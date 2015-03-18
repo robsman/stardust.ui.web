@@ -191,8 +191,8 @@
 
 	<div sd-dialog
 		sda-show="activityTableCtrl.showCompleteNotificationDialog"
-		sda-type="custom" sda-title="{{activityTableCtrl.completeActivityResult.title}}"
-		sda-scope="this" 
+		sda-type="alert" sda-title="{{activityTableCtrl.completeActivityResult.title}}"
+		sda-scope="this" sda-cancel-action-label="{{i18n('views-common-messages.common-close')}}"
 		sda-template="plugins/html5-process-portal/scripts/directives/partials/completeActivityNotfication.html">
 	</div>
 	
