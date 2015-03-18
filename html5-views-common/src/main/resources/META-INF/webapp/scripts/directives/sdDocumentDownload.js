@@ -29,7 +29,7 @@
 			},
 			transclude : true,
 			replace : true,
-			templateUrl : 'plugins/html5-process-portal/scripts/directives/partials/documentDownload.html',
+			templateUrl : 'plugins/html5-views-common/scripts/directives/partials/documentDownload.html',
 			link : function(scope, element, attrs, ctrl) {
 				new DocumentDownloadLink(scope, element, attrs, ctrl);
 			}
