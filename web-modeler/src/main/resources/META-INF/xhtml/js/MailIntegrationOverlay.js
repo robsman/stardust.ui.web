@@ -707,6 +707,20 @@ define(
                                                 && ap.dataType == m_constants.DOCUMENT_DATA_TYPE)
                                        {
                                           event.data.panel.add(ap);
+                                       }else{
+                                          event.data.panel.view
+                                          .submitChanges(
+                                                   {
+                                                      attributes : {
+                                                         "carnot:engine:camel::routeEntries" : this.getRoute()
+                                                      },
+                                                      contexts : {
+                                                         application : {
+                                                            accessPoints : event.data.panel.parameterDefinitionsPanel.parameterDefinitions
+                                                         }
+                                                      }
+                                                   }, false);
+                                          
                                        }
                                     });
                   this.dataTypeSelect.unbind("change");
@@ -793,7 +807,8 @@ define(
                                                             {
                                                                attributes : {
                                                                   "stardust:emailOverlay::templateConfigurations" : angular
-                                                                           .toJson(event.data.panel.templateConfigurations)
+                                                                           .toJson(event.data.panel.templateConfigurations),
+                                                                  "carnot:engine:camel::routeEntries" : event.data.panel.getRoute()
                                                                },
                                                                contexts : {
                                                                   application : {
@@ -860,7 +875,8 @@ define(
                                                          {
                                                             attributes : {
                                                                "stardust:emailOverlay::templateConfigurations" : angular
-                                                                        .toJson(event.data.panel.templateConfigurations)
+                                                                        .toJson(event.data.panel.templateConfigurations),
+                                                               "carnot:engine:camel::routeEntries" : event.data.panel.getRoute()
                                                             },
                                                             contexts : {
                                                                application : {
@@ -957,7 +973,8 @@ define(
                   this.view.submitChanges({
                      attributes : {
                         "stardust:emailOverlay::templateConfigurations" : angular
-                                 .toJson(this.templateConfigurations)
+                                 .toJson(this.templateConfigurations),
+                        "carnot:engine:camel::routeEntries" : this.getRoute()
                      },
                      contexts : {
                         application : {
