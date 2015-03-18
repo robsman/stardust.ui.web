@@ -82,7 +82,7 @@
 
 			// Process Descriptor columns
 			var showDescriptorCoulmns = true; // Default
-			if (attr.sdaDescriptorColumn && attr.sdaDescriptorColumn === 'false') {
+			if (attr.sdaDescriptorColumns && attr.sdaDescriptorColumns === 'false') {
 				showDescriptorCoulmns = false;
 		}
 			// If not required remove the column
@@ -401,6 +401,10 @@
 				});
 
 			} else {
+				
+				if(this.mode != 'worklist'){
+					throw 'sdData is not defined for sdActivityTable';
+				}
 				trace.debug("sdData not defined fetching default data. ");
 
 				var query = angular.extend({}, this.query);
