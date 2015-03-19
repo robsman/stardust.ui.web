@@ -238,7 +238,17 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
       },
       createUserProfileChangeCommand : function(profile) {
          return new ChangeEvent(m_constants.CHANGE_USER_PROFILE_COMMAND, profile);
+      },
+
+      //Exclude User
+      createAddExclusionCommand: function(modelId, uuid, changes) {
+        return new ChangeDescriptor("excludeUserAction.create", modelId, [{uuid: uuid, changes: changes}]);
+      },
+      
+      createDeleteExclusionCommand: function(modelId, uuid, changes) {
+        return new ChangeDescriptor("excludeUserAction.delete", modelId, [{uuid: uuid, changes: changes}]);
       }
+       
    };
 
    /**

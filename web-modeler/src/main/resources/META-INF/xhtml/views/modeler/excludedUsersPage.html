@@ -1,0 +1,68 @@
+<div class="propertiesPage">
+	<div class="heading">Excluded Users</div>
+	<div ng-controller="sdExcludedUserCtrl as ctrl" ng-cloak>
+		<div ng-if="ctrl.initialized">
+			<div>
+				<table>
+					<tr>
+						<td>
+							<div class="panelBorder" style="margin-bottom: 10px;">
+								<table width="100%" cellpadding="0" cellspacing="0"
+									class="layoutTable">
+									<tr>
+										<td><sd-modeler-simple-toolbar
+												sda-add-item="ctrl.addExclusion()"
+												sda-delete-item="ctrl.deleteExclusion()">
+											</sd-modeler-simple-toolbar></td>
+									</tr>
+									<tr>
+										<td>
+											<table class="dataTable" style="width: 100%">
+												<tr ng-repeat="exclusion in ctrl.exclusions"
+													ng-click="ctrl.setSelected($index)"
+													aid="selectExclusion{{$index}}"
+													ng-class="{selected: exclusion.uuid == ctrl.selectedExclusion.uuid}">
+													<td class="excludeUser"></td>
+													<td>{{exclusion.name}}</td>
+													<td>{{ ctrl.getDatapathStr(exclusion)}}</td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+								</table>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</div>
+
+
+			<div ng-if="ctrl.display">
+				<table>
+					<tr>
+						<td><label>{{ctrl.getProperty('modeler.element.properties.commonProperties.name')}}</label></td>
+						<td><input type="text" ng-model="ctrl.selectedExclusion.name"
+							ng-blur="ctrl.onNameChange(ctrl.selectedExclusion.name)"></td>
+					</tr>
+				</table>
+				<sd-modeler-data-path sda-data-items="ctrl.dataItems"
+					sda-data-selected="ctrl.selectedExclusion.data"
+					sda-data-path-selected="ctrl.selectedExclusion.dataPath"
+					sda-on-data-change="ctrl.updateExclusion(data, dataPath)"></sd-modeler-data-path>
+				<br />
+			</div>
+			<div>
+				<div class="heading">{{ctrl.getProperty('modeler.propertiesPage.activity.excludedUsers.logging')}}</div>
+				<table width="100%" cellpadding="0" cellspacing="0"
+					class="layoutTable">
+					<tr>
+						<td><input type="checkbox"
+							ng-change="ctrl.onLogToAuditTrailChange(ctrl.logToAuditTrail)"
+							ng-model="ctrl.logToAuditTrail"></td>
+						<td><label>{{ctrl.getProperty('modeler.propertiesPage.activity.excludedUsers.logToAuditTrail')}}</label></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>

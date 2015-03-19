@@ -284,6 +284,7 @@ define(function() {
 		ENTITY_DATA_TYPE : "entity",
 		HIBERNATE_DATA_TYPE : "hibernate",
 		ENUMERATION : "Enumeration",
+		LAST_ACTIVITY_PERFORMER: "LAST_ACTIVITY_PERFORMER",
 
 		// Type Declarations
 

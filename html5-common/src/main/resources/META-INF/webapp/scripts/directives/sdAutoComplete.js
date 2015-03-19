@@ -9,7 +9,7 @@ angular.module('bpm-common.directives')
     $scope.ui.styles={};
     
     $scope.$watch("matchStr",function(){
-      if($scope.matchStr.length==0){
+      if($scope.matchStr && $scope.matchStr.length==0){
            $scope.ui.selectedIndex=0;
       }
     });
@@ -151,11 +151,17 @@ angular.module('bpm-common.directives')
         }
         
         $scope.dataSelected.push(item);
+        if (angular.isDefined($attrs.sdaOnSelectionChange)) {
+          $scope.onSelectionChange({selectedData: $scope.dataSelected});
+        }
     };
               
     $scope.popData=function(item){
       var idx = $scope.dataSelected.indexOf(item);
       $scope.dataSelected.splice(idx,1);
+      if (angular.isDefined($attrs.sdaOnSelectionChange)) {
+        $scope.onSelectionChange({selectedData: $scope.dataSelected});
+      }
       
       if($scope.removeOnSelect===true){
           $scope.dataList.splice(idx,0,item);
@@ -245,7 +251,8 @@ angular.module('bpm-common.directives')
         removeOnSelect     : "=sdaRemoveOnSelect",
         orderPredicate     : "@sdaOrderPredicate",
         closeDelay         : "@sdaCloseDelay",
-        keyDelay           : "@sdaKeyDelay"
+        keyDelay           : "@sdaKeyDelay",
+        onSelectionChange : "&sdaOnSelectionChange"    
       }
   }
   
