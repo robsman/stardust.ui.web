@@ -17,17 +17,19 @@
 
 	angular.module("bcc-ui").controller(
 			'sdProcessResourceMgmtCtrl',
-			[ '$q', '$scope', 'sdProcessResourceMgmtService', 'sdUtilService',
-					'sdLoggerService', ProcessResourceMgmtCtrl ]);
+			[ '$q', '$scope', '$filter', 'sdProcessResourceMgmtService',
+					'sdUtilService', 'sdLoggerService', 'sdViewUtilService',
+					ProcessResourceMgmtCtrl ]);
 
 	/*
 	 * 
 	 */
-	function ProcessResourceMgmtCtrl($q, $scope, sdProcessResourceMgmtService,
-			sdUtilService, sdLoggerService) {
+	function ProcessResourceMgmtCtrl($q, $scope, $filter,
+			sdProcessResourceMgmtService, sdUtilService, sdLoggerService,
+			sdViewUtilService) {
 		var trace = sdLoggerService
-		.getLogger('bcc-ui.sdProcessResourceMgmtCtrl');
-		
+				.getLogger('bcc-ui.sdProcessResourceMgmtCtrl');
+
 		this.rolesTable = null;
 		this.usersTable = null;
 		this.columnSelector = 'admin';
@@ -50,8 +52,7 @@
 								trace.log(error);
 							});
 		};
-		
-		
+
 		/**
 		 * 
 		 */
@@ -66,28 +67,126 @@
 		 * @param options
 		 * @returns
 		 */
-		ProcessResourceMgmtCtrl.prototype.getProcessResourceRoles = function(options) {
+		ProcessResourceMgmtCtrl.prototype.getProcessResourceRoles = function(
+				options) {
 			var self = this;
-			return self.processResourceRoleList
+			var deferred = $q.defer();
+			// TO DO : The deferred object is not needed here but as the sdDataTable is 
+			// not working as expected with local mode, completed implementation with remote mode.
+			self.ProcessResourceRoles = {};
+			if (options.filters != undefined) {
+				var rows = this.filterRolesArray(self.processResourceRoleList,
+						options.filters.name.textSearch);
+				self.ProcessResourceRoles.list = rows;
+				self.ProcessResourceRoles.totalCount = rows.length;
+			} else {
+				self.ProcessResourceRoles.list = self.processResourceRoleList;
+				self.ProcessResourceRoles.totalCount = self.processResourceRoleList.length;
+			}
+			deferred.resolve(self.ProcessResourceRoles);
+			return deferred.promise;
 
 		};
-		
+		/**
+		 * 
+		 */
+		ProcessResourceMgmtCtrl.prototype.filterRolesArray = function(list,
+				textSearch) {
+			var rows = $filter('filter')(list, function(item, index) {
+				var newTextSearch = textSearch.replaceAll("*", ".*");
+				return item.name.match(new RegExp('^' + newTextSearch, "i"));
+			}, true);
+
+			return rows;
+
+		};
+
+		/**
+		 * 
+		 */
+		ProcessResourceMgmtCtrl.prototype.filterUsersArray = function(list,
+				textSearch) {
+			var rows = $filter('filter')(
+					list,
+					function(item, index) {
+						var newTextSearch = textSearch.replaceAll("*", ".*");
+						return item.userName.match(new RegExp('^'
+								+ newTextSearch, "i"));
+					}, true);
+
+			return rows;
+
+		};
+
+		/**
+		 * 
+		 */
+		String.prototype.replaceAll = function(str1, str2, ignore) {
+			return this.replace(new RegExp(str1.replace(
+					/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g, "\\$&"),
+					(ignore ? "gi" : "g")), (typeof (str2) == "string") ? str2
+					.replace(/\$/g, "$$$$") : str2);
+		}
+
 		/**
 		 * 
 		 * @param options
 		 * @returns
+		 * 
 		 */
-		ProcessResourceMgmtCtrl.prototype.getProcessResourceUsers = function(options) {
+		ProcessResourceMgmtCtrl.prototype.getProcessResourceUsers = function(
+				options) {
 			var self = this;
-			return self.processResourceUserList
-
+			// TO DO : The deferred object is not needed here but as the sdDataTable is 
+			// not working as expected with local mode, completed implementation with remote mode.
+			var deferred = $q.defer();
+			self.ProcessResourceUsers = {};
+			if (options.filters != undefined) {
+				var rows = this.filterUsersArray(self.processResourceUserList,
+						options.filters.userName.textSearch);
+				self.ProcessResourceUsers.list = rows;
+				self.ProcessResourceUsers.totalCount = rows.length;
+			} else {
+				self.ProcessResourceUsers.list = self.processResourceUserList;
+				self.ProcessResourceUsers.totalCount = self.processResourceUserList.length;
+			}
+			deferred.resolve(self.ProcessResourceUsers);
+			return deferred.promise;
 		};
 
-		ProcessResourceMgmtCtrl.prototype.refresh = function(){
+		/**
+		 * 
+		 */
+		ProcessResourceMgmtCtrl.prototype.refresh = function() {
 			var self = this;
 			self.getProcessResourceRolesAndUsers();
 			self.rolesTable.refresh();
 			self.usersTable.refresh();
+		};
+
+		/**
+		 * 
+		 */
+		ProcessResourceMgmtCtrl.prototype.openRoleManagerView = function(
+				roleId, departmentOid, name) {
+			sdViewUtilService.openView("roleManagerDetailView", "roleId="
+					+ roleId, {
+				"roleId" : "" + roleId,
+				"departmentOid" : "" + departmentOid,
+				"roleName" : "" + name
+			}, true);
+		};
+
+		/**
+		 * 
+		 */
+		ProcessResourceMgmtCtrl.prototype.openUserManagerView = function(
+				userOid, userId) {
+			sdViewUtilService.openView("userManagerDetailView", "userOid="
+					+ userOid, {
+				"userOid" : "" + userOid,
+				"userId" : "" + userId
+			}, true);
 		};
 	}
 })();

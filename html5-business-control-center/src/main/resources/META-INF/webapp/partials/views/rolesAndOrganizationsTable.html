@@ -1,17 +1,7 @@
 <div class="res-availability-wrapper">
     <div class="view-panel-toolbar tbl-title" style="color: #708090;font-size:11px">{{i18n('business-control-center-messages.views-resourceAvailabilityView-rolesTable-title')}}</div>
-	<!-- <div sda-toolbar>
-		<div class="tbl-toolbar-section">
-			<button ng-disabled="docSearchViewCtrl.rowSelection == null"
-				ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openAttachToProcessDialog(docSearchViewCtrl.rowSelection);"
-				title="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-attachToProcess')}}"
-				class="button-link tbl-toolbar-item tbl-tool-link">
-				<i class="sc sc-fw sc-1x sc-document-attach"></i>
-			</button>
-		</div>
-	</div> -->
 	<table sd-data-table="ctrl.rolesTable"
-		sd-data="ctrl.getProcessResourceRoles(params)" sda-mode="local" sda-no-pagination="true"
+		sd-data="ctrl.getProcessResourceRoles(params)" sda-mode="remote" sda-no-pagination="true"
 		sda-selectable="row"
 		sda-selection="ctrl.rowSelectionForRoles"
 		sda-column-selector="{{ctrl.columnSelector}}"
@@ -35,7 +25,8 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td></td>
+				<td sda-exporter="rowData.name"><a href="#" ng-click="bpmCommon.stopEvent($event); ctrl.openRoleManagerView(rowData.roleId,rowData.departmentOid,rowData.name);" title="{{i18n('business-control-center-messages.views-roleManagerDetailView-title')}}"
+							class="tbl-tool-link">{{rowData.name}}</a></td>
 				<td style="text-align: center;"></td>
 				<td style="text-align: center;"></td>
 				<td style="text-align: center;"></td>
