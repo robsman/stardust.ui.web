@@ -27,6 +27,7 @@ import org.eclipse.stardust.engine.core.extensions.conditions.timer.TimerAccessP
 import org.eclipse.stardust.engine.core.extensions.conditions.timer.TimerValidator;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
+import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.model.BpmPackageBuilder;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.AbstractEventSymbol;
@@ -46,6 +47,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.util.IdFactory;
 import org.eclipse.stardust.model.xpdl.util.NameIdUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
@@ -583,6 +585,35 @@ public class EventMarshallingUtils
       return action;
    }
 
+   public static EventActionType addEventAction(EventHandlerType eventHandler,
+         String typeId, String defaultName, boolean keepOtherActions)
+   {
+      EventActionType action = null;
+      EventActionTypeType actionType = decodeEventActionType(typeId,
+            findContainingModel(eventHandler));
+      if (actionType != null)
+      {
+         action = newEventAction(actionType);
+         IdFactory idFactory = null;
+         if (defaultName == null)
+         {
+            idFactory = new IdFactory("Exclude User", "Exclude User");
+            idFactory.computeNames(eventHandler.getEventAction(), false);
+            action.setId(idFactory.getId());
+            action.setName(idFactory.getName());
+         }
+         else
+         {
+            idFactory = new IdFactory(defaultName, defaultName);
+            idFactory.computeNames(eventHandler.getEventAction(), false);
+            action.setId(idFactory.getId());
+            action.setName(defaultName);
+         }
+         eventHandler.getEventAction().add(action);
+      }
+      return action;
+   }
+
    public static ActivityType createHostActivity(ProcessDefinitionType processDefinition, String name)
    {
       ActivityType hostActivity = BpmModelBuilder.newRouteActivity(processDefinition)
@@ -592,17 +623,22 @@ public class EventMarshallingUtils
       return hostActivity;
    }
 
-   public static void createExcludeUserAction(ActivityType activity, JsonObject activityJson)
+   public static EventActionType createExcludeUserAction(ActivityType activity, JsonObject euJson, EObjectUUIDMapper uuidMapper)
    {
-      JsonObject euJson = activityJson.getAsJsonObject(ModelerConstants.EU_EXCLUDE_USER);
-
       String dataFullID =  euJson.get(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA).getAsString();
+      String actionName = null;
+
+      if (GsonUtils.hasNotJsonNull(euJson, ModelerConstants.NAME_PROPERTY))
+      {
+         actionName = euJson.get(ModelerConstants.NAME_PROPERTY).getAsString();
+      }
+
 
       String dataID = dataFullID;
 
       if (dataFullID.split(":").length > 1)
       {
-         dataFullID = dataFullID.split(":")[1];
+         dataID = dataFullID.split(":")[1];
       }
 
       String dataPath = GsonUtils.extractAsString(euJson, ModelerConstants.EU_EXCLUDE_PERFORMER_DATA_PATH);
@@ -620,15 +656,41 @@ public class EventMarshallingUtils
       if (eventHandler == null)
       {
          eventHandler = EventMarshallingUtils.newEventHandler(conditionType);
+         eventHandler.setType(conditionType);
+         eventHandler.setId(ModelerConstants.EU_EXCLUDE_USER_INTERNAL);
+         eventHandler.setName(ModelerConstants.EU_EXCLUDE_USER_INTERNAL);
+         activity.getEventHandler().add(eventHandler);
+         uuidMapper.map(eventHandler);
       }
 
-      activity.getEventHandler().add(eventHandler);
-      EventActionType action = EventMarshallingUtils.setEventAction(eventHandler,PredefinedConstants.EXCLUDE_USER_ACTION, PredefinedConstants.EXCLUDE_USER_ACTION, true);
+      EventActionType action = EventMarshallingUtils.addEventAction(eventHandler,PredefinedConstants.EXCLUDE_USER_ACTION, actionName, true);
       AttributeUtil.setAttribute(action, PredefinedConstants.EXCLUDED_PERFORMER_DATA, dataID);
       AttributeUtil.setAttribute(action, PredefinedConstants.EXCLUDED_PERFORMER_DATAPATH, dataPath);
-      eventHandler.setType(conditionType);
-      eventHandler.setId(ModelerConstants.EU_EXCLUDE_USER_INTERNAL);
-      eventHandler.setName("Exclude User");
+      uuidMapper.map(action);
+      return action;
+   }
+
+   public static void addExcludeUserActions(EventHandlerType eventHandler,
+         JsonObject eventJson, EObjectUUIDMapper uuidMapper)
+   {
+      JsonArray excludeUserActionsJson = new JsonArray();
+      for (Iterator<EventActionType> i = eventHandler.getEventAction().iterator(); i
+            .hasNext();)
+      {
+         EventActionType action = i.next();
+         JsonObject euJson = new JsonObject();
+         euJson.addProperty(ModelerConstants.NAME_PROPERTY, action.getName());
+         euJson.addProperty(ModelerConstants.UUID_PROPERTY, uuidMapper.getUUID(action));
+         euJson.addProperty(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA, AttributeUtil
+               .getAttribute(action, PredefinedConstants.EXCLUDED_PERFORMER_DATA)
+               .getValue());
+         euJson.addProperty(
+               ModelerConstants.EU_EXCLUDE_PERFORMER_DATA_PATH,
+               AttributeUtil.getAttribute(action,
+                     PredefinedConstants.EXCLUDED_PERFORMER_DATAPATH).getValue());
+         excludeUserActionsJson.add(euJson);
+      }
+      eventJson.add("userExclusions", excludeUserActionsJson);
    }
 
    public static void createSetDataAction(EventHandlerType eventHandler, JsonObject eventJson)
@@ -680,22 +742,14 @@ public class EventMarshallingUtils
 
    }
 
-   public static void removeExcludeUserAction(ActivityType activity)
+   public static void removeExcludeUserAction(EventActionType action)
    {
-      EventHandlerType tobeRemoved = null;
-      for (Iterator<EventHandlerType> i = activity.getEventHandler().iterator(); i
-            .hasNext();)
+      if (action != null)
       {
-         EventHandlerType eventHandler = i.next();
-         if (eventHandler.getType().getId().equals(PredefinedConstants.EXCEPTION_CONDITION) && eventHandler.getId().equals(ModelerConstants.EU_EXCLUDE_USER_INTERNAL))
-         {
-            tobeRemoved = eventHandler;
-         }
+         EventHandlerType handler = (EventHandlerType) action.eContainer();
+         handler.getEventAction().remove(action);
       }
-      if (tobeRemoved != null)
-      {
-         activity.getEventHandler().remove(tobeRemoved);
-      }
+
    }
 
    public static EventHandlerType findExcludeUserEventHandler(ActivityType activity)
@@ -705,8 +759,7 @@ public class EventMarshallingUtils
       {
          EventHandlerType eventHandler = i.next();
          if (eventHandler.getType().getId()
-               .equals(PredefinedConstants.EXCEPTION_CONDITION)
-               && eventHandler.getId().equals(ModelerConstants.EU_EXCLUDE_USER_INTERNAL))
+               .equals(PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION))
          {
             return eventHandler;
          }

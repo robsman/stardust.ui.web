@@ -38,10 +38,13 @@ public class GenericModelingAssertions
    }
 
    public static ProcessDefinitionType assertSubProcess(ActivityType activity,
-         String subProcessID) {
-      assertThat(activity.getImplementation(), is(ActivityImplementationType.SUBPROCESS_LITERAL));
+         String subProcessID)
+   {
+      assertThat(activity.getImplementation(),
+            is(ActivityImplementationType.SUBPROCESS_LITERAL));
       assertThat(activity.getSubProcessMode(), is(not(nullValue())));
-      AttributeType attribute = AttributeUtil.getAttribute(activity, "carnot:engine:subprocess:copyAllData");
+      AttributeType attribute = AttributeUtil.getAttribute(activity,
+            "carnot:engine:subprocess:copyAllData");
       assertThat(attribute, is(not(nullValue())));
       ProcessDefinitionType subProcess = activity.getImplementationProcess();
       assertThat(subProcess, is(not(nullValue())));
@@ -389,6 +392,11 @@ public class GenericModelingAssertions
          String value)
    {
       AttributeType attribute = AttributeUtil.getAttribute(element, key);
+      if (value == null)
+      {
+         assertThat(attribute, is(nullValue()));
+         return null;
+      }
       assertThat(attribute, is(not(nullValue())));
       assertThat(attribute.getValue(), is(not(nullValue())));
       assertThat(attribute.getValue(), is(value));

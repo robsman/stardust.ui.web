@@ -52,6 +52,29 @@ public class EventCommandHandler
 
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
+
+   @OnCommand(commandId = "excludeUserAction.create")
+   public void createExcludeUserAction(ModelType model, ActivityType activity, JsonObject request)
+   {
+      EventMarshallingUtils.createExcludeUserAction(activity, request, modelService().uuidMapper());
+   }
+
+   @OnCommand(commandId = "excludeUserAction.delete")
+   public void deleteExcludeUserAction(ModelType model, ActivityType activity,
+         JsonObject request)
+   {
+      if (request.has(ModelerConstants.UUID_PROPERTY))
+      {
+         String uuid = request.get(ModelerConstants.UUID_PROPERTY).getAsString();
+         if (uuid != null)
+         {
+            EventActionType action = (EventActionType) modelService().uuidMapper()
+                  .getEObject(uuid);
+            EventMarshallingUtils.removeExcludeUserAction(action);
+         }
+      }
+   }
+
    @OnCommand(commandId = "eventSymbol.create")
    public void createEvent(ModelType model, LaneSymbol parentLaneSymbol, JsonObject request)
    {

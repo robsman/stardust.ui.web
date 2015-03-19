@@ -235,6 +235,14 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          updateDataFlowConnection((DataMappingConnectionType) element, json);
       }
+      else if (element instanceof EventHandlerType)
+      {
+         updateEventHandler((EventHandlerType) element, json);
+      }
+      else if (element instanceof EventActionType)
+      {
+         updateEventAction((EventActionType) element, json);
+      }
       else
       {
          logger.warn("===> Unsupported Symbol " + element);
@@ -1761,6 +1769,54 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          }
 
          updateTrigger(trigger, startEventJson);
+      }
+   }
+
+   private void updateEventAction(EventActionType eventAction, JsonObject eventActionJson)
+   {
+      if (!eventAction.getType().getId().equals(PredefinedConstants.EXCLUDE_USER_ACTION))
+      {
+         return;
+      }
+      JsonObject euJson = eventActionJson
+            .getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+      if (euJson.has(ModelerConstants.NAME_PROPERTY))
+      {
+         EventHandlerType eventHandler = (EventHandlerType) eventAction.eContainer();
+         String name = extractAsString(euJson, ModelerConstants.NAME_PROPERTY);
+         IdFactory idFactory = new IdFactory(name, name);
+         idFactory.computeNames(eventHandler.getEventAction(), false);
+         eventAction.setId(idFactory.getId());
+         eventAction.setName(name);
+      }
+      if (euJson.has(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA))
+      {
+         String data = extractAsString(euJson, ModelerConstants.EU_EXCLUDE_PERFORMER_DATA);
+         AttributeUtil.setAttribute(eventAction, PredefinedConstants.EXCLUDED_PERFORMER_DATA, data);
+      }
+      if (euJson.has(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA_PATH))
+      {
+         String dataPath = extractAsString(euJson, ModelerConstants.EU_EXCLUDE_PERFORMER_DATA_PATH);
+         AttributeUtil.setAttribute(eventAction, PredefinedConstants.EXCLUDED_PERFORMER_DATAPATH, dataPath);
+      }
+   }
+
+   private void updateEventHandler(EventHandlerType eventHandler,
+         JsonObject eventHandlerJson)
+   {
+      if (!eventHandler.getType().getId()
+            .equals(PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION))
+      {
+         return;
+      }
+
+      JsonObject euEventHandlerJson = eventHandlerJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+
+      if (euEventHandlerJson.has(ModelerConstants.LOG_HANDLER_PROPERTY))
+      {
+         boolean logHandler = euEventHandlerJson.get(ModelerConstants.LOG_HANDLER_PROPERTY)
+               .getAsBoolean();
+         eventHandler.setLogHandler(logHandler);
       }
    }
 

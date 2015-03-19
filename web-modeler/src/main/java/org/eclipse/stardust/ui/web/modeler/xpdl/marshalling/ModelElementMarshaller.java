@@ -216,6 +216,11 @@ public class ModelElementMarshaller implements ModelMarshaller
       {
          jsResult = toEventJson((EventHandlerType) modelElement, new JsonObject());
       }
+      else if (modelElement instanceof EventActionType)
+      {
+         jsResult = toEventActionJson((EventActionType) modelElement);
+      }
+
 
       if (null == jsResult)
       {
@@ -1134,19 +1139,13 @@ public class ModelElementMarshaller implements ModelMarshaller
          }
       }
 
-      /*EventHandlerType eventHandler = EventMarshallingUtils
+      EventHandlerType eventHandler = EventMarshallingUtils
             .findExcludeUserEventHandler(activity);
       if (eventHandler != null)
       {
-         JsonObject euJson = new JsonObject();
-         EventActionType action = eventHandler.getEventAction().get(0);
-         euJson.addProperty(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA, AttributeUtil
-               .getAttributeValue(action, PredefinedConstants.EXCLUDED_PERFORMER_DATA));
-         euJson.addProperty(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA_PATH,
-               AttributeUtil.getAttributeValue(action,
-                     PredefinedConstants.EXCLUDED_PERFORMER_DATAPATH));
-         activityJson.add(ModelerConstants.EU_EXCLUDE_USER, euJson);
-      }*/
+         JsonObject onAssignmentJson = this.toEventJson(eventHandler, new JsonObject());
+         activityJson.add("onAssignmentHandler", onAssignmentJson);
+      }
 
       return activityJson;
    }
@@ -1883,6 +1882,7 @@ public class ModelElementMarshaller implements ModelMarshaller
                AttributeUtil.getAttributeValue(setDataAction,
                      PredefinedConstants.SET_DATA_ACTION_DATA_PATH_ATT));
          eventJson.add(ModelerConstants.SD_SET_DATA_ACTION, setDataJson);
+
       }
       else
       {
@@ -1890,6 +1890,20 @@ public class ModelElementMarshaller implements ModelMarshaller
          setDataJson.addProperty(ModelerConstants.SD_SET_DATA_ACTION_DATA_ID, "");
          setDataJson.addProperty(ModelerConstants.SD_SET_DATA_ACTION_DATA_PATH, "");
          eventJson.add(ModelerConstants.SD_SET_DATA_ACTION, setDataJson);
+      }
+
+      if (eventHandler.getType().getId()
+            .equals(PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION))
+      {
+         JsonArray excludeUserActionsJson = new JsonArray();
+         for (Iterator<EventActionType> i = eventHandler.getEventAction().iterator(); i
+               .hasNext();)
+         {
+            EventActionType action = i.next();
+            JsonObject euJson = toEventActionJson(action);
+            excludeUserActionsJson.add(euJson);
+         }
+         eventJson.add("userExclusions", excludeUserActionsJson);
       }
 
       return eventJson;
@@ -2039,6 +2053,46 @@ public class ModelElementMarshaller implements ModelMarshaller
       }
 
       return eventJson;
+   }
+
+   public JsonObject toEventActionJson(EventActionType eventAction)
+   {
+      JsonObject euJson = new JsonObject();
+      if (!eventAction.getType().getId().equals(PredefinedConstants.EXCLUDE_USER_ACTION))
+      {
+         return euJson;
+      }
+      String uuid = eObjectUUIDMapper().getUUID(eventAction);
+      euJson.addProperty(ModelerConstants.UUID_PROPERTY, uuid);
+      euJson.addProperty(ModelerConstants.OID_PROPERTY, eventAction.getElementOid());
+      euJson.addProperty(ModelerConstants.NAME_PROPERTY, eventAction.getName());
+      euJson.addProperty(ModelerConstants.TYPE_PROPERTY,
+            ModelerConstants.EVENT_ACTION_KEY);
+
+      if (AttributeUtil.getAttribute(eventAction,
+            PredefinedConstants.EXCLUDED_PERFORMER_DATA) != null)
+      {
+         ModelType model = ModelUtils.findContainingModel(eventAction);
+         if (model != null)
+         {
+            euJson.addProperty(
+                  ModelerConstants.EU_EXCLUDE_PERFORMER_DATA,
+                  model.getId()
+                        + ":"
+                        + AttributeUtil.getAttribute(eventAction,
+                              PredefinedConstants.EXCLUDED_PERFORMER_DATA).getValue());
+         }
+
+      }
+      if (AttributeUtil.getAttribute(eventAction,
+            PredefinedConstants.EXCLUDED_PERFORMER_DATAPATH) != null)
+      {
+         euJson.addProperty(
+               ModelerConstants.EU_EXCLUDE_PERFORMER_DATA_PATH,
+               AttributeUtil.getAttribute(eventAction,
+                     PredefinedConstants.EXCLUDED_PERFORMER_DATAPATH).getValue());
+      }
+      return euJson;
    }
 
    /**
