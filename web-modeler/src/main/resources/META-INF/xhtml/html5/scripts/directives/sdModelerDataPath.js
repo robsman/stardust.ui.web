@@ -37,7 +37,7 @@
       </tr>\
       <tr>\
         <td><label>{{dataPathCtrl.getProperty("modeler.activity.propertyPages.onAssignment.path")}}</label></td>\
-        <td ng-if="dataPathCtrl.supportsDataPath"><div aid="dataPathInput" sd-auto-complete\
+        <td ng-if="dataPathCtrl.supportsDataPath"><div class="dataPathInput" aid="dataPathInput" sd-auto-complete\
             sda-matches="dataPathCtrl.filteredDataPaths"\
             sda-match-str="dataPathCtrl.matchVal"\
             sda-change="dataPathCtrl.getMatches(dataPathCtrl.matchVal)"\

@@ -803,7 +803,11 @@ textarea:focus {
 	width: 20px;
 }
 
+.dataPathInput {
+	position: relative;
+}
+
 .sd-ac-container {
-	max-width: 250px;
+	width: 200px;
 }	
 @import ('/plugins/modern/public/skins/modern/modern.css')
