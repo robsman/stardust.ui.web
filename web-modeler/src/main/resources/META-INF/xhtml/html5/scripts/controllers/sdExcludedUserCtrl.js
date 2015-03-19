@@ -98,15 +98,15 @@
           "oid": 41,
           "name": "User A excluded",
           "type": "eventAction",
-          "data": "Model1:personData",
-          "dataPath": "firstName"
+          "data": this.getDefaultData(),
+          "dataPath": null
         }, {
           "uuid": "00000000-0000-0000-0000-000000000089",
           "oid": 42,
           "name": "User B excluded",
           "type": "eventAction",
-          "data": "Model1:personData",
-          "dataPath": "lastName"
+          "data": this.getDefaultData(),
+          "dataPath": null
         }]
       }
     }

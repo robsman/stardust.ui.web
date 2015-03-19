@@ -219,7 +219,7 @@
    * @returns
    */
   DataPathController.prototype.getSelectedDataItem = function(dataFullId) {
-    for (var i = 0; this.dataItems.length; i++) {
+    for (var i = 0; i < this.dataItems.length; i++) {
       if (this.dataItems[i].fullId == dataFullId) { return this.dataItems[i]; }
     }
   }
