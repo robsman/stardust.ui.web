@@ -10,22 +10,42 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
+import org.eclipse.stardust.ui.web.rest.service.ProcessInstanceService;
+import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ProcessTableFilterDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ProcessTableFilterDTO.DescriptorFilterDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.common.util.GsonUtils;
-import org.eclipse.stardust.ui.web.rest.service.ProcessInstanceService;
-import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 
 /**
  * @author Anoop.Nair
@@ -40,6 +60,9 @@ public class ProcessInstanceResource
 
    @Autowired
    private ProcessInstanceService processInstanceService;
+   
+   @Autowired
+   ProcessDefinitionService processDefService;
 
    private final JsonMarshaller jsonIo = new JsonMarshaller();
 
@@ -174,6 +197,144 @@ public class ProcessInstanceResource
 
          return Response.serverError().build();
       }
+   }
+   
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/search")
+   public Response search(
+         @PathParam("participantQId") String participantQId,
+         @QueryParam("skip") @DefaultValue("0") Integer skip,
+         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
+         @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
+   {
+      try
+      {
+         Options options = new Options(pageSize, skip, orderBy,
+               "asc".equalsIgnoreCase(orderByDir));
+         populatePostData(options, postData);
+         
+      // TODO extract and apply filter options
+//         options.pageSize = 9;
+         
+         return Response.ok(GsonUtils.toJsonHTMLSafeString(processInstanceService.getProcessInstances(options)), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+   
+   /**
+    * Populate the options with the post data.
+    * @param options
+    * @param postData
+    * @return
+    */
+   private Options populatePostData(Options options, String postData)
+   {
+      JsonMarshaller jsonIo = new JsonMarshaller();
+      JsonObject postJSON = jsonIo.readJsonObject(postData);
+
+      // For filter
+      JsonObject filters = postJSON.getAsJsonObject("filters");
+      if (null != filters)
+      {
+         options.filter = getFilters(filters.toString());
+      }
+
+
+      JsonArray visbleColumns = postJSON.getAsJsonObject("descriptors").get("visbleColumns").getAsJsonArray();
+      List<String> columnsList = new ArrayList<String>();
+      for (JsonElement jsonElement : visbleColumns)
+      {
+         columnsList.add(StringUtils.substringAfter(jsonElement.getAsString(), "descriptorValues."));
+      }
+       options.visibleDescriptorColumns = columnsList;
+       options.allDescriptorsVisible = postJSON.getAsJsonObject("descriptors").get("fetchAll").getAsBoolean();
+
+      return options;
+   }
+   
+   /**
+    * Get the filters from the JSON string
+    * @param jsonFilterString
+    * @return
+    */
+   private ProcessTableFilterDTO getFilters(String jsonFilterString)
+   {
+      ProcessTableFilterDTO processListFilterDTO = null;
+      if (StringUtils.isNotEmpty(jsonFilterString))
+      {
+         try
+         {
+            JsonMarshaller jsonIo = new JsonMarshaller();
+            JsonObject json = jsonIo.readJsonObject(jsonFilterString);
+            processListFilterDTO = DTOBuilder.buildFromJSON(json, ProcessTableFilterDTO.class,
+                  ProcessTableFilterDTO.getCustomTokens());
+            if (StringUtils.contains(jsonFilterString, "descriptorValues"))
+            {
+               populateDescriptorFilters(processListFilterDTO, json);
+            }
+         }
+         catch (Exception e)
+         {
+            trace.error("Error in Deserializing filter JSON", e);
+         }
+      }
+
+      return processListFilterDTO;
+   }
+   
+   /**
+    * Populates the descriptor filter values.
+    * @param worklistFilter
+    * @param descriptorColumnsFilterJson
+    */
+   private void populateDescriptorFilters(ProcessTableFilterDTO processListFilterDTO,
+         JsonObject descriptorColumnsFilterJson)
+   {
+
+      List<DescriptorColumnDTO> descriptorColumns = processDefService
+            .getDescriptorColumns(true);
+      Map<String, DescriptorFilterDTO> descriptorColumnMap = new HashMap<String, DescriptorFilterDTO>();
+
+      for (DescriptorColumnDTO descriptorColumnDTO : descriptorColumns)
+      {
+         Object filterDTO = null;
+         if (null != descriptorColumnsFilterJson.get(descriptorColumnDTO.id))
+         {
+            // String TYPE
+            if (ColumnDataType.STRING.toString().equals(descriptorColumnDTO.type))
+            {
+               filterDTO = new Gson().fromJson(
+                     descriptorColumnsFilterJson.get(descriptorColumnDTO.id),
+                     ProcessTableFilterDTO.TextSearchDTO.class);
+
+            }
+            else if (ColumnDataType.DATE.toString().equals(descriptorColumnDTO.type)
+                  || ColumnDataType.NUMBER.toString().equals(descriptorColumnDTO.type))
+            {
+               filterDTO = new Gson().fromJson(
+                     descriptorColumnsFilterJson.get(descriptorColumnDTO.id),
+                     ProcessTableFilterDTO.RangeDTO.class);
+            }
+            else if (ColumnDataType.BOOLEAN.toString().equals(descriptorColumnDTO.type))
+            {
+               filterDTO = new Gson().fromJson(
+                     descriptorColumnsFilterJson.get(descriptorColumnDTO.id),
+                     ProcessTableFilterDTO.BooleanDTO.class);
+            }
+            descriptorColumnMap.put(descriptorColumnDTO.id, new DescriptorFilterDTO(
+                  descriptorColumnDTO.type, filterDTO));
+         }
+      }
+
+      processListFilterDTO.descriptorFilterMap = descriptorColumnMap;
    }
 
    /**

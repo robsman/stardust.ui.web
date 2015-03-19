@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
+import java.util.Date;
+import java.util.Map;
+
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 
@@ -27,4 +30,41 @@ public class ProcessInstanceDTO extends AbstractDTO
 
    @DTOAttribute("processName")
    public String processName;
+
+   public long processInstanceRootOID;
+
+   public int priority;
+
+   public Date startTime;
+
+   public Object duration;
+
+   public String createUser;
+
+   public Map<String, DescriptorDTO> descriptorValues;
+
+   public Object processDescriptorsList;
+
+   public Date endTime;
+
+   public String startingUser;
+
+   public Object enableTerminate;
+
+   public Object status;
+
+   public boolean enableRecover;
+
+   public boolean checkSelection;
+
+   public boolean modifyProcessInstance;
+
+   public int notesCount;
+
+   public boolean caseInstance;
+
+   public String caseOwner;
+
+   public int oldPriority;
+   
 }

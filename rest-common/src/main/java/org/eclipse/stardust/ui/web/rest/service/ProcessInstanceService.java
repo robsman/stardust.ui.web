@@ -10,22 +10,46 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.Resource;
+
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
+import org.eclipse.stardust.engine.api.dto.Note;
+import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
+import org.eclipse.stardust.engine.api.model.Model;
+import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.query.QueryResult;
+import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.Options;
+import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.converter.PriorityConverter;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDocumentDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
@@ -38,6 +62,9 @@ import com.google.gson.JsonObject;
 public class ProcessInstanceService
 {
    private static final Logger trace = LogManager.getLogger(ActivityInstanceUtils.class);
+   
+   @Resource
+   private org.eclipse.stardust.ui.web.rest.service.utils.ProcessInstanceUtils processInstanceUtilsREST;
    
    public ProcessInstanceDTO startProcess(JsonObject json)
    {
@@ -108,6 +135,177 @@ public class ProcessInstanceService
          }
       }
       return GsonUtils.toJsonHTMLSafeString(notificationMap);
+   }
+   
+   public QueryResultDTO getProcessInstances(Options options)
+   {
+      QueryResult<? extends ProcessInstance> queryResult = processInstanceUtilsREST.getProcessInstances(options);
+      return buildProcessListResult(queryResult);
+   }
+   
+   /**
+    * @param queryResult
+    * @return
+    */
+   private QueryResultDTO buildProcessListResult(QueryResult<?> queryResult)
+   {
+      List<ProcessInstanceDTO> list = new ArrayList<ProcessInstanceDTO>();
+
+      for (Object object : queryResult)
+      {
+         if (object instanceof ProcessInstance)
+         {
+            ProcessInstance processInstance = (ProcessInstance) object;
+
+            ProcessInstanceDTO dto = new ProcessInstanceDTO();
+            
+            ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(processInstance.getModelOID(),
+                  processInstance.getProcessID());
+            
+            dto.processInstanceRootOID = processInstance.getRootProcessInstanceOID();
+            dto.oid = processInstance.getOID();
+            dto.priority = processInstance.getPriority();
+            dto.startTime = processInstance.getStartTime();
+            dto.duration = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getDuration(processInstance);
+            dto.processName = I18nUtils.getProcessName(processDefinition);
+            String startingUserLabel = UserUtils.getUserDisplayLabel(processInstance.getStartingUser());
+            dto.createUser = startingUserLabel;
+            dto.descriptorValues = getDescriptorValues(processInstance, processDefinition);
+            dto.processDescriptorsList = getProcessDescriptor(processInstance, processDefinition);
+            // Update Document Descriptors for process
+            CommonDescriptorUtils.updateProcessDocumentDescriptors(((ProcessInstanceDetails) processInstance).getDescriptors(),
+                  processInstance, processDefinition);
+            
+            dto.endTime = processInstance.getTerminationTime();
+            dto.startingUser = startingUserLabel;
+            dto.status = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getProcessStateLabel(processInstance);
+            dto.enableTerminate = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.isAbortable(processInstance);
+            dto.enableRecover = true;
+            dto.checkSelection = false;
+            dto.modifyProcessInstance = AuthorizationUtils.hasPIModifyPermission(processInstance);
+            
+            List<Note> notes=org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getNotes(processInstance);
+            if(null!=notes)
+            {
+               dto.notesCount = notes.size();   
+            }
+            dto.caseInstance = processInstance.isCaseProcessInstance();
+            if (dto.caseInstance)
+            {
+               dto.caseOwner = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getCaseOwnerName(processInstance);
+            }
+            
+            dto.oldPriority = dto.priority;
+
+            list.add(dto);
+         }
+      }
+
+      QueryResultDTO resultDTO = new QueryResultDTO();
+      resultDTO.list = list;
+      resultDTO.totalCount = queryResult.getTotalCount();
+
+      return resultDTO;
+   }
+   
+   /*
+    * 
+    */
+   private Map<String, DescriptorDTO> getDescriptorValues(ProcessInstance processInstance, ProcessDefinition processDefinition)
+   {
+      if (processInstance != null && processDefinition != null)
+      {
+         List<ProcessDescriptor> processDescriptorsList = CollectionUtils.newList();
+
+         ModelCache modelCache = ModelCache.findModelCache();
+         Model model = modelCache.getModel(processInstance.getModelOID());
+         ProcessInstanceDetails processInstanceDetails = (ProcessInstanceDetails) processInstance;
+         Map<String, Object> descriptorValues = processInstanceDetails.getDescriptors();
+         CommonDescriptorUtils.updateProcessDocumentDescriptors(descriptorValues, processInstance, processDefinition);
+         if (processInstanceDetails.isCaseProcessInstance())
+         {
+            processDescriptorsList = CommonDescriptorUtils.createCaseDescriptors(
+                  processInstanceDetails.getDescriptorDefinitions(), descriptorValues, processDefinition, true);
+         }
+         else
+         {
+            processDescriptorsList = CommonDescriptorUtils.createProcessDescriptors(descriptorValues, processDefinition, true,
+                  true);
+
+         }
+
+         if (!processDescriptorsList.isEmpty())
+         {
+            return getProcessDescriptors(processDescriptorsList);
+         }
+      }
+
+      return new LinkedHashMap<String, DescriptorDTO>();
+   }
+
+   /**
+    * 
+    */
+   private Map<String, DescriptorDTO> getProcessDescriptors(List<ProcessDescriptor> processDescriptorsList)
+   {
+      Map<String, DescriptorDTO> descriptors = new LinkedHashMap<String, DescriptorDTO>();
+      for (Object descriptor : processDescriptorsList)
+      {
+         if (descriptor instanceof ProcessDocumentDescriptor)
+         {
+            ProcessDocumentDescriptor desc = (ProcessDocumentDescriptor) descriptor;
+
+            List<DocumentDTO> documents = new ArrayList<DocumentDTO>();
+
+            for (DocumentInfo documentInfo : desc.getDocuments())
+            {
+               DocumentDTO documentDTO = new DocumentDTO();
+               documentDTO.name = documentInfo.getName();
+               documentDTO.uuid = documentInfo.getId();
+               documentDTO.contentType = (MimeTypesHelper.detectMimeType(documentInfo.getName(), null).getType());
+               documents.add(documentDTO);
+            }
+
+            DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey(), desc.getValue(), true, documents);
+            descriptors.put(desc.getId(), descriptorDto);
+         }
+         else
+         {
+            ProcessDescriptor desc = (ProcessDescriptor) descriptor;
+            DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey(), desc.getValue(), false, null);
+            descriptors.put(desc.getId(), descriptorDto);
+         }
+      }
+      return descriptors;
+   }
+
+   /*
+     * 
+     */
+   private List<ProcessDescriptor> getProcessDescriptor(ProcessInstance processInstance, ProcessDefinition processDefinition)
+   {
+      List<ProcessDescriptor> processDescriptorsList = null;
+      if (processDefinition != null)
+      {
+         ProcessInstanceDetails processInstanceDetails = (ProcessInstanceDetails) processInstance;
+
+         if (processInstance.isCaseProcessInstance())
+         {
+            processDescriptorsList = CommonDescriptorUtils.createCaseDescriptors(
+                  processInstanceDetails.getDescriptorDefinitions(), processInstanceDetails.getDescriptors(), processDefinition,
+                  true);
+         }
+         else
+         {
+            processDescriptorsList = CommonDescriptorUtils.createProcessDescriptors(processInstanceDetails.getDescriptors(),
+                  processDefinition, true);
+         }
+      }
+      else
+      {
+         processDescriptorsList = CollectionUtils.newArrayList();
+      }
+      return processDescriptorsList;
    }
 
 }
