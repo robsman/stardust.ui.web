@@ -114,6 +114,8 @@
 
     this.exclusions = this.onAssignmentHandler.userExclusions
     this.setSelected(this.exclusionIndex);
+    
+    this.logToAuditTrail = this.onAssignmentHandler.logHandler;
   }
 
   /**
@@ -176,6 +178,10 @@
    * @param name
    */
   ExcludedUserCtrl.prototype.onNameChange = function(name) {
+    // TODO: remove following code post test start
+    this.selectedExclusion.name = name
+    // TODO: remove following code post test end    
+    
     this.submitUpdateExclusion(this.selectedExclusion.uuid, {
       'name': name
     });
@@ -186,16 +192,24 @@
    * @param dataPath
    */
   ExcludedUserCtrl.prototype.updateExclusion = function(data, dataPath) {
+    // TODO: remove following code post test start
+    this.selectedExclusion.data = data
+    this.selectedExclusion.dataPath = dataPath;
+    // TODO: remove following code post test end    
+    
     this.submitUpdateExclusion(this.selectedExclusion.uuid, {
       'data': data,
       'dataPath': dataPath
     });
+    
+    
   }
 
   /**
    * @param log
    */
   ExcludedUserCtrl.prototype.onLogToAuditTrailChange = function(log) {
+    this.logToAuditTrail = log;
     this.submitUpdateExclusion(this.onAssignmentHandler.uuid, {
       'logHandler': log
     });
