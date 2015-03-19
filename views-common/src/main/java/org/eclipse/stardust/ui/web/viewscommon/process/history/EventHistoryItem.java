@@ -58,6 +58,7 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
    private String detail;
    private String fullDetail;
    private Date eventTime;
+   private ParticipantInfo performedBy;
    private String performer;
    private HistoricalEventType eventType;
    private User user;
@@ -234,6 +235,7 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
 
       eventTime = event.getEventTime();
       user = event.getUser();
+      performedBy = user;
       performer = user != null ? I18nUtils.getUserLabel(user) : null;
    }
 
@@ -258,6 +260,11 @@ public class EventHistoryItem extends AbstractProcessHistoryTableEntry
    public Date getLastModificationTime()
    {
       return eventTime;
+   }
+
+   public ParticipantInfo getPerformedBy()
+   {
+      return performedBy;
    }
 
    public String getPerformer()

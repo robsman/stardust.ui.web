@@ -199,7 +199,49 @@ public class UserUtils
 
       return users.isEmpty() ? null : users.get(0);
    }
-   
+
+   /**
+    * @param accounts
+    * @param oids
+    * @param userDetailsLevel
+    * @return
+    */
+   public static Users getUsers(Set<String> accounts, Set<Long> oids, UserDetailsLevel userDetailsLevel)
+   {
+      UserQuery userQuery = UserQuery.findAll();
+
+      String[] prefModules = {UserPreferencesEntries.M_ADMIN_PORTAL, UserPreferencesEntries.M_VIEWS_COMMON};
+      UserDetailsPolicy userPolicy = new UserDetailsPolicy(userDetailsLevel);
+      userPolicy.setPreferenceModules(prefModules);
+      userQuery.setPolicy(userPolicy);
+
+      FilterAndTerm filter = userQuery.getFilter().addAndTerm();
+      
+      FilterOrTerm multiUserFilter = filter.addOrTerm();
+      if (null != accounts)
+      {
+         for (String account : accounts)
+         {
+            multiUserFilter.or(UserQuery.ACCOUNT.like(account));
+         }
+      }
+      else if (null != oids)
+      {
+         for (Long oid : oids)
+         {
+            multiUserFilter.or(UserQuery.OID.isEqual(oid));
+         }
+      }
+
+      filter.add(multiUserFilter);
+
+      userQuery.where(filter);
+
+      Users users = SessionContext.findSessionContext().getServiceFactory().getQueryService().getAllUsers(userQuery);
+
+      return users;
+   }
+
    /**
     * @param users
     * @return

@@ -16,6 +16,7 @@ import java.util.List;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.Participant;
+import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
@@ -42,6 +43,7 @@ public class ActivityInstanceHistoryItem extends AbstractProcessHistoryTableEntr
    private Date startTime;
    private ProcessInstance scopeProcessInstance;
    private String activityInstanceName;
+   private ParticipantInfo performedBy;
    private String performer;
    private String state;
    private String type;
@@ -171,6 +173,8 @@ public class ActivityInstanceHistoryItem extends AbstractProcessHistoryTableEntr
          startTime = activityInstance.getStartTime();
          lastModificationTime = activityInstance.getLastModificationTime();
 
+         performedBy = activityInstance.getCurrentPerformer();
+         
          // Either the activity is alive
          if (activityInstance.isAssignedToUser())
          {
@@ -193,6 +197,8 @@ public class ActivityInstanceHistoryItem extends AbstractProcessHistoryTableEntr
          if (performer == null)
          {          
             UserInfo userInfo = activityInstance.getPerformedBy();
+            performedBy = userInfo;
+
             if (null != userInfo)
             {
                performer= ParticipantUtils.getParticipantName(userInfo);
@@ -201,7 +207,6 @@ public class ActivityInstanceHistoryItem extends AbstractProcessHistoryTableEntr
             {
                performer= activityInstance.getPerformedByName();
             }
-            
          } 
 
          //state = activityInstance.getState().toString();
@@ -219,6 +224,11 @@ public class ActivityInstanceHistoryItem extends AbstractProcessHistoryTableEntr
    public String getName()
    {
       return activityInstanceName;
+   }
+
+   public ParticipantInfo getPerformedBy()
+   {
+      return performedBy;
    }
 
    public String getPerformer()

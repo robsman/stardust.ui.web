@@ -19,6 +19,7 @@ import java.util.Map;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
 import org.eclipse.stardust.engine.api.model.Model;
+import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
@@ -50,6 +51,7 @@ public class ProcessInstanceHistoryItem extends AbstractProcessHistoryTableEntry
    private Map<String, Object> descriptorValues;
    private String duration;
    private String name;
+   private ParticipantInfo performedBy;
    private String performer;
    private String startingUser;
    private String state;
@@ -112,6 +114,7 @@ public class ProcessInstanceHistoryItem extends AbstractProcessHistoryTableEntry
             ProcessDefinition processDefinition = model.getProcessDefinition(processInstance.getProcessID());
             name = I18nUtils.getProcessName(processDefinition);
             lastModificationTime = processInstance.getTerminationTime();
+            performedBy = processInstance.getStartingUser();
             performer = UserUtils.getUserDisplayLabel(processInstance.getStartingUser());
             //state = processInstance.getState().toString();
             state = propsBean.getString(STATUS_PREFIX +  processInstance.getState().getName().toLowerCase()); 
@@ -196,6 +199,11 @@ public class ProcessInstanceHistoryItem extends AbstractProcessHistoryTableEntry
    public int getOldPriority()
    {
       return oldPriority;
+   }
+
+   public ParticipantInfo getPerformedBy()
+   {
+      return performedBy;
    }
 
    public String getPerformer()
