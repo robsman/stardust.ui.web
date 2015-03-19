@@ -35,7 +35,6 @@ define(
                   mailIntegrationOverlayResponseTabHandler.initialize(this);
                   mailIntegrationOverlayTestTabHandler.initialize(this);
                   this.loadLabels();
-
                   var rdmNo = Math.floor((Math.random() * 100000) + 1);
                   this.mailTemplateEditor.id = "mailTemplateEditor" + rdmNo;
                   CKEDITOR.replace(this.mailTemplateEditor.id, {
@@ -147,7 +146,6 @@ define(
                MailIntegrationOverlay.prototype.createIntrinsicAccessPoints = function(
                         accessPoints)
                {
-
                   var defaultAccessPoints = [];
                   if (!accessPoints["to"])
                   {
@@ -229,13 +227,21 @@ define(
                MailIntegrationOverlay.prototype.update = function()
                {
                   this.parameterDefinitionsPanel.setScopeModel(this.getScopeModel());
-                  this.parameterDefinitionsPanel.setParameterDefinitions(this
-                           .getApplication().contexts.application.accessPoints);
+                  this.parameterDefinitionsPanel.setParameterDefinitions(this.getApplication().contexts.application.accessPoints);
+                  
+                  
                   this.serverInput.val(this
                            .getExtendedAttributeValue("stardust:emailOverlay::server"));
                   this.mailFormatSelect
                            .val(this
                                     .getExtendedAttributeValue("stardust:emailOverlay::mailFormat"));
+                  
+                  if(this.mailFormatSelect.val()=="text/plain"){
+                     CKEDITOR.config.startupMode = 'source';
+                  }else{
+                     CKEDITOR.config.startupMode = 'wysiwyg';
+                  }
+                  
                   this.protocolSelect.val(this
                            .getExtendedAttributeValue("stardust:emailOverlay::protocol"));
                   this.subjectInput.val(this
@@ -1130,6 +1136,11 @@ define(
                                                          {
                                                             attributes : attributes
                                                          }, false);
+                                       if(event.data.panel.mailFormatSelect.val()=="text/plain"){
+                                          CKEDITOR.instances[event.data.panel.mailTemplateEditor.id].setMode('source');
+                                       }else{
+                                          CKEDITOR.instances[event.data.panel.mailTemplateEditor.id].setMode('wysiwyg');
+                                       }
                                     });
                   this.protocolSelect
                            .change(
@@ -1272,6 +1283,29 @@ define(
                                                             attributes : attributes
                                                          }, false);
                                     });
+                  
+                  CKEDITOR.instances[this.mailTemplateEditor.id].on('mode', function(e) {
+                     var attributes=self.getApplication().attributes;
+                     if(!attributes["stardust:emailOverlay::mailFormat"])
+                     {
+                        var format="text/plain";
+                        if(e.editor.mode=='wysiwyg')
+                           format="text/html";
+                        attributes["stardust:emailOverlay::mailFormat"]=format;
+                        self.view
+                        .submitChanges(
+                                   {
+                                      attributes : attributes
+                                   }, false);
+                     }else{
+                        if(attributes["stardust:emailOverlay::mailFormat"]=="text/plain"){
+                           CKEDITOR.instances[self.mailTemplateEditor.id].setMode('source');
+                        }else{
+                           CKEDITOR.instances[self.mailTemplateEditor.id].setMode('wysiwyg');
+                        }
+                     }
+                 }); 
+                  
                   CKEDITOR.instances[this.mailTemplateEditor.id]
                            .on(
                                     'blur',
