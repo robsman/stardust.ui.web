@@ -106,6 +106,53 @@ var html5Deps = function() {
 		      }];
 		  });
 		  
+
+		/**
+		 * requireJs injection service is not available as bpm-ui module
+		 * is skipped for HTML5 datatable
+		 */  
+		module.provider('sgRequireJSService', function() {
+			this.$get = [
+					'$rootScope',
+					function($rootScope) {
+						var service = {};
+						/*
+						 * 
+						 */
+						service.getModule = function(modules) {
+							var deferred = jQuery.Deferred();
+
+							if ("string" == typeof (modules)) {
+								modules = [ modules ];
+							}
+
+							var paths = {};
+							var deps = [];
+							for ( var i in modules) {
+								paths["module" + i] = modules[i];
+								deps.push("module" + i);
+							}
+
+							var baseUrl = location.pathname.substring(0,
+									location.pathname.indexOf('/', 1));
+							var r = requirejs.config({
+								waitSeconds : 0,
+								baseUrl : baseUrl+ "/plugins", //for web-modeler dependency using /plugins
+								paths : paths
+							});
+
+							r(deps, function() {
+								var args = arguments ? Array.prototype.slice
+										.call(arguments, 0) : [];
+								deferred.resolve.apply(null, args);
+							});
+
+							return deferred.promise();
+						}
+						return service;
+					} ];
+		});
+		  
 		  // TODO - temp fix applied, resolve using angularContext
 		  module.provider('sgI18nService', function () {
 		      this.$get = ['$rootScope', function ($rootScope) {
