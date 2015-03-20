@@ -29,19 +29,19 @@
 		var trace = sdLoggerService.getLogger('bpm-common.sdActivityTable');
 
 		var directiveDefObject = {
-			restrict : 'AE',
-			require : '^?sdData',
-			scope: true, // Creates a new sub scope
-			templateUrl: 'plugins/html5-process-portal/scripts/directives/partials/worklist.html',
-			compile: function(elem, attr, transclude) {
-				processRawMarkup(elem, attr);
+				restrict : 'AE',
+				require : '^?sdData',
+				scope: true, // Creates a new sub scope
+				templateUrl: 'plugins/html5-process-portal/scripts/directives/partials/worklist.html',
+				compile: function(elem, attr, transclude) {
+					processRawMarkup(elem, attr);
 
-				return {
-					post: function(scope, element, attr, ctrl) {
-						var activityTableCompiler = new ActivityTableCompiler(scope, element, attr, ctrl);
-					}
-				};
-			}
+					return {
+						post: function(scope, element, attr, ctrl) {
+							var activityTableCompiler = new ActivityTableCompiler(scope, element, attr, ctrl);
+						}
+					};
+				}
 		};
 
 
@@ -93,7 +93,7 @@
 			var showDescriptorCoulmns = true; // Default
 			if (attr.sdaDescriptorColumns && attr.sdaDescriptorColumns === 'false') {
 				showDescriptorCoulmns = false;
-		}
+			}
 			// If not required remove the column
 			if (!showDescriptorCoulmns) {
 				var cols = elem.find('[sda-column="DESCRIPTOR_COLUMNS"]');
@@ -108,12 +108,12 @@
 		 */
 		function ActivityTableCompiler(scope, element, attr, ctrl) {
 			var self = this;
-
+			
 			try{
-			this.initialize(attr, scope, $filter);
+				this.initialize(attr, scope, $filter);
 				this.showError = false;
 			}catch (e) {
-			
+			   
 				this.showError(e);
 			}
 			/*
@@ -168,12 +168,12 @@
 			}
 			
 			if(!attr.sdData) {
-			var queryGetter = $parse(attr.sdaQuery);
-			var query = queryGetter(scopeToUse);
-			if (query == undefined) {
+				var queryGetter = $parse(attr.sdaQuery);
+				var query = queryGetter(scopeToUse);
+				if (query == undefined ) {
 				throw 'Query evaluated to "nothing" for activity table.';
-			}
-			this.query = query;
+				}
+				this.query = query;
 			}
 
 			
@@ -196,7 +196,7 @@
 
 			if (attr.sdaPageSize) {
 				this.sdaPageSize = attr.sdaPageSize;
-						}
+			}
 
 			if (attr.sdaInitialSelection) {
 				this.initialSelection = attr.sdaInitialSelection;
@@ -273,30 +273,30 @@
 			 * 
 			 */
 			ActivityTableCompiler.prototype.changeFormStatus = function(rowId) {
-			   var self = this;
+				var self = this;
 
-			   if (this.dirtyDataForms.indexOf(rowId) == -1) {
-			      this.dirtyDataForms.push(rowId);
-			   }
+				if (this.dirtyDataForms.indexOf(rowId) == -1) {
+					this.dirtyDataForms.push(rowId);
+				}
 
-			   //Auto select dirty rows
-			   var selectedRows = self.dataTable.getSelection();
-			   var matchArray   = $filter('filter')(selectedRows, { oid : rowId }, true);
-			   var isRowSelected = matchArray.length > 0;
+				//Auto select dirty rows
+				var selectedRows = self.dataTable.getSelection();
+				var matchArray   = $filter('filter')(selectedRows, { oid : rowId }, true);
+				var isRowSelected = matchArray.length > 0;
 
 				if(!isRowSelected) {
-			      var rows = $filter('filter')(self.activities.list, {
-			         oid : rowId
-			      }, true);
+					var rows = $filter('filter')(self.activities.list, {
+						oid : rowId
+					}, true);
 
-			      if (rows && rows.length === 1) {
-			         selectedRows.push({oid:rows[0].oid});
-			      }
+					if (rows && rows.length === 1) {
+						selectedRows.push({oid:rows[0].oid});
+					}
 
-			      self.dataTable.setSelection(selectedRows);
-			   }
+					self.dataTable.setSelection(selectedRows);
+				}
 			};
-
+			
 
 			this.fetchDescriptorCols();
 			this.fetchAllProcesses();
@@ -358,15 +358,15 @@
 			this.title = titleGetter(scopeToUse);
 
 			if(this.query){
+				
+				var idFromQuery = this.query.userId || this.query.participantQId;
 
-			var idFromQuery = this.query.userId || this.query.participantQId;
-
-			if(idFromQuery){
-				this.worklistPrefId = 'worklist-participant-columns';
-			}else{
-				this.worklistPrefId = 'worklist-process-columns';
-			}
-
+				if(idFromQuery){
+					this.worklistPrefId = 'worklist-participant-columns';
+				}else{
+					this.worklistPrefId = 'worklist-process-columns';
+				}
+				
 				this.worklistPrefName = idFromQuery ;
 				
 				this.exportFileName = idFromQuery; 
@@ -397,10 +397,10 @@
 
 		/*
 		 * 
-      */
-     ActivityTableCompiler.prototype.cleanLocals = function() {
-         this.dirtyDataForms = [];
-     };
+		 */
+		ActivityTableCompiler.prototype.cleanLocals = function() {
+			this.dirtyDataForms = [];
+		};
 
 		/*
 		 *
@@ -409,13 +409,13 @@
 			var self = this;
 			var deferred = $q.defer();
 			self.cleanLocals();
-
+			
 			var query = angular.extend({}, this.query);
 			query.options = options;
 
 			if( angular.isDefined(this.sdDataCtrl) ) {
 				trace.debug("sdData is defined fetching custom data. ");
-
+				
 				var dataResult = self.sdDataCtrl.retrieveData(query);
 
 				dataResult.then(function(data){
@@ -530,45 +530,45 @@
 		/*
 		 *
 		 */
-      ActivityTableCompiler.prototype.fetchAllAvailableCriticalities = function()
-      {
-         var self = this;
+		ActivityTableCompiler.prototype.fetchAllAvailableCriticalities = function()
+		{
+			var self = this;
 			sdCriticalityService.getAllCriticalities()
 			.then(function(criticalities){ 
-            self.allAvailableCriticalities = criticalities;
+				self.allAvailableCriticalities = criticalities;
 			});
-      };
+		};
 
-      /*
-       *
-       */
+		/*
+		 *
+		 */
 
-      ActivityTableCompiler.prototype.fetchAvailableStates = function()
-      {
-         var self = this;
+		ActivityTableCompiler.prototype.fetchAvailableStates = function()
+		{
+			var self = this;
 			sdStatusService.getAllActivityStates()
 			.then(function(value){
-            self.availableStates = value;
+				self.availableStates = value;
 			});
-      };
-
-
-      /*
-       *
-       */
-
-      ActivityTableCompiler.prototype.fetchAvailablePriorities = function()
-      {
-         var self = this;
-         sdPriorityService.getAllPriorities().then(function(data){
-        	 self.availablePriorities = data;
-         });
-      };
+		};
 
 
 		/*
-       *
-       */
+		 *
+		 */
+
+		ActivityTableCompiler.prototype.fetchAvailablePriorities = function()
+		{
+			var self = this;
+			sdPriorityService.getAllPriorities().then(function(data){
+				self.availablePriorities = data;
+			});
+		};
+
+
+		/*
+		 *
+		 */
 		ActivityTableCompiler.prototype.activateItem = function( rowItem ) {
 			sdViewUtilService.openView("activityPanel", "OID=" + rowItem.oid, {"oid" : "" + rowItem.oid});
 		};
@@ -588,8 +588,8 @@
 			sdViewUtilService.openView("processInstanceDetailsView",
 					"processInstanceOID=" + rowItem.processInstance.oid,
 					{
-						"oid": "" + rowItem.oid,
-						"processInstanceOID": "" + rowItem.processInstance.oid
+				"oid": "" + rowItem.oid,
+				"processInstanceOID": "" + rowItem.processInstance.oid
 					}, true
 			);
 		};
@@ -598,211 +598,211 @@
 		/**
 		 *
 		 */
-		 ActivityTableCompiler.prototype.containsAllTrivialManualActivities = function() {
-	         var self = this;
-	         var selectedtems = [];
+		ActivityTableCompiler.prototype.containsAllTrivialManualActivities = function() {
+			var self = this;
+			var selectedtems = [];
 
-	         var dataTable = self.dataTable;
+			var dataTable = self.dataTable;
 
-	         if(dataTable != null){
-	        	 selectedtems = dataTable.getSelection();
-	         }
+			if(dataTable != null){
+				selectedtems = dataTable.getSelection();
+			}
 
-	         if(selectedtems.length < 1){
-	            return false;
-	         }
-	         var activitiesData = [];
-	         angular.forEach(selectedtems,function( item ){
-	            var trivialActivityInfo = self.activities.trivialManualActivities[item.oid];
-	            if(trivialActivityInfo){
-	               activitiesData.push(item.oid);
-	            }
-	         });
+			if(selectedtems.length < 1){
+				return false;
+			}
+			var activitiesData = [];
+			angular.forEach(selectedtems,function( item ){
+				var trivialActivityInfo = self.activities.trivialManualActivities[item.oid];
+				if(trivialActivityInfo){
+					activitiesData.push(item.oid);
+				}
+			});
 
-	         if(selectedtems.length == activitiesData.length){
-	            return true;
-	         }
-	         return false;
-	      };
+			if(selectedtems.length == activitiesData.length){
+				return true;
+			}
+			return false;
+		};
 
-      /**
-       * 
-       */
-      ActivityTableCompiler.prototype.isSelectionHomogenous = function( selectedRows ) {
+		/**
+		 * 
+		 */
+		ActivityTableCompiler.prototype.isSelectionHomogenous = function( selectedRows ) {
 
-         var firstItem = selectedRows[0];
+			var firstItem = selectedRows[0];
 
-         var matchArray = [];
+			var matchArray = [];
 
-         angular.forEach( selectedRows, function(row) {
-            if (row.activity.qualifiedId === firstItem.activity.qualifiedId && row.modelOID === firstItem.modelOID) {
-               matchArray.push(row);
-            }
-         });
+			angular.forEach( selectedRows, function(row) {
+				if (row.activity.qualifiedId === firstItem.activity.qualifiedId && row.modelOID === firstItem.modelOID) {
+					matchArray.push(row);
+				}
+			});
 
-         if(matchArray.length === selectedRows.length ){
-            return true;
-         }
+			if(matchArray.length === selectedRows.length ){
+				return true;
+			}
 
-         return false;
-      };
+			return false;
+		};
 
-      /**
-       * 
-       */
-      ActivityTableCompiler.prototype.isSelectionDirty = function( activities ) { 
-         var self = this;
-         var activitiesWithDirtyForms =[]; 
-         angular.forEach(activities,function(activity){
+		/**
+		 * 
+		 */
+		ActivityTableCompiler.prototype.isSelectionDirty = function( activities ) { 
+			var self = this;
+			var activitiesWithDirtyForms =[]; 
+			angular.forEach(activities,function(activity){
 
-            if(self.dirtyDataForms.indexOf(activity.oid) > -1){
-               activitiesWithDirtyForms.push(activity);
-            }
-         });
+				if(self.dirtyDataForms.indexOf(activity.oid) > -1){
+					activitiesWithDirtyForms.push(activity);
+				}
+			});
 
-         if(activitiesWithDirtyForms.length > 0){
-            return true;
-         }
+			if(activitiesWithDirtyForms.length > 0){
+				return true;
+			}
 
-         return false;
-      }
-
-
-	  /*
-       * 
-       */
-	    ActivityTableCompiler.prototype.completeAll = function(res) {
-	         var self = this;
-	         var STATUS_PARTIAL_SUCCESS = 'partialSuccess';
-	         var STATUS_SUCCESS = 'success';
-	         var STATUS__FAILURE = 'failure';
-
-	         self.completeActivityResult = {
-	                  status : 'success',  //success failure partialSuccess
-	                  notifications : [],
-	                  nameIdMap : {}
-	         };
-
-	         var promise = res.promise;
-	         var selectedItems = self.selectedActivity;
-
-	         promise.then(function() {
-
-	            angular.forEach(selectedItems,function(item){
-	               self.completeActivityResult.nameIdMap[item.oid] = item.activity.name;
-	            });
-
-	            if (selectedItems.length > 0) {
-	               var activitiesData = [];
-
-	               if(self.completeDialog.confirmationType === 'dataMapping') {
-	                  //When data fields are filled in a dialog
-	                  angular.forEach(selectedItems, function(item, index) {
-	                     var outData = self.completeDialog.outData;
-	                     var dataMappings = {};
-	                     angular.forEach( self.completeDialog.dataMappings,function(mapping){
-	                        dataMappings[mapping.id] = mapping.typeName; 
-	                     });
-	                     activitiesData.push({
-	                        oid : item.oid,
-	                        outData : outData,
-	                        dataMappings : dataMappings
-	                     });
-	                  });
-
-	               }else {
-	                  //When data fields are filled inline in the table
-	                  angular.forEach(selectedItems, function(item, index) {
-	                     var trivialActivityInfo = self.activities.trivialManualActivities[item.oid];
-	                     if(trivialActivityInfo) {
-	                        var outData = trivialActivityInfo.inOutData;
-	                        var dataMappings = {};
-	                        angular.forEach( trivialActivityInfo.dataMappings,function(mapping){
-	                           dataMappings[mapping.id] = mapping.typeName; 
-	                        });
-
-	                        activitiesData.push({oid: item.oid, outData: outData , dataMappings : dataMappings});
-	                     }
-	                  });
-	               }
-
-	               if (activitiesData.length > 0 ) {
-	                  sdActivityInstanceService.completeAll(activitiesData).then(function(result) {
-
-	                	  self.showCompleteNotificationDialog = true;
-	                	  self.completeActivityResult.notifications = result;
-	                	  self.refresh();
-	                	  sdViewUtilService.syncLaunchPanels();
-
-	                	  if (result.failure.length > 0
-	                			  && result.success.length > 0) {
-	                		  // partial Success
-	                		  self.completeActivityResult.status = STATUS_PARTIAL_SUCCESS;
-	                		  self.completeActivityResult.title = sgI18nService.translate('processportal.views-completeActivityDialog-notification-title-error','ERROR');
-	                	  } else if (result.success.length === activitiesData.length) {
-	                		  // Success
-	                		  self.completeActivityResult.status = STATUS_SUCCESS;
-	                		  self.completeActivityResult.title = sgI18nService.translate('processportal.views-completeActivityDialog-notification-title-success','SUCCESS');
-	                	  } else {
-	                		  self.completeActivityResult.status = STATUS__FAILURE;
-	                		  self.completeActivityResult.title = sgI18nService.translate('processportal.views-completeActivityDialog-notification-title-error','ERROR');
-	                	  }
-
-	                  });
-	               } else {
-	                  self.dataTable.setSelection([]);
-	               }
-	            }
-	         });
-	      };
+			return false;
+		}
 
 
+		/*
+		 * 
+		 */
+		ActivityTableCompiler.prototype.completeAll = function(res) {
+			var self = this;
+			var STATUS_PARTIAL_SUCCESS = 'partialSuccess';
+			var STATUS_SUCCESS = 'success';
+			var STATUS__FAILURE = 'failure';
 
-	      /**
-	       * 
-	       * @param rowItem
-	       */
-      ActivityTableCompiler.prototype.openCompleteDialog = function( rowItem) {
+			self.completeActivityResult = {
+					status : 'success',  //success failure partialSuccess
+					notifications : [],
+					nameIdMap : {}
+			};
 
-         var self = this;
-         var CONFIRMATION_TYPE_SINGLE=  'single'
-         var CONFIRMATION_TYPE_GENERIC=  'generic'
-         var CONFIRMATION_TYPE_DATAMAPPING= 'dataMapping'
+			var promise = res.promise;
+			var selectedItems = self.selectedActivity;
 
-         self.selectedActivity = [];
-         self.completeDialog = {
-            confirmationType : CONFIRMATION_TYPE_SINGLE,  //single / generic / dataMapping
-            dataMappings : {},
-            outData : {}
-         }
-         self.showCompleteDialog = true;
+			promise.then(function() {
 
-         if (angular.isDefined( rowItem )) {
+				angular.forEach(selectedItems,function(item){
+					self.completeActivityResult.nameIdMap[item.oid] = item.activity.name;
+				});
 
-            self.selectedActivity = [ rowItem ];
-            self.completeDialog.confirmationType = CONFIRMATION_TYPE_SINGLE;
-         }
-         else {
-            var selectedItems = this.dataTable.getSelection();
-            if ( selectedItems.length > 0) {
-               // Add rows having dirty field to selected activity
-               this.selectedActivity = selectedItems;
+				if (selectedItems.length > 0) {
+					var activitiesData = [];
 
-               if ( this.isSelectionHomogenous( selectedItems ) && !this.isSelectionDirty( selectedItems ) ) {
+					if(self.completeDialog.confirmationType === 'dataMapping') {
+						//When data fields are filled in a dialog
+						angular.forEach(selectedItems, function(item, index) {
+							var outData = self.completeDialog.outData;
+							var dataMappings = {};
+							angular.forEach( self.completeDialog.dataMappings,function(mapping){
+								dataMappings[mapping.id] = mapping.typeName; 
+							});
+							activitiesData.push({
+								oid : item.oid,
+								outData : outData,
+								dataMappings : dataMappings
+							});
+						});
 
-            	  self.completeDialog.confirmationType = CONFIRMATION_TYPE_DATAMAPPING;
-                  var firstItem = selectedItems[0];
-                  self.completeDialog.dataMappings = angular
-                           .copy(self.activities.trivialManualActivities[firstItem.oid].dataMappings);
-                  self.completeDialog.outData =angular
-                  .copy(self.activities.trivialManualActivities[firstItem.oid].inOutData);
-               } else {
+					}else {
+						//When data fields are filled inline in the table
+						angular.forEach(selectedItems, function(item, index) {
+							var trivialActivityInfo = self.activities.trivialManualActivities[item.oid];
+							if(trivialActivityInfo) {
+								var outData = trivialActivityInfo.inOutData;
+								var dataMappings = {};
+								angular.forEach( trivialActivityInfo.dataMappings,function(mapping){
+									dataMappings[mapping.id] = mapping.typeName; 
+								});
 
-                  self.completeDialog.confirmationType = CONFIRMATION_TYPE_GENERIC;
-               }
-            }
-         }
-      };
+								activitiesData.push({oid: item.oid, outData: outData , dataMappings : dataMappings});
+							}
+						});
+					}
+
+					if (activitiesData.length > 0 ) {
+						sdActivityInstanceService.completeAll(activitiesData).then(function(result) {
+
+							self.showCompleteNotificationDialog = true;
+							self.completeActivityResult.notifications = result;
+							self.refresh();
+							sdViewUtilService.syncLaunchPanels();
+
+							if (result.failure.length > 0
+									&& result.success.length > 0) {
+								// partial Success
+								self.completeActivityResult.status = STATUS_PARTIAL_SUCCESS;
+								self.completeActivityResult.title = sgI18nService.translate('processportal.views-completeActivityDialog-notification-title-error','ERROR');
+							} else if (result.success.length === activitiesData.length) {
+								// Success
+								self.completeActivityResult.status = STATUS_SUCCESS;
+								self.completeActivityResult.title = sgI18nService.translate('processportal.views-completeActivityDialog-notification-title-success','SUCCESS');
+							} else {
+								self.completeActivityResult.status = STATUS__FAILURE;
+								self.completeActivityResult.title = sgI18nService.translate('processportal.views-completeActivityDialog-notification-title-error','ERROR');
+							}
+
+						});
+					} else {
+						self.dataTable.setSelection([]);
+					}
+				}
+			});
+		};
+
+
+
+		/**
+		 * 
+		 * @param rowItem
+		 */
+		ActivityTableCompiler.prototype.openCompleteDialog = function( rowItem) {
+
+			var self = this;
+			var CONFIRMATION_TYPE_SINGLE=  'single'
+				var CONFIRMATION_TYPE_GENERIC=  'generic'
+					var CONFIRMATION_TYPE_DATAMAPPING= 'dataMapping'
+
+						self.selectedActivity = [];
+			self.completeDialog = {
+					confirmationType : CONFIRMATION_TYPE_SINGLE,  //single / generic / dataMapping
+					dataMappings : {},
+					outData : {}
+			}
+			self.showCompleteDialog = true;
+
+			if (angular.isDefined( rowItem )) {
+
+				self.selectedActivity = [ rowItem ];
+				self.completeDialog.confirmationType = CONFIRMATION_TYPE_SINGLE;
+			}
+			else {
+				var selectedItems = this.dataTable.getSelection();
+				if ( selectedItems.length > 0) {
+					// Add rows having dirty field to selected activity
+					this.selectedActivity = selectedItems;
+
+					if ( this.isSelectionHomogenous( selectedItems ) && !this.isSelectionDirty( selectedItems ) ) {
+
+						self.completeDialog.confirmationType = CONFIRMATION_TYPE_DATAMAPPING;
+						var firstItem = selectedItems[0];
+						self.completeDialog.dataMappings = angular
+						.copy(self.activities.trivialManualActivities[firstItem.oid].dataMappings);
+						self.completeDialog.outData =angular
+						.copy(self.activities.trivialManualActivities[firstItem.oid].inOutData);
+					} else {
+
+						self.completeDialog.confirmationType = CONFIRMATION_TYPE_GENERIC;
+					}
+				}
+			}
+		};
 
 		/*
 		 *
@@ -861,141 +861,141 @@
 		/*
 		 *
 		 */
-		 ActivityTableCompiler.prototype.abortCompleted = function( ) {
+		ActivityTableCompiler.prototype.abortCompleted = function( ) {
 			this.refresh();
 			sdViewUtilService.syncLaunchPanels();
 			this.activitiesToAbort = [];
 		};
 
 		/*
-      *
-      */
-     ActivityTableCompiler.prototype.getDescriptorExportText = function(descriptors) {
-        var descriptorsToExport  = [];
+		 *
+		 */
+		ActivityTableCompiler.prototype.getDescriptorExportText = function(descriptors) {
+			var descriptorsToExport  = [];
 
-        angular.forEach(descriptors,function( descriptor){
-        	if( !descriptor.isDocument )
-           descriptorsToExport.push(descriptor.key +" : "+descriptor.value);
-        });
-        return descriptorsToExport.join(',');
-     };
+			angular.forEach(descriptors,function( descriptor){
+				if( !descriptor.isDocument )
+					descriptorsToExport.push(descriptor.key +" : "+descriptor.value);
+			});
+			return descriptorsToExport.join(',');
+		};
 
-
-     /**
-      * 
-      */
-     ActivityTableCompiler.prototype.getDescriptorValueForExport = function( descriptorData ) {
-    	 var exportValue;
-    	 if( angular.isUndefined(descriptorData)){
-    		 return;
-    	 }
-    	 if( descriptorData.isDocument) {
-
-    		 var documentNames = [];
-    		 angular.forEach(descriptorData.documents,function(document){
-    			 documentNames.push(document.name)
-    		 });
-    		 exportValue = documentNames.join(',');
-    	 } else {
-    		 exportValue = descriptorData.value;
-    	 }
-    	 return exportValue;
-     };
-
-     /*
-      *
-      */
-     ActivityTableCompiler.prototype.storePriorities = function(data) {
-    	 var self = this;
-    	 if(this.priorityEditable){
-    		 self.originalPriorities = {};
-    		 self.changedPriorities = {};
-    		 angular.forEach(data,function( row ) {
-    			 self.originalPriorities[row.oid] = row.priority.value;
-    		 });
-    	 }
-     };
-
-     /*
-      *
-      */
-     ActivityTableCompiler.prototype.isPriorityChanged = function() {
-    	 for ( name in this.changedPriorities ) {
-    		 return true;
-    	 }
-    	 return false;
-     };
-
-     /*
-      *
-      */
-     ActivityTableCompiler.prototype.registerNewPriority = function(oid, value) {
-    	 var self = this;
-
-    	 if(self.originalPriorities[oid] != value){
-    		 self.changedPriorities[oid] = value;
-			}else if(angular.isDefined(self.changedPriorities[oid])){
-				delete self.changedPriorities[oid];
-			}
-     };
-
-     /*
-      *
-      */
-     ActivityTableCompiler.prototype.savePriorityChanges = function() {
-    	 var self = this;
-
-    	 //Process instance oid to activity map for result
-    	 var processActivityMap = {};
-    	 //process oid to priority map to send to service
-    	 var requestData = {};
-
-
-    	 angular.forEach(self.activities.list,function( rowData ){
-    		 if(angular.isDefined(self.changedPriorities[ rowData.oid ])){
-    			 processActivityMap[rowData.processInstance.oid] =  	rowData.activity.name +' (#'+rowData.oid+')';
-    			 requestData[rowData.processInstance.oid] = self.changedPriorities[ rowData.oid ];
-    		 }
-
-    	 });
-
-    	 sdPriorityService.savePriorityChanges(requestData).then(
-
-    			 function(successResult) {
-    				 angular.forEach(successResult.success,function(data){
-    					 data['item'] = processActivityMap[data.OID];
-    				 });
-    				 angular.forEach(successResult.failure,function(data){
-    					 data['item'] = processActivityMap[data.OID];
-    				 });
-    				 self.updatePriorityNotification.visible = true;
-    				 self.updatePriorityNotification.result = successResult;
-    				 self.refresh();
-    				 sdViewUtilService.syncLaunchPanels();
-
-    			 }, function(failureResult) {
-    				 trace.error("Error occured in updating the priorities : ",failureResult);
-    			 });
-     };
-
-     /**
- 	 * 
- 	 */
- 	ActivityTableCompiler.prototype.openProcessDetails = function(oid) {
- 		sdViewUtilService.openView("processInstanceDetailsView",
- 				"processInstanceOID=" + oid, {
- 					"processInstanceOID" : "" + oid
- 				}, true);
- 	};
 
 		/**
 		 * 
 		 */
-		ActivityTableCompiler.prototype.isWorklistMode = function() {
+		ActivityTableCompiler.prototype.getDescriptorValueForExport = function( descriptorData ) {
+			var exportValue;
+			if( angular.isUndefined(descriptorData)){
+				return;
+			}
+			if( descriptorData.isDocument) {
 
-			return this.mode === DEFAULT_VALUES.WORKLIST.NAME;
+				var documentNames = [];
+				angular.forEach(descriptorData.documents,function(document){
+					documentNames.push(document.name)
+				});
+				exportValue = documentNames.join(',');
+			} else {
+				exportValue = descriptorData.value;
+			}
+			return exportValue;
 		};
 
+		/*
+		 *
+		 */
+		ActivityTableCompiler.prototype.storePriorities = function(data) {
+			var self = this;
+			if(this.priorityEditable){
+				self.originalPriorities = {};
+				self.changedPriorities = {};
+				angular.forEach(data,function( row ) {
+					self.originalPriorities[row.oid] = row.priority.value;
+				});
+			}
+		};
+
+		/*
+		 *
+		 */
+		ActivityTableCompiler.prototype.isPriorityChanged = function() {
+			for ( name in this.changedPriorities ) {
+				return true;
+			}
+			return false;
+		};
+
+		/*
+		 *
+		 */
+		ActivityTableCompiler.prototype.registerNewPriority = function(oid, value) {
+			var self = this;
+
+			if(self.originalPriorities[oid] != value){
+				self.changedPriorities[oid] = value;
+			}else if(angular.isDefined(self.changedPriorities[oid])){
+				delete self.changedPriorities[oid];
+			}
+		};
+
+		/*
+		 *
+		 */
+		ActivityTableCompiler.prototype.savePriorityChanges = function() {
+			var self = this;
+
+			//Process instance oid to activity map for result
+			var processActivityMap = {};
+			//process oid to priority map to send to service
+			var requestData = {};
+
+
+			angular.forEach(self.activities.list,function( rowData ){
+				if(angular.isDefined(self.changedPriorities[ rowData.oid ])){
+					processActivityMap[rowData.processInstance.oid] =  	rowData.activity.name +' (#'+rowData.oid+')';
+					requestData[rowData.processInstance.oid] = self.changedPriorities[ rowData.oid ];
+				}
+
+			});
+
+			sdPriorityService.savePriorityChanges(requestData).then(
+
+					function(successResult) {
+						angular.forEach(successResult.success,function(data){
+							data['item'] = processActivityMap[data.OID];
+						});
+						angular.forEach(successResult.failure,function(data){
+							data['item'] = processActivityMap[data.OID];
+						});
+						self.updatePriorityNotification.visible = true;
+						self.updatePriorityNotification.result = successResult;
+						self.refresh();
+						sdViewUtilService.syncLaunchPanels();
+
+					}, function(failureResult) {
+						trace.error("Error occured in updating the priorities : ",failureResult);
+					});
+		};
+
+		/**
+		 * 
+		 */
+		ActivityTableCompiler.prototype.openProcessDetails = function(oid) {
+			sdViewUtilService.openView("processInstanceDetailsView",
+					"processInstanceOID=" + oid, {
+				"processInstanceOID" : "" + oid
+			}, true);
+		};
+		
+		/**
+		 * 
+		 */
+		ActivityTableCompiler.prototype.isWorklistMode = function() {
+			
+			return this.mode === DEFAULT_VALUES.WORKLIST.NAME;
+		};
+		
 		/**
 		 * 
 		 */
@@ -1022,7 +1022,7 @@
 			this.errorMessage = 'sd-activity-table is unable to process table. Pls. refer browser console for details. Reason: ' + errorToShow;
 		};
 
-     return directiveDefObject;
+		return directiveDefObject;
 	};
 
 
