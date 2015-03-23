@@ -306,6 +306,47 @@
 			this.fetchAllAvailableCriticalities();
 			this.fetchAvailableStates();
 			this.fetchAvailablePriorities();
+			
+			
+			/*
+			 * 
+			 */
+			self.onAbortPopoverConfirm = function(type, result) {
+				self.refresh();
+				sdViewUtilService.syncLaunchPanels();
+				
+				if (angular.isDefined(type) && angular.isDefined(result)) {
+					if ('abortandstart' === type) {
+						// TODO open spawned activities
+						
+						sdViewUtilService.openView('worklistViewHtml5', true);
+					} else if ('abortandjoin' === type) {
+						// TODO open joined process
+						
+						sdViewUtilService.openView('processDefinitionView', true);
+					}						
+				}
+			};
+			
+			/*
+			 * 
+			 */
+			self.openAbortPopover = function(event, rowItem) {
+				var selectedItems = [];
+				if (angular.isDefined(rowItem)) {
+					selectedItems = [rowItem];
+				} else {
+					selectedItems = self.dataTable.getSelection();
+				}
+				
+				var processesToAbort = [];
+				angular.forEach(selectedItems, function( item ) {
+					processesToAbort.push(item.processInstance);
+				});
+				self.processesToAbort = processesToAbort;
+				
+				self.popoverDirective.show(event);
+			};
 		};
 
 

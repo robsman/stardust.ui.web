@@ -16,12 +16,12 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdPopover', ['sdLoggerService','$parse', PopoverDirective]);
+	angular.module('bpm-common').directive('sdPopover', ['sdLoggerService','$parse', '$timeout', PopoverDirective]);
 
 	var trace;
 	
 	/*
-	 * Directive class
+	 * Directive class sd-popover="someObject"
 	 * Attributes supported:
 	 * 		sda-on-open
 	 * 		ng-disabled
@@ -34,7 +34,7 @@
 	 *	</span>
 	 *  
 	 */
-	function PopoverDirective(sdLoggerService, $parse) {
+	function PopoverDirective(sdLoggerService, $parse, $timeout) {
 		
 		trace = sdLoggerService.getLogger('bpm-common.sdPopover');
 		
@@ -64,20 +64,28 @@
 					var popoverBody = clone.filter('.popover-body');
 					popoverBody.detach();
 					popoverBtn.append(clone);
-					elem.prepend(popoverBtn);
+					element.prepend(popoverBtn);
 					popoverBodyContainer.append(popoverBody);
 				});
 				
-				elem.bind('click', handlePopoverClick);
+				elem.bind('click', function(event) {
+					handlePopoverClick(event);
+				});
 				
-				function handlePopoverClick(clkEvent) {
+				$timeout(function() {
+					scope.$apply(function() {
+						exposeAPI(attrs.sdPopover, scope);
+					});
+				});
+				
+				function handlePopoverClick(clkEvent, clickElem) {
 					// In case of ng-disabled, make sure the click is not activated
 					var disabled = false;
 					if (angular.isDefined(attrs.ngDisabled)) {
 						disabled = parseAttribute(scope.$parent, attrs.ngDisabled);
 					}
 					
-					if (!disabled) {
+					if (disabled != true) {
 						
 						if (angular.isDefined(onOpenFn)) {
 							onOpenFn(scope);
@@ -96,16 +104,58 @@
 						$(document).bind('click', popoverCloseEvent);
 						
 						scope.$apply(function() {
-							if (clkEvent.target === popoverBtn || popoverBtn.find(clkEvent.target).length > 0) {
+							if (!angular.isDefined(clickElem)) {
+								clickElem = popoverBtn;
+							}
+							if (clkEvent.target === clickElem || clickElem.find(clkEvent.target).length > 0) {
 								scope.showPopover = !scope.showPopover;
 								if (scope.showPopover === false) {
 									// this is important since we want this to be called exactly once
 									$(document).unbind('click', popoverCloseEvent);
 								} else if (scope.showPopover === true) {
-									popoverBodyContainer.css({left: clkEvent.pageX - 5 + 'px', top: clkEvent.pageY + 5 + 'px'});
+									popoverBodyContainer.css({'visibility': 'hidden'});
+									$timeout(function() {
+										var xPos = clkEvent.pageX - 5;
+										var yPos = clkEvent.pageY + 5;
+										
+										var maxAllowedXPos = jQuery(window).width() - popoverBodyContainer.outerWidth();
+										var maxAllowedYPos = jQuery(window).height() - popoverBodyContainer.outerHeight();
+										
+										if (xPos > maxAllowedXPos) {
+											xPos = maxAllowedXPos;
+										}
+										if (yPos > maxAllowedYPos) {
+											yPos = maxAllowedYPos;
+										}
+										popoverBodyContainer.css({left: xPos + 'px', top: yPos + 'px'});
+										popoverBodyContainer.css({'visibility': 'visible'});
+									});
 								}
 							}
 						});
+					}
+				}
+				
+				// API with open & close functions
+				function PopoverApi() {
+					this.show = function(event) {
+						$timeout(function() {
+							handlePopoverClick(event, event.target);
+						});
+					}
+				}
+				
+				// Expose the api to allow show event from other targets
+				// Attribute value sd-popover='someObject' will be assigned the api object
+				// A button with ng-click='someObject.show(event)' would show the popover at the target location
+				function exposeAPI(popoverAttr, scope) {
+					if (angular.isDefined(popoverAttr) && popoverAttr != '') {
+						var popoverAttrAssignable = $parse(popoverAttr).assign;
+						if (popoverAttrAssignable) {
+							popoverAttrAssignable(scope, new PopoverApi());
+						} else {
+							trace.info('Could not expose API for: ' + popoverAttr + ', expression is not an assignable.');
+						}
 					}
 				}
 				
