@@ -75,7 +75,7 @@
 				
 			    // Initialize scope values for participant type select box
 			    self.participantTypes = [
-			                     {name:self.i18n('views-common-messages.delegation-allTypes', 'All'), value: '-1'},
+			                     {name:self.i18n('views-common-messages.delegation-allTypes', 'All'), value: 'All'},
 			                     {name:self.i18n('views-common-messages.delegation-users', 'Users'), value: 'User'},
 			                     {name:self.i18n('views-common-messages.delegation-roles', 'Roles'), value: 'Role'},
 			                     {name:self.i18n('views-common-messages.delegation-orgs', 'Organizations'), value: 'Organization'},
@@ -267,13 +267,15 @@
 
 				var matchVal = '';
 
+				var pType = 'All';
 				if (self.searchParticipantSectionVisible) {
 					matchVal = options;
+					pType = self.participantType.value;
 				}
 
 				query.data = {
 					searchText : matchVal, // Fetch all
-					participantType : 'All',
+					participantType : pType,
 					limitedSearch : !self.searchAllParticipant,
 					activities : activities,
 					disableAdministrator : false,

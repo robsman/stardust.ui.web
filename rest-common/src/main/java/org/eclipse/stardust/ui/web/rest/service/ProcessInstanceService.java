@@ -34,6 +34,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.PriorityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
@@ -164,7 +165,13 @@ public class ProcessInstanceService
             
             dto.processInstanceRootOID = processInstance.getRootProcessInstanceOID();
             dto.oid = processInstance.getOID();
-            dto.priority = processInstance.getPriority();
+            
+            PriorityDTO priority = new PriorityDTO();
+            priority.value = processInstance.getPriority();
+            priority.setLabel(processInstance.getPriority());
+            priority.setName(processInstance.getPriority());
+            
+            dto.priority = priority;
             dto.startTime = processInstance.getStartTime();
             dto.duration = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getDuration(processInstance);
             dto.processName = I18nUtils.getProcessName(processDefinition);

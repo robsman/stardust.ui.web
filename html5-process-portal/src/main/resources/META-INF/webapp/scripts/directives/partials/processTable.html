@@ -6,8 +6,16 @@
 			<button ng-disabled="processTableCtrl.dataTable.getSelection() < 1" ng-click="processTableCtrl.openAbortDialog(processTableCtrl.dataTable.getSelection())" title="{{i18n('processportal.toolbars-worklistView-tooltip-abort')}}" class="button-link tbl-toolbar-item tbl-tool-link" style="margin-right: 0px;">
 			   <i class="glyphicon glyphicon-remove"></i>
 			</button>
-			<button sd-abort-popover ng-disabled="processTableCtrl.dataTable.getSelection() < 1" sda-activities="processTableCtrl.dataTable.getSelection()" sda-on-confirm="processTableCtrl.refresh()" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
+			<button ng-click="processTableCtrl.openAbortPopover($event)" ng-disabled="processTableCtrl.dataTable.getSelection() < 1" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
 				<i class="glyphicon glyphicon-chevron-right glyphicon-rotate-90"></i>
+			</button>
+			
+			<!-- TODO Recover process-->
+			
+			<!-- TODO Case Menu  -->
+			
+			<button ng-disabled="!processTableCtrl.isPriorityChanged();" ng-click="processTableCtrl.savePriorityChanges();" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
+				<i class="glyphicon glyphicon-floppy-saved"></i>
 			</button>
 		</div>
 	</div>
@@ -63,8 +71,11 @@
 			<tr>
 				<td sda-data-type="int" style="text-align: center;"></td>
 				<td sda-field="processName"></td>
-				<td style="text-align: center;" sda-exporter="i18n('views-common-messages.common-priorities-' + rowData.priority)">
-					<div sd-process-priority sda-priority="rowData.priority"></div>
+				<td style="text-align: center; width:110px;" sda-exporter="rowData.priority.label">
+					<div sd-process-priority sda-priority="rowData.priority" sda-editable="true" 
+					 sda-available-priorities ="processTableCtrl.availablePriorities" 
+					 sda-on-change ="processTableCtrl.registerNewPriority( rowData.oid, rowData.priority.value)">
+					</div>
 				</td>
 				<td sda-exporter="processTableCtrl.getDescriptorExportText(rowData.descriptorValues)">
 					<table>
@@ -98,8 +109,9 @@
 							<i class="glyphicon glyphicon-remove"></i>
 						</button>
 						
-						<!-- TODO abort menu -->
-						<button sd-abort-popover sda-activities="processTableCtrl.dataTable.getSelection()" sda-on-confirm="processTableCtrl.refresh()" class="button-link tbl-toolbar-item tbl-tool-link">
+						<!-- abort menu -->
+						<button class="button-link tbl-tool-link" ng-show="rowData.enableTerminate"
+							ng-click="processTableCtrl.openAbortPopover($event, rowData); bpmCommon.stopEvent($event);">
 							<i class="glyphicon glyphicon-chevron-right glyphicon-rotate-90"></i>
 						</button>
 						
@@ -118,4 +130,7 @@
 		</tbody>
 	</table>
 	
+	<div sd-abort-popover="processTableCtrl.popoverDirective" sda-process-instances="processTableCtrl.processesToAbort" 
+		sda-on-confirm="processTableCtrl.onAbortPopoverConfirm" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
+	</div>
 </div>

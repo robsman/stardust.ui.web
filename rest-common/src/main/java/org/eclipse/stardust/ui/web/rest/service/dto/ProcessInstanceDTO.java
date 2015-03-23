@@ -33,7 +33,7 @@ public class ProcessInstanceDTO extends AbstractDTO
 
    public long processInstanceRootOID;
 
-   public int priority;
+   public PriorityDTO priority;
 
    public Date startTime;
 
@@ -65,6 +65,6 @@ public class ProcessInstanceDTO extends AbstractDTO
 
    public String caseOwner;
 
-   public int oldPriority;
+   public PriorityDTO oldPriority;
    
 }

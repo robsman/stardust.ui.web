@@ -18,13 +18,13 @@
 
 	angular.module('bpm-common').directive('sdProcessTable',
 			['$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sgI18nService', 'sdPreferenceService',
-			 'sdProcessInstanceService', 'sdProcessDefinitionService', 'sdStatusService', ProcessTableDirective]);
+			 'sdProcessInstanceService', 'sdProcessDefinitionService', 'sdStatusService', 'sdPriorityService', ProcessTableDirective]);
 
 	/*
 	 *
 	 */
 	function ProcessTableDirective($parse, $q, sdUtilService, sdViewUtilService, sdLoggerService, sgI18nService, sdPreferenceService,
-			sdProcessInstanceService, sdProcessDefinitionService, sdStatusService) {
+			sdProcessInstanceService, sdProcessDefinitionService, sdStatusService, sdPriorityService) {
 
 		var trace = sdLoggerService.getLogger('bpm-common.sdProcessTable');
 
@@ -61,28 +61,14 @@
 				var scopeToUse = scope.$parent;
 				
 				// Define data
-				this.processList = {};
-				this.dataTable = null; // Handle to data table instance, to be set later
+				self.processList = {};
+				self.dataTable = null; // Handle to data table instance, to be set later
 
-				//Abort Activity Data
-				this.showAbortActivityDialog = false;
-				this.activitiesToAbort = [];
+				//Abort Data
+				self.showAbortActivityDialog = false;
+				self.activitiesToAbort = [];
 
-				//All processes with activities
-//				this.allAccessibleProcesses = [];
-//				this.allAvailableCriticalities = [];
-				this.availableStates = [];
-
-				// Process Query
-//				if (!attr.sdaQuery) {
-//					throw 'Query attribute is not specified for processTable.';
-//				}
-//				var queryGetter = $parse(attr.sdaQuery);
-//				var query = queryGetter(scopeToUse);
-//				if (query == undefined) {
-//					throw 'Query evaluated to "nothing" for processTable.';
-//				}
-//				this.query = query;
+				self.availableStates = [];
 
 				// Process Title
 				var titleExpr = "";
@@ -90,12 +76,22 @@
 					titleExpr = attr.sdaTitle;
 				}
 				var titleGetter = $parse(titleExpr);
-				this.title = titleGetter(scopeToUse);
+				self.title = titleGetter(scopeToUse);
 
 				// Process TableHandle and then set data table instance
-				this.tableHandleExpr = 'processTableCtrl.dataTable';
+				self.tableHandleExpr = 'processTableCtrl.dataTable';
 				
-				var unregister = scope.$watch(this.tableHandleExpr, function(newVal, oldVal) {
+				
+				// Priority
+				self.priorityEditable = true;
+				self.originalPriorities = {};
+				self.changedPriorities = {};
+				self.updatePriorityNotification = {
+						error : false,
+						result : {}
+				};
+				
+				var unregister = scope.$watch(self.tableHandleExpr, function(newVal, oldVal) {
 					if (newVal != undefined && newVal != null && newVal != oldVal) {
 						if (attr.sdProcessTable) {
 							var assignable = $parse(attr.sdProcessTable).assign;
@@ -108,26 +104,25 @@
 				});
 				
 				if (attr.sdaInitialSelection) {
-					this.initialSelection = attr.sdaInitialSelection;
+					self.initialSelection = attr.sdaInitialSelection;
 				}
 				if (attr.sdaPageSize) {
-					this.sdaPageSize = attr.sdaPageSize;
+					self.sdaPageSize = attr.sdaPageSize;
 				}
-				this.columnSelector = 'admin'; //TODO
-//				this.exportFileName = this.query.userId || this.query.participantQId; //TODO
+				self.columnSelector = 'admin'; //TODO
+//				self.exportFileName = self.query.userId || self.query.participantQId; //TODO
 				
-				this.processTablePrefModule = 'ipp-workflow-perspective';
-				this.processTablePrefId = 'processTable-participant-columns' || 'processTable-process-columns'; //TODO
-				//this.processTablePrefName = this.query.userId || this.query.participantQId; //TODO
+				self.processTablePrefModule = 'ipp-workflow-perspective';
+				self.processTablePrefId = 'processTable-participant-columns' || 'processTable-process-columns'; //TODO
 				
 				if (attr.sdaSelection) {
 					var assignable = $parse(attr.sdaSelection).assign;
 					if (assignable) {
-						this.selection = null;
-						this.selectionExpr = 'processTableCtrl.selection';
+						self.selection = null;
+						self.selectionExpr = 'processTableCtrl.selection';
 
 						// Update parent for change in sdDataTable
-						scope.$watch(this.selectionExpr, function(newVal, oldVal) {
+						scope.$watch(self.selectionExpr, function(newVal, oldVal) {
 							if (newVal != undefined && newVal != null && newVal != oldVal) {
 								assignable(scopeToUse, self.selection);
 							}
@@ -142,16 +137,18 @@
 					}
 				}
 				
-				// TODO remove
-//				self.ready = true;
-				
 				self.descritorCols = [];
 				
-				this.fetchDescriptorCols();
-				this.fetchAvailableStates();
+				self.fetchDescriptorCols();
+				self.fetchAvailableStates();
+				self.fetchAvailablePriorities();
 			};
 			
-			this.preferenceDelegate = function(prefInfo) {
+			self.refresh = function() {
+				self.dataTable.refresh(true);
+			};
+			
+			self.preferenceDelegate = function(prefInfo) {
 				var preferenceStore = sdPreferenceService.getStore(prefInfo.scope, self.processTablePrefModule, self.processTablePrefId);
 
 				// Override
@@ -165,11 +162,10 @@
 				return preferenceStore;
 			}
 			
-			this.fetchPage = function(options) {
+			self.fetchPage = function(options) {
 				var deferred = $q.defer();
-//				self.cleanLocals();
 
-				var query = angular.extend({}, this.query);
+				var query = angular.extend({}, self.query);
 				query.options = options;
 
 				sdProcessInstanceService.getProcesslist(query).then(function(data) {
@@ -186,7 +182,7 @@
 				return deferred.promise;
 			};
 			
-			this.fetchDescriptorCols = function() {
+			self.fetchDescriptorCols = function() {
 				sdProcessDefinitionService.getDescriptorColumns().then(function(descriptors) {
 					self.descritorCols = [];
 					angular.forEach(descriptors, function(descriptor){
@@ -205,13 +201,13 @@
 				});
 			};
 			
-			this.fetchAvailableStates = function() {
+			self.fetchAvailableStates = function() {
 				sdStatusService.getAllActivityStates().then(function(value) {
 					self.availableStates = value;
 				});
 			};
 			
-			this.getDescriptorExportText = function(descriptors) {
+			self.getDescriptorExportText = function(descriptors) {
 		        var descriptorsToExport  = [];
 		        
 		        angular.forEach(descriptors,function( descriptor){
@@ -221,7 +217,7 @@
 		        return descriptorsToExport.join(',');
 		     };
 		     
-			this.getDescriptorValueForExport = function(descriptorData) {
+			self.getDescriptorValueForExport = function(descriptorData) {
 				var exportValue;
 				if (angular.isUndefined(descriptorData)) {
 					return;
@@ -242,7 +238,90 @@
 			/*
 			 *
 			 */
-			this.openNotes = function( rowItem ) {
+			self.fetchAvailablePriorities = function() {
+				sdPriorityService.getAllPriorities().then(function(data) {
+					self.availablePriorities = data;
+				});
+			};
+			
+			/*
+			 *
+			 */
+			self.registerNewPriority = function(oid, value) {
+				if(self.originalPriorities[oid] != value){
+					self.changedPriorities[oid] = value;
+				}else{
+					if(angular.isDefined(self.changedPriorities[oid])){
+						delete self.changedPriorities[oid];
+					}
+				}
+			};
+			
+			/*
+			 *
+			 */
+			self.storePriorities = function(data) {
+				if(self.priorityEditable){
+					self.originalPriorities = {};
+					self.changedPriorities = {};
+					angular.forEach(data,function( row ) {
+						self.originalPriorities[row.oid] = row.priority.value;
+					});
+				}
+			};
+
+			/*
+			 * 
+			 */
+			self.savePriorityChanges = function() {
+
+				// Process instance oid to Process map for result
+				var processMap = {};
+				// process oid to priority map to send to service
+				var requestData = {};
+
+				angular.forEach(self.processList.list, function(rowData) {
+					if (angular.isDefined(self.changedPriorities[rowData.oid])) {
+						processMap[rowData.oid] = rowData.processName + ' (#' + rowData.oid
+								+ ')';
+						requestData[rowData.oid] = self.changedPriorities[rowData.oid];
+					}
+
+				});
+
+				sdPriorityService.savePriorityChanges(requestData).then(
+
+				function(successResult) {
+					angular.forEach(successResult.success, function(data) {
+						data['item'] = processMap[data.OID];
+					});
+					angular.forEach(successResult.failure, function(data) {
+						data['item'] = processMap[data.OID];
+					});
+					self.updatePriorityNotification.visible = true;
+					self.updatePriorityNotification.result = successResult;
+					self.refresh();
+					sdViewUtilService.syncLaunchPanels();
+
+				}, function(failureResult) {
+					trace.error("Error occured in updating the priorities : ", failureResult);
+				});
+			};			
+
+			/*
+			 * 
+			 */
+			self.isPriorityChanged = function() {
+				for ( name in self.changedPriorities ) {
+					return true;
+				}
+				return false;
+			};
+			
+			/*
+			 *
+			 */
+			self.openNotes = function( rowItem ) {
 				sdViewUtilService.openView("notesPanel", "oid=" + rowItem.oid,
 						{"oid": "" + rowItem.oid}, true);
 			};
@@ -250,27 +329,24 @@
 			/*
 			 *
 			 */
-			this.openProcessHistory = function( rowItem ) {
-				sdViewUtilService.openView("processInstanceDetailsView",
-						"processInstanceOID=" + rowItem.oid,
-						{
-							"oid": "" + rowItem.oid,
-							"processInstanceOID": "" + rowItem.oid
-						}, true
-				);
+			self.openProcessHistory = function(rowItem) {
+				sdViewUtilService.openView("processInstanceDetailsView", "processInstanceOID=" + rowItem.oid, {
+					"oid" : "" + rowItem.oid,
+					"processInstanceOID" : "" + rowItem.oid
+				}, true);
 			};
 			
 			/*
-			 *
+			 * 
 			 */
-			this.onAbortPopoverConfirm = function() {
-				this.refresh();
+			self.onAbortPopoverConfirm = function() {
+				self.refresh();
 			};
 
 			/*
 			 *
 			 */
-			this.openAbortDialog = function(value) {
+			self.openAbortDialog = function(value) {
 				
 				//TODO abort process
 			}
@@ -278,41 +354,70 @@
 			/*
 			 *
 			 */
-			 this.abortCompleted = function( ) {
-				this.refresh();
+			self.abortCompleted = function() {
+				self.refresh();
 				sdViewUtilService.syncLaunchPanels();
-				this.processesToAbort = [];
+				self.processesToAbort = [];
 			};
 			
-			this.onSelect = function(info) {
+			self.onAbortPopoverConfirm = function(type, result) {
+				self.refresh();
+				sdViewUtilService.syncLaunchPanels();
+				
+				if (angular.isDefined(type) && angular.isDefined(result)) {
+					if ('abortandstart' === type) {
+						// TODO open spawned activities
+						
+						sdViewUtilService.openView('worklistViewHtml5', true);
+					} else if ('abortandjoin' === type) {
+						// TODO open joined process
+						
+						sdViewUtilService.openView('processDefinitionView', true);
+					}						
+				}
+			}
+			
+			self.openAbortPopover = function(event, rowItem) {
+				if (angular.isDefined(rowItem)) {
+					self.processesToAbort = [rowItem];
+				} else {
+					var selectedItems = self.dataTable.getSelection();
+					if (selectedItems.length > 0) {
+						self.processesToAbort = selectedItems;
+					}
+				}
+				self.popoverDirective.show(event);
+			}
+			
+			self.onSelect = function(info) {
 				// NOP
 			};
 
 			/*
 			 *
 			 */
-			this.onPagination = function(info) {
+			self.onPagination = function(info) {
 				// NOP
 			};
 
 			/*
 			 *
 			 */
-			this.onColumnReorder = function(info) {
+			self.onColumnReorder = function(info) {
 				// NOP
 			};
 
 			/*
 			 *
 			 */
-			this.onSorting = function(info) {
+			self.onSorting = function(info) {
 				// NOP
 			};
 			
 			
-			this.initialize(attr, scope);
+			self.initialize(attr, scope);
 			// Expose controller as a whole on to scope
-			scope.processTableCtrl = this;
+			scope.processTableCtrl = self;
 		}
 
 		return directiveDefObject;

@@ -216,9 +216,6 @@ public class ProcessInstanceResource
                "asc".equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          
-      // TODO extract and apply filter options
-//         options.pageSize = 9;
-         
          return Response.ok(GsonUtils.toJsonHTMLSafeString(processInstanceService.getProcessInstances(options)), MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)

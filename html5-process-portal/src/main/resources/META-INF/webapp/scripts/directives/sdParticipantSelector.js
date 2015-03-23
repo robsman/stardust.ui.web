@@ -32,7 +32,7 @@
 					allowMultiple: '=sdaMultiple'
 				},
 				transclude: true,
-				template: '<div sd-auto-complete'
+				template: '<div sd-auto-complete class="sd-participant-selector"'
 						  + ' sda-matches="participantSelectorCtlr.data"' 
 				          + ' sda-match-str="participantSelectorCtlr.matchVal"' 
 				          + ' sda-change="participantSelectorCtlr.getMatches(matchVal)"' 
