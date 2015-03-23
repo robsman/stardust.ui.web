@@ -121,6 +121,11 @@ define(
 								m_i18nUtils
 										.getProperty("modeler.propertyView.modelView.validFrom"));
 
+				m_utils.jQuerySelect("label[for='versionOutput']")
+					.text(
+						m_i18nUtils
+								.getProperty("modeler.propertyView.modelView.version"));	
+				
 				m_utils.jQuerySelect("#refreshValidationLbl")
 						.text(
 								m_i18nUtils
@@ -154,6 +159,7 @@ define(
 					this.validFromDate = m_utils.jQuerySelect("#validFromDate");
 					this.validFromDate.get(0).id = "validFromDate" + Math.floor((Math.random()*10000) + 1);
 					this.validFromDate.datepicker();
+					this.version = m_utils.jQuerySelect("#versionOutput");
 
 					m_utils.jQuerySelect("#modelTabs").tabs();
 
@@ -262,6 +268,12 @@ define(
 							&& this.model.attributes["carnot:engine:validFrom"]) {
 						this.setValidFromDate(this.model.attributes["carnot:engine:validFrom"]);
 					}
+					
+					if (this.model.attributes
+							&& this.model.attributes["carnot:engine:version"]) {
+						this.version.empty();
+						this.version.append(this.model.attributes["carnot:engine:version"]);
+					}
 
 					// TODO: Needed?
 
@@ -275,7 +287,7 @@ define(
 
 					//this.refreshValidation();
 				};
-
+			
 				/**
 				 *
 				 */

@@ -385,6 +385,40 @@ define(
 				}
 
 			};
+			
+			var versionizeModel = function(modelUUID) {
+				
+				var model = m_model.findModelByUuid(modelUUID);
+				
+				if (parent.iPopupDialog) {
+					parent.iPopupDialog
+							.openPopup({
+								attributes : {
+									width : "400px",
+									height : "250px",
+									src : m_urlUtils.getPlugsInRoot()
+											+ "bpm-modeler/popups/modelVersionPopupDialog.html"
+								},
+								payload : {
+									acceptFunction : versionizeModel2,
+									i18n: m_i18nUtils,
+									model: model,
+									m_utils: m_utils  
+								}
+							});
+				}
+			};
+			
+			var versionizeModel2 = function(popupPayload) {
+				var model = m_model.findModelByUuid(popupPayload.modelUUID);				
+				var changes  = { attributes : { 'carnot:engine:version' : popupPayload.newVersion}};
+				m_commandsController
+					.submitCommand(m_command
+						.createUpdateModelElementCommand(
+								model.id,
+								model.id,
+								changes));
+			};
 
 			var downloadModel = function(modelUUID) {
 				var model = m_model.findModelByUuid(modelUUID);
@@ -823,6 +857,14 @@ define(
 														.getProperty("modeler.outline.model.contextMenu.download"),
 												"action" : function(obj) {
 													downloadModel(obj
+															.attr("id"));
+												}
+											},
+											"versionize" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.model.contextMenu.versionize"),
+												"action" : function(obj) {
+													versionizeModel(obj
 															.attr("id"));
 												}
 											}
