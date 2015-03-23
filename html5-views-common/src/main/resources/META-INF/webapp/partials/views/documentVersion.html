@@ -1,6 +1,6 @@
 <div>
 <table sd-data-table="docSearchViewCtrl.docVersionsdataTable"
-		sd-data="docSearchViewCtrl.getDocumentVersions(params)"  sda-mode="local" sda-no-pagination="true"		
+		sd-data="docSearchViewCtrl.getDocumentVersions(params)"  sda-mode="local" sda-no-pagination="true" sda-ready="docSearchViewCtrl.showDocumentVersion"	
 		sda-sortable="true"
 		sda-sort-by="{name : 'versionNo', dir : 'desc'}" 
 		sda-column-selector="{{docSearchViewCtrl.columnSelector}}"

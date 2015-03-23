@@ -540,6 +540,7 @@
 						self.documentVersions.totalCount = data.totalCount;
 						self.showDocumentVersions = true;
 						self.documentVersions.documentName = documentName;
+						self.showDocumentVersion = true;
 					}, function(error) {
 						trace.log(error);
 					});
