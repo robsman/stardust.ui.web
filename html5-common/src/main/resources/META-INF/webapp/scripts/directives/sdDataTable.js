@@ -820,7 +820,7 @@
 
 			dtOptions.fnDrawCallback = drawCallbackHandler;
 			dtOptions.fnPreDrawCallback = function() {
-				destroyRows();
+				destroyRowScopes();
 			}
 			dtOptions.fnCreatedRow = createRowHandler;
 
@@ -949,7 +949,7 @@
 					ret.iTotalRecords = result.totalCount;
 					ret.iTotalDisplayRecords = result.totalCount;
 					ret.aaData = result.list;
-	
+
 					callback(ret);
 				} catch (e) {
 					showErrorOnUI(e);
@@ -1130,10 +1130,7 @@
 
 			var rowScope = row.scope();
 			if (rowScope == undefined) {
-				rowScope = myScope.$new();
-				rowScope.$on('$destroy', function() {
-					//trace.log(theTableId + ': Row Scope ' + rowScope.$id + ' destroyed for parent ' + rowScope.$parent.$id);
-				});
+				rowScope = createRowScope();
 			}
 
 			rowScope.rowData = data;
@@ -1156,6 +1153,17 @@
 					drawCallbackHandler (oSettings);
 				}, 0, false);
 				return;
+			}
+
+			// Handle empty table case
+			var count = getPageDataCount();
+			if (count == 0) {
+				trace.log(theTableId + ': Handling empty table case...');
+
+				var rows = theTable.find('> tbody > tr');
+				var row = angular.element(rows[0]); // There will be only one row 
+				var rowScope = createRowScope();
+				$compile(row)(rowScope);
 			}
 
 			if(!initialized) {
@@ -1532,8 +1540,11 @@
 		function enableRowSelection() {
 			if (rowSelectionMode) {
 				theTable.find('> tbody').on('click', '> tr', function() {
-					processRowSelection(this);
-					processSelectionBinding();
+					var count = getPageDataCount();
+					if (count > 0) {
+						processRowSelection(this);
+						processSelectionBinding();
+					}
 				});
 			}
 		}
@@ -1736,7 +1747,19 @@
 		/*
 		 * 
 		 */
-		function destroyRows() {
+		function createRowScope() {
+			var rowScope = myScope.$new();
+			rowScope.$on('$destroy', function() {
+				trace.log(theTableId + ': Row Scope ' + rowScope.$id + ' destroyed for parent ' + rowScope.$parent.$id);
+			});
+
+			return rowScope;
+		}
+
+		/*
+		 * 
+		 */
+		function destroyRowScopes() {
 			try {
 				var rows = theTable.find('> tbody > tr');
 				for (var i = 0; i < rows.length; i++) {
