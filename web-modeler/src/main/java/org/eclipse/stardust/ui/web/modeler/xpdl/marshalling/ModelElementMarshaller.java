@@ -1877,9 +1877,12 @@ public class ModelElementMarshaller implements ModelMarshaller
       {
          JsonObject setDataJson = new JsonObject();
 
-         setDataJson.addProperty(ModelerConstants.SD_SET_DATA_ACTION_DATA_ID,
-               AttributeUtil.getAttributeValue(setDataAction,
-                     PredefinedConstants.SET_DATA_ACTION_DATA_ID_ATT));
+         setDataJson.addProperty(
+               ModelerConstants.SD_SET_DATA_ACTION_DATA_ID,
+               model.getId()
+                     + ":"
+                     + AttributeUtil.getAttributeValue(setDataAction,
+                           PredefinedConstants.SET_DATA_ACTION_DATA_ID_ATT));
          setDataJson.addProperty(ModelerConstants.SD_SET_DATA_ACTION_DATA_PATH,
                AttributeUtil.getAttributeValue(setDataAction,
                      PredefinedConstants.SET_DATA_ACTION_DATA_PATH_ATT));
