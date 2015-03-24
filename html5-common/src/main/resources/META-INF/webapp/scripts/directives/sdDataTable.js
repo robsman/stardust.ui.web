@@ -1750,7 +1750,7 @@
 		function createRowScope() {
 			var rowScope = myScope.$new();
 			rowScope.$on('$destroy', function() {
-				trace.log(theTableId + ': Row Scope ' + rowScope.$id + ' destroyed for parent ' + rowScope.$parent.$id);
+				//trace.log(theTableId + ': Row Scope ' + rowScope.$id + ' destroyed for parent ' + rowScope.$parent.$id);
 			});
 
 			return rowScope;
