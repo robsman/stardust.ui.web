@@ -183,7 +183,7 @@
 		var onSelect = {}, onPagination = {}, onColumnReorder = {}, onSorting = {};
 		var enableColumnSelector, columnSelectorAdmin, columnsByDisplayOrder, columnsInfoByDisplayOrder, devColumnOrderPref;
 		var columnSelectorPreference, localPrefStore = {};
-		var pageSize = 8, jumpToPage;
+		var pageSize = 8, disablePagination, jumpToPage;
 		var sortingMode, sortByGetter;
 		var columnFilters;
 		var exportConfig = {}, exportAnchor = document.createElement("a"), remoteModeLastParams;
@@ -279,6 +279,10 @@
 
 			if (attr.sdaPageSize != undefined && attr.sdaPageSize != '') {
 				pageSize = parseInt(attr.sdaPageSize);
+			}
+
+			if (attr.sdaNoPagination == '' || attr.sdaNoPagination == 'true') {
+				disablePagination = true;
 			}
 
 			if (attr.sdaSelectable == undefined || attr.sdaSelectable == '') {
@@ -859,11 +863,10 @@
 			fetchData(undefined).then(function(result) {
 				try {
 					dtOptions.aaData = result.list ? result.list : result;
+
+					validateData(dtOptions.aaData);
 	
-					sdUtilService.assert(dtOptions.aaData && angular.isArray(dtOptions.aaData),
-							'sd-data did not return acceptable result: Missing "list" or its not an array');
-	
-					if (attr.sdaNoPagination == '' || attr.sdaNoPagination == 'true') {
+					if (disablePagination) {
 						dtOptions.iDisplayLength = dtOptions.aaData.length;
 						dtOptions.sDom = 't';
 					} else {
@@ -937,14 +940,7 @@
 			remoteModeLastParams = params;
 			fetchData(params).then(function(result) {
 				try {
-					sdUtilService.assert(jQuery.isPlainObject(result),
-							'sd-data did not return acceptable result: Return is not a plain object');
-					sdUtilService.assert(result.totalCount != undefined,
-							'sd-data did not return acceptable result: Missing "totalCount"');
-					sdUtilService.assert(result.list && angular.isArray(result.list),
-							'sd-data did not return acceptable result: Missing "list" or its not an array');
-					sdUtilService.assert(result.list.length <= data.length,
-							'sd-data did not return acceptable result: Returned more records than expected (' + data.length + ')');
+					validateData(result, pageSize);
 	
 					ret.iTotalRecords = result.totalCount;
 					ret.iTotalDisplayRecords = result.totalCount;
@@ -1094,6 +1090,25 @@
 		/*
 		 * 
 		 */
+		function validateData(result, maxPageSize) {
+			if (attr.sdaMode == 'local') {
+				sdUtilService.assert(result && angular.isArray(result),
+					'sd-data did not return acceptable result: Missing "list" or its not an array');
+			} else {
+				sdUtilService.assert(jQuery.isPlainObject(result),
+					'sd-data did not return acceptable result: Return is not a plain object');
+				sdUtilService.assert(result.totalCount != undefined,
+					'sd-data did not return acceptable result: Missing "totalCount"');
+				sdUtilService.assert(result.list && angular.isArray(result.list),
+					'sd-data did not return acceptable result: Missing "list" or its not an array');
+				sdUtilService.assert(result.list.length <= maxPageSize,
+					'sd-data did not return acceptable result: Returned more records than expected (' + maxPageSize + ')');
+			}
+		}
+
+		/*
+		 * 
+		 */
 		function createRowHandler(row, data, dataIndex) {
 			row = angular.element(row);
 			row.addClass(CLASSES.BODY_TR);
@@ -1208,12 +1223,11 @@
 					try {
 						var data = result.list ? result.list : result;
 
-						sdUtilService.assert(data && angular.isArray(data),
-								'sd-data did not return acceptable result: Missing "list" or its not an array');
-						
+						validateData(data);
+
 						theDataTable.fnClearTable(false);
 
-						if (attr.sdaNoPagination == '' || attr.sdaNoPagination == 'true') {
+						if (disablePagination) {
 							theDataTable.fnSettings()._iDisplayLength = data.length;
 						} else {
 							if (retainPageIndex) {
@@ -2052,14 +2066,19 @@
 			trace.log(theTableId + ': Fetching data for export, batch ' + batchNo);
 
 			fetchData(params).then(function(result) {
-				// TODO: Validate result!
-				data = data.concat(result.list);
-
-				params.skip += params.pageSize;
-				if (params.skip < result.totalCount) {
-					fetchAllInBatches(deferred, params, data);
-				} else {
-					deferred.resolve(data);
+				try {
+					validateData(result, params.pageSize);
+					
+					data = data.concat(result.list);
+	
+					params.skip += params.pageSize;
+					if (params.skip < result.totalCount) {
+						fetchAllInBatches(deferred, params, data);
+					} else {
+						deferred.resolve(data);
+					}
+				} catch (e) {
+					deferred.resolve({data: data, error: e});
 				}
 			}, function(error) {
 				deferred.resolve({data: data, error: error});
