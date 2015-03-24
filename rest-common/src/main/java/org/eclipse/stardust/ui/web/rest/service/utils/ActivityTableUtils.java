@@ -25,11 +25,14 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.stardust.common.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.dto.DepartmentInfoDetails;
+import org.eclipse.stardust.engine.api.dto.OrganizationInfoDetails;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
+import org.eclipse.stardust.engine.api.dto.RoleInfoDetails;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
@@ -45,6 +48,7 @@ import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
+import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.QualityAssuranceUtils.QualityAssuranceState;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.rest.FilterDTO.BooleanDTO;
@@ -52,6 +56,7 @@ import org.eclipse.stardust.ui.web.rest.FilterDTO.RangeDTO;
 import org.eclipse.stardust.ui.web.rest.FilterDTO.TextSearchDTO;
 import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.rest.Options;
+import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.CriticalityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
@@ -64,6 +69,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.TrivialActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO.DescriptorFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
@@ -74,6 +80,7 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils.ParticipantType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDocumentDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
@@ -96,6 +103,8 @@ public class ActivityTableUtils
    private static final String COL_ACTIVITY_NAME = "overview";
 
    private static final String COL_ACTIVITY_INSTANCE_OID = "oid";
+   
+   private static final String COL_PROCESS_OID = "processOid";
 
    private static final String COL_START_TIME = "started";
 
@@ -146,6 +155,25 @@ public class ActivityTableUtils
                   ? WorklistQuery.ACTIVITY_INSTANCE_OID
                   : ActivityInstanceQuery.OID).lessOrEqual(filterDTO.oid.to));
          }
+      }
+      
+      //Process Instance Oid
+      
+      if (null != filterDTO.processOid)
+      {
+         if (null != filterDTO.processOid.from)
+         {
+            filter.and((worklistQuery
+                  ? WorklistQuery.PROCESS_INSTANCE_OID
+                  : ActivityInstanceQuery.PROCESS_INSTANCE_OID).greaterOrEqual(filterDTO.processOid.from));
+         }
+         if (null != filterDTO.processOid.to)
+         {
+            filter.and((worklistQuery
+                  ? WorklistQuery.PROCESS_INSTANCE_OID
+                  : ActivityInstanceQuery.PROCESS_INSTANCE_OID).lessOrEqual(filterDTO.processOid.to));
+         }
+
       }
 
       // Start Filter
@@ -291,6 +319,33 @@ public class ActivityTableUtils
             }
          }
       }
+      
+      // Assigned To
+      if (null != filterDTO.assignedTo)
+      {
+         FilterOrTerm or = filter.addOrTerm();
+         for (ParticipantSearchResponseDTO participant : filterDTO.assignedTo.participants)
+         {  
+          
+            if(ParticipantType.USER.toString().equals( participant.type) ){
+            
+               or.add(new org.eclipse.stardust.engine.api.query.PerformingUserFilter( Long.valueOf( participant.OID)));
+            } 
+            else if (ParticipantType.ROLE.toString().endsWith( participant.type))
+            {
+               RoleInfoDetails roleInfo = new RoleInfoDetails(participant.qualifiedId);
+               or.add(org.eclipse.stardust.engine.api.query.PerformingParticipantFilter.forParticipant(roleInfo));                        
+            }else if(ParticipantType.ORGANIZATION.toString().equals( participant.type)){
+               
+               OrganizationInfoDetails organizationInfo = new OrganizationInfoDetails(participant.qualifiedId);
+               or.add(org.eclipse.stardust.engine.api.query.PerformingParticipantFilter.forParticipant(organizationInfo));     
+            }else if(ParticipantSearchComponent.PerformerTypeUI.Department.name().equals(participant.type)){
+              
+               DepartmentInfo departmentInfo = new DepartmentInfoDetails(participant.OID, participant.id, participant.name, participant.runtimeOrganizationOid);
+               or.add(org.eclipse.stardust.engine.api.query.ParticipantAssociationFilter.forDepartment(departmentInfo));
+            }
+         }
+      }
 
       addDescriptorFilters(query, filterDTO);
 
@@ -422,6 +477,13 @@ public class ActivityTableUtils
          query.orderBy(worklistQuery
                ? WorklistQuery.ACTIVITY_INSTANCE_CRITICALITY
                : ActivityInstanceQuery.CRITICALITY, options.asc);
+      }
+      
+      else if (COL_PROCESS_OID.equals(options.orderBy))
+      {
+         query.orderBy(worklistQuery
+               ? WorklistQuery.PROCESS_INSTANCE_OID
+               : ActivityInstanceQuery.PROCESS_INSTANCE_OID, options.asc);
       }
    }
    

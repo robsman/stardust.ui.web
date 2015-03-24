@@ -28,13 +28,19 @@ public class ParticipantSearchResponseDTO
 {
    private static final String BASE_IMAGE_PATH = "/plugins/views-common/images/icons/";
    // exposed properties
-   private String id;
-   private String qualifiedId;
-   private long OID;
-   private String name;
-   private String type;
-   private boolean onlineStatus = false;
-   private String icon;
+   public String id;
+   public String qualifiedId;
+   public long OID;
+   public String name;
+   public String type;
+   public boolean onlineStatus = false;
+   public String icon;
+   public Long runtimeOrganizationOid;
+
+   
+   public ParticipantSearchResponseDTO()
+   {
+   }
 
    /**
     * @param participant
@@ -59,6 +65,7 @@ public class ParticipantSearchResponseDTO
       this.name = ParticipantUtils.getDepartmentLabel(department);
       this.type = ParticipantSearchComponent.PerformerTypeUI.Department.name().toUpperCase();
       this.icon = determineIconPath(null);
+      this.runtimeOrganizationOid = department.getRuntimeOrganizationOID();
    }
 
    /**

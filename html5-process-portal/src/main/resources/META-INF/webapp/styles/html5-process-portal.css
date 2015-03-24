@@ -181,8 +181,12 @@ padding : 5px;;
 	width :80px;
 }
 
-.activity-table-priority-changed-highlight{
+.change-highlight{
 	background-color: gray;
+}
+
+.change-higlight-container{
+	width : 100px;
 }
 
 

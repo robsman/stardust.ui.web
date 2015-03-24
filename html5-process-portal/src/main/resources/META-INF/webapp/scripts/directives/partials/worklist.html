@@ -27,7 +27,7 @@
 		sda-column-selector="{{activityTableCtrl.columnSelector}}" sda-preference-delegate="activityTableCtrl.preferenceDelegate(prefInfo)"
 		sda-on-column-reorder="activityTableCtrl.onColumnReorder(info)"
 		sda-sortable="true" sda-sort-by="{name : 'started', dir : 'desc'}" sda-on-sorting="activityTableCtrl.onSorting(info)"
-		sda-exports="true" sda-exports-file-name="worklist-{{activityTableCtrl.exportFileName}}">
+		sda-exports="true" sda-exports-file-name="{{activityTableCtrl.exportFileName}}">
 		<thead sda-i18n-scope="processportal.views-worklistPanel-column">
 			<tr>
 				<th sda-name="overview" sda-sortable="true" sda-visible="{{activityTableCtrl.isColumnVisible('overview')}}">
@@ -51,19 +51,27 @@
 				<th sda-name="lastModified" sda-label-key="lastmodification"
 					sda-sortable="true" sda-filterable="true" sda-visible="{{activityTableCtrl.isColumnVisible('lastModified')}}"></th>
 				<th sda-name="duration" sda-sortable="false" sda-filterable="false" sda-visible="{{activityTableCtrl.isColumnVisible('duration')}}"></th>
-				<th sda-name="lastPerformer" sda-sortable="false" sda-filterable="false" sda-visible="{{activityTableCtrl.isColumnVisible('lastPerformer')}}"></th>
+				<th  sda-name="lastPerformer" ng-if ="activityTableCtrl.isWorklistMode();" sda-sortable="false" sda-filterable="false" sda-visible="{{activityTableCtrl.isColumnVisible('lastPerformer')}}"></th>
 				<th sda-name="processDefinition" sda-label-key="processName" sda-visible="{{activityTableCtrl.isColumnVisible('processDefinition')}}"
 					 sda-sortable="false">
 					<div sda-filter-template>
 						<div sd-process-activity-filter sda-filter-type='process' sda-processes="activityTableCtrl.allAccessibleProcesses"></div>
 					</div>
 				</th>
+				<th sda-name="processOid" ng-if ="activityTableCtrl.isActivityInstanceMode();" sda-label-key="processOid" sda-visible="{{activityTableCtrl.isColumnVisible('processOid')}}"
+					 sda-sortable="true" sda-filterable="true">
+				</th>
 				<th sda-name="status" sda-sortable="false" sda-visible="{{activityTableCtrl.isColumnVisible('status')}}">
 					<div sda-filter-template>
 						<div sd-multi-select-filter sda-options="activityTableCtrl.availableStates"></div>
 					</div>
 				</th>
-				<th sda-name="assignedTo" sda-sortable="false" sda-visible="{{activityTableCtrl.isColumnVisible('assignedTo')}}" sda-filterable="false"></th>
+				<th sda-name="assignedTo" sda-sortable="false" sda-visible="{{activityTableCtrl.isColumnVisible('assignedTo')}}" sda-filterable="false">
+				<div ng-if="activityTableCtrl.isActivityInstanceMode();"sda-filter-template>
+					<div sd-participant-filter></div>
+					</div>
+				</th>
+				<th sda-name="participantPerformer" ng-if ="activityTableCtrl.isActivityInstanceMode();"  sda-sortable="false" sda-filterable = "false" sda-visible="{{activityTableCtrl.isColumnVisible('participantPerformer')}}"></th>
 				<th sda-column="DESCRIPTOR_COLUMNS" ng-repeat="descCol in activityTableCtrl.descritorCols" sda-visible="{{activityTableCtrl.isColumnVisible('descritorCols')}}" 
 					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}"
 				    sda-sortable="{{descCol.sortable}}">
@@ -114,7 +122,7 @@
 					<div ng-if = "!activityTableCtrl.priorityEditable" sd-process-priority sda-priority="rowData.priority" sda-editable="activityTableCtrl.priorityEditable"></div>
 					<div ng-if = "activityTableCtrl.priorityEditable" sd-process-priority sda-priority="rowData.priority"
 						sda-editable="activityTableCtrl.priorityEditable"  sda-available-priorities ="activityTableCtrl.availablePriorities" 
-					sda-on-change ="activityTableCtrl.registerNewPriority( rowData.oid, rowData.priority.value)"></div>
+					sda-on-change ="activityTableCtrl.registerNewPriority( rowData.oid, rowData.priority.value)"  sda-value-changed="activityTableCtrl.isPriorityChangedForRow(rowData.oid);"></div>
 				</td>
 
 				<td sda-exporter="activityTableCtrl.getDescriptorExportText(rowData.descriptorValues)">
@@ -129,10 +137,12 @@
 				<td sda-field="start" sda-data-type="dateTime" style="text-align: center; white-space: nowrap;"></td>
 				<td sda-field="lastModification" sda-data-type="dateTime" style="text-align: center; white-space: nowrap;"></td>
 				<td sda-field="duration"></td>
-				<td sda-field="lastPerformer" ></td>
+				<td sda-field="lastPerformer" ng-if ="activityTableCtrl.isWorklistMode();"></td>
 				<td sda-field="processInstance.processName"></td>
+				<td ng-if ="activityTableCtrl.isActivityInstanceMode();" sda-data-type="int" sda-field="processInstance.oid" style="text-align: center; white-space: nowrap;"></td>
 				<td sda-field="status.label" ></td>
 				<td sda-field="assignedTo"></td>
+				<td ng-if ="activityTableCtrl.isActivityInstanceMode();" sda-field="participantPeformer" style="text-align: center; white-space: nowrap;"></td>
 				<td sda-column="DESCRIPTOR_COLUMNS" ng-repeat="descCol in activityTableCtrl.descritorCols" 
 					 style="text-align: center; white-space: nowrap;"  sda-data-type="{{descCol.dataType}}" sda-exporter="activityTableCtrl.getDescriptorValueForExport( rowData.descriptorValues[colData.title])">
 					<div sd-descriptor-content sda-value="rowData.descriptorValues[colData.title]" sda-data-type = "colData.dataType"> </div>

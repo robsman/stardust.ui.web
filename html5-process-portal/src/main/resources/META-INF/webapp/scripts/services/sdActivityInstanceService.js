@@ -92,6 +92,19 @@
 			return ajax(restUrl, "searchParticipants", query.data);
 		};
 		
+		
+		/*
+		 */
+		ActivityInstanceService.prototype.getMatchingParticpants = function( searchText , maxItems) {
+			
+			var restUrl = REST_BASE_URL;
+			
+			var params = "searchAllParticipants/"+searchText+"/"+maxItems;
+			
+			return ajax(restUrl, '', params);
+		};
+		
+		
 		/*
 		 * Expected data in following format:
 		 * {

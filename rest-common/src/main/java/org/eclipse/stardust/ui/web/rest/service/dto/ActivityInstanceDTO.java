@@ -68,6 +68,11 @@ public class ActivityInstanceDTO extends AbstractDTO
    public boolean activatable;
 
    public Map<String, DescriptorDTO> descriptorValues;
+   
+   public String completedBy;
+
+   @DTOAttribute("participantPerformerName")
+   public String participantPerformer;
 
    public void setQualityAssuranceState(QualityAssuranceState state)
    {

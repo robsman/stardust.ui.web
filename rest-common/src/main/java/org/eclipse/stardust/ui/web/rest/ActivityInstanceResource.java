@@ -390,6 +390,20 @@ public class ActivityInstanceResource
      * @author Yogesh.Manware
      * @param postedData
      * @return
+     */
+    @GET
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/searchAllParticipants/{searchText}/{maxMatches}")
+   public Response searchAllParticipant(@PathParam("searchText") String searchText ,@PathParam("maxMatches") int maxMatches )
+   {
+      return Response.ok(participantSearchComponent.searchAllParticipants( searchText, maxMatches), MediaType.APPLICATION_JSON).build();
+   }
+    
+    /**
+     * @author Yogesh.Manware
+     * @param postedData
+     * @return
     * @throws PortalRestException 
     * @throws PortalException 
     * @throws FacesException 

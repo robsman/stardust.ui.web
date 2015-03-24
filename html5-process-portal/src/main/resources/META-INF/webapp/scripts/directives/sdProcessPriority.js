@@ -34,7 +34,7 @@
 		   						'ng-mouseenter=\'processPriorityCtrl.toolTip.show = true\' '+
 		   						'ng-mouseleave=\'processPriorityCtrl.toolTip.show = false\'> '+
 		   			  '<\/i>'+
-		   			  '<div style="width:90px;" ng-class="{\'activity-table-priority-changed-highlight\':sdaValueChanged}"><select ng-if="sdaEditable" class="activity-table-priority-combo" ng-model="sdaPriority.value" ng-change="sdaOnChange();" '+
+		   			  '<div class="change-higlight-container" ng-class="{\'change-highlight\':sdaValueChanged}"><select ng-if="sdaEditable" class="activity-table-priority-combo" ng-model="sdaPriority.value" ng-change="sdaOnChange();" '+
 		   	         ' ng-options="item.value as item.label for item in sdaAvailablePriorities"></select></div>'+
 		   			  '<div class="popup-dlg worklist-tooltip" style="color: black" ng-show="processPriorityCtrl.toolTip.show">'+
 		   			  		'<span class="worklist-tooltip-label" ng-bind="processPriorityCtrl.i18n(\'views-common-messages.views-activityTable-priorityFilter-table-priorityColumn-name\')"><\/span> '+

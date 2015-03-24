@@ -184,10 +184,13 @@
 			}
 
 			if (this.mode === DEFAULT_VALUES.WORKLIST.NAME) {
+				
 				this.initializeWorklistMode(attr, scope);
 			} else if(this.mode === DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.NAME){
+				
 				this.initializeActivityInstanceMode(attr, scope);
 			}else{
+				
 				throw 'Not a valid value for sdaMode.Valid modes are : '+ DEFAULT_VALUES.WORKLIST.NAME +' & '+DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.NAME;
 			}
 
@@ -313,6 +316,7 @@
 			this.priorityEditable = false;
 			this.visbleColumns = DEFAULT_VALUES.WORKLIST.VISIBLE_COLUMNS;
 			this.worklistPrefModule = DEFAULT_VALUES.WORKLIST.PREFERENCE_MODULE;
+			this.exportFileName= "export_"+DEFAULT_VALUES.WORKLIST.NAME;
 
 		};
 
@@ -329,6 +333,8 @@
 					result : {}
 			};
 			this.visbleColumns = DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.VISIBLE_COLUMNS;
+			
+			this.exportFileName= "export_"+DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.NAME;
 			
 			if (!attr.sdaPreferenceModule) {
 				throw "sdaPreferenceModule is not defined."
@@ -369,7 +375,7 @@
 				
 				this.worklistPrefName = idFromQuery ;
 				
-				this.exportFileName = idFromQuery; 
+				this.exportFileName = this.mode +"-"+idFromQuery; 
 			}
 			
 
@@ -383,6 +389,10 @@
 
 			if (attr.sdaPreferenceName) {
 				this.worklistPrefName = attr.sdaPreferenceName;
+			}
+			
+			if (attr.sdaExportName) {
+				this.worklistPrefName = attr.sdaExportName;
 			}
 
 		};
@@ -420,9 +430,9 @@
 
 				dataResult.then(function(data){
 					self.activities = data;
-					deferred.resolve(self.activities);
-					self.safeApply(self.activities.list);
-					self.storePriorities();
+					deferred.resolve( self.activities );
+					self.safeApply( self.activities.list );
+					self.storePriorities( self.activities.list );
 				},function(error){
 					deferred.reject(error);
 				});
@@ -922,6 +932,18 @@
 		ActivityTableCompiler.prototype.isPriorityChanged = function() {
 			for ( name in this.changedPriorities ) {
 				return true;
+			}
+			return false;
+		};
+		
+		/*
+		 *
+		 */
+		ActivityTableCompiler.prototype.isPriorityChangedForRow = function( id ) {
+			for ( name in this.changedPriorities ) {
+			 if (name == id){
+				 return true;
+			 }
 			}
 			return false;
 		};
