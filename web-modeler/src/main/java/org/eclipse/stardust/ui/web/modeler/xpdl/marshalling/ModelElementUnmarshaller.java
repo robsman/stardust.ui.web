@@ -1792,7 +1792,12 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       if (euJson.has(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA))
       {
          String data = extractAsString(euJson, ModelerConstants.EU_EXCLUDE_PERFORMER_DATA);
-         AttributeUtil.setAttribute(eventAction, PredefinedConstants.EXCLUDED_PERFORMER_DATA, data);
+         if (data.split(":").length > 1)
+         {
+            data = data.split(":")[1];
+         }
+         AttributeUtil.setAttribute(eventAction,
+               PredefinedConstants.EXCLUDED_PERFORMER_DATA, data);
       }
       if (euJson.has(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA_PATH))
       {
