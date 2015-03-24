@@ -183,7 +183,7 @@
 		var onSelect = {}, onPagination = {}, onColumnReorder = {}, onSorting = {};
 		var enableColumnSelector, columnSelectorAdmin, columnsByDisplayOrder, columnsInfoByDisplayOrder, devColumnOrderPref;
 		var columnSelectorPreference, localPrefStore = {};
-		var pageSize = 8;
+		var pageSize = 8, jumpToPage;
 		var sortingMode, sortByGetter;
 		var columnFilters;
 		var exportConfig = {}, exportAnchor = document.createElement("a"), remoteModeLastParams;
@@ -1185,9 +1185,16 @@
 				initialized = true;
 			} else {
 				clearState();
+
+				if (jumpToPage) {
+					var newPage = jumpToPage;
+					jumpToPage = undefined;
+					theDataTable.fnPageChange(newPage, true);
+				}
+
 				showElement(theTable, true);
 			}
-		
+
 			sdUtilService.safeApply(elemScope);
 		}
 
@@ -1195,7 +1202,37 @@
 		 * 
 		 */
 		function refresh(retainPageIndex) {
-			theDataTable.fnDraw();
+			trace.log(theTableId + ': Refreshing table with retainPageIndex = ' + retainPageIndex);
+			if (attr.sdaMode == 'local') {
+				fetchData(undefined).then(function(result) {
+					try {
+						var data = result.list ? result.list : result;
+
+						sdUtilService.assert(data && angular.isArray(data),
+								'sd-data did not return acceptable result: Missing "list" or its not an array');
+						
+						theDataTable.fnClearTable(false);
+
+						if (attr.sdaNoPagination == '' || attr.sdaNoPagination == 'true') {
+							theDataTable.fnSettings()._iDisplayLength = data.length;
+						} else {
+							if (retainPageIndex) {
+								var settings = theDataTable.fnSettings();
+								var currentPage = (settings._iDisplayStart / settings._iDisplayLength);
+								jumpToPage = currentPage;
+							}
+						}
+
+						theDataTable.fnAddData(data, true);
+					} catch(e) {
+						showErrorOnUI(e);
+					}
+				}, function(error) {
+					alert('Error while fetching data'); // TODO
+				});
+			} else {
+				theDataTable.fnDraw(!retainPageIndex);
+			}
 		}
 	    
 		/*
@@ -1750,7 +1787,7 @@
 		function createRowScope() {
 			var rowScope = myScope.$new();
 			rowScope.$on('$destroy', function() {
-				//trace.log(theTableId + ': Row Scope ' + rowScope.$id + ' destroyed for parent ' + rowScope.$parent.$id);
+				//	trace.log(theTableId + ': Row Scope ' + rowScope.$id + ' destroyed for parent ' + rowScope.$parent.$id);
 			});
 
 			return rowScope;
