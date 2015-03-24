@@ -43,6 +43,8 @@ import org.eclipse.stardust.engine.api.query.ProcessDefinitionQuery;
 import org.eclipse.stardust.engine.api.runtime.ProcessDefinitions;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.SubprocessSpawnInfo;
+import org.eclipse.stardust.ui.web.common.message.MessageDialog;
+import org.eclipse.stardust.ui.web.common.message.MessageDialog.MessageType;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
 import org.eclipse.stardust.ui.web.rest.service.ActivityInstanceService;
@@ -479,9 +481,20 @@ public class ActivityInstanceResource
     		}
     		
     		if (CollectionUtils.isNotEmpty(processInstances)) {
+    		   
+    		   Integer modelOID = ProcessInstanceUtils.getProcessModelOID(processInstances);
+
+    	         if (null == modelOID)
+    	         {
+    	            MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+    	            String mesg = propsBean.getString("views.switchProcessDialog.pisInDiffModels");
+    	            trace.info(mesg);
+    	            return Response.status(417).entity(mesg).build();
+    	         }
+    		   
 	    		ProcessDefinitions pds = ServiceFactoryUtils.getQueryService().getProcessDefinitions(
-		    	ProcessDefinitionQuery.findStartable(ProcessInstanceUtils.getProcessModelOID(processInstances)));
-	
+		    	ProcessDefinitionQuery.findStartable(modelOID));
+	    		
 		        Object responseObj = pds;
 		        if ("select".equals(type)) {
 		    	    Map<String, ProcessDefinition> pdMap = CollectionUtils.newHashMap();
@@ -515,50 +528,75 @@ public class ActivityInstanceResource
 		}
    }
     
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/checkIfProcessesAbortable")
-   public Response checkIfProcessesAbortable(String postedData)
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/checkIfProcessesAbortable")
+   public Response checkIfProcessesAbortable(String postedData, @QueryParam("type") String type)
    {
-    	try {
-	    	List<AbortNotificationDTO> notAbortableProcesses = new ArrayList<AbortNotificationDTO>();
-	    	List<Long> processInstOIDs = JsonDTO.getAsList(postedData, Long.class);
-	    	for (Long processInstOID : processInstOIDs) {
-	    		ProcessInstance processInstance = getProcessInstance(processInstOID);
-	    		processInstance = ProcessInstanceUtils.getRootProcessInstance(processInstance, true);
-	    		
-	    		ProcessInstanceDTO processInstanceDTO = new ProcessInstanceDTO();
-	    		processInstanceDTO.processName = ProcessInstanceUtils.getProcessLabel(processInstance);
-	    		processInstanceDTO.oid = processInstance.getOID();
-	    		
-	    		AbortNotificationDTO switchNotificationDTO = null;
-	    		
-	    		MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
-	            
-	    		if (!AuthorizationUtils.hasAbortPermission(processInstance)) {
-	    			switchNotificationDTO = new AbortNotificationDTO();
-	    			switchNotificationDTO.statusMessage = propsBean.getString("common.authorization.msg");
-	    		} else if (!ProcessInstanceUtils.isAbortable(processInstance)) {
-	    			switchNotificationDTO = new AbortNotificationDTO();
-	    			switchNotificationDTO.statusMessage = propsBean.getString("common.notifyProcessAlreadyAborted");
-	    		} else if(processInstance.isCaseProcessInstance()) {
-	    			switchNotificationDTO = new AbortNotificationDTO();
-	    			switchNotificationDTO.statusMessage = propsBean.getString("views.switchProcessDialog.caseAbort.message");
-	    		}
-	    		
-	    		if (switchNotificationDTO != null) {
-		    		switchNotificationDTO.abortedProcess = processInstanceDTO;
-		    		
-	    			notAbortableProcesses.add(switchNotificationDTO);
-	    		}
-	    	}
-	    	
-	    	return Response.ok(GsonUtils.toJsonHTMLSafeString(notAbortableProcesses), MediaType.APPLICATION_JSON).build();
-    	} catch (Exception e) {
-			trace.error(e, e);
-	        return Response.serverError().build();
-		}
+      try
+      {
+         List<Long> processInstOIDs = JsonDTO.getAsList(postedData, Long.class);
+         MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+         List<AbortNotificationDTO> notAbortableProcesses = new ArrayList<AbortNotificationDTO>();
+
+         for (Long processInstOID : processInstOIDs)
+         {
+            ProcessInstance processInstance = getProcessInstance(processInstOID);
+            processInstance = ProcessInstanceUtils.getRootProcessInstance(processInstance, true);
+
+            ProcessInstanceDTO processInstanceDTO = new ProcessInstanceDTO();
+            processInstanceDTO.processName = ProcessInstanceUtils.getProcessLabel(processInstance);
+            processInstanceDTO.oid = processInstance.getOID();
+
+            AbortNotificationDTO switchNotificationDTO = null;
+
+            if ("abortandstart".equals(type))
+            {
+               if (!AuthorizationUtils.hasAbortPermission(processInstance))
+               {
+                  switchNotificationDTO = new AbortNotificationDTO();
+                  switchNotificationDTO.statusMessage = propsBean.getString("common.authorization.msg");
+               }
+               else if (!ProcessInstanceUtils.isAbortable(processInstance))
+               {
+                  switchNotificationDTO = new AbortNotificationDTO();
+                  switchNotificationDTO.statusMessage = propsBean.getString("common.notifyProcessAlreadyAborted");
+               }
+               else if (processInstance.isCaseProcessInstance())
+               {
+                  switchNotificationDTO = new AbortNotificationDTO();
+                  switchNotificationDTO.statusMessage = propsBean.getString("views.switchProcessDialog.caseAbort.message");
+               }
+            }
+            else if ("abortandjoin".equals(type))
+            {
+               if (processInstance.isCaseProcessInstance() && !AuthorizationUtils.hasManageCasePermission(processInstance))
+               {
+                  switchNotificationDTO = new AbortNotificationDTO();
+                  switchNotificationDTO.statusMessage = propsBean.getString("common.authorization.msg");
+               }
+               else if (!ProcessInstanceUtils.isAbortableState(processInstance))
+               {
+                  switchNotificationDTO = new AbortNotificationDTO();
+                  switchNotificationDTO.statusMessage = propsBean.getString("common.notifyProcessAlreadyAborted");
+               }
+            }
+
+            if (switchNotificationDTO != null)
+            {
+               switchNotificationDTO.abortedProcess = processInstanceDTO;
+
+               notAbortableProcesses.add(switchNotificationDTO);
+            }
+         }
+         return Response.ok(GsonUtils.toJsonHTMLSafeString(notAbortableProcesses), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+         return Response.serverError().build();
+      }
    }
     
     @POST

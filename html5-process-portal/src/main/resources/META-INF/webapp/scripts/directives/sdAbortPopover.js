@@ -238,7 +238,8 @@
 					dialogMsg : self.i18n('views-common-messages.views-switchProcessDialog-joinProcessMessage-message'),
 					joinScope : 'Process', // Other alternative is 'Case'
 					notificationMsg : '',
-					linkComment : ''
+					linkComment : '',
+					joinCompleted: false
 				};
 
 				self.abortNotification = {
@@ -301,7 +302,7 @@
 			function handleAbortAndStart() {
 				self.dialogTitle = self.i18n('views-common-messages.views-switchProcessDialog-title');
 
-				checkIfProcessesAbortable().then(function(data) {
+				checkIfProcessesAbortable(ACTION_TYPE.ABORT_AND_START).then(function(data) {
 					if (data.length > 0) {
 						// Un-abortable condition found
 						openInfoDialog(data);
@@ -340,7 +341,18 @@
 			function handleAbortAndJoin() {
 				self.dialogTitle = sdUtilService.format(self
 						.i18n('views-common-messages.views-joinProcessDialog-title'), [ self.processInstances[0].processName ]);
-				openAbortPopoverDialog();
+				
+				checkIfProcessesAbortable(ACTION_TYPE.ABORT_AND_JOIN).then(function(data) {
+					if (data.length > 0) {
+						// Un-abortable condition found
+						openInfoDialog(data);
+					} else {
+						// Can proceed to abort and start
+						openAbortPopoverDialog();
+					}
+				}, function(result) {
+					// Error occurred
+				})
 			}
 
 			/*
@@ -411,7 +423,8 @@
 
 					if (self.validateAbortJoin(abortData)) {
 						performAbortJoin(abortData).then(function(data) {
-							// 
+							self.abortAndJoin.joinCompleted = true;
+							
 							self.closeThisDialog(scope);
 
 							openInfoDialog(data);
@@ -486,11 +499,11 @@
 			/*
 			 * 
 			 */
-			function checkIfProcessesAbortable() {
+			function checkIfProcessesAbortable(abortType) {
 				var deferred = $q.defer();
 
 				sdActivityInstanceService
-						.checkIfProcessesAbortable(self.processInstanceOIDs)
+						.checkIfProcessesAbortable(self.processInstanceOIDs, abortType)
 						.then(
 								function(data) {
 									// checkIfProcessesAbortable successful
@@ -545,7 +558,7 @@
 			function okNotification(scope) {
 				self.abortNotificationDialog.confirm();
 
-				if (self.switchCompleted || self.showAbortAndJoin()) {
+				if (self.switchCompleted || self.abortAndJoin.joinCompleted) {
 					// Switch/Join finished
 					var oids = [];
 					angular.forEach(self.abortNotification.list, function(abortData) {
@@ -608,7 +621,21 @@
 					
 				} else if (self.showAbortAndJoin()) {
 					// Show notification dialog for abort & Join
-					if (angular.isDefined(result)) {
+					if (angular.isArray(result)) {
+						self.abortNotification = {
+							list : result,
+							totalCount : result.length
+						};
+						
+						self.abortNotificationType = getNotificationType(result);
+						self.abortNotificationTitle = self.i18n('portal-common-messages.common-'
+								+ self.abortNotificationType);
+
+						if (angular.isDefined(self.abortNotificationDataTable)) {
+							self.abortNotificationDataTable.refresh();
+							self.safeApply();
+						}
+					} else if (angular.isDefined(result)) {
 						self.abortAndJoin.notificationMsg = self
 								.i18n('views-common-messages.views-joinProcessDialog-processJoined');
 						if (angular.isDefined(result.abortedProcess) && angular.isDefined(result.targetProcess)) {

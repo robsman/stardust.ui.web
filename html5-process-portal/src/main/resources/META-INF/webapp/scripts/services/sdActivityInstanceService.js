@@ -181,13 +181,15 @@
 		 * 
 		 * activityProInstanceOids : activity process instance id
 		 */
-		ActivityInstanceService.prototype.checkIfProcessesAbortable = function(activityProInstanceOids) {
+		ActivityInstanceService.prototype.checkIfProcessesAbortable = function(activityProInstanceOids, abortType) {
 			console.log("Calling checkIfProcessesAbortable for:");
 			console.log(activityProInstanceOids);
+			console.log(" and abort type:");
+			console.log(abortType);
 			
 			var restUrl = REST_BASE_URL;
 			
-			return ajax(restUrl, "checkIfProcessesAbortable", activityProInstanceOids);
+			return ajax(restUrl, 'checkIfProcessesAbortable?type=' + abortType, activityProInstanceOids);
 		};
 		
 		/*
