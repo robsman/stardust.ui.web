@@ -1833,6 +1833,8 @@ public class ModelElementMarshaller implements ModelMarshaller
 
       eventJson.addProperty(ModelerConstants.LOG_HANDLER_PROPERTY,
             eventHandler.isLogHandler());
+      eventJson.addProperty(ModelerConstants.CONSUME_ON_MATCH_PROPERTY,
+            eventHandler.isConsumeOnMatch());
       eventJson.addProperty(ModelerConstants.EVENT_CLASS_PROPERTY,
             EventMarshallingUtils.encodeEventHandlerType(eventHandler.getType()));
       //eventJson.addProperty(ModelerConstants.THROWING_PROPERTY,

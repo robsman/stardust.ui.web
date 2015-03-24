@@ -74,10 +74,10 @@ define(
                            m_i18nUtils
                                  .getProperty("modeler.element.properties.timerEvent_intermediate.logHandler"));
 
-               /*jQuery("label[for='consumeOnMatchInput']")
+               jQuery("label[for='consumeOnMatchInput']")
                      .text(
                            m_i18nUtils
-                                 .getProperty("modeler.element.properties.timerEvent_intermediate.consumeOnMatch"));*/
+                                 .getProperty("modeler.element.properties.timerEvent_intermediate.consumeOnMatch"));
 
                jQuery("label[for='interruptingInput']")
                      .text(
@@ -122,7 +122,7 @@ define(
 
                // this.autoBindingInput = this.mapInputId("autoBindingInput");
                this.logHandlerInput = this.mapInputId("logHandlerInput");
-               // this.consumeOnMatchInput = this.mapInputId("consumeOnMatchInput");
+               this.consumeOnMatchInput = this.mapInputId("consumeOnMatchInput");
 
                this.interruptingInput = this
                      .mapInputId("interruptingInput");
@@ -172,6 +172,17 @@ define(
                      }
                   });
                });
+           
+               this.consumeOnMatchInput.change({
+                 overlay : this
+              }, function(event) {
+                 var overlay = event.data.overlay;
+                 overlay.submitChanges({
+                    modelElement : {
+                      consumeOnMatch :  overlay.consumeOnMatchInput.prop("checked")
+                    }
+                 });
+              });
                
                m_utils
                       .jQuerySelect("#writeToDataHeader")
@@ -402,12 +413,16 @@ define(
                // this.showHideEventTriggerFields('constant');
                // this.autoBindingInput.attr("disabled", "disabled");
                // this.eventActionSelect.attr("disabled", "disabled");
-
+              
+              jQuery("label[for='consumeOnMatchInput']").removeClass("invisible");
+              m_dialog.makeVisible(this.consumeOnMatchInput);
+              
                var modelElement = this.page.propertiesPanel.element.modelElement;
                this.interruptingInput.attr("checked", "checked");
                this.interruptingInput.attr("disabled", "disabled");
 
                this.logHandlerInput.prop("checked", modelElement.logHandler);
+               this.consumeOnMatchInput.prop("checked", modelElement.consumeOnMatch);
 
                //this.eventTriggerSelect.val('java.lang.Exception');
                this.eventTriggerInput.hide();
