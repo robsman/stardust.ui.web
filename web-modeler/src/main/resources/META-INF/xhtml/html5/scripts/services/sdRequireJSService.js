@@ -28,10 +28,13 @@
                     'plugins/bpm-modeler/js/m_parsingUtils',
                     'plugins/bpm-modeler/js/m_user',
                     'plugins/bpm-modeler/js/m_commandsController',
-                    'plugins/bpm-modeler/js/m_command'];
+                    'plugins/bpm-modeler/js/m_command',
+                    'plugins/bpm-modeler/js/m_modelElementUtils',
+                    'plugins/bpm-modeler/js/m_model',
+                    'plugins/bpm-modeler/js/m_ruleSetsHelper',
+                    'plugins/bpm-modeler/js/m_modelerUtils'];
 
                 var loadedModules = {};
-                var initialized = false;
 
                 var initialize = function() {
                   var deferred = $q.defer();
@@ -63,7 +66,7 @@
                     for (var i = 0; i < modules.length; i++) {
                       loadedModules[modules[i]] = args[i];
                     }
-                    initialized = true;
+
                     deferred.resolve();
                   });
 

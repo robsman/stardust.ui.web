@@ -1,0 +1,79 @@
+<div>
+	<div ng-controller="sdActivityImplementationSubProcessCtrl as ctrl"
+		ng-cloak>
+		<div ng-if="ctrl.show">
+			<div class="heading">{{ctrl.i18n('modeler.propertiesPage.activity.implementation.heading')}}</div>
+			<table>
+				<tbody>
+					<tr>
+						<td><label>{{ctrl.i18n('modeler.activity.propertyPages.general.subProcessInput')}}</label></td>
+						<td colspan="2"><select ng-model="ctrl.subProcess"
+							aid="subProcessSelect" ng-change="ctrl.onImplementationChange()"
+							ng-options="process.fullId as process.label group by process.group for process in ctrl.subProcessList">
+						</select></td>
+					</tr>
+					<tr>
+						<td><label>{{ctrl.i18n('modeler.activity.propertyPages.controlling.executionMode.label')}}</label></td>
+						<td colspan="2"><select ng-model="ctrl.subProcessMode"
+							aid="subprocessModeSelect"
+							ng-change="ctrl.onImplementationChange()"
+							ng-options="mode.id as mode.label for mode in ctrl.subProcessModeList">
+						</select></td>
+					</tr>
+					<tr>
+						<td></td>
+						<td width="20px"><input type="checkbox"
+							aid="copyAllDataCheck" ng-disabled="ctrl.isCopyDataDisabled()"
+							ng-change="ctrl.onImplementationChange()"
+							ng-model="ctrl.copyAllData"></td>
+						<td><label>{{ctrl.i18n('modeler.activity.propertyPages.controlling.copyalldata.label')}}</label></td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div class="heading">{{ctrl.i18n('modeler.propertiesPage.activity.implementation.runtimeBinding')}}</div>
+			<sd-modeler-data-path sda-data-items="ctrl.dataItems"
+				sda-data-selected="ctrl.runtimeBindingData"
+				sda-data-path-selected="ctrl.runtimeBindingDataPath"
+				sda-on-data-change="ctrl.updateRuntimeBinding(data, dataPath)"></sd-modeler-data-path>
+		</div>
+	</div>
+	<div ng-controller="sdActivityImplementationTaskCtrl as ctrl" ng-cloak>
+		<div ng-if="ctrl.show">
+			<div class="heading">{{ctrl.i18n('modeler.propertiesPage.activity.implementation.heading')}}</div>
+			<div ng-if="ctrl.noImplementation">
+				<table>
+					<tr>
+						<td colspan="2"><label>{{ctrl.noImplementation}}</label></td>
+					</tr>
+				</table>
+			</div>
+			<div ng-if="ctrl.application">
+				<table>
+					<tr>
+						<td><label>{{ctrl.i18n('modeler.propertiesPage.activity.implementation.application')}}</label></td>
+						<td><select ng-model="ctrl.selectedApplication"
+							aid="applicationSelect" ng-change="ctrl.onImplementationChange()"
+							ng-options="app.id as app.label group by app.group for app in ctrl.applicationList">
+						</select></td>
+						<td><img aid="appViewLink"
+							ng-class="{'imgLinkDisabled': ctrl.isLinkDisabled()}"
+							ng-click="ctrl.openApplication()" class="viewApplicationLink"
+							src="plugins/bpm-modeler/images/icons/arrow.png" /></td>
+					</tr>
+				</table>
+			</div>
+			<div ng-if="ctrl.ruleSet">
+				<table>
+					<tr>
+						<td><label>{{ctrl.i18n('modeler.propertiesPage.activity.implementation.ruleset')}}</label></td>
+						<td><select ng-model="ctrl.selectedRuleSet"
+							aid="ruleSetSelect" ng-change="ctrl.onRuleSetChange()"
+							ng-options="rule.id as rule.label for rule in ctrl.ruleSetList">
+						</select></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>

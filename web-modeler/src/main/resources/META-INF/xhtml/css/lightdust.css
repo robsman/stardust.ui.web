@@ -809,5 +809,12 @@ textarea:focus {
 
 .sd-ac-container {
 	width: 200px;
-}	
+}
+
+.viewApplicationLink {
+	opacity : 1;
+	cursor : pointer;
+	padding-left: 5px;
+}
+	
 @import ('/plugins/modern/public/skins/modern/modern.css')

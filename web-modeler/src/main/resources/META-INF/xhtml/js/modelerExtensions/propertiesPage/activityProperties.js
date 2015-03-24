@@ -39,10 +39,15 @@ define(
                 {
                   panelId: "activityPropertiesPanel",
                   id: "implementationPropertiesPage",
-                  provider: m_activityImplementationPropertiesPage,
+                  provider: m_propertiesPageProvider,
                   profiles: [m_constants.INTEGRATOR_ROLE],
-                  visibility: "always"
-                }, {
+                  visibility: "always",
+                  pageHtmlUrl: "plugins/bpm-modeler/views/modeler/activityImplementationPropertiesPage.html",
+                  imageUrl: "plugins/bpm-modeler/images/icons/wrench.png",
+                  title: m_i18nUtils.getProperty("modeler.propertiesPage.toolbar.implementation.title"),
+                  html5: true
+                },
+                {
                   panelId: "activityPropertiesPanel",
                   id: "excludedUsersPage",
                   provider: m_propertiesPageProvider,
