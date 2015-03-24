@@ -95,10 +95,6 @@ function line() {
    var checkindex = uri.indexOf("/portal/");
    if (checkindex > 0) 
       startarray=2;
-//check if in miscellaneous documentation to omit End User link
-   var checkindex = uri.indexOf("/misc/");
-   if (checkindex > 0) 
-      startarray=2;
 
 	for (var i = startarray; i < linkNumber; i=i+2) {
   		document.write('<a href=',linkArray[i],' class="header">',linkArray[i+1],'</a> &gt; ');
