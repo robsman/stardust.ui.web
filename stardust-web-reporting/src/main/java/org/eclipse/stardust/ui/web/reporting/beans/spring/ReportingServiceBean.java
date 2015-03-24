@@ -58,6 +58,8 @@ import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceExceptio
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.api.runtime.UserService;
+import org.eclipse.stardust.engine.core.runtime.scheduling.SchedulingFactory;
+import org.eclipse.stardust.engine.core.runtime.scheduling.SchedulingRecurrence;
 import org.eclipse.stardust.reporting.rt.ReportParameter;
 import org.eclipse.stardust.reporting.rt.mapping.ReportDefinition;
 import org.eclipse.stardust.reporting.rt.mapping.ReportRequest;
@@ -71,8 +73,6 @@ import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.SearchHandlerChain;
 import org.eclipse.stardust.ui.web.reporting.common.LanguageUtil;
 import org.eclipse.stardust.ui.web.reporting.common.portal.criticality.Criticality;
-import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingFactory;
-import org.eclipse.stardust.ui.web.reporting.scheduling.SchedulingRecurrence;
 import org.eclipse.stardust.ui.web.reporting.ui.UiHelper;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
@@ -963,13 +963,13 @@ public class ReportingServiceBean
    {
       trace.info(json.toString());
 
-      SchedulingRecurrence sc = SchedulingFactory.getSchedular(json);
+      SchedulingRecurrence sc = SchedulingFactory.getScheduler(json);
 
-      return sc.prcoessSchedule(json);
+      return sc.processSchedule(json);
 
    }
    
-   /**
+   /**s
     * @param reportInstanceJson
     * @return
     */
@@ -1139,7 +1139,7 @@ public class ReportingServiceBean
    {
       trace.info(json.toString());
 
-      SchedulingRecurrence sc = SchedulingFactory.getSchedular(json);
+      SchedulingRecurrence sc = SchedulingFactory.getScheduler(json);
 
       List<String> calculateSchedule = sc.calculateSchedule(json, startDate, endDate);
       
