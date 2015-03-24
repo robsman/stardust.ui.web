@@ -869,11 +869,8 @@
 					if (disablePagination) {
 						dtOptions.iDisplayLength = dtOptions.aaData.length;
 						dtOptions.sDom = 't';
-					} else {
-						// TODO: Undefine this for now! It causes wired issue with pagination
-						dtOptions.iDisplayLength = undefined;
 					}
-					
+
 					theDataTable = theTable.DataTable(dtOptions);
 					buildDataTableCompleted();
 				} catch (e) {
