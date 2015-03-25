@@ -1,6 +1,7 @@
 package org.eclipse.stardust.ui.web.modeler.xpdl.edit.postprocessing;
 
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.change.impl.ChangeDescriptionImpl;
 import org.springframework.stereotype.Component;
 
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
@@ -21,9 +22,22 @@ public class EventActionChangeTracker extends AbstractChangeTracker
          EventActionType action = (EventActionType) candidate;
          if (action.getType().getId().equals(PredefinedConstants.EXCLUDE_USER_ACTION))
          {
-            if (action.eContainer() instanceof EventHandlerType)
+
+            EObject container = null;
+            if (candidate.eContainer() instanceof ChangeDescriptionImpl)
             {
-               EventHandlerType handler = (EventHandlerType) action.eContainer();
+               ChangeDescriptionImpl changeDescription = (ChangeDescriptionImpl) candidate.eContainer();
+               container = changeDescription.getOldContainer(candidate);
+            }
+            else
+            {
+               container = candidate.eContainer();
+            }
+
+
+            if (container instanceof EventHandlerType)
+            {
+               EventHandlerType handler = (EventHandlerType) container;
                change.markUnmodified(handler);
                if (handler.eContainer() instanceof ActivityType)
                {

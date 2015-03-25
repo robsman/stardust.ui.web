@@ -746,10 +746,12 @@ public class EventMarshallingUtils
    {
       if (action != null)
       {
-         EventHandlerType handler = (EventHandlerType) action.eContainer();
-         handler.getEventAction().remove(action);
+         if (action.eContainer() instanceof EventHandlerType)
+         {
+            EventHandlerType handler = (EventHandlerType) action.eContainer();
+            handler.getEventAction().remove(action);
+         }
       }
-
    }
 
    public static EventHandlerType findExcludeUserEventHandler(ActivityType activity)
