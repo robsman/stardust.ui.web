@@ -683,7 +683,7 @@
 			// Add Header Labels
 			var headCols = element.find('> thead > tr > th');
 			angular.forEach(columns, function(col, i) {
-				var filterMarkup = '', filterDialogMarkup = ''
+				var filterMarkup = '', filterDialogMarkup = '';
 				if (enableFiltering && col.filterable) {
 					var toggleFilter = '$dtApi.toggleColumnFilter(\'' + col.name + '\')';
 					var resetFilter = '$dtApi.resetColumnFilter(\'' + col.name + '\')';
