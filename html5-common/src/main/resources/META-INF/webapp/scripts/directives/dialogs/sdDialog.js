@@ -31,6 +31,19 @@
 				CUSTOM: 'custom'       // Customized popup with no action button
 			};
 		
+
+		var templateURL = null;
+		if (location.href.indexOf("plugins") > -1) {
+			templateURL = location.href.substring(0, location.href
+					.indexOf("plugins"))
+					+ 'plugins/html5-common/scripts/directives/dialogs/templates/dialog.html';
+		} else {
+			// When loaded from framework i.e index.html, location.href points
+			// to contextRoot
+			templateURL = 'plugins/html5-common/scripts/directives/dialogs/templates/dialog.html';
+		}
+		
+
 		var directiveDefObject = {
 			restrict : 'A',
 			scope: {  // Creates a new sub scope
@@ -42,7 +55,7 @@
 				showDialog: '=sdaShow'
 			},
 			transclude: true,
-			templateUrl: 'plugins/html5-common/scripts/directives/dialogs/templates/dialog.html',
+			templateUrl: templateURL,
 			controller: ['$attrs', '$scope', '$element', '$parse', '$transclude', '$q', '$timeout', DialogControllerFn],
 			compile: DialogCompilerFn
 		};

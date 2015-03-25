@@ -45,6 +45,7 @@ var html5Deps = function() {
 	function prepareRequireJsConfig(config) {
 		var reqMod = {
 			paths : {
+				'jquery' : ['../portal-shell/js/libs/jquery/1.9.1/jquery'],
 				'jquery.dataTables' : [ "html5-common/libs/datatables/1.9.4/jquery.dataTables" ],
 				'angularjs' : ['../portal-shell/js/libs/angular/1.2.11/angular'],
 				'portalApplication' : [ 'common/html5/portalApplication' ],
@@ -56,11 +57,15 @@ var html5Deps = function() {
 				'sdDataTable' : [ 'html5-common/scripts/directives/sdDataTable' ],
 				'sdUtilService' : [ 'html5-common/scripts/services/sdUtilService' ],
 				'sdViewUtilService' : [ 'html5-common/scripts/services/sdViewUtilService' ],
-				'sdPreferenceService' : [ 'html5-common/scripts/services/sdPreferenceService' ]
+				'sdPreferenceService' : [ 'html5-common/scripts/services/sdPreferenceService' ],
+				'bootstrap' : [ 'html5-common/libs/bootstrap/bootstrap' ],
+				'sdDialog' : [ 'html5-common/scripts/directives/dialogs/sdDialog' ],
+				'sdDialogService' : [ 'html5-common/scripts/services/sdDialogService' ],
 			},
 			shim : {
 				'jquery.dataTables' : [ 'jquery' ],
 				'angularjs' : {
+					require : "jquery",
 					exports : "angular"
 				},
 				'html5CommonMain' : [ 'angularjs' ],
@@ -71,12 +76,15 @@ var html5Deps = function() {
 				'sdDataTable' : [ 'html5CommonMain', 'sdLoggerService' ],
 				'sdUtilService' : [ 'html5CommonMain' ],
 				'sdViewUtilService' : [ 'html5CommonMain' ],
-				'sdPreferenceService' : [ 'html5CommonMain' ]
+				'sdPreferenceService' : [ 'html5CommonMain' ],
+				'bootstrap' : ['jquery'],
+				'sdDialog' : [ 'html5CommonMain', 'sdLoggerService', 'bootstrap' ],
+				'sdDialogService' : [ 'sdDialog' ]
 			},
 			deps : [ "jquery.dataTables", "angularjs", "portalApplication",
 					"html5CommonMain", "sdEventBusService", "httpInterceptorProvider",
 					"sdLoggerService", "sdData", "sdDataTable",
-					'sdUtilService', 'sdViewUtilService', 'sdPreferenceService' ]
+					'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'bootstrap', 'sdDialog', 'sdDialogService' ]
 
 		};
 
