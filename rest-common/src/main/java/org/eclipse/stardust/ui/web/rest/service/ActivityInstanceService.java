@@ -30,7 +30,7 @@ import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
-import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceCountDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.CriticalityDTO;
@@ -225,10 +225,10 @@ public class ActivityInstanceService
     * 
     * @return List
     */
-   public ActivityInstanceCountDTO getAllCounts()
+   public InstanceCountsDTO getAllCounts()
    {
 
-      ActivityInstanceCountDTO countDTO = new ActivityInstanceCountDTO();
+      InstanceCountsDTO countDTO = new InstanceCountsDTO();
 
       countDTO.aborted = getAbortedActivityInstanceCount();
       countDTO.active = getActiveInstanceCount();

@@ -30,6 +30,7 @@ import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
+import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
@@ -136,6 +137,16 @@ public class ProcessInstanceService
          }
       }
       return GsonUtils.toJsonHTMLSafeString(notificationMap);
+   }
+   
+   /**
+    * Get all process instances count
+    * 
+    * @return List
+    */
+   public InstanceCountsDTO getAllCounts()
+   {
+      return processInstanceUtilsREST.getAllCounts();
    }
    
    public QueryResultDTO getProcessInstances(Options options)

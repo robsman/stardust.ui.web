@@ -30,6 +30,7 @@
 
 		var directiveDefObject = {
 			restrict : 'AE',
+			require : '^?sdData',
 			scope: true, // Creates a new sub scope
 			templateUrl: 'plugins/html5-process-portal/scripts/directives/partials/processTable.html',
 			compile: function(elem, attr, transclude) {
@@ -111,9 +112,21 @@
 				}
 				self.columnSelector = 'admin'; //TODO
 //				self.exportFileName = self.query.userId || self.query.participantQId; //TODO
+//				self.processTablePrefModule = 'ipp-workflow-perspective';
+//				self.processTablePrefId = 'processTable-participant-columns' || 'processTable-process-columns'; //TODO
 				
-				self.processTablePrefModule = 'ipp-workflow-perspective';
-				self.processTablePrefId = 'processTable-participant-columns' || 'processTable-process-columns'; //TODO
+				// Preference attributes
+				if (attr.sdaPreferenceModule) {
+					self.processTablePrefModule = attr.sdaPreferenceModule;
+				}
+
+				if (attr.sdaPreferenceId) {
+					self.processTablePrefId = attr.sdaPreferenceId;
+				}
+
+				if (attr.sdaPreferenceName) {
+					self.processTablePrefName = attr.sdaPreferenceName;
+				}
 				
 				if (attr.sdaSelection) {
 					var assignable = $parse(attr.sdaSelection).assign;
@@ -168,16 +181,33 @@
 				var query = angular.extend({}, self.query);
 				query.options = options;
 
-				sdProcessInstanceService.getProcesslist(query).then(function(data) {
-					self.processList.list = data.list;
-					self.processList.totalCount = data.totalCount;
+				if (angular.isDefined(self.sdDataCtrl)) {
+					trace.debug("sdData is defined fetching custom data. ");
 
-					deferred.resolve(self.processList);
+					var dataResult = self.sdDataCtrl.retrieveData(query);
 
-					self.safeApply();
-				}, function(error) {
-					deferred.reject(error);
-				});
+					dataResult.then(function(data) {
+						self.activities = data;
+						deferred.resolve(self.activities);
+						self.safeApply(self.activities.list);
+						self.storePriorities(self.activities.list);
+					}, function(error) {
+						deferred.reject(error);
+					});
+				} else {
+					trace.debug("sdData not defined fetching default data. ");
+
+					sdProcessInstanceService.getProcesslist(query).then(function(data) {
+						self.processList.list = data.list;
+						self.processList.totalCount = data.totalCount;
+
+						deferred.resolve(self.processList);
+
+						self.safeApply();
+					}, function(error) {
+						deferred.reject(error);
+					});
+				}
 
 				return deferred.promise;
 			};
@@ -330,9 +360,20 @@
 			 *
 			 */
 			self.openProcessHistory = function(rowItem) {
-				sdViewUtilService.openView("processInstanceDetailsView", "processInstanceOID=" + rowItem.oid, {
-					"oid" : "" + rowItem.oid,
-					"processInstanceOID" : "" + rowItem.oid
+				var view = 'processInstanceDetailsView';
+				if (rowItem.caseInstance) {
+					view = 'caseDetailsView';
+				}
+				sdViewUtilService.openView(view, 'processInstanceOID=' + rowItem.oid, {
+					'oid' : '' + rowItem.oid,
+					'processInstanceOID' : '' + rowItem.oid
+				}, true);
+			};
+			
+			self.openChart = function(rowItem) {
+				sdViewUtilService.openView('ganttChartView', 'processInstanceOId=' + rowItem.oid, {
+					'oid' : '' + rowItem.oid,
+					'processInstanceOId' : '' + rowItem.oid
 				}, true);
 			};
 			
@@ -416,6 +457,12 @@
 			
 			
 			self.initialize(attr, scope);
+			/*
+			 * Defined here as access required to scope
+			 */
+			if(angular.isDefined(ctrl)){
+				self.sdDataCtrl = ctrl;
+			}
 			// Expose controller as a whole on to scope
 			scope.processTableCtrl = self;
 		}

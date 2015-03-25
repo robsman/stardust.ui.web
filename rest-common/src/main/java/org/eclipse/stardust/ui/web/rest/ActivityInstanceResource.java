@@ -53,7 +53,7 @@ import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
 import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbortNotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceCountDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
@@ -783,7 +783,7 @@ public class ActivityInstanceResource
     {
        try
        {
-         ActivityInstanceCountDTO acitivityInstanceCountDTO = getActivityInstanceService().getAllCounts();
+         InstanceCountsDTO acitivityInstanceCountDTO = getActivityInstanceService().getAllCounts();
          return Response.ok(GsonUtils.toJsonHTMLSafeString( acitivityInstanceCountDTO ), MediaType.APPLICATION_JSON).build();
        }
        catch (Exception e)

@@ -89,5 +89,14 @@
 
 			return processList.fetch({}, postData).$promise;
 		};
+		
+		/*
+		 *
+		 */
+		ProcessInstanceService.prototype.getProcessInstanceCounts = function(query) {
+			var restUrl = REST_BASE_URL + "allCounts";
+			var processCounts = $resource(restUrl);
+			return processCounts.get().$promise;
+		};
 	};
 })();

@@ -37,6 +37,8 @@ import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.SubsetPolicy;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
+import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
@@ -44,9 +46,11 @@ import org.eclipse.stardust.ui.web.rest.FilterDTO.BooleanDTO;
 import org.eclipse.stardust.ui.web.rest.FilterDTO.RangeDTO;
 import org.eclipse.stardust.ui.web.rest.FilterDTO.TextSearchDTO;
 import org.eclipse.stardust.ui.web.rest.Options;
+import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessTableFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessTableFilterDTO.DescriptorFilterDTO;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
+import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.GenericDescriptorFilterModel;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.NumberRange;
@@ -161,6 +165,64 @@ public class ProcessInstanceUtils
       }
 
       return supportsProcessAttachments;
+   }
+   
+   /**
+    * Get all process instances count
+    * 
+    * @return List
+    */
+   public InstanceCountsDTO getAllCounts()
+   {
+
+      InstanceCountsDTO countDTO = new InstanceCountsDTO();
+
+      try
+      {
+         countDTO.aborted = getAbortedProcessInstancesCount();
+         countDTO.active = getActiveProcessInstancesCount();
+         countDTO.total = getTotalProcessInstancesCount();
+         countDTO.waiting = getInterruptedProcessInstancesCount();
+         countDTO.completed = getCompletedProcessInstancesCount();
+      }
+      catch (PortalException e)
+      {
+         trace.error("Error occurred.", e);
+      }
+      
+      return countDTO;
+
+   }
+   
+   private Long getProcessInstancesCount(ProcessInstanceQuery query)
+   {
+      QueryService service = serviceFactoryUtils.getQueryService();
+      return new Long(service.getProcessInstancesCount(query));
+   }
+   
+   private long getTotalProcessInstancesCount() throws PortalException
+   {
+      return getProcessInstancesCount(ProcessInstanceQuery.findAll());
+   }
+
+   private long getActiveProcessInstancesCount() throws PortalException
+   {
+      return getProcessInstancesCount(ProcessInstanceQuery.findActive());
+   }
+
+   private long getInterruptedProcessInstancesCount() throws PortalException
+   {
+      return getProcessInstancesCount(ProcessInstanceQuery.findInterrupted());
+   }
+
+   private long getCompletedProcessInstancesCount() throws PortalException
+   {
+      return getProcessInstancesCount(ProcessInstanceQuery.findCompleted());
+   }
+
+   private long getAbortedProcessInstancesCount() throws PortalException
+   {
+      return getProcessInstancesCount(ProcessInstanceQuery.findInState(ProcessInstanceState.Aborted));
    }
    
    

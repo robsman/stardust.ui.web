@@ -18,6 +18,7 @@ import java.util.Map;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
@@ -34,6 +35,7 @@ import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.service.ProcessInstanceService;
+import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessTableFilterDTO;
@@ -190,6 +192,24 @@ public class ProcessInstanceResource
          Map<String, Integer> oidPriorityMap = (Map)GsonUtils.extractMap(JsonDTO.getJsonObject(postedData), "priorities");
          String jsonOutput = getProcessInstanceService().updatePriorities( oidPriorityMap);
          return Response.ok(jsonOutput, MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+   
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/allCounts")
+   public Response getAllCounts()
+   {
+      try
+      {
+         InstanceCountsDTO processInstanceCountDTO = getProcessInstanceService().getAllCounts();
+         return Response.ok(GsonUtils.toJsonHTMLSafeString(processInstanceCountDTO), MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {
