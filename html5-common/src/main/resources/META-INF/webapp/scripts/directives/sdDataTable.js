@@ -184,7 +184,7 @@
 		var enableColumnSelector, columnSelectorAdmin, columnsByDisplayOrder, columnsInfoByDisplayOrder, devColumnOrderPref;
 		var columnSelectorPreference, localPrefStore = {};
 		var pageSize = 8, disablePagination, jumpToPage;
-		var sortingMode, sortByGetter;
+		var sortingMode, sortByGetter, enableFiltering;
 		var columnFilters;
 		var exportConfig = {}, exportAnchor = document.createElement("a"), remoteModeLastParams;
 
@@ -346,6 +346,8 @@
 				}
 			}
 
+			enableFiltering = sdUtilService.isEmpty(attr.sdaFilterable) || attr.sdaFilterable == 'true';
+
 			if (attr.sdaSortable == 'true' || attr.sdaSortable == 'single' || attr.sdaSortable == 'multiple') {
 				sortingMode = attr.sdaSortable == 'multiple' ? 'multiple' : 'single';
 
@@ -398,6 +400,12 @@
 				} else {
 					exportConfig.limit = EXPORT_LIMIT;
 				}
+			}
+
+			// Disable functionality not yet supported
+			if (attr.sdaMode == 'local') {
+				sortingMode = undefined; // Disable sorting - Causes weird angular issues, like ng-click stops working
+				enableFiltering = false; // Disable filtering
 			}
 		}
 
@@ -673,11 +681,10 @@
 			element.append(theFilters);
 
 			// Add Header Labels
-			var filterable = sdUtilService.isEmpty(element.attr('sda-filterable')) || element.attr('sda-filterable') == 'true' ? true : false;
 			var headCols = element.find('> thead > tr > th');
 			angular.forEach(columns, function(col, i) {
 				var filterMarkup = '', filterDialogMarkup = ''
-				if (filterable && col.filterable) {
+				if (enableFiltering && col.filterable) {
 					var toggleFilter = '$dtApi.toggleColumnFilter(\'' + col.name + '\')';
 					var resetFilter = '$dtApi.resetColumnFilter(\'' + col.name + '\')';
 					var resetFilterAndClose = '$dtApi.resetColumnFilter(\'' + col.name + '\', true)';
