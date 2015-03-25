@@ -44,7 +44,7 @@
 <div  ng-show="errorModel.hasError==true" 
       ng-click="errorModel.hasError=false;" 
       class="ipp-bar ipp-bar-error">
-	<i class="fa fa-times-circle-o"></i>
+	<i class="sc sc-close-circle"></i>
 	<span>{{errorModel.errorMessage}}</span>
 </div>
 
@@ -91,7 +91,7 @@
 </ul>
 
 <div ng-show="worklistModel.worklistItems.length == 0" style="text-align:center;margin-top:5em;">
-    	<i style="font-size:8em;" class="fa fa-inbox"></i>
+    	<i style="font-size:8em;" class="sc sc-archive-up"></i>
     	<p>
     		<strong>{{uiText.empty}}</strong>
     	</p>

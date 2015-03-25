@@ -153,19 +153,19 @@ define(["angularjs"],function(angular){
 				}
 				switch(activityType){
 					case "Auxiliary":
-						cssClass="fa-cog ipp-stroked";//TODO update with auxiliary stacked class
+						cssClass="sc-cog ipp-stroked";//TODO update with auxiliary stacked class
 						break;
 					case "SubprocessActivity":
-						cssClass="fa-cogs ipp-stroked";
+						cssClass="sc-cogs ipp-stroked";
 						break;
 					case "ManualActivity":
-						cssClass="fa-user ipp-stroked";//TODO update with Interactive stacked class
+						cssClass="sc-gear-user ipp-stroked";//TODO update with Interactive stacked class
 						break;
 					case "ApplicationActivity": 
-						cssClass="fa-desktop ipp-stroked"; //TODO update with application stacked class
+						cssClass="sc-clipboard ipp-stroked"; //TODO update with application stacked class
 						break;
 					default:
-						cssClass="fa-cog";
+						cssClass="sc-cog";
 				}
 				return cssClass;
 			},

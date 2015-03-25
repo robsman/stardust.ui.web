@@ -1,7 +1,7 @@
 <div  ng-show="errorModel.hasError==true" 
       ng-click="errorModel.hasError=false;" 
       class="ipp-bar ipp-bar-error">
-	<i class="fa fa-times-circle-o"></i>
+	<i class="sc sc-close-circle"></i>
 	<span>{{errorModel.errorMessage}}</span>
 </div>
 
@@ -9,11 +9,6 @@
      data-theme="c" 
      class="ipp-border-0x">
 
-		<!--div class="ipp-margin-top-2x ipp-center">
-			<div class="ipp-title-alt">Welcome</div>
-			<span class="ipp-fs-smaller">Please Sign in to access the Process Portal</span>
-		</div-->
-		
 		<div class="ipp-margin-h-2x ipp-margin-top-3x">
 	     		<input class="ipp-inline ipp-input-minimal" 
 	     		       data-enhance="false" 
@@ -44,7 +39,7 @@
 	     		       placeholder="{{uiText.partition}}" 
 	     		       ng-model="loginModel.partition" 
 	     		       value="{{loginModel.partition}}"/>
-	     		<i class="sc sc-fw sc-globe-americas fa-2x ipp-input-icon"></i>
+	     		<i class="sc sc-fw sc-globe-americas sc-2x ipp-input-icon"></i>
 
 	     </div>
 		

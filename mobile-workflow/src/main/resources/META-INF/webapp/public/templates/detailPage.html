@@ -150,7 +150,7 @@
 	     ng-href="#delegatePopup_{{$id}}" 
 	     style="margin-right:0em;" 
 	     class="ui-btn ui-btn-d ui-btn-inline ui-corner-all">
-	  	<i class="fa fa-user ipp-pad-right-4x"></i> {{uiText.delegate}}
+	  	<i class="sc sc-user ipp-pad-right-4x"></i> {{uiText.delegate}}
 	  </a>
 	  
 	  <div data-role="popup" 
@@ -178,12 +178,12 @@
 		              style="font-size:0.8em;padding:.1em .1em;margin-left:5px;" 
 		              class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-d">
 		             
-		             <i ng-class="{'fa-users': participantSearchModel.selectedParticipant.type=='role',
-		                           'fa-sitemap' : participantSearchModel.selectedParticipant.type=='organization'}" 
+		             <i ng-class="{'sc-users': participantSearchModel.selectedParticipant.type=='role',
+		                           'sc-organization' : participantSearchModel.selectedParticipant.type=='organization'}" 
 					   style="float:left;font-size:0.8em;padding:3px;"  
-					   class="fa fa-user ipp-color-secondary"></i>
+					   class="sc sc-user ipp-color-secondary"></i>
 					   
-		             <i style="float:right;padding:2px;" class="fa fa-times"></i>
+		             <i style="float:right;padding:2px;" class="sc sc-close"></i>
 		             
 		        	{{participantSearchModel.selectedParticipant.name}}
 		        </span>
@@ -203,21 +203,21 @@
 				        ng-repeat="participant in participantSearchModel.results" 
 				        class="ui-btn ui-mini ui-btn-a"
 				        style="margin:0px;">
-					<i ng-class="{'fa-users': participant.type=='role','fa-sitemap' : participant.type=='organization'}" 
+					<i ng-class="{'sc-users': participant.type=='role','sc-organization' : participant.type=='organization'}" 
 					   style="float:left;font-size:1.5em;"  
-					   class="fa fa-user"></i>
+					   class="sc sc-user"></i>
 					{{participant.name}}
 				</button>
 			</div>
 			<div class="ipp-center">
 				<a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-d ipp-block" data-rel="back"
 					ng-click="delegateActivity(participantSearchModel.selectedParticipant.id)">
-					<i class="fa fa-user ipp-pad-right-4x"></i>
+					<i class="sc sc-user ipp-pad-right-4x"></i>
 					{{uiText.delegate}}
 				</a>
 		        <a href="#" class="ui-btn ui-corner-all ui-shadow ui-btn-inline ipp-block ipp-bgcolor-tertiary" 
 		           data-rel="back">
-		           <i class="fa fa-times ipp-pad-right-4x"></i>
+		           <i class="sc sc-close ipp-pad-right-4x"></i>
 		           {{uiText.cancel}}
 		        </a>
 		        
