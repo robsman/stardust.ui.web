@@ -33,8 +33,12 @@ import org.eclipse.stardust.engine.api.dto.DepartmentInfoDetails;
 import org.eclipse.stardust.engine.api.dto.OrganizationInfoDetails;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
 import org.eclipse.stardust.engine.api.dto.RoleInfoDetails;
+import org.eclipse.stardust.engine.api.model.Activity;
+import org.eclipse.stardust.engine.api.model.ConditionalPerformer;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
+import org.eclipse.stardust.engine.api.model.ModelParticipant;
+import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ActivityFilter;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
@@ -50,6 +54,7 @@ import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.QualityAssuranceUtils.QualityAssuranceState;
+import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.rest.FilterDTO.BooleanDTO;
 import org.eclipse.stardust.ui.web.rest.FilterDTO.RangeDTO;
@@ -78,6 +83,7 @@ import org.eclipse.stardust.ui.web.viewscommon.descriptors.GenericDescriptorFilt
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.NumberRange;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils.ParticipantType;
@@ -99,14 +105,14 @@ import com.google.gson.JsonObject;
 @Component
 public class ActivityTableUtils
 {
-   
-   private static final String COL_ACTIVITY_NAME = "overview";
 
-   private static final String COL_ACTIVITY_INSTANCE_OID = "oid";
-   
+   private static final String COL_ACTIVITY_NAME = "activityName";
+
+   private static final String COL_ACTIVITY_INSTANCE_OID = "activityOID";
+
    private static final String COL_PROCESS_OID = "processOid";
 
-   private static final String COL_START_TIME = "started";
+   private static final String COL_START_TIME = "startTime";
 
    private static final String COL_LAST_MODIFICATION_TIME = "lastModified";
 
@@ -115,7 +121,7 @@ public class ActivityTableUtils
    private static final String COL_PRIOIRTY = "priority";
 
    private static double PORTAL_CRITICALITY_MUL_FACTOR = 1000;
-   
+
    private static final Logger trace = LogManager.getLogger(ActivityTableUtils.class);
 
    /**
@@ -141,37 +147,37 @@ public class ActivityTableUtils
       boolean worklistQuery = query instanceof WorklistQuery;
 
       // Activity ID
-      if (null != filterDTO.oid)
+      if (null != filterDTO.activityOID)
       {
-         if (null != filterDTO.oid.from)
+         if (null != filterDTO.activityOID.from)
          {
             filter.and((worklistQuery
                   ? WorklistQuery.ACTIVITY_INSTANCE_OID
-                  : ActivityInstanceQuery.OID).greaterOrEqual(filterDTO.oid.from));
+                        : ActivityInstanceQuery.OID).greaterOrEqual(filterDTO.activityOID.from));
          }
-         if (null != filterDTO.oid.to)
+         if (null != filterDTO.activityOID.to)
          {
             filter.and((worklistQuery
                   ? WorklistQuery.ACTIVITY_INSTANCE_OID
-                  : ActivityInstanceQuery.OID).lessOrEqual(filterDTO.oid.to));
+                        : ActivityInstanceQuery.OID).lessOrEqual(filterDTO.activityOID.to));
          }
       }
-      
+
       //Process Instance Oid
-      
-      if (null != filterDTO.processOid)
+
+      if (null != filterDTO.processOID)
       {
-         if (null != filterDTO.processOid.from)
+         if (null != filterDTO.processOID.from)
          {
             filter.and((worklistQuery
                   ? WorklistQuery.PROCESS_INSTANCE_OID
-                  : ActivityInstanceQuery.PROCESS_INSTANCE_OID).greaterOrEqual(filterDTO.processOid.from));
+                        : ActivityInstanceQuery.PROCESS_INSTANCE_OID).greaterOrEqual(filterDTO.processOID.from));
          }
-         if (null != filterDTO.processOid.to)
+         if (null != filterDTO.processOID.to)
          {
             filter.and((worklistQuery
                   ? WorklistQuery.PROCESS_INSTANCE_OID
-                  : ActivityInstanceQuery.PROCESS_INSTANCE_OID).lessOrEqual(filterDTO.processOid.to));
+                        : ActivityInstanceQuery.PROCESS_INSTANCE_OID).lessOrEqual(filterDTO.processOID.to));
          }
 
       }
@@ -185,7 +191,7 @@ public class ActivityTableUtils
             Date fromDate = new Date(filterDTO.started.from);
             filter.and((worklistQuery
                   ? WorklistQuery.START_TIME
-                  : ActivityInstanceQuery.START_TIME).greaterOrEqual(fromDate.getTime()));
+                        : ActivityInstanceQuery.START_TIME).greaterOrEqual(fromDate.getTime()));
          }
 
          if (filterDTO.started.to != null)
@@ -193,7 +199,7 @@ public class ActivityTableUtils
             Date toDate = new Date(filterDTO.started.to);
             filter.and((worklistQuery
                   ? WorklistQuery.START_TIME
-                  : ActivityInstanceQuery.START_TIME).lessOrEqual(toDate.getTime()));
+                        : ActivityInstanceQuery.START_TIME).lessOrEqual(toDate.getTime()));
          }
       }
 
@@ -207,8 +213,8 @@ public class ActivityTableUtils
 
             filter.and((worklistQuery
                   ? WorklistQuery.LAST_MODIFICATION_TIME
-                  : ActivityInstanceQuery.LAST_MODIFICATION_TIME).greaterOrEqual(fromDate
-                  .getTime()));
+                        : ActivityInstanceQuery.LAST_MODIFICATION_TIME).greaterOrEqual(fromDate
+                              .getTime()));
          }
 
          if (filterDTO.lastModified.to != null)
@@ -217,8 +223,8 @@ public class ActivityTableUtils
 
             filter.and((worklistQuery
                   ? WorklistQuery.LAST_MODIFICATION_TIME
-                  : ActivityInstanceQuery.LAST_MODIFICATION_TIME).lessOrEqual(toDate
-                  .getTime()));
+                        : ActivityInstanceQuery.LAST_MODIFICATION_TIME).lessOrEqual(toDate
+                              .getTime()));
          }
       }
 
@@ -252,8 +258,8 @@ public class ActivityTableUtils
          {
             or.or((worklistQuery
                   ? WorklistQuery.PROCESS_INSTANCE_PRIORITY
-                  : ActivityInstanceQuery.PROCESS_INSTANCE_PRIORITY).isEqual(Integer
-                  .valueOf(priority)));
+                        : ActivityInstanceQuery.PROCESS_INSTANCE_PRIORITY).isEqual(Integer
+                              .valueOf(priority)));
          }
       }
 
@@ -265,26 +271,26 @@ public class ActivityTableUtils
          {
             or.or((worklistQuery
                   ? WorklistQuery.ACTIVITY_INSTANCE_CRITICALITY
-                  : ActivityInstanceQuery.CRITICALITY).between(
-                  (criticality.from / PORTAL_CRITICALITY_MUL_FACTOR), criticality.to
-                        / PORTAL_CRITICALITY_MUL_FACTOR));
+                        : ActivityInstanceQuery.CRITICALITY).between(
+                              (criticality.from / PORTAL_CRITICALITY_MUL_FACTOR), criticality.to
+                              / PORTAL_CRITICALITY_MUL_FACTOR));
          }
 
       }
 
       // Activities Filter
-      if (null != filterDTO.overview)
+      if (null != filterDTO.activityName)
       {
 
-         if (!CollectionUtils.isEmpty(filterDTO.overview.activities))
+         if (!CollectionUtils.isEmpty(filterDTO.activityName.activities))
          {
             FilterOrTerm or = filter.addOrTerm();
-            if (filterDTO.overview.activities.contains("-1"))
+            if (filterDTO.activityName.activities.contains("-1"))
             {
             }
             else
             {
-               for (String activity : filterDTO.overview.activities)
+               for (String activity : filterDTO.activityName.activities)
                {
 
                   or.add(ActivityFilter.forAnyProcess(activity));
@@ -292,12 +298,12 @@ public class ActivityTableUtils
             }
          }
 
-         if (!CollectionUtils.isEmpty(filterDTO.overview.processes))
+         if (!CollectionUtils.isEmpty(filterDTO.activityName.processes))
          {
             FilterOrTerm or = filter.addOrTerm();
-            if (!filterDTO.overview.processes.contains("-1"))
+            if (!filterDTO.activityName.processes.contains("-1"))
             {
-               for (String processQId : filterDTO.overview.processes)
+               for (String processQId : filterDTO.activityName.processes)
                {
 
                   or.add(new ProcessDefinitionFilter(processQId, false));
@@ -307,28 +313,28 @@ public class ActivityTableUtils
       }
 
       // Process Filter
-      if (null != filterDTO.processDefinition)
+      if (null != filterDTO.processName)
       {
          FilterOrTerm or = filter.addOrTerm();
-         if (!filterDTO.processDefinition.processes.contains("-1"))
+         if (!filterDTO.processName.processes.contains("-1"))
          {
-            for (String processQId : filterDTO.processDefinition.processes)
+            for (String processQId : filterDTO.processName.processes)
             {
 
                or.add(new ProcessDefinitionFilter(processQId, false));
             }
          }
       }
-      
+
       // Assigned To
       if (null != filterDTO.assignedTo)
       {
          FilterOrTerm or = filter.addOrTerm();
          for (ParticipantSearchResponseDTO participant : filterDTO.assignedTo.participants)
          {  
-          
+
             if(ParticipantType.USER.toString().equals( participant.type) ){
-            
+
                or.add(new org.eclipse.stardust.engine.api.query.PerformingUserFilter( Long.valueOf( participant.OID)));
             } 
             else if (ParticipantType.ROLE.toString().endsWith( participant.type))
@@ -336,21 +342,31 @@ public class ActivityTableUtils
                RoleInfoDetails roleInfo = new RoleInfoDetails(participant.qualifiedId);
                or.add(org.eclipse.stardust.engine.api.query.PerformingParticipantFilter.forParticipant(roleInfo));                        
             }else if(ParticipantType.ORGANIZATION.toString().equals( participant.type)){
-               
+
                OrganizationInfoDetails organizationInfo = new OrganizationInfoDetails(participant.qualifiedId);
                or.add(org.eclipse.stardust.engine.api.query.PerformingParticipantFilter.forParticipant(organizationInfo));     
             }else if(ParticipantSearchComponent.PerformerTypeUI.Department.name().equals(participant.type)){
-              
+
                DepartmentInfo departmentInfo = new DepartmentInfoDetails(participant.OID, participant.id, participant.name, participant.runtimeOrganizationOid);
                or.add(org.eclipse.stardust.engine.api.query.ParticipantAssociationFilter.forDepartment(departmentInfo));
             }
          }
       }
 
+      //Completed By
+      else if ( null != filterDTO.completedBy)
+      {
+         FilterOrTerm or = filter.addOrTerm();
+         for (ParticipantSearchResponseDTO user : filterDTO.completedBy.participants)
+         {
+            or.add(new org.eclipse.stardust.engine.api.query.PerformedByUserFilter(user.OID));
+         }
+      }
+
       addDescriptorFilters(query, filterDTO);
 
    }
-  
+
    /**
     * Add descriptor policy
     * @param options
@@ -358,7 +374,7 @@ public class ActivityTableUtils
     */
    public static void addDescriptorPolicy(Options options, Query query)
    {
-      
+
       if(options.allDescriptorsVisible){
          query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
       }else if(CollectionUtils.isNotEmpty(options.visibleDescriptorColumns)){          
@@ -380,7 +396,7 @@ public class ActivityTableUtils
 
       if (null != descFilterMap)
       {
-        
+
          Map<String, DataPath> descriptors = ProcessDefinitionUtils.getAllDescriptors(false);
          GenericDescriptorFilterModel filterModel = GenericDescriptorFilterModel
                .create(descriptors.values());
@@ -434,7 +450,7 @@ public class ActivityTableUtils
 
    }
 
-   
+
 
    /**
     * @param query
@@ -452,41 +468,41 @@ public class ActivityTableUtils
       {
          query.orderBy(worklistQuery
                ? WorklistQuery.ACTIVITY_INSTANCE_OID
-               : ActivityInstanceQuery.OID, options.asc);
+                     : ActivityInstanceQuery.OID, options.asc);
       }
       else if (COL_START_TIME.equals(options.orderBy))
       {
          query.orderBy(worklistQuery
                ? WorklistQuery.START_TIME
-               : ActivityInstanceQuery.START_TIME, options.asc);
+                     : ActivityInstanceQuery.START_TIME, options.asc);
       }
       else if (COL_LAST_MODIFICATION_TIME.equals(options.orderBy))
       {
          query.orderBy(worklistQuery
                ? WorklistQuery.LAST_MODIFICATION_TIME
-               : ActivityInstanceQuery.LAST_MODIFICATION_TIME, options.asc);
+                     : ActivityInstanceQuery.LAST_MODIFICATION_TIME, options.asc);
       }
       else if (COL_PRIOIRTY.equals(options.orderBy))
       {
          query.orderBy(worklistQuery
                ? WorklistQuery.PROCESS_INSTANCE_PRIORITY
-               : ActivityInstanceQuery.PROCESS_INSTANCE_PRIORITY, options.asc);
+                     : ActivityInstanceQuery.PROCESS_INSTANCE_PRIORITY, options.asc);
       }
       else if (COL_CRITICALITY.equals(options.orderBy))
       {
          query.orderBy(worklistQuery
                ? WorklistQuery.ACTIVITY_INSTANCE_CRITICALITY
-               : ActivityInstanceQuery.CRITICALITY, options.asc);
+                     : ActivityInstanceQuery.CRITICALITY, options.asc);
       }
-      
+
       else if (COL_PROCESS_OID.equals(options.orderBy))
       {
          query.orderBy(worklistQuery
                ? WorklistQuery.PROCESS_INSTANCE_OID
-               : ActivityInstanceQuery.PROCESS_INSTANCE_OID, options.asc);
+                     : ActivityInstanceQuery.PROCESS_INSTANCE_OID, options.asc);
       }
    }
-   
+
    /**
     * Get the filters from the JSON string
     * @param jsonFilterString
@@ -516,7 +532,7 @@ public class ActivityTableUtils
 
       return worklistFilter;
    }
-   
+
    /**
     * Populate the options with the post data.
     * @param options
@@ -542,12 +558,12 @@ public class ActivityTableUtils
       {
          columnsList.add(StringUtils.substringAfter(jsonElement.getAsString(), "descriptorValues."));
       }
-       options.visibleDescriptorColumns = columnsList;
-       options.allDescriptorsVisible = postJSON.getAsJsonObject("descriptors").get("fetchAll").getAsBoolean();
+      options.visibleDescriptorColumns = columnsList;
+      options.allDescriptorsVisible = postJSON.getAsJsonObject("descriptors").get("fetchAll").getAsBoolean();
 
       return options;
    }
-   
+
    /**
     * Populates the descriptor filter values.
     * @param worklistFilter
@@ -558,7 +574,7 @@ public class ActivityTableUtils
    {
 
       List<DescriptorColumnDTO> descriptorColumns = availableDescriptorColumns;
-      
+
       Map<String, DescriptorFilterDTO> descriptorColumnMap = new HashMap<String, DescriptorFilterDTO>();
 
       for (DescriptorColumnDTO descriptorColumnDTO : descriptorColumns)
@@ -594,8 +610,8 @@ public class ActivityTableUtils
 
       worklistFilter.descriptorFilterMap = descriptorColumnMap;
    }
-   
-   
+
+
    /**
     * @param queryResult
     * @return
@@ -627,6 +643,7 @@ public class ActivityTableUtils
             dto.duration = ActivityInstanceUtils.getDuration(ai);
             dto.lastPerformer = getLastPerformer(ai, UserUtils.getDefaultUserNameDisplayFormat());
             dto.assignedTo = getAssignedToLabel(ai);
+            dto.completedBy = ActivityInstanceUtils.getPerformedByName(ai);
 
             StatusDTO status = DTOBuilder.build(ai, StatusDTO.class);
             status.label = ActivityInstanceUtils.getActivityStateLabel(ai);
@@ -637,7 +654,7 @@ public class ActivityTableUtils
             CriticalityDTO criticalityDTO = DTOBuilder.build(criticalCategory, CriticalityDTO.class);
             criticalityDTO.value = criticalityValue;
             dto.criticality = criticalityDTO;
-            
+
             dto.priority = DTOBuilder.build(ai, PriorityDTO.class);
 
             dto.defaultCaseActivity= ActivityInstanceUtils.isDefaultCaseActivity(ai);
@@ -666,16 +683,35 @@ public class ActivityTableUtils
                {
                   processDescriptorsList = CommonDescriptorUtils.createProcessDescriptors(descriptorValues,
                         processDefinition, true ,true);
-                  
+
+               }
+
+               dto.descriptorValues =  getProcessDescriptors(processDescriptorsList);
+            }
+
+            Participant  participantPerformer = null;
+            Activity activity = ai.getActivity();
+            ModelParticipant performer = activity.getDefaultPerformer();
+            if (performer != null)
+            {
+               participantPerformer = performer;
+               if (performer instanceof ConditionalPerformer)
+               {
+                  Participant p = ((ConditionalPerformer) performer).getResolvedPerformer();
+                  if (p != null && !(p instanceof User))
+                  {
+                     participantPerformer = p;
+                  }
+                  else
+                  {
+                     participantPerformer = null;
+                  }
                }
             }
-            
 
-            if (!processDescriptorsList.isEmpty()) {
-                dto.descriptorValues = getProcessDescriptors(processDescriptorsList);
+            if(null != participantPerformer){
+               dto.participantPerformer =  participantPerformer != null ? I18nUtils.getParticipantName(participantPerformer) : null;
             }
-            
-         
 
             dto.activatable = isActivatable(ai);
             if (QualityAssuranceState.IS_QUALITY_ASSURANCE.equals(ai.getQualityAssuranceState()))
@@ -699,37 +735,38 @@ public class ActivityTableUtils
 
       return resultDTO;
    }
-   
+
+
    /**
     * 
     */
-    private static Map<String, DescriptorDTO> getProcessDescriptors(  List<ProcessDescriptor> processDescriptorsList) 
-     {
-        Map<String, DescriptorDTO>  descriptors= new LinkedHashMap<String, DescriptorDTO>();
-        for (Object descriptor : processDescriptorsList)
-        {
-            if( descriptor instanceof ProcessDocumentDescriptor) {
-                ProcessDocumentDescriptor desc = (ProcessDocumentDescriptor) descriptor;
+   private static Map<String, DescriptorDTO> getProcessDescriptors(  List<ProcessDescriptor> processDescriptorsList) 
+   {
+      Map<String, DescriptorDTO>  descriptors= new LinkedHashMap<String, DescriptorDTO>();
+      for (Object descriptor : processDescriptorsList)
+      {
+         if( descriptor instanceof ProcessDocumentDescriptor) {
+            ProcessDocumentDescriptor desc = (ProcessDocumentDescriptor) descriptor;
 
-                List<DocumentDTO> documents = new ArrayList<DocumentDTO>();
+            List<DocumentDTO> documents = new ArrayList<DocumentDTO>();
 
-                for (DocumentInfo documentInfo : desc.getDocuments()) {
-                    DocumentDTO documentDTO = new DocumentDTO();
-                    documentDTO.name = documentInfo.getName();
-                    documentDTO.uuid = documentInfo.getId();
-                    documentDTO.contentType = (MimeTypesHelper.detectMimeType(documentInfo.getName(), null).getType());
-                    documents.add(documentDTO);
-                }
-
-                DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey() , desc.getValue(), true, documents);
-                descriptors.put(desc.getId(), descriptorDto);
-            }else{
-                ProcessDescriptor desc = (ProcessDescriptor) descriptor;
-                DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey() , desc.getValue(), false, null);
-                descriptors.put(desc.getId(), descriptorDto);
+            for (DocumentInfo documentInfo : desc.getDocuments()) {
+               DocumentDTO documentDTO = new DocumentDTO();
+               documentDTO.name = documentInfo.getName();
+               documentDTO.uuid = documentInfo.getId();
+               documentDTO.contentType = (MimeTypesHelper.detectMimeType(documentInfo.getName(), null).getType());
+               documents.add(documentDTO);
             }
-        }
-        return descriptors;
-    }
-    
+
+            DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey() , desc.getValue(), true, documents);
+            descriptors.put(desc.getId(), descriptorDto);
+         }else{
+            ProcessDescriptor desc = (ProcessDescriptor) descriptor;
+            DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey() , desc.getValue(), false, null);
+            descriptors.put(desc.getId(), descriptorDto);
+         }
+      }
+      return descriptors;
+   }
+
 }

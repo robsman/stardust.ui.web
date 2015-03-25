@@ -51,15 +51,25 @@
 				MODE:'worklist',
 				WORKLIST: {
 					NAME : 'worklist',
-					VISIBLE_COLUMNS : ['overview', 'oid', 'criticality', 'priority', 'descriptors', 'started', 'lastModified', 'duration', 'lastPerformer', 'data'],
+					VISIBLE_COLUMNS : ['ActivityName', 'ActivityOID', 'criticality', 'priority', 'descriptors', 'StartTime', 'lastModified', 'duration', 'lastPerformer', 'data'],
 					PREFERENCE_MODULE : 'ipp-workflow-perspective',
-					SHOW_TRIVIAL_DATA_COLUMNS : true
+					SHOW_TRIVIAL_DATA_COLUMNS : true,
+					COLUMN_NAME_MAP  : {
+						"Overview" : "ActivityName",
+						"OID" : "ActivityOID",
+						"Started" : "StartTime",
+						"ProcessDefinition" : "ProcessName"
+					}
 
 				},
 				ACITIVITY_INSTANCE_VIEW : {
 					NAME:'activityInstanceView',
-					VISIBLE_COLUMNS : ['overview', 'oid', 'assignedTo', 'priority', 'criticality', 'descriptors', 'started', 'lastModified', 'duration', 'status'],
-					SHOW_TRIVIAL_DATA_COLUMNS : false
+					VISIBLE_COLUMNS : ['ActivityName', 'ActivityOID', 'assignedTo', 'priority', 'criticality', 'descriptors', 'started', 'LastModified', 'duration', 'status'],
+					SHOW_TRIVIAL_DATA_COLUMNS : false,
+					COLUMN_NAME_MAP : {
+						"EndTime" : "LastModified",
+						"ProcessId" : "ProcessName"
+					}
 				}
 		};
 
@@ -134,6 +144,52 @@
 			scope.activityTableCtrl = this;
 			sdUtilService.addFunctionProxies(scope.activityTableCtrl);
 		}
+
+	
+		/**
+		 * 
+		 */
+		ActivityTableCompiler.prototype.getColumnNamesByMode = function(value) {
+			
+			if(angular.isUndefined(value)){
+				return value;
+			}
+			
+			if(this.mode === DEFAULT_VALUES.WORKLIST.NAME){
+				var prefValue = JSON.parse(value);
+				prefValue.selectedColumns = replaceColumnNames(prefValue.selectedColumns, DEFAULT_VALUES.WORKLIST.COLUMN_NAME_MAP);
+				value = JSON.stringify(prefValue);
+				
+			}else{
+				try{
+					var prefValue = JSON.parse(value);
+					//Do nothing
+				}catch (e){
+					var prefColumns = value.split('$#$');
+					value = replaceColumnNames(prefColumns, DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.COLUMN_NAME_MAP).join('$#$');
+				}
+			}
+			
+			return value;
+		};
+		
+		/**
+		 * 
+		 */
+		function replaceColumnNames(originalColumns , columnNameMap){
+			var newColumns = [];
+			angular.forEach(originalColumns,function(columnName){
+				
+				if(columnNameMap[columnName]){
+					newColumns.push(columnNameMap[columnName])
+				}else{
+					newColumns.push(columnName)
+				}
+			});
+			return newColumns;
+		};
+		
+		
 
 		/*
 		 *
@@ -249,6 +305,16 @@
 			this.preferenceDelegate = function(prefInfo) {
 				var preferenceStore = sdPreferenceService.getStore(prefInfo.scope, self.worklistPrefModule, self.worklistPrefId);
 
+				preferenceStore.super_getValue = preferenceStore.getValue;
+			
+				// Override
+				preferenceStore.getValue = function(name, fromParent) {
+					var value = this.super_getValue(name, fromParent);
+					value = self.getColumnNamesByMode(value);
+					return value;
+				};
+				
+				
 				// Override
 				preferenceStore.marshalName = function(scope) {
 					if (scope == 'PARTITION') {
@@ -284,16 +350,16 @@
 
 				//Auto select dirty rows
 				var selectedRows = self.dataTable.getSelection();
-				var matchArray   = $filter('filter')(selectedRows, { oid : rowId }, true);
+				var matchArray   = $filter('filter')(selectedRows, { activityOID : rowId }, true);
 				var isRowSelected = matchArray.length > 0;
 
 				if(!isRowSelected) {
 					var rows = $filter('filter')(self.activities.list, {
-						oid : rowId
+						activityOID : rowId
 					}, true);
 
 					if (rows && rows.length === 1) {
-						selectedRows.push({oid:rows[0].oid});
+						selectedRows.push({activityOID:rows[0].activityOID});
 					}
 
 					self.dataTable.setSelection(selectedRows);
@@ -357,7 +423,8 @@
 			this.priorityEditable = false;
 			this.visbleColumns = DEFAULT_VALUES.WORKLIST.VISIBLE_COLUMNS;
 			this.worklistPrefModule = DEFAULT_VALUES.WORKLIST.PREFERENCE_MODULE;
-			this.exportFileName= "export_"+DEFAULT_VALUES.WORKLIST.NAME;
+			this.exportFileName= "Worklist";
+			this.intialSort = {name : 'startTime', dir : 'desc'};
 
 		};
 
@@ -369,13 +436,14 @@
 			this.priorityEditable = true;
 			this.originalPriorities = {};
 			this.changedPriorities = {};
+			this.intialSort = {name : 'activityOID', dir : 'desc'};
 			this.updatePriorityNotification = {
 					error : false,
 					result : {}
 			};
 			this.visbleColumns = DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.VISIBLE_COLUMNS;
 			
-			this.exportFileName= "export_"+DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.NAME;
+			this.exportFileName= "Activity_Table";
 			
 			if (!attr.sdaPreferenceModule) {
 				throw "sdaPreferenceModule is not defined."
@@ -416,7 +484,7 @@
 				
 				this.worklistPrefName = idFromQuery ;
 				
-				this.exportFileName = this.mode +"-"+idFromQuery; 
+				this.exportFileName = this.exportFileName +"_"+idFromQuery; 
 			}
 			
 
@@ -433,7 +501,12 @@
 			}
 			
 			if (attr.sdaExportName) {
-				this.worklistPrefName = attr.sdaExportName;
+				this.exportFileName = attr.sdaExportName;
+			}
+			
+			if(attr.sdaIntialSort){
+				var sortGetter = $parse(attr.sdaIntialSort);
+				this.intialSort = sortGetter(scopeToUse);
 			}
 
 		};
@@ -490,14 +563,14 @@
 					self.activities.totalCount = data.totalCount;
 					self.storePriorities(self.activities.list);
 
-					var oids = [];
+					var activityOIDs = [];
 					angular.forEach(self.activities.list, function(workItem, index){
 						if (workItem.trivial == undefined || workItem.trivial) {
-							oids.push(workItem.oid);
+							activityOIDs.push(workItem.activityOID);
 						}
 					});
 
-					sdActivityInstanceService.getTrivialManualActivitiesDetails(oids).then(function(data) {
+					sdActivityInstanceService.getTrivialManualActivitiesDetails(activityOIDs).then(function(data) {
 						self.activities.trivialManualActivities = data;
 
 						deferred.resolve(self.activities);
@@ -558,7 +631,8 @@
 						title: descriptor.title,
 						dataType: descriptor.type,
 						sortable: descriptor.sortable,
-						filterable : descriptor.filterable
+						filterable : descriptor.filterable,
+						key : descriptor.title.replace(/ /g, '')
 					});
 				});
 
@@ -621,7 +695,7 @@
 		 *
 		 */
 		ActivityTableCompiler.prototype.activateItem = function( rowItem ) {
-			sdViewUtilService.openView("activityPanel", "OID=" + rowItem.oid, {"oid" : "" + rowItem.oid});
+			sdViewUtilService.openView("activityPanel", "OID=" + rowItem.activityOID, {"oid" : "" + rowItem.activityOID});
 		};
 
 		/*
@@ -664,9 +738,9 @@
 			}
 			var activitiesData = [];
 			angular.forEach(selectedtems,function( item ){
-				var trivialActivityInfo = self.activities.trivialManualActivities[item.oid];
+				var trivialActivityInfo = self.activities.trivialManualActivities[item.activityOID];
 				if(trivialActivityInfo){
-					activitiesData.push(item.oid);
+					activitiesData.push(item.activityOID);
 				}
 			});
 
@@ -706,7 +780,7 @@
 			var activitiesWithDirtyForms =[]; 
 			angular.forEach(activities,function(activity){
 
-				if(self.dirtyDataForms.indexOf(activity.oid) > -1){
+				if(self.dirtyDataForms.indexOf(activity.activityOID) > -1){
 					activitiesWithDirtyForms.push(activity);
 				}
 			});
@@ -740,7 +814,7 @@
 			promise.then(function() {
 
 				angular.forEach(selectedItems,function(item){
-					self.completeActivityResult.nameIdMap[item.oid] = item.activity.name;
+					self.completeActivityResult.nameIdMap[item.activityOID] = item.activity.name;
 				});
 
 				if (selectedItems.length > 0) {
@@ -755,7 +829,7 @@
 								dataMappings[mapping.id] = mapping.typeName; 
 							});
 							activitiesData.push({
-								oid : item.oid,
+								oid : item.activityOID,
 								outData : outData,
 								dataMappings : dataMappings
 							});
@@ -764,7 +838,7 @@
 					}else {
 						//When data fields are filled inline in the table
 						angular.forEach(selectedItems, function(item, index) {
-							var trivialActivityInfo = self.activities.trivialManualActivities[item.oid];
+							var trivialActivityInfo = self.activities.trivialManualActivities[item.activityOID];
 							if(trivialActivityInfo) {
 								var outData = trivialActivityInfo.inOutData;
 								var dataMappings = {};
@@ -772,7 +846,7 @@
 									dataMappings[mapping.id] = mapping.typeName; 
 								});
 
-								activitiesData.push({oid: item.oid, outData: outData , dataMappings : dataMappings});
+								activitiesData.push({oid: item.activityOID, outData: outData , dataMappings : dataMappings});
 							}
 						});
 					}
@@ -844,9 +918,9 @@
 						self.completeDialog.confirmationType = CONFIRMATION_TYPE_DATAMAPPING;
 						var firstItem = selectedItems[0];
 						self.completeDialog.dataMappings = angular
-						.copy(self.activities.trivialManualActivities[firstItem.oid].dataMappings);
+						.copy(self.activities.trivialManualActivities[firstItem.activityOID].dataMappings);
 						self.completeDialog.outData =angular
-						.copy(self.activities.trivialManualActivities[firstItem.oid].inOutData);
+						.copy(self.activities.trivialManualActivities[firstItem.activityOID].inOutData);
 					} else {
 
 						self.completeDialog.confirmationType = CONFIRMATION_TYPE_GENERIC;
@@ -899,11 +973,11 @@
 				}
 
 				angular.forEach(selectedItems, function( item ) {
-					self.activitiesToAbort.push(item.oid);
+					self.activitiesToAbort.push(item.activityOID);
 				});
 			} else {
 				var item = value;
-				this.activitiesToAbort.push(item.oid);
+				this.activitiesToAbort.push(item.activityOID);
 			}
 
 			this.showAbortActivityDialog = true;
@@ -962,7 +1036,7 @@
 				self.originalPriorities = {};
 				self.changedPriorities = {};
 				angular.forEach(data,function( row ) {
-					self.originalPriorities[row.oid] = row.priority.value;
+					self.originalPriorities[row.activityOID] = row.priority.value;
 				});
 			}
 		};
@@ -992,13 +1066,13 @@
 		/*
 		 *
 		 */
-		ActivityTableCompiler.prototype.registerNewPriority = function(oid, value) {
+		ActivityTableCompiler.prototype.registerNewPriority = function(activityOID, value) {
 			var self = this;
 
-			if(self.originalPriorities[oid] != value){
-				self.changedPriorities[oid] = value;
-			}else if(angular.isDefined(self.changedPriorities[oid])){
-				delete self.changedPriorities[oid];
+			if(self.originalPriorities[activityOID] != value){
+				self.changedPriorities[activityOID] = value;
+			}else if(angular.isDefined(self.changedPriorities[activityOID])){
+				delete self.changedPriorities[activityOID];
 			}
 		};
 
@@ -1015,9 +1089,9 @@
 
 
 			angular.forEach(self.activities.list,function( rowData ){
-				if(angular.isDefined(self.changedPriorities[ rowData.oid ])){
-					processActivityMap[rowData.processInstance.oid] =  	rowData.activity.name +' (#'+rowData.oid+')';
-					requestData[rowData.processInstance.oid] = self.changedPriorities[ rowData.oid ];
+				if(angular.isDefined(self.changedPriorities[ rowData.activityOID ])){
+					processActivityMap[rowData.processInstance.oid] =  	rowData.activity.name +' (#'+rowData.activityOID+')';
+					requestData[rowData.processInstance.oid] = self.changedPriorities[ rowData.activityOID ];
 				}
 
 			});

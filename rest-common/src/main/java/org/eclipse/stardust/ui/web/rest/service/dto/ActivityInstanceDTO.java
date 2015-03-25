@@ -15,7 +15,6 @@ import java.util.Map;
 import org.eclipse.stardust.engine.api.runtime.QualityAssuranceUtils.QualityAssuranceState;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 
 
 /**
@@ -27,10 +26,10 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 public class ActivityInstanceDTO extends AbstractDTO
 {
    @DTOAttribute("OID")
-   public long oid;
+   public long activityOID;
 
    @DTOAttribute("startTime.time")
-   public Long start;
+   public Long startTime;
 
    @DTOAttribute("lastModificationTime.time")
    public Long lastModification;
@@ -71,7 +70,6 @@ public class ActivityInstanceDTO extends AbstractDTO
    
    public String completedBy;
 
-   @DTOAttribute("participantPerformerName")
    public String participantPerformer;
 
    public void setQualityAssuranceState(QualityAssuranceState state)

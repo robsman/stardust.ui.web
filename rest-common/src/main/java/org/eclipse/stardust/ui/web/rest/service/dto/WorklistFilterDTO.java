@@ -25,11 +25,11 @@ import com.google.gson.reflect.TypeToken;
 
 public class WorklistFilterDTO implements FilterDTO{
 
-   public ProcessActivityDTO processDefinition;
+   public ProcessActivityDTO processName;
 
-   public ProcessActivityDTO overview;
+   public ProcessActivityDTO activityName;
 
-   public RangeDTO oid;
+   public RangeDTO activityOID;
 
    public RangeDTO started;
 
@@ -43,7 +43,9 @@ public class WorklistFilterDTO implements FilterDTO{
    
    public ParticipantFilterDTO assignedTo;
    
-   public RangeDTO processOid;
+   public ParticipantFilterDTO completedBy;
+   
+   public RangeDTO processOID;
 
    public Map<String, DescriptorFilterDTO> descriptorFilterMap;
 

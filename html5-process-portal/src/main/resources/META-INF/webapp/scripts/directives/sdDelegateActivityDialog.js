@@ -200,7 +200,7 @@
 
 				var activitiesArr = [];
 				angular.forEach(self.activities, function(actvty) {
-					activitiesArr.push(actvty.oid);
+					activitiesArr.push(actvty.activityOID);
 				});
 
 				var delegateData = {
@@ -262,7 +262,7 @@
 					};
 				}
 				var activities = self.activities.map(function(val) {
-					return val.oid;
+					return val.activityOID;
 				});
 
 				var matchVal = '';

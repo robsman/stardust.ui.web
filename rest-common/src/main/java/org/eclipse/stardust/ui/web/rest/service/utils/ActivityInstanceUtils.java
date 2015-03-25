@@ -37,6 +37,7 @@ import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
+import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.ui.event.ActivityEvent;
@@ -53,6 +54,7 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ClientContextBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
@@ -100,7 +102,7 @@ public class ActivityInstanceUtils
    }
 
    /**
-    * @param oid
+    * @param activityOID
     * @return
     */
    public List<ActivityInstance> getActivityInstances(List<Long> oids)
@@ -521,6 +523,23 @@ public class ActivityInstanceUtils
 		}
 		return DateUtils.formatDurationInHumanReadableFormat(timeInMillis
 				- ai.getStartTime().getTime());
+	}
+	
+	/**
+	 * 
+	 */
+
+	public  static String getPerformedByName(ActivityInstance activityInstance)
+	{
+	   UserInfo userInfo = activityInstance.getPerformedBy();
+	   if (null != userInfo)
+	   {
+	      return ParticipantUtils.getParticipantName(userInfo);
+	   }
+	   else
+	   {
+	      return activityInstance.getPerformedByName();
+	   }
 	}
    
 }

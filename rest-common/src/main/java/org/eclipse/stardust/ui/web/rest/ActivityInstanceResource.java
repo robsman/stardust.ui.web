@@ -343,7 +343,7 @@ public class ActivityInstanceResource
                DocumentDTO.class);
 
          List<ProcessInstanceDTO> processInstances = getActivityInstanceService()
-               .completeRendezvous(aiDTO.oid, documentDTO.uuid);
+               .completeRendezvous(aiDTO.activityOID, documentDTO.uuid);
 
          String jsonOutput = gson.toJson(processInstances);
 

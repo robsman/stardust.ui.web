@@ -22,7 +22,7 @@
 	   return {
 		   restrict : 'A',
 		   template : '<div sd-participant-selector '+
-				 		'sda-selected-data="selectedParticipants" '+
+				 		'sda-selected-data="filterData.participants" '+
 				 		'sda-multiple="true" sd-data="participantFilterCtrl.fetchParticipants(params)">'+
 				 	  '</div>',
 		   controller : [ '$scope', 'sdActivityInstanceService','$q',  ParticipantFilterCtrl ],
@@ -31,15 +31,12 @@
              * 
              */
         	 scope.handlers.applyFilter = function() {
-        		 var filterValues = [];
         		 var displayText = [];
-        		 angular.forEach(scope.selectedParticipants, function( participant ) {
+        		 angular.forEach(scope.filterData.particiapnts, function( participant ) {
         			displayText.push(participant.name);
-        			filterValues.push(participant)
         		 });
         		 var title = displayText.join(',');
         		 scope.setFilterTitle(sdUtilService.truncateTitle(title));
-        		 scope.filterData.participants = filterValues;
         		 return true;
         	 };
          }
@@ -53,7 +50,6 @@
    var ParticipantFilterCtrl = function( $scope , sdActivityInstanceService, $q) {
 
       $scope.participantFilterCtrl = this;
-      $scope.selectedParticipants = [];
       
       /*
        * 
