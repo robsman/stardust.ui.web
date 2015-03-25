@@ -88,34 +88,18 @@
     this.dataItems = this.propertiesPanel.propertiesPage.getModel().dataItems;
     this.onAssignmentHandler = this.modelElement.onAssignmentHandler;
 
-    // TODO : remove following code post server side implementation - start
-    if (!this.onAssignmentHandler) {
-      this.onAssignmentHandler = {
-        "uuid": "00000000-0000-0000-0000-000000000087",
-        "logHandler": false,
-        "userExclusions": [{
-          "uuid": "00000000-0000-0000-0000-000000000088",
-          "oid": 41,
-          "name": "User A excluded",
-          "type": "eventAction",
-          "data": this.getDefaultData(),
-          "dataPath": null
-        }, {
-          "uuid": "00000000-0000-0000-0000-000000000089",
-          "oid": 42,
-          "name": "User B excluded",
-          "type": "eventAction",
-          "data": this.getDefaultData(),
-          "dataPath": null
-        }]
-      }
+    this.exclusions = [];
+    if (this.onAssignmentHandler && this.onAssignmentHandler.userExclusions) {
+      this.exclusions = this.onAssignmentHandler.userExclusions
     }
-    // TODO : remove following code post server side implementation - end
 
-    this.exclusions = this.onAssignmentHandler.userExclusions
     this.setSelected(this.exclusionIndex);
-    
-    this.logToAuditTrail = this.onAssignmentHandler.logHandler;
+
+    this.logToAuditTrail = false;
+
+    if (this.onAssignmentHandler && this.onAssignmentHandler.logHandler) {
+      this.logToAuditTrail = this.onAssignmentHandler.logHandler
+    }
   }
 
   /**
@@ -123,24 +107,11 @@
    */
   ExcludedUserCtrl.prototype.addExclusion = function() {
 
-    // TODO: remove this code later
-    this.exclusions
-            .push({
-              'uuid': "00000000-0000-0000-0000-userExclusion"
-                      + this.exclusionIndex,
-              'name': this
-                      .getProperty('modeler.propertiesPage.activity.excludedUsers.exclude'),
-              'data': this.getDefaultData(),
-              'dataPath': null
-            })
-
-    // TODO remove -1
-    this.exclusionIndex = this.exclusions.length - 1;
-    // TODO remove following line
-    this.setSelected(this.exclusionIndex);
+    this.exclusionIndex = this.exclusions.length;
 
     // submit changes
-    this.submitCreateExclusion({
+    this
+            .submitCreateExclusion({
               "name": this
                       .getProperty('modeler.propertiesPage.activity.excludedUsers.exclude'),
               'data': this.getDefaultData(),
@@ -161,27 +132,12 @@
     this.submitDeleteExclusion({
       "uuid": this.selectedExclusion.uuid
     })
-
-    // TODO: remove all following code
-    if (this.exclusionIndex > -1) {
-      this.exclusions.splice(this.exclusionIndex, 1);
-    }
-    if (this.exclusionIndex > 0) {
-      this.exclusionIndex--;
-    } else {
-      this.exclusionIndex = 0;
-    }
-    this.setSelected(this.exclusionIndex)
   }
 
   /**
    * @param name
    */
   ExcludedUserCtrl.prototype.onNameChange = function(name) {
-    // TODO: remove following code post test start
-    this.selectedExclusion.name = name
-    // TODO: remove following code post test end    
-    
     this.submitUpdateExclusion(this.selectedExclusion.uuid, {
       'name': name
     });
@@ -192,17 +148,11 @@
    * @param dataPath
    */
   ExcludedUserCtrl.prototype.updateExclusion = function(data, dataPath) {
-    // TODO: remove following code post test start
-    this.selectedExclusion.data = data
-    this.selectedExclusion.dataPath = dataPath;
-    // TODO: remove following code post test end    
-    
     this.submitUpdateExclusion(this.selectedExclusion.uuid, {
       'data': data,
       'dataPath': dataPath
     });
-    
-    
+
   }
 
   /**
