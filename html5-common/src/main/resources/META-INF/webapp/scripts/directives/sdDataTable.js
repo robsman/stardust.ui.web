@@ -873,6 +873,10 @@
 
 					theDataTable = theTable.DataTable(dtOptions);
 					buildDataTableCompleted();
+					
+					// refresh is required, otherwise ng-clicks from cells does not work.
+					// TODO: Find some otherway to fix ng-click issue.
+					refresh(true);
 				} catch (e) {
 					showErrorOnUI(e);
 				}
@@ -1245,7 +1249,7 @@
 				theDataTable.fnDraw(!retainPageIndex);
 			}
 		}
-	    
+
 		/*
 		 * 
 		 */
