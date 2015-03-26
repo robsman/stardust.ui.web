@@ -69,7 +69,6 @@
 	 */
 	controller.prototype.refresh = function() {
 		this.daemonDataTable.refresh(true);
-		// Refresh for sda-mode local is not working
 	};
 
 	/*
