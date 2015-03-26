@@ -29,7 +29,7 @@
 		}
 		
 		function createDialog(scope, options, html) {
-			var dialogController = 'dialogControllerUnique_' + _.uniqueId();
+			var dialogController = 'dialogControllerUnique_' + (Math.floor(Math.random() * 9000) + 1000);
 			scope[dialogController] = angular.extend({dialog: {}}, options);
 			
 			scope[dialogController].onClose = function(res) {

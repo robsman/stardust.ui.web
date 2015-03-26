@@ -232,7 +232,8 @@
 			// Initial config of the dialog.
 			function configureDialog() {
 				if (!angular.isDefined(self.dialogElem)) {
-					self.dialogId = 'modal' + _.uniqueId();
+					self.dialogId = 'modal'
+							+ (Math.floor(Math.random() * 9000) + 1000);
 					self.dialogElem = $element.find('#modal');
 					// Change to unique id
 					self.dialogElem.attr('id', self.dialogId);
