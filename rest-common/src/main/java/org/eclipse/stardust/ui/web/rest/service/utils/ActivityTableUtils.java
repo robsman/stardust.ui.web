@@ -620,7 +620,7 @@ public class ActivityTableUtils
     * @param queryResult
     * @return
     */
-   public static QueryResultDTO buildWorklistResult(QueryResult<?> queryResult , MODE mode)
+   public static QueryResultDTO buildTableResult(QueryResult<?> queryResult , MODE mode)
    {
       List<ActivityInstanceDTO> list = new ArrayList<ActivityInstanceDTO>();
 

@@ -303,7 +303,7 @@ public class ActivityInstanceService
    public QueryResultDTO getAllInstances( Options options)
    {
       QueryResult<?> queryResult = activityInstanceUtils.getActivityInstances( options);
-      return ActivityTableUtils.buildWorklistResult(queryResult, MODE.ACTIVITY_TABLE);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.ACTIVITY_TABLE);
    }
 
    /**
