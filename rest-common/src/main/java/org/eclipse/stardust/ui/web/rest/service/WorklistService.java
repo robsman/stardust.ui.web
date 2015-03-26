@@ -17,6 +17,7 @@ import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils;
+import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils.MODE;
 import org.eclipse.stardust.ui.web.rest.service.utils.WorklistUtils;
 import org.springframework.stereotype.Component;
 /**
@@ -40,7 +41,7 @@ public class WorklistService
    public QueryResultDTO getWorklistForParticipant(String participantQId, String context, Options options)
    {
       QueryResult<?> queryResult = worklistUtils.getWorklistForParticipant(participantQId, options);
-      return ActivityTableUtils.buildWorklistResult(queryResult);
+      return ActivityTableUtils.buildWorklistResult(queryResult ,MODE.WORKLIST);
    }
 
    /**
@@ -50,7 +51,7 @@ public class WorklistService
    public QueryResultDTO getWorklistForUser(String userId, String context, Options options)
    {
       QueryResult<?> queryResult = worklistUtils.getWorklistForUser(userId, options);
-      return ActivityTableUtils.buildWorklistResult(queryResult);
+      return ActivityTableUtils.buildWorklistResult(queryResult,MODE.WORKLIST);
    }
    
    

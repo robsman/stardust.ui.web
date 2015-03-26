@@ -121,6 +121,10 @@ public class ActivityTableUtils
    private static final String COL_PRIOIRTY = "priority";
 
    private static double PORTAL_CRITICALITY_MUL_FACTOR = 1000;
+   
+   public static enum MODE {
+      ACTIVITY_TABLE, WORKLIST;
+   }
 
    private static final Logger trace = LogManager.getLogger(ActivityTableUtils.class);
 
@@ -616,7 +620,7 @@ public class ActivityTableUtils
     * @param queryResult
     * @return
     */
-   public static QueryResultDTO buildWorklistResult(QueryResult<?> queryResult)
+   public static QueryResultDTO buildWorklistResult(QueryResult<?> queryResult , MODE mode)
    {
       List<ActivityInstanceDTO> list = new ArrayList<ActivityInstanceDTO>();
 
@@ -641,9 +645,7 @@ public class ActivityTableUtils
             }
 
             dto.duration = ActivityInstanceUtils.getDuration(ai);
-            dto.lastPerformer = getLastPerformer(ai, UserUtils.getDefaultUserNameDisplayFormat());
             dto.assignedTo = getAssignedToLabel(ai);
-            dto.completedBy = ActivityInstanceUtils.getPerformedByName(ai);
 
             StatusDTO status = DTOBuilder.build(ai, StatusDTO.class);
             status.label = ActivityInstanceUtils.getActivityStateLabel(ai);
@@ -689,29 +691,6 @@ public class ActivityTableUtils
                dto.descriptorValues =  getProcessDescriptors(processDescriptorsList);
             }
 
-            Participant  participantPerformer = null;
-            Activity activity = ai.getActivity();
-            ModelParticipant performer = activity.getDefaultPerformer();
-            if (performer != null)
-            {
-               participantPerformer = performer;
-               if (performer instanceof ConditionalPerformer)
-               {
-                  Participant p = ((ConditionalPerformer) performer).getResolvedPerformer();
-                  if (p != null && !(p instanceof User))
-                  {
-                     participantPerformer = p;
-                  }
-                  else
-                  {
-                     participantPerformer = null;
-                  }
-               }
-            }
-
-            if(null != participantPerformer){
-               dto.participantPerformer =  participantPerformer != null ? I18nUtils.getParticipantName(participantPerformer) : null;
-            }
 
             dto.activatable = isActivatable(ai);
             if (QualityAssuranceState.IS_QUALITY_ASSURANCE.equals(ai.getQualityAssuranceState()))
@@ -724,6 +703,43 @@ public class ActivityTableUtils
                   dto.activatable = false;
                }
             }
+            
+            if(mode.equals(MODE.ACTIVITY_TABLE))
+            {
+               dto.completedBy = ActivityInstanceUtils.getPerformedByName(ai);
+               
+               Participant  participantPerformer = null;
+               Activity activity = ai.getActivity();
+               ModelParticipant performer = activity.getDefaultPerformer();
+               if (performer != null)
+               {
+                  participantPerformer = performer;
+                  if (performer instanceof ConditionalPerformer)
+                  {
+                     Participant p = ((ConditionalPerformer) performer).getResolvedPerformer();
+                     if (p != null && !(p instanceof User))
+                     {
+                        participantPerformer = p;
+                     }
+                     else
+                     {
+                        participantPerformer = null;
+                     }
+                  }
+               }
+               
+               if(null != participantPerformer)
+               {
+                  dto.participantPerformer =  participantPerformer != null ? I18nUtils.getParticipantName(participantPerformer) : null;
+               }
+             
+               
+            }
+            else
+            {
+               dto.lastPerformer = getLastPerformer(ai, UserUtils.getDefaultUserNameDisplayFormat());
+            }
+            
 
             list.add(dto);
          }

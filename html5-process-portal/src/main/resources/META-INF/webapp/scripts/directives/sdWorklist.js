@@ -60,10 +60,9 @@
 						"Started" : "StartTime",
 						"ProcessDefinition" : "ProcessName"
 					}
-
 				},
 				ACITIVITY_INSTANCE_VIEW : {
-					NAME:'activityInstanceView',
+					NAME:'activityTable',
 					VISIBLE_COLUMNS : ['ActivityName', 'ActivityOID', 'assignedTo', 'priority', 'criticality', 'descriptors', 'started', 'LastModified', 'duration', 'status'],
 					SHOW_TRIVIAL_DATA_COLUMNS : false,
 					COLUMN_NAME_MAP : {
@@ -73,19 +72,17 @@
 				}
 		};
 
-
-
 		/*
 		 *
 		 */
 		function processRawMarkup(elem, attr) {
 			// Process Trivial Data Column
 			var showTrivialDataColumn =  DEFAULT_VALUES.WORKLIST.SHOW_TRIVIAL_DATA_COLUMNS;
-			
+
 			if( attr.sdaMode === DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.NAME ){
 				showTrivialDataColumn = DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.SHOW_TRIVIAL_DATA_COLUMNS;
 			}
-		
+
 			if (attr.sdaTrivialDataColumn && attr.sdaTrivialDataColumn === 'false') {
 				showTrivialDataColumn = false;
 			}
@@ -109,23 +106,19 @@
 				var cols = elem.find('[sda-column="DESCRIPTOR_COLUMNS"]');
 				cols.remove();
 			}
-
-
 		}
 
 		/*
 		 *
 		 */
 		function ActivityTableCompiler(scope, element, attr, ctrl) {
-			var self = this;
-			
 			try{
 				this.initialize(attr, scope, $filter);
 				this.showError = false;
 			}catch (e) {
-			   
 				this.showError(e);
 			}
+
 			/*
 			 * Defined here as access required to scope
 			 */
@@ -143,53 +136,8 @@
 			// Expose controller as a whole on to scope
 			scope.activityTableCtrl = this;
 			sdUtilService.addFunctionProxies(scope.activityTableCtrl);
-		}
+		};
 
-	
-		/**
-		 * 
-		 */
-		ActivityTableCompiler.prototype.getColumnNamesByMode = function(value) {
-			
-			if(angular.isUndefined(value)){
-				return value;
-			}
-			
-			if(this.mode === DEFAULT_VALUES.WORKLIST.NAME){
-				var prefValue = JSON.parse(value);
-				prefValue.selectedColumns = replaceColumnNames(prefValue.selectedColumns, DEFAULT_VALUES.WORKLIST.COLUMN_NAME_MAP);
-				value = JSON.stringify(prefValue);
-				
-			}else{
-				try{
-					var prefValue = JSON.parse(value);
-					//Do nothing
-				}catch (e){
-					var prefColumns = value.split('$#$');
-					value = replaceColumnNames(prefColumns, DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.COLUMN_NAME_MAP).join('$#$');
-				}
-			}
-			
-			return value;
-		};
-		
-		/**
-		 * 
-		 */
-		function replaceColumnNames(originalColumns , columnNameMap){
-			var newColumns = [];
-			angular.forEach(originalColumns,function(columnName){
-				
-				if(columnNameMap[columnName]){
-					newColumns.push(columnNameMap[columnName])
-				}else{
-					newColumns.push(columnName)
-				}
-			});
-			return newColumns;
-		};
-		
-		
 
 		/*
 		 *
@@ -222,17 +170,17 @@
 			if (!attr.sdaQuery && !attr.sdData) {
 				throw 'Query attribute has to be specified if sdData is not specified.';
 			}
-			
+
 			if(!attr.sdData) {
 				var queryGetter = $parse(attr.sdaQuery);
 				var query = queryGetter(scopeToUse);
 				if (query == undefined ) {
-				throw 'Query evaluated to "nothing" for activity table.';
+					throw 'Query evaluated to "nothing" for activity table.';
 				}
 				this.query = query;
 			}
 
-			
+			//Mode Selector
 			if(attr.sdaMode){
 				this.mode= attr.sdaMode;
 			}else{
@@ -240,18 +188,14 @@
 			}
 
 			if (this.mode === DEFAULT_VALUES.WORKLIST.NAME) {
-				
 				this.initializeWorklistMode(attr, scope);
 			} else if(this.mode === DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.NAME){
-				
 				this.initializeActivityInstanceMode(attr, scope);
 			}else{
-				
 				throw 'Not a valid value for sdaMode.Valid modes are : '+ DEFAULT_VALUES.WORKLIST.NAME +' & '+DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.NAME;
 			}
 
 			this.customizeWithAttributeValues(attr, scope, scopeToUse);
-
 
 			if (attr.sdaPageSize) {
 				this.sdaPageSize = attr.sdaPageSize;
@@ -283,8 +227,6 @@
 				}
 			}
 
-
-
 			// Process TableHandle and then set data table instance
 			this.tableHandleExpr = 'activityTableCtrl.dataTable';
 
@@ -300,21 +242,21 @@
 				}
 			});
 
-		
-
+			/**
+			 * 
+			 */
 			this.preferenceDelegate = function(prefInfo) {
 				var preferenceStore = sdPreferenceService.getStore(prefInfo.scope, self.worklistPrefModule, self.worklistPrefId);
 
 				preferenceStore.super_getValue = preferenceStore.getValue;
-			
+
 				// Override
 				preferenceStore.getValue = function(name, fromParent) {
 					var value = this.super_getValue(name, fromParent);
 					value = self.getColumnNamesByMode(value);
 					return value;
 				};
-				
-				
+
 				// Override
 				preferenceStore.marshalName = function(scope) {
 					if (scope == 'PARTITION') {
@@ -324,7 +266,34 @@
 				}
 
 				return preferenceStore;
-			}
+			};
+			
+			/**
+			 * 
+			 */
+			ActivityTableCompiler.prototype.getColumnNamesByMode = function getColumnNamesByMode(value) {
+				
+				if(angular.isUndefined(value)){
+					return value;
+				}
+				
+				if(this.mode === DEFAULT_VALUES.WORKLIST.NAME){
+					var prefValue = JSON.parse(value);
+					prefValue.selectedColumns = replaceColumnNames(prefValue.selectedColumns, DEFAULT_VALUES.WORKLIST.COLUMN_NAME_MAP);
+					value = JSON.stringify(prefValue);
+					
+				}else{
+					try{
+						var prefValue = JSON.parse(value);
+						//Do nothing
+					}catch (e){
+						var prefColumns = value.split('$#$');
+						value = replaceColumnNames(prefColumns, DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.COLUMN_NAME_MAP).join('$#$');
+					}
+				}
+				
+				return value;
+			};
 
 			/**
 			 * 
@@ -365,7 +334,6 @@
 					self.dataTable.setSelection(selectedRows);
 				}
 			};
-			
 
 			this.fetchDescriptorCols();
 			this.fetchAllProcesses();
@@ -416,6 +384,7 @@
 		};
 
 
+
 		/**
 		 * 
 		 */
@@ -424,7 +393,7 @@
 			this.visbleColumns = DEFAULT_VALUES.WORKLIST.VISIBLE_COLUMNS;
 			this.worklistPrefModule = DEFAULT_VALUES.WORKLIST.PREFERENCE_MODULE;
 			this.exportFileName= "Worklist";
-			this.intialSort = {name : 'startTime', dir : 'desc'};
+			this.initialSort = {name : 'startTime', dir : 'desc'};
 
 		};
 
@@ -436,23 +405,23 @@
 			this.priorityEditable = true;
 			this.originalPriorities = {};
 			this.changedPriorities = {};
-			this.intialSort = {name : 'activityOID', dir : 'desc'};
+			this.initialSort = {name : 'activityOID', dir : 'desc'};
 			this.updatePriorityNotification = {
 					error : false,
 					result : {}
 			};
 			this.visbleColumns = DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.VISIBLE_COLUMNS;
-			
+
 			this.exportFileName= "Activity_Table";
-			
+
 			if (!attr.sdaPreferenceModule) {
 				throw "sdaPreferenceModule is not defined."
 			}
-			
+
 			if (!attr.sdaPreferenceId) {
 				throw "sdaPreferenceId is not defined."
 			}
-			
+
 			if (!attr.sdaPreferenceName) {
 				throw "sdaPreferenceName is not defined."
 			}
@@ -473,7 +442,7 @@
 			this.title = titleGetter(scopeToUse);
 
 			if(this.query){
-				
+
 				var idFromQuery = this.query.userId || this.query.participantQId;
 
 				if(idFromQuery){
@@ -481,12 +450,12 @@
 				}else{
 					this.worklistPrefId = 'worklist-process-columns';
 				}
-				
+
 				this.worklistPrefName = idFromQuery ;
-				
+
 				this.exportFileName = this.exportFileName +"_"+idFromQuery; 
 			}
-			
+
 
 			if (attr.sdaPreferenceModule) {
 				this.worklistPrefModule = attr.sdaPreferenceModule;
@@ -499,13 +468,13 @@
 			if (attr.sdaPreferenceName) {
 				this.worklistPrefName = attr.sdaPreferenceName;
 			}
-			
+
 			if (attr.sdaExportName) {
 				this.exportFileName = attr.sdaExportName;
 			}
-			
+
 			if(attr.sdaIntialSort){
-				var sortGetter = $parse(attr.sdaIntialSort);
+				var sortGetter = $parse(attr.sdaInitialSort);
 				this.intialSort = sortGetter(scopeToUse);
 			}
 
@@ -533,13 +502,13 @@
 			var self = this;
 			var deferred = $q.defer();
 			self.cleanLocals();
-			
+
 			var query = angular.extend({}, this.query);
 			query.options = options;
 
 			if( angular.isDefined(this.sdDataCtrl) ) {
 				trace.debug("sdData is defined fetching custom data. ");
-				
+
 				var dataResult = self.sdDataCtrl.retrieveData(query);
 
 				dataResult.then(function(data){
@@ -552,7 +521,7 @@
 				});
 
 			} else {
-				
+
 				if(this.mode != 'worklist'){
 					throw 'sdData is not defined for sdActivityTable';
 				}
@@ -572,7 +541,6 @@
 
 					sdActivityInstanceService.getTrivialManualActivitiesDetails(activityOIDs).then(function(data) {
 						self.activities.trivialManualActivities = data;
-
 						deferred.resolve(self.activities);
 						self.safeApply();
 					}, function(error) {
@@ -583,7 +551,6 @@
 				});
 
 			}
-
 
 			return deferred.promise;
 		};
@@ -667,7 +634,6 @@
 		/*
 		 *
 		 */
-
 		ActivityTableCompiler.prototype.fetchAvailableStates = function()
 		{
 			var self = this;
@@ -681,7 +647,6 @@
 		/*
 		 *
 		 */
-
 		ActivityTableCompiler.prototype.fetchAvailablePriorities = function()
 		{
 			var self = this;
@@ -713,7 +678,7 @@
 			sdViewUtilService.openView("processInstanceDetailsView",
 					"processInstanceOID=" + rowItem.processInstance.oid,
 					{
-				"oid": "" + rowItem.oid,
+				"oid": "" + rowItem.activityOID,
 				"processInstanceOID": "" + rowItem.processInstance.oid
 					}, true
 			);
@@ -1050,15 +1015,15 @@
 			}
 			return false;
 		};
-		
+
 		/*
 		 *
 		 */
 		ActivityTableCompiler.prototype.isPriorityChangedForRow = function( id ) {
 			for ( name in this.changedPriorities ) {
-			 if (name == id){
-				 return true;
-			 }
+				if (name == id){
+					return true;
+				}
 			}
 			return false;
 		};
@@ -1124,24 +1089,24 @@
 				"processInstanceOID" : "" + oid
 			}, true);
 		};
-		
+
 		/**
 		 * 
 		 */
 		ActivityTableCompiler.prototype.isWorklistMode = function() {
-			
+
 			return this.mode === DEFAULT_VALUES.WORKLIST.NAME;
 		};
-		
+
 		/**
 		 * 
 		 */
-		ActivityTableCompiler.prototype.isActivityInstanceMode = function() {
-			
+		ActivityTableCompiler.prototype.isActivityTableMode = function() {
+
 			return this.mode === DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.NAME;
 		};
 
-		
+
 		/*
 		 * 
 		 */
@@ -1149,7 +1114,7 @@
 			trace.error('Error on activity table:', e);
 			trace.printStackTrace();
 			this.showError = "true";
-				
+
 			var errorToShow = 'Unknown Error';
 			if (angular.isString(e)) {
 				errorToShow = e;
@@ -1160,6 +1125,23 @@
 		};
 
 		return directiveDefObject;
+	};
+	
+	
+	/**
+	 * 
+	 */
+	function replaceColumnNames(originalColumns , columnNameMap){
+		var newColumns = [];
+		angular.forEach(originalColumns,function(columnName){
+
+			if(columnNameMap[columnName]){
+				newColumns.push(columnNameMap[columnName])
+			}else{
+				newColumns.push(columnName)
+			}
+		});
+		return newColumns;
 	};
 
 

@@ -32,7 +32,7 @@
              */
         	 scope.handlers.applyFilter = function() {
         		 var displayText = [];
-        		 angular.forEach(scope.filterData.particiapnts, function( participant ) {
+        		 angular.forEach(scope.filterData.participants, function( participant ) {
         			displayText.push(participant.name);
         		 });
         		 var title = displayText.join(',');

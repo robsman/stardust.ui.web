@@ -47,6 +47,7 @@ import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.CriticalityUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils.MODE;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.springframework.stereotype.Component;
@@ -302,7 +303,7 @@ public class ActivityInstanceService
    public QueryResultDTO getAllInstances( Options options)
    {
       QueryResult<?> queryResult = activityInstanceUtils.getActivityInstances( options);
-      return ActivityTableUtils.buildWorklistResult(queryResult);
+      return ActivityTableUtils.buildWorklistResult(queryResult, MODE.ACTIVITY_TABLE);
    }
 
    /**
