@@ -18,13 +18,13 @@
 
 	angular.module('bpm-common').directive('sdActivityTable',
 			['$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sdPreferenceService', 'sdWorklistService',
-			 'sdActivityInstanceService', 'sdProcessDefinitionService', 'sdCriticalityService', 'sdStatusService', 'sdPriorityService', '$filter','sgI18nService', ActivityTableDirective]);
+			 'sdActivityInstanceService', 'sdProcessDefinitionService', 'sdCriticalityService', 'sdStatusService', 'sdPriorityService', '$filter','sgI18nService','$timeout', ActivityTableDirective]);
 
 	/*
 	 *
 	 */
 	function ActivityTableDirective($parse, $q, sdUtilService, sdViewUtilService, sdLoggerService, sdPreferenceService, sdWorklistService,
-			sdActivityInstanceService, sdProcessDefinitionService, sdCriticalityService, sdStatusService, sdPriorityService, $filter, sgI18nService) {
+			sdActivityInstanceService, sdProcessDefinitionService, sdCriticalityService, sdStatusService, sdPriorityService, $filter, sgI18nService, $timeout) {
 
 		var trace = sdLoggerService.getLogger('bpm-common.sdActivityTable');
 
@@ -241,6 +241,18 @@
 					unregister();
 				}
 			});
+			
+			if (attr.sdaReady) {
+				trace.log( 'Table defines sda-ready attribute, so deferring initialization...');
+				var unregisterReady = scopeToUse.$watch(attr.sdaReady, function(newVal, oldVal) {
+					if(newVal === true) {
+						trace.log('sda-ready flag is triggered...');
+						// Initialize after current digest cycle
+						$timeout(function(){self.ready = true;});
+						unregisterReady();
+					}
+				});
+			} 
 
 			/**
 			 * 
@@ -335,7 +347,7 @@
 				}
 			};
 
-			this.fetchDescriptorCols();
+			this.fetchDescriptorCols(attr);
 			this.fetchAllProcesses();
 			this.fetchAllAvailableCriticalities();
 			this.fetchAvailableStates();
@@ -586,7 +598,7 @@
 		/*
 		 *
 		 */
-		ActivityTableCompiler.prototype.fetchDescriptorCols = function() {
+		ActivityTableCompiler.prototype.fetchDescriptorCols = function(attr) {
 			var self = this;
 
 			sdProcessDefinitionService.getDescriptorColumns().then(function(descriptors) {
@@ -603,7 +615,12 @@
 					});
 				});
 
-				self.ready = true;
+				if(attr.sdaReady){
+					self.descriptorsReady = true;
+				}else{
+					self.ready = true;
+				}
+				
 				self.safeApply();
 			});
 		};
