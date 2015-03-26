@@ -48,7 +48,7 @@
 
 		<table sd-data-table="ctrl.userGroupDataTable"
 			sd-data="ctrl.fetchUserGroups(params)" sda-mode="remote"
-			sda-column-selector="ctrl.columnSelector" sda-sortable="true"
+			sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
 			sda-selectable="row" sda-selection="ctrl.selectionExpr"
 			sda-exports="Excel,csv" sda-exports-file-name="userGroupList">
 			<thead sda-i18n-scope="admin-portal-messages.views-common">
