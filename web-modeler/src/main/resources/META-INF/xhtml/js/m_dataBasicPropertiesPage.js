@@ -216,11 +216,17 @@ define(
 						this.publicVisibilityCheckbox.attr("checked", false);
 					}
 					
-					var volatileVal = this.getModelElement().attributes["carnot:engine:volatile"];
-					if (volatileVal == true || volatileVal == "true") {
-            this.volatileDataInput.attr("checked", true);
+					if (this.getModelElement().dataType == m_constants.DOCUMENT_DATA_TYPE) {
+					  this.volatileDataInput.attr("checked", false);
+					  this.volatileDataInput.attr("disabled", true);
           } else {
-            this.volatileDataInput.attr("checked", false);
+            this.volatileDataInput.attr("disabled", false);
+            var volatileVal = this.getModelElement().attributes["carnot:engine:volatile"];
+            if (volatileVal == true || volatileVal == "true") {
+              this.volatileDataInput.attr("checked", true);
+            } else {
+              this.volatileDataInput.attr("checked", false);
+            }
           }
 				};
 
