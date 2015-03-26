@@ -1,0 +1,9 @@
+/* ********* Info Panel Style Starts ********** */
+.sd-panel-summary-bar
+{
+	padding: 2px;
+	border-radius: 8px;
+	border:1px solid rgb(153, 153, 153);
+	width: 800px;
+	margin-top:5px;
+}

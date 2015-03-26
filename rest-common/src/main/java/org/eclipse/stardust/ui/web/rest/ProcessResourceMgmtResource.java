@@ -16,6 +16,7 @@ package org.eclipse.stardust.ui.web.rest;
 import javax.annotation.Resource;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -36,14 +37,14 @@ public class ProcessResourceMgmtResource
    private ProcessResourceMgmtService processResourceMgmtService;
 
    @GET
-   @Path("/availableRolesAndUsers")
-   public Response getProcessResourceRolesAndUsers()
+   @Path("/availableRolesAndUsers/{refreshInd}")
+   public Response getProcessResourceRolesAndUsers(@PathParam("refreshInd") boolean refreshInd)
    {
 
       try
       {
          ProcessResourceMgmtDTO result = processResourceMgmtService
-               .getProcessResourceRolesAndUsers();
+               .getProcessResourceRolesAndUsers(refreshInd);
 
          return Response.ok(result.toJson(), MediaType.TEXT_PLAIN_TYPE).build();
       }

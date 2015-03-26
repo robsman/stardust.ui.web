@@ -1,7 +1,7 @@
 <div class="res-availability-wrapper">
     <div class="view-panel-toolbar tbl-title" style="color: #708090;font-size:11px">{{i18n('business-control-center-messages.views-resourceAvailabilityView-rolesTable-title')}}</div>
 	<table sd-data-table="ctrl.rolesTable"
-		sd-data="ctrl.getProcessResourceRoles(params)" sda-mode="remote" sda-no-pagination="true"
+		sd-data="ctrl.getProcessResourceRoles(params)" sda-mode="remote" sda-no-pagination="true" sda-ready="ctrl.showRolesTable"
 		sda-selectable="row"
 		sda-selection="ctrl.rowSelectionForRoles"
 		sda-column-selector="{{ctrl.columnSelector}}"

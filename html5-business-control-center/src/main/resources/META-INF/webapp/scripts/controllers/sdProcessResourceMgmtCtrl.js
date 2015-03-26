@@ -40,14 +40,21 @@
 		/**
 		 * This method will load the available roles and users data.
 		 */
-		ProcessResourceMgmtCtrl.prototype.getProcessResourceRolesAndUsers = function() {
+		ProcessResourceMgmtCtrl.prototype.getProcessResourceRolesAndUsers = function(refreshInd) {
 			var self = this;
 			sdProcessResourceMgmtService
-					.getProcessResourceRolesAndUsers()
+					.getProcessResourceRolesAndUsers(refreshInd)
 					.then(
 							function(data) {
 								self.processResourceRoleList = data.processResourceRoleList;
 								self.processResourceUserList = data.processResourceUserList;
+								
+								self.showRolesTable = true;
+								self.showUsersTable = true;
+								if(self.rolesTable != undefined && self.usersTable != undefined){
+								self.rolesTable.refresh();
+								self.usersTable.refresh();
+								}
 							}, function(error) {
 								trace.log(error);
 							});
@@ -57,7 +64,7 @@
 		 * 
 		 */
 		ProcessResourceMgmtCtrl.prototype.initialize = function() {
-			this.getProcessResourceRolesAndUsers();
+			this.getProcessResourceRolesAndUsers(false);
 		};
 
 		this.initialize();
@@ -159,9 +166,9 @@
 		 */
 		ProcessResourceMgmtCtrl.prototype.refresh = function() {
 			var self = this;
-			self.getProcessResourceRolesAndUsers();
-			self.rolesTable.refresh();
-			self.usersTable.refresh();
+			self.getProcessResourceRolesAndUsers(true);
+/*			self.rolesTable.refresh();
+			self.usersTable.refresh();*/
 		};
 
 		/**
@@ -169,7 +176,7 @@
 		 */
 		ProcessResourceMgmtCtrl.prototype.openRoleManagerView = function(
 				roleId, departmentOid, name) {
-			sdViewUtilService.openView("roleManagerDetailView", "roleId="
+			sdViewUtilService.openView("roleManagerDetailViewHtml5", "roleId="
 					+ roleId, {
 				"roleId" : "" + roleId,
 				"departmentOid" : "" + departmentOid,

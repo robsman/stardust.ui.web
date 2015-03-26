@@ -1,0 +1,67 @@
+<div style="padding-left: 20px;" ng-controller="sdRoleManagerDetailViewCtrl as ctrl">
+	<div
+		sd-include="'plugins/html5-admin-portal/partials/views/refreshViewToolbar.html'">
+	</div>
+	<div id="alertMsg" ng-show="ctrl.userAuthorizationMsg" class="sd-panel-summary-bar">
+	   <table><tbody>
+	     <tr>
+	         <td><i class="sc sc-fw sc-2x sc-info-circle"></i></td>
+	         <td>
+	            <span>{{i18n('views-common-messages.views-participantTree-toolbar-highlightUsers-alertMsg')}}</span>
+	            <button class="close" title="Close" type="button" aria-label="Close" ng-click="ctrl.closeAlertMsg()" style="padding-left: 200px">
+	             	<span aria-hidden="true">&times;</span>
+	            </button>
+	         </td>
+	      </tr>
+	   </tbody></table>
+    </div>	
+	<div class="view-panel-toolbar tbl-title"
+		style="color: #708090; font-size: 11px">{{i18n('business-control-center-messages.views-common-details-label')}}</div>
+	<table>
+		<tbody>
+			<tr>
+				<td><label>{{i18n('business-control-center-messages.views-common-column-name')
+						+ i18n('business-control-center-messages.common-colon')}}</label></td>
+				<td><span>{{ctrl.roleManagerDetails.roleName}}</span></td>
+			</tr>
+			<tr>
+				<td><label>{{i18n('business-control-center-messages.views-common-items-label')
+						+ i18n('business-control-center-messages.common-colon')}}</label></td>
+				<td><span>{{ctrl.roleManagerDetails.items}}</span></td>
+			</tr>
+			<tr>
+				<td><label>{{i18n('business-control-center-messages.views-common-account-label')
+						+ i18n('business-control-center-messages.common-colon')}}</label></td>
+				<td><span>{{ctrl.roleManagerDetails.account}}</span></td>
+			</tr>
+			<tr>
+				<td><label>{{i18n('business-control-center-messages.views-common-itemsPerUser-label')
+						+ i18n('business-control-center-messages.common-colon')}}</label></td>
+				<td><span>{{ctrl.roleManagerDetails.itemsPerUser}}</span></td>
+			</tr>
+		</tbody>
+	</table>
+
+	<ul id="myTab" class="nav nav-tabs">
+		<li class="active"><a href="#userAssignment" data-toggle="tab" ng-click="ctrl.showUserAssignment()">
+				{{i18n('business-control-center-messages.views-common-userAssignment-label')}}
+		</a></li>
+		<li><a href="#activityList" ng-click="ctrl.showActivityList()" data-toggle="tab">{{i18n('business-control-center-messages.views-common-activityList-label')}}</a></li>
+	</ul>
+	<div id="myTabContent" class="tab-content">
+		<div id="userAssignment" ng-show="ctrl.activeTab==1">
+
+			<div
+				ng-include="'plugins/html5-business-control-center/partials/views/userAssignmentTab.html'">
+			</div>
+		</div>
+		<div id="activityList" ng-show="ctrl.activeTab==2">
+			<div ng-if="ctrl.showActivityListTab"
+				 ng-include="'plugins/html5-business-control-center/partials/views/activityListTab.html'">
+			</div>
+		</div>
+
+	</div>
+
+</div>
+

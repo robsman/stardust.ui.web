@@ -28,9 +28,12 @@ public class ProcessResourceMgmtService
    @Resource
    private ProcessResourceMgmtUtils processResourceMgmtUtils;
 
-   public ProcessResourceMgmtDTO getProcessResourceRolesAndUsers()
+   public ProcessResourceMgmtDTO getProcessResourceRolesAndUsers(boolean refreshInd)
    {
       ProcessResourceMgmtDTO processResourceMgmtDTO = new ProcessResourceMgmtDTO();
+      if(refreshInd){
+         processResourceMgmtUtils.initializeWorkflowFacade();
+      }
       processResourceMgmtDTO.processResourceRoleList = processResourceMgmtUtils
             .getProcessResourceRoles();
       processResourceMgmtDTO.processResourceUserList = processResourceMgmtUtils

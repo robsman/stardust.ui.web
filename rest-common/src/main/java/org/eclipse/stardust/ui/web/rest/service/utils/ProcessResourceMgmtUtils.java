@@ -109,7 +109,7 @@ public class ProcessResourceMgmtUtils
     * 
     * @return query
     */
-   public Query createQuery()
+   private Query createQuery()
    {
       UserQuery query = UserQuery.findActive();
       UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
@@ -128,7 +128,7 @@ public class ProcessResourceMgmtUtils
    /**
     * @return IQueryExtender
     */
-   public IQueryExtender getQueryExtender()
+   private IQueryExtender getQueryExtender()
    {
       if (queryExtender == null)
       {
@@ -136,5 +136,12 @@ public class ProcessResourceMgmtUtils
          return (IQueryExtender) sessionCtx.lookup(QUERY_EXTENDER);
       }
       return queryExtender;
+   }
+   
+   /**
+    * This method will be used in case of refresh to reload users and roles.
+    */
+   public void initializeWorkflowFacade(){
+      WorkflowFacade.getWorkflowFacade().initVars();
    }
 }

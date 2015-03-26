@@ -21,6 +21,10 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		targetPerspective="*" id="ippHtml5BusinessControlCenterPerspective" messageBundles="html5-business-control-center">		
 		<ippui:viewsExtension>
 			<ippui:view name="resourceAvailabilityViewHtml5" include="/plugins/html5-business-control-center/partials/views/resourceAvailabilityView.html" />
-		</ippui:viewsExtension>			
+		</ippui:viewsExtension>	
+		<ippui:viewsExtension>
+			<ippui:view name="roleManagerDetailViewHtml5" include="/plugins/html5-business-control-center/partials/views/roleManagerDetailView.html" />
+		</ippui:viewsExtension>
+				
 	</ippui:perspectiveExtension>
 </beans>
