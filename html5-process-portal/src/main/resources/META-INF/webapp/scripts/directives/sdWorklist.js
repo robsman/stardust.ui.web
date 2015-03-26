@@ -11,6 +11,7 @@
 
 /**
  * @author Subodh.Godbole
+ * @author johnson.quadras
  */
 
 (function(){
@@ -51,7 +52,7 @@
 				MODE:'worklist',
 				WORKLIST: {
 					NAME : 'worklist',
-					VISIBLE_COLUMNS : ['ActivityName', 'ActivityOID', 'criticality', 'priority', 'descriptors', 'StartTime', 'lastModified', 'duration', 'lastPerformer', 'data'],
+					VISIBLE_COLUMNS : ['activityName', 'activityOID', 'criticality', 'priority', 'descriptors', 'startTime', 'lastModified', 'duration', 'lastPerformer', 'data'],
 					PREFERENCE_MODULE : 'ipp-workflow-perspective',
 					SHOW_TRIVIAL_DATA_COLUMNS : true,
 					COLUMN_NAME_MAP  : {
@@ -63,7 +64,7 @@
 				},
 				ACITIVITY_INSTANCE_VIEW : {
 					NAME:'activityTable',
-					VISIBLE_COLUMNS : ['ActivityName', 'ActivityOID', 'assignedTo', 'priority', 'criticality', 'descriptors', 'started', 'LastModified', 'duration', 'status'],
+					VISIBLE_COLUMNS : ['activityName', 'activityOID', 'assignedTo', 'priority', 'criticality', 'descriptors', 'startTime', 'LastModified', 'duration', 'assignedTo'],
 					SHOW_TRIVIAL_DATA_COLUMNS : false,
 					COLUMN_NAME_MAP : {
 						"EndTime" : "LastModified",
@@ -488,6 +489,11 @@
 			if(attr.sdaIntialSort){
 				var sortGetter = $parse(attr.sdaInitialSort);
 				this.intialSort = sortGetter(scopeToUse);
+			}
+			
+			if(attr.sdaVisibleColumns){
+				var visibleColumnGetter = $parse(attr.sdaVisibleColumns);
+				this.visbleColumns =visibleColumnGetter(scopeToUse);
 			}
 
 		};

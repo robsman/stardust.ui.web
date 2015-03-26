@@ -289,10 +289,7 @@ public class ActivityTableUtils
          if (!CollectionUtils.isEmpty(filterDTO.activityName.activities))
          {
             FilterOrTerm or = filter.addOrTerm();
-            if (filterDTO.activityName.activities.contains("-1"))
-            {
-            }
-            else
+            if (!filterDTO.activityName.activities.contains("-1"))
             {
                for (String activity : filterDTO.activityName.activities)
                {
@@ -358,7 +355,7 @@ public class ActivityTableUtils
       }
 
       //Completed By
-      else if ( null != filterDTO.completedBy)
+      if ( null != filterDTO.completedBy)
       {
          FilterOrTerm or = filter.addOrTerm();
          for (ParticipantSearchResponseDTO user : filterDTO.completedBy.participants)
@@ -512,7 +509,7 @@ public class ActivityTableUtils
     * @param jsonFilterString
     * @return
     */
-   public static  WorklistFilterDTO getFilters(String jsonFilterString, List<DescriptorColumnDTO> availableDescriptorColumns)
+   public static WorklistFilterDTO getFilters(String jsonFilterString, List<DescriptorColumnDTO> availableDescriptorColumns)
    {
       WorklistFilterDTO worklistFilter = null;
       if (StringUtils.isNotEmpty(jsonFilterString))
@@ -543,7 +540,7 @@ public class ActivityTableUtils
     * @param postData
     * @return
     */
-   public static  Options populatePostData(Options options, String postData, List<DescriptorColumnDTO> availableDescriptorColumns)
+   public static Options populatePostData(Options options, String postData, List<DescriptorColumnDTO> availableDescriptorColumns)
    {
       JsonMarshaller jsonIo = new JsonMarshaller();
       JsonObject postJSON = jsonIo.readJsonObject(postData);
@@ -626,6 +623,8 @@ public class ActivityTableUtils
 
       List<CriticalityCategory>  criticalityConfigurations = CriticalityUtils.getCriticalityConfiguration();
 
+      ModelCache modelCache = ModelCache.findModelCache();
+
       for (Object object : queryResult)
       {
          if (object instanceof ActivityInstance)
@@ -646,94 +645,25 @@ public class ActivityTableUtils
 
             dto.duration = ActivityInstanceUtils.getDuration(ai);
             dto.assignedTo = getAssignedToLabel(ai);
-
-            StatusDTO status = DTOBuilder.build(ai, StatusDTO.class);
-            status.label = ActivityInstanceUtils.getActivityStateLabel(ai);
-            dto.status = status;
-
-            int criticalityValue = CriticalityUtils.getPortalCriticalityValue(ai.getCriticality());
-            CriticalityCategory criticalCategory =  CriticalityUtils.getCriticalityCategory(criticalityValue, criticalityConfigurations);
-            CriticalityDTO criticalityDTO = DTOBuilder.build(criticalCategory, CriticalityDTO.class);
-            criticalityDTO.value = criticalityValue;
-            dto.criticality = criticalityDTO;
-
+            dto.criticality = populateCriticalityDTO(criticalityConfigurations, ai);
             dto.priority = DTOBuilder.build(ai, PriorityDTO.class);
 
+            dto.status =  DTOBuilder.build(ai, StatusDTO.class);;
+            dto.status.label = ActivityInstanceUtils.getActivityStateLabel(ai);
+            dto.descriptorValues =  getProcessDescriptors(modelCache, ai);
+            dto.activatable = findIfActivatable(ai);
             dto.defaultCaseActivity= ActivityInstanceUtils.isDefaultCaseActivity(ai);
+            
             if ( !dto.defaultCaseActivity )
             {
                dto.abortActivity = isAbortable(ai);
                dto.delegable = isDelegable(ai);
             }
-
-            List<ProcessDescriptor> processDescriptorsList = CollectionUtils.newList();
-
-            ModelCache modelCache = ModelCache.findModelCache();
-            Model model = modelCache.getModel(ai.getModelOID());
-            ProcessDefinition processDefinition = model != null ? model.getProcessDefinition(ai.getProcessDefinitionId()) : null;
-            if (processDefinition != null)
-            {
-               ProcessInstanceDetails processInstanceDetails = (ProcessInstanceDetails) ai.getProcessInstance();
-               Map<String, Object> descriptorValues = processInstanceDetails.getDescriptors();
-               CommonDescriptorUtils.updateProcessDocumentDescriptors(descriptorValues, ai.getProcessInstance(), processDefinition);
-               if (processInstanceDetails.isCaseProcessInstance())
-               {
-                  processDescriptorsList = CommonDescriptorUtils.createCaseDescriptors(
-                        processInstanceDetails.getDescriptorDefinitions(), descriptorValues, processDefinition, true);
-               }
-               else
-               {
-                  processDescriptorsList = CommonDescriptorUtils.createProcessDescriptors(descriptorValues,
-                        processDefinition, true ,true);
-
-               }
-
-               dto.descriptorValues =  getProcessDescriptors(processDescriptorsList);
-            }
-
-
-            dto.activatable = isActivatable(ai);
-            if (QualityAssuranceState.IS_QUALITY_ASSURANCE.equals(ai.getQualityAssuranceState()))
-            {
-               long monitoredActivityPerformerOID = ai.getQualityAssuranceInfo().getMonitoredInstance()
-                     .getPerformedByOID();
-               long currentPerformerOID = SessionContext.findSessionContext().getUser().getOID();
-               if (monitoredActivityPerformerOID == currentPerformerOID)
-               {
-                  dto.activatable = false;
-               }
-            }
             
             if(mode.equals(MODE.ACTIVITY_TABLE))
             {
                dto.completedBy = ActivityInstanceUtils.getPerformedByName(ai);
-               
-               Participant  participantPerformer = null;
-               Activity activity = ai.getActivity();
-               ModelParticipant performer = activity.getDefaultPerformer();
-               if (performer != null)
-               {
-                  participantPerformer = performer;
-                  if (performer instanceof ConditionalPerformer)
-                  {
-                     Participant p = ((ConditionalPerformer) performer).getResolvedPerformer();
-                     if (p != null && !(p instanceof User))
-                     {
-                        participantPerformer = p;
-                     }
-                     else
-                     {
-                        participantPerformer = null;
-                     }
-                  }
-               }
-               
-               if(null != participantPerformer)
-               {
-                  dto.participantPerformer =  participantPerformer != null ? I18nUtils.getParticipantName(participantPerformer) : null;
-               }
-             
-               
+               dto.participantPerformer = getParticipantPerformer(ai);
             }
             else
             {
@@ -752,37 +682,134 @@ public class ActivityTableUtils
       return resultDTO;
    }
 
+   /**
+    * 
+    * @param ai
+    * @return
+    */
+   private static boolean findIfActivatable(ActivityInstance ai)
+   {
+      boolean isActivable = isActivatable(ai);
+      if (QualityAssuranceState.IS_QUALITY_ASSURANCE.equals(ai.getQualityAssuranceState()))
+      {
+         long monitoredActivityPerformerOID = ai.getQualityAssuranceInfo().getMonitoredInstance()
+               .getPerformedByOID();
+         long currentPerformerOID = SessionContext.findSessionContext().getUser().getOID();
+         if (monitoredActivityPerformerOID == currentPerformerOID)
+         {
+            isActivable = false;
+         }
+      }
+      
+      return isActivable;
+   }
+
+   /**
+    * 
+    * @param criticalityConfigurations
+    * @param ai
+    * @return
+    */
+   private static CriticalityDTO populateCriticalityDTO(List<CriticalityCategory> criticalityConfigurations,
+         ActivityInstance ai)
+   {
+      int criticalityValue = CriticalityUtils.getPortalCriticalityValue(ai.getCriticality());
+      CriticalityCategory criticalCategory =  CriticalityUtils.getCriticalityCategory(criticalityValue, criticalityConfigurations);
+      CriticalityDTO criticalityDTO = DTOBuilder.build(criticalCategory, CriticalityDTO.class);
+      criticalityDTO.value = criticalityValue;
+      return criticalityDTO;
+   }
+
+   /**
+    * 
+    * @param ai
+    * @param dto
+    * @return
+    */
+   private static String  getParticipantPerformer(ActivityInstance ai)
+   {
+      Participant  participantPerformer = null;
+      Activity activity = ai.getActivity();
+      ModelParticipant performer = activity.getDefaultPerformer();
+      if (performer != null)
+      {
+         participantPerformer = performer;
+         if (performer instanceof ConditionalPerformer)
+         {
+            Participant p = ((ConditionalPerformer) performer).getResolvedPerformer();
+            if (p != null && !(p instanceof User))
+            {
+               participantPerformer = p;
+            }
+            else
+            {
+               participantPerformer = null;
+            }
+         }
+      }
+      
+      if(null != participantPerformer)
+      {
+        return participantPerformer != null ? I18nUtils.getParticipantName(participantPerformer) : null;
+      }
+      
+      return null;
+   }
+
 
    /**
     * 
     */
-   private static Map<String, DescriptorDTO> getProcessDescriptors(  List<ProcessDescriptor> processDescriptorsList) 
+   private static Map<String, DescriptorDTO> getProcessDescriptors( ModelCache modelCache , ActivityInstance ai) 
    {
-      Map<String, DescriptorDTO>  descriptors= new LinkedHashMap<String, DescriptorDTO>();
-      for (Object descriptor : processDescriptorsList)
+      List<ProcessDescriptor> processDescriptorsList = CollectionUtils.newList();
+
+      Model model = modelCache.getModel(ai.getModelOID());
+      ProcessDefinition processDefinition = model != null ? model.getProcessDefinition(ai.getProcessDefinitionId()) : null;
+      if (processDefinition != null)
       {
-         if( descriptor instanceof ProcessDocumentDescriptor) {
-            ProcessDocumentDescriptor desc = (ProcessDocumentDescriptor) descriptor;
-
-            List<DocumentDTO> documents = new ArrayList<DocumentDTO>();
-
-            for (DocumentInfo documentInfo : desc.getDocuments()) {
-               DocumentDTO documentDTO = new DocumentDTO();
-               documentDTO.name = documentInfo.getName();
-               documentDTO.uuid = documentInfo.getId();
-               documentDTO.contentType = (MimeTypesHelper.detectMimeType(documentInfo.getName(), null).getType());
-               documents.add(documentDTO);
-            }
-
-            DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey() , desc.getValue(), true, documents);
-            descriptors.put(desc.getId(), descriptorDto);
-         }else{
-            ProcessDescriptor desc = (ProcessDescriptor) descriptor;
-            DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey() , desc.getValue(), false, null);
-            descriptors.put(desc.getId(), descriptorDto);
+         ProcessInstanceDetails processInstanceDetails = (ProcessInstanceDetails) ai.getProcessInstance();
+         Map<String, Object> descriptorValues = processInstanceDetails.getDescriptors();
+         CommonDescriptorUtils.updateProcessDocumentDescriptors(descriptorValues, ai.getProcessInstance(), processDefinition);
+         if (processInstanceDetails.isCaseProcessInstance())
+         {
+            processDescriptorsList = CommonDescriptorUtils.createCaseDescriptors(
+                  processInstanceDetails.getDescriptorDefinitions(), descriptorValues, processDefinition, true);
          }
+         else
+         {
+            processDescriptorsList = CommonDescriptorUtils.createProcessDescriptors(descriptorValues,
+                  processDefinition, true ,true);
+
+         }
+         
+         Map<String, DescriptorDTO>  descriptors= new LinkedHashMap<String, DescriptorDTO>();
+         for (Object descriptor : processDescriptorsList)
+         {
+            if( descriptor instanceof ProcessDocumentDescriptor) {
+               ProcessDocumentDescriptor desc = (ProcessDocumentDescriptor) descriptor;
+
+               List<DocumentDTO> documents = new ArrayList<DocumentDTO>();
+
+               for (DocumentInfo documentInfo : desc.getDocuments()) {
+                  DocumentDTO documentDTO = new DocumentDTO();
+                  documentDTO.name = documentInfo.getName();
+                  documentDTO.uuid = documentInfo.getId();
+                  documentDTO.contentType = (MimeTypesHelper.detectMimeType(documentInfo.getName(), null).getType());
+                  documents.add(documentDTO);
+               }
+
+               DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey() , desc.getValue(), true, documents);
+               descriptors.put(desc.getId(), descriptorDto);
+            }else{
+               ProcessDescriptor desc = (ProcessDescriptor) descriptor;
+               DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey() , desc.getValue(), false, null);
+               descriptors.put(desc.getId(), descriptorDto);
+            }
+         }
+         return descriptors;
       }
-      return descriptors;
+    return null;
    }
 
 }
