@@ -35,11 +35,13 @@ import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ProcessInstances;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.SubsetPolicy;
+import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
+import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.rest.FilterDTO.BooleanDTO;
@@ -47,6 +49,8 @@ import org.eclipse.stardust.ui.web.rest.FilterDTO.RangeDTO;
 import org.eclipse.stardust.ui.web.rest.FilterDTO.TextSearchDTO;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessTableFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessTableFilterDTO.DescriptorFilterDTO;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
@@ -54,6 +58,8 @@ import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.GenericDescriptorFilterModel;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.NumberRange;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.springframework.stereotype.Component;
 
 /**
@@ -194,6 +200,118 @@ public class ProcessInstanceUtils
 
    }
    
+   public void recoverProcesses(List<Long> processOids)
+   {
+      if(processOids != null && !CollectionUtils.isEmpty(processOids))
+      {
+         AdministrationService adminService = serviceFactoryUtils.getAdministrationService();
+         if (adminService != null)
+         {
+            adminService.recoverProcessInstances(processOids);
+         }
+      }
+   }
+   
+   public NotificationMap abortProcesses(AbortScope abortScope, List<Long> processesToBeAborted)
+   {
+      NotificationMap notificationMap = new NotificationMap();
+
+      if (CollectionUtils.isNotEmpty(processesToBeAborted))
+      {
+         WorkflowService workflowService = serviceFactoryUtils.getWorkflowService();
+         ProcessInstance processInstance;
+         for (Long processInstanceOid : processesToBeAborted)
+         {
+            if (null != processInstanceOid)
+            {
+               processInstance = this.getProcessInstance(processInstanceOid.longValue());
+               if (processInstance != null
+                     && org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.isAbortable(processInstance))
+               {
+                  try
+                  {
+                     if (processInstance.isCaseProcessInstance())
+                     {
+                        notificationMap
+                              .addFailure(new NotificationDTO(processInstanceOid,
+                                    org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+                                          .getProcessLabel(processInstance), MessagesViewsCommonBean.getInstance()
+                                          .getParamString(
+                                                "views.switchProcessDialog.caseAbort.message",
+                                                org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+                                                      .getProcessStateLabel(processInstance))));
+                     }
+                     else
+                     {
+                        org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.abortProcess(processInstance,
+                              abortScope);
+                        notificationMap
+                              .addSuccess(new NotificationDTO(processInstanceOid,
+                                    org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+                                          .getProcessLabel(processInstance),
+                                    org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+                                          .getProcessStateLabel(processInstance)));
+                     }
+                  }
+                  catch (Exception e)
+                  {
+                     // It is very to rare that any exception would occur
+                     // here
+                     trace.error(e);
+                     notificationMap.addFailure(new NotificationDTO(processInstanceOid,
+                           org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getProcessLabel(processInstance),
+                           MessagesViewsCommonBean.getInstance().getParamString("views.common.process.abortProcess.failureMsg2",
+                                 ExceptionHandler.getExceptionMessage(e))));
+                  }
+               }
+               else
+               {
+                  if (ProcessInstanceState.Aborted.equals(processInstance.getState())
+                        || ProcessInstanceState.Completed.equals(processInstance.getState()))
+                  {
+                     notificationMap.addFailure(new NotificationDTO(processInstanceOid,
+                           org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getProcessLabel(processInstance),
+                           MessagesViewsCommonBean.getInstance().getParamString(
+                                 "views.common.process.abortProcess.failureMsg3",
+                                 org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+                                       .getProcessStateLabel(processInstance))));
+                  }
+                  else
+                  {
+                     notificationMap.addFailure(new NotificationDTO(processInstanceOid,
+                           org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getProcessLabel(processInstance),
+                           MessagesViewsCommonBean.getInstance().getString("views.common.process.abortProcess.failureMsg1")));
+                  }
+               }
+            }
+         }
+      }
+      return notificationMap;
+   }
+   
+   
+   /**
+    * 
+    * @param options
+    * @return
+    */
+   public ProcessInstances getProcessInstances(Options options)
+   {
+      ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
+      
+      addDescriptorPolicy(options, query);
+
+      addSortCriteria(query, options);
+
+      addFilterCriteria(query, options);
+      
+      SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip,
+            true);
+      query.setPolicy(subsetPolicy);
+      
+      return serviceFactoryUtils.getQueryService().getAllProcessInstances(query);      
+   }
+   
    private Long getProcessInstancesCount(ProcessInstanceQuery query)
    {
       QueryService service = serviceFactoryUtils.getQueryService();
@@ -223,29 +341,6 @@ public class ProcessInstanceUtils
    private long getAbortedProcessInstancesCount() throws PortalException
    {
       return getProcessInstancesCount(ProcessInstanceQuery.findInState(ProcessInstanceState.Aborted));
-   }
-   
-   
-   /**
-    * 
-    * @param options
-    * @return
-    */
-   public ProcessInstances getProcessInstances(Options options)
-   {
-      ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
-      
-      addDescriptorPolicy(options, query);
-
-      addSortCriteria(query, options);
-
-      addFilterCriteria(query, options);
-      
-      SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip,
-            true);
-      query.setPolicy(subsetPolicy);
-      
-      return serviceFactoryUtils.getQueryService().getAllProcessInstances(query);      
    }
    
    /**

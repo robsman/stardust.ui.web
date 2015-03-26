@@ -27,9 +27,12 @@
 	 *
 	 */
 	function StatusService( $q, $resource) {
-		var REST_URL = "services/rest/portal/activity-instances/allActivityStates";
 		StatusService.prototype.getAllActivityStates = function() {
-			return  $resource(REST_URL).query().$promise;
+			return  $resource('services/rest/portal/activity-instances/allActivityStates').query().$promise;
+		};
+		
+		StatusService.prototype.getAllProcessStates = function() {
+			return  $resource('services/rest/portal/process-instances/allProcessStates').query().$promise;
 		};
 	};
 

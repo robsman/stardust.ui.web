@@ -41,8 +41,6 @@
 				self.processList.totalCount = data.totalCount;
 
 				deferred.resolve(self.processList);
-
-				self.safeApply();
 			}, function(error) {
 				deferred.reject(error);
 			});

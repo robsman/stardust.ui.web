@@ -18,13 +18,13 @@
 
 	angular.module('bpm-common').directive('sdProcessTable',
 			['$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sgI18nService', 'sdPreferenceService',
-			 'sdProcessInstanceService', 'sdProcessDefinitionService', 'sdStatusService', 'sdPriorityService', ProcessTableDirective]);
+			 'sdProcessInstanceService', 'sdProcessDefinitionService', 'sdStatusService', 'sdPriorityService', 'sdDialogService', ProcessTableDirective]);
 
 	/*
 	 *
 	 */
 	function ProcessTableDirective($parse, $q, sdUtilService, sdViewUtilService, sdLoggerService, sgI18nService, sdPreferenceService,
-			sdProcessInstanceService, sdProcessDefinitionService, sdStatusService, sdPriorityService) {
+			sdProcessInstanceService, sdProcessDefinitionService, sdStatusService, sdPriorityService, sdDialogService) {
 
 		var trace = sdLoggerService.getLogger('bpm-common.sdProcessTable');
 
@@ -66,8 +66,8 @@
 				self.dataTable = null; // Handle to data table instance, to be set later
 
 				//Abort Data
-				self.showAbortActivityDialog = false;
-				self.activitiesToAbort = [];
+				self.showAbortProcessDialog = false;
+				self.processesToAbort = [];
 
 				self.availableStates = [];
 
@@ -187,10 +187,10 @@
 					var dataResult = self.sdDataCtrl.retrieveData(query);
 
 					dataResult.then(function(data) {
-						self.activities = data;
-						deferred.resolve(self.activities);
-						self.safeApply(self.activities.list);
-						self.storePriorities(self.activities.list);
+						self.processList = data;
+						deferred.resolve(self.processList);
+						self.safeApply(self.processList.list);
+						self.storePriorities(self.processList.list);
 					}, function(error) {
 						deferred.reject(error);
 					});
@@ -232,7 +232,7 @@
 			};
 			
 			self.fetchAvailableStates = function() {
-				sdStatusService.getAllActivityStates().then(function(value) {
+				sdStatusService.getAllProcessStates().then(function(value) {
 					self.availableStates = value;
 				});
 			};
@@ -378,6 +378,42 @@
 			};
 			
 			/*
+			 *
+			 */
+			self.recoverProcess = function(scope, value) {
+				var processes = [];
+				if (Array.isArray(value)) {
+					var selectedItems = value;
+					if (selectedItems.length < 1) {
+						trace.log("No Rows selected");
+						return;
+					}
+
+					angular.forEach(selectedItems, function( item ) {
+						processes.push(item.oid);
+					});
+				} else {
+					var item = value;
+					processes.push(item.oid);
+				}
+				
+				sdProcessInstanceService.recoverProcesses(processes).then(function(result) {
+					var title = '';
+					var message = result.message;
+					if (result.success == 'true') {
+						title = sgI18nService.translate('portal-common-messages.common-info','Information');
+					} else {
+						title = sgI18nService.translate('portal-common-messages.common-error','ERROR');
+					}
+					sdDialogService.alert(scope, message, title);
+				}, function() {
+					sdDialogService.alert(scope, 
+							sgI18nService.translate('portal-common-messages.internalServerError','Error Occurred'), 
+							sgI18nService.translate('portal-common-messages.common-error','ERROR'));
+				});
+			};
+			
+			/*
 			 * 
 			 */
 			self.onAbortPopoverConfirm = function() {
@@ -388,8 +424,24 @@
 			 *
 			 */
 			self.openAbortDialog = function(value) {
-				
-				//TODO abort process
+				self.processesToAbort = [];
+
+				if (Array.isArray(value)) {
+					var selectedItems = value;
+					if (selectedItems.length < 1) {
+						trace.log("No Rows selected");
+						return;
+					}
+
+					angular.forEach(selectedItems, function( item ) {
+						self.processesToAbort.push(item.oid);
+					});
+				} else {
+					var item = value;
+					self.processesToAbort.push(item.oid);
+				}
+
+				self.showAbortProcessDialog = true;
 			}
 
 			/*
@@ -407,7 +459,7 @@
 				
 				if (angular.isDefined(type) && angular.isDefined(result)) {
 					if ('abortandstart' === type) {
-						// TODO open spawned activities
+						// TODO open spawned processes
 						
 						sdViewUtilService.openView('worklistViewHtml5', true);
 					} else if ('abortandjoin' === type) {

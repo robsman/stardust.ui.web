@@ -35,6 +35,7 @@ import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.service.ProcessInstanceService;
+import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
@@ -58,7 +59,7 @@ import com.google.gson.JsonObject;
 public class ProcessInstanceResource
 {
    private static final Logger trace = LogManager
-         .getLogger(ActivityInstanceResource.class);
+         .getLogger(ProcessInstanceResource.class);
 
    @Autowired
    private ProcessInstanceService processInstanceService;
@@ -217,6 +218,50 @@ public class ProcessInstanceResource
 
          return Response.serverError().build();
       }
+   }
+   
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/allProcessStates")
+   public Response getAllProcessStates()
+   {
+      try
+      {
+         return Response.ok(AbstractDTO.toJson(getProcessInstanceService().getAllProcessStates()), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+   
+   /**
+    * @param postedData
+    * @return
+    */
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/abort")
+   public Response abortProcesses(String postedData)
+   {
+      // postedData = "{scope: 'root', processes : [11]}";
+      return Response.ok(getProcessInstanceService().abortProcesses(postedData), MediaType.APPLICATION_JSON).build();
+   }
+   
+   /**
+    * @param postedData
+    * @return
+    */
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/recover")
+   public Response recoverProcesses(String postedData)
+   {
+      return Response.ok(getProcessInstanceService().recoverProcesses(postedData), MediaType.APPLICATION_JSON).build();
    }
    
    @POST

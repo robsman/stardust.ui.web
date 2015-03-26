@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,18 +28,22 @@ import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
+import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
-import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PriorityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.StatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.converter.PriorityConverter;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
@@ -55,6 +61,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * @author Anoop.Nair
@@ -140,6 +147,33 @@ public class ProcessInstanceService
    }
    
    /**
+    * Returns all states
+    * 
+    * @return List
+    */
+   public List<StatusDTO> getAllProcessStates()
+   {
+      MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+      List<StatusDTO> allStatusList = new ArrayList<StatusDTO>();
+      
+      allStatusList.add(new StatusDTO(ProcessInstanceState.CREATED, propsBean
+            .getString("views.processTable.statusFilter.created")));
+      allStatusList.add(new StatusDTO(ProcessInstanceState.ACTIVE, propsBean
+            .getString("views.processTable.statusFilter.active")));
+      
+      allStatusList.add(new StatusDTO(ProcessInstanceState.INTERRUPTED, propsBean
+            .getString("views.processTable.statusFilter.interrupted")));
+      allStatusList.add(new StatusDTO(ProcessInstanceState.ABORTED, propsBean
+            .getString("views.processTable.statusFilter.aborted")));
+      allStatusList.add(new StatusDTO(ProcessInstanceState.COMPLETED, propsBean
+            .getString("views.processTable.statusFilter.completed")));
+      allStatusList.add(new StatusDTO(ProcessInstanceState.ABORTING, propsBean
+            .getString("views.processTable.statusFilter.aborting")));
+      
+      return allStatusList;
+   }
+   
+   /**
     * Get all process instances count
     * 
     * @return List
@@ -147,6 +181,68 @@ public class ProcessInstanceService
    public InstanceCountsDTO getAllCounts()
    {
       return processInstanceUtilsREST.getAllCounts();
+   }
+   
+   /**
+    * 
+    * @param request
+    * @return
+    */
+   public String recoverProcesses(String request)
+   {
+      MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+      Map<String, String> returnValue = new HashMap<String, String>();
+      List<Long> processes = JsonDTO.getAsList(request, Long.class);
+      
+      try
+      {
+         processInstanceUtilsREST.recoverProcesses(processes);
+         returnValue.put("success", "true");
+         returnValue.put("message", propsBean.getString("views.common.recoverMessage"));
+      }
+      catch (AccessForbiddenException e)
+      {
+         returnValue.put("success", "false");
+         returnValue.put("message", propsBean.getString("common.authorization.msg"));
+      }
+      catch (Exception e)
+      {
+         returnValue.put("success", "false");
+         returnValue.put("message", propsBean.getString("common.exception"));
+      }
+      
+      return GsonUtils.toJsonHTMLSafeString(returnValue);
+   }
+   
+   /**
+    * 
+    * @param request
+    * @return
+    */
+   public String abortProcesses(String request)
+   {
+      NotificationMap notificationMap = new NotificationMap();
+
+      JsonObject json = GsonUtils.readJsonObject(request);
+      String scope = GsonUtils.extractString(json, "scope");
+
+      Type listType = new TypeToken<List<Long>>()
+      {
+      }.getType();
+
+      @SuppressWarnings("unchecked")
+      List<Long> processes = (List<Long>) GsonUtils.extractList(GsonUtils.extractJsonArray(json, "processes"), listType);
+
+      if ("root".equalsIgnoreCase(scope))
+      {
+         notificationMap = processInstanceUtilsREST.abortProcesses(AbortScope.RootHierarchy, processes);
+      }
+      else
+      {
+         notificationMap = processInstanceUtilsREST.abortProcesses(AbortScope.SubHierarchy, processes);
+      }
+
+      return GsonUtils.toJsonHTMLSafeString(notificationMap);
    }
    
    public QueryResultDTO getProcessInstances(Options options)

@@ -98,5 +98,39 @@
 			var processCounts = $resource(restUrl);
 			return processCounts.get().$promise;
 		};
+		
+
+		/**
+		 * 
+		 */
+		ProcessInstanceService.prototype.abortProcesses = function(scope, processes) {
+			var restUrl = REST_BASE_URL + "abort";
+			var requestObj = {
+				scope : scope,
+				processes : processes
+			};
+
+			var processList = $resource(restUrl, {}, {
+				abort : {
+					method : 'POST'
+				}
+			});
+
+			return processList.abort({}, requestObj).$promise;
+		};
+		
+		/**
+		 * 
+		 */
+		ProcessInstanceService.prototype.recoverProcesses = function(processes) {
+			var restUrl = REST_BASE_URL + "recover";
+			var processList = $resource(restUrl, {}, {
+				recover : {
+					method : 'POST'
+				}
+			});
+
+			return processList.recover({}, processes).$promise;
+		};
 	};
 })();
