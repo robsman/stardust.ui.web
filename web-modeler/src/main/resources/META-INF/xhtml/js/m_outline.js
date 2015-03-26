@@ -2796,6 +2796,11 @@ define(
 					window.parent.EventHub.events.subscribe("RELOAD_MODELS",
 							reloadOutlineTree);
 
+ 					window.parent.EventHub.events.subscribe("SAVE_AND_RELOAD_MODELS",
+            function() {
+              reloadOutlineTree(true);
+            });
+
 					window.parent.EventHub.events.subscribe("CONTEXT_UPDATED", function(releaseId) {
 						if (releaseId != undefined) {
 							reloadOutlineTree();

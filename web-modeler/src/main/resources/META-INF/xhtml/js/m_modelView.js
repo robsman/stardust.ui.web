@@ -163,21 +163,7 @@ define(
 
 					m_utils.jQuerySelect("#modelTabs").tabs();
 
-					this.idInput = m_utils.jQuerySelect("#idInput");
-					this.idInputRow = m_utils.jQuerySelect("#idInputRow");
-
-					this.idInput.change({
-						"view" : this
-					}, function(event) {
-						var view = event.data.view;
-
-						if (view.modelElement.id != view.idInput.val()) {
-							view.submitChanges({
-								id : view.idInput.val()
-							});
-						}
-					});
-
+					this.idEdit = m_utils.jQuerySelect("#idEdit");
 
 					this.versionTable.tableScroll({
 						height : 200
@@ -229,7 +215,7 @@ define(
 					this.initializeModelElementView(model);
 					this.view.css("visibility", "visible");
 				};
-
+				
 				/**
 				 *
 				 */
@@ -237,14 +223,6 @@ define(
 					this.model = model;
 
 					this.initializeModelElement(model);
-
-					m_dialog.makeInvisible(this.idOutputRow);
-					if (m_user.getCurrentRole() != m_constants.INTEGRATOR_ROLE) {
-						m_dialog.makeInvisible(this.idInputRow);
-					}else{
-						m_dialog.makeVisible(this.idInputRow);
-						this.idInput.val(model.id);
-					}
 
 					if (this.model[m_constants.DATE_OF_CREATION]) {
 						this.creationDateOutput.empty();
@@ -283,11 +261,12 @@ define(
 
 					this.updateViewIcon();
 
-					// TODO Commented out because it is slow
+					var self = this;
 
+					// TODO Commented out because it is slow
 					//this.refreshValidation();
 				};
-			
+
 				/**
 				 *
 				 */
@@ -586,27 +565,5 @@ define(
 										this.model.uuid);
 					}
 				};
-
-      	ModelView.prototype.processCommandError = function(command,response) {
-            // handle server side exceptions (validation etc)
-            if (command.commandId == "modelElement.update") {
-              if (response.responseText
-                      && ((response.responseText.indexOf("ModelerError.01002") > -1) || (response.responseText.indexOf("ModelerError.01003") > -1))) {
-                this.clearErrorMessages();
-                this.errorMessages.push(m_i18nUtils.getProperty(
-                        response.responseText, response.responseText)
-                        .replace('{0}', this.idInput.val()));
-                this.idInput.addClass("error");
-                this.showErrorMessages();
-                this.idInput.val(this.model.id);
-              } else if (response.responseText
-                      && (response.responseText.indexOf("ModelerError.") > -1)) {
-                this.clearErrorMessages();
-                this.errorMessages.push(m_i18nUtils.getProperty(
-                        response.responseText, response.responseText));
-                this.showErrorMessages();
-              }
-            }
-        };
 			}
 		});

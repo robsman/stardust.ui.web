@@ -816,5 +816,20 @@ textarea:focus {
 	cursor : pointer;
 	padding-left: 5px;
 }
+
+.modelIdDialogContent {
+	padding-bottom: 10px;
+	padding-left: 10px
+}
+
+.sd-dialog .modal-dialog .modal-content .button-alignment {
+	float: left;
+	margin-left: 15px;
+	
+}
+
+.sd-dialog .modal-dialog .modal-content .button-alignment button {
+	margin-right: 10px;
+}	
 	
 @import ('/plugins/modern/public/skins/modern/modern.css')

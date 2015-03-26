@@ -15,7 +15,7 @@
       <div class="modal-footer" ng-hide="dialogController.dialogType === TYPE_CUSTOM">
         <div class="confirmation-buttonpane">
 			<div class="button-pane cf" >
-				<div class="right">
+				<div class="button-alignment">
 				  	<button class="button" ng-click="dialogController.confirmAction()" ng-hide="dialogController.dialogType === TYPE_ALERT">{{confirmActionLabel == undefined ? i18n('views-common-messages.common-ok') : confirmActionLabel}}</button>
 				    <button class="button" ng-click="dialogController.cancelAction()">
 				    	{{cancelActionLabel == undefined ? i18n('views-common-messages.common-cancel') : cancelActionLabel}}

@@ -27,13 +27,12 @@ define(
 							imageUrl);
 				},
 				createPage : function(propertiesPanel, extCfg) {
-		          return new PropertiesPage(propertiesPanel, extCfg.id, extCfg.titel,
+		          return new PropertiesPage(propertiesPanel, extCfg.id, extCfg.title,
 		                  extCfg.imageUrl);
 		        }
 			};
 
 			function PropertiesPage(propertiesPanel, id, title, imageUrl) {
-				this.m_utils = m_utils;
 			  this.propertiesPanel = propertiesPanel;
 				this.id = id;
 				this.title = title;
@@ -166,7 +165,7 @@ define(
 						}
 					});
 				};
-
+				
 				/**
 				 * 
 				 */

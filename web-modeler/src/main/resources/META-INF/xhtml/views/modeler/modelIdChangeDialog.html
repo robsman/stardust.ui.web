@@ -1,0 +1,31 @@
+
+<form name="modelPopupForm">
+	<div id="contentArea" class="modelIdDialogContent">
+		<table>
+			<tr>
+				<td><img
+					src="plugins/bpm-modeler/images/icons/dialog-icon-warning.jpg" /></td>
+				<td><label>{{ctrl.i18n('modeler.propertyView.modelView.editDialog.warning')}}</label></td>
+		</table>
+		<table border="0" cellpadding="5">
+			<tr>
+				<td>{{ctrl.i18n('modeler.propertyView.modelView.id')}}</td>
+				<td><input ng-model="ctrl.modelId" name="modelId" type="text"
+					aid="modelId" ng-change="ctrl.onModelIdChange()" required></input></td>
+			</tr>
+			<tr>
+				<td></td>
+				<td>
+					<div class="msg-error"
+						ng-show="ctrl.showOnSubmitErrors && modelPopupForm.modelId.$error.required">
+						{{ctrl.i18n("modeler.messages.modelPopup.id.required")}}</div>
+					<div class="msg-error"
+						"margin-left:15px" ng-show="ctrl.serverError">
+						{{ctrl.serverErrorMsg}}</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+
+</form>
