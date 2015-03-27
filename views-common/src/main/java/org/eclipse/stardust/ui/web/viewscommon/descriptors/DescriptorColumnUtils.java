@@ -36,8 +36,10 @@ import org.eclipse.stardust.ui.web.common.table.DataTable;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
+import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataMapping;
 import org.eclipse.stardust.ui.web.viewscommon.common.ProcessAttachmentColumnPreference;
 import org.eclipse.stardust.ui.web.viewscommon.common.ProcessDocumentColumnPreference;
+import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
@@ -92,7 +94,8 @@ public class DescriptorColumnUtils
          String descriptorId = descriptor.getKey();
          DataPath dataPath = descriptor.getValue();
          Class mappedType = dataPath.getMappedType();
-         ColumnDataType columnType = determineColumnType(mappedType);
+         ColumnDataType columnType = determineColumnType(dataPath);
+         
          if(contentUrl!=null && determineDocumentTypeColumn(mappedType))
          {
             ColumnPreference descriptorColumn = new ProcessDocumentColumnPreference(descriptorId ,
@@ -320,6 +323,11 @@ public class DescriptorColumnUtils
          popup = new TableDataFilterPopup(
                new TableDataFilterDate(dataPath.getId(), "", DataType.DATE, true, null, null));
       }
+      else if (ColumnDataType.DATE_WITHOUT_TIME.equals(columnDataType))
+      {
+         popup = new TableDataFilterPopup(
+               new TableDataFilterDate(dataPath.getId(), "", DataType.DATE_WITHOUT_TIME, true, null, null));
+      }
 
       // Number filter
       else if (ColumnDataType.NUMBER.equals(columnDataType))
@@ -344,15 +352,26 @@ public class DescriptorColumnUtils
     * @param mappedType
     * @return
     */
-   private static ColumnDataType determineColumnType(Class mappedType)
+   private static ColumnDataType determineColumnType(DataPath dataPath)
    {
+      Class mappedType = dataPath.getMappedType();
+      
       if (Boolean.class.equals(mappedType))
       {
          return ColumnDataType.BOOLEAN;
       }
       if (Date.class.equals(mappedType))
       {
-         return ColumnDataType.DATE;
+         GenericDataMapping mapping = new GenericDataMapping(dataPath);
+         DataMappingWrapper dmWrapper = new DataMappingWrapper(mapping, null, false);
+         if (ProcessPortalConstants.TIMESTAMP_TYPE.equals(dmWrapper.getType()))
+         {
+            return ColumnDataType.DATE;
+         }
+         else
+         {
+            return ColumnDataType.DATE_WITHOUT_TIME;
+         }
       }
       else if (determineNumberDataType(mappedType) != null)
       {

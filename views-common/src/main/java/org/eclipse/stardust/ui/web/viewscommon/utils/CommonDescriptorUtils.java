@@ -45,15 +45,18 @@ import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.engine.core.struct.TypedXPath;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.plugin.support.ServiceLoaderUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataMapping;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.DataMappingWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils.DataPathMetadata;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
@@ -321,8 +324,11 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
                }
                else
                {
+                  GenericDataMapping mapping = new GenericDataMapping(dataPathDetails);
+                  DataMappingWrapper dmWrapper = new DataMappingWrapper(mapping, null, false);
+
                   processDescriptor = new ProcessDescriptor(entry.getKey(), I18nUtils.getDataPathName(entry.getValue()),
-                        formatDescriptorValue(descriptors.get(entry.getKey()), entry.getValue().getAccessPath()));
+                        formatDescriptorValue(descriptors.get(entry.getKey()), dmWrapper.getType()));
                   processDescriptors.add(processDescriptor);
                }
             }
@@ -651,23 +657,23 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
     * Format Descriptors based on their types
     * 
     * @param valueObj
-    * @param accessPath
+    * @param dateType
     * @return
     */
-   public static String formatDescriptorValue(Object valueObj, String accessPath)
+   public static String formatDescriptorValue(Object valueObj, String dateType)
    {
       String value = "";
       if (valueObj instanceof Date)
       {
-         if (StringUtils.isNotEmpty(accessPath))
+         if (StringUtils.isNotEmpty(dateType))
          {
-            if (accessPath.equalsIgnoreCase(ProcessPortalConstants.DATE_TYPE))
+            if (dateType.equalsIgnoreCase(ProcessPortalConstants.DATE_TYPE))
             {
                value = DateUtils.formatDate((Date) valueObj);
             }
-            else if (accessPath.equalsIgnoreCase(ProcessPortalConstants.TIME_TYPE))
+            else if (dateType.equalsIgnoreCase(ProcessPortalConstants.TIMESTAMP_TYPE))
             {
-               value = DateUtils.formatTime((Date) valueObj);
+               value = DateUtils.formatDateTime((Date) valueObj);
             }
          }
          if (StringUtils.isEmpty(value))
