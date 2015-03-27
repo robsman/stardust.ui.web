@@ -25,25 +25,25 @@ public class TestEventHandler extends RecordingTestcase
       InputStream requestInput = getClass().getResourceAsStream(
             "../../service/rest/requests/createEventHandler.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
-      replay(requestStream, "create Event Handler");
+      replay(requestStream, "create Event Handler", false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "Process1", "Process 1");
       ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
-      EventHandlerType eventHandler = assertEventHandler(activity, "abc", "abc", "exception");      
+      EventHandlerType eventHandler = assertEventHandler(activity, "abc", "abc", "exception");
       assertThat(eventHandler.isConsumeOnMatch(), is(true));
-      assertThat(eventHandler.isLogHandler(), is(true));      
-      
+      assertThat(eventHandler.isLogHandler(), is(true));
+
       requestInput = getClass().getResourceAsStream(
             "../../service/rest/requests/updateEventHandler.txt");
       requestStream = new InputStreamReader(requestInput);
-      replay(requestStream, "update Event Handler");
+      replay(requestStream, "update Event Handler", false);
 
       process = GenericModelingAssertions.assertProcess(providerModel, "Process1", "Process 1");
       activity = GenericModelingAssertions.assertActivity(process, "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
       eventHandler = assertEventHandler(activity, "abc", "abc", "exception");
       assertThat(eventHandler.isConsumeOnMatch(), is(false));
-      assertThat(eventHandler.isLogHandler(), is(false));      
-      
+      assertThat(eventHandler.isLogHandler(), is(false));
+
       // saveReplayModel("C:/tmp");
    }
 
@@ -64,9 +64,9 @@ public class TestEventHandler extends RecordingTestcase
       assertThat(foundHandler.getType().getId(), is(type));
       return foundHandler;
    }
-  
+
    protected boolean includeConsumerModel()
    {
       return false;
-   }   
+   }
 }

@@ -25,7 +25,7 @@ public class TestDataMappings extends RecordingTestcase
             "../../service/rest/requests/createUIMashupDataMappingOperations.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
 
-      replay(requestStream, "testUIMashUpDatamappings");
+      replay(requestStream, "testUIMashUpDatamappings", false);
 
       //saveReplayModel("C:/development/");
 
@@ -64,7 +64,7 @@ public class TestDataMappings extends RecordingTestcase
             "../../service/rest/requests/changeDataMappingsToInputOutput.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
 
-      replay(requestStream, "testChangeDataMappingsToInputOutput");
+      replay(requestStream, "testChangeDataMappingsToInputOutput", false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "DatamappingProcess","Datamapping Process");
       ActivityType activity = assertUIMashupProcess(process);
@@ -107,7 +107,7 @@ public class TestDataMappings extends RecordingTestcase
             "../../service/rest/requests/changeDataMappingsGeneral.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
 
-      replay(requestStream, "changeDataMappingsGeneral");
+      replay(requestStream, "changeDataMappingsGeneral", false);
 
       //saveReplayModel("C:/development/");
 
@@ -144,7 +144,7 @@ public class TestDataMappings extends RecordingTestcase
             "../../service/rest/requests/createMultipleDataMappings.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
 
-      replay(requestStream, "testMultipleDatamappings");
+      replay(requestStream, "testMultipleDatamappings", false);
 
       DataType data = GenericModelingAssertions.assertPrimitiveData(providerModel, "PrimitiveData", "Primitive Data", "String");
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "ProviderProcess", "Provider Process");

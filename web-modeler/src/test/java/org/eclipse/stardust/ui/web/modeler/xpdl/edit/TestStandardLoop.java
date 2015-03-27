@@ -31,7 +31,7 @@ public class TestStandardLoop extends RecordingTestcase
             "../../service/rest/requests/createStandardLoop.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
 
-      replay(requestStream, "createStandardLoop");
+      replay(requestStream, "createStandardLoop", false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "Process1", "Process 1");
       ActivityType activity = GenericModelingAssertions.assertActivity(process, "UserTask1", "User Task 1", ActivityImplementationType.MANUAL_LITERAL);

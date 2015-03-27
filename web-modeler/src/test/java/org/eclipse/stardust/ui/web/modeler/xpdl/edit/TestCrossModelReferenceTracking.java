@@ -20,27 +20,27 @@ public class TestCrossModelReferenceTracking extends RecordingTestcase
    {
       providerModel = modelService.findModel(PROVIDER_MODEL_ID);
       providerModel2 = modelService.findModel(PROVIDER_MODEL_ID2);
-      
+
       consumerModel = modelService.findModel(CONSUMER_MODEL_ID);
 
       InputStream requestInput = getClass().getResourceAsStream(
             "../../service/rest/requests/createRolesForProvider.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
-      replay(requestStream, "createRolesForProvider");
+      replay(requestStream, "createRolesForProvider", false);
 
       requestInput = getClass().getResourceAsStream(
             "../../service/rest/requests/createRolesForProvider2.txt");
       requestStream = new InputStreamReader(requestInput);
-      replay(requestStream, "createRolesForProvider2");
-      
+      replay(requestStream, "createRolesForProvider2", false);
+
       requestInput = getClass().getResourceAsStream(
             "../../service/rest/requests/prepareMultiModelConsumer.txt");
       requestStream = new InputStreamReader(requestInput);
-      replay(requestStream, "prepareMultiModelConsumer");
-      
+      replay(requestStream, "prepareMultiModelConsumer", false);
+
 
       RoleType role2 = null;
-      RoleType role1 = null;      
+      RoleType role1 = null;
       for(RoleType role : consumerModel.getRole())
       {
          if(role.getId().equals("Role2"))
@@ -50,13 +50,13 @@ public class TestCrossModelReferenceTracking extends RecordingTestcase
          if(role.getId().equals("Role1"))
          {
             role1 = role;
-         }         
+         }
       }
-      
+
       assertThat(role2, is(nullValue()));
       assertThat(role1, is(not(nullValue())));
       assertThat(role1.eIsProxy(), is(false));
-      
+
       EList<ProcessDefinitionType> processDefinitions = consumerModel.getProcessDefinition();
       ProcessDefinitionType processDefinition = processDefinitions.get(0);
       assertThat(processDefinition, is(not(nullValue())));
@@ -67,19 +67,19 @@ public class TestCrossModelReferenceTracking extends RecordingTestcase
       assertThat(performer, is(not(nullValue())));
       assertEquals(performer, role1);
 
-      
+
       EList<ExternalPackage> externalPackage = consumerModel.getExternalPackages().getExternalPackage();
       assertThat(externalPackage.size(), is(0));
-      
+
       saveModel();
-      
+
       List<AttributeType> attributes = consumerModel.getAttribute();
       for(AttributeType attribute : attributes)
       {
          String attributeName = attribute.getName();
          assertThat(attributeName, not(containsString("carnot:connection:")));
       }
-      
+
       // saveReplayModel("C:/tmp");
    }
 

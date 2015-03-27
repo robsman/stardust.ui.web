@@ -53,7 +53,7 @@ public class TestCrossModelSupport extends TestGeneralModeling
             "../../service/rest/requests/dragAndDropFromProviderToConsumer.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
 
-      replay(requestStream, "testDragAndDropFromProviderToConsumer");
+      replay(requestStream, "testDragAndDropFromProviderToConsumer", false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(consumerModel, "ConsumerProcess", "ConsumerProcess");
       assertReferencedPrimitiveData(consumerModel, providerModel, "ProvidedPrimitive", "ProvidedPrimitive", "String");
@@ -81,7 +81,7 @@ public class TestCrossModelSupport extends TestGeneralModeling
       InputStream requestInput = getClass().getResourceAsStream(
             "../../service/rest/requests/crossModelingByDropDown.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
-      replay(requestStream, "testCrossModelingByDropDown");
+      replay(requestStream, "testCrossModelingByDropDown", false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(consumerModel, "ConsumerSubProcess", "ConsumerSubProcess");
       ActivityType activity = GenericModelingAssertions.assertActivity(process, "ConsumerUIMashup", "ConsumerUIMashup", ActivityImplementationType.APPLICATION_LITERAL);
@@ -106,7 +106,7 @@ public class TestCrossModelSupport extends TestGeneralModeling
       InputStream requestInput = getClass().getResourceAsStream(
             "../../service/rest/requests/switchSubprocessFromRemoteToLocal.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
-      replay(requestStream, "testSwitchSubprocessFromRemoteToLocal");
+      replay(requestStream, "testSwitchSubprocessFromRemoteToLocal", false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(consumerModel, "ConsumerProcess", "ConsumerProcess");
       ActivityType activity = GenericModelingAssertions.assertActivity(process, "ProvidedProcess", "ProvidedProcess", ActivityImplementationType.SUBPROCESS_LITERAL);
@@ -128,7 +128,7 @@ public class TestCrossModelSupport extends TestGeneralModeling
       InputStream requestInput = getClass().getResourceAsStream(
             "../../service/rest/requests/switchSubprocessFromLocalToRemote.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
-      replay(requestStream, "testSwitchSubprocessFromLocalToRemote");
+      replay(requestStream, "testSwitchSubprocessFromLocalToRemote", false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(consumerModel, "ConsumerProcess", "ConsumerProcess");
       ActivityType activity = GenericModelingAssertions.assertActivity(process, "ProvidedProcess", "ProvidedProcess", ActivityImplementationType.SUBPROCESS_LITERAL);
@@ -150,7 +150,7 @@ public class TestCrossModelSupport extends TestGeneralModeling
       InputStream requestInput = getClass().getResourceAsStream(
             "../../service/rest/requests/processInterfaceUsesReferencedTypedeclarations.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
-      replay(requestStream, "processInterfaceUsesReferencedTypedeclarations");
+      replay(requestStream, "processInterfaceUsesReferencedTypedeclarations", false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcessInterface(consumerModel, "ConsumerSubProcess", "ConsumerSubProcess", 2);
 
@@ -202,7 +202,7 @@ public class TestCrossModelSupport extends TestGeneralModeling
       InputStream requestInput = getClass().getResourceAsStream(
             "../../service/rest/requests/crossModelingRename.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
-      replay(requestStream, "testCrossModelingRename");
+      replay(requestStream, "testCrossModelingRename", false);
 
       ModelType brokenModel = XpdlModelIoUtils.loadModel(brokenModelXML, modelService.getModelManagementStrategy());
 

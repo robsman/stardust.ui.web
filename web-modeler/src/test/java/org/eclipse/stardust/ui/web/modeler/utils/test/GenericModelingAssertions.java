@@ -7,6 +7,8 @@ import java.lang.reflect.Proxy;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.gson.JsonObject;
+
 import org.eclipse.stardust.model.xpdl.builder.connectionhandler.EObjectProxyHandler;
 import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.extensions.FormalParameterMappingsType;
@@ -401,6 +403,14 @@ public class GenericModelingAssertions
       assertThat(attribute.getValue(), is(not(nullValue())));
       assertThat(attribute.getValue(), is(value));
       return attribute;
+   }
+
+   public static void assertJsonHas(JsonObject json, String... keys)
+   {
+      for (int i = 0; i < keys.length; i++)
+      {
+         assertThat(json.has(keys[i]), is(true));
+      }
    }
 
 

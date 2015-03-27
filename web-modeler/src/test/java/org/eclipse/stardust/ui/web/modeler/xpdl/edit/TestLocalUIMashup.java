@@ -26,7 +26,7 @@ public class TestLocalUIMashup extends TestGeneralModeling
             "../../service/rest/requests/createProcessWithUIMashup.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
 
-      replay(requestStream, "testCreateProcessWithUIMashup");
+      replay(requestStream, "testCreateProcessWithUIMashup", false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "UIMashupProcess", "UIMashupProcess");
       assertUIMashupProcess(process);

@@ -31,7 +31,7 @@ public class TestUndoOperation extends TestGeneralModeling
             "../../service/rest/requests/deleteDataSymbolAndUndo.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
 
-      replay(requestStream, "deleteDataSymbolAndUndo");
+      replay(requestStream, "deleteDataSymbolAndUndo", false);
 
       DataType data = GenericModelingAssertions.assertPrimitiveData(providerModel, "ProvidedPrimitive", "ProvidedPrimitive", "String");
 

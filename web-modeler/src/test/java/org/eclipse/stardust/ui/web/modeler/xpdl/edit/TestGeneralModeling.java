@@ -23,7 +23,7 @@ public class TestGeneralModeling extends RecordingTestcase
             "../../service/rest/requests/createBasicModelElementsInProvider.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
 
-      replay(requestStream, "testBasicModelElementsInProvider");
+      replay(requestStream, "testBasicModelElementsInProvider", false);
 
       GenericModelingAssertions.assertPrimitiveData(providerModel, "ProvidedPrimitive", "ProvidedPrimitive", "String");
       GenericModelingAssertions.assertStructData(providerModel, "ProvidedStructData", "ProvidedStructData", "ProvidedTypeDeclaration");
@@ -58,7 +58,7 @@ public class TestGeneralModeling extends RecordingTestcase
             "../../service/rest/requests/deleteConnections.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
 
-      replay(requestStream, "testDeleteConnections");
+      replay(requestStream, "testDeleteConnections", false);
 
       //saveReplayModel("C:/development/");
 

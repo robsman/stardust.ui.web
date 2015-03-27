@@ -8,22 +8,32 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.annotation.Resource;
 
 import org.eclipse.emf.ecore.EObject;
-import org.eclipse.stardust.engine.api.runtime.Document;
-import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
-import org.eclipse.stardust.engine.api.runtime.Folder;
-import org.eclipse.stardust.engine.api.runtime.User;
-import org.eclipse.stardust.engine.api.runtime.UserService;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.FixMethodOrder;
+import org.junit.runner.RunWith;
+import org.junit.runners.MethodSorters;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.util.ReflectionUtils;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelIoUtils;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
@@ -41,16 +51,6 @@ import org.eclipse.stardust.ui.web.modeler.service.ModelerSessionController;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.utils.test.ChangeApiDriver;
 import org.eclipse.stardust.ui.web.modeler.utils.test.MockServiceFactoryLocator;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.FixMethodOrder;
-import org.junit.runner.RunWith;
-import org.junit.runners.MethodSorters;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"../../web-modeler-recording-test-context.xml"})
@@ -98,6 +98,58 @@ public class RecordingTestcase
 
    protected String modelLocation = "../../service/rest/";
 
+   protected List<TestResponse> testResponses = new ArrayList<TestResponse>();
+
+   protected class TestResponse
+   {
+      private int responseNumber;
+
+      private String commandID;
+
+      private JsonArray added;
+
+      private JsonArray modified;
+
+      private JsonArray removed;
+
+      public TestResponse(int count, JsonObject response)
+      {
+         JsonObject changes = response.get("changes").getAsJsonObject();
+         commandID = response.get("commandId").getAsString();
+         added = changes.get("added").getAsJsonArray();
+         modified = changes.get("modified").getAsJsonArray();
+         removed = changes.get("removed").getAsJsonArray();
+         responseNumber = count;
+      }
+
+      public JsonArray getAdded()
+      {
+         return added;
+      }
+
+      public JsonArray getModified()
+      {
+         return modified;
+      }
+
+      public JsonArray getRemoved()
+      {
+         return removed;
+      }
+
+      public String getCommandID()
+      {
+         return commandID;
+      }
+
+      public int getResponseNumber()
+      {
+         return responseNumber;
+      }
+
+
+   };
+
    protected void initUUIDMap()
    {
       modelService.getModelManagementStrategy().uuidMapper().empty();
@@ -110,7 +162,7 @@ public class RecordingTestcase
          eObjectUUIDMapper.map(i.next());
       }
       if (includeProviderModel2())
-      {         
+      {
          eObjectUUIDMapper.map(providerModel2);
          for (Iterator<EObject> i = providerModel2.eAllContents(); i.hasNext();)
          {
@@ -129,12 +181,13 @@ public class RecordingTestcase
    }
 
 
-   protected String[] replay(InputStreamReader requestStream, String testScenarioName) throws IOException
+   protected String[] replay(InputStreamReader requestStream, String testScenarioName, boolean performResponseCallback) throws IOException
    {
       System.out.println("Replay Commands for '" + this.getClass().getSimpleName() + "." + testScenarioName + "'");
       String line;
       String responseString = null;
       String expectedResponse = null;
+      int responseNumber = 0;
       BufferedReader requestReader = new BufferedReader(requestStream);
       while ((line = requestReader.readLine()) != null)
       {
@@ -144,26 +197,53 @@ public class RecordingTestcase
          if (newJto != null)
          {
             newJto = jsonIo.gson().fromJson(command, CommandJto.class);
-            changeApiDriver.performChange(newJto);
+            JsonObject response = changeApiDriver.performChange(newJto);
+
+            if (performResponseCallback)
+            {
+               TestResponse testResponse = new TestResponse(++responseNumber, response);
+               Method method = ReflectionUtils.findMethod(this.getClass(),
+                     testScenarioName + "Callback", new Class[] {TestResponse.class});
+               if (method != null)
+               {
+                  try
+                  {
+                     method.invoke(this, new Object[] {testResponse});
+                  }
+                  catch (InvocationTargetException t)
+                  {
+                     System.out.println("Assertion of response " + responseNumber + " failed.");
+                     throw new AssertionError(t.getTargetException());
+                  }
+                  catch (Throwable t)
+                  {
+                  }
+               }
+            }
          }
       }
       System.out.println("Replay finished.");
       return new String[] {responseString, expectedResponse};
    }
 
+   protected List<TestResponse> getTestResponses()
+   {
+      return testResponses;
+   }
+
    public void saveModel()
    {
       XpdlModelIoUtils.saveModel(providerModel);
       if (providerModel2 != null)
-      {      
+      {
          XpdlModelIoUtils.saveModel(providerModel2);
       }
       if (consumerModel != null)
       {
          XpdlModelIoUtils.saveModel(consumerModel);
-      }      
-   }   
-   
+      }
+   }
+
    protected void saveReplayModel(String filePath)
    {
       byte[] bytes = XpdlModelIoUtils.saveModel(providerModel);
@@ -182,7 +262,7 @@ public class RecordingTestcase
       }
 
       if (providerModel2 != null)
-      {      
+      {
          bytes = XpdlModelIoUtils.saveModel(providerModel2);
          xmlString = new String(bytes);
          try
@@ -198,7 +278,7 @@ public class RecordingTestcase
             e.printStackTrace();
          }
       }
-            
+
       if (consumerModel != null)
       {
          bytes = XpdlModelIoUtils.saveModel(consumerModel);
@@ -245,7 +325,7 @@ public class RecordingTestcase
       final Document providerModel2 = Mockito.mock(Document.class);
       Mockito.when(providerModel2.getId()).thenReturn(PROVIDER_MODEL_ID2);
       Mockito.when(providerModel2.getName()).thenReturn(PROVIDER_MODEL_ID2 + ".xpdl");
-            
+
       final Document consumerModel = Mockito.mock(Document.class);
       Mockito.when(consumerModel.getId()).thenReturn(CONSUMER_MODEL_ID);
       Mockito.when(consumerModel.getName()).thenReturn(CONSUMER_MODEL_ID + ".xpdl");
@@ -255,14 +335,14 @@ public class RecordingTestcase
       if (includeConsumerModel())
       {
          if (includeProviderModel2())
-         {         
+         {
             Mockito.when(modelsFolder.getDocuments()).thenReturn(
                   asList(providerModel, providerModel2, consumerModel));
          }
          else
          {
             Mockito.when(modelsFolder.getDocuments()).thenReturn(
-                  asList(providerModel, consumerModel));            
+                  asList(providerModel, consumerModel));
          }
       }
       else
@@ -364,5 +444,7 @@ public class RecordingTestcase
    protected boolean includeProviderModel2()
    {
       return false;
-   }  
+   }
+
+
 }

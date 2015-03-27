@@ -35,7 +35,7 @@ public class TestQualityControl extends RecordingTestcase
             "../../service/rest/requests/crossModelingQualityControl.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
 
-      replay(requestStream, "crossModelingQualityControl");
+      replay(requestStream, "crossModelingQualityControl", false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(consumerModel, "Process1", "Process 1");
       ActivityType activity = GenericModelingAssertions.assertActivity(process, "UserTask1", "User Task 1", ActivityImplementationType.MANUAL_LITERAL);
@@ -45,10 +45,10 @@ public class TestQualityControl extends RecordingTestcase
             "../../service/rest/requests/deleteQualityControl.txt");
       requestStream = new InputStreamReader(requestInput);
 
-      replay(requestStream, "deleteQualityControl");
-      
+      replay(requestStream, "deleteQualityControl", false);
+
       assertQualityControlPerformer(activity, providerModel, false);
-      
+
       // saveReplayModel("C:/tmp");
    }
 
@@ -66,9 +66,9 @@ public class TestQualityControl extends RecordingTestcase
       }
       else
       {
-         assertThat(qualityControlPerformer, is(nullValue()));         
+         assertThat(qualityControlPerformer, is(nullValue()));
          assertThat(probability, is(nullValue()));
-         assertThat(formula, is(nullValue()));         
+         assertThat(formula, is(nullValue()));
       }
    }
 }

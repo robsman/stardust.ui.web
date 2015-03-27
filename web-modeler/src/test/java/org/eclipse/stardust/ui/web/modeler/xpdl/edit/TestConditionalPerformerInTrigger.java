@@ -28,7 +28,7 @@ public class TestConditionalPerformerInTrigger extends RecordingTestcase
             "../../service/rest/requests/conditionalPerformerInTrigger.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
 
-      replay(requestStream, "conditionalPerformerInTrigger");
+      replay(requestStream, "conditionalPerformerInTrigger", false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "Process1", "Process 1");
       assertTrigger(process);

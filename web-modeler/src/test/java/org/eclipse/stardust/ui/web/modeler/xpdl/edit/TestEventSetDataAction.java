@@ -27,7 +27,7 @@ public class TestEventSetDataAction extends RecordingTestcase
             "../../service/rest/requests/createSimpleIntermediateEvent.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
 
-      replay(requestStream, "createSimpleIntermediateEvent");
+      replay(requestStream, "createSimpleIntermediateEvent", false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "Process1", "Process 1");
       ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
@@ -50,7 +50,7 @@ public class TestEventSetDataAction extends RecordingTestcase
             "../../service/rest/requests/createEventSetDataAction.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
 
-      replay(requestStream, "createEventSetDataAction");
+      replay(requestStream, "createEventSetDataAction", false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "Process1", "Process 1");
       ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
@@ -80,7 +80,7 @@ public class TestEventSetDataAction extends RecordingTestcase
             "../../service/rest/requests/removeEventSetDataAction.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
 
-      replay(requestStream, "removeEventSetDataAction");
+      replay(requestStream, "removeEventSetDataAction", false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "Process1", "Process 1");
       ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
