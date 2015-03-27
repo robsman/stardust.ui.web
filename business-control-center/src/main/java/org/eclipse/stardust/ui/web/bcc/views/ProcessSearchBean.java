@@ -16,6 +16,7 @@ import static org.eclipse.stardust.ui.web.common.util.DateUtils.formatDateTime;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,11 +38,10 @@ import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
-import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstancePriority;
+import org.eclipse.stardust.engine.api.runtime.RuntimeEnvironmentInfo;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.bcc.ActivitySearchProvider;
-import org.eclipse.stardust.ui.web.bcc.AuditTrailProcessInstanceInfo;
 import org.eclipse.stardust.ui.web.bcc.ProcessSearchProvider;
 import org.eclipse.stardust.ui.web.bcc.ResourcePaths;
 import org.eclipse.stardust.ui.web.bcc.ActivitySearchProvider.ActivityFilterAttributes;
@@ -53,7 +53,6 @@ import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
-import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.FilterToolbarItem;
 import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataMapping;
@@ -1101,13 +1100,18 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
          caseDataPath = caseProcessDefinition.getAllDataPaths();
       }
       
-      AuditTrailProcessInstanceInfo auditTrailProcessInstance = (AuditTrailProcessInstanceInfo) FacesUtils
-            .getBeanFromContext("auditTrailProcessInstanceInfo");
-      ProcessInstance instance = auditTrailProcessInstance.getProcessInstance();
-      if (instance != null)
+      RuntimeEnvironmentInfo runtimeEnvironmentInfo = ServiceFactoryUtils.getQueryService().getRuntimeEnvironmentInfo();
+      Long lastArchivingTime  = runtimeEnvironmentInfo.getLastArchivingTime();
+      if (lastArchivingTime == null)
       {
-         auditTrailOldestPI = formatDateTime(instance.getStartTime());
+         auditTrailOldestPI = "";
       }
+      else
+      {
+         Date date = new Date(lastArchivingTime);
+         auditTrailOldestPI = formatDateTime(date);
+      }
+
    }
    
    /**
