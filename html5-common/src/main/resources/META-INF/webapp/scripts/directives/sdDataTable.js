@@ -187,6 +187,7 @@
 		var sortingMode, sortByGetter, enableFiltering;
 		var columnFilters;
 		var exportConfig = {}, exportAnchor = document.createElement("a"), remoteModeLastParams;
+		var localModeData, localModeRefreshInitiated;
 
 		// Setup component instance
 		setup();
@@ -622,8 +623,7 @@
 				dtColumns.push({
 					sName: col.name,
 					mData: colRenderer(col),
-					bSortable: col.sortable,
-					sType: attr.sdaMode == 'local' ? 'string' : undefined
+					bSortable: col.sortable
 				});
 			});
 
@@ -636,11 +636,6 @@
 
 					if (type === 'display') {
 						ret = col.contents;
-					} else {
-						// For 'local' mode return the actual value for types other than display
-						if (attr.sdaMode == 'local') {
-							ret = row[col.field];
-						}
 					}
 
 					if (ret == undefined || ret == null) {
@@ -835,22 +830,20 @@
 			}
 			dtOptions.fnCreatedRow = createRowHandler;
 
-			if (attr.sdaMode == 'local') {
-				buildDataTableLocalMode(dtOptions);
-			} else {
-				buildDataTableRemoteMode(dtOptions);
-			}
-		}
+			var localMode = attr.sdaMode == 'local';
 
-		/*
-		 * 
-		 */
-		function buildDataTableRemoteMode(dtOptions) {
 			dtOptions.bServerSide = true;
 			dtOptions.sAjaxSource = "dummy.html";
-			dtOptions.fnServerData = ajaxHandler;
+			dtOptions.fnServerData = localMode ? ajaxHandlerLocalMode : ajaxHandler;
 
-			trace.log(theTableId + ': Building table for remote mode... with options: ', dtOptions);
+			if (localMode) {
+				if (disablePagination) {
+					dtOptions.sDom = 't';
+				}
+			}
+
+			trace.log(theTableId + ': Building table for ' + 
+				(localMode ? 'local' : 'remote') + ' mode... with options: ', dtOptions);
 
 			try {
 				theDataTable = theTable.DataTable(dtOptions);
@@ -864,32 +857,80 @@
 		/*
 		 * 
 		 */
-		function buildDataTableLocalMode(dtOptions) {
-			trace.log(theTableId + ': Building table for local mode... with options: ', dtOptions);
+		function ajaxHandlerLocalMode(source, data, callback, settings) {
+			var dataMap = {};
+			for (var i = 0; i < data.length; i++) {
+				dataMap[data[i].name] = data[i].value;
+			}
 
-			fetchData(undefined).then(function(result) {
-				try {
-					dtOptions.aaData = result.list ? result.list : result;
+			var ret = {
+				"sEcho" : dataMap['sEcho']
+			};
 
-					validateData(dtOptions.aaData);
-	
-					if (disablePagination) {
-						dtOptions.iDisplayLength = dtOptions.aaData.length;
-						dtOptions.sDom = 't';
+			var params = {skip : dataMap['iDisplayStart'], pageSize : dataMap['iDisplayLength']};
+
+			// TODO: Sorting, Filtering
+			
+			if(localModeRefreshInitiated) {
+				localModeData = undefined;
+				localModeRefreshInitiated = false;
+			}
+				
+			if (!localModeData) {
+				fetchData(undefined).then(function(result) {
+					try {
+						localModeData = result.list ? result.list : result;
+
+						validateData(localModeData);
+		
+						ret.iTotalRecords = localModeData.length;
+						ret.iTotalDisplayRecords = localModeData.length;
+						
+						if (disablePagination) {
+							ret.aaData = localModeData;
+						} else {
+							ret.aaData = getLocalModePageData(params);
+						}
+
+						callback(ret);
+					} catch (e) {
+						showErrorOnUI(e);
 					}
+				}, function(error) {
+					alert('Error while fetching data'); // TODO
+				});
+			} else {
+				ret.iTotalRecords = localModeData.length;
+				ret.iTotalDisplayRecords = localModeData.length;
 
-					theDataTable = theTable.DataTable(dtOptions);
-					buildDataTableCompleted();
-					
-					// refresh is required, otherwise ng-clicks from cells does not work.
-					// TODO: Find some otherway to fix ng-click issue.
-					refresh(true);
-				} catch (e) {
-					showErrorOnUI(e);
+				if (disablePagination) {
+					ret.aaData = localModeData;
+				} else {
+					ret.aaData = getLocalModePageData(params);
 				}
-			}, function(error) {
-				alert('Error while fetching data'); // TODO
-			});
+
+				callback(ret);
+			}
+
+			/*
+			 * 
+			 */
+			function getLocalModePageData(params) {
+				var pageData = [];
+
+				if (localModeData) {
+					var end = params.skip + params.pageSize;
+					if (end > localModeData.length) {
+						end = localModeData.length;
+					}
+		
+					for (var i = params.skip; i < end; i++) {
+						pageData.push(localModeData[i]);
+					}
+				}
+
+				return pageData;
+			}
 		}
 
 		/*
@@ -968,14 +1009,10 @@
 		 */
 		function buildDataTableCompleted() {
 			// Initialization handler
-			if (attr.sdaMode == 'local') {
+			theDataTable.on('init.dt', function() {
 				firePaginationEvent();
-			} else {
-				theDataTable.on('init.dt', function() {
-					firePaginationEvent();
-				});
-			}
-			
+			});
+
 			// Register for pagination events
 			theDataTable.on('page.dt', firePaginationEvent);
 
@@ -1226,36 +1263,11 @@
 		 */
 		function refresh(retainPageIndex) {
 			trace.log(theTableId + ': Refreshing table with retainPageIndex = ' + retainPageIndex);
+
 			if (attr.sdaMode == 'local') {
-				fetchData(undefined).then(function(result) {
-					try {
-						var data = result.list ? result.list : result;
-
-						validateData(data);
-
-						theDataTable.fnClearTable(false);
-
-						if (disablePagination) {
-							theDataTable.fnSettings()._iDisplayLength = data.length;
-						} else {
-							if (retainPageIndex) {
-								var settings = theDataTable.fnSettings();
-								var currentPage = (settings._iDisplayStart / settings._iDisplayLength);
-								jumpToPage = currentPage;
-							}
-						}
-
-						theDataTable.fnAddData(data, false);
-						theDataTable.fnDraw(false);
-					} catch(e) {
-						showErrorOnUI(e);
-					}
-				}, function(error) {
-					alert('Error while fetching data'); // TODO
-				});
-			} else {
-				theDataTable.fnDraw(!retainPageIndex);
+				localModeRefreshInitiated = true;
 			}
+			theDataTable.fnDraw(!retainPageIndex);
 		}
 
 		/*
@@ -1534,25 +1546,13 @@
 				var start = 0;
 				var end = tableData.length;
 
-				if (attr.sdaMode == 'local') {
-					var settings = theDataTable.fnSettings();
-					start = settings._iDisplayStart;
-					end = settings._iDisplayEnd;
-				}
-
 				var data = [];
 				for (var i = start; i < end; i++) {
 					data.push(tableData[i]);
 				}
 				return data;
 			} else {
-				if (attr.sdaMode == 'local') {
-					// TODO: Get the current UI ordered Data
-					var settings = theDataTable.fnSettings();
-					return tableData[settings._iDisplayStart + index];
-				} else {
-					return tableData[index];
-				}
+				return tableData[index];
 			}
 		}
 
@@ -1560,13 +1560,8 @@
 		 * 
 		 */
 		function getPageDataCount() {
-			if (attr.sdaMode == 'local') {
-				var settings = theDataTable.fnSettings();
-				return settings._iDisplayEnd - settings._iDisplayStart;
-			} else {
-				var data = theDataTable.fnGetData();
-				return data.length;
-			}
+			var data = theDataTable.fnGetData();
+			return data.length;
 		}
 
 		/*
@@ -2016,7 +2011,7 @@
 
 			var data;
 			if (exportAllRows) {
-				data = theDataTable.fnGetData();
+				data = localModeData;
 			} else {
 				data = getPageData();
 			}
