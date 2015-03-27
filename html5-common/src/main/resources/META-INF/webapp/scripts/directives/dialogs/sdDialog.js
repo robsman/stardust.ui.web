@@ -172,6 +172,15 @@
 				self.cancelAction = closeDialog;
 				self.isOpen = false;
 				
+				self.onKeyUp = function(evt){
+				  if (angular.equals(evt.keyCode, 13)){
+				    self.confirmAction(); 
+				  }
+				  if (angular.equals(evt.keyCode, 27)){
+            self.cancelAction(); 
+          } 
+        }
+				
 				$scope.$watch('showDialog', function(showDialog) {
 					if(showDialog === true){
 						openDialog();
