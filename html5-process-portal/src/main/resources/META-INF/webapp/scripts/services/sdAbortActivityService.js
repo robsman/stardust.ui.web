@@ -21,13 +21,11 @@
          return service;
       } ];
    });
-
    /**
     * 
     */
    function AbortActivityService($q, $http) {
       var REST_URL = "services/rest/portal/activity-instances/abort";
-
       /**
        * 
        */
@@ -38,9 +36,7 @@
             scope : scope,
             activities : activities
          };
-
          var httpResponse = $http.post(REST_URL, requestObj);
-
          httpResponse.success(function(data) {
             deferred.resolve(data);
          }).error(function(data) {
@@ -50,5 +46,4 @@
          return deferred.promise;
       };
    };
-
 })();

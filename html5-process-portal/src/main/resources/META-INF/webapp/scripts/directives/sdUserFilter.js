@@ -15,7 +15,6 @@
 	'use strict';
 
    angular.module('bpm-common').directive( 'sdUserFilter',[ 'sdUtilService', UserFilterDirective]);
-
    /*
     * 
     */
@@ -41,5 +40,4 @@
          }
       };
    };
- 
 })();

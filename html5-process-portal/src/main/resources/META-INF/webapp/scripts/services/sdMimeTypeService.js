@@ -55,7 +55,6 @@
 		'application/octet-stream' : 'sc sc-fw sc-document-o',
 		'text/xml' : 'sc sc-fw sc-document-html-o'
 	};
-
 	/**
 	 * 
 	 */
@@ -73,7 +72,5 @@
 			}
 			return icon;
 		};
-	}
-	;
-
+	};
 })();

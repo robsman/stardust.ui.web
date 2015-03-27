@@ -18,7 +18,9 @@ import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtil
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -49,12 +51,14 @@ import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.ProcessDefinitionFilter;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
+import org.eclipse.stardust.engine.api.query.SubsetPolicy;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.QualityAssuranceUtils.QualityAssuranceState;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.rest.FilterDTO.BooleanDTO;
 import org.eclipse.stardust.ui.web.rest.FilterDTO.RangeDTO;
@@ -119,8 +123,22 @@ public class ActivityTableUtils
    private static final String COL_CRITICALITY = "criticality";
 
    private static final String COL_PRIOIRTY = "priority";
+   
+   private static final String TODAY = "today";
 
-   private static double PORTAL_CRITICALITY_MUL_FACTOR = 1000;
+   private static final String THIS_WEEK = "thisWeek";
+
+   private static final String THIS_MONTH = "thisMonth";
+
+   private static final String THIS_QUARTER = "thisQuarter";
+
+   private static final String LAST_SIX_MONTHS = "lastSixMonths";
+
+   private static final String LAST_YEAR = "lastYear";
+
+   private static final String ALL = "all";
+
+   public static double PORTAL_CRITICALITY_MUL_FACTOR = 1000;
    
    public static enum MODE {
       ACTIVITY_TABLE, WORKLIST;
@@ -166,9 +184,7 @@ public class ActivityTableUtils
                         : ActivityInstanceQuery.OID).lessOrEqual(filterDTO.activityOID.to));
          }
       }
-
       //Process Instance Oid
-
       if (null != filterDTO.processOID)
       {
          if (null != filterDTO.processOID.from)
@@ -183,30 +199,27 @@ public class ActivityTableUtils
                   ? WorklistQuery.PROCESS_INSTANCE_OID
                         : ActivityInstanceQuery.PROCESS_INSTANCE_OID).lessOrEqual(filterDTO.processOID.to));
          }
-
       }
-
       // Start Filter
-      if (null != filterDTO.started)
+      if (null != filterDTO.startTime)
       {
 
-         if (filterDTO.started.from != null)
+         if (filterDTO.startTime.from != null)
          {
-            Date fromDate = new Date(filterDTO.started.from);
+            Date fromDate = new Date(filterDTO.startTime.from);
             filter.and((worklistQuery
                   ? WorklistQuery.START_TIME
                         : ActivityInstanceQuery.START_TIME).greaterOrEqual(fromDate.getTime()));
          }
 
-         if (filterDTO.started.to != null)
+         if (filterDTO.startTime.to != null)
          {
-            Date toDate = new Date(filterDTO.started.to);
+            Date toDate = new Date(filterDTO.startTime.to);
             filter.and((worklistQuery
                   ? WorklistQuery.START_TIME
                         : ActivityInstanceQuery.START_TIME).lessOrEqual(toDate.getTime()));
          }
       }
-
       // Modified Filter
       if (null != filterDTO.lastModified)
       {
@@ -231,16 +244,13 @@ public class ActivityTableUtils
                               .getTime()));
          }
       }
-
       // Status Filter
       if (null != filterDTO.status)
       {
          FilterOrTerm or = filter.addOrTerm();
          for (String status : filterDTO.status.like)
          {
-
             Integer actState = Integer.parseInt(status);
-
             if (!worklistQuery)
             {
                or.add(ActivityInstanceQuery.STATE.isEqual(Long.parseLong(status
@@ -253,7 +263,6 @@ public class ActivityTableUtils
             }
          }
       }
-
       // Priority Filter
       if (null != filterDTO.priority)
       {
@@ -266,7 +275,6 @@ public class ActivityTableUtils
                               .valueOf(priority)));
          }
       }
-
       // Criticality Filter
       if (null != filterDTO.criticality)
       {
@@ -281,7 +289,6 @@ public class ActivityTableUtils
          }
 
       }
-
       // Activities Filter
       if (null != filterDTO.activityName)
       {
@@ -312,7 +319,6 @@ public class ActivityTableUtils
             }
          }
       }
-
       // Process Filter
       if (null != filterDTO.processName)
       {
@@ -321,12 +327,10 @@ public class ActivityTableUtils
          {
             for (String processQId : filterDTO.processName.processes)
             {
-
                or.add(new ProcessDefinitionFilter(processQId, false));
             }
          }
       }
-
       // Assigned To
       if (null != filterDTO.assignedTo)
       {
@@ -353,7 +357,6 @@ public class ActivityTableUtils
             }
          }
       }
-
       //Completed By
       if ( null != filterDTO.completedBy)
       {
@@ -363,9 +366,7 @@ public class ActivityTableUtils
             or.add(new org.eclipse.stardust.engine.api.query.PerformedByUserFilter(user.OID));
          }
       }
-
       addDescriptorFilters(query, filterDTO);
-
    }
 
    /**
@@ -442,15 +443,11 @@ public class ActivityTableUtils
                   ((DateRange) value).setToDateValue(new Date(to));
                }
             }
-
             filterModel.setFilterValue(key, (Serializable) value);
          }
-
          DescriptorFilterUtils.applyFilters(query, filterModel);
       }
-
    }
-
 
 
    /**
@@ -647,7 +644,6 @@ public class ActivityTableUtils
             dto.assignedTo = getAssignedToLabel(ai);
             dto.criticality = populateCriticalityDTO(criticalityConfigurations, ai);
             dto.priority = DTOBuilder.build(ai, PriorityDTO.class);
-
             dto.status =  DTOBuilder.build(ai, StatusDTO.class);;
             dto.status.label = ActivityInstanceUtils.getActivityStateLabel(ai);
             dto.descriptorValues =  getProcessDescriptors(modelCache, ai);
@@ -669,17 +665,99 @@ public class ActivityTableUtils
             {
                dto.lastPerformer = getLastPerformer(ai, UserUtils.getDefaultUserNameDisplayFormat());
             }
-            
-
             list.add(dto);
          }
       }
-
       QueryResultDTO resultDTO = new QueryResultDTO();
       resultDTO.list = list;
       resultDTO.totalCount = queryResult.getTotalCount();
 
       return resultDTO;
+   }
+   
+   /**
+    * 
+    * @param fromDateString
+    * @return
+    */
+   public static Date determineDate(String fromDateString)
+   {
+      Calendar calendar = new GregorianCalendar(PortalApplication.getInstance().getTimeZone());
+      if (fromDateString.equals(TODAY))
+      {
+         calendar.set(Calendar.HOUR_OF_DAY, 0);
+         calendar.set(Calendar.MINUTE, 0);
+         calendar.set(Calendar.SECOND, 0);
+         calendar.set(Calendar.MILLISECOND, 0);
+      }
+      else if (fromDateString.equals(THIS_WEEK))
+      {
+         calendar.set(Calendar.HOUR_OF_DAY, 0);
+         calendar.set(Calendar.MINUTE, 0);
+         calendar.set(Calendar.SECOND, 0);
+         calendar.set(Calendar.MILLISECOND, 0);
+         calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+      }
+      else if (fromDateString.equals(THIS_MONTH))
+      {
+         calendar.set(Calendar.HOUR_OF_DAY, 0);
+         calendar.set(Calendar.MINUTE, 0);
+         calendar.set(Calendar.SECOND, 0);
+         calendar.set(Calendar.MILLISECOND, 0);
+         calendar.set(Calendar.DAY_OF_MONTH, 1);
+      }
+      else if (fromDateString.equals(THIS_QUARTER))
+      {
+         int month = calendar.get(Calendar.MONTH);
+
+         int quarter = month / 3;
+
+         calendar.set(Calendar.HOUR_OF_DAY, 0);
+         calendar.set(Calendar.MINUTE, 0);
+         calendar.set(Calendar.SECOND, 0);
+         calendar.set(Calendar.MILLISECOND, 0);
+         calendar.set(Calendar.MONTH, quarter * 3);
+         calendar.set(Calendar.DAY_OF_MONTH, 1);
+      }
+      else if (fromDateString.equals(LAST_SIX_MONTHS))
+      {
+         calendar.set(Calendar.HOUR_OF_DAY, 0);
+         calendar.set(Calendar.MINUTE, 0);
+         calendar.set(Calendar.SECOND, 0);
+         calendar.set(Calendar.MILLISECOND, 0);
+         calendar.add(Calendar.MONTH, -6);
+      }
+      else if (fromDateString.equals(LAST_YEAR))
+      {
+         calendar.set(Calendar.HOUR_OF_DAY, 0);
+         calendar.set(Calendar.MINUTE, 0);
+         calendar.set(Calendar.SECOND, 0);
+         calendar.set(Calendar.MILLISECOND, 0);
+         // TODO did FS mean since last year, only last year or since begin
+         // of last year
+         // ect.
+         // right now uses the interval of [(now - 1year), now]
+         calendar.add(Calendar.YEAR, -1);
+      }
+      else if (fromDateString.equals(ALL))
+      {
+         calendar.setTime(new Date(0));
+      }
+      return calendar.getTime();
+   }
+   
+   /**
+    * Adds the filter sort descriptor criterias and the subset policy
+    * @param query
+    * @param options
+    */
+   public static void addCriterias(Query query,Options options){
+      addDescriptorPolicy(options, query);
+      addSortCriteria(query, options);
+      addFilterCriteria(query, options);
+      SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip,
+            true);
+      query.setPolicy(subsetPolicy);
    }
 
    /**
@@ -747,7 +825,6 @@ public class ActivityTableUtils
             }
          }
       }
-      
       if(null != participantPerformer)
       {
         return participantPerformer != null ? I18nUtils.getParticipantName(participantPerformer) : null;
@@ -755,7 +832,6 @@ public class ActivityTableUtils
       
       return null;
    }
-
 
    /**
     * 
@@ -811,5 +887,4 @@ public class ActivityTableUtils
       }
     return null;
    }
-
 }

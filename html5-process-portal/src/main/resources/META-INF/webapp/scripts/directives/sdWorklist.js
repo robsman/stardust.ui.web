@@ -45,9 +45,7 @@
 				}
 		};
 
-
 		//Defaults
-
 		var DEFAULT_VALUES = {
 				MODE:'worklist',
 				WORKLIST: {
@@ -139,7 +137,6 @@
 			sdUtilService.addFunctionProxies(scope.activityTableCtrl);
 		};
 
-
 		/*
 		 *
 		 */
@@ -161,10 +158,8 @@
 			this.allAvailableCriticalities = [];
 			this.availableStates = [];
 			this.availablePriorities = [];
-
 			this.worklistPrefModule = "";
 			this.worklistPrefId ="";
-
 			this.columnSelector = 'admin';
 
 			// Process Query
@@ -295,7 +290,7 @@
 					prefValue.selectedColumns = replaceColumnNames(prefValue.selectedColumns, DEFAULT_VALUES.WORKLIST.COLUMN_NAME_MAP);
 					value = JSON.stringify(prefValue);
 					
-				}else{
+				} else {
 					try{
 						var prefValue = JSON.parse(value);
 						//Do nothing
@@ -304,7 +299,6 @@
 						value = replaceColumnNames(prefColumns, DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.COLUMN_NAME_MAP).join('$#$');
 					}
 				}
-				
 				return value;
 			};
 
@@ -353,8 +347,6 @@
 			this.fetchAllAvailableCriticalities();
 			this.fetchAvailableStates();
 			this.fetchAvailablePriorities();
-			
-			
 			/*
 			 * 
 			 */
@@ -374,7 +366,6 @@
 					}						
 				}
 			};
-			
 			/*
 			 * 
 			 */
@@ -382,7 +373,7 @@
 				var selectedItems = [];
 				if (angular.isDefined(rowItem)) {
 					selectedItems = [rowItem];
-				} else {
+				}else {
 					selectedItems = self.dataTable.getSelection();
 				}
 				
@@ -395,8 +386,6 @@
 				self.popoverDirective.show(event);
 			};
 		};
-
-
 
 		/**
 		 * 
@@ -424,17 +413,14 @@
 					result : {}
 			};
 			this.visbleColumns = DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.VISIBLE_COLUMNS;
-
 			this.exportFileName= "Activity_Table";
 
 			if (!attr.sdaPreferenceModule) {
 				throw "sdaPreferenceModule is not defined."
 			}
-
 			if (!attr.sdaPreferenceId) {
 				throw "sdaPreferenceId is not defined."
 			}
-
 			if (!attr.sdaPreferenceName) {
 				throw "sdaPreferenceName is not defined."
 			}
@@ -444,8 +430,6 @@
 		 * 
 		 */
 		ActivityTableCompiler.prototype.customizeWithAttributeValues = function(attr, scope, scopeToUse){
-
-
 			// Process Title
 			var titleExpr = "";
 			if (attr.sdaTitle) {
@@ -495,7 +479,6 @@
 				var visibleColumnGetter = $parse(attr.sdaVisibleColumns);
 				this.visbleColumns =visibleColumnGetter(scopeToUse);
 			}
-
 		};
 
 
@@ -714,9 +697,7 @@
 		ActivityTableCompiler.prototype.containsAllTrivialManualActivities = function() {
 			var self = this;
 			var selectedtems = [];
-
 			var dataTable = self.dataTable;
-
 			if(dataTable != null){
 				selectedtems = dataTable.getSelection();
 			}
@@ -742,9 +723,7 @@
 		 * 
 		 */
 		ActivityTableCompiler.prototype.isSelectionHomogenous = function( selectedRows ) {
-
 			var firstItem = selectedRows[0];
-
 			var matchArray = [];
 
 			angular.forEach( selectedRows, function(row) {
@@ -1074,18 +1053,14 @@
 			var processActivityMap = {};
 			//process oid to priority map to send to service
 			var requestData = {};
-
-
 			angular.forEach(self.activities.list,function( rowData ){
 				if(angular.isDefined(self.changedPriorities[ rowData.activityOID ])){
 					processActivityMap[rowData.processInstance.oid] =  	rowData.activity.name +' (#'+rowData.activityOID+')';
 					requestData[rowData.processInstance.oid] = self.changedPriorities[ rowData.activityOID ];
 				}
-
 			});
 
 			sdPriorityService.savePriorityChanges(requestData).then(
-
 					function(successResult) {
 						angular.forEach(successResult.success,function(data){
 							data['item'] = processActivityMap[data.OID];
@@ -1117,7 +1092,6 @@
 		 * 
 		 */
 		ActivityTableCompiler.prototype.isWorklistMode = function() {
-
 			return this.mode === DEFAULT_VALUES.WORKLIST.NAME;
 		};
 
@@ -1125,7 +1099,6 @@
 		 * 
 		 */
 		ActivityTableCompiler.prototype.isActivityTableMode = function() {
-
 			return this.mode === DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.NAME;
 		};
 
@@ -1137,7 +1110,6 @@
 			trace.error('Error on activity table:', e);
 			trace.printStackTrace();
 			this.showError = "true";
-
 			var errorToShow = 'Unknown Error';
 			if (angular.isString(e)) {
 				errorToShow = e;
@@ -1149,7 +1121,6 @@
 
 		return directiveDefObject;
 	};
-	
 	
 	/**
 	 * 
@@ -1166,6 +1137,4 @@
 		});
 		return newColumns;
 	};
-
-
 })();

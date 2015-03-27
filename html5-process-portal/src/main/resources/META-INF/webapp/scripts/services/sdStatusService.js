@@ -22,7 +22,6 @@
 			return service;
 		}];
 	});
-
 	/**
 	 *
 	 */
@@ -35,6 +34,5 @@
 			return  $resource('services/rest/portal/process-instances/allProcessStates').query().$promise;
 		};
 	};
-
 })();
 

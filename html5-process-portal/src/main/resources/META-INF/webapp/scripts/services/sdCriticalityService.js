@@ -26,7 +26,6 @@
       CriticalityService.prototype.getAllCriticalities = function() {
          return $resource(REST_URL).query().$promise;
       };
-
    }
 
 })();

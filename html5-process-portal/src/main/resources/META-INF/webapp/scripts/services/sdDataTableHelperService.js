@@ -12,26 +12,22 @@
  * @author johnson.quadras
  */
 (function() {
-   'use strict';
+	'use strict';
+	angular.module('workflow-ui.services').provider('sdDataTableHelperService',function() {
+		this.$get = ['$filter', function($filter) {
+			var service = new TableHelperService($filter);
+			return service;
+		}];
+	});
 
-   angular.module('workflow-ui.services').provider('sdActivityTableUtilService', function()
-   {
-      this.$get = [ '$filter', function( $filter)
-      {
-         var service = new UtilService( $filter);
-         return service;
-      } ];
-   });
-
-   /*
-    * 
-    */
-   function UtilService( $filter) {
-	   
+	/*
+	 * 
+	 */
+   function TableHelperService( $filter) {
 	   /**
 	    * Construct the query params from the options
 	    */
-	   UtilService.prototype.getQueryParamsFromOptions = function(options){
+	   TableHelperService.prototype.convertToQueryParams = function(options){
 		   		
 		   	var queryParams = "";
 	       
@@ -49,15 +45,13 @@
 	            queryParams += "&orderBy=" + options.order[index].name;
 	            queryParams += "&orderByDir=" + options.order[index].dir;
 	         }
-	         
 	         return queryParams
 	   };
-	   
 	   
 	   /**
 	    * Construct the post params from the options
 	    */
-	   UtilService.prototype.getPostParamsFromOptions = function(options){
+	   TableHelperService.prototype.convertToPostParams = function(options){
 
 		   var postData = {
 				   filters : options.filters,
@@ -84,13 +78,8 @@
 				   postData.descriptors.visbleColumns.push(column.name);
 			   });
 		   }
-		   
 		   return postData;
 	   };
-
    };
-   
- 
-   
    
 })();

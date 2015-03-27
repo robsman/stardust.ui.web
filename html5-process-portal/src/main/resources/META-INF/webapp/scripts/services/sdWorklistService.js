@@ -15,132 +15,49 @@
 (function() {
    'use strict';
 
-   angular.module('workflow-ui.services').provider('sdWorklistService', function()
-   {
-      this.$get = [ '$rootScope', '$resource','sdActivityTableUtilService', function($rootScope, $resource, sdActivityTableUtilService)
-      {
-         var service = new WorklistService($rootScope, $resource, sdActivityTableUtilService);
+   angular.module('workflow-ui.services').provider('sdWorklistService', function() {
+      this.$get = [ '$rootScope', '$resource','sdDataTableHelperService', function($rootScope, $resource, sdDataTableHelperService) {
+         var service = new WorklistService($rootScope, $resource, sdDataTableHelperService);
          return service;
       } ];
    });
-
    /*
     * 
     */
-   function WorklistService($rootScope, $resource, sdActivityTableUtilService) {
-      var REST_BASE_URL = "services/rest/portal/worklist/";
-      /*
-       * 
-       */
-      WorklistService.prototype.getWorklist = function(query) {
-         // Prepare URL
-         var restUrl = REST_BASE_URL + ":type/:id";
+   function WorklistService($rootScope, $resource, sdDataTableHelperService) {
+	   var REST_BASE_URL = "services/rest/portal/worklist/";
+	   /*
+	    * 
+	    */
+	   WorklistService.prototype.getWorklist = function(query) {
 
-         var queryParams = sdActivityTableUtilService.getQueryParamsFromOptions(query.options);
+		   var restUrl = REST_BASE_URL + ":type/:id";
+		   var queryParams = sdDataTableHelperService.convertToQueryParams(query.options);
 
-         if (queryParams.length > 0) {
-            restUrl = restUrl + "?" + queryParams.substr(1);
-         }
-         
-         var postData = sdActivityTableUtilService.getPostParamsFromOptions(query.options);
+		   if (queryParams.length > 0) {
+			   restUrl = restUrl + "?" + queryParams.substr(1);
+		   }
+		   var postData = sdDataTableHelperService.convertToPostParams(query.options);
+		   var worklist = $resource(restUrl, {
+			   type : '@type',
+			   id : '@id'
+		   }, {
+			   fetch : {
+				   method : 'POST'
+			   }
+		   });
 
-         var worklist = $resource(restUrl, {
-            type : '@type',
-            id : '@id'
-         }, {
-            fetch : {
-               method : 'POST'
-            }
-         });
-
-         // Prepare path Params
-         var urlTemplateParams = {};
-         if (query.participantQId) {
-            urlTemplateParams.type = "participant";
-            urlTemplateParams.id = query.participantQId;
-         }
-         else if (query.userId) {
-            urlTemplateParams.type = "user";
-            urlTemplateParams.id = query.userId;
-         }
-
-         return worklist.fetch(urlTemplateParams, postData).$promise;
-         ;
-      };
-      
-      
-      
-      /**
-       * 
-       */
-      WorklistService.prototype.getActivityInstances = function(query) {
-   	   // Prepare URL
-   	   var restUrl = "services/rest/portal/worklist/:type" 
-
-   	   // Add Query String Params. TODO: Can this be sent as stringified JSON?
-   	   var options = "";
-   	   if (query.options.skip != undefined) {
-   		   options += "&skip=" + query.options.skip;
-   	   }
-   	   if (query.options.pageSize != undefined) {
-   		   options += "&pageSize=" + query.options.pageSize;
-   	   }
-   	   if (query.options.order != undefined) {
-   		   // Supports only single column sort
-   		   var index = query.options.order.length - 1;
-   		   options += "&orderBy=" + query.options.order[index].name;
-   		   options += "&orderByDir=" + query.options.order[index].dir;
-   	   }
-
-   	   if (options.length > 0) {
-   		   restUrl = restUrl + "?" + options.substr(1);
-   	   }
-
-   	   var postData = {
-   			   filters : query.options.filters,
-   			   descriptors : {
-   				   fetchAll : false,
-   				   visbleColumns : []
-   			   }
-   	   };
-
-   	   var found = $filter('filter')(query.options.columns, {
-   		   field : 'descriptors'
-   	   }, true);
-
-   	   if (found && found.length > 0) {
-   		   postData.descriptors.fetchAll = true;
-   	   }
-
-   	   var descriptorColumns = $filter('filter')(query.options.columns, {
-   		   name : 'descriptorValues'
-   	   });
-
-   	   if (descriptorColumns) {
-   		   angular.forEach(descriptorColumns, function(column) {
-   			   postData.descriptors.visbleColumns.push(column.name);
-   		   });
-   	   }
-
-   	   var worklist = $resource(restUrl, {
-   		type : '@type'
-   	   }, {
-   		   fetch : {
-   			   method : 'POST'
-   		   }
-   	   });
-
-   	   // Prepare Query Params
-   	   var urlTemplateParams = {};
-   		   urlTemplateParams.type ='activityOverview';
-
-   	   return worklist.fetch(urlTemplateParams, postData).$promise;
-   	   ;
-      };
-      
-   };
-   
- 
-   
+		   // Prepare path Params
+		   var urlTemplateParams = {};
+		   if (query.participantQId) {
+			   urlTemplateParams.type = "participant";
+			   urlTemplateParams.id = query.participantQId;
+		   }else if (query.userId) {
+			   urlTemplateParams.type = "user";
+			   urlTemplateParams.id = query.userId;
+		   }
+		   return worklist.fetch(urlTemplateParams, postData).$promise;
+	   };
+   }   
    
 })();

@@ -22,7 +22,6 @@
    });
    
 	var REST_BASE_URL = "services/rest/portal/process-instances/";
-
    /**
     * 
     */
@@ -74,5 +73,4 @@
           return priority.updatePriorities(urlTemplateParams, {'priorities': value}).$promise;
        };
    };
-
 })();

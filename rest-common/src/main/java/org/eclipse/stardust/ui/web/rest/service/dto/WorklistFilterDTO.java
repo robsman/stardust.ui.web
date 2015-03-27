@@ -31,7 +31,7 @@ public class WorklistFilterDTO implements FilterDTO{
 
    public RangeDTO activityOID;
 
-   public RangeDTO started;
+   public RangeDTO startTime;
 
    public RangeDTO lastModified;
 
