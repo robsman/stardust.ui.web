@@ -16,8 +16,8 @@
 	'use strict';
 
 	angular.module('bpm-common.services').provider('sdUtilService', function() {
-		this.$get = [ '$rootScope', function($rootScope) {
-			var service = new UtilService($rootScope);
+		this.$get = [ '$rootScope', '$parse', function($rootScope, $parse) {
+			var service = new UtilService($rootScope, $parse);
 			return service;
 		} ];
 	});
@@ -25,7 +25,7 @@
 	/*
 	 * 
 	 */
-	function UtilService($rootScope) {
+	function UtilService($rootScope, $parse) {
 		/*
 		 * 
 		 */
@@ -268,6 +268,32 @@
 		    });
 		};
 
+	  /**
+	   * invokes the callback the given element is available on scope
+	   * Note that it is only Availability trigger!
+	   */
+		UtilService.prototype.doWhenElementIsAvailable = function($scope, watchforElement, callback) {
+	    console.log("watching scope for: " + watchforElement);
+	    if ($parse(watchforElement)($scope)) {
+	      callback();
+	    } else {
+	      // If not available Watch for it
+	      $scope.watchForIt = function() {
+	        return $parse(watchforElement)($scope) ? "GotIt"
+	                : "";
+	      };
+
+	      console.log("Registering Watch for Element: " + watchforElement);
+	      var unregister = $scope.$watch("watchForIt()", function(newVal, oldVal) {
+	        if (newVal !== oldVal) {
+	          console.log("Element is available now!");
+	          unregister();
+	          callback();
+	        }
+	      });
+	    }
+	  }
+		
 		/*
 		 * 
 		 */

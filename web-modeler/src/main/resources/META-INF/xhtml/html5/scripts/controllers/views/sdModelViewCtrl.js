@@ -14,30 +14,33 @@
   'use strict';
 
   angular.module('modeler-ui').controller('sdModelViewCtrl',
-          ['$scope', '$q', ModelViewCtrl]);
+          ['$scope', '$q', 'sdUtilService', 'sdI18nService', ModelViewCtrl]);
 
   /*
    * 
    */
-  function ModelViewCtrl($scope, $q) {
+  function ModelViewCtrl($scope, $q, sdUtilService, sdI18nService) {
     var self = this;
     self.initialized = false;
+    
+    $scope.sdI18nM = sdI18nService.getInstance('bpm-modeler-messages').translate;
 
-    doWhenModelElementViewIsAvailable($scope, function() {
-      self.initialize($scope.elementView, $scope.require);
-      // TODO is this better OR implement processCommand()?
-      $scope.$watch('elementView.modelElement.id', function() {
-        self.refresh();
-      }, false);
+    sdUtilService.doWhenElementIsAvailable($scope, 'elementView.modelElement',
+            function() {
+              self.initialize($scope.elementView, $scope.require);
+              // TODO is this better OR implement processCommand()?
+              $scope.$watch('elementView.modelElement.id', function() {
+                self.refresh();
+              }, false);
 
-      $scope.$watch('commandError.command', function() {
-        if ($scope.commandError) {
-          self.processCommandError($scope.commandError.command,
-                  $scope.commandError.response);
-        }
-      }, false);
+              $scope.$watch('commandError.command', function() {
+                if ($scope.commandError) {
+                  self.processCommandError($scope.commandError.command,
+                          $scope.commandError.response);
+                }
+              }, false);
 
-    });
+            });
 
     /**
      * @returns
@@ -56,13 +59,14 @@
 
       return this.deferIdChange.promise;
     }
-  }
 
-  /**
-   * 
-   */
-  ModelViewCtrl.prototype.i18n = function(key) {
-    return this.m_i18nUtils.getProperty(key);
+    /**
+     * 
+     */
+    ModelViewCtrl.prototype.i18n = function(key, defVal, params) {
+      return $scope.sdI18nM(key, defVal, params);
+    }
+
   }
 
   /**
@@ -73,11 +77,8 @@
     self.elementView = elementView;
     self.modelElement = self.elementView.modelElement;
 
-    require(['bpm-modeler/js/m_i18nUtils'], function(m_i18nUtils) {
-      self.m_i18nUtils = m_i18nUtils;
-      self.refresh();
-      self.initialized = true;
-    })
+    self.refresh();
+    self.initialized = true;
   }
 
   /**
@@ -130,38 +131,9 @@
                       .indexOf("ModelerError.01003") > -1))) {
         // with parameters
         self.serverErrorMsg = self.i18n(response.responseText,
-                response.responseText).replace('{0}', self.modelId);
+                response.responseText, [self.modelId])
         self.modelId = self.modelElement.id;
       }
-    }
-  }
-
-  /**
-   * 
-   */
-  function doWhenModelElementViewIsAvailable($scope, callback) {
-    console.log("Element View =");
-    console.log($scope.elementView);
-
-    if ($scope.elementView && $scope.elementView.modelElement) {
-      callback();
-    } else {
-      // If not available Watch for it
-      $scope.watchForIt = function() {
-        return $scope.elementView && $scope.elementView.modelElement ? "GotIt"
-                : "";
-      };
-
-      console.log("Registering Watch for Element View");
-      var unregister = $scope.$watch("watchForIt()", function(newVal, oldVal) {
-        if (newVal !== oldVal) {
-          console.log("ModelElement view got initialized =");
-          console.log($scope.elementView.modelElement);
-          unregister();
-
-          callback();
-        }
-      });
     }
   }
 })();
