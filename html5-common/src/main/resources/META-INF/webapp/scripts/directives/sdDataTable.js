@@ -1245,7 +1245,8 @@
 							}
 						}
 
-						theDataTable.fnAddData(data, true);
+						theDataTable.fnAddData(data, false);
+						theDataTable.fnDraw(false);
 					} catch(e) {
 						showErrorOnUI(e);
 					}
