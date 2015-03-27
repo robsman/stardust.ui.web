@@ -176,14 +176,14 @@
 		var myScope = scope;
 		var sdData = ctrl[0];
 
-		var initialized;
+		var tableInLocalMode, initialized;
 		var columns = [], dtColumns = [];
 		var theTable, theTableId, theDataTable, theToolbar, theColReorder;
 		var selectedRowIndexes = {}, rowSelectionMode = false, selectionBinding;
 		var onSelect = {}, onPagination = {}, onColumnReorder = {}, onSorting = {};
 		var enableColumnSelector, columnSelectorAdmin, columnsByDisplayOrder, columnsInfoByDisplayOrder, devColumnOrderPref;
 		var columnSelectorPreference, localPrefStore = {};
-		var pageSize = 8, disablePagination, jumpToPage;
+		var pageSize = 8, disablePagination;
 		var sortingMode, sortByGetter, enableFiltering;
 		var columnFilters;
 		var exportConfig = {}, exportAnchor = document.createElement("a"), remoteModeLastParams;
@@ -278,6 +278,8 @@
 		function processAttributes() {
 			trace.log(theTableId + ': Processing table attributes...');
 
+			tableInLocalMode = attr.sdaMode == 'local';
+				
 			if (attr.sdaPageSize != undefined && attr.sdaPageSize != '') {
 				pageSize = parseInt(attr.sdaPageSize);
 			}
@@ -404,7 +406,7 @@
 			}
 
 			// Disable functionality not yet supported
-			if (attr.sdaMode == 'local') {
+			if (tableInLocalMode) {
 				sortingMode = undefined; // Disable sorting - Causes weird angular issues, like ng-click stops working
 				enableFiltering = false; // Disable filtering
 			}
@@ -830,20 +832,18 @@
 			}
 			dtOptions.fnCreatedRow = createRowHandler;
 
-			var localMode = attr.sdaMode == 'local';
-
 			dtOptions.bServerSide = true;
 			dtOptions.sAjaxSource = "dummy.html";
-			dtOptions.fnServerData = localMode ? ajaxHandlerLocalMode : ajaxHandler;
+			dtOptions.fnServerData = tableInLocalMode ? ajaxHandlerLocalMode : ajaxHandler;
 
-			if (localMode) {
+			if (tableInLocalMode) {
 				if (disablePagination) {
 					dtOptions.sDom = 't';
 				}
 			}
 
 			trace.log(theTableId + ': Building table for ' + 
-				(localMode ? 'local' : 'remote') + ' mode... with options: ', dtOptions);
+				(tableInLocalMode ? 'local' : 'remote') + ' mode... with options: ', dtOptions);
 
 			try {
 				theDataTable = theTable.DataTable(dtOptions);
@@ -1136,7 +1136,7 @@
 		 * 
 		 */
 		function validateData(result, maxPageSize) {
-			if (attr.sdaMode == 'local') {
+			if (tableInLocalMode) {
 				sdUtilService.assert(result && angular.isArray(result),
 					'sd-data did not return acceptable result: Missing "list" or its not an array');
 			} else {
@@ -1245,13 +1245,6 @@
 				initialized = true;
 			} else {
 				clearState();
-
-				if (jumpToPage) {
-					var newPage = jumpToPage;
-					jumpToPage = undefined;
-					theDataTable.fnPageChange(newPage, true);
-				}
-
 				showElement(theTable, true);
 			}
 
@@ -1264,7 +1257,7 @@
 		function refresh(retainPageIndex) {
 			trace.log(theTableId + ': Refreshing table with retainPageIndex = ' + retainPageIndex);
 
-			if (attr.sdaMode == 'local') {
+			if (tableInLocalMode) {
 				localModeRefreshInitiated = true;
 			}
 			theDataTable.fnDraw(!retainPageIndex);
@@ -1983,7 +1976,7 @@
 		 * 
 		 */
 		function getTableDataForExport(exportAllRows, expotCols) {
-			if (attr.sdaMode == 'local') {
+			if (tableInLocalMode) {
 				return getLocalModeTableDataForExport(exportAllRows, expotCols);
 			} else {
 				return getRemoteModeTableDataForExport(exportAllRows, expotCols);
