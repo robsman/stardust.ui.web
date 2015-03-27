@@ -5,23 +5,20 @@ define(
                   "bpm-modeler/js/m_model", "bpm-modeler/js/m_accessPoint",
                   "bpm-modeler/js/m_typeDeclaration",
                   "bpm-modeler/js/m_parameterDefinitionsPanel",
+                  "bpm-modeler/js/m_communicationController",
                   "bpm-modeler/js/m_codeEditorAce" ],
          function(m_utils, m_i18nUtils, m_constants, m_dialog, m_commandsController,
                   m_command, m_model, m_accessPoint, m_typeDeclaration,
-                  m_parameterDefinitionsPanel, m_codeEditorAce)
+                  m_parameterDefinitionsPanel,m_communicationController, m_codeEditorAce)
          {
             return {
                create : function(view)
                {
-
                   var overlay = new RestServiceOverlay();
-
                   overlay.initialize(view);
-
                   return overlay;
                }
             };
-
             /**
              * 
              */
@@ -92,45 +89,38 @@ define(
                   this.authenticationPreemptiveLabel = m_utils
                            .jQuerySelect("#securityTab #authenticationPreemptiveLabel");
                   this.authenticationPreemptiveLabel.hide();
-
                   m_utils
                            .jQuerySelect("label[for='securityModeSelect']")
                            .text(
                                     m_i18nUtils
                                              .getProperty("modeler.model.applicationOverlay.rest.security.securityModeSelect.label"));
-
                   m_utils
                            .jQuerySelect("#securityModeSelect option[value='none']")
                            .text(
                                     m_i18nUtils
                                              .getProperty("modeler.model.applicationOverlay.rest.security.securityModeSelect.none.label"));
-
                   m_utils
                            .jQuerySelect(
                                     "#securityModeSelect option[value='httpBasicAuth']")
                            .text(
                                     m_i18nUtils
                                              .getProperty("modeler.model.applicationOverlay.rest.security.securityModeSelect.httpBasicAuth.label"));
-
                   m_utils
                            .jQuerySelect(
                                     "#securityModeSelect option[value='customSecTok']")
                            .text(
                                     m_i18nUtils
                                              .getProperty("modeler.model.applicationOverlay.rest.security.securityModeSelect.customSecTok.label"));
-
                   m_utils
                            .jQuerySelect("#httpBasicAuthenticationHintLabel")
                            .text(
                                     m_i18nUtils
                                              .getProperty("modeler.model.applicationOverlay.rest.security.httpBasicAuthenticationHint.label"));
-
                   m_utils
                            .jQuerySelect("#customSecurityTokenHintLabel")
                            .text(
                                     m_i18nUtils
                                              .getProperty("modeler.model.applicationOverlay.rest.security.customSecurityTokenHint.label"));
-
                   this.resetButton
                            .prop(
                                     "title",
@@ -204,47 +194,50 @@ define(
                   this.inputBodyAccessPointInput
                            .change(function()
                            {
-                              if (!self.view.validate())
-                              {
-                                 return;
-                              }
+                              var attributes= self.getApplication().attributes;
+                              var submitElements = {};
                               if (self.inputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED)
                               {
-                                 self.submitSingleAttributeChange(
-                                          "carnot:engine:camel::inBodyAccessPoint", null);
+                                 attributes["carnot:engine:camel::inBodyAccessPoint"]=null;
+                              }else{
+                                 attributes["carnot:engine:camel::inBodyAccessPoint"]=self.inputBodyAccessPointInput.val();
                               }
-                              else
-                              {
-                                 self.submitSingleAttributeChange(
-                                          "carnot:engine:camel::inBodyAccessPoint",
-                                          self.inputBodyAccessPointInput.val());
-                              }
+                              submitElements.attributes = attributes;
+                              self.view.submitChanges(submitElements, false);
                            });
                   this.outputBodyAccessPointInput
                            .change(function()
                            {
-                              if (!self.view.validate())
-                              {
-                                 return;
-                              }
+                              var attributes= self.getApplication().attributes;
+                              var submitElements = {};
                               if (self.outputBodyAccessPointInput.val() == m_constants.TO_BE_DEFINED)
                               {
-                                 self
-                                          .submitSingleAttributeChange(
-                                                   "carnot:engine:camel::outBodyAccessPoint",
-                                                   null);
+                                 attributes["carnot:engine:camel::outBodyAccessPoint"]=null;
+                              }else{
+                                 attributes["carnot:engine:camel::outBodyAccessPoint"]=self.outputBodyAccessPointInput.val();
                               }
-                              else
-                              {
-                                 self.submitSingleAttributeChange(
-                                          "carnot:engine:camel::outBodyAccessPoint",
-                                          self.outputBodyAccessPointInput.val());
-                              }
+                              submitElements.attributes = attributes;
+                              self.view.submitChanges(submitElements, false);
                            });
 
                   this.securityModeSelect.change(function()
                   {
-                     self.submitChanges();
+                     var attributes= self.getApplication().attributes;
+                     var accessPoints=self.getApplication().contexts.application.accessPoints;
+                     var submitElements = {};
+                     attributes["stardust:restServiceOverlay::securityMode"]=self.securityModeSelect.val();
+                     if(attributes["stardust:restServiceOverlay::securityMode"]=="none"){
+                        attributes["stardust:restServiceOverlay::customSecurityTokenKey"]=null;
+                        attributes["stardust:restServiceOverlay::customSecurityTokenValue"]=null;
+                        attributes["stardust:restServiceOverlay::securityTokenSource"]=null;
+                        attributes["stardust:restServiceOverlay::customSecurityTokenCV" ]=null;
+                        attributes["stardust:restServiceOverlay::httpBasicAuthUser" ]=null;
+                        attributes["stardust:restServiceOverlay::httpBasicAuthPwd" ]=null;
+                        attributes["stardust:restServiceOverlay::httpBasicAuthCV" ]=null;
+                        attributes["stardust:restServiceOverlay::authenticationPreemptive" ]=false;
+                     }
+                     submitElements.attributes = attributes;
+                     self.view.submitChanges(submitElements, false);
                      self.setSecurityMode(self.securityModeSelect.val());
                   });
 
@@ -282,6 +275,7 @@ define(
                               {
                                  attributes : attributes
                               }, false);
+                     that.updateSecurityView();
                   });
                   m_utils
                            .jQuerySelect(this.customSecurityTokenKeyInput)
@@ -330,31 +324,26 @@ define(
                   {
                      self.submitChanges();
                   });
-
-                  
-
                   this.transactedRouteInput.change(function()
                   {
-                     if (!self.view.validate())
-                     {
-                        return;
-                     }
-                     self.view.submitModelElementAttributeChange(
-                              "carnot:engine:camel::transactedRoute",
-                              self.transactedRouteInput.prop('checked'));
-                     self.submitChanges();
+                     var attributes = self.getApplication().attributes;
+                     var accessPoints = self.getApplication().contexts.application.accessPoints;
+                     var submitElements = {};
+                     attributes["carnot:engine:camel::transactedRoute"]=self.transactedRouteInput.prop('checked');
+                     attributes["carnot:engine:camel::routeEntries"]=self.getRoute(attributes, accessPoints);
+                     submitElements.attributes = attributes;
+                     self.view.submitChanges(submitElements, false);
                   });
 
                   this.autoStartupInput.change(function()
                   {
-                     if (!self.view.validate())
-                     {
-                        return;
-                     }
-                     self.view.submitModelElementAttributeChange(
-                              "carnot:engine:camel::autoStartup", self.autoStartupInput
-                                       .prop('checked'));
-                     self.submitChanges();
+                     var attributes = self.getApplication().attributes;
+                     var accessPoints = self.getApplication().contexts.application.accessPoints;
+                     var submitElements = {};
+                     attributes["carnot:engine:camel::autoStartup"]=self.autoStartupInput.prop('checked');
+                     attributes["carnot:engine:camel::routeEntries"]=self.getRoute(attributes, accessPoints);
+                     submitElements.attributes = attributes;
+                     self.view.submitChanges(submitElements, false);
                   });
 
                   this.runButton.click({
@@ -459,28 +448,12 @@ define(
 
                                        view.inputDataTextarea.append(inputData);
                                     });
-                  var attributes=this.getApplication().attributes;
-                  if (attributes["carnot:engine:camel::transactedRoute"] == null || attributes["carnot:engine:camel::transactedRoute"] === undefined)
-                  {
-                     attributes["carnot:engine:camel::transactedRoute"]=false;
-                  }
-                  if (attributes["carnot:engine:camel::autoStartup"] == null || attributes["carnot:engine:camel::autoStartup"] === undefined)
-                  {
-                     attributes["carnot:engine:camel::autoStartup"]=true;
-                  }
-                  if (attributes["stardust:restServiceOverlay::authenticationPreemptive"] == null)
-                  {
-                     attributes["stardust:restServiceOverlay::authenticationPreemptive"]=true;
-                  }
-                  if (Object.keys(attributes).length > 0){
-                   this.view.submitChanges({
-                               attributes : attributes
-                         }, true);
-                  }
                };
 
                RestServiceOverlay.prototype.setSecurityMode = function(securityMode)
                {
+                  var attributes = this.getApplication().attributes;
+                  var accessPoints = this.getApplication().contexts.application.accessPoints;
                   if (!securityMode)
                   {
                      securityMode = "none";
@@ -491,18 +464,7 @@ define(
                   m_utils.jQuerySelect("#httpBasicAuthenticationDiv").hide();
                   m_utils.jQuerySelect("#customSecurityTokenDiv").hide();
 
-                  if (securityMode === "httpBasicAuth")
-                  {
-                     m_utils.jQuerySelect("#httpBasicAuthenticationDiv").show();
-                     this.customSecurityTokenKeyInput.val("");
-                     this.customSecurityTokenValueInput.val("");
-                     this.customSecurityTokenUsingCVInput.prop('checked', false);
-                     this.submitSingleAttributeChange(
-                              "stardust:restServiceOverlay::httpHeaders", null);
-                     this.authenticationPreemptiveInput.show();
-                     this.authenticationPreemptiveLabel.show();
-                  }
-                  else if (securityMode === "customSecTok")
+                  if (securityMode === "customSecTok")
                   {
                      m_utils.jQuerySelect("#customSecurityTokenDiv").show();
                      this.httpBasicAuthUserInput.val("");
@@ -511,25 +473,33 @@ define(
                      this.authenticationPreemptiveInput.prop('checked', false);
                      this.customSecurityTokenValueInput.prop('disabled', false);
                      this.customSecurityTokenUsingCVInput.prop('disabled', false);
-                  }
-                  else
-                  {
-                     this.httpBasicAuthUserInput.val("");
-                     this.httpBasicAuthPwdInput.val("");
-                     this.httpBasicAuthUsingCVInput.prop('checked', false);
-                     this.customSecurityTokenKeyInput.val("");
-                     this.customSecurityTokenValueInput.val("");
-                     this.customSecurityTokenUsingCVInput.prop('checked', false);
-
-                     this.submitSingleAttributeChange(
-                              "stardust:restServiceOverlay::httpHeaders", null);
+                  }else{ 
+                     if (securityMode === "httpBasicAuth")
+                        {
+                           m_utils.jQuerySelect("#httpBasicAuthenticationDiv").show();
+                           this.customSecurityTokenKeyInput.val("");
+                           this.customSecurityTokenValueInput.val("");
+                           this.customSecurityTokenUsingCVInput.prop('checked', false);
+                           this.authenticationPreemptiveInput.show();
+                           this.authenticationPreemptiveLabel.show();
+                        }
+                        else
+                        {
+                           this.httpBasicAuthUserInput.val("");
+                           this.httpBasicAuthPwdInput.val("");
+                           this.httpBasicAuthUsingCVInput.prop('checked', false);
+                           this.customSecurityTokenKeyInput.val("");
+                           this.customSecurityTokenValueInput.val("");
+                           this.customSecurityTokenUsingCVInput.prop('checked', false);
+                        }
                   }
                };
-
+               /**
+                * 
+                */
                RestServiceOverlay.prototype.initializeHeaderAttributesTable = function()
                {
-
-                  m_utils.jQuerySelect("#securityTab #addHeaderButton").click(
+                  m_utils.jQuerySelect("#configurationTab #addHeaderButton").click(
                            {
                               page : this,
                            },
@@ -538,6 +508,7 @@ define(
                               event.data.page.httpHeaders.push({
                                  "headerName" : "New"
                                           + (event.data.page.httpHeaders.length + 1),
+                                 "headerSource" : "direct",
                                  "headerValue" : "New"
                                           + (event.data.page.httpHeaders.length + 1)
                               });
@@ -553,18 +524,46 @@ define(
                            });
                   this.refreshHeaderAttributesTable();
                };
+               
+               
+               RestServiceOverlay.prototype.refreshConfigurationVariables = function() {
+                  var page = this;
+
+                  var deferred = jQuery.Deferred();
+                  jQuery.ajax({
+                     type : 'GET',
+                     url : m_communicationController
+                           .getEndpointUrl()
+                           + "/models/"
+                           + encodeURIComponent(this.getScopeModel().id)
+                           + "/configurationVariables",
+                     async : false
+                  }).done(
+                        function(json) {
+                           page.getScopeModel().configVariables = json;
+//                           page.refreshConfigurationVariablesTable(json);
+
+                           deferred.resolve();
+                        }).fail(function(data) {
+                                 m_utils.debug("Error");
+                                 deferred.reject();
+                              });
+
+                  return deferred.promise();
+               };
+               /**
+                * 
+                */
                RestServiceOverlay.prototype.refreshHeaderAttributesTable = function()
                {
                   m_utils.jQuerySelect("table#headerAttributesTable tbody").empty();
                   for (var n = 0; n < this.httpHeaders.length; ++n)
                   {
-                     var row = m_utils.jQuerySelect("<tr></tr>");
+                     var row = m_utils.jQuerySelect("<tr id='"+n+"'></tr>");
                      var cell = m_utils.jQuerySelect("<td></td>");
                      row.append(cell);
-                     var button = m_utils
-                              .jQuerySelect("<input type='image' title='Delete' alt='Delete' class='toolbarButton' src='plugins/bpm-modeler/images/icons/delete.png'/>");
-                     button
-                              .click(
+                     var deleteButton = m_utils.jQuerySelect("<input type='image' title='Delete' alt='Delete' class='toolbarButton' src='plugins/bpm-modeler/images/icons/delete.png'/>");
+                     deleteButton.click(
                                        {
                                           page : this,
                                           headerName : this.httpHeaders[n].headerName
@@ -582,25 +581,20 @@ define(
                                           }
                                           event.data.page.httpHeaders = newHttpHeaders;
                                           
-                                          
-                                          
-                                          // submit changes
-                                          event.data.page
-                                                   .submitSingleAttributeChange(
-                                                            "stardust:restServiceOverlay::httpHeaders",
-                                                            JSON
-                                                                     .stringify(newHttpHeaders));
-                                          // update route
-                                          event.data.page.submitSingleAttributeChange(
-                                                   "carnot:engine:camel::routeEntries",
-                                                   event.data.page.getRoute());
+                                          var attributes= event.data.page.getApplication().attributes;
+                                          var accessPoints=event.data.page.getApplication().contexts.application.accessPoints;
+                                          attributes["stardust:restServiceOverlay::httpHeaders"]= JSON.stringify(newHttpHeaders);
+                                          attributes["carnot:engine:camel::routeEntries"]= event.data.page.getRoute(attributes,accessPoints);
+                                          event.data.page.view.submitChanges(
+                                                                        {
+                                                                           attributes : attributes
+                                                                        }, false);
                                           event.data.page.refreshHeaderAttributesTable();
                                        });
-                     cell.append(button);
+                     
+                     cell.append(deleteButton);
                      cell = m_utils.jQuerySelect("<td></td>");
-                     headerNameInput = m_utils
-                              .jQuerySelect("<input type='text' class='cellEditor' value='"
-                                       + this.httpHeaders[n].headerName + "'></input>");
+                     headerNameInput = m_utils.jQuerySelect("<input id='"+n+"' type='text' class='cellEditor' value='"+ this.httpHeaders[n].headerName + "'></input>");
                      headerNameInput.change({
                         page : this,
                         headerName : this.httpHeaders[n].headerName
@@ -608,28 +602,105 @@ define(
                      {
                         var oldValue = event.data.headerName;
                         var newValue = event.target.value;
-
                         for (var h = 0; h < event.data.page.httpHeaders.length; ++h)
                         {
                            if (event.data.page.httpHeaders[h].headerName === oldValue)
                            {
                               event.data.page.httpHeaders[h].headerName = newValue;
+                              event.data.page.httpHeaders[h].headerSource = "direct";
+                              if(!event.data.page.httpHeaders[h].headerValue)
+                              event.data.page.httpHeaders[h].headerValue = "";
                            }
                         }
-
-                        // submit changes
-                        event.data.page.submitSingleAttributeChange(
-                                 "stardust:restServiceOverlay::httpHeaders", JSON
-                                          .stringify(event.data.page.httpHeaders));
-
-                        // update route
-                        event.data.page.submitSingleAttributeChange(
-                                 "carnot:engine:camel::routeEntries", event.data.page
-                                          .getRoute());
-
+                        var attributes= event.data.page.getApplication().attributes;
+                        var accessPoints=event.data.page.getApplication().contexts.application.accessPoints;
+                        attributes["stardust:restServiceOverlay::httpHeaders"]= JSON.stringify(event.data.page.httpHeaders);
+                        attributes["carnot:engine:camel::routeEntries"]= event.data.page.getRoute(attributes,accessPoints);
+                        event.data.page.view.submitChanges(
+                                 {
+                                    attributes : attributes
+                                 }, false);
                         event.data.page.refreshHeaderAttributesTable();
                      });
+                     var currentPage=this;
+                     var headerNameEntry=m_utils.jQuerySelect(headerNameInput.get(0));
+                     headerNameEntry.autocomplete(
+                              {
+                                 source : function(request, response)
+                                 {
+                                    var accessPoints = currentPage.getApplication().contexts.application.accessPoints;
+                                    var outputList = [];
+                                    for (var n = 0; n < accessPoints.length; ++n)
+                                    {
+                                       var ap = accessPoints[n];
+                                       if (ap.dataType == m_constants.PRIMITIVE_DATA_TYPE
+                                                && ap.direction == m_constants.IN_ACCESS_POINT)
+                                          outputList.push(ap.id);
+                                    }
+                                    var matcher = new RegExp("^"
+                                             + $.ui.autocomplete
+                                                      .escapeRegex(request.term),
+                                             "i");
+                                    response($.grep(outputList, function(item)
+                                    {
+                                       return matcher.test(item);
+                                    }));
+                                 },
+                                 select : function(event, ui)
+                                 {
+                                    var attributes = currentPage.getApplication().attributes;
+                                    var accessPoints = currentPage.getApplication().contexts.application.accessPoints;
+                                    var index=event.target.id;
+                                    var newHttpHeaders=currentPage.httpHeaders;
+                                    newHttpHeaders[index].headerName=ui.item.value;
+                                    newHttpHeaders[index].headerSource="data";
+                                    delete newHttpHeaders[index].headerValue;
+                                    attributes["stardust:restServiceOverlay::httpHeaders"]= JSON.stringify(newHttpHeaders);
+                                    attributes["carnot:engine:camel::routeEntries"]= currentPage.getRoute(attributes,accessPoints);
+                                    currentPage.view.submitChanges(
+                                             {
+                                                attributes : attributes
+                                             }, false);
+                                    currentPage.refreshHeaderAttributesTable();
+                                 }
+                              });
+                     
+                     
                      cell.append(headerNameInput);
+                     row.append(cell);
+                     cell = m_utils.jQuerySelect("<td></td>");
+                     headerSourceInput = m_utils.jQuerySelect("<select id='"+n+"'></select>");
+                     headerSourceInput.empty();
+                     headerSourceInput.append("<option value='direct' selected>Direct</option>");
+                     headerSourceInput.append("<option value='data'>Data</option>");
+                     headerSourceInput.append("<option value='cv'>Configuration Variable</option>");
+                     headerSourceInput.change({
+                        page : this,
+                        headerSource : this.httpHeaders[n].headerSource
+                     }, function(event)
+                     {
+                        var attributes = currentPage.getApplication().attributes;
+                        var accessPoints = currentPage.getApplication().contexts.application.accessPoints;
+                        var index=event.currentTarget.id;
+                        var newHttpHeaders=currentPage.httpHeaders;
+                        newHttpHeaders[index].headerSource=event.currentTarget.value;
+                        if(newHttpHeaders[index].headerSource=="cv"){
+                           newHttpHeaders[index].headerValue="${"+newHttpHeaders[index].headerName+"}";
+                           currentPage.refreshConfigurationVariables();
+                        }else if(newHttpHeaders[index].headerSource=="direct")
+                           newHttpHeaders[index].headerValue=newHttpHeaders[index].headerName;
+                        else
+                           newHttpHeaders[index].headerValue="";
+                        
+                        attributes["stardust:restServiceOverlay::httpHeaders"]= JSON.stringify(newHttpHeaders);
+                        attributes["carnot:engine:camel::routeEntries"]= currentPage.getRoute(attributes,accessPoints);
+                        currentPage.view.submitChanges(
+                                 {
+                                    attributes : attributes
+                                 }, false);
+                        currentPage.refreshHeaderAttributesTable();
+                     });
+                     cell.append(headerSourceInput);
                      row.append(cell);
                      cell = m_utils.jQuerySelect("<td></td>");
                      headerValueInput = m_utils
@@ -649,16 +720,25 @@ define(
                               event.data.page.httpHeaders[h].headerValue = newValue;
                            }
                         }
-                        // submit changes
-                        event.data.page.submitSingleAttributeChange(
-                                 "stardust:restServiceOverlay::httpHeaders", JSON
-                                          .stringify(event.data.page.httpHeaders));
-                        // update route
-                        event.data.page.submitSingleAttributeChange(
-                                 "carnot:engine:camel::routeEntries", event.data.page
-                                          .getRoute());
+                        var attributes= event.data.page.getApplication().attributes;
+                        var accessPoints=event.data.page.getApplication().contexts.application.accessPoints;
+                        attributes["stardust:restServiceOverlay::httpHeaders"]= JSON.stringify(event.data.page.httpHeaders);
+                        attributes["carnot:engine:camel::routeEntries"]= event.data.page.getRoute(attributes,accessPoints);
+                        event.data.page.view.submitChanges(
+                                 {
+                                    attributes : attributes
+                                 }, false);
                         event.data.page.refreshHeaderAttributesTable();
                      });
+                     if(this.httpHeaders[n].headerSource){
+                        headerSourceInput.val(this.httpHeaders[n].headerSource);
+                        if(this.httpHeaders[n].headerSource=="data"){
+                           headerValueInput.val(null);
+                        }
+                        if(this.httpHeaders[n].headerSource=="data" || this.httpHeaders[n].headerSource=="cv"){
+                           headerValueInput.prop('disabled', true);
+                        }
+                     }
                      cell.append(headerValueInput);
                      row.append(cell);
                      m_utils.jQuerySelect("table#headerAttributesTable tbody")
@@ -775,6 +855,32 @@ define(
                {
                   return this.view.getModelElement().model;
                };
+               
+               RestServiceOverlay.prototype.getHttpHeaderByName=function(key, httpHeaders){
+                  var response;
+                  for (var i = 0; i < httpHeaders.length; i++)
+                  {
+                     var httpHeader = httpHeaders[i];
+                     if(httpHeader.headerName==key){
+                        response=httpHeader;
+                        break;
+                     }
+                  }
+                  return response;
+               };
+               RestServiceOverlay.prototype.getConfigurationVariable=function(name, configurationVariables){
+                  var response;
+                  for (var i = 0; i < configurationVariables.length; i++)
+                  {
+                     var cv = configurationVariables[i];
+                     if(cv.name==key){
+                        response=cv;
+                        break;
+                     }
+                  }
+                  return response;
+               };
+               
                /**
                 * 
                 */
@@ -804,11 +910,12 @@ define(
                   var route = "";
                   var httpUri = "";
                   var httpQuery = "";
-                  if (uri.indexOf("?") >= 0)
+                  if (uri && uri.indexOf("?") >= 0)
                   {
                      // there is already a ? defined in URI
                      start = false;
                   }
+                  
                   for (var n = 0; n < accessPoints.length; ++n)
                   {
                      var accessPoint = accessPoints[n];
@@ -816,17 +923,20 @@ define(
                      {
                         continue;
                      }
-                     if(attributes["stardust:restServiceOverlay::securityTokenSource"]=="data" && accessPoint.id ===attributes["stardust:restServiceOverlay::customSecurityTokenKey"] ){
+                     if(attributes["stardust:restServiceOverlay::securityTokenSource"]=="data" && accessPoint.id ===attributes["stardust:restServiceOverlay::customSecurityTokenKey"] )
+                     {
                         continue;
                      }
-
+                     
+                     var httpHeader=this.getHttpHeaderByName(accessPoint.id,httpHeaders);
+                     if(httpHeader && httpHeader.headerSource=="data")
+                        continue;
+                     
                      if (this.uriInput.val().indexOf("{" + accessPoint.id + "}") >= 0)
                      {
-                        uri = uri.replace("{" + accessPoint.id + "}", "$simple{header."
-                                 + accessPoint.id + "}");
+                        uri = uri.replace("{" + accessPoint.id + "}", "$simple{header."+ accessPoint.id + "}");
                         route += "<setHeader headerName='" + accessPoint.id + "'>";
-                        route += "<javaScript>encodeURIComponent(request.headers.get('"
-                                 + accessPoint.id + "'))</javaScript>";
+                        route += "<javaScript>encodeURIComponent(request.headers.get('"+ accessPoint.id + "'))</javaScript>";
                         route += "</setHeader>";
                      }
                      else
@@ -886,17 +996,34 @@ define(
                      route += "</constant>";
                      route += "</setHeader>";
                      }
-                    
-                     
-                     for (var h = 0; h < httpHeaders.length; h++)
-                     {
-                        var hName = httpHeaders[h].headerName;
+                  }
+                  for (var h = 0; h < httpHeaders.length; h++)
+                  {
+                     var hName = httpHeaders[h].headerName;
+                     var hValue = httpHeaders[h].headerValue;
+                     var hSource = httpHeaders[h].headerSource;
+                     if(hName)
                         hName = m_utils.encodeXmlPredfinedCharacters(hName);
-                        var hValue = httpHeaders[h].headerValue;
+                     if(hValue)
                         hValue = m_utils.encodeXmlPredfinedCharacters(hValue);
-                        route += "<setHeader headerName='" + hName + "'>";
-                        route += "<constant>" + hValue + "</constant>";
-                        route += "</setHeader>";
+                     if(hSource=="direct"){
+                        if(hName && hValue){
+                           route += "<setHeader headerName='" + hName + "'>";
+                           route += "<constant>" + hValue + "</constant>";
+                           route += "</setHeader>";
+                        }
+                     }else if(hSource=="cv"){
+                        if(hName && hValue){
+                           route += "<setHeader headerName='" + hName + "'>";
+                           route += "<constant>" + hValue + "</constant>";
+                           route += "</setHeader>";
+                        }
+                     }else{
+                        if(hName){
+                           route += "<setHeader headerName='" + hName + "'>";
+                           route += "<simple>$simple{header."+hName+"}</simple>";
+                           route += "</setHeader>";
+                        }
                      }
                   }
                   uri = uri.replace(/&/g, "&amp;");
@@ -1130,6 +1257,26 @@ define(
                            .prop(
                                     "checked",
                                     this.getApplication().attributes["carnot:engine:camel::autoStartup"]);
+                  
+                  var attributes=this.getApplication().attributes;
+                  if (attributes["carnot:engine:camel::transactedRoute"] == null || attributes["carnot:engine:camel::transactedRoute"] === undefined)
+                  {
+                     attributes["carnot:engine:camel::transactedRoute"]=false;
+                  }
+                  if (attributes["carnot:engine:camel::autoStartup"] == null || attributes["carnot:engine:camel::autoStartup"] === undefined)
+                  {
+                     attributes["carnot:engine:camel::autoStartup"]=true;
+                  }
+                  if (attributes["stardust:restServiceOverlay::authenticationPreemptive"] == null)
+                  {
+                     attributes["stardust:restServiceOverlay::authenticationPreemptive"]=true;
+                  }
+                  if (Object.keys(attributes).length > 0){
+                   this.view.submitChanges({
+                               attributes : attributes
+                         }, true);
+                  }
+                  
                   this.updateSecurityView();
                };
                /**
@@ -1162,7 +1309,7 @@ define(
                   attributes["stardust:restServiceOverlay::crossDomain"]= this.crossDomainInput.prop("checked");
                   attributes["carnot:engine:camel::transactedRoute"]=this.transactedRouteInput.prop("checked");
                   attributes["carnot:engine:camel::autoStartup"]=this.autoStartupInput.prop("checked");
-                  attributes["stardust:restServiceOverlay::securityMode"]=this.securityModeSelect.val();
+                  //attributes["stardust:restServiceOverlay::securityMode"]=this.securityModeSelect.val();
                   attributes["stardust:restServiceOverlay::httpBasicAuthUser"]=this.httpBasicAuthUserInput.val();
                   attributes["stardust:restServiceOverlay::httpBasicAuthPwd"]= this.getHttpBasicAuthRawPwd(this.httpBasicAuthPwdInput.val());
                   attributes["stardust:restServiceOverlay::httpBasicAuthCV"]=this.httpBasicAuthUsingCVInput.prop("checked") ? this.httpBasicAuthUsingCVInput.prop("checked"): null;
@@ -1170,12 +1317,6 @@ define(
                   attributes["stardust:restServiceOverlay::customSecurityTokenKey"]=this.customSecurityTokenKeyInput.val();
                   attributes["stardust:restServiceOverlay::customSecurityTokenValue"]=this.convertPasswordToConfigVariable(this.customSecurityTokenValueInput.val(), false);
                   attributes["stardust:restServiceOverlay::customSecurityTokenCV" ]=this.customSecurityTokenUsingCVInput.prop("checked") ? this.customSecurityTokenUsingCVInput.prop("checked"): null;
-                  if(attributes["stardust:restServiceOverlay::securityMode"]=="none"){
-                     attributes["stardust:restServiceOverlay::customSecurityTokenKey"]=null;
-                     attributes["stardust:restServiceOverlay::customSecurityTokenValue"]=null;
-                     attributes["stardust:restServiceOverlay::securityTokenSource"]=null;
-                     attributes["stardust:restServiceOverlay::customSecurityTokenCV" ]=null;
-                  }
                   
                   attributes["carnot:engine:camel::routeEntries"]=this.getRoute(attributes, accessPoints);
                   this.view.submitChanges({
@@ -1341,6 +1482,27 @@ define(
                            
                         }
                      }
+                     
+                     if(this.httpHeaders.length>0){
+                        for (var i = 0; i < this.httpHeaders.length; i++)
+                        {
+                           var httpHeader = this.httpHeaders[i];
+                           if(httpHeader.headerSource=="direct"){
+                              for (var j = 0; j < this.getApplication().contexts.application.accessPoints.length; j++)
+                              {
+                                 var accessPoint = this.getApplication().contexts.application.accessPoints[j];
+                                 if(httpHeader.headerName==accessPoint.id && accessPoint.direction == m_constants.IN_ACCESS_POINT && accessPoint.dataType == m_constants.PRIMITIVE_DATA_TYPE){
+                                    this.view.errorMessages.push("Please change the name of HTTP Header "+httpHeader.headerName+" because an access point with the same name already exists.");
+                                 }
+                                 
+                              }
+                              if(m_utils.isEmptyString(httpHeader.headerValue)){
+                                 this.view.errorMessages.push("The value for header "+httpHeader.headerName+" cannot be empty.");
+                              }
+                           }
+                        }
+                     }
+                     
                   return true;
                };
             }
