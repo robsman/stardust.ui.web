@@ -742,6 +742,8 @@ public class ActivityTableUtils
       else if (fromDateString.equals(ALL))
       {
          calendar.setTime(new Date(0));
+      }else{
+         throw new IllegalArgumentException();
       }
       return calendar.getTime();
    }

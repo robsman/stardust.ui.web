@@ -118,8 +118,7 @@ public class WorklistResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/criticality/high")
-   public Response getWorklistForCriticality(@PathParam("criticalityFrom") long criticalityFrom,
-         @PathParam("criticalityTo") long criticalityTo,
+   public Response getWorklistForHighCriticality(
          @QueryParam("skip") @DefaultValue("0") Integer skip,
          @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
          @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
@@ -129,7 +128,7 @@ public class WorklistResource
       {
          Options options = new Options(pageSize, skip, orderBy,
                "asc".equalsIgnoreCase(orderByDir));
-         populatePostData(options, postData);
+         populatePostData( options,postData);
          QueryResultDTO resultDTO = getWorklistService().getWorklistForHighCriticality( options);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }
@@ -262,6 +261,36 @@ public class WorklistResource
          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
    }
+   
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("/personalItems")
+   public Response getWorklistForLoggedInUser(
+         @QueryParam("skip") @DefaultValue("0") Integer skip,
+         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
+         @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
+   {
+      try
+      {
+         Options options = new Options(pageSize, skip, orderBy,
+               "asc".equalsIgnoreCase(orderByDir));
+         populatePostData(options, postData);
+         QueryResultDTO resultDTO = getWorklistService().getWorklistForLoggedInUser(options);
+         return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (ObjectNotFoundException onfe)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+   }
+   
    
    
    

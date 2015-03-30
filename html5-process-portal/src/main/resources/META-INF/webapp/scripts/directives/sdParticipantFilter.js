@@ -21,9 +21,9 @@
 		return {
 			restrict : 'A',
 			template : '<div sd-participant-selector '+
-			'sda-selected-data="filterData.participants" '+
-			'sda-multiple="true" sd-data="participantFilterCtrl.fetchParticipants(params)">'+
-			'</div>',
+							'sda-selected-data="filterData.participants" '+
+							'sda-multiple="true" sd-data="participantFilterCtrl.fetchParticipants(params)">'+
+						'</div>',
 			controller : [ '$scope', 'sdActivityInstanceService','$q',  ParticipantFilterCtrl ],
 			link : function( scope, element, attr, ctrl) {
 				/*
@@ -51,10 +51,11 @@
 	   /*
 	    * 
 	    */
-	   ParticipantFilterCtrl.prototype.fetchParticipants = function(options) {
+	   ParticipantFilterCtrl.prototype.fetchParticipants = function(value) {
+		  
 		   var deferred = $q.defer();
 		   self.participants = {};
-		   sdActivityInstanceService.getMatchingParticpants( options, 15).then(function(data) {
+		   sdActivityInstanceService.getMatchingParticpants( value, 15).then(function(data) {
 			   self.participants.list = data;
 			   self.participants.totalCount = data.length;
 			   deferred.resolve(data);

@@ -31,7 +31,36 @@
 	    */
 	   WorklistService.prototype.getWorklist = function(query) {
 
-		   var restUrl = REST_BASE_URL + ":type/:id";
+		   var restUrl = "";
+		   
+		   if(query.url) {
+			   restUrl = query.url;
+		   }else {
+			   restUrl = REST_BASE_URL + ":type/:id";
+		   }
+		   
+		   // Prepare path Params
+		   var urlTemplateParams = {};
+		   
+		   if (query.fromDate) {
+			   urlTemplateParams.type = "date";
+			   urlTemplateParams.id = query.fromDate;
+		   }else if (query.processQId) {
+			   urlTemplateParams.type = "process";
+			   urlTemplateParams.id = query.processQId;
+		   }else if (query.participantQId) {
+			   urlTemplateParams.type = "participant";
+			   urlTemplateParams.id = query.participantQId;
+		   }else if (query.userId) {
+			   urlTemplateParams.type = "user";
+			   urlTemplateParams.id = query.userId;
+		   }else{
+			   if(!query.url){
+				   throw "Illegal type passed to getWorklist : "+query;
+			   }
+		   }
+		   
+		
 		   var queryParams = sdDataTableHelperService.convertToQueryParams(query.options);
 
 		   if (queryParams.length > 0) {
@@ -46,16 +75,7 @@
 				   method : 'POST'
 			   }
 		   });
-
-		   // Prepare path Params
-		   var urlTemplateParams = {};
-		   if (query.participantQId) {
-			   urlTemplateParams.type = "participant";
-			   urlTemplateParams.id = query.participantQId;
-		   }else if (query.userId) {
-			   urlTemplateParams.type = "user";
-			   urlTemplateParams.id = query.userId;
-		   }
+ 
 		   return worklist.fetch(urlTemplateParams, postData).$promise;
 	   };
    }   

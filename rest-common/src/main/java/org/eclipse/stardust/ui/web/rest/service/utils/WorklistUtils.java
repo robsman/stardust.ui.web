@@ -246,6 +246,21 @@ public class WorklistUtils
 
       return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
    }
+
+   /**
+    * 
+    * @param options
+    * @return
+    */
+   public QueryResult< ? > getWorklistForLoggedInUser(Options options)
+   {  
+      
+      ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
+            ActivityInstanceState.Application, ActivityInstanceState.Suspended});
+      query.getFilter().add(PerformingUserFilter.CURRENT_USER);
+      ActivityTableUtils.addCriterias(query, options);
+      return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+   }
   
    /**
     * @param worklist

@@ -40,7 +40,6 @@ public class WorklistService
    public QueryResultDTO getWorklistForParticipant(String participantQId, String context, Options options)
    {
       QueryResult<?> queryResult = worklistUtils.getWorklistForParticipant(participantQId, options);
-      
       return ActivityTableUtils.buildTableResult(queryResult ,MODE.WORKLIST);
    }
 
@@ -111,6 +110,17 @@ public class WorklistService
    public QueryResultDTO getWorklistForResubmissionActivities(Options options)
    {
       QueryResult<?> queryResult = worklistUtils.getWorklistForResubmissionActivities(options);
+      return ActivityTableUtils.buildTableResult(queryResult,MODE.WORKLIST);
+   }
+   
+   /***
+    * 
+    * @param options
+    * @return
+    */
+   public QueryResultDTO getWorklistForLoggedInUser(Options options)
+   {
+      QueryResult<?> queryResult = worklistUtils.getWorklistForLoggedInUser(options);
       return ActivityTableUtils.buildTableResult(queryResult,MODE.WORKLIST);
    }
 }
