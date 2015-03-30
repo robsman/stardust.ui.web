@@ -28,16 +28,25 @@ public class ProcessResourceMgmtService
    @Resource
    private ProcessResourceMgmtUtils processResourceMgmtUtils;
 
-   public ProcessResourceMgmtDTO getProcessResourceRolesAndUsers(boolean refreshInd)
+  /**
+   * 
+   * @return
+   */
+   public ProcessResourceMgmtDTO getProcessResourceRoles()
    {
       ProcessResourceMgmtDTO processResourceMgmtDTO = new ProcessResourceMgmtDTO();
-      if(refreshInd){
-         processResourceMgmtUtils.initializeWorkflowFacade();
-      }
-      processResourceMgmtDTO.processResourceRoleList = processResourceMgmtUtils
-            .getProcessResourceRoles();
-      processResourceMgmtDTO.processResourceUserList = processResourceMgmtUtils
-            .getProcessResourceUsers();
+      processResourceMgmtDTO.processResourceRoleList = processResourceMgmtUtils.getProcessResourceRoles();
+      return processResourceMgmtDTO;
+   }
+
+   /**
+    * 
+    * @return
+    */
+   public ProcessResourceMgmtDTO getProcessResourceUsers()
+   {
+      ProcessResourceMgmtDTO processResourceMgmtDTO = new ProcessResourceMgmtDTO();
+      processResourceMgmtDTO.processResourceUserList = processResourceMgmtUtils.getProcessResourceUsers();
       return processResourceMgmtDTO;
    }
 

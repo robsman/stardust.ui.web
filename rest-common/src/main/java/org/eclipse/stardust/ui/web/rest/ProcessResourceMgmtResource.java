@@ -16,7 +16,6 @@ package org.eclipse.stardust.ui.web.rest;
 import javax.annotation.Resource;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -30,21 +29,45 @@ import org.springframework.stereotype.Component;
 @Path("/processResourceManagement")
 public class ProcessResourceMgmtResource
 {
-   private static final Logger trace = LogManager
-         .getLogger(ProcessResourceMgmtResource.class);
+   private static final Logger trace = LogManager.getLogger(ProcessResourceMgmtResource.class);
 
    @Resource
    private ProcessResourceMgmtService processResourceMgmtService;
 
+   /**
+    * 
+    * @return
+    */
    @GET
-   @Path("/availableRolesAndUsers/{refreshInd}")
-   public Response getProcessResourceRolesAndUsers(@PathParam("refreshInd") boolean refreshInd)
+   @Path("/availableRoles")
+   public Response getProcessResourceRoles()
    {
 
       try
       {
-         ProcessResourceMgmtDTO result = processResourceMgmtService
-               .getProcessResourceRolesAndUsers(refreshInd);
+         ProcessResourceMgmtDTO result = processResourceMgmtService.getProcessResourceRoles();
+
+         return Response.ok(result.toJson(), MediaType.TEXT_PLAIN_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+         return Response.serverError().build();
+      }
+   }
+
+   /**
+    * 
+    * @return
+    */
+   @GET
+   @Path("/availableUsers")
+   public Response getProcessResourceUsers()
+   {
+
+      try
+      {
+         ProcessResourceMgmtDTO result = processResourceMgmtService.getProcessResourceUsers();
 
          return Response.ok(result.toJson(), MediaType.TEXT_PLAIN_TYPE).build();
       }

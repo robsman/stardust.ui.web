@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This
+ * Copyright (c) 2014 SunGard CSA LLC and others. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -18,14 +18,14 @@
 	angular.module("bcc-ui").controller(
 			'sdProcessResourceMgmtCtrl',
 			[ '$q', '$scope', '$filter', 'sdProcessResourceMgmtService',
-					'sdUtilService', 'sdLoggerService', 'sdViewUtilService',
+					'sdLoggerService', 'sdViewUtilService',
 					ProcessResourceMgmtCtrl ]);
 
 	/*
 	 * 
 	 */
 	function ProcessResourceMgmtCtrl($q, $scope, $filter,
-			sdProcessResourceMgmtService, sdUtilService, sdLoggerService,
+			sdProcessResourceMgmtService, sdLoggerService,
 			sdViewUtilService) {
 		var trace = sdLoggerService
 				.getLogger('bcc-ui.sdProcessResourceMgmtCtrl');
@@ -36,63 +36,28 @@
 		this.exportFileName = new Date();
 		this.rowSelectionForRoles = null;
 		this.rowSelectionForUsers = null;
-
-		/**
-		 * This method will load the available roles and users data.
-		 */
-		ProcessResourceMgmtCtrl.prototype.getProcessResourceRolesAndUsers = function(refreshInd) {
-			var self = this;
-			sdProcessResourceMgmtService
-					.getProcessResourceRolesAndUsers(refreshInd)
-					.then(
-							function(data) {
-								self.processResourceRoleList = data.processResourceRoleList;
-								self.processResourceUserList = data.processResourceUserList;
-								
-								self.showRolesTable = true;
-								self.showUsersTable = true;
-								if(self.rolesTable != undefined && self.usersTable != undefined){
-								self.rolesTable.refresh();
-								self.usersTable.refresh();
-								}
-							}, function(error) {
-								trace.log(error);
-							});
-		};
-
-		/**
-		 * 
-		 */
-		ProcessResourceMgmtCtrl.prototype.initialize = function() {
-			this.getProcessResourceRolesAndUsers(false);
-		};
-
-		this.initialize();
+		this.showRolesTable = true;
 
 		/**
 		 * 
 		 * @param options
 		 * @returns
 		 */
-		ProcessResourceMgmtCtrl.prototype.getProcessResourceRoles = function(
-				options) {
-			var self = this;
+		ProcessResourceMgmtCtrl.prototype.getProcessResourceRoles = function() {
 			var deferred = $q.defer();
-			// TO DO : The deferred object is not needed here but as the sdDataTable is 
-			// not working as expected with local mode, completed implementation with remote mode.
-			self.ProcessResourceRoles = {};
-			if (options.filters != undefined) {
-				var rows = this.filterRolesArray(self.processResourceRoleList,
-						options.filters.name.textSearch);
-				self.ProcessResourceRoles.list = rows;
-				self.ProcessResourceRoles.totalCount = rows.length;
-			} else {
-				self.ProcessResourceRoles.list = self.processResourceRoleList;
-				self.ProcessResourceRoles.totalCount = self.processResourceRoleList.length;
-			}
-			deferred.resolve(self.ProcessResourceRoles);
+			var self = this;
+			sdProcessResourceMgmtService.getProcessResourceRoles()
+					.then(function(data) {
+						deferred.resolve(data.processResourceRoleList);
+						self.showUsersTable = true;
+						if(self.usersTable != undefined){
+							self.usersTable.refresh();
+						}
+					}, function(error) {
+						trace.log(error);
+						deferred.reject(error);
+					});
 			return deferred.promise;
-
 		};
 		/**
 		 * 
@@ -141,23 +106,15 @@
 		 * @returns
 		 * 
 		 */
-		ProcessResourceMgmtCtrl.prototype.getProcessResourceUsers = function(
-				options) {
-			var self = this;
-			// TO DO : The deferred object is not needed here but as the sdDataTable is 
-			// not working as expected with local mode, completed implementation with remote mode.
+		ProcessResourceMgmtCtrl.prototype.getProcessResourceUsers = function() {
 			var deferred = $q.defer();
-			self.ProcessResourceUsers = {};
-			if (options.filters != undefined) {
-				var rows = this.filterUsersArray(self.processResourceUserList,
-						options.filters.userName.textSearch);
-				self.ProcessResourceUsers.list = rows;
-				self.ProcessResourceUsers.totalCount = rows.length;
-			} else {
-				self.ProcessResourceUsers.list = self.processResourceUserList;
-				self.ProcessResourceUsers.totalCount = self.processResourceUserList.length;
-			}
-			deferred.resolve(self.ProcessResourceUsers);
+			sdProcessResourceMgmtService.getProcessResourceUsers()
+					.then(function(data) {
+						deferred.resolve(data.processResourceUserList);
+					}, function(error) {
+						trace.log(error);
+						deferred.reject(error);
+					});
 			return deferred.promise;
 		};
 
@@ -166,9 +123,7 @@
 		 */
 		ProcessResourceMgmtCtrl.prototype.refresh = function() {
 			var self = this;
-			self.getProcessResourceRolesAndUsers(true);
-/*			self.rolesTable.refresh();
-			self.usersTable.refresh();*/
+			self.rolesTable.refresh();
 		};
 
 		/**

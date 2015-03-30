@@ -239,26 +239,6 @@
 					.indexOf("/main.html"));
 		};
 
-		/**
-		 * 
-		 */
-		UtilService.prototype.prepareUrlParams = function(optionData) {
-			var options = "";
-			if (optionData.skip != undefined) {
-				options += "&skip=" + optionData.skip;
-			}
-			if (optionData.pageSize != undefined) {
-				options += "&pageSize=" + optionData.pageSize;
-			}
-			if (optionData.order != undefined) {
-				// Supports only single column sort
-				var index = optionData.order.length - 1;
-				options += "&orderBy=" + optionData.order[index].name;
-				options += "&orderByDir=" + optionData.order[index].dir;
-			}
-
-			return options;
-		};
 		
 		UtilService.prototype.format = function(str, args) {
 		    return str.replace(/{(\d+)}/g, function(match, number) { 

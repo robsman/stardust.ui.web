@@ -36,8 +36,6 @@ import org.springframework.stereotype.Component;
 public class RoleManagerDetailUtils
 {
 
-   // private WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
-
    /**
     * 
     * @param roleId
@@ -48,20 +46,62 @@ public class RoleManagerDetailUtils
    {
       WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
       RoleItem roleItem = getRoleItem(roleId, departmentOid);
-      List<UserItem> assignedUserList = new ArrayList<UserItem>();
-      List<UserItem> assignableUserList = new ArrayList<UserItem>();
+
+      RoleManagerDetailsDTO roleManagerDetailsDTO = new RoleManagerDetailsDTO();
 
       // Code to get the assigned user list
-      UserQuery query = UserQuery.findAll();
-      query.getFilter().add(
-            ParticipantAssociationFilter.forParticipant(roleItem.getRole(), false));
-      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
-      userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
-      query.setPolicy(userPolicy);
-      assignedUserList = facade.getAllUsersAsUserItems(query);
+      List<UserItem> assignedUserList = getAssignedUsersAsUserItems(facade, roleItem);
+      List<RoleManagerDetailUserDTO> userAssignedList = new ArrayList<RoleManagerDetailUserDTO>();
+
+      for (UserItem userItem : assignedUserList)
+      {
+
+         userAssignedList.add(new RoleManagerDetailUserDTO(userItem.getUserName(), Long.toString(userItem.getUser()
+               .getOID()), Long.toString(userItem.getDirectItemCount()),
+               Long.toString(userItem.getIndirectItemCount()), Long.toString(userItem.getIndirectItemCount()
+                     + userItem.getDirectItemCount()), userItem.isLoggedIn(), Long.toString(userItem.getRoleCount()),
+               userItem, true));
+      }
+      roleManagerDetailsDTO.assignedUserList = userAssignedList;
 
       // code to get Assignable User list
 
+      List<UserItem> assignableUserList = getAssignableUsersAsUserItems(facade, assignedUserList);
+      List<RoleManagerDetailUserDTO> userAssignableList = new ArrayList<RoleManagerDetailUserDTO>();
+
+      for (UserItem userItem : assignableUserList)
+      {
+         userAssignableList.add(new RoleManagerDetailUserDTO(userItem.getUserName(), Long.toString(userItem.getUser()
+               .getOID()), Long.toString(userItem.getDirectItemCount()),
+               Long.toString(userItem.getIndirectItemCount()), Long.toString(userItem.getIndirectItemCount()
+                     + userItem.getDirectItemCount()), userItem.isLoggedIn(), Long.toString(userItem.getRoleCount()),
+               userItem, false));
+      }
+      roleManagerDetailsDTO.assignableUserList = userAssignableList;
+
+      // code to set the role manager details such as roleName, roleId etc.
+      roleManagerDetailsDTO.roleName = (!roleItem.getRoleName().toString().isEmpty()) ? roleItem.getRoleName()
+            .toString() : null;
+      roleManagerDetailsDTO.roleId = (!roleItem.getRole().getId().isEmpty()) ? roleItem.getRole().getId() : roleId;
+      roleManagerDetailsDTO.items = (!Long.toString(roleItem.getWorklistCount()).isEmpty()) ? Long.toString(roleItem
+            .getWorklistCount()) : null;
+      roleManagerDetailsDTO.account = (!Long.toString(roleItem.getUserCount()).isEmpty()) ? Long.toString(roleItem
+            .getUserCount()) : null;
+      roleManagerDetailsDTO.itemsPerUser = Long.toString(roleItem.getEntriesPerUser()) != null ? Long.toString(roleItem
+            .getEntriesPerUser()) : null;
+      roleManagerDetailsDTO.roleModifiable = canUserModifyRole(roleItem);
+
+      return roleManagerDetailsDTO;
+   }
+
+   /**
+    * 
+    * @param facade
+    * @param assignedUserList
+    * @return
+    */
+   private List<UserItem> getAssignableUsersAsUserItems(WorkflowFacade facade, List<UserItem> assignedUserList)
+   {
       UserQuery queryForAssignableUser = UserQuery.findActive();
       FilterAndTerm filter = queryForAssignableUser.getFilter();
 
@@ -74,61 +114,29 @@ public class RoleManagerDetailUtils
             filter.add(UserQuery.OID.notEqual(userItem.getUser().getOID()));
          }
       }
-      UserDetailsPolicy userPolicyForAssignableUser = new UserDetailsPolicy(
-            UserDetailsLevel.Core);
-      userPolicyForAssignableUser
-            .setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
+      UserDetailsPolicy userPolicyForAssignableUser = new UserDetailsPolicy(UserDetailsLevel.Core);
+      userPolicyForAssignableUser.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
       queryForAssignableUser.setPolicy(userPolicyForAssignableUser);
 
-      assignableUserList = facade.getAllUsersAsUserItems(queryForAssignableUser);
+      List<UserItem> assignableUserList = facade.getAllUsersAsUserItems(queryForAssignableUser);
+      return assignableUserList;
+   }
 
-      // code to assign values to RoleManagerDetailsDTO
-
-      RoleManagerDetailsDTO roleManagerDetailsDTO = new RoleManagerDetailsDTO();
-
-      List<RoleManagerDetailUserDTO> userAssignedList = new ArrayList<RoleManagerDetailUserDTO>();
-      List<RoleManagerDetailUserDTO> userAssignableList = new ArrayList<RoleManagerDetailUserDTO>();
-
-      for (UserItem userItem : assignedUserList)
-      {
-
-         userAssignedList.add(new RoleManagerDetailUserDTO(userItem.getUserName(), Long
-               .toString(userItem.getUser().getOID()), Long.toString(userItem
-               .getDirectItemCount()), Long.toString(userItem.getIndirectItemCount()),
-               Long.toString(userItem.getIndirectItemCount()
-                     + userItem.getDirectItemCount()), userItem.isLoggedIn(), Long
-                     .toString(userItem.getRoleCount()), userItem, true));
-      }
-
-      for (UserItem userItem : assignableUserList)
-      {
-         userAssignableList.add(new RoleManagerDetailUserDTO(userItem.getUserName(), Long
-               .toString(userItem.getUser().getOID()), Long.toString(userItem
-               .getDirectItemCount()), Long.toString(userItem.getIndirectItemCount()),
-               Long.toString(userItem.getIndirectItemCount()
-                     + userItem.getDirectItemCount()), userItem.isLoggedIn(), Long
-                     .toString(userItem.getRoleCount()), userItem, false));
-      }
-
-      roleManagerDetailsDTO.assignedUserList = userAssignedList;
-      roleManagerDetailsDTO.assignableUserList = userAssignableList;
-
-      roleManagerDetailsDTO.roleName = (!roleItem.getRoleName().toString().isEmpty())
-            ? roleItem.getRoleName().toString()
-            : null;
-      roleManagerDetailsDTO.roleId = (!roleItem.getRole().getId().isEmpty()) ? roleItem
-            .getRole().getId() : roleId;
-      roleManagerDetailsDTO.items = (!Long.toString(roleItem.getWorklistCount())
-            .isEmpty()) ? Long.toString(roleItem.getWorklistCount()) : null;
-      roleManagerDetailsDTO.account = (!Long.toString(roleItem.getUserCount()).isEmpty())
-            ? Long.toString(roleItem.getUserCount())
-            : null;
-      roleManagerDetailsDTO.itemsPerUser = Long.toString(roleItem.getEntriesPerUser()) != null
-            ? Long.toString(roleItem.getEntriesPerUser())
-            : null;
-      roleManagerDetailsDTO.roleModifiable = canUserModifyRole(roleItem);
-
-      return roleManagerDetailsDTO;
+   /**
+    * 
+    * @param facade
+    * @param roleItem
+    * @return
+    */
+   private List<UserItem> getAssignedUsersAsUserItems(WorkflowFacade facade, RoleItem roleItem)
+   {
+      UserQuery query = UserQuery.findAll();
+      query.getFilter().add(ParticipantAssociationFilter.forParticipant(roleItem.getRole(), false));
+      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
+      userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
+      query.setPolicy(userPolicy);
+      List<UserItem> assignedUserList = facade.getAllUsersAsUserItems(query);
+      return assignedUserList;
    }
 
    /**
@@ -139,8 +147,7 @@ public class RoleManagerDetailUtils
    private RoleItem getRoleItem(String roleId, String departmentOid)
    {
       WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
-      QualifiedModelParticipantInfo modelParticipantInfo = getModelParticipantInfo(
-            roleId, departmentOid, facade);
+      QualifiedModelParticipantInfo modelParticipantInfo = getModelParticipantInfo(roleId, departmentOid, facade);
       RoleItem roleItem = facade.getRoleItem(modelParticipantInfo);
       return roleItem;
    }
@@ -151,13 +158,11 @@ public class RoleManagerDetailUtils
     * @param facade
     * @return
     */
-   private QualifiedModelParticipantInfo getModelParticipantInfo(String roleId,
-         String departmentOid, WorkflowFacade facade)
+   private QualifiedModelParticipantInfo getModelParticipantInfo(String roleId, String departmentOid,
+         WorkflowFacade facade)
    {
-      ModelParticipant participant = (ModelParticipant) ModelCache.findModelCache()
-            .getParticipant(roleId);
-      Department department = facade.getAdministrationService().getDepartment(
-            Long.parseLong(departmentOid));
+      ModelParticipant participant = (ModelParticipant) ModelCache.findModelCache().getParticipant(roleId);
+      Department department = facade.getAdministrationService().getDepartment(Long.parseLong(departmentOid));
       QualifiedModelParticipantInfo modelParticipantInfo = (QualifiedModelParticipantInfo) ((department == null)
             ? participant
             : department.getScopedParticipant(participant));
@@ -227,8 +232,7 @@ public class RoleManagerDetailUtils
     * @param departmentOid
     * @return
     */
-   public boolean removeUserFromRole(List<String> userIds, String roleId,
-         String departmentOid)
+   public boolean removeUserFromRole(List<String> userIds, String roleId, String departmentOid)
    {
       List<UserItem> users = CollectionUtils.newArrayList();
       WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
@@ -301,15 +305,13 @@ public class RoleManagerDetailUtils
     * @param facade
     * @return
     */
-   private UserItem checkForUserAuthChange(List<String> userIds, List<UserItem> users,
-         WorkflowFacade facade)
+   private UserItem checkForUserAuthChange(List<String> userIds, List<UserItem> users, WorkflowFacade facade)
    {
       UserItem userItem = null;
       for (String userId : userIds)
       {
 
-         if (facade.getUserItem(Long.parseLong(userId)).getUser()
-               .equals(facade.getLoginUser()))
+         if (facade.getUserItem(Long.parseLong(userId)).getUser().equals(facade.getLoginUser()))
          {
             userItem = facade.getUserItem(facade.getLoginUser());
          }
@@ -330,8 +332,7 @@ public class RoleManagerDetailUtils
     * @param options
     * @return
     */
-   public QueryResult<ActivityInstance> getAllActivitiesForRole(String roleId,
-         String departmentOid, Options options)
+   public QueryResult<ActivityInstance> getAllActivitiesForRole(String roleId, String departmentOid, Options options)
    {
       Query query = createQuery(roleId, departmentOid, options);
       QueryResult<ActivityInstance> result = performSearch(query);
@@ -348,15 +349,11 @@ public class RoleManagerDetailUtils
    private Query createQuery(String roleId, String departmentOid, Options options)
    {
       WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
-      QualifiedModelParticipantInfo modelParticipantInfo = getModelParticipantInfo(
-            roleId, departmentOid, facade);
-      ActivityInstanceQuery query = ActivityInstanceQuery
-            .findInState(new ActivityInstanceState[] {
-                  ActivityInstanceState.Application, ActivityInstanceState.Created,
-                  ActivityInstanceState.Hibernated, ActivityInstanceState.Interrupted,
-                  ActivityInstanceState.Suspended});
-      query.getFilter().add(
-            PerformingParticipantFilter.forParticipant(modelParticipantInfo, true));
+      QualifiedModelParticipantInfo modelParticipantInfo = getModelParticipantInfo(roleId, departmentOid, facade);
+      ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
+            ActivityInstanceState.Application, ActivityInstanceState.Created, ActivityInstanceState.Hibernated,
+            ActivityInstanceState.Interrupted, ActivityInstanceState.Suspended});
+      query.getFilter().add(PerformingParticipantFilter.forParticipant(modelParticipantInfo, true));
 
       ActivityTableUtils.addDescriptorPolicy(options, query);
 
@@ -378,8 +375,7 @@ public class RoleManagerDetailUtils
    private QueryResult<ActivityInstance> performSearch(Query query)
    {
       WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
-      QueryResult<ActivityInstance> result = facade
-            .getAllActivityInstances((ActivityInstanceQuery) query);
+      QueryResult<ActivityInstance> result = facade.getAllActivityInstances((ActivityInstanceQuery) query);
       return result;
    }
 }

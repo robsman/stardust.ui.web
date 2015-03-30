@@ -24,12 +24,12 @@
 						'sdLoggerService',
 						'$q',
 						'$http',
-						'sdUtilService',
+						'sdDataTableHelperService',
 						function($rootScope, $resource, sdLoggerService, $q,
-								$http, sdUtilService) {
+								$http, sdDataTableHelperService) {
 							var service = new DocumentSearchService($rootScope,
 									$resource, sdLoggerService, $q, $http,
-									sdUtilService);
+									sdDataTableHelperService);
 							return service;
 						} ];
 			});
@@ -38,7 +38,7 @@
 	 * 
 	 */
 	function DocumentSearchService($rootScope, $resource, sdLoggerService, $q,
-			$http, sdUtilService) {
+			$http, sdDataTableHelperService) {
 		var REST_BASE_URL = "services/rest/portal/documentSearch";
 		var trace = sdLoggerService
 				.getLogger('viewscommon-ui.services.sdDocumentSearchServic');
@@ -81,7 +81,8 @@
 			// Prepare URL
 			var restUrl = REST_BASE_URL + "/:type";
 
-			var options = sdUtilService.prepareUrlParams(query.options);
+			var options = sdDataTableHelperService
+					.convertToQueryParams(query.options);
 
 			if (options.length > 0) {
 				restUrl = restUrl + "?" + options.substr(1);

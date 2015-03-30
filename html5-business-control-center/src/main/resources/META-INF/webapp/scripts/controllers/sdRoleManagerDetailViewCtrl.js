@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This
+ * Copyright (c) 2014 SunGard CSA LLC and others. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
@@ -18,16 +18,14 @@
 	angular.module("bcc-ui").controller(
 			'sdRoleManagerDetailViewCtrl',
 			[ '$q', '$scope', '$filter', '$element',
-					'sdProcessResourceMgmtService', 'sdUtilService',
-					'sdLoggerService', 'sdViewUtilService',
-					RoleManagerDetailViewCtrl ]);
+					'sdRoleManagerDetailService', 'sdLoggerService',
+					'sdViewUtilService', RoleManagerDetailViewCtrl ]);
 
 	/*
 	 * 
 	 */
 	function RoleManagerDetailViewCtrl($q, $scope, $filter, $element,
-			sdProcessResourceMgmtService, sdUtilService, sdLoggerService,
-			sdViewUtilService) {
+			sdRoleManagerDetailService, sdLoggerService, sdViewUtilService) {
 		var trace = sdLoggerService
 				.getLogger('bcc-ui.sdRoleManagerDetailViewCtrl');
 
@@ -60,7 +58,7 @@
 		 */
 		RoleManagerDetailViewCtrl.prototype.getRoleManagerDetails = function() {
 			var self = this;
-			sdProcessResourceMgmtService
+			sdRoleManagerDetailService
 					.getRoleManagerDetails(self.viewParams.roleId,
 							self.viewParams.departmentOid)
 					.then(
@@ -95,7 +93,7 @@
 		 */
 		RoleManagerDetailViewCtrl.prototype.getAssignedUsers = function(options) {
 			var self = this;
-			var deferred = $q.defer();
+			// var deferred = $q.defer();
 			self.assignedUsers = {};
 			if (self.showLoggedInAssignedUsers) {
 
@@ -105,16 +103,11 @@
 						}, true);
 
 				self.assignedUsers.list = rows;
-				self.assignedUsers.totalCount = rows.length;
 
 			} else {
 				self.assignedUsers.list = self.roleManagerDetails.assignedUserList;
-				self.assignedUsers.totalCount = self.roleManagerDetails.assignedUserList.length;
 			}
-
-			deferred.resolve(self.assignedUsers);
-			return deferred.promise;
-			// return self.roleManagerDetails.assignedUserList;
+			return self.assignedUsers.list;
 		};
 
 		/**
@@ -122,7 +115,6 @@
 		 */
 		RoleManagerDetailViewCtrl.prototype.getAssignableUsers = function() {
 			var self = this;
-			var deferred = $q.defer();
 			self.assignableUsers = {};
 
 			if (self.showLoggedInAssignableUsers) {
@@ -133,16 +125,10 @@
 						}, true);
 
 				self.assignableUsers.list = rows;
-				self.assignableUsers.totalCount = rows.length;
-
 			} else {
 				self.assignableUsers.list = self.roleManagerDetails.assignableUserList;
-				self.assignableUsers.totalCount = self.roleManagerDetails.assignableUserList.length;
 			}
-
-			deferred.resolve(self.assignableUsers);
-			return deferred.promise;
-			// return self.roleManagerDetails.assignableUserList;
+			return self.assignableUsers.list;
 		};
 
 		/**
@@ -171,10 +157,6 @@
 		RoleManagerDetailViewCtrl.prototype.refreshLoggedInAssignedUsers = function() {
 			var self = this;
 			self.assignedUsersTable.refresh();
-			/*
-			 * if(self.showLoggedInAssignedUsers){
-			 *  }
-			 */
 		};
 
 		/**
@@ -183,10 +165,6 @@
 		RoleManagerDetailViewCtrl.prototype.refreshLoggedInAssignableUsers = function() {
 			var self = this;
 			self.assignableUsersTable.refresh();
-			/*
-			 * if(self.showLoggedInAssignedUsers){
-			 *  }
-			 */
 		};
 
 		/**
@@ -197,7 +175,7 @@
 			var self = this;
 			var userIds = this
 					.getSelectedUserIds(rowSelectionAssignedUsersTable);
-			sdProcessResourceMgmtService.removeUserFromRole(userIds,
+			sdRoleManagerDetailService.removeUserFromRole(userIds,
 					self.viewParams.roleId, self.viewParams.departmentOid)
 					.then(function(data) {
 						self.userAuthorizationMsg = data.userAuthorization;
@@ -216,7 +194,7 @@
 			var self = this;
 			var userIds = this
 					.getSelectedUserIds(rowSelectionAssignableUsersTable);
-			sdProcessResourceMgmtService.addUserToRole(userIds,
+			sdRoleManagerDetailService.addUserToRole(userIds,
 					self.viewParams.roleId, self.viewParams.departmentOid)
 					.then(function(data) {
 						self.userAuthorizationMsg = data.userAuthorization;
@@ -248,13 +226,16 @@
 			self.dialogElem.detach();
 		};
 
+		/**
+		 * 
+		 */
 		RoleManagerDetailViewCtrl.prototype.getActivitiesForRole = function(
 				params) {
 
 			var self = this;
 			var deferred = $q.defer();
 			self.activities = {};
-			sdProcessResourceMgmtService.getAllActivitiesForRole(params,
+			sdRoleManagerDetailService.getAllActivitiesForRole(params,
 					self.viewParams.roleId, self.viewParams.departmentOid)
 					.then(function(data) {
 						self.activities.list = data.list;

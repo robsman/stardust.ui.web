@@ -89,8 +89,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 
-
-
 public class WorkflowFacade implements Resetable
 {
    protected final static Logger trace = LogManager.getLogger(WorkflowFacade.class);
@@ -153,20 +151,17 @@ public class WorkflowFacade implements Resetable
       }
       catch (AccessForbiddenException e)
       {
-         PageMessage.setMessage(FacesMessage.SEVERITY_WARN, Localizer
-               .getString(LocalizerKey.ACCESS_FORBIDDEN), null);
+         PageMessage.setMessage(FacesMessage.SEVERITY_WARN, Localizer.getString(LocalizerKey.ACCESS_FORBIDDEN), null);
       }
       catch (Exception e)
       {
          String message = e.getMessage();
          if (StringUtils.isEmpty(message))
          {
-            message = Localizer.getString(
-                  BusinessControlCenterLocalizerKey.CANNOT_MODIFY_USER, "USER", user
-                        .getAccount());
+            message = Localizer.getString(BusinessControlCenterLocalizerKey.CANNOT_MODIFY_USER, "USER",
+                  user.getAccount());
          }
-         FacesContext.getCurrentInstance().addMessage(null,
-               new FacesMessage(FacesMessage.SEVERITY_ERROR, "", message));
+         FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", message));
       }
       return null;
    }
@@ -175,21 +170,20 @@ public class WorkflowFacade implements Resetable
    private void buildRoleAndUserItemList()
    {
 
-     
       List<ModelParticipantInfo> roles = CollectionUtils.newArrayList();
-      
+
       ModelCache modelCache = ModelCache.findModelCache();
 
-      for (Participant p:modelCache.getAllParticipants())
-      {        
+      for (Participant p : modelCache.getAllParticipants())
+      {
          this.participants.put(p.getQualifiedId(), p);
          if (p instanceof Role || p instanceof Organization)
          {
             ModelParticipantInfo mp = (ModelParticipantInfo) p;
             roles.add(mp);
-            
-            boolean isTeamLead = isTeamLead(mp);            
-                 
+
+            boolean isTeamLead = isTeamLead(mp);
+
             if (isTeamLead)
             {
                teamleadRoles.put(ParticipantUtils.getParticipantUniqueKey(p), p);
@@ -203,10 +197,10 @@ public class WorkflowFacade implements Resetable
                {
                   roles.add(modelParticipantInfo);
                   if (isTeamLead)// this is a team lead role
-                  {                     
+                  {
                      String participantKey = ParticipantUtils.getParticipantUniqueKey(modelParticipantInfo);
                      teamleadRoles.put(participantKey, modelParticipantInfo);
-                  
+
                   }
                }
             }
@@ -214,13 +208,13 @@ public class WorkflowFacade implements Resetable
          }
 
       }
-      
+
       UserQuery query = UserQuery.findActive();
       UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
       userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
       query.setPolicy(userPolicy);
       List<User> users = getQueryService().getAllUsers(query);
-      
+
       Pair/* <Map<String, RoleItem>, Map<Long, UserItem>> */pair = getWorklistStatistics(roles, users);
       ParticipantDepartmentPairComparator pairComparator = new ParticipantDepartmentPairComparator();
       roleItems = new TreeMap(pairComparator);
@@ -228,7 +222,7 @@ public class WorkflowFacade implements Resetable
 
       userItems = (Map) pair.getSecond();
    }
-   
+
    private boolean isTeamLead(ModelParticipantInfo participant)
    {
       if (participant instanceof Role)
@@ -250,8 +244,7 @@ public class WorkflowFacade implements Resetable
       if (modelParticipantInfo instanceof Organization)
       {
          Organization organization = (Organization) modelParticipantInfo;
-         List<Department> departments = getQueryService().findAllDepartments(null,
-               organization);
+         List<Department> departments = getQueryService().findAllDepartments(null, organization);
 
          for (Department department : departments)
          {
@@ -275,8 +268,7 @@ public class WorkflowFacade implements Resetable
          {
             parentOrganization = leadsOrganizations.get(0);
          }
-         List<Department> departments = getQueryService().findAllDepartments(null,
-               parentOrganization);
+         List<Department> departments = getQueryService().findAllDepartments(null, parentOrganization);
 
          for (Department department : departments)
          {
@@ -301,8 +293,8 @@ public class WorkflowFacade implements Resetable
    {
       if (serviceFactory == null)
       {
-         throw new InvalidServiceException("", Localizer
-               .getString(BusinessControlCenterLocalizerKey.INVALID_SERVICE_FACTORY));
+         throw new InvalidServiceException("",
+               Localizer.getString(BusinessControlCenterLocalizerKey.INVALID_SERVICE_FACTORY));
       }
       return serviceFactory;
    }
@@ -312,8 +304,8 @@ public class WorkflowFacade implements Resetable
       QueryService service = getServiceFactory().getQueryService();
       if (service == null)
       {
-         throw new InvalidServiceException("", Localizer
-               .getString(BusinessControlCenterLocalizerKey.INVALID_QUERY_SERVICE));
+         throw new InvalidServiceException("",
+               Localizer.getString(BusinessControlCenterLocalizerKey.INVALID_QUERY_SERVICE));
       }
       return service;
    }
@@ -323,8 +315,8 @@ public class WorkflowFacade implements Resetable
       UserService service = getServiceFactory().getUserService();
       if (service == null)
       {
-         throw new InvalidServiceException("", Localizer
-               .getString(BusinessControlCenterLocalizerKey.INVALID_USER_SERVICE));
+         throw new InvalidServiceException("",
+               Localizer.getString(BusinessControlCenterLocalizerKey.INVALID_USER_SERVICE));
       }
       return service;
    }
@@ -334,8 +326,8 @@ public class WorkflowFacade implements Resetable
       WorkflowService service = getServiceFactory().getWorkflowService();
       if (service == null)
       {
-         throw new InvalidServiceException("", Localizer
-               .getString(BusinessControlCenterLocalizerKey.INVALID_WORKFLOW_SERVICE));
+         throw new InvalidServiceException("",
+               Localizer.getString(BusinessControlCenterLocalizerKey.INVALID_WORKFLOW_SERVICE));
       }
       return service;
    }
@@ -345,10 +337,8 @@ public class WorkflowFacade implements Resetable
       AdministrationService service = getServiceFactory().getAdministrationService();
       if (service == null)
       {
-         throw new InvalidServiceException(
-               "",
-               Localizer
-                     .getString(BusinessControlCenterLocalizerKey.INVALID_ADMINISTARTION_SERVICE));
+         throw new InvalidServiceException("",
+               Localizer.getString(BusinessControlCenterLocalizerKey.INVALID_ADMINISTARTION_SERVICE));
       }
       return service;
    }
@@ -387,6 +377,34 @@ public class WorkflowFacade implements Resetable
       return facade;
    }
 
+   /**
+    * Method added to load the initvars if facade is already exist.
+    * @return
+    */
+   public static WorkflowFacade getWorkflowFacadeForResourceAvailability()
+   {
+      SessionContext context = SessionContext.findSessionContext();
+      WorkflowFacade facade = null;
+      if (context != null)
+      {
+         facade = (WorkflowFacade) context.lookup(WORKFLOW_FACADE);
+      }
+      if (facade == null)
+      {
+         facade = createWorkflowFacade(ServiceFactoryUtils.getServiceFactory());
+      }
+      else
+      {
+         facade.initVars();
+      }
+
+      if (facade == null)
+      {
+         throw new InvalidServiceException("", Localizer.getString(BusinessControlCenterLocalizerKey.INVALID_SESSION));
+      }
+      return facade;
+   }
+
    public boolean isValueBindingNullable()
    {
       return false;
@@ -409,7 +427,7 @@ public class WorkflowFacade implements Resetable
       }
       return null;
    }
-   
+
    /**
     * 
     * @return
@@ -458,7 +476,7 @@ public class WorkflowFacade implements Resetable
                }
             }
          }
-         
+
          if (roleItem == null)
          {
             WorklistStatistics worklistStatistices = (WorklistStatistics) getQueryService().getAllUsers(
@@ -491,7 +509,7 @@ public class WorkflowFacade implements Resetable
          buildRoleAndUserItemList();
          userItem = (UserItem) userItems.get(new Long(userOid));
       }
-     return userItem;
+      return userItem;
    }
 
    public UserItem getUserItem(User user)
@@ -565,7 +583,7 @@ public class WorkflowFacade implements Resetable
       UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Full);
       userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
       query.setPolicy(userPolicy);
-      
+
       Iterator uIter = userItems.iterator();
       FilterOrTerm filter = query.getFilter().addOrTerm();
       Map lookupMap = new HashMap();
@@ -675,8 +693,8 @@ public class WorkflowFacade implements Resetable
       if (CollectionUtils.isNotEmpty(roles))
       {
          setFullUserDetails(userItem);
-         for (RoleItem roleItem:roles)
-         {            
+         for (RoleItem roleItem : roles)
+         {
             User user = userItem.getUser();
             removeGrant(user, roleItem.getRole());
             user = modifyUser(user);
@@ -766,8 +784,7 @@ public class WorkflowFacade implements Resetable
       return count;
    }
 
-   public void activitiesDelegated(List/* <ActivityInstance> */activityInstances,
-         Participant participant)
+   public void activitiesDelegated(List/* <ActivityInstance> */activityInstances, Participant participant)
    {
       if (!CollectionUtils.isEmpty(activityInstances))
       {
@@ -795,8 +812,7 @@ public class WorkflowFacade implements Resetable
       return getQueryService().getAllUsers(query);
    }
 
-   public List/* <ActivityInstanceWithPrio> */getAliveActivityInstances(
-         ProcessDefinition pd)
+   public List/* <ActivityInstanceWithPrio> */getAliveActivityInstances(ProcessDefinition pd)
    {
       List/* <ActivityInstanceWithPrio> */aiList = new ArrayList/*
                                                                  * <ActivityInstanceWithPrio
@@ -826,7 +842,7 @@ public class WorkflowFacade implements Resetable
          Iterator<ProcessDefinition> pdIter = model.getAllProcessDefinitions().iterator();
          while (pdIter.hasNext())
          {
-            ProcessDefinition pd =  pdIter.next();
+            ProcessDefinition pd = pdIter.next();
             if (!receivedProcesses.contains(pd.getQualifiedId()))
             {
                receivedProcesses.add(pd.getQualifiedId());
@@ -836,6 +852,7 @@ public class WorkflowFacade implements Resetable
       }
       return processes;
    }
+
    /**
     * 
     * @param processId
@@ -867,8 +884,11 @@ public class WorkflowFacade implements Resetable
       }
       return activities;
    }
+
    /**
-    * method returns all activity by a process id in all model version (based on FQID of process definition)
+    * method returns all activity by a process id in all model version (based on FQID of
+    * process definition)
+    * 
     * @param pd
     * @return
     */
@@ -881,7 +901,7 @@ public class WorkflowFacade implements Resetable
 
       for (DeployedModel model : models)
       {
-         if(model.getId().equals(modelId))
+         if (model.getId().equals(modelId))
          {
             ProcessDefinition processDefinition = model.getProcessDefinition(pd.getId());
             if (processDefinition != null)
@@ -897,7 +917,7 @@ public class WorkflowFacade implements Resetable
                   }
                }
             }
-            
+
          }
 
       }
@@ -912,23 +932,20 @@ public class WorkflowFacade implements Resetable
          documentSet = (List) documentSetForPiMap.get(new Long(pi.getOID()));
          if (documentSet == null)
          {
-            documentSet = (List) getInDataPath(pi.getOID(),
-                  DmsConstants.PATH_ID_ATTACHMENTS);
+            documentSet = (List) getInDataPath(pi.getOID(), DmsConstants.PATH_ID_ATTACHMENTS);
          }
       }
       return documentSet;
    }
 
-   public void setDocumentSetForPI(ProcessInstance pi, List documentSet,
-         boolean propagateToAT)
+   public void setDocumentSetForPI(ProcessInstance pi, List documentSet, boolean propagateToAT)
    {
       if (pi != null && documentSet != null)
       {
          documentSetForPiMap.put(new Long(pi.getOID()), documentSet);
          if (propagateToAT)
          {
-            getWorkflowService().setOutDataPath(pi.getOID(),
-                  DmsConstants.PATH_ID_ATTACHMENTS, documentSet);
+            getWorkflowService().setOutDataPath(pi.getOID(), DmsConstants.PATH_ID_ATTACHMENTS, documentSet);
          }
       }
    }
@@ -987,14 +1004,12 @@ public class WorkflowFacade implements Resetable
 
    public String getNotes(ActivityInstance activityInstance)
    {
-      if (activityInstance != null
-            && activityInstance.isScopeProcessInstanceNoteAvailable())
+      if (activityInstance != null && activityInstance.isScopeProcessInstanceNoteAvailable())
       {
          try
          {
             WorkflowService ws = getWorkflowService();
-            ProcessInstance pi = ws.getProcessInstance(activityInstance
-                  .getProcessInstanceOID());
+            ProcessInstance pi = ws.getProcessInstance(activityInstance.getProcessInstanceOID());
             if (pi.getOID() != pi.getScopeProcessInstanceOID())
             {
                pi = ws.getProcessInstance(pi.getScopeProcessInstanceOID());
@@ -1059,8 +1074,7 @@ public class WorkflowFacade implements Resetable
       return participants.values();
    }
 
-   public Collection/* <Participant> */getCommonParticipantsFromModels(
-         Set/* <Integer> */models)
+   public Collection/* <Participant> */getCommonParticipantsFromModels(Set/* <Integer> */models)
    {
       ModelCache modelCache = ModelCache.findModelCache();
       Map/* <String, Participant> */participants = new HashMap/* <String, Participant> */();
@@ -1076,13 +1090,11 @@ public class WorkflowFacade implements Resetable
             {
                if (participants.isEmpty())
                {
-                  for (Iterator pIter = model.getAllParticipants().iterator(); pIter
-                        .hasNext();)
+                  for (Iterator pIter = model.getAllParticipants().iterator(); pIter.hasNext();)
                   {
                      Participant participant = (Participant) pIter.next();
                      String participantId = participant.getId();
-                     if (participant instanceof Role
-                           || participant instanceof Organization)
+                     if (participant instanceof Role || participant instanceof Organization)
                      {
                         participants.put(participantId, participant);
                         commonParticipants.add(participantId);
@@ -1092,8 +1104,7 @@ public class WorkflowFacade implements Resetable
                else
                {
                   List/* <String> */modelParticipants = new ArrayList/* <String> */();
-                  for (Iterator pIter = model.getAllParticipants().iterator(); pIter
-                        .hasNext();)
+                  for (Iterator pIter = model.getAllParticipants().iterator(); pIter.hasNext();)
                   {
                      Participant participant = (Participant) pIter.next();
                      modelParticipants.add(participant.getId());
@@ -1118,18 +1129,18 @@ public class WorkflowFacade implements Resetable
    private Pair/* <Map<ParticipantDepartmentPair, RoleItem>, Map<String, UserItem>> */getWorklistStatistics(
          List/* <Role> */roles, List/* <User> */users)
    {
-      WorklistStatistics worklistStatistices = (WorklistStatistics) getQueryService()
-            .getAllUsers(WorklistStatisticsQuery.forAllUsers());
+      WorklistStatistics worklistStatistices = (WorklistStatistics) getQueryService().getAllUsers(
+            WorklistStatisticsQuery.forAllUsers());
       Map/* <ParticipantDepartmentPair, RoleItem> */roleItems = new HashMap/*
-                                                                            * <ParticipantDepartmentPair
+                                                                            * <
+                                                                            * ParticipantDepartmentPair
                                                                             * , RoleItem>
                                                                             */();
       Map/* <String, UserItem> */userItems = new HashMap/* <String, UserItem> */();
       for (Iterator entryIter = roles.iterator(); entryIter.hasNext();)
       {
          ModelParticipantInfo role = (ModelParticipantInfo) entryIter.next();
-         ParticipantStatistics pStatistics = worklistStatistices
-               .getModelParticipantStatistics(role);
+         ParticipantStatistics pStatistics = worklistStatistices.getModelParticipantStatistics(role);
          RoleItem roleItem = new RoleItem(role);
          if (pStatistics != null)
          {
@@ -1137,17 +1148,13 @@ public class WorkflowFacade implements Resetable
             roleItem.addUser(pStatistics.nUsers);
             roleItem.addLoggedInUser(pStatistics.nLoggedInUsers);
          }
-         roleItems.put(ParticipantDepartmentPair.getParticipantDepartmentPair(role),
-               roleItem);
+         roleItems.put(ParticipantDepartmentPair.getParticipantDepartmentPair(role), roleItem);
       }
       for (Iterator entryIter = users.iterator(); entryIter.hasNext();)
       {
          User user = (User) entryIter.next();
-         UserStatistics uStatistics = worklistStatistices
-               .getUserStatistics(user.getOID());
-         UserItem userItem = new UserItem(user, uStatistics != null
-               ? uStatistics.loggedIn
-               : false);
+         UserStatistics uStatistics = worklistStatistices.getUserStatistics(user.getOID());
+         UserItem userItem = new UserItem(user, uStatistics != null ? uStatistics.loggedIn : false);
          if (uStatistics != null)
          {
             userItem.addDirectItemCount(uStatistics.nPrivateWorkitems);
@@ -1156,8 +1163,7 @@ public class WorkflowFacade implements Resetable
          }
          userItems.put(new Long(user.getOID()), userItem);
       }
-      return new Pair/* <Map<ParticipantDepartmentPair, RoleItem>, Map<String, UserItem>> */(
-            roleItems, userItems);
+      return new Pair/* <Map<ParticipantDepartmentPair, RoleItem>, Map<String, UserItem>> */(roleItems, userItems);
    }
 
    public List getTeamleadRoles()
@@ -1169,7 +1175,7 @@ public class WorkflowFacade implements Resetable
    {
       return getTeamQuery(includeTeamLeader, false);
    }
-   
+
    /**
     * For deputy, if user is Admin, all users should be visible
     * 
@@ -1182,28 +1188,28 @@ public class WorkflowFacade implements Resetable
       UserQuery query = UserQuery.findActive();
       User user = getLoginUser();
       if (user != null)
-      {       
+      {
          if (excludeFilterForAdmin && user.isAdministrator())
          {
             // Deputy- For Admin user, return all users
             return query;
          }
          FilterTerm filter = query.getFilter().addOrTerm();
-         
+
          ModelParticipantInfo modelParticipantInfo;
          Model model;
          Role role;
          Department department;
-         
+
          List<Grant> grants = user.getAllGrants();
-         for (Grant grant:grants)
-         {            
+         for (Grant grant : grants)
+         {
             if (!grant.isOrganization())
             {
                model = ModelCache.findModelCache().getActiveModel(grant);
                role = model.getRole(grant.getId());
                department = grant.getDepartment();
-               
+
                if (department != null)
                {
                   modelParticipantInfo = department.getScopedParticipant(role);
@@ -1249,7 +1255,7 @@ public class WorkflowFacade implements Resetable
          Department department;
 
          List<Grant> grants = user.getAllGrants();
-         for (Grant grant:grants)
+         for (Grant grant : grants)
          {
             if (!grant.isOrganization())
             {
@@ -1295,7 +1301,7 @@ public class WorkflowFacade implements Resetable
          Department department;
 
          List<Grant> grants = user.getAllGrants();
-         for (Grant grant:grants)
+         for (Grant grant : grants)
          {
             if (!grant.isOrganization())
             {
@@ -1322,7 +1328,7 @@ public class WorkflowFacade implements Resetable
 
          if (excludeThisUser)
          {
-            //filter.add(UserQuery.OID.isEqual(user.getOID()));
+            // filter.add(UserQuery.OID.isEqual(user.getOID()));
          }
       }
       else

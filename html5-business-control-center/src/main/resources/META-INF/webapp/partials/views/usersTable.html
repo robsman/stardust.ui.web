@@ -1,7 +1,7 @@
 <div class="res-availability-wrapper">
     <div class="view-panel-toolbar tbl-title" style="color: #708090;font-size:11px">{{i18n('business-control-center-messages.views-resourceAvailabilityView-accountTable-title')}}</div>
 	<table sd-data-table="ctrl.usersTable"
-		sd-data="ctrl.getProcessResourceUsers(params)" sda-mode="remote" sda-no-pagination="true" sda-ready="ctrl.showUsersTable"
+		sd-data="ctrl.getProcessResourceUsers()" sda-mode="local" sda-ready="ctrl.showUsersTable"
 		sda-selectable="row"
 		sda-selection="ctrl.rowSelectionForUsers"
 		sda-column-selector="{{ctrl.columnSelector}}"

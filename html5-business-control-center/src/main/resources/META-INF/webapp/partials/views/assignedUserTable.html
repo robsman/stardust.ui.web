@@ -8,7 +8,7 @@
     <div class="view-panel-toolbar tbl-title" style="color: #708090;font-size:11px">{{i18n('business-control-center-messages.views-common-assignedUser-title')}}</div>
     <div sda-toolbar>
 		<div class="tbl-toolbar-section">
-			<button ng-disabled="ctrl.rowSelectionAssignedUsersTable.length == 0 && !self.roleManagerDetails.roleModifiable"
+			<button ng-disabled="!(ctrl.rowSelectionAssignedUsersTable.length > 0 && ctrl.roleManagerDetails.roleModifiable)"
 				ng-click="bpmCommon.stopEvent($event); ctrl.removeUserFromRole(ctrl.rowSelectionAssignedUsersTable);"
 				title="{{i18n('business-control-center-messages.views-common-button-removeUserFromRole')}}"
 				class="button-link tbl-toolbar-item tbl-tool-link">
@@ -17,7 +17,7 @@
 		</div>
 	</div>
 	<table sd-data-table="ctrl.assignedUsersTable"
-		sd-data="ctrl.getAssignedUsers(params)" sda-mode="remote" sda-ready="ctrl.table1"
+		sd-data="ctrl.getAssignedUsers()" sda-mode="local" sda-ready="ctrl.table1"
 		sda-selectable="multiple"
 		sda-selection="ctrl.rowSelectionAssignedUsersTable"
 		sda-column-selector="{{ctrl.columnSelector}}"
@@ -28,9 +28,6 @@
 			sda-i18n-scope="business-control-center-messages.views-resourceAvailabilityView-accountTable-column">
 			<tr>
 				<th sda-name="userName"  sda-label="{{i18n('business-control-center-messages.views-common-column-name')}}" sda-sortable="true">
-					<div sda-filter-template>
-						<div sd-text-search-filter></div>
-					</div>
 				</th>
 				<th sda-name="roleCount" sda-label-key="rolesCount" sda-sortable="true">					
 				</th>

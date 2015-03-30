@@ -43,10 +43,11 @@ public class ProcessResourceMgmtUtils
 
    /**
     * Used to set the list of ProcessResourceMgmtRoleDTO
+    * @return
     */
    public List<ProcessResourceMgmtRoleDTO> getProcessResourceRoles()
    {
-      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
+      WorkflowFacade facade = WorkflowFacade.getWorkflowFacadeForResourceAvailability();
       List<ProcessResourceMgmtRoleDTO> processResourceRoleList = new ArrayList<ProcessResourceMgmtRoleDTO>();
       List<RoleItem> roleItemList = facade.getAllRolesExceptCasePerformer();
       DepartmentInfo departmentInfo;
@@ -56,10 +57,9 @@ public class ProcessResourceMgmtUtils
       {
          departmentInfo = roleItem.getRole().getDepartment();
          departmentOid = (departmentInfo == null) ? 0 : departmentInfo.getOID();
-         processResourceRoleList.add(new ProcessResourceMgmtRoleDTO(roleItem.getRole()
-               .getQualifiedId(), departmentOid, roleItem.getRoleName(), roleItem
-               .getWorklistCount(), roleItem.getLoggedInUserCount(), roleItem
-               .getUserCount(), roleItem.getEntriesPerUser()));
+         processResourceRoleList.add(new ProcessResourceMgmtRoleDTO(roleItem.getRole().getQualifiedId(), departmentOid,
+               roleItem.getRoleName(), roleItem.getWorklistCount(), roleItem.getLoggedInUserCount(), roleItem
+                     .getUserCount(), roleItem.getEntriesPerUser()));
 
       }
 
@@ -79,8 +79,7 @@ public class ProcessResourceMgmtUtils
       WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
       if (query.getOrderCriteria().getCriteria().size() == 0)
       {
-         query.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME)
-               .and(UserQuery.ACCOUNT);
+         query.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME).and(UserQuery.ACCOUNT);
       }
       Users users = facade.getAllUsers((UserQuery) query);
       List<UserItem> userItems = facade.getAllUsersAsUserItems(users);
@@ -90,13 +89,10 @@ public class ProcessResourceMgmtUtils
          for (UserItem userItem : userItems)
          {
             userFullName = I18nUtils.getUserLabel(userItem.getUser());
-            processResourceUserList.add(new ProcessResourceMgmtUserDTO(userItem
-                  .getUserName(), userItem.getUser().getOID(),
-                  userItem.getUser().getId(), userFullName, userItem.getUser()
-                        .getAccount(), userItem.getUser().getEMail(), userItem
-                        .getRoleCount(), userItem.getDirectItemCount(), userItem
-                        .getIndirectItemCount(), userItem.getItemCount(), userItem
-                        .isLoggedIn()));
+            processResourceUserList.add(new ProcessResourceMgmtUserDTO(userItem.getUserName(), userItem.getUser()
+                  .getOID(), userItem.getUser().getId(), userFullName, userItem.getUser().getAccount(), userItem
+                  .getUser().getEMail(), userItem.getRoleCount(), userItem.getDirectItemCount(), userItem
+                  .getIndirectItemCount(), userItem.getItemCount(), userItem.isLoggedIn()));
 
          }
       }
@@ -136,12 +132,5 @@ public class ProcessResourceMgmtUtils
          return (IQueryExtender) sessionCtx.lookup(QUERY_EXTENDER);
       }
       return queryExtender;
-   }
-   
-   /**
-    * This method will be used in case of refresh to reload users and roles.
-    */
-   public void initializeWorkflowFacade(){
-      WorkflowFacade.getWorkflowFacade().initVars();
    }
 }

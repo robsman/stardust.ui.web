@@ -61,7 +61,6 @@
 
 				self.setShowDocumentDownload = setShowDocumentDownload;
 				self.downloadDocument = downloadDocument;
-				self.downloadDocumentClose = downloadDocumentClose;
 			}
 
 			/**
