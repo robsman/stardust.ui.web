@@ -159,13 +159,22 @@ var html5Deps = function() {
 		  module.provider('sgI18nService', function () {
 		      this.$get = ['$rootScope', function ($rootScope) {
 		          var service = {};
-		          service.translate = function(key, value) {
-		              if(value){
-		            	  return value;
-		              }else{
-		            	  return key;
-		              }
-		          };
+		          var parentScope = parent.window.angular.element(parent.document.body).scope();
+		          // use parent i18n implementation
+		          if (parentScope && parentScope.sdI18n) {
+		        	  $rootScope.i18n = parentScope.sdI18n;
+		          } else {
+		        	  // provide dummy implementation if i18n not
+			          // available from parent
+			          service.translate = function(key, value) {
+			              if(value){
+			            	  return value;
+			              }else{
+			            	  return key;
+			              }
+			          };
+			          $rootScope.i18n = service.translate;  
+		          }
 		          return service;
 		      }];
 		  });
