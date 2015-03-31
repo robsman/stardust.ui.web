@@ -35,8 +35,10 @@ define(
                   mailIntegrationOverlayResponseTabHandler.initialize(this);
                   mailIntegrationOverlayTestTabHandler.initialize(this);
                   this.loadLabels();
+
                   var rdmNo = Math.floor((Math.random() * 100000) + 1);
                   this.mailTemplateEditor.id = "mailTemplateEditor" + rdmNo;
+
                   CKEDITOR.replace(this.mailTemplateEditor.id, {
                      toolbarGroups : this.getToolbarConfiguration()
                   });
@@ -1285,25 +1287,15 @@ define(
                                     });
                   
                   CKEDITOR.instances[this.mailTemplateEditor.id].on('mode', function(e) {
+                     var format="text/plain";
+                     if(e.editor.mode=='wysiwyg')
+                        format="text/html";
                      var attributes=self.getApplication().attributes;
-                     if(!attributes["stardust:emailOverlay::mailFormat"])
-                     {
-                        var format="text/plain";
-                        if(e.editor.mode=='wysiwyg')
-                           format="text/html";
-                        attributes["stardust:emailOverlay::mailFormat"]=format;
-                        self.view
-                        .submitChanges(
-                                   {
-                                      attributes : attributes
-                                   }, false);
-                     }else{
-                        if(attributes["stardust:emailOverlay::mailFormat"]=="text/plain"){
-                           CKEDITOR.instances[self.mailTemplateEditor.id].setMode('source');
-                        }else{
-                           CKEDITOR.instances[self.mailTemplateEditor.id].setMode('wysiwyg');
-                        }
-                     }
+                     attributes["stardust:emailOverlay::mailFormat"]=format;
+                     self.view.submitChanges(
+                                {
+                                   attributes : attributes
+                                }, false);
                  }); 
                   
                   CKEDITOR.instances[this.mailTemplateEditor.id]
@@ -1612,8 +1604,8 @@ define(
                   }, {
                      name : 'colors'
                   } ];
-               }
-               /** *********************************************************************************************************** */
+               };
+               /**************************************************************************************************************/
                MailIntegrationOverlay.prototype.i18nLabels = function(key)
                {
                   return this.i18nValues[key];
@@ -1628,8 +1620,7 @@ define(
                   labels['templateConfigurations.title'] = m_i18nUtils
                            .getProperty("modeler.model.applicationOverlay.email.attachments.templateConfigurations.title");
                   return labels;
-               }
-               ;
+               };
 
                this.sourceOptions = [ {
                   value : "repository",

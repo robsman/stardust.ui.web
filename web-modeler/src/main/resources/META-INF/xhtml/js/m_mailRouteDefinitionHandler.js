@@ -316,9 +316,9 @@ define(
                   }
                   route += "\n";
                   var markup = attributes["stardust:emailOverlay::mailTemplate"];//CKEDITOR.instances[mailIntegrationOverlay.mailTemplateEditor.id].getData();
-                  if (attributes["stardust:emailOverlay::responseOptionType"] != "none")
+                  if (attributes["stardust:emailOverlay::responseType"] != "none")
                   {
-                     markup += mailIntegrationOverlayTestTabHandler.createResponseOptionString();
+                     markup += mailIntegrationOverlayTestTabHandler.createResponseOptionString(attributes["stardust:emailOverlay::responseType"],attributes["stardust:emailOverlay::responseOptionType"],attributes["stardust:emailOverlay::responseHttpUrl"] );
                   }
                   markup = markup.replace(new RegExp("(&#39;)", 'g'), "\\'");
                   markup = markup.replace(new RegExp("(&amp;)", 'g'), "&");

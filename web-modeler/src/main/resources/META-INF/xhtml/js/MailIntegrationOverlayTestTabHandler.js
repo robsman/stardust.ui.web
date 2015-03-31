@@ -17,7 +17,7 @@ define(
                {
                   return overlay.createParameterObjectString();
                },
-               createResponseOptionString : function(responseOptionsTypeSelect,
+               createResponseOptionString : function(responseTypeSelect,
                         responseOptionsTypeSelect, responseHttpUrlInput)
                {
                   return overlay.createResponseOptionString(responseTypeSelect,
@@ -185,11 +185,11 @@ define(
                 * Constructs a preview of the email content.
                 */
                MailIntegrationOverlayTestTabHandler.prototype.createResponseOptionString = function(
-                        responseOptionsTypeSelect, responseOptionsTypeSelect,
+                        responseTypeSelect, responseOptionsTypeSelect,
                         responseHttpUrlInput)
                {
-                  if (responseOptionsTypeSelect != null
-                           && responseOptionsTypeSelect != m_constants.TO_BE_DEFINED)
+                  if (responseTypeSelect != null
+                           && responseTypeSelect != m_constants.TO_BE_DEFINED)
                   {
                      var typeDeclaration = m_model
                               .findTypeDeclaration(responseOptionsTypeSelect);
