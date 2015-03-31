@@ -19,13 +19,13 @@
 
 	angular.module('bpm-common').directive('sdActivityTable',
 			['$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sdPreferenceService', 'sdWorklistService',
-			 'sdActivityInstanceService', 'sdProcessDefinitionService', 'sdCriticalityService', 'sdStatusService', 'sdPriorityService', '$filter','sgI18nService','$timeout', ActivityTableDirective]);
+			 'sdActivityInstanceService', 'sdProcessDefinitionService', 'sdCriticalityService', 'sdStatusService', 'sdPriorityService', '$filter','sgI18nService','$timeout','sdLoggedInUserService', ActivityTableDirective]);
 
 	/*
 	 *
 	 */
 	function ActivityTableDirective($parse, $q, sdUtilService, sdViewUtilService, sdLoggerService, sdPreferenceService, sdWorklistService,
-			sdActivityInstanceService, sdProcessDefinitionService, sdCriticalityService, sdStatusService, sdPriorityService, $filter, sgI18nService, $timeout) {
+			sdActivityInstanceService, sdProcessDefinitionService, sdCriticalityService, sdStatusService, sdPriorityService, $filter, sgI18nService, $timeout, sdLoggedInUserService) {
 
 		var trace = sdLoggerService.getLogger('bpm-common.sdActivityTable');
 
@@ -158,8 +158,8 @@
 			this.allAvailableCriticalities = [];
 			this.availableStates = [];
 			this.availablePriorities = [];
-			this.worklistPrefModule = "";
-			this.worklistPrefId ="";
+			this.preferenceModule = "";
+			this.preferenceId ="";
 			this.columnSelector = 'admin';
 
 			// Process Query
@@ -254,25 +254,22 @@
 			 * 
 			 */
 			this.preferenceDelegate = function(prefInfo) {
-				var preferenceStore = sdPreferenceService.getStore(prefInfo.scope, self.worklistPrefModule, self.worklistPrefId);
-
+				var preferenceStore = sdPreferenceService.getStore(prefInfo.scope, self.preferenceModule, self.preferenceId);
 				preferenceStore.super_getValue = preferenceStore.getValue;
-
 				// Override
 				preferenceStore.getValue = function(name, fromParent) {
 					var value = this.super_getValue(name, fromParent);
 					value = self.getColumnNamesByMode(value);
 					return value;
 				};
-
 				// Override
 				preferenceStore.marshalName = function(scope) {
+					var name = self.preferenceName;
 					if (scope == 'PARTITION') {
-						return 'Default';
+						name = 'Default';
 					}
-					return self.worklistPrefName;
+					return name;
 				}
-
 				return preferenceStore;
 			};
 			
@@ -393,7 +390,7 @@
 		ActivityTableCompiler.prototype.initializeWorklistMode = function(attr, scope){
 			this.priorityEditable = false;
 			this.visbleColumns = DEFAULT_VALUES.WORKLIST.VISIBLE_COLUMNS;
-			this.worklistPrefModule = DEFAULT_VALUES.WORKLIST.PREFERENCE_MODULE;
+			this.preferenceModule = DEFAULT_VALUES.WORKLIST.PREFERENCE_MODULE;
 			this.exportFileName= "Worklist";
 			this.initialSort = {name : 'startTime', dir : 'desc'};
 
@@ -439,31 +436,37 @@
 			this.title = titleGetter(scopeToUse);
 
 			if(this.query){
-
-				var idFromQuery = this.query.userId || this.query.participantQId;
-
-				if(idFromQuery){
-					this.worklistPrefId = 'worklist-participant-columns';
+				
+				var idFromQuery = this.query.userId || this.query.participantQId || this.query.processQId;
+				
+				if(this.query.processQId) {
+					this.preferenceName = idFromQuery;
+					this.preferenceId = 'worklist-process-columns';
+				}else if(this.query.userId) {
+					this.preferenceName = idFromQuery;
+					this.preferenceId = 'worklist-participant-columns';
+				}else if(this.query.participantQId) {
+					this.preferenceName = "{ipp-participant}" + idFromQuery;
+					this.preferenceId = 'worklist-participant-columns';
 				}else{
-					this.worklistPrefId = 'worklist-process-columns';
+					this.preferenceName = sdLoggedInUserService.getUserId();
+					this.preferenceId = 'worklist-participant-columns';
 				}
-
-				this.worklistPrefName = idFromQuery ;
 
 				this.exportFileName = this.exportFileName +"_"+idFromQuery; 
 			}
 
 
 			if (attr.sdaPreferenceModule) {
-				this.worklistPrefModule = attr.sdaPreferenceModule;
+				this.preferenceModule = attr.sdaPreferenceModule;
 			}
 
 			if (attr.sdaPreferenceId) {
-				this.worklistPrefId = attr.sdaPreferenceId;
+				this.preferenceId = attr.sdaPreferenceId;
 			}
 
 			if (attr.sdaPreferenceName) {
-				this.worklistPrefName = attr.sdaPreferenceName;
+				this.preferenceName = attr.sdaPreferenceName;
 			}
 
 			if (attr.sdaExportName) {

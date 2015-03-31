@@ -179,9 +179,9 @@ public class WorklistUtils
     * @param options
     * @return
     */
-   public QueryResult< ? > getItemtWorkingFromDate(String fromDateString, Options options)
+   public QueryResult< ? > getItemtWorkingFromDate(String dateId, Options options)
    {
-      Date fromDate = ActivityTableUtils.determineDate(fromDateString);
+      Date fromDate = ActivityTableUtils.determineDate(dateId);
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
             ActivityInstanceState.Suspended, ActivityInstanceState.Completed, ActivityInstanceState.Created,
             ActivityInstanceState.Interrupted, ActivityInstanceState.Application});
@@ -261,7 +261,22 @@ public class WorklistUtils
       ActivityTableUtils.addCriterias(query, options);
       return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
    }
-  
+   
+   /**
+    * 
+    * @param options
+    * @return
+    */
+   public QueryResult< ? > getAllActivable(Options options)
+   {  
+      
+      ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
+            ActivityInstanceState.Hibernated, ActivityInstanceState.Application, ActivityInstanceState.Suspended});
+      ActivityTableUtils.addCriterias(query, options);
+      return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+   }
+   
+
    /**
     * @param worklist
     * @param participantInfo

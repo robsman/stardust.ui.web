@@ -313,7 +313,6 @@ public class ActivityTableUtils
             {
                for (String processQId : filterDTO.activityName.processes)
                {
-
                   or.add(new ProcessDefinitionFilter(processQId, false));
                }
             }

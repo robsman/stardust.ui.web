@@ -84,9 +84,9 @@ public class WorklistService
     * @param options
     * @return
     */
-   public QueryResultDTO getItemtWorkingFromDate(String fromDate, Options options)
+   public QueryResultDTO getItemtWorkingFromDate(String dateId, Options options)
    {
-      QueryResult<?> queryResult = worklistUtils.getItemtWorkingFromDate(fromDate, options);
+      QueryResult<?> queryResult = worklistUtils.getItemtWorkingFromDate(dateId, options);
       return ActivityTableUtils.buildTableResult(queryResult,MODE.WORKLIST);
    }
    
@@ -121,6 +121,17 @@ public class WorklistService
    public QueryResultDTO getWorklistForLoggedInUser(Options options)
    {
       QueryResult<?> queryResult = worklistUtils.getWorklistForLoggedInUser(options);
+      return ActivityTableUtils.buildTableResult(queryResult,MODE.WORKLIST);
+   }
+   
+   /***
+    * 
+    * @param options
+    * @return
+    */
+   public QueryResultDTO getAllActivable(Options options)
+   {
+      QueryResult<?> queryResult = worklistUtils.getAllActivable(options);
       return ActivityTableUtils.buildTableResult(queryResult,MODE.WORKLIST);
    }
 }

@@ -41,8 +41,10 @@
 		   
 		   // Prepare path Params
 		   var urlTemplateParams = {};
-		   
-		   if (query.fromDate) {
+		   if (query.criticality) {
+			   urlTemplateParams.type = "criticality";
+			   urlTemplateParams.id = query.criticality;
+		   }else  if (query.fromDate) {
 			   urlTemplateParams.type = "date";
 			   urlTemplateParams.id = query.fromDate;
 		   }else if (query.processQId) {
@@ -60,11 +62,14 @@
 			   }
 		   }
 		   
-		
 		   var queryParams = sdDataTableHelperService.convertToQueryParams(query.options);
 
 		   if (queryParams.length > 0) {
-			   restUrl = restUrl + "?" + queryParams.substr(1);
+			   var separator = "?";
+			   if(/[?]/.test(restUrl)){
+				   separator =  "&";
+			   }
+			   restUrl = restUrl + separator + queryParams.substr(1);
 		   }
 		   var postData = sdDataTableHelperService.convertToPostParams(query.options);
 		   var worklist = $resource(restUrl, {

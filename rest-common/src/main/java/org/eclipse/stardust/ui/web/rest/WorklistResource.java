@@ -176,8 +176,8 @@ public class WorklistResource
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
-   @Path("/date/{fromDate}")
-   public Response getItemtWorkingFromDate(@PathParam("fromDate") String fromDate,
+   @Path("/date/{dateId}")
+   public Response getItemtWorkingFromDate(@PathParam("dateId") String dateId,
          @QueryParam("skip") @DefaultValue("0") Integer skip,
          @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
          @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
@@ -188,7 +188,7 @@ public class WorklistResource
          Options options = new Options(pageSize, skip, orderBy,
                "asc".equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
-         QueryResultDTO resultDTO = getWorklistService().getItemtWorkingFromDate(fromDate, options);
+         QueryResultDTO resultDTO = getWorklistService().getItemtWorkingFromDate(dateId, options);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }
       catch (ObjectNotFoundException onfe)
@@ -291,7 +291,34 @@ public class WorklistResource
       }
    }
    
-   
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("/allActivable")
+   public Response getAllActivable(
+         @QueryParam("skip") @DefaultValue("0") Integer skip,
+         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
+         @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
+   {
+      try
+      {
+         Options options = new Options(pageSize, skip, orderBy,
+               "asc".equalsIgnoreCase(orderByDir));
+         populatePostData(options, postData);
+         QueryResultDTO resultDTO = getWorklistService().getAllActivable(options);
+         return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (ObjectNotFoundException onfe)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+   }
    
    
    
