@@ -1740,8 +1740,25 @@ define(
                      // filter Document Request AP
                      filteredAccessPoints = m_routeDefinitionUtils.filterAccessPoint(
                               filteredAccessPoints, "DOCUMENT_REQUEST");
+                     var templateConfigurations=[];
+                     for (var n = 0; n < filteredAccessPoints.length; n++)
+                     {
+                        var ap = filteredAccessPoints[n];
+                        if (ap.direction == m_constants.IN_ACCESS_POINT&& ap.dataType == m_constants.DOCUMENT_DATA_TYPE)
+                          {
+                            templateConfigurations.push({
+                              "tTemplate" : false,
+                              "tName" : ap.name,
+                              "tPath" : "",
+                              "tSource" : "data",
+                              "tFormat" : "plain"
+                            });
+                          }
+                     }
+                     
                      specificAttributes["stardust:emailOverlay::attachmentsTemplateSource"] = "embedded";
                      specificAttributes["stardust:emailOverlay::attachmentsTemplateSourceType"] = null;
+                     specificAttributes["stardust:emailOverlay::templateConfigurations"]=angular.toJson(templateConfigurations);
                      this.hideTemplateErroType();
                      m_utils.jQuerySelect("#templateConfigurationTab").show();
                      m_utils.jQuerySelect("#attachmentsTemplateSourceTypeTab").hide();
