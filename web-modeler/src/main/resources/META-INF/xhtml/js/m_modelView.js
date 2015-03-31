@@ -263,6 +263,13 @@ define(
 
 					var self = this;
 
+					// refresh Angular Context
+					 if (!this.refreshElement) {
+             this.refreshElement = true;
+           } else {
+             this.refreshElement = false;
+           }
+					
 					// TODO Commented out because it is slow
 					//this.refreshValidation();
 				};

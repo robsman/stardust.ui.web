@@ -272,7 +272,7 @@
 	   * invokes the callback the given element is available on scope
 	   * Note that it is only Availability trigger!
 	   */
-		UtilService.prototype.doWhenElementIsAvailable = function($scope, watchforElement, callback) {
+		UtilService.prototype.watch = function($scope, watchforElement, callback, unregister) {
 	    console.log("watching scope for: " + watchforElement);
 	    if ($parse(watchforElement)($scope)) {
 	      callback();
@@ -287,16 +287,50 @@
 	      var unregister = $scope.$watch("watchForIt()", function(newVal, oldVal) {
 	        if (newVal !== oldVal) {
 	          console.log("Element is available now!");
-	          unregister();
+	          if(unregister){
+	            unregister();  
+	          }
 	          callback();
 	        }
 	      });
 	    }
 	  }
-		
-		/*
+	
+		/**
 		 * 
 		 */
+		UtilService.prototype.convertToSortedArray = function(obj, field, ascending) {
+      var sortedObjects = [];
+  
+      for ( var key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          sortedObjects.push(obj[key]);
+        }
+      }
+  
+      var ascendingFactor = ascending ? 1 : -1;
+  
+      sortedObjects.sort(function(left, right) {
+  
+        var leftValue, rightValue;
+  
+        if (left[field] && right[field]) {
+  
+          leftValue = left[field].toLowerCase();
+          rightValue = right[field].toLowerCase();
+  
+          if (leftValue < rightValue) { return -1 * ascendingFactor; }
+          if (leftValue > rightValue) { return 1 * ascendingFactor; }
+        }
+        return 0;
+      });
+  
+      return sortedObjects;
+    }
+		
+		/*
+     * 
+     */
 		function createProxyFunc(obj, member) {
 			function proxyFunc() {
 				var args = Array.prototype.slice.call(arguments, 0);

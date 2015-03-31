@@ -28,9 +28,9 @@
         moveDown: '&sdaMoveDown',
         moveUp: '&sdaMoveUp',
       },
-      controller: ['$scope', 'sdRequireJSService', '$attrs',
+      controller: ['$scope', 'sdI18nService', '$attrs',
           ModelerSimpleToolbarCtrl],
-      template: '<div class="toolBar" ng-if="toolbarCtrl.initialized">\
+      template: '<div class="toolBar" ng-cloak>\
         <table>\
         <tr>\
           <td><input type="image" aid="add" ng-src="plugins/bpm-modeler/images/icons/add.png"\
@@ -56,37 +56,18 @@
   /**
    * 
    */
-  var ModelerSimpleToolbarCtrl = function($scope, sdRequireJSService, $attrs) {
-    var self = this;
+  var ModelerSimpleToolbarCtrl = function($scope, sdI18nService, $attrs) {
 
-    var defPromise = sdRequireJSService.getPromise();
-    defPromise.then(function() {
-      self.m_i18nUtils = sdRequireJSService
-              .getModule('plugins/bpm-modeler/js/m_i18nUtils');
-      self.initialize($scope, $attrs);
-      $scope.toolbarCtrl = self;
-      self.initialized = true;
-    }, function() {
-      console.error("failed to load m_I18nUtils");
-    });
-  }
+    var i18n = sdI18nService.getInstance('bpm-modeler-messages').translate;
 
-  /**
-   * 
-   */
-  ModelerSimpleToolbarCtrl.prototype.initialize = function($scope, $attrs) {
     this.showOrderCtrl = false;
     if (angular.isDefined($attrs.sdaMoveUp)) {
       this.showOrderCtrl = true;
     }
-    this.addLabel = this.m_i18nUtils
-            .getProperty('modeler.element.properties.commonProperties.add');
-    this.deleteLabel = this.m_i18nUtils
-            .getProperty('modeler.element.properties.commonProperties.delete');
-    this.moveDownLabel = this.m_i18nUtils
-            .getProperty('modeler.element.properties.commonProperties.moveDown');
-    this.moveUpLabel = this.m_i18nUtils
-            .getProperty('modeler.element.properties.commonProperties.moveUp');
+    this.addLabel = i18n('modeler.element.properties.commonProperties.add');
+    this.deleteLabel = i18n('modeler.element.properties.commonProperties.delete');
+    this.moveDownLabel = i18n('modeler.element.properties.commonProperties.moveDown');
+    this.moveUpLabel = i18n('modeler.element.properties.commonProperties.moveUp');
+    $scope.toolbarCtrl = this;
   }
-
 })();

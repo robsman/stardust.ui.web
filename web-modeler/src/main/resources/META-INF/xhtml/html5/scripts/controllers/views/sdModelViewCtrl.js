@@ -22,25 +22,26 @@
   function ModelViewCtrl($scope, $q, sdUtilService, sdI18nService) {
     var self = this;
     self.initialized = false;
-    
-    $scope.sdI18nM = sdI18nService.getInstance('bpm-modeler-messages').translate;
 
-    sdUtilService.doWhenElementIsAvailable($scope, 'elementView.modelElement',
-            function() {
-              self.initialize($scope.elementView, $scope.require);
-              // TODO is this better OR implement processCommand()?
-              $scope.$watch('elementView.modelElement.id', function() {
-                self.refresh();
-              }, false);
+    $scope.sdI18nModeler = sdI18nService.getInstance('bpm-modeler-messages').translate;
+    var i18n = $scope.sdI18nModeler;
 
-              $scope.$watch('commandError.command', function() {
-                if ($scope.commandError) {
-                  self.processCommandError($scope.commandError.command,
-                          $scope.commandError.response);
-                }
-              }, false);
+    $scope.$watch('elementView.refreshElement', function() {
+      if (!self.initialized) {
+        self.elementView = $scope.elementView;
+        if (!self.elementView) { return; }
+        self.initialized = true;
+      }
+      self.modelElement = self.elementView.modelElement;
+      self.refresh();
+    }, false);
 
-            });
+    $scope.$watch('commandError.command', function() {
+      if ($scope.commandError) {
+        self.processCommandError($scope.commandError.command,
+                $scope.commandError.response);
+      }
+    }, false);
 
     /**
      * @returns
@@ -61,78 +62,58 @@
     }
 
     /**
+     * @param modelElement
+     */
+    ModelViewCtrl.prototype.refresh = function() {
+      this.modelId = this.modelElement.id;
+      if (this.deferIdChange) {
+        this.deferIdChange.resolve();
+        window.parent.EventHub.events.publish("SAVE_AND_RELOAD_MODELS");
+        this.deferIdChange = null;
+      }
+    }
+
+    /**
      * 
      */
-    ModelViewCtrl.prototype.i18n = function(key, defVal, params) {
-      return $scope.sdI18nM(key, defVal, params);
+    ModelViewCtrl.prototype.onModelIdChange = function() {
+      this.showOnSubmitErrors = false;
+      this.serverError = false;
+      this.serverErrorMsg = null;
     }
 
-  }
-
-  /**
-   *
-   */
-  ModelViewCtrl.prototype.initialize = function(elementView, require) {
-    var self = this;
-    self.elementView = elementView;
-    self.modelElement = self.elementView.modelElement;
-
-    self.refresh();
-    self.initialized = true;
-  }
-
-  /**
-   * @param modelElement
-   */
-  ModelViewCtrl.prototype.refresh = function() {
-    this.modelId = this.modelElement.id;
-    if (this.deferIdChange) {
-      this.deferIdChange.resolve();
-      window.parent.EventHub.events.publish("SAVE_AND_RELOAD_MODELS");
-      this.deferIdChange = null;
+    /**
+     * 
+     */
+    ModelViewCtrl.prototype.onModelIdChangeDialogOpen = function() {
+      this.modelId = this.modelElement.id;
+      this.showOnSubmitErrors = false;
+      this.serverError = false;
+      this.serverErrorMsg = null;
     }
-  }
 
-  /**
-   * 
-   */
-  ModelViewCtrl.prototype.onModelIdChange = function() {
-    this.showOnSubmitErrors = false;
-    this.serverError = false;
-    this.serverErrorMsg = null;
-  }
-
-  /**
-   * 
-   */
-  ModelViewCtrl.prototype.onModelIdChangeDialogOpen = function() {
-    this.modelId = this.modelElement.id;
-    this.showOnSubmitErrors = false;
-    this.serverError = false;
-    this.serverErrorMsg = null;
-  }
-
-  /**
-   * 
-   */
-  ModelViewCtrl.prototype.processCommandError = function(command, response) {
-    // TODO: verify if command pertains to this ctrl change but it is very
-    // complex make such match
-    // so, checking the specific error code
-    var self = this;
-    if (self.deferIdChange) {
-      self.deferIdChange.reject();
-      self.deferIdChange = null;
-    }
-    if (command.commandId == "modelElement.update") {
-      self.serverError = true;
-      if (response.responseText
-              && ((response.responseText.indexOf("ModelerError.01002") > -1) || (response.responseText
-                      .indexOf("ModelerError.01003") > -1))) {
-        // with parameters
-        self.serverErrorMsg = self.i18n(response.responseText,
-                response.responseText, [self.modelId])
-        self.modelId = self.modelElement.id;
+    /**
+     * 
+     */
+    ModelViewCtrl.prototype.processCommandError = function(command, response) {
+      // TODO: verify if command pertains to this ctrl change but it is very
+      // complex make such match
+      // so, checking the specific error code
+      var self = this;
+      if (self.deferIdChange) {
+        self.deferIdChange.reject();
+        self.deferIdChange = null;
+      }
+      if (command.commandId == "modelElement.update") {
+        self.serverError = true;
+        if (response.responseText
+                && ((response.responseText.indexOf("ModelerError.01002") > -1) || (response.responseText
+                        .indexOf("ModelerError.01003") > -1))) {
+          // with parameters
+          self.serverErrorMsg = i18n(response.responseText,
+                  response.responseText, [self.modelId])
+          self.modelId = self.modelElement.id;
+        }
       }
     }
   }

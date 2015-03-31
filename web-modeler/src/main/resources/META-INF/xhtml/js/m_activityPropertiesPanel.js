@@ -90,5 +90,36 @@ define(
 						this.propertiesPages[n].setElement();
 					}
 				};
+				
+			  // server interaction
+        /**
+         * exclusion.uuid or onAssignmentHandler.uuid
+         */
+				ActivityPropertiesPanel.prototype.submitUpdateExclusion = function(uuid, changes) {
+          m_commandsController.submitCommand(m_command
+                  .createUpdateModelElementWithUUIDCommand(this.getModel().id, uuid,
+                          {
+                            'modelElement': changes
+                          }));
+        }
+
+        /**
+         * @param changes
+         */
+				ActivityPropertiesPanel.prototype.submitCreateExclusion = function(changes) {
+          m_commandsController.submitCommand(m_command
+                  .createAddExclusionCommand(this.getModel().id,
+                          this.element.modelElement.uuid, changes));
+        }
+
+        /**
+         * @param changes
+         */
+				ActivityPropertiesPanel.prototype.submitDeleteExclusion = function(changes) {
+          m_commandsController.submitCommand(m_command
+                  .createDeleteExclusionCommand(this.getModel().id,
+                          this.element.modelElement.uuid, changes));
+        }
+				
 			}
 		});

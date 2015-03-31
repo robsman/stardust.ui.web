@@ -272,9 +272,9 @@ define(
 									function(event) {
 										var page = event.data.page;
 
-										if (!page.validate()) {
+										/*if (!page.validate()) {
 											return;
-										}
+										}*/
 
 										page.submitTaskTypeChanges();
 									});
@@ -463,7 +463,17 @@ define(
 					}
 				};
 
-
+				/**
+				 * 
+				 */
+        ActivityBasicPropertiesPage.prototype.setSubProcessImplementationLinkVisibility = function() {
+          if (m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE
+                  && this.getModelElement().activityType == m_constants.SUBPROCESS_ACTIVITY_TYPE) {
+            this.subProcessImplLink.css("visibility", 'visible');
+          } else {
+            this.subProcessImplLink.css("visibility", 'hidden');
+          }
+        };
 				/**
 				 *
 				 */
@@ -645,6 +655,7 @@ define(
 						this.supportsRelocationInput.attr("disabled", true);
 					}
 					this.setTaskImplementationLinkVisibility();
+					this.setSubProcessImplementationLinkVisibility();
 					m_activityProcessingPropertiesCommon.initProcessingType(this);
 				};
 

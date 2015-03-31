@@ -13,63 +13,35 @@
 (function() {
   'use strict';
 
-  angular.module('modeler-ui').controller('sdDataFlowPropertiesPageCtrl',
-          ['$scope', 'sgRequireJSService', DataFlowPropertiesPageCtrl]);
+  angular.module('modeler-ui').controller(
+          'sdDataFlowPropertiesPageCtrl',
+          ['$scope', 'sdModelerConstants', 'sdUtilService', 'sdLoggerService',
+              'sdI18nService', DataFlowPropertiesPageCtrl]);
 
   /*
    * 
    */
-  function DataFlowPropertiesPageCtrl($scope, sgRequireJSService) {
+  function DataFlowPropertiesPageCtrl($scope, constants, sdUtilService, sdLoggerService, sdI18nService) {
     var self = this;
     self.initialized = false;
-
-    // load requireJs modules
-    var promise = sgRequireJSService.getModule([
-        'plugins/bpm-modeler/js/m_utils', 'plugins/bpm-modeler/js/m_i18nUtils',
-        'plugins/bpm-modeler/js/m_user', 'plugins/bpm-modeler/js/m_constants']);
-    promise.then(function(m_utils, m_i18nUtils, m_user, m_constants) {
-      self.m_utils = m_utils;
-      self.m_i18nUtils = m_i18nUtils;
-      self.m_user = m_user;
-      self.m_constants = m_constants;
-    }, function() {
-      self.failedToLoadRequireJsModules = true;
-    });
-        
-    $scope.$on('PAGE_ELEMENT_CHANGED', function(event, page) {
-      if (!self.initialized) {
-        // generic
-        self.page = page;
-        self.propertiesPanel = self.page.propertiesPanel;
-        
-        // dataFlow specific
-        self.dataMappingIndex = 0;
-        self.initialized = true;
-      }
-
-      // dataFlow specific
-      self.reset();
-    });
-
-    /**
-     * 
-     */
-    DataFlowPropertiesPageCtrl.prototype.getProperty = function(key, param1,
-            param2) {
-      var value = this.m_i18nUtils.getProperty(key);
-      if (param1) {
-        value = value.replace('{0}', param1);
-      }
-      if (param2) {
-        value = value.replace('{1}', param2);
-      }
-      return value;
-    }
+    var trace = sdLoggerService.getLogger('modeler-ui.sdDataFlowPropertiesPageCtrl');
+    $scope.sdI18nModeler = sdI18nService.getInstance('bpm-modeler-messages').translate;
+    var i18n = $scope.sdI18nModeler;
     
+    $scope.$watch('page.propertiesPanel.refreshElement', function() {
+      if (!self.initialized) {
+        self.page = $scope.page;
+        self.propertiesPanel = self.page.propertiesPanel;
+        self.dataMappingIndex = 0;
+      } 
+      self.refresh();
+      self.initialized = true;
+    });
+   
     /**
      * 
      */
-    DataFlowPropertiesPageCtrl.prototype.reset = function() {
+    DataFlowPropertiesPageCtrl.prototype.refresh = function() {
       this.element = this.propertiesPanel.element;
       if(!this.element){
         return;
@@ -77,7 +49,7 @@
       
       this.modelElement = this.element.modelElement;
       this.unifiedDataMappings = transformDMs(this.modelElement.dataMappings);
-      this.unifiedDataMappings = this.m_utils.convertToSortedArray(
+      this.unifiedDataMappings = sdUtilService.convertToSortedArray(
               this.unifiedDataMappings, "id", true);
 
       if (this.selectedDataMapping
@@ -87,7 +59,7 @@
         this.setSelected(this.dataMappingIndex);
       }
 
-      if (this.m_user.getCurrentRole() != this.m_constants.INTEGRATOR_ROLE) {
+      if (this.propertiesPanel.getCurrentRole() != constants.INTEGRATOR_ROLE) {
         this.integrator = false;
       } else {
         this.integrator = true;
@@ -111,16 +83,16 @@
 
       var defaultVal;
 
-      if (this.modelElement.activity.taskType != this.m_constants.TASK_ACTIVITY_TYPE) {
+      if (this.modelElement.activity.taskType != constants.TASK_ACTIVITY_TYPE) {
         defaultVal = {
           id: "DEFAULT",
-          label: this.getProperty("modeler.general.defaultLiteral"),
+          label: i18n("modeler.general.defaultLiteral"),
           context: ""
         }
       } else {
         defaultVal = {
           id: "DEFAULT",
-          label: this.getProperty("modeler.general.toBeDefined"),
+          label: i18n("modeler.general.toBeDefined"),
           context: ""
         }
       }
@@ -129,17 +101,17 @@
         var context = this.modelElement.activity.getContexts()[i];
         var count = 0;
 
-        this.m_utils.debug("i = " + i);
-        this.m_utils.debug(context);
+        trace.debug("i = " + i);
+        trace.debug(context);
 
         for (var m = 0; m < context.accessPoints.length; ++m) {
           var accessPoint = context.accessPoints[m];
 
-          this.m_utils.debug("m = " + m);
-          this.m_utils.debug(accessPoint);
+          trace.debug("m = " + m);
+          trace.debug(accessPoint);
 
-          if (accessPoint.direction == this.m_constants.IN_ACCESS_POINT
-                  || accessPoint.direction == this.m_constants.IN_OUT_ACCESS_POINT) {
+          if (accessPoint.direction == constants.IN_ACCESS_POINT
+                  || accessPoint.direction == constants.IN_OUT_ACCESS_POINT) {
             count++;
           }
         }
@@ -148,14 +120,13 @@
           continue;
         }
 
-        var group = this
-                .getProperty("modeler.dataFlow.propertiesPanel.outputAccessPointSelectInput.group."
+        var group = i18n("modeler.dataFlow.propertiesPanel.outputAccessPointSelectInput.group."
                         + i)
 
         for (var m = 0; m < context.accessPoints.length; ++m) {
           var accessPoint = context.accessPoints[m];
 
-          if (accessPoint.direction == this.m_constants.OUT_ACCESS_POINT) {
+          if (accessPoint.direction == constants.OUT_ACCESS_POINT) {
             continue;
           }
 
@@ -163,8 +134,7 @@
           if (accessPoint.isUsedAsList) {
             label = accessPoint.name
                     + " ("
-                    + this
-                            .getProperty("modeler.general.multiInstanceActivity.accesspoint.name.listSuffix")
+                    + i18n("modeler.general.multiInstanceActivity.accesspoint.name.listSuffix")
                     + ")";
           } else {
             label = accessPoint.name;
@@ -213,15 +183,15 @@
 
       var defaultVal;
 
-      if (this.modelElement.activity.taskType != this.m_constants.TASK_ACTIVITY_TYPE) {
+      if (this.modelElement.activity.taskType != constants.TASK_ACTIVITY_TYPE) {
         defaultVal = {
           id: 'DEFAULT',
-          label: this.m_i18nUtils.getProperty("modeler.general.defaultLiteral")
+          label: i18n("modeler.general.defaultLiteral")
         };
       } else {
         defaultVal = {
           id: 'DEFAULT',
-          label: +this.m_i18nUtils.getProperty("modeler.general.toBeDefined")
+          label: +i18n("modeler.general.toBeDefined")
         };
       }
 
@@ -234,8 +204,8 @@
         for (var m = 0; m < context.accessPoints.length; ++m) {
           var accessPoint = context.accessPoints[m];
 
-          if (accessPoint.direction == this.m_constants.OUT_ACCESS_POINT
-                  || accessPoint.direction == this.m_constants.IN_OUT_ACCESS_POINT) {
+          if (accessPoint.direction == constants.OUT_ACCESS_POINT
+                  || accessPoint.direction == constants.IN_OUT_ACCESS_POINT) {
             count++;
           }
         }
@@ -244,14 +214,13 @@
           continue;
         }
 
-        var group = this.m_i18nUtils
-                .getProperty("modeler.dataFlow.propertiesPanel.outputAccessPointSelectInput.group."
+        var group = i18n("modeler.dataFlow.propertiesPanel.outputAccessPointSelectInput.group."
                         + i);
 
         for (var m = 0; m < context.accessPoints.length; ++m) {
           var accessPoint = context.accessPoints[m];
 
-          if (accessPoint.direction == this.m_constants.IN_ACCESS_POINT) {
+          if (accessPoint.direction == constants.IN_ACCESS_POINT) {
             continue;
           }
 
@@ -259,8 +228,7 @@
           if (accessPoint.isUsedAsList) {
             label = accessPoint.name
                     + " ("
-                    + this.m_i18nUtils
-                            .getProperty("modeler.general.multiInstanceActivity.accesspoint.name.listSuffix")
+                    + i18n("modeler.general.multiInstanceActivity.accesspoint.name.listSuffix")
                     + ")";
           } else {
             label = accessPoint.name;
@@ -301,12 +269,11 @@
       // for sub-process activities with where copyAllData is disabled.
       if (this.modelElement
               && this.modelElement.activity
-              && this.modelElement.activity.activityType === this.m_constants.SUBPROCESS_ACTIVITY_TYPE
+              && this.modelElement.activity.activityType === constants.SUBPROCESS_ACTIVITY_TYPE
               && this.modelElement.activity.subprocessMode !== "synchShared"
               && (this.modelElement.activity.attributes && !this.modelElement.activity.attributes["carnot:engine:subprocess:copyAllData"])) {
 
-        var group = this
-                .getProperty("modeler.dataFlow.propertiesPanel.outputAccessPointSelectInput.group.engine");
+        var group = i18n("modeler.dataFlow.propertiesPanel.outputAccessPointSelectInput.group.engine");
 
         for ( var i in this.propertiesPanel.getModel().dataItems) {
           var d = this.propertiesPanel.getModel().dataItems[i];
@@ -327,21 +294,20 @@
             inputElement) {
       // Generate engine context access points for all data in the model,
       // for sub-process activities with where copyAllData is disabled.
-      if (this.getModelElement
-              && this.getModelElement.activity
-              && this.getModelElement.activity.activityType === this.m_constants.TASK_ACTIVITY_TYPE
-              && this.getModelElement.activity.attributes["ruleSetId"]) {
-        var ruleOptGroupName = this.m_i18nUtils
-                .getProperty("modeler.dataFlow.propertiesPage.accessPoints.rules.optGroup.name");
-        var group = m_utils.jQuerySelect("<optgroup label='" + ruleOptGroupName
-                + "'/>");
-        inputElement.append(group);
-        var ruleSets = m_ruleSetsHelper.getRuleSets();
+      if (this.modelElement
+              && this.modelElement.activity
+              && this.modelElement.activity.activityType === constants.TASK_ACTIVITY_TYPE
+              && this.modelElement.activity.attributes["ruleSetId"]) {
+        
+        var ruleOptGroupName = i18n("modeler.dataFlow.propertiesPage.accessPoints.rules.optGroup.name");
+        
+        var ruleSets = this.propertiesPanel.getRuleSets();
+        
         if (ruleSets) {
           var rule = null;
           for ( var i in ruleSets) {
             if (ruleSets[i].state.isDeleted != true) {
-              if (ruleSets[i].id == this.getModelElement.activity.attributes["ruleSetId"]) {
+              if (ruleSets[i].id == this.modelElement.activity.attributes["ruleSetId"]) {
                 rule = ruleSets[i];
               }
             }
@@ -351,13 +317,12 @@
             for ( var i in rule.parameterDefinitions) {
               var param = rule.parameterDefinitions[i];
               if (param.direction === "IN" || param.direction === "INOUT") {
-                var option = "<option value='application:";
-                option += param.id;
-                option += "'>";
-                option += param.name;
-                option += "</option>";
-
-                group.append(option);
+                inputElement.push({
+                  id: param.id,
+                  context: "application",
+                  label: param.name,
+                  group: ruleOptGroupName
+                });
               }
             }
           }
@@ -374,11 +339,12 @@
       // for sub-process activities with where copyAllData is disabled.
       if (this.modelElement
               && this.modelElement.activity
-              && this.modelElement.activity.activityType === this.m_constants.TASK_ACTIVITY_TYPE
+              && this.modelElement.activity.activityType === constants.TASK_ACTIVITY_TYPE
               && this.modelElement.activity.attributes["ruleSetId"]) {
-        var ruleOptGroupName = this.m_i18nUtils
-                .getProperty("modeler.dataFlow.propertiesPage.accessPoints.rules.optGroup.name");
+        var ruleOptGroupName = i18n("modeler.dataFlow.propertiesPage.accessPoints.rules.optGroup.name");
 
+        var ruleSets = this.propertiesPanel.getRuleSets();
+        
         if (ruleSets) {
           var rule = null;
           for ( var i in ruleSets) {
@@ -551,17 +517,16 @@
         if (this.element.modelElement.activity
                 && this.element.modelElement.activity.activityType === "Task"
                 && this.element.modelElement.activity.applicationFullId) {
-          var app = m_model
-                  .findApplication(this.element.modelElement.activity.applicationFullId);
+          var app = this.page.findApplication(this.element.modelElement.activity.applicationFullId);
           if (app
-                  && (app.applicationType === this.m_constants.JAVA_APPLICATION_TYPE
-                          || app.applicationType === this.m_constants.SPRING_BEAN_APPLICATION_TYPE || app.applicationType === this.m_constants.SESSION_BEAN_APPLICATION_TYPE)) {
+                  && (app.applicationType === constants.JAVA_APPLICATION_TYPE
+                          || app.applicationType === constants.SPRING_BEAN_APPLICATION_TYPE || app.applicationType === constants.SESSION_BEAN_APPLICATION_TYPE)) {
             disableDataPath = true;
           }
         }
 
         if (this.element.modelElement.data
-                && (this.element.modelElement.data.dataType === this.m_constants.ENTITY_DATA_TYPE || this.element.modelElement.data.dataType === this.m_constants.HIBERNATE_DATA_TYPE)) {
+                && (this.element.modelElement.data.dataType === constants.ENTITY_DATA_TYPE || this.element.modelElement.data.dataType === constants.HIBERNATE_DATA_TYPE)) {
           disableDataPath = true;
         }
       }
@@ -637,7 +602,7 @@
       // TODO: find consolidated inMapping and outMapping
       if (this.selectedDataMapping.inMappingExist
               && this.selectedDataMapping.outMappingExist
-              && this.element.fromAnchorPoint.symbol.type !== this.m_constants.DATA_SYMBOL) {
+              && this.element.fromAnchorPoint.symbol.type !== constants.DATA_SYMBOL) {
         // convert to Data to Activity connection
         var tempFromAnchorPoint = this.element.fromAnchorPoint; // activity
         this.element.fromAnchorPoint = this.element.toAnchorPoint; // data
@@ -650,7 +615,7 @@
 
       } else if (!this.selectedDataMapping.inMappingExist
               && this.selectedDataMapping.outMappingExist
-              && this.element.fromAnchorPoint.symbol.type === this.m_constants.DATA_SYMBOL) {
+              && this.element.fromAnchorPoint.symbol.type === constants.DATA_SYMBOL) {
         // convert to Activity to Data connection
         var tempFromAnchorPoint = this.element.fromAnchorPoint;
         this.element.fromAnchorPoint = this.element.toAnchorPoint;

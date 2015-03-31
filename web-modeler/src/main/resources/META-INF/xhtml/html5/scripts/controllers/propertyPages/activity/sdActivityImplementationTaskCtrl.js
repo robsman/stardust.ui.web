@@ -15,279 +15,246 @@
 
   angular.module('modeler-ui').controller(
           'sdActivityImplementationTaskCtrl',
-          ['$scope', 'sdRequireJSService', 'sdUtilService',
-              ActivityImplementationTaskCtrl]);
+          ['$scope', 'sdUtilService', 'sdI18nService', 'sdModelerConstants',
+              'sdModelerUtilService', ActivityImplementationTaskCtrl]);
 
   /*
    * 
    */
-  function ActivityImplementationTaskCtrl($scope, sdRequireJSService,
-          sdUtilService) {
+  function ActivityImplementationTaskCtrl($scope, sdUtilService, sdI18nService,
+          sdModelerConstants, sdModelerUtilService) {
     var self = this;
     self.initialized = false;
     self.show = false;
 
-    // load requireJs modules, in future these would be services
-    var promise = sdRequireJSService.getPromise();
-    promise.then(function() {
-      self.m_utils = sdRequireJSService
-              .getModule('plugins/bpm-modeler/js/m_utils');
-      self.m_i18nUtils = sdRequireJSService
-              .getModule('plugins/bpm-modeler/js/m_i18nUtils');
-      self.m_constants = sdRequireJSService
-              .getModule('plugins/bpm-modeler/js/m_constants');
-      self.m_modelElementUtils = sdRequireJSService
-              .getModule('plugins/bpm-modeler/js/m_modelElementUtils');
-      self.m_model = sdRequireJSService
-              .getModule('plugins/bpm-modeler/js/m_model');
-      self.m_ruleSetsHelper = sdRequireJSService
-              .getModule('plugins/bpm-modeler/js/m_ruleSetsHelper');
-      self.m_modelerUtils = sdRequireJSService
-              .getModule('plugins/bpm-modeler/js/m_modelerUtils');
+    $scope.sdI18nModeler = sdI18nService.getInstance('bpm-modeler-messages').translate;
+    var i18n = $scope.sdI18nModeler;
 
-    }, function() {
-      console.error("exception occurred while loading requirejs modules")
-    });
-
+    //TODO: find some other way to know the model element is initialized or changed
     $scope
             .$on(
                     'PAGE_ELEMENT_CHANGED',
                     function(event, page) {
                       if (!self.initialized) {
-                        // generic
                         self.page = page;
                         self.propertiesPanel = self.page.propertiesPanel;
+                        self.initialized = true;
                       }
-                      // Activity Implementation Page specific
                       if (self.propertiesPanel.element.modelElement) {
-                        if (self.propertiesPanel.element.modelElement.activityType != self.m_constants.SUBPROCESS_ACTIVITY_TYPE) {
+                        if (self.propertiesPanel.element.modelElement.activityType != sdModelerConstants.SUBPROCESS_ACTIVITY_TYPE) {
                           self.show = true;
                         } else {
                           self.show = false;
                         }
                       }
                       self.reset();
-                      self.initialized = true;
                     });
 
-    ActivityImplementationTaskCtrl.prototype.safeApply = function() {
-      sdUtilService.safeApply($scope);
-    }
-  }
+    /**
+     * 
+     */
+    ActivityImplementationTaskCtrl.prototype.reset = function() {
+      this.element = this.propertiesPanel.element;
+      if (!this.element) { return; }
 
-  /**
-   * 
-   */
-  ActivityImplementationTaskCtrl.prototype.i18n = function(key) {
-    return this.m_i18nUtils.getProperty(key);
-  }
+      this.modelElement = this.element.modelElement;
 
-  /**
-   * 
-   */
-  ActivityImplementationTaskCtrl.prototype.reset = function() {
-    this.element = this.propertiesPanel.element;
-    if (!this.element) { return; }
+      this.noImplementation = null;
+      this.ruleSet = false;
+      this.application = false;
 
-    this.modelElement = this.element.modelElement;
+      if (this.modelElement.taskType == sdModelerConstants.NONE_TASK_TYPE
+              || this.modelElement.taskType == sdModelerConstants.MANUAL_TASK_TYPE) {
 
-    this.noImplementation = null;
-    this.ruleSet = false;
-    this.application = false;
+        this.noImplementation = this.getNoImplementationMsg();
+      } else if (this.modelElement.taskType == sdModelerConstants.RULE_TASK_TYPE) {
 
-    if (this.modelElement.taskType == this.m_constants.NONE_TASK_TYPE
-            || this.modelElement.taskType == this.m_constants.MANUAL_TASK_TYPE) {
+        this.populateRuleSetList();
+        this.selectedRuleSet = !this.modelElement.attributes["ruleSetId"]
+                ? sdModelerConstants.TO_BE_DEFINED
+                : this.modelElement.attributes["ruleSetId"];
+        this.ruleSet = true;
 
-      this.noImplementation = this.getNoImplementationMsg();
-    } else if (this.modelElement.taskType == this.m_constants.RULE_TASK_TYPE) {
-
-      this.populateRuleSetList();
-      this.selectedRuleSet = !this.modelElement.attributes["ruleSetId"]
-              ? this.m_constants.TO_BE_DEFINED
-              : this.modelElement.attributes["ruleSetId"];
-      this.ruleSet = true;
-
-    } else {
-      this.populateApplicationList();
-      this.selectedApplication = !this.modelElement.applicationFullId
-              ? this.m_constants.TO_BE_DEFINED
-              : this.modelElement.applicationFullId;
-      this.application = true;
-
-    }
-  }
-
-  /**
-   * @returns
-   */
-  ActivityImplementationTaskCtrl.prototype.getNoImplementationMsg = function() {
-    var message = "";
-    if (this.modelElement.taskType == this.m_constants.MANUAL_TASK_TYPE) {
-      message = this
-              .i18n("modeler.propertiesPage.activity.implementation.autoGeneratedScreen");
-    } else {
-      message = this
-              .i18n("modeler.propertiesPage.activity.implementation.notRequiredAvailable");
-    }
-    return message;
-  }
-
-  /**
-   * 
-   */
-  ActivityImplementationTaskCtrl.prototype.populateApplicationList = function() {
-    this.applicationList = [];
-
-    this.applicationList.push({
-      id: this.m_constants.TO_BE_DEFINED,
-      label: this.i18n('modeler.general.toBeDefined')
-    });
-
-    var appsSorted = this.m_utils.convertToSortedArray(
-            this.getModel().applications, "name", true);
-
-    var thisModel = this.i18n('modeler.general.thisModel');
-
-    for ( var i in appsSorted) {
-      if (!this.checkCompatibility(appsSorted[i])) {
-        continue;
+      } else {
+        this.populateApplicationList();
+        this.selectedApplication = !this.modelElement.applicationFullId
+                ? sdModelerConstants.TO_BE_DEFINED
+                : this.modelElement.applicationFullId;
+        this.application = true;
       }
+    }
+
+    /**
+     * @returns
+     */
+    ActivityImplementationTaskCtrl.prototype.getNoImplementationMsg = function() {
+      var message = "";
+      if (this.modelElement.taskType == sdModelerConstants.MANUAL_TASK_TYPE) {
+        message = i18n("modeler.propertiesPage.activity.implementation.autoGeneratedScreen");
+      } else {
+        message = i18n("modeler.propertiesPage.activity.implementation.notRequiredAvailable");
+      }
+      return message;
+    }
+
+    /**
+     * 
+     */
+    ActivityImplementationTaskCtrl.prototype.populateApplicationList = function() {
+      this.applicationList = [];
 
       this.applicationList.push({
-        id: appsSorted[i].getFullId(),
-        label: appsSorted[i].name,
-        group: thisModel
-      })
-    }
-    var modelsSorted = this.m_utils.convertToSortedArray(this.m_model
-            .getModels(), "name", true);
+        id: sdModelerConstants.TO_BE_DEFINED,
+        label: i18n('modeler.general.toBeDefined')
+      });
 
-    var otherModel = this.i18n('modeler.general.otherModel');
+      var appsSorted = sdUtilService.convertToSortedArray(
+              this.getModel().applications, "name", true);
 
-    for ( var n in modelsSorted) {
-      if (modelsSorted[n] == this.getModel()) {
-        continue;
-      }
+      var thisModel = i18n('modeler.general.thisModel');
 
-      var appsSorted = this.m_utils.convertToSortedArray(
-              modelsSorted[n].applications, "name", true);
-
-      for ( var m in appsSorted) {
-        if (!this.m_modelElementUtils.hasPublicVisibility(appsSorted[m])) {
-          continue;
-        }
-
-        if (!this.checkCompatibility(appsSorted[m])) {
+      for ( var i in appsSorted) {
+        if (!this.checkCompatibility(appsSorted[i])) {
           continue;
         }
 
         this.applicationList.push({
-          id: appsSorted[m].getFullId(),
-          label: modelsSorted[n].name + "/" + appsSorted[m].name,
-          group: otherModel
+          id: appsSorted[i].getFullId(),
+          label: appsSorted[i].name,
+          group: thisModel
         })
       }
-    }
-  }
-  /**
-   * 
-   */
-  ActivityImplementationTaskCtrl.prototype.populateRuleSetList = function() {
-    this.ruleSetList = [];
-    this.ruleSetList.push({
-      id: this.m_constants.TO_BE_DEFINED,
-      label: this.i18n("modeler.general.toBeDefined")
-    });
+      var modelsSorted = sdUtilService.convertToSortedArray(this.page
+              .getModels(), "name", true);
 
-    var ruleSets = this.m_ruleSetsHelper.getRuleSets();
+      var otherModel = i18n('modeler.general.otherModel');
 
-    if (ruleSets) {
-      ruleSets = this.m_utils.convertToSortedArray(ruleSets, "name", true);
-      for ( var i in ruleSets) {
-        if (ruleSets[i].state.isDeleted != true) {
-          this.ruleSetList.push({
-            id: ruleSets[i].id,
-            label: ruleSets[i].name
-          });
+      for ( var n in modelsSorted) {
+        if (modelsSorted[n] == this.getModel()) {
+          continue;
+        }
+
+        var appsSorted = sdUtilService.convertToSortedArray(
+                modelsSorted[n].applications, "name", true);
+
+        for ( var m in appsSorted) {
+          if (!sdModelerUtilService.hasPublicVisibility(appsSorted[m])) {
+            continue;
+          }
+
+          if (!this.checkCompatibility(appsSorted[m])) {
+            continue;
+          }
+
+          this.applicationList.push({
+            id: appsSorted[m].getFullId(),
+            label: modelsSorted[n].name + "/" + appsSorted[m].name,
+            group: otherModel
+          })
         }
       }
     }
-  };
+    /**
+     * 
+     */
+    ActivityImplementationTaskCtrl.prototype.populateRuleSetList = function() {
+      this.ruleSetList = [];
+      this.ruleSetList.push({
+        id: sdModelerConstants.TO_BE_DEFINED,
+        label: i18n("modeler.general.toBeDefined")
+      });
 
-  /**
-   * 
-   */
-  ActivityImplementationTaskCtrl.prototype.openApplication = function() {
-    var application = this.m_model.findApplication(this.selectedApplication);
-    this.m_modelerUtils.openApplicationView(application);
-  }
+      var ruleSets = this.propertiesPanel.getRuleSets();
 
-  /**
-   * 
-   */
-  ActivityImplementationTaskCtrl.prototype.isLinkDisabled = function() {
-    if (!this.selectedApplication
-            || this.selectedApplication == this.m_constants.TO_BE_DEFINED) { return true; }
-    return false;
-  }
-  /**
-   * @param application
-   * @returns {Boolean}
-   */
-  ActivityImplementationTaskCtrl.prototype.checkCompatibility = function(
-          application) {
-    if (application
-            && this.modelElement.taskType === application
-                    .getCompatibleActivityTaskType()) { return true; }
-
-    return false;
-  }
-
-  /**
-   * 
-   */
-  ActivityImplementationTaskCtrl.prototype.onImplementationChange = function() {
-    this.submitImplementionChanges();
-  }
-
-  /**
-   * 
-   */
-  ActivityImplementationTaskCtrl.prototype.onRuleSetChange = function() {
-    this.submitRuleSetChanges();
-  }
-
-  /**
-   * @returns
-   */
-  ActivityImplementationTaskCtrl.prototype.getModel = function() {
-    return this.propertiesPanel.propertiesPage.getModel();
-  }
-
-  // Server Interaction
-  /**
-   * 
-   */
-  ActivityImplementationTaskCtrl.prototype.submitImplementionChanges = function() {
-    this.page
-            .submitChanges({
-              modelElement: {
-                applicationFullId: this.selectedApplication == this.m_constants.TO_BE_DEFINED
-                        ? null : this.selectedApplication
-              }
+      if (ruleSets) {
+        ruleSets = sdUtilService.convertToSortedArray(ruleSets, "name", true);
+        for ( var i in ruleSets) {
+          if (ruleSets[i].state.isDeleted != true) {
+            this.ruleSetList.push({
+              id: ruleSets[i].id,
+              label: ruleSets[i].name
             });
-  }
-
-  /**
-   * 
-   */
-  ActivityImplementationTaskCtrl.prototype.submitRuleSetChanges = function() {
-    this.page.submitChanges({
-      modelElement: {
-        attributes: {
-          ruleSetId: this.selectedRuleSet
+          }
         }
       }
-    });
-  };
+    };
+
+    /**
+     * 
+     */
+    ActivityImplementationTaskCtrl.prototype.openApplication = function() {
+      var application = this.page.findApplication(this.selectedApplication);
+      this.page.openApplicationView(application);
+    }
+
+    /**
+     * 
+     */
+    ActivityImplementationTaskCtrl.prototype.isLinkDisabled = function() {
+      if (!this.selectedApplication
+              || this.selectedApplication == sdModelerConstants.TO_BE_DEFINED) { return true; }
+      return false;
+    }
+
+    /**
+     * @param application
+     * @returns {Boolean}
+     */
+    ActivityImplementationTaskCtrl.prototype.checkCompatibility = function(
+            application) {
+      if (application
+              && this.modelElement.taskType === application
+                      .getCompatibleActivityTaskType()) { return true; }
+
+      return false;
+    }
+
+    /**
+     * 
+     */
+    ActivityImplementationTaskCtrl.prototype.onImplementationChange = function() {
+      this.submitImplementionChanges();
+    }
+
+    /**
+     * 
+     */
+    ActivityImplementationTaskCtrl.prototype.onRuleSetChange = function() {
+      this.submitRuleSetChanges();
+    }
+
+    /**
+     * @returns
+     */
+    ActivityImplementationTaskCtrl.prototype.getModel = function() {
+      return this.propertiesPanel.propertiesPage.getModel();
+    }
+
+    // Server Interaction
+    /**
+     * 
+     */
+    ActivityImplementationTaskCtrl.prototype.submitImplementionChanges = function() {
+      this.page
+              .submitChanges({
+                modelElement: {
+                  applicationFullId: this.selectedApplication == sdModelerConstants.TO_BE_DEFINED
+                          ? null : this.selectedApplication
+                }
+              });
+    }
+
+    /**
+     * 
+     */
+    ActivityImplementationTaskCtrl.prototype.submitRuleSetChanges = function() {
+      this.page.submitChanges({
+        modelElement: {
+          attributes: {
+            ruleSetId: this.selectedRuleSet
+          }
+        }
+      });
+    }
+  }
 })();

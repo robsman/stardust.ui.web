@@ -19,9 +19,10 @@ define(
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_communicationController",
-				"bpm-modeler/js/m_angularContextUtils" ],
+				"bpm-modeler/js/m_angularContextUtils",
+				"bpm-modeler/js/m_ruleSetsHelper"],
 		function(m_utils, m_constants, m_extensionManager, m_session, m_user, m_command,
-				 m_commandsController, m_dialog, m_communicationController, m_angularContextUtils) {
+				 m_commandsController, m_dialog, m_communicationController, m_angularContextUtils, m_ruleSetsHelper) {
 
 			var currentPropertiesPanel = null;
 
@@ -633,5 +634,19 @@ define(
 									this.getModel().id, this.getElementUuid(),
 									changes));
 				};
+				
+				/**
+				 * 
+				 */
+				PropertiesPanel.prototype.getCurrentRole = function() {
+				  return m_session.getInstance().currentProfile;
+				}
+				
+				/**
+				 * 
+				 */
+				PropertiesPanel.prototype.getRuleSets = function() {
+          return m_ruleSetsHelper.getRuleSets();
+        }
 			}
 		});

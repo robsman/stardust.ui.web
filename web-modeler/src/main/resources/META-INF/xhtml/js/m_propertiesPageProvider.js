@@ -10,12 +10,8 @@
  * @author Yogesh.Manware
  */
 
-define(["bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
-    "bpm-modeler/js/m_user", "bpm-modeler/js/m_dialog",
-    "bpm-modeler/js/m_propertiesPage", "bpm-modeler/js/m_i18nUtils",
-    "bpm-modeler/js/m_model", "bpm-modeler/js/m_ruleSetsHelper"], function(
-        m_utils, m_constants, m_user, m_dialog, m_propertiesPage, m_i18nUtils,
-        m_model, m_ruleSetsHelper) {
+define(["bpm-modeler/js/m_utils", "bpm-modeler/js/m_propertiesPage"], function(
+        m_utils, m_propertiesPage) {
   return {
     create: function(propertiesPanel, extCfg) {
       var page = new PropertiesPageProvider(propertiesPanel, extCfg);
@@ -30,6 +26,14 @@ define(["bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
     m_utils.inheritMethods(PropertiesPageProvider.prototype, propertiesPage);
 
     PropertiesPageProvider.prototype.setElement = function() {
+      if (this.propertiesPanel && this.propertiesPanel.element) {
+        if (!this.propertiesPanel.refreshElement) {
+          this.propertiesPanel.refreshElement = true;
+        } else {
+          this.propertiesPanel.refreshElement = false;
+        }
+      }
+      //TODO: remove following
       this.broadcastElementChangedEvent();
     }
   }
