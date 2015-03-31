@@ -497,8 +497,9 @@ define(
 				/**
 				 * 
 				 */
-				ReportDefinitionController.prototype.reloadTable = function() {
+				ReportDefinitionController.prototype.reloadTable = function(previewRetrieveAll) {
 					var self = this;
+					this.reportingService.previewRetrieveAll = previewRetrieveAll;
 					this.renderingController.refreshPreview(this, this.report, this.parameters).done(function(){
 						self.updateView();	
 					});

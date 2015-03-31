@@ -609,6 +609,9 @@ define(
 				};
 				
 				this.serverDateFormat = "yy/mm/dd";
+				
+				this.previewMaxFetchSize = 500;
+				this.previewRetrieveAll = false;
 
 				/**
 				 * 
@@ -958,6 +961,15 @@ define(
 								console.debug("Report Definition");
 								console.debug(report);
 								
+								var clonedReport = jQuery.extend(true, {}, report);
+
+								if (this.previewRetrieveAll) {
+									// Do not insert maxFetchSize into report object.
+									this.previewRetrieveAll = false;
+								} else {
+									clonedReport.dataSet.maxFetchSize = this.previewMaxFetchSize;
+								}
+								
 								//convert parameters
 								var parametersString = convertToParametersString(parameters);
 								
@@ -976,7 +988,7 @@ define(
 													url : encodeURI(self.getRootUrl()
 															+ "/services/rest/bpm-reporting/report-data?" + parametersString),
 													contentType : "application/json",
-													data : JSON.stringify(report)
+													data : JSON.stringify(clonedReport)
 												}).done(function(data) {
 											deferred.resolve(data);
 										}).fail(function() {
