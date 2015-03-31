@@ -11,7 +11,6 @@
 /**
  * @author Abhay.Thappan
  */
-
 package org.eclipse.stardust.ui.web.rest.service;
 
 import java.util.List;
@@ -22,69 +21,66 @@ import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.RoleManagerDetailsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserAuthorizationStatusDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.UserManagerDetailsDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils;
+import org.eclipse.stardust.ui.web.rest.service.utils.UserManagerDetailUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils.MODE;
-import org.eclipse.stardust.ui.web.rest.service.utils.RoleManagerDetailUtils;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RoleManagerDetailService
+public class UserManagerDetailService
 {
-
    @Resource
-   private RoleManagerDetailUtils roleManagerDetailUtils;
+   private UserManagerDetailUtils userManagerDetailUtils;
 
    /**
     * 
-    * @param roleId
-    * @param departmentOid
+    * @param userOid
     * @return
     */
-   public RoleManagerDetailsDTO getRoleManagerDetails(String roleId, String departmentOid)
+   public UserManagerDetailsDTO getUserManagerDetails(String userOid)
    {
-      return roleManagerDetailUtils.getRoleManagerDetails(roleId, departmentOid);
+      return userManagerDetailUtils.getUserManagerDetails(userOid);
    }
-   
+
    /**
     * 
-    * @param userIds
-    * @param roleId
-    * @param departmentOid
+    * @param roleIds
+    * @param userOid
     * @return
     */
-   public UserAuthorizationStatusDTO removeUserFromRole(List<String> userIds, String roleId,
-         String departmentOid){
-      boolean userAuthorization = roleManagerDetailUtils.removeUserFromRole(userIds, roleId, departmentOid);
+   public UserAuthorizationStatusDTO addRoleToUser(List<String> roleIds, String userOid)
+   {
+      boolean userAuthorization = userManagerDetailUtils.addRoleToUser(roleIds, userOid);
       UserAuthorizationStatusDTO userAuthorizationStatus = new UserAuthorizationStatusDTO();
       userAuthorizationStatus.userAuthorization = userAuthorization;
       return userAuthorizationStatus;
    }
-   
+
    /**
     * 
-    * @param userIds
-    * @param roleId
-    * @param departmentOid
+    * @param roleIds
+    * @param userOid
     * @return
     */
-   public UserAuthorizationStatusDTO addUserToRole(List<String> userIds, String roleId, String departmentOid){
-      boolean userAuthorization = roleManagerDetailUtils.addUserToRole(userIds, roleId, departmentOid);
+   public UserAuthorizationStatusDTO removeRoleFromUser(List<String> roleIds, String userOid)
+   {
+      boolean userAuthorization = userManagerDetailUtils.removeRoleFromUser(roleIds, userOid);
       UserAuthorizationStatusDTO userAuthorizationStatus = new UserAuthorizationStatusDTO();
       userAuthorizationStatus.userAuthorization = userAuthorization;
       return userAuthorizationStatus;
    }
+
    /**
     * 
-    * @param roleId
-    * @param departmentOid
+    * @param userOid
     * @param options
     * @return
     */
-   public QueryResultDTO getAllActivitiesForRole(String roleId,
-         String departmentOid, Options options){
-      QueryResult<ActivityInstance> queryResult = roleManagerDetailUtils.getAllActivitiesForRole(roleId, departmentOid, options);
+   public QueryResultDTO getAllActivitiesForUser(String userOid, Options options)
+   {
+      QueryResult<ActivityInstance> queryResult = userManagerDetailUtils.getAllActivitiesForUser(userOid, options);
       return ActivityTableUtils.buildTableResult(queryResult,MODE.ACTIVITY_TABLE);
    }
 }

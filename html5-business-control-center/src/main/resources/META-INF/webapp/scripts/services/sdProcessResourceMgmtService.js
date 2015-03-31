@@ -16,31 +16,19 @@
 (function() {
 	'use strict';
 
-	angular
-			.module('bcc-ui.services')
-			.provider(
-					'sdProcessResourceMgmtService',
-					function() {
-						this.$get = [
-								'$rootScope',
-								'$resource',
-								'sdLoggerService',
-								function($rootScope, $resource,
-										sdLoggerService) {
-									var service = new ProcessResourceMgmtService(
-											$rootScope, $resource,
-											sdLoggerService);
-									return service;
-								} ];
-					});
+	angular.module('bcc-ui.services').provider('sdProcessResourceMgmtService', function() {
+		this.$get = [ '$rootScope', '$resource', 'sdLoggerService', function($rootScope, $resource, sdLoggerService) {
+			var service = new ProcessResourceMgmtService($rootScope, $resource, sdLoggerService);
+			return service;
+		} ];
+	});
 
 	/*
 	 * 
 	 */
 	function ProcessResourceMgmtService($rootScope, $resource, sdLoggerService) {
 		var REST_BASE_URL = "services/rest/portal/processResourceManagement";
-		var trace = sdLoggerService
-				.getLogger('bcc-ui.services.sdProcessResourceMgmtService');
+		var trace = sdLoggerService.getLogger('bcc-ui.services.sdProcessResourceMgmtService');
 
 		/**
 		 * 

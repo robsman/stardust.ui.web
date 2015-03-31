@@ -17,17 +17,15 @@
 
 	angular.module("bcc-ui").controller(
 			'sdRoleManagerDetailViewCtrl',
-			[ '$q', '$scope', '$filter', '$element',
-					'sdRoleManagerDetailService', 'sdLoggerService',
+			[ '$q', '$scope', '$filter', '$element', 'sdRoleManagerDetailService', 'sdLoggerService',
 					'sdViewUtilService', RoleManagerDetailViewCtrl ]);
 
 	/*
 	 * 
 	 */
-	function RoleManagerDetailViewCtrl($q, $scope, $filter, $element,
-			sdRoleManagerDetailService, sdLoggerService, sdViewUtilService) {
-		var trace = sdLoggerService
-				.getLogger('bcc-ui.sdRoleManagerDetailViewCtrl');
+	function RoleManagerDetailViewCtrl($q, $scope, $filter, $element, sdRoleManagerDetailService, sdLoggerService,
+			sdViewUtilService) {
+		var trace = sdLoggerService.getLogger('bcc-ui.sdRoleManagerDetailViewCtrl');
 
 		this.columnSelector = 'admin';
 		this.exportFileName = new Date();
@@ -50,30 +48,25 @@
 		};
 
 		// Register for View Events
-		sdViewUtilService.registerForViewEvents($scope, this.handleViewEvents,
-				this);
+		sdViewUtilService.registerForViewEvents($scope, this.handleViewEvents, this);
 
 		/**
 		 * 
 		 */
 		RoleManagerDetailViewCtrl.prototype.getRoleManagerDetails = function() {
 			var self = this;
-			sdRoleManagerDetailService
-					.getRoleManagerDetails(self.viewParams.roleId,
-							self.viewParams.departmentOid)
-					.then(
-							function(data) {
-								self.roleManagerDetails = data;
-								self.table1 = true;
-								self.table2 = true;
-								if (self.assignedUsersTable != undefined
-										&& self.assignableUsersTable != undefined) {
-									self.assignedUsersTable.refresh();
-									self.assignableUsersTable.refresh();
-								}
-							}, function(error) {
-								trace.log(error);
-							});
+			sdRoleManagerDetailService.getRoleManagerDetails(self.viewParams.roleId, self.viewParams.departmentOid)
+					.then(function(data) {
+						self.roleManagerDetails = data;
+						self.table1 = true;
+						self.table2 = true;
+						if (self.assignedUsersTable != undefined && self.assignableUsersTable != undefined) {
+							self.assignedUsersTable.refresh();
+							self.assignableUsersTable.refresh();
+						}
+					}, function(error) {
+						trace.log(error);
+					});
 
 		};
 
@@ -97,10 +90,9 @@
 			self.assignedUsers = {};
 			if (self.showLoggedInAssignedUsers) {
 
-				var rows = $filter('filter')(
-						self.roleManagerDetails.assignedUserList, {
-							loggedIn : 'Yes'
-						}, true);
+				var rows = $filter('filter')(self.roleManagerDetails.assignedUserList, {
+					loggedIn : 'Yes'
+				}, true);
 
 				self.assignedUsers.list = rows;
 
@@ -119,10 +111,9 @@
 
 			if (self.showLoggedInAssignableUsers) {
 
-				var rows = $filter('filter')(
-						self.roleManagerDetails.assignableUserList, {
-							loggedIn : 'Yes'
-						}, true);
+				var rows = $filter('filter')(self.roleManagerDetails.assignableUserList, {
+					loggedIn : 'Yes'
+				}, true);
 
 				self.assignableUsers.list = rows;
 			} else {
@@ -170,13 +161,26 @@
 		/**
 		 * 
 		 */
-		RoleManagerDetailViewCtrl.prototype.removeUserFromRole = function(
-				rowSelectionAssignedUsersTable) {
+		RoleManagerDetailViewCtrl.prototype.removeUserFromRole = function(rowSelectionAssignedUsersTable) {
 			var self = this;
-			var userIds = this
-					.getSelectedUserIds(rowSelectionAssignedUsersTable);
-			sdRoleManagerDetailService.removeUserFromRole(userIds,
-					self.viewParams.roleId, self.viewParams.departmentOid)
+			var userIds = this.getSelectedUserIds(rowSelectionAssignedUsersTable);
+			sdRoleManagerDetailService.removeUserFromRole(userIds, self.viewParams.roleId,
+					self.viewParams.departmentOid).then(function(data) {
+				self.userAuthorizationMsg = data.userAuthorization;
+				self.refresh();
+			}, function(error) {
+				trace.log(error);
+			});
+
+		};
+
+		/**
+		 * 
+		 */
+		RoleManagerDetailViewCtrl.prototype.addUserToRole = function(rowSelectionAssignableUsersTable) {
+			var self = this;
+			var userIds = this.getSelectedUserIds(rowSelectionAssignableUsersTable);
+			sdRoleManagerDetailService.addUserToRole(userIds, self.viewParams.roleId, self.viewParams.departmentOid)
 					.then(function(data) {
 						self.userAuthorizationMsg = data.userAuthorization;
 						self.refresh();
@@ -189,27 +193,7 @@
 		/**
 		 * 
 		 */
-		RoleManagerDetailViewCtrl.prototype.addUserToRole = function(
-				rowSelectionAssignableUsersTable) {
-			var self = this;
-			var userIds = this
-					.getSelectedUserIds(rowSelectionAssignableUsersTable);
-			sdRoleManagerDetailService.addUserToRole(userIds,
-					self.viewParams.roleId, self.viewParams.departmentOid)
-					.then(function(data) {
-						self.userAuthorizationMsg = data.userAuthorization;
-						self.refresh();
-					}, function(error) {
-						trace.log(error);
-					});
-
-		};
-
-		/**
-		 * 
-		 */
-		RoleManagerDetailViewCtrl.prototype.getSelectedUserIds = function(
-				selectedUsers) {
+		RoleManagerDetailViewCtrl.prototype.getSelectedUserIds = function(selectedUsers) {
 			var userIds = [];
 			for ( var assignedUser in selectedUsers) {
 				userIds.push(selectedUsers[assignedUser].userOid);
@@ -229,21 +213,19 @@
 		/**
 		 * 
 		 */
-		RoleManagerDetailViewCtrl.prototype.getActivitiesForRole = function(
-				params) {
+		RoleManagerDetailViewCtrl.prototype.getActivitiesForRole = function(params) {
 
 			var self = this;
 			var deferred = $q.defer();
 			self.activities = {};
-			sdRoleManagerDetailService.getAllActivitiesForRole(params,
-					self.viewParams.roleId, self.viewParams.departmentOid)
-					.then(function(data) {
-						self.activities.list = data.list;
-						self.activities.totalCount = data.totalCount;
-						deferred.resolve(self.activities);
-					}, function(error) {
-						deferred.reject(error);
-					});
+			sdRoleManagerDetailService.getAllActivitiesForRole(params, self.viewParams.roleId,
+					self.viewParams.departmentOid).then(function(data) {
+				self.activities.list = data.list;
+				self.activities.totalCount = data.totalCount;
+				deferred.resolve(self.activities);
+			}, function(error) {
+				deferred.reject(error);
+			});
 
 			return deferred.promise;
 		};

@@ -16,8 +16,8 @@
 	'use strict';
 
 	angular.module('bpm-common.services').provider('sdUtilService', function() {
-		this.$get = [ '$rootScope', '$parse', function($rootScope, $parse) {
-			var service = new UtilService($rootScope, $parse);
+		this.$get = [ '$rootScope', '$parse', '$q', '$http', function($rootScope, $parse, $q, $http) {
+			var service = new UtilService($rootScope, $parse, $q, $http);
 			return service;
 		} ];
 	});
@@ -25,7 +25,7 @@
 	/*
 	 * 
 	 */
-	function UtilService($rootScope, $parse) {
+	function UtilService($rootScope, $parse, $q, $http) {
 		/*
 		 * 
 		 */
@@ -41,8 +41,7 @@
 		 * with $ Properties starting with $ are considered as private and hence
 		 * skipped
 		 */
-		UtilService.prototype.extend = function(childObject, parentObject,
-				addFuncProxies) {
+		UtilService.prototype.extend = function(childObject, parentObject, addFuncProxies) {
 			var proxies = addFuncProxies ? addFuncProxies : true;
 
 			for ( var member in parentObject) {
@@ -50,8 +49,7 @@
 					childObject[member] = parentObject[member];
 
 					if (proxies && angular.isFunction(childObject[member])) {
-						childObject["$" + member] = createProxyFunc(
-								parentObject, member);
+						childObject["$" + member] = createProxyFunc(parentObject, member);
 					}
 				}
 			}
@@ -93,8 +91,7 @@
 					funcAsStr = funcAsStr.substring(funcAsStr.indexOf('(') + 1);
 
 					if (funcAsStr.indexOf(')') != -1) {
-						var params = funcAsStr.substring(0, funcAsStr
-								.indexOf(')'));
+						var params = funcAsStr.substring(0, funcAsStr.indexOf(')'));
 						params = params.split(',');
 						for (var i = 0; i < params.length; i++) {
 							params[i] = params[i].trim();
@@ -235,16 +232,12 @@
 		 */
 
 		UtilService.prototype.getRootUrl = function() {
-			return window.location.href.substring(0, location.href
-					.indexOf("/main.html"));
+			return window.location.href.substring(0, location.href.indexOf("/main.html"));
 		};
 
-		
 		UtilService.prototype.format = function(str, args) {
-		    return str.replace(/{(\d+)}/g, function(match, number) { 
-		      return typeof args[number] != 'undefined'
-		        ? args[number]
-		        : match;
+			return str.replace(/{(\d+)}/g, function(match, number) {
+				return typeof args[number] != 'undefined' ? args[number] : match;
 		    });
 		};
 
@@ -259,8 +252,7 @@
 	    } else {
 	      // If not available Watch for it
 	      $scope.watchForIt = function() {
-	        return $parse(watchforElement)($scope) ? "GotIt"
-	                : "";
+					return $parse(watchforElement)($scope) ? "GotIt" : "";
 	      };
 
 	      console.log("Registering Watch for Element: " + watchforElement);
@@ -275,7 +267,7 @@
 	      });
 	    }
 	  }
-	
+
 		/**
 		 * 
 		 */
@@ -320,6 +312,40 @@
 
 			return proxyFunc;
 		}
+
+		/**
+		 * 
+		 */
+
+		UtilService.prototype.ajax = function(restUrl, extension, value) {
+			var deferred = $q.defer();
+
+			var type;
+			var data;
+			if (angular.isObject(value) || angular.isArray(value)) {
+				restUrl += extension;
+				type = "POST";
+				data = JSON.stringify(value);
+			} else {
+				restUrl += value + "/" + extension;
+				type = "GET";
+	}
+
+			var httpResponse;
+			if (type == "GET") {
+				httpResponse = $http.get(restUrl);
+			} else {
+				httpResponse = $http.post(restUrl, data);
+			}
+
+			httpResponse.success(function(data) {
+				deferred.resolve(data);
+			}).error(function(data) {
+				deferred.reject(data);
+			});
+
+			return deferred.promise;
+		};
 
 	}
 	;

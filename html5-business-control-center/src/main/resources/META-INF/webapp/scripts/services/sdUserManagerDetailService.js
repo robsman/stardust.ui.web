@@ -17,7 +17,7 @@
 	'use strict';
 
 	angular.module('bcc-ui.services').provider(
-			'sdRoleManagerDetailService',
+			'sdUserManagerDetailService',
 			function() {
 				this.$get = [
 						'$rootScope',
@@ -29,7 +29,7 @@
 						'sdUtilService',
 						function($rootScope, $resource, sdLoggerService, $q, $http, sdDataTableHelperService,
 								sdUtilService) {
-							var service = new RoleManagerDetailService($rootScope, $resource, sdLoggerService, $q,
+							var service = new UserManagerDetailService($rootScope, $resource, sdLoggerService, $q,
 									$http, sdDataTableHelperService, sdUtilService);
 							return service;
 						} ];
@@ -38,23 +38,22 @@
 	/*
 	 * 
 	 */
-	function RoleManagerDetailService($rootScope, $resource, sdLoggerService, $q, $http, sdDataTableHelperService,
+	function UserManagerDetailService($rootScope, $resource, sdLoggerService, $q, $http, sdDataTableHelperService,
 			sdUtilService) {
-		var REST_BASE_URL = "services/rest/portal/roleManagerDetails";
-		var trace = sdLoggerService.getLogger('bcc-ui.services.sdRoleManagerDetailService');
+		var REST_BASE_URL = "services/rest/portal/userManagerDetails";
+		var trace = sdLoggerService.getLogger('bcc-ui.services.sdUserManagerDetailService');
 
 		/**
 		 * 
 		 */
-		RoleManagerDetailService.prototype.getRoleManagerDetails = function(roleId, departmentOid) {
+		UserManagerDetailService.prototype.getUserManagerDetails = function(userOid) {
 
 			// Prepare URL
-			var restUrl = REST_BASE_URL + "/:roleId/:departmentOid";
+			var restUrl = REST_BASE_URL + "/:userOid";
 
 			var urlTemplateParams = {};
 
-			urlTemplateParams.roleId = roleId;
-			urlTemplateParams.departmentOid = departmentOid;
+			urlTemplateParams.userOid = userOid;
 
 			return $resource(restUrl).get(urlTemplateParams).$promise;
 		};
@@ -62,18 +61,16 @@
 		/**
 		 * 
 		 */
-
-		RoleManagerDetailService.prototype.removeUserFromRole = function(userIds, roleId, departmentOid) {
-			var restUrl = REST_BASE_URL + "/:type/:roleId/:departmentOid";
+		UserManagerDetailService.prototype.removeRoleFromUser = function(roleIds, userOid) {
+			var restUrl = REST_BASE_URL + "/:type/:userOid";
 
 			var postData = {
-				userIds : userIds
+				roleIds : roleIds
 			};
 
-			var removeUserFromRole = $resource(restUrl, {
+			var removeRoleFromUser = $resource(restUrl, {
 				type : '@type',
-				roleId : '@roleId',
-				departmentOid : '@departmentOid'
+				userOid : '@userOid'
 			}, {
 				fetch : {
 					method : 'POST'
@@ -81,28 +78,24 @@
 			});
 
 			var urlTemplateParams = {};
-			urlTemplateParams.type = "removeUserFromRole";
-			urlTemplateParams.roleId = roleId;
-			urlTemplateParams.departmentOid = departmentOid;
-
-			return removeUserFromRole.fetch(urlTemplateParams, postData).$promise;
+			urlTemplateParams.type = "removeRoleFromUser";
+			urlTemplateParams.userOid = userOid;
+			return removeRoleFromUser.fetch(urlTemplateParams, postData).$promise;
 		};
 
 		/**
 		 * 
 		 */
 
-		RoleManagerDetailService.prototype.addUserToRole = function(userIds, roleId, departmentOid) {
-			var restUrl = REST_BASE_URL + "/:type/:roleId/:departmentOid";
-
+		UserManagerDetailService.prototype.addRoleToUser = function(roleIds, userOid) {
+			var restUrl = REST_BASE_URL + "/:type/:userOid";
 			var postData = {
-				userIds : userIds
+				roleIds : roleIds
 			};
 
-			var addUserToRole = $resource(restUrl, {
+			var addRoleToUser = $resource(restUrl, {
 				type : '@type',
-				roleId : '@roleId',
-				departmentOid : '@departmentOid'
+				userOid : '@userOid'
 			}, {
 				fetch : {
 					method : 'POST'
@@ -110,17 +103,17 @@
 			});
 
 			var urlTemplateParams = {};
-			urlTemplateParams.type = "addUserToRole";
-			urlTemplateParams.roleId = roleId;
-			urlTemplateParams.departmentOid = departmentOid;
+			urlTemplateParams.type = "addRoleToUser";
+			urlTemplateParams.userOid = userOid;
 
-			return addUserToRole.fetch(urlTemplateParams, postData).$promise;
+			return addRoleToUser.fetch(urlTemplateParams, postData).$promise;
 		};
 
 		/**
 		 * 
 		 */
-		RoleManagerDetailService.prototype.getAllActivitiesForRole = function(query, roleId, departmentOid) {
+
+		UserManagerDetailService.prototype.getAllActivitiesForUser = function(query, userOid) {
 			var restUrl = REST_BASE_URL + "/allActivities";
 
 			var queryParams = sdDataTableHelperService.convertToQueryParams(query.options);
@@ -131,11 +124,11 @@
 
 			var postData = sdDataTableHelperService.convertToPostParams(query.options);
 
-			postData.roleId = roleId;
-			postData.departmentOid = departmentOid;
+			postData.userOid = userOid;
 
 			return sdUtilService.ajax(restUrl, '', postData);
 		};
+
 	}
 	;
 })();

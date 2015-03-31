@@ -523,7 +523,7 @@
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.getDocumentVersions = function(options) {
+		DocumentSearchViewCtrl.prototype.getDocumentVersions = function() {
 			var self = this;
 			return self.documentVersions;
 		};
