@@ -21,32 +21,31 @@
   /*
    * 
    */
-  function DataFlowPropertiesPageCtrl($scope, constants, sdUtilService, sdLoggerService, sdI18nService) {
+  function DataFlowPropertiesPageCtrl($scope, constants, sdUtilService,
+          sdLoggerService, sdI18nService) {
     var self = this;
     self.initialized = false;
-    var trace = sdLoggerService.getLogger('modeler-ui.sdDataFlowPropertiesPageCtrl');
+    var trace = sdLoggerService
+            .getLogger('modeler-ui.sdDataFlowPropertiesPageCtrl');
     $scope.sdI18nModeler = sdI18nService.getInstance('bpm-modeler-messages').translate;
     var i18n = $scope.sdI18nModeler;
-    
-    $scope.$watch('page.propertiesPanel.refreshElement', function() {
+
+    $scope.$on('REFRESH_PROPERTIES_PANEL', function(event, propertiesPanel) {
       if (!self.initialized) {
-        self.page = $scope.page;
-        self.propertiesPanel = self.page.propertiesPanel;
+        self.propertiesPanel = propertiesPanel;
         self.dataMappingIndex = 0;
-      } 
+      }
       self.refresh();
       self.initialized = true;
     });
-   
+
     /**
      * 
      */
     DataFlowPropertiesPageCtrl.prototype.refresh = function() {
       this.element = this.propertiesPanel.element;
-      if(!this.element){
-        return;
-      }
-      
+      if (!this.element) { return; }
+
       this.modelElement = this.element.modelElement;
       this.unifiedDataMappings = transformDMs(this.modelElement.dataMappings);
       this.unifiedDataMappings = sdUtilService.convertToSortedArray(
@@ -121,7 +120,7 @@
         }
 
         var group = i18n("modeler.dataFlow.propertiesPanel.outputAccessPointSelectInput.group."
-                        + i)
+                + i)
 
         for (var m = 0; m < context.accessPoints.length; ++m) {
           var accessPoint = context.accessPoints[m];
@@ -215,7 +214,7 @@
         }
 
         var group = i18n("modeler.dataFlow.propertiesPanel.outputAccessPointSelectInput.group."
-                        + i);
+                + i);
 
         for (var m = 0; m < context.accessPoints.length; ++m) {
           var accessPoint = context.accessPoints[m];
@@ -298,11 +297,11 @@
               && this.modelElement.activity
               && this.modelElement.activity.activityType === constants.TASK_ACTIVITY_TYPE
               && this.modelElement.activity.attributes["ruleSetId"]) {
-        
+
         var ruleOptGroupName = i18n("modeler.dataFlow.propertiesPage.accessPoints.rules.optGroup.name");
-        
+
         var ruleSets = this.propertiesPanel.getRuleSets();
-        
+
         if (ruleSets) {
           var rule = null;
           for ( var i in ruleSets) {
@@ -344,7 +343,7 @@
         var ruleOptGroupName = i18n("modeler.dataFlow.propertiesPage.accessPoints.rules.optGroup.name");
 
         var ruleSets = this.propertiesPanel.getRuleSets();
-        
+
         if (ruleSets) {
           var rule = null;
           for ( var i in ruleSets) {
@@ -517,7 +516,8 @@
         if (this.element.modelElement.activity
                 && this.element.modelElement.activity.activityType === "Task"
                 && this.element.modelElement.activity.applicationFullId) {
-          var app = this.page.findApplication(this.element.modelElement.activity.applicationFullId);
+          var app = this.propertiesPanel
+                  .findApplication(this.element.modelElement.activity.applicationFullId);
           if (app
                   && (app.applicationType === constants.JAVA_APPLICATION_TYPE
                           || app.applicationType === constants.SPRING_BEAN_APPLICATION_TYPE || app.applicationType === constants.SESSION_BEAN_APPLICATION_TYPE)) {
@@ -671,7 +671,7 @@
      */
     DataFlowPropertiesPageCtrl.prototype.submitChanges = function() {
       var self = this;
-      this.page.submitChanges({
+      this.propertiesPanel.submitChanges({
         modelElement: {
           dataMappings: self.modelElement.dataMappings
         }

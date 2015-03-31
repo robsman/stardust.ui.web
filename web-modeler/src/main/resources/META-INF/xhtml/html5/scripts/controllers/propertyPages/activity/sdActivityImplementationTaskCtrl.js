@@ -30,14 +30,12 @@
     $scope.sdI18nModeler = sdI18nService.getInstance('bpm-modeler-messages').translate;
     var i18n = $scope.sdI18nModeler;
 
-    //TODO: find some other way to know the model element is initialized or changed
     $scope
-            .$on(
-                    'PAGE_ELEMENT_CHANGED',
-                    function(event, page) {
+    .$on(
+            'REFRESH_PROPERTIES_PANEL',
+            function(event, propertiesPanel) {
                       if (!self.initialized) {
-                        self.page = page;
-                        self.propertiesPanel = self.page.propertiesPanel;
+                        self.propertiesPanel = propertiesPanel;
                         self.initialized = true;
                       }
                       if (self.propertiesPanel.element.modelElement) {
@@ -48,7 +46,7 @@
                         }
                       }
                       self.reset();
-                    });
+                    }, false);
 
     /**
      * 
@@ -124,7 +122,7 @@
           group: thisModel
         })
       }
-      var modelsSorted = sdUtilService.convertToSortedArray(this.page
+      var modelsSorted = sdUtilService.convertToSortedArray(this.propertiesPanel
               .getModels(), "name", true);
 
       var otherModel = i18n('modeler.general.otherModel');
@@ -183,8 +181,9 @@
      * 
      */
     ActivityImplementationTaskCtrl.prototype.openApplication = function() {
-      var application = this.page.findApplication(this.selectedApplication);
-      this.page.openApplicationView(application);
+      var application = this.propertiesPanel
+              .findApplication(this.selectedApplication);
+      this.propertiesPanel.openApplicationView(application);
     }
 
     /**
@@ -235,7 +234,7 @@
      * 
      */
     ActivityImplementationTaskCtrl.prototype.submitImplementionChanges = function() {
-      this.page
+      this.propertiesPanel
               .submitChanges({
                 modelElement: {
                   applicationFullId: this.selectedApplication == sdModelerConstants.TO_BE_DEFINED
@@ -248,7 +247,7 @@
      * 
      */
     ActivityImplementationTaskCtrl.prototype.submitRuleSetChanges = function() {
-      this.page.submitChanges({
+      this.propertiesPanel.submitChanges({
         modelElement: {
           attributes: {
             ruleSetId: this.selectedRuleSet

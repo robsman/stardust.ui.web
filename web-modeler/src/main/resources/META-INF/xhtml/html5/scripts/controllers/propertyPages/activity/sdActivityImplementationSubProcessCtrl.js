@@ -29,14 +29,12 @@
     $scope.sdI18nModeler = sdI18nService.getInstance('bpm-modeler-messages').translate;
     var i18n = $scope.sdI18nModeler;
 
-    //TODO: find some other way to know the model element is initialized or changed
     $scope
     .$on(
-            'PAGE_ELEMENT_CHANGED',
-            function(event, page) {
+            'REFRESH_PROPERTIES_PANEL',
+            function(event, propertiesPanel) {
                       if (!self.initialized) {
-                        self.page = page;
-                        self.propertiesPanel = self.page.propertiesPanel;
+                        self.propertiesPanel = propertiesPanel;
                         self.initSubProcessModeList();
                         self.initialized = true;
                       }
@@ -110,7 +108,7 @@
 
       modelName = i18n("modeler.general.otherModels");
 
-      var modelsSorted = sdUtilService.convertToSortedArray(this.page
+      var modelsSorted = sdUtilService.convertToSortedArray(this.propertiesPanel
               .getModels(), "name", true);
 
       for ( var n in modelsSorted) {
@@ -240,7 +238,7 @@
         }
       };
 
-      this.page.submitChanges(submitObj);
+      this.propertiesPanel.submitChanges(submitObj);
     }
   }
 })();

@@ -26,15 +26,8 @@ define(["bpm-modeler/js/m_utils", "bpm-modeler/js/m_propertiesPage"], function(
     m_utils.inheritMethods(PropertiesPageProvider.prototype, propertiesPage);
 
     PropertiesPageProvider.prototype.setElement = function() {
-      if (this.propertiesPanel && this.propertiesPanel.element) {
-        if (!this.propertiesPanel.refreshElement) {
-          this.propertiesPanel.refreshElement = true;
-        } else {
-          this.propertiesPanel.refreshElement = false;
-        }
-      }
-      //TODO: remove following
       this.broadcastElementChangedEvent();
     }
+    
   }
 });

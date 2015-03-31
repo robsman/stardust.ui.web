@@ -32,10 +32,9 @@
 
     // TODO: find some other way to know the model element is initialized or
     // changed
-    $scope.$on('PAGE_ELEMENT_CHANGED', function(event, page) {
+    $scope.$on('REFRESH_PROPERTIES_PANEL', function(event, propertiesPanel) {
       if (!self.initialized) {
-        self.page = page;
-        self.propertiesPanel = self.page.propertiesPanel;
+        self.propertiesPanel = propertiesPanel;
         self.exclusionIndex = 0;
       }
 

@@ -20,9 +20,12 @@ define(
 				"bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_communicationController",
 				"bpm-modeler/js/m_angularContextUtils",
-				"bpm-modeler/js/m_ruleSetsHelper"],
+				"bpm-modeler/js/m_ruleSetsHelper",
+				"bpm-modeler/js/m_model",
+				"bpm-modeler/js/m_modelerUtils"],
 		function(m_utils, m_constants, m_extensionManager, m_session, m_user, m_command,
-				 m_commandsController, m_dialog, m_communicationController, m_angularContextUtils, m_ruleSetsHelper) {
+				 m_commandsController, m_dialog, m_communicationController, m_angularContextUtils, m_ruleSetsHelper, 
+				 m_model, m_modelerUtils) {
 
 			var currentPropertiesPanel = null;
 
@@ -55,6 +58,7 @@ define(
 
 						currentPropertiesPanel.setElement(element);
 						currentPropertiesPanel.show(page);
+						currentPropertiesPanel.refreshElementInAngularContext();
 					}
 				},
 
@@ -519,7 +523,7 @@ define(
 				PropertiesPanel.prototype.processCommand = function(command) {
 					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
 						this.setElement(this.element);
-
+						this.refreshElementInAngularContext();
 						// Update the selectable property pages list
 						// for the given profile
 						currentPropertiesPanel.show();
@@ -581,6 +585,8 @@ define(
             
          		  this.refreshData(object.changes.removed);
             }
+         		
+         		this.refreshElementInAngularContext();
 					}
 				};
 				
@@ -588,6 +594,7 @@ define(
 				  for (var i = 0; i < changes.length; i++) {
             if (changes[i].type == m_constants.DATA) {
               this.setElement(this.element);
+              this.refreshElementInAngularContext();
             }
           }
 				}
@@ -648,5 +655,44 @@ define(
 				PropertiesPanel.prototype.getRuleSets = function() {
           return m_ruleSetsHelper.getRuleSets();
         }
+				
+				/**
+				 * 
+				 */
+				PropertiesPanel.prototype.refreshElementInAngularContext = function() {
+				  //TODO: watch on following attribute does not work, mostly due to the fact that properties panels are lazily loaded 
+				  //and not updated on scope later on 
+				  this.refreshElement = Math.random();
+        }
+				
+				 /**
+         * 
+         */
+				PropertiesPanel.prototype.findApplication = function(appFullId) {
+          return m_model.findApplication(appFullId);
+        };
+        
+        /**
+         * 
+         */
+        PropertiesPanel.prototype.getModels = function(appFullId) {
+          return m_model.getModels();
+        };
+        
+        /**
+         * 
+         */
+        PropertiesPanel.prototype.openApplicationView = function(application) {
+          m_modelerUtils.openApplicationView(application)
+        };
+        
+        /**
+         * 
+         */
+        PropertiesPanel.prototype.getMModel = function(application) {
+          return m_model;
+        };
+        
+        
 			}
 		});
