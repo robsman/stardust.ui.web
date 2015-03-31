@@ -57,9 +57,13 @@ public class ActivityInstanceDTO extends AbstractDTO
    
    public boolean defaultCaseActivity;
    
+   public boolean isCaseInstance;
+   
    public boolean abortActivity;
    
    public boolean delegable;
+   
+   public boolean abortProcess;
    
    @DTOAttribute("qualityAssuranceState")
    public String qualityAssuranceState;
@@ -71,6 +75,8 @@ public class ActivityInstanceDTO extends AbstractDTO
    public String completedBy;
 
    public String participantPerformer;
+
+   public int notesCount;
 
    public void setQualityAssuranceState(QualityAssuranceState state)
    {

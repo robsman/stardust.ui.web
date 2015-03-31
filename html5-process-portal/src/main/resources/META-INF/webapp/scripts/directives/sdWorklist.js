@@ -683,8 +683,15 @@
 		/*
 		 *
 		 */
-		ActivityTableCompiler.prototype.openProcessHistory = function( rowItem ) {
-			sdViewUtilService.openView("processInstanceDetailsView",
+		ActivityTableCompiler.prototype.openProcessDetails = function( rowItem ) {
+			var viewId = "";
+			if(this.isWorklistMode()) {
+				viewId = rowItem.defaultCaseActivity ? 'caseDetailsView' : 'processInstanceDetailsView';
+			}else if(this.isActivityTableMode()) {
+				viewId = rowItem.isCaseInstance ? 'caseDetailsView' : 'processInstanceDetailsView';
+			}
+			
+			sdViewUtilService.openView( viewId,
 					"processInstanceOID=" + rowItem.processInstance.oid,
 					{
 				"oid": "" + rowItem.activityOID,
@@ -1081,15 +1088,6 @@
 					});
 		};
 
-		/**
-		 * 
-		 */
-		ActivityTableCompiler.prototype.openProcessDetails = function(oid) {
-			sdViewUtilService.openView("processInstanceDetailsView",
-					"processInstanceOID=" + oid, {
-				"processInstanceOID" : "" + oid
-			}, true);
-		};
 
 		/**
 		 * 

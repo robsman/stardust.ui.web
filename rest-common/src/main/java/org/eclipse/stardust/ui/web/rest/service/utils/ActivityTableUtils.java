@@ -15,6 +15,7 @@ import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtil
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isAbortable;
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isActivatable;
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isDelegable;
+import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getCaseName;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,6 +33,7 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.DepartmentInfoDetails;
+import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.dto.OrganizationInfoDetails;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
 import org.eclipse.stardust.engine.api.dto.RoleInfoDetails;
@@ -90,6 +92,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils.ParticipantType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDocumentDescriptor;
@@ -647,22 +650,34 @@ public class ActivityTableUtils
             dto.status.label = ActivityInstanceUtils.getActivityStateLabel(ai);
             dto.descriptorValues =  getProcessDescriptors(modelCache, ai);
             dto.activatable = findIfActivatable(ai);
-            dto.defaultCaseActivity= ActivityInstanceUtils.isDefaultCaseActivity(ai);
-            
-            if ( !dto.defaultCaseActivity )
+           
+            List<Note> notes=org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getNotes(ai.getProcessInstance());
+            if(null != notes)
             {
-               dto.abortActivity = isAbortable(ai);
-               dto.delegable = isDelegable(ai);
+               dto.notesCount = notes.size();   
             }
-            
+          
             if(mode.equals(MODE.ACTIVITY_TABLE))
             {
                dto.completedBy = ActivityInstanceUtils.getPerformedByName(ai);
                dto.participantPerformer = getParticipantPerformer(ai);
+               dto.isCaseInstance = ai.getProcessInstance().isCaseProcessInstance();
+               dto.abortActivity =!dto.isCaseInstance && isAbortable(ai);
+               dto.delegable = isDelegable(ai);
+               dto.abortProcess = ProcessInstanceUtils.isAbortable(ai.getProcessInstance());
             }
             else
             {
                dto.lastPerformer = getLastPerformer(ai, UserUtils.getDefaultUserNameDisplayFormat());
+               dto.defaultCaseActivity= ActivityInstanceUtils.isDefaultCaseActivity(ai);
+               if ( !dto.defaultCaseActivity )
+               {
+                  dto.abortActivity = isAbortable(ai);
+                  dto.delegable = isDelegable(ai);
+               }else{
+                  dto.processInstance.processName = getCaseName(ai);
+               }
+               
             }
             list.add(dto);
          }

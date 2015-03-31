@@ -216,7 +216,7 @@
 				
 				<td>
 					<div style="text-align: right; white-space: nowrap;">
-						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openProcessHistory(rowData);"
+						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openProcessDetails(rowData);"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-processContextExplorer')}}" class="button-link tbl-tool-link">
 							<i class="glyphicon glyphicon-cog"></i>
 						</button>
@@ -230,21 +230,22 @@
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-complete')}}" class="button-link tbl-tool-link">
 							<i class="glyphicon glyphicon-share-alt"></i>
 						</button>
-						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openDelegateDialog(rowData);" ng-disabled="!rowData.delegable || row.defaultCaseActivity"
+						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openDelegateDialog(rowData);" ng-disabled="!rowData.delegable || rowData.defaultCaseActivity"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-delegate')}}" class="button-link tbl-tool-link">
 							<i class="glyphicon glyphicon-user"></i>
 						</button>
-						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openAbortDialog(rowData);" ng-disabled="!rowData.abortActivity || row.defaultCaseActivity"
+						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openAbortDialog(rowData);" ng-disabled="!rowData.abortActivity || rowData.defaultCaseActivity"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}" class="button-link tbl-tool-link" >
 							<i class="glyphicon glyphicon-remove"></i>
 						</button>
-						<button ng-if="activityTableCtrl.isActivityTableMode();" class="button-link tbl-tool-link" ng-disabled="!rowData.abortActivity || row.defaultCaseActivity"
-							ng-click="activityTableCtrl.openAbortPopover($event, rowData); bpmCommon.stopEvent($event);" style="margin-left:-10px;">
+						<button ng-if="activityTableCtrl.isActivityTableMode();" class="button-link tbl-tool-link" ng-disabled="!rowData.abortProcess || rowData.isCaseInstance"
+							ng-click="activityTableCtrl.openAbortPopover($event, rowData); bpmCommon.stopEvent($event);" style="margin-left:-5px;">
 							<i class="glyphicon glyphicon-chevron-right glyphicon-rotate-90"></i>
 						</button>
-						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openNotes(rowData);"
+						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openNotes(rowData);" ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-notes')}}" class="button-link tbl-tool-link">
-							<i class="glyphicon glyphicon-comment"></i>
+							<i class="sc sc-document-o" ng-if ="rowData.notesCount === 0"></i>
+							<i class="sc sc-document-text-o" ng-if ="rowData.notesCount > 0"></i>
 						</button>
 					</div>
 				</td>
