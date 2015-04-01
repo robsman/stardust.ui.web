@@ -258,14 +258,7 @@ public class IppThemeProvider implements ThemeProvider
 
       if (sessionCtx.isSessionInitialized())
       {
-         if (sessionCtx.getUser().isAdministrator() || !DMSHelper.isSecurityEnabled())
-         {
-            return repoManager.getContentFolder(RepositorySpaceKey.SKINS, true);
-         }
-         else
-         {
-            return repoManager.getContentFolder(RepositorySpaceKey.SKINS, false);
-         }
+         return repoManager.getContentFolder(RepositorySpaceKey.SKINS, false);
       }
       return null;
    }
