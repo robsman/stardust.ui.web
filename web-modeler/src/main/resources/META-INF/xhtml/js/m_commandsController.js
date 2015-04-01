@@ -80,7 +80,7 @@ define(
 					var models = m_globalVariables.get("models");
 					var model = models[command.modelId]; //m_model.findModel(command.modelId);
 					if (model != undefined) {
-						if (model.isReadonly()) {
+						if (model.isReadonly() && !model.isSimple()) {
 							m_utils.debug("Model '" + model.name + "' is marked as Readonly. Skipping server post.");
 							return false;
 						} else {
