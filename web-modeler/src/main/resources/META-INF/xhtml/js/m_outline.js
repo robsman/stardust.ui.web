@@ -318,11 +318,15 @@ define(
         var outline = this;
         var outlineRoot = jQuery(displayScope + "#outline");
 
+        var sessionRef = m_session.initialize();
         jQuery.each(m_utils.convertToSortedArray(m_model.getModels(), "name", true),
             function(index, model) {
         	  try{
-	              newOutlineTreeDomBuilder(model).buildModelNode(outlineRoot);
-	              refreshModelStatus(model);
+        		  if (!(model.attributes && model.attributes['simpleModel'])
+        				  || sessionRef.showSimpleModels) {
+    	              newOutlineTreeDomBuilder(model).buildModelNode(outlineRoot);
+    	              refreshModelStatus(model);
+        		  }
         	  }
         	  catch(err){
         		  //Place errored node in tree

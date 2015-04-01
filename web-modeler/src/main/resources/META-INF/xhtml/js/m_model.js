@@ -442,7 +442,8 @@ define(
 
 				Model.prototype.isReadonly = function() {
 					if (this.attributes
-							&& this.attributes["stardust:security:hash"]) {
+							&& (this.attributes["stardust:security:hash"]
+								|| this.attributes['simpleModel'])) {
 						return true;
 					}
 					if (this.editLock && ("lockedByOther" === this.editLock.lockStatus)) {

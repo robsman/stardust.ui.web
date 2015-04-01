@@ -153,6 +153,7 @@ define(
 
 											m_globalVariables.get("modelingSession").technologyPreview =  json.showTechnologyPreview;
 											m_globalVariables.get("modelingSession").currentProfile = json.defaultProfile;
+											m_globalVariables.get("modelingSession").showSimpleModels = json.showSimpleModels;
 										},
 										"error" : function() {
 											alert('Error occured while fetching models');
