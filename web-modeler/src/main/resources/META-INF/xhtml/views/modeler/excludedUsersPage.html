@@ -44,12 +44,13 @@
 					<td><input type="text" ng-model="ctrl.selectedExclusion.name"
 						ng-blur="ctrl.onNameChange(ctrl.selectedExclusion.name)"></td>
 				</tr>
+				<tr sd-modeler-data-path sda-data-items="ctrl.dataItems"
+					sda-data-selected="ctrl.selectedExclusion.data"
+					sda-data-path-selected="ctrl.selectedExclusion.dataPath"
+					sda-on-data-change="ctrl.updateExclusion(data, dataPath)"
+					sda-data-model-service="ctrl.propertiesPanel.getMModel()"
+					sda-data-embed=true></tr>
 			</table>
-			<sd-modeler-data-path sda-data-items="ctrl.dataItems"
-				sda-data-selected="ctrl.selectedExclusion.data"
-				sda-data-path-selected="ctrl.selectedExclusion.dataPath"
-				sda-on-data-change="ctrl.updateExclusion(data, dataPath)"
-				sda-service-model="ctrl.propertiesPanel.getMModel()"></sd-modeler-data-path>
 			<br />
 		</div>
 		<div>

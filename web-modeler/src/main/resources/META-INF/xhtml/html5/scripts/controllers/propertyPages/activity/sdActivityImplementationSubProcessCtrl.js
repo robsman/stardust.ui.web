@@ -73,7 +73,7 @@
 
       this.copyAllData = this.modelElement.attributes["carnot:engine:subprocess:copyAllData"];
 
-      this.runtimeBindingData = this.modelElement.attributes["carnot:engine:data"];
+      this.runtimeBindingData = this.modelElement.attributes["carnot:engine:dataId"];
       if (!this.runtimeBindingData) {
         this.runtimeBindingData = sdModelerConstants.TO_BE_DEFINED;
       }

@@ -16,41 +16,46 @@
   angular.module('modeler-ui').directive('sdModelerDataPath',
           ['$compile', ModelerDataPath]);
 
+  var template = '<tr>\
+    <td><label>{{dataPathCtrl.sdI18nModeler("modeler.activity.propertyPages.onAssignment.data")}}</label></td>\
+    <td><select ng-model="dataSelected" aid="dataSelect"\
+      ng-change="dataPathCtrl.onDataChange(dataSelected)"\
+      ng-options="dataItem.fullId as dataItem.label group by dataItem.group for dataItem in dataPathCtrl.dataItems">\
+    </select></td>\
+  </tr>\
+  <tr>\
+    <td><label>{{dataPathCtrl.sdI18nModeler("modeler.activity.propertyPages.onAssignment.path")}}</label></td>\
+    <td ng-if="dataPathCtrl.supportsDataPath"><div class="dataPathInput" aid="dataPathInput" sd-auto-complete\
+        sda-matches="dataPathCtrl.filteredDataPaths"\
+        sda-match-str="dataPathCtrl.matchVal"\
+        sda-change="dataPathCtrl.getMatches(dataPathCtrl.matchVal)"\
+        sda-text-property="name" sda-container-class="sd-ac-container"\
+        sda-item-hot-class="sd-ac-item-isActive"\
+        sda-allow-duplicates="false"\
+        sda-allow-multiple="false"\
+        sda-selected-matches="dataPathCtrl.dataPathSelected"\
+        sda-on-selection-change="dataPathCtrl.onDataPathChange(selectedData)"></div></td>\
+    <td ng-if="!dataPathCtrl.supportsDataPath"><input type="text" ng-disabled="true" style="width:200px">  </td>\
+  </tr>'
+
   function ModelerDataPath($compile) {
-      return {
-      restrict: 'E',
+    return {
+      restrict: 'EA',
       replace: true,
-      template: '<div ng-if="dataPathCtrl.initialized">\
-        <table>\
-      <tr>\
-        <td><label>{{dataPathCtrl.sdI18nModeler("modeler.activity.propertyPages.onAssignment.data")}}</label></td>\
-        <td><select ng-model="dataSelected" aid="dataSelect"\
-          ng-change="dataPathCtrl.onDataChange(dataSelected)"\
-          ng-options="dataItem.fullId as dataItem.label group by dataItem.group for dataItem in dataPathCtrl.dataItems">\
-        </select></td>\
-      </tr>\
-      <tr>\
-        <td><label>{{dataPathCtrl.sdI18nModeler("modeler.activity.propertyPages.onAssignment.path")}}</label></td>\
-        <td ng-if="dataPathCtrl.supportsDataPath"><div class="dataPathInput" aid="dataPathInput" sd-auto-complete\
-            sda-matches="dataPathCtrl.filteredDataPaths"\
-            sda-match-str="dataPathCtrl.matchVal"\
-            sda-change="dataPathCtrl.getMatches(dataPathCtrl.matchVal)"\
-            sda-text-property="name" sda-container-class="sd-ac-container"\
-            sda-item-hot-class="sd-ac-item-isActive"\
-            sda-allow-duplicates="false"\
-            sda-allow-multiple="false"\
-            sda-selected-matches="dataPathCtrl.dataPathSelected"\
-            sda-on-selection-change="dataPathCtrl.onDataPathChange(selectedData)"></div></td>\
-        <td ng-if="!dataPathCtrl.supportsDataPath"><input type="text" ng-disabled="true" style="width:200px">  </td>\
-      </tr>\
-    </table>\
-  </div>',
       scope: {
         dataItems: '=sdaDataItems',
         dataSelected: '=sdaDataSelected',
         dataPathSelectedStr: '=sdaDataPathSelected',
         onDataChangeClbk: '&sdaOnDataChange',
-        m_model: '=sdaServiceModel'
+        m_model: '=sdaDataModelService'
+      },
+      link: function(scope, element, attrs) {
+        var templ = template;
+        if (!attrs.sdaDataEmbed) {
+          templ = '<table>' + template + '</table>';
+        }
+        var e = $compile(templ)(scope);
+        element.replaceWith(e);
       },
       controller: ['$scope', '$attrs', 'sdUtilService',
           'sdModelerParsingUtilService', 'sdI18nService', 'sdModelerConstants',
