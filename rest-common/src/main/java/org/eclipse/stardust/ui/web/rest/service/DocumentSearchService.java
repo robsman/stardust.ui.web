@@ -45,11 +45,10 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class DocumentSearchServiceBean
+public class DocumentSearchService
 {
 
-   private static final Logger trace = LogManager
-         .getLogger(DocumentSearchServiceBean.class);
+   private static final Logger trace = LogManager.getLogger(DocumentSearchService.class);
 
    @Resource
    private DocumentSearchUtils documentSearchUtils;
@@ -62,11 +61,9 @@ public class DocumentSearchServiceBean
       return documentSearchUtils.getFilterAttributes();
    }
 
-   public QueryResultDTO performSearch(Options options,
-         DocumentSearchCriteriaDTO documentSearchAttributes)
+   public QueryResultDTO performSearch(Options options, DocumentSearchCriteriaDTO documentSearchAttributes)
    {
-      QueryResult<Document> docs = documentSearchUtils.performSearch(options,
-            documentSearchAttributes);
+      QueryResult<Document> docs = documentSearchUtils.performSearch(options, documentSearchAttributes);
       return buildDocumentSearchResult(docs);
 
    }
@@ -78,8 +75,7 @@ public class DocumentSearchServiceBean
     */
    public QueryResultDTO getProcessInstancesFromDocument(String documentId)
    {
-      List<ProcessInstanceDTO> processList = documentSearchUtils
-            .getProcessInstancesFromDocument(documentId);
+      List<ProcessInstanceDTO> processList = documentSearchUtils.getProcessInstancesFromDocument(documentId);
       QueryResultDTO resultDTO = new QueryResultDTO();
       resultDTO.list = processList;
       resultDTO.totalCount = processList.size();
@@ -130,11 +126,9 @@ public class DocumentSearchServiceBean
     * @return
     * @throws ResourceNotFoundException
     */
-   public QueryResultDTO getDocumentVersions(String documentId)
-         throws ResourceNotFoundException
+   public QueryResultDTO getDocumentVersions(String documentId) throws ResourceNotFoundException
    {
-      List<DocumentVersionDTO> docVersions = documentSearchUtils
-            .getDocumentVersions(documentId);
+      List<DocumentVersionDTO> docVersions = documentSearchUtils.getDocumentVersions(documentId);
 
       QueryResultDTO resultDTO = new QueryResultDTO();
       resultDTO.list = docVersions;
@@ -149,8 +143,7 @@ public class DocumentSearchServiceBean
     */
    public QueryResultDTO loadAvailableProcessDefinitions()
    {
-      List<SelectItemDTO> processDefns = documentSearchUtils
-            .loadAvailableProcessDefinitions();
+      List<SelectItemDTO> processDefns = documentSearchUtils.loadAvailableProcessDefinitions();
       QueryResultDTO resultDTO = new QueryResultDTO();
       resultDTO.list = processDefns;
       resultDTO.totalCount = processDefns.size();
@@ -164,8 +157,7 @@ public class DocumentSearchServiceBean
     * @return
     * @throws ResourceNotFoundException
     */
-   public InfoDTO attachDocumentsToProcess(long processOid, String documentId)
-         throws ResourceNotFoundException
+   public InfoDTO attachDocumentsToProcess(long processOid, String documentId) throws ResourceNotFoundException
    {
       return documentSearchUtils.attachDocuments(processOid, documentId);
    }

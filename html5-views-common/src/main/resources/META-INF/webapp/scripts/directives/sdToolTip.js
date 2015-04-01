@@ -41,8 +41,7 @@
 		this.toolTipClass = 'popup-dlg';
 		if (angular.isDefined($attrs.sdaToolTipClass)) {
 
-			this.toolTipClass = this.toolTipClass + " "
-					+ $attrs.sdaToolTipClass;
+			this.toolTipClass = this.toolTipClass + " " + $attrs.sdaToolTipClass;
 		}
 
 		if (angular.isDefined($attrs.sdaToolTipUrl)) {

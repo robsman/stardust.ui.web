@@ -14,8 +14,7 @@
 (function() {
 	'use strict';
 
-	angular.module('viewscommon-ui').directive('sdDocumentDownload',
-			[ 'sdUtilService', DocumentDownload ]);
+	angular.module('viewscommon-ui').directive('sdDocumentDownload', [ 'sdUtilService', DocumentDownload ]);
 	/*
 	 * 
 	 */
@@ -68,8 +67,7 @@
 			 */
 			function downloadDocument(res) {
 				var REST_BASE_URL = "services/rest/portal/documents";
-				window.location = sdUtilService.getRootUrl() + "/"
-						+ REST_BASE_URL + "/downloadDocument" + "/"
+				window.location = sdUtilService.getRootUrl() + "/" + REST_BASE_URL + "/downloadDocument" + "/"
 						+ scope.documentId + "/" + scope.documentName;
 			}
 			;
@@ -78,8 +76,7 @@
 			 * 
 			 */
 			function setShowDocumentDownload() {
-				if (scope.documentId != undefined
-						&& scope.documentName != undefined) {
+				if (scope.documentId != undefined && scope.documentName != undefined) {
 					self.showDoumentDownload = true;
 				}
 			}

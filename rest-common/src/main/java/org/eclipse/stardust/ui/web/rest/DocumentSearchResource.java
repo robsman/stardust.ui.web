@@ -31,7 +31,7 @@ import javax.ws.rs.core.Response.Status;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.rest.service.DocumentSearchServiceBean;
+import org.eclipse.stardust.ui.web.rest.service.DocumentSearchService;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentSearchCriteriaDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentSearchFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InfoDTO;
@@ -52,7 +52,7 @@ public class DocumentSearchResource
    private static final Logger trace = LogManager.getLogger(DocumentSearchResource.class);
 
    @Resource
-   private DocumentSearchServiceBean documentSearchService;
+   private DocumentSearchService documentSearchService;
 
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
@@ -95,20 +95,17 @@ public class DocumentSearchResource
    public Response searchByCritera(@QueryParam("skip") @DefaultValue("0") Integer skip,
          @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
          @QueryParam("orderBy") @DefaultValue("documentName") String orderBy,
-         @QueryParam("orderByDir") @DefaultValue("desc") String orderByDir,
-         String postData)
+         @QueryParam("orderByDir") @DefaultValue("desc") String orderByDir, String postData)
    {
 
       try
       {
-         Options options = new Options(pageSize, skip, orderBy,
-               "desc".equalsIgnoreCase(orderByDir));
+         Options options = new Options(pageSize, skip, orderBy, "desc".equalsIgnoreCase(orderByDir));
          populateFilters(options, postData);
 
          DocumentSearchCriteriaDTO documentSearchAttributes = getDocumentSearchCriteria(postData);
 
-         QueryResultDTO result = documentSearchService.performSearch(options,
-               documentSearchAttributes);
+         QueryResultDTO result = documentSearchService.performSearch(options, documentSearchAttributes);
          Gson gson = new Gson();
          return Response.ok(gson.toJson(result), MediaType.TEXT_PLAIN_TYPE).build();
       }
@@ -131,8 +128,7 @@ public class DocumentSearchResource
 
       try
       {
-         QueryResultDTO resultDTO = documentSearchService
-               .getProcessInstancesFromDocument(documentId);
+         QueryResultDTO resultDTO = documentSearchService.getProcessInstancesFromDocument(documentId);
 
          Gson gson = new Gson();
          return Response.ok(gson.toJson(resultDTO), MediaType.TEXT_PLAIN_TYPE).build();
@@ -204,8 +200,7 @@ public class DocumentSearchResource
       try
       {
 
-         QueryResultDTO resultDTO = documentSearchService
-               .loadAvailableProcessDefinitions();
+         QueryResultDTO resultDTO = documentSearchService.loadAvailableProcessDefinitions();
          Gson gson = new Gson();
          return Response.ok(gson.toJson(resultDTO), MediaType.TEXT_PLAIN_TYPE).build();
       }
@@ -230,8 +225,7 @@ public class DocumentSearchResource
       try
       {
 
-         InfoDTO result = documentSearchService.attachDocumentsToProcess(
-               Long.parseLong(processOID), documentId);
+         InfoDTO result = documentSearchService.attachDocumentsToProcess(Long.parseLong(processOID), documentId);
          Gson gson = new Gson();
          return Response.ok(gson.toJson(result), MediaType.TEXT_PLAIN_TYPE).build();
       }
@@ -263,8 +257,8 @@ public class DocumentSearchResource
       JsonObject filters = postJSON.getAsJsonObject("filters");
       if (null != filters)
       {
-         DocumentSearchFilterDTO docSearchFilterDTO = new Gson().fromJson(
-               postJSON.get("filters"), DocumentSearchFilterDTO.class);
+         DocumentSearchFilterDTO docSearchFilterDTO = new Gson().fromJson(postJSON.get("filters"),
+               DocumentSearchFilterDTO.class);
 
          options.filter = docSearchFilterDTO;
       }
@@ -277,24 +271,22 @@ public class DocumentSearchResource
     * @return
     * @throws Exception
     */
-   private DocumentSearchCriteriaDTO getDocumentSearchCriteria(String postData)
-         throws Exception
+   private DocumentSearchCriteriaDTO getDocumentSearchCriteria(String postData) throws Exception
    {
       DocumentSearchCriteriaDTO documentSearchCriteria = null;
 
       JsonMarshaller jsonIo = new JsonMarshaller();
       JsonObject postJSON = jsonIo.readJsonObject(postData);
 
-      JsonObject documentSearchCriteriaJson = postJSON
-            .getAsJsonObject("documentSearchCriteria");
+      JsonObject documentSearchCriteriaJson = postJSON.getAsJsonObject("documentSearchCriteria");
 
       String documentSearchCriteriaJsonStr = documentSearchCriteriaJson.toString();
       if (StringUtils.isNotEmpty(documentSearchCriteriaJsonStr))
       {
          try
          {
-            documentSearchCriteria = DTOBuilder.buildFromJSON(
-                  documentSearchCriteriaJsonStr, DocumentSearchCriteriaDTO.class);
+            documentSearchCriteria = DTOBuilder.buildFromJSON(documentSearchCriteriaJsonStr,
+                  DocumentSearchCriteriaDTO.class);
          }
          catch (Exception e)
          {

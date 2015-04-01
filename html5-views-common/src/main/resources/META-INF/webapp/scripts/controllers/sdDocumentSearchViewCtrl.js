@@ -17,16 +17,14 @@
 
 	angular.module("viewscommon-ui").controller(
 			'sdDocumentSearchViewCtrl',
-			[ '$q', '$scope', 'sdDocumentSearchService', 'sdViewUtilService',
-					'sdUtilService', 'sdMimeTypeService', 'sdLoggerService',
-					DocumentSearchViewCtrl ]);
+			[ '$q', '$scope', 'sdDocumentSearchService', 'sdViewUtilService', 'sdUtilService', 'sdMimeTypeService',
+					'sdLoggerService', DocumentSearchViewCtrl ]);
 
 	/*
 	 * 
 	 */
-	function DocumentSearchViewCtrl($q, $scope, sdDocumentSearchService,
-			sdViewUtilService, sdUtilService, sdMimeTypeService,
-			sdLoggerService) {
+	function DocumentSearchViewCtrl($q, $scope, sdDocumentSearchService, sdViewUtilService, sdUtilService,
+			sdMimeTypeService, sdLoggerService) {
 		// variable for search result table
 		this.documentSearchResult = {};
 		this.documentVersions = {};
@@ -37,30 +35,25 @@
 		this.rowSelection = null;
 		this.showDocumentSearchCriteria = true;
 
-
-		var trace = sdLoggerService
-				.getLogger('viewscommon-ui.sdDocumentSearchViewCtrl');
+		var trace = sdLoggerService.getLogger('viewscommon-ui.sdDocumentSearchViewCtrl');
 
 		/**
 		 * 
 		 */
 		DocumentSearchViewCtrl.prototype.searchAttributes = function() {
 			var self = this;
-			sdDocumentSearchService
-					.searchAttributes()
-					.then(
-							function(data) {
-								self.fileTypes = data.typicalFileTypes;
-								self.typicalFileTypes = data.typicalFileTypes;
-								self.allRegisteredMimeFileTypes = data.allRegisteredMimeFileTypes;
-								self.documentTypes = data.documentTypes;
-								self.repositories = data.repositories;
-								self.query.documentSearchCriteria.selectedFileTypes = [ self.fileTypes[0].value ];
-								self.query.documentSearchCriteria.selectedDocumentTypes = [ self.documentTypes[0].value ];
-								self.query.documentSearchCriteria.selectedRepository = [ self.repositories[0].value ];
-							}, function(error) {
-								trace.log(error);
-							});
+			sdDocumentSearchService.searchAttributes().then(function(data) {
+				self.fileTypes = data.typicalFileTypes;
+				self.typicalFileTypes = data.typicalFileTypes;
+				self.allRegisteredMimeFileTypes = data.allRegisteredMimeFileTypes;
+				self.documentTypes = data.documentTypes;
+				self.repositories = data.repositories;
+				self.query.documentSearchCriteria.selectedFileTypes = [ self.fileTypes[0].value ];
+				self.query.documentSearchCriteria.selectedDocumentTypes = [ self.documentTypes[0].value ];
+				self.query.documentSearchCriteria.selectedRepository = [ self.repositories[0].value ];
+			}, function(error) {
+				trace.log(error);
+			});
 
 		};
 
@@ -111,8 +104,7 @@
 			self.query.documentSearchCriteria.selectedFileTypes = [ self.fileTypes[0].value ];
 			self.query.documentSearchCriteria.selectedDocumentTypes = [ self.documentTypes[0].value ];
 			self.query.documentSearchCriteria.selectedRepository = [ self.repositories[0].value ];
-			if (self.selectedAuthors != undefined
-					&& self.selectedAuthors.length == 1) {
+			if (self.selectedAuthors != undefined && self.selectedAuthors.length == 1) {
 				delete self.selectedAuthors;
 			}
 		}
@@ -130,8 +122,7 @@
 		DocumentSearchViewCtrl.prototype.performSearch = function(options) {
 			var deferred = $q.defer();
 			var self = this;
-			if (self.selectedAuthors != undefined
-					&& self.selectedAuthors.length == 1) {
+			if (self.selectedAuthors != undefined && self.selectedAuthors.length == 1) {
 				self.query.documentSearchCriteria.author = self.selectedAuthors[0].id;
 			} else {
 				self.query.documentSearchCriteria.author = "";
@@ -139,46 +130,22 @@
 
 			self.query.options = options;
 
-			sdDocumentSearchService.performSearch(self.query).then(
-					function(data) {
-						self.documentSearchResult.list = data.list;
-						self.documentSearchResult.totalCount = data.totalCount;
-						deferred.resolve(self.documentSearchResult);
-					}, function(error) {
-						trace.log(error);
-						deferred.reject(error);
-					});
+			sdDocumentSearchService.performSearch(self.query).then(function(data) {
+				self.documentSearchResult.list = data.list;
+				self.documentSearchResult.totalCount = data.totalCount;
+				deferred.resolve(self.documentSearchResult);
+			}, function(error) {
+				trace.log(error);
+				deferred.reject(error);
+			});
 			return deferred.promise;
 		};
 
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.getAuthors = function(searchVal) {
-			var self = this;
-			if (searchVal.length > 0) {
-				searchVal = searchVal.concat("%");
-
-				clearTimeout(self.typingTimer);
-
-				self.typingTimer = setTimeout(function() {
-					sdDocumentSearchService.searchUsers(searchVal).then(
-							function(data) {
-								self.authors = data.list;
-							}, function(error) {
-								trace.log(error);
-							});
-				}, 500);
-			}
-		};
-
-		/**
-		 * 
-		 */
-		DocumentSearchViewCtrl.prototype.validateDateRange = function(fromDate,
-				toDate) {
-			if (!sdUtilService.isEmpty(fromDate)
-					&& !sdUtilService.isEmpty(toDate)) {
+		DocumentSearchViewCtrl.prototype.validateDateRange = function(fromDate, toDate) {
+			if (!sdUtilService.isEmpty(fromDate) && !sdUtilService.isEmpty(toDate)) {
 				if (fromDate > toDate) {
 					return false;
 				}
@@ -191,15 +158,14 @@
 		 */
 		DocumentSearchViewCtrl.prototype.openProcessDialog = function(rowData) {
 			var self = this;
-			sdDocumentSearchService.fetchProcessDialogData(rowData.documentId)
-					.then(function(data) {
-						self.processDialogData = {};
-						self.processDialogData.list = data.list;
-						self.processDialogData.totalCount = data.totalCount;
-						self.showProcessDialog = true;
-					}, function(error) {
-						trace.log(error);
-					});
+			sdDocumentSearchService.fetchProcessDialogData(rowData.documentId).then(function(data) {
+				self.processDialogData = {};
+				self.processDialogData.list = data.list;
+				self.processDialogData.totalCount = data.totalCount;
+				self.showProcessDialog = true;
+			}, function(error) {
+				trace.log(error);
+			});
 		}
 
 		/**
@@ -207,10 +173,9 @@
 		 */
 		DocumentSearchViewCtrl.prototype.openProcessHistory = function(oid) {
 			this.processDialog.close();
-			sdViewUtilService.openView("processInstanceDetailsView",
-					"processInstanceOID=" + oid, {
-						"processInstanceOID" : "" + oid
-					}, true);
+			sdViewUtilService.openView("processInstanceDetailsView", "processInstanceOID=" + oid, {
+				"processInstanceOID" : "" + oid
+			}, true);
 		};
 
 		/**
@@ -219,28 +184,23 @@
 		DocumentSearchViewCtrl.prototype.openDocumentView = function(documentId) {
 			var viewKey = "documentOID=" + documentId + "_instance";
 			viewKey = window.btoa(viewKey);
-			sdViewUtilService.openView("documentView",
-					"documentOID=" + viewKey, {
-						"documentId" : documentId
-					}, true);
+			sdViewUtilService.openView("documentView", "documentOID=" + viewKey, {
+				"documentId" : documentId
+			}, true);
 		}
 
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.openUserDetails = function(
-				documentOwner) {
+		DocumentSearchViewCtrl.prototype.openUserDetails = function(documentOwner) {
 			var self = this;
-			sdDocumentSearchService.getUserDetails(documentOwner).then(
-					function(data) {
-						self.userDetails = data;
-						self.userDetails.userImageURI = sdUtilService
-								.getRootUrl()
-								+ data.userImageURI;
-						self.showUserDetails = true;
-					}, function(error) {
-						trace.log(error);
-					});
+			sdDocumentSearchService.getUserDetails(documentOwner).then(function(data) {
+				self.userDetails = data;
+				self.userDetails.userImageURI = sdUtilService.getRootUrl() + data.userImageURI;
+				self.showUserDetails = true;
+			}, function(error) {
+				trace.log(error);
+			});
 		}
 
 		/**
@@ -250,8 +210,7 @@
 			var self = this;
 			var error = false;
 			// validating the createDateTo and createDateFrom
-			if (!this.validateDateRange(
-					self.query.documentSearchCriteria.createDateFrom,
+			if (!this.validateDateRange(self.query.documentSearchCriteria.createDateFrom,
 					self.query.documentSearchCriteria.createDateTo)) {
 				error = true;
 				self.searchCriteriaForm.$error.createDateRange = true;
@@ -259,8 +218,7 @@
 				self.searchCriteriaForm.$error.createDateRange = false;
 			}
 			// validating the modificationDateTo and modificationDateFrom
-			if (!this.validateDateRange(
-					self.query.documentSearchCriteria.modificationDateFrom,
+			if (!this.validateDateRange(self.query.documentSearchCriteria.modificationDateFrom,
 					self.query.documentSearchCriteria.modificationDateTo)) {
 				error = true;
 				self.searchCriteriaForm.$error.modificationDateRange = true;
@@ -299,25 +257,18 @@
 		 */
 		DocumentSearchViewCtrl.prototype.constructFinalText = function() {
 			var self = this;
-			if (self.advancedTextSearch.allWords != undefined
-					&& self.advancedTextSearch.allWords != 0) {
+			if (self.advancedTextSearch.allWords != undefined && self.advancedTextSearch.allWords != 0) {
 				self.advancedTextSearch.finalText = self.advancedTextSearch.allWords;
 			} else {
 				self.advancedTextSearch.finalText = "";
 			}
-			if (self.advancedTextSearch.exactPhrase != undefined
-					&& self.advancedTextSearch.exactPhrase.length != 0) {
-				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
-						.concat(" ");
-				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
-						.concat("\"").concat(
-								self.advancedTextSearch.exactPhrase).concat(
-								"\"");
+			if (self.advancedTextSearch.exactPhrase != undefined && self.advancedTextSearch.exactPhrase.length != 0) {
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat("\"").concat(
+						self.advancedTextSearch.exactPhrase).concat("\"");
 			}
-			if (self.advancedTextSearch.oneOrMore1 != undefined
-					&& self.advancedTextSearch.oneOrMore1.length != 0) {
-				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
-						.concat(" ");
+			if (self.advancedTextSearch.oneOrMore1 != undefined && self.advancedTextSearch.oneOrMore1.length != 0) {
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
 				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
 						.concat(self.advancedTextSearch.oneOrMore1);
 
@@ -325,44 +276,34 @@
 
 			if ((self.advancedTextSearch.oneOrMore1 != undefined && self.advancedTextSearch.oneOrMore1.length != 0)
 					&& (self.advancedTextSearch.oneOrMore2 != undefined && self.advancedTextSearch.oneOrMore2.length != 0)) {
-				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
-						.concat(" ");
-				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
-						.concat("OR");
-				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
-						.concat(" ");
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat("OR");
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
 				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
 						.concat(self.advancedTextSearch.oneOrMore2);
 			} else if (self.advancedTextSearch.oneOrMore2 != undefined
 					&& self.advancedTextSearch.oneOrMore2.length != 0) {
-				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
-						.concat(" ");
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
 				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
 						.concat(self.advancedTextSearch.oneOrMore2);
 			}
 
 			if (((self.advancedTextSearch.oneOrMore1 != undefined && self.advancedTextSearch.oneOrMore1.length != 0) || (self.advancedTextSearch.oneOrMore2 != undefined && self.advancedTextSearch.oneOrMore2.length != 0))
 					&& (self.advancedTextSearch.oneOrMore3 != undefined && self.advancedTextSearch.oneOrMore3.length != 0)) {
-				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
-						.concat(" ");
-				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
-						.concat("OR");
-				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
-						.concat(" ");
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat("OR");
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
 				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
 						.concat(self.advancedTextSearch.oneOrMore3);
 			} else if (self.advancedTextSearch.oneOrMore3 != undefined
 					&& self.advancedTextSearch.oneOrMore3.length != 0) {
-				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
-						.concat(" ");
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" ");
 				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
 						.concat(self.advancedTextSearch.oneOrMore3);
 			}
 
-			if (self.advancedTextSearch.unwantedWords != undefined
-					&& self.advancedTextSearch.unwantedWords.length != 0) {
-				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
-						.concat(" -");
+			if (self.advancedTextSearch.unwantedWords != undefined && self.advancedTextSearch.unwantedWords.length != 0) {
+				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText.concat(" -");
 				self.advancedTextSearch.finalText = self.advancedTextSearch.finalText
 						.concat(self.advancedTextSearch.unwantedWords);
 			}
@@ -377,8 +318,7 @@
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.onConfirmFromAdvanceText = function(
-				res) {
+		DocumentSearchViewCtrl.prototype.onConfirmFromAdvanceText = function(res) {
 			var self = this;
 			self.query.documentSearchCriteria.containingText = self.advancedTextSearch.finalText;
 			delete self.advancedTextSearch;
@@ -396,36 +336,31 @@
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.openAttachToProcessDialog = function(
-				rowData) {
+		DocumentSearchViewCtrl.prototype.openAttachToProcessDialog = function(rowData) {
 			var self = this;
 			self.processDefns = {};
 			self.showAttachToProcessDialog = true;
 			self.documentId = rowData.documentId;
-			sdDocumentSearchService
-					.getAvailableProcessDefns()
-					.then(
-							function(data) {
-								self.processDefns.list = data.list;
-								self.processDefns.totalCount = data.totalCount;
-								if (self.processDefns.totalCount == 0) {
-									self.processDefns.disabledSelectProcess = true;
-									self.processType = "SPECIFY";
-								} else {
-									self.processType = "SELECT";
-									self.selectedProcess = self.processDefns.list[0].value;
-								}
+			sdDocumentSearchService.getAvailableProcessDefns().then(function(data) {
+				self.processDefns.list = data.list;
+				self.processDefns.totalCount = data.totalCount;
+				if (self.processDefns.totalCount == 0) {
+					self.processDefns.disabledSelectProcess = true;
+					self.processType = "SPECIFY";
+				} else {
+					self.processType = "SELECT";
+					self.selectedProcess = self.processDefns.list[0].value;
+				}
 
-							}, function(error) {
-								trace.log(error);
-							});
+			}, function(error) {
+				trace.log(error);
+			});
 		};
 
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.onConfirmFromAttachToProcess = function(
-				res) {
+		DocumentSearchViewCtrl.prototype.onConfirmFromAttachToProcess = function(res) {
 			var self = this;
 			if (self.processType == "SPECIFY" && self.specifiedProcess == null) {
 				self.showRequiredProcessId = true;
@@ -436,9 +371,7 @@
 				self.selectedProcess = self.specifiedProcess;
 			}
 
-			this
-					.attachDocumentsToProcess(self.selectedProcess,
-							self.documentId);
+			this.attachDocumentsToProcess(self.selectedProcess, self.documentId);
 			delete self.documentId;
 			delete self.selectedProcess;
 			delete self.specifiedProcess;
@@ -447,8 +380,7 @@
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.onCloseFromAttachToProcess = function(
-				res) {
+		DocumentSearchViewCtrl.prototype.onCloseFromAttachToProcess = function(res) {
 			var self = this;
 			delete self.documentId;
 			delete self.selectedProcess;
@@ -458,11 +390,9 @@
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.attachDocumentsToProcess = function(
-				processOID, documentId) {
+		DocumentSearchViewCtrl.prototype.attachDocumentsToProcess = function(processOID, documentId) {
 			var self = this;
-			sdDocumentSearchService.attachDocumentsToProcess(processOID,
-					documentId).then(function(data) {
+			sdDocumentSearchService.attachDocumentsToProcess(processOID, documentId).then(function(data) {
 				self.infoData = {};
 				self.infoData.messageType = data.messageType;
 				self.infoData.details = data.details;
@@ -478,8 +408,7 @@
 
 		DocumentSearchViewCtrl.prototype.checkForProcessIdEmpty = function() {
 			var self = this;
-			if (self.processType == "SPECIFY"
-					&& self.specifiedProcess == undefined) {
+			if (self.processType == "SPECIFY" && self.specifiedProcess == undefined) {
 				self.showRequiredProcessId = false;
 			}
 		};
@@ -531,19 +460,17 @@
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.setShowDocumentVersions = function(
-				documentId, documentName) {
+		DocumentSearchViewCtrl.prototype.setShowDocumentVersions = function(documentId, documentName) {
 			var self = this;
-			sdDocumentSearchService.getDocumentVersions(documentId).then(
-					function(data) {
-						self.documentVersions.list = data.list;
-						self.documentVersions.totalCount = data.totalCount;
-						self.showDocumentVersions = true;
-						self.documentVersions.documentName = documentName;
-						self.showDocumentVersion = true;
-					}, function(error) {
-						trace.log(error);
-					});
+			sdDocumentSearchService.getDocumentVersions(documentId).then(function(data) {
+				self.documentVersions.list = data.list;
+				self.documentVersions.totalCount = data.totalCount;
+				self.showDocumentVersions = true;
+				self.documentVersions.documentName = documentName;
+				self.showDocumentVersion = true;
+			}, function(error) {
+				trace.log(error);
+			});
 
 		};
 
@@ -558,19 +485,15 @@
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.openUserDetailsFromVersionHistory = function(
-				documentOwner) {
+		DocumentSearchViewCtrl.prototype.openUserDetailsFromVersionHistory = function(documentOwner) {
 			var self = this;
-			sdDocumentSearchService.getUserDetails(documentOwner).then(
-					function(data) {
-						self.userDetails = data;
-						self.userDetails.userImageURI = sdUtilService
-								.getRootUrl()
-								+ data.userImageURI;
-						self.showUserDetailsFromDocHistory = true;
-					}, function(error) {
-						trace.log(error);
-					});
+			sdDocumentSearchService.getUserDetails(documentOwner).then(function(data) {
+				self.userDetails = data;
+				self.userDetails.userImageURI = sdUtilService.getRootUrl() + data.userImageURI;
+				self.showUserDetailsFromDocHistory = true;
+			}, function(error) {
+				trace.log(error);
+			});
 
 		};
 
@@ -597,8 +520,7 @@
 			var metadataToExport = [];
 
 			angular.forEach(metadata, function(metadataItem) {
-				metadataToExport.push(metadataItem.first + " : "
-						+ metadataItem.second);
+				metadataToExport.push(metadataItem.first + " : " + metadataItem.second);
 			});
 			return metadataToExport.join(',');
 		};

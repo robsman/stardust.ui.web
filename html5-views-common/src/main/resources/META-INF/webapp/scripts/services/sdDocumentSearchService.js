@@ -25,10 +25,8 @@
 						'$q',
 						'$http',
 						'sdDataTableHelperService',
-						function($rootScope, $resource, sdLoggerService, $q,
-								$http, sdDataTableHelperService) {
-							var service = new DocumentSearchService($rootScope,
-									$resource, sdLoggerService, $q, $http,
+						function($rootScope, $resource, sdLoggerService, $q, $http, sdDataTableHelperService) {
+							var service = new DocumentSearchService($rootScope, $resource, sdLoggerService, $q, $http,
 									sdDataTableHelperService);
 							return service;
 						} ];
@@ -37,28 +35,9 @@
 	/*
 	 * 
 	 */
-	function DocumentSearchService($rootScope, $resource, sdLoggerService, $q,
-			$http, sdDataTableHelperService) {
+	function DocumentSearchService($rootScope, $resource, sdLoggerService, $q, $http, sdDataTableHelperService) {
 		var REST_BASE_URL = "services/rest/portal/documentSearch";
-		var trace = sdLoggerService
-				.getLogger('viewscommon-ui.services.sdDocumentSearchServic');
-
-		/**
-		 * 
-		 */
-		DocumentSearchService.prototype.searchUsers = function(searchValue) {
-			trace.info("Getting authors for:", searchValue);
-
-			// Prepare URL
-			var restUrl = REST_BASE_URL + "/:type/:searchValue";
-
-			var urlTemplateParams = {};
-
-			urlTemplateParams.type = "searchUsers";
-			urlTemplateParams.searchValue = searchValue;
-
-			return $resource(restUrl).get(urlTemplateParams).$promise;
-		};
+		var trace = sdLoggerService.getLogger('viewscommon-ui.services.sdDocumentSearchService');
 
 		/**
 		 * 
@@ -81,8 +60,7 @@
 			// Prepare URL
 			var restUrl = REST_BASE_URL + "/:type";
 
-			var options = sdDataTableHelperService
-					.convertToQueryParams(query.options);
+			var options = sdDataTableHelperService.convertToQueryParams(query.options);
 
 			if (options.length > 0) {
 				restUrl = restUrl + "?" + options.substr(1);
@@ -111,8 +89,7 @@
 		/**
 		 * 
 		 */
-		DocumentSearchService.prototype.fetchProcessDialogData = function(
-				documentId) {
+		DocumentSearchService.prototype.fetchProcessDialogData = function(documentId) {
 
 			var restUrl = REST_BASE_URL + "/:type/:documentId";
 
@@ -156,8 +133,7 @@
 		/**
 		 * 
 		 */
-		DocumentSearchService.prototype.getDocumentVersions = function(
-				documentId) {
+		DocumentSearchService.prototype.getDocumentVersions = function(documentId) {
 			var restUrl = REST_BASE_URL + "/:type/:documentId";
 
 			var urlTemplateParams = {};
@@ -172,8 +148,7 @@
 		/**
 		 * 
 		 */
-		DocumentSearchService.prototype.attachDocumentsToProcess = function(
-				processOID, documentId) {
+		DocumentSearchService.prototype.attachDocumentsToProcess = function(processOID, documentId) {
 			var restUrl = REST_BASE_URL + "/:type/:processOID/:documentId";
 
 			var urlTemplateParams = {};

@@ -117,10 +117,9 @@ public class DocumentSearchUtils
 
       messageCommonBean = MessagesViewsCommonBean.getInstance();
 
-      List<IRepositoryInstanceInfo> repositoryInstances = DocumentMgmtUtility
-            .getDocumentManagementService().getRepositoryInstanceInfos();
-      Set<DocumentTypeWrapper> declaredDocumentTypes = ModelUtils
-            .getAllActiveDeclaredDocumentTypes();
+      List<IRepositoryInstanceInfo> repositoryInstances = DocumentMgmtUtility.getDocumentManagementService()
+            .getRepositoryInstanceInfos();
+      Set<DocumentTypeWrapper> declaredDocumentTypes = ModelUtils.getAllActiveDeclaredDocumentTypes();
 
       // set file types list
       ArrayList<SelectItemDTO> typicalFileTypes = new ArrayList<SelectItemDTO>();
@@ -132,31 +131,27 @@ public class DocumentSearchUtils
       typicalFileTypes.add(getMimeTypeInSelectItemFormat(MimeTypesHelper.TIFF));
 
       // set document types list
-      List<SelectItemDTO> documentTypes = new ArrayList<SelectItemDTO>(
-            declaredDocumentTypes.size());
-      documentTypes.add(new SelectItemDTO(ALL, messageCommonBean
-            .getString("views.documentSearchView.documentType.All")));
+      List<SelectItemDTO> documentTypes = new ArrayList<SelectItemDTO>(declaredDocumentTypes.size());
+      documentTypes
+            .add(new SelectItemDTO(ALL, messageCommonBean.getString("views.documentSearchView.documentType.All")));
 
       for (DocumentTypeWrapper documentTypeWrapper : declaredDocumentTypes)
       {
-         documentTypes.add(new SelectItemDTO(documentTypeWrapper.getDocumentTypeId(),
-               documentTypeWrapper.getDocumentTypeI18nName()));
+         documentTypes.add(new SelectItemDTO(documentTypeWrapper.getDocumentTypeId(), documentTypeWrapper
+               .getDocumentTypeI18nName()));
       }
 
       // set repository list
       ArrayList<SelectItemDTO> repositories = new ArrayList<SelectItemDTO>();
-      repositories.add(new SelectItemDTO(ALL, messageCommonBean
-            .getString("views.documentSearchView.documentType.All")));
+      repositories
+            .add(new SelectItemDTO(ALL, messageCommonBean.getString("views.documentSearchView.documentType.All")));
 
       if (!CollectionUtils.isEmpty(repositoryInstances) && repositoryInstances.size() > 1)
       {
          for (IRepositoryInstanceInfo repos : repositoryInstances)
          {
-            repositories.add(new SelectItemDTO(repos.getRepositoryId(), repos
-                  .getRepositoryId()
-                  + POSTFIX_OPEN
-                  + repos.getRepositoryName()
-                  + POSTFIX_CLOSE));
+            repositories.add(new SelectItemDTO(repos.getRepositoryId(), repos.getRepositoryId() + POSTFIX_OPEN
+                  + repos.getRepositoryName() + POSTFIX_CLOSE));
          }
       }
 
@@ -200,15 +195,11 @@ public class DocumentSearchUtils
    public ArrayList<SelectItemDTO> getAllRegisteredMimeFileTypes()
    {
 
-      DocumentHandlersRegistryBean documentHandlersRegistryBean = DocumentHandlersRegistryBean
-            .getInstance();
+      DocumentHandlersRegistryBean documentHandlersRegistryBean = DocumentHandlersRegistryBean.getInstance();
       Set<MIMEType> mimeTypes = documentHandlersRegistryBean.getAllRegisteredMimeTypes();
-      ArrayList<SelectItemDTO> fileTypes = new ArrayList<SelectItemDTO>(
-            mimeTypes.size() + 1);
-      fileTypes.add(
-            0,
-            new SelectItemDTO("All", messageCommonBean
-                  .getString("views.documentSearchView.documentType.All")));
+      ArrayList<SelectItemDTO> fileTypes = new ArrayList<SelectItemDTO>(mimeTypes.size() + 1);
+      fileTypes.add(0,
+            new SelectItemDTO("All", messageCommonBean.getString("views.documentSearchView.documentType.All")));
       int index = 1;
       for (MIMEType mimeType : mimeTypes)
       {
@@ -223,8 +214,7 @@ public class DocumentSearchUtils
     * @param documentSearchAttributes
     * @return
     */
-   public QueryResult<Document> performSearch(Options options,
-         DocumentSearchCriteriaDTO documentSearchAttributes)
+   public QueryResult<Document> performSearch(Options options, DocumentSearchCriteriaDTO documentSearchAttributes)
    {
       DocumentQuery query = new DocumentQuery();
 
@@ -241,16 +231,13 @@ public class DocumentSearchUtils
       FilterAndTerm filter = query.where(DocumentQuery.NAME.like(QueryUtils
             .getFormattedString(documentSearchAttributes.documentName)));
 
-      if (null != documentSearchAttributes.createDateFrom
-            && null != documentSearchAttributes.createDateTo)
+      if (null != documentSearchAttributes.createDateFrom && null != documentSearchAttributes.createDateTo)
       {
-         filter.and(DocumentQuery.DATE_CREATED.between(
-               DateUtils.convertToGmt(documentSearchAttributes.createDateFrom),
+         filter.and(DocumentQuery.DATE_CREATED.between(DateUtils.convertToGmt(documentSearchAttributes.createDateFrom),
                DateUtils.convertToGmt(documentSearchAttributes.createDateTo)));
       }
 
-      if (null != documentSearchAttributes.modificationDateFrom
-            && null != documentSearchAttributes.modificationDateTo)
+      if (null != documentSearchAttributes.modificationDateFrom && null != documentSearchAttributes.modificationDateTo)
       {
          filter.and(DocumentQuery.DATE_LAST_MODIFIED.between(
                DateUtils.convertToGmt(documentSearchAttributes.modificationDateFrom),
@@ -259,8 +246,7 @@ public class DocumentSearchUtils
 
       if (StringUtils.isNotEmpty(documentSearchAttributes.author))
       {
-         filter.and(DocumentQuery.OWNER.like(QueryUtils
-               .getFormattedString(documentSearchAttributes.author)));
+         filter.and(DocumentQuery.OWNER.like(QueryUtils.getFormattedString(documentSearchAttributes.author)));
       }
 
       // Document types
@@ -278,8 +264,7 @@ public class DocumentSearchUtils
       List<String> selectedRepo = documentSearchAttributes.selectedRepository;
       if (selectedRepo.size() > 0 && !checkIfAllOptionSelect(selectedRepo))
       {
-         query.setPolicy(RepositoryPolicy.includeRepositories(CollectionUtils
-               .newArrayList(selectedRepo)));
+         query.setPolicy(RepositoryPolicy.includeRepositories(CollectionUtils.newArrayList(selectedRepo)));
       }
       else
       {
@@ -307,8 +292,7 @@ public class DocumentSearchUtils
 
       if (StringUtils.isNotEmpty(documentSearchAttributes.documentId))
       {
-         filter.and(DocumentQuery.ID.like(QueryUtils
-               .getFormattedString(documentSearchAttributes.documentId)));
+         filter.and(DocumentQuery.ID.like(QueryUtils.getFormattedString(documentSearchAttributes.documentId)));
       }
 
       FilterCriterion contentFilter = null, dataFilter = null;
@@ -323,8 +307,7 @@ public class DocumentSearchUtils
          if (documentSearchAttributes.searchData)
          {
             dataFilter = DocumentQuery.META_DATA.any().like(
-                  QueryUtils.getFormattedString(Text
-                        .escapeIllegalJcrChars(documentSearchAttributes.containingText)));
+                  QueryUtils.getFormattedString(Text.escapeIllegalJcrChars(documentSearchAttributes.containingText)));
          }
 
          if (null != contentFilter && null != dataFilter)
@@ -343,8 +326,7 @@ public class DocumentSearchUtils
          }
       }
 
-      DocumentManagementService documentManagementService = ServiceFactoryUtils
-            .getDocumentManagementService();
+      DocumentManagementService documentManagementService = ServiceFactoryUtils.getDocumentManagementService();
       Documents docs = documentManagementService.findDocuments(query);
 
       return docs;
@@ -375,12 +357,10 @@ public class DocumentSearchUtils
          Date startTime = new Date(documentSearchFilter.createDate.from);
          Date endTime = new Date(documentSearchFilter.createDate.to);
          if (startTime != null)
-            filter.and(DocumentQuery.DATE_CREATED.greaterOrEqual(DateUtils
-                  .convertToGmt(startTime)));
+            filter.and(DocumentQuery.DATE_CREATED.greaterOrEqual(DateUtils.convertToGmt(startTime)));
 
          if (endTime != null)
-            filter.and(DocumentQuery.DATE_CREATED.lessOrEqual(DateUtils
-                  .convertToGmt(endTime)));
+            filter.and(DocumentQuery.DATE_CREATED.lessOrEqual(DateUtils.convertToGmt(endTime)));
 
       }
       else if (null != documentSearchFilter.modificationDate)
@@ -388,19 +368,16 @@ public class DocumentSearchUtils
          Date startTime = new Date(documentSearchFilter.modificationDate.from);
          Date endTime = new Date(documentSearchFilter.modificationDate.to);
          if (startTime != null)
-            filter.and(DocumentQuery.DATE_LAST_MODIFIED.greaterOrEqual(DateUtils
-                  .convertToGmt(startTime)));
+            filter.and(DocumentQuery.DATE_LAST_MODIFIED.greaterOrEqual(DateUtils.convertToGmt(startTime)));
 
          if (endTime != null)
-            filter.and(DocumentQuery.DATE_LAST_MODIFIED.lessOrEqual(DateUtils
-                  .convertToGmt(endTime)));
+            filter.and(DocumentQuery.DATE_LAST_MODIFIED.lessOrEqual(DateUtils.convertToGmt(endTime)));
       }
       else if (null != documentSearchFilter.author)
       {
          if (StringUtils.isNotEmpty(documentSearchFilter.author.textSearch))
          {
-            filter.and(DocumentQuery.OWNER.like(QueryUtils
-                  .getFormattedString(documentSearchFilter.author.textSearch)));
+            filter.and(DocumentQuery.OWNER.like(QueryUtils.getFormattedString(documentSearchFilter.author.textSearch)));
          }
       }
       else if (null != documentSearchFilter.fileType)
@@ -416,8 +393,7 @@ public class DocumentSearchUtils
       {
          if (StringUtils.isNotEmpty(documentSearchFilter.documentId.textSearch))
          {
-            filter.and(DocumentQuery.ID.like(QueryUtils
-                  .getFormattedString(documentSearchFilter.documentId.textSearch)));
+            filter.and(DocumentQuery.ID.like(QueryUtils.getFormattedString(documentSearchFilter.documentId.textSearch)));
          }
       }
       else if (null != documentSearchFilter.documentType)
@@ -425,8 +401,7 @@ public class DocumentSearchUtils
 
          List<String> filterByValues = documentSearchFilter.documentType.like;
 
-         if (!CollectionUtils.isEmpty(filterByValues)
-               && !checkIfAllOptionSelect(filterByValues))
+         if (!CollectionUtils.isEmpty(filterByValues) && !checkIfAllOptionSelect(filterByValues))
          {
             FilterOrTerm filterOrTerm = filter.addOrTerm();
             for (String object : filterByValues)
@@ -450,8 +425,7 @@ public class DocumentSearchUtils
 
       query.where(new DocumentFilter(documentId, null));
 
-      ProcessInstances processInstances = ServiceFactoryUtils.getQueryService()
-            .getAllProcessInstances(query);
+      ProcessInstances processInstances = ServiceFactoryUtils.getQueryService().getAllProcessInstances(query);
 
       List<ProcessInstanceDTO> processList = new ArrayList<ProcessInstanceDTO>();
       if (CollectionUtils.isNotEmpty(processInstances))
@@ -460,8 +434,7 @@ public class DocumentSearchUtils
          {
 
             ProcessInstanceDTO processInstanceDTO = new ProcessInstanceDTO();
-            processInstanceDTO.processName = ProcessInstanceUtils
-                  .getProcessLabel(processInstance);
+            processInstanceDTO.processName = ProcessInstanceUtils.getProcessLabel(processInstance);
             processInstanceDTO.oid = processInstance.getOID();
             processList.add(processInstanceDTO);
          }
@@ -513,8 +486,7 @@ public class DocumentSearchUtils
     * @return
     * @throws ResourceNotFoundException
     */
-   public List<DocumentVersionDTO> getDocumentVersions(String id)
-         throws ResourceNotFoundException
+   public List<DocumentVersionDTO> getDocumentVersions(String id) throws ResourceNotFoundException
    {
       Document document = DocumentMgmtUtility.getDocument(id);
       JCRVersionTracker vt = new JCRVersionTracker(document);
@@ -529,8 +501,7 @@ public class DocumentSearchUtils
          for (Iterator<Integer> iterator = sortedVersions.iterator(); iterator.hasNext();)
          {
             version = (Integer) iterator.next();
-            docVersion = new DocumentVersionDTO(version,
-                  (Document) docVersions.get(version));
+            docVersion = new DocumentVersionDTO(version, (Document) docVersions.get(version));
 
             if (documentName.equals(docVersion.documentName))
             {
@@ -581,15 +552,12 @@ public class DocumentSearchUtils
             if (null != activityOid && activityOid instanceof String)
             {
                long activityOidLong = Long.parseLong(((String) activityOid).trim());
-               ActivityInstance actInstance = ActivityInstanceUtils
-                     .getActivityInstance(activityOidLong);
+               ActivityInstance actInstance = ActivityInstanceUtils.getActivityInstance(activityOidLong);
                ProcessInstance pi = actInstance.getProcessInstance();
-               StringBuffer processLabel = new StringBuffer(
-                     I18nUtils.getProcessName(ProcessDefinitionUtils
-                           .getProcessDefinition(pi.getProcessID())));
+               StringBuffer processLabel = new StringBuffer(I18nUtils.getProcessName(ProcessDefinitionUtils
+                     .getProcessDefinition(pi.getProcessID())));
                processLabel.append(" (#").append(pi.getOID()).append(")");
-               allProcessDefns.add(new SelectItemDTO(String.valueOf(pi.getOID()),
-                     processLabel.toString()));
+               allProcessDefns.add(new SelectItemDTO(String.valueOf(pi.getOID()), processLabel.toString()));
             }
          }
       }
@@ -603,8 +571,7 @@ public class DocumentSearchUtils
     * @return
     * @throws ResourceNotFoundException
     */
-   public InfoDTO attachDocuments(Long processOid, String documentId)
-         throws ResourceNotFoundException
+   public InfoDTO attachDocuments(Long processOid, String documentId) throws ResourceNotFoundException
    {
       InfoDTO infoDTO = null;
       ProcessInstance pi = null;
@@ -614,8 +581,8 @@ public class DocumentSearchUtils
       }
       catch (Exception e)
       { // Todo for Errors
-         return new InfoDTO(MessageType.ERROR, MessagesViewsCommonBean.getInstance()
-               .getString("views.common.process.invalidProcess.message"));
+         return new InfoDTO(MessageType.ERROR, MessagesViewsCommonBean.getInstance().getString(
+               "views.common.process.invalidProcess.message"));
 
       }
 
@@ -640,27 +607,24 @@ public class DocumentSearchUtils
             {
                if (DocumentMgmtUtility.getDuplicateDocuments(pi, documentList).size() > 0)
                {
-                  return new InfoDTO(MessageType.ERROR, MessagesViewsCommonBean
-                        .getInstance().getString(
-                              "views.common.process.duplicateDocAttached.message"));
+                  return new InfoDTO(MessageType.ERROR, MessagesViewsCommonBean.getInstance().getString(
+                        "views.common.process.duplicateDocAttached.message"));
                }
                DocumentMgmtUtility.addDocumentsToProcessInstance(pi, documentList);
-               infoDTO = new InfoDTO(MessageType.INFO, MessagesViewsCommonBean
-                     .getInstance().getString(
-                           "views.common.process.documentAttachedSuccess.message"));
+               infoDTO = new InfoDTO(MessageType.INFO, MessagesViewsCommonBean.getInstance().getString(
+                     "views.common.process.documentAttachedSuccess.message"));
             }
             catch (Exception e)
             {
-               return new InfoDTO(MessageType.ERROR, MessagesViewsCommonBean
-                     .getInstance().getString(
-                           "views.common.process.documentAttachedFailure.message"));
+               return new InfoDTO(MessageType.ERROR, MessagesViewsCommonBean.getInstance().getString(
+                     "views.common.process.documentAttachedFailure.message"));
             }
          }
       }
       else
       {
-         infoDTO = new InfoDTO(MessageType.ERROR, MessagesViewsCommonBean.getInstance()
-               .getString("views.common.process.invalidProcess.message"));
+         infoDTO = new InfoDTO(MessageType.ERROR, MessagesViewsCommonBean.getInstance().getString(
+               "views.common.process.invalidProcess.message"));
       }
 
       return infoDTO;
