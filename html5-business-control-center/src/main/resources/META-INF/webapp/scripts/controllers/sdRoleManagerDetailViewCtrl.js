@@ -28,7 +28,8 @@
 		var trace = sdLoggerService.getLogger('bcc-ui.sdRoleManagerDetailViewCtrl');
 
 		this.columnSelector = 'admin';
-		this.exportFileName = new Date();
+		this.exportFileNameForAssignedUsers = "AssignedUsers";
+		this.exportFileNameForAssignableUsers = "AssignableUsers";
 		this.assignedUsersTable = null;
 		this.assignableUsersTable = null;
 		this.activityTable = null;

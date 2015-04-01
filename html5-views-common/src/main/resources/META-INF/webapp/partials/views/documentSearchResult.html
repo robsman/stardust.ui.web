@@ -18,7 +18,7 @@
 		sda-column-selector="{{docSearchViewCtrl.columnSelector}}"
 		sda-sortable="true"
 		sda-sort-by="{name : 'documentName', dir : 'desc'}" sda-exports="true"
-		sda-exports-file-name="export-{{docSearchViewCtrl.exportFileName}}">
+		sda-exports-file-name="{{docSearchViewCtrl.exportFileNameForDocumentSearchResult}}">
 		<thead
 			sda-i18n-scope="views-common-messages.views-documentSearchView-documentSearchTable-column">
 			<tr>
@@ -168,7 +168,6 @@
 		sda-title="{{i18n('views-common-messages.views-documentView-documentVersion-versionHistory')+ ' ' + docSearchViewCtrl.documentVersions.documentName}}"
 		sda-scope="this"
 		sda-template="plugins/html5-views-common/partials/views/documentVersion.html"
-		sda-on-close="docSearchViewCtrl.onCloseDocumentVersions(res)"
 		sda-width="700px" sda-height="350px" >
 	</div>
 	<div sd-dialog="docSearchViewCtrl.processDialog" sda-modal="true"

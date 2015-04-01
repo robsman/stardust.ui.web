@@ -1,14 +1,17 @@
 <div class="res-availability-wrapper">
-     <div><label class="form-lable"
-										style="display: inline-block; margin-bottom: 5px; padding-left: 1px; vertical-align: text-top;">{{i18n('business-control-center-messages.views-common-showLoggedInUser-label')}}</label>
-     <input type="checkbox"
-										ng-model="ctrl.showLoggedInAssignedUsers"
-										ng-change="ctrl.refreshLoggedInAssignedUsers()"
-										style="vertical-align: middle" /> </div>
-    <div class="view-panel-toolbar tbl-title" style="color: #708090;font-size:11px">{{i18n('business-control-center-messages.views-common-assignedUser-title')}}</div>
-    <div sda-toolbar>
+	<div>
+		<label class="form-lable"
+			style="display: inline-block; margin-bottom: 5px; padding-left: 1px; vertical-align: text-top;">{{i18n('business-control-center-messages.views-common-showLoggedInUser-label')}}</label>
+		<input type="checkbox" ng-model="ctrl.showLoggedInAssignedUsers"
+			ng-change="ctrl.refreshLoggedInAssignedUsers()"
+			style="vertical-align: middle" />
+	</div>
+	<div class="view-panel-toolbar tbl-title"
+		style="color: #708090; font-size: 11px">{{i18n('business-control-center-messages.views-common-assignedUser-title')}}</div>
+	<div sda-toolbar>
 		<div class="tbl-toolbar-section">
-			<button ng-disabled="!(ctrl.rowSelectionAssignedUsersTable.length > 0 && ctrl.roleManagerDetails.roleModifiable)"
+			<button
+				ng-disabled="!(ctrl.rowSelectionAssignedUsersTable.length > 0 && ctrl.roleManagerDetails.roleModifiable)"
 				ng-click="bpmCommon.stopEvent($event); ctrl.removeUserFromRole(ctrl.rowSelectionAssignedUsersTable);"
 				title="{{i18n('business-control-center-messages.views-common-button-removeUserFromRole')}}"
 				class="button-link tbl-toolbar-item tbl-tool-link">
@@ -17,28 +20,27 @@
 		</div>
 	</div>
 	<table sd-data-table="ctrl.assignedUsersTable"
-		sd-data="ctrl.getAssignedUsers()" sda-mode="local" sda-ready="ctrl.table1"
-		sda-selectable="multiple"
+		sd-data="ctrl.getAssignedUsers()" sda-mode="local"
+		sda-ready="ctrl.table1" sda-selectable="multiple"
 		sda-selection="ctrl.rowSelectionAssignedUsersTable"
-		sda-column-selector="{{ctrl.columnSelector}}"
-		sda-sortable="true"
+		sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
 		sda-sort-by="{name : 'userName', dir : 'desc'}" sda-exports="true"
-		sda-exports-file-name="export-{{ctrl.exportFileName}}">
+		sda-exports-file-name="{{ctrl.exportFileNameForAssignedUsers}}">
 		<thead
 			sda-i18n-scope="business-control-center-messages.views-resourceAvailabilityView-accountTable-column">
 			<tr>
-				<th sda-name="userName"  sda-label="{{i18n('business-control-center-messages.views-common-column-name')}}" sda-sortable="true">
-				</th>
-				<th sda-name="roleCount" sda-label-key="rolesCount" sda-sortable="true">					
-				</th>
-				<th sda-name="directItemCount" sda-label-key="directItems" sda-sortable="true">					
-				</th>
-				<th sda-name="inDirectItemCount" sda-label-key="indirectItems" sda-sortable="true">
-				</th>
-				<th sda-name="totalItemCount" sda-label-key="totalItemsCount" sda-sortable="true">
-				</th>
-				<th sda-name="loggedIn" sda-sortable="true">
-				</th>
+				<th sda-name="userName"
+					sda-label="{{i18n('business-control-center-messages.views-common-column-name')}}"
+					sda-sortable="true"></th>
+				<th sda-name="roleCount" sda-label-key="rolesCount"
+					sda-sortable="true"></th>
+				<th sda-name="directItemCount" sda-label-key="directItems"
+					sda-sortable="true"></th>
+				<th sda-name="inDirectItemCount" sda-label-key="indirectItems"
+					sda-sortable="true"></th>
+				<th sda-name="totalItemCount" sda-label-key="totalItemsCount"
+					sda-sortable="true"></th>
+				<th sda-name="loggedIn" sda-sortable="true"></th>
 		</thead>
 		<tbody>
 			<tr>
@@ -51,5 +53,4 @@
 			</tr>
 		</tbody>
 	</table>
-	</div>
-	
+</div>

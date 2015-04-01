@@ -24,18 +24,10 @@
 			<tr>
 				<td><a href="#" ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openDocumentView(rowData.revisionId);docSearchViewCtrl.documentHistory.close();">{{rowData.versionNo}}</a></td>
 				<td></td>
-				<td><a href="#" ng-click="docSearchViewCtrl.openUserDetailsFromVersionHistory(rowData.documentOwner)">{{rowData.author}}</a></td>
+				<td><a href="#" ng-click="docSearchViewCtrl.openUserDetails(rowData.documentOwner)">{{rowData.author}}</a></td>
 				<td></td>
 				<td></td>
 			</tr>
 		</tbody>
 	</table>
-	<div sd-dialog sda-modal="false"
-		 sda-show="docSearchViewCtrl.showUserDetailsFromDocHistory"
-		 sda-type="custom"
-		 sda-title="{{i18n('views-common-messages.views-userDetails-title')}}"
-		 sda-scope="this"
-		 sda-template="plugins/html5-views-common/partials/views/userDetails.html"
-		 sda-width="400px">
-	</div>
 </div>

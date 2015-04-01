@@ -31,7 +31,7 @@
 		this.docSrchRsltTable = null;
 		this.columnSelector = 'admin';
 		this.docVersionsdataTable = null;
-		this.exportFileName = new Date();
+		this.exportFileNameForDocumentSearchResult = "DocumentSearchResult";
 		this.rowSelection = null;
 		this.showDocumentSearchCriteria = true;
 
@@ -80,8 +80,6 @@
 					containingText : ""
 				}
 			};
-
-			self.partialAuthor = "";
 		}
 
 		/**
@@ -480,21 +478,6 @@
 		DocumentSearchViewCtrl.prototype.onCloseDocumentVersions = function(res) {
 			var self = this;
 			self.documentVersions = {};
-		};
-
-		/**
-		 * 
-		 */
-		DocumentSearchViewCtrl.prototype.openUserDetailsFromVersionHistory = function(documentOwner) {
-			var self = this;
-			sdDocumentSearchService.getUserDetails(documentOwner).then(function(data) {
-				self.userDetails = data;
-				self.userDetails.userImageURI = sdUtilService.getRootUrl() + data.userImageURI;
-				self.showUserDetailsFromDocHistory = true;
-			}, function(error) {
-				trace.log(error);
-			});
-
 		};
 
 		/**

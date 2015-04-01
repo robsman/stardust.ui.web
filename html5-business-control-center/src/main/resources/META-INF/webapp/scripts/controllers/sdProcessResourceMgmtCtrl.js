@@ -30,7 +30,8 @@
 		this.rolesTable = null;
 		this.usersTable = null;
 		this.columnSelector = 'admin';
-		this.exportFileName = new Date();
+		this.exportFileNameForRolesAndOrg = "RolesAndOrgnizations"
+		this.exportFileNameForUsers = "Users"
 		this.rowSelectionForRoles = null;
 		this.rowSelectionForUsers = null;
 		this.showRolesTable = true;
