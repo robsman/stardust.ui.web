@@ -625,14 +625,18 @@ public class EventMarshallingUtils
 
    public static EventActionType createExcludeUserAction(ActivityType activity, JsonObject euJson, EObjectUUIDMapper uuidMapper)
    {
-      String dataFullID =  euJson.get(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA).getAsString();
+      String dataFullID = "";
+      if (GsonUtils.hasNotJsonNull(euJson, ModelerConstants.EU_EXCLUDE_PERFORMER_DATA))
+      {
+         dataFullID = euJson.get(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA).getAsString();
+      }
+
       String actionName = null;
 
       if (GsonUtils.hasNotJsonNull(euJson, ModelerConstants.NAME_PROPERTY))
       {
          actionName = euJson.get(ModelerConstants.NAME_PROPERTY).getAsString();
       }
-
 
       String dataID = dataFullID;
 
