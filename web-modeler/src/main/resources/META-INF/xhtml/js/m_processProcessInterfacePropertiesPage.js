@@ -57,8 +57,6 @@ define(
 					this.noInterfacePanel = this.mapInputId("noInterfacePanel");
 					this.providesProcessInterfacePanel = this
 							.mapInputId("providesProcessInterfacePanel");
-					this.implementsProcessInterfacePanel = this
-							.mapInputId("implementsProcessInterfacePanel");
 					this.webServiceInterfaceCheckboxInput = this
 							.mapInputId("webServiceInterfaceCheckboxInput");
 					this.restInterfaceCheckboxInput = this
@@ -270,8 +268,6 @@ define(
 					this.processInterfaceTypeSelectInput.val(m_constants.NO_PROCESS_INTERFACE_KEY);
 					m_dialog.makeVisible(this.noInterfacePanel);
 					m_dialog.makeInvisible(this.providesProcessInterfacePanel);
-					m_dialog
-							.makeInvisible(this.implementsProcessInterfacePanel);
 				};
 
 				/**
@@ -282,8 +278,11 @@ define(
 							.val(m_constants.PROVIDES_PROCESS_INTERFACE_KEY);
 					m_dialog.makeInvisible(this.noInterfacePanel);
 					m_dialog.makeVisible(this.providesProcessInterfacePanel);
-					m_dialog
-							.makeInvisible(this.implementsProcessInterfacePanel);
+
+					m_dialog.makeVisible(m_utils.jQuerySelect("label[for='webServiceInterfaceCheckboxInput']"));
+          m_dialog.makeVisible(this.webServiceInterfaceCheckboxInput);
+          m_dialog.makeVisible(m_utils.jQuerySelect("label[for='restInterfaceCheckboxInput']"));
+          m_dialog.makeVisible(this.restInterfaceCheckboxInput);
 
 					if (this.getModelElement().formalParameters == null) {
 						this.getModelElement().formalParameters = [];
@@ -302,8 +301,12 @@ define(
 					this.processInterfaceTypeSelectInput
 							.val(m_constants.IMPLEMENTS_PROCESS_INTERFACE_KEY);
 					m_dialog.makeInvisible(this.noInterfacePanel);
-					m_dialog.makeInvisible(this.providesProcessInterfacePanel);
-					m_dialog.makeVisible(this.implementsProcessInterfacePanel);
+					m_dialog.makeVisible(this.providesProcessInterfacePanel);
+					
+					m_dialog.makeInvisible(m_utils.jQuerySelect("label[for='webServiceInterfaceCheckboxInput']"));
+          m_dialog.makeInvisible(this.webServiceInterfaceCheckboxInput);
+          m_dialog.makeInvisible(m_utils.jQuerySelect("label[for='restInterfaceCheckboxInput']"));
+          m_dialog.makeInvisible(this.restInterfaceCheckboxInput);
 				};
 
 				/**
