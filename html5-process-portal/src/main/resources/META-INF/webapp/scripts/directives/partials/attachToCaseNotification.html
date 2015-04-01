@@ -1,0 +1,33 @@
+<div style="text-align:left;" width="100%" class="section">
+
+	<div>
+		<span style="padding-right: 11px;">
+			<i ng-if="!attachToCaseController.notificationMessage.success" style="color: red;" class="glyphicon glyphicon-remove-sign"></i>
+			<i ng-if="attachToCaseController.notificationMessage.success" class="glyphicon glyphicon-exclamation-sign"></i>
+		</span>
+		<span>
+			{{attachToCaseController.notificationMessage.message}}
+		</span>
+	</div>
+
+	<span class="clearing"></span>
+	
+	<div ng-if="attachToCaseController.notificationMessage.success == true">
+		{{i18n('views-common-messages.views-attachToCase-showCase-message')}}
+	</div>
+	
+	<br>
+	<br>
+</div>
+
+<div class="confirmation-buttonpane">
+	<div class="button-pane cf" >
+		<div class="right" ng-if="!attachToCaseController.attachToCase.attachToCaseCompleted">
+		    <button class="button" ng-click="attachToCaseController.closeNotification()">{{i18n('views-common-messages.common-close')}}</button>
+		</div>
+		<div class="right" ng-if="attachToCaseController.attachToCase.attachToCaseCompleted">
+		  	<button class="button" ng-click="attachToCaseController.okNotification()">{{i18n('views-common-messages.common-yes')}}</button>
+		    <button class="button" ng-click="attachToCaseController.closeNotification()">{{i18n('views-common-messages.common-no')}}</button>
+		</div>
+    </div>
+</div>

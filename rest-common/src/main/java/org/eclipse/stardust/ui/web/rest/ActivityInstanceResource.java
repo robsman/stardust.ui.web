@@ -750,11 +750,13 @@ public class ActivityInstanceResource
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/getRelatedProcesses")
-    public Response getRelatedProcesses(String processData, @QueryParam("matchAny") String matchAnyStr, @QueryParam("case") String searchCasesStr)
+    public Response getRelatedProcesses(String processData, @QueryParam("matchAny") String matchAnyStr, @QueryParam("case") String caseStr)
     {
     	List<Long> processInstOIDs = JsonDTO.getAsList(processData, Long.class);
     	boolean matchAny = "true".equals(matchAnyStr);
-    	boolean searchCases = "true".equals(searchCasesStr);
+    	boolean isCase = "true".equals(caseStr);
+    	
+    	boolean searchCases = !isCase;
     	
     	List<ProcessInstance> sourceProcessInstances = new ArrayList<ProcessInstance>();
     	for (Long processInstOID : processInstOIDs) {
@@ -846,10 +848,20 @@ public class ActivityInstanceResource
 		
 		dto.descriptorValues = ((ProcessInstanceDetails) pi).getDescriptors();
 	    dto.startTime = pi.getStartTime();
+	    
+	    dto.caseInstance = pi.isCaseProcessInstance();
+      if (pi.isCaseProcessInstance())
+      {
+         dto.caseOwner = ProcessInstanceUtils.getCaseOwnerName(pi);
+      }
+      else
+      {
+         dto.caseOwner = null;
+      }
 		
 		return dto;
 	}
-
+	
 	/**
 	 * 
 	 * @param processInstanceOID

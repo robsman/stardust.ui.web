@@ -124,13 +124,61 @@
 		 */
 		ProcessInstanceService.prototype.recoverProcesses = function(processes) {
 			var restUrl = REST_BASE_URL + "recover";
-			var processList = $resource(restUrl, {}, {
+			var res = $resource(restUrl, {}, {
 				recover : {
 					method : 'POST'
 				}
 			});
 
-			return processList.recover({}, processes).$promise;
+			return res.recover({}, processes).$promise;
+		};
+		
+		/*
+		 *
+		 *	{
+		 *	  sourceProcessOIDs: [oid],
+		 *	  targetProcessOID: oid,
+		 *	}
+		 * 
+		 */
+		ProcessInstanceService.prototype.attachToCase = function(payload) {
+			console.log("Attaching to case for:");
+			console.log(payload);
+			
+			var restUrl = REST_BASE_URL + 'attachToCase';
+			
+			var res = $resource(restUrl, {}, {
+				attachToCase : {
+					method : 'POST'
+				}
+			});
+
+			return res.attachToCase({}, payload).$promise;
+		};
+		
+		/*
+		 *
+		 *	{
+		 *	  sourceProcessOIDs: [oid],
+		 *	  caseName: String,
+		 *	  description: String,
+		 *    note: String
+		 *	}
+		 * 
+		 */
+		ProcessInstanceService.prototype.createCase = function(payload) {
+			console.log("Creating case for:");
+			console.log(payload);
+			
+			var restUrl = REST_BASE_URL + 'createCase';
+			
+			var res = $resource(restUrl, {}, {
+				createCase : {
+					method : 'POST'
+				}
+			});
+
+			return res.createCase({}, payload).$promise;
 		};
 	};
 })();

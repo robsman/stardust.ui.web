@@ -68,6 +68,7 @@
 				//Abort Data
 				self.showAbortProcessDialog = false;
 				self.processesToAbort = [];
+				self.processesToJoin = [];
 
 				self.availableStates = [];
 
@@ -451,6 +452,113 @@
 				self.refresh();
 				sdViewUtilService.syncLaunchPanels();
 				self.processesToAbort = [];
+			};
+			
+			/*
+			 *
+			 */
+			self.joinCompleted = function(result) {
+				self.refresh();
+				sdViewUtilService.syncLaunchPanels();
+				if (angular.isDefined(result)) {
+					sdViewUtilService.openView('processDefinitionView', true);
+				}
+			};
+			
+			/*
+			 *
+			 */
+			self.openJoinDialog = function(value) {
+				self.processesToJoin = [];
+
+				if (Array.isArray(value)) {
+					var selectedItems = value;
+					if (selectedItems.length < 1) {
+						trace.log("No Rows selected");
+						return;
+					}
+
+					self.processesToJoin = selectedItems;
+				} else {
+					var item = value;
+					self.processesToJoin.push(item);
+				}
+
+				self.showJoinProcessDialog = true;
+			}
+			
+			/*
+			 *
+			 */
+			self.openAttachToCaseDialog = function(value) {
+				self.processesToAttachCase = [];
+
+				if (Array.isArray(value)) {
+					var selectedItems = value;
+					if (selectedItems.length < 1) {
+						trace.log("No Rows selected");
+						return;
+					}
+
+					self.processesToAttachCase = selectedItems;
+				} else {
+					var item = value;
+					self.processesToAttachCase.push(item);
+				}
+
+				self.showAttachToCaseDialog = true;
+			}
+			
+			/*
+			 *
+			 */
+			self.attachToCaseCompleted = function(success, result) {
+				if (success) {
+					self.refresh();
+					sdViewUtilService.syncLaunchPanels();
+					if (angular.isDefined(result)) {
+						sdViewUtilService.openView('caseDetailsView', 'processInstanceOID=' + result, {
+							'oid' : '' + result,
+							'processInstanceOID' : '' + result
+						}, true);
+					}
+				}
+			};
+			
+			/*
+			 *
+			 */
+			self.openCreateCaseDialog = function(value) {
+				self.processesToCreateCase = [];
+
+				if (Array.isArray(value)) {
+					var selectedItems = value;
+					if (selectedItems.length < 1) {
+						trace.log("No Rows selected");
+						return;
+					}
+
+					self.processesToCreateCase = selectedItems;
+				} else {
+					var item = value;
+					self.processesToCreateCase.push(item);
+				}
+
+				self.showCreateCaseDialog = true;
+			}
+			
+			/*
+			 *
+			 */
+			self.createCaseCompleted = function(caseOid, openCaseDetail) {
+				self.refresh();
+				sdViewUtilService.syncLaunchPanels();
+				if (openCaseDetail && angular.isDefined(caseOid)) {
+					sdViewUtilService.openView('caseDetailsView', 'processInstanceOID=' + caseOid, {
+						'oid' : '' + caseOid,
+						'processInstanceOID' : '' + caseOid
+					}, true);
+				}
 			};
 			
 			self.onAbortPopoverConfirm = function(type, result) {

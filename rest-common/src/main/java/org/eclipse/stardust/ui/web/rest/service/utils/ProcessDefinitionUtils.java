@@ -17,16 +17,20 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
-import org.springframework.stereotype.Component;
-
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Anoop.Nair
@@ -83,6 +87,41 @@ public class ProcessDefinitionUtils
       }
 
       return supportsProcessAttachments;
+   }
+   
+   /**
+    * @param processId
+    * @return
+    */
+   public static ProcessDefinition getProcessDefinition(String processId)
+   {
+      ProcessDefinition processDefinition = null;
+
+      List<DeployedModel> models = CollectionUtils.newList(ModelUtils.getAllModelsActiveFirst());
+      for (Model model : models)
+      {
+         processDefinition = model.getProcessDefinition(processId);
+         if (processDefinition != null)
+         {
+            break;
+         }
+      }
+
+      return processDefinition;
+   }
+
+   /**
+    * returns process definition
+    * 
+    * @param modelOid
+    * @param processId
+    * @return
+    */
+   public static ProcessDefinition getProcessDefinition(long modelOid, String processId)
+   {
+      ModelCache modelCache = ModelCache.findModelCache();
+      Model model = modelCache.getModel(modelOid);
+      return model != null ? model.getProcessDefinition(processId) : null;
    }
 
    /**

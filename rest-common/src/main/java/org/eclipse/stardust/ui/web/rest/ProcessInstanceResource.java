@@ -36,8 +36,8 @@ import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.service.ProcessInstanceService;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessTableFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessTableFilterDTO.DescriptorFilterDTO;
@@ -262,6 +262,26 @@ public class ProcessInstanceResource
    public Response recoverProcesses(String postedData)
    {
       return Response.ok(getProcessInstanceService().recoverProcesses(postedData), MediaType.APPLICATION_JSON).build();
+   }
+   
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/attachToCase")
+   public Response attachToCase(String request)
+   {
+      return Response
+            .ok(processInstanceService.attachToCase(request), MediaType.APPLICATION_JSON).build();
+   }
+   
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/createCase")
+   public Response createCase(String request)
+   {
+      return Response
+            .ok(processInstanceService.createCase(request), MediaType.APPLICATION_JSON).build();
    }
    
    @POST

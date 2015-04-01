@@ -22,7 +22,10 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.dto.ContextKind;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
+import org.eclipse.stardust.engine.api.dto.ProcessInstanceAttributes;
+import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
@@ -31,6 +34,7 @@ import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.ProcessDefinitionFilter;
+import org.eclipse.stardust.engine.api.query.ProcessInstanceFilter;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ProcessInstances;
 import org.eclipse.stardust.engine.api.query.Query;
@@ -51,6 +55,7 @@ import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessTableFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessTableFilterDTO.DescriptorFilterDTO;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
@@ -59,7 +64,11 @@ import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.GenericDescriptorFilterModel;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.NumberRange;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
+import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessContextCacheManager;
 import org.springframework.stereotype.Component;
 
 /**
@@ -118,6 +127,255 @@ public class ProcessInstanceUtils
       }
 
       return pi;
+   }
+   
+   /**
+    * @param instance
+    * @return localized process name with OID appended
+    */
+   public String getProcessLabel(ProcessInstance instance)
+   {
+      if (null != instance)
+      {
+         StringBuilder processLabel = new StringBuilder(I18nUtils.getProcessName(ProcessDefinitionUtils
+               .getProcessDefinition(instance.getModelOID(), instance.getProcessID())));
+         processLabel.append(" (").append("#").append(instance.getOID()).append(")");
+         return processLabel.toString();
+      }
+      return "";
+   }
+   
+   /**
+    * 
+    * @param processInstance
+    * @return
+    */
+   public boolean isRootProcessInstance(ProcessInstance processInstance)
+   {
+      return processInstance.getRootProcessInstanceOID() == processInstance.getOID() ? true : false;
+   }
+   
+   /**
+    * 
+    * @param processInstance
+    * @return
+    */
+   public boolean isActiveProcessInstance(ProcessInstance processInstance)
+   {
+      if (ProcessInstanceState.ACTIVE != processInstance.getState().getValue())
+      {
+         return false;
+      }
+      return true;
+   }
+   
+   private boolean hasManageCasePermission(List<ProcessInstance> sourceProcessInstances)
+   {
+      for (ProcessInstance pi : sourceProcessInstances)
+      {
+         if(!AuthorizationUtils.hasManageCasePermission(pi))
+         {
+           return false; 
+         }
+      }
+      return true;
+   }
+   
+   /**
+    * 
+    * @param processInstances
+    * @return
+    */
+   public boolean isRootProcessInstances(List<ProcessInstance> processInstances)
+   {
+      for (ProcessInstance processInstance : processInstances)
+      {
+         if (processInstance.getRootProcessInstanceOID() != processInstance.getOID())
+         {
+           return false;
+         }
+      }
+      return true;
+   }
+   
+   /**
+    * @param oids
+    * @return
+    */
+   public List<ProcessInstance> getProcessInstances(List<Long> oids)
+   {
+      return getProcessInstances(oids, false, false);
+   }
+   
+   /**
+    * 
+    * @param oids
+    * @param forceReload
+    * @param withDescriptors
+    * @return list of ProcessInstance
+    */
+   public List<ProcessInstance> getProcessInstances(List<Long> oids, boolean forceReload, boolean withDescriptors)
+   {      
+      
+      List<ProcessInstance> processInstances = ProcessContextCacheManager.getInstance().getProcessInstances(oids,
+            forceReload, withDescriptors);
+
+      if (null == processInstances)
+      {
+         processInstances = CollectionUtils.newList();
+         if (!oids.isEmpty())
+         {
+            ProcessInstanceQuery piQuery = ProcessInstanceQuery.findAll();
+            FilterOrTerm orTerm =  piQuery.getFilter().addOrTerm();
+   
+            if (withDescriptors)
+            {
+               piQuery.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+            }
+            
+            // Prepare Data to fetch
+            for (Long oid : oids)
+            {
+               orTerm.add(new ProcessInstanceFilter(oid,false));
+            }
+
+            // Fetch the Data from Engine
+
+            ProcessInstances pis = serviceFactoryUtils.getQueryService().getAllProcessInstances(piQuery);
+            if (null != pis)
+            {
+               for (ProcessInstance pi : pis)
+               {
+                  processInstances.add(pi);
+               }
+            }
+         }
+      }
+
+      return processInstances;
+   }
+   
+   /**
+    * @param processInstance
+    * @return
+    */
+   public boolean isAbortable(ProcessInstance processInstance)
+   {
+      boolean abortable = isAbortableState(processInstance) && AuthorizationUtils.hasAbortPermission(processInstance);
+      return abortable;
+   }
+   
+   /**
+    * @param processInstance
+    * @return
+    */
+   public boolean isAbortableState(ProcessInstance processInstance)
+   {
+      boolean abortable = processInstance == null ? false : !ProcessInstanceState.Aborted.equals(processInstance
+            .getState()) && !ProcessInstanceState.Completed.equals(processInstance.getState());
+      return abortable;
+   }
+   
+   /**
+    * 
+    * @param processInstances
+    * @return
+    */
+   public static boolean isCaseWithNoncaseProcessInstances(List<ProcessInstance> processInstances)
+   {
+      if (processInstances.size() > 1)
+      {
+         boolean containCase = false;
+         boolean containNonCase = false;
+         for (ProcessInstance processInstance : processInstances)
+         {
+            if (processInstance.isCaseProcessInstance())
+            {
+               containCase = true;
+            }
+            else
+            {
+               containNonCase = true;
+            }
+            if (containCase && containNonCase)
+            {
+               return true;
+            }
+
+         }
+         return false;
+      }
+      return false;
+
+   }
+   
+   /**
+    * 
+    * @param processInstances
+    * @return
+    */
+   public static boolean isCaseProcessInstances(List<ProcessInstance> processInstances)
+   {
+      for (ProcessInstance processInstance : processInstances)
+      {
+         if (!processInstance.isCaseProcessInstance())
+         {
+            return false;
+         }
+      }
+      return true;
+   }
+   
+   /**
+    * 
+    * @param processInstances
+    * @return
+    */
+   public static boolean isActiveProcessInstances(List<ProcessInstance> processInstances)
+   {
+      for (ProcessInstance processInstance : processInstances)
+      {
+         if (ProcessInstanceState.ACTIVE != processInstance.getState().getValue())
+         {
+            return false;
+         }
+      }
+      return true;
+   }
+
+   /**
+    * 
+    * @param processInstances
+    * @return
+    */
+   public static boolean isTerminatedProcessInstances(List<ProcessInstance> processInstances)
+   {
+      for (ProcessInstance processInstance : processInstances)
+      {
+         if (ProcessInstanceState.COMPLETED == processInstance.getState().getValue()
+               || ProcessInstanceState.ABORTED == processInstance.getState().getValue())
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+   
+   /**
+    * 
+    * @param processInstances
+    * @return
+    */
+   public boolean isNonCaseProcessInstances(List<ProcessInstance> processInstances)
+   {
+      for (ProcessInstance processInstance : processInstances)
+      {
+         if (processInstance.isCaseProcessInstance())
+         {
+            return false;
+         }
+      }
+      return true;
    }
 
    /**
@@ -212,13 +470,296 @@ public class ProcessInstanceUtils
       }
    }
    
+   public NotificationMessageDTO attachToCase(List<Long> sourceProcessInstanceOids, Long targetOid)
+   {
+      MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+      
+      if (null == sourceProcessInstanceOids || CollectionUtils.isEmpty(sourceProcessInstanceOids))
+      {
+         NotificationMessageDTO exception = new NotificationMessageDTO();
+         exception.success = false;
+         exception.message = propsBean.getString("views.attachToCase.selectProcessToAttachToCase");
+         
+         return exception;
+      }
+      
+      boolean caseScope = false;
+      if (sourceProcessInstanceOids.size() == 1) {
+         ProcessInstance processInstance = getProcessInstance(sourceProcessInstanceOids.get(0));
+         caseScope = processInstance.isCaseProcessInstance();
+      }
+      
+      // Validation cases
+      NotificationMessageDTO validationMessage = validateAttachToCase(caseScope, sourceProcessInstanceOids, targetOid);
+      if (validationMessage != null) {
+         return validationMessage;
+      }
+      
+      long[] members;
+      Long caseOID = null;
+      if (!caseScope)
+      {
+         caseOID = targetOid;
+         members = new long[sourceProcessInstanceOids.size()];
+         for (int i = 0; i < members.length; i++)
+         {
+            members[i] = sourceProcessInstanceOids.get(i);
+         }
+      }
+      else
+      {
+         caseOID = sourceProcessInstanceOids.get(0);
+         members = new long[] {targetOid};
+      }
+      
+      ProcessInstance caseInstance = getProcessInstance(caseOID);
+      if (AuthorizationUtils.hasManageCasePermission(caseInstance))
+      {
+         serviceFactoryUtils.getWorkflowService().joinCase(caseOID, members);
+         CommonDescriptorUtils.reCalculateCaseDescriptors(caseInstance);
+         
+         String message = "";
+         if (caseScope)
+         {
+            
+            message = propsBean.getParamString("views.attachToCase.successProcessAttachToCase.message",
+                  getProcessLabel(getProcessInstance(sourceProcessInstanceOids.get(0))), getProcessLabel(caseInstance));
+         }
+         else
+         {
+            message = propsBean.getParamString("views.attachToCase.successProcessesAttachToCase.message",
+                  getProcessLabel(caseInstance));
+         }
+         
+         NotificationMessageDTO success = new NotificationMessageDTO();
+         success.success = true;
+         success.message = message;
+         
+         return success;
+      }
+      else
+      {
+         NotificationMessageDTO exception = new NotificationMessageDTO();
+         exception.success = false;
+         exception.message = propsBean.getString("views.attachToCase.caseAttach.notAuthorizedToManageCase");
+         
+         return exception;
+      }
+   }
+   
+   public NotificationMessageDTO createCase(List<Long> sourceProcessInstanceOids, String caseName, String description, String note) {
+      MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+      try
+      {
+         // Validation cases
+         NotificationMessageDTO validationMessage = validateCreateCase(sourceProcessInstanceOids, caseName);
+         if (validationMessage != null) {
+            return validationMessage;
+         }
+         
+         // create Case
+         long[] processOIDs = new long[sourceProcessInstanceOids.size()];
+         for (int i = 0; i < processOIDs.length; i++)
+         {
+            processOIDs[i] = sourceProcessInstanceOids.get(i);
+         }
+         ProcessInstance caseProcessInstance = serviceFactoryUtils.getWorkflowService().createCase(caseName,description, processOIDs);
+         CommonDescriptorUtils.reCalculateCaseDescriptors(caseProcessInstance);
+
+         // add notes
+         if (StringUtils.isNotEmpty(note))
+         {
+            ProcessInstanceAttributes attributes = caseProcessInstance.getAttributes();
+            attributes.addNote(note, ContextKind.ProcessInstance, caseProcessInstance.getOID());
+            serviceFactoryUtils.getWorkflowService().setProcessInstanceAttributes(attributes);
+         }
+         
+         NotificationMessageDTO success = new NotificationMessageDTO();
+         success.success = true;
+         success.message = String.valueOf(caseProcessInstance.getOID());
+         
+         return success;
+      }
+      catch (Exception e)
+      {
+         NotificationMessageDTO exception = new NotificationMessageDTO();
+         exception.success = false;
+         exception.message = propsBean.getString("views.createCase.caseException") + " : "
+               + e.getLocalizedMessage();
+         
+         return exception;
+      }
+   }
+   
+   private NotificationMessageDTO validateCreateCase(List<Long> sourceProcessInstanceOids, String caseName)
+   {
+      MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+      NotificationMessageDTO validationMessage = new NotificationMessageDTO();
+      validationMessage.success = false;
+      if (StringUtils.isEmpty(caseName))
+      {
+         validationMessage.message = propsBean.getString("views.attachToCase.caseRequired.message");
+         return validationMessage;
+      } else if (null == sourceProcessInstanceOids || sourceProcessInstanceOids.isEmpty()) {
+         validationMessage.message = propsBean.getString("views.attachToCase.selectProcessToCreateCase");
+         return validationMessage;
+      }
+      
+      List<ProcessInstance> processInstances = getProcessInstances(sourceProcessInstanceOids);
+      boolean isActiveProcessInstances = isActiveProcessInstances(processInstances);
+      if (isActiveProcessInstances)
+      {
+         boolean isRootProcessInstances = isRootProcessInstances(processInstances);
+         if (isRootProcessInstances)
+         {
+            boolean isNonCaseProcessInstances = isNonCaseProcessInstances(processInstances);
+            if (!isNonCaseProcessInstances)
+            {
+               validationMessage.message = propsBean.getString("views.attachToCase.selectOnlyProcess.message");
+               return validationMessage;
+            }
+         }
+         else
+         {
+            validationMessage.message = propsBean.getString("views.attachToCase.selectOnlyProcess.message");
+            return validationMessage;
+         }
+      }
+      else
+      {
+         validationMessage.message = propsBean.getString("views.attachToCase.selectActiveProcesses");
+         return validationMessage;
+      }
+      return null;
+   }
+   
+   private NotificationMessageDTO validateAttachToCase(boolean caseScope, List<Long> sourceProcessInstanceOids, Long targetOid)
+   {
+      MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+      NotificationMessageDTO validationMessage = new NotificationMessageDTO();
+      validationMessage.success = false;
+      ProcessInstance targetInstance;
+      
+      List<ProcessInstance> sourceProcessInstances = getProcessInstances(sourceProcessInstanceOids);
+      
+      boolean isRootProcessInstances = isRootProcessInstances(sourceProcessInstances);
+
+      if (isRootProcessInstances)
+      {
+         boolean isMixProcessInstances = isCaseWithNoncaseProcessInstances(sourceProcessInstances);
+         boolean isCaseProcessInstances = isCaseProcessInstances(sourceProcessInstances);
+
+         if (isMixProcessInstances)
+         {
+            validationMessage.message = propsBean.getString("views.attachToCase.selectCaseOrProcess.message");
+            return validationMessage;
+         }
+         else if (isCaseProcessInstances && sourceProcessInstances.size() > 1)
+         {
+            validationMessage.message = propsBean.getString("views.attachToCase.caseProcess.notSelectMultipleCases");
+            return validationMessage;
+         }
+         else if (isCaseProcessInstances && !AuthorizationUtils.hasManageCasePermission(sourceProcessInstances.get(0)))
+         {
+            validationMessage.message = propsBean.getString("views.attachToCase.caseAttach.notAuthorizedToManageCase");
+            return validationMessage;
+         }
+         else if (isCaseProcessInstances && isTerminatedProcessInstances(sourceProcessInstances))
+         {
+            validationMessage.message = propsBean.getString("views.attachToCase.selectActiveCaseToAttach");
+            return validationMessage;
+         }
+         else if (!isCaseProcessInstances && !isActiveProcessInstances(sourceProcessInstances))
+         {
+            validationMessage.message = propsBean.getString("views.attachToCase.selectActiveProcessesToAttach");
+            return validationMessage;
+         }
+      }
+      else
+      {
+         validationMessage.message = propsBean.getString("views.attachToCase.nonRootProcessSelectedToCreateCase");
+         return validationMessage;
+      }
+      
+      if (caseScope && !hasManageCasePermission(sourceProcessInstances))
+      {
+         validationMessage.message = propsBean.getString("views.attachToCase.caseAttach.notAuthorizedToManageCase");
+         return validationMessage;
+      }
+      
+      if(null == targetOid)
+      {
+         validationMessage.success = false;
+         if (caseScope)
+         {
+            validationMessage.message = propsBean.getString("views.attachToCase.processRequired.message");
+         }
+         else
+         {
+            validationMessage.message = propsBean.getString("views.attachToCase.caseRequired.message");
+         }
+         return validationMessage;
+      }
+      
+      targetInstance = getProcessInstance(targetOid);
+     
+      if (null == targetInstance)
+      {
+         validationMessage.success = false;
+         if (caseScope)
+         {
+            validationMessage.message = propsBean.getString("views.attachToCase.inputIsCase.message");
+         }
+         else
+         {
+            validationMessage.message = propsBean.getString("views.attachToCase.inputIsProcess.message");
+         }
+         return validationMessage;
+      }
+      
+      boolean isTargetCase = targetInstance.isCaseProcessInstance();
+      
+      if (!caseScope && !isTargetCase)
+      {
+         validationMessage.message = propsBean.getString("views.attachToCase.inputIsProcess.message");
+         return validationMessage;
+      }
+      else if (!caseScope && isTargetCase && ! AuthorizationUtils.hasManageCasePermission(targetInstance))
+      {
+         validationMessage.message = propsBean.getString("views.attachToCase.caseAttach.notAuthorizedToManageCase");
+         return validationMessage;
+      }
+      else if(!caseScope && !isRootProcessInstance(targetInstance))
+      {
+         validationMessage.message = propsBean.getString("views.attachToCase.nonRootProcessSelectedToCreateCase");
+         return validationMessage;
+      }
+      else if (caseScope && isTargetCase)
+      {
+         validationMessage.message = propsBean.getString("views.attachToCase.inputIsCase.message");
+         return validationMessage;
+      }
+      else if (caseScope && !isActiveProcessInstance(targetInstance))
+      {
+         validationMessage.message = propsBean.getString("views.attachToCase.specifyActiveProcess");
+         return validationMessage;
+      }
+      else if (!caseScope
+            && (ProcessInstanceState.ABORTED == targetInstance.getState().getValue() || ProcessInstanceState.COMPLETED == targetInstance
+                  .getState().getValue()))
+      {
+         validationMessage.message = propsBean.getString("views.attachToCase.specifyActiveCase");
+         return validationMessage;
+      }
+      return null;
+   }
+
    public NotificationMap abortProcesses(AbortScope abortScope, List<Long> processesToBeAborted)
    {
       NotificationMap notificationMap = new NotificationMap();
 
       if (CollectionUtils.isNotEmpty(processesToBeAborted))
       {
-         WorkflowService workflowService = serviceFactoryUtils.getWorkflowService();
          ProcessInstance processInstance;
          for (Long processInstanceOid : processesToBeAborted)
          {
@@ -226,7 +767,7 @@ public class ProcessInstanceUtils
             {
                processInstance = this.getProcessInstance(processInstanceOid.longValue());
                if (processInstance != null
-                     && org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.isAbortable(processInstance))
+                     && isAbortable(processInstance))
                {
                   try
                   {
@@ -243,7 +784,7 @@ public class ProcessInstanceUtils
                      }
                      else
                      {
-                        org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.abortProcess(processInstance,
+                        abortProcess(processInstance,
                               abortScope);
                         notificationMap
                               .addSuccess(new NotificationDTO(processInstanceOid,
@@ -259,7 +800,7 @@ public class ProcessInstanceUtils
                      // here
                      trace.error(e);
                      notificationMap.addFailure(new NotificationDTO(processInstanceOid,
-                           org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getProcessLabel(processInstance),
+                           getProcessLabel(processInstance),
                            MessagesViewsCommonBean.getInstance().getParamString("views.common.process.abortProcess.failureMsg2",
                                  ExceptionHandler.getExceptionMessage(e))));
                   }
@@ -270,7 +811,7 @@ public class ProcessInstanceUtils
                         || ProcessInstanceState.Completed.equals(processInstance.getState()))
                   {
                      notificationMap.addFailure(new NotificationDTO(processInstanceOid,
-                           org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getProcessLabel(processInstance),
+                           getProcessLabel(processInstance),
                            MessagesViewsCommonBean.getInstance().getParamString(
                                  "views.common.process.abortProcess.failureMsg3",
                                  org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
@@ -279,7 +820,7 @@ public class ProcessInstanceUtils
                   else
                   {
                      notificationMap.addFailure(new NotificationDTO(processInstanceOid,
-                           org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getProcessLabel(processInstance),
+                           getProcessLabel(processInstance),
                            MessagesViewsCommonBean.getInstance().getString("views.common.process.abortProcess.failureMsg1")));
                   }
                }
@@ -287,6 +828,29 @@ public class ProcessInstanceUtils
          }
       }
       return notificationMap;
+   }
+   
+   /**
+    * abort process
+    * 
+    * @param pi
+    * @param abortScope
+    */
+   public void abortProcess(ProcessInstance pi, AbortScope abortScope)
+   {
+      ProcessInstanceDetails processInstanceDetails = (ProcessInstanceDetails) pi;
+      WorkflowService workflowService = serviceFactoryUtils.getWorkflowService();
+      long startingActivityInstanceOid = processInstanceDetails.getStartingActivityInstanceOID();
+      if (startingActivityInstanceOid != 0)
+      {
+         workflowService.abortActivityInstance(startingActivityInstanceOid, abortScope);
+      }
+      else
+      {
+         // startingActivityInstanceOid = 0 means you don't have AI reference, and through
+         // PI will be aborted(sub hierarchy or root process hierarchy) as per abort scope         
+         workflowService.abortProcessInstance(processInstanceDetails.getOID(), abortScope);
+      }
    }
    
    

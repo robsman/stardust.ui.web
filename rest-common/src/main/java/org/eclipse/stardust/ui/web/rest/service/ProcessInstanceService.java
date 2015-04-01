@@ -34,12 +34,15 @@ import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
+import org.eclipse.stardust.ui.web.rest.service.dto.AttachToCaseDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.CreateCaseDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PriorityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
@@ -211,6 +214,33 @@ public class ProcessInstanceService
          returnValue.put("message", propsBean.getString("common.exception"));
       }
       
+      return GsonUtils.toJsonHTMLSafeString(returnValue);
+   }
+   
+   /**
+    * 
+    * @param request
+    * @return
+    */
+   public String attachToCase(String request)
+   {
+      AttachToCaseDTO attachToCaseDTO = GsonUtils.fromJson(request, AttachToCaseDTO.class);
+      List<Long> sourceProcessInstanceOids = attachToCaseDTO.sourceProcessOIDs;
+      Long targetProcessInstanceOid = Long.parseLong(attachToCaseDTO.targetProcessOID);
+      
+      NotificationMessageDTO returnValue = processInstanceUtilsREST.attachToCase(sourceProcessInstanceOids,
+            targetProcessInstanceOid);
+      
+      return GsonUtils.toJsonHTMLSafeString(returnValue);
+   }
+   
+   public String createCase(String request)
+   {
+      CreateCaseDTO createCaseDTO = GsonUtils.fromJson(request, CreateCaseDTO.class);
+
+      NotificationMessageDTO returnValue = processInstanceUtilsREST.createCase(createCaseDTO.sourceProcessOIDs,
+            createCaseDTO.caseName, createCaseDTO.description, createCaseDTO.note);
+
       return GsonUtils.toJsonHTMLSafeString(returnValue);
    }
    
