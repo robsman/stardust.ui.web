@@ -2,8 +2,7 @@
 <div class="view-panel" ng-controller="sdDaemonCtrl as ctrl"
 	sg-stretch-to-bottom>
 	<!-- View Toolbar -->
-	<div
-		sd-include="'plugins/html5-admin-portal/partials/views/refreshViewToolbar.html'"></div>
+	<sd-refresh sda-on-refresh="ctrl.refresh()"></sd-refresh>
 
 	<!-- View Content -->
 	<div class="view-panel-content">
@@ -41,9 +40,9 @@
 							ng-attr-title="{{rowData.running ? i18n('admin-portal-messages.views-daemons-stopDaemon') : i18n('admin-portal-messages.views-daemons-startDaemon')}}"
 							class="button-link tbl-tool-link">
 							<i
-							ng-class="rowData.running ? 'glyphicon glyphicon-ban-circle' : 'glyphicon glyphicon-play-circle'"></i>
+								ng-class="rowData.running ? 'glyphicon glyphicon-ban-circle' : 'glyphicon glyphicon-play-circle'"></i>
 						</button>
-					
+
 					</td>
 				</tr>
 			</tbody>
