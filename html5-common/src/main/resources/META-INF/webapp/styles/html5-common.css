@@ -94,6 +94,11 @@
    color: #333 !important;
 }
 
+.popup-error-icon {
+	color: red;
+	font-size:25px;
+}
+
 /************** Input Components *****************/
 
 .inp-sel-one {
