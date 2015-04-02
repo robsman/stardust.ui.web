@@ -105,6 +105,18 @@
 					}
 				});
 				
+				if (attr.sdaReady) {
+					trace.log( 'Table defines sda-ready attribute, so deferring initialization...');
+					var unregisterReady = scopeToUse.$watch(attr.sdaReady, function(newVal, oldVal) {
+						if(newVal === true) {
+							trace.log('sda-ready flag is triggered...');
+							// Initialize after current digest cycle
+							$timeout(function(){self.ready = true;});
+							unregisterReady();
+						}
+					});
+				} 
+				
 				if (attr.sdaInitialSelection) {
 					self.initialSelection = attr.sdaInitialSelection;
 				}
@@ -112,9 +124,6 @@
 					self.sdaPageSize = attr.sdaPageSize;
 				}
 				self.columnSelector = 'admin'; //TODO
-//				self.exportFileName = self.query.userId || self.query.participantQId; //TODO
-//				self.processTablePrefModule = 'ipp-workflow-perspective';
-//				self.processTablePrefId = 'processTable-participant-columns' || 'processTable-process-columns'; //TODO
 				
 				// Preference attributes
 				if (attr.sdaPreferenceModule) {
@@ -227,7 +236,12 @@
 						});
 					});
 
-					self.ready = true;
+					if(attr.sdaReady){
+						self.descriptorsReady = true;
+					}else{
+						self.ready = true;
+					}
+					
 					self.safeApply();
 				});
 			};
@@ -565,23 +579,6 @@
 					}, true);
 				}
 			};
-			
-			self.onAbortPopoverConfirm = function(type, result) {
-				self.refresh();
-				sdViewUtilService.syncLaunchPanels();
-				
-				if (angular.isDefined(type) && angular.isDefined(result)) {
-					if ('abortandstart' === type) {
-						// TODO open spawned processes
-						
-						sdViewUtilService.openView('worklistViewHtml5', true);
-					} else if ('abortandjoin' === type) {
-						// TODO open joined process
-						
-						sdViewUtilService.openView('processDefinitionView', true);
-					}						
-				}
-			}
 			
 			self.openAbortPopover = function(event, rowItem) {
 				if (angular.isDefined(rowItem)) {
