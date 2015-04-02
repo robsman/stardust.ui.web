@@ -417,6 +417,11 @@ define(
               jQuery("label[for='consumeOnMatchInput']").removeClass("invisible");
               m_dialog.makeVisible(this.consumeOnMatchInput);
               
+              jQuery("label[for='logHandlerInput']")
+              .text(
+                    m_i18nUtils
+                          .getProperty("modeler.propertiesPage.activity.excludedUsers.logToAuditTrail"));
+              
                var modelElement = this.page.propertiesPanel.element.modelElement;
                this.interruptingInput.attr("checked", "checked");
                this.interruptingInput.attr("disabled", "disabled");

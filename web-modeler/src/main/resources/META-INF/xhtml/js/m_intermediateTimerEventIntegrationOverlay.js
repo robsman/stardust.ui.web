@@ -355,6 +355,12 @@ define(
 
 				  jQuery("label[for='consumeOnMatchInput']").addClass("invisible");
           m_dialog.makeInvisible(this.consumeOnMatchInput);
+          
+
+					jQuery("label[for='logHandlerInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.timerEvent_intermediate.logHandler"));
 				  
 					var modelElement = this.page.propertiesPanel.element.modelElement;
 					if (modelElement.isBoundaryEvent()) {
