@@ -87,7 +87,7 @@ define(
 							var chgDesc = [];
 							for( var i in command.changeDescriptions) {
 								var elem = model.findModelElementByUuid(command.changeDescriptions[i].uuid);
-								if (elem && elem.isReadonly()) {
+								if (elem && elem.isReadonly() && !model.isSimple()) {
 									m_utils.debug("Model Element '" + model.name + "/" + elem.name + "' is marked as Readonly. Skipping server post.");
 								} else {
 									chgDesc.push(command.changeDescriptions[i]);
