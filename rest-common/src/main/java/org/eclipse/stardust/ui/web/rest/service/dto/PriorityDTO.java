@@ -16,6 +16,11 @@ package org.eclipse.stardust.ui.web.rest.service.dto;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 
+/**
+ * 
+ * @author Johnson.Quadras
+ *
+ */
 public class PriorityDTO extends AbstractDTO
 {
 

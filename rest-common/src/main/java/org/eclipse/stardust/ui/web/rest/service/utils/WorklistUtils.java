@@ -67,14 +67,14 @@ public class WorklistUtils
     */
    public QueryResult< ? > getWorklistForParticipant(String participantQId,
          Options options)
-   {
+         {
       Participant participant = serviceFactoryUtils.getQueryService().getParticipant(
             participantQId);
       if (null != participant)
       {
          WorklistQuery query = org.eclipse.stardust.ui.web.viewscommon.utils.WorklistUtils
                .createWorklistQuery(participant);
-         
+
          query.setPolicy(HistoricalStatesPolicy.WITH_LAST_USER_PERFORMER);
 
          ActivityTableUtils.addCriterias(query, options);
@@ -86,7 +86,7 @@ public class WorklistUtils
          return queryResult;
       }
       return null;
-   }
+         }
 
    /**
     * @param userId
@@ -128,7 +128,7 @@ public class WorklistUtils
          throw new ObjectNotFoundException("UserId not found");
       }
    }
-   
+
    /**
     * 
     * @param criticalityValue
@@ -153,7 +153,7 @@ public class WorklistUtils
 
       return serviceFactoryUtils.getQueryService().getAllActivityInstances(criticalActivitiesQuery);
    }
-   
+
    /**
     * 
     * @param criticalityValue
@@ -172,7 +172,7 @@ public class WorklistUtils
 
       return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
    }
-   
+
    /**
     * 
     * @param criticalityValue
@@ -192,7 +192,7 @@ public class WorklistUtils
 
       return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
    }
-   
+
    /**
     * 
     * @param criticalityValue
@@ -213,7 +213,7 @@ public class WorklistUtils
 
       return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
    }
-   
+
    /**
     * 
     * @param options
@@ -221,7 +221,7 @@ public class WorklistUtils
     */
    public QueryResult< ? > getWorklistForResubmissionActivities(Options options)
    {  
-      
+
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(ActivityInstanceState.Hibernated);
       query.getFilter().add(PerformingUserFilter.CURRENT_USER);
       List<ModelResubmissionActivity> resubmissionActivities = CollectionUtils.newList();
@@ -241,7 +241,7 @@ public class WorklistUtils
                   activity.getModelOids(), false));
          }
       }
-      
+
       ActivityTableUtils.addCriterias(query, options);
 
       return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
@@ -254,14 +254,14 @@ public class WorklistUtils
     */
    public QueryResult< ? > getWorklistForLoggedInUser(Options options)
    {  
-      
+
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
             ActivityInstanceState.Application, ActivityInstanceState.Suspended});
       query.getFilter().add(PerformingUserFilter.CURRENT_USER);
       ActivityTableUtils.addCriterias(query, options);
       return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
    }
-   
+
    /**
     * 
     * @param options
@@ -269,13 +269,13 @@ public class WorklistUtils
     */
    public QueryResult< ? > getAllActivable(Options options)
    {  
-      
+
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
             ActivityInstanceState.Hibernated, ActivityInstanceState.Application, ActivityInstanceState.Suspended});
       ActivityTableUtils.addCriterias(query, options);
       return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
    }
-   
+
 
    /**
     * @param worklist
@@ -290,46 +290,46 @@ public class WorklistUtils
 
       switch (ParticipantUtils.getParticipantType(participantInfo))
       {
-         case ORGANIZATION:
-         case ROLE:
-         case SCOPED_ORGANIZATION:
-         case SCOPED_ROLE:
-         case USERGROUP:
-            Iterator<Worklist> worklistIter1 = worklist.getSubWorklists();
-            Worklist subWorklist;
-            while (worklistIter1.hasNext())
+      case ORGANIZATION:
+      case ROLE:
+      case SCOPED_ORGANIZATION:
+      case SCOPED_ROLE:
+      case USERGROUP:
+         Iterator<Worklist> worklistIter1 = worklist.getSubWorklists();
+         Worklist subWorklist;
+         while (worklistIter1.hasNext())
+         {
+            subWorklist = worklistIter1.next();
+            if (ParticipantUtils.areEqual(participantInfo, subWorklist.getOwner()))
             {
-               subWorklist = worklistIter1.next();
-               if (ParticipantUtils.areEqual(participantInfo, subWorklist.getOwner()))
+               extractedWorklist = subWorklist;
+               break;
+            }
+         }
+         break;
+
+      case USER:
+         if (ParticipantUtils.areEqual(participantInfo, worklist.getOwner()))
+         {
+            extractedWorklist = worklist;
+            break;
+         }
+         else
+         {
+            // User-Worklist(Deputy Of) is contained in Sub-worklist of
+            // User worklist(Deputy)
+            Iterator<Worklist> subWorklistIter = worklist.getSubWorklists();
+            Worklist subWorklist1;
+            while (subWorklistIter.hasNext())
+            {
+               subWorklist1 = subWorklistIter.next();
+               if (ParticipantUtils.areEqual(participantInfo, subWorklist1.getOwner()))
                {
-                  extractedWorklist = subWorklist;
+                  extractedWorklist = subWorklist1;
                   break;
                }
             }
-            break;
-
-         case USER:
-            if (ParticipantUtils.areEqual(participantInfo, worklist.getOwner()))
-            {
-               extractedWorklist = worklist;
-               break;
-            }
-            else
-            {
-               // User-Worklist(Deputy Of) is contained in Sub-worklist of
-               // User worklist(Deputy)
-               Iterator<Worklist> subWorklistIter = worklist.getSubWorklists();
-               Worklist subWorklist1;
-               while (subWorklistIter.hasNext())
-               {
-                  subWorklist1 = subWorklistIter.next();
-                  if (ParticipantUtils.areEqual(participantInfo, subWorklist1.getOwner()))
-                  {
-                     extractedWorklist = subWorklist1;
-                     break;
-                  }
-               }
-            }
+         }
       }
       return extractedWorklist;
    }

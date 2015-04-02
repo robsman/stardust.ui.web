@@ -20,6 +20,7 @@ import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils.MODE;
 import org.eclipse.stardust.ui.web.rest.service.utils.WorklistUtils;
 import org.springframework.stereotype.Component;
+
 /**
  * @author Subodh.Godbole
  * @version $Revision: $
@@ -39,8 +40,8 @@ public class WorklistService
     */
    public QueryResultDTO getWorklistForParticipant(String participantQId, String context, Options options)
    {
-      QueryResult<?> queryResult = worklistUtils.getWorklistForParticipant(participantQId, options);
-      return ActivityTableUtils.buildTableResult(queryResult ,MODE.WORKLIST);
+      QueryResult< ? > queryResult = worklistUtils.getWorklistForParticipant(participantQId, options);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
    }
 
    /**
@@ -49,10 +50,10 @@ public class WorklistService
     */
    public QueryResultDTO getWorklistForUser(String userId, String context, Options options)
    {
-      QueryResult<?> queryResult = worklistUtils.getWorklistForUser(userId, options);
-      return ActivityTableUtils.buildTableResult(queryResult,MODE.WORKLIST);
+      QueryResult< ? > queryResult = worklistUtils.getWorklistForUser(userId, options);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
    }
-   
+
    /**
     * 
     * @param criticalityValue
@@ -60,24 +61,24 @@ public class WorklistService
     * @param options
     * @return
     */
-   public QueryResultDTO getWorklistForHighCriticality( Options options)
+   public QueryResultDTO getWorklistForHighCriticality(Options options)
    {
-      QueryResult<?> queryResult = worklistUtils.getWorklistForHighCriticality(options);
-      return ActivityTableUtils.buildTableResult(queryResult,MODE.WORKLIST);
+      QueryResult< ? > queryResult = worklistUtils.getWorklistForHighCriticality(options);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
    }
-   
+
    /**
     * 
     * @param userId
     * @param options
     * @return
     */
-   public QueryResultDTO getAllAssignedWorkItems( Options options)
+   public QueryResultDTO getAllAssignedWorkItems(Options options)
    {
-      QueryResult<?> queryResult = worklistUtils.getAllAssignedWorkItems( options);
-      return ActivityTableUtils.buildTableResult(queryResult,MODE.WORKLIST);
+      QueryResult< ? > queryResult = worklistUtils.getAllAssignedWorkItems(options);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
    }
-   
+
    /**
     * 
     * @param userId
@@ -86,10 +87,10 @@ public class WorklistService
     */
    public QueryResultDTO getItemtWorkingFromDate(String dateId, Options options)
    {
-      QueryResult<?> queryResult = worklistUtils.getItemtWorkingFromDate(dateId, options);
-      return ActivityTableUtils.buildTableResult(queryResult,MODE.WORKLIST);
+      QueryResult< ? > queryResult = worklistUtils.getItemtWorkingFromDate(dateId, options);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
    }
-   
+
    /**
     * 
     * @param processQId
@@ -98,10 +99,10 @@ public class WorklistService
     */
    public QueryResultDTO getWorklistByProcess(String processQId, Options options)
    {
-      QueryResult<?> queryResult = worklistUtils.getWorklistByProcess(processQId, options);
-      return ActivityTableUtils.buildTableResult(queryResult,MODE.WORKLIST);
+      QueryResult< ? > queryResult = worklistUtils.getWorklistByProcess(processQId, options);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
    }
-  
+
    /***
     * 
     * @param options
@@ -109,10 +110,10 @@ public class WorklistService
     */
    public QueryResultDTO getWorklistForResubmissionActivities(Options options)
    {
-      QueryResult<?> queryResult = worklistUtils.getWorklistForResubmissionActivities(options);
-      return ActivityTableUtils.buildTableResult(queryResult,MODE.WORKLIST);
+      QueryResult< ? > queryResult = worklistUtils.getWorklistForResubmissionActivities(options);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
    }
-   
+
    /***
     * 
     * @param options
@@ -120,10 +121,10 @@ public class WorklistService
     */
    public QueryResultDTO getWorklistForLoggedInUser(Options options)
    {
-      QueryResult<?> queryResult = worklistUtils.getWorklistForLoggedInUser(options);
-      return ActivityTableUtils.buildTableResult(queryResult,MODE.WORKLIST);
+      QueryResult< ? > queryResult = worklistUtils.getWorklistForLoggedInUser(options);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
    }
-   
+
    /***
     * 
     * @param options
@@ -131,7 +132,7 @@ public class WorklistService
     */
    public QueryResultDTO getAllActivable(Options options)
    {
-      QueryResult<?> queryResult = worklistUtils.getAllActivable(options);
-      return ActivityTableUtils.buildTableResult(queryResult,MODE.WORKLIST);
+      QueryResult< ? > queryResult = worklistUtils.getAllActivable(options);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
    }
 }

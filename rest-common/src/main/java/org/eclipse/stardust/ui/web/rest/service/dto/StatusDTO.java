@@ -15,6 +15,11 @@ package org.eclipse.stardust.ui.web.rest.service.dto;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 
+/**
+ * 
+ * @author Johnson.Quadras
+ *
+ */
 public class StatusDTO extends AbstractDTO
 {
 

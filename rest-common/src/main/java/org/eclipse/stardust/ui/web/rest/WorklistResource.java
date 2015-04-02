@@ -43,6 +43,14 @@ import org.springframework.stereotype.Component;
 @Path("/worklist")
 public class WorklistResource
 {
+   private static final String DEFAULT_ORDER_BY_FIELD = "oid";
+
+   private static final String DEFAULT_PAGE_SIZE = "8";
+
+   private static final String DEFAULT_SKIP_STEP = "0";
+
+   private static final String DEFAULT_ORDER = "asc";
+
    private static final Logger trace = LogManager.getLogger(WorklistResource.class);
 
    @Autowired
@@ -57,15 +65,15 @@ public class WorklistResource
    @Path("/participant/{participantQId}")
    public Response getWorklistForParticipant(
          @PathParam("participantQId") String participantQId,
-         @QueryParam("skip") @DefaultValue("0") Integer skip,
-         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
-         @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
-         @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
+         @QueryParam("skip") @DefaultValue(DEFAULT_SKIP_STEP) Integer skip,
+         @QueryParam("pageSize") @DefaultValue(DEFAULT_PAGE_SIZE) Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue(DEFAULT_ORDER_BY_FIELD) String orderBy,
+         @QueryParam("orderByDir") @DefaultValue(DEFAULT_ORDER) String orderByDir, String postData)
    {
       try
       {
          Options options = new Options(pageSize, skip, orderBy,
-               "asc".equalsIgnoreCase(orderByDir));
+               DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
 
          QueryResultDTO resultDTO = getWorklistService().getWorklistForParticipant(
@@ -89,15 +97,15 @@ public class WorklistResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/user/{userId}")
    public Response getWorklistForUser(@PathParam("userId") String userId,
-         @QueryParam("skip") @DefaultValue("0") Integer skip,
-         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
-         @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
-         @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
+         @QueryParam("skip") @DefaultValue(DEFAULT_SKIP_STEP) Integer skip,
+         @QueryParam("pageSize") @DefaultValue(DEFAULT_PAGE_SIZE) Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue(DEFAULT_ORDER_BY_FIELD) String orderBy,
+         @QueryParam("orderByDir") @DefaultValue(DEFAULT_ORDER) String orderByDir, String postData)
    {
       try
       {
          Options options = new Options(pageSize, skip, orderBy,
-               "asc".equalsIgnoreCase(orderByDir));
+               DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          QueryResultDTO resultDTO = getWorklistService().getWorklistForUser(userId,
                "default", options);
@@ -119,15 +127,15 @@ public class WorklistResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/criticality/high")
    public Response getWorklistForHighCriticality(
-         @QueryParam("skip") @DefaultValue("0") Integer skip,
-         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
-         @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
-         @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
+         @QueryParam("skip") @DefaultValue(DEFAULT_SKIP_STEP) Integer skip,
+         @QueryParam("pageSize") @DefaultValue(DEFAULT_PAGE_SIZE) Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue(DEFAULT_ORDER_BY_FIELD) String orderBy,
+         @QueryParam("orderByDir") @DefaultValue(DEFAULT_ORDER) String orderByDir, String postData)
    {
       try
       {
          Options options = new Options(pageSize, skip, orderBy,
-               "asc".equalsIgnoreCase(orderByDir));
+               DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData( options,postData);
          QueryResultDTO resultDTO = getWorklistService().getWorklistForHighCriticality( options);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
@@ -148,15 +156,15 @@ public class WorklistResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/allAssigned")
    public Response getAllAssignedWorkItems(
-         @QueryParam("skip") @DefaultValue("0") Integer skip,
-         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
-         @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
-         @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
+         @QueryParam("skip") @DefaultValue(DEFAULT_SKIP_STEP) Integer skip,
+         @QueryParam("pageSize") @DefaultValue(DEFAULT_PAGE_SIZE) Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue(DEFAULT_ORDER_BY_FIELD) String orderBy,
+         @QueryParam("orderByDir") @DefaultValue(DEFAULT_ORDER) String orderByDir, String postData)
    {
       try
       {
          Options options = new Options(pageSize, skip, orderBy,
-               "asc".equalsIgnoreCase(orderByDir));
+               DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          QueryResultDTO resultDTO = getWorklistService().getAllAssignedWorkItems( options);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
@@ -178,15 +186,15 @@ public class WorklistResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/date/{dateId}")
    public Response getItemtWorkingFromDate(@PathParam("dateId") String dateId,
-         @QueryParam("skip") @DefaultValue("0") Integer skip,
-         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
-         @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
-         @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
+         @QueryParam("skip") @DefaultValue(DEFAULT_SKIP_STEP) Integer skip,
+         @QueryParam("pageSize") @DefaultValue(DEFAULT_PAGE_SIZE) Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue(DEFAULT_ORDER_BY_FIELD) String orderBy,
+         @QueryParam("orderByDir") @DefaultValue(DEFAULT_ORDER) String orderByDir, String postData)
    {
       try
       {
          Options options = new Options(pageSize, skip, orderBy,
-               "asc".equalsIgnoreCase(orderByDir));
+               DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          QueryResultDTO resultDTO = getWorklistService().getItemtWorkingFromDate(dateId, options);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
@@ -208,15 +216,15 @@ public class WorklistResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/process/{processQId}")
    public Response getWorklistByProcess(@PathParam("processQId") String processQId,
-         @QueryParam("skip") @DefaultValue("0") Integer skip,
-         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
-         @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
-         @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
+         @QueryParam("skip") @DefaultValue(DEFAULT_SKIP_STEP) Integer skip,
+         @QueryParam("pageSize") @DefaultValue(DEFAULT_PAGE_SIZE) Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue(DEFAULT_ORDER_BY_FIELD) String orderBy,
+         @QueryParam("orderByDir") @DefaultValue(DEFAULT_ORDER) String orderByDir, String postData)
    {
       try
       {
          Options options = new Options(pageSize, skip, orderBy,
-               "asc".equalsIgnoreCase(orderByDir));
+               DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          QueryResultDTO resultDTO = getWorklistService().getWorklistByProcess(processQId, options);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
@@ -238,15 +246,15 @@ public class WorklistResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/resubmissionActivities")
    public Response getWorklistForResubmissionActivities(
-         @QueryParam("skip") @DefaultValue("0") Integer skip,
-         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
-         @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
-         @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
+         @QueryParam("skip") @DefaultValue(DEFAULT_SKIP_STEP) Integer skip,
+         @QueryParam("pageSize") @DefaultValue(DEFAULT_PAGE_SIZE) Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue(DEFAULT_ORDER_BY_FIELD) String orderBy,
+         @QueryParam("orderByDir") @DefaultValue(DEFAULT_ORDER) String orderByDir, String postData)
    {
       try
       {
          Options options = new Options(pageSize, skip, orderBy,
-               "asc".equalsIgnoreCase(orderByDir));
+               DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          QueryResultDTO resultDTO = getWorklistService().getWorklistForResubmissionActivities(options);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
@@ -267,15 +275,15 @@ public class WorklistResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/personalItems")
    public Response getWorklistForLoggedInUser(
-         @QueryParam("skip") @DefaultValue("0") Integer skip,
-         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
-         @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
-         @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
+         @QueryParam("skip") @DefaultValue(DEFAULT_SKIP_STEP) Integer skip,
+         @QueryParam("pageSize") @DefaultValue(DEFAULT_PAGE_SIZE) Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue(DEFAULT_ORDER_BY_FIELD) String orderBy,
+         @QueryParam("orderByDir") @DefaultValue(DEFAULT_ORDER) String orderByDir, String postData)
    {
       try
       {
          Options options = new Options(pageSize, skip, orderBy,
-               "asc".equalsIgnoreCase(orderByDir));
+               DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          QueryResultDTO resultDTO = getWorklistService().getWorklistForLoggedInUser(options);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
@@ -296,15 +304,15 @@ public class WorklistResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/allActivable")
    public Response getAllActivable(
-         @QueryParam("skip") @DefaultValue("0") Integer skip,
-         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
-         @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
-         @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
+         @QueryParam("skip") @DefaultValue(DEFAULT_SKIP_STEP) Integer skip,
+         @QueryParam("pageSize") @DefaultValue(DEFAULT_PAGE_SIZE) Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue(DEFAULT_ORDER_BY_FIELD) String orderBy,
+         @QueryParam("orderByDir") @DefaultValue(DEFAULT_ORDER) String orderByDir, String postData)
    {
       try
       {
          Options options = new Options(pageSize, skip, orderBy,
-               "asc".equalsIgnoreCase(orderByDir));
+               DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          QueryResultDTO resultDTO = getWorklistService().getAllActivable(options);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();

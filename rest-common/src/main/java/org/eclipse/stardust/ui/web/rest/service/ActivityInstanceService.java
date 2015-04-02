@@ -213,7 +213,7 @@ public class ActivityInstanceService
    {
 
       List<CriticalityDTO> criticalityCategories = new ArrayList<CriticalityDTO>();
-      for (CriticalityCategory category : criticalityUtils.getCriticalityConfiguration())
+      for (CriticalityCategory category : CriticalityUtils.getCriticalityConfiguration())
       {
          CriticalityDTO criticalityDTO = DTOBuilder.build(category, CriticalityDTO.class);
          criticalityCategories.add(criticalityDTO);

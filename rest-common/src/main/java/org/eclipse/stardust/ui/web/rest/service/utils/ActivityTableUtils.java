@@ -112,7 +112,6 @@ import com.google.gson.JsonObject;
 @Component
 public class ActivityTableUtils
 {
-
    private static final String COL_ACTIVITY_NAME = "activityName";
 
    private static final String COL_ACTIVITY_INSTANCE_OID = "activityOID";
@@ -126,7 +125,7 @@ public class ActivityTableUtils
    private static final String COL_CRITICALITY = "criticality";
 
    private static final String COL_PRIOIRTY = "priority";
-   
+
    private static final String TODAY = "today";
 
    private static final String THIS_WEEK = "thisWeek";
@@ -142,7 +141,7 @@ public class ActivityTableUtils
    private static final String ALL = "all";
 
    public static double PORTAL_CRITICALITY_MUL_FACTOR = 1000;
-   
+
    public static enum MODE {
       ACTIVITY_TABLE, WORKLIST;
    }
@@ -378,7 +377,6 @@ public class ActivityTableUtils
     */
    public static void addDescriptorPolicy(Options options, Query query)
    {
-
       if(options.allDescriptorsVisible){
          query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
       }else if(CollectionUtils.isNotEmpty(options.visibleDescriptorColumns)){          
@@ -650,13 +648,13 @@ public class ActivityTableUtils
             dto.status.label = ActivityInstanceUtils.getActivityStateLabel(ai);
             dto.descriptorValues =  getProcessDescriptors(modelCache, ai);
             dto.activatable = findIfActivatable(ai);
-           
+
             List<Note> notes=org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getNotes(ai.getProcessInstance());
             if(null != notes)
             {
                dto.notesCount = notes.size();   
             }
-          
+
             if(mode.equals(MODE.ACTIVITY_TABLE))
             {
                dto.completedBy = ActivityInstanceUtils.getPerformedByName(ai);
@@ -677,7 +675,7 @@ public class ActivityTableUtils
                }else{
                   dto.processInstance.processName = getCaseName(ai);
                }
-               
+
             }
             list.add(dto);
          }
@@ -688,7 +686,7 @@ public class ActivityTableUtils
 
       return resultDTO;
    }
-   
+
    /**
     * 
     * @param fromDateString
@@ -761,7 +759,7 @@ public class ActivityTableUtils
       }
       return calendar.getTime();
    }
-   
+
    /**
     * Adds the filter sort descriptor criterias and the subset policy
     * @param query
@@ -794,7 +792,7 @@ public class ActivityTableUtils
             isActivable = false;
          }
       }
-      
+
       return isActivable;
    }
 
@@ -843,14 +841,17 @@ public class ActivityTableUtils
       }
       if(null != participantPerformer)
       {
-        return participantPerformer != null ? I18nUtils.getParticipantName(participantPerformer) : null;
+         return participantPerformer != null ? I18nUtils.getParticipantName(participantPerformer) : null;
       }
-      
+
       return null;
    }
 
    /**
     * 
+    * @param modelCache
+    * @param ai
+    * @return
     */
    private static Map<String, DescriptorDTO> getProcessDescriptors( ModelCache modelCache , ActivityInstance ai) 
    {
@@ -874,7 +875,7 @@ public class ActivityTableUtils
                   processDefinition, true ,true);
 
          }
-         
+
          Map<String, DescriptorDTO>  descriptors= new LinkedHashMap<String, DescriptorDTO>();
          for (Object descriptor : processDescriptorsList)
          {
@@ -901,6 +902,6 @@ public class ActivityTableUtils
          }
          return descriptors;
       }
-    return null;
+      return null;
    }
 }

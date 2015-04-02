@@ -423,6 +423,13 @@ public class ActivityInstanceResource
       return Response.ok(delegationComponent.delegate(postedData), MediaType.APPLICATION_JSON).build();
    }
     
+    /**
+     * @author Johnson.Quadras
+     * @param postedData
+     * @return
+     * @throws PortalRestException
+     * @throws PortalException
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
@@ -432,7 +439,10 @@ public class ActivityInstanceResource
       return Response.ok(delegationComponent.performDefaultDelegate(postedData), MediaType.APPLICATION_JSON).build();
    }
     
-    
+    /**
+     * @author Johnson.Quadras
+     * @return
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/availableCriticalities")
@@ -450,6 +460,10 @@ public class ActivityInstanceResource
        }
     }
     
+    /**
+     * @author Johnson.Quadras
+     * @return
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/allActivityStates")

@@ -16,27 +16,34 @@ package org.eclipse.stardust.ui.web.rest.service.dto;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil.ICON_COLOR;
 
-public class CriticalityDTO extends AbstractDTO {
+/**
+ * 
+ * @author Johnson.Quadras
+ *
+ */
+public class CriticalityDTO extends AbstractDTO
+{
 
-	public int value;
+   public int value;
 
-	@DTOAttribute("iconColor")
-	public String color;
+   @DTOAttribute("iconColor")
+   public String color;
 
-	@DTOAttribute("label")
-	public String label;
+   @DTOAttribute("label")
+   public String label;
 
-	@DTOAttribute("iconCount")
-	public int count;
+   @DTOAttribute("iconCount")
+   public int count;
 
-	@DTOAttribute("rangeFrom")
-	public int rangeFrom;
+   @DTOAttribute("rangeFrom")
+   public int rangeFrom;
 
-	@DTOAttribute("rangeTo")
-	public int rangeTo;
+   @DTOAttribute("rangeTo")
+   public int rangeTo;
 
-	public void setColor(ICON_COLOR iconColor) {
-		this.color = iconColor.toString();
-	}
+   public void setColor(ICON_COLOR iconColor)
+   {
+      this.color = iconColor.toString();
+   }
 
 }
