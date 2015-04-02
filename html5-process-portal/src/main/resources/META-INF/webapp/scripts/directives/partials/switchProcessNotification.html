@@ -1,0 +1,89 @@
+<div class="sd-abort-noti-dlg">
+<div class="section">
+	<div id="infoSign" ng-if="switchProcessController.switchProcess.switchCompleted">
+		<i style="color: grey;" class="glyphicon glyphicon-exclamation-sign"></i>
+	</div>
+	<div id="infoSign" ng-if="!switchProcessController.switchProcess.switchCompleted">
+		<i ng-show="switchProcessController.abortNotification.totalCount === switchProcessController.processInstances.length" 
+			style="color: red;" class="glyphicon glyphicon-remove-sign"></i>
+		<i ng-show="switchProcessController.abortNotification.totalCount < switchProcessController.processInstances.length" 
+			style="color: #D7AD01;" class="glyphicon glyphicon-exclamation-sign"></i>
+	</div>
+	<div id="infoSign" ng-if="switchProcessController.abortNotification.list == undefined">
+		<i style="color: red;" class="glyphicon glyphicon-remove-sign"></i>
+	</div>
+	<div id="notificationBody" class="notification-body">
+		<div>
+			<div ng-if="switchProcessController.switchProcess.switchCompleted">
+				<div class="panelHeaderTitle">
+					<span>{{i18n('views-common-messages.views-switchProcessDialog-operationSuccess')}}</span>
+				</div>
+				<table sd-data-table="switchProcessController.abortNotificationDataTable" sd-data="switchProcessController.abortNotification"
+					sda-page-size="5"
+					sda-mode="local">
+					<thead>
+						<tr>
+							<th ng-show="switchProcessController.switchProcess.switchCompleted" sda-name="abortedProcess" sda-label="{{i18n('views-common-messages.views-switchProcessDialog-switchedProcess-column-abortedProcesses')}}" sda-sortable="false"></th>
+							<th ng-show="switchProcessController.switchProcess.switchCompleted" sda-name="startedProcess" sda-label="{{i18n('views-common-messages.views-switchProcessDialog-switchedProcess-column-startedProcesses')}}" sda-sortable="false"></th>
+							<th sda-name="status" sda-label="{{i18n('views-common-messages.views-switchProcessDialog-switchedProcess-column-status')}}" sda-sortable="false"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>{{rowData.abortedProcess.processName}}</td>
+							
+							<td>{{rowData.targetProcess.processName}}</td>
+							
+							<td>{{rowData.statusMessage}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div ng-if="!switchProcessController.switchProcess.switchCompleted">
+				<div ng-if="switchProcessController.abortNotification.list != undefined">
+					<div class="panelHeaderTitle">
+						<span ng-show="switchProcessController.abortNotification.totalCount > 0">{{i18n('views-common-messages.views-switchProcessDialog-cannotAbortMessage')}}</span>
+					</div>
+					<table sd-data-table="switchProcessController.abortNotificationDataTable" sd-data="switchProcessController.abortNotification"
+						sda-no-pagination="true"
+						sda-mode="local">
+						<thead>
+							<tr>
+								<th sda-name="process" sda-label="{{i18n('views-common-messages.views-switchProcessDialog-notification-column-process')}}" sda-sortable="false"></th>
+								<th sda-name="status" sda-label="{{i18n('views-common-messages.views-switchProcessDialog-switchedProcess-column-status')}}" sda-sortable="false"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>{{rowData.abortedProcess.processName}}</td>
+								
+								<td>{{rowData.statusMessage}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div ng-if="switchProcessController.abortNotification.list == undefined">
+					{{switchProcessController.abortNotification}}
+				</div>
+			</div>
+		</div>
+		<p></p>
+		<div class="panelHeaderTitle">
+			<span id="cannotAbortAny" ng-if="!switchProcessController.switchProcess.switchCompleted && switchProcessController.abortNotification.totalCount === switchProcessController.processInstances.length">{{i18n('views-common-messages.common-confirmCannotContinue-message-label')}}</span>
+			<span id="contunueAbort" ng-if="!switchProcessController.switchProcess.switchCompleted && switchProcessController.abortNotification.totalCount < switchProcessController.processInstances.length">{{i18n('views-common-messages.views-common-continueQuestion-label')}}</span>
+			<span id="switchCompleted" ng-if="switchProcessController.switchProcess.switchCompleted">{{i18n('views-common-messages.views-switchProcessDialog-viewSwitchedActivities')}}</span>
+		</div>
+	</div>
+</div>
+<div class="confirmation-buttonpane">
+	<div class="button-pane cf" >
+		<div class="right" ng-show="(!switchProcessController.switchProcess.switchCompleted && switchProcessController.abortNotification.totalCount === switchProcessController.processInstances.length) || switchProcessController.abortNotification.list == undefined">
+		    <button class="button" ng-click="switchProcessController.closeNotification(this)">{{i18n('views-common-messages.common-close')}}</button>
+		</div>
+		<div class="right" ng-show="switchProcessController.switchProcess.switchCompleted || switchProcessController.abortNotification.totalCount < switchProcessController.processInstances.length">
+		  	<button class="button" ng-click="switchProcessController.okNotification(this)">{{i18n('views-common-messages.common-yes')}}</button>
+		    <button class="button" ng-click="switchProcessController.closeNotification(this)">{{i18n('views-common-messages.common-no')}}</button>
+		</div>
+    </div>
+</div>
+</div>

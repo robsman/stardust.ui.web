@@ -442,7 +442,7 @@
 				var deferred = $q.defer();
 
 				sdActivityInstanceService.getRelatedProcesses(self.processInstanceOIDs, !self.attachToCase.matchAll,
-						self.attachToCase.isCase).then(function(data) {
+						!self.attachToCase.isCase).then(function(data) {
 					// getRelatedProcesses successful
 					self.attachToCase.relatedProcesses = {};
 					self.attachToCase.relatedProcesses.list = data;

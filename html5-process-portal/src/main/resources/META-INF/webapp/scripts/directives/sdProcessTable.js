@@ -461,6 +461,7 @@
 				self.refresh();
 				sdViewUtilService.syncLaunchPanels();
 				if (angular.isDefined(result)) {
+					// TODO pass result as an argument to below view
 					sdViewUtilService.openView('processDefinitionView', true);
 				}
 			};
@@ -468,23 +469,27 @@
 			/*
 			 *
 			 */
-			self.openJoinDialog = function(value) {
-				self.processesToJoin = [];
-
-				if (Array.isArray(value)) {
-					var selectedItems = value;
-					if (selectedItems.length < 1) {
-						trace.log("No Rows selected");
-						return;
-					}
-
-					self.processesToJoin = selectedItems;
-				} else {
-					var item = value;
-					self.processesToJoin.push(item);
-				}
-
+			self.openJoinDialog = function() {
 				self.showJoinProcessDialog = true;
+			}
+			
+			/*
+			 *
+			 */
+			self.switchCompleted = function(result) {
+				self.refresh();
+				sdViewUtilService.syncLaunchPanels();
+				if (angular.isDefined(result)) {
+					// TODO pass result as an argument to below view
+					sdViewUtilService.openView('worklistViewHtml5', true);
+				}
+			};
+			
+			/*
+			 *
+			 */
+			self.openSwitchDialog = function() {
+				self.showSwitchProcessDialog = true;
 			}
 			
 			/*

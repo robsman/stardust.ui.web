@@ -1,0 +1,61 @@
+<div class="sd-abort-noti-dlg">
+	<div class="section">
+		<div id="infoSign">
+			<i ng-if="joinProcessController.joinProcess.joinCompleted" style="color: grey;" class="glyphicon glyphicon-exclamation-sign"></i>
+			<i ng-if="!joinProcessController.joinProcess.joinCompleted" style="color: red;" class="glyphicon glyphicon-remove-sign"></i>
+		</div>
+		
+		<div id="notificationBody" class="notification-body">
+			<div ng-if="joinProcessController.joinProcess.joinCompleted">
+				<div>
+					<span ng-bind-html="joinProcessController.joinProcess.notificationMsg"></span>
+				</div>
+		
+				<div styleClass="clearing"></div><br/>
+					
+				<span
+					ng-if="!joinProcessController.joinProcess.isCase"
+					ng-bind="i18n('views-common-messages.views-joinProcessDialog-viewprocessJoined')"></span>
+				<span
+					ng-if="joinProcessController.joinProcess.isCase"
+					ng-bind="i18n('views-common-messages.views-attachToCase-showCase-message')"></span>
+			</div>
+			
+			<div ng-if="!joinProcessController.joinProcess.joinCompleted">
+				<div ng-if="joinProcessController.abortNotification.list != undefined">
+					<table sd-data-table="joinProcessController.abortNotificationDataTable" sd-data="joinProcessController.abortNotification"
+						sda-no-pagination="true"
+						sda-mode="local">
+						<thead>
+							<tr>
+								<th sda-name="process" sda-label="{{i18n('views-common-messages.views-switchProcessDialog-notification-column-process')}}" sda-sortable="false"></th>
+								<th sda-name="status" sda-label="{{i18n('views-common-messages.views-switchProcessDialog-switchedProcess-column-status')}}" sda-sortable="false"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>{{rowData.abortedProcess.processName}}</td>
+								
+								<td>{{rowData.statusMessage}}</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div ng-if="joinProcessController.abortNotification.list == undefined">
+					{{joinProcessController.abortNotification}}
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="confirmation-buttonpane">
+		<div class="button-pane cf" >
+			<div class="right" ng-if="!joinProcessController.joinProcess.joinCompleted">
+			    <button class="button" ng-click="joinProcessController.closeNotification(this)">{{i18n('views-common-messages.common-close')}}</button>
+			</div>
+			<div class="right" ng-if="joinProcessController.joinProcess.joinCompleted">
+			  	<button class="button" ng-click="joinProcessController.okNotification(this)">{{i18n('views-common-messages.common-yes')}}</button>
+			    <button class="button" ng-click="joinProcessController.closeNotification(this)">{{i18n('views-common-messages.common-no')}}</button>
+			</div>
+	    </div>
+	</div>
+</div>

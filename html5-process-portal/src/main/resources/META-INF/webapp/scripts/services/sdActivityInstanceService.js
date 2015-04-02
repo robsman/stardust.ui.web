@@ -208,7 +208,7 @@
 			}
 			
 			if (searchCases != undefined) {
-				restUrl += '&case=' + searchCases;
+				restUrl += '&searchCases=' + searchCases;
 			}
 			
 			return ajax(restUrl, '', proInstanceOids);

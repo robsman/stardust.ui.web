@@ -1,0 +1,100 @@
+<div class="sd-abort-dlg">
+	<div class="section" style="border:none;">
+		<div sd-js-error class="msgError">
+		</div>
+		<div class="abort-join-section">
+			<!-- Select From List -->	
+			<div ng-show="!joinProcessController.joinProcess.advancedSelect">
+				<div style="float:right;"><a class="action-link " ng-click="joinProcessController.showAdvancedSelect(true)">{{i18n('views-common-messages.views-joinProcessAdvanced-advanced-link-label')}} >></a></div>
+				<br/>
+				<div style="clear:both; margin-top: 10px;">
+					<span ng-hide="joinProcessController.joinProcess.matchAll">
+						<span style="margin-right: 10px;">{{i18n('views-common-messages.views-joinProcessDialog-descriptorAnyMatchingProcesses-message')}}</span>
+						<button class="button" ng-click="joinProcessController.showMatchAll(true)">
+							{{i18n('views-common-messages.views-joinProcessDialog-descriptorMatchAll-button-label')}}
+						</button>
+					</span>
+					<span ng-show="joinProcessController.joinProcess.matchAll">
+						<span style="margin-right: 10px;">{{i18n('views-common-messages.views-joinProcessDialog-descriptorAllMatchingProcesses-message')}}</span>
+						<button class="button" ng-click="joinProcessController.showMatchAll(false)">
+							{{i18n('views-common-messages.views-joinProcessDialog-descriptorMatchAny-button-label')}}
+						</button>
+					</span>
+				</div>
+				<br/>
+				<div>
+					<table sd-data-table="joinProcessController.joinProcess.relatedProcessDataTable" sd-data="joinProcessController.joinProcess.relatedProcesses"
+						sda-page-size="4"
+						sda-selectable="row"
+						sda-mode="local">
+						<thead>
+							<tr>
+								<th sda-name="processName" sda-label="{{i18n('views-common-messages.views-relatedProcessSearch-table-column-processName')}}" sda-sortable="false"></th>
+								<th sda-name="oid" sda-label="{{i18n('views-common-messages.views-relatedProcessSearch-table-column-oid')}}" sda-sortable="false"></th>
+								<th sda-name="priority" sda-label="{{i18n('views-common-messages.views-relatedProcessSearch-table-column-priority')}}" sda-sortable="false"></th>
+								<th sda-name="startTime" sda-label="{{i18n('views-common-messages.views-relatedProcessSearch-table-column-startTime')}}" sda-sortable="false"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td sda-field="processName"></td>
+								<td sda-field="oid"></td>
+								<td sda-field="priority"></td>
+								<td sda-field="startTime"></td>
+							</tr>
+						</tbody>
+					</table>
+					<br/>
+					<table class="join-form">
+						<tr>
+							<td><label class="label-form">{{i18n('views-common-messages.views-joinProcessDialog-linkComment-label')}}</label></td>
+							<td>
+								<textarea ng-model="joinProcessController.joinProcess.linkComment"></textarea>
+							</td>
+						</tr>
+					</table>
+					
+					<table class="switch-form-info">
+						<tr>
+							<td style="padding-right: 11px;">
+								<i class="glyphicon glyphicon-info-sign"></i>
+							</td>
+							<td>
+								<div ng-bind-html="joinProcessController.joinProcess.dialogMsg"></div>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			
+			<!-- Advanced -->	
+			<div ng-show="joinProcessController.joinProcess.advancedSelect">
+				<div style="float:right;"><a class="action-link " ng-click="joinProcessController.showAdvancedSelect(false)">{{i18n('views-common-messages.views-joinProcessDialog-selectFromList-link-label')}} >></a></div>
+				<br/>
+				<div style="clear:both; margin-top: 10px;">
+					<div ng-if="!joinProcessController.joinProcess.isCase">{{i18n('views-common-messages.views-joinProcessDialog-specifyProcessToAbort-message')}}</div>
+					<div ng-if="joinProcessController.joinProcess.isCase">{{i18n('views-common-messages.views-joinCaseDialog-specifyCaseToAbort-message')}}</div>
+					<table class="join-form">
+						<tr>
+							<td>
+								<label ng-if="!joinProcessController.joinProcess.isCase" class="label-form">{{i18n('views-common-messages.views-joinProcessDialog-processOID-label')}}</label>
+								<label ng-if="joinProcessController.joinProcess.isCase" class="label-form">{{i18n('views-common-messages.views-attachToCase-caseOID-label')}}</label>
+							</td>
+							<td>
+								<div>
+									<input ng-model="joinProcessController.joinProcess.processOID" type="text" />
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td><label class="label-form">{{i18n('views-common-messages.views-joinProcessDialog-linkComment-label')}}</label></td>
+							<td>
+								<textarea ng-model="joinProcessController.joinProcess.linkComment"></textarea>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
