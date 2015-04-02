@@ -17,9 +17,9 @@ define(
 				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_propertiesPage",
 				"bpm-modeler/js/m_dataTypeSelector",
 				"bpm-modeler/js/m_parameterDefinitionsPanel",
-				"bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_model" ],
 		function(m_utils, m_constants, m_dialog, m_propertiesPage,
-				m_dataTypeSelector, m_parameterDefinitionsPanel, m_i18nUtils) {
+				m_dataTypeSelector, m_parameterDefinitionsPanel, m_i18nUtils, m_model) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new ProcessProcessInterfacePropertiesPage(
@@ -68,6 +68,9 @@ define(
 					this.processInterfaceFromDataCreationWizardLink = this
 							.mapInputId("processInterfaceFromDataCreationWizardLink");
 					this.processDataTableBody = m_utils.jQuerySelect("#processDataTable tbody"); // TODO
+					
+					this.implementsProcess = this.mapInputId("implementsProcess");
+					
 					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
 							.create({
 								scope : "processInterfacePropertiesPage",
@@ -104,6 +107,23 @@ define(
 
 										event.data.callbackScope.submitProcessInterfaceType();
 									});
+					
+
+					this.implementsProcess.change({
+            "callbackScope": this
+          }, function(event) {
+            
+            event.data.callbackScope.submitImplementsProcessChange();
+            
+            /*//TODO: remove post server side implementation
+            var process = m_model.findProcess(event.data.callbackScope.implementsProcess.val());
+            event.data.callbackScope.getModelElement().formalParameters = process.formalParameters;
+            event.data.callbackScope.parameterDefinitionsPanel.setScopeModel(event.data.callbackScope.
+                    getModelElement().model);
+            event.data.callbackScope.parameterDefinitionsPanel.setParameterDefinitions(event.data.callbackScope
+                    .getModelElement().formalParameters);*/
+          });
+					
 					this.processInterfaceFromDataCreationWizardLink.click({
 						"callbackScope" : this
 					}, function(event) {
@@ -262,6 +282,43 @@ define(
 				};
 
 				/**
+				 * 
+				 */
+        ProcessProcessInterfacePropertiesPage.prototype.populateImplementsProcess = function() {
+          this.implementsProcess.empty();
+          
+          this.implementsProcess.append("<option value='"
+                  + m_constants.TO_BE_DEFINED
+                  + "'>"
+                  + m_i18nUtils
+                      .getProperty("modeler.general.toBeDefined")
+                  + "</option>");
+          
+          var modelsSorted = m_utils.convertToSortedArray(
+                  m_model.getModels(), "name", true);
+
+          for ( var n in modelsSorted) {
+            if (modelsSorted[n] == this.getModelElement().model) {
+              continue;
+            }
+
+            processesSorted = m_utils.convertToSortedArray(
+                    modelsSorted[n].processes, "name", true);
+            for ( var m in processesSorted) {
+              if ((processesSorted[m].processInterfaceType === m_constants.PROVIDES_PROCESS_INTERFACE_KEY)) {
+                this.implementsProcess
+                .append("<option value='"
+                    + processesSorted[m].getFullId()
+                    + "'>"
+                    + modelsSorted[n].name
+                    + "/"
+                    + processesSorted[m].name
+                    + "</option>");
+              }
+            }
+          }
+        }
+				/**
 				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.setNoInterface = function() {
@@ -283,6 +340,8 @@ define(
           m_dialog.makeVisible(this.webServiceInterfaceCheckboxInput);
           m_dialog.makeVisible(m_utils.jQuerySelect("label[for='restInterfaceCheckboxInput']"));
           m_dialog.makeVisible(this.restInterfaceCheckboxInput);
+          m_dialog.makeInvisible(m_utils.jQuerySelect("label[for='implementsProcess']"));
+          m_dialog.makeInvisible(this.implementsProcess);
 
 					if (this.getModelElement().formalParameters == null) {
 						this.getModelElement().formalParameters = [];
@@ -307,6 +366,25 @@ define(
           m_dialog.makeInvisible(this.webServiceInterfaceCheckboxInput);
           m_dialog.makeInvisible(m_utils.jQuerySelect("label[for='restInterfaceCheckboxInput']"));
           m_dialog.makeInvisible(this.restInterfaceCheckboxInput);
+          
+          m_dialog.makeVisible(m_utils.jQuerySelect("label[for='implementsProcess']"));
+          m_dialog.makeVisible(this.implementsProcess);
+          
+          this.populateImplementsProcess();
+          if(this.getModelElement().implementsProcessId){
+            this.implementsProcess.val(this.getModelElement().implementsProcessId);
+          }else{
+            this.implementsProcess.val(m_constants.TO_BE_DEFINED);  
+          }
+          
+          if (this.getModelElement().formalParameters == null) {
+            this.getModelElement().formalParameters = [];            
+          }
+
+          this.parameterDefinitionsPanel.setScopeModel(this
+              .getModelElement().model);
+          this.parameterDefinitionsPanel.setParameterDefinitions(this
+              .getModelElement().formalParameters);
 				};
 
 				/**
@@ -418,5 +496,15 @@ define(
 						"processInterfaceType" : this.processInterfaceTypeSelectInput.val()
 					});
 				};
+				
+				/**
+				 * 
+				 */
+        ProcessProcessInterfacePropertiesPage.prototype.submitImplementsProcessChange = function() {
+          this.propertiesPanel.submitChanges({
+            "implementsProcessId": this.implementsProcess.val()
+          });
+        };
+        
 			}
 		});
