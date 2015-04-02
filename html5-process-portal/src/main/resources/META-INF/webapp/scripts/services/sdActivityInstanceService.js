@@ -15,8 +15,8 @@
 	'use strict';
 
 	angular.module('workflow-ui.services').provider('sdActivityInstanceService', function () {
-		this.$get = ['$rootScope', '$http', '$q', 'sdDataTableHelperService', function ($rootScope, $http, $q, sdActivityTableUtilService) {
-			var service = new ActivityInstanceService($rootScope, $http, $q, sdActivityTableUtilService);
+		this.$get = ['$rootScope', '$http', '$q', 'sdDataTableHelperService', function ($rootScope, $http, $q, sdDataTableHelperService) {
+			var service = new ActivityInstanceService($rootScope, $http, $q, sdDataTableHelperService);
 			return service;
 		}];
 	});
@@ -143,6 +143,16 @@
 			};
 			
 			return ajax(REST_BASE_URL, "delegate", delegateData);
+		};
+		
+		
+		/**
+		 * Expected data 
+		 * [{oid : status} , {..},...]
+		 * 
+		 */
+		ActivityInstanceService.prototype.performDefaultDelegate = function(delegateData) {
+			return ajax(REST_BASE_URL, "performDefaultDelegate", delegateData);
 		};
 		
 		/*

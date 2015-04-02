@@ -423,6 +423,15 @@ public class ActivityInstanceResource
       return Response.ok(delegationComponent.delegate(postedData), MediaType.APPLICATION_JSON).build();
    }
     
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/performDefaultDelegate")
+   public Response performDefaultDelegate(String postedData) throws PortalRestException, PortalException
+   {
+      return Response.ok(delegationComponent.performDefaultDelegate(postedData), MediaType.APPLICATION_JSON).build();
+   }
+    
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)

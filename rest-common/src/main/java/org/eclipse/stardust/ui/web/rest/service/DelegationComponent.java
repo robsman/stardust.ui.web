@@ -17,6 +17,7 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.Resource;
 
@@ -27,8 +28,11 @@ import org.eclipse.stardust.engine.api.model.ModelParticipant;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
+import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
@@ -37,6 +41,7 @@ import org.eclipse.stardust.ui.web.html5.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.rest.exception.ExceptionHelper;
 import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent.PerformerTypeUI;
+import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DelegationRequestDTO;
@@ -49,6 +54,8 @@ import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.DelegationHandlerBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.IDelegatesProvider;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.IDepartmentProvider;
+import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils.ParticipantType;
@@ -264,6 +271,65 @@ public class DelegationComponent
          throw new I18NException(restCommonClientMessages.getString("activity.delegation.noParticipantSelected.error"));
       }
       return notificationMap;
+   }
+   
+   
+   /**
+    * Performs default delegate
+    * 
+    * @param request
+    * @return
+    */
+   public String performDefaultDelegate(String request)
+   {
+      NotificationMap notification = new NotificationMap();
+      Map<String, Object> activityStatusMap = JsonDTO.getAsMap(request);
+
+      try
+      {
+         WorkflowService workflowService = serviceFactoryUtils.getWorkflowService();
+         for (Entry<String, Object> entry : activityStatusMap.entrySet())
+         {
+            int status = (Integer) entry.getValue();
+            Long oid = Long.valueOf(entry.getKey());
+            if (ActivityInstanceState.Application.getValue() == status)
+            {
+               forceSuspend(oid);
+            }
+            workflowService.delegateToDefaultPerformer(oid);
+            notification.addSuccess(new NotificationDTO(oid, null, null));
+         }
+      }
+      catch (Exception e)
+      {
+         trace.error("Error in performing default delegate", e);
+         notification.addFailure(new NotificationDTO(null, null, e.getMessage()));
+      }
+      return GsonUtils.toJsonHTMLSafeString(notification);
+   }
+   
+   
+   /**
+    * Activity instance is in Application state, force suspend will be done
+    * 
+    * @param ai
+    */
+   public  void forceSuspend(Long oid)
+   {
+      AdministrationService adminService = serviceFactoryUtils.getAdministrationService();
+
+      boolean forceSuspend = AuthorizationUtils.canForceSuspend();
+      try
+      {
+         if (forceSuspend && adminService != null)
+         {
+             adminService.forceSuspendToDefaultPerformer(oid);
+         }
+      }
+      catch (Exception e)
+      {
+         ExceptionHandler.handleException(e);
+      }
    }
 
    /**

@@ -19,13 +19,14 @@
 
 	angular.module('bpm-common').directive('sdActivityTable',
 			['$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sdPreferenceService', 'sdWorklistService',
-			 'sdActivityInstanceService', 'sdProcessDefinitionService', 'sdCriticalityService', 'sdStatusService', 'sdPriorityService', '$filter','sgI18nService','$timeout','sdLoggedInUserService', ActivityTableDirective]);
+			 'sdActivityInstanceService', 'sdProcessDefinitionService', 'sdCriticalityService', 'sdStatusService', 'sdPriorityService', 
+			 '$filter','sgI18nService','$timeout','sdLoggedInUserService','sdDialogService', ActivityTableDirective]);
 
 	/*
 	 *
 	 */
 	function ActivityTableDirective($parse, $q, sdUtilService, sdViewUtilService, sdLoggerService, sdPreferenceService, sdWorklistService,
-			sdActivityInstanceService, sdProcessDefinitionService, sdCriticalityService, sdStatusService, sdPriorityService, $filter, sgI18nService, $timeout, sdLoggedInUserService) {
+			sdActivityInstanceService, sdProcessDefinitionService, sdCriticalityService, sdStatusService, sdPriorityService, $filter, sgI18nService, $timeout, sdLoggedInUserService, sdDialogService ) {
 
 		var trace = sdLoggerService.getLogger('bpm-common.sdActivityTable');
 
@@ -382,6 +383,30 @@
 				
 				self.popoverDirective.show(event);
 			};
+			
+			/**
+			 * 
+			 * @param rowItems
+			 */
+			self.openDefaultDelegationDialog = function(rowItems) {
+				var self = this;
+				
+				var title = sgI18nService.translate('views-common-messages.common-confirm','Confirm');
+				var html  = sgI18nService.translate('views-common-messages.views-strandedActivities-confirmDefaultDelegate','Confirm');
+				var options = {
+						title: title,
+						type: 'confirm',
+						onConfirm: function() {
+							self.performDefaultDelegate(scope,sdActivityInstanceService, sdDialogService, sgI18nService, rowItems);
+						},
+						confirmActionLabel: sgI18nService.translate('views-common-messages.common-yes','Yes'),
+						cancelActionLabel:sgI18nService.translate('views-common-messages.common-no','No')
+					};
+				
+				
+				sdDialogService.dialog(scope, options, html)
+				
+			};
 		};
 
 		/**
@@ -404,6 +429,7 @@
 			this.priorityEditable = true;
 			this.originalPriorities = {};
 			this.changedPriorities = {};
+			this.defaultDelegateEnabled = false;
 			this.initialSort = {name : 'activityOID', dir : 'desc'};
 			this.updatePriorityNotification = {
 					error : false,
@@ -420,6 +446,9 @@
 			}
 			if (!attr.sdaPreferenceName) {
 				throw "sdaPreferenceName is not defined."
+			}
+			if (attr.sdaDefaultDelegateEnabled) {
+				this.defaultDelegateEnabled = attr.sdaDefaultDelegateEnabled === 'true' ? true : false;
 			}
 		};
 
@@ -1103,7 +1132,6 @@
 			return this.mode === DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.NAME;
 		};
 
-
 		/*
 		 * 
 		 */
@@ -1119,6 +1147,47 @@
 			}
 			this.errorMessage = 'sd-activity-table is unable to process table. Pls. refer browser console for details. Reason: ' + errorToShow;
 		};
+		
+
+		/*
+		 * 
+		 */
+		ActivityTableCompiler.prototype.performDefaultDelegate = function(scope, sdActivityInstanceService, sdDialogService, sgI18nService, rowItems) {
+			var self = this;
+			
+			var containsCaseInstance = false;
+			angular.forEach(rowItems,function(activity){
+				if(activity.isCaseInstance){
+					containsCaseInstance = true;
+				}
+			});
+			
+			if(containsCaseInstance){
+				var title = sgI18nService.translate('views-common-messages.common-error','Error');
+				var message  = sgI18nService.translate('views-common-messages.views-switchProcessDialog-caseAbort-message','Operation not suppored for case instances');
+				sdDialogService.error(scope, message, title)
+			}
+			
+			rowItems.every(function(activity) {
+			    return !(activity.isCaseInstance);
+			});
+			
+			var data = {};
+			angular.forEach(rowItems, function(item){
+				data[item.activityOID] = item.status.value;
+			});
+			sdActivityInstanceService.performDefaultDelegate(data).then(
+					function(result) {
+						if( result.failure.length > 0){
+							var title = sgI18nService.translate('views-common-messages.common-error','Error');
+							sdDialogService.error(scope, result.failure[0].message, title)
+						}
+						self.refresh();
+					}, function(error) {
+						trace.error("Error in performing default delegate :  "+error);
+					});
+		};
+		
 
 		return directiveDefObject;
 	};
