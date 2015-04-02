@@ -25,6 +25,9 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			<ippui:view name="activityViewHtml5"
 				include="/plugins/html5-admin-portal/partials/views/activityView.html" />
 		</ippui:viewsExtension>
+		<ippui:viewsExtension>
+			<ippui:view name="processViewHtml5" include="/plugins/html5-admin-portal/partials/views/processOverview.html" />
+		</ippui:viewsExtension>
 
 	</ippui:perspectiveExtension>
 </beans>
