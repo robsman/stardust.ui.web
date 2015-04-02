@@ -17,13 +17,13 @@
 	'use strict';
 
 	angular.module('bpm-common').directive('sdProcessTable',
-			['$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sgI18nService', 'sdPreferenceService',
+			['$parse', '$q', '$timeout', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sgI18nService', 'sdPreferenceService',
 			 'sdProcessInstanceService', 'sdProcessDefinitionService', 'sdStatusService', 'sdPriorityService', 'sdDialogService', ProcessTableDirective]);
 
 	/*
 	 *
 	 */
-	function ProcessTableDirective($parse, $q, sdUtilService, sdViewUtilService, sdLoggerService, sgI18nService, sdPreferenceService,
+	function ProcessTableDirective($parse, $q, $timeout, sdUtilService, sdViewUtilService, sdLoggerService, sgI18nService, sdPreferenceService,
 			sdProcessInstanceService, sdProcessDefinitionService, sdStatusService, sdPriorityService, sdDialogService) {
 
 		var trace = sdLoggerService.getLogger('bpm-common.sdProcessTable');
