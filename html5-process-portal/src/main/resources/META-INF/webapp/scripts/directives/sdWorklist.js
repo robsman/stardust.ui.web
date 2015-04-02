@@ -345,25 +345,7 @@
 			this.fetchAllAvailableCriticalities();
 			this.fetchAvailableStates();
 			this.fetchAvailablePriorities();
-			/*
-			 * 
-			 */
-			self.onAbortPopoverConfirm = function(type, result) {
-				self.refresh();
-				sdViewUtilService.syncLaunchPanels();
-				
-				if (angular.isDefined(type) && angular.isDefined(result)) {
-					if ('abortandstart' === type) {
-						// TODO open spawned activities
-						
-						sdViewUtilService.openView('worklistViewHtml5', true);
-					} else if ('abortandjoin' === type) {
-						// TODO open joined process
-						
-						sdViewUtilService.openView('processDefinitionView', true);
-					}						
-				}
-			};
+
 			/*
 			 * 
 			 */
@@ -383,7 +365,45 @@
 				
 				self.popoverDirective.show(event);
 			};
+
+			/*
+			 *
+			 */
+			self.joinCompleted = function(result) {
+				self.refresh();
+				sdViewUtilService.syncLaunchPanels();
+				if (angular.isDefined(result)) {
+					// TODO pass result as an argument to below view
+					sdViewUtilService.openView('processDefinitionView', true);
+				}
+			};
+
+/*
+			 *
+			 */
+			self.openJoinDialog = function() {
+				self.showJoinProcessDialog = true;
+			};
 			
+			/*
+			 *
+			 */
+			self.switchCompleted = function(result) {
+				self.refresh();
+				sdViewUtilService.syncLaunchPanels();
+				if (angular.isDefined(result)) {
+					// TODO pass result as an argument to below view
+					sdViewUtilService.openView('worklistViewHtml5', true);
+				}
+			};
+			
+			/*
+			 *
+			 */
+			self.openSwitchDialog = function() {
+				self.showSwitchProcessDialog = true;
+			};
+
 			/**
 			 * 
 			 * @param rowItems
@@ -954,13 +974,6 @@
 		 *
 		 */
 		ActivityTableCompiler.prototype.onDelegateConfirm = function() {
-			this.refresh();
-		};
-
-		/*
-		 *
-		 */
-		ActivityTableCompiler.prototype.onAbortPopoverConfirm = function() {
 			this.refresh();
 		};
 
