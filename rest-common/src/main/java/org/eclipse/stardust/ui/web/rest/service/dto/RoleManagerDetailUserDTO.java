@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
-import org.eclipse.stardust.ui.web.bcc.jsf.UserItem;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 
 /**
@@ -33,11 +32,7 @@ public class RoleManagerDetailUserDTO extends AbstractDTO
 
    public String roleCount;
 
-   public UserItem userItem;
-
    public String totalItemCount;
-
-   public boolean select;
 
    /**
     * @param directItemCount
@@ -46,14 +41,12 @@ public class RoleManagerDetailUserDTO extends AbstractDTO
     * @param roleCount
     * @param userItem
     */
-   public RoleManagerDetailUserDTO(String userName, String userOid,
-         String directItemCount, String inDirectItemCount, String totalItemCount,
-         boolean loggedIn, String roleCount, UserItem userItem, boolean select)
+   public RoleManagerDetailUserDTO(String userName, String userOid, String directItemCount, String inDirectItemCount,
+         String totalItemCount, boolean loggedIn, String roleCount)
    {
       super();
       this.userName = userName;
       this.userOid = userOid;
-      this.select = select;
       this.directItemCount = directItemCount;
       this.inDirectItemCount = inDirectItemCount;
       this.totalItemCount = totalItemCount;
@@ -66,6 +59,5 @@ public class RoleManagerDetailUserDTO extends AbstractDTO
          this.loggedIn = "No";
       }
       this.roleCount = roleCount;
-      this.userItem = userItem;
    }
 }

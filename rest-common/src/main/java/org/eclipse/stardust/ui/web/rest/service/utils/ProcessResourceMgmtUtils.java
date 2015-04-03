@@ -31,7 +31,6 @@ import org.eclipse.stardust.ui.web.bcc.jsf.UserItem;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessResourceMgmtRoleDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessResourceMgmtUserDTO;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
-import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -43,6 +42,7 @@ public class ProcessResourceMgmtUtils
 
    /**
     * Used to set the list of ProcessResourceMgmtRoleDTO
+    * 
     * @return
     */
    public List<ProcessResourceMgmtRoleDTO> getProcessResourceRoles()
@@ -85,14 +85,11 @@ public class ProcessResourceMgmtUtils
       List<UserItem> userItems = facade.getAllUsersAsUserItems(users);
       if (!userItems.isEmpty())
       {
-         String userFullName;
          for (UserItem userItem : userItems)
          {
-            userFullName = I18nUtils.getUserLabel(userItem.getUser());
             processResourceUserList.add(new ProcessResourceMgmtUserDTO(userItem.getUserName(), userItem.getUser()
-                  .getOID(), userItem.getUser().getId(), userFullName, userItem.getUser().getAccount(), userItem
-                  .getUser().getEMail(), userItem.getRoleCount(), userItem.getDirectItemCount(), userItem
-                  .getIndirectItemCount(), userItem.getItemCount(), userItem.isLoggedIn()));
+                  .getOID(), userItem.getUser().getId(), userItem.getRoleCount(), userItem.getDirectItemCount(),
+                  userItem.getIndirectItemCount(), userItem.getItemCount(), userItem.isLoggedIn()));
 
          }
       }

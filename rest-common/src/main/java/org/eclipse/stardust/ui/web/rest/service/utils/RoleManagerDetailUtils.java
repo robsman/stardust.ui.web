@@ -59,8 +59,7 @@ public class RoleManagerDetailUtils
          userAssignedList.add(new RoleManagerDetailUserDTO(userItem.getUserName(), Long.toString(userItem.getUser()
                .getOID()), Long.toString(userItem.getDirectItemCount()),
                Long.toString(userItem.getIndirectItemCount()), Long.toString(userItem.getIndirectItemCount()
-                     + userItem.getDirectItemCount()), userItem.isLoggedIn(), Long.toString(userItem.getRoleCount()),
-               userItem, true));
+                     + userItem.getDirectItemCount()), userItem.isLoggedIn(), Long.toString(userItem.getRoleCount())));
       }
       roleManagerDetailsDTO.assignedUserList = userAssignedList;
 
@@ -74,8 +73,7 @@ public class RoleManagerDetailUtils
          userAssignableList.add(new RoleManagerDetailUserDTO(userItem.getUserName(), Long.toString(userItem.getUser()
                .getOID()), Long.toString(userItem.getDirectItemCount()),
                Long.toString(userItem.getIndirectItemCount()), Long.toString(userItem.getIndirectItemCount()
-                     + userItem.getDirectItemCount()), userItem.isLoggedIn(), Long.toString(userItem.getRoleCount()),
-               userItem, false));
+                     + userItem.getDirectItemCount()), userItem.isLoggedIn(), Long.toString(userItem.getRoleCount())));
       }
       roleManagerDetailsDTO.assignableUserList = userAssignableList;
 

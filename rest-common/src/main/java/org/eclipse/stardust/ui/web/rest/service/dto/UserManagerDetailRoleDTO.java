@@ -28,15 +28,11 @@ public class UserManagerDetailRoleDTO extends AbstractDTO
 
    public String itemsPerUser;
 
-   // public ModelParticipantInfo modelParticipantInfo;
-
-   public boolean select;
 
    public UserManagerDetailRoleDTO(String roleName, String roleId, long itemsCount, long roleAccount,
-         long itemsPerUser, boolean select)
+         long itemsPerUser)
    {
       super();
-      this.select = select;
       this.roleName = roleName;
       this.roleId = roleId;
       this.itemsCount = Long.toString(itemsCount);

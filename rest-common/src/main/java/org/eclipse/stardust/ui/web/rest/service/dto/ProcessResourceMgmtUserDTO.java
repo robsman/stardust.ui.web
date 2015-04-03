@@ -22,12 +22,6 @@ public class ProcessResourceMgmtUserDTO extends AbstractDTO
 
    public String userName;
 
-   public String userAccount;
-
-   public String userFullName;
-
-   public String userEmail;
-
    public String userOid;
 
    public Long roleCount;
@@ -55,25 +49,13 @@ public class ProcessResourceMgmtUserDTO extends AbstractDTO
     * @param itemCount
     * @param loggedIn
     */
-   public ProcessResourceMgmtUserDTO(String userName, Long userOid, String userId,
-         String userFullName, String userAccount, String eMail, Long roleCount,
-         Long directItemCount, Long indirectItemCount, Long itemCount, boolean loggedIn)
+   public ProcessResourceMgmtUserDTO(String userName, Long userOid, String userId, Long roleCount, Long directItemCount, Long indirectItemCount,
+         Long itemCount, boolean loggedIn)
    {
       super();
       this.userName = userName;
       this.userOid = userOid.toString();
       this.userId = userId;
-      this.userFullName = userFullName;
-      this.userAccount = userAccount;
-      if (eMail != null)
-      {
-         this.userEmail = eMail;
-      }
-      else
-      {
-         this.userEmail = "";
-      }
-
       this.roleCount = roleCount;
       this.directItemCount = directItemCount;
       this.indirectItemCount = indirectItemCount;

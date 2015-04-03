@@ -124,7 +124,7 @@ public class UserManagerDetailUtils
          for (RoleItem roleItem : roles)
          {
             roleList.add(new UserManagerDetailRoleDTO(roleItem.getRoleName(), roleItem.getRole().getId(), roleItem
-                  .getWorklistCount(), roleItem.getUserCount(), roleItem.getEntriesPerUser(), false));
+                  .getWorklistCount(), roleItem.getUserCount(), roleItem.getEntriesPerUser()));
          }
       }
       return roleList;
@@ -298,7 +298,8 @@ public class UserManagerDetailUtils
    }
 
    /**
-    *  This method will get all activities for user
+    * This method will get all activities for user
+    * 
     * @param userOid
     * @param options
     * @return
