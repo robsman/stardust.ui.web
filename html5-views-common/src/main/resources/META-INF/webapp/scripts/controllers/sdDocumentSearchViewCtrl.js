@@ -334,11 +334,16 @@
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.openAttachToProcessDialog = function(rowData) {
+		DocumentSearchViewCtrl.prototype.openAttachToProcessDialog = function(rowSelection) {
 			var self = this;
 			self.processDefns = {};
 			self.showAttachToProcessDialog = true;
-			self.documentId = rowData.documentId;
+			if(angular.isArray(rowSelection)){
+				self.documentIds = self.getSelectedRoleIds(rowSelection);	
+			}
+			else{
+				self.documentIds = [rowSelection.documentId];
+			}
 			sdDocumentSearchService.getAvailableProcessDefns().then(function(data) {
 				self.processDefns.list = data.list;
 				self.processDefns.totalCount = data.totalCount;
@@ -358,6 +363,17 @@
 		/**
 		 * 
 		 */
+		DocumentSearchViewCtrl.prototype.getSelectedRoleIds = function(rowSelection) {
+			var documentIds = [];
+			for ( var index in rowSelection) {
+				documentIds.push(rowSelection[index].documentId);
+			}
+			return documentIds;
+		};
+		
+		/**
+		 * 
+		 */
 		DocumentSearchViewCtrl.prototype.onConfirmFromAttachToProcess = function(res) {
 			var self = this;
 			if (self.processType == "SPECIFY" && self.specifiedProcess == null) {
@@ -369,8 +385,8 @@
 				self.selectedProcess = self.specifiedProcess;
 			}
 
-			this.attachDocumentsToProcess(self.selectedProcess, self.documentId);
-			delete self.documentId;
+			this.attachDocumentsToProcess(self.selectedProcess, self.documentIds);
+			delete self.documentIds;
 			delete self.selectedProcess;
 			delete self.specifiedProcess;
 		};
@@ -380,7 +396,7 @@
 		 */
 		DocumentSearchViewCtrl.prototype.onCloseFromAttachToProcess = function(res) {
 			var self = this;
-			delete self.documentId;
+			delete self.documentIds;
 			delete self.selectedProcess;
 			delete self.specifiedProcess;
 		};
@@ -388,9 +404,9 @@
 		/**
 		 * 
 		 */
-		DocumentSearchViewCtrl.prototype.attachDocumentsToProcess = function(processOID, documentId) {
+		DocumentSearchViewCtrl.prototype.attachDocumentsToProcess = function(processOID, documentIds) {
 			var self = this;
-			sdDocumentSearchService.attachDocumentsToProcess(processOID, documentId).then(function(data) {
+			sdDocumentSearchService.attachDocumentsToProcess(processOID, documentIds).then(function(data) {
 				self.infoData = {};
 				self.infoData.messageType = data.messageType;
 				self.infoData.details = data.details;

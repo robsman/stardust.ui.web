@@ -153,12 +153,12 @@ public class DocumentSearchService
    /**
     * 
     * @param processOid
-    * @param documentId
+    * @param documentIds
     * @return
     * @throws ResourceNotFoundException
     */
-   public InfoDTO attachDocumentsToProcess(long processOid, String documentId) throws ResourceNotFoundException
+   public InfoDTO attachDocumentsToProcess(long processOid, List<String> documentIds) throws ResourceNotFoundException
    {
-      return documentSearchUtils.attachDocuments(processOid, documentId);
+      return documentSearchUtils.attachDocuments(processOid, documentIds);
    }
 }

@@ -148,16 +148,28 @@
 		/**
 		 * 
 		 */
-		DocumentSearchService.prototype.attachDocumentsToProcess = function(processOID, documentId) {
-			var restUrl = REST_BASE_URL + "/:type/:processOID/:documentId";
+		DocumentSearchService.prototype.attachDocumentsToProcess = function(processOID, documentIds) {
+			var restUrl = REST_BASE_URL + "/:type/:processOID";
+
+			var postData = {
+				documentIds : documentIds,
+			};
+
+			var attachDocumentsToProcess = $resource(restUrl, {
+				type : '@type',
+				processOID : '@processOID'
+			}, {
+				fetch : {
+					method : 'POST'
+				}
+			});
 
 			var urlTemplateParams = {};
 
 			urlTemplateParams.type = "attachDocumentsToProcess";
-			urlTemplateParams.documentId = documentId;
 			urlTemplateParams.processOID = processOID;
 
-			return $resource(restUrl).get(urlTemplateParams).$promise;
+			return attachDocumentsToProcess.fetch(urlTemplateParams, postData).$promise;
 		};
 
 	}

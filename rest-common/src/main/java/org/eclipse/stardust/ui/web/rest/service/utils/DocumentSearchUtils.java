@@ -567,11 +567,11 @@ public class DocumentSearchUtils
    /**
     * 
     * @param processOid
-    * @param documentId
+    * @param documentIds
     * @return
     * @throws ResourceNotFoundException
     */
-   public InfoDTO attachDocuments(Long processOid, String documentId) throws ResourceNotFoundException
+   public InfoDTO attachDocuments(Long processOid, List<String> documentIds) throws ResourceNotFoundException
    {
       InfoDTO infoDTO = null;
       ProcessInstance pi = null;
@@ -589,17 +589,14 @@ public class DocumentSearchUtils
       if (DocumentMgmtUtility.isProcessAttachmentAllowed(pi))
       {
          List<Document> documentList = new ArrayList<Document>();
-         Document selectedDoc = DocumentMgmtUtility.getDocument(documentId);
-         if (null != selectedDoc)
-         {// single document is selected
-            documentList.add(selectedDoc);
+         for(String documentId : documentIds){
+            Document selectedDoc = DocumentMgmtUtility.getDocument(documentId); 
+            if (null != selectedDoc)
+            {
+               documentList.add(selectedDoc);
+            }
          }
-         else
-         { // multiple documents are selected
-           // Can be implemented later as for me it was not in
-           // scope.
-         }
-
+               
          if (documentList.size() > 0)
          {
             // create copy of the documents and update process instance

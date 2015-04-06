@@ -13,6 +13,9 @@
  */
 package org.eclipse.stardust.ui.web.rest;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.MissingResourceException;
 
 import javax.annotation.Resource;
@@ -43,7 +46,9 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 @Component
 @Path("/documentSearch")
@@ -214,18 +219,18 @@ public class DocumentSearchResource
    /**
     * 
     * @param processOID
-    * @param documentId
+    * @param postData
     * @return
     */
-   @GET
-   @Path("/attachDocumentsToProcess/{processOID}/{documentId}")
+   @POST
+   @Path("/attachDocumentsToProcess/{processOID}")
    public Response attachDocumentsToProcess(@PathParam("processOID") String processOID,
-         @PathParam("documentId") String documentId)
+         String postData)
    {
       try
-      {
+      {   List<String> documentIds = populateDocumentIds(postData);
 
-         InfoDTO result = documentSearchService.attachDocumentsToProcess(Long.parseLong(processOID), documentId);
+         InfoDTO result = documentSearchService.attachDocumentsToProcess(Long.parseLong(processOID), documentIds);
          Gson gson = new Gson();
          return Response.ok(gson.toJson(result), MediaType.TEXT_PLAIN_TYPE).build();
       }
@@ -239,6 +244,31 @@ public class DocumentSearchResource
          trace.error(e, e);
          return Response.status(Status.BAD_REQUEST).build();
       }
+   }
+   
+   
+   /**
+    * Populate the options with the post data.
+    * @param postData
+    * @return
+    */
+
+   private List<String> populateDocumentIds(String postData)
+   {
+      JsonMarshaller jsonIo = new JsonMarshaller();
+      JsonObject postJSON = jsonIo.readJsonObject(postData);
+
+      JsonArray documentIdsArray = postJSON.getAsJsonArray("documentIds");
+      Type type = new TypeToken<List<String>>()
+      {
+      }.getType();
+      List<String> documentIds = new ArrayList<String>();
+      if (null != documentIdsArray)
+      {
+         documentIds = new Gson().fromJson(documentIdsArray.toString(), type);
+
+      }
+      return documentIds;
    }
 
    /**
