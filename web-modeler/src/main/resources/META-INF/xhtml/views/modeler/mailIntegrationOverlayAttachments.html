@@ -89,7 +89,7 @@
                <td style="border: 1px solid lightgray;">
                   <select ng-model="templateConf.tSource"
                         ng-disabled="templateConf.tSource == 'data' ? true : false"
-                     ng-options="srcOpt.value as srcOpt.title for srcOpt in overlayPanel.sourceOptions"
+                     ng-options="srcOpt.value as srcOpt.title for srcOpt in overlayPanel.getSourceOptions(templateConf)"
                         ng-change="overlayPanel.submitTemplateChanges(templateConf.tSource, $index)"/>
                </td>
                <td style="border: 1px solid lightgray;">

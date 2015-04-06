@@ -1621,17 +1621,6 @@ define(
                            .getProperty("modeler.model.applicationOverlay.email.attachments.templateConfigurations.title");
                   return labels;
                };
-
-               this.sourceOptions = [ {
-                  value : "repository",
-                  title : "Document Repository"
-               }, {
-                  value : "classpath",
-                  title : "Classpath"
-               }, {
-                  value : "data",
-                  title : "Data"
-               } ];
                this.formatOptions = [ {
                   value : "plain",
                   title : "Plain"
@@ -1649,7 +1638,23 @@ define(
                   value : "DOCUMENT_REQUEST",
                   title : "Document Request"
                } ];
-
+               MailIntegrationOverlay.prototype.getSourceOptions = function(item){
+                   var sourceOptions = [ {
+                          value : "repository",
+                          title : "Document Repository"
+                       }, {
+                          value : "classpath",
+                          title : "Classpath"
+                       }];
+                   if(item.tSource=="data"){
+                   sourceOptions.push({
+                          value : "data",
+                          title : "Data"
+                    });
+                   }
+                   return sourceOptions;
+               };
+                
                /**
                 * invoked when the user click on add button in attchment tab (add template
                 * configuration)
@@ -1695,11 +1700,6 @@ define(
                MailIntegrationOverlay.prototype.submitTemplateChanges = function(source,
                         index)
                {
-                  if (source == "data")
-                  {
-                     // TODO use new directive options-disabled
-                     this.templateConfigurations[index].tSource = "repository";
-                  }
                   var attributes=this.getApplication().attributes;
                   attributes["stardust:emailOverlay::templateConfigurations"]=angular.toJson(this.templateConfigurations);
                   attributes["carnot:engine:camel::routeEntries"]= this.getRoute(attributes,this.getApplication().contexts.application.accessPoints);
