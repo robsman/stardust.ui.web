@@ -1065,20 +1065,7 @@ define(
                      if (authenticationPreemptiveInput)
                         route += "&amp;httpClient.authenticationPreemptive=true";
                      route += "&amp;authUsername=" + httpBasicAuthUserInput;
-                     route += "&amp;authPassword=";
-                     if (httpBasicAuthUsingCVInput)
-                     {
-                        route += "${";
-                        route += httpBasicAuthPwdInput; // TODO: Verify if
-                                                                     // URL encoding is
-                                                                     // required.
-                        route += ":Password}"; // TODO: Add :password type information
-                     }
-                     else
-                     {
-                        route += this.getHttpBasicAuthRawPwd(httpBasicAuthPwdInput); // TODO: Verify if URL
-                                                                  // encoding is required.
-                     }
+                     route += "&amp;authPassword="+httpBasicAuthPwdInput;
                   }
                   route += "'/>";
                   if (responseTypeSelect === "application/json")
