@@ -1012,6 +1012,19 @@ define(
 			                "disabled", true);  
 					  }
 					}
+					
+					//for Implements Process scope
+					if (this.options.disableParameterDefinitionNameInput) {
+  					  this.parameterDefinitionNameInput.attr("disabled", true);  
+          }else{
+            this.parameterDefinitionNameInput.removeAttr("disabled");
+          }
+					
+          if (this.options.disableParameterDefinitionDirectionSelect) {
+            this.parameterDefinitionDirectionSelect.attr("disabled", true);
+          } else {
+            this.parameterDefinitionDirectionSelect.removeAttr("disabled");
+          }
 				};
 
 				/**
