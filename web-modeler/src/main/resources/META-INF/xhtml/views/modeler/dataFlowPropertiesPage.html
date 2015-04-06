@@ -11,20 +11,11 @@
 									<td><div class="toolBar">
 											<table>
 												<tr>
-													<td><input type="image" aid="addMapping"
-														src="plugins/bpm-modeler/images/icons/add.png"
-														title="sdI18nModeler('modeler.element.properties.commonProperties.add')"
-														alt="sdI18nModeler('modeler.element.properties.commonProperties.add')"
-														class="toolbarButton" ng-click="ctrl.addMapping()" /></td>
-													<td><img
-														ng-src="plugins/bpm-modeler/images/icons/toolbar-separator.png"></img>
-													</td>
-													<td><input type="image" aid="deleteMapping"
-														src="plugins/bpm-modeler/images/icons/delete.png"
-														title="sdI18nModeler('modeler.element.properties.commonProperties.delete')"
-														alt="sdI18nModeler('modeler.element.properties.commonProperties.delete')"
-														class="toolbarButton" ng-click="ctrl.deleteMapping()" /></td>
-												</tr>
+													<td><sd-modeler-simple-toolbar
+															sda-add-item="ctrl.addMapping()"
+															sda-delete-item="ctrl.deleteMapping()">
+														</sd-modeler-simple-toolbar></td>
+												<tr>
 											</table>
 										</div></td>
 								</tr>
