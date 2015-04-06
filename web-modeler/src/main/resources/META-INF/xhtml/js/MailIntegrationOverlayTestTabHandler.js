@@ -188,8 +188,8 @@ define(
                         responseTypeSelect, responseOptionsTypeSelect,
                         responseHttpUrlInput)
                {
-                  if (responseTypeSelect != null
-                           && responseTypeSelect != m_constants.TO_BE_DEFINED)
+                  if (responseOptionsTypeSelect != null
+                           && responseOptionsTypeSelect != m_constants.TO_BE_DEFINED)
                   {
                      var typeDeclaration = m_model
                               .findTypeDeclaration(responseOptionsTypeSelect);
