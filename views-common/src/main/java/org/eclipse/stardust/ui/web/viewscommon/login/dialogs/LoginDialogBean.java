@@ -13,7 +13,6 @@ package org.eclipse.stardust.ui.web.viewscommon.login.dialogs;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collections;
-
 import java.util.List;
 import java.util.Map;
 
@@ -22,28 +21,27 @@ import javax.faces.context.FacesContext;
 
 import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
-import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
-import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
+import org.eclipse.stardust.ui.web.viewscommon.beans.ApplicationContext;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalPluginSkinResourceResolver;
 import org.eclipse.stardust.ui.web.viewscommon.common.TechnicalUserUtils;
-import org.eclipse.stardust.ui.web.viewscommon.beans.ApplicationContext;
-import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.login.InfinityStartup;
 import org.eclipse.stardust.ui.web.viewscommon.login.util.LoginUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DefaultPreferenceProviderUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
-import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.beans.factory.InitializingBean;
+
+import com.icesoft.faces.context.effects.JavascriptContext;
 
 
 public class LoginDialogBean implements Serializable, InitializingBean
@@ -335,7 +333,26 @@ public class LoginDialogBean implements Serializable, InitializingBean
          return null;
       }
 
-      return getNavigationOutcome();
+      String outcome = getNavigationOutcome();
+      if (null != outcome && outcome.startsWith(Constants.LOGGED_INTO_PREFIX))
+      {
+         String landingPage = FacesUtils.getServerBaseURL() + "/main.html";
+
+         String uicommand = FacesUtils
+               .getQueryParameterValue(org.eclipse.stardust.ui.web.common.Constants.URL_PARAM_UI_COMMAND);
+         if (StringUtils.isNotEmpty(uicommand))
+         {
+            landingPage += "#uicommand=" + uicommand;
+         }
+
+         // "FacesUtils.sendRedirect(landingPage);" does not work, hence use JavascriptContext
+         String jsCall = "window.location.replace('" + landingPage + "');";
+         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), jsCall);
+
+         return null;
+      }
+      
+      return outcome;
    }
    
    public String getNavigationOutcome()

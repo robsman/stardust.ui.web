@@ -17,11 +17,15 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.eclipse.stardust.ui.web.common.Constants;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.spi.theme.ThemeProvider;
+import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.html5.rest.HTML5FrameworkServices;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
@@ -72,6 +76,11 @@ public class HTML5LandingPageFilter implements Filter
 
       if(!response.isCommitted())
       {
+         if (handleTripOverSession(request, response))
+         {
+            return;
+         }
+
          // This is required in HTTP header for IE9
          response.setHeader("X-UA-Compatible", "IE=10,chrome=1");
          
@@ -219,6 +228,85 @@ public class HTML5LandingPageFilter implements Filter
       }
       
       return styles;
+   }
+
+   /**
+    * @param request
+    * @param response
+    * @return
+    * @throws IOException
+    */
+   private boolean handleTripOverSession(HttpServletRequest request, HttpServletResponse response) throws IOException
+   {
+      HttpSession session = request.getSession(false);
+      
+      try
+      {
+         RestControllerUtils.resolveSpringBean(UserProvider.class, session.getServletContext()).getUser();
+
+         try
+         {
+            String uiCmd = FacesUtils.getQueryParameterValue(request.getQueryString(), Constants.URL_PARAM_UI_COMMAND);
+            if (StringUtils.isNotEmpty(uiCmd))
+            {
+               // TODO: Before redirect, need to close already open views if any from session
+               // But this can only be done from ICEfaces context
+               // PortalApplication.getInstance().closeAllViews();
+
+               // Redirect
+               String landingPage = FacesUtils.getServerBaseURL(request) + "/main.html";
+               landingPage += "#uicommand=" + uiCmd;
+               response.sendRedirect(response.encodeRedirectURL(landingPage));
+
+               return true;
+            }
+         }
+         catch (Throwable t)
+         {
+            trace.error("Error occurred while recovering session", t);
+            // TODO?
+         }
+
+         return false;
+      }
+      catch (Throwable t)
+      {
+         try
+         {
+            trace.error("Appears to be an antuthenticated session... redirecting to login page.");
+
+            if (null == session)
+            {
+               session = request.getSession(true);
+            }
+
+            // Cannot directly redirect to login page, because login page is Stardust specific is configuration
+            // And is done in viewscommon, also principal mode may have different login page.
+            // So redirect to logout 
+            String logoutUri = (String) session.getServletContext()
+                  .getInitParameter(Constants.CONTEXT_PARAM_LOGOUT_URI);
+            if (!logoutUri.startsWith("/"))
+            {
+               logoutUri = "/" + logoutUri;
+            }
+            
+            logoutUri = FacesUtils.getServerBaseURL(request) + logoutUri;
+
+            String uiCmd = FacesUtils.getQueryParameterValue(request.getQueryString(), Constants.URL_PARAM_UI_COMMAND);
+            if (StringUtils.isNotEmpty(uiCmd))
+            {
+               logoutUri += "?uicommand=" + uiCmd;
+            }
+
+            response.sendRedirect(response.encodeRedirectURL(logoutUri));
+         }
+         catch(Throwable tt)
+         {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+         }
+
+         return false;
+      }
    }
 
    /**

@@ -344,6 +344,21 @@ public class FacesUtils implements Constants
     * @param paramName
     * @return
     */
+   public static String getQueryParameterValue(String queryString, final String paramName)
+   {
+      Map<String, List<String>> queryParameters = parseQueryString(queryString);
+      if (queryParameters.containsKey(paramName))
+      {
+         return queryParameters.get(paramName).get(0);
+      }
+      return null;
+   }
+
+   /**
+    * @param facesContext
+    * @param paramName
+    * @return
+    */
    public static String getQueryParameterValue(FacesContext facesContext, final String paramName)
    {
       ExternalContext ectx = facesContext.getExternalContext();
@@ -601,9 +616,20 @@ public class FacesUtils implements Constants
       HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext()
             .getRequest();
 
+      return getServerBaseURL(request);
+   }
+
+   /**
+    * returns servers base URL
+    * 
+    * @return
+    */
+   public static String getServerBaseURL(HttpServletRequest request)
+   {
       return new StringBuffer(request.getScheme()).append("://").append(request.getServerName()).append(":").append(
             request.getServerPort()).append(request.getContextPath()).toString();
    }
+
 //moved this method from BeanUtil
  @Deprecated
  public static ValueBinding createValueBinding(String expr)
