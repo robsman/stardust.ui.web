@@ -859,7 +859,9 @@ define(
 				 *
 				 */
 				SwimlaneSymbol.prototype.drag = function(dX, dY, x, y) {
-					// Do nothing
+          if (dX == 0  && dY == 0) {
+            return;
+          }
 				};
 
 				/**

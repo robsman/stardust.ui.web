@@ -1767,6 +1767,10 @@ define(
             *
             */
             Connection.prototype.dragMove = function(dX, dY, x, y, event) {
+              if (dX == 0  && dY == 0) {
+                return;
+              }
+              
                /*if (this.clickedSegmentIndex > 0
                      && this.clickedSegmentIndex < this.segments.length - 1) {
 
