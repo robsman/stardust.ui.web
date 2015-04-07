@@ -141,7 +141,15 @@ public class RoleManagerDetailResource
          return Response.serverError().build();
       }
    }
-   
+   /**
+    * 
+    * @param skip
+    * @param pageSize
+    * @param orderBy
+    * @param orderByDir
+    * @param postData
+    * @return
+    */
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)

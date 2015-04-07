@@ -224,11 +224,11 @@ public class DocumentSearchResource
     */
    @POST
    @Path("/attachDocumentsToProcess/{processOID}")
-   public Response attachDocumentsToProcess(@PathParam("processOID") String processOID,
-         String postData)
+   public Response attachDocumentsToProcess(@PathParam("processOID") String processOID, String postData)
    {
       try
-      {   List<String> documentIds = populateDocumentIds(postData);
+      {
+         List<String> documentIds = populateDocumentIds(postData);
 
          InfoDTO result = documentSearchService.attachDocumentsToProcess(Long.parseLong(processOID), documentIds);
          Gson gson = new Gson();
@@ -245,10 +245,10 @@ public class DocumentSearchResource
          return Response.status(Status.BAD_REQUEST).build();
       }
    }
-   
-   
+
    /**
     * Populate the options with the post data.
+    * 
     * @param postData
     * @return
     */

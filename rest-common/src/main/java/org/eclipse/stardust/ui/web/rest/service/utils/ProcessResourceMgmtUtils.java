@@ -72,7 +72,6 @@ public class ProcessResourceMgmtUtils
    public List<ProcessResourceMgmtUserDTO> getProcessResourceUsers()
    {
       List<ProcessResourceMgmtUserDTO> processResourceUserList = new ArrayList<ProcessResourceMgmtUserDTO>();
-
       Query query = createQuery();
 
       processResourceUserList = new ArrayList<ProcessResourceMgmtUserDTO>();

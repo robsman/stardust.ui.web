@@ -129,11 +129,9 @@ public class DocumentSearchService
    public QueryResultDTO getDocumentVersions(String documentId) throws ResourceNotFoundException
    {
       List<DocumentVersionDTO> docVersions = documentSearchUtils.getDocumentVersions(documentId);
-
       QueryResultDTO resultDTO = new QueryResultDTO();
       resultDTO.list = docVersions;
       resultDTO.totalCount = docVersions.size();
-
       return resultDTO;
    }
 

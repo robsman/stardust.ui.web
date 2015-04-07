@@ -19,13 +19,26 @@
 			'sdRoleManagerDetailViewCtrl',
 			[ '$q', '$scope', '$filter', '$element', 'sdRoleManagerDetailService', 'sdLoggerService',
 					'sdViewUtilService', RoleManagerDetailViewCtrl ]);
+	var _q;
+	var _scope;
+	var _filter;
+	var _element;
+	var _sdRoleManagerDetailService;
+	var _sdViewUtilService;
+	var trace;
 
 	/*
 	 * 
 	 */
 	function RoleManagerDetailViewCtrl($q, $scope, $filter, $element, sdRoleManagerDetailService, sdLoggerService,
 			sdViewUtilService) {
-		var trace = sdLoggerService.getLogger('bcc-ui.sdRoleManagerDetailViewCtrl');
+		trace = sdLoggerService.getLogger('bcc-ui.sdRoleManagerDetailViewCtrl');
+		_q = $q;
+		_scope = $scope;
+		_filter = $filter;
+		_element = $element;
+		_sdRoleManagerDetailService = sdRoleManagerDetailService;
+		_sdViewUtilService = sdViewUtilService;
 
 		this.columnSelector = 'admin';
 		this.exportFileNameForAssignedUsers = "AssignedUsers";
@@ -40,215 +53,214 @@
 
 		this.showLoggedInAssignedUsers = true;
 
-		RoleManagerDetailViewCtrl.prototype.handleViewEvents = function(event) {
-			if (event.type == "ACTIVATED") {
-				this.refreshOnlyActiveTab();
-			} else if (event.type == "DEACTIVATED") {
-				// TODO
-			}
-		};
-
-		// Register for View Events
-		sdViewUtilService.registerForViewEvents($scope, this.handleViewEvents, this);
-
-		/**
-		 * 
-		 */
-		RoleManagerDetailViewCtrl.prototype.getRoleManagerDetails = function() {
-			var self = this;
-			sdRoleManagerDetailService.getRoleManagerDetails(self.viewParams.roleId, self.viewParams.departmentOid)
-					.then(function(data) {
-						self.roleManagerDetails = data;
-						self.table1 = true;
-						self.table2 = true;
-						if (self.assignedUsersTable != undefined && self.assignableUsersTable != undefined) {
-							self.assignedUsersTable.refresh();
-							self.assignableUsersTable.refresh();
-						}
-					}, function(error) {
-						trace.log(error);
-					});
-
-		};
-
-		/**
-		 * 
-		 */
-		RoleManagerDetailViewCtrl.prototype.initialize = function() {
-			var self = this;
-			self.viewParams = sdViewUtilService.getViewParams($scope);
-			self.getRoleManagerDetails();
-		};
-
 		this.initialize();
 
-		/**
-		 * 
-		 */
-		RoleManagerDetailViewCtrl.prototype.getAssignedUsers = function(options) {
-			var self = this;
-			// var deferred = $q.defer();
-			self.assignedUsers = {};
-			if (self.showLoggedInAssignedUsers) {
-
-				var rows = $filter('filter')(self.roleManagerDetails.assignedUserList, {
-					loggedIn : 'Yes'
-				}, true);
-
-				self.assignedUsers.list = rows;
-
-			} else {
-				self.assignedUsers.list = self.roleManagerDetails.assignedUserList;
-			}
-			return self.assignedUsers.list;
-		};
-
-		/**
-		 * 
-		 */
-		RoleManagerDetailViewCtrl.prototype.getAssignableUsers = function() {
-			var self = this;
-			self.assignableUsers = {};
-
-			if (self.showLoggedInAssignableUsers) {
-
-				var rows = $filter('filter')(self.roleManagerDetails.assignableUserList, {
-					loggedIn : 'Yes'
-				}, true);
-
-				self.assignableUsers.list = rows;
-			} else {
-				self.assignableUsers.list = self.roleManagerDetails.assignableUserList;
-			}
-			return self.assignableUsers.list;
-		};
-
-		/**
-		 * 
-		 */
-		RoleManagerDetailViewCtrl.prototype.refresh = function() {
-			var self = this;
-			self.getRoleManagerDetails();
-		};
-
-		/**
-		 * 
-		 */
-		RoleManagerDetailViewCtrl.prototype.refreshOnlyActiveTab = function() {
-			var self = this;
-			if (self.activeTab == 1) {
-				self.getRoleManagerDetails();
-			} else {
-				self.activityTable.refresh();
-			}
-		};
-
-		/**
-		 * 
-		 */
-		RoleManagerDetailViewCtrl.prototype.refreshLoggedInAssignedUsers = function() {
-			var self = this;
-			self.assignedUsersTable.refresh();
-		};
-
-		/**
-		 * 
-		 */
-		RoleManagerDetailViewCtrl.prototype.refreshLoggedInAssignableUsers = function() {
-			var self = this;
-			self.assignableUsersTable.refresh();
-		};
-
-		/**
-		 * 
-		 */
-		RoleManagerDetailViewCtrl.prototype.removeUserFromRole = function(rowSelectionAssignedUsersTable) {
-			var self = this;
-			var userIds = this.getSelectedUserIds(rowSelectionAssignedUsersTable);
-			sdRoleManagerDetailService.removeUserFromRole(userIds, self.viewParams.roleId,
-					self.viewParams.departmentOid).then(function(data) {
-				self.userAuthorizationMsg = data.userAuthorization;
-				self.refresh();
-			}, function(error) {
-				trace.log(error);
-			});
-
-		};
-
-		/**
-		 * 
-		 */
-		RoleManagerDetailViewCtrl.prototype.addUserToRole = function(rowSelectionAssignableUsersTable) {
-			var self = this;
-			var userIds = this.getSelectedUserIds(rowSelectionAssignableUsersTable);
-			sdRoleManagerDetailService.addUserToRole(userIds, self.viewParams.roleId, self.viewParams.departmentOid)
-					.then(function(data) {
-						self.userAuthorizationMsg = data.userAuthorization;
-						self.refresh();
-					}, function(error) {
-						trace.log(error);
-					});
-
-		};
-
-		/**
-		 * 
-		 */
-		RoleManagerDetailViewCtrl.prototype.getSelectedUserIds = function(selectedUsers) {
-			var userIds = [];
-			for ( var assignedUser in selectedUsers) {
-				userIds.push(selectedUsers[assignedUser].userOid);
-			}
-			return userIds;
-		};
-
-		/**
-		 * 
-		 */
-		RoleManagerDetailViewCtrl.prototype.closeAlertMsg = function() {
-			self.userAuthorizationMsg = false;
-			self.dialogElem = $element.find('#alertMsg');
-			self.dialogElem.detach();
-		};
-
-		/**
-		 * 
-		 */
-		RoleManagerDetailViewCtrl.prototype.getActivitiesForRole = function(params) {
-
-			var self = this;
-			var deferred = $q.defer();
-			self.activities = {};
-			sdRoleManagerDetailService.getAllActivitiesForRole(params, self.viewParams.roleId,
-					self.viewParams.departmentOid).then(function(data) {
-				self.activities.list = data.list;
-				self.activities.totalCount = data.totalCount;
-				deferred.resolve(self.activities);
-			}, function(error) {
-				deferred.reject(error);
-			});
-
-			return deferred.promise;
-		};
-
-		/**
-		 * 
-		 */
-		RoleManagerDetailViewCtrl.prototype.showActivityList = function() {
-			var self = this;
-			self.showActivityListTab = true;
-			self.activeTab = 2;
-
-		};
-
-		/**
-		 * 
-		 */
-		RoleManagerDetailViewCtrl.prototype.showUserAssignment = function() {
-			var self = this;
-			self.activeTab = 1;
-
-		};
-
+		// Register for View Events
+		_sdViewUtilService.registerForViewEvents(_scope, this.handleViewEvents, this);
 	}
+
+	/**
+	 * 
+	 * @param event
+	 */
+	RoleManagerDetailViewCtrl.prototype.handleViewEvents = function(event) {
+		if (event.type == "ACTIVATED") {
+			this.refreshOnlyActiveTab();
+		} else if (event.type == "DEACTIVATED") {
+			// TODO
+		}
+	};
+
+	/**
+	 * 
+	 */
+	RoleManagerDetailViewCtrl.prototype.getRoleManagerDetails = function() {
+		var self = this;
+		_sdRoleManagerDetailService.getRoleManagerDetails(self.viewParams.roleId, self.viewParams.departmentOid).then(
+				function(data) {
+					self.roleManagerDetails = data;
+					self.table1 = true;
+					self.table2 = true;
+					if (self.assignedUsersTable != undefined && self.assignableUsersTable != undefined) {
+						self.assignedUsersTable.refresh();
+						self.assignableUsersTable.refresh();
+					}
+				}, function(error) {
+					trace.log(error);
+				});
+
+	};
+
+	/**
+	 * 
+	 */
+	RoleManagerDetailViewCtrl.prototype.initialize = function() {
+		var self = this;
+		self.viewParams = _sdViewUtilService.getViewParams(_scope);
+		self.getRoleManagerDetails();
+	};
+
+	/**
+	 * 
+	 * @returns
+	 */
+	RoleManagerDetailViewCtrl.prototype.getAssignedUsers = function() {
+		var self = this;
+		if (self.showLoggedInAssignedUsers) {
+
+			var rows = _filter('filter')(self.roleManagerDetails.assignedUserList, {
+				loggedIn : 'Yes'
+			}, true);
+
+			return rows;
+
+		} else {
+			return self.roleManagerDetails.assignedUserList;
+		}
+	};
+
+	/**
+	 * 
+	 * @returns
+	 */
+	RoleManagerDetailViewCtrl.prototype.getAssignableUsers = function() {
+		var self = this;
+		if (self.showLoggedInAssignableUsers) {
+
+			var rows = _filter('filter')(self.roleManagerDetails.assignableUserList, {
+				loggedIn : 'Yes'
+			}, true);
+
+			return rows;
+		} else {
+			return self.roleManagerDetails.assignableUserList;
+		}
+	};
+
+	/**
+	 * 
+	 */
+	RoleManagerDetailViewCtrl.prototype.refresh = function() {
+		var self = this;
+		self.getRoleManagerDetails();
+	};
+
+	/**
+	 * 
+	 */
+	RoleManagerDetailViewCtrl.prototype.refreshOnlyActiveTab = function() {
+		var self = this;
+		if (self.activeTab == 1) {
+			self.getRoleManagerDetails();
+		} else {
+			self.activityTable.refresh();
+		}
+	};
+
+	/**
+	 * 
+	 */
+	RoleManagerDetailViewCtrl.prototype.refreshLoggedInAssignedUsers = function() {
+		var self = this;
+		self.assignedUsersTable.refresh();
+	};
+
+	/**
+	 * 
+	 */
+	RoleManagerDetailViewCtrl.prototype.refreshLoggedInAssignableUsers = function() {
+		var self = this;
+		self.assignableUsersTable.refresh();
+	};
+
+	/**
+	 * 
+	 */
+	RoleManagerDetailViewCtrl.prototype.removeUserFromRole = function(rowSelectionAssignedUsersTable) {
+		var self = this;
+		var userIds = this.getSelectedUserIds(rowSelectionAssignedUsersTable);
+		_sdRoleManagerDetailService.removeUserFromRole(userIds, self.viewParams.roleId, self.viewParams.departmentOid)
+				.then(function(data) {
+					self.userAuthorizationMsg = data.userAuthorization;
+					self.refresh();
+				}, function(error) {
+					trace.log(error);
+				});
+
+	};
+
+	/**
+	 * 
+	 */
+	RoleManagerDetailViewCtrl.prototype.addUserToRole = function(rowSelectionAssignableUsersTable) {
+		var self = this;
+		var userIds = this.getSelectedUserIds(rowSelectionAssignableUsersTable);
+		_sdRoleManagerDetailService.addUserToRole(userIds, self.viewParams.roleId, self.viewParams.departmentOid).then(
+				function(data) {
+					self.userAuthorizationMsg = data.userAuthorization;
+					self.refresh();
+				}, function(error) {
+					trace.log(error);
+				});
+
+	};
+
+	/**
+	 * 
+	 */
+	RoleManagerDetailViewCtrl.prototype.getSelectedUserIds = function(selectedUsers) {
+		var userIds = [];
+		for ( var assignedUser in selectedUsers) {
+			userIds.push(selectedUsers[assignedUser].userOid);
+		}
+		return userIds;
+	};
+
+	/**
+	 * 
+	 */
+	RoleManagerDetailViewCtrl.prototype.closeAlertMsg = function() {
+		self.userAuthorizationMsg = false;
+		self.dialogElem = _element.find('#alertMsg');
+		self.dialogElem.detach();
+	};
+
+	/**
+	 * 
+	 */
+	RoleManagerDetailViewCtrl.prototype.getActivitiesForRole = function(params) {
+
+		var self = this;
+		var deferred = _q.defer();
+		self.activities = {};
+		_sdRoleManagerDetailService.getAllActivitiesForRole(params, self.viewParams.roleId,
+				self.viewParams.departmentOid).then(function(data) {
+			self.activities.list = data.list;
+			self.activities.totalCount = data.totalCount;
+			deferred.resolve(self.activities);
+		}, function(error) {
+			deferred.reject(error);
+		});
+
+		return deferred.promise;
+	};
+
+	/**
+	 * 
+	 */
+	RoleManagerDetailViewCtrl.prototype.showActivityList = function() {
+		var self = this;
+		self.showActivityListTab = true;
+		self.activeTab = 2;
+
+	};
+
+	/**
+	 * 
+	 */
+	RoleManagerDetailViewCtrl.prototype.showUserAssignment = function() {
+		var self = this;
+		self.activeTab = 1;
+
+	};
 })();

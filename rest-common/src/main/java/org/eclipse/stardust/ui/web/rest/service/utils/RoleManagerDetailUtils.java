@@ -178,9 +178,6 @@ public class RoleManagerDetailUtils
       // Does logged-in user have "Manage Authorization" declarative security?
       if (AuthorizationUtils.canManageAuthorization())
       {
-         // return UserUtils.hasNonTeamLeadGrant(facade.getLoginUser()) ? true :
-         // (isParticipantPartofTeam() ? true : false);
-
          // If logged-in user has at least 1 non-team lead grant, then all participants
          // are modifiable
          WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
@@ -247,9 +244,6 @@ public class RoleManagerDetailUtils
       RoleItem roleItem = getRoleItem(roleId, departmentOid);
       if (facade.removeUserFromRole(roleItem, users) > 0)
       {
-         // items = Integer.toString(getAssignedUser().size()); not sure about this at
-         // this moment
-         // initialize();
          if (showInfoDialog && UserUtils.isLoggedInUser(userItem.getUser()))
          {
             userAuthorizationChanged = true;
@@ -285,9 +279,6 @@ public class RoleManagerDetailUtils
       RoleItem roleItem = getRoleItem(roleId, departmentOid);
       if (facade.addUserToRole(roleItem, users) > 0)
       {
-         // items = Integer.toString(getAssignedUser().size()); not sure about this at
-         // this moment
-         // initialize();
          if (showInfoDialog && UserUtils.isLoggedInUser(userItem.getUser()))
          {
             userAuthorizationChanged = true;

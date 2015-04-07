@@ -17,15 +17,24 @@
 
 	angular.module("bcc-ui").controller(
 			'sdProcessResourceMgmtCtrl',
-			[ '$q', '$scope', '$filter', 'sdProcessResourceMgmtService', 'sdLoggerService', 'sdViewUtilService',
+			[ '$q', '$filter', 'sdProcessResourceMgmtService', 'sdLoggerService', 'sdViewUtilService',
 					ProcessResourceMgmtCtrl ]);
 
-	/*
+	var _q;
+	var _filter;
+	var _sdProcessResourceMgmtService;
+	var _sdViewUtilService;
+	var trace;
+
+	/**
 	 * 
 	 */
-	function ProcessResourceMgmtCtrl($q, $scope, $filter, sdProcessResourceMgmtService, sdLoggerService,
-			sdViewUtilService) {
-		var trace = sdLoggerService.getLogger('bcc-ui.sdProcessResourceMgmtCtrl');
+	function ProcessResourceMgmtCtrl($q, $filter, sdProcessResourceMgmtService, sdLoggerService, sdViewUtilService) {
+		trace = sdLoggerService.getLogger('bcc-ui.sdProcessResourceMgmtCtrl');
+		_q = $q;
+		_filter = $filter;
+		_sdProcessResourceMgmtService = sdProcessResourceMgmtService;
+		_sdViewUtilService = sdViewUtilService;
 
 		this.rolesTable = null;
 		this.usersTable = null;
@@ -35,105 +44,114 @@
 		this.rowSelectionForRoles = null;
 		this.rowSelectionForUsers = null;
 		this.showRolesTable = true;
-
-		/**
-		 * 
-		 * @param options
-		 * @returns
-		 */
-		ProcessResourceMgmtCtrl.prototype.getProcessResourceRoles = function() {
-			var deferred = $q.defer();
-			var self = this;
-			sdProcessResourceMgmtService.getProcessResourceRoles().then(function(data) {
-				deferred.resolve(data.processResourceRoleList);
-				self.showUsersTable = true;
-				if (self.usersTable != undefined) {
-					self.usersTable.refresh();
-				}
-			}, function(error) {
-				trace.log(error);
-				deferred.reject(error);
-			});
-			return deferred.promise;
-		};
-		/**
-		 * 
-		 */
-		ProcessResourceMgmtCtrl.prototype.filterRolesArray = function(list, textSearch) {
-			var rows = $filter('filter')(list, function(item, index) {
-				var newTextSearch = textSearch.replaceAll("*", ".*");
-				return item.name.match(new RegExp('^' + newTextSearch, "i"));
-			}, true);
-
-			return rows;
-
-		};
-
-		/**
-		 * 
-		 */
-		ProcessResourceMgmtCtrl.prototype.filterUsersArray = function(list, textSearch) {
-			var rows = $filter('filter')(list, function(item, index) {
-				var newTextSearch = textSearch.replaceAll("*", ".*");
-				return item.userName.match(new RegExp('^' + newTextSearch, "i"));
-			}, true);
-
-			return rows;
-
-		};
-
-		/**
-		 * 
-		 */
-		String.prototype.replaceAll = function(str1, str2, ignore) {
-			return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g, "\\$&"),
-					(ignore ? "gi" : "g")), (typeof (str2) == "string") ? str2.replace(/\$/g, "$$$$") : str2);
-		}
-
-		/**
-		 * 
-		 * @param options
-		 * @returns
-		 * 
-		 */
-		ProcessResourceMgmtCtrl.prototype.getProcessResourceUsers = function() {
-			var deferred = $q.defer();
-			sdProcessResourceMgmtService.getProcessResourceUsers().then(function(data) {
-				deferred.resolve(data.processResourceUserList);
-			}, function(error) {
-				trace.log(error);
-				deferred.reject(error);
-			});
-			return deferred.promise;
-		};
-
-		/**
-		 * 
-		 */
-		ProcessResourceMgmtCtrl.prototype.refresh = function() {
-			var self = this;
-			self.rolesTable.refresh();
-		};
-
-		/**
-		 * 
-		 */
-		ProcessResourceMgmtCtrl.prototype.openRoleManagerView = function(roleId, departmentOid, name) {
-			sdViewUtilService.openView("roleManagerDetailViewHtml5", "roleId=" + roleId, {
-				"roleId" : "" + roleId,
-				"departmentOid" : "" + departmentOid,
-				"roleName" : "" + name
-			}, true);
-		};
-
-		/**
-		 * 
-		 */
-		ProcessResourceMgmtCtrl.prototype.openUserManagerView = function(userOid, userId) {
-			sdViewUtilService.openView("userManagerDetailViewHtml5", "userOid=" + userOid, {
-				"userOid" : "" + userOid,
-				"userId" : "" + userId
-			}, true);
-		};
 	}
+
+	/**
+	 * 
+	 * @returns
+	 */
+	ProcessResourceMgmtCtrl.prototype.getProcessResourceRoles = function() {
+		var deferred = _q.defer();
+		var self = this;
+		_sdProcessResourceMgmtService.getProcessResourceRoles().then(function(data) {
+			deferred.resolve(data.processResourceRoleList);
+			self.showUsersTable = true;
+			if (self.usersTable != undefined) {
+				self.usersTable.refresh();
+			}
+		}, function(error) {
+			trace.log(error);
+			deferred.reject(error);
+		});
+		return deferred.promise;
+	};
+
+	/**
+	 * 
+	 * @param list
+	 * @param textSearch
+	 * @returns
+	 */
+	ProcessResourceMgmtCtrl.prototype.filterRolesArray = function(list, textSearch) {
+		var rows = _filter('filter')(list, function(item, index) {
+			var newTextSearch = textSearch.replaceAll("*", ".*");
+			return item.name.match(new RegExp('^' + newTextSearch, "i"));
+		}, true);
+
+		return rows;
+
+	};
+
+	/**
+	 * 
+	 * @param list
+	 * @param textSearch
+	 * @returns
+	 */
+	ProcessResourceMgmtCtrl.prototype.filterUsersArray = function(list, textSearch) {
+		var rows = _filter('filter')(list, function(item, index) {
+			var newTextSearch = textSearch.replaceAll("*", ".*");
+			return item.userName.match(new RegExp('^' + newTextSearch, "i"));
+		}, true);
+
+		return rows;
+
+	};
+
+	/**
+	 * 
+	 */
+	String.prototype.replaceAll = function(str1, str2, ignore) {
+		return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g, "\\$&"),
+				(ignore ? "gi" : "g")), (typeof (str2) == "string") ? str2.replace(/\$/g, "$$$$") : str2);
+	}
+
+	/**
+	 * 
+	 * @returns
+	 */
+	ProcessResourceMgmtCtrl.prototype.getProcessResourceUsers = function() {
+		var deferred = _q.defer();
+		_sdProcessResourceMgmtService.getProcessResourceUsers().then(function(data) {
+			deferred.resolve(data.processResourceUserList);
+		}, function(error) {
+			trace.log(error);
+			deferred.reject(error);
+		});
+		return deferred.promise;
+	};
+
+	/**
+	 * 
+	 */
+	ProcessResourceMgmtCtrl.prototype.refresh = function() {
+		var self = this;
+		self.rolesTable.refresh();
+	};
+
+	/**
+	 * 
+	 * @param roleId
+	 * @param departmentOid
+	 * @param name
+	 */
+	ProcessResourceMgmtCtrl.prototype.openRoleManagerView = function(roleId, departmentOid, name) {
+		_sdViewUtilService.openView("roleManagerDetailViewHtml5", "roleId=" + roleId, {
+			"roleId" : "" + roleId,
+			"departmentOid" : "" + departmentOid,
+			"roleName" : "" + name
+		}, true);
+	};
+
+	/**
+	 * 
+	 * @param userOid
+	 * @param userId
+	 */
+	ProcessResourceMgmtCtrl.prototype.openUserManagerView = function(userOid, userId) {
+		_sdViewUtilService.openView("userManagerDetailViewHtml5", "userOid=" + userOid, {
+			"userOid" : "" + userOid,
+			"userId" : "" + userId
+		}, true);
+	};
 })();

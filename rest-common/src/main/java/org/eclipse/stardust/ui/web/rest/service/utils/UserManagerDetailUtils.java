@@ -73,7 +73,7 @@ public class UserManagerDetailUtils
 
       initUserItem(facade, userItem);
 
-      // // code to get assigned roles list
+      // code to get assigned roles list
       List<RoleItem> rolesAssigned = getAssignedRoles(facade, userItem);
       List<UserManagerDetailRoleDTO> roleAssignedList = getRoleItemsAsUserManagerDetailRoleList(rolesAssigned);
       userManagerDetailsDTO.assignedRoleList = roleAssignedList;
@@ -168,8 +168,6 @@ public class UserManagerDetailUtils
       List<RoleItem> roles = CollectionUtils.newArrayList();
       UserItem user = facade.getUserItem(Long.parseLong(userOid));
 
-      // List<UserManagerRoleAssignmentUserObject> rolesList =
-      // roleAssignableTable.getList();
       for (String roleId : roleIds)
       {
          roles.add(getRoleItem(roleId, facade));
@@ -195,8 +193,6 @@ public class UserManagerDetailUtils
          List<RoleItem> rolesToAdd = getTeamsRoles(roles, facade);
          if (CollectionUtils.isNotEmpty(rolesToAdd) && (facade.addRolesToUser(user, rolesToAdd) > 0))
          {
-            // roleCount = Integer.toString(getAssignedRoles(user).size());
-            // initialize();
             if (UserUtils.isLoggedInUser(user.getUser()))
             {
                userAuthorizationChanged = true;
@@ -271,8 +267,6 @@ public class UserManagerDetailUtils
       {
          if (CollectionUtils.isNotEmpty(roles) && (facade.removeRolesFromUser(user, roles) > 0))
          {
-            // roleCount = Integer.toString(getAssignedRoles(user).size());
-            // initialize();
             if (UserUtils.isLoggedInUser(user.getUser()))
             {
                userAuthorizationChanged = true;
@@ -286,8 +280,6 @@ public class UserManagerDetailUtils
          List<RoleItem> rolesToremove = getTeamsRoles(roles, facade);
          if (CollectionUtils.isNotEmpty(rolesToremove) && (facade.removeRolesFromUser(user, rolesToremove) > 0))
          {
-            // roleCount = Integer.toString(getAssignedRoles(user).size());
-            // initialize();
             if (UserUtils.isLoggedInUser(user.getUser()))
             {
                userAuthorizationChanged = true;
