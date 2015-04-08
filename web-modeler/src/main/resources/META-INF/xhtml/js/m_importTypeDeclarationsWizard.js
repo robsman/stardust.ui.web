@@ -110,7 +110,6 @@ define(
 
             this.importButton.click(function(event) {
                view.performImport();
-               closePopup();
             });
 
             this.cancelButton.click(function(event) {
@@ -330,6 +329,13 @@ define(
                   }
                });
 
+               if (typeDeclarations.length == 0) {
+                this.urlTextInput.addClass("error");
+                m_messageDisplay.showErrorMessage(
+                        m_i18nUtils.getProperty("modeler.model.propertyView.structuredTypes.importTypeDeclarations.errorMessage.typeDeclarationNotSelected"));
+                return;
+               }
+               
                if (typeDeclarations.length > 0) {
                   var view = this;
                   var ns = view.schema.targetNamespace;
@@ -365,6 +371,7 @@ define(
                               view.model.id,
                               changes));
                }
+               closePopup();
             };
          };
       });
