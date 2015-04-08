@@ -32,9 +32,9 @@
 
     $scope.$on('REFRESH_PROPERTIES_PANEL', function(event, propertiesPanel) {
       if (!self.initialized) {
-        self.propertiesPanel = propertiesPanel;
         self.dataMappingIndex = 0;
       }
+      self.propertiesPanel = propertiesPanel;
       self.refresh();
       self.initialized = true;
     });
