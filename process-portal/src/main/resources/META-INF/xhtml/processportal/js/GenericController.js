@@ -1037,7 +1037,7 @@ if (!window.bpm.portal.GenericController) {
 		 * 
 		 */
 		GenericController.prototype.getAngularScope = function() {
-			return angular.element(document).scope();
+			return angular.element('html').scope();
 		};
 
 		/*

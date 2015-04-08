@@ -28,6 +28,6 @@ function performIppAiClosePanelCommand(commandId)
  * 
  */
 function runInAngularContext(func) {
-	var scope = angular.element(document).scope();
+	var scope = angular.element('html').scope();
 	scope.$apply(func);
 }
