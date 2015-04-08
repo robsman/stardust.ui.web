@@ -283,6 +283,9 @@ public class ModelElementMarshaller implements ModelMarshaller
          {
             processJson.addProperty(ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY,
                   ModelerConstants.IMPLEMENTS_PROCESS_INTERFACE_KEY);
+            IdRef externalReference = processDefinition.getExternalRef();
+            String processFullID = externalReference.getPackageRef().getId() + ":" + externalReference.getRef();
+            processJson.addProperty("implementsProcessId", processFullID);
          }
 
          processJson.add(ModelerConstants.FORMAL_PARAMETERS_PROPERTY,
@@ -323,12 +326,6 @@ public class ModelElementMarshaller implements ModelMarshaller
 
       for (ActivityType activity : processDefinition.getActivity())
       {
-         // JsonObject activityJson = new JsonObject();
-         // activitiesJson.add(activity.getId(), activityJson);
-         //
-         // activityJson.addProperty(ModelerConstants.ID_PROPERTY, activity.getId());
-         // activityJson.addProperty(ModelerConstants.NAME_PROPERTY, activity.getName());
-         // loadDescription(activityJson, activity);
          activitiesJson.add(activity.getId(), toActivityJson(activity));
       }
 
@@ -351,18 +348,31 @@ public class ModelElementMarshaller implements ModelMarshaller
          List<ChangeDescriptionJto> changeDescriptions)
    {
       JsonArray formalParametersJson = new JsonArray();
+
       FormalParametersType formalParameters = processDefinition.getFormalParameters();
+      ProcessDefinitionType interfaceProcess = null;
+
+      //We retrieve the interface definition directly from the provider, if we "implement" a process interface
+      if (processDefinition.getExternalRef() != null)
+      {
+         String interfaceModelID = processDefinition.getExternalRef().getPackageRef().getId();
+         String processID = processDefinition.getExternalRef().getRef();
+         interfaceProcess = getModelBuilderFacade().getProcessDefinition(
+               interfaceModelID, processID);
+         formalParameters = interfaceProcess.getFormalParameters();
+      }
+
       if (formalParameters != null)
       {
          for (FormalParameterType formalParameter : formalParameters.getFormalParameter())
          {
-            formalParametersJson.add(getFormalParameterJson(formalParameter, changeDescriptions));
+            formalParametersJson.add(getFormalParameterJson(processDefinition, interfaceProcess, formalParameter, changeDescriptions));
          }
       }
       return formalParametersJson;
    }
 
-   private JsonObject getFormalParameterJson(FormalParameterType formalParameter,
+   private JsonObject getFormalParameterJson(ProcessDefinitionType processDefinition, ProcessDefinitionType interfaceProcess, FormalParameterType formalParameter,
          List<ChangeDescriptionJto> changeDescriptions)
    {
       JsonObject formalParameterJson = new JsonObject();
@@ -377,7 +387,7 @@ public class ModelElementMarshaller implements ModelMarshaller
       }
 
       DataTypeType dataType = formalParameter.getDataType();
-      final ModelType model = ModelUtils.findContainingModel(formalParameter);
+      ModelType model = ModelUtils.findContainingModel(formalParameter);
       if (model != null)
       {
          if(dataType.getCarnotType() != null)
@@ -393,6 +403,10 @@ public class ModelElementMarshaller implements ModelMarshaller
                if (xpdlType instanceof DeclaredTypeType)
                {
                   typeDeclarationId = ((DeclaredTypeType) xpdlType).getId();
+                  if (interfaceProcess != null)
+                  {
+                     typeModel = ModelUtils.findContainingModel(interfaceProcess);
+                  }
                }
                else if (xpdlType instanceof ExternalReferenceType)
                {
@@ -400,6 +414,7 @@ public class ModelElementMarshaller implements ModelMarshaller
                   typeModel = getModelBuilderFacade().findModel(modelId);
                   typeDeclarationId = ((ExternalReferenceType) xpdlType).getXref();
                }
+
 
                if(typeModel != null)
                {
@@ -423,6 +438,10 @@ public class ModelElementMarshaller implements ModelMarshaller
                if (xpdlType instanceof DeclaredTypeType)
                {
                   typeDeclarationId = ((DeclaredTypeType) xpdlType).getId();
+                  if (interfaceProcess != null)
+                  {
+                     typeModel = ModelUtils.findContainingModel(interfaceProcess);
+                  }
                }
                else if (xpdlType instanceof ExternalReferenceType)
                {
@@ -489,9 +508,10 @@ public class ModelElementMarshaller implements ModelMarshaller
             }
          }
 
-         FormalParameterMappingsType mappingsType = getFormalParameterMappings(formalParameter);
+         FormalParameterMappingsType mappingsType = processDefinition.getFormalParameterMappings();
          if (mappingsType != null)
          {
+            model = ModelUtils.findContainingModel(processDefinition);
             DataType data = mappingsType.getMappedData(formalParameter);
             setDataFullID(formalParameterJson, model, data);
          }

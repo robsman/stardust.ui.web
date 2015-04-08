@@ -50,6 +50,8 @@ import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.utils.*;
 import org.eclipse.stardust.model.xpdl.carnot.*;
+import org.eclipse.stardust.model.xpdl.carnot.extensions.ExtensionsFactory;
+import org.eclipse.stardust.model.xpdl.carnot.extensions.FormalParameterMappingsType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.util.StructuredTypeUtils;
@@ -1074,14 +1076,30 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       storeAttributes(processDefinition, processDefinitionJson);
       storeDescription(processDefinition, processDefinitionJson);
 
-      if (hasNotJsonNull(processDefinitionJson, ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
+      if (hasNotJsonNull(processDefinitionJson,
+            ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
       {
-         updateFormalParameters(processDefinition, processDefinitionJson);
+         if (processDefinition.getExternalRef() == null)
+         {
+            updateFormalParameters(processDefinition, processDefinitionJson);
+         }
+         else
+         {
+            //In case we're an interface implementation, we have to synchronize with interface first,
+            //and mapping is updated separately
+            updateProcessInterfaceImplementation(processDefinition, processDefinitionJson);
+            updateFormalParametersMapping(processDefinition, processDefinitionJson);
+         }
       }
 
       if (hasNotJsonNull(processDefinitionJson, ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY))
       {
          updateProcessInterface(processDefinition, processDefinitionJson);
+      }
+
+      if (hasNotJsonNull(processDefinitionJson, "implementsProcessId"))
+      {
+         updateProcessInterfaceImplementation(processDefinition, processDefinitionJson);
       }
 
       if (hasNotJsonNull(processDefinitionJson, ModelerConstants.DATA_PATHES_PROPERTY))
@@ -1177,6 +1195,48 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       processDefinition.getDataPath().addAll(newDataPaths);
    }
 
+   public void updateProcessInterfaceImplementation(ProcessDefinitionType processDefinition,
+         JsonObject processDefinitionJson)
+   {
+      String processFullID = null;
+      if (processDefinition.getExternalRef() != null)
+      {
+         processFullID = processDefinition.getExternalRef().getPackageRef().getId() + ":" + processDefinition.getExternalRef().getRef();
+      }
+
+      if (hasNotJsonNull(processDefinitionJson, "implementsProcessId"))
+      {
+         processFullID = processDefinitionJson.get("implementsProcessId").getAsString();
+      }
+
+      String modelID = getModelBuilderFacade().getModelId(processFullID);
+      String processID = getModelBuilderFacade().stripFullId(processFullID);
+      ProcessDefinitionType processInterface = getModelBuilderFacade().getProcessDefinition(modelID, processID);
+      ModelType model = ModelUtils.findContainingModel(processDefinition);
+      ModelType interfaceModel = ModelUtils.findContainingModel(processInterface);
+      ExternalReferenceUtils.updateReferences(model, interfaceModel);
+
+      ExternalPackage packageRef = model.getExternalPackages().getExternalPackage(interfaceModel.getId());
+      IdRef idRef = CarnotWorkflowModelFactory.eINSTANCE.createIdRef();
+      idRef.setRef(processInterface.getId());
+      idRef.setPackageRef(packageRef);
+      processDefinition.setExternalRef(idRef);
+
+      FormalParameterMappingsType parameterMappings = ExtensionsFactory.eINSTANCE.createFormalParameterMappingsType();
+      FormalParametersType referencedParametersType = processInterface.getFormalParameters();
+      FormalParametersType formalParameters = XpdlFactory.eINSTANCE.createFormalParametersType();
+      for (Iterator<FormalParameterType> i = referencedParametersType.getFormalParameter().iterator(); i.hasNext();)
+      {
+         FormalParameterType referencedParameterType = i.next();
+         FormalParameterType parameterType = ModelUtils.cloneFormalParameterType(referencedParameterType, null);
+         formalParameters.addFormalParameter(parameterType);
+         parameterMappings.setMappedData(parameterType, null);
+      }
+      processDefinition.setFormalParameters(formalParameters);
+      processDefinition.setFormalParameterMappings(parameterMappings);
+
+   }
+
    public void updateProcessInterface(ProcessDefinitionType processDefinition,
          JsonObject processDefinitionJson)
    {
@@ -1206,15 +1266,40 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                processDefinition.getFormalParameters().getFormalParameter().clear();
             }
             processDefinition.setFormalParameterMappings(null);
+            processDefinition.setExternalRef(null);
          }
       }
-      else if (processDefinitionJson.get(
-            ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY)
-            .getAsString()
-            .equals(ModelerConstants.IMPLEMENTS_PROCESS_INTERFACE_KEY))
-      {
-      }
    }
+
+   public void updateFormalParametersMapping(ProcessDefinitionType processDefinition,
+         JsonObject processDefinitionJson)
+   {
+      JsonArray formalParametersJson = processDefinitionJson.get(
+            ModelerConstants.FORMAL_PARAMETERS_PROPERTY).getAsJsonArray();
+      for (int n = 0; n < formalParametersJson.size(); ++n)
+      {
+         JsonObject formalParameterJson = formalParametersJson.get(n).getAsJsonObject();
+         String formalParameterId = GsonUtils.safeGetAsString(formalParameterJson,
+               ModelerConstants.ID_PROPERTY);
+         FormalParameterType parameterType = processDefinition.getFormalParameters()
+               .getFormalParameter(formalParameterId);
+
+         DataType data = null;
+         String dataFullID = null;
+
+         if (hasNotJsonNull(formalParameterJson, ModelerConstants.DATA_FULL_ID_PROPERTY))
+         {
+            dataFullID = formalParameterJson.get(ModelerConstants.DATA_FULL_ID_PROPERTY)
+                  .getAsString();
+            ModelType model = ModelUtils.findContainingModel(processDefinition);
+            data = getModelBuilderFacade().importData(model, dataFullID);
+         }
+         processDefinition.getFormalParameterMappings()
+               .setMappedData(parameterType, data);
+      }
+
+   }
+
 
    public void updateFormalParameters(ProcessDefinitionType processDefinition,
          JsonObject processDefinitionJson)

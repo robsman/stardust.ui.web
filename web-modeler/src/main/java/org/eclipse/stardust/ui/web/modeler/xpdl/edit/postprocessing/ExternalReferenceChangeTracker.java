@@ -9,6 +9,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.InternalEObject;
 import org.eclipse.emf.ecore.change.impl.ChangeDescriptionImpl;
+
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
@@ -16,6 +17,7 @@ import org.eclipse.stardust.model.xpdl.builder.utils.WebModelerConnectionManager
 import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.IExtensibleElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.util.IConnection;
@@ -27,6 +29,7 @@ import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
 import org.eclipse.stardust.modeling.repository.common.Connection;
 import org.eclipse.stardust.modeling.repository.common.impl.ConnectionImpl;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
+
 import org.eclipse.xsd.XSDImport;
 import org.springframework.stereotype.Component;
 
@@ -151,6 +154,24 @@ public class ExternalReferenceChangeTracker implements ChangePostprocessor
                         checkConnectionUsed(connectionManager, list, connectionId, modelElement,
                               uri == null ? null : URI.createURI(uri));
                      }
+                  }
+               }
+            }
+         }
+         if (modelElement instanceof ProcessDefinitionType)
+         {
+            ProcessDefinitionType process = (ProcessDefinitionType) modelElement;
+            if (process.getExternalRef() != null)
+            {
+               ExternalPackage pack = process.getExternalRef().getPackageRef();
+               if (pack != null)
+               {
+                  if (pack != null)
+                  {
+                     String uri = ExtendedAttributeUtil.getAttributeValue(pack,
+                           IConnectionManager.URI_ATTRIBUTE_NAME);
+                     checkConnectionUsed(connectionManager, list, connectionId,
+                           modelElement, uri == null ? null : URI.createURI(uri));
                   }
                }
             }

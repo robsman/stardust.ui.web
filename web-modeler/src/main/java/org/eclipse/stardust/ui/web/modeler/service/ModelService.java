@@ -441,9 +441,7 @@ public class ModelService
     */
    public JsonArray validateModel(String modelId)
    {
-      ModelRepository modelRepository = currentSession().modelRepository();
-      EObject model = modelRepository.findModel(modelId);
-
+      EObject model = getModelManagementStrategy().getModels().get(modelId);
       return findModelBinding(model).validateModel(model);
    }
 
