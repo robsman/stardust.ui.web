@@ -203,7 +203,7 @@ public class GenericModelingAssertions
       return parameter;
    }
 
-   public static FormalParameterType assertPrimitiveFormalParameter(ProcessDefinitionType process, String parameterID, String parameterName, ModeType modeType)
+   public static FormalParameterType assertPrimitiveFormalParameter(ProcessDefinitionType process, String parameterID, String parameterName, ModeType modeType, TypeType typeType)
    {
       FormalParameterType parameter = assertFormalParameter(process, parameterID, parameterName, modeType);
       DataTypeType dataTypeType = parameter.getDataType();
@@ -213,7 +213,7 @@ public class GenericModelingAssertions
       BasicTypeType basicTypeType = dataTypeType.getBasicType();
       assertThat(basicTypeType, is(not(nullValue())));
       assertThat(basicTypeType.getType(), is(not(nullValue())));
-      assertThat(basicTypeType.getType(), is(TypeType.STRING));
+      assertThat(basicTypeType.getType(), is(typeType));
       return parameter;
    }
 
@@ -282,6 +282,15 @@ public class GenericModelingAssertions
       assertThat(extAttribute, is(not(nullValue())));
       assertThat(extAttribute.getValue(), is(not(nullValue())));
       return typeDeclaration;
+   }
+
+   public static void assertInterfaceReference(ProcessDefinitionType interfaceImplementation, String modelID, String interfaceID)
+   {
+      IdRef externalReference = interfaceImplementation.getExternalRef();
+      assertThat(externalReference, is(not(nullValue())));
+      assertThat(externalReference.getRef(), is(interfaceID));
+      assertThat(externalReference.getPackageRef(), is(not(nullValue())));
+      assertThat(externalReference.getPackageRef().getId(), is(modelID));
    }
 
    public static DataType assertPrimitiveData(ModelType model, String dataID, String dataName,

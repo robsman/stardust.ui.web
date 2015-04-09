@@ -7,7 +7,9 @@ import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.TypeType;
 import org.eclipse.stardust.ui.web.modeler.utils.test.GenericModelingAssertions;
+
 import org.junit.Test;
 
 public class TestGeneralModeling extends RecordingTestcase
@@ -30,7 +32,7 @@ public class TestGeneralModeling extends RecordingTestcase
       GenericModelingAssertions.assertDocumentData(providerModel, "ProvidedDocument", "ProvidedDocument", "ProvidedTypeDeclaration");
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "ProvidedProcess", "ProvidedProcess");
       GenericModelingAssertions.assertProcessInterface(providerModel, "ProvidedProcess", "ProvidedProcess", 2);
-      GenericModelingAssertions.assertPrimitiveFormalParameter(process, "InString", "InString", ModeType.IN);
+      GenericModelingAssertions.assertPrimitiveFormalParameter(process, "InString", "InString", ModeType.IN, TypeType.STRING);
       GenericModelingAssertions.assertStructFormalParameter(process, "OutStruct", "OutStruct", ModeType.IN, "ProvidedTypeDeclaration");
       GenericModelingAssertions.assertRole(providerModel, "ProvidedRole", "ProvidedRole");
       GenericModelingAssertions.assertTypeDeclaration(providerModel, "ProvidedTypeDeclaration", "ProvidedTypeDeclaration");

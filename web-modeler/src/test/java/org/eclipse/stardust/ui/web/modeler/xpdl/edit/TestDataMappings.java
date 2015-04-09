@@ -11,8 +11,12 @@ import java.util.List;
 
 import org.junit.Test;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.ui.web.modeler.utils.test.GenericModelingAssertions;
+import org.eclipse.stardust.ui.web.modeler.xpdl.edit.RecordingTestcase.TestResponse;
 
 public class TestDataMappings extends RecordingTestcase
 {
@@ -25,7 +29,7 @@ public class TestDataMappings extends RecordingTestcase
             "../../service/rest/requests/createUIMashupDataMappingOperations.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
 
-      replay(requestStream, "testUIMashUpDatamappings", false);
+      replay(requestStream, "testUIMashUpDatamappings", true);
 
       //saveReplayModel("C:/development/");
 
@@ -48,9 +52,26 @@ public class TestDataMappings extends RecordingTestcase
 
       data = GenericModelingAssertions.assertStructData(providerModel, "OutStructType", "OutStructType", "OutStructType");
       assertApplicationDataMapping(activity, "OutStructType", "OutStructType", "StructParameterOUT", "externalWebApp", DirectionType.OUT_LITERAL, data);
+   }
 
-
-
+   public void testUIMashUpDatamappingsCallback(TestResponse response)
+         throws AssertionError
+   {
+      if (response.getCommandID().equals("connection.create"))
+      {
+         if (response.getResponseNumber() == 47)
+         {
+            JsonObject modelElement = response.getAdded().get(0).getAsJsonObject().get("modelElement").getAsJsonObject();
+            GenericModelingAssertions.assertJsonHas(modelElement, "type", "dataMappings", "id", "name", "dataFullId", "activityId");
+            JsonArray dataMappings = modelElement.get("dataMappings").getAsJsonArray();
+            JsonObject dataMapping = dataMappings.get(0).getAsJsonObject();
+            GenericModelingAssertions.assertJsonHas(dataMapping, "id", "name", "direction", "dataPath");
+            assertThat(dataMapping.get("id").getAsString(), is("InPrimitiveTypeLong"));
+            assertThat(dataMapping.get("name").getAsString(), is("InPrimitiveTypeLong"));
+            assertThat(dataMapping.get("direction").getAsString(), is("IN"));
+            //assertThat(dataMapping.get("dataPath").getAsJsonObject(), null);
+         }
+      }
    }
 
    @Test
