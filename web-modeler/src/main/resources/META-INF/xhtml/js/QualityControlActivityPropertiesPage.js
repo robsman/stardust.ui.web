@@ -46,6 +46,7 @@ define(
 				this.qualityControlParticipant;
 				this.qualityControlProbability;
 				this.noParticipantSetMessage;
+				this.taskNotInteractiveMessage;
 
 				/**
 				 * 
@@ -62,6 +63,7 @@ define(
 					this.qualityControlParticipant = undefined;
 					this.qualityControlProbability = undefined;
 					this.qualityControlFormula = undefined
+					this.noParticipantSetMessage = undefined;
 
 					this.participants.lenght = 0;
 					for ( var n in m_model.getModels()) {
@@ -139,6 +141,19 @@ define(
 					}
 				};
 
+				/**
+				 * 
+				 */
+				QualityControlActivityPropertiesPage.prototype.isModelElementInteractive = function() {
+					var me = this.getModelElement();
+					if (me && (me.taskType === 'manual' || me.taskType === 'user')) {
+						return true;
+					}
+					
+					this.taskNotInteractiveMessage = this.getI18NProperty("modeler.activity.propertyPages.qualityControl.taskNotInteractiveMsg");
+					return false;
+				};
+				
 				/**
 				 * 
 				 * @param key

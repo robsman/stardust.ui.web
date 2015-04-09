@@ -17,11 +17,18 @@
 				<td><label>{{page.noParticipantSetMessage}}</label></td>
 			</tr>
 		</table>
+		<table ng-show="!page.isModelElementInteractive()">
+			<tr class="errorMessagesPanel">
+				<td></td>
+				<td><label>{{page.taskNotInteractiveMessage}}</label></td>
+			</tr>
+		</table>
 		<table>
 			<tr>
 				<td><input type="checkbox"
 					ng-model="page.isQualityControlActivity"
-					ng-change="page.updateQAParams()"></input></td>
+					ng-change="page.updateQAParams()"
+					ng-disabled="!page.isModelElementInteractive()"></input></td>
 				<td><label>{{page.getI18NProperty('modeler.activity.propertyPages.qualityControl.isQualityAssuranceActivity')}}</label></td>
 			</tr>
 		</table>
