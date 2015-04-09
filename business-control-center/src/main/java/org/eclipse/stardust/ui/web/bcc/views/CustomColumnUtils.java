@@ -24,6 +24,7 @@ import org.eclipse.stardust.engine.core.query.statistics.api.CalendarUnit;
 import org.eclipse.stardust.engine.core.query.statistics.api.DateRange;
 import org.eclipse.stardust.engine.core.query.statistics.api.Duration;
 import org.eclipse.stardust.engine.core.query.statistics.api.RelativePastDateRange;
+import org.eclipse.stardust.ui.web.bcc.messsages.MessagesBCCBean;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 
 import com.google.gson.JsonObject;
@@ -66,11 +67,12 @@ public class CustomColumnUtils
     */
    public static List<SelectItem> populateDurationList()
    {
+      MessagesBCCBean messagesBCCBean = MessagesBCCBean.getInstance();
       List<SelectItem> items = new ArrayList<SelectItem>();
-      items.add(new SelectItem(DAY_TYPE, "Days"));
-      items.add(new SelectItem(WEEK_TYPE, "Weeks"));
-      items.add(new SelectItem(MONTH_TYPE, "Months"));
-      items.add(new SelectItem(YEAR_TYPE, "Years"));
+      items.add(new SelectItem(DAY_TYPE, messagesBCCBean.getString("views.costs.customColumn.duration.days")));
+      items.add(new SelectItem(WEEK_TYPE,messagesBCCBean.getString("views.costs.customColumn.duration.weeks")));
+      items.add(new SelectItem(MONTH_TYPE, messagesBCCBean.getString("views.costs.customColumn.duration.months")));
+      items.add(new SelectItem(YEAR_TYPE, messagesBCCBean.getString("views.costs.customColumn.duration.years")));
       return items;
    }
    
