@@ -508,6 +508,10 @@ div#messagePanel {
 	height: 20px;
 }
 
+div#messagePanel table {
+	padding-top:5px;
+}
+
 div.messagePanelHighlight {
 	background-color: #FFD966;
 }
@@ -807,9 +811,41 @@ textarea:focus {
 	position: relative;
 }
 
-.sd-ac-container {
-	width: 200px;
+
+/* <-- autocomplete style */
+.sd-ac-container{
+  width:200px;
 }
+
+.sd-ac-container div[name='sd-ac-tag']{
+  font-size: 11px;
+  font-family: Helvetica, Arial, sans-serif;
+  border: none;
+  background-color: #f0f0f0;
+}
+
+.sd-ac-container div[name='sd-ac-tag']:after{
+  font-size:11px;
+}
+
+.sd-ac-container div[name='sd-ac-selectList']{
+  border:none;
+  background-color:#fff;
+}
+
+.sd-ac-container [name='sd-ac-selectList'] div{
+  cursor:pointer;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size:11px;
+  background-color:white;
+}
+
+/* .sd-ac-item-isActive{
+  background-color: white;
+  color:black;
+}
+ */
+/* autocomplete style --> */
 
 .viewApplicationLink {
 	opacity : 1;
