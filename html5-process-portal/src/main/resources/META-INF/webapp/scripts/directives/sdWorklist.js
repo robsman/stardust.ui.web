@@ -916,16 +916,24 @@
 		ActivityTableCompiler.prototype.openCompleteDialog = function( rowItem) {
 
 			var self = this;
-			var CONFIRMATION_TYPE_SINGLE=  'single'
-				var CONFIRMATION_TYPE_GENERIC=  'generic'
-					var CONFIRMATION_TYPE_DATAMAPPING= 'dataMapping'
+			var CONFIRMATION_TYPE_SINGLE = 'single'
+			var CONFIRMATION_TYPE_GENERIC = 'generic'
+			var CONFIRMATION_TYPE_DATAMAPPING = 'dataMapping'
+			
+			self.completeAllDialog = {
+				confirmLabel : sgI18nService.translate('processportal.views-common-messages.common-Yes','yes'),
+				cancelLabel : sgI18nService.translate('processportal.views-common-messages.common-No','no'),
+				title : sgI18nService.translate('processportal.views-completeActivityDialog-title','Confirm')
+			};
+				
 
-						self.selectedActivity = [];
+			self.selectedActivity = [];
 			self.completeDialog = {
 					confirmationType : CONFIRMATION_TYPE_SINGLE,  //single / generic / dataMapping
 					dataMappings : {},
 					outData : {}
-			}
+			};
+			
 			self.showCompleteDialog = true;
 
 			if (angular.isDefined( rowItem )) {
@@ -947,6 +955,10 @@
 						.copy(self.activities.trivialManualActivities[firstItem.activityOID].dataMappings);
 						self.completeDialog.outData =angular
 						.copy(self.activities.trivialManualActivities[firstItem.activityOID].inOutData);
+						
+						self.completeAllDialog.confirmLabel = sgI18nService.translate('views-common-messages.common-confirm','Confirm');
+						self.completeAllDialog.cancelLabel = sgI18nService.translate('views-common-messages.common-cancel','Cancel');
+						self.completeAllDialog.title = sgI18nService.translate('processportal.views-completeActivityDialog-form-title','Complete Activities')
 					} else {
 
 						self.completeDialog.confirmationType = CONFIRMATION_TYPE_GENERIC;
