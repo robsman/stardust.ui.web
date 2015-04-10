@@ -222,8 +222,8 @@
               ? null : this.runtimeBindingData;
       attributes["carnot:engine:dataPath"] = !this.runtimeBindingDataPath
               ? null : this.runtimeBindingDataPath;
-      attributes["carnot:engine:dataId"] = this.runtimeBindingData == sdModelerConstants.TO_BE_DEFINED
-              ? null : this.runtimeBindingData;
+      attributes["carnot:engine:bound"] = this.runtimeBindingData == sdModelerConstants.TO_BE_DEFINED
+              ? false : true;
 
       attributes["carnot:engine:subprocess:copyAllData"] = this.copyAllData;
 
