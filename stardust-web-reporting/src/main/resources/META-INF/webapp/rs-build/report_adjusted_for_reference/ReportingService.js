@@ -609,6 +609,9 @@ define(
 				};
 				
 				this.serverDateFormat = "yy/mm/dd";
+				
+				this.previewMaxFetchSize = 500;
+				this.previewRetrieveAll = false;
 
 				/**
 				 * 
@@ -958,6 +961,15 @@ define(
 								console.debug("Report Definition");
 								console.debug(report);
 								
+								var clonedReport = jQuery.extend(true, {}, report);
+
+								if (this.previewRetrieveAll) {
+									// Do not insert maxFetchSize into report object.
+									this.previewRetrieveAll = false;
+								} else {
+									clonedReport.dataSet.maxFetchSize = this.previewMaxFetchSize;
+								}
+								
 								//convert parameters
 								var parametersString = convertToParametersString(parameters);
 								
@@ -976,7 +988,7 @@ define(
 													url : encodeURI(self.getRootUrl()
 															+ "/services/rest/bpm-reporting/report-data?" + parametersString),
 													contentType : "application/json",
-													data : JSON.stringify(report)
+													data : JSON.stringify(clonedReport)
 												}).done(function(data) {
 											deferred.resolve(data);
 										}).fail(function() {
@@ -1746,20 +1758,25 @@ define(
 				/**
 				 * Get dimension objects for report columns.
 				 */
-				ReportingService.prototype.getColumnDimensions = function(
-						report) {
+				ReportingService.prototype.getColumnDimensions = function(report) {
+				  var primaryObject = this.getPrimaryObject(report.dataSet.primaryObject);
 					var dimensions = [];
+					var columnId;
+					var dimension;
 
 					for ( var m in report.dataSet.columns) {
-						if (this.getPrimaryObject(report.dataSet.primaryObject).dimensions[report.dataSet.columns[m].id] != null) {
-							dimensions.push(this.getDimension(
-									report.dataSet.primaryObject,
-									report.dataSet.columns[m].id));
+					  columnId = report.dataSet.columns[m].id;
+						if (primaryObject.dimensions[columnId] != null) {
+						  dimension = this.getDimension(report.dataSet.primaryObject, columnId);
 						} else {
 							// Must be a joined field or computed column
-
-							dimensions.push(this.getUserDefinedField(report,
-									report.dataSet.columns[m].id));
+						  dimension = this.getUserDefinedField(report, columnId);
+						}
+						
+						if (dimension) {
+						  dimensions.push(dimension);
+						} else {
+						  // unresolvable column reference, just drop it for now
 						}
 					}
 
@@ -2247,7 +2264,7 @@ define(
 						}else{
 							//TODO: remove this when filter and parameter format is same for DATE
 							//special parameter, in case of date, there are multiple fields so change the format here
-							if(parameters[itemInd].value.from){
+							if(parameters[itemInd].value && parameters[itemInd].value.from){
 								var pValue = ["from", "to", "duration", "durationUnit"];
 								var actualValue = parameters[itemInd].value; //complex object startDate = {from : "", to : ""};
 								var formattedValue = ""; 

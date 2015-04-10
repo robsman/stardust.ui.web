@@ -189,6 +189,11 @@ define(
 						chartOptions.axes.xaxis.label = this.report.layout.chart.options.axes.xaxis.label;
 					}
 					chartOptions.axes.xaxis.min = this.report.layout.chart.options.axes.xaxis.min;
+					if (!this.report.layout.chart.options.axes.xaxis.min && 
+							(this.getFirstDimension().type == this.reportingService.metadata.countType ||
+							this.getFirstDimension().type == this.reportingService.metadata.durationType)) {
+						chartOptions.axes.xaxis.min = 0;
+					}
 					chartOptions.axes.xaxis.max = this.report.layout.chart.options.axes.xaxis.max;
 					chartOptions.axes.xaxis.tickOptions = this.report.layout.chart.options.axes.xaxis.tickOptions;
 					chartOptions.axes.xaxis.tickOptions.showMark = this.report.layout.chart.options.axes.xaxis.showTickMarks;
@@ -199,6 +204,23 @@ define(
 						chartOptions.axes.yaxis.label = this.report.layout.chart.options.axes.yaxis.label;
 					}
 					chartOptions.axes.yaxis.min = this.report.layout.chart.options.axes.yaxis.min;
+					if (!this.report.layout.chart.options.axes.yaxis.min) {
+						var cumulatedFacts = this.reportingService.getCumulatedFacts(this.report, true);
+						for ( var n in cumulatedFacts) {
+							var fact = cumulatedFacts[n];
+							
+							if (this.report.dataSet.fact == fact.id)
+							{
+								if (fact.type.id == this.reportingService.metadata.countType.id || 
+										fact.type.id == this.reportingService.metadata.durationType.id) {
+									chartOptions.axes.yaxis.min = 0;
+								} else {
+									chartOptions.axes.yaxis.min = this.report.layout.chart.options.axes.yaxis.min;
+								}
+								break;
+							}
+						}
+					}
 					chartOptions.axes.yaxis.max = this.report.layout.chart.options.axes.yaxis.max;
 					chartOptions.axes.yaxis.tickOptions = this.report.layout.chart.options.axes.yaxis.tickOptions;
 					chartOptions.axes.yaxis.tickOptions.showMark = this.report.layout.chart.options.axes.yaxis.showTickMarks;
@@ -207,6 +229,10 @@ define(
 					
 					chartOptions.legend.show = this.report.layout.chart.options.legend.show;
 					chartOptions.legend.location = this.report.layout.chart.options.legend.location;
+					if (!this.report.layout.chart.options.legend.show) {
+						//JQPLOT issue: If Legend is disabled(false) still jqplot tries to draw and fails, so initializing it to empty object 
+						chartOptions.legend = {};
+					} 
 					chartOptions.highlighter.show = this.report.layout.chart.options.highlighter.show;
 					chartOptions.cursor.showTooltip = this.report.layout.chart.options.cursor.showTooltip;
 					chartOptions.cursor.show = this.report.layout.chart.options.cursor.show;
@@ -223,7 +249,7 @@ define(
 					};
 					chartOptions.animate = this.report.layout.chart.options.animate;
 					chartOptions.animateReplot = this.report.layout.chart.options.animateReplot;
-
+					
 					if (this.report.layout.chart.options.seriesDefaults.lineWidth) {
 					   chartOptions.seriesDefaults.lineWidth = this.report.layout.chart.options.seriesDefaults.lineWidth;
 					}
@@ -282,7 +308,7 @@ define(
                      chartOptions.legend.rendererOptions = {
                         numberColumns : Math.ceil(data.seriesGroup.length / 10)
                      }
-      			}
+                  }  
       			}
 
 					// TODO There is more
@@ -293,7 +319,9 @@ define(
 						if (this.getFirstDimension().type == this.reportingService.metadata.timestampType) {
 							chartOptions.axes.xaxis.renderer = jQuery.jqplot.DateAxisRenderer;
 							chartOptions.axes.xaxis.tickOptions.formatString = this.getDateFormatForDimension(true);
-						} else {
+						} else if (this.getFirstDimension().type == this.reportingService.metadata.integerType) {
+							//No need to set any axis renderer, default is sufficient for integer values
+						} else {						
 							chartOptions.axes.xaxis.renderer = jQuery.jqplot.CategoryAxisRenderer;
 						}
 						
@@ -346,9 +374,13 @@ define(
 						   chartOptions.axes.xaxis.renderer = jQuery.jqplot.DateAxisRenderer;
 						   chartOptions.axes.xaxis.tickOptions.formatString = this.getDateFormatForDimension(true);
 						   chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.AxisTickRenderer;
+						} else if (this.getFirstDimension().type == this.reportingService.metadata.integerType) {
+						   chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
+						   chartOptions.axes.yaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
 						} else {
 						   chartOptions.axes.xaxis.renderer = jQuery.jqplot.CategoryAxisRenderer;
 						   chartOptions.axes.xaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
+						   chartOptions.axes.yaxis.tickRenderer = jQuery.jqplot.CanvasAxisTickRenderer;
 						}
 						
 						chartOptions.axes.yaxis.pad = 1.05;
@@ -544,6 +576,21 @@ define(
 											}
 										}
 										
+
+										if (self.report.dataSet.firstDimension == self.reportingService.metadata.objects.activityInstance.dimensions.activeTimestamp.id) {
+											for ( var i in inData) {
+												for ( var j in inData[i]) {
+													//For dimension, "activeTimestamp" date returned from engine is in wrong format like "2014/11/19 00:00:00:000".
+													//In IE above Date fails.
+													//It should be like "2014/11/19 00:00:00" or "2014/11/19".
+													//Applying below logic to convert date to "2014/11/19"
+													if (inData[i][j][0].length > 10) {
+														inData[i][j][0] = inData[i][j][0].substring(0, 10); 
+													}
+												}
+											}
+										}
+										
 										var data = {};
 										data.seriesGroup = [];
 										var seriesIds = [];
@@ -552,28 +599,7 @@ define(
 											seriesIds.push(prop);
 										}
 										
-										if (self.report.dataSet.firstDimension === self.reportingService.metadata.objects.processInstance.dimensions.priority.id)
-										{
-										   var enumItems = self.reportingService.getEnumerators(self.reportingService.metadata.objects.processInstance.dimensions.priority.enumerationType);
-
-										   data.seriesGroup.forEach(function(group)
-										   {
-										      for ( var i = 0; i < group.length; i++)
-										      {
-										         for ( var item in enumItems)
-										         {
-										            if (enumItems[item].id == group[i][0])
-										            {
-										               group[i][0] = enumItems[item].name;
-										               break;
-										            }
-										         }
-										      }
-										   })
-										}
-										
-										console
-												.log("Report Data before preprocessing");
+										console.log("Report Data before preprocessing");
 										console.log(data);
 
 //										var chartOptions ={
@@ -866,7 +892,7 @@ define(
 				this.renderingFailed = null;
 				document.body.style.cursor = "wait";
 				scopeController.updateView();
-            	
+				
 					setTimeout(
 							function() {
 								if (self.report.layout.type == 'document') {
@@ -1410,10 +1436,10 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
 	  if (selectedColumns[selColumn].type.id == this.reportingService.metadata.timestampType.id) 
       {
          tableOptions.aoColumnDefs.push(getColumnDefForDate(selColumn, this.reportingService.dateFormats.minutes));
-         }
-         }
-
-               
+      }
+   }
+		
+   
    var a = [];
    
    for ( var row in data)
@@ -1524,11 +1550,11 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
 					};
 
 					return popupData;
-				};
+			};
 				
             /*
-             * 
-             */
+			 * 
+			 */
             ReportRenderingController.prototype.formatDate = function(value, fromFormat, toFormat) {
                if (value != undefined && value != null && value != "") {
                   try {
@@ -1577,7 +1603,7 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
             		"oAria" : {
             			"sSortAscending" : this.getI18N('datatables.oAria.sSortAscending'),
             			"sSortDescending" : this.getI18N('datatables.oAria.sSortDescending')
-		}
+            		}
             	};
              };	
            };
@@ -1634,8 +1660,8 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
 					"mData" : (function (dateFormat, col) {
 						return function (source, type, val) {
 
-						if (type === 'set') {
-							//backup original date value
+							if (type === 'set') {
+								//backup original date value
 								source[col] = val;
 
 								if (!source.display) {
@@ -1643,44 +1669,44 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
 								}
 
 								try {
-							//format date value
-							var dateVal = val;
+									//format date value
+									var dateVal = val;
 
 									if (!val) {
 										source.display[col] = dateVal;
 										return;
 									}
 
-							var matches = dateVal.match(/\:/g);
-							// cannot handle millisecs at the moment
-							if (matches.length > 2) {
-								var lastIndex = dateVal.lastIndexOf(":");
-								dateVal = dateVal.substring(0, lastIndex);
-							}
+									var matches = dateVal.match(/\:/g);
+									// cannot handle millisecs at the moment
+									if (matches.length > 2) {
+										var lastIndex = dateVal.lastIndexOf(":");
+										dateVal = dateVal.substring(0, lastIndex);
+									}
 
-							//get the date object
-							var d = new Date(dateVal);
-							if (isFinite(d)) {
-								if (angularServices && angularServices.filter) {
-									dateVal = angularServices.filter('date')(d, dateFormat);
-								}
-							}
+									//get the date object
+									var d = new Date(dateVal);
+									if (isFinite(d)) {
+										if (angularServices && angularServices.filter) {
+											dateVal = angularServices.filter('date')(d, dateFormat);
+										}
+									}
 								} catch (e) {
 									console.debug("Error occurred while formatting date");
 								}
 								finally {
 									source.display[col] = dateVal;
-							return;
+									return;
 								}
-						} else if (type === 'display' || type == 'filter') {
+							} else if (type === 'display' || type == 'filter') {
 								return source.display[col];
-						}
+							}
 
-						// 'sort' and 'type' both just use the raw data
+							// 'sort' and 'type' both just use the raw data
 							return source[col];
-				};
+						};
 					})(dateFormat, col)
-			    };
+				};
 			};
 			
 			 /**
