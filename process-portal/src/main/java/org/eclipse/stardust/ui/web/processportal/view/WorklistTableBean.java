@@ -626,7 +626,7 @@ public class WorklistTableBean extends UIComponentBean
    {
       worklistTable = new PaginatorDataTable<WorklistTableEntry, Object>(worklistColSelecpopup, new SearchHandler(),
             new FilterHandler(), new SortHandler(), this,
-            new DataTableSortModel<WorklistTableEntry>("startDate", false));
+            new DataTableSortModel<WorklistTableEntry>("oid", false));
       worklistTable.setRowSelector(new DataTableRowSelector("checkSelection",true));
       worklistTable.setDataTableExportHandler(new WorklistExportHandler());
       worklistTable.initialize();
