@@ -437,7 +437,7 @@
 			this.visbleColumns = DEFAULT_VALUES.WORKLIST.VISIBLE_COLUMNS;
 			this.preferenceModule = DEFAULT_VALUES.WORKLIST.PREFERENCE_MODULE;
 			this.exportFileName= "Worklist";
-			this.initialSort = {name : 'startTime', dir : 'desc'};
+			this.initialSort = {name : 'activityOID', dir : 'desc'};
 
 		};
 
