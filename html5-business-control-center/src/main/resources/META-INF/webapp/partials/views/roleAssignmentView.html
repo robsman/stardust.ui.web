@@ -1,0 +1,30 @@
+<div ng-controller="sdRoleAssignmentCtrl as ctrl">
+<div class="roleAssignment-wrapper">
+    <div class="view-panel-toolbar tbl-title" style="color: #708090;font-size:11px">{{i18n('business-control-center-messages.views-roleAssignmentView-title')}}</div>
+	<table sd-data-table="ctrl.roleAssignmentTable"
+		sd-data="ctrl.getRoleAssignmentData()" sda-mode="remote" sda-ready="ctrl.showRoleAssignmentTable"
+		sda-selectable="multiple"
+		sda-selection="ctrl.rowSelectionForRoleAssignment"
+		sda-column-selector="{{ctrl.columnSelector}}"
+		sda-sortable="true"
+		sda-sort-by="{name : 'teamMember', dir : 'desc'}" sda-exports="true"
+		sda-exports-file-name="{{ctrl.exportFileNameForRoleAssignment}}">
+		<thead
+			sda-i18n-scope="business-control-center-messages.views-common-column">
+			<tr>
+			   <th sda-name="teamMember" sda-sortable="true" sda-label={{rowData.teamMember}}>
+				</th>
+				<th ng-repeat="obj in ctrl.descriptors" sda-name="{{obj.title}}" sda-label="{{obj.title}}" sda-visible="true">
+				 </th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td></td>
+				<td ng-repeat="obj in ctrl.descriptors" sda-exporter="rowData.descriptorsValues[colData.title]">
+				    <div sd-role-assignment-descriptor-content sda-descriptor="rowData.descriptorsValues[colData.title]"></div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	</div>

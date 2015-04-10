@@ -28,6 +28,7 @@
          <bean class="org.eclipse.stardust.ui.web.rest.ProcessResourceMgmtResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.RoleManagerDetailResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.UserManagerDetailResource" />
+         <bean class="org.eclipse.stardust.ui.web.rest.RoleAssignmentResource" />
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>
             <bean class="org.eclipse.stardust.ui.web.rest.exception.PortalRestExceptionMapper"/>

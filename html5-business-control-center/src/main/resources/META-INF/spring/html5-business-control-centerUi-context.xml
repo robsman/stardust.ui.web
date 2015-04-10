@@ -28,6 +28,10 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		<ippui:viewsExtension>
 			<ippui:view name="userManagerDetailViewHtml5" include="/plugins/html5-business-control-center/partials/views/userManagerDetailView.html" />
 		</ippui:viewsExtension>
+		
+		<ippui:viewsExtension>
+			<ippui:view name="roleAssignmentViewHtml5" include="/plugins/html5-business-control-center/partials/views/roleAssignmentView.html" />
+		</ippui:viewsExtension>
 				
 	</ippui:perspectiveExtension>
 </beans>
