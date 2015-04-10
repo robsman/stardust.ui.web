@@ -3289,6 +3289,22 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
             JsonElement jsonValue = attributes.get(key);
 
+            if (key.equals(PredefinedConstants.BINDING_DATA_ID_ATT))
+            {
+               if (element instanceof ActivityType)
+               {
+                  ActivityType activity = (ActivityType) element;
+                  String data = jsonValue.getAsString();
+                  if (data.split(":").length > 1)
+                  {
+                     data = data.split(":")[1];
+                  }
+                  AttributeUtil.setAttribute(activity,
+                        PredefinedConstants.BINDING_DATA_ID_ATT, data);
+                  continue;
+               }
+            }
+
             //Infer the ruleSetId into the "hidden" drools application
             if (key.equals(ModelerConstants.RULE_SET_ID))
             {
