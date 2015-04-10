@@ -224,6 +224,18 @@
 			return ajax(restUrl, '', proInstanceOids);
 		};
 		
+		
+		/**
+		 * 
+		 */
+		ActivityInstanceService.prototype.abortActivities = function( scope, activities) {
+			var requestObj = {
+					scope : scope,
+					activities : activities
+			};
+			return ajax(REST_BASE_URL, "abort", requestObj);
+			
+		};
 		/*
 		 *
 		 *	{

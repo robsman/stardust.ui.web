@@ -14,12 +14,12 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive( 'sdAbortActivityDialog', [ 'sdAbortActivityService', AbortActivity]);
+	angular.module('bpm-common').directive( 'sdAbortActivityDialog', [ 'sdActivityInstanceService', AbortActivity]);
 
 	/**
     * 
     */
-	function AbortActivity(sdAbortActivityService){
+	function AbortActivity(sdActivityInstanceService){
 
 		return {
 			restrict: 'A',
@@ -45,18 +45,18 @@
 				showDialog : '=sdaShowDialog',
 				abortCompleted: '&sdaOnAbortComplete'
 			},
-			controller: [ '$scope', 'sdAbortActivityService', AbortActivityController]
+			controller: [ '$scope', 'sdActivityInstanceService', AbortActivityController]
 		};
 	};
 
 	/**
     * 
     */
-	var AbortActivityController = function( $scope, sdAbortActivityService){
+	var AbortActivityController = function( $scope, sdActivityInstanceService){
 
 		var self = this;
 
-		this.intialize( $scope, sdAbortActivityService);
+		this.intialize( $scope, sdActivityInstanceService);
 		
 		/**
 		 * 
@@ -96,10 +96,10 @@
 	/**
     * 
     */
-	AbortActivityController.prototype.intialize = function ( $scope, sdAbortActivityService){
+	AbortActivityController.prototype.intialize = function ( $scope, sdActivityInstanceService){
 
 		this.i18n = $scope.$parent.i18n;
-		this.sdAbortActivityService = sdAbortActivityService;
+		this.sdActivityInstanceService = sdActivityInstanceService;
 		this.notification = {
 			result : null,
 			error : false
@@ -115,7 +115,7 @@
     */
 	AbortActivityController.prototype.abortActivities = function (){
 		this.getActvities();
-		return this.sdAbortActivityService.abortActivities( this.abortActivity.scope, this.abortActivity.activities);
+		return this.sdActivityInstanceService.abortActivities( this.abortActivity.scope, this.abortActivity.activities);
 	};
 	/**
     * 
