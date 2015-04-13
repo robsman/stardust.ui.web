@@ -271,7 +271,7 @@ define(function(require){
 		 * 
 		 */
 		function log(msg) {
-			if (console) {
+			if (window.console) {
 				console.log(msg);
 			}
 		}
