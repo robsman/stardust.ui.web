@@ -55,39 +55,68 @@ public final class ImageUtils
     * <p>
     * This method returns the TIFF Image Writer
     * 
+    * Scans for TIFF writers. Also, forces a re-scans of the classpath once if no reader
+    * is found the first time. (This is needed as a workaround for the classloading issues
+    * observed on JBoss)
+    * 
     * @return
     */
    public static ImageWriter getTiffImageWriter()
    {
-      Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName(TIFF_FORMAT_NAME);
-      if (writers.hasNext())
+      final int TIFF_WRITER_SCAN_RETRY_COUNT_MAX = 1;
+      int retryCount = 0;
+      
+      Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName(TIFF_FORMAT_NAME);      
+      while (!writers.hasNext())
       {
-         return (ImageWriter) writers.next();
+         if (retryCount < TIFF_WRITER_SCAN_RETRY_COUNT_MAX)
+         {
+            ImageIO.scanForPlugins();
+            writers = ImageIO.getImageWritersByFormatName(TIFF_FORMAT_NAME);
+            retryCount++;
+         }
+         else
+         {
+            throw new RuntimeException(MessagesViewsCommonBean.getInstance().getString(
+                    "views.tiffViewer.error.noWriterFound"));
+         }
       }
-      else
-      {
-         throw new RuntimeException("Writer not found");
-      }
+
+      return (ImageWriter) writers.next();
    }
 
    /**
     * <p>
     * This method returns the TIFF Image Reader
     * 
+    * Scans for TIFF readers. Also, forces a re-scans of the classpath once if no reader
+    * is found the first time. (This is needed as a workaround for the classloading issues
+    * observed on JBoss)
+    * 
     * @return
     */
    public static ImageReader getTiffImageReader()
    {
-      Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName(TIFF_FORMAT_NAME);
-      if (readers.hasNext())
+      final int TIFF_READER_SCAN_RETRY_COUNT_MAX = 1;
+      int retryCount = 0;
+      
+      Iterator<ImageReader> readers = ImageIO.getImageReadersByFormatName(TIFF_FORMAT_NAME);      
+      while (!readers.hasNext())
       {
-         return (ImageReader) readers.next();
+         if (retryCount < TIFF_READER_SCAN_RETRY_COUNT_MAX)
+         {
+            ImageIO.scanForPlugins();
+            readers = ImageIO.getImageReadersByFormatName(TIFF_FORMAT_NAME);
+            retryCount++;
+         }
+         else
+         {
+             throw new RuntimeException(MessagesViewsCommonBean.getInstance().getString(
+                     "views.tiffViewer.error.noReaderFound"));
+         }
       }
-      else
-      {
-         throw new RuntimeException(MessagesViewsCommonBean.getInstance().getString(
-               "views.tiffViewer.error.noReaderFound"));
-      }
+
+      return (ImageReader) readers.next();
    }
 
    /**
