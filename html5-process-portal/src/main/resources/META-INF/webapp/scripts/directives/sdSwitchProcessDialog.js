@@ -16,7 +16,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdSwitchProcessDialog', ['$parse', '$q', 'sdUtilService', 'sdActivityInstanceService', 'sdLoggerService', 'eventBus', 'sdViewUtilService',
+	angular.module('bpm-common').directive('sdSwitchProcessDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'eventBus', 'sdViewUtilService',
 	                                                                    SwitchProcessDialogDirective]);
 
 	var trace;
@@ -24,7 +24,7 @@
 	/*
 	 * Directive class
 	 */
-	function SwitchProcessDialogDirective($parse, $q, sdUtilService, sdActivityInstanceService, sdLoggerService, eventBus, sdViewUtilService) {
+	function SwitchProcessDialogDirective($parse, $q, sdUtilService, sdProcessInstanceService, sdLoggerService, eventBus, sdViewUtilService) {
 		
 		trace = sdLoggerService.getLogger('bpm-common.sdSwitchProcessDialog');
 		
@@ -253,7 +253,7 @@
 			function performSwitch(abortPayload) {
 				var deferred = $q.defer();
 
-				sdActivityInstanceService.switchProcess(abortPayload).then(function(data) {
+				sdProcessInstanceService.switchProcess(abortPayload).then(function(data) {
 					// abort & start successful
 					deferred.resolve(data);
 
@@ -343,7 +343,7 @@
 			function checkIfProcessesAbortable(abortType) {
 				var deferred = $q.defer();
 
-				sdActivityInstanceService
+				sdProcessInstanceService
 						.checkIfProcessesAbortable(self.processInstanceOIDs, abortType)
 						.then(
 								function(data) {
@@ -367,7 +367,7 @@
 			function fetchSpawnableProcesses() {
 				var deferred = $q.defer();
 
-				sdActivityInstanceService.getSpawnableProcesses(self.processInstanceOIDs).then(function(data) {
+				sdProcessInstanceService.getSpawnableProcesses(self.processInstanceOIDs).then(function(data) {
 					deferred.resolve(data);
 
 					self.safeApply();

@@ -16,7 +16,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdJoinProcessDialog', ['$parse', '$q', 'sdUtilService', 'sdActivityInstanceService', 'sdLoggerService', 'eventBus', 'sdViewUtilService',
+	angular.module('bpm-common').directive('sdJoinProcessDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'eventBus', 'sdViewUtilService',
 	                                                                    JoinProcessDialogDirective]);
 
 	var trace;
@@ -24,7 +24,7 @@
 	/*
 	 * Directive class
 	 */
-	function JoinProcessDialogDirective($parse, $q, sdUtilService, sdActivityInstanceService, sdLoggerService, eventBus, sdViewUtilService) {
+	function JoinProcessDialogDirective($parse, $q, sdUtilService, sdProcessInstanceService, sdLoggerService, eventBus, sdViewUtilService) {
 		
 		trace = sdLoggerService.getLogger('bpm-common.sdJoinProcessDialog');
 		
@@ -262,7 +262,7 @@
 			function performAbortJoin(abortPayload) {
 				var deferred = $q.defer();
 
-				sdActivityInstanceService.abortAndJoinProcess(abortPayload).then(function(data) {
+				sdProcessInstanceService.abortAndJoinProcess(abortPayload).then(function(data) {
 					// abort & start successful
 					deferred.resolve(data);
 
@@ -378,7 +378,7 @@
 			function checkIfProcessesAbortable(abortType) {
 				var deferred = $q.defer();
 
-				sdActivityInstanceService
+				sdProcessInstanceService
 						.checkIfProcessesAbortable(self.processInstanceOIDs, abortType)
 						.then(
 								function(data) {
@@ -402,7 +402,7 @@
 			function loadRelatedProcesses() {
 				var deferred = $q.defer();
 
-				sdActivityInstanceService.getRelatedProcesses(self.processInstanceOIDs, !self.joinProcess.matchAll,
+				sdProcessInstanceService.getRelatedProcesses(self.processInstanceOIDs, !self.joinProcess.matchAll,
 						self.joinProcess.isCase).then(function(data) {
 					// getRelatedProcesses successful
 					self.joinProcess.relatedProcesses = {};

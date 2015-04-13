@@ -16,7 +16,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdAttachToCaseDialog', ['$parse', '$q', 'sdUtilService', 'sdActivityInstanceService', 'sdProcessInstanceService', 'sdLoggerService', 'eventBus', 'sdViewUtilService',
+	angular.module('bpm-common').directive('sdAttachToCaseDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'eventBus', 'sdViewUtilService',
 	                                                                    AttachToCaseDialogDirective]);
 
 	var trace;
@@ -24,7 +24,7 @@
 	/*
 	 * Directive class
 	 */
-	function AttachToCaseDialogDirective($parse, $q, sdUtilService, sdActivityInstanceService, sdProcessInstanceService, sdLoggerService, eventBus, sdViewUtilService) {
+	function AttachToCaseDialogDirective($parse, $q, sdUtilService, sdProcessInstanceService, sdLoggerService, eventBus, sdViewUtilService) {
 		
 		trace = sdLoggerService.getLogger('bpm-common.sdAttachToCaseDialog');
 		
@@ -441,7 +441,7 @@
 			function loadRelatedProcesses() {
 				var deferred = $q.defer();
 
-				sdActivityInstanceService.getRelatedProcesses(self.processInstanceOIDs, !self.attachToCase.matchAll,
+				sdProcessInstanceService.getRelatedProcesses(self.processInstanceOIDs, !self.attachToCase.matchAll,
 						!self.attachToCase.isCase).then(function(data) {
 					// getRelatedProcesses successful
 					self.attachToCase.relatedProcesses = {};

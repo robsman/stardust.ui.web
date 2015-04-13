@@ -312,6 +312,64 @@ public class ProcessInstanceResource
    }
    
    /**
+    * @author Nikhil.Gahlot
+    * @param processInstanceOID
+    * @return
+    */
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/spawnableProcesses")
+  public Response spawnableProcesses(String postedData, @QueryParam("type") String type)
+  {
+      return Response
+            .ok(processInstanceService.spawnableProcesses(postedData, type), MediaType.APPLICATION_JSON).build();
+  }
+   
+  @POST
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("/checkIfProcessesAbortable")
+  public Response checkIfProcessesAbortable(String postedData, @QueryParam("type") String type)
+  {
+     return Response
+           .ok(processInstanceService.checkIfProcessesAbortable(postedData, type), MediaType.APPLICATION_JSON).build();
+  }
+   
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/switchProcess")
+  public Response switchProcess(String postedData)
+  {
+      return Response
+            .ok(processInstanceService.switchProcess(postedData), MediaType.APPLICATION_JSON).build();
+  }
+   
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/abortAndJoinProcess")
+   public Response abortAndJoinProcess(String postedData)
+   {
+      return Response
+            .ok(processInstanceService.abortAndJoinProcess(postedData), MediaType.APPLICATION_JSON).build();
+   }
+   
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/getRelatedProcesses")
+   public Response getRelatedProcesses(String postedData, @QueryParam("matchAny") String matchAnyStr, @QueryParam("searchCases") String searchCasesStr)
+   {
+      boolean matchAny = "true".equals(matchAnyStr);
+      boolean searchCases = "true".equals(searchCasesStr);
+      
+      return Response
+            .ok(processInstanceService.getRelatedProcesses(postedData, matchAny, searchCases), MediaType.APPLICATION_JSON).build();
+   }
+   
+   /**
     * Populate the options with the post data.
     * @param options
     * @param postData

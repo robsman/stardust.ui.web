@@ -39,6 +39,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.CreateCaseDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.JoinProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
@@ -46,8 +47,11 @@ import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PriorityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.StatusDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.SwitchProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
+import org.eclipse.stardust.ui.web.rest.service.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.converter.PriorityConverter;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
@@ -56,7 +60,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDocumentDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
@@ -77,6 +80,9 @@ public class ProcessInstanceService
    
    @Resource
    private org.eclipse.stardust.ui.web.rest.service.utils.ProcessInstanceUtils processInstanceUtilsREST;
+   
+   @Resource
+   private ProcessDefinitionUtils processDefinitionUtils;
    
    public ProcessInstanceDTO startProcess(JsonObject json)
    {
@@ -281,6 +287,68 @@ public class ProcessInstanceService
       return buildProcessListResult(queryResult);
    }
    
+   public String spawnableProcesses(String postedData, String type)
+   {
+      try
+      {
+         List<Long> processInstOIDs = JsonDTO.getAsList(postedData, Long.class);
+
+         List<ProcessDefinition> pds = processInstanceUtilsREST.spawnableProcesses(processInstOIDs);
+         Object responseObj = pds;
+         if ("select".equals(type))
+         {
+            List<SelectItemDTO> items = new ArrayList<SelectItemDTO>();
+            for (ProcessDefinition pd : pds)
+            {
+               SelectItemDTO selectItem = new SelectItemDTO();
+               selectItem.label = I18nUtils.getProcessName(pd);
+               selectItem.value = pd.getQualifiedId();
+               items.add(selectItem);
+            }
+
+            responseObj = items;
+         }
+
+         return GsonUtils.toJsonHTMLSafeString(responseObj);
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+         NotificationMessageDTO exception = new NotificationMessageDTO();
+         exception.message = e.getMessage();
+         return GsonUtils.toJsonHTMLSafeString(exception);
+      }
+   }
+   
+   public String checkIfProcessesAbortable(String postedData, String type)
+   {
+      List<Long> processInstOIDs = JsonDTO.getAsList(postedData, Long.class);
+      return GsonUtils.toJsonHTMLSafeString(processInstanceUtilsREST.checkIfProcessesAbortable(processInstOIDs, type));
+   }
+   
+   public String switchProcess(String processData)
+   {
+      SwitchProcessDTO processDTO = GsonUtils.fromJson(processData, SwitchProcessDTO.class);
+
+      return GsonUtils.toJsonHTMLSafeString(processInstanceUtilsREST.switchProcess(processDTO.processInstaceOIDs,
+            processDTO.processId, processDTO.linkComment));
+   }
+   
+   public String abortAndJoinProcess(String processData)
+   {
+      JoinProcessDTO processDTO = GsonUtils.fromJson(processData, JoinProcessDTO.class);
+
+      return GsonUtils.toJsonHTMLSafeString(processInstanceUtilsREST.abortAndJoinProcess(
+            Long.parseLong(processDTO.sourceProcessOID), Long.parseLong(processDTO.targetProcessOID), processDTO.linkComment));
+   }
+   
+   public String getRelatedProcesses(String processData, boolean matchAny, boolean searchCases)
+   {
+      List<Long> processInstOIDs = JsonDTO.getAsList(processData, Long.class);
+      
+      return GsonUtils.toJsonHTMLSafeString(processInstanceUtilsREST.getRelatedProcesses(processInstOIDs, matchAny, searchCases));
+   }
+
    /**
     * @param queryResult
     * @return
@@ -297,7 +365,7 @@ public class ProcessInstanceService
 
             ProcessInstanceDTO dto = new ProcessInstanceDTO();
             
-            ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(processInstance.getModelOID(),
+            ProcessDefinition processDefinition = processDefinitionUtils.getProcessDefinition(processInstance.getModelOID(),
                   processInstance.getProcessID());
             
             dto.processInstanceRootOID = processInstance.getRootProcessInstanceOID();

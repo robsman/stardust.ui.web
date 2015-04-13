@@ -155,76 +155,6 @@
 			return ajax(REST_BASE_URL, "performDefaultDelegate", delegateData);
 		};
 		
-		/*
-		 * Get Spawnable Processes
-		 * 
-		 * id activity id
-		 */
-		ActivityInstanceService.prototype.getSpawnableProcesses = function(activityProInstanceOids) {
-			console.log("Getting spawnable process for:");
-			console.log(activityProInstanceOids);
-			
-			var restUrl = REST_BASE_URL;
-			
-			return ajax(restUrl, "spawnableProcesses", activityProInstanceOids);
-		};
-		
-		/*
-		 *
-		 *	{
-		 *	  processId: string value,  // qualified id
-		 *	  linkComment: string value
-		 *	}
-		 * 
-		 */
-		ActivityInstanceService.prototype.switchProcess = function(payload) {
-			console.log("Aborting & spawning new process for:");
-			console.log(payload);
-			
-			var restUrl = REST_BASE_URL;
-			
-			return ajax(restUrl, "switchProcess", payload);
-		};
-		
-		/*
-		 * Check If Processes are Abortable
-		 * 
-		 * activityProInstanceOids : activity process instance id
-		 */
-		ActivityInstanceService.prototype.checkIfProcessesAbortable = function(activityProInstanceOids, abortType) {
-			console.log("Calling checkIfProcessesAbortable for:");
-			console.log(activityProInstanceOids);
-			console.log(" and abort type:");
-			console.log(abortType);
-			
-			var restUrl = REST_BASE_URL;
-			
-			return ajax(restUrl, 'checkIfProcessesAbortable?type=' + abortType, activityProInstanceOids);
-		};
-		
-		/*
-		 * 
-		 */
-		ActivityInstanceService.prototype.getRelatedProcesses = function(proInstanceOids, matchAny, searchCases) {
-			console.log("Calling getRelatedProcesses for:");
-			console.log(proInstanceOids);
-			
-			var restUrl = REST_BASE_URL + 'getRelatedProcesses?';
-			
-			if (matchAny != undefined) {
-				restUrl += '?matchAny=' + matchAny;
-			} else {
-				restUrl += '?matchAny=false';
-			}
-			
-			if (searchCases != undefined) {
-				restUrl += '&searchCases=' + searchCases;
-			}
-			
-			return ajax(restUrl, '', proInstanceOids);
-		};
-		
-		
 		/**
 		 * 
 		 */
@@ -235,23 +165,6 @@
 			};
 			return ajax(REST_BASE_URL, "abort", requestObj);
 			
-		};
-		/*
-		 *
-		 *	{
-		 *	  sourceProcessOID: oid,
-		 *	  targetProcessOID: oid,
-		 *	  linkComment: string value
-		 *	}
-		 * 
-		 */
-		ActivityInstanceService.prototype.abortAndJoinProcess = function(payload) {
-			console.log("Aborting & joining new process for:");
-			console.log(payload);
-			
-			var restUrl = REST_BASE_URL;
-			
-			return ajax(restUrl, "abortAndJoinProcess", payload);
 		};
 
 		/*

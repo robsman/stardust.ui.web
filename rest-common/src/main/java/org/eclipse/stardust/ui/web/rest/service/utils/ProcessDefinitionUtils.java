@@ -12,6 +12,8 @@ package org.eclipse.stardust.ui.web.rest.service.utils;
 
 import static java.util.Collections.emptyList;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -24,10 +26,12 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.springframework.stereotype.Component;
@@ -93,7 +97,7 @@ public class ProcessDefinitionUtils
     * @param processId
     * @return
     */
-   public static ProcessDefinition getProcessDefinition(String processId)
+   public ProcessDefinition getProcessDefinition(String processId)
    {
       ProcessDefinition processDefinition = null;
 
@@ -117,7 +121,7 @@ public class ProcessDefinitionUtils
     * @param processId
     * @return
     */
-   public static ProcessDefinition getProcessDefinition(long modelOid, String processId)
+   public ProcessDefinition getProcessDefinition(long modelOid, String processId)
    {
       ModelCache modelCache = ModelCache.findModelCache();
       Model model = modelCache.getModel(modelOid);
@@ -131,6 +135,40 @@ public class ProcessDefinitionUtils
    public static Map<String, DataPath> getAllDescriptors(Boolean onlyFilterable)
    {
       return CommonDescriptorUtils.getAllDescriptors(onlyFilterable);
+   }
+   
+   /**
+    * 
+    * @param processId
+    * @return
+    */
+   public boolean isCaseProcess(String processId)
+   {      
+      return PredefinedConstants.CASE_PROCESS_ID.equals(processId) ? true : false;
+   }
+   
+   /**
+    * Sorts the specified list of ProcessDefinition by their i18n name
+    * 
+    * @param processDefinitions
+    */
+   public void sort(List<ProcessDefinition> processDefinitions)
+   {
+      Collections.sort(processDefinitions, new ProcessDefinitionComparator());
+   }
+
+   /**
+    * Comparator to sort ProcessDefinitions by name
+    * 
+    */
+   private static class ProcessDefinitionComparator implements Comparator<ProcessDefinition>
+   {
+      public int compare(ProcessDefinition pd1, ProcessDefinition pd2)
+      {
+         String pd1Name = I18nUtils.getProcessName(pd1);
+         String pd2Name = I18nUtils.getProcessName(pd2);
+         return pd1Name.compareTo(pd2Name);
+      }
    }
 
 }

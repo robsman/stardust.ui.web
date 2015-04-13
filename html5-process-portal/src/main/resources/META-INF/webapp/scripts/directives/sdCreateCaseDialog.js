@@ -16,7 +16,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdCreateCaseDialog', ['$parse', '$q', 'sdUtilService', 'sdActivityInstanceService', 'sdProcessInstanceService', 'sdLoggerService', 'eventBus', 'sdViewUtilService',
+	angular.module('bpm-common').directive('sdCreateCaseDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'eventBus', 'sdViewUtilService',
 	                                                                    CreateCaseDialogDirective]);
 
 	var trace;
@@ -24,7 +24,7 @@
 	/*
 	 * Directive class
 	 */
-	function CreateCaseDialogDirective($parse, $q, sdUtilService, sdActivityInstanceService, sdProcessInstanceService, sdLoggerService, eventBus, sdViewUtilService) {
+	function CreateCaseDialogDirective($parse, $q, sdUtilService, sdProcessInstanceService, sdLoggerService, eventBus, sdViewUtilService) {
 		
 		trace = sdLoggerService.getLogger('bpm-common.sdCreateCaseDialog');
 		
