@@ -67,6 +67,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessTableFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessTableFilterDTO.DescriptorFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.RelatedProcessesDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
@@ -1514,14 +1515,11 @@ public class ProcessInstanceUtils
       // starting user Filter
       if (null != filterDTO.startingUser)
       {
-         // TODO
-
-         // FilterOrTerm or = filter.addOrTerm();
-         // for (UserWrapper user : users)
-         // {
-         // or.add(new
-         // org.eclipse.stardust.engine.api.query.StartingUserFilter(user.getUser().getOID()));
-         // }
+         FilterOrTerm or = filter.addOrTerm();
+         for (ParticipantSearchResponseDTO user : filterDTO.startingUser.participants)
+         {
+            or.add(new org.eclipse.stardust.engine.api.query.StartingUserFilter(user.OID));
+         }
       }
 
       // descriptors Filter
@@ -1623,9 +1621,6 @@ public class ProcessInstanceUtils
          trace.debug("options.orderBy = " + options.orderBy);
       }
 
-      //TODO sorting for descriptors
-      
-      
       if (COL_PROCESS_NAME.equals(options.orderBy))
       {
          query.orderBy(ProcessInstanceQuery.PROC_DEF_NAME.ascendig(options.asc));

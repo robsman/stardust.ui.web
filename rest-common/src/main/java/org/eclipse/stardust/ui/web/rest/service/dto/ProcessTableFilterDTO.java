@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.stardust.ui.web.rest.FilterDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -26,7 +27,7 @@ public class ProcessTableFilterDTO implements FilterDTO
 
    public EqualsDTO priority;
    
-   public EqualsDTO startingUser;
+   public ParticipantFilterDTO startingUser;
 
    public Map<String, DescriptorFilterDTO> descriptorFilterMap;
 
@@ -53,6 +54,11 @@ public class ProcessTableFilterDTO implements FilterDTO
             new TypeToken<List<RangeDTO>>() {
       }.getType());
       return customTokens;
+   }
+   
+   public static class ParticipantFilterDTO
+   {
+      public List<ParticipantSearchResponseDTO> participants;
    }
    
 }
