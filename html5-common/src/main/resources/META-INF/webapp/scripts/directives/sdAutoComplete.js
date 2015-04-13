@@ -185,7 +185,7 @@ angular.module('bpm-common.directives')
               </div>\
               <input ng-model="matchStr"\
                      ng-keyUp="changeWrapper(matchStr)"\
-                     style="outline-width:0px;border:none;"\
+                     style="outline-width:0px;border:none; margin-left:4px"\
                      type="text" />\
               <div  ng-show="dataList.length >0 && matchStr.length>0"\
                     name="sd-ac-selectList"\
