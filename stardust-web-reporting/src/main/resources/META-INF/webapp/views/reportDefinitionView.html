@@ -1224,14 +1224,14 @@ table.formTable td {
 																		</table>
 																		<table>
 																			<tr>
-																				<td><input id="auto-reporting-schedulingTab-yearlyRecurrenceFirst" type="radio" value="weekday"
+																				<td><input id="auto-reporting-schedulingTab-yearlyRecurrenceFirst" type="radio" value="date"
 																					ng-model="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence" /></td>
 																				<td><label>{{getI18N('reporting.definitionView.on.label')}}</label></td>
 																				<td><table cellpadding="0" cellspacing="0">
 																						<tr>
 																							<td><select id="auto-reporting-schedulingTab-yearlyRecurrenceOnMonth"  
                                                                         ng-model="report.scheduling.yearlyRecurrenceOptions.onMonth"
-																								ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'weekday'">
+																								ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'date'">
 																									<option value="1">{{getI18N('reporting.definitionView.january.label')}}</option>
 																									<option value="2">{{getI18N('reporting.definitionView.february.label')}}</option>
 																									<option value="3">{{getI18N('reporting.definitionView.march.label')}}</option>
@@ -1247,7 +1247,7 @@ table.formTable td {
                                                                            
 																									<td><input id="auto-reporting-schedulingTab-yearlyRecurrenceOnDay" type="number"
                                                                               ng-model="report.scheduling.yearlyRecurrenceOptions.onDay"
-																										ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'weekday'"
+																										ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'date'"
 																										style="width: 50px;"></input></td>
 																						</tr>
 																					</table></td>
@@ -1255,14 +1255,14 @@ table.formTable td {
 																		</table>
 																		<table>
 																			<tr>
-																				<td><input id="auto-reporting-schedulingTab-yearlyRecurrenceSecond" type="radio" value="date"
+																				<td><input id="auto-reporting-schedulingTab-yearlyRecurrenceSecond" type="radio" value="weekday"
 																					ng-model="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence" /></td>
 																				<td><label>{{getI18N('reporting.definitionView.onThe.label')}}</label></td>
 																				<td><table>
 																						<tr>
 																							<td><select id="auto-reporting-schedulingTab-yearlyRecurrenceOnTheXDay" 
                                                                         ng-model="report.scheduling.yearlyRecurrenceOptions.onTheXDay"
-																								ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'date'"><option  value="1">{{getI18N('reporting.definitionView.first.label')}}</option>
+																								ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'weekday'"><option  value="1">{{getI18N('reporting.definitionView.first.label')}}</option>
 																									<option value="2">{{getI18N('reporting.definitionView.second.label')}}</option>
 																									<option value="3">{{getI18N('reporting.definitionView.third.label')}}</option>
 																									<option value="4">{{getI18N('reporting.definitionView.fourth.label')}}</option>
@@ -1270,7 +1270,7 @@ table.formTable td {
 																							</select></td>
 																							<td><select id="auto-reporting-schedulingTab-yearlyRecurrenceOnTheXDayName"  
                                                                         ng-model="report.scheduling.yearlyRecurrenceOptions.onTheXDayName"
-																								ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'date'"><option value="1">{{getI18N('reporting.definitionView.monday.label')}}</option>
+																								ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'weekday'"><option value="1">{{getI18N('reporting.definitionView.monday.label')}}</option>
 																									<option value="2">{{getI18N('reporting.definitionView.tuesday.label')}}</option>
 																									<option value="3">{{getI18N('reporting.definitionView.wednesday.label')}}</option>
 																									<option value="4">{{getI18N('reporting.definitionView.thursday.label')}}</option>
@@ -1282,7 +1282,7 @@ table.formTable td {
 																							<td><label>{{getI18N('reporting.definitionView.of.label')}}</label></td>
 																							<td><select id="auto-reporting-schedulingTab-yearlyRecurrenceOnTheMonth"  
                                                                         ng-model="report.scheduling.yearlyRecurrenceOptions.onTheMonth"
-																								ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'date'">
+																								ng-disabled="report.scheduling.yearlyRecurrenceOptions.yearlyRecurrence != 'weekday'">
 																									<option value="1">{{getI18N('reporting.definitionView.january.label')}}</option>
                                                                            <option value="2">{{getI18N('reporting.definitionView.february.label')}}</option>
                                                                            <option value="3">{{getI18N('reporting.definitionView.march.label')}}</option>
