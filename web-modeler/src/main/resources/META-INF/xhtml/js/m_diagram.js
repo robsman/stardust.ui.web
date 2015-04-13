@@ -2118,21 +2118,26 @@ define(
 							.trigger("blur");
 					this.currentTextPrimitive.attr("text", content);
 					m_utils.debug("text set");
-					var changes = this.currentTextPrimitive.auxiliaryProperties.callbackScope.getEditedChanges(content);
+					var callbkSymbol = this.currentTextPrimitive.auxiliaryProperties.callbackScope;
+					
+					var changes = callbkSymbol.getEditedChanges(content);
 
-					m_commandsController
-							.submitCommand(m_command
-									.createUpdateModelElementCommand(
-											this.currentTextPrimitive.auxiliaryProperties.callbackScope.diagram.modelId,
-											this.currentTextPrimitive.auxiliaryProperties.callbackScope.oid,
-											changes));
+					//check if handler exist
+          if (typeof(callbkSymbol.submitEditable) == "function") {
+            callbkSymbol.submitEditable(changes);
+          } else {
+            m_commandsController.submitCommand(m_command
+                    .createUpdateModelElementCommand(
+                            callbkSymbol.diagram.modelId,
+                            callbkSymbol.oid, changes));
+          }
+          
 					this.currentTextPrimitive.show();
-					this.currentTextPrimitive.auxiliaryProperties.callbackScope
-							.adjustPrimitivesOnShrink();
+					callbkSymbol.adjustPrimitivesOnShrink();
 					this.symbolEditMode = false;
 					this.clickedOnScrollBar = false;
 					m_utils.debug("text primitive shown");
-					this.currentTextPrimitive.auxiliaryProperties.callbackScope.parentSymbol.adjustToSymbolBoundaries();
+					callbkSymbol.parentSymbol.adjustToSymbolBoundaries();
 					}
 				};
 
