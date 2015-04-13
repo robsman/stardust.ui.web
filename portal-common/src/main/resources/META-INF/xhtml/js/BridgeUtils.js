@@ -1617,7 +1617,7 @@ if (!window["BridgeUtils"].FrameManager) {
 			BridgeUtils.log("Trying to activate Frame = " + contentId);
 
 			if (hiddenCounter == undefined) {
-				hiddenCounter = 50; // Max tries
+				hiddenCounter = 100; // Max tries
 			}
 
 			doWithContentFrame( contentId, function(contentFrame) {
