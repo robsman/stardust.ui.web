@@ -44,17 +44,17 @@ var html5Deps = function() {
 				'angularjs' : ['../portal-shell/js/libs/angular/1.2.11/angular'],
 				'portalApplication' : [ 'common/html5/portalApplication' ],
 				'html5CommonMain' : [ 'html5-common/scripts/main' ],
-				'bootstrap' : [ 'html5-common/libs/bootstrap/bootstrap' ],
-				'sdData' : [ 'html5-common/scripts/directives/sdData' ],
-				'sdDataTable' : [ 'html5-common/scripts/directives/sdDataTable' ],
 				'sdEventBusService' : [ 'html5-common/scripts/services/sdEventBusService' ],
 				'httpInterceptorProvider' : [ 'html5-common/scripts/services/sdHttpInterceptorProvider' ],
 				'sdLoggerService' : [ 'html5-common/scripts/services/sdLoggerService' ],
+				'sdData' : [ 'html5-common/scripts/directives/sdData' ],
+				'sdDataTable' : [ 'html5-common/scripts/directives/sdDataTable' ],
 				'sdUtilService' : [ 'html5-common/scripts/services/sdUtilService' ],
 				'sdViewUtilService' : [ 'html5-common/scripts/services/sdViewUtilService' ],
 				'sdPreferenceService' : [ 'html5-common/scripts/services/sdPreferenceService' ],
+				'bootstrap' : [ 'html5-common/libs/bootstrap/bootstrap' ],
 				'sdDialog' : [ 'html5-common/scripts/directives/dialogs/sdDialog' ],
-				'sdDialogService' : [ 'html5-common/scripts/services/sdDialogService' ]
+				'sdDialogService' : [ 'html5-common/scripts/services/sdDialogService' ],
 			},
 			shim : {
 				'jquery.dataTables' : [ 'jquery' ],
@@ -62,8 +62,7 @@ var html5Deps = function() {
 					require : "jquery",
 					exports : "angular"
 				},
-				'html5CommonMain' : [ 'angularjs', 'portalApplication' ],
-				'bootstrap' : ['jquery'],
+				'html5CommonMain' : [ 'angularjs' ],
 				'sdEventBusService' : [ 'html5CommonMain' ],
 				'httpInterceptorProvider' : [ 'html5CommonMain' ],
 				'sdLoggerService' : [ 'html5CommonMain' ],
@@ -72,13 +71,14 @@ var html5Deps = function() {
 				'sdUtilService' : [ 'html5CommonMain' ],
 				'sdViewUtilService' : [ 'html5CommonMain' ],
 				'sdPreferenceService' : [ 'html5CommonMain' ],
+				'bootstrap' : ['jquery'],
 				'sdDialog' : [ 'html5CommonMain', 'sdLoggerService', 'bootstrap' ],
 				'sdDialogService' : [ 'sdDialog' ]
 			},
 			deps : [ "jquery.dataTables", "angularjs", "portalApplication",
-					"html5CommonMain", "bootstrap","sdEventBusService", "httpInterceptorProvider",
+					"html5CommonMain", "sdEventBusService", "httpInterceptorProvider",
 					"sdLoggerService", "sdData", "sdDataTable",
-					'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'sdDialog', 'sdDialogService' ]
+					'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'bootstrap', 'sdDialog', 'sdDialogService' ]
 
 		};
 
