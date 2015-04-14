@@ -55,7 +55,11 @@
 		<thead sda-i18n-scope="views-common-messages.views-processTable-column">
 			<tr>
 				<th sda-name="oid" sda-label-key="pOID" sda-sortable="true" sda-filterable="true"></th>
-				<th sda-name="processName" sda-visible="true"></th>
+				<th sda-name="processName" sda-visible="true" sda-sortable="true">
+					<div sda-filter-template>
+						<div sd-process-activity-filter sda-filter-type='process' sda-processes="processTableCtrl.allAccessibleProcesses"></div>
+					</div>
+				</th>
 				<th sda-name="priority" sda-sortable="true">
 					<div sda-filter-template>
 						<div sd-priority-filter></div>

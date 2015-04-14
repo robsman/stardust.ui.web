@@ -69,7 +69,7 @@
 				self.showAbortProcessDialog = false;
 				self.processesToAbort = [];
 				self.processesToJoin = [];
-
+				self.allAccessibleProcesses = [];
 				self.availableStates = [];
 
 				// Process Title
@@ -165,6 +165,7 @@
 				self.fetchDescriptorCols();
 				self.fetchAvailableStates();
 				self.fetchAvailablePriorities();
+				self.fetchAllProcesses();
 			};
 			
 			self.refresh = function() {
@@ -615,6 +616,15 @@
 			 */
 			self.onSorting = function(info) {
 				// NOP
+			};
+			
+			/*
+			 *
+			 */
+			self.fetchAllProcesses = function() {
+				sdProcessDefinitionService.getAllProcesses(false).then(function(processes) {
+					self.allAccessibleProcesses = processes;
+				});
 			};
 			
 			
