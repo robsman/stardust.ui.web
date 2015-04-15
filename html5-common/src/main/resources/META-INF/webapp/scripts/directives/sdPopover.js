@@ -42,7 +42,7 @@
 				restrict : 'AE',
 				scope: true,
 				transclude: true,
-				template: ' <span class="popover-btn"></span>'
+				template: ' <button ng-disabled="popoverDisabled" class="popover-btn button-link"></button>'
 						+ ' <div ng-show="showPopover" class="popover-body-container popup-dlg" style="cursor:auto; position:fixed;"></div>',
 				compile: PopoverCompilerFn
 			};
@@ -57,6 +57,10 @@
 			var popoverBtn = elem.find('.popover-btn');
 			
 			return function (scope, element, attrs) { // Link Function
+				
+				scope.$watch(attrs.ngDisabled, function(val) {
+					scope.popoverDisabled = val;
+				});
 				
 				var onOpenFn = $parse(attrs.sdaOnOpen);
 				
@@ -80,12 +84,7 @@
 				
 				function handlePopoverClick(clkEvent, clickElem) {
 					// In case of ng-disabled, make sure the click is not activated
-					var disabled = false;
-					if (angular.isDefined(attrs.ngDisabled)) {
-						disabled = parseAttribute(scope.$parent, attrs.ngDisabled);
-					}
-					
-					if (disabled != true) {
+					if (scope.popoverDisabled != true) {
 						
 						if (angular.isDefined(onOpenFn)) {
 							onOpenFn(scope);

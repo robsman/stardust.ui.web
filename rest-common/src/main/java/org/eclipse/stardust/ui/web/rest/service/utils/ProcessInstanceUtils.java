@@ -1609,7 +1609,14 @@ public class ProcessInstanceUtils
             filterModel.setFilterValue(key, (Serializable) value);
          }
 
-         DescriptorFilterUtils.applyFilters(query, filterModel);
+         try
+         {
+            DescriptorFilterUtils.applyFilters(query, filterModel);
+         }
+         catch (Exception e)
+         {
+            trace.error("Error occurred while applying filter to descriptors..", e);
+         }
       }
 
    }

@@ -7,7 +7,7 @@
 			   <i class="sc sc-fw sc-gear-close" style="font-size: 14px;"></i>
 			</button>
 			
-			<button class="button-link tbl-tool-link" ng-disabled="processTableCtrl.dataTable.getSelection() < 1"
+			<button class="button-link tbl-tool-link" ng-disabled="processTableCtrl.dataTable.getSelection() < 1" title="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}"
 				ng-click="processTableCtrl.openAbortPopover($event);">
 				<i class="glyphicon glyphicon-chevron-right glyphicon-rotate-90"></i>
 			</button>
@@ -18,7 +18,7 @@
 				Recover
 			</button>
 			
-			<span sd-popover ng-disabled="processTableCtrl.dataTable.getSelection() < 1" id="caseMenu">
+			<span sd-popover ng-disabled="processTableCtrl.dataTable.getSelection() < 1" id="caseMenu" title="{{i18n('views-common-messages.views-case-tooltip-menu')}}">
 				<!-- TODO Case Menu icon -->
 				<i class="glyphicon glyphicon-chevron-right glyphicon-rotate-90"></i>
 				<div id="caseMenu" class="popover-body">
@@ -158,7 +158,7 @@
 						</button>
 						
 						<!-- abort menu -->
-						<button class="button-link tbl-tool-link" ng-disabled="!rowData.enableTerminate"
+						<button class="button-link tbl-tool-link" ng-disabled="!rowData.enableTerminate" title="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}"
 							ng-click="processTableCtrl.openAbortPopover($event, rowData); bpmCommon.stopEvent($event);">
 							<i class="glyphicon glyphicon-chevron-right glyphicon-rotate-90"></i>
 						</button>
