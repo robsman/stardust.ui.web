@@ -12,9 +12,6 @@ var html5Deps = function() {
 	function loadStyleSheets(pluginBaseUrl) {
 		var head = document.getElementsByTagName('head')[0];
 		var styleSheets = [
-		        "../shell/styles/kendo.css",
-		        "../shell/styles/style.css",
-		        "../shell/styles/style_override.css",
 		        "html5-common/styles/starclipse/starclipse.css",          
 				"html5-common/styles/3rd-party/jquery-plugins/jquery-ui/1.10.2/jquery-ui-custom.css",
 				"html5-common/styles/3rd-party/glyphicons/3.3.2/glyphicons.css",
