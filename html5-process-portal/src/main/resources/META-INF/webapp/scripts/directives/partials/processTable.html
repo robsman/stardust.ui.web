@@ -54,39 +54,44 @@
 		sda-exports="true" sda-exports-file-name="processTable-{{processTableCtrl.exportFileName}}">
 		<thead sda-i18n-scope="views-common-messages.views-processTable-column">
 			<tr>
-				<th sda-name="oid" sda-label-key="pOID" sda-sortable="true" sda-filterable="true"></th>
-				<th sda-name="processName" sda-visible="true" sda-sortable="true">
+				<th sda-name="oid" sda-label-key="pOID" sda-sortable="true" sda-filterable="true" sda-visible="{{processTableCtrl.isColumnVisible('oid')}}"></th>
+				<th sda-name="processName" sda-sortable="true" sda-visible="{{processTableCtrl.isColumnVisible('processName')}}">
 					<div sda-filter-template>
 						<div sd-process-activity-filter sda-filter-type='process' sda-processes="processTableCtrl.allAccessibleProcesses"></div>
 					</div>
 				</th>
-				<th sda-name="priority" sda-sortable="true">
+				<th sda-name="priority" sda-sortable="true" sda-visible="{{processTableCtrl.isColumnVisible('priority')}}">
 					<div sda-filter-template>
 						<div sd-priority-filter></div>
 					</div>
 				</th>
-				<th sda-name="descriptors" sda-visible="true"></th>
-				<th sda-name="startingUser" sda-sortable="true">
+				<th sda-name="descriptors" sda-visible="{{processTableCtrl.isColumnVisible('descriptors')}}"></th>
+				<th sda-name="startingUser" sda-sortable="true" sda-visible="{{processTableCtrl.isColumnVisible('startingUser')}}">
 					<div sda-filter-template>
 						<div sd-user-filter></div>
 					</div>
 				</th>
-				<th sda-name="startTime" sda-sortable="true" sda-filterable="true"></th>
-				<th sda-name="duration" sda-sortable="false"></th>
+				<th sda-name="startTime" sda-sortable="true" sda-filterable="true" sda-visible="{{processTableCtrl.isColumnVisible('startTime')}}"></th>
+				<th sda-name="duration" sda-sortable="false" sda-visible="{{processTableCtrl.isColumnVisible('duration')}}"></th>
 				
-				<th sda-name="status" sda-sortable="false" sda-visible="false">
+				<th sda-name="status" sda-sortable="false" sda-visible="{{processTableCtrl.isColumnVisible('status')}}">
 					<div sda-filter-template>
 						<div sd-multi-select-filter sda-options="processTableCtrl.availableStates"></div>
 					</div>
 				</th>
 				
-				<th sda-name="processInstanceRootOID" sda-label-key="rootPOID" sda-sortable="true" sda-filterable="true"></th>
-				<th sda-name="endTime" sda-label-key="endTime"
-					sda-sortable="true" sda-filterable="true"></th>
-				<th sda-name="caseOwner" sda-label="{{i18n('views-common-messages.overview-CaseOwner')}}" sda-sortable="false"></th>
+				<th sda-name="processInstanceRootOID" sda-label-key="rootPOID" sda-sortable="true" sda-filterable="true"
+					sda-visible="{{processTableCtrl.isColumnVisible('processInstanceRootOID')}}">
+				</th>
+				<th sda-name="endTime" sda-label-key="endTime"	sda-sortable="true" sda-filterable="true" 
+					sda-visible="{{processTableCtrl.isColumnVisible('endTime')}}"></th>
+					
+				<th sda-name="caseOwner" sda-label="{{i18n('views-common-messages.overview-CaseOwner')}}" sda-sortable="false"
+					sda-visible="{{processTableCtrl.isColumnVisible('caseOwner')}}">
+				</th>
 				<th ng-repeat="descCol in processTableCtrl.descritorCols"
 					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}"
-					sda-sortable="{{descCol.sortable}}">
+					sda-sortable="{{descCol.sortable}}" sda-visible="{{processTableCtrl.isColumnVisible(descCol.id)}}">
 					<div sda-filter-template ng-if="descCol.filterable">
 						<div ng-if="colData.dataType =='NUMBER'"><div sd-number-filter></div></div>
 						<div ng-if="colData.dataType =='DATE'"><div sd-date-filter></div></div>

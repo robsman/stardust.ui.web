@@ -17,15 +17,21 @@
 	'use strict';
 
 	angular.module('bpm-common').directive('sdProcessTable',
-			['$parse', '$q', '$timeout', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sgI18nService', 'sdPreferenceService',
+			['$parse', '$q', '$timeout', '$filter', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sgI18nService', 'sdPreferenceService',
 			 'sdProcessInstanceService', 'sdProcessDefinitionService', 'sdStatusService', 'sdPriorityService', 'sdDialogService', ProcessTableDirective]);
 
 	/*
 	 *
 	 */
-	function ProcessTableDirective($parse, $q, $timeout, sdUtilService, sdViewUtilService, sdLoggerService, sgI18nService, sdPreferenceService,
+	function ProcessTableDirective($parse, $q, $timeout, $filter, sdUtilService, sdViewUtilService, sdLoggerService, sgI18nService, sdPreferenceService,
 			sdProcessInstanceService, sdProcessDefinitionService, sdStatusService, sdPriorityService, sdDialogService) {
 
+		//Defaults
+		var DEFAULT_VALUES = {
+			VISIBLE_COLUMNS : ['oid', 'processName', 'priority', 'descriptors', 'startingUser', 'startTime', 'duration', 'status', 'processInstanceRootOID', 'endTime'],
+			PREFERENCE_MODULE : 'ipp-views-common'
+		};
+		
 		var trace = sdLoggerService.getLogger('bpm-common.sdProcessTable');
 
 		var directiveDefObject = {
@@ -72,17 +78,18 @@
 				self.allAccessibleProcesses = [];
 				self.availableStates = [];
 
-				// Process Title
-				var titleExpr = "";
-				if (attr.sdaTitle) {
-					titleExpr = attr.sdaTitle;
-				}
-				var titleGetter = $parse(titleExpr);
-				self.title = titleGetter(scopeToUse);
-
+				// Set Default values
+				self.visbleColumns = DEFAULT_VALUES.VISIBLE_COLUMNS;
+				self.processTablePrefModule = DEFAULT_VALUES.PREFERENCE_MODULE;
+				self.exportFileName= "Processes";
+				self.columnSelector = 'admin'; //TODO
+				self.initialSort = {name : 'oid', dir : 'desc'};
+				
+				// Set custom values
+				self.customizeWithAttributeValues(attr, scope, scopeToUse);
+				
 				// Process TableHandle and then set data table instance
 				self.tableHandleExpr = 'processTableCtrl.dataTable';
-				
 				
 				// Priority
 				self.priorityEditable = true;
@@ -117,27 +124,6 @@
 					});
 				} 
 				
-				if (attr.sdaInitialSelection) {
-					self.initialSelection = attr.sdaInitialSelection;
-				}
-				if (attr.sdaPageSize) {
-					self.sdaPageSize = attr.sdaPageSize;
-				}
-				self.columnSelector = 'admin'; //TODO
-				
-				// Preference attributes
-				if (attr.sdaPreferenceModule) {
-					self.processTablePrefModule = attr.sdaPreferenceModule;
-				}
-
-				if (attr.sdaPreferenceId) {
-					self.processTablePrefId = attr.sdaPreferenceId;
-				}
-
-				if (attr.sdaPreferenceName) {
-					self.processTablePrefName = attr.sdaPreferenceName;
-				}
-				
 				if (attr.sdaSelection) {
 					var assignable = $parse(attr.sdaSelection).assign;
 					if (assignable) {
@@ -166,6 +152,65 @@
 				self.fetchAvailableStates();
 				self.fetchAvailablePriorities();
 				self.fetchAllProcesses();
+			};
+			
+			/**
+			 * 
+			 */
+			ProcessTableCompiler.prototype.customizeWithAttributeValues = function(attr, scope, scopeToUse){
+				// Process Title
+				var titleExpr = "";
+				if (attr.sdaTitle) {
+					titleExpr = attr.sdaTitle;
+				}
+				var titleGetter = $parse(titleExpr);
+				self.title = titleGetter(scopeToUse);
+				
+				// Preference attributes
+				if (attr.sdaPreferenceModule) {
+					self.processTablePrefModule = attr.sdaPreferenceModule;
+				}
+
+				if (attr.sdaPreferenceId) {
+					self.processTablePrefId = attr.sdaPreferenceId;
+				}
+
+				if (attr.sdaPreferenceName) {
+					self.processTablePrefName = attr.sdaPreferenceName;
+				}
+				
+				if (attr.sdaInitialSelection) {
+					self.initialSelection = attr.sdaInitialSelection;
+				}
+				if(attr.sdaInitialSort){
+					var sortGetter = $parse(attr.sdaInitialSort);
+					self.initialSort = sortGetter(scopeToUse);
+				}
+				
+				if (attr.sdaPageSize) {
+					self.sdaPageSize = attr.sdaPageSize;
+				}
+				
+				if (attr.sdaExportName) {
+					self.exportFileName = attr.sdaExportName;
+				}
+				
+				if(attr.sdaVisibleColumns){
+					var visibleColumnGetter = $parse(attr.sdaVisibleColumns);
+					self.visbleColumns =visibleColumnGetter(scopeToUse);
+				}
+				
+			};
+			
+			/**
+			 * 
+			 */
+			self.isColumnVisible = function(columnName) {
+				var found = $filter('filter')(self.visbleColumns, columnName);
+				if(found && found.length === 1){
+					return true;
+				}
+				return false;
 			};
 			
 			self.refresh = function() {
