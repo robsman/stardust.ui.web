@@ -2123,6 +2123,13 @@
 			this.setSelection = function(data) {
 				setRowSelection(data);
 			};
+
+			/*
+			 * 
+			 */
+			this.getData = function(index) {
+				return getPageData(index);
+			}
 		}
 
 		/*
