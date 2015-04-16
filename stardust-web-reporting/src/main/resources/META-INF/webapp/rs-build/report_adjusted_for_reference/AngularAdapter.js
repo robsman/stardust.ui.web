@@ -226,7 +226,7 @@ if (!window.bpm.portal.AngularAdapter) {
 						    		sExtends : "text",
 						    		sButtonText : "CSV",
 						    		fnInit : function (nButton, oConfig, oFlash) {
-						    			if (navigator.msSaveBlob) { // Only to handle Internet Explorer
+						    			if (navigator.msSaveBlob) { // Only to handle Internet Explorer 10+
 						    				var csvData = getCSVData(scope.baseTableClone);
 						    				var fileName = tableParameters.csv + ".csv";
 
@@ -253,6 +253,21 @@ if (!window.bpm.portal.AngularAdapter) {
 						    				nButton.setAttribute("download", fileName);
 						    				nButton.style.setProperty('text-decoration', 'none');
 						    			}
+						    			if(isIEBelow10()){
+						    			  var csvData = getCSVData(scope.baseTableClone);
+                        var fileName = tableParameters.csv + ".csv";
+                        
+                        var frame = document.createElement('iframe');
+                        document.body.appendChild(frame);
+                        
+                        frame.contentWindow.document.open("text/csv", "replace");
+                        frame.contentWindow.document.write(csvData);
+                        frame.contentWindow.document.close();
+                        frame.contentWindow.focus();
+                        frame.contentWindow.document.execCommand('SaveAs', true, fileName);
+                        document.body.removeChild(frame);
+                        return true;
+						    			}
 						    		}
 						    	});
 						    }
@@ -267,7 +282,7 @@ if (!window.bpm.portal.AngularAdapter) {
 						    		sExtends : "text",
 						    		sButtonText : "Excel",
 						    		fnInit : function (nButton, oConfig, oFlash) {
-						    			if (navigator.msSaveBlob) { // // Only to handle Internet Explorer
+						    			if (navigator.msSaveBlob) { // Only to handle Internet Explorer 10+
 						    				// download stuff
 						    				var xlsData = getXlsData(scope.baseTableClone);
 						    				var fileName = tableParameters.excel + ".xls";
@@ -285,8 +300,8 @@ if (!window.bpm.portal.AngularAdapter) {
 						    			if (nButton.download !== undefined) { // feature detection
 						    				// Browsers that support HTML5 download attribute
 						    				// download stuff
-						    				var xlsData = getXlsData(scope.baseTableClone);
-						    				var fileName = tableParameters.excel + ".xls";
+						    			  var xlsData = getXlsData(scope.baseTableClone);
+                        var fileName = tableParameters.excel + ".xls";
 
 						    				var blob = new Blob([xlsData], {
 						    						type : 'data:application/vnd.ms-excel'
@@ -296,6 +311,21 @@ if (!window.bpm.portal.AngularAdapter) {
 						    				nButton.setAttribute("download", fileName);
 						    				nButton.style.setProperty('text-decoration', 'none');
 						    			}
+						    			if(isIEBelow10()){
+						    			  var xlsData = getXlsData(scope.baseTableClone);
+                        var fileName = tableParameters.excel + ".xls";
+                        
+                        var frame = document.createElement('iframe');
+                        document.body.appendChild(frame);
+                        
+                        frame.contentWindow.document.open("text/html", "replace");
+                        frame.contentWindow.document.write(xlsData);
+                        frame.contentWindow.document.close();
+                        frame.contentWindow.focus();
+                        frame.contentWindow.document.execCommand('SaveAs', true, fileName);
+                        document.body.removeChild(frame);
+                        return true;
+                      }
 						    		}
 						    	});
 						    }
@@ -1217,7 +1247,14 @@ if (!window.bpm.portal.AngularAdapter) {
 		return csvData.join("\n");
 	}
 	
-	
+	/**
+	 * 
+	 * @returns
+	 */
+  function isIEBelow10() {
+    var nav = navigator.userAgent.toLowerCase();
+    return (nav.indexOf('msie') != -1) ? parseInt(nav.split('msie')[1]) < 10 : false;
+  }
 	
 	function getTemplateCopy(template) {
         var v1 = jQuery.extend({}, template);
