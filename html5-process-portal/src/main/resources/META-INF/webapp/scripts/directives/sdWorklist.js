@@ -587,7 +587,7 @@
 
 					var activityOIDs = [];
 					angular.forEach(self.activities.list, function(workItem, index){
-						if (workItem.trivial == undefined || workItem.trivial) {
+						if ((workItem.trivial == undefined || workItem.trivial) && workItem.status.value != 2) {
 							activityOIDs.push(workItem.activityOID);
 						}
 					});
