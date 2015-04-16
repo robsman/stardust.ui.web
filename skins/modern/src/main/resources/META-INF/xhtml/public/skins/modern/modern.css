@@ -7532,7 +7532,7 @@ x-img[src *='disk_multiple.png']:hover{
 	background: none repeat scroll 0 0 #DBDBDB !important
 }
 
-.jstree-0 li[rel="model"] > a > .jstree-icon
+.jstree li[rel="model"] > a > .jstree-icon
 {
 	background-image: url(./images/flat-icons/model.png) !important;
 	background-position: 0 0 !important;
@@ -7540,54 +7540,54 @@ x-img[src *='disk_multiple.png']:hover{
 }
 
 
-.jstree-0 li[rel="structuredTypes"] > a > .jstree-icon
+.jstree li[rel="structuredTypes"] > a > .jstree-icon
 {
 	background-image: url(./images/flat-icons/structured-types.png) !important;
 	background-position: 0 0 !important;
 	opacity:0.7;
 }
 
-.jstree-0 li[rel="compositeStructuredDataType"] > a > .jstree-icon{
+.jstree li[rel="compositeStructuredDataType"] > a > .jstree-icon{
 	background-image: url(./images/flat-icons/bricks.png) !important;
 	background-position: 0 0 !important;
 	opacity:0.7;
 }
 
-.jstree-0 li[rel="data"] > a > .jstree-icon
+.jstree li[rel="data"] > a > .jstree-icon
 {
 	background-image: url(./images/flat-icons/data.png) !important;
 	background-position: 0 0 !important;
 	opacity:0.7;
 }
 
-.jstree-0 li[rel="primitive"] > a > .jstree-icon
+.jstree li[rel="primitive"] > a > .jstree-icon
 {
 	background-image: url(./images/flat-icons/data-primitive.png) !important;
 	background-position: 0 0 !important;
 	opacity:0.7;
 }
 
-.jstree-0 li[rel="struct"] > a > .jstree-icon
+.jstree li[rel="struct"] > a > .jstree-icon
 {
 	background-image: url(./images/flat-icons/data-structured.png) !important;
 	background-position: 0 0 !important;
 	opacity:0.7;
 }
 
-.jstree-0 li[rel="dmsDocument"] > a > .jstree-icon
+.jstree li[rel="dmsDocument"] > a > .jstree-icon
 {
 	background-image: url(./images/flat-icons/data-document.png) !important;
 	background-position: 0 0 !important;
 	opacity:0.7;
 }
 
-.jstree-0 li[rel="interactive"] > a > .jstree-icon{
+.jstree li[rel="interactive"] > a > .jstree-icon{
 	background-image: url(./images/flat-icons/application-c-ext-web.png) !important;
 	background-position: 0 0 !important;
 	opacity:0.7;
 }
 
-.jstree-0 li[rel="applications"] > a > .jstree-icon
+.jstree li[rel="applications"] > a > .jstree-icon
 {
 	background-image: url(./images/flat-icons/applications-blue.png) !important;
 	background-position: 0 0 !important;
@@ -7595,54 +7595,54 @@ x-img[src *='disk_multiple.png']:hover{
 }
 
 
-.jstree-0 li[rel="participants"] > a > .jstree-icon
+.jstree li[rel="participants"] > a > .jstree-icon
 {
 	background-image: url(./images/flat-icons/participants.png) !important;
 	background-position: 0 0 !important;
 	opacity:0.7;
 }
 
-.jstree-0 li[rel="process"] > a > .jstree-icon
+.jstree li[rel="process"] > a > .jstree-icon
 {
 	background-image: url(./images/flat-icons/process.png) !important;
 	background-position: 0 0 !important;
 	opacity:0.7;
 }
 
-.jstree-0 li[rel="roleParticipant"] > a > .jstree-icon
+.jstree li[rel="roleParticipant"] > a > .jstree-icon
 {
 	background-image: url(./images/flat-icons/role.png) !important;
 	background-position: 0 0 !important;
 	opacity:0.7;
 }
 
-.jstree-0 li[rel="organizationParticipant"] > a > .jstree-icon{
+.jstree li[rel="organizationParticipant"] > a > .jstree-icon{
 	background-image: url(./images/flat-icons/organization.png) !important;
 	background-position: 0 0 !important;
 	opacity:0.7;
 }
 
-.jstree-0 li[rel="conditionalPerformerParticipant"] > a > .jstree-icon{
+.jstree li[rel="conditionalPerformerParticipant"] > a > .jstree-icon{
 	background-image: url(./images/flat-icons/conditional.png) !important;
 	background-position: 0 0 !important;
 	opacity:0.7;
 }
 
-.jstree-0 li[rel="camelSpringProducerApplication"] > a > .jstree-icon
+.jstree li[rel="camelSpringProducerApplication"] > a > .jstree-icon
 {
 	background-image: url(./images/flat-icons/application_camel.png) !important;
 	background-position: 0 0 !important;
 	opacity:0.7;
 }
 
-.jstree-0 li[rel="messageTransformationBean"] > a > .jstree-icon
+.jstree li[rel="messageTransformationBean"] > a > .jstree-icon
 {
 	background-image: url(./images/flat-icons/application-message-trans.png) !important;
 	background-position: 0 0 !important;
 	opacity:0.7;
 }
 
-.jstree-0 li[rel="webservice"] > a > .jstree-icon
+.jstree li[rel="webservice"] > a > .jstree-icon
 {
 	background-image: url(./images/flat-icons/application-web-service.png) !important;
 	background-position: 0 0 !important;
@@ -9498,7 +9498,7 @@ img[src *='dropBox.png']{
      opacity: 0.7;
 }
 
-.jstree-0 li[rel="DecisionTable"] > a > .jstree-icon{
+.jstree li[rel="DecisionTable"] > a > .jstree-icon{
 	background-image:url('./images/flat-icons/dt_icon.png') !important;
 }
 
@@ -11213,7 +11213,7 @@ img[src *='role_teamlead_scoped.png']{
      opacity: 0.7;
 }
 
-.jstree-0 li[rel="ruleSet"] > a > .jstree-icon{
+.jstree li[rel="ruleSet"] > a > .jstree-icon{
 	background-image:url('./images/flat-icons/rule-set.png') !important;
 }
 
@@ -11348,7 +11348,7 @@ img[src *='script_edit.png']{
      opacity: 0.7;
 }
 
-.jstree-0 li[rel="TechnicalRule"] > a > .jstree-icon{
+.jstree li[rel="TechnicalRule"] > a > .jstree-icon{
 	background-image:url('./images/flat-icons/script_gear.png') !important;
 }
 
