@@ -23,7 +23,7 @@
 					title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-showHideAbsActivites-title')}}"
 					class="button-link tbl-toolbar-item tbl-tool-link">
 					<!-- 	Replace with pen book icon for show obsolete activities -->
-					<i class="toolbar-icon sc sc-book toolbar-icon" ng-class="{iconDisabled:!qaManagementCtrl.showObsoleteActivities }"></i>
+					<i class="toolbar-icon sc sc-book toolbar-icon" ng-class="{iconDisabled:qaManagementCtrl.showObsoleteActivities }"></i>
 				</button>
 				<button ng-click="qaManagementCtrl.editActivityQa();" ng-disabled="qaManagementCtrl.activityTable.getSelection() < 1"
 					title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-editQA-title')}}"
