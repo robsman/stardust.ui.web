@@ -306,6 +306,7 @@
 
 .sd-dialog .modal-dialog .modal-content .modal-header {
 	height: 1px;
+	padding: 15px;
 }
 
 .sd-dialog .modal-dialog .modal-content .confirmation-header {
@@ -315,12 +316,58 @@
 .sd-dialog .modal-dialog .modal-content .modal-body {
 	height: inherit;
 	max-height: none;
-}
-
-.sd-dialog .modal-dialog .modal-content .modal-footer {
-	height: 33px;
+	padding-bottom: 0;
 }
 
 .sd-dialog .modal-dialog .modal-content .button-alignment {
+	float: left;
+	margin-left: 5px;
+}
+
+.sd-dialog .modal-dialog .modal-content .button-alignment button {
+	margin-right: 10px;
+}
+
+.modal-header .close {
 	float: right;
+}
+
+.header {
+	line-height: 0px;
+}
+
+.sd-dialog .modal-dialog .modal-content .modal-footer {
+	padding: 10px;
+	margin-top: 15px;
+}
+
+.close {
+	float: right;
+	font-size: 21px;
+	font-weight: bold;
+	line-height: 1;
+	color: #000;
+	text-shadow: 0 1px 0 #fff;
+	filter: alpha(opacity = 20);
+	opacity: .2;
+}
+
+.close:hover, .close:focus {
+	color: #000;
+	text-decoration: none;
+	cursor: pointer;
+	filter: alpha(opacity = 50);
+	opacity: .5;
+}
+
+button.close {
+	-webkit-appearance: none;
+	padding: 0;
+	cursor: pointer;
+	background: transparent;
+	border: 0;
+}
+
+.modal-header .close {
+	margin-top: -2px;
 }

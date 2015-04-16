@@ -2,7 +2,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button ng-show="dialogController.showClose" type="button" class="close" ng-click="dialogController.cancelAction()" aria-label="Close">
+        <button ng-show="dialogController.showClose" type="button" class="close" ng-click="dialogController.cancelAction()" aria-label="Close" title="{{i18n == undefined ? 'Close' : i18n('views-common-messages.common-close')}}">
         	<span aria-hidden="true">&times;</span>
         </button>
         <div id="modalLabel" class="confirmation-header">
