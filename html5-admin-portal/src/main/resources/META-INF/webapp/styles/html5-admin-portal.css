@@ -1,0 +1,14 @@
+/* QA MANAGEMENT VIEW*/
+.qa-management-table-icon {
+	font-size: 15px;
+	padding-right: 5px;
+}
+
+.qa-management-emptyCell-warning {
+	color: orange;
+	font-size: 25px;
+}
+
+.view-save-button {
+	font-size: 15px;
+}

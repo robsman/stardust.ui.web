@@ -1,0 +1,156 @@
+<div class="view-panel" ng-controller="sdQaManagementViewCtrl as qaManagementCtrl" sg-stretch-to-bottom>
+	<!-- Save Button -->
+	<div class="view-panel-toolbar " align="right">
+		<button
+			title="{{i18n('admin-portal-messages.views-participantManagement-configuration-saveButton')}}"
+			ng-click="qaManagementCtrl.saveChanges();" class="button-link tbl-tool-link">
+			<i class="glyphicon glyphicon-floppy-saved view-save-button"> </i>
+		</button>
+	</div>
+	<!-- Activities -->
+	<div class="view-panel-toolbar">
+		<i class="sc sc-arrow-d" ng-show="qaManagementCtrl.isActivitiesPanelExpanded" ng-click="qaManagementCtrl.expandActivitiesPanel(false);"> </i> 
+		<i class="sc sc-arrow-r" ng-show="!qaManagementCtrl.isActivitiesPanelExpanded" ng-click="qaManagementCtrl.expandActivitiesPanel(true);"> </i> 
+		<span ng-bind="i18n('admin-portal-messages.views-qaManagementView-label')">
+		</span>
+	</div>
+	<!-- Activities Panel-->
+	<div ng-show="qaManagementCtrl.isActivitiesPanelExpanded">
+		<!-- ToolBar -->
+		<div sda-toolbar>
+			<div class="tbl-toolbar-section">
+				<button ng-click="qaManagementCtrl.showHideObsoleteActivities();"
+					title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-showHideAbsActivites-title')}}"
+					class="button-link tbl-toolbar-item tbl-tool-link">
+					<!-- 	Replace with pen book icon for show obsolete activities -->
+					<i class="toolbar-icon sc sc-book toolbar-icon" ng-class="{iconDisabled:!qaManagementCtrl.showObsoleteActivities }"></i>
+				</button>
+				<button ng-click="qaManagementCtrl.editActivityQa();" ng-disabled="qaManagementCtrl.activityTable.getSelection() < 1"
+					title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-editQA-title')}}"
+					class="button-link tbl-toolbar-item tbl-tool-link">
+					<i class="glyphicon glyphicon-pencil toolbar-icon"></i>
+				</button>
+			</div>
+		</div>
+		<!-- Activities Table -->
+		<div>
+			<table sd-data-table="qaManagementCtrl.activityTable" sd-data="qaManagementCtrl.fetchQaActivities(params)" sda-mode="local"
+			  sda-selectable="row" sda-no-pagination="true" sda-sortable="true" sda-on-select="qaManagementCtrl.onSelect(info)">
+				<thead>
+					<tr>
+						<th sda-name="modelName" sda-label="{{i18n('admin-portal-messages.views-qaManagementView-modelName-label')}}"
+							sda-sortable="true" sda-filterable="true">
+							<div sda-filter-template>
+								<div sd-text-search-filter></div>
+							</div>
+						</th>
+						<th sda-name="processName" sda-label="{{i18n('admin-portal-messages.common-process')}}" sda-sortable="true" 
+						    sda-filterable="true">
+							<div sda-filter-template>
+								<div sd-text-search-filter></div>
+							</div>
+						</th>
+						<th sda-name="activityName" sda-label="{{i18n('admin-portal-messages.common-activity')}}"
+							sda-sortable="true" sda-filterable="true">
+							<div sda-filter-template>
+								<div sd-text-search-filter></div>
+							</div>
+						</th>
+						<th sda-name="defaultPerformer" sda-label="{{i18n('admin-portal-messages.views-qaManagementView-defaultPerformer-label')}}"
+							sda-sortable="true" sda-filterable="true">
+							<div sda-filter-template>
+								<div sd-text-search-filter></div>
+							</div>
+						</th>
+						<th sda-name="qaPercentage" sda-label="{{i18n('admin-portal-messages.views-qaManagementView-qaPercentage-label')}}"
+							sda-sortable="true" sda-filterable="false"></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<!--  TODO  Replace with icon for model -->
+						<td>
+							<i class="sc sc-circle qa-management-table-icon"> </i>
+							<span ng-bind="rowData.modelName"></span>
+						</td>
+						<td>
+							<i class="glyphicon glyphicon-cog qa-management-table-icon"> </i>
+							<span ng-bind="rowData.processName"></span>
+						</td>
+						<!-- TODO Replace with  manual activity Icon -->
+						<td>
+							<i class="sc sc-gear-user qa-management-table-icon"></i>
+							<span ng-bind="rowData.activityName"></span>
+						</td>
+						<td>
+							<i ng-class="rowData.icon"class="qa-management-table-icon"> </i>
+							<span ng-bind="rowData.defaultPerformer"></span>
+						</td>
+						<td>
+							<span ng-hide="rowData.isEditMode" ng-bind="rowData.qaPercentage"></span> 
+							<span ng-show="rowData.isEditMode">
+								<input type="text" ng-model="rowData.qaPercentage" style="width: 30px;"/> 
+								 <span ng-show=" !rowData.qaPercentage || rowData.qaPercentage === ''" 
+								 class="qa-management-emptyCell-warning "> * </span>
+							</span>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<br />
+	<!-- Departments -->
+	<div ng-show="qaManagementCtrl.departments.totalCount > 0">
+		<div class="view-panel-toolbar">
+			<i class="sc sc-arrow-d" ng-show="qaManagementCtrl.isDepartmentsPanelExpanded"ng-click="qaManagementCtrl.expandDepartmentsPanel(false);"> 
+			</i> 
+			<i class="sc sc-arrow-r" ng-show="!qaManagementCtrl.isDepartmentsPanelExpanded" ng-click="qaManagementCtrl.expandDepartmentsPanel(true);"> 
+			</i> 
+			<span ng-bind="i18n('admin-portal-messages.views-qaManagementView-departments-label')"></span>
+		</div>
+		<div ng-show="qaManagementCtrl.isDepartmentsPanelExpanded">
+			<div sda-toolbar>
+				<div class="tbl-toolbar-section">
+					<button ng-click="qaManagementCtrl.editDepartmentQa();" ng-disabled="qaManagementCtrl.departmentTable.getSelection() < 1"
+						title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-editQA-title')}}"
+						class="button-link tbl-toolbar-item tbl-tool-link">
+						<i class="glyphicon glyphicon-pencil toolbar-icon"></i>
+					</button>
+				</div>
+			</div>
+			<!-- Departments Table	 -->
+			<table sd-data-table="qaManagementCtrl.departmentTable" 
+				   sd-data="qaManagementCtrl.fetchQaDepartments(qaManagementCtrl.activityTable.getSelection())"
+				   sda-mode="local" sda-ready="qaManagementCtrl.searchDepartments" sda-selectable="row" sda-no-pagination="true" sda-sortable="true">
+				<thead>
+					<tr>
+						<th sda-name="name" sda-label="{{i18n('admin-portal-messages.views-qaManagementView-department-label')}}"
+							sda-sortable="true" sda-filterable="true">
+							<div sda-filter-template>
+								<div sd-text-search-filter></div>
+							</div>
+						</th>
+						<th sda-name="qaPercentage" sda-label="{{i18n('admin-portal-messages.views-qaManagementView-qaPercentage-label')}}"
+							sda-sortable="true" sda-filterable="false"></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<!--  TODO replace by group link icons -->
+						<td>
+							<i class="sc sc-users qa-management-table-icon"> </i><span ng-bind="rowData.name"></span>
+						</td>
+						<td>
+							<span ng-hide="rowData.isEditMode" ng-bind="rowData.qaPercentage"></span> 
+							<span ng-show="rowData.isEditMode">
+								<input type="text" ng-model="rowData.qaPercentage" style="width: 30px;"></input> 
+								<span ng-show=" !rowData.qaPercentage || rowData.qaPercentage === ''" style="color: orange; font-size: 25px;"> * </span>
+							</span>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>

@@ -371,3 +371,7 @@ button.close {
 .modal-header .close {
 	margin-top: -2px;
 }
+	
+.iconDisabled {
+	color: gray;
+}
