@@ -153,7 +153,9 @@ define(
 				 *
 				 */
 				PropertiesPanel.prototype.getModelElement = function() {
-					return this.element.modelElement;
+					if (this.element) {
+						return this.element.modelElement;
+					}
 				};
 
 				/**
@@ -177,7 +179,9 @@ define(
 				 *
 				 */
 				PropertiesPanel.prototype.getElementUuid = function() {
-					return this.element.oid;
+					if (this.element) {
+						return this.element.oid;
+					}
 				};
 
 				/**
