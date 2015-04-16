@@ -36,9 +36,19 @@
 			if (scope.msg) {
 				this.msg = scope.msg;
 			}
-			if (attr.sdaIconClass) {
-				angular.element('#messageIcon').parent().attr("class",
-						"infoSeverityIssueItem");
+			if (attr.sdaMessageType) {
+				var msgType = attr.sdaMessageType;
+				if(msgType == 'info'){
+					angular.element('#messageIcon').parent().attr("class",
+					"infoSeverityIssueItem");	
+				} else if(msgType == 'error'){
+					angular.element('#messageIcon').parent().attr("class",
+					"errorSeverityIssueItem");	
+				} else {
+					angular.element('#messageIcon').parent().attr("class",
+					"warningSeverityIssueItem");
+				}
+				
 				angular.element('#messagePanel').attr("class",
 						"messagePanelHighlight");
 			}
