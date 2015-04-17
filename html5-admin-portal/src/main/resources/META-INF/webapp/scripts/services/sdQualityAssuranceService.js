@@ -45,8 +45,8 @@
 	    var restUrl = REST_BASE_URL + "/departments";
 
 	    var postData = {
-		"processQId" : processQId,
-		"activityQId" : activityQId
+		"processQualifiedId" : processQId,
+		"activityQualifiedId" : activityQId
 	    };
 	    var departments = $resource(restUrl, {}, {
 		fetch : {

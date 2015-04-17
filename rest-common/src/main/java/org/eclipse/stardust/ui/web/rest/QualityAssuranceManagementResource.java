@@ -13,10 +13,12 @@ package org.eclipse.stardust.ui.web.rest;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -58,8 +60,9 @@ public class QualityAssuranceManagementResource
     */
    @GET
    @Path("/activities")
+   @Produces(MediaType.APPLICATION_JSON)
    public Response getActivities(
-         @QueryParam("showObsoleteActivities") @DefaultValue("true") String showObsoleteActivities)
+         @QueryParam("showObsoleteActivities") @DefaultValue("false") String showObsoleteActivities)
    {
       try
       {
@@ -76,13 +79,15 @@ public class QualityAssuranceManagementResource
 
    @POST
    @Path("/departments")
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
    public Response getDepartments(String postData)
    {
       try
       {
          JsonObject json = GsonUtils.readJsonObject(postData);
-         String activityQId = GsonUtils.extractString(json, "activityQId");
-         String processQId = GsonUtils.extractString(json, "processQId");
+         String activityQId = GsonUtils.extractString(json, "activityQualifiedId");
+         String processQId = GsonUtils.extractString(json, "processQualifiedId");
 
          List<QualityAssuranceDepartmentDTO> result = qualityAssuranceManagementService.getDepartments(processQId,
                activityQId);
@@ -97,7 +102,9 @@ public class QualityAssuranceManagementResource
 
    @POST
    @Path("/updateQaProbabilities")
-   public Response updateQaProbability(String postData)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   public Response updateQaProbabilities(String postData)
    {
       try
       {

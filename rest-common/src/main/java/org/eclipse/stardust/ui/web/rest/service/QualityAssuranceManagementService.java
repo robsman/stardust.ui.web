@@ -20,6 +20,8 @@ import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityUtils.filter
 import java.util.List;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.DepartmentInfoDetails;
 import org.eclipse.stardust.engine.api.dto.QualityAssuranceAdminServiceFacade;
 import org.eclipse.stardust.engine.api.model.Activity;
@@ -52,7 +54,7 @@ import org.springframework.stereotype.Component;
 public class QualityAssuranceManagementService
 {
    private QualityAssuranceAdminServiceFacade qualityAssuranceAdminService = null;
-
+   private static final Logger trace = LogManager.getLogger(QualityAssuranceManagementService.class);
    /**
     * 
     * @param processQualifiedId
@@ -107,6 +109,7 @@ public class QualityAssuranceManagementService
       ServiceFactoryUtils.getQualityCheckAdminServiceFacade();
 
       List<QualityAssuranceActivityDTO> activityEntries = CollectionUtils.newList();
+      trace.debug("Getting QA activities for obsolete Activities :" + showObsoleteActivities);
       if (showObsoleteActivities) // Show old model's activities
       {
          activityEntries = getQAActivityEntries();
@@ -130,7 +133,8 @@ public class QualityAssuranceManagementService
       for (QualityAssuranceActivityDTO activityEntry : request.activities)
       {
 
-         Activity activity = ActivityUtils.getActivity(activityEntry.processQualifiedId, activityEntry.activityQualifiedId);
+         Activity activity = ActivityUtils.getActivity(activityEntry.processQualifiedId,
+               activityEntry.activityQualifiedId);
          qualityAssuranceAdminService.setQualityAssuranceParticipantProbability(activity, null,
                QualityAssuranceUtils.getIntegerValueofQAProbability(activityEntry.qaPercentage));
       }
@@ -140,7 +144,8 @@ public class QualityAssuranceManagementService
       {
          DepartmentInfo departmentInfo = new DepartmentInfoDetails(departmentEnrty.oid, departmentEnrty.id,
                departmentEnrty.name, departmentEnrty.orgRuntimeId);
-         Activity activity = ActivityUtils.getActivity(departmentEnrty.processQualifiedId, departmentEnrty.activityQualifiedId);
+         Activity activity = ActivityUtils.getActivity(departmentEnrty.processQualifiedId,
+               departmentEnrty.activityQualifiedId);
          qualityAssuranceAdminService.setQualityAssuranceParticipantProbability(activity, departmentInfo,
                QualityAssuranceUtils.getIntegerValueofQAProbability(departmentEnrty.qaPercentage));
       }
@@ -238,6 +243,5 @@ public class QualityAssuranceManagementService
       }
       return activityEntries;
    }
-
 
 }
