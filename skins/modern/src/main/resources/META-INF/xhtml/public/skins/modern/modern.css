@@ -7553,6 +7553,13 @@ x-img[src *='disk_multiple.png']:hover{
 	opacity:0.7;
 }
 
+
+.jstree li[rel="enumStructuredDataType"] > a > .jstree-icon {
+	background-image:url('./images/flat-icons/structured-type-enum.png') !important;
+	background-position: 0 0 !important;
+	opacity:0.7;
+}
+
 .jstree li[rel="data"] > a > .jstree-icon
 {
 	background-image: url(./images/flat-icons/data.png) !important;
