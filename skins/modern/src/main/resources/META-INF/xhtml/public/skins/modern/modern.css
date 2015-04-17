@@ -7665,17 +7665,6 @@ x-img[src *='disk_multiple.png']:hover{
 }
 
 /***AUTO GENERATED ICON FILLS***/
-img[src *='abort_process.png'],
-input[src *='abort_process.png']{
-     background-image:url('./images/flat-icons/abort_process.png') !important;
-     width:16px;
-     background-size: 16px 16px !important;
-     padding: 16px 0 0 0 !important;
-     height:0px;
-     background-repeat: no-repeat !important;
-     opacity: 0.7;
-}
-
 img[src *='accept.png']{
      background-image:url('./images/flat-icons/accept.png') !important;
      width:16px;
@@ -10981,6 +10970,17 @@ input[src *='process.png']{
      background-image:url('./images/flat-icons/process.png') !important;
      width:16px;
      background-size: 16px 16px;
+     padding: 16px 0 0 0 !important;
+     height:0px;
+     background-repeat: no-repeat !important;
+     opacity: 0.7;
+}
+
+img[src *='abort_process.png'],
+input[src *='abort_process.png']{
+     background-image:url('./images/flat-icons/abort_process.png') !important;
+     width:16px;
+     background-size: 16px 16px !important;
      padding: 16px 0 0 0 !important;
      height:0px;
      background-repeat: no-repeat !important;
