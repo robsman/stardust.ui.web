@@ -414,11 +414,7 @@ public final class XsdSchemaUtils
             String prefixedName = getPrefixedName(type);
             if(StringUtils.isEmpty(prefixedName))
             {
-               prefixedName = "{}" + element.getName();
-         }
-            else if(prefixedName.indexOf(':') < 0)
-            {
-               prefixedName = "{}" + prefixedName;
+               prefixedName = element.getName();
             }
             json.addProperty("type", prefixedName);
          }
