@@ -37,6 +37,7 @@ import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelIoUtils;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.ui.web.modeler.common.exception.ModelerException;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto;
 import org.eclipse.stardust.ui.web.modeler.edit.recording.ModelChangeRecorder;
@@ -197,9 +198,16 @@ public class RecordingTestcase
          if (newJto != null)
          {
             newJto = jsonIo.gson().fromJson(command, CommandJto.class);
-            JsonObject response = changeApiDriver.performChange(newJto);
+            JsonObject response = null;
+            try
+            {
+               response = changeApiDriver.performChange(newJto);
+            }
+            catch (ModelerException e)
+            {
+            }
 
-            if (performResponseCallback)
+            if (performResponseCallback && response != null)
             {
                TestResponse testResponse = new TestResponse(++responseNumber, response);
                Method method = ReflectionUtils.findMethod(this.getClass(),
