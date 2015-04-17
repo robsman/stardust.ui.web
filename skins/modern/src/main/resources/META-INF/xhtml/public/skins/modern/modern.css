@@ -138,7 +138,7 @@ div#loginBox .loginContent input{
 div#loginBox .buttonContainer{
 	width:100%;
 	border-top:1px solid #CCCCCC;
-	background:url(../images/footer-BG.jpg) top repeat-x;
+	background:url(./skin-images/footer-BG.jpg) top repeat-x;
 	margin-top:15px;
 	clear:both;
 }
@@ -153,7 +153,7 @@ div#loginBox .buttonContainer input{
 	font-family: Lato, Arial, Helvetica, sans-serif;
 	font-size:11px;
 	font-weight:normal;
-	background:#FFFFFF url(../images/toolbar-BG.jpg) bottom repeat-x;
+	background:#FFFFFF url(./skin-images/toolbar-BG.jpg) bottom repeat-x;
 	cursor:pointer;
 }
 
@@ -171,7 +171,7 @@ div#loginBox .buttonContainer input{
 .banner{
 	height: 70px;
 	width 100%;
-	background: #FFFFFF url(../images/banner.jpg) left no-repeat;
+	background: #FFFFFF url(./skin-images/banner.jpg) left no-repeat;
 	border-bottom: 3px solid #FFFFFF;
 }
 
@@ -179,7 +179,7 @@ div#loginBox .buttonContainer input{
 	height: 40px;
 	width: 465px;
 	line-height: 25px;
-	background: url(../images/userConsole-BG.png) top right no-repeat;
+	background: url(./skin-images/userConsole-BG.png) top right no-repeat;
 	text-align: right;
 }
 
@@ -262,7 +262,7 @@ div#loginBox .buttonContainer input{
 }
 
 .logout{
-	background:url(../images/icons/userConsole-bttn-logOut.png) right no-repeat;
+	background:url(./skin-images/icons/userConsole-bttn-logOut.png) right no-repeat;
 	padding-right:20px;
 	margin: 10px;
 	text-decoration:none;
@@ -271,7 +271,7 @@ div#loginBox .buttonContainer input{
 }
 
 .logout:hover{
-	background:url(../images/icons/userConsole-bttn-logOutHover.png) right no-repeat;
+	background:url(./skin-images/icons/userConsole-bttn-logOutHover.png) right no-repeat;
 }
 
 .topMenu{
@@ -345,20 +345,20 @@ div#loginBox .buttonContainer input{
 	width: 200px;
 	min-width: 200px;
 	border-right:1px solid #CCCCCC;
-	background:url(../images/toolbar-shadow.jpg) top repeat-x;
+	background:url(./skin-images/toolbar-shadow.jpg) top repeat-x;
 }
 
 .leftContentTdCol{
 	vertical-align: top;
 	border-right:1px solid #CCCCCC;
-	background:url(../images/toolbar-shadow.jpg) top repeat-x;
+	background:url(./skin-images/toolbar-shadow.jpg) top repeat-x;
 }
 
 .leftContentTdOnly{
 	vertical-align: top;
 	min-width: 200px;
 	border-right:1px solid #CCCCCC;
-	background:url(../images/toolbar-shadow.jpg) top repeat-x;
+	background:url(./skin-images/toolbar-shadow.jpg) top repeat-x;
 }
 
 .rightContentTd{
@@ -373,7 +373,7 @@ div#loginBox .buttonContainer input{
 	padding-right: 5px;
 	white-space: nowrap;
 	border-bottom: 1px solid #CCCCCC;
-	background: url(../images/toolbar-BG.jpg) bottom repeat-x;
+	background: url(./skin-images/toolbar-BG.jpg) bottom repeat-x;
 	color: #666666;
 }
 
@@ -383,7 +383,7 @@ div#loginBox .buttonContainer input{
 }
 
 .toolbarGroupLeft {
-	background: url(../images/icons/toolbar-separator.png) right no-repeat;
+	background: url(./skin-images/icons/toolbar-separator.png) right no-repeat;
 	padding-top: 0px;
 	padding-left: 8px;
 	padding-right: 8px;
@@ -392,14 +392,14 @@ div#loginBox .buttonContainer input{
 }
 
 .toolbarGroupRight {
-	background: url(../images/icons/toolbar-separator.png) left no-repeat;
+	background: url(./skin-images/icons/toolbar-separator.png) left no-repeat;
 	padding-left: 8px;
 	padding-right: 8px;
 	white-space: nowrap;
 }
 
 .toolbarGroupRight4 {
-	background: url(../images/icons/toolbar-separator.png) left no-repeat;
+	background: url(./skin-images/icons/toolbar-separator.png) left no-repeat;
 	padding-left: 0px;
 	padding-right: 3px;
 	white-space: nowrap;
@@ -443,7 +443,7 @@ html, body {
 }
 
 .breadCrumbsToolbarWrapper {
-	x-background:url(../images/toolbar-BG-border-bottom.png) center repeat-x;
+	x-background:url(./skin-images/toolbar-BG-border-bottom.png) center repeat-x;
 	background:none !important;
 	width: 100%;
 }
@@ -465,7 +465,7 @@ html, body {
 
 .breadcrumbs a{
 	display:inline;
-	background:url(../images/icons/breadcrumb-arrow.png) right no-repeat;
+	background:url(./skin-images/icons/breadcrumb-arrow.png) right no-repeat;
 	padding-right:10px;
 	text-decoration:none;
 	margin:0 5px 0 0;
@@ -493,7 +493,7 @@ html, body {
 .footer{
 	height:20px;
 	border-top:1px solid #CCCCCC;
-	background:url(../images/footer-BG.jpg) top repeat-x;
+	background:url(./skin-images/footer-BG.jpg) top repeat-x;
 	color:#CCCCCC;
 	font-size:10px;
 	text-align:center;
@@ -1494,7 +1494,7 @@ img
 	font-weight: normal;
 	text-align: left;
 	vertical-align: middle;
-	background: transparent url(../images/footer-BG.jpg) repeat-x scroll
+	background: transparent url(./skin-images/footer-BG.jpg) repeat-x scroll
 		center top;
 }
 
@@ -1593,7 +1593,7 @@ select.icon-menu option {
  	background-repeat: no-repeat;
 	padding: 2px 0 5px 20px;
 	vertical-align: middle;
-	background-image:url(../images/icons/key.png);
+	background-image:url(./skin-images/icons/key.png);
 }
 
 /* ********* Session Control - Start ********** */
@@ -2045,7 +2045,7 @@ table.autoCompTable > tbody > tr > td
 }
 
 .chatSendButtonContainer {
-	background: transparent url(../images/footer_bg.png) repeat-x
+	background: transparent url(./skin-images/footer_bg.png) repeat-x
 		scroll center top;
 	border-top: 1px solid #CCCCCC;
 	bottom: 0;
@@ -2054,7 +2054,7 @@ table.autoCompTable > tbody > tr > td
 }
 
 .chatSendButtonContainer input {
-	background: #FFFFFF url(../images/toolbar-BG.jpg) repeat-x scroll
+	background: #FFFFFF url(./skin-images/toolbar-BG.jpg) repeat-x scroll
 		center bottom;
 	border-color: #CCCCCC #999999 #999999 #CCCCCC;
 	border-style: solid;
@@ -2108,7 +2108,7 @@ table.autoCompTable > tbody > tr > td
 }
 
 .form-panel-summary-bar .windowClose {
-	background: url(../images/icons/dialog-windowbttn-close.png) no-repeat scroll 0 transparent;
+	background: url(./skin-images/icons/dialog-windowbttn-close.png) no-repeat scroll 0 transparent;
 	border: none;
 	float: right;
 	padding-top: 5px;
@@ -5783,7 +5783,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 /* messages */
  
 .iceMsgImageError {
-	background: url('../images/icons/exclamation.png') no-repeat 0;
+	background: url('./skin-images/icons/exclamation.png') no-repeat 0;
 	padding-left: 16px !important;
 	padding-bottom: 1px; 
 	margin-left: 5px;
@@ -5794,7 +5794,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	padding-left: 16px !important;
 	padding-bottom: 1px;
 	margin-left: 5px;
-	background: url('../images/icons/exclamation.png') no-repeat 0; 
+	background: url('./skin-images/icons/exclamation.png') no-repeat 0; 
 }
 
 .iceMsgError {
@@ -5998,7 +5998,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	white-space: nowrap;
 	padding-bottom: 2px;
 	padding-right: 8px;
-	background: transparent url(../images/icons/toolbar-separator.png) no-repeat scroll right center;
+	background: transparent url(./skin-images/icons/toolbar-separator.png) no-repeat scroll right center;
 }	
 
 .genericTableUserToolbar
@@ -6008,7 +6008,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	white-space: nowrap;
 	padding-bottom: 2px;
 	padding-right: 8px;
-	background: transparent url(../images/icons/toolbar-separator.png) no-repeat scroll right center;
+	background: transparent url(./skin-images/icons/toolbar-separator.png) no-repeat scroll right center;
 }
 
 .genericTableRow1
@@ -6117,7 +6117,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	padding-left: 16px !important;
 	padding-bottom: 1px;
 	margin-left: 5px;
-	background: url('../images/icons/information.png') no-repeat 0; 
+	background: url('./skin-images/icons/information.png') no-repeat 0; 
 }
 
 .breadCrumbTitle
@@ -6300,7 +6300,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 }
 
 .pnlConfirmationHdr {
-	background: #FFFFFF url(../images/panelHeader-BG.png) repeat-x scroll center bottom;
+	background: #FFFFFF url(./skin-images/panelHeader-BG.png) repeat-x scroll center bottom;
 	color: #333333;
 	padding: 0px 10px 0px 10px;
 	border-bottom: 1px solid #D9D9D9;
@@ -6324,7 +6324,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	font-weight: normal;
 	text-align: left;
 	vertical-align: middle;
-	background: transparent url(../images/footer-BG.jpg) repeat-x scroll center top;
+	background: transparent url(./skin-images/footer-BG.jpg) repeat-x scroll center top;
 }
 
 .pnlConfirmationBtns input {
@@ -6404,7 +6404,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	border: none;
 	border-bottom:solid 1px #DDD;
 	border-right:solid 1px #DDD;
-	background: url(../images/icons/colItemBox-grip.png) top right no-repeat #FFFFFF;
+	background: url(./skin-images/icons/colItemBox-grip.png) top right no-repeat #FFFFFF;
 	cursor: n-resize;
 }
 
