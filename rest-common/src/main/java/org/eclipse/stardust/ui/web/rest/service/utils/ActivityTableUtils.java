@@ -614,75 +614,81 @@ public class ActivityTableUtils
     * @param queryResult
     * @return
     */
-   public static QueryResultDTO buildTableResult(QueryResult<?> queryResult , MODE mode)
+   public static QueryResultDTO buildTableResult(QueryResult< ? > queryResult, MODE mode)
    {
       List<ActivityInstanceDTO> list = new ArrayList<ActivityInstanceDTO>();
 
-      List<CriticalityCategory>  criticalityConfigurations = CriticalityUtils.getCriticalityConfiguration();
+      List<CriticalityCategory> criticalityConfigurations = CriticalityUtils.getCriticalityConfiguration();
 
       ModelCache modelCache = ModelCache.findModelCache();
 
-      for (Object object : queryResult)
+      if (null != queryResult)
       {
-         if (object instanceof ActivityInstance)
+         for (Object object : queryResult)
          {
-            ActivityInstance ai = (ActivityInstance) object;
+            if (object instanceof ActivityInstance)
+            {
+               ActivityInstance ai = (ActivityInstance) object;
 
-            ActivityInstanceDTO dto;
-            if (!ActivityInstanceUtils.isTrivialManualActivity(ai))
-            {
-               dto = DTOBuilder.build(ai, ActivityInstanceDTO.class);
-            }
-            else
-            {
-               TrivialActivityInstanceDTO trivialDto = DTOBuilder.build(ai, TrivialActivityInstanceDTO.class);
-               trivialDto.trivial = true;
-               dto = trivialDto;
-            }
-
-            dto.duration = ActivityInstanceUtils.getDuration(ai);
-            dto.assignedTo = getAssignedToLabel(ai);
-            dto.criticality = populateCriticalityDTO(criticalityConfigurations, ai);
-            dto.priority = DTOBuilder.build(ai, PriorityDTO.class);
-            dto.status =  DTOBuilder.build(ai, StatusDTO.class);;
-            dto.status.label = ActivityInstanceUtils.getActivityStateLabel(ai);
-            dto.descriptorValues =  getProcessDescriptors(modelCache, ai);
-            dto.activatable = findIfActivatable(ai);
-
-            List<Note> notes=org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getNotes(ai.getProcessInstance());
-            if(null != notes)
-            {
-               dto.notesCount = notes.size();   
-            }
-
-            if(mode.equals(MODE.ACTIVITY_TABLE))
-            {
-               dto.completedBy = ActivityInstanceUtils.getPerformedByName(ai);
-               dto.participantPerformer = getParticipantPerformer(ai);
-               dto.isCaseInstance = ai.getProcessInstance().isCaseProcessInstance();
-               dto.abortActivity =!dto.isCaseInstance && isAbortable(ai);
-               dto.delegable = isDelegable(ai);
-               dto.abortProcess = ProcessInstanceUtils.isAbortable(ai.getProcessInstance());
-            }
-            else
-            {
-               dto.lastPerformer = getLastPerformer(ai, UserUtils.getDefaultUserNameDisplayFormat());
-               dto.defaultCaseActivity= ActivityInstanceUtils.isDefaultCaseActivity(ai);
-               if ( !dto.defaultCaseActivity )
+               ActivityInstanceDTO dto;
+               if (!ActivityInstanceUtils.isTrivialManualActivity(ai))
                {
-                  dto.abortActivity = isAbortable(ai);
-                  dto.delegable = isDelegable(ai);
-               }else{
-                  dto.processInstance.processName = getCaseName(ai);
+                  dto = DTOBuilder.build(ai, ActivityInstanceDTO.class);
+               }
+               else
+               {
+                  TrivialActivityInstanceDTO trivialDto = DTOBuilder.build(ai, TrivialActivityInstanceDTO.class);
+                  trivialDto.trivial = true;
+                  dto = trivialDto;
                }
 
+               dto.duration = ActivityInstanceUtils.getDuration(ai);
+               dto.assignedTo = getAssignedToLabel(ai);
+               dto.criticality = populateCriticalityDTO(criticalityConfigurations, ai);
+               dto.priority = DTOBuilder.build(ai, PriorityDTO.class);
+               dto.status = DTOBuilder.build(ai, StatusDTO.class);
+               dto.status.label = ActivityInstanceUtils.getActivityStateLabel(ai);
+               dto.descriptorValues = getProcessDescriptors(modelCache, ai);
+               dto.activatable = findIfActivatable(ai);
+
+               List<Note> notes = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getNotes(ai
+                     .getProcessInstance());
+               if (null != notes)
+               {
+                  dto.notesCount = notes.size();
+               }
+
+               if (mode.equals(MODE.ACTIVITY_TABLE))
+               {
+                  dto.completedBy = ActivityInstanceUtils.getPerformedByName(ai);
+                  dto.participantPerformer = getParticipantPerformer(ai);
+                  dto.isCaseInstance = ai.getProcessInstance().isCaseProcessInstance();
+                  dto.abortActivity = !dto.isCaseInstance && isAbortable(ai);
+                  dto.delegable = isDelegable(ai);
+                  dto.abortProcess = ProcessInstanceUtils.isAbortable(ai.getProcessInstance());
+               }
+               else
+               {
+                  dto.lastPerformer = getLastPerformer(ai, UserUtils.getDefaultUserNameDisplayFormat());
+                  dto.defaultCaseActivity = ActivityInstanceUtils.isDefaultCaseActivity(ai);
+                  if (!dto.defaultCaseActivity)
+                  {
+                     dto.abortActivity = isAbortable(ai);
+                     dto.delegable = isDelegable(ai);
+                  }
+                  else
+                  {
+                     dto.processInstance.processName = getCaseName(ai);
+                  }
+
+               }
+               list.add(dto);
             }
-            list.add(dto);
          }
       }
       QueryResultDTO resultDTO = new QueryResultDTO();
       resultDTO.list = list;
-      resultDTO.totalCount = queryResult.getTotalCount();
+      resultDTO.totalCount = list.size();
 
       return resultDTO;
    }

@@ -600,7 +600,14 @@
 						deferred.reject(error);
 					});
 				}, function(error) {
+				    if(error && error.status === 404){
+					trace.error("Could not find data for the parameters passed. Params : ",query);
+					deferred.reject("Could not find data for the parameters passed.Please refer console for more details.");
+					
+				    }else{
 					deferred.reject(error);
+				    }
+					
 				});
 
 			}
