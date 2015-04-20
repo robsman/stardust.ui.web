@@ -17,22 +17,24 @@
 
 	angular.module("bcc-ui").controller(
 			'sdRoleAssignmentCtrl',
-			[ '$q', 'sdRoleAssignmentService', 'sdLoggerService', 'sdViewUtilService',
+			[ '$q', '$timeout', 'sdRoleAssignmentService', 'sdLoggerService', 'sdViewUtilService',
 			  RoleAssignmentCtrl ]);
 
 	var _q;
 	var _sdRoleAssignmentService;
 	var _sdViewUtilService;
 	var trace;
+	var _timeout;
 
 	/**
 	 * 
 	 */
-	function RoleAssignmentCtrl($q, sdRoleAssignmentService, sdLoggerService, sdViewUtilService) {
+	function RoleAssignmentCtrl($q, $timeout, sdRoleAssignmentService, sdLoggerService, sdViewUtilService) {
 		trace = sdLoggerService.getLogger('bcc-ui.sdRoleAssignmentCtrl');
 		_q = $q;
 		_sdRoleAssignmentService = sdRoleAssignmentService;
 		_sdViewUtilService = sdViewUtilService;
+		_timeout = $timeout
 
 		this.roleAssignmentTable = null;
 		this.columnSelector = 'admin';
@@ -51,13 +53,20 @@
 		_sdRoleAssignmentService.getRoleAssignments().then(function(data) {
 			self.roleAssignments.list =  data.list;
 			self.roleAssignments.totalCount = data.totalCount;
-			self.descriptors = data.list[0].descriptors;
+			self.columns = data.roleColumns;
 			self.showRoleAssignmentTable= true;
+			_timeout(function() {
+				self.createTable = true;
+			}, 0, true);
 		}, function(error) {
 			trace.log(error);
 		});
 	};
 
+	/**
+	 * 
+	 * @returns
+	 */
 	RoleAssignmentCtrl.prototype.getRoleAssignmentData = function(){
 		var self = this;
 		return self.roleAssignments;
@@ -68,7 +77,8 @@
 	 */
 	RoleAssignmentCtrl.prototype.refresh = function() {
 		var self = this;
-		self.roleAssignmentTable.refresh();
+		self.createTable = false;
+		self.getRoleAssignments();		
 	};
 
 	/**
@@ -81,5 +91,13 @@
 			"userOid" : "" + userOid,
 			"userId" : "" + userId
 		}, true);
+	};
+	
+	RoleAssignmentCtrl.prototype.getExportValue = function(colValue){
+		if(colValue == true){
+			return 'Yes';
+		}else{
+			return 'No';
+		}
 	};
 })();

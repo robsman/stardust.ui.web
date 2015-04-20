@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.service.RoleAssignmentService;
-import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.RoleAssignmentResultDTO;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -43,7 +43,7 @@ public class RoleAssignmentResource
    {
       try
       {
-         QueryResultDTO result = roleAssignmentService.getRoleAssignments();
+         RoleAssignmentResultDTO result = roleAssignmentService.getRoleAssignments();
          return Response.ok(result.toJson(), MediaType.TEXT_PLAIN_TYPE).build();
       }
       catch (Exception e)
