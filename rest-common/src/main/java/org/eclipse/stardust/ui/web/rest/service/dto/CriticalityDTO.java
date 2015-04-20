@@ -14,6 +14,7 @@
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
+import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil.ICON_COLOR;
 
 /**
@@ -21,6 +22,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCon
  * @author Johnson.Quadras
  *
  */
+@DTOClass
 public class CriticalityDTO extends AbstractDTO
 {
 
