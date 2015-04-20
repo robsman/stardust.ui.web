@@ -619,6 +619,7 @@
 										}
 									});
 
+<<<<<<< Upstream, based on origin/feature/ipp/portal-html5-contrib
 									sdActivityInstanceService.getTrivialManualActivitiesDetails(activityOIDs).then(
 											function(data) {
 												self.activities.trivialManualActivities = data;
@@ -639,6 +640,18 @@
 									}
 
 								});
+=======
+					sdActivityInstanceService.getTrivialManualActivitiesDetails(activityOIDs).then(function(data) {
+						self.activities.trivialManualActivities = data;
+						deferred.resolve(self.activities);
+						self.safeApply();
+					}, function(error) {
+						deferred.reject(error);
+					});
+				}, function(error) {
+					deferred.reject(error);
+				});
+>>>>>>> c9fb223 [CRNT-35275] :Reverting the previous change for error message, Bug: CRNT-35275 
 
 			}
 
