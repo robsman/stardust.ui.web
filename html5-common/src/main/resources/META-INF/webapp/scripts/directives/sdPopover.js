@@ -53,10 +53,10 @@
 		function PopoverCompilerFn(elem, attr, transcludeFn) {
 			elem.addClass('sd-popover');
 			
-			var popoverBodyContainer = elem.find('.popover-body-container');
-			var popoverBtn = elem.find('.popover-btn');
-			
 			return function (scope, element, attrs) { // Link Function
+				
+				var popoverBodyContainer = element.find('.popover-body-container');
+				var popoverBtn = element.find('.popover-btn');
 				
 				scope.$watch(attrs.ngDisabled, function(val) {
 					scope.popoverDisabled = val;
@@ -66,13 +66,11 @@
 				
 				transcludeFn(scope, function(clone) {
 					var popoverBody = clone.filter('.popover-body');
-					popoverBody.detach();
 					popoverBtn.append(clone);
-					element.prepend(popoverBtn);
 					popoverBodyContainer.append(popoverBody);
 				});
 				
-				elem.bind('click', function(event) {
+				element.bind('click', function(event) {
 					handlePopoverClick(event);
 				});
 				
@@ -91,15 +89,6 @@
 						}
 						
 						// Handle close by click on document event
-						var popoverCloseEvent = function(event) {
-							if (elem.find(event.target).length === 0) {
-								scope.$apply(function() {
-									scope.showPopover = false;
-									// this is important since we want this to be called exactly once
-									$(document).unbind('click', popoverCloseEvent);
-								});
-							}
-						};
 						$(document).bind('click', popoverCloseEvent);
 						
 						scope.$apply(function() {
@@ -135,11 +124,26 @@
 					}
 				}
 				
+				function popoverCloseEvent(event) {
+					if (event == null || element.find(event.target).length === 0) {
+						scope.$apply(function() {
+							scope.showPopover = false;
+							// this is important since we want this to be called exactly once
+							$(document).unbind('click', popoverCloseEvent);
+						});
+					}
+				}
+				
 				// API with open & close functions
 				function PopoverApi() {
 					this.show = function(event) {
 						$timeout(function() {
 							handlePopoverClick(event, event.target);
+						});
+					},
+					this.hide = function() {
+						$timeout(function() {
+							popoverCloseEvent();
 						});
 					}
 				}

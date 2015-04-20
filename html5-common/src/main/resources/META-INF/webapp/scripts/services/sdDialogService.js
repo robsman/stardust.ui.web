@@ -187,7 +187,7 @@
 				var dialogController = createDialog(scope, options, html);
 				$timeout(function() {
 					dialogController.dialog.open();
-				});
+				}, 100);
 			}
 		};
 	}]);

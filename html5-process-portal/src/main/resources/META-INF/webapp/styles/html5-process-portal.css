@@ -83,6 +83,10 @@ padding : 5px;;
   color:black;
 }
 
+.criticality-flag-NO-COLOR{
+  color:#CFCFCF;
+}
+
 .criticality-flag{
   font-size: 18px;
 }

@@ -28,6 +28,9 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		<ippui:viewsExtension>
 			<ippui:view name="qaManagementViewHTML5" include="/plugins/html5-admin-portal/partials/views/qaManagementView.html" />
 		</ippui:viewsExtension>
+		<ippui:viewsExtension>
+			<ippui:view name="criticalityConfigHtml5" include="/plugins/html5-admin-portal/partials/views/criticalityConfig.html" />
+		</ippui:viewsExtension>
 
 	</ippui:perspectiveExtension>
 </beans>
