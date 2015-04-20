@@ -8,7 +8,7 @@
    <parent>
       <groupId>com.infinity.bpm</groupId>
       <artifactId>product-parent</artifactId>
-      <version>8.2.0-M14-SNAPSHOT</version>
+      <version>8.2.0-RC1-SNAPSHOT</version>
    </parent>
 
    <groupId>org.eclipse.stardust.ui.web</groupId>
