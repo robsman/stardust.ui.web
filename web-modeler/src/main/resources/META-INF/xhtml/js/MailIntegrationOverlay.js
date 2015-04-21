@@ -1771,6 +1771,20 @@ define(
                      // add Document Request AP
                      var documentRequestAp = m_routeDefinitionUtils.findAccessPoint(
                               filteredAccessPoints, "DOCUMENT_REQUEST");
+                     var documentRequestType=m_model.findTypeDeclaration(this.getScopeModel().id + ":"+ "DOCUMENT_REQUEST");
+                     if(!documentRequestType){
+                        this.view
+                        .submitChanges(
+                                 {
+                                    attributes :{
+                                       "stardust:emailOverlay::attachmentsTemplateSource" :  "embedded"
+                                       }
+                                 }, true);
+                        this.view.errorMessages
+                        .push("DOCUMENT_REQUEST structure is not available in the current model, please create it.");
+                        this.view.showErrorMessages();
+                        return;
+                     }
                      if (!documentRequestAp)
                      {
                         filteredAccessPoints.push({
