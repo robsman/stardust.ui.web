@@ -4037,11 +4037,14 @@ public class ModelElementMarshaller implements ModelMarshaller
                      attributes.addProperty(attributeName, attributeValue);
                   }
                }
+               else if (element instanceof IModelParticipant)
+               {
+                  attributes.addProperty(attributeName, attributeValue);
+               }
             }
             else
             {
-               attributes.addProperty(attributeName,
-                     attributeValue);
+               attributes.addProperty(attributeName, attributeValue);
             }
          }
       }
