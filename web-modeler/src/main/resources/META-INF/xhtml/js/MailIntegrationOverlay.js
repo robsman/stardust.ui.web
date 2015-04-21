@@ -278,11 +278,6 @@ define(
                            .getExtendedAttributeValue("stardust:emailOverlay::user"));
                   this.passwordInput.val(this
                            .getExtendedAttributeValue("stardust:emailOverlay::pwd"));
-                  this.transactedRouteInput
-                           .prop(
-                                    "checked",
-                                    this
-                                             .getExtendedAttributeValue("carnot:engine:camel::transactedRoute"));
                   this.autoStartupInput
                            .prop(
                                     "checked",
@@ -1057,22 +1052,6 @@ define(
                MailIntegrationOverlay.prototype.registerConfigurationTabEvents = function()
                {
                   var self = this;
-                  this.transactedRouteInput
-                           .change(
-                                    {
-                                       panel : this
-                                    },
-                                    function(event)
-                                    {
-                                       var attributes=event.data.panel.getApplication().attributes;
-                                       attributes["carnot:engine:camel::transactedRoute"]=event.data.panel.transactedRouteInput.prop("checked");
-                                       attributes["carnot:engine:camel::routeEntries"]= event.data.panel.getRoute(attributes,event.data.panel.getApplication().contexts.application.accessPoints);
-                                       event.data.panel.view
-                                                .submitChanges(
-                                                         {
-                                                            attributes : attributes
-                                                         }, false);
-                                    });
                   this.autoStartupInput
                            .change(
                                     {
@@ -1379,8 +1358,6 @@ define(
                            .jQuerySelect("#mailIntegrationOverlay #storeEmailInput");
                   this.storeAttachmentsInput = m_utils
                            .jQuerySelect("#mailIntegrationOverlay #storeAttachmentsInput");
-                  this.transactedRouteInput = m_utils
-                           .jQuerySelect("#mailIntegrationOverlay #transactedRouteInput");
                   this.autoStartupInput = m_utils
                            .jQuerySelect("#mailIntegrationOverlay #autoStartupInput");
                   this.templateSourceSelect = m_utils
