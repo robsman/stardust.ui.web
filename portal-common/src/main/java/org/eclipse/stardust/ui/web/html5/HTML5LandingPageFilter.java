@@ -242,6 +242,7 @@ public class HTML5LandingPageFilter implements Filter
       
       try
       {
+         // Check for valid session
          RestControllerUtils.resolveSpringBean(UserProvider.class, session.getServletContext()).getUser();
 
          try
@@ -271,41 +272,33 @@ public class HTML5LandingPageFilter implements Filter
       }
       catch (Throwable t)
       {
+         trace.error("Landing page was accessed without authenticated session", t);
+
          try
          {
-            trace.error("Appears to be an antuthenticated session... redirecting to login page.");
+            trace.error("Redirecting to login page.");
 
             if (null == session)
             {
                session = request.getSession(true);
             }
 
-            // Cannot directly redirect to login page, because login page is Stardust specific is configuration
-            // And is done in viewscommon, also principal mode may have different login page.
-            // So redirect to logout 
-            String logoutUri = (String) session.getServletContext()
-                  .getInitParameter(Constants.CONTEXT_PARAM_LOGOUT_URI);
-            if (!logoutUri.startsWith("/"))
-            {
-               logoutUri = "/" + logoutUri;
-            }
-            
-            logoutUri = FacesUtils.getServerBaseURL(request) + logoutUri;
+            String redirectUri = FacesUtils.getServerBaseURL(request);
 
             String uiCmd = FacesUtils.getQueryParameterValue(request.getQueryString(), Constants.URL_PARAM_UI_COMMAND);
             if (StringUtils.isNotEmpty(uiCmd))
             {
-               logoutUri += "?uicommand=" + uiCmd;
+               redirectUri += "?uicommand=" + uiCmd;
             }
 
-            response.sendRedirect(response.encodeRedirectURL(logoutUri));
+            response.sendRedirect(response.encodeRedirectURL(redirectUri));
          }
          catch(Throwable tt)
          {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
          }
 
-         return false;
+         return true;
       }
    }
 
