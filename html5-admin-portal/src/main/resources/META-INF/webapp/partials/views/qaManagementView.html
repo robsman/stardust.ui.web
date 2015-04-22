@@ -11,7 +11,7 @@
 	<div class="view-panel-toolbar">
 		<i class="sc sc-arrow-d" ng-show="qaManagementCtrl.isActivitiesPanelExpanded" ng-click="qaManagementCtrl.expandActivitiesPanel(false);"> </i> 
 		<i class="sc sc-arrow-r" ng-show="!qaManagementCtrl.isActivitiesPanelExpanded" ng-click="qaManagementCtrl.expandActivitiesPanel(true);"> </i> 
-		<span ng-bind="i18n('admin-portal-messages.views-qaManagementView-label')">
+		<span ng-bind="i18n('admin-portal-messages.views-qaManagementView-label')" class="heading"> 
 		</span>
 	</div>
 	<!-- Activities Panel-->
@@ -107,7 +107,7 @@
 			</i> 
 			<i class="sc sc-arrow-r" ng-show="!qaManagementCtrl.isDepartmentsPanelExpanded" ng-click="qaManagementCtrl.expandDepartmentsPanel(true);"> 
 			</i> 
-			<span ng-bind="i18n('admin-portal-messages.views-qaManagementView-departments-label')"></span>
+			<span ng-bind="i18n('admin-portal-messages.views-qaManagementView-departments-label')" class="heading"></span>
 		</div>
 		<div ng-show="qaManagementCtrl.isDepartmentsPanelExpanded">
 			<div sda-toolbar>
@@ -126,7 +126,7 @@
 				<thead>
 					<tr>
 						<th sda-name="name" sda-label="{{i18n('admin-portal-messages.views-qaManagementView-department-label')}}"
-							sda-sortable="true" sda-filterable="true">
+							sda-sortable="true" sda-filterable="true" >
 							<div sda-filter-template>
 								<div sd-text-search-filter></div>
 							</div>

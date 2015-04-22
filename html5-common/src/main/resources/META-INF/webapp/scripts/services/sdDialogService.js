@@ -106,28 +106,32 @@
 				this.dialog(scope, options, html);
 			},
 			error: function(scope, message, title) {
-				if (scope === undefined || scope === null) {
-					trace.error('No scope provided. Cannot open Error dialog.');
-					return;
-				}
-				
-				if (!angular.isDefined(title)) {
-					title = 'Error';
-				}
-				
-				var options = {
-					title: title,
-					type: 'alert',
-					cancelActionLabel: 'Close'
-				};
-				var html = '<table style="width : 100%">'+
-								'<tr>'+
-									'<td style="width : 15% ; align:center"><i  class="glyphicon glyphicon-remove-sign popup-error-icon" ></i> </td>'+
-									'<td style="width : 85%">'+message +'</td>'+
-								'</tr>'+
-							'</table>';
-				
-				this.dialog(scope, options, html);
+
+			    if (!angular.isDefined(title)) {
+				title = 'Error';
+			    }
+			    var html = '<table style="width : 100%">'+
+			    '<tr>'+
+			    '<td style="width : 15% ; align:center"><i  class="glyphicon glyphicon-remove-sign popup-error-icon" ></i> </td>'+
+			    '<td style="width : 85%">'+message +'</td>'+
+			    '</tr>'+
+			    '</table>';
+
+			    this.alert(scope,html,title);
+			},
+			info: function(scope, message, title) {
+
+			    if (!angular.isDefined(title)) {
+				title = 'Information';
+			    }
+
+			    var html = '<table style="width : 100%">'+
+			    '<tr>'+
+			    '<td style="width : 15% ; align:center"><i  class="sc sc-info-circle popup-info-icon" ></i> </td>'+
+			    '<td style="width : 85%">'+message +'</td>'+
+			    '</tr>'+
+			    '</table>' 
+			    this.alert(scope,html,title);
 			},
 			confirm: function(scope, message, title) {
 				if (scope === undefined || scope === null) {

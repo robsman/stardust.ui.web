@@ -122,6 +122,7 @@
 	    _trace.debug("Updating password rules", self.passwordRules);
 	    _sdPasswordManagementService.savePasswordRules(self.passwordRules).then(function(result) {
 		deferred.resolve("Update successfull");
+		$scope.passwordMgmtForm.$setPristine(true);
 		self.showSuccessNotification()
 		_trace.debug("Password rules updated successfully");
 	    }, function(error) {
@@ -347,7 +348,7 @@
 	var title = _sgI18nService.translate('portal-common-messages.common-info', 'Information');
 	var message = _sgI18nService.translate('admin-portal-messages.views-passwordMgmt-saveSuccess',
 		'Save Sucessfull');
-	_sdDialogService.alert($scope, message, title)
+	_sdDialogService.info($scope, message, title)
     };
 
     /**
