@@ -31,6 +31,7 @@
          <bean class="org.eclipse.stardust.ui.web.rest.RoleAssignmentResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.QualityAssuranceManagementResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.CriticalityConfigResource" />
+                  <bean class="org.eclipse.stardust.ui.web.rest.PasswordManagementResource" />
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>
             <bean class="org.eclipse.stardust.ui.web.rest.exception.PortalRestExceptionMapper"/>

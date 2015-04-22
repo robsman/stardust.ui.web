@@ -29,6 +29,18 @@
 	margin-right: 5px;
 }
 
+.label-item {
+	color: #708090;
+	padding: 3px 5px 3px 0;
+	white-space: nowrap;
+	font-weight: normal;
+}
+
+.heading {
+	font-weight: bold;
+	color: #708090;
+}
+
 /************** popup dialog *****************/
 
 .popup-dlg {
@@ -105,6 +117,20 @@
    border-color: #AAAAAA;
    margin: 2px;
    width: auto;
+}
+
+.inp-check-box {
+    margin: 0 5px 2px 2px;
+    padding: 2px;
+    vertical-align: middle;
+}
+
+.inp-text-box {
+    margin: 2px;
+    padding: 3px;
+    font: 11px tahoma;
+    background: #FFF;
+    border: 1px solid #d9d9d9;
 }
 
 .ui-section {
