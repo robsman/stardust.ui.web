@@ -282,9 +282,9 @@
 	var isValid = false;
 	var numbersOnly = /^\d+$/;
 	angular.forEach(values, function(item) {
-	    if (item === '') {
+	    if (item.qaPercentage == '') {
 		isValid = true;
-	    } else if (item.qaPercentage < 100 && item.qaPercentage > -1 && numbersOnly.test(item.qaPercentage)) {
+	    } else if (item.qaPercentage <= 100 && item.qaPercentage >= 0 && numbersOnly.test(item.qaPercentage)) {
 		isValid = true;
 	    }
 	});
