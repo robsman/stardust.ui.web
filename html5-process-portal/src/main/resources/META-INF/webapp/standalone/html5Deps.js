@@ -56,7 +56,7 @@ var html5Deps = function() {
 			shim : {
 				'jquery.dataTables' : [ 'jquery' ],
 				'angularjs' : {
-					require : "jquery",
+					deps : ["jquery"],
 					exports : "angular"
 				},
 				'bootstrap' : ['jquery'],
