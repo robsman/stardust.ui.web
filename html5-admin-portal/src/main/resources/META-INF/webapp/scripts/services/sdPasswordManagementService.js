@@ -30,7 +30,7 @@ function PasswordManagementService($resource, sgI18nService) {
      * 
      */
     PasswordManagementService.prototype.getPasswordRules = function() {
-	var restUrl = REST_BASE_URL + "/passwordRules";
+	var restUrl = REST_BASE_URL + "/rules";
 	return $resource(restUrl).get().$promise;
     };
 
@@ -38,7 +38,7 @@ function PasswordManagementService($resource, sgI18nService) {
      * 
      */
     PasswordManagementService.prototype.savePasswordRules = function(passwordRules) {
-	var restUrl = REST_BASE_URL + "/passwordRules";
+	var restUrl = REST_BASE_URL + "/rules";
 	var postData = passwordRules;
 	var departments = $resource(restUrl, {}, {
 	    fetch : {

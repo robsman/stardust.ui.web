@@ -42,7 +42,7 @@ public class PasswordManagementResource
     * 
     */
    @GET
-   @Path("/passwordRules")
+   @Path("/rules")
    @Produces(MediaType.APPLICATION_JSON)
    public Response getPasswordRules()
    {
@@ -71,7 +71,7 @@ public class PasswordManagementResource
     */
    @POST
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("/passwordRules")
+   @Path("/rules")
    public Response savePasswordRules(String postedData)
    {
       try

@@ -1,12 +1,6 @@
 <div class="view-panel" ng-controller="sdQaManagementViewCtrl as qaManagementCtrl" sg-stretch-to-bottom>
 	<!-- Save Button -->
-	<div class="view-panel-toolbar " align="right">
-		<button
-			title="{{i18n('admin-portal-messages.views-participantManagement-configuration-saveButton')}}"
-			ng-click="qaManagementCtrl.saveChanges();" class="button-link tbl-tool-link">
-			<i class="glyphicon glyphicon-floppy-saved view-save-button"> </i>
-		</button>
-	</div>
+	<div sd-save sda-on-save="qaManagementCtrl.saveChanges();"></div>
 	<!-- Activities -->
 	<div class="view-panel-toolbar">
 		<i class="sc sc-arrow-d" ng-show="qaManagementCtrl.isActivitiesPanelExpanded" ng-click="qaManagementCtrl.expandActivitiesPanel(false);"> </i> 
