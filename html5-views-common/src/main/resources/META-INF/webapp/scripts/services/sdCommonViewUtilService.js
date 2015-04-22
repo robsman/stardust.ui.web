@@ -62,18 +62,18 @@
 		/**
 		 * 
 		 */
-		CommonViewUtilService.prototype.openUserWorklistView = function(id, nested) {
-			sdViewUtilService.openView('worklistViewHtml5', "id=" + id, {
-				"userId" : "" + id
+		CommonViewUtilService.prototype.openUserWorklistView = function(userId, nested) {
+			sdViewUtilService.openView('worklistViewHtml5', "id=" + userId, {
+				"userId" : "" + userId
 			}, nested);
 		};
 
 		/**
 		 * 
 		 */
-		CommonViewUtilService.prototype.openParticipantWorklistView = function(id, nested) {
-			sdViewUtilService.openView('worklistViewHtml5', "id=" + id, {
-				"participantQId" : "" + id
+		CommonViewUtilService.prototype.openParticipantWorklistView = function(participantQId, nested) {
+			sdViewUtilService.openView('worklistViewHtml5', "id=" + participantQId, {
+				"participantQId" : "" + participantQId
 			}, nested);
 		};
 
