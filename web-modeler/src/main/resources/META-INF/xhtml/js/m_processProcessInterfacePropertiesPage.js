@@ -79,7 +79,8 @@ define(
 								supportsDescriptors : false,
 								supportsDataTypeSelection : true,
 								restrictToCurrentModel : false,
-								supportsInOutDirection : true
+								supportsInOutDirection : true,
+								showExternalDataReferences : true
 							});
 					
 
@@ -96,7 +97,8 @@ define(
                 restrictToCurrentModel: false,
                 supportsInOutDirection: true,
                 disableParameterDefinitionNameInput: true,
-                disableParameterDefinitionDirectionSelect: true
+                disableParameterDefinitionDirectionSelect: true,
+                showExternalDataReferences : true
               });
 					
 					this.internationalizeLabels();
