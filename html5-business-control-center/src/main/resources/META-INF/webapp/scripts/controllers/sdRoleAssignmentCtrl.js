@@ -17,29 +17,29 @@
 
 	angular.module("bcc-ui").controller(
 			'sdRoleAssignmentCtrl',
-			[ '$q', '$timeout', 'sdRoleAssignmentService', 'sdLoggerService', 'sdViewUtilService',
-			  RoleAssignmentCtrl ]);
+			[ '$q', '$timeout', 'sdRoleAssignmentService', 'sdLoggerService', 'sdCommonViewUtilService',
+					RoleAssignmentCtrl ]);
 
 	var _q;
 	var _sdRoleAssignmentService;
-	var _sdViewUtilService;
+	var _sdCommonViewUtilService;
 	var trace;
 	var _timeout;
 
 	/**
 	 * 
 	 */
-	function RoleAssignmentCtrl($q, $timeout, sdRoleAssignmentService, sdLoggerService, sdViewUtilService) {
+	function RoleAssignmentCtrl($q, $timeout, sdRoleAssignmentService, sdLoggerService, sdCommonViewUtilService) {
 		trace = sdLoggerService.getLogger('bcc-ui.sdRoleAssignmentCtrl');
 		_q = $q;
 		_sdRoleAssignmentService = sdRoleAssignmentService;
-		_sdViewUtilService = sdViewUtilService;
+		_sdCommonViewUtilService = sdCommonViewUtilService;
 		_timeout = $timeout
 
 		this.roleAssignmentTable = null;
 		this.columnSelector = 'admin';
 		this.exportFileNameForRoleAssignment = "RoleAssignment"
-		this.rowSelectionForRoleAssignment = null;				
+		this.rowSelectionForRoleAssignment = null;
 		this.getRoleAssignments();
 	}
 
@@ -51,10 +51,10 @@
 		var self = this;
 		self.roleAssignments = {};
 		_sdRoleAssignmentService.getRoleAssignments().then(function(data) {
-			self.roleAssignments.list =  data.list;
+			self.roleAssignments.list = data.list;
 			self.roleAssignments.totalCount = data.totalCount;
 			self.columns = data.roleColumns;
-			self.showRoleAssignmentTable= true;
+			self.showRoleAssignmentTable = true;
 			_timeout(function() {
 				self.createTable = true;
 			}, 0, true);
@@ -67,7 +67,7 @@
 	 * 
 	 * @returns
 	 */
-	RoleAssignmentCtrl.prototype.getRoleAssignmentData = function(){
+	RoleAssignmentCtrl.prototype.getRoleAssignmentData = function() {
 		var self = this;
 		return self.roleAssignments;
 	};
@@ -78,7 +78,7 @@
 	RoleAssignmentCtrl.prototype.refresh = function() {
 		var self = this;
 		self.createTable = false;
-		self.getRoleAssignments();		
+		self.getRoleAssignments();
 	};
 
 	/**
@@ -87,16 +87,18 @@
 	 * @param userId
 	 */
 	RoleAssignmentCtrl.prototype.openUserManagerView = function(userOid, userId) {
-		_sdViewUtilService.openView("userManagerDetailViewHtml5", "userOid=" + userOid, {
-			"userOid" : "" + userOid,
-			"userId" : "" + userId
-		}, true);
+		_sdCommonViewUtilService.openUserManagerDetailView(userOid, userId, true);
 	};
-	
-	RoleAssignmentCtrl.prototype.getExportValue = function(colValue){
-		if(colValue == true){
+
+	/**
+	 * 
+	 * @param colValue
+	 * @returns {String}
+	 */
+	RoleAssignmentCtrl.prototype.getExportValue = function(colValue) {
+		if (colValue == true) {
 			return 'Yes';
-		}else{
+		} else {
 			return 'No';
 		}
 	};

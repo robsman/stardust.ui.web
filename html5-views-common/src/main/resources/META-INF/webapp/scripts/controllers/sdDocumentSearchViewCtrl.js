@@ -18,19 +18,20 @@
 	angular.module("viewscommon-ui").controller(
 			'sdDocumentSearchViewCtrl',
 			[ '$q', 'sdDocumentSearchService', 'sdViewUtilService', 'sdUtilService', 'sdMimeTypeService',
-					'sdLoggerService', DocumentSearchViewCtrl ]);
+					'sdLoggerService','sdCommonViewUtilService', DocumentSearchViewCtrl ]);
 	var _q;
 	var _sdDocumentSearchService;
 	var _sdViewUtilService;
 	var _sdUtilService;
 	var _sdMimeTypeService;
 	var trace;
+	var _sdCommonViewUtilService;
 	
 	/*
 	 * 
 	 */
 	function DocumentSearchViewCtrl($q, sdDocumentSearchService, sdViewUtilService, sdUtilService, sdMimeTypeService,
-			sdLoggerService) {
+			sdLoggerService, sdCommonViewUtilService) {
 		// variable initialization for various services
 		trace = sdLoggerService.getLogger('viewscommon-ui.sdDocumentSearchViewCtrl');
 		_q = $q;
@@ -38,6 +39,7 @@
 		_sdViewUtilService = sdViewUtilService;
 		_sdUtilService = sdUtilService;
 		_sdMimeTypeService = sdMimeTypeService;
+		_sdCommonViewUtilService = sdCommonViewUtilService;
 
 		// variable for search result table
 		this.documentSearchResult = {};
@@ -191,9 +193,7 @@
 	 */
 	DocumentSearchViewCtrl.prototype.openProcessHistory = function(oid) {
 		this.processDialog.close();
-		_sdViewUtilService.openView("processInstanceDetailsView", "processInstanceOID=" + oid, {
-			"processInstanceOID" : "" + oid
-		}, true);
+		_sdCommonViewUtilService.openProcessInstanceDetailsView(oid,true);
 	};
 
 	/**
@@ -201,11 +201,7 @@
 	 * @param documentId
 	 */
 	DocumentSearchViewCtrl.prototype.openDocumentView = function(documentId) {
-		var viewKey = "documentOID=" + documentId + "_instance";
-		viewKey = window.btoa(viewKey);
-		_sdViewUtilService.openView("documentView", "documentOID=" + viewKey, {
-			"documentId" : documentId
-		}, true);
+		_sdCommonViewUtilService.openDocumentView(documentId,true);
 	}
 
 	/**
