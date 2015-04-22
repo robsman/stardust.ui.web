@@ -19,7 +19,7 @@
 				'ohlcRenderer' :  'jqplot/plugins/jqplot.ohlcRenderer.min' ,
 				'pieRenderer' :  'jqplot/plugins/jqplot.pieRenderer.min' ,
 				'donutRenderer' :  'jqplot/plugins/jqplot.donutRenderer.min' ,
-				'enhancedLegendRenderer' : 'jqplot/plugins/jqplot.enhancedLegendRenderer.min',				
+				'enhancedLegendRenderer' : 'jqplot/plugins/jqplot.enhancedLegendRenderer.min',
 				'pointLabels' :  'jqplot/plugins/jqplot.pointLabels.min' ,
 				'dataTables' :  'datatables/jquery.dataTables.min' ,
 				'I18NUtils' : '../report/I18NUtils'
@@ -27,7 +27,7 @@
 			shim : {
 				'jquery-ui' : [ 'jquery' ],
 				'angularjs' : {
-					require : "jquery",
+					deps : ["jquery"],
 					exports : "angular"
 				},
 				'jquery.jqplot' : [ 'jquery' ],
