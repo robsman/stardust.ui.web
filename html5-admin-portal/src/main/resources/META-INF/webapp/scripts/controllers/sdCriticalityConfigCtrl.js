@@ -44,6 +44,7 @@
 		 * 
 		 */
 		Controller.prototype.resetValues = function() {
+			this.uploadedFiles = undefined;
 			this.showImportDlg = false;
 			this.errorMessages = [];
 			this.criticalityConfig = {
@@ -103,6 +104,7 @@
 					sdDialogService.alert($scope, 
 							sgI18nService.translate('admin-portal-messages.views-criticalityConf-criticality-save-success-dialog'),
 							sgI18nService.translate('portal-common-messages.common-info'));
+					self.resetValues();
 					self.fetchCriticalityConfig();
 				}, function(error) {
 					trace.error('Error occured while saving Criticality Configuration : ', error);
@@ -188,8 +190,8 @@
 				.addToErrorMessages(
 						sdUtilService
 								.format(sgI18nService
-										.translate('admin-portal-messages.views.criticalityConf.criticality.validation.values.oursideRange.message')),
-						[ '[' + RANGE_LOWER_LIMIT + ' - ' + RANGE_HIGHER_LIMIT + ']' ]);
+										.translate('admin-portal-messages.views-criticalityConf-criticality-validation-values-oursideRange-message'),
+						[ '[' + RANGE_LOWER_LIMIT + ' - ' + RANGE_HIGHER_LIMIT + ']' ]));
 		      }
 		};
 		
@@ -260,14 +262,16 @@
 		 * 
 		 */
 		Controller.prototype.importCriticalities = function() {
-			if (!angular.isDefined(this.uploadedFile)) {
-				trace.error('No file was found to be uploaded. Please upload a file and try again.');
+			if (!angular.isDefined(this.uploadedFiles) || this.uploadedFiles.length == 0) {
+				trace.log('No file was found to be uploaded. Please upload a file and try again.');
 				return;
 			}
 			var self = this;
-			sdCriticalityConfigService.importCriticalities(this.uploadedFile).then(function(result) {
+			sdCriticalityConfigService.importCriticalities(this.uploadedFiles[0]).then(function(result) {
+				self.resetValues();
 				self.fetchCriticalityConfig();
 			}, function(error) {
+				self.uploadedFiles = undefined;
 				trace.error('Error occured while importing Criticality Configuration : ', error);
 				// show error to the user
 				sdDialogService.error($scope, 
@@ -333,7 +337,7 @@
 		Controller.prototype.addRow = function() {
 			var existingList = this.dataTable.getData();
 			if (angular.isDefined(existingList)) {
-				existingList.unshift({ editMode: true});
+				existingList.push({ editMode: true, count: 1});
 
 				this.criticalityConfig.criticalities.list = existingList;
 				this.criticalityConfig.criticalities.totalCount = existingList.length;

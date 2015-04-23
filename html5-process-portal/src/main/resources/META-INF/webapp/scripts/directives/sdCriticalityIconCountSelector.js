@@ -29,7 +29,7 @@
 				+ '<button ng-click="criticalityIconCountSelectorCtrl.setIconCount(count)"'
 					+ ' class="button-link tbl-tool-link" ng-disabled="editMode != true"> '
 					+ '<i class="glyphicon glyphicon-flag criticality-flag" '
-					+ 'ng-class="\'criticality-flag-\'+ (count <= bindModel ? icon : \'NO-COLOR\')"><\/i>'
+					+ 'ng-class="\'criticality-flag-\'+ (count <= bindModel && icon != undefined? icon : \'NO-COLOR\')"><\/i>'
 				+ '<\/button>'
 			+ '</span>',
 		 scope : {

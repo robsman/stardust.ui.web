@@ -26,6 +26,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
@@ -49,7 +50,7 @@ public class FileUploadResource
    @Consumes(MediaType.MULTIPART_FORM_DATA)
    public Response uploadFile(List<Attachment> attachments, @Context HttpServletRequest request)
    {
-      JsonObject response = null;
+      JsonArray response = new JsonArray();
       for (Attachment attachment : attachments)
       {
          DataHandler dataHandler = attachment.getDataHandler();
@@ -97,11 +98,13 @@ public class FileUploadResource
 
             String docIcon = DOC_PATH + "mime-types/" + mType.getIconPath();
 
-            response = new JsonObject();
-            response.add("uuid", new JsonPrimitive(uuid));
-            response.add("contentType", new JsonPrimitive(fileInfo.contentType));
-            response.add("fileName", new JsonPrimitive(fileInfo.name));
-            response.add("docIcon", new JsonPrimitive(docIcon));
+            JsonObject jsonObj = new JsonObject();
+            jsonObj.add("uuid", new JsonPrimitive(uuid));
+            jsonObj.add("contentType", new JsonPrimitive(fileInfo.contentType));
+            jsonObj.add("fileName", new JsonPrimitive(fileInfo.name));
+            jsonObj.add("docIcon", new JsonPrimitive(docIcon));
+            
+            response.add(jsonObj);
          }
          catch (Exception e)
          {
@@ -109,14 +112,7 @@ public class FileUploadResource
          }
       }
 
-      if (response != null)
-      {
-         return Response.ok(response.toString()).build();
-      }
-      else
-      {
-         return Response.serverError().build();
-      }
+      return Response.ok(response.toString()).build();
    }
    
    /**

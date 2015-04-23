@@ -17,7 +17,7 @@
    angular.module('bpm-common').directive('sdFileUpload', [ FileUpload ]);
 
    /*
-    * <span sd-file-upload ng-model="" sda-title="" sda-end-point=""
+    * <span sd-file-upload ng-model="" sda-title="" sda-end-point="" sda-multiple="true/false"
     */
    function FileUpload() {
 
@@ -27,8 +27,8 @@
         	 '<span>' 
         	 	+ '<span class="iPopupDialogContentText" id="fileUploadFormLabel" ng-bind="title"></span>'
         	 	+ '<form id="fileUploadForm" method="post" enctype="multipart/form-data" style="width: 100%">'
-	        	 	+ '<input id="file" type="file" size="35" name="upload" class="iPopupDialogControlButton">'
-	        	 	+ '<input id="uploadButton"	type="submit" value="Upload" class="iPopupDialogControlButton button" />'
+	        	 	+ '<input id="file" type="file" size="35" name="upload" class="iPopupDialogControlButton" />'
+	        	 	+ '<input id="uploadButton"	ng-disabled="true" type="submit" value="Upload" class="iPopupDialogControlButton button" />'
 	        	 	+ '<span  id="confirmationMessage" style="color: green; margin: 10px" class="iPopupDialogContentText"></span>'
 	        	+ '</form>'
 	        	+ '<div id="fileUploadprogress">'
@@ -101,9 +101,15 @@
 			};
 			$element.find("#fileUploadForm").ajaxForm(options);
 			
-			$element.find("#file").change(function(t) {
-				var s;
+			$element.find("#file").change(function(event) {
+				$element.find("#uploadButton").attr('disabled', event.target.value == '');
+				setUploadProgress(0);
 			});
+			
+			var multiple = parseAttribute($scope.$parent, $attrs.sdaMultiple);
+			if (multiple == 'true') {
+				$element.find("#file").attr('multiple', 'multiple');
+			}
 		};
 		
 		/*

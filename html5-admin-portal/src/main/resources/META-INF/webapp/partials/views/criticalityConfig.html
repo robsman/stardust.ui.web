@@ -1,24 +1,7 @@
-<style>
-.clearing
-{
-	clear: both;
-	height: 10px;
-}
-</style>
-
 <div class="view-panel" ng-controller="sdCriticalityConfigCtrl as ctrl"
 	sg-stretch-to-bottom>
-	<div class="view-panel-toolbar">
-		<table style="width: 100%" cellpadding="0" cellspacing="0">
-			<tr>
-				<td style="width: 100%"></td>
-				<td class="view-toolbar-item"><a href="#" ng-click="ctrl.save()"
-					title="{{refreshController.i18n('admin-portal-messages.common-button-save')}}"
-					class="view-tool-link"> <i class="glyphicon glyphicon-floppy-disk" style="font-size: 1.5em;"></i>
-				</a></td>
-			</tr>
-		</table>
-	</div>
+	<!-- Save Button -->
+	<div sd-save sda-on-save="ctrl.save()"></div>
 	<div>
 		<div class="heading" ng-bind="i18n('admin-portal-messages.views-criticalityConf-criticality-categories-title')"></div>
 		<div class="clearing"></div>
@@ -30,7 +13,6 @@
 						class="button-link tbl-toolbar-item tbl-tool-link" style="margin-right: 0px;">
 				   <i class="sc sc-fw sc-archive-up" style="font-size: 1.5em;"></i>
 				</button>
-				<!-- <span sd-file-upload sda-title="Upld"></span> -->
 				<!-- Export -->
 				<button ng-click="ctrl.exportCriticalities()" title="{{i18n('admin-portal-messages.views-criticalityConf-criticality-categories-toolbar-export')}}" 
 						class="button-link tbl-toolbar-item tbl-tool-link" style="margin-right: 0px;">
@@ -159,7 +141,7 @@
 			<span ng-bind="i18n('admin-portal-messages.views-criticalityConf-importDialog-warning')"></span>
 		</div>
 		<br />
-		<div><span sd-file-upload ng-model="ctrl.uploadedFile" 
+		<div><span sd-file-upload ng-model="ctrl.uploadedFiles"
 			sda-title="{{i18n('views-common-messages.views-configurationImportDialog-uploadFile')}} {{i18n('views-common-messages.common-colon')}}"></span></div>
 	</div>
 </div>
