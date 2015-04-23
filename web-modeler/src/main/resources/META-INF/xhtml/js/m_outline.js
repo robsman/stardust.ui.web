@@ -2315,7 +2315,7 @@ define(
 
 			function deleteElementAction(name, callback, isUndoable) {
 				
-				//default to true as only models are undoable
+				//default to true as only models are not undoable
 				if (typeof isUndoable === "undefined") {
 					isUndoable = true;
 				}
