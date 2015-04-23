@@ -598,16 +598,11 @@ define(
 							// external references.
 							if ((!dataItem.externalReference || this.options.showExternalDataReferences)
 									&& this.isDataOfSelectedType(dataItem)) {
-							  
-							  var fullId = dataItem.getFullId();
-							    if(dataItem.dataFullId){
-							      fullId = dataItem.dataFullId;
-                  }
-							 
-							    this.parameterDefinitionDataSelect
-										.append("<option value='"
-												+ fullId + "'>"
-												+ dataItem.name + "</option>");
+
+							  this.parameterDefinitionDataSelect
+									.append("<option value='"
+											+ dataItem.getFullId() + "'>"
+											+ dataItem.name + "</option>");
 							}
 						}
 					}
