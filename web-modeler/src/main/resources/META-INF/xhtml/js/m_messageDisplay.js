@@ -15,11 +15,51 @@ define(
 		[ "jquery", "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants","bpm-modeler/js/m_i18nUtils"  ],
 		function(jquery, m_utils, m_constants, m_i18nUtils){
 
-			var INFO_MESSAGE = 0;
-			var ERROR_MESSAGE = 1;
-			var lastSaveDate;
-
-			var messages = [];
+			var INFO_MESSAGE = 0,
+				ERROR_MESSAGE = 1,
+				lastSaveDate,
+				messages = [],
+				lessThanText,
+				singularText,
+				pluralText,
+			
+			//Extract our i18n text so we dont have to do it each time the timer executes.
+			lessThanText = m_i18nUtils.getProperty("modeler.element.properties.sessionProperties.lastSavedAt.suffix.lessThan");
+			singularText = m_i18nUtils.getProperty("modeler.element.properties.sessionProperties.lastSavedAt.suffix.singular");
+			pluralText = m_i18nUtils.getProperty("modeler.element.properties.sessionProperties.lastSavedAt.suffix.plural");
+			
+			//Set up internal timer to update our last saved label.
+			/*Set up a timer to check for delta between now and our last save event
+			 *and update our UI accordingly. Timer runs every 10 seconds.*/
+			setInterval(function(){
+				var now,
+					dateDelta;
+				
+				if(!lastSaveDate){
+					return;
+				}
+				
+				now=new Date();
+				dateDelta=Math.abs(now-lastSaveDate);/*diff in milliseconds*/
+				
+				//If we are less than 30 seconds then keep label as default
+				if(dateDelta < 30000){
+					return;
+				}
+				
+				dateDelta=Math.floor((dateDelta/1000)/60); /*convert to minutes*/
+				
+				if(dateDelta===0){
+					updateLastSavedLabel(lessThanText);
+				}
+				else if(dateDelta===1){
+					updateLastSavedLabel(dateDelta + " " + singularText);
+				}
+				else{
+					updateLastSavedLabel(dateDelta + " " + pluralText);
+				}	
+					
+			},10000);
 
 			return {
 				markSaved : markSaved,

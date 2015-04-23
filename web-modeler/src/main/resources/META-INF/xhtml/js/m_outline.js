@@ -346,7 +346,6 @@ define(
         jQuery("div#outlineLoadingMsg").hide();
         runHasModelsCheck();
 
-        m_messageDisplay.markSaved();
         m_modelsSaveStatus.setModelsSaved();
         m_utils.jQuerySelect("#undoChange").addClass("toolDisabled");
         m_utils.jQuerySelect("#redoChange").addClass("toolDisabled");
