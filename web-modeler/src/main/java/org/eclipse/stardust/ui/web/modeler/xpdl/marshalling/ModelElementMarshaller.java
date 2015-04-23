@@ -513,7 +513,9 @@ public class ModelElementMarshaller implements ModelMarshaller
          {
             model = ModelUtils.findContainingModel(processDefinition);
             DataType data = mappingsType.getMappedData(formalParameter);
-            setDataFullID(formalParameterJson, model, data);
+            //setDataFullID(formalParameterJson, model, data);
+            formalParameterJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
+                  getModelBuilderFacade().createFullId(model, data));
          }
       }
       return formalParameterJson;
