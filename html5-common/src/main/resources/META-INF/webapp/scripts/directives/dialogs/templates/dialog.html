@@ -9,7 +9,7 @@
 			<p><span class="header">{{title}}</span></p>
 		</div>
       </div>
-      <div class="modal-body">
+      <div class="modal-body{{dialogController.dialogType == 'custom' ? '-custom': ''}}">
       	<div class="transclude"></div>
       </div>
       <div class="modal-footer" ng-hide="dialogController.dialogType === TYPE_CUSTOM">
