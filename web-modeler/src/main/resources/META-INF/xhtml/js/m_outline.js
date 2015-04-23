@@ -837,7 +837,7 @@ define(
 															function() {
 																deleteModel(obj
 																		.attr("elementId"));
-															});
+															},false);
 												}
 											},
 											"createProcess" : {
@@ -914,7 +914,7 @@ define(
 															function() {
 																deleteModel(obj
 																		.attr("elementId"));
-															});
+															},false);
 												}
 											},
 											"download" : {
@@ -2313,8 +2313,15 @@ define(
 				return popupData;
 			};
 
-			function deleteElementAction(name, callback) {
-				if (parent.iPopupDialog) {
+			function deleteElementAction(name, callback, isUndoable) {
+				
+				//default to true as only models are undoable
+				if (typeof isUndoable === "undefined") {
+					isUndoable = true;
+				}
+				
+				//only show confirmations for operations which cant be undone
+				if (parent.iPopupDialog && !isUndoable) {
 					parent.iPopupDialog.openPopup(prepareDeleteElementData(
 							name, callback));
 				} else {
