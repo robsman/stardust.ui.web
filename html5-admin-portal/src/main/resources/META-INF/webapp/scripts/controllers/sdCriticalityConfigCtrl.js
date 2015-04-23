@@ -36,12 +36,15 @@
 			this.dataTable = null; // This will be set to underline data
 			this.selection = null;
 			this.fetchCriticalityConfig();
+			
+			this.exportAnchor = document.createElement("a");
 		};
 		
 		/*
 		 * 
 		 */
 		Controller.prototype.resetValues = function() {
+			this.showImportDlg = false;
 			this.errorMessages = [];
 			this.criticalityConfig = {
 				criticalities : {
@@ -70,9 +73,7 @@
 				
 				self.refresh();
 			}, function(error) {
-				trace.error('Error occured while fetching Critical Configuration : ', error);
-				self.resetValues();
-				// TODO show error to the user
+				trace.error('Error occured while fetching Criticality Configuration : ', error);
 			});
 		}
 		
@@ -104,7 +105,7 @@
 							sgI18nService.translate('portal-common-messages.common-info'));
 					self.fetchCriticalityConfig();
 				}, function(error) {
-					trace.error('Error occured while saving Critical Configuration : ', error);
+					trace.error('Error occured while saving Criticality Configuration : ', error);
 					// show error to the user
 					sdDialogService.error($scope, 
 							sgI18nService.translate('admin-portal-messages.views-criticalityConf-criticality-save-failure-dialog'),
@@ -251,18 +252,71 @@
 		/*
 		 * 
 		 */
-		Controller.prototype.importVariables = function() {
-			// TDOD
-			sdDialogService.alert($scope, 'To be implemented!', 'Alert');
+		Controller.prototype.showImportDialog = function() {
+			this.showImportDlg = true;
 		};
 		
 		/*
 		 * 
 		 */
-		Controller.prototype.exportVariables = function() {
-			// TDOD
-			sdDialogService.alert($scope, 'To be implemented!', 'Alert');
+		Controller.prototype.importCriticalities = function() {
+			if (!angular.isDefined(this.uploadedFile)) {
+				trace.error('No file was found to be uploaded. Please upload a file and try again.');
+				return;
+			}
+			var self = this;
+			sdCriticalityConfigService.importCriticalities(this.uploadedFile).then(function(result) {
+				self.fetchCriticalityConfig();
+			}, function(error) {
+				trace.error('Error occured while importing Criticality Configuration : ', error);
+				// show error to the user
+				sdDialogService.error($scope, 
+						error.data,
+						sgI18nService.translate('portal-common-messages.common-error'));
+			});
 		};
+		
+		/*
+		 * 
+		 */
+		Controller.prototype.exportCriticalities = function() {
+			var self = this;
+			sdCriticalityConfigService.exportCriticalities().then(function(result) {
+				var fileName = 'CriticalityCategories.zip';
+				downloadDataAsFile(self.exportAnchor, fileName, result.data)
+			}, function(error) {
+				trace.error('Error occured while exporting Criticality Configuration : ', error);
+			});
+		};
+		
+		/*
+		 * 
+		 */
+		function downloadDataAsFile(exportAnchor, fileName, data) {
+			var byteArray = new Uint8Array(data);
+			var octetStreamMime = 'application/octet-stream; charset=utf-8';
+			var urlCreator = window.URL || window.webkitURL || window.mozURL || window.msURL;
+			if (urlCreator) {
+				if ("download" in exportAnchor) {
+					var blob = new Blob([ byteArray ], {
+						type : octetStreamMime
+					});
+					var url = urlCreator.createObjectURL(blob);
+					exportAnchor.setAttribute("href", url);
+					exportAnchor.setAttribute("download", fileName);
+					var event = document.createEvent('MouseEvents');
+					event.initMouseEvent('click', true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0,
+							null);
+					exportAnchor.dispatchEvent(event);
+				} else {
+					var blob = new Blob([ byteArray ], {
+						type : octetStreamMime
+					});
+					var url = urlCreator.createObjectURL(blob);
+					window.location = url;
+				}
+			}
+		}
 		
 		/*
 		 * 

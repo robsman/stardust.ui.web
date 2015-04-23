@@ -31,7 +31,7 @@
 		/*
 		 *
 		 */
-		CriticalityConfigService.prototype.getCriticalityConfig = function(query) {
+		CriticalityConfigService.prototype.getCriticalityConfig = function() {
 			var restUrl = REST_BASE_URL + "fetch";
 			var criticalityConfig = $resource(restUrl);
 			return criticalityConfig.get().$promise;
@@ -49,6 +49,34 @@
 			});
 
 			return saveRes.save({}, criticalityConfig).$promise;
+		};
+		
+		/**
+		 * 
+		 */
+		CriticalityConfigService.prototype.importCriticalities = function(fileId) {
+			var restUrl = REST_BASE_URL + "import";
+			var saveRes = $resource(restUrl, {}, {
+				import : {
+					method : 'POST'
+				}
+			});
+
+			return saveRes.import({}, fileId).$promise;
+		};
+		
+		/*
+		 *
+		 */
+		CriticalityConfigService.prototype.exportCriticalities = function() {
+			var restUrl = REST_BASE_URL + "export";
+			var criticalityConfig = $resource(restUrl, {}, {
+				get : {
+					method : 'GET',
+					isArray:false
+				}
+			});
+			return criticalityConfig.get().$promise;
 		};
 	};
 })();

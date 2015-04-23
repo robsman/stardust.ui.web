@@ -1,5 +1,7 @@
 package org.eclipse.stardust.ui.web.rest.service;
 
+import java.io.File;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,19 +12,25 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletContext;
 
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.service.dto.CriticalityConfigDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.CriticalityDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.CriticalityConfigUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil.ICON_COLOR;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileStorage;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 @Component
+@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class CriticalityConfigService
 {
 
@@ -36,6 +44,9 @@ public class CriticalityConfigService
    
    @Resource
    private org.eclipse.stardust.ui.web.rest.service.utils.CriticalityConfigUtils criticalityConfigUtilsREST;
+   
+   @Resource
+   protected ServletContext servletContext;
    
    
    public CriticalityConfigDTO getCriticalityConfig()
@@ -94,10 +105,38 @@ public class CriticalityConfigService
       }
    }
    
+   public void exportCriticalityConfig(OutputStream outputStream) throws Exception {
+      criticalityConfigUtilsREST.exportCriticalityConfig(outputStream);
+   }
+   
+   public void importCriticalityConfig(String uuid) throws Exception
+   {
+      try
+      {
+         FileStorage fileStorage = (FileStorage) RestControllerUtils.resolveSpringBean(
+               "fileStorage", servletContext);
+         if (StringUtils.isNotEmpty(uuid))
+         {
+            String path = fileStorage.pullPath(uuid);
+            if (StringUtils.isNotEmpty(path))
+            {
+               File file = new File(path);
+               
+               criticalityConfigUtilsREST.importCriticalityConfig(file);
+            }
+         }
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+         throw new Exception(e.getMessage());
+      }
+   }
+   
+   
+   
    private Set<String> validate(List<CriticalityDTO> criticalities)
    {
-      // TODO
-      
       Set<String> errorMessages = new HashSet<String>();
       Set<String> labels = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
       Set<Integer> uniqueRangeList = new HashSet<Integer>();

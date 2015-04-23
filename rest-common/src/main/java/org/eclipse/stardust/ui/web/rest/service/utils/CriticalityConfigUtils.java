@@ -1,5 +1,9 @@
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,14 +13,18 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.core.javascript.CriticalityEvaluationAction;
 import org.eclipse.stardust.engine.core.monitoring.ActivityInstanceStateChangeMonitor;
 import org.eclipse.stardust.engine.core.monitoring.UpdateCriticalityAction;
 import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
+import org.eclipse.stardust.engine.core.preferences.PreferenceStoreUtils;
 import org.eclipse.stardust.engine.core.preferences.Preferences;
 import org.eclipse.stardust.engine.core.preferences.PreferencesConstants;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
+import org.eclipse.stardust.ui.web.common.util.FileUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil.ICON_COLOR;
@@ -26,6 +34,8 @@ import org.springframework.stereotype.Component;
 @Component("CriticalityConfigUtilsREST")
 public class CriticalityConfigUtils
 {
+   private static final Logger trace = LogManager.getLogger(CriticalityConfigUtils.class);
+   
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
    
@@ -240,6 +250,55 @@ public class CriticalityConfigUtils
       }
       
       return "";
+   }
+   
+   public void exportCriticalityConfig(OutputStream outputStream) throws Exception {
+      List<Preferences> preferencesList = new ArrayList<Preferences>();
+      preferencesList.add(readCriticalityCategoryPrefs());
+      
+      if (preferencesList != null)
+      {
+         PreferenceStoreUtils.backupToZipFile(outputStream, preferencesList, serviceFactoryUtils.getServiceFactory());
+      }
+   }
+   
+   public void importCriticalityConfig(File file) throws Exception
+   {
+      String filePath = file.getAbsolutePath();
+      InputStream inputStream = null;
+
+      MessagesViewsCommonBean messageBean = MessagesViewsCommonBean.getInstance();
+
+      try
+      {
+         if (filePath.endsWith(FileUtils.ZIP_FILE))
+         {
+            inputStream = new FileInputStream(file);
+            PreferenceStoreUtils.loadFromZipFile(inputStream, serviceFactoryUtils.getServiceFactory());
+         }
+         else
+         {
+            throw new Exception(messageBean.getString("views.configurationImportDialog.invalidFileFormat"));
+         }
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+         throw e;
+      }
+      finally
+      {
+         FileUtils.close(inputStream);
+      }
+   }
+   
+   /**
+    * @return
+    */
+   public Preferences readCriticalityCategoryPrefs()
+   {
+      return getPreferences(PreferenceScope.PARTITION, UserPreferencesEntries.M_ADMIN_PORTAL,
+            UserPreferencesEntries.P_ACTIVITY_CRITICALITY_CONFIG);
    }
    
    /**

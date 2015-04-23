@@ -4,7 +4,6 @@
 	clear: both;
 	height: 10px;
 }
-.
 </style>
 
 <div class="view-panel" ng-controller="sdCriticalityConfigCtrl as ctrl"
@@ -27,12 +26,13 @@
 		<div sda-toolbar>
 			<div class="tbl-toolbar-section">
 				<!-- Import -->
-				<button ng-click="ctrl.importVariables()" title="{{i18n('admin-portal-messages.views-criticalityConf-criticality-categories-toolbar-import')}}" 
+				<button ng-click="ctrl.showImportDialog()" title="{{i18n('admin-portal-messages.views-criticalityConf-criticality-categories-toolbar-import')}}" 
 						class="button-link tbl-toolbar-item tbl-tool-link" style="margin-right: 0px;">
 				   <i class="sc sc-fw sc-archive-up" style="font-size: 1.5em;"></i>
 				</button>
+				<!-- <span sd-file-upload sda-title="Upld"></span> -->
 				<!-- Export -->
-				<button ng-click="ctrl.exportVariables()" title="{{i18n('admin-portal-messages.views-criticalityConf-criticality-categories-toolbar-export')}}" 
+				<button ng-click="ctrl.exportCriticalities()" title="{{i18n('admin-portal-messages.views-criticalityConf-criticality-categories-toolbar-export')}}" 
 						class="button-link tbl-toolbar-item tbl-tool-link" style="margin-right: 0px;">
 				   <i class="sc sc-fw sc-archive-down" style="font-size: 1.5em;"></i>
 				</button>
@@ -148,5 +148,18 @@
 			<span ng-bind="i18n('admin-portal-messages.views-criticalityConf-criticality-defaultformula-infoMessage')"></span>
 		</div>
 		<div class="clearing"></div>
+	</div>
+	
+	<div sd-dialog sda-show="ctrl.showImportDlg" sda-type="alert" sda-cancel-action-label="{{i18n('views-common-messages.common-ok')}}"
+		sda-on-close="ctrl.importCriticalities()" sda-title="{{i18n('admin-portal-messages.views-criticalityConf-importDialog-title')}}"
+		sda-height="140px" sda-show-close="false">
+		<div><span ng-bind="i18n('admin-portal-messages.views-criticalityConf-importDialog-info')"></span></div>
+		<div>
+			<i style="color: red;" class="glyphicon glyphicon-remove-sign"></i> 
+			<span ng-bind="i18n('admin-portal-messages.views-criticalityConf-importDialog-warning')"></span>
+		</div>
+		<br />
+		<div><span sd-file-upload ng-model="ctrl.uploadedFile" 
+			sda-title="{{i18n('views-common-messages.views-configurationImportDialog-uploadFile')}} {{i18n('views-common-messages.common-colon')}}"></span></div>
 	</div>
 </div>
