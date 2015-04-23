@@ -16,31 +16,31 @@
     /**
      * 
      */
-    angular.module('workflow-ui.services').provider('sdLoggedInUserService', function() {
+    angular.module('bpm-common.services').provider('sdLocalizationService', function() {
 	this.$get = [ 'sdUtilService', function(sdUtilService) {
-	    var service = new LoggedInUserService(sdUtilService);
+	    var service = new LocalizationService(sdUtilService);
 	    return service;
 	} ];
     });
 
-    var REST_BASE_URL = "services/rest/portal/user";
-    var user = null;
+    var REST_BASE_URL = "services/rest/portal/localization";
+    var localizationInfo = null;
     /**
      * 
      */
-    function LoggedInUserService(sdUtilService) {
+    function LocalizationService(sdUtilService) {
 
 	/**
 	 * 
 	 */
-	LoggedInUserService.prototype.getUserInfo = function() {
-	    var restUrl = REST_BASE_URL + "/whoAmI";
+	LocalizationService.prototype.getInfo = function() {
+	    var restUrl = REST_BASE_URL + "/info";
 	    var self = this;
 
-	    if (!user) {
-		user = sdUtilService.syncAjax(restUrl);
+	    if (!localizationInfo) {
+		localizationInfo = sdUtilService.syncAjax(restUrl);
 	    }
-	    return user;
+	    return localizationInfo;
 	};
 
     }

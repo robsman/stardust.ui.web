@@ -22,7 +22,7 @@
 	    [ '$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sdPreferenceService',
 		    'sdWorklistService', 'sdActivityInstanceService', 'sdProcessDefinitionService',
 		    'sdCriticalityService', 'sdStatusService', 'sdPriorityService', '$filter', 'sgI18nService',
-		    '$timeout', 'sdLoggedInUserService', 'sdDialogService', 'sdCommonViewUtilService',
+		    '$timeout', 'sdLoggedInUserService', 'sdDialogService', 'sdCommonViewUtilService','sdPortalConfigurationService',
 		    ActivityTableDirective ]);
 
     /*
@@ -522,10 +522,9 @@
 		    this.preferenceName = "{ipp-participant}" + idFromQuery;
 		    this.preferenceId = 'worklist-participant-columns';
 		} else {
-		    this.preferenceName = sdLoggedInUserService.getUserId();
+		    this.preferenceName = sdLoggedInUserService.getUserInfo().id;
 		    this.preferenceId = 'worklist-participant-columns';
 		}
-
 		this.exportFileName = this.exportFileName + "_" + idFromQuery;
 	    }
 

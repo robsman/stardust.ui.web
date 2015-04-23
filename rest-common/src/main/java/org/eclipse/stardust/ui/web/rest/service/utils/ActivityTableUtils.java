@@ -621,7 +621,7 @@ public class ActivityTableUtils
       List<CriticalityCategory> criticalityConfigurations = CriticalityUtils.getCriticalityConfiguration();
 
       ModelCache modelCache = ModelCache.findModelCache();
-
+      QueryResultDTO resultDTO = new QueryResultDTO();
       if (null != queryResult)
       {
          for (Object object : queryResult)
@@ -685,11 +685,9 @@ public class ActivityTableUtils
                list.add(dto);
             }
          }
+         resultDTO.totalCount = queryResult.getTotalCount();
       }
-      QueryResultDTO resultDTO = new QueryResultDTO();
       resultDTO.list = list;
-      resultDTO.totalCount = list.size();
-
       return resultDTO;
    }
 

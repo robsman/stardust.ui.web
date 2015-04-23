@@ -8,13 +8,21 @@
  * documentation
  ******************************************************************************/
 
+(function(){
+	'use strict';
+var  jQueryDateFormats = {
+		'MM/dd/yy' :  'm/d/y',
+		'dd.MM.yy' :  'dd.m.y',
+		'yyyy-MM-dd' : 'yy-m-d'
+	};
+
 angular.module('bpm-common.directives')
-	.directive('sdDatePicker', function() {
+	.directive('sdDatePicker', ['sdLocalizationService','$filter',function(sdLocalizationService) {
 	    return {
 	        restrict: 'A',
 	        require: 'ngModel',
 	        link: function(scope, element, attrs, ngModelCtrl) {
-	          
+	            
 	            var months = "January,February,March,April,May,June,July," +
 	                         "August,September,October,November,December",
 	                monthsShort = "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug," +
@@ -23,7 +31,7 @@ angular.module('bpm-common.directives')
 	                       "Thursday,Friday,Saturday",
 	                daysMin = "Su,Mo,Tu,We,Th,Fr,Sa,Su",
 	                daysShort = "Sun,Mon,Tue,Wed,Thu,Fri,Sat",
-	                dateFormat = attrs.sdaDateFormat || 'yy.mm.dd',
+	                dateFormat = attrs.sdaDateFormat || jQueryDateFormats[sdLocalizationService.getInfo().dateFormat],
 	                firstDay = 1*(attrs.sdaFirstDay || 1),
 	                numberOfMonths = 1*(attrs.sdaNumberMonths || 1),
 	                changeMonth = (attrs.sdaChangeMonth === 'true')?true:false,
@@ -74,7 +82,7 @@ angular.module('bpm-common.directives')
                 		return  milliseconds ? jQuery.datepicker.formatDate(dateFormat, date):vaue;
 		            });
 
-	            $(element).datepicker({
+	                $(element).datepicker({
 	                numberOfMonths : numberOfMonths,
 	                dateFormat: dateFormat,
 	                firstDay : firstDay,
@@ -109,4 +117,5 @@ angular.module('bpm-common.directives')
 	            });
 	        }
 	    };
-	});
+	}]);
+})();

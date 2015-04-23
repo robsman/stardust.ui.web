@@ -15,23 +15,38 @@
 (function() {
     'use strict';
 
-    angular.module('workflow-ui.services').provider('sdPortalConfigurationService', function() {
-	this.$get = [ '$resource', function($resource) {
-	    var service = new WorklistService($resource);
+    angular.module('bpm-common.services').provider('sdPortalConfigurationService', function() {
+	this.$get = [ 'sdPreferenceService', 'sdUtilService', function(sdPreferenceService, sdUtilService) {
+	    var service = new WorklistService(sdPreferenceService, sdUtilService);
 	    return service;
 	} ];
     });
+
+    var portalConfig = null;
+
     /*
      * 
      */
-    function WorklistService($resource) {
+    function WorklistService(sdPreferenceService, sdUtilService) {
 	var REST_BASE_URL = "services/rest/portal/portalConfiguration/";
 	/*
 	 * 
 	 */
 	WorklistService.prototype.getConfiguration = function(scope) {
-	    var restUrl = REST_BASE_URL + "configuration/"+scope;
-	    return $resource(restUrl).get().$promise;
+	    var restUrl = REST_BASE_URL + "configuration/" + scope;
+	    var self = this;
+
+	    if (!portalConfig) {
+		portalConfig = sdUtilService.syncAjax(restUrl);
+	    }
+	    return portalConfig;
+	};
+	/**
+	 * 
+	 */
+	WorklistService.prototype.getPageSize = function() {
+	    var store = sdPreferenceService.getStore("USER", "ipp-portal-common", "preference");
+	    return store.getValue("ipp-portal-common.configuration.prefs.pageSize", null)
 	};
     }
 

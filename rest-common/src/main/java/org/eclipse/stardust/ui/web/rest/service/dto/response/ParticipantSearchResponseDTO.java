@@ -16,6 +16,7 @@ import org.eclipse.stardust.engine.api.model.Role;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
+import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 
@@ -24,7 +25,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
  *
  */
 
-public class ParticipantSearchResponseDTO
+public class ParticipantSearchResponseDTO extends AbstractDTO
 {
    private static final String BASE_IMAGE_PATH = "/plugins/views-common/images/icons/";
    // exposed properties

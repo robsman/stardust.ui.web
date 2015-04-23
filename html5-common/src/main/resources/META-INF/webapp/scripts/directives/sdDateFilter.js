@@ -15,13 +15,14 @@
 
 (function(){
 	'use strict';
+	
 
-	angular.module('bpm-common').directive('sdDateFilter', ['sdUtilService', DateFilterDirective]);
+	angular.module('bpm-common').directive('sdDateFilter', ['sdUtilService','$filter', DateFilterDirective]);
 
 	/*
 	 * 
 	 */
-	function DateFilterDirective(sdUtilService) {
+	function DateFilterDirective(sdUtilService, $filter) {
 		return {
 			restrict: 'A',
 			template: 
@@ -93,8 +94,9 @@
 				 * 
 				 */
 				function formatDate(mills) {
-					var date = new Date(mills);
-            		return jQuery.datepicker.formatDate('yy.mm.dd', date);
+				    var date = new Date(mills);
+				    var angularDateFilter = $filter('sdDateFilter');
+				    return angularDateFilter(date);
 				}
 			}
 		};

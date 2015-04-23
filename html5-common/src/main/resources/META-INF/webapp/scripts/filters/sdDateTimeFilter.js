@@ -9,31 +9,55 @@
  ******************************************************************************/
 
 /**
- * @author Subodh.Godbole
+ * @author Johnson.Quadras
  */
-angular.module('bpm-common').filter('sdDateTimeFilter', function() {
-	return function(input) {
-		if (!input) {
-	        return "-";
-	    } else {
-	    	try {
-	    		var dateTime = new Date(input);
-		        return pad(dateTime.getUTCDate(), 2) + "."
-							+ pad(dateTime.getUTCMonth() + 1, 2) + "."
-							+ dateTime.getUTCFullYear() + " "
-							+ pad(dateTime.getUTCHours(), 2) + ":"
-							+ pad(dateTime.getUTCMinutes(), 2);
-	    	} catch(e) {
-	    		return input; // Cannot process, return as is!
-	    	}
-	    }
-	};
 
-	/**
-	 * 
-	 */
-	function pad(number, characters) {
-		// combine with large number & convert to string and cut leading "1"
-		return (1e15 + number + "").slice(-characters); 
-	}
-});
+(function() {
+    'use strict';
+    
+   /*Date Time filter*/
+    angular.module('bpm-common').filter('sdDateTimeFilter',
+	    [ '$filter', 'sdLocalizationService', function($filter, sdLocalizationService) {
+
+		return function(input) {
+		    if (input == null) {
+			return "";
+		    }
+		    var angularDateFilter = $filter('date');
+		    var format = sdLocalizationService.getInfo().dateTimeFormat;
+		    return angularDateFilter(input, format);
+		};
+
+	    } ]);
+
+    /*Date Filter*/
+    angular.module('bpm-common').filter('sdDateFilter',
+	    [ '$filter', 'sdLocalizationService', function($filter, sdLocalizationService) {
+
+		return function(input) {
+		    if (input == null) {
+			return "";
+		    }
+		    var angularDateFilter = $filter('date');
+		    var format = sdLocalizationService.getInfo().dateFormat;
+		    return angularDateFilter(input, format);
+		};
+
+	    } ]);
+
+   /* Time filter*/
+    angular.module('bpm-common').filter('sdTimeFilter',
+	    [ '$filter', 'sdLocalizationService', function($filter, sdLocalizationService) {
+
+		return function(input) {
+		    if (input == null) {
+			return "";
+		    }
+		    var angularDateFilter = $filter('date');
+		    var format = sdLocalizationService.getInfo().timeFormat;
+		    return angularDateFilter(input, format);
+		};
+
+	    } ]);
+
+})();
