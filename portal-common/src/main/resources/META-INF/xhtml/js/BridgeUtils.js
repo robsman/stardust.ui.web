@@ -1723,6 +1723,15 @@ if (!window["BridgeUtils"].FrameManager) {
 						}else{
 							contentFrame.style.position = 'absolute';	
 						}
+						
+						//ZZM: CRNT-36708 - hard coding offset based on pin state
+						if(BridgeUtils.View.getSidebarDetails().pinned){
+							posX  = 14;
+						}
+						else{
+							posX = 42;
+						}
+						
 						contentFrame.style.left = posX + 'px';
 						contentFrame.style.top = posY + 'px';
 						contentFrame.style.width = iFrameWith + 'px';
