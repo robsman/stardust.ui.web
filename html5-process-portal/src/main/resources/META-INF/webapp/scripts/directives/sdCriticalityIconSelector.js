@@ -17,9 +17,13 @@
    angular.module('bpm-common').directive('sdCriticalityIconSelector', [ CriticalityIconSelector ]);
 
    /*
-    * 
-    */
-
+	 * Directive class
+	 * 
+	 * 		Attributes			Type	Required	Default
+	 * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	 * 		nd-model			=		Yes
+	 * 		sda-edit-mode 		@ 		No			false
+	 */
    function CriticalityIconSelector() {
 
       return {

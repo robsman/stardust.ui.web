@@ -17,8 +17,15 @@
    angular.module('bpm-common').directive('sdFileUpload', [ FileUpload ]);
 
    /*
-    * <span sd-file-upload ng-model="" sda-title="" sda-end-point="" sda-multiple="true/false"
-    */
+	 * Directive class
+	 * 
+	 * 		Attributes			Type	Required	Default
+	 * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+	 * 		nd-model			=		Yes
+	 * 		sda-title 			@		No
+	 * 		sda-end-point 		@		No
+	 * 		sda-multiple 		@ 		No			false
+	 */
    function FileUpload() {
 
       return {
@@ -42,16 +49,23 @@
 			 title: '@sdaTitle',
 			 bindModel: '=ngModel'
 		 },
-         controller : [ '$scope', '$attrs', '$element', 'sgI18nService', FileUploadController ]
+         controller : [ '$scope', '$attrs', '$element', 'sgI18nService', 'sdLoggerService', FileUploadController ]
       };
 
    }
 
-	function FileUploadController($scope, $attrs, $element, sgI18nService) {
+	function FileUploadController($scope, $attrs, $element, sgI18nService, sdLoggerService) {
+		var trace = sdLoggerService.getLogger('bpm-common.sdFileUpload');
+		
 		var self = this;
 		var REST_END_POINT = "services/rest/portal/file-upload/upload";
 
 		FileUploadController.prototype.initialise = function() {
+			
+			if (!$attrs.ngModel) {
+				trace.error("ngModel is not defined.");
+				return;
+		    }
 			
 			var endPoint = REST_END_POINT;
 			if (angular.isDefined($attrs.sdaEndPoint)) {
