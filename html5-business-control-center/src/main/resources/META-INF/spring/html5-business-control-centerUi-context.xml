@@ -43,5 +43,15 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			</ippui:view>
 		</ippui:viewsExtension>
 
+		<ippui:viewsExtension>
+			<ippui:view name="deputyTeamMemberViewHtml5"
+				include="/plugins/html5-business-control-center/partials/views/deputyManagementView.html">
+				<ippui:preferences>
+					<ippui:preferencePage name="icon"
+						include="/plugins/views-common/images/icons/user-silhouette.png" />
+				</ippui:preferences>
+			</ippui:view>
+		</ippui:viewsExtension>
+
 	</ippui:perspectiveExtension>
 </beans>
