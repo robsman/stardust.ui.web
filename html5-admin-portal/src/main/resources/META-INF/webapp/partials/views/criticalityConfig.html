@@ -1,7 +1,12 @@
 <div class="view-panel" ng-controller="sdCriticalityConfigCtrl as ctrl"
 	sg-stretch-to-bottom>
 	<!-- Save Button -->
-	<div sd-save sda-on-save="ctrl.save()"></div>
+
+	<div class="view-panel-toolbar toolbar-buttons">
+		<div class="view-toolbar-section" >
+			<span sd-save sda-on-save="ctrl.save()"></sapn>
+		</div>
+	</div>
 	<div>
 		<div class="heading" ng-bind="i18n('admin-portal-messages.views-criticalityConf-criticality-categories-title')"></div>
 		<div class="clearing"></div>

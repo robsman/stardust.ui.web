@@ -2,7 +2,11 @@
 	ng-stretch-to-bottom>
 
 	<!-- View Toolbar -->
-	<sd-refresh sda-on-refresh="ctrl.refresh()"></sd-refresh>
+	<div class="view-panel-toolbar toolbar-buttons">
+		<div class="view-toolbar-section" >
+			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+		</div>
+	</div>
 	
 	<div class="view-panel-toolbar">
 		<label>{{i18n('admin-portal-messages.views-userGroupMgmt-userGroups-label')}}</label>

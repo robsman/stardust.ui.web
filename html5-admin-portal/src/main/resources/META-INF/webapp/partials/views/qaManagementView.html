@@ -1,6 +1,10 @@
 <div class="view-panel" ng-controller="sdQaManagementViewCtrl as qaManagementCtrl" sg-stretch-to-bottom>
 	<!-- Save Button -->
-	<div sd-save sda-on-save="qaManagementCtrl.saveChanges();"></div>
+	<div class="view-panel-toolbar toolbar-buttons">
+		<div class="view-toolbar-section" >
+			<span sd-save sda-on-save="ctrl.save()"></sapn>
+		</div>
+	</div>
 	<!-- Activities -->
 	<div class="view-panel-toolbar">
 		<i class="sc sc-arrow-d" ng-show="qaManagementCtrl.isActivitiesPanelExpanded" ng-click="qaManagementCtrl.expandActivitiesPanel(false);"> </i> 

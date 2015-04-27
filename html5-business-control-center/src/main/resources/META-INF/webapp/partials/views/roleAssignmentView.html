@@ -1,6 +1,10 @@
 <div ng-controller="sdRoleAssignmentCtrl as ctrl">
 <div class="roleAssignment-wrapper">
-    <sd-refresh sda-on-refresh="ctrl.refresh()"></sd-refresh>
+    <div class="view-panel-toolbar toolbar-buttons">
+		<div class="view-toolbar-section" >
+			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+		</div>
+	</div>
     <div ng-if="ctrl.createTable">
     <div class="view-panel-toolbar tbl-title" style="color: #708090;font-size:11px">{{i18n('business-control-center-messages.views-roleAssignmentView-title')}}</div>
 	<table sd-data-table="ctrl.roleAssignmentTable"

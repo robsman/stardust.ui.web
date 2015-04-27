@@ -27,13 +27,11 @@
 	    scope : {
 		save : "&sdaOnSave"
 	    },
-	    template : '<div class="view-panel-toolbar" align="right">'+
-	    		     '<a href="#"'+
+	    template : 	'<button '+
 		    		' title="{{saveController.i18n(\'admin-portal-messages.views-participantManagement-configuration-saveButton\')}}"'+
-	    			' ng-click="save();" class="button-link tbl-tool-link">'+
-	    			'<i class="glyphicon glyphicon-floppy-disk view-save-button"> </i>' + 
-	    		      '</a>' +
-	    		'</div>',
+	    			' ng-click="save();" class="button-link">'+
+	    			'<i class="glyphicon glyphicon-floppy-disk"> </i>' + 
+	    		      '</button>',
 	    controller : [ '$scope', SaveController ]
 	};
     }

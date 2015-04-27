@@ -408,8 +408,7 @@ public class ActivityTableUtils
                .entrySet())
          {
             Object value = null;
-            String key = StringUtils.substringAfter(descriptor.getKey(),
-                  "descriptorValues.");
+            String key = descriptor.getKey();
 
             // Boolean type desc
             if (descriptor.getValue().type.equals(ColumnDataType.BOOLEAN.toString()))
@@ -517,10 +516,7 @@ public class ActivityTableUtils
             JsonObject json = jsonIo.readJsonObject(jsonFilterString);
             worklistFilter = DTOBuilder.buildFromJSON(json, WorklistFilterDTO.class,
                   WorklistFilterDTO.getCustomTokens());
-            if (StringUtils.contains(jsonFilterString, "descriptorValues"))
-            {
                populateDescriptorFilters(worklistFilter, json, availableDescriptorColumns);
-            }
          }
          catch (Exception e)
          {
@@ -578,13 +574,15 @@ public class ActivityTableUtils
       for (DescriptorColumnDTO descriptorColumnDTO : descriptorColumns)
       {
          Object filterDTO = null;
-         if (null != descriptorColumnsFilterJson.get(descriptorColumnDTO.id))
+         String id = StringUtils.substringAfterLast(descriptorColumnDTO.id, "descriptorValues.");
+         
+         if (null != descriptorColumnsFilterJson.get(id))
          {
             // String TYPE
             if (ColumnDataType.STRING.toString().equals(descriptorColumnDTO.type))
             {
                filterDTO = new Gson().fromJson(
-                     descriptorColumnsFilterJson.get(descriptorColumnDTO.id),
+                     descriptorColumnsFilterJson.get(id),
                      WorklistFilterDTO.TextSearchDTO.class);
 
             }
@@ -592,16 +590,16 @@ public class ActivityTableUtils
                   || ColumnDataType.NUMBER.toString().equals(descriptorColumnDTO.type))
             {
                filterDTO = new Gson().fromJson(
-                     descriptorColumnsFilterJson.get(descriptorColumnDTO.id),
+                     descriptorColumnsFilterJson.get(id),
                      WorklistFilterDTO.RangeDTO.class);
             }
             else if (ColumnDataType.BOOLEAN.toString().equals(descriptorColumnDTO.type))
             {
                filterDTO = new Gson().fromJson(
-                     descriptorColumnsFilterJson.get(descriptorColumnDTO.id),
+                     descriptorColumnsFilterJson.get(id),
                      WorklistFilterDTO.BooleanDTO.class);
             }
-            descriptorColumnMap.put(descriptorColumnDTO.id, new DescriptorFilterDTO(
+            descriptorColumnMap.put(id, new DescriptorFilterDTO(
                   descriptorColumnDTO.type, filterDTO));
          }
       }

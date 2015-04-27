@@ -17,6 +17,10 @@
 	padding-bottom: 2px;
 }
 
+.toolbar-buttons {
+	height: 30px
+}
+
 .view-panel-content {
 	margin-top: 5px;
 }
@@ -27,6 +31,13 @@
 
 .view-tool-link {
 	margin-right: 5px;
+}
+
+.view-toolbar-section {
+	margin-left: 8px;
+	padding-left: 3px;
+	border-left: 1px dotted gray;
+	float: right;
 }
 
 .label-item {
