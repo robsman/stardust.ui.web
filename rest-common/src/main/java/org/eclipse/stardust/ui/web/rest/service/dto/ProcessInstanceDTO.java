@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
-import java.util.Date;
 import java.util.Map;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
@@ -35,9 +34,9 @@ public class ProcessInstanceDTO extends AbstractDTO
 
    public PriorityDTO priority;
 
-   public Date startTime;
+   public Long startTime;
 
-   public Object duration;
+   public String duration;
 
    public String createUser;
 
@@ -45,7 +44,7 @@ public class ProcessInstanceDTO extends AbstractDTO
 
    public Object processDescriptorsList;
 
-   public Date endTime;
+   public Long endTime;
 
    public String startingUser;
 
