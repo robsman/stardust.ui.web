@@ -16,8 +16,8 @@
     'use strict';
 
     angular.module('bpm-common.services').provider('sdPortalConfigurationService', function() {
-	this.$get = [ 'sdPreferenceService', 'sdUtilService', function(sdPreferenceService, sdUtilService) {
-	    var service = new WorklistService(sdPreferenceService, sdUtilService);
+	this.$get = [ 'sdUtilService', function( sdUtilService) {
+	    var service = new WorklistService( sdUtilService);
 	    return service;
 	} ];
     });
@@ -27,7 +27,7 @@
     /*
      * 
      */
-    function WorklistService(sdPreferenceService, sdUtilService) {
+    function WorklistService( sdUtilService) {
 	var REST_BASE_URL = "services/rest/portal/portalConfiguration/";
 	/*
 	 * 
@@ -45,8 +45,8 @@
 	 * 
 	 */
 	WorklistService.prototype.getPageSize = function() {
-	    var store = sdPreferenceService.getStore("USER", "ipp-portal-common", "preference");
-	    return store.getValue("ipp-portal-common.configuration.prefs.pageSize", null)
+	    var config = this.getConfiguration("USER");
+	    return config.pageSize;
 	};
     }
 

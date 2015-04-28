@@ -1,6 +1,8 @@
 <div style="padding-left: 20px;" ng-controller="sdUserManagerDetailViewCtrl as ctrl">
-	<div
-		sd-include="'plugins/html5-admin-portal/partials/views/refreshViewToolbar.html'">
+	<div class="view-panel-toolbar toolbar-buttons">
+		<div class="view-toolbar-section">
+			<span sd-save sda-on-save="ctrl.save();"></sapn>
+		</div>
 	</div>
 	<div id="alertMsg" ng-show="ctrl.userAuthorizationMsg" class="sd-panel-summary-bar">
 	   <table><tbody>
