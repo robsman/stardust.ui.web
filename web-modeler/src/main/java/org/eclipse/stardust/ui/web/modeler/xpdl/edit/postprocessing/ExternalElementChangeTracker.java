@@ -189,7 +189,7 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
                return true;
             }
          }
-         else if (modelElement instanceof IExtensibleElement)
+         if (modelElement instanceof IExtensibleElement)
          {
             if (AttributeUtil.getAttributeValue((IExtensibleElement) modelElement,
                   IConnectionManager.URI_ATTRIBUTE_NAME) != null)
