@@ -27,14 +27,13 @@ angular.module('bpm-common', ['bpm-common.services', 'bpm-common.directives', 'b
 		    	msie = true;
 		    } else {
 		    	var edge = ua.indexOf('Edge/'); // IE 12
-		    	
 			    if (edge > 0) {
 			    	msie = true;
 			    }	
 		    }
 	    }
 	   	} catch (e) {}
-	
+	   	
 	// To disable cache for IE
 	if(msie) {
 		if (!$httpProvider.defaults.headers.get) {
@@ -45,6 +44,8 @@ angular.module('bpm-common', ['bpm-common.services', 'bpm-common.directives', 'b
 	    // extra
 	    $httpProvider.defaults.headers.get['Cache-Control'] = 'no-cache';
 	    $httpProvider.defaults.headers.get['Pragma'] = 'no-cache';
+	    // To disable JQuery cache for Ajax calls
+	    jQuery.ajaxSetup({ cache: false });  
 	 }
     
 }]);
