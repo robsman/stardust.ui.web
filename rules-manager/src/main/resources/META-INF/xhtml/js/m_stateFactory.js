@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2015 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
 /*Simple state object to encapsulate three basic conditions of a piece of data...
  * 1. isPersisted: is it resident in some format in a persistent state? (file,database,etc...)
  * 2. isDirty: has the data been modified at all since arbitrary event or time?
