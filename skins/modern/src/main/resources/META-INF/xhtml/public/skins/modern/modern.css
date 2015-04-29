@@ -2300,6 +2300,73 @@ fieldset {
 }
 
 /*
+=================== JQUERY CALENDAR OVERRIDE ==============
+*/
+
+/*calendar container*/
+div#ui-datepicker-div {
+  background-color: #FFFFFF;
+  border: solid 1px #DDD;
+  border-radius: 3px;
+  padding: 3px;
+  box-shadow: 5px 5px 25px #888888;
+}
+
+
+div#ui-datepicker-div .ui-state-default, 
+div#ui-datepicker-div .ui-widget-content .ui-state-default, 
+div#ui-datepicker-div .ui-widget-header .ui-state-default{
+	background:none;
+	border:none;
+    font-family:lato;
+}
+
+div#ui-datepicker-div .ui-widget-header {
+  border: none;
+  background: none;
+  color: #222222;
+  font-weight: bold;
+}
+
+.ui-datepicker .ui-datepicker-next:after {
+  content: '>';
+  font-size: 18px;
+}
+
+.ui-datepicker .ui-datepicker-prev:after {
+  content: '<';
+  font-size: 18px;
+}
+
+.ui-datepicker .ui-widget-header .ui-icon {
+  background-image: none;
+}
+
+.ui-datepicker-prev-hover,
+.ui-datepicker-next-hover{
+	background:none !important;
+	border:none !important;
+	text-decoration:none !important;
+}
+
+.ui-datepicker .ui-state-active {
+  background: #4387bf !important;
+  text-align: center !important;
+  color:#FFF;
+  border-right: none;
+  border-bottom: none;
+  border-radius:3px;
+}
+
+.ui-datepicker th
+{
+  font-weight: 600;
+  color: #28303B;
+  text-align: center;
+  padding: 3px;
+  border: none;
+}
+/*
 =================== ICE Component Appearence ==============
 */
 /*
@@ -2340,11 +2407,11 @@ table.iceSelInpDate tbody tr td table{
 .iceSelInpDateOpenPopup {
     display: inline;
     text-decoration: none;
-    background-color: transparent;
-    background-image: url( "./images/calendar16X16.png" );
+    background-color: transparent !important;
+    background-image: url( "./images/calendar16X16.png" ) !important;
     background-repeat: no-repeat;
     text-align: center;
-    border: none;
+    border: none !important;
     width: 16px;
     height: 16px;
     margin-left: 5px;
@@ -2353,11 +2420,11 @@ table.iceSelInpDate tbody tr td table{
 .iceSelInpDateClosePopup {
     display: inline;
     text-decoration: none;
-    background-color: transparent;
-    background-image: url( "./images/close16X16.png" );
+    background-color: transparent !important;
+    background-image: url( "./images/close16X16.png" ) !important;
     background-repeat: no-repeat;
     text-align: center;
-    border: none;
+    border: none !important;
     width: 16px;
     height: 16px;
     margin-left: 5px;
@@ -2481,7 +2548,7 @@ table.iceSelInpDate tbody tr td table{
 }
 .iceSelInpDateDay .iceOutTxt {
     color: #333333;
-    font-weight:300;
+    font-weight:normal;
 }
 
 .iceSelInpDateCur a {
