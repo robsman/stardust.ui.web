@@ -23,9 +23,9 @@ angular.module('bpm-common.directives')
 	        require: 'ngModel',
 	        link: function(scope, element, attrs, ngModelCtrl) {
 	            
-	            var months =sgI18nService.translate('html5-common.date-picker-meridian-months',
+	            var months =sgI18nService.translate('html5-common.date-picker-months',
 			'January,February,March,April,May,June,July,August,September,October,November,December'),
-	                daysMin = sgI18nService.translate('html5-common.date-picker-meridian-days',
+	                daysMin = sgI18nService.translate('html5-common.date-picker-days',
 			'Su,Mo,Tu,We,Th,Fr,Sa,Su'),
 	                dateFormat = attrs.sdaDateFormat || jQueryDateFormats[sdLocalizationService.getInfo().dateFormat],
 	                firstDay = 1*(attrs.sdaFirstDay || 1),

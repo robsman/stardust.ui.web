@@ -16,11 +16,11 @@
 (function() {
     'use strict';
 
-    angular.module('bpm-common').directive('sdDateTimePicker', ['sdLocalizationService', Directive ]);
+    angular.module('bpm-common').directive('sdDateTimePicker', ['sdLocalizationService', 'sgI18nService', Directive ]);
 
     /*
      */
-    function Directive(sdLocalizationService) {
+    function Directive(sdLocalizationService, sgI18nService) {
 
 	return {
 	    restrict : 'A',
@@ -57,7 +57,7 @@
 		    }
 		}
 	    },
-	    controller : [ '$scope','sdLocalizationService', Controller ],
+	    controller : [ '$scope','sdLocalizationService', 'sgI18nService', Controller ],
 	    template : '<span id="date">'+
 	    			'<input  type="text" sd-date-picker  sda-milliseconds="true" style="width:100px"' + 
 	    				' id="selectDate" name="selectDate"   ng-change="ctrl.onChange()" ng-model="ctrl.selectedDate.date"  / >'+
@@ -74,46 +74,49 @@
 	}
     }
 
-
-        var OPTIONS = {
+    
+    var OPTIONS = {
 	clock24 : {
 	    hours : getArrayWithNumber(0, 23)
 	},
 	clock12 : {
 	    hours : getArrayWithNumber(1, 12)
 	},
-	minutes : getArrayWithNumber(0, 59)
+	minutes : getArrayWithNumber(0, 59),
+	AM : '',
+	PM : ''
     }
-        
 
     /**
      * 
      */
-    function Controller($scope, sdLocalizationService) {
-	
+    function Controller($scope, sdLocalizationService, sgI18nService) {
+
 	var self = this;
 	var currentDate = new Date();
 	var dateTimeFormat = sdLocalizationService.getInfo().dateTimeFormat;
-	
+	OPTIONS.AM = sgI18nService.translate('html5-common.date-picker-meridian-am', 'am');
+	OPTIONS.PM = sgI18nService.translate('html5-common.date-picker-meridian-pm', 'pm');
+
 	this.is24HourClock = true;
-	if( dateTimeFormat.indexOf('a') > -1){
+	if (dateTimeFormat.indexOf('a') > -1) {
 	    this.is24HourClock = false;
 	}
-	
-	if(this.is24HourClock){
+
+	if (this.is24HourClock) {
 	    self.hoursOptions = OPTIONS.clock24.hours;
-	}else{
+	} else {
 	    self.hoursOptions = OPTIONS.clock12.hours;
 	}
 	self.minsOptions = OPTIONS.minutes;
-	self.meridianOptions = ['AM','PM']
-	
+	self.meridianOptions = [ OPTIONS.AM, OPTIONS.PM ]
+
 	if ($scope.selectedDateTime) {
-	    self.selectedDate = getDateTimeObj(new Date($scope.selectedDateTime), true ,self.is24HourClock);
+	    self.selectedDate = getDateTimeObj(new Date($scope.selectedDateTime), true, self.is24HourClock);
 	} else {
 	    self.selectedDate = getDateTimeObj(currentDate, false, self.is24HourClock);
 	}
-	
+
 	$scope.ctrl = this;
     }
 
@@ -121,33 +124,29 @@
      * 
      */
     function getDateTimeObj(date, isDateSelected, is24HourClock) {
-	
+
 	var dateTime = {
-		mins : date.getMinutes()
+	    mins : date.getMinutes()
 	}
-	
-	if(is24HourClock){
+
+	if (is24HourClock) {
 	    dateTime.hours = date.getHours()
-	}else{
+	} else {
 	    var postHour = date.getHours();
-	    if ( postHour == 12)
-	    { //At 00 hours we need to show 12 AM
-		dateTime.meridian = "PM";
+	    if (postHour == 12) { //At 00 hours we need to show 12 AM
+		dateTime.meridian = OPTIONS.PM;
 		dateTime.hours = postHour;
-	    }
-	    else if (postHour > 12)
-	    {
-		dateTime.meridian='PM';
-		dateTime.hours = postHour -12;
-	    }else if(postHour ==  0){
+	    } else if (postHour > 12) {
+		dateTime.meridian = OPTIONS.PM;
+		dateTime.hours = postHour - 12;
+	    } else if (postHour == 0) {
 		dateTime.hours = 12;
-		dateTime.meridian='AM';
-	    }else {
-		dateTime.hours =postHour;
-		dateTime.meridian='AM';
+		dateTime.meridian = OPTIONS.AM;
+	    } else {
+		dateTime.hours = postHour;
+		dateTime.meridian = OPTIONS.AM;
 	    }
 	}
-	
 
 	if (isDateSelected) {
 	    dateTime.date = date.getTime();
@@ -168,10 +167,9 @@
 	return array;
     }
 
-
-            /**
-	     * 
-	     */
+    /**
+     * 
+     */
     function getDate(input, is24HourClock) {
 	if (!input) {
 	    return undefined;
@@ -179,9 +177,9 @@
 	var date = new Date(input.date);
 	date.setMinutes(input.mins);
 	if (!is24HourClock) {
-	    if (input.meridian == 'PM' && input.hours < 12) {
+	    if (input.meridian == OPTIONS.PM && input.hours < 12) {
 		date.setHours(input.hours + 12);
-	    } else if (input.meridian == 'AM' && input.hours == 12) {
+	    } else if (input.meridian == OPTIONS.AM && input.hours == 12) {
 		date.setHours(input.hours - 12);
 	    } else {
 		date.setHours(input.hours);
@@ -192,6 +190,5 @@
 	}
 	return date.getTime();
     }
-    
 
 })();
