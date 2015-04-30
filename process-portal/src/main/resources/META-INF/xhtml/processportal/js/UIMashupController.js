@@ -72,7 +72,7 @@ if (!window.bpm.portal.UIMashupController) {
 
 			var html = jQuery("html");
 			html.attr("ng-controller", "ManualActivityCtrl");
-			
+
 			var i18nLabelProvider = i18nProvider != undefined ? i18nProvider : this.i18nProvider();
 			this.interactionProvider = new bpm.portal.Interaction();
 			this.initialize(dataMappings, bindings, clientDateFormat, i18nLabelProvider, this.interactionProvider, this.nestedMarkupProvider());
