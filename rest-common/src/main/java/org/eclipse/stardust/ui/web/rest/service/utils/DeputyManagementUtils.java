@@ -340,5 +340,13 @@ public class DeputyManagementUtils
       }
 
    }
+   
+   public void removeUserDeputy(long userOID, long deputyOID){
+      UserService userService = ServiceFactoryUtils.getUserService();
+      User user = userService.getUser(userOID);
+      User deputy = userService.getUser(deputyOID);
+      userService.removeDeputy(user, deputy);
+   }
+   
 
 }

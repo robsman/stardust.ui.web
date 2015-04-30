@@ -38,7 +38,7 @@
 							<i class="sc sc-pencil action-column-icon"></i>
 						</button>
 						<button
-							ng-click="bpmCommon.stopEvent($event);"
+							ng-click="bpmCommon.stopEvent($event);ctrl.removeUserDeputy(rowData.userOID)"
 							title="{{i18n('business-control-center-messages.views-deputyTeamMemberView-remove')}}"
 							class="button-link tbl-tool-link">
 							<i class="sc sc-minus-circle action-column-icon" style="color:red;"></i>

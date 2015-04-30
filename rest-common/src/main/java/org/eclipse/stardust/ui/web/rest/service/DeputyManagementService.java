@@ -90,10 +90,26 @@ public class DeputyManagementService
       resultDTO.totalCount = authorozations.size();
       return resultDTO;
    }
-
+   /**
+    * 
+    * @param userOID
+    * @param deputyOID
+    * @param validFrom
+    * @param validTo
+    * @param modelParticipantIds
+    * @param mode
+    */
    public void addDeputy(long userOID, long deputyOID, long validFrom, long validTo, List<String> modelParticipantIds, String mode)
    {
       deputyManagementUtils.addDeputy(userOID, deputyOID, validFrom, validTo,
             modelParticipantIds,mode);     
+   }
+   /**
+    * 
+    * @param userOID
+    * @param deputyOID
+    */
+   public void removeUserDeputy(long userOID, long deputyOID){
+      deputyManagementUtils.removeUserDeputy(userOID, deputyOID);    
    }
 }

@@ -98,7 +98,7 @@
 				mode : mode
 			};
 
-			var AddDeputy = $resource(restUrl, {
+			var addDeputy = $resource(restUrl, {
 				type : '@type',
 			}, {
 				fetch : {
@@ -109,9 +109,33 @@
 			var urlTemplateParams = {};
 			urlTemplateParams.type = "addDeputy";
 
-			return AddDeputy.fetch(urlTemplateParams, postData).$promise;
+			return addDeputy.fetch(urlTemplateParams, postData).$promise;
 		};
+		
+		/**
+		 * 
+		 */
+		DeputyManagementService.prototype.removeUserDeputy = function(userOID, deputyOID) {
+			var restUrl = REST_BASE_URL + "/:type";
 
+			var postData = {
+				userOID : userOID,
+				deputyOID : deputyOID
+			};
+
+			var removeUserDeputy = $resource(restUrl, {
+				type : '@type',
+			}, {
+				fetch : {
+					method : 'POST'
+				}
+			});
+
+			var urlTemplateParams = {};
+			urlTemplateParams.type = "removeUserDeputy";
+
+			return removeUserDeputy.fetch(urlTemplateParams, postData).$promise;
+		};		
 	}
 	;
 })();

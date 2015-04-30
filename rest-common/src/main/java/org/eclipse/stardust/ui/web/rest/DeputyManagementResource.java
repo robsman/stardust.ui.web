@@ -29,7 +29,6 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.service.DeputyManagementService;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.UserAuthorizationStatusDTO;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -100,6 +99,7 @@ public class DeputyManagementResource
       }
 
    }
+
    @GET
    @Path("/authorizations/{userOID}")
    public Response getAuthorizations(@PathParam("userOID") String userOID)
@@ -116,7 +116,7 @@ public class DeputyManagementResource
       }
 
    }
-   
+
    /**
     * 
     * @param userIds
@@ -132,18 +132,17 @@ public class DeputyManagementResource
 
       try
       {
-      JsonMarshaller jsonIo = new JsonMarshaller();
-      JsonObject postJSON = jsonIo.readJsonObject(postData);
-      long userOID = postJSON.getAsJsonPrimitive("userOID").getAsLong();
-      long deputyOID = postJSON.getAsJsonPrimitive("deputyOID").getAsLong();
-      long validFrom = postJSON.getAsJsonPrimitive("validFrom").getAsLong();
-      long validTo = postJSON.getAsJsonPrimitive("validTo").getAsLong();
-      String mode = postJSON.getAsJsonPrimitive("mode").getAsString();
-      List<String> modelParticipantIds = populateModelParticipantIds(postData);
+         JsonMarshaller jsonIo = new JsonMarshaller();
+         JsonObject postJSON = jsonIo.readJsonObject(postData);
+         long userOID = postJSON.getAsJsonPrimitive("userOID").getAsLong();
+         long deputyOID = postJSON.getAsJsonPrimitive("deputyOID").getAsLong();
+         long validFrom = postJSON.getAsJsonPrimitive("validFrom").getAsLong();
+         long validTo = postJSON.getAsJsonPrimitive("validTo").getAsLong();
+         String mode = postJSON.getAsJsonPrimitive("mode").getAsString();
+         List<String> modelParticipantIds = populateModelParticipantIds(postData);
 
-      deputyManagementService.addDeputy(userOID, deputyOID, validFrom, validTo,
-            modelParticipantIds,mode);
-      return Response.ok("SUCCESS", MediaType.APPLICATION_JSON).build();
+         deputyManagementService.addDeputy(userOID, deputyOID, validFrom, validTo, modelParticipantIds, mode);
+         return Response.ok("SUCCESS", MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {
@@ -151,7 +150,28 @@ public class DeputyManagementResource
          return Response.serverError().build();
       }
    }
-   
+
+   @POST
+   @Path("/removeUserDeputy")
+   public Response removeUserDeputy(String postData)
+   {
+
+      try
+      {
+         JsonMarshaller jsonIo = new JsonMarshaller();
+         JsonObject postJSON = jsonIo.readJsonObject(postData);
+         long userOID = postJSON.getAsJsonPrimitive("userOID").getAsLong();
+         long deputyOID = postJSON.getAsJsonPrimitive("deputyOID").getAsLong();
+         deputyManagementService.removeUserDeputy(userOID, deputyOID);
+         return Response.ok("SUCCESS", MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+         return Response.serverError().build();
+      }
+   }
+
    /**
     * Populate the options with the post data.
     * 

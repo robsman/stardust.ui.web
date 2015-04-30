@@ -204,7 +204,7 @@
 	DeputyManagementCtrl.prototype.getSourceParticipantForEdit = function() {
 		var self = this;
 		angular.forEach(self.deputy.targetParticipants, function(participant) {
-			self.removeFromArry(self.deputy.sourceParticipants,participant);
+			self.removeFromArry(self.deputy.sourceParticipants, participant);
 		});
 	}
 	/**
@@ -213,7 +213,7 @@
 	DeputyManagementCtrl.prototype.add = function() {
 		var self = this;
 		angular.forEach(self.deputy.selectedSourceParticipants, function(participant) {
-			self.removeFromArry(self.deputy.sourceParticipants,participant);
+			self.removeFromArry(self.deputy.sourceParticipants, participant);
 			self.deputy.targetParticipants.push(participant)
 
 		});
@@ -237,7 +237,7 @@
 		var self = this;
 		angular.forEach(self.deputy.selectedTargetParticipants, function(participant) {
 			self.deputy.sourceParticipants.push(participant);
-			self.removeFromArry(self.deputy.targetParticipants,participant);
+			self.removeFromArry(self.deputy.targetParticipants, participant);
 
 		});
 
@@ -254,10 +254,10 @@
 		self.remove();
 	};
 
-     /**
+	/**
 	 * 
 	 */
-	DeputyManagementCtrl.prototype.removeFromArry = function(array,val) {
+	DeputyManagementCtrl.prototype.removeFromArry = function(array, val) {
 		var i = array.map(function(e) {
 			return e.value;
 		}).indexOf(val.value);
@@ -298,7 +298,7 @@
 				function(data) {
 					self.getUsers().then(function(data) {
 						setTimeout(function() {
-							self.usersTable.setSelection(userRow)
+							self.usersTable.setSelection(userRow);
 						}, 500);
 					});
 				}, function(result) {
@@ -306,5 +306,25 @@
 					trace.log('An error occurred while adding deputy.\n Caused by: ' + result);
 				});
 
+	};
+
+	/**
+	 * 
+	 */
+	DeputyManagementCtrl.prototype.removeUserDeputy = function(deputyOID) {
+		var self = this;
+		var userRow = {
+			userOID : self.rowSelectionForUsers.userOID
+		};
+		_sdDeputyManagementService.removeUserDeputy(self.rowSelectionForUsers.userOID, deputyOID).then(function(data) {
+			self.getUsers().then(function(data) {
+				setTimeout(function() {
+					self.usersTable.setSelection(userRow);
+				}, 500);
+			});
+		}, function(result) {
+			// Error occurred
+			trace.log('An error occurred while removing user deputy.\n Caused by: ' + result);
+		});
 	};
 })();
