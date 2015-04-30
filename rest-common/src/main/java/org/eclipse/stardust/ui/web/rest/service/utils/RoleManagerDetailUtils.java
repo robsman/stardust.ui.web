@@ -159,7 +159,7 @@ public class RoleManagerDetailUtils
    private QualifiedModelParticipantInfo getModelParticipantInfo(String roleId, String departmentOid,
          WorkflowFacade facade)
    {
-      ModelParticipant participant = (ModelParticipant) ModelCache.findModelCache().getParticipant(roleId);
+      ModelParticipant participant = (ModelParticipant) ModelCache.findModelCache().getParticipant(roleId, null);
       Department department = facade.getAdministrationService().getDepartment(Long.parseLong(departmentOid));
       QualifiedModelParticipantInfo modelParticipantInfo = (QualifiedModelParticipantInfo) ((department == null)
             ? participant

@@ -5,4 +5,14 @@
 	<div style="padding-top: 20px;"
 		ng-include="'plugins/html5-business-control-center/partials/views/deputyManagementUserDeputiesTable.html'">
 	</div>
+	<div sd-dialog sda-modal="true"
+		sda-show="ctrl.showCreateOrModifyDeputyDialog"
+		sda-type="confirm"
+		sda-title="{{i18n('business-control-center-messages.views-deputyManagementView-dialog-create-title')+ ' ' + ctrl.rowSelectionForUsers.userDisplayName}}"
+		sda-scope="this"
+		sda-template="plugins/html5-business-control-center/partials/views/createOrModifyDeputyDialog.html"
+		sda-on-confirm="ctrl.onConfirmAddDeputy(res)"
+		sda-on-close="docSearchViewCtrl.onCloseFromAttachToProcess(res)"
+		sda-width="750px">
+	</div>	
 </div>

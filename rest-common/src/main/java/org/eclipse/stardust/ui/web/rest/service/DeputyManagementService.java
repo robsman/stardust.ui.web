@@ -19,6 +19,8 @@ import javax.annotation.Resource;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.DeputyMemberDetailDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.DeputyManagementUtils;
 import org.springframework.stereotype.Component;
 
@@ -42,6 +44,11 @@ public class DeputyManagementService
       return resultDTO;
    }
 
+   /**
+    * 
+    * @param userOID
+    * @return
+    */
    public QueryResultDTO loadDeputiesForUser(long userOID)
    {
       List<DeputyMemberDetailDTO> deputies = deputyManagementUtils.loadDeputiesForUser(userOID);
@@ -50,5 +57,43 @@ public class DeputyManagementService
       resultDTO.list = deputies;
       resultDTO.totalCount = deputies.size();
       return resultDTO;
+   }
+
+   /**
+    * 
+    * @param userOID
+    * @param searchValue
+    * @param searchMode
+    * @return
+    */
+   public QueryResultDTO getDeputyUsersData(long userOID, String searchValue, String searchMode)
+   {
+      List<ParticipantSearchResponseDTO> userWrappers = deputyManagementUtils.getDeputyUsersData(userOID, searchValue,
+            searchMode);
+
+      QueryResultDTO resultDTO = new QueryResultDTO();
+      resultDTO.list = userWrappers;
+      resultDTO.totalCount = userWrappers.size();
+      return resultDTO;
+   }
+   /**
+    * 
+    * @param userOID
+    * @return
+    */
+   public QueryResultDTO getAuthorizations(long userOID)
+   {
+      List<SelectItemDTO> authorozations = deputyManagementUtils.getAuthorizations(userOID);
+
+      QueryResultDTO resultDTO = new QueryResultDTO();
+      resultDTO.list = authorozations;
+      resultDTO.totalCount = authorozations.size();
+      return resultDTO;
+   }
+
+   public void addDeputy(long userOID, long deputyOID, long validFrom, long validTo, List<String> modelParticipantIds, String mode)
+   {
+      deputyManagementUtils.addDeputy(userOID, deputyOID, validFrom, validTo,
+            modelParticipantIds,mode);     
    }
 }

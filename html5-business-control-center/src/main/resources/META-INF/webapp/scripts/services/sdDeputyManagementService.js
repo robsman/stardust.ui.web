@@ -41,8 +41,7 @@
 			urlTemplateParams.type = 'users';
 			return $resource(restUrl).get(urlTemplateParams).$promise;
 		};
-		
-		
+
 		/**
 		 * 
 		 */
@@ -54,6 +53,63 @@
 			urlTemplateParams.type = 'deputiesForUser';
 			urlTemplateParams.userOID = userOID;
 			return $resource(restUrl).get(urlTemplateParams).$promise;
+		};
+
+		/**
+		 * 
+		 */
+		DeputyManagementService.prototype.getDeputyUsersData = function(userOID, searchValue, searchMode) {
+			// Prepare URL
+			var restUrl = REST_BASE_URL + '/:type/:userOID/:searchValue/:searchMode';
+
+			var urlTemplateParams = {};
+			urlTemplateParams.type = 'deputiesForUser';
+			urlTemplateParams.userOID = userOID;
+			urlTemplateParams.searchValue = searchValue;
+			urlTemplateParams.searchMode = searchMode;
+			return $resource(restUrl).get(urlTemplateParams).$promise;
+		};
+
+		/**
+		 * 
+		 */
+		DeputyManagementService.prototype.getAuthorizations = function(userOID) {
+			// Prepare URL
+			var restUrl = REST_BASE_URL + '/:type/:userOID/';
+
+			var urlTemplateParams = {};
+			urlTemplateParams.type = 'authorizations';
+			urlTemplateParams.userOID = userOID;
+			return $resource(restUrl).get(urlTemplateParams).$promise;
+		};
+		/**
+		 * 
+		 */
+		DeputyManagementService.prototype.addDeputy = function(userOID, deputyOID, validFrom, validTo,
+				modelParticipantIds, mode) {
+			var restUrl = REST_BASE_URL + "/:type";
+
+			var postData = {
+				userOID : userOID,
+				deputyOID : deputyOID,
+				validFrom : validFrom,
+				validTo : validTo,
+				modelParticipantIds : modelParticipantIds,
+				mode : mode
+			};
+
+			var AddDeputy = $resource(restUrl, {
+				type : '@type',
+			}, {
+				fetch : {
+					method : 'POST'
+				}
+			});
+
+			var urlTemplateParams = {};
+			urlTemplateParams.type = "addDeputy";
+
+			return AddDeputy.fetch(urlTemplateParams, postData).$promise;
 		};
 
 	}

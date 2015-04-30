@@ -11,10 +11,8 @@
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
-import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.common.table.IRowModel;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
@@ -29,18 +27,24 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 public class DeputyMemberDetailDTO implements IRowModel
 {
    public User user;
+
    public String userDisplayName;
+
    public long userOID;
+
    public String avatarImageURI;
 
    public long validFrom;
+
    public long validTo;
 
    public boolean hasDeputies;
+
    public String hasDeputiesLabel;
 
    public boolean selected;
-   public Set<ModelParticipantInfo> participants;
+
+   public List<SelectItemDTO> participants;
 
    /**
     * @param user
@@ -48,19 +52,21 @@ public class DeputyMemberDetailDTO implements IRowModel
     * @param validTo
     * @param participants
     */
-   public DeputyMemberDetailDTO(User user, Date validFrom, Date validTo, Set<ModelParticipantInfo> participants)
+   public DeputyMemberDetailDTO(User user, Date validFrom, Date validTo, List<SelectItemDTO> participants)
    {
       this.user = user;
       this.userDisplayName = getUserDisplayName();
-      this.userOID = user.getOID(); 
+      this.userOID = user.getOID();
       this.avatarImageURI = getAvatarImageURI();
-      if(validFrom != null){
-      this.validFrom = validFrom.getTime();
+      if (validFrom != null)
+      {
+         this.validFrom = validFrom.getTime();
       }
-      if(validTo != null){
-      this.validTo = validTo.getTime();
+      if (validTo != null)
+      {
+         this.validTo = validTo.getTime();
       }
-      setParticipants(participants);
+      this.participants = participants;
    }
 
    /**
@@ -70,13 +76,15 @@ public class DeputyMemberDetailDTO implements IRowModel
    public DeputyMemberDetailDTO(User user, boolean hasDeputies)
    {
       this.user = user;
-      this.userDisplayName= getUserDisplayName();
-      this.userOID = user.getOID(); 
+      this.userDisplayName = getUserDisplayName();
+      this.userOID = user.getOID();
       this.avatarImageURI = getAvatarImageURI();
       setHasDeputies(hasDeputies);
    }
 
-   /* (non-Javadoc)
+   /*
+    * (non-Javadoc)
+    * 
     * @see org.eclipse.stardust.ui.web.common.table.IRowModel#getStyleClass()
     */
    public String getStyleClass()
@@ -94,15 +102,13 @@ public class DeputyMemberDetailDTO implements IRowModel
       return userDisplayName;
    }
 
- /*  *//**
+   /*  *//**
     * @return
-    *//*
-   public DeputyMemberDetailDTO getClone()
-   {
-      DeputyMemberDetailDTO clone = new DeputyMemberDetailDTO(user, validFrom, validTo, participants);
-      return clone;
-   }
-*/
+    */
+   /*
+    * public DeputyMemberDetailDTO getClone() { DeputyMemberDetailDTO clone = new
+    * DeputyMemberDetailDTO(user, validFrom, validTo, participants); return clone; }
+    */
    /**
     * @return
     */
@@ -145,16 +151,6 @@ public class DeputyMemberDetailDTO implements IRowModel
    public void setUser(User user)
    {
       this.user = user;
-   }
-
-    public Set<ModelParticipantInfo> getParticipants()
-   {
-      return participants;
-   }
-
-   public void setParticipants(Set<ModelParticipantInfo> participants)
-   {
-      this.participants = (null != participants) ? participants : new HashSet<ModelParticipantInfo>();
    }
 
    public boolean isHasDeputies()
