@@ -51,7 +51,8 @@ var html5Deps = function() {
 				'sdViewUtilService' : [ 'html5-common/scripts/services/sdViewUtilService' ],
 				'sdPreferenceService' : [ 'html5-common/scripts/services/sdPreferenceService' ],
 				'sdDialog' : [ 'html5-common/scripts/directives/dialogs/sdDialog' ],
-				'sdDialogService' : [ 'html5-common/scripts/services/sdDialogService' ]
+				'sdDialogService' : [ 'html5-common/scripts/services/sdDialogService' ],
+				'sdPortalConfigurationService' : [ 'html5-common/scripts/services/sdPortalConfigurationService' ]
 			},
 			shim : {
 				'jquery.dataTables' : [ 'jquery' ],
@@ -70,12 +71,13 @@ var html5Deps = function() {
 				'sdViewUtilService' : [ 'html5CommonMain' ],
 				'sdPreferenceService' : [ 'html5CommonMain' ],
 				'sdDialog' : [ 'html5CommonMain', 'sdLoggerService', 'bootstrap' ],
-				'sdDialogService' : [ 'sdDialog' ]
+				'sdDialogService' : [ 'sdDialog' ],
+				'sdPortalConfigurationService' : [ 'html5CommonMain' ]
 			},
 			deps : [ "jquery.dataTables", "angularjs", "bootstrap", "portalApplication",
 					"html5CommonMain", "sdEventBusService", "httpInterceptorProvider",
 					"sdLoggerService", "sdData", "sdDataTable",
-					'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'sdDialog', 'sdDialogService' ]
+					'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'sdDialog', 'sdDialogService', 'sdPortalConfigurationService' ]
 
 		};
 
