@@ -346,6 +346,20 @@
 
 			return deferred.promise;
 		};
+		
+		/** 
+		 * @param fromDate
+		 * @param toDate
+		 * @returns {Boolean}
+		 */
+		UtilService.prototype.validateDateRange = function(fromDate, toDate) {
+			if (!this.isEmpty(fromDate) && !this.isEmpty(toDate)) {
+				if (fromDate > toDate) {
+					return false;
+				}
+			}
+			return true;
+		}
 
 	}
 	;

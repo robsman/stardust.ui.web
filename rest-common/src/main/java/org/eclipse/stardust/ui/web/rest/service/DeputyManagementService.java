@@ -13,6 +13,7 @@
  */
 package org.eclipse.stardust.ui.web.rest.service;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -99,9 +100,9 @@ public class DeputyManagementService
     * @param modelParticipantIds
     * @param mode
     */
-   public void addDeputy(long userOID, long deputyOID, long validFrom, long validTo, List<String> modelParticipantIds, String mode)
+   public void addOrModifyDeputy(long userOID, long deputyOID, Date validFrom, Date validTo, List<String> modelParticipantIds, String mode)
    {
-      deputyManagementUtils.addDeputy(userOID, deputyOID, validFrom, validTo,
+      deputyManagementUtils.addOrModifyDeputy(userOID, deputyOID, validFrom, validTo,
             modelParticipantIds,mode);     
    }
    /**

@@ -34,9 +34,9 @@ public class DeputyMemberDetailDTO implements IRowModel
 
    public String avatarImageURI;
 
-   public long validFrom;
+   public Long validFrom = null;
 
-   public long validTo;
+   public Long validTo = null;
 
    public boolean hasDeputies;
 

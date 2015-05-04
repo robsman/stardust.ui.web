@@ -15,6 +15,7 @@ package org.eclipse.stardust.ui.web.rest;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -126,8 +127,8 @@ public class DeputyManagementResource
     */
 
    @POST
-   @Path("/addDeputy")
-   public Response addDeputy(String postData)
+   @Path("/addOrModifyDeputy")
+   public Response addOrModifyDeputy(String postData)
    {
 
       try
@@ -136,12 +137,20 @@ public class DeputyManagementResource
          JsonObject postJSON = jsonIo.readJsonObject(postData);
          long userOID = postJSON.getAsJsonPrimitive("userOID").getAsLong();
          long deputyOID = postJSON.getAsJsonPrimitive("deputyOID").getAsLong();
-         long validFrom = postJSON.getAsJsonPrimitive("validFrom").getAsLong();
-         long validTo = postJSON.getAsJsonPrimitive("validTo").getAsLong();
+         Date validFrom = null;
+         if (postJSON.getAsJsonPrimitive("validFrom") != null)
+         {
+            validFrom = new Date(postJSON.getAsJsonPrimitive("validFrom").getAsLong());
+         }
+         Date validTo = null;
+         if (postJSON.getAsJsonPrimitive("validTo") != null)
+         {
+            validTo = new Date(postJSON.getAsJsonPrimitive("validTo").getAsLong());
+         }
          String mode = postJSON.getAsJsonPrimitive("mode").getAsString();
          List<String> modelParticipantIds = populateModelParticipantIds(postData);
 
-         deputyManagementService.addDeputy(userOID, deputyOID, validFrom, validTo, modelParticipantIds, mode);
+         deputyManagementService.addOrModifyDeputy(userOID, deputyOID, validFrom, validTo, modelParticipantIds, mode);
          return Response.ok("SUCCESS", MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)

@@ -158,21 +158,6 @@
 
 	/**
 	 * 
-	 * @param fromDate
-	 * @param toDate
-	 * @returns {Boolean}
-	 */
-	DocumentSearchViewCtrl.prototype.validateDateRange = function(fromDate, toDate) {
-		if (!_sdUtilService.isEmpty(fromDate) && !_sdUtilService.isEmpty(toDate)) {
-			if (fromDate > toDate) {
-				return false;
-			}
-		}
-		return true;
-	}
-
-	/**
-	 * 
 	 * @param rowData
 	 */
 	DocumentSearchViewCtrl.prototype.openProcessDialog = function(rowData) {
@@ -226,7 +211,7 @@
 		var self = this;
 		var error = false;
 		// validating the createDateTo and createDateFrom
-		if (!this.validateDateRange(self.query.documentSearchCriteria.createDateFrom,
+		if (!_sdUtilService.validateDateRange(self.query.documentSearchCriteria.createDateFrom,
 				self.query.documentSearchCriteria.createDateTo)) {
 			error = true;
 			self.searchCriteriaForm.$error.createDateRange = true;
@@ -234,7 +219,7 @@
 			self.searchCriteriaForm.$error.createDateRange = false;
 		}
 		// validating the modificationDateTo and modificationDateFrom
-		if (!this.validateDateRange(self.query.documentSearchCriteria.modificationDateFrom,
+		if (!_sdUtilService.validateDateRange(self.query.documentSearchCriteria.modificationDateFrom,
 				self.query.documentSearchCriteria.modificationDateTo)) {
 			error = true;
 			self.searchCriteriaForm.$error.modificationDateRange = true;

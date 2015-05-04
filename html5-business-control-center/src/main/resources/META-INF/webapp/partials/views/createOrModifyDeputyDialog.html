@@ -1,127 +1,128 @@
 <div>
-  <table>
-	 <tbody>
-		<tr>
-		  <td class="table-columnVertical" style="padding-top: 10px;">
-			<label style="padding-top: 8px;">Deputy Name</label>
-		  </td>
-		  <td class="table-columnVertical">
-		    <div ng-if="ctrl.deputy.mode != 'EDIT'" sd-participant-selector
-				 sda-selected-data="ctrl.deputy.participantDataSelected"
-				 sda-multiple="false"
-				 sd-data="ctrl.getDeputyUsersData(params)">
-		     </div>
-		     <div ng-if="ctrl.deputy.mode == 'EDIT'"><span>{{ctrl.deputy.deputyDisplayName}}</span></div>
-		  </td>
-		  <td class="table-columnVertical">
-		   <div ng-if="ctrl.deputy.mode != 'EDIT'">
-		   <table cellpadding="0" cellspacing="0">
-			 <tbody>
-			   <tr>
-				<td>
-				  <fieldset>
-					<table border="0" cellpadding="0" cellspacing="0">
-					  <tbody>
-						<tr>
-						  <td><input type="radio" ng-model="ctrl.searchMode" value="ALL_USERS">
-						       <label>Search All Users</label>
-						  </td>
-					   </tr>
-					   <tr>
-						 <td><input type="radio" ng-model="ctrl.searchMode" value="SIMILAR_USERS" >
-						       <label>Search Users with Similar Grants</label>
-						 </td>
-					   </tr>
-					 </tbody>
-				   </table>
-			     </fieldset>
-			    </td>
-			  </tr>
-		    </tbody>
-		   </table>
-		  </div>
-		 </td>
-		</tr>
-		<tr>
-		  <td><label>Valid From</label></td>
-		  <td class="table-columnVertical">
-		     <input type="text" sd-date-picker sda-change-year="true"
-					sda-milliseconds="true" ng-model-onblur
-					ng-model="ctrl.deputy.validFrom"
-					name="validFrom" />
-		  </td>
-		</tr>
-		<tr>
-		  <td class="table-columnVertical">
-		    <label>Valid To</label>
-		  </td>
-		  <td class="table-columnVertical">
-		     <input type="text" sd-date-picker sda-change-year="true"
-					sda-milliseconds="true" ng-model-onblur
-					ng-model="ctrl.deputy.validTo"
-					name="validTo" />
-		  </td>		  
-		</tr>
-	   </tbody>
-	  </table>
-      <br>
-		<div>
-			<span>Authorizations</span>
+	<form name="ctrl.addEditDeputyForm">
+		<table>
+			<tbody>
+				<tr>
+					<td class="msg-error"
+						ng-show="ctrl.addEditDeputyForm.$error.invalidDeputy">
+						{{i18n('views-common-messages.views-deputyManagementView-dialog-error-invalidDeputy')}}
+					</td>
+				</tr>
+				<tr>
+					<td class="msg-error"
+						ng-show="ctrl.addEditDeputyForm.$error.invalidDateRange">
+						{{i18n('views-common-messages.views-deputyManagementView-dialog-error-invalidDateRange')}}
+					</td>
+				</tr>
+				<tr>
+					<td class="msg-error"
+						ng-show="ctrl.addEditDeputyForm.$error.noAuthsSelected">
+						{{i18n('views-common-messages.views-deputyManagementView-dialog-error-noAuthsSelected')}}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<table>
+			<tbody>
+				<tr>
+					<td class="table-columnVertical" style="padding-top: 10px;"><label class="form-lable"
+						style="padding-top: 8px;">{{i18n('views-common-messages.views-deputyManagementView-dialog-deputyName')}}</label></td>
+					<td class="table-columnVertical">
+						<div ng-if="ctrl.deputy.mode != 'EDIT'" sd-participant-selector
+							sda-selected-data="ctrl.deputy.participantDataSelected"
+							sda-multiple="false" sd-data="ctrl.getDeputyUsersData(params)">
+						</div>
+						<div ng-if="ctrl.deputy.mode == 'EDIT'" style='padding-top: 10px;'>
+							<span>{{ctrl.deputy.deputyDisplayName}}</span>
+						</div>
+					</td>
+					<td class="table-columnVertical">
+						<div ng-if="ctrl.deputy.mode != 'EDIT'">
+							<table cellpadding="0" cellspacing="0">
+								<tbody>
+									<tr>
+										<td>
+											<fieldset>
+												<table border="0" cellpadding="0" cellspacing="0">
+													<tbody>
+														<tr>
+															<td><input type="radio" ng-model="ctrl.searchMode"
+																value="ALL_USERS"> <span class="form-lable">{{i18n('views-common-messages.views-deputyManagementView-dialog-searchMode-allUsers')}}</span></td>
+														</tr>
+														<tr>
+															<td><input type="radio" ng-model="ctrl.searchMode"
+																value="SIMILAR_USERS"> <span class="form-lable">{{i18n('views-common-messages.views-deputyManagementView-dialog-searchMode-similarUsers')}}</span></td>
+														</tr>
+													</tbody>
+												</table>
+											</fieldset>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td><label class="form-lable">{{i18n('business-control-center-messages.views-deputyManagementView-validFrom')}}</label></td>
+					<td class="table-columnVertical"><div
+						sd-date-time-picker ng-model="ctrl.deputy.validFrom" name="validFrom"></div>
+					</td>
+				</tr>
+				<tr>
+					<td class="table-columnVertical"><label class="form-lable">{{i18n('business-control-center-messages.views-deputyManagementView-validTo')}}</label></td>
+					<td class="table-columnVertical"><div
+						sd-date-time-picker
+						ng-model="ctrl.deputy.validTo" name="validTo"> </div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<br>
+		<div class="view-panel-toolbar">
+			<span class="form-lable" style='font-weight: bold;''>{{i18n('views-common-messages.views-deputyManagementView-dialog-authorizations')}}</span>
 		</div>
 		<div>
-			<table style="vertical-align: top; white-space: nowrap; text-align: center;">
+			<table
+				style="vertical-align: top; white-space: nowrap; text-align: center;">
 				<tbody>
 					<tr>
-						<td><label
-							>Available</label></td>
-						<td ><label
-							></label></td>
-						<td><label
-							>Selected</label></td>
+						<td><label>{{i18n('views-common-messages.dualList-available-header')}}</label></td>
+						<td><label></label></td>
+						<td><label>{{i18n('views-common-messages.dualList-selected-header')}}</label></td>
 					</tr>
 					<tr>
-					<td><select multiple="multiple"
+						<td><select multiple="multiple"
 							ng-model="ctrl.deputy.selectedSourceParticipants"
-							style="min-width: 300px; height: 150px;"
-							size="10" ng-options="opt as opt.label for opt in ctrl.deputy.sourceParticipants">
+							style="min-width: 300px; height: 150px;" size="10"
+							ng-options="opt as opt.label for opt in ctrl.deputy.sourceParticipants">
 						</select></td>
-						
+
 						<td><table style="vertical-align: top; margin-bottom:">
 								<tbody>
 									<tr>
-									  <td>
-										<input class="button" 
-										       style="padding: 5px;width:90px;" 
-										       type="submit" value="{{i18n('views-common-messages.dualList-add-label')}}"
-										       ng-click="ctrl.add()">
-									 </td>
+										<td><input class="button"
+											style="padding: 5px; width: 90px;" type="submit"
+											value="{{i18n('views-common-messages.dualList-add-label')}}"
+											ng-click="ctrl.add()"></td>
 									</tr>
 									<tr>
-									  <td>
-										<input class="button" 
-											   style="padding: 5px;width:90px;" 
-											   type="submit" 
-											   value="{{i18n('views-common-messages.dualList-addAll-label')}}"
-											   ng-click="ctrl.addAll()">
-											</td>
+										<td><input class="button"
+											style="padding: 5px; width: 90px;" type="submit"
+											value="{{i18n('views-common-messages.dualList-addAll-label')}}"
+											ng-click="ctrl.addAll()"></td>
 									</tr>
 									<tr>
-									  <td>
-										<input class="button" 
-										       style="padding: 5px;width:90px;" 
-										       type="submit" 
-										       value="{{i18n('views-common-messages.dualList-remove-label')}}"
-										       ng-click="ctrl.remove()">
-									  </td>
+										<td><input class="button"
+											style="padding: 5px; width: 90px;" type="submit"
+											value="{{i18n('views-common-messages.dualList-remove-label')}}"
+											ng-click="ctrl.remove()"></td>
 									</tr>
 									<tr>
-									  <td>
-										<input class="button" 
-										       style="padding: 5px;width:90px;" 
-										       type="submit" 
-										       value="{{i18n('views-common-messages.dualList-removeAll-label')}}"
-										       ng-click="ctrl.removeAll()">
-									  </td>
+										<td><input class="button"
+											style="padding: 5px; width: 90px;" type="submit"
+											value="{{i18n('views-common-messages.dualList-removeAll-label')}}"
+											ng-click="ctrl.removeAll()"></td>
 									</tr>
 								</tbody>
 							</table></td>
@@ -132,6 +133,7 @@
 						</select></td>
 					</tr>
 				</tbody>
-			</table> 
+			</table>
 		</div>
-	</div>
+	</form>
+</div>

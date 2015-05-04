@@ -85,7 +85,7 @@
 		/**
 		 * 
 		 */
-		DeputyManagementService.prototype.addDeputy = function(userOID, deputyOID, validFrom, validTo,
+		DeputyManagementService.prototype.addOrModifyDeputy = function(userOID, deputyOID, validFrom, validTo,
 				modelParticipantIds, mode) {
 			var restUrl = REST_BASE_URL + "/:type";
 
@@ -107,7 +107,7 @@
 			});
 
 			var urlTemplateParams = {};
-			urlTemplateParams.type = "addDeputy";
+			urlTemplateParams.type = "addOrModifyDeputy";
 
 			return addDeputy.fetch(urlTemplateParams, postData).$promise;
 		};

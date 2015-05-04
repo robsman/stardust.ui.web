@@ -129,33 +129,39 @@ public class DeputyManagementUtils
       return deputyList;
 
    }
-
+   /**
+    * 
+    * @param userOID
+    * @param searchValue
+    * @param searchMode
+    * @return
+    */
    public List<ParticipantSearchResponseDTO> getDeputyUsersData(long userOID, String searchValue, String searchMode)
    {
+      UserService userService = ServiceFactoryUtils.getUserService();
+      User user = userService.getUser(userOID);
+      List<User> users;
+
       if (SRCH_MODE_ALL_USERS.equals(searchMode))
       {
-         // TODO Filter User for whom deputy is being added, also filter already added
+         // Filter User for whom deputy is being added, also filter already added
          // Deputies
-         List<User> users = UserUtils.searchUsers(searchValue + "%", true, maxMatches);
-         return buildSearchResult(users, new ArrayList<String>(), searchValue);
-         // return mainDataProvider.getMatchingData(searchValue, maxMatches);
+         users = UserUtils.searchUsers(searchValue + "%", true, maxMatches);
       }
       else
       {
-         UserService userService = ServiceFactoryUtils.getUserService();
-         User user = userService.getUser(userOID);
-         UserQuery userQuery = getUsersWithSimilarGrants(user, true);
+         UserQuery userQuery = getUsersWithSimilarGrants(user);
          userQuery.setPolicy(new SubsetPolicy(maxMatches, false));
          applyFilters(userQuery, searchValue + "%");
-
-         // This would filter the user for whom deputy is being added
-         // TODO Also filter already added Deputies
-         List<String> selData = new ArrayList<String>();
-         selData.add(user.getAccount());
-
-         Users users = ServiceFactoryUtils.getQueryService().getAllUsers(userQuery);
-         return buildSearchResult(users, selData, searchValue);
+         users = ServiceFactoryUtils.getQueryService().getAllUsers(userQuery);
       }
+
+      // This would filter the user for whom deputy is being added
+      // and also filter already added Deputies
+      List<String> selData = new ArrayList<String>();
+      selData.add(user.getAccount());
+
+      return buildSearchResult(users, selData, searchValue);
    }
 
    /**
@@ -179,13 +185,6 @@ public class DeputyManagementUtils
 
          for (User user : users)
          {
-            /*
-             * LoginStatistics loginStatistics =
-             * userLoginStatistics.getLoginStatistics(user.getOID()); userWrapper = new
-             * UserWrapper(user, SessionContext.findSessionContext().getUser(),
-             * getUserLabel(user, searchValue), loginStatistics != null ?
-             * loginStatistics.currentlyLoggedIn : false);
-             */
             if (!selectedData.contains(user.getAccount()))
             {
                userItems.add(new ParticipantSearchResponseDTO((Participant) user));
@@ -222,11 +221,9 @@ public class DeputyManagementUtils
     * @param excludeThisUser
     * @return
     */
-   private UserQuery getUsersWithSimilarGrants(User user, boolean excludeThisUser)
+   private UserQuery getUsersWithSimilarGrants(User user)
    {
       UserQuery query = UserQuery.findActive();
-      // User user = null == this.user ? SessionContext.findSessionContext().getUser() :
-      // this.user;
       if (user != null)
       {
          FilterTerm filter = query.getFilter().addOrTerm();
@@ -253,15 +250,8 @@ public class DeputyManagementUtils
                {
                   modelParticipantInfo = role;
                }
-               // modelParticipantInfoList.add(modelParticipantInfo); similar kind of code
-               // will be required getting participant
                filter.add(ParticipantAssociationFilter.forParticipant(((RoleInfo) modelParticipantInfo)));
             }
-         }
-
-         if (excludeThisUser)
-         {
-            // filter.add(UserQuery.OID.isEqual(user.getOID()));
          }
       }
       else
@@ -315,8 +305,17 @@ public class DeputyManagementUtils
       return modelParticipantInfoList;
    }
 
-   public void addDeputy(long userOID, long deputyOID, long validFrom, long validTo, List<String> modelParticipantIds,
-         String mode)
+   /**
+    * 
+    * @param userOID
+    * @param deputyOID
+    * @param validFrom
+    * @param validTo
+    * @param modelParticipantIds
+    * @param mode
+    */
+   public void addOrModifyDeputy(long userOID, long deputyOID, Date validFrom, Date validTo,
+         List<String> modelParticipantIds, String mode)
    {
       UserService userService = ServiceFactoryUtils.getUserService();
       User user = userService.getUser(userOID);
@@ -329,7 +328,7 @@ public class DeputyManagementUtils
          participants.add(participant);
       }
 
-      DeputyOptions deputyOptions = new DeputyOptions(new Date(validFrom), new Date(validTo), participants);
+      DeputyOptions deputyOptions = new DeputyOptions(validFrom, validTo, participants);
       if (mode.equals("EDIT"))
       {
          userService.modifyDeputy(user, deputy, deputyOptions);
@@ -340,13 +339,18 @@ public class DeputyManagementUtils
       }
 
    }
-   
-   public void removeUserDeputy(long userOID, long deputyOID){
+
+   /**
+    * 
+    * @param userOID
+    * @param deputyOID
+    */
+   public void removeUserDeputy(long userOID, long deputyOID)
+   {
       UserService userService = ServiceFactoryUtils.getUserService();
       User user = userService.getUser(userOID);
       User deputy = userService.getUser(deputyOID);
       userService.removeDeputy(user, deputy);
    }
-   
 
 }
