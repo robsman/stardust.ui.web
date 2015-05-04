@@ -8,45 +8,23 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.stardust.ui.web.rest.service.dto;
-
-import java.util.List;
-
-import org.eclipse.stardust.engine.api.runtime.User;
-import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
-import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
-
 /**
  * @author Abhay.Thappan
  */
+package org.eclipse.stardust.ui.web.rest.service.dto;
+
+import java.util.Map;
+
+import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
+
 @DTOClass
 public class RoleAssignmentDTO extends AbstractDTO
 {
-   public String name;
+   public String teamMember;
 
    public String userId;
 
    public String userOid;
 
-   public List<GrantsAssignmentDTO> grants;
-
-   /**
-    * 
-    */
-   public RoleAssignmentDTO()
-   {}
-
-   /**
-    * 
-    * @param user
-    * @param grants
-    */
-   public RoleAssignmentDTO(User user, List<GrantsAssignmentDTO> grants)
-   {
-      super();
-      this.userId = user.getId();
-      this.userOid = String.valueOf(user.getOID());
-      this.grants = grants;
-      this.name = UserUtils.getUserDisplayLabel(user);
-   }
+   public Map<String, Boolean> columnsValue;
 }

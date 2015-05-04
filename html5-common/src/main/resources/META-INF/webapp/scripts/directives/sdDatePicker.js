@@ -8,26 +8,30 @@
  * documentation
  ******************************************************************************/
 
+(function(){
+	'use strict';
+var  jQueryDateFormats = {
+		'MM/dd/yy' :  'm/d/y',
+		'dd.MM.yy' :  'dd.m.y',
+		'yyyy-MM-dd' : 'yy-m-d'
+	};
+
 angular.module('bpm-common.directives')
-	.directive('sdDatePicker', function() {
+	.directive('sdDatePicker', [ 'sdLocalizationService', 'sgI18nService',function( sdLocalizationService, sgI18nService) {
 	    return {
 	        restrict: 'A',
 	        require: 'ngModel',
 	        link: function(scope, element, attrs, ngModelCtrl) {
-	          
-	            var months = "January,February,March,April,May,June,July," +
-	                         "August,September,October,November,December",
-	                monthsShort = "Jan,Feb,Mar,Apr,May,Jun,Jul,Aug," +
-	                                 "Sep,Oct,Nov,Dec",
-	                days = "Sunday,Monday,Tuesday,Wednesday," +
-	                       "Thursday,Friday,Saturday",
-	                daysMin = "Su,Mo,Tu,We,Th,Fr,Sa,Su",
-	                daysShort = "Sun,Mon,Tue,Wed,Thu,Fri,Sat",
-	                dateFormat = attrs.sdaDateFormat || 'yy.mm.dd',
+	            
+	            var months =sgI18nService.translate('html5-common.date-picker-months',
+			'January,February,March,April,May,June,July,August,September,October,November,December'),
+	                daysMin = sgI18nService.translate('html5-common.date-picker-days',
+			'Su,Mo,Tu,We,Th,Fr,Sa,Su'),
+	                dateFormat = attrs.sdaDateFormat || jQueryDateFormats[sdLocalizationService.getInfo().dateFormat],
 	                firstDay = 1*(attrs.sdaFirstDay || 1),
 	                numberOfMonths = 1*(attrs.sdaNumberMonths || 1),
 	                changeMonth = (attrs.sdaChangeMonth === 'true')?true:false,
-	                changeYear = (attrs.sdaChangeYear === 'true')?true:false,
+	                changeYear = (attrs.sdaChangeYear === 'false')?false:true,
 	                showButtonPanel = (attrs.sdaShowButtons==='true')?true:false,
 	                showAnim = attrs.sdaAnimationStyle || 'show',
 	                showWeek = (attrs.sdaShowWeek==='true')?true:false,
@@ -40,11 +44,8 @@ angular.module('bpm-common.directives')
 	                defaultDate = attrs.sdaDefaultDate || 0,
 	                currentText = attrs.sdaCurrentText || 'Today',
 	                closeText = attrs.sdaCloseText || 'Close',
-	                dayNames = (attrs.sdaDayNames)?attrs.sdaDayNames.split(","):days.split(","),
 	                dayNamesMin =(attrs.sdaDayNamesMin)?attrs.sdaDayNamesMin.split(","):daysMin.split(","),
-	                dayNamesShort =(attrs.sdaDayNamesShort)?attrs.sdaDayNamesShort.split(","):daysShort.split(","),
 	                monthNames = (attrs.sdaMonthNames)?attrs.sdaMonthNames.split(","):months.split(","),
-	                monthNamesShort = (attrs.sdaMonthNamesShort)?attrs.sdaMonthNamesShort.split(","):monthsShort.split(","),
 	                yearRange = attrs.sdaYearRange || 'c-10:c+10',
 	                buttonImageOnly = (attrs.sdaButtonImageOnly==='true')?true:false ,
 	                buttonText = attrs.sdaButtonText || "Select Date",
@@ -74,7 +75,7 @@ angular.module('bpm-common.directives')
                 		return  milliseconds ? jQuery.datepicker.formatDate(dateFormat, date):vaue;
 		            });
 
-	            $(element).datepicker({
+	                $(element).datepicker({
 	                numberOfMonths : numberOfMonths,
 	                dateFormat: dateFormat,
 	                firstDay : firstDay,
@@ -93,14 +94,11 @@ angular.module('bpm-common.directives')
 	                buttonImage : buttonImage,
 	                buttonImageOnly : buttonImageOnly,
 	                yearRange: yearRange,
-	                dayNames: dayNames,
 	                dayNamesMin : dayNamesMin,
-	                dayNamesShort: dayNamesShort,
 	                monthNames: monthNames,
-	                monthNamesShort : monthNamesShort,
 	                
 	                onSelect: function(date) {
-                		ngModelCtrl.$setViewValue(date);
+	                    ngModelCtrl.$setViewValue(date);
 	                    ngModelCtrl.$render();
 	                    if (angular.isFunction(ngModelCtrl.$apply)) {
 	                    	ngModelCtrl.$apply();
@@ -109,4 +107,5 @@ angular.module('bpm-common.directives')
 	            });
 	        }
 	    };
-	});
+	}]);
+})();

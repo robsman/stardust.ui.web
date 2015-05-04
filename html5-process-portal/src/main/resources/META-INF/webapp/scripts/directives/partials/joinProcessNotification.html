@@ -1,5 +1,5 @@
 <div class="sd-abort-noti-dlg">
-	<div class="section">
+	<div class="modal-body">
 		<div id="infoSign">
 			<i ng-if="joinProcessController.joinProcess.joinCompleted" style="color: grey;" class="glyphicon glyphicon-exclamation-sign"></i>
 			<i ng-if="!joinProcessController.joinProcess.joinCompleted" style="color: red;" class="glyphicon glyphicon-remove-sign"></i>
@@ -47,8 +47,8 @@
 			</div>
 		</div>
 	</div>
-	<div class="confirmation-buttonpane">
-		<div class="button-pane cf" >
+	<div class="modal-footer">
+		<div class="button-alignment" >
 			<div class="right" ng-if="!joinProcessController.joinProcess.joinCompleted">
 			    <button class="button" ng-click="joinProcessController.closeNotification(this)">{{i18n('views-common-messages.common-close')}}</button>
 			</div>

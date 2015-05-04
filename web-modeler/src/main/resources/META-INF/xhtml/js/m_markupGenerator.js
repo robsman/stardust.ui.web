@@ -187,7 +187,7 @@ define(
 					writeTag("      'jquery-ui' : [ 'jquery' ],");
 					writeTag("      'jquery.url' : [ 'jquery' ],");
 					writeTag("      'angularjs' : {");
-					writeTag("         require : 'jquery',");
+					writeTag("         deps : ['jquery'],");
 					writeTag("         exports : 'angular'");
 					writeTag("      },");
 					writeTag("      'bpm.portal.Interaction' : [ 'jquery' ],");

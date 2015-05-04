@@ -27,7 +27,11 @@
 			scope : {
 				refresh : "&sdaOnRefresh"
 			},
-			templateUrl : 'plugins/html5-process-portal/scripts/directives/partials/refreshViewToolbar.html',
+			template : '<button ng-click="refresh()"'+
+					' title="{{refreshController.i18n(\'processportal.launchPanels-worklists-button-refresh\')}}"'+
+					' class="button-link">'+
+					' <i class="glyphicon glyphicon-refresh"></i>'+
+				    '</button>',
 			controller : [ '$scope', RefreshController ]
 		};
 	}

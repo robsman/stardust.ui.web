@@ -408,8 +408,7 @@ public class ActivityTableUtils
                .entrySet())
          {
             Object value = null;
-            String key = StringUtils.substringAfter(descriptor.getKey(),
-                  "descriptorValues.");
+            String key = descriptor.getKey();
 
             // Boolean type desc
             if (descriptor.getValue().type.equals(ColumnDataType.BOOLEAN.toString()))
@@ -517,10 +516,7 @@ public class ActivityTableUtils
             JsonObject json = jsonIo.readJsonObject(jsonFilterString);
             worklistFilter = DTOBuilder.buildFromJSON(json, WorklistFilterDTO.class,
                   WorklistFilterDTO.getCustomTokens());
-            if (StringUtils.contains(jsonFilterString, "descriptorValues"))
-            {
                populateDescriptorFilters(worklistFilter, json, availableDescriptorColumns);
-            }
          }
          catch (Exception e)
          {
@@ -578,13 +574,15 @@ public class ActivityTableUtils
       for (DescriptorColumnDTO descriptorColumnDTO : descriptorColumns)
       {
          Object filterDTO = null;
-         if (null != descriptorColumnsFilterJson.get(descriptorColumnDTO.id))
+         String id = StringUtils.substringAfterLast(descriptorColumnDTO.id, "descriptorValues.");
+         
+         if (null != descriptorColumnsFilterJson.get(id))
          {
             // String TYPE
             if (ColumnDataType.STRING.toString().equals(descriptorColumnDTO.type))
             {
                filterDTO = new Gson().fromJson(
-                     descriptorColumnsFilterJson.get(descriptorColumnDTO.id),
+                     descriptorColumnsFilterJson.get(id),
                      WorklistFilterDTO.TextSearchDTO.class);
 
             }
@@ -592,16 +590,16 @@ public class ActivityTableUtils
                   || ColumnDataType.NUMBER.toString().equals(descriptorColumnDTO.type))
             {
                filterDTO = new Gson().fromJson(
-                     descriptorColumnsFilterJson.get(descriptorColumnDTO.id),
+                     descriptorColumnsFilterJson.get(id),
                      WorklistFilterDTO.RangeDTO.class);
             }
             else if (ColumnDataType.BOOLEAN.toString().equals(descriptorColumnDTO.type))
             {
                filterDTO = new Gson().fromJson(
-                     descriptorColumnsFilterJson.get(descriptorColumnDTO.id),
+                     descriptorColumnsFilterJson.get(id),
                      WorklistFilterDTO.BooleanDTO.class);
             }
-            descriptorColumnMap.put(descriptorColumnDTO.id, new DescriptorFilterDTO(
+            descriptorColumnMap.put(id, new DescriptorFilterDTO(
                   descriptorColumnDTO.type, filterDTO));
          }
       }
@@ -614,76 +612,80 @@ public class ActivityTableUtils
     * @param queryResult
     * @return
     */
-   public static QueryResultDTO buildTableResult(QueryResult<?> queryResult , MODE mode)
+   public static QueryResultDTO buildTableResult(QueryResult< ? > queryResult, MODE mode)
    {
       List<ActivityInstanceDTO> list = new ArrayList<ActivityInstanceDTO>();
 
-      List<CriticalityCategory>  criticalityConfigurations = CriticalityUtils.getCriticalityConfiguration();
+      List<CriticalityCategory> criticalityConfigurations = CriticalityUtils.getCriticalityConfiguration();
 
       ModelCache modelCache = ModelCache.findModelCache();
-
-      for (Object object : queryResult)
+      QueryResultDTO resultDTO = new QueryResultDTO();
+      if (null != queryResult)
       {
-         if (object instanceof ActivityInstance)
+         for (Object object : queryResult)
          {
-            ActivityInstance ai = (ActivityInstance) object;
+            if (object instanceof ActivityInstance)
+            {
+               ActivityInstance ai = (ActivityInstance) object;
 
-            ActivityInstanceDTO dto;
-            if (!ActivityInstanceUtils.isTrivialManualActivity(ai))
-            {
-               dto = DTOBuilder.build(ai, ActivityInstanceDTO.class);
-            }
-            else
-            {
-               TrivialActivityInstanceDTO trivialDto = DTOBuilder.build(ai, TrivialActivityInstanceDTO.class);
-               trivialDto.trivial = true;
-               dto = trivialDto;
-            }
-
-            dto.duration = ActivityInstanceUtils.getDuration(ai);
-            dto.assignedTo = getAssignedToLabel(ai);
-            dto.criticality = populateCriticalityDTO(criticalityConfigurations, ai);
-            dto.priority = DTOBuilder.build(ai, PriorityDTO.class);
-            dto.status =  DTOBuilder.build(ai, StatusDTO.class);;
-            dto.status.label = ActivityInstanceUtils.getActivityStateLabel(ai);
-            dto.descriptorValues =  getProcessDescriptors(modelCache, ai);
-            dto.activatable = findIfActivatable(ai);
-
-            List<Note> notes=org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getNotes(ai.getProcessInstance());
-            if(null != notes)
-            {
-               dto.notesCount = notes.size();   
-            }
-
-            if(mode.equals(MODE.ACTIVITY_TABLE))
-            {
-               dto.completedBy = ActivityInstanceUtils.getPerformedByName(ai);
-               dto.participantPerformer = getParticipantPerformer(ai);
-               dto.isCaseInstance = ai.getProcessInstance().isCaseProcessInstance();
-               dto.abortActivity =!dto.isCaseInstance && isAbortable(ai);
-               dto.delegable = isDelegable(ai);
-               dto.abortProcess = ProcessInstanceUtils.isAbortable(ai.getProcessInstance());
-            }
-            else
-            {
-               dto.lastPerformer = getLastPerformer(ai, UserUtils.getDefaultUserNameDisplayFormat());
-               dto.defaultCaseActivity= ActivityInstanceUtils.isDefaultCaseActivity(ai);
-               if ( !dto.defaultCaseActivity )
+               ActivityInstanceDTO dto;
+               if (!ActivityInstanceUtils.isTrivialManualActivity(ai))
                {
-                  dto.abortActivity = isAbortable(ai);
-                  dto.delegable = isDelegable(ai);
-               }else{
-                  dto.processInstance.processName = getCaseName(ai);
+                  dto = DTOBuilder.build(ai, ActivityInstanceDTO.class);
+               }
+               else
+               {
+                  TrivialActivityInstanceDTO trivialDto = DTOBuilder.build(ai, TrivialActivityInstanceDTO.class);
+                  trivialDto.trivial = true;
+                  dto = trivialDto;
                }
 
-            }
-            list.add(dto);
-         }
-      }
-      QueryResultDTO resultDTO = new QueryResultDTO();
-      resultDTO.list = list;
-      resultDTO.totalCount = queryResult.getTotalCount();
+               dto.duration = ActivityInstanceUtils.getDuration(ai);
+               dto.assignedTo = getAssignedToLabel(ai);
+               dto.criticality = populateCriticalityDTO(criticalityConfigurations, ai);
+               dto.priority = DTOBuilder.build(ai, PriorityDTO.class);
+               dto.status = DTOBuilder.build(ai, StatusDTO.class);
+               dto.status.label = ActivityInstanceUtils.getActivityStateLabel(ai);
+               dto.descriptorValues = getProcessDescriptors(modelCache, ai);
+               dto.activatable = findIfActivatable(ai);
 
+               List<Note> notes = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getNotes(ai
+                     .getProcessInstance());
+               if (null != notes)
+               {
+                  dto.notesCount = notes.size();
+               }
+
+               if (mode.equals(MODE.ACTIVITY_TABLE))
+               {
+                  dto.completedBy = ActivityInstanceUtils.getPerformedByName(ai);
+                  dto.participantPerformer = getParticipantPerformer(ai);
+                  dto.isCaseInstance = ai.getProcessInstance().isCaseProcessInstance();
+                  dto.abortActivity = !dto.isCaseInstance && isAbortable(ai);
+                  dto.delegable = isDelegable(ai);
+                  dto.abortProcess = ProcessInstanceUtils.isAbortable(ai.getProcessInstance());
+               }
+               else
+               {
+                  dto.lastPerformer = getLastPerformer(ai, UserUtils.getDefaultUserNameDisplayFormat());
+                  dto.defaultCaseActivity = ActivityInstanceUtils.isDefaultCaseActivity(ai);
+                  if (!dto.defaultCaseActivity)
+                  {
+                     dto.abortActivity = isAbortable(ai);
+                     dto.delegable = isDelegable(ai);
+                  }
+                  else
+                  {
+                     dto.processInstance.processName = getCaseName(ai);
+                  }
+
+               }
+               list.add(dto);
+            }
+         }
+         resultDTO.totalCount = queryResult.getTotalCount();
+      }
+      resultDTO.list = list;
       return resultDTO;
    }
 

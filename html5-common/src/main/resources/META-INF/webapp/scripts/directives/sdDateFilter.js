@@ -15,13 +15,14 @@
 
 (function(){
 	'use strict';
+	
 
-	angular.module('bpm-common').directive('sdDateFilter', ['sdUtilService', DateFilterDirective]);
+	angular.module('bpm-common').directive('sdDateFilter', ['sdUtilService','$filter', DateFilterDirective]);
 
 	/*
 	 * 
 	 */
-	function DateFilterDirective(sdUtilService) {
+	function DateFilterDirective(sdUtilService, $filter) {
 		return {
 			restrict: 'A',
 			template: 
@@ -30,19 +31,15 @@
 						'<tr>' +
 							'<td><label class="label-form">{{i18n(\'portal-common-messages.common-filterPopup-betweenFilter-first\')}}</label></td>' +
 							'<td>' +
-								'<input type="text" sd-date-picker sda-change-year="true" sda-milliseconds="true"' + 
-									' id="from" name="from" ng-model="filterData.from" ng-model-onblur />' +
-								'<div class="msg-error" ng-show="filterForm[\'from\'].$error.datePicker">{{i18n(\'html5-common.converter-number-error\')}}</div>' +
+								'<div sd-date-time-picker ng-model="filterData.from" id="from" name="from" ng-model-onblur> </div>' +
 								'<div class="msg-error" ng-show="filterForm[\'from\'].$error.validate">{{i18n(\'html5-common.date-error\')}}</div>' +
 							'</td>' +
 						'</tr>' +
 						'<tr>' +
 							'<td><label class="label-form">{{i18n(\'portal-common-messages.common-filterPopup-betweenFilter-last\')}}</label></td>' +
 							'<td>' +
-								'<input type="text" sd-date-picker sda-change-year="true" sda-milliseconds="true"' + 
-									' id="to" name="to" ng-model="filterData.to" ng-model-onblur />' +
-								'<div class="msg-error" ng-show="filterForm[\'to\'].$error.datePicker">{{i18n(\'html5-common.converter-number-error\')}}</div>' +
-								'<div class="msg-error" ng-show="filterForm[\'to\'].$error.validate">{{i18n(\'html5-common.date-error\')}}</div>' +
+        							'<div sd-date-time-picker ng-model="filterData.to" id="to" name="to" ng-model-onblur> </div>' +
+        							'<div class="msg-error" ng-show="filterForm[\'to\'].$error.validate">{{i18n(\'html5-common.date-error\')}}</div>' +
 							'</td>' +
 						'</tr>' +
 					'</table>' +
@@ -93,8 +90,9 @@
 				 * 
 				 */
 				function formatDate(mills) {
-					var date = new Date(mills);
-            		return jQuery.datepicker.formatDate('yy.mm.dd', date);
+				    var date = new Date(mills);
+				    var angularDateFilter = $filter('sdDateTimeFilter');
+				    return angularDateFilter(date);
 				}
 			}
 		};

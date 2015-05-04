@@ -65,11 +65,9 @@ public class WorklistUtils
     * @param participantQId
     * @return
     */
-   public QueryResult< ? > getWorklistForParticipant(String participantQId,
-         Options options)
-         {
-      Participant participant = serviceFactoryUtils.getQueryService().getParticipant(
-            participantQId);
+   public QueryResult< ? > getWorklistForParticipant(String participantQId, Options options)
+   {
+      Participant participant = serviceFactoryUtils.getQueryService().getParticipant(participantQId);
       if (null != participant)
       {
          WorklistQuery query = org.eclipse.stardust.ui.web.viewscommon.utils.WorklistUtils
@@ -79,14 +77,13 @@ public class WorklistUtils
 
          ActivityTableUtils.addCriterias(query, options);
 
-         Worklist worklist = serviceFactoryUtils.getWorkflowService().getWorklist(
-               (WorklistQuery) query);
+         Worklist worklist = serviceFactoryUtils.getWorkflowService().getWorklist((WorklistQuery) query);
          QueryResult< ? > queryResult = extractParticipantWorklist(worklist, participant);
 
          return queryResult;
       }
       return null;
-         }
+   }
 
    /**
     * @param userId
@@ -99,28 +96,25 @@ public class WorklistUtils
       if (null != user)
       {
          // TODO: User WorklistQuery?
-         ActivityInstanceQuery query = ActivityInstanceQuery
-               .findInState(new ActivityInstanceState[] {
-                     ActivityInstanceState.Application, ActivityInstanceState.Suspended});
+         ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
+               ActivityInstanceState.Application, ActivityInstanceState.Suspended});
          // TODO - this is used to enhance performace but has a bug
          // query.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
 
          FilterOrTerm or = query.getFilter().addOrTerm();
-         or.add(PerformingParticipantFilter.ANY_FOR_USER).add(
-               new PerformingUserFilter(user.getOID()));
+         or.add(PerformingParticipantFilter.ANY_FOR_USER).add(new PerformingUserFilter(user.getOID()));
 
          // Remove role activities
          FilterAndNotTerm not = query.getFilter().addAndNotTerm();
          List<Grant> allGrants = user.getAllGrants();
          for (Grant grant : allGrants)
          {
-            not.add(PerformingParticipantFilter.forParticipant(serviceFactoryUtils
-                  .getQueryService().getParticipant(grant.getId())));
+            not.add(PerformingParticipantFilter.forParticipant(serviceFactoryUtils.getQueryService().getParticipant(
+                  grant.getId())));
          }
          ActivityTableUtils.addCriterias(query, options);
 
-         ActivityInstances activityInstances = serviceFactoryUtils.getQueryService()
-               .getAllActivityInstances(query);
+         ActivityInstances activityInstances = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
 
          return activityInstances;
       }
@@ -136,7 +130,7 @@ public class WorklistUtils
     * @param options
     * @return
     */
-   public QueryResult< ? > getWorklistForHighCriticality( Options options)
+   public QueryResult< ? > getWorklistForHighCriticality(Options options)
    {
       ActivityInstanceQuery criticalActivitiesQuery = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
             ActivityInstanceState.Application, ActivityInstanceState.Suspended});
@@ -146,9 +140,11 @@ public class WorklistUtils
       criticalActivitiesQuery.setPolicy(ExcludeUserPolicy.EXCLUDE_USER);
       criticalActivitiesQuery.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
       List<CriticalityCategory> criticalityConfigs = CriticalityUtils.getCriticalityConfiguration();
-      CriticalityCategory highCriticality = CriticalityUtils.getCriticalityCategory(CriticalityConfigurationUtil.PORTAL_CRITICALITY_MAX, criticalityConfigs);
-      criticalActivitiesQuery.where(ActivityInstanceQuery.CRITICALITY.between(highCriticality.getRangeFrom() / ActivityTableUtils.PORTAL_CRITICALITY_MUL_FACTOR,
-            highCriticality.getRangeTo()/ ActivityTableUtils.PORTAL_CRITICALITY_MUL_FACTOR));
+      CriticalityCategory highCriticality = CriticalityUtils.getCriticalityCategory(
+            CriticalityConfigurationUtil.PORTAL_CRITICALITY_MAX, criticalityConfigs);
+      criticalActivitiesQuery.where(ActivityInstanceQuery.CRITICALITY.between(highCriticality.getRangeFrom()
+            / ActivityTableUtils.PORTAL_CRITICALITY_MUL_FACTOR, highCriticality.getRangeTo()
+            / ActivityTableUtils.PORTAL_CRITICALITY_MUL_FACTOR));
 
       ActivityTableUtils.addCriterias(criticalActivitiesQuery, options);
 
@@ -169,7 +165,7 @@ public class WorklistUtils
       or.add(PerformingParticipantFilter.ANY_FOR_USER).add(PerformingUserFilter.CURRENT_USER);
       query.setPolicy(ExcludeUserPolicy.EXCLUDE_USER);
       query.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
-      
+
       ActivityTableUtils.addCriterias(query, options);
 
       return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
@@ -190,7 +186,7 @@ public class WorklistUtils
       FilterTerm where = query.getFilter().addAndTerm();
       where.add(ActivityInstanceQuery.LAST_MODIFICATION_TIME.greaterOrEqual(fromDate.getTime()));
       where.addOrTerm().add(PerformingUserFilter.CURRENT_USER).add(PerformedByUserFilter.CURRENT_USER);
-      
+
       ActivityTableUtils.addCriterias(query, options);
 
       return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
@@ -203,7 +199,7 @@ public class WorklistUtils
     * @return
     */
    public QueryResult< ? > getWorklistByProcess(String processQId, Options options)
-   {  
+   {
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
             ActivityInstanceState.Application, ActivityInstanceState.Suspended});
 
@@ -212,7 +208,7 @@ public class WorklistUtils
       query.setPolicy(ExcludeUserPolicy.EXCLUDE_USER);
       query.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
       query.where(new ProcessDefinitionFilter(processQId, false));
-      
+
       ActivityTableUtils.addCriterias(query, options);
 
       return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
@@ -224,7 +220,7 @@ public class WorklistUtils
     * @return
     */
    public QueryResult< ? > getWorklistForResubmissionActivities(Options options)
-   {  
+   {
 
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(ActivityInstanceState.Hibernated);
       query.getFilter().add(PerformingUserFilter.CURRENT_USER);
@@ -241,7 +237,9 @@ public class WorklistUtils
          for (Iterator<ModelResubmissionActivity> as = resubmissionActivities.iterator(); as.hasNext();)
          {
             ModelResubmissionActivity activity = as.next();
-            or.add(ActivityFilter.forProcess(activity.getActivityId(), activity.getProcessId(),//TODO:check FQID change
+            or.add(ActivityFilter.forProcess(activity.getActivityId(), activity.getProcessId(),// TODO:check
+                                                                                               // FQID
+                                                                                               // change
                   activity.getModelOids(), false));
          }
       }
@@ -257,14 +255,14 @@ public class WorklistUtils
     * @return
     */
    public QueryResult< ? > getWorklistForLoggedInUser(Options options)
-   {  
+   {
 
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
             ActivityInstanceState.Application, ActivityInstanceState.Suspended});
       query.getFilter().add(PerformingUserFilter.CURRENT_USER);
-      
+
       ActivityTableUtils.addCriterias(query, options);
-      
+
       return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
    }
 
@@ -274,16 +272,15 @@ public class WorklistUtils
     * @return
     */
    public QueryResult< ? > getAllActivable(Options options)
-   {  
+   {
 
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
             ActivityInstanceState.Hibernated, ActivityInstanceState.Application, ActivityInstanceState.Suspended});
-      
+
       ActivityTableUtils.addCriterias(query, options);
-      
+
       return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
    }
-
 
    /**
     * @param worklist
@@ -291,8 +288,7 @@ public class WorklistUtils
     * @return
     */
    @SuppressWarnings("unchecked")
-   private Worklist extractParticipantWorklist(Worklist worklist,
-         ParticipantInfo participantInfo)
+   private Worklist extractParticipantWorklist(Worklist worklist, ParticipantInfo participantInfo)
    {
       Worklist extractedWorklist = null;
 

@@ -1,3 +1,14 @@
+/*******************************************************************************
+ * Copyright (c) 2014 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
+
 package org.eclipse.stardust.ui.web.rest;
 
 import java.util.ArrayList;
@@ -17,9 +28,12 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.ui.web.rest.service.UserService;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -27,6 +41,7 @@ import com.google.gson.Gson;
 /**
  * 
  * @author Nikhil.Gahlot
+ * @author Johnson.Quadras
  *
  */
 @Component
@@ -35,6 +50,9 @@ public class UserResource
 {
 
    public static final Logger trace = LogManager.getLogger(UserResource.class);
+
+   @Autowired
+   private UserService userService;
 
    /**
     * @param serviceName
@@ -60,8 +78,8 @@ public class UserResource
 
    @GET
    @Path("/search/{searchValue}")
-   public Response searchUsers(@PathParam("searchValue") String searchValue,
-         @QueryParam("active") Boolean active, @QueryParam("max") Integer max)
+   public Response searchUsers(@PathParam("searchValue") String searchValue, @QueryParam("active") Boolean active,
+         @QueryParam("max") Integer max)
    {
       if (StringUtils.isNotEmpty(searchValue))
       {
@@ -93,10 +111,24 @@ public class UserResource
       }
    }
 
+   /**
+    * This method returns the logged In user
+    * @return
+    */
    @GET
-   @Path("/test")
-   public Response test()
+   @Path("/whoAmI")
+   public Response getLoggedInUser()
    {
-      return Response.ok("test ok", MediaType.TEXT_PLAIN_TYPE).build();
+      try
+      {
+         UserDTO loggedInUser = userService.getLoggedInUser();
+         return Response.ok(loggedInUser.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+
    }
 }

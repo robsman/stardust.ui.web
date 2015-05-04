@@ -598,10 +598,11 @@ define(
 							// external references.
 							if ((!dataItem.externalReference || this.options.showExternalDataReferences)
 									&& this.isDataOfSelectedType(dataItem)) {
-								this.parameterDefinitionDataSelect
-										.append("<option value='"
-												+ dataItem.getFullId() + "'>"
-												+ dataItem.name + "</option>");
+
+							  this.parameterDefinitionDataSelect
+									.append("<option value='"
+											+ dataItem.getFullId() + "'>"
+											+ dataItem.name + "</option>");
 							}
 						}
 					}

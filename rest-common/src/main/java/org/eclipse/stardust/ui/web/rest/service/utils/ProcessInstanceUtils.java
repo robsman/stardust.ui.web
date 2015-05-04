@@ -32,6 +32,7 @@ import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.CustomOrderCriterion;
+import org.eclipse.stardust.engine.api.query.DataOrder;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
@@ -1440,7 +1441,7 @@ public class ProcessInstanceUtils
          }
          if (null != filterDTO.oid.to)
          {
-            filter.and(ProcessInstanceQuery.OID.greaterOrEqual(filterDTO.oid.to));
+            filter.and(ProcessInstanceQuery.OID.lessOrEqual(filterDTO.oid.to));
          }
       }
 
@@ -1459,7 +1460,7 @@ public class ProcessInstanceUtils
          {
             Date toDate = new Date(filterDTO.startTime.to);
 
-            filter.and(ProcessInstanceQuery.START_TIME.greaterOrEqual(toDate.getTime()));
+            filter.and(ProcessInstanceQuery.START_TIME.lessOrEqual(toDate.getTime()));
          }
       }
 
@@ -1496,9 +1497,12 @@ public class ProcessInstanceUtils
       else if (null != filterDTO.processName)
       {
          FilterOrTerm or = filter.addOrTerm();
-         for (String processQId : filterDTO.processName.like)
+         if (!filterDTO.processName.processes.contains("-1"))
          {
-            or.add(new ProcessDefinitionFilter(processQId, false));
+            for (String processQId : filterDTO.processName.processes)
+            {
+               or.add(new ProcessDefinitionFilter(processQId, false));
+            }
          }
       }
 
@@ -1605,7 +1609,14 @@ public class ProcessInstanceUtils
             filterModel.setFilterValue(key, (Serializable) value);
          }
 
-         DescriptorFilterUtils.applyFilters(query, filterModel);
+         try
+         {
+            DescriptorFilterUtils.applyFilters(query, filterModel);
+         }
+         catch (Exception e)
+         {
+            trace.error("Error occurred while applying filter to descriptors..", e);
+         }
       }
 
    }
@@ -1621,7 +1632,28 @@ public class ProcessInstanceUtils
          trace.debug("options.orderBy = " + options.orderBy);
       }
 
-      if (COL_PROCESS_NAME.equals(options.orderBy))
+      if (options.orderBy.startsWith("descriptorValues."))
+      {
+         Map<String, DataPath> allDescriptors = processDefUtils.getAllDescriptors(false);
+         String[] descriptorNames = options.orderBy.split("\\.");
+         String descriptorName = descriptorNames[1];
+
+         if (allDescriptors.containsKey(descriptorName))
+         {
+            applyDescriptorPolicy(query, options);
+            String columnName = getDescriptorColumnName(descriptorName, allDescriptors);
+            if (CommonDescriptorUtils.isStructuredData(allDescriptors.get(descriptorName)))
+            {
+               query.orderBy(new DataOrder(columnName,
+                     getXpathName(descriptorName, allDescriptors), options.asc));
+            }
+            else
+            {
+               query.orderBy(new DataOrder(columnName, options.asc));
+            }
+         }
+      }
+      else if (COL_PROCESS_NAME.equals(options.orderBy))
       {
          query.orderBy(ProcessInstanceQuery.PROC_DEF_NAME.ascendig(options.asc));
       }
@@ -1662,4 +1694,47 @@ public class ProcessInstanceUtils
          }
       }
    }
+   
+   /**
+    * @param query
+    */
+   private void applyDescriptorPolicy(Query query, Options options)
+   {
+      if (options.allDescriptorsVisible)
+      {
+         query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+      }
+      else if (CollectionUtils.isEmpty(options.visibleDescriptorColumns))
+      {
+         query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
+      }
+      else
+      {
+         query.setPolicy(DescriptorPolicy.withIds(new HashSet<String>(options.visibleDescriptorColumns)));
+      }
+   }
+   
+   private static String getXpathName(String descriptorName, Map<String, DataPath> descriptorNameAndDataPathMap)
+   {
+      if (descriptorNameAndDataPathMap.containsKey(descriptorName))
+      {
+         DataPath columnNameDataPath = (DataPath) descriptorNameAndDataPathMap.get(descriptorName);
+
+         return columnNameDataPath.getAccessPath();
+      }
+      else
+         return null;
+   }
+
+   private static String getDescriptorColumnName(String descriptorName, Map<String, DataPath> descriptorNameAndDataPathMap)
+   {
+      if (descriptorNameAndDataPathMap.containsKey(descriptorName))
+      {
+         DataPath columnNameDataPath = (DataPath) descriptorNameAndDataPathMap.get(descriptorName);
+
+         return columnNameDataPath.getData();
+      }
+      else
+         return null;
+   }   
 }

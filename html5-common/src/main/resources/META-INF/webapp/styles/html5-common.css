@@ -17,6 +17,10 @@
 	padding-bottom: 2px;
 }
 
+.toolbar-buttons {
+	height: 30px
+}
+
 .view-panel-content {
 	margin-top: 5px;
 }
@@ -27,6 +31,25 @@
 
 .view-tool-link {
 	margin-right: 5px;
+}
+
+.view-toolbar-section {
+	margin-left: 8px;
+	padding-left: 3px;
+	border-left: 1px dotted gray;
+	float: right;
+}
+
+.label-item {
+	color: #708090;
+	padding: 3px 5px 3px 0;
+	white-space: nowrap;
+	font-weight: normal;
+}
+
+.heading {
+	font-weight: bold;
+	color: #708090;
 }
 
 /************** popup dialog *****************/
@@ -99,12 +122,30 @@
 	font-size:25px;
 }
 
+.popup-info-icon {
+	font-size:25px;
+}
+
 /************** Input Components *****************/
 
 .inp-sel-one {
    border-color: #AAAAAA;
    margin: 2px;
    width: auto;
+}
+
+.inp-check-box {
+    margin: 0 5px 2px 2px;
+    padding: 2px;
+    vertical-align: middle;
+}
+
+.inp-text-box {
+    margin: 2px;
+    padding: 3px;
+    font: 11px tahoma;
+    background: #FFF;
+    border: 1px solid #d9d9d9;
 }
 
 .ui-section {
@@ -306,6 +347,7 @@
 
 .sd-dialog .modal-dialog .modal-content .modal-header {
 	height: 1px;
+	padding: 15px;
 }
 
 .sd-dialog .modal-dialog .modal-content .confirmation-header {
@@ -315,12 +357,62 @@
 .sd-dialog .modal-dialog .modal-content .modal-body {
 	height: inherit;
 	max-height: none;
-}
-
-.sd-dialog .modal-dialog .modal-content .modal-footer {
-	height: 33px;
+	padding-bottom: 0;
 }
 
 .sd-dialog .modal-dialog .modal-content .button-alignment {
+	float: left;
+	margin-left: 5px;
+}
+
+.sd-dialog .modal-dialog .modal-content .button-alignment button {
+	margin-right: 10px;
+}
+
+.modal-header .close {
 	float: right;
+}
+
+.header {
+	line-height: 0px;
+}
+
+.sd-dialog .modal-dialog .modal-content .modal-footer {
+	padding: 10px;
+	margin-top: 15px;
+}
+
+.close {
+	float: right;
+	font-size: 21px;
+	font-weight: bold;
+	line-height: 1;
+	color: #000;
+	text-shadow: 0 1px 0 #fff;
+	filter: alpha(opacity = 20);
+	opacity: .2;
+}
+
+.close:hover, .close:focus {
+	color: #000;
+	text-decoration: none;
+	cursor: pointer;
+	filter: alpha(opacity = 50);
+	opacity: .5;
+}
+
+button.close {
+	-webkit-appearance: none;
+	padding: 0;
+	cursor: pointer;
+	background: transparent;
+	border: 0;
+}
+
+.modal-header .close {
+	margin-top: -2px;
+}
+	
+.iconDisabled {
+	color: gray;
 }

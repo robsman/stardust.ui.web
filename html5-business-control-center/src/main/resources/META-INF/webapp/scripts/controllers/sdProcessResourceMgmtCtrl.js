@@ -18,23 +18,26 @@
 	angular.module("bcc-ui").controller(
 			'sdProcessResourceMgmtCtrl',
 			[ '$q', '$filter', 'sdProcessResourceMgmtService', 'sdLoggerService', 'sdViewUtilService',
-					ProcessResourceMgmtCtrl ]);
+					'sdCommonViewUtilService', ProcessResourceMgmtCtrl ]);
 
 	var _q;
 	var _filter;
 	var _sdProcessResourceMgmtService;
 	var _sdViewUtilService;
 	var trace;
+	var _sdCommonViewUtilService
 
 	/**
 	 * 
 	 */
-	function ProcessResourceMgmtCtrl($q, $filter, sdProcessResourceMgmtService, sdLoggerService, sdViewUtilService) {
+	function ProcessResourceMgmtCtrl($q, $filter, sdProcessResourceMgmtService, sdLoggerService, sdViewUtilService,
+			sdCommonViewUtilService) {
 		trace = sdLoggerService.getLogger('bcc-ui.sdProcessResourceMgmtCtrl');
 		_q = $q;
 		_filter = $filter;
 		_sdProcessResourceMgmtService = sdProcessResourceMgmtService;
 		_sdViewUtilService = sdViewUtilService;
+		_sdCommonViewUtilService = sdCommonViewUtilService;
 
 		this.rolesTable = null;
 		this.usersTable = null;
@@ -149,9 +152,6 @@
 	 * @param userId
 	 */
 	ProcessResourceMgmtCtrl.prototype.openUserManagerView = function(userOid, userId) {
-		_sdViewUtilService.openView("userManagerDetailViewHtml5", "userOid=" + userOid, {
-			"userOid" : "" + userOid,
-			"userId" : "" + userId
-		}, true);
+		_sdCommonViewUtilService.openUserManagerDetailView(userOid, userId, true);
 	};
 })();

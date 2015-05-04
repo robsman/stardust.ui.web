@@ -513,7 +513,9 @@ public class ModelElementMarshaller implements ModelMarshaller
          {
             model = ModelUtils.findContainingModel(processDefinition);
             DataType data = mappingsType.getMappedData(formalParameter);
-            setDataFullID(formalParameterJson, model, data);
+            //setDataFullID(formalParameterJson, model, data);
+            formalParameterJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY,
+                  getModelBuilderFacade().createFullId(model, data));
          }
       }
       return formalParameterJson;
@@ -2172,6 +2174,9 @@ public class ModelElementMarshaller implements ModelMarshaller
             {
                String dataId = getModelBuilderFacade().createFullId(referencedModel, data);
                dataJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, dataId);
+               DataType refData = ModelUtils.findIdentifiableElement(referencedModel.getData(), data.getId());
+               dataJson.addProperty(ModelerConstants.REF_UUID_PROPERTY,
+                     eObjectUUIDMapper().getUUID(refData));
             }
          }
 
@@ -4037,11 +4042,14 @@ public class ModelElementMarshaller implements ModelMarshaller
                      attributes.addProperty(attributeName, attributeValue);
                   }
                }
+               else if (element instanceof IModelParticipant)
+               {
+                  attributes.addProperty(attributeName, attributeValue);
+               }
             }
             else
             {
-               attributes.addProperty(attributeName,
-                     attributeValue);
+               attributes.addProperty(attributeName, attributeValue);
             }
          }
       }

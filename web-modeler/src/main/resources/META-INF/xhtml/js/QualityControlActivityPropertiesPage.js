@@ -65,7 +65,7 @@ define(
 					this.qualityControlFormula = undefined
 					this.noParticipantSetMessage = undefined;
 
-					this.participants.lenght = 0;
+					this.participants.length = 0;
 					for ( var n in m_model.getModels()) {
 						var model = m_model.getModels()[n];
 

@@ -11,33 +11,37 @@
  * @author Johnson.Quadras
  */
 (function() {
-	'use strict';
+    'use strict';
+
+    /**
+     * 
+     */
+    angular.module('workflow-ui.services').provider('sdLoggedInUserService', function() {
+	this.$get = [ 'sdUtilService', function(sdUtilService) {
+	    var service = new LoggedInUserService(sdUtilService);
+	    return service;
+	} ];
+    });
+
+    var REST_BASE_URL = "services/rest/portal/user";
+    var user = null;
+    /**
+     * 
+     */
+    function LoggedInUserService(sdUtilService) {
 
 	/**
 	 * 
 	 */
-	angular.module('workflow-ui.services').provider( 'sdLoggedInUserService', function() {
-		this.$get = [ '$q', '$resource', function ( $q, $resource) {
-			var service = new LoggedInUserService($q, $resource);
-			return service;
-		}];
-	});
-	/**
-	 *
-	 */
-	function LoggedInUserService( $q, $resource) {
-		
-		var user = {
-			userId : 'motu'	
-		};
-		
-		/**
-		 * 
-		 */
-		LoggedInUserService.prototype.getUserId = function() {
-			return  user.userId;
-		};
-		
-	};
-})();
+	LoggedInUserService.prototype.getUserInfo = function() {
+	    var restUrl = REST_BASE_URL + "/whoAmI";
+	    var self = this;
 
+	    if (!user) {
+		user = sdUtilService.syncAjax(restUrl);
+	    }
+	    return user;
+	};
+
+    }
+})();

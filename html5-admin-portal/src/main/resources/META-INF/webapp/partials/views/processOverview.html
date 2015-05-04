@@ -12,7 +12,12 @@
 
 <div class="view-panel" ng-controller="sdProcessOverviewCtrl as ctrl"
 	sg-stretch-to-bottom>
-	<sd-refresh sda-on-refresh="ctrl.refresh()"></sd-refresh>
+
+	<div class="view-panel-toolbar toolbar-buttons">
+		<div class="view-toolbar-section">
+			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+		</div>
+	</div>
 
 	<div class="tbl-title view-panel-toolbar"ng-bind="i18n('admin-portal-messages.views-common-processes-label')"></div>
 	<div>

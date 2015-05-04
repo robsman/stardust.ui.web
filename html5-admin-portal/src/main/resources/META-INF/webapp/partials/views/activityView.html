@@ -1,37 +1,46 @@
 
 <div class="view-panel" ng-controller="sdActivityOverviewCtrl as ctrl"
 	sg-stretch-to-bottom>
-	
-	<sd-refresh sda-on-refresh="ctrl.refresh()"></sd-refresh>
+	<div class="view-panel-toolbar toolbar-buttons">
+		<div class="view-toolbar-section">
+			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+		</div>
+	</div>
 
-	<div class="tbl-title view-panel-toolbar"ng-bind="i18n('admin-portal-messages.views-common-activities-label')"></div>
+	<div class="tbl-title view-panel-toolbar"
+		ng-bind="i18n('admin-portal-messages.views-common-activities-label')"></div>
 	<div>
 		<table>
 			<tr>
-				<td><span class="activity-overview-report-field-value-label" ng-bind="i18n('admin-portal-messages.views-common-total-label')+i18n('admin-portal-messages.common-colon')">
+				<td><span class="activity-overview-report-field-value-label"
+					ng-bind="i18n('admin-portal-messages.views-common-total-label')+i18n('admin-portal-messages.common-colon')">
 				</span></td>
-				<td><span class="activity-overview-report-field-value" ng-bind="ctrl.count.total">
-				</span></td>
+				<td><span class="activity-overview-report-field-value"
+					ng-bind="ctrl.count.total"> </span></td>
 
-				<td><span class="activity-overview-report-field-value-label" ng-bind="i18n('admin-portal-messages.views-common-active-label')+i18n('admin-portal-messages.common-colon')">
+				<td><span class="activity-overview-report-field-value-label"
+					ng-bind="i18n('admin-portal-messages.views-common-active-label')+i18n('admin-portal-messages.common-colon')">
 				</span></td>
-				<td><span class="activity-overview-report-field-value" ng-bind="ctrl.count.active">
-				</span></td>
+				<td><span class="activity-overview-report-field-value"
+					ng-bind="ctrl.count.active"> </span></td>
 
-				<td><span class="activity-overview-report-field-value-label" ng-bind="i18n('admin-portal-messages.views-common-waiting-label')+i18n('admin-portal-messages.common-colon')">
+				<td><span class="activity-overview-report-field-value-label"
+					ng-bind="i18n('admin-portal-messages.views-common-waiting-label')+i18n('admin-portal-messages.common-colon')">
 				</span></td>
-				<td><span class="activity-overview-report-field-value" ng-bind="ctrl.count.waiting">
-				</span></td>
+				<td><span class="activity-overview-report-field-value"
+					ng-bind="ctrl.count.waiting"> </span></td>
 
-				<td><span class="activity-overview-report-field-value-label" ng-bind="i18n('admin-portal-messages.views-common-aborted-label')+i18n('admin-portal-messages.common-colon')">
+				<td><span class="activity-overview-report-field-value-label"
+					ng-bind="i18n('admin-portal-messages.views-common-aborted-label')+i18n('admin-portal-messages.common-colon')">
 				</span></td>
-				<td><span class="activity-overview-report-field-value" ng-bind="ctrl.count.aborted">
-				</span></td>
+				<td><span class="activity-overview-report-field-value"
+					ng-bind="ctrl.count.aborted"> </span></td>
 
-				<td><span class="activity-overview-report-field-value-label" ng-bind="i18n('admin-portal-messages.views-common-completed-label')+i18n('admin-portal-messages.common-colon')">
+				<td><span class="activity-overview-report-field-value-label"
+					ng-bind="i18n('admin-portal-messages.views-common-completed-label')+i18n('admin-portal-messages.common-colon')">
 				</span></td>
-				<td><span class="activity-overview-report-field-value" ng-bind="ctrl.count.completed">
-				</span></td>
+				<td><span class="activity-overview-report-field-value"
+					ng-bind="ctrl.count.completed"> </span></td>
 
 			</tr>
 		</table>
@@ -39,10 +48,14 @@
 	</div>
 
 	<div class="view-panel-content">
-		<div class="tbl-title view-panel-toolbar" ng-bind="i18n('admin-portal-messages.views-common-activityTable-title')"></div>
-		
-		<div sd-activity-table="ctrl.dataTable" sda-mode="activityTable" sd-data="ctrl.getData(params);"
-			sda-preference-module ="ipp-views-common" sda-preference-id="preference" sda-preference-name = "ipp-views-common.activityWithPrio.selectedColumns" ></div>
+		<div class="tbl-title view-panel-toolbar"
+			ng-bind="i18n('admin-portal-messages.views-common-activityTable-title')"></div>
+
+		<div sd-activity-table="ctrl.dataTable" sda-mode="activityTable"
+			sd-data="ctrl.getData(params);"
+			sda-preference-module="ipp-views-common"
+			sda-preference-id="preference"
+			sda-preference-name="ipp-views-common.activityWithPrio.selectedColumns"></div>
 	</div>
 </div>
 

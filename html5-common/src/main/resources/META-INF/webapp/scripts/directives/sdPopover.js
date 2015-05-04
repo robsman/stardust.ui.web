@@ -42,7 +42,7 @@
 				restrict : 'AE',
 				scope: true,
 				transclude: true,
-				template: ' <span class="popover-btn"></span>'
+				template: ' <button ng-disabled="popoverDisabled" class="popover-btn button-link"></button>'
 						+ ' <div ng-show="showPopover" class="popover-body-container popup-dlg" style="cursor:auto; position:fixed;"></div>',
 				compile: PopoverCompilerFn
 			};
@@ -53,22 +53,24 @@
 		function PopoverCompilerFn(elem, attr, transcludeFn) {
 			elem.addClass('sd-popover');
 			
-			var popoverBodyContainer = elem.find('.popover-body-container');
-			var popoverBtn = elem.find('.popover-btn');
-			
 			return function (scope, element, attrs) { // Link Function
+				
+				var popoverBodyContainer = element.find('.popover-body-container');
+				var popoverBtn = element.find('.popover-btn');
+				
+				scope.$watch(attrs.ngDisabled, function(val) {
+					scope.popoverDisabled = val;
+				});
 				
 				var onOpenFn = $parse(attrs.sdaOnOpen);
 				
 				transcludeFn(scope, function(clone) {
 					var popoverBody = clone.filter('.popover-body');
-					popoverBody.detach();
 					popoverBtn.append(clone);
-					element.prepend(popoverBtn);
 					popoverBodyContainer.append(popoverBody);
 				});
 				
-				elem.bind('click', function(event) {
+				element.bind('click', function(event) {
 					handlePopoverClick(event);
 				});
 				
@@ -80,27 +82,13 @@
 				
 				function handlePopoverClick(clkEvent, clickElem) {
 					// In case of ng-disabled, make sure the click is not activated
-					var disabled = false;
-					if (angular.isDefined(attrs.ngDisabled)) {
-						disabled = parseAttribute(scope.$parent, attrs.ngDisabled);
-					}
-					
-					if (disabled != true) {
+					if (scope.popoverDisabled != true) {
 						
 						if (angular.isDefined(onOpenFn)) {
 							onOpenFn(scope);
 						}
 						
 						// Handle close by click on document event
-						var popoverCloseEvent = function(event) {
-							if (elem.find(event.target).length === 0) {
-								scope.$apply(function() {
-									scope.showPopover = false;
-									// this is important since we want this to be called exactly once
-									$(document).unbind('click', popoverCloseEvent);
-								});
-							}
-						};
 						$(document).bind('click', popoverCloseEvent);
 						
 						scope.$apply(function() {
@@ -136,11 +124,26 @@
 					}
 				}
 				
+				function popoverCloseEvent(event) {
+					if (event == null || element.find(event.target).length === 0) {
+						scope.$apply(function() {
+							scope.showPopover = false;
+							// this is important since we want this to be called exactly once
+							$(document).unbind('click', popoverCloseEvent);
+						});
+					}
+				}
+				
 				// API with open & close functions
 				function PopoverApi() {
 					this.show = function(event) {
 						$timeout(function() {
 							handlePopoverClick(event, event.target);
+						});
+					},
+					this.hide = function() {
+						$timeout(function() {
+							popoverCloseEvent();
 						});
 					}
 				}

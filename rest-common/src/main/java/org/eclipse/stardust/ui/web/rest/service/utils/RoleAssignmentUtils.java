@@ -33,15 +33,13 @@ import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
 import org.eclipse.stardust.ui.web.bcc.jsf.IQueryExtender;
-import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorsDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.GrantsAssignmentDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.RoleAssignmentDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.RoleAssignmentDataDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.RoleAssignmentResultDTO;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.ParticipantDepartmentPair;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -51,14 +49,12 @@ public class RoleAssignmentUtils
 
    private final static String QUERY_EXTENDER = "carnotBcRoleAssignment/queryExtender";
 
-   public QueryResultDTO getRoleAssignments()
+   public RoleAssignmentResultDTO getRoleAssignments()
    {
       Query query = createQuery();
       WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
       Users users = facade.getAllUsers((UserQuery) query);
       Map<ParticipantDepartmentPair, String> roleNameMap = CollectionUtils.newHashMap();
-      List<RoleAssignmentDTO> roleEntries = CollectionUtils.newArrayList();
-
       Map<User, List<ParticipantDepartmentPair>> userPairMap = CollectionUtils.newHashMap();
 
       for (User user : users)
@@ -89,11 +85,17 @@ public class RoleAssignmentUtils
          userPairMap.put(user, pairList);
       }
       // Now iterate users
+      List<RoleAssignmentDTO> roleAssignmentList = new ArrayList<RoleAssignmentDTO>();
       for (User user : users)
       {
-         List<ParticipantDepartmentPair> paitList = userPairMap.get(user);
+         RoleAssignmentDTO roleAssignmentData = new RoleAssignmentDTO();
+         roleAssignmentData.teamMember = UserUtils.getUserDisplayLabel(user);
+         roleAssignmentData.userId = user.getId();
+         roleAssignmentData.userOid = String.valueOf(user.getOID());
 
-         List<GrantsAssignmentDTO> grantsEntries = CollectionUtils.newArrayList();
+         Map<String, Boolean> columnsValue = CollectionUtils.newHashMap();
+
+         List<ParticipantDepartmentPair> paitList = userPairMap.get(user);
          Set<ParticipantDepartmentPair> roles = roleNameMap.keySet();
          for (ParticipantDepartmentPair participantDepartmentPair : roles)
          {
@@ -107,40 +109,24 @@ public class RoleAssignmentUtils
                }
             }
 
-            grantsEntries.add(new GrantsAssignmentDTO(participantDepartmentPair, found));
+            columnsValue.put(roleNameMap.get(participantDepartmentPair), found);
          }
-         roleEntries.add(new RoleAssignmentDTO(user, grantsEntries));
+         roleAssignmentData.columnsValue = columnsValue;
+         roleAssignmentList.add(roleAssignmentData);
       }
 
-      List<RoleAssignmentDataDTO> roleAssignmentDataList = new ArrayList<RoleAssignmentDataDTO>();
-      if (CollectionUtils.isNotEmpty(roleEntries))
+      RoleAssignmentResultDTO result = new RoleAssignmentResultDTO();
+
+      if (roleAssignmentList.get(0) != null && !roleAssignmentList.get(0).columnsValue.isEmpty())
       {
-         for (RoleAssignmentDTO roleEntry : roleEntries)
-         {
-            RoleAssignmentDataDTO roleAssignmentData = new RoleAssignmentDataDTO();
-            roleAssignmentData.teamMember = roleEntry.name;
-            List<DescriptorsDTO> descriptors = CollectionUtils.newArrayList();
-            Map<String, Boolean> descriptorsValues = CollectionUtils.newHashMap();
-            for (GrantsAssignmentDTO grantAssignment : roleEntry.grants)
-            {
-               DescriptorsDTO descriptor = new DescriptorsDTO(
-                     roleNameMap.get(grantAssignment.participantDepartmentPair));
-               descriptorsValues.put(roleNameMap.get(grantAssignment.participantDepartmentPair),
-                     grantAssignment.userInRole);
-               descriptors.add(descriptor);
-            }
-            roleAssignmentData.descriptors = descriptors;
-            roleAssignmentData.descriptorsValues = descriptorsValues;
-            roleAssignmentDataList.add(roleAssignmentData);
-         }
+         Set<String> roles = roleAssignmentList.get(0).columnsValue.keySet();
+         result.list = roleAssignmentList;
+         result.totalCount = roleAssignmentList.size();
+         result.roleColumns = roles;
       }
 
       userPairMap = null;
       users = null;
-
-      QueryResultDTO result = new QueryResultDTO();
-      result.list = roleAssignmentDataList;
-      result.totalCount = roleAssignmentDataList.size();
       return result;
    }
 

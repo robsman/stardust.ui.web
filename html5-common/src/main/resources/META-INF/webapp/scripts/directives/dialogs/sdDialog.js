@@ -162,9 +162,6 @@
 					self.dialogType = SUPPORTED_TYPES.CUSTOM;
 				}
 				
-				setContentWidth($attrs.sdaWidth);
-				setContentHeight($attrs.sdaHeight);
-				
 				self.onOpenFn = $parse($attrs.sdaOnOpen);
 				self.onCloseFn = $parse($attrs.sdaOnClose);
 				self.onConfirmFn = $parse($attrs.sdaOnConfirm);
@@ -173,13 +170,13 @@
 				self.isOpen = false;
 				
 				self.onKeyUp = function(evt){
-				  if (angular.equals(evt.keyCode, 13)){
-				    self.confirmAction(); 
-				  }
-				  if (angular.equals(evt.keyCode, 27)){
-            self.cancelAction(); 
-          } 
-        }
+					if (angular.equals(evt.keyCode, 13)){
+						self.confirmAction(); 
+					}
+					if (angular.equals(evt.keyCode, 27)){
+						self.cancelAction(); 
+					}
+				}
 				
 				$scope.$watch('showDialog', function(showDialog) {
 					if(showDialog === true){
@@ -297,6 +294,9 @@
 						template = clone;
 					}
 					templatePlaceHolder.append(template);
+					
+					setContentWidth($attrs.sdaWidth);
+					setContentHeight($attrs.sdaHeight);
 				});
 			}
 			

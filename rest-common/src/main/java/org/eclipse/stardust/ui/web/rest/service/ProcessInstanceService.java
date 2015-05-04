@@ -377,7 +377,7 @@ public class ProcessInstanceService
             priority.setName(processInstance.getPriority());
             
             dto.priority = priority;
-            dto.startTime = processInstance.getStartTime();
+            dto.startTime = processInstance.getStartTime().getTime();
             dto.duration = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getDuration(processInstance);
             dto.processName = I18nUtils.getProcessName(processDefinition);
             String startingUserLabel = UserUtils.getUserDisplayLabel(processInstance.getStartingUser());
@@ -387,8 +387,10 @@ public class ProcessInstanceService
             // Update Document Descriptors for process
             CommonDescriptorUtils.updateProcessDocumentDescriptors(((ProcessInstanceDetails) processInstance).getDescriptors(),
                   processInstance, processDefinition);
-            
-            dto.endTime = processInstance.getTerminationTime();
+            if (null != processInstance.getTerminationTime())
+            {
+               dto.endTime = processInstance.getTerminationTime().getTime();
+            }
             dto.startingUser = startingUserLabel;
             dto.status = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getProcessStateLabel(processInstance);
             dto.enableTerminate = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.isAbortable(processInstance);

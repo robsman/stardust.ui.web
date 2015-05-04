@@ -16,14 +16,18 @@ package org.eclipse.stardust.ui.web.rest.service.dto;
 import java.util.Date;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
-
+/**
+ * 
+ * @author Johnson.Quadras
+ *
+ */
 public class UserDTO extends AbstractDTO
 {
    @DTOAttribute("id")
    public String id;
 
    @DTOAttribute("name")
-   public String name;
+   public String displayName;
 
    @DTOAttribute("validFrom")
    public Date validFrom;
@@ -41,5 +45,18 @@ public class UserDTO extends AbstractDTO
    public String realm;
 
    public String userImageURI;
+   
+   @DTOAttribute("firstName")
+   public String firstName;
+   
+   @DTOAttribute("lastName")
+   public String lastName;
+   
+   @DTOAttribute("OID")
+   public Long oid;
+   
+   @DTOAttribute("administrator")
+   public Boolean isAdminstartor;
+   
 
 }

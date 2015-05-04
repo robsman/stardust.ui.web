@@ -1,5 +1,9 @@
 <div style="padding-left: 20px;" ng-controller="sdProcessResourceMgmtCtrl as ctrl">
-	<sd-refresh sda-on-refresh="ctrl.refresh()"></sd-refresh>
+	<div class="view-panel-toolbar toolbar-buttons">
+		<div class="view-toolbar-section" >
+			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+		</div>
+	</div>
 	<div
 		ng-include="'plugins/html5-business-control-center/partials/views/rolesAndOrganizationsTable.html'">
 	</div>

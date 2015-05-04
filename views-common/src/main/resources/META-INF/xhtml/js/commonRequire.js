@@ -51,7 +51,7 @@ if (!window.bpm.portal.viewsCommonRequire) {
 		},
 		SHIM : {
 			'angularjs' : {
-				require : "jquery",
+				deps : ["jquery"],
 				exports : "angular"
 			},
 			'jquery-ui' : [ 'jquery' ],

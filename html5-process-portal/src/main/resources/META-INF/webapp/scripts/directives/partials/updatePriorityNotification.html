@@ -1,4 +1,4 @@
-<div class="confirmation-contents section" style="padding-bottom: 20px">
+<div class="confirmation-contents modal-body" style="padding-bottom: 20px">
 	<div ng-hide="activityTableCtrl.updatePriorityNotification.error">
 		<div
 			ng-show="activityTableCtrl.updatePriorityNotification.result.success.length > 0">
@@ -46,8 +46,8 @@
 		</div>
 	</div>
 </div>
-<div class="confirmation-buttonpane">
-	<div class="button-pane cf">
+<div class="modal-footer">
+	<div class="button-alignment">
 		<div class="right">
 			<button class="button" ng-click="closeThisDialog()">{{i18n('views-common-messages.common-close')}}</button>
 		</div>

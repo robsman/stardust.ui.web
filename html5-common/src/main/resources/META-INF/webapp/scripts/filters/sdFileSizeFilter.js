@@ -11,7 +11,7 @@
  * @author Abhay.Thappan
  */
 
-angular.module('bpm-common').filter('sdFileSizeFilter', function() {
+angular.module('bpm-common').filter('sdFileSize', function() {
 	var units = [ 'bytes', 'KB', 'MB', 'GB', 'TB', 'PB' ];
 
 	return function(bytes, precision) {

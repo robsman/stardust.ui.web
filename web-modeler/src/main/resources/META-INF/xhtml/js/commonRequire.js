@@ -64,7 +64,7 @@ if (!window.bpm.portal.modelerRequire) {
 		},
 		SHIM : {
 			'angularjs' : {
-				require : "jquery",
+				deps : ["jquery"],
 				exports : "angular"
 			},
 			'json' : {

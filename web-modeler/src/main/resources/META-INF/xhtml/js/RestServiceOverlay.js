@@ -594,24 +594,77 @@ define(
                      
                      cell.append(deleteButton);
                      cell = m_utils.jQuerySelect("<td></td>");
-                     headerNameInput = m_utils.jQuerySelect("<input id='"+n+"' type='text' class='cellEditor' value='"+ this.httpHeaders[n].headerName + "'></input>");
+                     headerNameInput = m_utils.jQuerySelect("<input  id='"+n+"' type='text' class='cellEditor' value='"+ this.httpHeaders[n].headerName + "'></input>");//
                      headerNameInput.change({
                         page : this,
                         headerName : this.httpHeaders[n].headerName
                      }, function(event)
                      {
-                        var oldValue = event.data.headerName;
+                        var index=event.target.parentElement.parentElement.id;
+                       //var oldValue = event.data.headerName;
                         var newValue = event.target.value;
-                        for (var h = 0; h < event.data.page.httpHeaders.length; ++h)
-                        {
-                           if (event.data.page.httpHeaders[h].headerName === oldValue)
-                           {
-                              event.data.page.httpHeaders[h].headerName = newValue;
-                              event.data.page.httpHeaders[h].headerSource = "direct";
-                              if(!event.data.page.httpHeaders[h].headerValue)
-                              event.data.page.httpHeaders[h].headerValue = "";
-                           }
-                        }
+                        event.data.page.httpHeaders[index].headerName = newValue;
+                        var attributes= event.data.page.getApplication().attributes;
+                        var accessPoints=event.data.page.getApplication().contexts.application.accessPoints;
+                        attributes["stardust:restServiceOverlay::httpHeaders"]= JSON.stringify(event.data.page.httpHeaders);
+                        attributes["carnot:engine:camel::routeEntries"]= event.data.page.getRoute(attributes,accessPoints);
+                        event.data.page.view.submitChanges(
+                                 {
+                                    attributes : attributes
+                                 }, false);
+                        event.data.page.refreshHeaderAttributesTable();
+                     });
+
+                     cell.append(headerNameInput);
+                     row.append(cell);
+                     cell = m_utils.jQuerySelect("<td></td>");
+                     headerSourceInput = m_utils.jQuerySelect("<select></select>");//id='"+n+"'
+                     headerSourceInput.empty();
+                     headerSourceInput.append("<option value='direct' selected>Direct</option>");
+                     headerSourceInput.append("<option value='data'>Data</option>");
+                     headerSourceInput.append("<option value='cv'>Configuration Variable</option>");
+                     headerSourceInput.change({
+                        page : this,
+                        headerSource : this.httpHeaders[n].headerSource
+                     }, function(event)
+                     {
+                        var attributes = currentPage.getApplication().attributes;
+                        var accessPoints = currentPage.getApplication().contexts.application.accessPoints;
+                        var index=event.target.parentElement.parentElement.id;
+                       // var index=event.currentTarget.id;
+                        var newHttpHeaders=currentPage.httpHeaders;
+                        newHttpHeaders[index].headerSource=event.currentTarget.value;
+                        if(newHttpHeaders[index].headerSource=="cv"){
+                           newHttpHeaders[index].headerValue="${"+newHttpHeaders[index].headerName+"}";
+                           currentPage.refreshConfigurationVariables();
+                        }else if(newHttpHeaders[index].headerSource=="direct")
+                           newHttpHeaders[index].headerValue=newHttpHeaders[index].headerName;
+                        else
+                           newHttpHeaders[index].headerValue="";
+                        
+                        attributes["stardust:restServiceOverlay::httpHeaders"]= JSON.stringify(newHttpHeaders);
+                        attributes["carnot:engine:camel::routeEntries"]= currentPage.getRoute(attributes,accessPoints);
+                        currentPage.view.submitChanges(
+                                 {
+                                    attributes : attributes
+                                 }, false);
+                        currentPage.refreshHeaderAttributesTable();
+                     });
+                     cell.append(headerSourceInput);
+                     row.append(cell);
+                     cell = m_utils.jQuerySelect("<td></td>");
+                     headerValueInput = m_utils
+                              .jQuerySelect("<input id='"+n+"' type='text' class='cellEditor' value='"
+                                       + this.httpHeaders[n].headerValue + "'></input>");
+                     headerValueInput.change({
+                        page : this,
+                        headerValue : this.httpHeaders[n].headerValue
+                     }, function(event)
+                     {
+                        var index=event.target.parentElement.parentElement.id;
+                        var oldValue = event.data.headerValue;
+                        var newValue = event.target.value;
+                        event.data.page.httpHeaders[index].headerValue = newValue;
                         var attributes= event.data.page.getApplication().attributes;
                         var accessPoints=event.data.page.getApplication().contexts.application.accessPoints;
                         attributes["stardust:restServiceOverlay::httpHeaders"]= JSON.stringify(event.data.page.httpHeaders);
@@ -623,8 +676,8 @@ define(
                         event.data.page.refreshHeaderAttributesTable();
                      });
                      var currentPage=this;
-                     var headerNameEntry=m_utils.jQuerySelect(headerNameInput.get(0));
-                     headerNameEntry.autocomplete(
+                     var headerValueEntry=m_utils.jQuerySelect(headerValueInput.get(0));
+                     headerValueEntry.autocomplete(
                               {
                                  source : function(request, response)
                                  {
@@ -652,9 +705,10 @@ define(
                                     var accessPoints = currentPage.getApplication().contexts.application.accessPoints;
                                     var index=event.target.id;
                                     var newHttpHeaders=currentPage.httpHeaders;
-                                    newHttpHeaders[index].headerName=ui.item.value;
+                                    if(newHttpHeaders[index].headerName==null || newHttpHeaders[index].headerName=="")
+                                       newHttpHeaders[index].headerName=ui.item.value;
                                     newHttpHeaders[index].headerSource="data";
-                                    delete newHttpHeaders[index].headerValue;
+                                    newHttpHeaders[index].headerValue=ui.item.value;
                                     attributes["stardust:restServiceOverlay::httpHeaders"]= JSON.stringify(newHttpHeaders);
                                     attributes["carnot:engine:camel::routeEntries"]= currentPage.getRoute(attributes,accessPoints);
                                     currentPage.view.submitChanges(
@@ -666,76 +720,10 @@ define(
                               });
                      
                      
-                     cell.append(headerNameInput);
-                     row.append(cell);
-                     cell = m_utils.jQuerySelect("<td></td>");
-                     headerSourceInput = m_utils.jQuerySelect("<select id='"+n+"'></select>");
-                     headerSourceInput.empty();
-                     headerSourceInput.append("<option value='direct' selected>Direct</option>");
-                     headerSourceInput.append("<option value='data'>Data</option>");
-                     headerSourceInput.append("<option value='cv'>Configuration Variable</option>");
-                     headerSourceInput.change({
-                        page : this,
-                        headerSource : this.httpHeaders[n].headerSource
-                     }, function(event)
-                     {
-                        var attributes = currentPage.getApplication().attributes;
-                        var accessPoints = currentPage.getApplication().contexts.application.accessPoints;
-                        var index=event.currentTarget.id;
-                        var newHttpHeaders=currentPage.httpHeaders;
-                        newHttpHeaders[index].headerSource=event.currentTarget.value;
-                        if(newHttpHeaders[index].headerSource=="cv"){
-                           newHttpHeaders[index].headerValue="${"+newHttpHeaders[index].headerName+"}";
-                           currentPage.refreshConfigurationVariables();
-                        }else if(newHttpHeaders[index].headerSource=="direct")
-                           newHttpHeaders[index].headerValue=newHttpHeaders[index].headerName;
-                        else
-                           newHttpHeaders[index].headerValue="";
-                        
-                        attributes["stardust:restServiceOverlay::httpHeaders"]= JSON.stringify(newHttpHeaders);
-                        attributes["carnot:engine:camel::routeEntries"]= currentPage.getRoute(attributes,accessPoints);
-                        currentPage.view.submitChanges(
-                                 {
-                                    attributes : attributes
-                                 }, false);
-                        currentPage.refreshHeaderAttributesTable();
-                     });
-                     cell.append(headerSourceInput);
-                     row.append(cell);
-                     cell = m_utils.jQuerySelect("<td></td>");
-                     headerValueInput = m_utils
-                              .jQuerySelect("<input type='text' class='cellEditor' value='"
-                                       + this.httpHeaders[n].headerValue + "'></input>");
-                     headerValueInput.change({
-                        page : this,
-                        headerValue : this.httpHeaders[n].headerValue
-                     }, function(event)
-                     {
-                        var oldValue = event.data.headerValue;
-                        var newValue = event.target.value;
-                        for (var h = 0; h < event.data.page.httpHeaders.length; ++h)
-                        {
-                           if (event.data.page.httpHeaders[h].headerValue === oldValue)
-                           {
-                              event.data.page.httpHeaders[h].headerValue = newValue;
-                           }
-                        }
-                        var attributes= event.data.page.getApplication().attributes;
-                        var accessPoints=event.data.page.getApplication().contexts.application.accessPoints;
-                        attributes["stardust:restServiceOverlay::httpHeaders"]= JSON.stringify(event.data.page.httpHeaders);
-                        attributes["carnot:engine:camel::routeEntries"]= event.data.page.getRoute(attributes,accessPoints);
-                        event.data.page.view.submitChanges(
-                                 {
-                                    attributes : attributes
-                                 }, false);
-                        event.data.page.refreshHeaderAttributesTable();
-                     });
+                     
                      if(this.httpHeaders[n].headerSource){
                         headerSourceInput.val(this.httpHeaders[n].headerSource);
-                        if(this.httpHeaders[n].headerSource=="data"){
-                           headerValueInput.val(null);
-                        }
-                        if(this.httpHeaders[n].headerSource=="data" || this.httpHeaders[n].headerSource=="cv"){
+                        if( this.httpHeaders[n].headerSource=="cv"){
                            headerValueInput.prop('disabled', true);
                         }
                      }
