@@ -500,7 +500,9 @@ define(
 				 */
 				ReportDefinitionController.prototype.reloadTable = function(previewRetrieveAll) {
 					var self = this;
-					this.reportingService.previewRetrieveAll = previewRetrieveAll;
+
+					this.renderingController.previewRetrieveAll = previewRetrieveAll;
+
 					if (previewRetrieveAll) {
 						self.renderingController.showRetrieveAll = true;
 					}

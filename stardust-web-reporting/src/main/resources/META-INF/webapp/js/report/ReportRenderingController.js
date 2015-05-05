@@ -48,6 +48,9 @@ define(
 			      this.countTableConfig = {
 			        multi_headers : false, //dont change this
 			      };
+			      
+			      this.previewMaxFetchSize = 500;
+			      this.previewRetrieveAll = false;
 
 				/**
 				 * 
@@ -852,8 +855,18 @@ define(
                 	document.body.style.cursor = "default";
                    return deferred.resolve(this.reportData);
                 }else{
-                	var self = this;
-                    self.reportingService.retrieveData(report, parameters)
+                	var clonedReport = jQuery.extend(true, {}, report);
+
+					if (this.previewRetrieveAll) {
+						// Do not insert maxFetchSize into report object.
+						this.previewRetrieveAll = false;
+					} else {
+						clonedReport.dataSet.maxFetchSize = this.previewMaxFetchSize;
+					}
+
+					var self = this;                	
+                	
+                    self.reportingService.retrieveData(clonedReport, parameters)
                     .done(
                           function(data) {
                         	document.body.style.cursor = "default";
@@ -1474,11 +1487,12 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
         	this.parameters = parameters;
 
         	if (this.report.storage.state == "saved") {
-        		this.reportingService.previewRetrieveAll = true;	
+
+        		this.previewRetrieveAll = true;	
+
         		this.getReportData(this.report, this.parameters)
                 .done(
                       function(data) {
-                    	  
                     	// save report instance along with report definition
                     		self.saveReportInstance_(self.report, data, null);
                       }).fail(function(data) {
@@ -1518,7 +1532,9 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
 		 */
 		ReportRenderingController.prototype.saveReportInstanceAdhoc = function(reportMetadata) {
 			var self = this;
-			this.reportingService.previewRetrieveAll = true;
+
+			this.previewRetrieveAll = true;
+
 			this.getReportData(this.report, this.parameters)
             .done(
                   function(data) {
