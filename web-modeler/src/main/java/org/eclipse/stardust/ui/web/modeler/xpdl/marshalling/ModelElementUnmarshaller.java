@@ -3294,10 +3294,14 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                if (element instanceof ActivityType)
                {
                   ActivityType activity = (ActivityType) element;
-                  String data = jsonValue.getAsString();
-                  if (data.split(":").length > 1)
+                  String data = null;
+                  if (!(jsonValue instanceof JsonNull))
                   {
-                     data = data.split(":")[1];
+                     data = jsonValue.getAsString();
+                     if (data.split(":").length > 1)
+                     {
+                        data = data.split(":")[1];
+                     }
                   }
                   AttributeUtil.setAttribute(activity,
                         PredefinedConstants.BINDING_DATA_ID_ATT, data);

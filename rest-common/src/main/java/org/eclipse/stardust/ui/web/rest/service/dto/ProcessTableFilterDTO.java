@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.stardust.ui.web.rest.FilterDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO.ProcessActivityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
 
 import com.google.gson.reflect.TypeToken;
@@ -21,7 +22,7 @@ public class ProcessTableFilterDTO implements FilterDTO
 
    public RangeDTO endTime;
    
-   public EqualsDTO processName;
+   public ProcessActivityDTO processName;
    
    public EqualsDTO status;
 

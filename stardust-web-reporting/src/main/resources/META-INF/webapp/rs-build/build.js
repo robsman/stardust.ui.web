@@ -37,7 +37,7 @@
 			shim : {
 				'jquery-ui' : [ 'jquery' ],
 				'angularjs' : {
-					require : "jquery",
+					deps : ["jquery"],
 					exports : "angular"
 				},
 				'jquery.jqplot' : [ 'jquery' ],

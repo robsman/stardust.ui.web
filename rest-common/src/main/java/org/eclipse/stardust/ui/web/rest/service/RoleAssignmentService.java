@@ -15,7 +15,7 @@ package org.eclipse.stardust.ui.web.rest.service;
 
 import javax.annotation.Resource;
 
-import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.RoleAssignmentResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.RoleAssignmentUtils;
 import org.springframework.stereotype.Component;
 
@@ -24,12 +24,13 @@ public class RoleAssignmentService
 {
    @Resource
    private RoleAssignmentUtils roleAssignmentUtils;
-   
+
    /**
     * 
     * @return
     */
-   public QueryResultDTO getRoleAssignments(){
+   public RoleAssignmentResultDTO getRoleAssignments()
+   {
       return roleAssignmentUtils.getRoleAssignments();
    }
 }

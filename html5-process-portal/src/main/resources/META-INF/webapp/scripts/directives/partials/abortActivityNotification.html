@@ -1,4 +1,4 @@
-<div class="confirmation-contents section" style="padding-bottom: 20px">
+<div class="confirmation-contents modal-body" style="padding-bottom: 20px">
 	<div ng-hide="abortActivityCtrl.notification.error">
 		<div
 			ng-show="abortActivityCtrl.notification.result.success.length > 0">
@@ -29,8 +29,8 @@
 		<span>An error occurred while aborting activities</span>
 	</div>
 </div>
-<div class="confirmation-buttonpane">
-	<div class="button-pane cf">
+<div class="modal-footer">
+	<div class="button-alignment">
 		<div class="right">
 			<button class="button" ng-click="closeThisDialog()">{{abortActivityCtrl.i18n('views-common-messages.common-close')}}</button>
 		</div>

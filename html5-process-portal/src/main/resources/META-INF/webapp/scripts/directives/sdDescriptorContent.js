@@ -29,9 +29,9 @@
 			},
 			template : '<div ng-if="descriptorCtrl.dataType ==\'NUMBER\' ">'+
 							'{{descriptorCtrl.descriptorValue.value | number}}<\/div>'+
-						'<div ng-if="descriptorCtrl.dataType == \'DATE\' ">'+
-						'{{descriptorCtrl.descriptorValue.value | date: "shortDate"}}<\/div>'+
-						'<div ng-if="descriptorCtrl.dataType == \'STRING\' ">'+
+						'<div ng-if="descriptorCtrl.dataType == \'DATE\' "> ' +
+						'{{descriptorCtrl.descriptorValue.value | sdDateFilter}}<\/div>'+
+						'<div ng-if="descriptorCtrl.dataType == \'STRING\' || descriptorCtrl.dataType == \'BOOLEAN\' ">'+
 							'{{descriptorCtrl.descriptorValue.value}}'+
 						'<\/div>'+
 						'<div style="text-align:left;" ng-if="(descriptorCtrl.dataType == \'DOCUMENT\') || (descriptorCtrl.dataType == \'LIST\' && descriptorCtrl.descriptorValue.isDocument ) ">'+

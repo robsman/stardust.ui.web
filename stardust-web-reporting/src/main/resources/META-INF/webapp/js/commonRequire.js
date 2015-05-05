@@ -81,7 +81,7 @@ if (!window.bpm.portal.reportingRequire) {
 		},
 		SHIM : {
 			'angularjs' : {
-				require : "jquery",
+				deps : ["jquery"],
 				exports : "angular"
 			},
 			'json' : {

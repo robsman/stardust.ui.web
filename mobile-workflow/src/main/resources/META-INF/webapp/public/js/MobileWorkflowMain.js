@@ -32,7 +32,7 @@ require
 					exports : "InfinityBPMI18N"
 				},
 				'angularjs' : {
-					require : "jquery",
+					deps : ["jquery"],
 					exports : "angular"
 				}
 			}

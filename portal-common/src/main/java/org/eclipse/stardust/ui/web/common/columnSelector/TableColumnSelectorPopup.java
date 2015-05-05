@@ -21,6 +21,7 @@ import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.configuration.PreferencesScopesHelper;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.util.PopupDialog;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
@@ -99,6 +100,9 @@ public class TableColumnSelectorPopup extends PopupDialog
       
       prefScopesHelper.setSelectedPreferenceScope(selectedPreferenceScope);
       columnModel.saveSelectableColumns(prefScopesHelper.getSelectedPreferenceScope(),columns);
+
+      // Page refresh is required, for ICEfaces page restoration to work correctly after rearranging columns.
+      FacesUtils.refreshPage();
    }
 
    @Override

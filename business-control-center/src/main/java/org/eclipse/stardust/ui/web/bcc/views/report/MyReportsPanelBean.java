@@ -33,6 +33,7 @@ public class MyReportsPanelBean extends AbstractLaunchPanel
    public MyReportsPanelBean()
    {
       super(ResourcePaths.V_MY_FAV_REPORT);
+      setExpanded(true);
    }
 
    /**

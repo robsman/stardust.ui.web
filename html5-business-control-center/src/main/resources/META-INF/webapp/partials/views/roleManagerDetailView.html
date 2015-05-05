@@ -1,5 +1,9 @@
 <div style="padding-left: 20px;" ng-controller="sdRoleManagerDetailViewCtrl as ctrl">
-	<sd-refresh sda-on-refresh="ctrl.refresh()"></sd-refresh>
+	<div class="view-panel-toolbar toolbar-buttons">
+		<div class="view-toolbar-section" >
+			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+		</div>
+	</div>
 	<div id="alertMsg" ng-show="ctrl.userAuthorizationMsg" class="sd-panel-summary-bar">
 	   <table><tbody>
 	     <tr>

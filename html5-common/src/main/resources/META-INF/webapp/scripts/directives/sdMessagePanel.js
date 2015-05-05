@@ -15,8 +15,10 @@
 	function MessagePanel(sdUtilService) {
 		var directiveDefObject = {
 			restrict : 'E',
-			scope : true,
-			template : '<div id="messagePanel" style="border: 1px solid #CCCCCC">'
+			scope : {
+				msg : '=sdaMessage'
+			},
+			template : '<div id="messagePanel" style="border: 1px solid #CCCCCC" ng-cloak>'
 					+ '<table style="width: 100%; height: 100%;" cellpadding="0" cellspacing="0">'
 					+ '<tr valign="middle">'
 					+ '<td align="center">'
@@ -31,12 +33,22 @@
 		function MessagePanel(scope, attr) {
 			var self = this;
 			this.msg = null;
-			if (attr.sdaMessage) {
-				this.msg = attr.sdaMessage;
+			if (scope.msg) {
+				this.msg = scope.msg;
 			}
-			if (attr.sdaIconClass) {
-				angular.element('#messageIcon').parent().attr("class",
-						"infoSeverityIssueItem");
+			if (attr.sdaMessageType) {
+				var msgType = attr.sdaMessageType;
+				if(msgType == 'info'){
+					angular.element('#messageIcon').parent().attr("class",
+					"infoSeverityIssueItem");	
+				} else if(msgType == 'error'){
+					angular.element('#messageIcon').parent().attr("class",
+					"errorSeverityIssueItem");	
+				} else {
+					angular.element('#messageIcon').parent().attr("class",
+					"warningSeverityIssueItem");
+				}
+				
 				angular.element('#messagePanel').attr("class",
 						"messagePanelHighlight");
 			}

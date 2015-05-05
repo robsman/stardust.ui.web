@@ -1627,7 +1627,7 @@ if (!window["BridgeUtils"].FrameManager) {
 			BridgeUtils.log("Trying to activate Frame = " + contentId);
 
 			if (hiddenCounter == undefined) {
-				hiddenCounter = 100; // Max tries
+				hiddenCounter = 600; // Max tries = 60 secs
 			}
 
 			doWithContentFrame( contentId, function(contentFrame) {
@@ -1733,6 +1733,7 @@ if (!window["BridgeUtils"].FrameManager) {
 						}else{
 							contentFrame.style.position = 'absolute';	
 						}
+						
 						contentFrame.style.left = posX + 'px';
 						contentFrame.style.top = posY + 'px';
 						contentFrame.style.width = iFrameWith + 'px';

@@ -208,7 +208,9 @@ public class ProcessInstanceHistoryItem extends AbstractProcessHistoryTableEntry
 
    public String getPerformer()
    {
-      return performer;
+      //not applicable for process
+      //return performer;
+      return "";
    }
 
    public int getPriority()

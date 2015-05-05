@@ -17,7 +17,7 @@
 	'use strict';
 
 	angular.module('bpm-common').directive('sdDataTable', 
-			['$parse', '$q', '$compile', '$timeout', 'sgI18nService', 'sdUtilService', 'sdLoggerService', 'sdPreferenceService',
+			['$parse', '$q', '$compile', '$timeout', 'sgI18nService', 'sdUtilService', 'sdLoggerService', 'sdPreferenceService','sdPortalConfigurationService',
 			 DataTableDirective]);
 
 	var trace;
@@ -37,7 +37,7 @@
 	/*
 	 * 
 	 */
-	function DataTableDirective($parse, $q, $compile, $timeout, sgI18nService, sdUtilService, sdLoggerService, sdPreferenceService) {
+	function DataTableDirective($parse, $q, $compile, $timeout, sgI18nService, sdUtilService, sdLoggerService, sdPreferenceService, sdPortalConfigurationService) {
 		trace = sdLoggerService.getLogger('bpm-common.sdDataTable');
 
 		return {
@@ -51,7 +51,7 @@
 					post : function(scope, element, attr, ctrl) {
 						var dataTableCompiler = new DataTableCompiler(
 								$parse, $q, $compile, $timeout, sgI18nService, sdUtilService, sdPreferenceService, 
-								scope, element, attr, ctrl);
+								scope, element, attr, ctrl, sdPortalConfigurationService);
 					}
 				};
 			}
@@ -104,7 +104,7 @@
 	 * 
 	 */
 	function DataTableCompiler($parse, $q, $compile, $timeout, sgI18nService, sdUtilService, sdPreferenceService, 
-			scope, element, attr, ctrl) {
+			scope, element, attr, ctrl, sdPortalConfigurationService) {
 		var TOOLBAR_TEMPLATE =
 			'<div class="tbl-toolbar-section">\n' +
 				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSelectColumns" ng-click="$dtApi.toggleColumnSelector()"' + 
@@ -282,6 +282,8 @@
 				
 			if (attr.sdaPageSize != undefined && attr.sdaPageSize != '') {
 				pageSize = parseInt(attr.sdaPageSize);
+			} else {
+			    pageSize =  sdPortalConfigurationService.getPageSize();
 			}
 
 			if (attr.sdaNoPagination == '' || attr.sdaNoPagination == 'true') {
@@ -605,11 +607,11 @@
 			if (colDef.dataType === 'int') {
 				contents = 'rowData.' + colDef.field + ' | number';
 			} else if (colDef.dataType === 'dateTime') {
-				contents = 'rowData.' + colDef.field + ' | date: "short"';
+				contents = 'rowData.' + colDef.field + ' | sdDateTimeFilter';
 			} else if (colDef.dataType === 'date') {
-				contents = 'rowData.' + colDef.field + ' | date: "shortDate"';
+				contents = 'rowData.' + colDef.field + ' | sdDateFilter';
 			} else if (colDef.dataType === 'time') {
-				contents = 'rowData.' + colDef.field + ' | date: "shortTime"';
+				contents = 'rowData.' + colDef.field + ' | sdTimeFilter';
 			}
 
 			return contents;
@@ -2123,6 +2125,13 @@
 			this.setSelection = function(data) {
 				setRowSelection(data);
 			};
+
+			/*
+			 * 
+			 */
+			this.getData = function(index) {
+				return getPageData(index);
+			}
 		}
 
 		/*

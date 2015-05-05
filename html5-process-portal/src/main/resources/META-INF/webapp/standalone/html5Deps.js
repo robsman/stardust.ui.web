@@ -12,9 +12,6 @@ var html5Deps = function() {
 	function loadStyleSheets(pluginBaseUrl) {
 		var head = document.getElementsByTagName('head')[0];
 		var styleSheets = [
-		        "../shell/styles/kendo.css",
-		        "../shell/styles/style.css",
-		        "../shell/styles/style_override.css",
 		        "html5-common/styles/starclipse/starclipse.css",          
 				"html5-common/styles/3rd-party/jquery-plugins/jquery-ui/1.10.2/jquery-ui-custom.css",
 				"html5-common/styles/3rd-party/glyphicons/3.3.2/glyphicons.css",
@@ -42,6 +39,7 @@ var html5Deps = function() {
 				'jquery' : ['../portal-shell/js/libs/jquery/1.9.1/jquery'],
 				'jquery.dataTables' : [ "html5-common/libs/datatables/1.9.4/jquery.dataTables" ],
 				'angularjs' : ['../portal-shell/js/libs/angular/1.2.11/angular'],
+				'bootstrap' : [ 'html5-common/libs/bootstrap/bootstrap' ],
 				'portalApplication' : [ 'common/html5/portalApplication' ],
 				'html5CommonMain' : [ 'html5-common/scripts/main' ],
 				'sdEventBusService' : [ 'html5-common/scripts/services/sdEventBusService' ],
@@ -52,17 +50,18 @@ var html5Deps = function() {
 				'sdUtilService' : [ 'html5-common/scripts/services/sdUtilService' ],
 				'sdViewUtilService' : [ 'html5-common/scripts/services/sdViewUtilService' ],
 				'sdPreferenceService' : [ 'html5-common/scripts/services/sdPreferenceService' ],
-				'bootstrap' : [ 'html5-common/libs/bootstrap/bootstrap' ],
 				'sdDialog' : [ 'html5-common/scripts/directives/dialogs/sdDialog' ],
 				'sdDialogService' : [ 'html5-common/scripts/services/sdDialogService' ],
+				'sdPortalConfigurationService' : [ 'html5-common/scripts/services/sdPortalConfigurationService' ]
 			},
 			shim : {
 				'jquery.dataTables' : [ 'jquery' ],
 				'angularjs' : {
-					require : "jquery",
+					deps : ["jquery"],
 					exports : "angular"
 				},
-				'html5CommonMain' : [ 'angularjs' ],
+				'bootstrap' : ['jquery'],
+				'html5CommonMain' : [ 'angularjs', 'portalApplication'],
 				'sdEventBusService' : [ 'html5CommonMain' ],
 				'httpInterceptorProvider' : [ 'html5CommonMain' ],
 				'sdLoggerService' : [ 'html5CommonMain' ],
@@ -71,14 +70,14 @@ var html5Deps = function() {
 				'sdUtilService' : [ 'html5CommonMain' ],
 				'sdViewUtilService' : [ 'html5CommonMain' ],
 				'sdPreferenceService' : [ 'html5CommonMain' ],
-				'bootstrap' : ['jquery'],
 				'sdDialog' : [ 'html5CommonMain', 'sdLoggerService', 'bootstrap' ],
-				'sdDialogService' : [ 'sdDialog' ]
+				'sdDialogService' : [ 'sdDialog' ],
+				'sdPortalConfigurationService' : [ 'html5CommonMain' ]
 			},
-			deps : [ "jquery.dataTables", "angularjs", "portalApplication",
+			deps : [ "jquery.dataTables", "angularjs", "bootstrap", "portalApplication",
 					"html5CommonMain", "sdEventBusService", "httpInterceptorProvider",
 					"sdLoggerService", "sdData", "sdDataTable",
-					'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'bootstrap', 'sdDialog', 'sdDialogService' ]
+					'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'sdDialog', 'sdDialogService', 'sdPortalConfigurationService' ]
 
 		};
 

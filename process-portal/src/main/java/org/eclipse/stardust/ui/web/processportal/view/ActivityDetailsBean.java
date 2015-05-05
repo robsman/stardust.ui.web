@@ -1339,7 +1339,9 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       closeSaveActivityIframePopup();
       showMappedDocumentWarningAndProcessActivity(WorkflowAction.SAVE_TO_USER_WORKLIST);
-      renderSession();
+
+      // This causes JS calls to execute multiple times, TODO
+      //renderSession();
    }
 
    /**
@@ -1349,7 +1351,9 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       closeSaveActivityIframePopup();
       showMappedDocumentWarningAndProcessActivity(WorkflowAction.SAVE_TO_DEFAULT_PERFORMER);
-      renderSession();
+
+      // This causes JS calls to execute multiple times, TODO
+      //renderSession();
    }
 
    public void suspendAndSaveCurrentActivity()
