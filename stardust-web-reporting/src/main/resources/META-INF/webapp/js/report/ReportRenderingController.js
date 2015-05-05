@@ -1474,9 +1474,11 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
         	this.parameters = parameters;
 
         	if (this.report.storage.state == "saved") {
+        		this.reportingService.previewRetrieveAll = true;	
         		this.getReportData(this.report, this.parameters)
                 .done(
                       function(data) {
+                    	  
                     	// save report instance along with report definition
                     		self.saveReportInstance_(self.report, data, null);
                       }).fail(function(data) {
@@ -1516,6 +1518,7 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
 		 */
 		ReportRenderingController.prototype.saveReportInstanceAdhoc = function(reportMetadata) {
 			var self = this;
+			this.reportingService.previewRetrieveAll = true;
 			this.getReportData(this.report, this.parameters)
             .done(
                   function(data) {
@@ -1606,6 +1609,13 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
             		}
             	};
              };	
+             
+             /**
+              * 
+              */             
+             ReportRenderingController.prototype.retrieveAllRecords = function(retrieveAllResults) {
+            	 this.reportingService.previewRetrieveAll = retrieveAllResults;
+             };
            };
 			
 			function transposeArray(aInput) {
