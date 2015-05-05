@@ -2,9 +2,9 @@
    <div id="dataSetExceedWarning" style="display: none">
    
    </div>
-
+	
 	<div
-		ng-show="!renderingController.hideReportPreview && !renderingController.renderingFailed">
+		ng-show="!renderingController.hideReportPreview && !renderingController.renderingFailed && !renderingController.showRetrieveAll && report.dataSet.type != 'processHistory' && !isInstance() && !isReRun() && !isEmbedded()">
 		<table cellpadding="0" cellspacing="0" class="formTable">
 			<tr>
 				<td><img src="../css/images/information.png"></img></td>

@@ -368,6 +368,7 @@ define(
 
 									if (ui.newPanel.selector === "#previewTab") {
 										self.resetParamFilters();
+										self.renderingController.showRetrieveAll = false;
 										self.renderingController.refreshPreview(self, self.report, self.parameters).done(
 												function(){
 													//self.resetParamFilters();
@@ -500,6 +501,9 @@ define(
 				ReportDefinitionController.prototype.reloadTable = function(previewRetrieveAll) {
 					var self = this;
 					this.reportingService.previewRetrieveAll = previewRetrieveAll;
+					if (previewRetrieveAll) {
+						self.renderingController.showRetrieveAll = true;
+					}
 					this.renderingController.refreshPreview(this, this.report, this.parameters).done(function(){
 						self.updateView();	
 					});
