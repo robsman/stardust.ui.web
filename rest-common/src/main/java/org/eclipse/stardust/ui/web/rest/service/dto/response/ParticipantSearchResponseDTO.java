@@ -37,7 +37,7 @@ public class ParticipantSearchResponseDTO extends AbstractDTO
    public boolean onlineStatus = false;
    public String icon;
    public Long runtimeOrganizationOid;
-
+   public String realmId;
    
    public ParticipantSearchResponseDTO()
    {
@@ -54,6 +54,20 @@ public class ParticipantSearchResponseDTO extends AbstractDTO
       this.name = ParticipantUtils.getParticipantLabel(participant);
       this.type = ParticipantUtils.getParticipantType(participant).name();
       this.icon = determineIconPath(participant);
+   }
+   
+   /**
+    * @param user
+    */
+   public ParticipantSearchResponseDTO(User user)
+   {
+      this.id = user.getId();
+      this.qualifiedId = user.getQualifiedId();
+      this.OID = ParticipantUtils.getParticipantOID(user);
+      this.name = ParticipantUtils.getParticipantLabel(user);
+      this.type = ParticipantUtils.getParticipantType(user).name();
+      this.realmId = user.getRealm().getId();
+      this.icon = determineIconPath(user);
    }
 
    /**

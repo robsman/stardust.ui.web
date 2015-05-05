@@ -1,0 +1,93 @@
+<div class="view-panel" ng-controller="sdPreferenceManagerctrl as ctrl" sg-stretch-to-bottom>
+	<table class="preferenceSelectView">
+		<tr>
+			<td>
+				<input ng-change="ctrl.changeView()" type="radio" ng-model="ctrl.selectedPreference.value" value="partition"
+				    	name="preferenceSelectView" style="margin: 4px" />
+			</td>
+			<td>
+				<span class="label-item"
+					ng-bind="i18n('admin-portal-messages.views-prefManagerBean-tenant-label')">
+				</span>
+			</td>
+		</tr>
+
+		<tr>
+			<td>
+				<input ng-change="ctrl.changeView()" type="radio" ng-model="ctrl.selectedPreference.value" value="user"
+				       name="preferenceSelectView" style="margin: 4px" />
+			</td>
+			<td>
+				<span class="label-item"
+				ng-bind="i18n('admin-portal-messages.views-prefManagerBean-user-label')">
+				</span>
+			</td>
+			<td>
+				<sd-user-selector sda-multiple="false"
+					ng-show="ctrl.selectedPreference.value === 'user'"
+					sda-selected-data="ctrl.selectedUser"></sd-user-selector>
+			</td>
+		</tr>
+	</table>
+
+	<br/> 
+	
+	<span class="label-item"
+		ng-bind="i18n('admin-portal-messages.views-prefManagerBean-search-filter')"></span><span ng-bind="i18n('admin-portal-messages.common-colon')"></span> 
+		<input style="width: 350px" type="text" name="filterCriteria" ng-model="ctrl.searchText"></input>
+		
+	 <br/>
+	<div style="padding-top: 15px;">
+		<button class="button primary" ng-click="ctrl.filterTable()">{{i18n('admin-portal-messages.views-prefManagerBean-searchPrefStore-label')}}
+		</button>
+	</div>
+	<br />
+	<div>
+		<!-- Preferences Table -->
+		<table sd-data-table="ctrl.dataTable"
+			sd-data="ctrl.fetchPreferences(params)" sda-mode="local"
+			 sda-selectable="row" sda-no-pagination="true"
+			 sda-exports="true" sda-exports-file-name="Preference store manager">
+			<thead sda-i18n-scope="admin-portal-messages.views-prefManagerBean">
+				<tr>
+					<th sda-name="scope"
+						sda-label-key="scope-label"
+						sda-sortable="true" sda-filterable="false">
+					</th>
+					<th sda-name="moduleId"
+						sda-label-key="moduleId-label"
+						sda-sortable="true" sda-filterable="false">
+					</th>
+					<th sda-name="preferenceId"
+						sda-label-key="preferenceId-label"
+						sda-sortable="true" sda-filterable="false">
+					</th>
+					<th sda-name="preferenceName"
+						sda-label-key="preferenceName-label"
+						sda-sortable="true" sda-filterable="false">
+					</th>
+					<th sda-name="preferenceValue"
+						sda-label-key="preferenceValue-label"
+						sda-sortable="true" sda-filterable="false">
+					</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td style="white-space: nowrap;" sda-exporter="ctrl.getExportDataForScope(rowData)">
+						<span ng-bind="rowData.scope"></span> (
+							<span ng-bind="rowData.userName" ng-show="ctrl.selectedPreference.value == 'user'"> </span> 
+							<span ng-bind="rowData.partitionId" ng-show="ctrl.selectedPreference.value == 'partition'"></span> )
+					</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td sda-exporter="rowData.preferenceValue">
+						<span ng-show="!rowData.isPasswordType" ng-bind="rowData.preferenceValue"></span>
+						<span ng-show="rowData.isPasswordType"> <input type="password" readonly="readonly" ng-model="rowData.preferenceValue"></span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

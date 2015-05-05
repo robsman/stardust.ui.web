@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.rest;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -20,6 +21,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -30,8 +32,12 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.engine.core.preferences.Preferences;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.service.PreferenceService;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.PreferenceDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -49,6 +55,9 @@ public class PreferenceResource
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
 
+   @Autowired
+   private PreferenceService PreferenceService;
+
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{scope}/{moduleId}/{preferenceId}")
@@ -63,7 +72,7 @@ public class PreferenceResource
 
          AdministrationService adminService = serviceFactoryUtils.getAdministrationService();
 
-         Map<String, Map<String, Serializable>> allVals = new HashMap<String, Map<String,Serializable>>();
+         Map<String, Map<String, Serializable>> allVals = new HashMap<String, Map<String, Serializable>>();
 
          Preferences preferences = adminService.getPreferences(pScope, moduleId, preferenceId);
          allVals.put(pScope.toString(), preferences.getPreferences());
@@ -115,5 +124,47 @@ public class PreferenceResource
 
       trace.error("Scope should not be empty.");
       return Response.status(Status.BAD_REQUEST).build();
+   }
+
+   /**
+    * 
+    */
+   @GET
+   @Path("/PARTITION")
+   @Produces(MediaType.APPLICATION_JSON)
+   public Response getTenantPreferences()
+   {
+      try
+      {
+         List<PreferenceDTO> result = PreferenceService.fetchPartitionPreferences();
+         return Response.ok(GsonUtils.toJsonHTMLSafeString(result), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("Exception when fetching tenant preferences", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+
+   }
+
+   /**
+    * 
+    * @return
+    */
+   @GET
+   @Path("/USER")
+   @Produces(MediaType.APPLICATION_JSON)
+   public Response getUserPreferences(@QueryParam("realmId") String realmId, @QueryParam("userId") String userId)
+   {
+      try
+      {
+         List<PreferenceDTO> result = PreferenceService.fetchUserPreferences(userId, realmId);
+         return Response.ok(GsonUtils.toJsonHTMLSafeString(result), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("Exception when fetching Uuser preferences", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
    }
 }

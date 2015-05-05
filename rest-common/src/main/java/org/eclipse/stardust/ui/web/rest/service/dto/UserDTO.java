@@ -55,6 +55,9 @@ public class UserDTO extends AbstractDTO
    @DTOAttribute("OID")
    public Long oid;
    
+   @DTOAttribute("realm.id")
+   public String realmId;
+   
    @DTOAttribute("administrator")
    public Boolean isAdminstartor;
    

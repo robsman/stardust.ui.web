@@ -65,7 +65,7 @@ public class UserResource
       List<ParticipantSearchResponseDTO> userWrappers = new ArrayList<ParticipantSearchResponseDTO>();
       for (User user : users)
       {
-         userWrappers.add(new ParticipantSearchResponseDTO((Participant) user));
+         userWrappers.add(new ParticipantSearchResponseDTO(user));
       }
 
       QueryResultDTO resultDTO = new QueryResultDTO();
