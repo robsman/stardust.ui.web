@@ -130,7 +130,7 @@ public class PreferenceResource
     * 
     */
    @GET
-   @Path("/PARTITION")
+   @Path("/partition")
    @Produces(MediaType.APPLICATION_JSON)
    public Response getTenantPreferences()
    {
@@ -152,7 +152,7 @@ public class PreferenceResource
     * @return
     */
    @GET
-   @Path("/USER")
+   @Path("/user")
    @Produces(MediaType.APPLICATION_JSON)
    public Response getUserPreferences(@QueryParam("realmId") String realmId, @QueryParam("userId") String userId)
    {

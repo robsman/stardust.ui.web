@@ -40,7 +40,7 @@
 		 * 
 		 */
 		PreferenceService.prototype.getTenantPreferences = function() {
-		    var restUrl = "services/rest/portal/preference/PARTITION";
+		    var restUrl = "services/rest/portal/preference/partition";
 		    return $resource(restUrl).query().$promise;
 		};
 		
@@ -48,7 +48,7 @@
 		 * 
 		 */
 		PreferenceService.prototype.getUserPreferences = function(realmId,userId) {
-		    var restUrl = "services/rest/portal/preference/USER";
+		    var restUrl = "services/rest/portal/preference/user";
 		    if (realmId && userId) {
 			restUrl =restUrl + "?realmId="+realmId +"&userId="+ userId;
 		    }
