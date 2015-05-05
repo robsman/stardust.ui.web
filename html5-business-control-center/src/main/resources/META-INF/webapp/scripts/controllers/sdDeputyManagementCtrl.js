@@ -15,11 +15,8 @@
 (function() {
 	'use strict';
 
-	angular.module("bcc-ui")
-			.controller(
-					'sdDeputyManagementCtrl',
-					[ '$q', 'sdDeputyManagementService', 'sdLoggerService', 'sdUtilService',
-							DeputyManagementCtrl ]);
+	angular.module("bcc-ui").controller('sdDeputyManagementCtrl',
+			[ '$q', 'sdDeputyManagementService', 'sdLoggerService', 'sdUtilService', DeputyManagementCtrl ]);
 
 	var _q;
 	var _sdDeputyManagementService;
@@ -195,7 +192,7 @@
 		});
 
 	};
-	
+
 	/**
 	 * 
 	 */
@@ -271,51 +268,56 @@
 	DeputyManagementCtrl.prototype.onConfirmAddEditDeputy = function(res) {
 		var self = this;
 		// validating data
-		var error = this.validateData();
-		if (error) {
-			return false;
-		} else {
-			var userOID = self.rowSelectionForUsers.userOID;
-			if (self.deputy.mode == "EDIT") {
-				var deputyOID = self.deputy.deputyOID;
+		if (self.addEditDeputyForm.$valid) {
+			var error = this.validateData();
+			if (error) {
+				return false;
 			} else {
-				var deputyOID = self.deputy.participantDataSelected[0].OID;
+				var userOID = self.rowSelectionForUsers.userOID;
+				if (self.deputy.mode == "EDIT") {
+					var deputyOID = self.deputy.deputyOID;
+				} else {
+					var deputyOID = self.deputy.participantDataSelected[0].OID;
+				}
+
+				var validFrom = self.deputy.validFrom;
+				var validTo = self.deputy.validTo;
+				var modelParticipantIds = [];
+				angular.forEach(self.deputy.targetParticipants, function(participant) {
+					modelParticipantIds.push(participant.value);
+				});
+
+				var mode = self.deputy.mode;
+
+				var userRow = {
+					userOID : self.rowSelectionForUsers.userOID
+				};
+
+				delete self.deputy;
+
+				_sdDeputyManagementService.addOrModifyDeputy(userOID, deputyOID, validFrom, validTo,
+						modelParticipantIds, mode).then(function(data) {
+					self.getUsers().then(function(data) {
+						setTimeout(function() {
+							self.usersTable.setSelection(userRow);
+						}, 500);
+					});
+				}, function(result) {
+					// Error occurred
+					trace.log('An error occurred while adding deputy.\n Caused by: ' + result);
+				});
+
 			}
 
-			var validFrom = self.deputy.validFrom;
-			var validTo = self.deputy.validTo;
-			var modelParticipantIds = [];
-			angular.forEach(self.deputy.targetParticipants, function(participant) {
-				modelParticipantIds.push(participant.value);
-			});
+		} else {
 
-			var mode = self.deputy.mode;
-
-			var userRow = {
-				userOID : self.rowSelectionForUsers.userOID
-			};
-
-			delete self.deputy;
-
-			_sdDeputyManagementService.addOrModifyDeputy(userOID, deputyOID, validFrom, validTo, modelParticipantIds, mode)
-					.then(function(data) {
-						self.getUsers().then(function(data) {
-							setTimeout(function() {
-								self.usersTable.setSelection(userRow);
-							}, 500);
-						});
-					}, function(result) {
-						// Error occurred
-						trace.log('An error occurred while adding deputy.\n Caused by: ' + result);
-					});
-
+			return false;
 		}
-
 	};
-    /**
-     * 
-     * @returns {Boolean}
-     */
+	/**
+	 * 
+	 * @returns {Boolean}
+	 */
 	DeputyManagementCtrl.prototype.validateData = function() {
 		var self = this;
 		var error = false;

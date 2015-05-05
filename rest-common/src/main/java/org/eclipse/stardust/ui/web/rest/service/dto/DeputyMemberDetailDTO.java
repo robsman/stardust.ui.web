@@ -14,9 +14,9 @@ import java.util.Date;
 import java.util.List;
 
 import org.eclipse.stardust.engine.api.runtime.User;
-import org.eclipse.stardust.ui.web.common.table.IRowModel;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
+import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 
@@ -24,7 +24,8 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
  * @author Abhay.Thappan
  *
  */
-public class DeputyMemberDetailDTO implements IRowModel
+@DTOClass
+public class DeputyMemberDetailDTO extends AbstractDTO
 {
    public User user;
 
@@ -82,16 +83,6 @@ public class DeputyMemberDetailDTO implements IRowModel
       setHasDeputies(hasDeputies);
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.eclipse.stardust.ui.web.common.table.IRowModel#getStyleClass()
-    */
-   public String getStyleClass()
-   {
-      return null;
-   }
-
    public String getUserDisplayName()
    {
       if (null != user && StringUtils.isEmpty(userDisplayName))
@@ -102,13 +93,6 @@ public class DeputyMemberDetailDTO implements IRowModel
       return userDisplayName;
    }
 
-   /*  *//**
-    * @return
-    */
-   /*
-    * public DeputyMemberDetailDTO getClone() { DeputyMemberDetailDTO clone = new
-    * DeputyMemberDetailDTO(user, validFrom, validTo, participants); return clone; }
-    */
    /**
     * @return
     */
@@ -135,41 +119,11 @@ public class DeputyMemberDetailDTO implements IRowModel
    @Override
    public boolean equals(Object obj)
    {
-      if (null != this.getUser() && obj instanceof DeputyMemberDetailDTO)
+      if (null != this.user && obj instanceof DeputyMemberDetailDTO)
       {
-         return this.getUser().getAccount().equals(((DeputyMemberDetailDTO) obj).getUser().getAccount());
+         return this.user.getAccount().equals(((DeputyMemberDetailDTO) obj).user.getAccount());
       }
 
       return false;
-   }
-
-   public User getUser()
-   {
-      return user;
-   }
-
-   public void setUser(User user)
-   {
-      this.user = user;
-   }
-
-   public boolean isHasDeputies()
-   {
-      return hasDeputies;
-   }
-
-   public String getHasDeputiesLabel()
-   {
-      return hasDeputiesLabel;
-   }
-
-   public boolean isSelected()
-   {
-      return selected;
-   }
-
-   public void setSelected(boolean selected)
-   {
-      this.selected = selected;
    }
 }

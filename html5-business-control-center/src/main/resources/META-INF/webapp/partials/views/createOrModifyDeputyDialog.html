@@ -25,8 +25,8 @@
 		<table>
 			<tbody>
 				<tr>
-					<td class="table-columnVertical" style="padding-top: 10px;"><label class="form-lable"
-						style="padding-top: 8px;">{{i18n('views-common-messages.views-deputyManagementView-dialog-deputyName')}}</label></td>
+					<td class="table-columnVertical" style="padding-top: 10px;"><label
+						class="form-lable" style="padding-top: 8px;">{{i18n('views-common-messages.views-deputyManagementView-dialog-deputyName')}}</label></td>
 					<td class="table-columnVertical">
 						<div ng-if="ctrl.deputy.mode != 'EDIT'" sd-participant-selector
 							sda-selected-data="ctrl.deputy.participantDataSelected"
@@ -65,16 +65,27 @@
 				</tr>
 				<tr>
 					<td><label class="form-lable">{{i18n('business-control-center-messages.views-deputyManagementView-validFrom')}}</label></td>
-					<td class="table-columnVertical"><div
-						sd-date-time-picker ng-model="ctrl.deputy.validFrom" name="validFrom"></div>
+					<td class="table-columnVertical"><div sd-date-time-picker
+							ng-model="ctrl.deputy.validFrom" name="validFrom" ng-model-onblur></div>
 					</td>
 				</tr>
 				<tr>
+					<td></td>
+					<td class="msg-error"
+						ng-show="ctrl.addEditDeputyForm['validFrom'].$error.validate">
+						{{i18n('html5-common.date-error')}}</td>
+				</tr>
+				<tr>
 					<td class="table-columnVertical"><label class="form-lable">{{i18n('business-control-center-messages.views-deputyManagementView-validTo')}}</label></td>
-					<td class="table-columnVertical"><div
-						sd-date-time-picker
-						ng-model="ctrl.deputy.validTo" name="validTo"> </div>
-					</td>
+					<td class="table-columnVertical"><div sd-date-time-picker
+							ng-model="ctrl.deputy.validTo" name="validTo" ng-model-onblur>
+						</div></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td class="msg-error"
+						ng-show="ctrl.addEditDeputyForm['validTo'].$error.validate">
+						{{i18n('html5-common.date-error')}}</td>
 				</tr>
 			</tbody>
 		</table>
