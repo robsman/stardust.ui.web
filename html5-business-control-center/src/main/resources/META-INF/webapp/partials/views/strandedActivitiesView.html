@@ -1,0 +1,16 @@
+<div style="padding-left: 20px;"
+	ng-controller="sdStrandedActivitiesCtrl as ctrl" class="view-panel">
+	<div class="view-panel-toolbar toolbar-buttons">
+		<div class="view-toolbar-section">
+			<span sd-refresh sda-on-refresh="ctrl.refresh();"></sapn>
+		</div>
+	</div>
+	<div class="view-panel-toolbar tbl-title"
+		style="color: #708090; font-size: 11px">{{i18n('business-control-center-messages.views-strandedActivities-label')}}</div>
+	<div sd-activity-table="ctrl.strandedActivitiesTable"
+		sda-mode="activityTable" sd-data="ctrl.getStrandedActivities(params);"
+		sda-default-delegate-enabled="true"
+		sda-preference-module="ipp-views-common"
+		sda-preference-id="preference"
+		sda-preference-name="ipp-views-common.activityWithPrio.selectedColumns"></div>
+</div>
