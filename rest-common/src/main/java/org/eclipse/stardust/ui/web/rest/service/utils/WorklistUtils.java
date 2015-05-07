@@ -39,6 +39,7 @@ import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil;
@@ -95,25 +96,44 @@ public class WorklistUtils
 
       if (null != user)
       {
+         ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
+               ActivityInstanceState.Application, ActivityInstanceState.Suspended});
+         FilterOrTerm or = query.getFilter().addOrTerm();
+         or.add(ActivityInstanceQuery.CURRENT_USER_PERFORMER_OID.isEqual(user.getOID()));
+         ActivityInstances activityInstances = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+         return activityInstances;
+      }
+      else
+      {
+         throw new ObjectNotFoundException("UserId not found");
+      }
+   }
+   
+   
+   /**
+    * @param userId
+    * @return
+    */
+   public QueryResult< ? > getUnifiedWorklistForUser(String userId, Options options)
+   {
+      User user = serviceFactoryUtils.getUserService().getUser(userId);
+
+      if (null != user)
+      {
          // TODO: User WorklistQuery?
          ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
                ActivityInstanceState.Application, ActivityInstanceState.Suspended});
-         // TODO - this is used to enhance performace but has a bug
-         // query.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
-
-         FilterOrTerm or = query.getFilter().addOrTerm();
-         or.add(PerformingParticipantFilter.ANY_FOR_USER).add(new PerformingUserFilter(user.getOID()));
-
          // Remove role activities
-         FilterAndNotTerm not = query.getFilter().addAndNotTerm();
+         FilterOrTerm or = query.getFilter().addOrTerm();
+         or.add(new PerformingUserFilter(user.getOID()));
          List<Grant> allGrants = user.getAllGrants();
          for (Grant grant : allGrants)
          {
-            not.add(PerformingParticipantFilter.forParticipant(serviceFactoryUtils.getQueryService().getParticipant(
+            if (!(grant instanceof UserInfo))
+               or.add(PerformingParticipantFilter.forParticipant(serviceFactoryUtils.getQueryService().getParticipant(
                   grant.getId())));
          }
          ActivityTableUtils.addCriterias(query, options);
-
          ActivityInstances activityInstances = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
 
          return activityInstances;

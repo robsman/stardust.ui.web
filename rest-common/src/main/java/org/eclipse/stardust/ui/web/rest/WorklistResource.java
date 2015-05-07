@@ -116,6 +116,35 @@ public class WorklistResource
          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
    }
+   
+   
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("/unified/user/{userId}")
+   public Response getUnifiedWorklistForUser(@PathParam("userId") String userId,
+         @QueryParam("skip") @DefaultValue(DEFAULT_SKIP_STEP) Integer skip,
+         @QueryParam("pageSize") @DefaultValue(DEFAULT_PAGE_SIZE) Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue(DEFAULT_ORDER_BY_FIELD) String orderBy,
+         @QueryParam("orderByDir") @DefaultValue(DEFAULT_ORDER) String orderByDir, String postData)
+   {
+      try
+      {
+         Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
+         populatePostData(options, postData);
+         QueryResultDTO resultDTO = getWorklistService().getUnifiedWorklistForUser(userId, "default", options);
+         return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (ObjectNotFoundException onfe)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+   }
 
    @POST
    @Produces(MediaType.APPLICATION_JSON)

@@ -350,6 +350,73 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
          lastSearchItems.put(id, new ActivitySearchModel(id, name, userWorklistQueryBuilder));
       }
    }
+   
+   public void searchAllActivityInstancesActionHTML5()
+   {
+      allActivityQueryBuilder.executeCountQuery();
+      if (allActivityQueryBuilder.getCountQueryResult() != null)
+      {
+         Map<String, Object> params = CollectionUtils.newTreeMap();
+         String name = this.getMessages().getString("allActivities");
+         String id = ID_ALL_ACTIVITY_INSTANCES;
+         params.put("id", id);
+         params.put("name", name);
+         params.put("url", "services/rest/portal/worklist/allActivable");
+         PPUtils.openWorklistViewHTML5("id=" + id, params);
+         PPUtils.selectWorklist(null);
+         if (lastSearchItems.containsKey(id))
+            lastSearchItems.remove(id);
+         // add to SearchResult Map
+         lastSearchItems.put(id, new ActivitySearchModel(id, name, allActivityQueryBuilder, params));
+      }
+   }
+
+   public void searchAllResubmissionActivityInstancesActionHTML5()
+   {
+      allResubmissionActivity.executeCountQuery();
+      if (allResubmissionActivity.getCountQueryResult() != null)
+      {
+         Map<String, Object> params = CollectionUtils.newTreeMap();
+         String name = this.getMessages().getString("resubmission");
+         String id = ID_ALL_RESUBMISSION_ACTIVITY_INSTANCES;
+         params.put("id", id);
+         params.put("name", name);
+         params.put("showResubmitLink", true);
+         params.put("url", "services/rest/portal/worklist/resubmissionActivities");
+         PPUtils.openWorklistViewHTML5("id=" + id, params);
+         PPUtils.selectWorklist(null);
+         // add to SearchResult Map
+         if (lastSearchItems != null)
+         {
+            lastSearchItems.put(id, new ActivitySearchModel(id, name, allResubmissionActivity, params));
+         }
+      }
+
+   }
+
+   public void searchWorklistHTML5For(User user)
+   {
+      userWorklistSearchPanelVisible = false;
+      UserWorklistQueryBuilder userWorklistQueryBuilder = new UserWorklistQueryBuilder(user);
+      userWorklistQueryBuilder.executeCountQuery();
+      if (userWorklistQueryBuilder.getCountQueryResult() != null)
+      {
+         Map<String, Object> params = CollectionUtils.newTreeMap();
+         String name = I18nUtils.getUserLabel(user);
+         String id = ID_USER_WORKLIST_SEARCH + user.getOID();
+         params.put("id", id);
+         params.put("name", name);
+         params.put("userId", user.getId());
+         PPUtils.openWorklistViewHTML5("id=" + id, params);
+         PPUtils.selectWorklist(null);
+         if (lastSearchItems.containsKey(id))
+         {
+            lastSearchItems.remove(id);
+         }
+         // add to SearchResult Map
+         lastSearchItems.put(id, new ActivitySearchModel(id, name, userWorklistQueryBuilder, params));
+      }
+   }
 
    private class UserWorklistQueryBuilder implements IQueryBuilder
    {

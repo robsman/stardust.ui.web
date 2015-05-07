@@ -45,6 +45,11 @@ public class ActivitySearchUserModel
       select();
       return null;
    }
+   
+   public void selectActionHTML5()
+   {
+      searchHandler.searchWorklistHTML5For(this.user);
+   }
 
    /**
     * 

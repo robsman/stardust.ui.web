@@ -27,4 +27,6 @@ public interface IActivitySearchUserSearchHandler
     *           the user to search the <code>Worklist</code> for
     */
    void searchWorklistFor(User user);
+   
+   void searchWorklistHTML5For(User user);
 }

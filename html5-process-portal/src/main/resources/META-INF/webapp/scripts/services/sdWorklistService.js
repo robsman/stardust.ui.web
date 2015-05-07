@@ -36,24 +36,29 @@
 		   if(query.url) {
 			   restUrl = query.url;
 		   }else {
-			   restUrl = REST_BASE_URL + ":type/:id";
+			   restUrl = REST_BASE_URL;
 		   }
 		   
 		   // Prepare path Params
 		   var urlTemplateParams = {};
 		   if (query.criticality) {
+		       	   restUrl = restUrl  + ":type/:id";
 			   urlTemplateParams.type = "criticality";
 			   urlTemplateParams.id = query.criticality;
 		   }else  if (query.fromDate) {
+			   restUrl = restUrl  + ":type/:id";
 			   urlTemplateParams.type = "date";
 			   urlTemplateParams.id = query.fromDate;
 		   }else if (query.processQId) {
+			   restUrl = restUrl  + ":type/:id";
 			   urlTemplateParams.type = "process";
 			   urlTemplateParams.id = query.processQId;
 		   }else if (query.participantQId) {
+			   restUrl = restUrl  + ":type/:id";
 			   urlTemplateParams.type = "participant";
 			   urlTemplateParams.id = query.participantQId;
 		   }else if (query.userId) {
+			   restUrl = restUrl  + ":type/:id";
 			   urlTemplateParams.type = "user";
 			   urlTemplateParams.id = query.userId;
 		   }else{

@@ -82,6 +82,18 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
    {
       setExpanded(true);
    }
+   
+   
+   public void lastNSelectListenerHTML5(ValueChangeEvent event)
+   {
+      String dateId = ((String) event.getNewValue());
+      Map<String, Object> params = CollectionUtils.newTreeMap();
+      params.put("id", "lastNWorkedOn");
+      params.put("name", this.getMessages().getString("pastProcessInstances." + dateId));
+      params.put("fromDate", dateId);
+      PPUtils.openWorklistViewHTML5("id=" + "lastNWorkedOn" + "&dateID=" + dateId, params);
+      PPUtils.selectWorklist(null);
+   }
 
    public void lastNSelectListener(ValueChangeEvent event)
    {
@@ -176,6 +188,7 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
       selectDirectUserWorklist();
       return null;
    }
+   
 
    /**
     * @return
@@ -320,6 +333,52 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
       // TODO: This will be removed
       return 7000;
    }
+   
+   /**
+    * @return
+    */
+   public void selectDirectUserWorkActionHTML5()
+   {
+      ParticipantInfo participantInfo = SessionContext.findSessionContext().getUser();
+
+      Map<String, Object> params = CollectionUtils.newTreeMap();
+      params.put("id", participantInfo.getId());
+      params.put("url", "services/rest/portal/worklist/personalItems");
+      String name = ParticipantUtils.getParticipantName(participantInfo);
+      params.put("name", name);
+      PPUtils.openWorklistViewHTML5("id=" + participantInfo.getId(), params);
+      PPUtils.selectWorklist(participantInfo);
+   }
+   
+   public void selectAllAssignedActivitiesActionHTML5()
+   {
+      ParticipantInfo participantInfo = SessionContext.findSessionContext().getUser();
+      Map<String, Object> params = CollectionUtils.newTreeMap();
+      String id =  SpecialWorklistCacheManager.ALL_ACTVITIES;
+      params.put("id", id);
+      params.put("url", "services/rest/portal/worklist/allAssigned");
+      String name = ParticipantUtils.getParticipantName(participantInfo);
+      params.put("name", name);
+      PPUtils.openWorklistViewHTML5("id=" + id, params);
+      PPUtils.selectWorklist(participantInfo);
+   }
+   
+   public void selectCriticalActivitiesActionHTML5()
+   {
+      ParticipantInfo participantInfo = SessionContext.findSessionContext().getUser();
+      Map<String, Object> params = CollectionUtils.newTreeMap();
+      String id =  SpecialWorklistCacheManager.CRITICAL_ACTVITIES;
+      params.put("id", id);
+      params.put("criticality", "high");
+      String name = ParticipantUtils.getParticipantName(participantInfo);
+      params.put("name", name);
+      PPUtils.openWorklistViewHTML5("id=" + id, params);
+      PPUtils.selectWorklist(participantInfo);
+   }
+   
+   
+   
+   
 
    private class PriorityActivityQueryBuilder implements IQueryBuilder
    {

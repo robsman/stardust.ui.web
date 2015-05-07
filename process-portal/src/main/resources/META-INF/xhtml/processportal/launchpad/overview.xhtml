@@ -5,6 +5,7 @@
 	xmlns:c="http://java.sun.com/jstl/core"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
 
 	<ice:panelGroup>
 			<ui:include src="/plugins/common/templates/launchPanelTemplate.xhtml">
@@ -15,12 +16,13 @@
 		</ui:include>
 	</ice:panelGroup>
 	<ice:panelGroup rendered="#{processportal_overviewPanel.expanded}">
+	
 		<ice:outputText
 			value="#{processportal_overviewPanel.messages['directWorkItems']} " />
 		<ice:panelGrid columns="1" style="margin-left:10px">
 			<ice:panelGroup>
 				<ice:commandLink styleClass="action-link"
-					action="#{processportal_overviewPanel.selectDirectUserWorkAction}">
+					action="#{processportal_overviewPanel.selectDirectUserWorkActionHTML5}">
 					<pc:automationTag value="auto-PP-LP-Overview-DirectWorkItems"
 						standAlone="true" />
 					<ice:outputFormat
@@ -29,6 +31,20 @@
 					</ice:outputFormat>
 				</ice:commandLink>
 			</ice:panelGroup>
+			<ice:panelGroup>
+				<ice:commandLink styleClass="action-link"
+					action="#{processportal_overviewPanel.selectAllAssignedActivitiesActionHTML5}">
+					<pc:automationTag
+						value="auto-PP-LP-Overview-selectAllAssignedActivitiesAction"
+						standAlone="true" />
+					<ice:outputFormat
+						value="#{processportal_overviewPanel.messages['allWorkItemsLink']}">
+						<f:param
+							value="#{processportal_overviewPanel.allAssignedActivitiesCount}" />
+					</ice:outputFormat>
+				</ice:commandLink>
+			</ice:panelGroup>
+			
 			<ice:panelGroup>
 				<ice:commandLink styleClass="action-link"
 					action="#{processportal_overviewPanel.selectAllAssignedActivitiesAction}">
@@ -42,10 +58,9 @@
 					</ice:outputFormat>
 				</ice:commandLink>
 			</ice:panelGroup>
-	
 			<ice:panelGroup>
 				<ice:commandLink styleClass="action-link"
-					action="#{processportal_overviewPanel.selectCriticalActivitiesAction}">
+					action="#{processportal_overviewPanel.selectCriticalActivitiesActionHTML5}">
 					<pc:automationTag
 						value="auto-PP-LP-Overview-selectCriticalActivitiesAction"
 						standAlone="true" />
@@ -80,7 +95,7 @@
 			<ice:panelGroup>
 				<ice:outputText value="#{processportal_overviewPanel.messages['pastProcessInstances']}" />
 				<ice:selectOneMenu partialSubmit="true"
-					valueChangeListener="#{processportal_overviewPanel.lastNSelectListener}">
+					valueChangeListener="#{processportal_overviewPanel.lastNSelectListenerHTML5}">
 					<pc:automationTag value="auto-PP-LP-Overview-LastNSelect" standAlone="false"/>
 					<f:selectItem itemLabel="" itemValue="-" />
 					<f:selectItem

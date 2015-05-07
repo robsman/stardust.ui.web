@@ -28,7 +28,7 @@
 					<ice:panelGroup style="display:inline;" panelTooltip="myProcTooltip">
 						<ice:outputText value="#{item.name}:" />
 					</ice:panelGroup>
-					<ice:commandLink styleClass="action-link" action="#{item.select}" 
+					<ice:commandLink styleClass="action-link" action="#{item.selectHTML5}" 
 						disabled="#{(item.totalCount eq 0) ? true : false}">
 						<ice:outputFormat style="white-space: nowrap;"
 							value="#{myProcessesPanel.messages['items']}">

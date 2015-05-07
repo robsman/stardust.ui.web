@@ -509,9 +509,6 @@
 	    this.title = titleGetter(scopeToUse);
 
 	    if (this.query) {
-
-		var idFromQuery = this.query.userId || this.query.participantQId || this.query.processQId;
-
 		if (this.query.processQId) {
 		    this.preferenceName = idFromQuery;
 		    this.preferenceId = 'worklist-process-columns';
@@ -525,7 +522,7 @@
 		    this.preferenceName = sdLoggedInUserService.getUserInfo().id;
 		    this.preferenceId = 'worklist-participant-columns';
 		}
-		this.exportFileName = this.exportFileName + "_" + idFromQuery;
+		this.exportFileName = this.exportFileName + " (" + this.query.name +")";
 	    }
 
 	    if (attr.sdaPreferenceModule) {

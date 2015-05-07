@@ -53,6 +53,16 @@ public class WorklistService
       QueryResult< ? > queryResult = worklistUtils.getWorklistForUser(userId, options);
       return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
    }
+   
+   /**
+    * @param userId
+    * @return
+    */
+   public QueryResultDTO getUnifiedWorklistForUser(String userId, String context, Options options)
+   {
+      QueryResult< ? > queryResult = worklistUtils.getUnifiedWorklistForUser(userId, options);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
+   }
 
    /**
     * 

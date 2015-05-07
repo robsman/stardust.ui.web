@@ -109,6 +109,15 @@ public class PPUtils
    {
       PortalApplication.getInstance().openViewById(WORKLIST_VIEW_ID, viewKey, params, null, false);
    }
+   
+   /**
+    * @param viewKey
+    * @param params
+    */
+   public static void openWorklistViewHTML5(String viewKey, Map<String, Object> params)
+   {
+      PortalApplication.getInstance().openViewById("worklistViewHtml5", viewKey, params, null, false);
+   }
 
    /**
     * @param firstName

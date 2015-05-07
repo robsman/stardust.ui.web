@@ -127,7 +127,7 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td sda-exporter="rowData.activity.name">
+				<td sda-exporter="rowData.activity.name" style="text-align: left; white-space: nowrap;">
 					<div ng-if="activityTableCtrl.isWorklistMode();">
 						<a ng-if="rowData.activatable" href="#" ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$activateItem(rowData);"
 							title="{{i18n('processportal.views-worklistPanel-tooltip-openActivity')}}" class="button-link tbl-tool-link"> 
@@ -182,7 +182,7 @@
 				
 				<td sda-field="lastModification" sda-data-type="dateTime" style="text-align: center; white-space: nowrap;">
 				</td>
-				<td sda-field="duration" style="text-align: center;">
+				<td sda-field="duration" style="text-align: center; white-space: nowrap;"">
 				</td>
 				
 				<td sda-field="lastPerformer" ng-if ="activityTableCtrl.isWorklistMode();" style="text-align: left;">
