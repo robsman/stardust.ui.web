@@ -87,6 +87,10 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
    public void lastNSelectListenerHTML5(ValueChangeEvent event)
    {
       String dateId = ((String) event.getNewValue());
+      
+      if("-".equals(dateId)){
+         return;
+      }
       Map<String, Object> params = CollectionUtils.newTreeMap();
       params.put("id", "lastNWorkedOn");
       params.put("name", this.getMessages().getString("pastProcessInstances." + dateId));

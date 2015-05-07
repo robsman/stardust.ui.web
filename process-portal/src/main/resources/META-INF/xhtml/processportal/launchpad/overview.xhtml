@@ -44,20 +44,6 @@
 					</ice:outputFormat>
 				</ice:commandLink>
 			</ice:panelGroup>
-			
-			<ice:panelGroup>
-				<ice:commandLink styleClass="action-link"
-					action="#{processportal_overviewPanel.selectAllAssignedActivitiesAction}">
-					<pc:automationTag
-						value="auto-PP-LP-Overview-selectAllAssignedActivitiesAction"
-						standAlone="true" />
-					<ice:outputFormat
-						value="#{processportal_overviewPanel.messages['allWorkItemsLink']}">
-						<f:param
-							value="#{processportal_overviewPanel.allAssignedActivitiesCount}" />
-					</ice:outputFormat>
-				</ice:commandLink>
-			</ice:panelGroup>
 			<ice:panelGroup>
 				<ice:commandLink styleClass="action-link"
 					action="#{processportal_overviewPanel.selectCriticalActivitiesActionHTML5}">
