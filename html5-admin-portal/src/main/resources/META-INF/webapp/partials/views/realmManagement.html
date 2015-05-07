@@ -1,0 +1,83 @@
+<div class="view-panel" ng-controller="sdRealmManagementCtrl as ctrl"
+	sg-stretch-to-bottom>
+	<!-- Refresh Button -->
+	<div class="view-panel-toolbar toolbar-buttons">
+		<div class="view-toolbar-section">
+			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+		</div>
+	</div>
+	
+	<div>
+		<div class="heading" ng-bind="i18n('admin-portal-messages.views-realmMgmt-userRealmsTable-title')"></div>
+		<div class="clearing"></div>
+		<!-- Categories table -->
+		<div sda-toolbar>
+			<div class="tbl-toolbar-section">
+				<!-- Create -->
+				<button ng-click="ctrl.openCreateRealmDlg()" title="{{i18n('admin-portal-messages.common-create')}}" 
+						class="button-link tbl-toolbar-item tbl-tool-link" style="margin-right: 0px;">
+				   <i class="sc sc-fw sc-plus" style="font-size: 1.5em;"></i>
+				</button>
+				<!-- Remove -->
+				<button ng-disabled="ctrl.dataTable.getSelection() < 1" ng-click="ctrl.removeRealms()" 
+					title="{{i18n('admin-portal-messages.common-delete')}}" class="button-link tbl-toolbar-item tbl-tool-link" style="margin-right: 0px;">
+				   <i class="sc sc-fw sc-minus" style="font-size: 1.5em;"></i>
+				</button>
+			</div>
+		</div>
+	
+		<!-- Data table -->
+		<table sd-data-table="ctrl.dataTable" sd-data="ctrl.realms"
+			sda-mode="local" sda-selectable="multiple" sda-selection="ctrl.selection" sda-no-pagination="true"
+			sda-sortable="true" sda-exports="true" sda-column-selector="{{ctrl.columnSelector}}"
+			sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)">
+			<thead sda-i18n-scope="admin-portal-messages.views-realmMgmt-userRealmsTable-column">
+				<tr>
+					<th sda-name="name" sda-sortable="true"></th>
+					<th sda-name="id" sda-sortable="false"></th>
+					<th sda-name="descr" sda-sortable="false"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td sda-field="name"></td>
+					<td sda-field="id"></td>
+					<td sda-field="description"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+	<div sd-dialog sda-show="ctrl.showCreateDlg" sda-type="confirm" sda-confirm-action-label="{{i18n('views-common-messages.common-apply')}}"
+		sda-cancel-action-label="{{i18n('views-common-messages.common-cancel')}}"
+		sda-on-confirm="ctrl.createRealm()" sda-title="{{i18n('admin-portal-messages.views-realmMgmt-createRealm-title')}}"
+		>
+		<form name="realmForm">
+			<div sd-message></div>
+			<table>
+				<tr>
+					<td>* {{i18n('admin-portal-messages.views-realmMgmt-userRealmsTable-column-id')}} {{i18n('admin-portal-messages.common-colon')}}</td>
+					<td>
+						<input name="id" ng-model="ctrl.realmToCreate.id" required/>
+						<span class="msg-error" ng-show="realmForm.id.$error.required">
+							{{i18n('html5-common.required-value')}}
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td>* {{i18n('admin-portal-messages.views-realmMgmt-userRealmsTable-column-name')}} {{i18n('admin-portal-messages.common-colon')}}</td>
+					<td>
+						<input name="name" ng-model="ctrl.realmToCreate.name" required/>
+						<span class="msg-error" ng-show="realmForm.name.$error.required">
+							{{i18n('html5-common.required-value')}}
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<td>{{i18n('admin-portal-messages.views-realmMgmt-userRealmsTable-column-descr')}} {{i18n('admin-portal-messages.common-colon')}}</td>
+					<td><input ng-model="ctrl.realmToCreate.description" /></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+</div>
