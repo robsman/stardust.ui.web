@@ -306,10 +306,10 @@ define(
 				/**
 				 * 
 				 */
-				PropertiesPage.prototype.broadcastElementChangedEvent = function() {
+				PropertiesPage.prototype.broadcastElementChangedEvent = function(initialize) {
           var self = this;
           m_angularContextUtils.runInAngularContext(function($scope){
-            $scope.$broadcast('REFRESH_PROPERTIES_PANEL', self.propertiesPanel);
+            $scope.$broadcast('REFRESH_PROPERTIES_PANEL', self.propertiesPanel, initialize);
           }, m_utils.jQuerySelect("#" + self.id).get(0));
         };
         

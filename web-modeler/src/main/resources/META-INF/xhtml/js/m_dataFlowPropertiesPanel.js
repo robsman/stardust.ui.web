@@ -88,13 +88,13 @@ define(
 				 * 
 				 */
 				DataFlowPropertiesPanel.prototype.setElement = function(
-						element) {
+						element, initialize) {
 					this.clearErrorMessages();
 
 					this.element = element;
 
 					for ( var n in this.propertiesPages) {
-						this.propertiesPages[n].setElement();
+						this.propertiesPages[n].setElement(initialize);
 					}
 				};
 			}
