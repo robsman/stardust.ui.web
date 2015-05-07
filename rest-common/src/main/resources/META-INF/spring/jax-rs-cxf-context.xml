@@ -31,6 +31,7 @@
          <bean class="org.eclipse.stardust.ui.web.rest.RoleAssignmentResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.QualityAssuranceManagementResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.CriticalityConfigResource" />
+         <bean class="org.eclipse.stardust.ui.web.rest.RealmManagementResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.PasswordManagementResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.FileUploadResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.DeputyManagementResource" />
