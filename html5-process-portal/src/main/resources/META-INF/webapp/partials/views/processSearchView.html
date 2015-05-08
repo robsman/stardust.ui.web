@@ -354,7 +354,7 @@ table.layoutTable td {
 									<table>
 										<tr>
 											<td><select
-												ng-model="procSearchViewCtrl.query.processSearchCriteria.descriptors.selected[descCol.id]"
+												ng-model="procSearchViewCtrl.selected[descCol.id]"
 												ng-options="option.value as option.label for option in procSearchViewCtrl.descBoolOptions"</select></td>
 										</tr>
 									</table>
@@ -363,7 +363,7 @@ table.layoutTable td {
 									ng-if="descCol.dataType =='NUMBER' || descCol.dataType==
 									'STRING'">
 									<input type="text" id="{{descCol.id}}"
-									ng-model="procSearchViewCtrl.query.processSearchCriteria.descriptors.selected[descCol.id]" />
+									ng-model="procSearchViewCtrl.selected[descCol.id]" />
 								</td>
 								<td ng-if="descCol.dataType =='DATE'">
 									<table cellspacing="2" cellpadding="2"
@@ -373,7 +373,7 @@ table.layoutTable td {
 											<td><input type="text" sd-date-picker
 												sda-change-year="true" sda-milliseconds="true" id="from"
 												name="from"
-												ng-model="procSearchViewCtrl.query.processSearchCriteria.descriptors.selected[descCol.id]"
+												ng-model="procSearchViewCtrl.selected[descCol.id]"
 												ng-model-onblur />
 												<div class="msg-error"
 													ng-show="filterForm['from'].$error.datePicker">{{i18n('html5-common.converter-number-error')}}</div>
@@ -386,7 +386,7 @@ table.layoutTable td {
 											<td><input type="text" sd-date-picker
 												sda-change-year="true" sda-milliseconds="true" id="to"
 												name="to"
-												ng-model="procSearchViewCtrl.query.processSearchCriteria.descriptors.selected[descCol.id]"
+												ng-model="procSearchViewCtrl.selected[descCol.id]"
 												ng-model-onblur />
 												<div class="msg-error"
 													ng-show="filterForm['to'].$error.datePicker">{{i18n('html5-common.converter-number-error')}}</div>

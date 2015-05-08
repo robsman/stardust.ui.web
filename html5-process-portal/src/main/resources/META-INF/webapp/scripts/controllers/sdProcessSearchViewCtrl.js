@@ -108,6 +108,7 @@
 		this.CASE_PROCESS_ID = "{PredefinedModel}CaseProcess";
 		this.caseProcDef = {};
 		this.descBoolOptions = {};
+		this.selected = {};
 
 		var self = this;
 
@@ -265,7 +266,6 @@
 				activitySrchActivityOID : '',
 				activitySrchPerformer : '',
 				descriptors : {
-					selected : {},
 					formatted : {}
 				},
 			}
@@ -299,8 +299,6 @@
 			self.data = {};
 			self.data.totalCount = data.totalCount;
 			self.data.list = data.list;
-
-//			self.query.processSearchCriteria.descriptors.selected = {};
 
 			deferred.resolve(self.data);
 		}, function(error) {
@@ -435,15 +433,15 @@
 			}
 		}
 		
-		if (this.query.processSearchCriteria.descriptors.selected) {
+		if (this.selected) {
 			var obj = {};
-			for ( var item in this.query.processSearchCriteria.descriptors.selected) {
+			for ( var item in this.selected) {
 				for ( var index in this.descritorCols) {
 					if (this.descritorCols[index].id == item) {
 						console.log("Got it");
 						
 						if (this.descritorCols[index].dataType == "STRING") {
-							obj['textSearch'] = this.query.processSearchCriteria.descriptors.selected[this.descritorCols[index].id];
+							obj['textSearch'] = this.selected[this.descritorCols[index].id];
 						}
 						this.query.processSearchCriteria.descriptors.formatted[item] = obj;
 						break;
@@ -469,6 +467,8 @@
 		this.descritorCols = [];
 		this.filterProcessDefinitionList();
 
+		this.selected = {};
+		this.query.processSearchCriteria.descriptors.formatted = {};
 		this.showProcSearchResult = false;
 	}
 
