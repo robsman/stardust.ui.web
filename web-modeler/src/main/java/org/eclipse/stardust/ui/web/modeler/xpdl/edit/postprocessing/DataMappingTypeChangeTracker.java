@@ -53,8 +53,6 @@ public class DataMappingTypeChangeTracker implements ChangePostprocessor
                }
             }
          }
-
-         change.markUnmodified(candidate);
       }
    }
 }

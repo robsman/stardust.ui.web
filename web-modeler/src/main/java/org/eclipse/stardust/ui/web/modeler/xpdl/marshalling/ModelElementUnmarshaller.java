@@ -237,6 +237,10 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          updateDataFlowConnection((DataMappingConnectionType) element, json);
       }
+      else if (element instanceof DataMappingType)
+      {
+         updateDataMapping((DataMappingType) element, json);
+      }
       else if (element instanceof EventHandlerType)
       {
          updateEventHandler((EventHandlerType) element, json);
@@ -696,6 +700,58 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       }
    }
 
+   private void updateDataMapping(DataMappingType dataMapping, JsonObject dataMappingJson)
+   {
+      dataMappingJson = dataMappingJson
+            .getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.NAME_PROPERTY))
+      {
+         dataMapping.setName(dataMappingJson.get(ModelerConstants.NAME_PROPERTY)
+               .getAsString());
+      }
+
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.ACCESS_POINT_ID_PROPERTY))
+      {
+
+         dataMapping.setApplicationAccessPoint(dataMappingJson.get(
+               ModelerConstants.ACCESS_POINT_ID_PROPERTY).getAsString());
+         {
+            dataMapping.setContext(dataMappingJson.get(
+                  ModelerConstants.ACCESS_POINT_CONTEXT_PROPERTY).getAsString());
+         }
+      }
+      if (dataMappingJson.has(ModelerConstants.ACCESS_POINT_PATH_PROPERTY))
+      {
+         if (dataMappingJson.get(ModelerConstants.ACCESS_POINT_PATH_PROPERTY)
+               .isJsonNull())
+         {
+            dataMapping.setApplicationPath(null);
+         }
+         else
+         {
+            dataMapping.setApplicationPath(dataMappingJson.get(
+                  ModelerConstants.ACCESS_POINT_PATH_PROPERTY).getAsString());
+         }
+      }
+
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.DATA_PATH_PROPERTY))
+      {
+         dataMapping.setDataPath(dataMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY)
+               .getAsString());
+      }
+
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.DIRECTION_PROPERTY))
+      {
+         String direction = dataMappingJson.get(ModelerConstants.DIRECTION_PROPERTY)
+               .getAsString();
+         DirectionType directionType = direction.equals(ModelerConstants.DATAMAPPING_IN)
+               ? DirectionType.IN_LITERAL
+               : DirectionType.OUT_LITERAL;
+         dataMapping.setDirection(directionType);
+      }
+   }
+
    /**
     *
     * @param dataFlowConnection
@@ -705,6 +761,9 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          JsonObject dataFlowConnectionJson)
    {
       // dataFlowConnectionJson is the diagram element; dataFlowJson is the model element
+
+
+      System.out.println(this.getModelBuilderFacade().getModelManagementStrategy().uuidMapper().getUUID(dataFlowConnection));
 
       JsonObject dataFlowJson = dataFlowConnectionJson
             .getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);

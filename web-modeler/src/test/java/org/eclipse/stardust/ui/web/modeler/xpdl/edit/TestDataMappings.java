@@ -16,7 +16,6 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.ui.web.modeler.utils.test.GenericModelingAssertions;
-import org.eclipse.stardust.ui.web.modeler.xpdl.edit.RecordingTestcase.TestResponse;
 
 public class TestDataMappings extends RecordingTestcase
 {
@@ -35,7 +34,6 @@ public class TestDataMappings extends RecordingTestcase
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "DatamappingProcess","Datamapping Process");
       ActivityType activity = assertUIMashupProcess(process);
-
       List<DataMappingType> dataMappings = activity.getDataMapping();
       assertThat(dataMappings, is(not(nullValue())));
       assertThat(dataMappings.size(), is(4));
@@ -61,7 +59,7 @@ public class TestDataMappings extends RecordingTestcase
       {
          if (response.getResponseNumber() == 47)
          {
-            JsonObject modelElement = response.getAdded().get(0).getAsJsonObject().get("modelElement").getAsJsonObject();
+            JsonObject modelElement = response.getAdded().get(1).getAsJsonObject().get("modelElement").getAsJsonObject();
             GenericModelingAssertions.assertJsonHas(modelElement, "type", "dataMappings", "id", "name", "dataFullId", "activityId");
             JsonArray dataMappings = modelElement.get("dataMappings").getAsJsonArray();
             JsonObject dataMapping = dataMappings.get(0).getAsJsonObject();
@@ -69,7 +67,6 @@ public class TestDataMappings extends RecordingTestcase
             assertThat(dataMapping.get("id").getAsString(), is("InPrimitiveTypeLong"));
             assertThat(dataMapping.get("name").getAsString(), is("InPrimitiveTypeLong"));
             assertThat(dataMapping.get("direction").getAsString(), is("IN"));
-            //assertThat(dataMapping.get("dataPath").getAsJsonObject(), null);
          }
       }
    }
@@ -78,12 +75,11 @@ public class TestDataMappings extends RecordingTestcase
    public void testChangeDataMappingsToInputOutput() throws Exception
    {
       providerModel = modelService.findModel(PROVIDER_MODEL_ID);
-      testUIMashUpDatamappings();
-      initUUIDMap();
 
       InputStream requestInput = getClass().getResourceAsStream(
             "../../service/rest/requests/changeDataMappingsToInputOutput.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
+
 
       replay(requestStream, "testChangeDataMappingsToInputOutput", false);
 
@@ -121,14 +117,12 @@ public class TestDataMappings extends RecordingTestcase
    public void testChangeDataMappingsGeneral() throws Exception
    {
       providerModel = modelService.findModel(PROVIDER_MODEL_ID);
-      testChangeDataMappingsToInputOutput();
-      initUUIDMap();
 
       InputStream requestInput = getClass().getResourceAsStream(
             "../../service/rest/requests/changeDataMappingsGeneral.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
 
-      replay(requestStream, "changeDataMappingsGeneral", false);
+      replay(requestStream, "changeDataMappingsGeneral", true);
 
       //saveReplayModel("C:/development/");
 
@@ -153,7 +147,19 @@ public class TestDataMappings extends RecordingTestcase
       data = GenericModelingAssertions.assertStructData(providerModel, "OutStructType", "OutStructType", "OutStructType");
       assertApplicationDataMapping(activity, "OutStructType", "OutStructType", "StructParameterIN", "externalWebApp", DirectionType.IN_LITERAL, data);
 
+   }
 
+   public void changeDataMappingsGeneralCallback(TestResponse response)
+         throws AssertionError
+   {
+      if (response.getCommandID().equals("datamapping.delete"))
+      {
+         System.out.println("RESPONSE: " + response.getRemoved().toString());
+         if (response.getResponseNumber() == 60)
+         {
+            //ToDo
+         }
+      }
    }
 
    @Test

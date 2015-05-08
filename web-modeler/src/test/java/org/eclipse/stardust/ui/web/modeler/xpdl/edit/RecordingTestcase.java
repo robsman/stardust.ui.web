@@ -221,6 +221,7 @@ public class RecordingTestcase
                   catch (InvocationTargetException t)
                   {
                      System.out.println("Assertion of response " + responseNumber + " failed.");
+                     t.printStackTrace();
                      throw new AssertionError(t.getTargetException());
                   }
                   catch (Throwable t)

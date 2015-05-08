@@ -182,7 +182,7 @@ public class ModelElementMarshaller implements ModelMarshaller
       }
       else if (modelElement instanceof DataMappingType)
       {
-         // Do nothing - handled via DataMappingConnectionType
+         jsResult = toDataMappingJson((DataMappingType) modelElement);
       }
       else if (modelElement instanceof DataType)
       {
@@ -2865,6 +2865,7 @@ public class ModelElementMarshaller implements ModelMarshaller
 
                dataMappingsJson.add(toDataMappingJson(dataMapping));
 
+
                if (!hasNotJsonNull(connectionJson, ModelerConstants.FROM_MODEL_ELEMENT_OID))
                {
                   if (dataMapping.getDirection().equals(DirectionType.OUT_LITERAL))
@@ -3333,6 +3334,12 @@ public class ModelElementMarshaller implements ModelMarshaller
    {
       JsonObject dataMappingJson = new JsonObject();
 
+      String uuid = modelingSession.uuidMapper().getUUID(dataMapping);
+      if (null != uuid)
+      {
+         dataMappingJson.addProperty(ModelerConstants.UUID_PROPERTY, uuid);
+      }
+
       if (dataMapping.getApplicationAccessPoint() != null)
       {
          dataMappingJson.addProperty(ModelerConstants.ACCESS_POINT_ID_PROPERTY,
@@ -3351,6 +3358,7 @@ public class ModelElementMarshaller implements ModelMarshaller
       dataMappingJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, dataMapping.getDirection().getLiteral());
       dataMappingJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY,
             dataMapping.getDataPath());
+
 
       return dataMappingJson;
    }
