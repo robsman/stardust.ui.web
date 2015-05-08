@@ -2990,6 +2990,7 @@ define(
 							.parseJSON(command) : command;
 
 					if (null != command && null != command.changes) {
+						var sessionRef = m_session.initialize();
 						for ( var i = 0; i < command.changes.added.length; i++) {
 							// Create Process
 							if (m_constants.PROCESS == command.changes.added[i].type) {
@@ -3047,58 +3048,72 @@ define(
 								node.attr("fullId", modelElement.getFullId());
 								node.attr("name", modelElement.name);
 
-								var textElem = m_utils.jQuerySelect(link.childNodes[1])[0];
-
-								textElem.nodeValue = modelElement.name;
-								m_utils.inheritFields(modelElement,
-										command.changes.modified[i]);
-								if (m_constants.ROLE_PARTICIPANT_TYPE == command.changes.modified[i].type
-										|| m_constants.TEAM_LEADER_TYPE == command.changes.modified[i].type) {
-									node.attr("rel",
-											command.changes.modified[i].type);
+								// Delete node if it's found to be a simplemodel node
+								// and "showSimpleModels" configuration flag is set to false
+								var deleted = false;
+								if (link) {
+									if (modelElement.type === "model"
+											&& !sessionRef.showSimpleModels
+											&& modelElement.attributes && modelElement.attributes["simpleModel"]) {
+										m_utils.jQuerySelect(displayScope + "#outline").jstree("remove", "#" + uuid);
+										deleted = true;
+									}
 								}
-
-								// Change icon in case the date type changes
-								if (m_constants.DATA === modelElement.type) {
-									if (modelElement.structuredDataTypeFullId) {
-										var typeDeclaration = m_model.findModel(m_model
-												.stripModelId(modelElement.structuredDataTypeFullId)).typeDeclarations[m_model
-												.stripElementId(modelElement.structuredDataTypeFullId)];
-										if(typeDeclaration.isEnumeration()){
-											node.attr("rel", m_constants.PRIMITIVE_DATA_TYPE);
-										}else{
+								
+								if (link && ! deleted) {
+									var textElem = m_utils.jQuerySelect(link.childNodes[1])[0];
+	
+									textElem.nodeValue = modelElement.name;
+									m_utils.inheritFields(modelElement,
+											command.changes.modified[i]);
+									if (m_constants.ROLE_PARTICIPANT_TYPE == command.changes.modified[i].type
+											|| m_constants.TEAM_LEADER_TYPE == command.changes.modified[i].type) {
+										node.attr("rel",
+												command.changes.modified[i].type);
+									}
+	
+									// Change icon in case the date type changes
+									if (m_constants.DATA === modelElement.type) {
+										if (modelElement.structuredDataTypeFullId) {
+											var typeDeclaration = m_model.findModel(m_model
+													.stripModelId(modelElement.structuredDataTypeFullId)).typeDeclarations[m_model
+													.stripElementId(modelElement.structuredDataTypeFullId)];
+											if(typeDeclaration.isEnumeration()){
+												node.attr("rel", m_constants.PRIMITIVE_DATA_TYPE);
+											}else{
+												node.attr("rel",
+														command.changes.modified[i].dataType);
+											}
+										} else {
 											node.attr("rel",
 													command.changes.modified[i].dataType);
 										}
-									} else {
-										node.attr("rel",
-												command.changes.modified[i].dataType);
 									}
-								}
-
-								// Change struct type icon in case the type
-								// changes
-								if (m_constants.TYPE_DECLARATION_PROPERTY === modelElement.type) {
-									node.attr("rel", modelElement.getType());
-								}
-
-								// Change model icon in case the read-only factor has changed.
-								if (m_constants.MODEL === modelElement.type) {
-									modelTreeType="model";
-									if(modelElement.isReadonly()){
-										modelTreeType="lockedModel";
-										if(modelElement.editLock && modelElement.editLock.lockStatus=="lockedByOther"){
-											modelTreeType="lockedModelForEdit";
+	
+									// Change struct type icon in case the type
+									// changes
+									if (m_constants.TYPE_DECLARATION_PROPERTY === modelElement.type) {
+										node.attr("rel", modelElement.getType());
+									}
+	
+									// Change model icon in case the read-only factor has changed.
+									if (m_constants.MODEL === modelElement.type) {
+										modelTreeType="model";
+										if(modelElement.isReadonly()){
+											modelTreeType="lockedModel";
+											if(modelElement.editLock && modelElement.editLock.lockStatus=="lockedByOther"){
+												modelTreeType="lockedModelForEdit";
+											}
+										}
+										node.attr("rel", modelTreeType);
+										if (command.commandId === "modelLockStatus.update" && modelElement.isReadonly()) {
+											var isModelLockCommand = true;
 										}
 									}
-									node.attr("rel", modelTreeType);
-									if (command.commandId === "modelLockStatus.update" && modelElement.isReadonly()) {
-										var isModelLockCommand = true;
-									}
+	
+									renameElementViewLabel(node.attr("rel"), node
+											.attr("id"), node.attr("name"));
 								}
-
-								renameElementViewLabel(node.attr("rel"), node
-										.attr("id"), node.attr("name"));
 							}
 						}
 						for ( var i = 0; i < command.changes.removed.length; i++) {
