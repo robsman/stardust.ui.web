@@ -59,7 +59,7 @@ public class UserDTO extends AbstractDTO
    public String realmId;
    
    @DTOAttribute("administrator")
-   public Boolean isAdminstartor;
+   public Boolean isAdministrator;
    
 
 }

@@ -169,7 +169,7 @@
 	    this.availablePriorities = [];
 	    this.preferenceModule = "";
 	    this.preferenceId = "";
-	    this.columnSelector = 'admin';
+	    this.columnSelector = sdLoggedInUserService.getUserInfo().isAdministrator ?  'admin' : true;
 
 	    // Process Query
 	    if (!attr.sdaQuery && !attr.sdData) {
