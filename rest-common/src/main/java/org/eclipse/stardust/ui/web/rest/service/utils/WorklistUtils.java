@@ -25,7 +25,6 @@ import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
 import org.eclipse.stardust.engine.api.query.EvaluateByWorkitemsPolicy;
 import org.eclipse.stardust.engine.api.query.ExcludeUserPolicy;
-import org.eclipse.stardust.engine.api.query.FilterAndNotTerm;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.FilterTerm;
 import org.eclipse.stardust.engine.api.query.HistoricalStatesPolicy;
@@ -100,6 +99,9 @@ public class WorklistUtils
                ActivityInstanceState.Application, ActivityInstanceState.Suspended});
          FilterOrTerm or = query.getFilter().addOrTerm();
          or.add(ActivityInstanceQuery.CURRENT_USER_PERFORMER_OID.isEqual(user.getOID()));
+         
+         ActivityTableUtils.addCriterias(query, options);
+         
          ActivityInstances activityInstances = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
          return activityInstances;
       }
