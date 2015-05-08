@@ -156,26 +156,62 @@ public class ProcessDefinitionService
 			 ActivityDTO activityDTO = DTOBuilder.build(activity, ActivityDTO.class);
 			 activityDTO.auxillary = isAuxiliaryActivity(activity);
 			 activityDTO.name = I18nUtils.getActivityName(activity);
+			 activityDTO.runtimeElementOid = activity.getRuntimeElementOID();
 			 activitiesDTO.add(activityDTO);
 		}
 		return activitiesDTO;
 	}
 
-	/**
-	 * Return a process Definition DTO for a process Definition
-	 * @param processDefinition
-	 * @return
-	 */
-	private ProcessDefinitionDTO buildProcessDTO(
-			ProcessDefinition processDefinition) {
-		String modelName = I18nUtils.getModelName(modelUtils.getModel(processDefinition.getModelOID()));
+   /**
+    * Return a process Definition DTO for a process Definition
+    * @param processDefinition
+    * @return
+    */
+	private ProcessDefinitionDTO buildProcessDTO(ProcessDefinition processDefinition)
+   {
+      String modelName = I18nUtils.getModelName(modelUtils.getModel(processDefinition.getModelOID()));
 
-		ProcessDefinitionDTO processDTO = DTOBuilder.build(processDefinition, ProcessDefinitionDTO.class);
-		processDTO.auxillary = isAuxiliaryProcess(processDefinition);
-		processDTO.modelName = modelName;
-		processDTO.name = I18nUtils.getProcessName(processDefinition);
-		return processDTO;
-	}
+      ProcessDefinitionDTO processDTO = DTOBuilder.build(processDefinition, ProcessDefinitionDTO.class);
+      processDTO.auxillary = isAuxiliaryProcess(processDefinition);
+      processDTO.modelName = modelName;
+      processDTO.name = I18nUtils.getProcessName(processDefinition);
+      return processDTO;
+   }
 
+   /**
+    * @param procDefIDs
+    * @param onlyFilterable
+    */
+   public List<DescriptorColumnDTO> getCommonDescriptors(List<String> procDefIDs, Boolean onlyFilterable)
+   {
+      List<ProcessDefinition> processDefinitions = ProcessDefinitionUtils.getProcessDefinitions(procDefIDs);
+      DataPath[] descriptors = ProcessDefinitionUtils.getCommonDescriptors(processDefinitions, onlyFilterable);
+      Map<String, DataPath> commonDescriptors = ProcessDefinitionUtils.getDataPathMap(descriptors);
+      List<DescriptorColumnDTO> descriptorCols = createDescriptorColumns(commonDescriptors);
+      return descriptorCols;
+   }
 
+   /**
+    * Returns all the accessible Processes
+    * 
+    * @return
+    */
+   public List<ProcessDefinitionDTO> getAllUniqueProcess(boolean excludeActivities)
+   {
+      List<ProcessDefinition> allAccessibleProcesses = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils
+            .getAllAccessibleProcessDefinitions();
+      return buildProcessesDTO(allAccessibleProcesses, excludeActivities);
+   }
+
+   /**
+    * Returns all the accessible Processes
+    * 
+    * @return
+    */
+   public List<ProcessDefinitionDTO> getAllBusinessRelevantProcesses(boolean excludeActivities)
+   {
+      List<ProcessDefinition> allAccessibleProcesses = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils
+            .getAllBusinessRelevantProcesses();
+      return buildProcessesDTO(allAccessibleProcesses, excludeActivities);
+   }
 }

@@ -52,6 +52,16 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 				</ippui:preferences>
 			</ippui:view>
 		</ippui:viewsExtension>
+		
+		<ippui:viewsExtension>
+			<ippui:view name="processSearchViewHtml5" 
+				include="/plugins/html5-process-portal/partials/views/processSearchView.html" >
+				<ippui:preferences>
+					<ippui:preferencePage name="icon"
+						include="/plugins/views-common/images/icons/cog_search.png" />
+				</ippui:preferences>
+			</ippui:view>
+		</ippui:viewsExtension>
 
 	</ippui:perspectiveExtension>
 </beans>

@@ -301,7 +301,7 @@ public class ProcessInstanceResource
                "asc".equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          
-         return Response.ok(GsonUtils.toJsonHTMLSafeString(processInstanceService.getProcessInstances(options)), MediaType.APPLICATION_JSON).build();
+         return Response.ok(GsonUtils.toJsonHTMLSafeString(processInstanceService.getProcessInstances(null, options)), MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {

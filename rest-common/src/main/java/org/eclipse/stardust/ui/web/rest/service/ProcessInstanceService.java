@@ -26,6 +26,7 @@ import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
@@ -281,9 +282,9 @@ public class ProcessInstanceService
       return GsonUtils.toJsonHTMLSafeString(notificationMap);
    }
    
-   public QueryResultDTO getProcessInstances(Options options)
+   public QueryResultDTO getProcessInstances(ProcessInstanceQuery query, Options options)
    {
-      QueryResult<? extends ProcessInstance> queryResult = processInstanceUtilsREST.getProcessInstances(options);
+      QueryResult<? extends ProcessInstance> queryResult = processInstanceUtilsREST.getProcessInstances(query, options);
       return processInstanceUtilsREST.buildProcessListResult(queryResult);
    }
    

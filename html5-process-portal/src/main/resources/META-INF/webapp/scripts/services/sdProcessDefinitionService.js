@@ -41,6 +41,58 @@
 		var restUrl = REST_BASE_URL + 'all-processes?excludeActivties='+excludeActivties;
 			return $resource(restUrl).query().$promise;
 		};
+		
+
+		/*
+		 *
+		 */
+		ProcessDefinitionService.prototype.getAllUniqueProcesses = function(
+				excludeActivties) {
+			var restUrl = REST_BASE_URL
+					+ 'all-unique-processes?excludeActivties='
+					+ excludeActivties;
+			return $resource(restUrl).query().$promise;
+		};
+
+		/*
+		 *
+		 */
+		ProcessDefinitionService.prototype.getAllBusinessProcesses = function(
+				excludeActivties) {
+			var restUrl = REST_BASE_URL
+					+ 'all-business-processes?excludeActivties='
+					+ excludeActivties;
+			return $resource(restUrl).query().$promise;
+		};
+
+		/*
+		 *
+		 */
+		ProcessDefinitionService.prototype.getCommonDescriptors = function(
+				procDefids, onlyFilterable) {
+			// Prepare URL
+			var restUrl = REST_BASE_URL + "common-descriptors";
+
+			var queryParams = "?onlyFilterable="
+					+ (onlyFilterable === true ? true : false);
+
+			if (queryParams.length > 0) {
+				restUrl = restUrl + "?" + queryParams.substr(1);
+			}
+
+			var postData = {
+				procDefIDs : procDefids
+			};
+
+			var processDefinition = $resource(restUrl, {}, {
+				fetch : {
+					method : 'PUT',
+					isArray : true
+				}
+			});
+
+			return processDefinition.fetch({}, postData).$promise;
+		};
 
 	};
 })();

@@ -36,6 +36,7 @@
          <bean class="org.eclipse.stardust.ui.web.rest.DeputyManagementResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.PortalConfigurationResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.LocalizationResource" />
+         <bean class="org.eclipse.stardust.ui.web.rest.ProcessActivityResource" />
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>
             <bean class="org.eclipse.stardust.ui.web.rest.exception.PortalRestExceptionMapper"/>

@@ -1361,12 +1361,16 @@ public class ProcessInstanceUtils
    
    /**
     * 
+    * @param query
     * @param options
     * @return
     */
-   public ProcessInstances getProcessInstances(Options options)
+   public ProcessInstances getProcessInstances(ProcessInstanceQuery query, Options options)
    {
-      ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
+      if (query == null)
+      {
+         query = ProcessInstanceQuery.findAll();
+      }
       
       addDescriptorPolicy(options, query);
 

@@ -41,4 +41,9 @@ public class ActivityDTO extends AbstractDTO
    public String implementationTypeName;
    
    public Boolean auxillary;
+   
+   @DTOAttribute("interactive")
+   public Boolean interactive;
+   
+   public long runtimeElementOid;
 }

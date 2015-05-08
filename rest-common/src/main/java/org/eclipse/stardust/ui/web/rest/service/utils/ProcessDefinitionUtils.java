@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.Resource;
 
@@ -169,6 +170,70 @@ public class ProcessDefinitionUtils
          String pd2Name = I18nUtils.getProcessName(pd2);
          return pd1Name.compareTo(pd2Name);
       }
+   }
+   
+   /**
+    * @param procDefID
+    * @return
+    */
+   public static List<ProcessDefinition> getProcessDefinitions(List<String> procDefIDs)
+   {
+      List<ProcessDefinition> processDefinitions = CollectionUtils.newArrayList();
+
+      if (null != procDefIDs)
+      {
+         for (String processId : procDefIDs)
+         {
+            ProcessDefinition processDefinition = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils
+                  .getProcessDefinition(processId);
+            processDefinitions.add(processDefinition);
+         }
+      }
+
+      return processDefinitions;
+   }
+
+ 
+   /**
+    * @param processes
+    * @param onlyFilterable
+    * @return
+    */
+   public static DataPath[] getCommonDescriptors(List<ProcessDefinition> processes, Boolean onlyFilterable)
+   {
+       DataPath[] commonDescriptorsDataPath = CommonDescriptorUtils.getCommonDescriptors(processes, onlyFilterable);
+       return commonDescriptorsDataPath;
+   }
+   
+ 
+   /**
+    * @param dataPaths
+    * @return
+    */
+   public static Map<String, DataPath> getDataPathMap(DataPath[] dataPaths)
+   {
+      Map<String, DataPath> allDescriptors = new TreeMap<String, DataPath>();
+      for (DataPath dataPath : dataPaths)
+      {
+         if (dataPath.isDescriptor())
+         {
+            if (allDescriptors.containsKey(dataPath.getId()))
+            {
+               DataPath existing = allDescriptors.get(dataPath.getId());
+               if (!existing.getData().equals(dataPath.getData()))
+               {
+                  trace.warn("* Duplicate datapath detected with id: " + dataPath.getNamespace() + "->"
+                        + dataPath.getData() + "->" + dataPath.getId() + "(" + existing.getNamespace() + "->"
+                        + existing.getData() + "->" + existing.getId() + ")");
+               }
+            }
+            else
+            {
+               allDescriptors.put(dataPath.getId(), dataPath);
+            }
+         }
+      }
+      return allDescriptors;
    }
 
 }
