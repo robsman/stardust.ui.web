@@ -38,6 +38,7 @@
          <bean class="org.eclipse.stardust.ui.web.rest.PortalConfigurationResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.LocalizationResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.StrandedActivitiesResource" />
+         <bean class="org.eclipse.stardust.ui.web.rest.ParticipantManagementResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.ProcessActivityResource" />
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>

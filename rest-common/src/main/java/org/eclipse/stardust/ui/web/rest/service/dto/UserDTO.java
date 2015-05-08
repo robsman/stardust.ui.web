@@ -61,5 +61,8 @@ public class UserDTO extends AbstractDTO
    @DTOAttribute("administrator")
    public Boolean isAdministrator;
    
+   @DTOAttribute("account")
+   public String account;
+   
 
 }

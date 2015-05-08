@@ -1,0 +1,49 @@
+<div class="participant-management-wrapper">
+	<div class="view-panel-toolbar tbl-title"
+		style="color: #708090; font-size: 11px">{{i18n('admin-portal-messages.views-participantMgmt-table-title')}}</div>
+	<table sd-data-table="ctrl.allUsersTable"
+		sd-data="ctrl.getAllUsers(params)" sda-mode="remote"
+		sda-selectable="row" sda-selection="ctrl.rowSelectionForAllUsersTable"
+		sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
+		sda-sort-by="{name : 'displayName', dir : 'desc'}" sda-exports="true"
+		sda-exports-file-name="{{ctrl.exportFileNameForAllUsers}}">
+		<thead
+			sda-i18n-scope="admin-portal-messages.views-participantMgmt-column">
+			<tr>
+				<th sda-name="displayName" sda-label-key="name"></th>
+				<th sda-name="oid" sda-sortable="true"></th>
+				<th sda-name="account" sda-sortable="true">
+					<div sda-filter-template>
+						<div sd-text-search-filter></div>
+					</div>
+				</th>
+				<th sda-name="realm">
+					<div sda-filter-template>
+						<div sd-text-search-filter></div>
+					</div>
+				</th>
+				<th sda-name="validFrom">
+					<div sda-filter-template>
+						<div sd-date-filter></div>
+					</div>
+				</th>
+				<th sda-name="validTo">
+					<div sda-filter-template>
+						<div sd-date-filter></div>
+					</div>
+				</th>
+				<th sda-name="eMail" sda-label-key="email"></th>
+		</thead>
+		<tbody>
+			<tr>
+				<td style="text-align: center;"></td>
+				<td style="text-align: center;"></td>
+				<td style="text-align: center;"></td>
+				<td style="text-align: center;"></td>
+				<td sda-data-type="dateTime" style="text-align: center;"></td>
+				<td sda-data-type="dateTime" style="text-align: center;"></td>
+				<td style="text-align: center;"></td>
+			</tr>
+		</tbody>
+	</table>
+</div>

@@ -13,8 +13,6 @@
  */
 package org.eclipse.stardust.ui.web.rest;
 
-import java.util.List;
-
 import javax.annotation.Resource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -29,25 +27,22 @@ import javax.ws.rs.core.Response.Status;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
-import org.eclipse.stardust.ui.web.rest.service.StrandedActivitiesService;
-import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
+import org.eclipse.stardust.ui.web.rest.service.ParticipantManagementService;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
-import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.eclipse.stardust.ui.web.rest.service.dto.UserFilterDTO;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 @Component
-@Path("/strandedActivities")
-public class StrandedActivitiesResource
+@Path("/participantManagement")
+public class ParticipantManagementResource
 {
-   private static final Logger trace = LogManager.getLogger(StrandedActivitiesResource.class);
+   private static final Logger trace = LogManager.getLogger(ParticipantManagementResource.class);
 
    @Resource
-   private StrandedActivitiesService strandedActivitiesService;
-
-   @Autowired
-   ProcessDefinitionService processDefService;
+   private ParticipantManagementService participantManagementService;
 
    /**
     * 
@@ -61,16 +56,22 @@ public class StrandedActivitiesResource
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
-   public Response getStrandedActivities(@QueryParam("skip") @DefaultValue("0") Integer skip,
-         @QueryParam("pageSize") @DefaultValue("14") Integer pageSize,
-         @QueryParam("orderBy") @DefaultValue("activityOID") String orderBy,
+   @Path("/allUsers")
+   public Response getAllUsers(@QueryParam("skip") @DefaultValue("0") Integer skip,
+         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
          @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
    {
       try
       {
          Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
-         populatePostData(options, postData);
-         QueryResultDTO resultDTO = strandedActivitiesService.getStrandedActivities(options);
+         populateFilters(options, postData);
+         
+         JsonMarshaller jsonIo = new JsonMarshaller();
+         JsonObject postJSON = jsonIo.readJsonObject(postData);
+         boolean hideInvalidatedUsers = postJSON.getAsJsonPrimitive("hideInvalidatedUsers").getAsBoolean();
+
+         QueryResultDTO resultDTO = participantManagementService.getAllUsers(hideInvalidatedUsers, options);
 
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }
@@ -86,14 +87,25 @@ public class StrandedActivitiesResource
    }
 
    /**
+    * Populate the options with the post data.
     * 
     * @param options
     * @param postData
+    * @return
     */
-
-   private void populatePostData(Options options, String postData)
+   private Options populateFilters(Options options, String postData)
    {
-      List<DescriptorColumnDTO> availableDescriptors = processDefService.getDescriptorColumns(true);
-      ActivityTableUtils.populatePostData(options, postData, availableDescriptors);
+      JsonMarshaller jsonIo = new JsonMarshaller();
+      JsonObject postJSON = jsonIo.readJsonObject(postData);
+
+      // For filter
+      JsonObject filters = postJSON.getAsJsonObject("filters");
+      if (null != filters)
+      {
+         UserFilterDTO userFilterDTO = new Gson().fromJson(postJSON.get("filters"), UserFilterDTO.class);
+
+         options.filter = userFilterDTO;
+      }
+      return options;
    }
 }
