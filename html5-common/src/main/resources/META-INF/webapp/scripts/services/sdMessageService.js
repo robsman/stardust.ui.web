@@ -24,8 +24,12 @@
 		return {
 			
 			/**
-			 * message can be a string or an object {message: <message>, type: <type>}
-			 * Supported type values : 'error' / 'info' / 'warn'
+			 * Shows the message wherever sd-message is used.
+			 *  
+			 * message: A string or an object {message: <message>, type: <type>}. 
+			 * 			Supported type values : 'error' / 'info' / 'warn' 
+			 * namespace: A namespace that eventBus uses to push the message against. Default is 'global.error'.
+			 * 
 			 */
 			showMessage: function(message, namespace) {
 				emitMessage(message, namespace);

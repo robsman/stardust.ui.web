@@ -16,7 +16,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdDelegateActivityDialog', ['$parse', '$q', 'sdUtilService', 'sdActivityInstanceService', 'sdLoggerService', 'eventBus', 'sdViewUtilService',
+	angular.module('bpm-common').directive('sdDelegateActivityDialog', ['$parse', '$q', 'sdUtilService', 'sdActivityInstanceService', 'sdLoggerService', 'sdMessageService', 'sdViewUtilService',
 	                                                                    DelegateActivityDialogDirective]);
 
 	var trace;
@@ -24,7 +24,7 @@
 	/*
 	 * Directive class
 	 */
-	function DelegateActivityDialogDirective($parse, $q, sdUtilService, sdActivityInstanceService, sdLoggerService, eventBus, sdViewUtilService) {
+	function DelegateActivityDialogDirective($parse, $q, sdUtilService, sdActivityInstanceService, sdLoggerService, sdMessageService, sdViewUtilService) {
 		
 		trace = sdLoggerService.getLogger('bpm-common.sdDelegateActivityDialog');
 		
@@ -128,15 +128,7 @@
 				key = prefix + key;
 				msg = self.i18n(key, def);
 
-				self.resetErrorMessage();
-				eventBus.emitMsg("js.error", msg);
-			}
-
-			/*
-			 * 
-			 */
-			DelegateActivityDialogController.prototype.resetErrorMessage = function() {
-				eventBus.emitMsg("js.error.reset");
+				sdMessageService.showMessage(msg);
 			}
 
 			/*

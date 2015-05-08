@@ -16,7 +16,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdJoinProcessDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'eventBus', 'sdViewUtilService',
+	angular.module('bpm-common').directive('sdJoinProcessDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'sdMessageService', 'sdViewUtilService',
 	                                                                    JoinProcessDialogDirective]);
 
 	var trace;
@@ -24,7 +24,7 @@
 	/*
 	 * Directive class
 	 */
-	function JoinProcessDialogDirective($parse, $q, sdUtilService, sdProcessInstanceService, sdLoggerService, eventBus, sdViewUtilService) {
+	function JoinProcessDialogDirective($parse, $q, sdUtilService, sdProcessInstanceService, sdLoggerService, sdMessageService, sdViewUtilService) {
 		
 		trace = sdLoggerService.getLogger('bpm-common.sdJoinProcessDialog');
 		
@@ -141,15 +141,7 @@
 					}
 				}
 
-				self.resetErrorMessage();
-				eventBus.emitMsg("js.error", msg);
-			}
-
-			/*
-			 * 
-			 */
-			JoinProcessDialogController.prototype.resetErrorMessage = function() {
-				eventBus.emitMsg("js.error.reset");
+				sdMessageService.showMessage(msg);
 			}
 			
 			/*

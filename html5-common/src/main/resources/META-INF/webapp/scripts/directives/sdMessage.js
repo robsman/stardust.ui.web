@@ -7,7 +7,9 @@
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
-
+/*
+ * Usage: <div sd-message="<optional-namespace>"></div>
+ */
 angular
 		.module('bpm-common.directives')
 		.directive(

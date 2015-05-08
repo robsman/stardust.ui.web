@@ -16,7 +16,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdSwitchProcessDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'eventBus', 'sdViewUtilService',
+	angular.module('bpm-common').directive('sdSwitchProcessDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'sdMessageService', 'sdViewUtilService',
 	                                                                    SwitchProcessDialogDirective]);
 
 	var trace;
@@ -24,7 +24,7 @@
 	/*
 	 * Directive class
 	 */
-	function SwitchProcessDialogDirective($parse, $q, sdUtilService, sdProcessInstanceService, sdLoggerService, eventBus, sdViewUtilService) {
+	function SwitchProcessDialogDirective($parse, $q, sdUtilService, sdProcessInstanceService, sdLoggerService, sdMessageService, sdViewUtilService) {
 		
 		trace = sdLoggerService.getLogger('bpm-common.sdSwitchProcessDialog');
 		
@@ -138,17 +138,9 @@
 					}
 				}
 
-				self.resetErrorMessage();
-				eventBus.emitMsg("js.error", msg);
+				sdMessageService.showMessage(msg);
 			}
 
-			/*
-			 * 
-			 */
-			SwitchProcessDialogController.prototype.resetErrorMessage = function() {
-				eventBus.emitMsg("js.error.reset");
-			}
-			
 			/*
 			 * 
 			 */
