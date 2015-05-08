@@ -522,7 +522,9 @@
 		    this.preferenceName = sdLoggedInUserService.getUserInfo().id;
 		    this.preferenceId = 'worklist-participant-columns';
 		}
-		this.exportFileName = this.exportFileName + " (" + this.query.name +")";
+		if(this.query.name) {
+		    this.exportFileName = this.exportFileName + " (" + this.query.name +")";
+		}
 	    }
 
 	    if (attr.sdaPreferenceModule) {
