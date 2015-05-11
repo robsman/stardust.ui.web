@@ -38,13 +38,21 @@
 		<br/>
 		<div>
 			<table sd-data-table="delegateActivityController.participantDataTable" sd-data="delegateActivityController.fetchParticipants(params)"
-			sda-page-size="{{delegateActivityController.sdaPageSize}}"
+			sda-page-size="{{delegateActivityController.sdaPageSize}}" sda-filterable="true"
 			sda-mode="remote" sda-toolbar="false"
 			sda-selectable="row">
 			<thead sda-i18n-scope="processportal.views-worklistPanel-column">
 				<tr>
-					<th sda-name="name" sda-label="{{i18n('views-common-messages.delegation-userOrRole')}}" sda-sortable="false"></th>
-					<th sda-name="type" sda-label="{{i18n('views-common-messages.delegation-type')}}" sda-sortable="false"></th>
+					<th sda-name="name" sda-label="{{i18n('views-common-messages.delegation-userOrRole')}}" sda-sortable="false" sda-filterable="true">
+						<div sda-filter-template>
+							<div sd-text-search-filter></div>
+						</div>
+					</th>
+					<th sda-name="type" sda-visible="true" sda-label="{{i18n('views-common-messages.delegation-type')}}" sda-sortable="false" sda-filterable="true">
+						<div sda-filter-template>
+			  				<div sd-multi-select-filter sda-options="delegateActivityController.participantTypes" sda-label="name" sda-multiple="false"></div>
+						</div>
+					</th>
 				</tr>
 			</thead>
 			<tbody>

@@ -360,11 +360,12 @@ public class ActivityInstanceResource
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @Path("/searchParticipants")
-   public Response searchParticipant(String postedData)
+   public Response searchParticipant(String postedData, @QueryParam("skip") @DefaultValue("0") Integer skip,
+            @QueryParam("pageSize") @DefaultValue("8") Integer pageSize)
    {
       // postedData = "{searchText: '', activities=[8], participantType='All', limitedSearch=false, disableAdministrator=false, excludeUserType=false}";
       // postedData = "{activities=[8], limitedSearch=false}";
-      return Response.ok(participantSearchComponent.searchParticipants(postedData), MediaType.APPLICATION_JSON).build();
+      return Response.ok(participantSearchComponent.searchParticipants(postedData, skip, pageSize), MediaType.APPLICATION_JSON).build();
    }
     
     /**

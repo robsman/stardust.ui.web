@@ -87,9 +87,32 @@
 			console.log("Getting participants for:");
 			console.log(query);
 			
-			var restUrl = REST_BASE_URL;
+			var options = "";
+			if (query.options) {
+				if (query.options.skip != undefined) {
+					options += "&skip=" + query.options.skip;
+				}
+				if (query.options.pageSize != undefined) {
+					options += "&pageSize=" + query.options.pageSize;
+				}
+				
+				if (query.options.filters != undefined) {
+					if (query.options.filters.name != undefined) {
+						query.data.searchText = query.options.filters.name.textSearch;
+					}
+					if (query.options.filters.type != undefined) {
+						query.data.participantType = query.options.filters.type.like;
+					}
+				}
+			}
+
+			var restUrl = REST_BASE_URL + 'searchParticipants';
+
+			if (options.length > 0) {
+				restUrl = restUrl + "?" + options.substr(1);
+			}
 			
-			return ajax(restUrl, "searchParticipants", query.data);
+			return ajax(restUrl, '', query.data);
 		};
 		
 		

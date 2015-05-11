@@ -35,6 +35,7 @@ import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.PerformerType;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.ParticipantSearchRequestDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
@@ -90,7 +91,7 @@ public class ParticipantSearchComponent
     * @param request
     * @return
     */
-   public String searchParticipants(String request)
+   public String searchParticipants(String request, Integer skip, Integer pageSize)
    {
       // convert request json to request object
       ParticipantSearchRequestDTO delegationDTO = GsonUtils.fromJson(request, ParticipantSearchRequestDTO.class);
@@ -112,8 +113,20 @@ public class ParticipantSearchComponent
       // search participant
       List<ParticipantSearchResponseDTO> response = getMatchingData(delegationDTO);
 
+      QueryResultDTO result = new QueryResultDTO();
+      result.totalCount = response.size();
+      result.list = response;
+      
+      if (skip != null && pageSize != null && skip < result.totalCount && result.totalCount > pageSize) {
+         long to = pageSize;
+         if (result.totalCount - skip < pageSize) {
+            to = result.totalCount;
+         }
+         result.list = response.subList(skip, (int) to);
+      }
+      
       // convert response to json string
-      return GsonUtils.toJsonHTMLSafeString(response);
+      return GsonUtils.toJsonHTMLSafeString(result);
    }
    
    

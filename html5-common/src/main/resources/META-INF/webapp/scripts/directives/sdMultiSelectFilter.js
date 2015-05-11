@@ -19,33 +19,62 @@
    function MultiSelectFilter($parse, sdUtilService) {
       return {
          restrict : 'A',
-         template : '<select style="height: 75px; min-width: 200px; max-width: 350px;" name="options" ng-model="filterData.like" multiple '
-                  + 'ng-options="option.value as option.label for option in filterCtrl.options | orderBy:\'label\'"><\/select>'
-                  + '<label ng-bind="i18n(\'portal-common-messages.common-filterPopup-pickListFilter-pickMany-list-message\')"><\/label>',
+         template : '<select style="min-width: 200px; max-width: 350px;" name="options" ng-model="filterData.like" '
+                  + 'ng-options="option[value] as option[label] for option in filterCtrl.options | orderBy:\'{{label}}\'"><\/select>'
+                  + '<label ng-show="multiple" ng-bind="i18n(\'portal-common-messages.common-filterPopup-pickListFilter-pickMany-list-message\')"><\/label>',
          controller : [ '$scope','$attrs','$parse', FilterController ],
-         link : function(scope, element, attr, ctrl) {
-            /**
-             * 
-             */
-            scope.handlers.applyFilter = function() {
-               scope.setFilterTitle(sdUtilService.truncateTitle(ctrl
-                        .getDisplayText(scope.filterData.like)));
-               return true;
-            };
+         compile: function (elem, attr) {
+			if (!attr.sdaMultiple || attr.sdaMultiple == 'true') {
+				var selectElem = elem.find('select');
+				selectElem.attr('multiple', '');
+				selectElem.attr('height', '75px');
+			}
 
-            /*
-             * 
-             */
-            scope.handlers.resetFilter = function() {
-               // NOP
-            };
+			return function(scope, element, attr, ctrl) { // Link
+																		// Function
+				if (attr.sdaMultiple == 'false') {
+					scope.multiple = false;
+				} else {
+					scope.multiple = true;
+				}
+
+				scope.value = 'value';
+				scope.label = 'label';
+
+				if (attr.sdaValue) {
+					scope.value = attr.sdaValue;
+				}
+
+				if (attr.sdaLabel) {
+					scope.label = attr.sdaLabel;
+				}
+
+				/**
+				 * 
+				 */
+				scope.handlers.applyFilter = function() {
+					var values = scope.filterData.like;
+					if (scope.multiple === false) {
+						values = [scope.filterData.like];
+					}
+					scope.setFilterTitle(sdUtilService.truncateTitle(ctrl.getDisplayText(values, scope.label)));
+					return true;
+				};
+
+				/*
+				 * 
+				 */
+				scope.handlers.resetFilter = function() {
+					// NOP
+				};
+			}
          }
       };
    }
 
    /*
-    * 
-    */
+	 * 
+	 */
    function FilterController($scope, $attrs, $parse) {
       var optionsBinding = $parse($attrs.sdaOptions);
       this.options = optionsBinding($scope);
@@ -53,15 +82,15 @@
    }
 
    /**
-    * 
-    */
-   FilterController.prototype.getDisplayText = function(values) {
+	 * 
+	 */
+   FilterController.prototype.getDisplayText = function(values, label) {
       var filtered = [];
       var self = this;
       angular.forEach(values, function(value) {
          for ( var key in self.options) {
             if (self.options[key].value === value) {
-               filtered.push(self.options[key].label);
+               filtered.push(self.options[key][label]);
             }
          }
       });

@@ -294,12 +294,13 @@
 				// Transclude using 2 options - by use of template and trancluded content
 				// If 'sda-template' is provided, it is the content of the template that gets appended to the popup body
 				// else actual directive body contents will be appended.
-				$transclude(function(clone) {
+				self.cloneScope = self.dialogScope.$new();
+				$transclude(self.cloneScope, function(clone) {
 					var dialogElem = self.dialogElem;
 					var templatePlaceHolder = dialogElem.find('.transclude');
 					var template = '';
 					if (self.useTransclude === false) {
-						template = $compile(angular.element('<div ng-include="\'' + self.template + '\'"></div>'))(self.dialogScope);
+						template = $compile(angular.element('<div ng-include="\'' + self.template + '\'"></div>'))(self.cloneScope);
 					} else if (self.useTransclude === true) {
 						template = clone;
 					}
@@ -313,6 +314,7 @@
 			// Removes the body content since it is no longer needed in the DOM. 
 			// It will be retrieved again when needed ie. Dialog is opened.
 			function removeBody() {
+				self.cloneScope.$destroy();
 				var templatePlaceHolder = self.dialogElem.find('.transclude');
 				templatePlaceHolder.empty();
 				

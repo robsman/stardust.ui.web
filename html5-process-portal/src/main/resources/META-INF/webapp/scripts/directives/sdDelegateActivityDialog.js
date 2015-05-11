@@ -119,14 +119,20 @@
 			/*
 			 * 
 			 */
-			DelegateActivityDialogController.prototype.showErrorMessage = function(key, def) {
+			DelegateActivityDialogController.prototype.showErrorMessage = function(key, def, args) {
 				var msg = key;
-				if (def) {
-					msg = def;
+				if (angular.isObject(key) && key.message) {
+					msg = key.message;
+				} else {
+					if (def) {
+						msg = def;
+					}
+					msg = self.i18n(key, def);
+					
+					if (args) {
+						msg = sdUtilService.format(msg, args);
+					}
 				}
-				var prefix = 'views-common-messages.delegation.error.';
-				key = prefix + key;
-				msg = self.i18n(key, def);
 
 				sdMessageService.showMessage(msg);
 			}
@@ -201,6 +207,13 @@
 				};
 				if (self.validate(delegateData)) {
 					performDelegate(delegateData).then(function(data) {
+						if(data.failure && data.failure.length > 0) {
+							// Error occurred
+							self.showErrorMessage(data.failure[0]);
+							
+							return;
+						}
+						
 						sdViewUtilService.syncLaunchPanels();
 
 						if (angular.isDefined(self.onConfirm)) {
@@ -210,7 +223,7 @@
 						self.closeThisDialog(scope);
 					}, function(result) {
 						// Error occurred
-						self.showErrorMessage('save', 'An error occurred while performing delegation.');
+						self.showErrorMessage('views-common-messages.delegation-error-save', 'An error occurred while performing delegation.');
 					});
 				}
 			}
@@ -220,15 +233,15 @@
 			 */
 			function validate(delegateData) {
 				if (!delegateData) {
-					self.showErrorMessage('general', 'An error occurred.');
+					self.showErrorMessage('views-common-messages.delegation-error-general', 'An error occurred.');
 					return false;
 				}
 				if (!angular.isDefined(delegateData.participant) || delegateData.participant == null) {
-					self.showErrorMessage('participant', 'Please select a participant.');
+					self.showErrorMessage('views-common-messages.delegation-noParticipantSelected-message', 'No participant selected.');
 					return false;
 				}
 				if (delegateData.activities.length === 0) {
-					self.showErrorMessage('activities', 'Please select an activity.');
+					self.showErrorMessage('views-common-messages.delegation-error-activities', 'No activity selected.');
 					return false;
 				}
 				return true;
@@ -263,6 +276,8 @@
 				if (self.searchParticipantSectionVisible) {
 					matchVal = options;
 					pType = self.participantType.value;
+				} else {
+					query.options = options;
 				}
 
 				query.data = {
@@ -276,11 +291,10 @@
 
 				sdActivityInstanceService.getParticipants(query).then(function(data) {
 
-					self.participants.list = data;
-					self.participants.totalCount = data.length;
+					self.participants = data;
 
 					if (self.searchParticipantSectionVisible) {
-						deferred.resolve(data);
+						deferred.resolve(self.participants.list);
 					} else {
 						deferred.resolve(self.participants);
 					}
@@ -289,7 +303,7 @@
 				}, function(result) {
 					// Error occurred
 					trace.log('An error occurred while fetching participants.\n Caused by: ' + result);
-					self.showErrorMessage('fetch', 'An error occurred while fetching participants.');
+					self.showErrorMessage('views-common-messages.delegation-error-fetch', 'An error occurred while fetching participants.');
 
 					deferred.reject(result);
 				});
