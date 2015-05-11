@@ -363,6 +363,7 @@
 	     */
 	    this.showResubmissionConfirmation = function(rowItem) {
 		var self = this;
+		trace.log('Worklist Item submitted for resubmission : '+rowItem.activityOID);
 		var title = sgI18nService.translate('views-common-messages.common-confirm', 'Confirm');
 		var html = '<div>'
 		    + sgI18nService.translate('processportal.views-worklistPanel-resubmit-confirm',
@@ -493,6 +494,7 @@
 	    sdActivityInstanceService.reactivate(rowItem.activityOID).then(
 		    function(result) {
 			if (result.failure.length > 0) {
+			    trace.error("Error in reactivating worklist item : "+rowItem.activityOID+".Error : " + result.failure[0].message);
 			    var title = sgI18nService.translate('views-common-messages.common-error', 'Error');
 			    var message = interpolate(sgI18nService.translate(
 				    'processportal.views-worklistPanel-resubmit-error', 'Error'),

@@ -406,6 +406,7 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
          params.put("id", id);
          params.put("name", name);
          params.put("userId", user.getId());
+         params.put("queryParams", "fetchAllStates=true");
          PPUtils.openWorklistViewHTML5("id=" + id, params);
          PPUtils.selectWorklist(null);
          if (lastSearchItems.containsKey(id))

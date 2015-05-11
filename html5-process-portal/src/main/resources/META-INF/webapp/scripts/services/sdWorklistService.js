@@ -67,6 +67,10 @@
 			   }
 		   }
 		   
+		   if(query.queryParams){
+		       restUrl = restUrl+ '?'+ query.queryParams;
+		   }
+		   
 		   var queryParams = sdDataTableHelperService.convertToQueryParams(query.options);
 
 		   if (queryParams.length > 0) {

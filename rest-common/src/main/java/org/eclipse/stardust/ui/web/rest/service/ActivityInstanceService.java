@@ -361,7 +361,7 @@ public class ActivityInstanceService
       }
       catch (Exception exception)
       {
-         notification.addFailure(new NotificationDTO(activityOID, null, "Error"));
+         notification.addFailure(new NotificationDTO(activityOID, null, exception.getMessage()));
       }
       return notification;
 

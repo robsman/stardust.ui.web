@@ -94,6 +94,7 @@ public class WorklistResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/user/{userId}")
    public Response getWorklistForUser(@PathParam("userId") String userId,
+         @QueryParam("fetchAllStates") @DefaultValue("false") String fetchAllStates,
          @QueryParam("skip") @DefaultValue(DEFAULT_SKIP_STEP) Integer skip,
          @QueryParam("pageSize") @DefaultValue(DEFAULT_PAGE_SIZE) Integer pageSize,
          @QueryParam("orderBy") @DefaultValue(DEFAULT_ORDER_BY_FIELD) String orderBy,
@@ -103,7 +104,7 @@ public class WorklistResource
       {
          Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
-         QueryResultDTO resultDTO = getWorklistService().getWorklistForUser(userId, "default", options);
+         QueryResultDTO resultDTO = getWorklistService().getWorklistForUser(userId, options, Boolean.valueOf(fetchAllStates));
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }
       catch (ObjectNotFoundException onfe)

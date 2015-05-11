@@ -48,9 +48,9 @@ public class WorklistService
     * @param userId
     * @return
     */
-   public QueryResultDTO getWorklistForUser(String userId, String context, Options options)
+   public QueryResultDTO getWorklistForUser(String userId, Options options, boolean fetchAllStates)
    {
-      QueryResult< ? > queryResult = worklistUtils.getWorklistForUser(userId, options);
+      QueryResult< ? > queryResult = worklistUtils.getWorklistForUser(userId, options, fetchAllStates);
       return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
    }
    

@@ -89,19 +89,27 @@ public class WorklistUtils
     * @param userId
     * @return
     */
-   public QueryResult< ? > getWorklistForUser(String userId, Options options)
+   public QueryResult< ? > getWorklistForUser(String userId, Options options , boolean fetchAllStates)
    {
       User user = serviceFactoryUtils.getUserService().getUser(userId);
 
       if (null != user)
       {
-         ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
-               ActivityInstanceState.Application, ActivityInstanceState.Suspended});
+         ActivityInstanceQuery query = null;
+         if (fetchAllStates)
+         {
+            query = ActivityInstanceQuery.findAll();
+         }
+         else
+         {
+            query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
+                  ActivityInstanceState.Application, ActivityInstanceState.Suspended});
+         }
          FilterOrTerm or = query.getFilter().addOrTerm();
          or.add(ActivityInstanceQuery.CURRENT_USER_PERFORMER_OID.isEqual(user.getOID()));
-         
+
          ActivityTableUtils.addCriterias(query, options);
-         
+
          ActivityInstances activityInstances = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
          return activityInstances;
       }
