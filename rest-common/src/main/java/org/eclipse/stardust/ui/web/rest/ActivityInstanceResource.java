@@ -49,6 +49,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
@@ -509,6 +510,36 @@ public class ActivityInstanceResource
           return Response.status(Status.INTERNAL_SERVER_ERROR).build();
        }
     }
+    
+    /**
+     * @author Johnson.Quadras
+     * @param postedData
+     * @return
+     * @throws PortalRestException
+     * @throws PortalException
+     */
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/reactivate")
+   public Response reactivateActivity(String postedData)
+   {
+       try
+       {
+          Map<String, Object> data = JsonDTO.getAsMap(postedData);
+          NotificationMap result =  activityInstanceService.reactivate(Long.valueOf(data.get("activityOID").toString()));
+          return Response.ok(GsonUtils.toJsonHTMLSafeString(result), MediaType.APPLICATION_JSON).build();
+       }
+       catch (ObjectNotFoundException onfe)
+       {
+          return Response.status(Status.NOT_FOUND).build();
+       }
+       catch (Exception e)
+       {
+          trace.error("", e);
+          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+       }
+   }
 	
 	/**
 	 * 

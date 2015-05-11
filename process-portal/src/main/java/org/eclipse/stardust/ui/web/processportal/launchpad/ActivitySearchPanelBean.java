@@ -381,7 +381,6 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
          String id = ID_ALL_RESUBMISSION_ACTIVITY_INSTANCES;
          params.put("id", id);
          params.put("name", name);
-         params.put("showResubmitLink", true);
          params.put("url", "services/rest/portal/worklist/resubmissionActivities");
          PPUtils.openWorklistViewHTML5("id=" + id, params);
          PPUtils.selectWorklist(null);

@@ -27,6 +27,16 @@
 	function ActivityInstanceService($rootScope, $http, $q, sdDataTableHelperService) {
 		var REST_BASE_URL = "services/rest/portal/activity-instances/";
 		
+		
+		/*
+		 * 
+		 */
+		ActivityInstanceService.prototype.reactivate = function(activityOID) {
+
+		    var data = {activityOID : activityOID}
+		    return ajax(REST_BASE_URL,'reactivate' , data);
+		};
+		
 		/*
 		 * 
 		 */

@@ -356,6 +356,29 @@
 		    self.dataTable.setSelection(selectedRows);
 		}
 	    };
+	    
+
+	    /**
+	     * 
+	     */
+	    this.showResubmissionConfirmation = function(rowItem) {
+		var self = this;
+		var title = sgI18nService.translate('views-common-messages.common-confirm', 'Confirm');
+		var html = '<div>'
+		    + sgI18nService.translate('processportal.views-worklistPanel-resubmit-confirm',
+		    'Reactivate the activity ?') + '</div>';
+		var options = {
+			title : title,
+			type : 'confirm',
+			onConfirm : function() {
+			    self.reactivateItem(rowItem, scope, self);
+			},
+			confirmActionLabel : sgI18nService.translate('views-common-messages.common-yes', 'Yes'),
+			cancelActionLabel : sgI18nService.translate('views-common-messages.common-no', 'No')
+		};
+
+		sdDialogService.dialog(scope, options, html)
+	    };
 
 	    this.fetchDescriptorCols(attr);
 	    this.fetchAllProcesses();
@@ -461,6 +484,29 @@
 	    };
 
 	};
+	
+	/**
+	 * 
+	 */
+	ActivityTableCompiler.prototype.reactivateItem = function(rowItem, scope, methodScope) {
+	    var interpolate = $filter('interpolate');
+	    sdActivityInstanceService.reactivate(rowItem.activityOID).then(
+		    function(result) {
+			if (result.failure.length > 0) {
+			    var title = sgI18nService.translate('views-common-messages.common-error', 'Error');
+			    var message = interpolate(sgI18nService.translate(
+				    'processportal.views-worklistPanel-resubmit-error', 'Error'),
+				    [ rowItem.activityOID ]);
+			    sdDialogService.error(scope, message, title)
+			} else {
+			    sdCommonViewUtilService.openActivityView(rowItem.activityOID);
+			    methodScope.refresh();
+			}
+		    });
+
+	};
+	
+	
 
 	/**
 	 * 
@@ -579,14 +625,21 @@
 	    var query = angular.extend({}, this.query);
 	    options.descriptorColumns = self.descritorCols;
 	    query.options = options;
+	    
+	    var showResubmitLink = false;
+	    if(query.id == 'allResubmissionInstances'){
+		showResubmitLink  = true;
+	    }
 
 	    if (angular.isDefined(this.sdDataCtrl)) {
 		trace.debug("sdData is defined fetching custom data. ");
 
 		var dataResult = self.sdDataCtrl.retrieveData(query);
-
 		dataResult.then(function(data) {
-		    self.activities = data;
+		    angular.forEach(data.list,function(item){
+			item.showResubmitLink = showResubmitLink;
+		    });
+		    
 		    deferred.resolve(self.activities);
 		    self.safeApply(self.activities.list);
 		    self.storePriorities(self.activities.list);
@@ -602,6 +655,11 @@
 		trace.debug("sdData not defined fetching default data. ");
 
 		sdWorklistService.getWorklist(query).then(function(data) {
+		    
+		    angular.forEach(data.list,function(item){
+			item.showResubmitLink = showResubmitLink;
+		    });
+		    
 		    self.activities.list = data.list;
 		    self.activities.totalCount = data.totalCount;
 		    self.storePriorities(self.activities.list);
@@ -732,9 +790,15 @@
 	 * 
 	 */
 	ActivityTableCompiler.prototype.activateItem = function(rowItem) {
-	    sdCommonViewUtilService.openActivityView(rowItem.activityOID);
+	    
+	    if(rowItem.showResubmitLink){
+		this.showResubmissionConfirmation(rowItem);
+	    }else{
+		sdCommonViewUtilService.openActivityView(rowItem.activityOID);
+	    }
+	    
 	};
-
+	
 	/*
 	 * 
 	 */

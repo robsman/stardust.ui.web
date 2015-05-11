@@ -128,12 +128,12 @@
 		<tbody>
 			<tr>
 				<td sda-exporter="rowData.activity.name" style="text-align: left; white-space: nowrap;">
-					<div ng-if="activityTableCtrl.isWorklistMode();">
-						<a ng-if="rowData.activatable" href="#" ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$activateItem(rowData);"
+					<div ng-if="activityTableCtrl.isWorklistMode();"> 
+						<a ng-if="rowData.activatable || rowData.showResubmitLink" href="#" ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$activateItem(rowData);"
 							title="{{i18n('processportal.views-worklistPanel-tooltip-openActivity')}}" class="button-link tbl-tool-link"> 
 							{{rowData.activity.name}}
 						</a>
-						 <span ng-if="!rowData.activatable" ng-bind="rowData.activity.name"> </span> 
+						 <span ng-if="!rowData.activatable && !rowData.showResubmitLink" ng-bind="rowData.activity.name"> </span> 
 						<span ng-if="rowData.qualityAssuranceState"> 
 							<span ng-if="rowData.qualityAssuranceState ==='IS_REVISED'"> 
 								 <i class="glyphicon glyphicon-remove-circle" style="color: red; margin-left: 2px;"></i>

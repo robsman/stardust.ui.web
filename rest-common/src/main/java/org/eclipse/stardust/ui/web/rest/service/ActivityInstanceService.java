@@ -13,6 +13,8 @@
  */
 package org.eclipse.stardust.ui.web.rest.service;
 
+import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.activate;
+
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -30,11 +32,11 @@ import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
-import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.CriticalityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
@@ -45,9 +47,9 @@ import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils;
+import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils.MODE;
 import org.eclipse.stardust.ui.web.rest.service.utils.CriticalityUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
-import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils.MODE;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.springframework.stereotype.Component;
@@ -341,17 +343,28 @@ public class ActivityInstanceService
             .getString("views.activityTable.statusFilter.suspended")));
       return allStatusList;
    }
-
+   
    /**
     * 
-    * @param oid
-    * @param outData
-    * @param context
+    * @param activityOID
     * @return
     */
-   private Map<String, Serializable> convertOutDataTOAppropriateType(Long oid, Map<String, Serializable> outData,
-         String context)
+   public NotificationMap reactivate(Long activityOID)
    {
-      return outData;
+      NotificationMap notification = new NotificationMap();
+      try
+      {
+         ActivityInstance ai = activityInstanceUtils.getActivityInstance(activityOID);
+         ai = activate(ai);
+         serviceFactoryUtils.getWorkflowService().unbindActivityEventHandler(ai.getOID(), "Resubmission");
+         notification.addSuccess(new NotificationDTO(activityOID, ai.getActivity().getName(), null));
+      }
+      catch (Exception exception)
+      {
+         notification.addFailure(new NotificationDTO(activityOID, null, "Error"));
+      }
+      return notification;
+
    }
+
 }
