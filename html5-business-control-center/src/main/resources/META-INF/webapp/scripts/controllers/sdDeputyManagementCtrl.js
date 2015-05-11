@@ -183,6 +183,9 @@
 				self.deputy.validTo = rowData.validTo;
 				self.deputy.deputyDisplayName = rowData.userDisplayName;
 				self.deputy.deputyOID = rowData.userOID;
+				self.deputy.title = 'views-common-messages.views-deputyManagementView-dialog-modify-title';
+			}else{
+				self.deputy.title = 'views-common-messages.views-deputyManagementView-dialog-create-title';
 			}
 
 			self.showCreateOrModifyDeputyDialog = true;
