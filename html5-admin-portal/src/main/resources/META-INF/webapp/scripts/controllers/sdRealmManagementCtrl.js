@@ -78,7 +78,6 @@
 			if (angular.isDefined(this.dataTable)) {
 				this.dataTable.refresh(true);
 			}
-			this.resetErrorMessages();
 		};
 		
 		/*
@@ -116,23 +115,6 @@
 			}
 			
 			return false;
-		};
-		
-		
-		/*
-		 * 
-		 */
-		RealmManagementController.prototype.addToErrorMessages = function(mesg) {
-			if (this.errorMessages.indexOf(mesg) == -1) {
-				this.errorMessages.push(mesg);
-			}
-		};
-		
-		/*
-		 * 
-		 */
-		RealmManagementController.prototype.resetErrorMessages = function(mesg) {
-			this.errorMessages = [];
 		};
 		
 		/*
