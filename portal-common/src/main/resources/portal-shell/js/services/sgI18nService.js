@@ -44,22 +44,33 @@
 	     * 
 	     */
 		I18nService.prototype.translate = function(key, defVal) {
-			var ret;
+			var ret = '';
 			if (messages) {
-				var parts = key.split('.');
-				if (parts.length > 1) {
-					var msgNode;
-					for (var i = 0; i < parts.length - 1; i++) {
-						msgNode = messages[parts[i]];
-					}
+				try {
+					var parts = key.split('.');
+					if (parts.length > 1) {
+						var msgNode = messages;
+						for (var i = 0; i < parts.length - 1; i++) {
+							if (msgNode == undefined) {
+								break;
+							}
+							msgNode = msgNode[parts[i]];
+						}
 
-					ret = msgNode[parts[parts.length - 1]];
-				} else {
-					ret = messages[key];
-				}
-				
-				if (!ret && (defVal != undefined || defVal != null)) {
-					ret = defVal;
+						if (msgNode != undefined) {
+							ret = msgNode[parts[parts.length - 1]];
+						}
+					} else {
+						ret = messages[key];
+					}
+					
+					if (!ret && (defVal != undefined || defVal != null)) {
+						ret = defVal;
+					}
+				} catch (e) {
+					if (window.console) {
+						window.console.log(e);
+					}
 				}
 			} else {
 				ret = key;
