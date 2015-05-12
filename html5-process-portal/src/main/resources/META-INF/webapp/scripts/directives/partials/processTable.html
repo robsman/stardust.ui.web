@@ -109,15 +109,15 @@
 				<td>
 					<img src="plugins/views-common/images/icons/process-history/processrootblue.png"
 						style="border: none;"
-						title="{{i18n('business-control-center.common-tooltip-process')}}"
+						title="{{i18n('business-control-center-messages.common-tooltip-process')}}"
 						ng-if="!rowData.caseInstance && rowData.oid == rowData.processInstanceRootOID" />
 					<img src="plugins/views-common/images/icons/process.png"
 						style="border: none;"
-						title="{{i18n('business-control-center.common-tooltip-subProcess')}}"
+						title="{{i18n('business-control-center-messages.common-tooltip-subProcess')}}"
 						ng-if="!rowData.caseInstance && rowData.oid != rowData.processInstanceRootOID" />
 					<img src="plugins/views-common/images/icons/envelope.png"
 						style="border: none;"
-						title="{{i18n('business-control-center.common-tooltip-case')}}"
+						title="{{i18n('business-control-center-messages.common-tooltip-case')}}"
 						ng-if="rowData.caseInstance" />
 					<a  href="#"
 						ng-click="bpmCommon.stopEvent($event); processTableCtrl.openProcessHistory(rowData);"
@@ -127,7 +127,8 @@
 				<td style="text-align: center; width:110px;" sda-exporter="rowData.priority.label">
 					<div sd-process-priority sda-priority="rowData.priority" sda-editable="true" 
 					 sda-available-priorities ="processTableCtrl.availablePriorities" 
-					 sda-on-change ="processTableCtrl.registerNewPriority( rowData.oid, rowData.priority.value)">
+					 sda-on-change ="processTableCtrl.registerNewPriority( rowData.oid, rowData.priority.value)"
+					 sda-value-changed="processTableCtrl.isPriorityChangedForRow(rowData.oid);">
 					</div>
 				</td>
 				<td sda-exporter="processTableCtrl.getDescriptorExportText(rowData.descriptorValues)">
@@ -175,15 +176,15 @@
 						</button>
 						
 						<!-- View chart -->
-						<button class="button-link tbl-tool-link" title="{{i18n('business-control-center.views-processSearchView-tooltip-viewGanttChart')}}"
+						<button class="button-link tbl-tool-link" title="{{i18n('business-control-center-messages.views-processSearchView-tooltip-viewGanttChart')}}"
 							ng-click="processTableCtrl.openChart(rowData); bpmCommon.stopEvent($event);">
 							<i class="glyphicons glyphicon-stats"  style="font-size: 1.5em;"></i>
 						</button>
 						
-						
 						<button ng-click="bpmCommon.stopEvent($event); processTableCtrl.openNotes(rowData);"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-notes')}}" class="button-link tbl-tool-link">
-							<i class="glyphicon glyphicon-comment"></i>
+							<i class="sc sc-document-o action-column-icon" ng-if ="rowData.notesCount === 0"></i>
+							<i class="sc sc-document-text-o action-column-icon" ng-if ="rowData.notesCount > 0 "></i>
 						</button>
 					</div>
 				</td>

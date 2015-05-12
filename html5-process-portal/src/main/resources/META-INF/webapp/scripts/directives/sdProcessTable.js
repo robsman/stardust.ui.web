@@ -346,6 +346,18 @@
 					self.availablePriorities = data;
 				});
 			};
+			
+			/*
+			 * 
+			 */
+			self.isPriorityChangedForRow = function(id) {
+			    for (name in self.changedPriorities) {
+				if (name == id) {
+				    return true;
+				}
+			    }
+			    return false;
+			};
 
 			/*
 			 *
