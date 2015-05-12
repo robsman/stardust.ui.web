@@ -48,14 +48,16 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<div class="button-alignment" >
-			<div class="right" ng-if="!joinProcessController.joinProcess.joinCompleted">
-			    <button class="button" ng-click="joinProcessController.closeNotification(this)">{{i18n('views-common-messages.common-close')}}</button>
+		<div class="button-pane cf" >
+			<div class="button-alignment" >
+				<div class="right" ng-if="!joinProcessController.joinProcess.joinCompleted">
+				    <button class="button" ng-click="joinProcessController.closeNotification(this)">{{i18n('views-common-messages.common-close')}}</button>
+				</div>
+				<div class="right" ng-if="joinProcessController.joinProcess.joinCompleted">
+				  	<button class="button" ng-click="joinProcessController.okNotification(this)">{{i18n('views-common-messages.common-yes')}}</button>
+				    <button class="button" ng-click="joinProcessController.closeNotification(this)">{{i18n('views-common-messages.common-no')}}</button>
+				</div>
 			</div>
-			<div class="right" ng-if="joinProcessController.joinProcess.joinCompleted">
-			  	<button class="button" ng-click="joinProcessController.okNotification(this)">{{i18n('views-common-messages.common-yes')}}</button>
-			    <button class="button" ng-click="joinProcessController.closeNotification(this)">{{i18n('views-common-messages.common-no')}}</button>
-			</div>
-	    </div>
+		</div>
 	</div>
 </div>
