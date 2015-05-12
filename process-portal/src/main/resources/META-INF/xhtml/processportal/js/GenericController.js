@@ -661,6 +661,11 @@ if (!window.bpm.portal.GenericController) {
 					var widthOffset = elemDialog.width();
 		    		var heightOffset = elemDialog.height();
 
+		    		if (widthOffset == 0 || heightOffset == 0) {
+		    			widthOffset = elemDialogContent.width()
+		    			heightOffset = elemDialogContent.height() + 100;
+		    		}
+
 		    		dialogLeft = (((windowSize.width - widthOffset)/ 2) + scrollPos.x);
 		    		dialogTop = (((windowSize.height - heightOffset)/ 2) + scrollPos.y);
 
