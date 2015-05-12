@@ -2662,8 +2662,7 @@ define(
 					}
 
 					options[applicationIntegrationOverlayExtension.id] = {
-						label : createTxt + " " +
-								m_i18nUtils.getProperty("modeler.integrationoverlays.application." +
+						label : m_i18nUtils.getProperty("modeler.integrationoverlays.application." +
 								applicationIntegrationOverlayExtension.id),
 
 						// This code requires the following patch in
