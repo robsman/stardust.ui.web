@@ -8,12 +8,14 @@
 
 /**
  * @author Yogesh.Manware
+ * @author Subodh.Godbole
  */
 (function() {
   'use strict';
 
   angular.module('shell').controller('sd.common.controller',
-          ['$scope', 'sdI18nService', function($scope, sdI18nService) {
+          ['$scope', 'sgI18nService', 'sdI18nService', function($scope, sgI18nService, sdI18nService) {
+        	$scope.i18n = sgI18nService.translate;
             $scope.sdI18n = sdI18nService.translate;
           }])
 })();

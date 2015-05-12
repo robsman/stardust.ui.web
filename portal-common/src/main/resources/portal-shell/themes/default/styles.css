@@ -161,6 +161,7 @@ body, table {
    margin-right: 2px;
    margin-top: -35px;
    font-weight: bold;
+   font-size: 12px;
    color: #696969;
 }
 
@@ -351,6 +352,7 @@ body, table {
 	padding-right: 8px;
 	line-height: 40px;
 	vertical-align: middle;
+	text-align: left;
 }
 
 .footer-filler-cell {
@@ -363,6 +365,7 @@ body, table {
 }
 
 .copy-right {
+	font-size: 16px;
 }
 
 .content-frame {

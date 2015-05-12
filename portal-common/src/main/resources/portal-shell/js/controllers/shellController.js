@@ -4,8 +4,8 @@
 	'use strict';
 	
 angular.module('shell').controller('sg.shell.Controller',
-			['$scope', '$resource', '$q', '$window', '$document', '$timeout', '$compile', '$controller', 'sgConfigService', 'sgNavigationService', 'sgViewPanelService', 'sgPubSubService', 'sgSidebarStateService',
-			function ($scope, $resource, $q, $window, $document, $timeout, $compile, $controller, sgConfigService, sgNavigationService, sgViewPanelService, sgPubSubService, sgSidebarStateService) {
+			['$scope', '$resource', '$q', '$window', '$document', '$timeout', '$compile', '$controller', 'sgConfigService', 'sgNavigationService', 'sgViewPanelService', 'sgPubSubService', 'sgSidebarStateService', 'sgI18nService',
+			function ($scope, $resource, $q, $window, $document, $timeout, $compile, $controller, sgConfigService, sgNavigationService, sgViewPanelService, sgPubSubService, sgSidebarStateService, sgI18nService) {
 
 				// ****************** Config Service - START ******************
 				/*
@@ -171,7 +171,11 @@ angular.module('shell').controller('sg.shell.Controller',
                 	}
                 };
 		        // ****************** View Panel Service - END ******************
-		        
+
+				// ****************** I18n - START ******************
+                sgI18nService.load();
+				// ****************** I18n - START ******************
+
 				// ****************** Sidebar - START ******************
 				var currSidebar;
 				/*
