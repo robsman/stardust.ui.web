@@ -50,6 +50,7 @@ import org.eclipse.stardust.engine.api.query.ActivityStateFilter;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
+import org.eclipse.stardust.engine.api.query.HistoricalStatesPolicy;
 import org.eclipse.stardust.engine.api.query.ProcessDefinitionFilter;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
@@ -773,6 +774,7 @@ public class ActivityTableUtils
       addFilterCriteria(query, options);
       SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip,
             true);
+      query.setPolicy(HistoricalStatesPolicy.WITH_LAST_USER_PERFORMER);
       query.setPolicy(subsetPolicy);
    }
 

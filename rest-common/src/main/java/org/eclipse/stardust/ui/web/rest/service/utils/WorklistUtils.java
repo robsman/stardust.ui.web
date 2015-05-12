@@ -73,8 +73,6 @@ public class WorklistUtils
          WorklistQuery query = org.eclipse.stardust.ui.web.viewscommon.utils.WorklistUtils
                .createWorklistQuery(participant);
 
-         query.setPolicy(HistoricalStatesPolicy.WITH_LAST_USER_PERFORMER);
-
          ActivityTableUtils.addCriterias(query, options);
 
          Worklist worklist = serviceFactoryUtils.getWorkflowService().getWorklist((WorklistQuery) query);
