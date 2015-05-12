@@ -12,12 +12,17 @@ package org.eclipse.stardust.ui.web.rest.service.dto;
 
 import java.util.Date;
 
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.PerformingUserFilter;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.ui.web.rest.service.utils.CriticalityUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessActivityUtils;
+import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
+import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
 /**
  * @author Aditya.Gaikwad
@@ -128,19 +133,23 @@ public class ActivityFilterAttributesDTO
       {
          filter.add(new PerformingUserFilter(user.getOID()));
       }
-      
-      //TODO
-/*      if (StringUtils.isNotEmpty(criticality)
-            && !criticality.equals("ALL"))
+
+      String string = MessagesViewsCommonBean.getInstance().getString("delegation.allTypes");
+
+      if (StringUtils.isNotEmpty(criticality)
+            && !criticality.equals(MessagesViewsCommonBean.getInstance().getString("delegation.allTypes")))
       {
-         CriticalityCategory cCat = CriticalityConfigurationUtil.getCriticalityForLabel(criticality);
-         if (null != cCat)
+         for (CriticalityCategory category : CriticalityUtils.getCriticalityConfiguration())
          {
-            filter.and(ActivityInstanceQuery.CRITICALITY.between(
-                  CriticalityConfigurationUtil.getEngineCriticality(cCat.getRangeFrom()),
-                  CriticalityConfigurationUtil.getEngineCriticality(cCat.getRangeTo())));
+            if (category.getLabel().equals(criticality))
+            {
+               filter.and(ActivityInstanceQuery.CRITICALITY.between(
+                     CriticalityConfigurationUtil.getEngineCriticality(category.getRangeFrom()),
+                     CriticalityConfigurationUtil.getEngineCriticality(category.getRangeTo())));
+               break;
+            }
          }
-      }*/
+      }
       query.where(filter);
       return query;
    }

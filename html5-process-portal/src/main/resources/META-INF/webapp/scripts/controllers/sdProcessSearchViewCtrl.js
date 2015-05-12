@@ -188,7 +188,7 @@
 
 							self.activitySrchCriticality = self.activitySrchCriticality
 									.concat(criticalities);
-							self.query.processSearchCriteria.activitySrchCriticalitySelected = self.activitySrchCriticality[0].value;
+							self.query.processSearchCriteria.activitySrchCriticalitySelected = self.activitySrchCriticality[0].label;
 						});
 
 		_sdProcessSearchService
@@ -340,7 +340,7 @@
 			this.activitySrchSelected = [ this.procSrchActivities[0] ];
 
 			this.query.processSearchCriteria.activitySrchStateSelected = this.activitySrchState[0].value;
-			this.query.processSearchCriteria.activitySrchCriticalitySelected = this.activitySrchCriticality[0].value;
+			this.query.processSearchCriteria.activitySrchCriticalitySelected = this.activitySrchCriticality[0].label;
 		}
 
 		if (this.procSrchProcessSelected[0]
