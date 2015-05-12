@@ -246,11 +246,11 @@ padding : 5px;;
 }
 
 .activity-overview-report-field-label {
-	padding-right: 5px;
 }
 
 .activity-overview-report-field-value {
 	padding-right: 10px;
+	font-weight: bold;
 }
 .toolbar-icon {
 	

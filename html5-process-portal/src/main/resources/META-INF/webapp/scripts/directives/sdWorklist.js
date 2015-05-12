@@ -638,12 +638,10 @@
 
 		var dataResult = self.sdDataCtrl.retrieveData(query);
 		dataResult.then(function(data) {
-		    angular.forEach(data.list,function(item){
-			item.showResubmitLink = showResubmitLink;
-		    });
-		    
+		    self.activities.list = data.list;
+		    self.activities.totalCount = data.totalCount;
 		    deferred.resolve(self.activities);
-		    self.safeApply(self.activities.list);
+		    self.safeApply();
 		    self.storePriorities(self.activities.list);
 		}, function(error) {
 		    deferred.reject(error);
@@ -657,7 +655,7 @@
 		trace.debug("sdData not defined fetching default data. ");
 
 		sdWorklistService.getWorklist(query).then(function(data) {
-		    
+		  
 		    angular.forEach(data.list,function(item){
 			item.showResubmitLink = showResubmitLink;
 		    });
