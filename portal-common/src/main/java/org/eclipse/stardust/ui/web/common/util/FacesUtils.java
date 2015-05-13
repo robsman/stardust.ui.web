@@ -99,7 +99,7 @@ public class FacesUtils implements Constants
    {
       boolean result = false;
 
-      if (null != view)
+      if (null != view && null != toolbarSection)
       {
 	      if (StringUtils.isEmpty(toolbarSection.getRequiredView()))
 	      {
