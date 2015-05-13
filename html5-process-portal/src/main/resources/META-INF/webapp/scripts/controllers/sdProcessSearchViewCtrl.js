@@ -434,16 +434,19 @@
 		}
 		
 		if (this.selected) {
-			var obj = {};
 			for ( var item in this.selected) {
 				for ( var index in this.descritorCols) {
 					if (this.descritorCols[index].id == item) {
-						console.log("Got it");
-						
+						var obj = {};
 						if (this.descritorCols[index].dataType == "STRING") {
 							obj['textSearch'] = this.selected[this.descritorCols[index].id];
+						} else if (this.descritorCols[index].dataType == "BOOLEAN") {
+							obj['equals'] = (this.selected[this.descritorCols[index].id] == 0)? 'true' : 'false';
+						} else if (this.descritorCols[index].dataType == "NUMBER") {
+							obj['from'] = this.selected[this.descritorCols[index].id];
+							obj['to'] = this.selected[this.descritorCols[index].id];;
 						}
-						this.query.processSearchCriteria.descriptors.formatted[item] = obj;
+						this.query.processSearchCriteria.descriptors.formatted[item.substr('descriptorValues.'.length)] = obj;
 						break;
 					}
 				}
@@ -539,6 +542,8 @@
 	 */
 	ProcessSearchViewCtrl.prototype.processHierarchyChange = function() {
 		this.filterProcessDefinitionList();
+		this.processChange();
+		this.procSrchProcessSelected = [ this.procSrchProcess[0] ];
 		this.processSrchCaseOwner = "";
 	}
 

@@ -246,8 +246,8 @@
 				var deferred = $q.defer();
 
 				var query = angular.extend({}, self.query);
+				options.descriptorColumns = self.descritorCols;
 				query.options = options;
-
 				if (angular.isDefined(self.sdDataCtrl)) {
 					trace.debug("sdData is defined fetching custom data. ");
 
@@ -289,7 +289,8 @@
 							title : descriptor.title,
 							dataType : descriptor.type,
 							sortable : descriptor.sortable,
-							filterable : descriptor.filterable
+							filterable : descriptor.filterable,
+							key : descriptor.title.replace(/ /g, '')
 						});
 					});
 

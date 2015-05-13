@@ -28,6 +28,7 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
+import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.ui.web.rest.common.ProcessSearchParameterConstants;
 import org.eclipse.stardust.ui.web.rest.service.ProcessActivityService;
 import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
@@ -38,6 +39,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ProcessSearchCriteriaDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -91,10 +93,9 @@ public class ProcessActivityResource
       Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
 
       List<DescriptorColumnDTO> availableDescriptors = processDefinitionService.getDescriptorColumns(true);
-      ActivityTableUtils.populatePostData(options, postData, availableDescriptors);
 
-      QueryResultDTO queryResultDTO = getProcessActivityService().performSearch(options, processSearchCriteria,
-            availableDescriptors);
+      QueryResultDTO queryResultDTO = getProcessActivityService().performSearch(options, postData,
+            processSearchCriteria, availableDescriptors);
 
       return Response.ok(queryResultDTO.toJson(), MediaType.APPLICATION_JSON).build();
    }
@@ -138,8 +139,9 @@ public class ProcessActivityResource
             break;
          }
 
-         ProcessDefinitionDTO processDefinitionDTO = new ProcessDefinitionDTO();
-         processDefinitionDTO.id = procDefID;
+         ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(procDefID);
+         ProcessDefinitionDTO processDefinitionDTO = DTOBuilder.build(processDefinition, ProcessDefinitionDTO.class);
+         
          processDTOList.add(processDefinitionDTO);
       }
 
@@ -171,9 +173,18 @@ public class ProcessActivityResource
             }
             else
             {
-               ActivityDTO activityDTO = new ActivityDTO();
-               activityDTO.runtimeElementOid = Long.parseLong(activityRuntimeElementOid);
-               activites.add(activityDTO);
+               for (ProcessDefinitionDTO procDef : processDTOList)
+               {
+                  List<ActivityDTO> activities = procDef.activities;
+                  for (ActivityDTO activityDTO : activities)
+                  {
+                     if (activityDTO.runtimeElementOid.equals(Long.parseLong(activityRuntimeElementOid)))
+                     {
+                        activites.add(activityDTO);
+                        break;
+                     }
+                  }
+               }
             }
          }
       }
@@ -198,7 +209,7 @@ public class ProcessActivityResource
       }
       processSearchCriteria.procSrchProcessSelected = processDTOList;
 
-      processSearchCriteria.descriptors = formattedJsonObject.toString();
+      processSearchCriteria.descriptors = formattedJsonObject;
       return processSearchCriteria;
    }
 

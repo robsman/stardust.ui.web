@@ -51,6 +51,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.FilterAttributesDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessSearchCriteriaDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ProcessTableFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO;
 import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataMapping;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DataMappingWrapper;
@@ -116,12 +117,13 @@ public class ProcessActivityUtils
    /**
     * 
     * @param options
+    * @param postData
     * @param processSearchAttributes
     * @param commonDescriptors
     * @return
     */
    public QueryResult<ProcessInstance> performProcessSearch(Options options,
-         ProcessSearchCriteriaDTO processSearchAttributes, List<DescriptorColumnDTO> availableDescriptors)
+         String postData, ProcessSearchCriteriaDTO processSearchAttributes, List<DescriptorColumnDTO> availableDescriptors)
    {
 
       // TODO Validation for Process Search
@@ -154,7 +156,7 @@ public class ProcessActivityUtils
       commonDescriptors = ProcessDefinitionUtils.getCommonDescriptors(processDefinitions, true);
 
       Query query = null;
-
+      
       filterAttributesDTO = new FilterAttributesDTO();
 
       // Set hiearchy
@@ -164,14 +166,14 @@ public class ProcessActivityUtils
 
       prePopulateProcessCriteria(processSearchAttributes);
       query = createQuery(processSearchAttributes);
-
-      SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip, true);
-      query.setPolicy(subsetPolicy);
-
-      // For Descriptors
-      WorklistFilterDTO filters = ActivityTableUtils.getFilters(processSearchAttributes.descriptors,
-            availableDescriptors);
-      ActivityTableUtils.addDescriptorFilters(query, filters);
+      
+      // For Criteria Descriptors
+      ProcessTableFilterDTO descFilterDTO = new ProcessTableFilterDTO();
+      ProcessInstanceUtils.populateDescriptorFilters(descFilterDTO, processSearchAttributes.descriptors, availableDescriptors);
+      ProcessInstanceUtils.addDescriptorFilters(query, descFilterDTO);
+      
+      // For Filter Descriptors of table
+      ProcessInstanceUtils.populatePostData(options, postData, availableDescriptors);
 
       if (query instanceof ProcessInstanceQuery)
       {
@@ -194,11 +196,13 @@ public class ProcessActivityUtils
    /**
     * 
     * @param options
+    * @param postData
     * @param processSearchAttributes
+    * @param availableDescriptors
     * @return
     */
    public QueryResult<ActivityInstance> performActivitySearch(Options options,
-         ProcessSearchCriteriaDTO processSearchAttributes)
+         String postData, ProcessSearchCriteriaDTO processSearchAttributes, List<DescriptorColumnDTO> availableDescriptors)
    {
       // TODO Validation for Activity Search
 
@@ -236,6 +240,14 @@ public class ProcessActivityUtils
       }
 
       applyFilter(processSearchAttributes, query);
+      
+      // For Criteria Descriptors
+      WorklistFilterDTO descFilterDTO = new WorklistFilterDTO();
+      ActivityTableUtils.populateDescriptorFilters(descFilterDTO, processSearchAttributes.descriptors, availableDescriptors);
+      ActivityTableUtils.addDescriptorFilters(query, descFilterDTO);
+      
+      // For Filter Descriptors of table
+      ActivityTableUtils.populatePostData(options, postData, availableDescriptors);
 
       return allActivityInstances(options, (ActivityInstanceQuery) query);
    }
@@ -294,14 +306,7 @@ public class ProcessActivityUtils
 
       QueryResult< ? extends ProcessInstance> queryResult = processInstanceUtilsREST
             .getProcessInstances(query, options);
-      // return processInstanceUtilsREST.buildProcessListResult(queryResult);
       return (QueryResult<ProcessInstance>) queryResult;
-
-      /*
-       * QueryResult<ProcessInstance> result = null; result =
-       * serviceFactoryUtils.getQueryService().getAllProcessInstances(query); return
-       * result;
-       */
    }
 
    /**
@@ -336,8 +341,6 @@ public class ProcessActivityUtils
       // Case search by ActivityInstanceQuery
       if (filterAttributesDTO.isCaseOnlySearch() && null != filterAttributesDTO.getUser())
       {
-         // TODO
-
          query = getActivityQueryByProcessState(filterAttributesDTO.getState());
          FilterAndTerm filter = query.getFilter().addAndTerm();
          if (null != filterAttributesDTO.getOid())
@@ -599,11 +602,6 @@ public class ProcessActivityUtils
             FilterAndTerm filter = query.getFilter().addAndTerm();
             applyCaseFilter = true;
             filter = DescriptorFilterUtils.createCaseDescriptors(descriptorItems, filter);
-         }
-
-         if (!applyCaseFilter)
-         {
-            DescriptorFilterUtils.evaluateAndApplyFilters(query, descriptorItems, commonDescriptors);
          }
       }
    }

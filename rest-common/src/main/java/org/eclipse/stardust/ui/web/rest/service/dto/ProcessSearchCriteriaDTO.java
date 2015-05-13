@@ -18,6 +18,8 @@ import java.util.List;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 
+import com.google.gson.JsonObject;
+
 @DTOClass
 public class ProcessSearchCriteriaDTO extends AbstractDTO
 {
@@ -63,5 +65,5 @@ public class ProcessSearchCriteriaDTO extends AbstractDTO
 
    public String activitySrchPerformer;
    
-   public String descriptors;
+   public JsonObject descriptors;
 }

@@ -52,7 +52,7 @@ public class UserGroupResource
    public Response getAllUserGroups(@QueryParam("skip") @DefaultValue("0") Integer skip,
          @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
          @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
-         @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
+         @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir)
    {
       Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
       UserGroupQueryResultDTO allUserGroupsDTO = getUserGroupService().getAllUserGroups(options);

@@ -98,7 +98,7 @@ public class ProcessDefinitionUtils
     * @param processId
     * @return
     */
-   public ProcessDefinition getProcessDefinition(String processId)
+   public static ProcessDefinition getProcessDefinition(String processId)
    {
       ProcessDefinition processDefinition = null;
 

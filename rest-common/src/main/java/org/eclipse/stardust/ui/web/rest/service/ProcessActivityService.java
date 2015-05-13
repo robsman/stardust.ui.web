@@ -47,22 +47,23 @@ public class ProcessActivityService
    /**
     * 
     * @param options
+    * @param postData
     * @param processSearchAttributes
     * @return
     */
-   public QueryResultDTO performSearch(Options options, ProcessSearchCriteriaDTO processSearchAttributes,
-         List<DescriptorColumnDTO> availableDescriptors)
+   public QueryResultDTO performSearch(Options options, String postData,
+         ProcessSearchCriteriaDTO processSearchAttributes, List<DescriptorColumnDTO> availableDescriptors)
    {
       if (processSearchAttributes.filterObject == 0)
       {
          QueryResult<ProcessInstance> processInstances = getProcessActivityUtils().performProcessSearch(options,
-               processSearchAttributes, availableDescriptors);
+               postData, processSearchAttributes, availableDescriptors);
          return buildProcessSearchresult(processInstances);
       }
       else if (processSearchAttributes.filterObject == 1)
       {
          QueryResult<ActivityInstance> activityInstances = getProcessActivityUtils().performActivitySearch(options,
-               processSearchAttributes);
+               postData, processSearchAttributes, availableDescriptors);
          return buildActivitySearchResult(activityInstances);
       }
       return null;

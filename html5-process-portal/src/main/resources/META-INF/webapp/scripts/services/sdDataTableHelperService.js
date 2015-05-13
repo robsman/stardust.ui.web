@@ -57,10 +57,10 @@
 				   filters : options.filters,
 				   descriptors : {
 					   fetchAll : false,
-					   visbleColumns : []
+					   visibleColumns : []
 				   }
 		   };
-
+		   
 		   var found = $filter('filter')(options.columns, {
 			   field : 'descriptors'
 		   }, true);
@@ -68,15 +68,20 @@
 		   if (found && found.length > 0) {
 			   postData.descriptors.fetchAll = true;
 		   }
+		   
+		   var visibleDescriptors = [];
+		   
+		   angular.forEach(options.descriptorColumns,function(descriptor){
+		      var found =  $filter('filter')(options.columns, { name : descriptor.key
+		       },true);
+		      
+		      if(found && found.length > 0){
+			  visibleDescriptors.push(descriptor.key)
+		      }
+		   })
 
-		   var descriptorColumns = $filter('filter')(options.columns, {
-			   name : 'descriptorValues'
-		   });
-
-		   if (descriptorColumns) {
-			   angular.forEach(descriptorColumns, function(column) {
-				   postData.descriptors.visbleColumns.push(column.name);
-			   });
+		   if (visibleDescriptors) {
+		       postData.descriptors.visibleColumns = visibleDescriptors;
 		   }
 		   return postData;
 	   };

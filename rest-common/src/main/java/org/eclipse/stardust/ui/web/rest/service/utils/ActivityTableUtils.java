@@ -546,11 +546,11 @@ public class ActivityTableUtils
       }
 
 
-      JsonArray visbleColumns = postJSON.getAsJsonObject("descriptors").get("visbleColumns").getAsJsonArray();
+      JsonArray visbleColumns = postJSON.getAsJsonObject("descriptors").get("visibleColumns").getAsJsonArray();
       List<String> columnsList = new ArrayList<String>();
       for (JsonElement jsonElement : visbleColumns)
       {
-         columnsList.add(StringUtils.substringAfter(jsonElement.getAsString(), "descriptorValues."));
+         columnsList.add(jsonElement.getAsString());
       }
       options.visibleDescriptorColumns = columnsList;
       options.allDescriptorsVisible = postJSON.getAsJsonObject("descriptors").get("fetchAll").getAsBoolean();

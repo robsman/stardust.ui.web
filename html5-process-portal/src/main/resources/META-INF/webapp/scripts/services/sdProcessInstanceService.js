@@ -57,7 +57,7 @@
 	            filters : query.options.filters,
 	            descriptors : {
 	               fetchAll : false,
-	               visbleColumns : []
+	               visibleColumns : []
 	            }
 	         };
 
