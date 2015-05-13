@@ -97,11 +97,11 @@
 	    if (!showTrivialDataColumn) {
 		var cols = elem.find('[sda-column="TRIVIAL_DATA"]');
 		cols.remove();
+		// Toolbar
+		var toolbar = elem.prev();
+		var items = toolbar.find('[sda-column="TRIVIAL_DATA"]');
+		items.remove();
 	    }
-	    // Toolbar
-	    var toolbar = elem.prev();
-	    var items = toolbar.find('[sda-column="TRIVIAL_DATA"]');
-	    items.remove();
 
 	    // Process Descriptor columns
 	    var showDescriptorCoulmns = true; // Default
@@ -110,6 +110,7 @@
 	    }
 	    // If not required remove the column
 	    if (!showDescriptorCoulmns) {
+		trace.debug("Removing descriptor columns.");
 		var cols = elem.find('[sda-column="DESCRIPTOR_COLUMNS"]');
 		cols.remove();
 	    }
@@ -130,6 +131,7 @@
 	     * Defined here as access required to scope
 	     */
 	    if (angular.isDefined(ctrl)) {
+		trace.debug("sdData is defined.Activity table will use provided custom source for data.");
 		this.sdDataCtrl = ctrl;
 	    }
 
@@ -330,7 +332,7 @@
 	     */
 	    ActivityTableCompiler.prototype.changeFormStatus = function(rowId) {
 		var self = this;
-
+		trace.debug("Marking row as dirty.");
 		if (this.dirtyDataForms.indexOf(rowId) == -1) {
 		    this.dirtyDataForms.push(rowId);
 		}
@@ -352,7 +354,6 @@
 			    activityOID : rows[0].activityOID
 			});
 		    }
-
 		    self.dataTable.setSelection(selectedRows);
 		}
 	    };
@@ -365,9 +366,9 @@
 		var self = this;
 		trace.log('Worklist Item submitted for resubmission : '+rowItem.activityOID);
 		var title = sgI18nService.translate('views-common-messages.common-confirm', 'Confirm');
-		var html = '<div>'
+		var html = '<span><i  class="sc sc-exclamation-circle popup-warning-icon" ></i></span><span>'
 		    + sgI18nService.translate('processportal.views-worklistPanel-resubmit-confirm',
-		    'Reactivate the activity ?') + '</div>';
+		    'Reactivate the activity ?') + '</span>';
 		var options = {
 			title : title,
 			type : 'confirm',
@@ -412,7 +413,6 @@
 	     */
 	    self.joinCompleted = function(result) {
 		self.refresh();
-		sdViewUtilService.syncLaunchPanels();
 		if (angular.isDefined(result)) {
 		    // TODO pass result as an argument to below view
 		    sdViewUtilService.openView('processDefinitionView', true);
@@ -431,7 +431,6 @@
 	     */
 	    self.switchCompleted = function(result) {
 		self.refresh();
-		sdViewUtilService.syncLaunchPanels();
 		if (angular.isDefined(result)) {
 		    // TODO pass result as an argument to below view
 		    sdViewUtilService.openView('worklistViewHtml5', true);
@@ -475,6 +474,7 @@
 	 * 
 	 */
 	ActivityTableCompiler.prototype.initializeWorklistMode = function(attr, scope) {
+	    trace.debug("Table intialized in worklist mode.");
 	    this.priorityEditable = false;
 	    this.visbleColumns = DEFAULT_VALUES.WORKLIST.VISIBLE_COLUMNS;
 	    this.preferenceModule = DEFAULT_VALUES.WORKLIST.PREFERENCE_MODULE;
@@ -501,20 +501,18 @@
 				    [ rowItem.activityOID ]);
 			    sdDialogService.error(scope, message, title)
 			} else {
+			    trace.debug("Rebusmission successfull for activity : ",rowItem.activityOID);
 			    sdCommonViewUtilService.openActivityView(rowItem.activityOID);
 			    methodScope.refresh();
 			}
 		    });
-
 	};
 	
-	
-
 	/**
 	 * 
 	 */
 	ActivityTableCompiler.prototype.initializeActivityInstanceMode = function(attr, scope) {
-
+	    trace.debug("Table intialized in activity table  mode.");
 	    this.priorityEditable = true;
 	    this.originalPriorities = {};
 	    this.changedPriorities = {};
@@ -542,6 +540,7 @@
 	    if (attr.sdaDefaultDelegateEnabled) {
 		this.defaultDelegateEnabled = attr.sdaDefaultDelegateEnabled === 'true' ? true : false;
 	    }
+	    
 	};
 
 	/**
@@ -571,6 +570,7 @@
 		    this.preferenceId = 'worklist-participant-columns';
 		}
 		if(this.query.name) {
+		    trace.debug("Worklist Name :"+this.query.name);
 		    this.exportFileName = this.exportFileName + " (" + this.query.name +")";
 		}
 	    }
@@ -599,6 +599,7 @@
 	    if (attr.sdaVisibleColumns) {
 		var visibleColumnGetter = $parse(attr.sdaVisibleColumns);
 		this.visbleColumns = visibleColumnGetter(scopeToUse);
+		trace.debug("Visible columns - ",this.visbleColumns);
 	    }
 	};
 
@@ -607,6 +608,7 @@
 	 */
 	ActivityTableCompiler.prototype.refresh = function() {
 	    this.dataTable.refresh(true);
+	    sdViewUtilService.syncLaunchPanels();
 	};
 
 	/*
@@ -632,10 +634,8 @@
 	    if(query.id == 'allResubmissionInstances'){
 		showResubmitLink  = true;
 	    }
-
+	    
 	    if (angular.isDefined(this.sdDataCtrl)) {
-		trace.debug("sdData is defined fetching custom data. ");
-
 		var dataResult = self.sdDataCtrl.retrieveData(query);
 		dataResult.then(function(data) {
 		    self.activities.list = data.list;
@@ -652,7 +652,6 @@
 		if (this.mode != 'worklist') {
 		    throw 'sdData is not defined for sdActivityTable';
 		}
-		trace.debug("sdData not defined fetching default data. ");
 
 		sdWorklistService.getWorklist(query).then(function(data) {
 		  
@@ -670,7 +669,6 @@
 			    activityOIDs.push(workItem.activityOID);
 			}
 		    });
-
 		    sdActivityInstanceService.getTrivialManualActivitiesDetails(activityOIDs).then(function(data) {
 			self.activities.trivialManualActivities = data;
 			deferred.resolve(self.activities);
@@ -792,8 +790,10 @@
 	ActivityTableCompiler.prototype.activateItem = function(rowItem) {
 	    
 	    if(rowItem.showResubmitLink){
+		trace.debug("Openinig resubmission confirmation for ",rowItem.activityOID);
 		this.showResubmissionConfirmation(rowItem);
 	    }else{
+		trace.debug("Activate :",rowItem.activityOID);
 		sdCommonViewUtilService.openActivityView(rowItem.activityOID);
 	    }
 	    
@@ -908,9 +908,7 @@
 	    var promise = res.promise;
 	    var selectedItems = self.selectedActivity;
 
-	    promise
-		    .then(function() {
-
+	    promise.then(function() {
 			angular.forEach(selectedItems, function(item) {
 			    self.completeActivityResult.nameIdMap[item.activityOID] = item.activity.name;
 			});
@@ -957,6 +955,7 @@
 			    }
 
 			    if (activitiesData.length > 0) {
+				trace.debug("Complete activity called for "+activitiesData.length+ " activities.");
 				sdActivityInstanceService
 					.completeAll(activitiesData)
 					.then(
@@ -965,7 +964,7 @@
 						    self.showCompleteNotificationDialog = true;
 						    self.completeActivityResult.notifications = result;
 						    self.refresh();
-						    sdViewUtilService.syncLaunchPanels();
+						   
 
 						    if (result.failure.length > 0 && result.success.length > 0) {
 							// partial Success
@@ -974,6 +973,8 @@
 								.translate(
 									'processportal.views-completeActivityDialog-notification-title-error',
 									'ERROR');
+							trace.debug("Complete activity finished with partial success.");
+							trace.debug("Failed  activites - ",result.failure);
 						    } else if (result.success.length === activitiesData.length) {
 							// Success
 							self.completeActivityResult.status = STATUS_SUCCESS;
@@ -981,12 +982,15 @@
 								.translate(
 									'processportal.views-completeActivityDialog-notification-title-success',
 									'SUCCESS');
+							trace.debug("Complete activity finished with no failures.");
 						    } else {
 							self.completeActivityResult.status = STATUS__FAILURE;
 							self.completeActivityResult.title = sgI18nService
 								.translate(
 									'processportal.views-completeActivityDialog-notification-title-error',
 									'ERROR');
+							trace.debug("Complete activity failed.");
+							trace.debug("Failed  activites - ",result.failure);
 						    }
 
 						});
@@ -1093,7 +1097,6 @@
 		    trace.log("No Rows selected");
 		    return;
 		}
-
 		angular.forEach(selectedItems, function(item) {
 		    self.activitiesToAbort.push(item.activityOID);
 		});
@@ -1110,7 +1113,6 @@
 	 */
 	ActivityTableCompiler.prototype.abortCompleted = function() {
 	    this.refresh();
-	    sdViewUtilService.syncLaunchPanels();
 	    this.activitiesToAbort = [];
 	};
 
@@ -1225,7 +1227,6 @@
 		self.updatePriorityNotification.visible = true;
 		self.updatePriorityNotification.result = successResult;
 		self.refresh();
-		sdViewUtilService.syncLaunchPanels();
 
 	    }, function(failureResult) {
 		trace.error("Error occured in updating the priorities : ", failureResult);
@@ -1306,7 +1307,6 @@
 
 	return directiveDefObject;
     }
-    ;
 
     /**
      * 
@@ -1323,5 +1323,4 @@
 	});
 	return newColumns;
     }
-    ;
 })();

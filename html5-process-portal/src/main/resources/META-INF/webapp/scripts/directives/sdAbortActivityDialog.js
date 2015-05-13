@@ -14,12 +14,12 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive( 'sdAbortActivityDialog', [ 'sdActivityInstanceService', AbortActivity]);
+	angular.module('bpm-common').directive( 'sdAbortActivityDialog', [ 'sdActivityInstanceService','sdLoggerService', AbortActivity]);
 
 	/**
-    * 
-    */
-	function AbortActivity(sdActivityInstanceService){
+	 * 
+	 */
+	function AbortActivity(sdActivityInstanceService, sdLoggerService){
 
 		return {
 			restrict: 'A',
@@ -45,110 +45,119 @@
 				showDialog : '=sdaShowDialog',
 				abortCompleted: '&sdaOnAbortComplete'
 			},
-			controller: [ '$scope', 'sdActivityInstanceService', AbortActivityController]
+			controller: [ '$scope', 'sdActivityInstanceService', 'sdLoggerService', AbortActivityController]
 		};
 	};
 
 	/**
-    * 
-    */
-	var AbortActivityController = function( $scope, sdActivityInstanceService){
+	 * 
+	 */
 
-		var self = this;
+	var trace = null;
+	var AbortActivityController = function( $scope, sdActivityInstanceService, sdLoggerService){
 
-		this.intialize( $scope, sdActivityInstanceService);
-		
-		/**
-		 * 
-		 */
-		AbortActivityController.prototype.abortCompleted = function (){
-			$scope.abortCompleted();
-		};
-		/**
-		 * 
-		 */
-		AbortActivityController.prototype.hideDialog = function (){
-			$scope.showDialog = false;
-		};
-		/**
-		 * 
-		 */
-		AbortActivityController.prototype.openDialog = function (){
-			$scope.showDialog = true;
-		};
-		/**
-		 * 
-		 */
-		AbortActivityController.prototype.getActvities = function (){
-			this.abortActivity.activities = $scope.activitiesToAbort;
-		};
+	    var self = this;
+	    trace = sdLoggerService.getLogger('bpm-common.sdAbortActivityDialog');
+	    this.intialize( $scope, sdActivityInstanceService);
 
-		/**
-         * 
-        */
-		AbortActivityController.prototype.showNotification = function (){
-			self.abortActivityNotification.open();
-		};
+	    /**
+	     * 
+	     */
+	    AbortActivityController.prototype.abortCompleted = function (){
+		$scope.abortCompleted();
+	    };
+	    /**
+	     * 
+	     */
+	    AbortActivityController.prototype.hideDialog = function (){
+		$scope.showDialog = false;
+	    };
+	    /**
+	     * 
+	     */
+	    AbortActivityController.prototype.openDialog = function (){
+		$scope.showDialog = true;
+	    };
+	    /**
+	     * 
+	     */
+	    AbortActivityController.prototype.getActvities = function (){
+		this.abortActivity.activities = $scope.activitiesToAbort;
+	    };
 
-		$scope.abortActivityCtrl = this;
+	    /**
+	     * 
+	     */
+	    AbortActivityController.prototype.showNotification = function (){
+		self.abortActivityNotification.open();
+	    };
+
+	    $scope.abortActivityCtrl = this;
 	}
 
 	/**
-    * 
-    */
+	 * 
+	 */
 	AbortActivityController.prototype.intialize = function ( $scope, sdActivityInstanceService){
 
-		this.i18n = $scope.$parent.i18n;
-		this.sdActivityInstanceService = sdActivityInstanceService;
-		this.notification = {
-			result : null,
-			error : false
-		};
-		this.abortActivity = {
-			scope : 'activity',
-			activities : []
-		};
+	    this.i18n = $scope.$parent.i18n;
+	    this.sdActivityInstanceService = sdActivityInstanceService;
+	    this.notification = {
+		    result : null,
+		    error : false
+	    };
+	    this.abortActivity = {
+		    scope : 'activity',
+		    activities : []
+	    };
 	};
 
 	/**
-    * 
-    */
+	 * 
+	 */
 	AbortActivityController.prototype.abortActivities = function (){
-		this.getActvities();
-		return this.sdActivityInstanceService.abortActivities( this.abortActivity.scope, this.abortActivity.activities);
+	    this.getActvities();
+	    trace.debug("Aborting activities with following params ",this.abortActivity.scope, this.abortActivity.activities);
+	    return this.sdActivityInstanceService.abortActivities( this.abortActivity.scope, this.abortActivity.activities);
 	};
 	/**
-    * 
-    */
+	 * 
+	 */
 	AbortActivityController.prototype.resetValues = function (){
-		this.abortActivity.scope ='activity';
-		this.notification.result = {};
-		this.notification.error = false;
+	    this.abortActivity.scope ='activity';
+	    this.notification.result = {};
+	    this.notification.error = false;
 	};
-	
-	/**
-    * 
-    */
-	AbortActivityController.prototype.onConfirm = function(res) {
-		
-		var self = this;
-		var promise = res.promise;
-		
-		this.resetValues();
 
-		promise.then(function(data) {
-			self.abortActivities().then(function(data) {
-				// success
-				self.showNotification();
-				self.abortCompleted();
-				self.notification.result = data;
-			}, function(data) {
-				// Failure
-				self.notification.result = {};
-				self.notification.error = true;
-				self.showNotification();
-			});
-		})
+	/**
+	 * 
+	 */
+	AbortActivityController.prototype.onConfirm = function(res) {
+	    var self = this;
+	    var promise = res.promise;
+
+	    this.resetValues();
+
+	    promise.then(function(data) {
+		self.abortActivities().then(function(data) {
+		    // success
+		    self.showNotification();
+		    self.abortCompleted();
+		    self.notification.result = data;
+		    if (self.notification.result.failure.length > 0) {
+			trace.debug("Failure in aborting activities ", self.notification.result.failure);
+		    } else {
+			trace.debug("Activities aborted sucessfully.");
+		    }
+
+		}, function(data) {
+		    // Failure
+		    self.notification.result = {};
+		    self.notification.error = true;
+		    self.showNotification();
+		    trace.error("Error in aborting activities.");
+		});
+	    })
 	};
-	
+
 })();

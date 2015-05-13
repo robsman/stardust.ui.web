@@ -14,14 +14,16 @@
  (function() {
    'use strict';
 
-   angular.module('bpm-common').directive('sdProcessActivityFilter',[ '$filter', '$parse', 'sdUtilService', ActivityFilter]);
+   angular.module('bpm-common').directive('sdProcessActivityFilter',[ '$filter', '$parse', 'sdUtilService','sdLoggerService', ActivityFilter]);
 
+   var trace = null;
    /*
     *
     */
-   function ActivityFilter( $filter, $parse, sdUtilService) {
-
-      return {
+   function ActivityFilter( $filter, $parse, sdUtilService, sdLoggerService) {
+       trace = sdLoggerService.getLogger('bpm-common.sdProcessActivityFilter');
+     
+       return {
          restrict : 'A',
          templateUrl : 'plugins/html5-process-portal/scripts/directives/partials/processActivityFilter.html',
          controller : [ '$scope', '$attrs', '$filter', '$parse', FilterController ],
@@ -52,7 +54,6 @@
          }
       };
    }
-   ;
 
    var DEFAULT_ACTIVITY = {
       "id" : "-1",
@@ -92,6 +93,9 @@
       var allProcessBinding = $parse($attrs.sdaProcesses);
 
       this.allAccessibleProcesses = allProcessBinding($scope);
+      
+      trace.debug("Intialized with Filter type : ",this.filterType);
+      trace.debug("Intialized with Processes : ",this.allAccessibleProcesses);
 
       /**
        * 

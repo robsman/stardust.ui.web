@@ -146,6 +146,12 @@
 	font-size:25px;
 }
 
+.popup-warning-icon {
+	font-size:25px;
+	color : #F7CA18;
+	padding-right: 10px;
+}
+
 /************** Input Components *****************/
 
 .inp-sel-one {
