@@ -107,7 +107,7 @@ public class PerspectiveAuthorizationProxy implements java.lang.reflect.Invocati
       }
       catch (Exception e)
       {
-         throw new RuntimeException("unexpected invocation exception: " + e.getMessage());
+         throw new RuntimeException("unexpected invocation exception: " + e.getMessage(), e);
       }
 
       return result;
@@ -122,7 +122,7 @@ public class PerspectiveAuthorizationProxy implements java.lang.reflect.Invocati
    {
       if (null == views)
       {
-         views = new ArrayList<ViewDefinition>();
+         List<ViewDefinition> list = new ArrayList<ViewDefinition>();
          
          if (null != result)
          {
@@ -131,10 +131,13 @@ public class PerspectiveAuthorizationProxy implements java.lang.reflect.Invocati
             {
                if (isAuthorized(viewDefinition))
                {
-                  views.add(viewDefinition);
+                  list.add(viewDefinition);
                }
             }
          }
+
+         views = list;
+         return list;
       }
 
       return views;
@@ -149,7 +152,7 @@ public class PerspectiveAuthorizationProxy implements java.lang.reflect.Invocati
    {
       if (null == launchPanels)
       {
-         launchPanels = new ArrayList<LaunchPanel>();
+         List<LaunchPanel> list = new ArrayList<LaunchPanel>();
 
          if (null != result)
          {
@@ -158,10 +161,13 @@ public class PerspectiveAuthorizationProxy implements java.lang.reflect.Invocati
             {
                if (isAuthorized(launchPanel))
                {
-                  launchPanels.add(launchPanel);
+                  list.add(launchPanel);
                }
             }
          }
+
+         launchPanels = list;
+         return list;
       }
       
       return launchPanels;
@@ -176,7 +182,7 @@ public class PerspectiveAuthorizationProxy implements java.lang.reflect.Invocati
    {
       if (null == toolbarSections)
       {
-         toolbarSections = new ArrayList<ToolbarSection>();
+         List<ToolbarSection> list = new ArrayList<ToolbarSection>();
 
          if (null != result)
          {
@@ -185,10 +191,13 @@ public class PerspectiveAuthorizationProxy implements java.lang.reflect.Invocati
             {
                if (isAuthorized(toolbar))
                {
-                  toolbarSections.add(toolbar);
+                  list.add(toolbar);
                }
             }
          }
+         
+         toolbarSections = list;
+         return list;
       }
       
       return toolbarSections;
@@ -203,7 +212,7 @@ public class PerspectiveAuthorizationProxy implements java.lang.reflect.Invocati
    {
       if (null == menuSections)
       {
-         menuSections = new ArrayList<MenuSection>();
+         List<MenuSection> list = new ArrayList<MenuSection>();
 
          if (null != result)
          {
@@ -212,10 +221,13 @@ public class PerspectiveAuthorizationProxy implements java.lang.reflect.Invocati
             {
                if (isAuthorized(menu))
                {
-                  menuSections.add(menu);
+                  list.add(menu);
                }
             }
          }
+         
+         menuSections = list;
+         return list;
       }
       
       return menuSections;
