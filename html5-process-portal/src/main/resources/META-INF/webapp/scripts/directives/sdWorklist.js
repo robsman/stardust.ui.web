@@ -578,6 +578,7 @@
 	    self.cleanLocals();
 
 	    var query = angular.extend({}, this.query);
+	    options.descriptorColumns = self.descritorCols;
 	    query.options = options;
 
 	    if (angular.isDefined(this.sdDataCtrl)) {
