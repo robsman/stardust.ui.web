@@ -16,7 +16,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdSwitchProcessDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'sdMessageService', 'sdViewUtilService',
+	angular.module('bpm-common').directive('sdSwitchProcessDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'sdMessageService', 'sdViewUtilService', '$sce',
 	                                                                    SwitchProcessDialogDirective]);
 
 	var trace;
@@ -24,7 +24,7 @@
 	/*
 	 * Directive class
 	 */
-	function SwitchProcessDialogDirective($parse, $q, sdUtilService, sdProcessInstanceService, sdLoggerService, sdMessageService, sdViewUtilService) {
+	function SwitchProcessDialogDirective($parse, $q, sdUtilService, sdProcessInstanceService, sdLoggerService, sdMessageService, sdViewUtilService, $sce) {
 		
 		trace = sdLoggerService.getLogger('bpm-common.sdSwitchProcessDialog');
 		
@@ -151,8 +151,8 @@
 					linkComment : '',
 					switchCompleted: false,
 					selectedProcess: undefined,
-					switchProcessDialogMsg : self
-					.i18n('views-common-messages.views-switchProcessDialog-switchProcessmessage')
+					switchProcessDialogMsg : $sce.trustAsHtml(self
+					.i18n('views-common-messages.views-switchProcessDialog-switchProcessmessage'))
 				};
 
 				self.abortNotification = {

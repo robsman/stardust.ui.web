@@ -16,7 +16,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdJoinProcessDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'sdMessageService', 'sdViewUtilService',
+	angular.module('bpm-common').directive('sdJoinProcessDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'sdMessageService', 'sdViewUtilService', '$sce',
 	                                                                    JoinProcessDialogDirective]);
 
 	var trace;
@@ -24,7 +24,7 @@
 	/*
 	 * Directive class
 	 */
-	function JoinProcessDialogDirective($parse, $q, sdUtilService, sdProcessInstanceService, sdLoggerService, sdMessageService, sdViewUtilService) {
+	function JoinProcessDialogDirective($parse, $q, sdUtilService, sdProcessInstanceService, sdLoggerService, sdMessageService, sdViewUtilService, $sce) {
 		
 		trace = sdLoggerService.getLogger('bpm-common.sdJoinProcessDialog');
 		
@@ -157,7 +157,7 @@
 						list : []
 					},
 					pageSize : 6,
-					dialogMsg : self.i18n('views-common-messages.views-switchProcessDialog-joinProcessMessage-message'),
+					dialogMsg : $sce.trustAsHtml(self.i18n('views-common-messages.views-switchProcessDialog-joinProcessMessage-message')),
 					notificationMsg : '',
 					linkComment : '',
 					joinCompleted: false,
@@ -321,11 +321,11 @@
 			function openNotificationDialog(result) {
 				// Show notification dialog for abort & Join
 				if (self.joinProcess.joinCompleted == true && angular.isDefined(result)) {
-					self.joinProcess.notificationMsg = self
-							.i18n('views-common-messages.views-joinProcessDialog-processJoined');
+					self.joinProcess.notificationMsg = $sce.trustAsHtml(self
+							.i18n('views-common-messages.views-joinProcessDialog-processJoined'));
 					if (angular.isDefined(result.abortedProcess) && angular.isDefined(result.targetProcess)) {
-						self.joinProcess.notificationMsg = sdUtilService.format(self.joinProcess.notificationMsg, [
-								result.abortedProcess.processName, result.targetProcess.processName ]);
+						self.joinProcess.notificationMsg = $sce.trustAsHtml(sdUtilService.format(self.joinProcess.notificationMsg, [
+								result.abortedProcess.processName, result.targetProcess.processName ]));
 					}
 					self.notificationTitle = self.i18n('portal-common-messages.common-'
 							+ SUPPORTED_NOTIFICATION_TYPES.INFO);
