@@ -367,8 +367,6 @@
 																filterable : descriptor.filterable
 															});
 												});
-								console.log("descritorCols: "
-										+ self.descritorCols);
 							});
 		}
 	};
@@ -442,9 +440,9 @@
 							obj['textSearch'] = this.selected[this.descritorCols[index].id];
 						} else if (this.descritorCols[index].dataType == "BOOLEAN") {
 							obj['equals'] = (this.selected[this.descritorCols[index].id] == 0)? 'true' : 'false';
-						} else if (this.descritorCols[index].dataType == "NUMBER") {
+						} else if (this.descritorCols[index].dataType == "NUMBER" || this.descritorCols[index].dataType == "DATE") {
 							obj['from'] = this.selected[this.descritorCols[index].id];
-							obj['to'] = this.selected[this.descritorCols[index].id];;
+							obj['to'] = this.selected[this.descritorCols[index].title];
 						}
 						this.query.processSearchCriteria.descriptors.formatted[item.substr('descriptorValues.'.length)] = obj;
 						break;
@@ -541,9 +539,9 @@
 	 * 
 	 */
 	ProcessSearchViewCtrl.prototype.processHierarchyChange = function() {
+		this.procSrchProcessSelected = [ this.procSrchProcess[0] ];
 		this.filterProcessDefinitionList();
 		this.processChange();
-		this.procSrchProcessSelected = [ this.procSrchProcess[0] ];
 		this.processSrchCaseOwner = "";
 	}
 
