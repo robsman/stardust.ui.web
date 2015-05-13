@@ -8693,6 +8693,21 @@ input[src *='quality-assurance.png']:hover{
 	background-image:url('./images/flat-icons/quality-assurance.png') !important;
 }
 
+img[src *='quality-assurance-code.png'],
+input[src *='quality-assurance-code.png']{
+     background-image:url('./images/flat-icons/quality-assurance-code.png') !important;
+     width:16px;
+     background-size: 16px 16px;
+     padding: 16px 0 0 0 !important;
+     height:0px;
+     background-repeat: no-repeat !important;
+     opacity: 0.7;
+}
+input[src *='quality-assurance-code.png']:hover{
+	background:none;
+	background-image:url('./images/flat-icons/quality-assurance-code.png') !important;
+}
+
 img[src *='clipboard-task.png']{
      background-image:url('./images/flat-icons/clipboard-task.png') !important;
      width:16px;

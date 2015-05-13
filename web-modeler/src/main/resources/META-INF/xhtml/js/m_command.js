@@ -247,8 +247,16 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
       
       createDeleteExclusionCommand: function(modelId, uuid, changes) {
         return new ChangeDescriptor("excludeUserAction.delete", modelId, [{uuid: uuid, changes: changes}]);
-      }
+      },
        
+      //Quality Assurance Codes
+      createAddQualityAssuranceCodeCommand: function(modelId, uuid, changes) {
+        return new ChangeDescriptor("qualityAssuranceCode.create", modelId, [{uuid: uuid, changes: changes}]);
+      },
+      
+      createDeleteQualityAssuranceCodeCommand: function(modelId, uuid, changes) {
+        return new ChangeDescriptor("qualityAssuranceCode.delete", modelId, [{uuid: uuid, changes: changes}]);
+      }
    };
 
    /**
