@@ -52,7 +52,9 @@ var html5Deps = function() {
 				'sdPreferenceService' : [ 'html5-common/scripts/services/sdPreferenceService' ],
 				'sdDialog' : [ 'html5-common/scripts/directives/dialogs/sdDialog' ],
 				'sdDialogService' : [ 'html5-common/scripts/services/sdDialogService' ],
-				'sdPortalConfigurationService' : [ 'html5-common/scripts/services/sdPortalConfigurationService' ]
+				'sdPortalConfigurationService' : [ 'html5-common/scripts/services/sdPortalConfigurationService' ],
+			    'sdLocalizationService' : [ 'html5-common/scripts/services/sdLocalizationService' ],
+			    'sdDatePicker': ['html5-common/scripts/directives/sdDatePicker'],
 			},
 			shim : {
 				'jquery.dataTables' : [ 'jquery' ],
@@ -72,7 +74,9 @@ var html5Deps = function() {
 				'sdPreferenceService' : [ 'html5CommonMain' ],
 				'sdDialog' : [ 'html5CommonMain', 'sdLoggerService', 'bootstrap' ],
 				'sdDialogService' : [ 'sdDialog' ],
-				'sdPortalConfigurationService' : [ 'html5CommonMain' ]
+				'sdPortalConfigurationService' : [ 'html5CommonMain' ],
+			    'sdLocalizationService' : [ 'html5CommonMain' ],
+			    'sdDatePicker' : [ 'html5CommonMain', 'sdLocalizationService' ],
 			},
 			deps : [ "jquery.dataTables", "angularjs", "bootstrap", "portalApplication",
 					"html5CommonMain", "sdEventBusService", "httpInterceptorProvider",
@@ -161,6 +165,7 @@ var html5Deps = function() {
 		          var parentScope = parent.window.angular.element(parent.document.body).scope();
 		          // use parent i18n implementation
 		          if (parentScope && parentScope.sdI18n) {
+		        	  service.translate = parentScope.sdI18n;
 		        	  $rootScope.i18n = parentScope.sdI18n;
 		          } else {
 		        	  // provide dummy implementation if i18n not

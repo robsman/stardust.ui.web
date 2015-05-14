@@ -72,7 +72,7 @@ angular.module('bpm-common.directives')
 		            	}
 
 		            	var date = new Date(value);
-                		return  milliseconds ? jQuery.datepicker.formatDate(dateFormat, date):vaue;
+                		return  milliseconds ? jQuery.datepicker.formatDate(dateFormat, date) : value;
 		            });
 
 	                $(element).datepicker({
