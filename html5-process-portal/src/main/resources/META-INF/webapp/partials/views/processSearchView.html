@@ -41,7 +41,7 @@ table.layoutTable td {
 										ng-model="procSearchViewCtrl.query.processSearchCriteria.filterObject"
 										ng-options="option.value as option.label for option in procSearchViewCtrl.searchOptions"
 										ng-change="procSearchViewCtrl.processChange()"
-										style="width: 100px"</select></td>
+										style="width: 100px"></select></td>
 									<td><i class="sc sc-fw sc-1x sc-exclamation-circle"></i></td>
 								</tr>
 							</table>
@@ -302,7 +302,7 @@ table.layoutTable td {
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
 								<td><select id="actStateSelect"
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.activitySrchStateSelected"
-									ng-options="option.value as option.label for option in procSearchViewCtrl.activitySrchState"</select></td>
+									ng-options="option.value as option.label for option in procSearchViewCtrl.activitySrchState"></select></td>
 								<td></td>
 							</tr>
 							<tr>
@@ -310,7 +310,7 @@ table.layoutTable td {
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
 								<td><select id="criticalitySelect"
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.activitySrchCriticalitySelected"
-									ng-options="option.label as option.label for option in procSearchViewCtrl.activitySrchCriticality"</select></td>
+									ng-options="option.label as option.label for option in procSearchViewCtrl.activitySrchCriticality"></select></td>
 								<td></td>
 							</tr>
 							<tr>
@@ -355,7 +355,7 @@ table.layoutTable td {
 										<tr>
 											<td><select
 												ng-model="procSearchViewCtrl.selected[descCol.id]"
-												ng-options="option.value as option.label for option in procSearchViewCtrl.descBoolOptions"</select></td>
+												ng-options="option.value as option.label for option in procSearchViewCtrl.descBoolOptions"></select></td>
 										</tr>
 									</table>
 								</td>
