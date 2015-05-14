@@ -356,8 +356,9 @@ define(
          */
         ModelView.prototype.submitAddQACode = function(changes) {
           var uuid = this.getModelElement().uuid;
-          m_commandsController.submitCommand(m_command
-              .createAddQualityAssuranceCodeCommand(this.getModelElement().id, uuid, changes));
+          m_commandsController.submitCommand(m_command.createCommand(
+                  "qualityAssuranceCode.create", this.getModelElement().id,
+                  uuid, changes));
         };
         
         /**
@@ -365,8 +366,9 @@ define(
          */
         ModelView.prototype.submitDeleteQACode = function(changes) {
           var uuid = this.getModelElement().uuid;
-          m_commandsController.submitCommand(m_command
-              .createDeleteQualityAssuranceCodeCommand(this.getModelElement().id, uuid, changes));
+          m_commandsController.submitCommand(m_command.createCommand(
+                  "qualityAssuranceCode.delete", this.getModelElement().id,
+                  uuid, changes));
         };
 				
 				/**
