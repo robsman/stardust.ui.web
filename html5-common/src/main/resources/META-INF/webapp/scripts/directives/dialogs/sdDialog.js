@@ -11,7 +11,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common.directives').directive('sdDialog', ['sdLoggerService', '$compile', '$document', DialogDirectiveFn]);
+	angular.module('bpm-common.directives').directive('sdDialog', ['sdLoggerService', '$compile', '$document', 'sdUtilService', DialogDirectiveFn]);
 	
 	/*
 	 * Directive class
@@ -32,7 +32,7 @@
 	 * 		sda-on-confirm: (@) Eg: func(res)
 	 * 		sda-modal (String)
 	 */
-	function DialogDirectiveFn(sdLoggerService, $compile, $document) {
+	function DialogDirectiveFn(sdLoggerService, $compile, $document, sdUtilService) {
 		var trace = sdLoggerService.getLogger('bpm-common.directives.sdDialog');
 		
 		var SUPPORTED_TYPES = {
@@ -41,18 +41,7 @@
 				CUSTOM: 'custom'       // Customized popup with no action button
 			};
 		
-
-		var templateURL = null;
-		if (location.href.indexOf("plugins") > -1) {
-			templateURL = location.href.substring(0, location.href
-					.indexOf("plugins"))
-					+ 'plugins/html5-common/scripts/directives/dialogs/templates/dialog.html';
-		} else {
-			// When loaded from framework i.e index.html, location.href points
-			// to contextRoot
-			templateURL = 'plugins/html5-common/scripts/directives/dialogs/templates/dialog.html';
-		}
-		
+		var templateURL = sdUtilService.getBaseUrl() + 'plugins/html5-common/scripts/directives/dialogs/templates/dialog.html';
 
 		var directiveDefObject = {
 			restrict : 'A',
@@ -205,6 +194,7 @@
 			
 			// Scope destroy function
 			function onDestroyDialog() {
+				removeBody();
 				self.dialogElem.detach();
 				self.dialogElem.empty();
 				self.dialogElem = null;
@@ -314,7 +304,9 @@
 			// Removes the body content since it is no longer needed in the DOM. 
 			// It will be retrieved again when needed ie. Dialog is opened.
 			function removeBody() {
-				self.cloneScope.$destroy();
+				if (self.cloneScope) {
+					self.cloneScope.$destroy();
+				}
 				var templatePlaceHolder = self.dialogElem.find('.transclude');
 				templatePlaceHolder.empty();
 				

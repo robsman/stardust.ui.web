@@ -49,7 +49,8 @@
 					+ ' sda-type="confirm"'
 					+ ' sda-scope="this"'
 					+ ' sda-on-open="joinProcessController.onOpenDialog(res)"'
-					+ ' sda-template="plugins/html5-process-portal/scripts/directives/partials/joinProcessDialog.html"'
+					+ ' sda-template="'
+					+  sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/joinProcessDialog.html"'
 					+ ' sda-on-confirm="joinProcessController.confirm()"'
 					+ ' sda-confirm-action-label="{{i18n(\'views-common-messages.views-joinProcessDialog-abortAndJoin-button-label\')}}"'
 					+ ' sda-cancel-action-label="{{i18n(\'views-common-messages.common-cancel\')}}"'
@@ -62,7 +63,8 @@
 					+ ' sda-type="custom"'
 					+ ' sda-scope="this"'
 					+ ' sda-on-close="joinProcessController.onCloseNotification()"'
-					+ ' sda-template="plugins/html5-process-portal/scripts/directives/partials/joinProcessNotification.html">'
+					+ ' sda-template="'
+					+  sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/joinProcessNotification.html">'
 					+ '</span>',
 				controller: JoinProcessDialogController
 			};

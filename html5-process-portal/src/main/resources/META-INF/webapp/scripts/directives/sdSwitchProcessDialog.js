@@ -49,7 +49,8 @@
 					+ ' sda-type="confirm"'
 					+ ' sda-scope="this"'
 					+ ' sda-on-open="switchProcessController.onOpenDialog(res)"'
-					+ ' sda-template="plugins/html5-process-portal/scripts/directives/partials/switchProcessDialog.html"'
+					+ ' sda-template="'
+					+  sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/switchProcessDialog.html"'
 					+ ' sda-on-confirm="switchProcessController.confirm()"'
 					+ ' sda-confirm-action-label="{{i18n(\'views-common-messages.delegation-applyButton-text\')}}"'
 					+ ' sda-cancel-action-label="{{i18n(\'views-common-messages.common-cancel\')}}"'
@@ -62,7 +63,8 @@
 					+ ' sda-type="custom"'
 					+ ' sda-scope="this"'
 					+ ' sda-on-close="switchProcessController.onCloseNotification()"'
-					+ ' sda-template="plugins/html5-process-portal/scripts/directives/partials/switchProcessNotification.html">'
+					+ ' sda-template="'
+					+  sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/switchProcessNotification.html">'
 					+ '</span>',
 				controller: SwitchProcessDialogController
 			};

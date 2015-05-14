@@ -14,18 +14,18 @@
 (function() {
 	'use strict';
 
-	angular.module('viewscommon-ui').directive('sdToolTip', ToolTip);
+	angular.module('viewscommon-ui').directive('sdToolTip', [ 'sdUtilService', ToolTip]);
 
 	/*
 	 * 
 	 */
-	function ToolTip() {
+	function ToolTip(sdUtilService) {
 
 		return {
 			restrict : 'EA',
 			transclude : true,
 			replace : true,
-			templateUrl : 'plugins/html5-views-common/scripts/directives/partials/toolTip.html',
+			templateUrl : sdUtilService.getBaseUrl() + 'plugins/html5-views-common/scripts/directives/partials/toolTip.html',
 			controller : [ '$scope', '$parse', '$attrs', ToolTipController ]
 		};
 	}

@@ -43,7 +43,7 @@
 			restrict : 'AE',
 			require : '^?sdData',
 			scope : true, // Creates a new sub scope
-			templateUrl : 'plugins/html5-process-portal/scripts/directives/partials/processTable.html',
+			templateUrl : sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/processTable.html',
 			compile : function(elem, attr, transclude) {
 				return {
 					post : function(scope, element, attr, ctrl) {

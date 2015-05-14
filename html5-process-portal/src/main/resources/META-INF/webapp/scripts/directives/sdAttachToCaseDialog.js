@@ -50,7 +50,8 @@
 					+ ' sda-type="confirm"'
 					+ ' sda-scope="this"'
 					+ ' sda-on-open="attachToCaseController.onOpenDialog(res)"'
-					+ ' sda-template="plugins/html5-process-portal/scripts/directives/partials/attachToCaseDialog.html"'
+					+ ' sda-template="'
+					+  sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/attachToCaseDialog.html"'
 					+ ' sda-on-confirm="attachToCaseController.confirm()"'
 					+ ' sda-confirm-action-label="{{i18n(\'views-common-messages.views-attachToCase-button-attach\')}}"'
 					+ ' sda-cancel-action-label="{{i18n(\'views-common-messages.common-cancel\')}}"'
@@ -63,7 +64,8 @@
 					+ ' sda-type="custom"'
 					+ ' sda-scope="this"'
 					+ ' sda-on-close="attachToCaseController.onCloseNotification()"'
-					+ ' sda-template="plugins/html5-process-portal/scripts/directives/partials/attachToCaseNotification.html">'
+					+ ' sda-template="'
+					+  sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/attachToCaseNotification.html">'
 					+ '</span>',
 				controller: AttachToCaseDialogController
 			};

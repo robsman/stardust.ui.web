@@ -14,7 +14,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive( 'sdAbortProcessDialog', [ 'sdProcessInstanceService', AbortProcess]);
+	angular.module('bpm-common').directive( 'sdAbortProcessDialog', [ 'sdProcessInstanceService', 'sdUtilService', AbortProcess]);
 	
 	var ABORT_SCOPE = {
 			ROOT : 'root',
@@ -24,7 +24,7 @@
 	/**
     * 
     */
-	function AbortProcess(sdProcessInstanceService){
+	function AbortProcess(sdProcessInstanceService, sdUtilService){
 		
 		return {
 			restrict: 'A',
@@ -36,14 +36,16 @@
 							'sda-confirm-action-label="{{abortProcessCtrl.i18n(\'views-common-messages.common-ok\')}}" ' +
 							'sda-cancel-action-label="{{abortProcessCtrl.i18n(\'views-common-messages.common-close\')}}" ' +
 							'sda-on-open="abortProcessCtrl.onConfirm(res)" '+
-							'sda-template="plugins/html5-process-portal/scripts/directives/partials/abortProcessDialogBody.html"> '+
+							'sda-template="' +
+							 sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/abortProcessDialogBody.html"> '+
 					 '<\/div> ' +
 					 '<span style="float: left;" ' +
 					 		'sd-dialog="abortProcessCtrl.abortProcessNotification" ' +
 					 		'sda-title="{{abortProcessCtrl.i18n(\'admin-portal-messages.common-notification-title\')}}" '+
 					 		'sda-type="custom" ' +
 					 		'sda-scope="this" ' +
-					 		'sda-template="plugins/html5-process-portal/scripts/directives/partials/abortProcessNotification.html"> ' +
+					 		'sda-template="' +
+							 sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/abortProcessNotification.html"> ' +
 					 '</span>',
 			scope :{
 				processesToAbort : '=sdaProcessesToAbort',

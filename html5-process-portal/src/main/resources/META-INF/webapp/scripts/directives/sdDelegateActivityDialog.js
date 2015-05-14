@@ -42,7 +42,8 @@
 							+ ' sda-type="custom"'
 							+ ' sda-scope="this"'
 							+ ' sda-on-open="delegateActivityController.onOpenDialog(res)"'
-							+ ' sda-template="plugins/html5-process-portal/scripts/directives/partials/delegateActivityDialogBody.html"'
+							+ ' sda-template="'
+							+  sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/delegateActivityDialogBody.html"'
 							+ ' class="view-tool-link">'
 						+ '</span>',
 				controller: DelegateActivityDialogController
@@ -106,7 +107,7 @@
 			    self.confirm = confirm;
 			    self.validate = validate;
 			    
-			    $scope.tempurl = "plugins/html5-process-portal/scripts/directives/partials/delegateActivityDialogBody.html";
+			    $scope.tempurl = sdUtilService.getBaseUrl() + "plugins/html5-process-portal/scripts/directives/partials/delegateActivityDialogBody.html";
 			}
 			
 			/*

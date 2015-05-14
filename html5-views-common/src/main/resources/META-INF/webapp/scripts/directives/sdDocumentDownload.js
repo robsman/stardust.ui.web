@@ -28,7 +28,7 @@
 			},
 			transclude : true,
 			replace : true,
-			templateUrl : 'plugins/html5-views-common/scripts/directives/partials/documentDownload.html',
+			templateUrl : sdUtilService.getBaseUrl() + 'plugins/html5-views-common/scripts/directives/partials/documentDownload.html',
 			link : function(scope, element, attrs, ctrl) {
 				new DocumentDownloadLink(scope, element, attrs, ctrl);
 			}

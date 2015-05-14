@@ -14,12 +14,12 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive( 'sdAbortActivityDialog', [ 'sdActivityInstanceService','sdLoggerService', AbortActivity]);
+	angular.module('bpm-common').directive( 'sdAbortActivityDialog', [ 'sdActivityInstanceService','sdLoggerService', 'sdUtilService', AbortActivity]);
 
 	/**
 	 * 
 	 */
-	function AbortActivity(sdActivityInstanceService, sdLoggerService){
+	function AbortActivity(sdActivityInstanceService, sdLoggerService, sdUtilService){
 
 		return {
 			restrict: 'A',
@@ -31,14 +31,16 @@
 							'sda-confirm-action-label="{{abortActivityCtrl.i18n(\'views-common-messages.common-ok\')}}" ' +
 							'sda-cancel-action-label="{{abortActivityCtrl.i18n(\'views-common-messages.common-close\')}}" ' +
 							'sda-on-open="abortActivityCtrl.onConfirm(res)" '+
-							'sda-template="plugins/html5-process-portal/scripts/directives/partials/abortActivityDialogBody.html"> '+
+							'sda-template="' +
+							 sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/abortActivityDialogBody.html"> '+
 					 '<\/div> ' +
 					 '<span style="float: left;" ' +
 					 		'sd-dialog="abortActivityCtrl.abortActivityNotification" ' +
 					 		'sda-title="{{abortActivityCtrl.i18n(\'admin-portal-messages.common-notification-title\')}}" '+
 					 		'sda-type="custom" ' +
 					 		'sda-scope="this" ' +
-					 		'sda-template="plugins/html5-process-portal/scripts/directives/partials/abortActivityNotification.html"> ' +
+					 		'sda-template="' +
+							 sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/abortActivityNotification.html"> ' +
 					 '</span>',
 			scope :{
 				activitiesToAbort : '=sdaActivitiesToAbort',
