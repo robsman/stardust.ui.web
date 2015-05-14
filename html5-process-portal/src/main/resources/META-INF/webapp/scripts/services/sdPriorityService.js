@@ -32,19 +32,22 @@
                   "value" : -1,
                   "label" : sgI18nService
                            .translate('views-common-messages.common-priorities-low'),
-                  "name" : "low"
+                  "name" : "low",
+                  "order": 3,
                },
                {
                   "value" : 0,
                   "label" : sgI18nService
                            .translate('views-common-messages.common-priorities-normal'),
-                  "name" : "normal"
+                  "name" : "normal",
+                  "order": 2,
                },
                {
                   "value" : 1,
                   "label" : sgI18nService
                            .translate('views-common-messages.common-priorities-high'),
-                  "name" : "high"
+                  "name" : "high",
+                  "order": 1,
                } ];
       
       /**

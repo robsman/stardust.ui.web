@@ -130,7 +130,7 @@ table.layoutTable td {
 								<td valign="top"><select id="processSelect"
 									multiple="multiple" style="height: 100px; width: 250px;"
 									ng-model="procSearchViewCtrl.procSrchProcessSelected"
-									ng-options="option.name for option in procSearchViewCtrl.procSrchProcess"
+									ng-options="option.name for option in procSearchViewCtrl.procSrchProcess | orderBy: ['order', 'name']"
 									ng-change="procSearchViewCtrl.processChange()"></select></td>
 								<td></td>
 							</tr>
@@ -148,7 +148,7 @@ table.layoutTable td {
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
 								<td><select id="priority"
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.processSrchPrioritySelected"
-									ng-options="option.value as option.label for option in procSearchViewCtrl.priorities">
+									ng-options="option.value as option.label for option in procSearchViewCtrl.priorities | orderBy: 'order'">
 								</select></td>
 								<td></td>
 							</tr>
@@ -292,7 +292,7 @@ table.layoutTable td {
 								<td></td>
 								<td valign="top"><select id="activitySelect"
 									ng-model="procSearchViewCtrl.activitySrchSelected"
-									ng-options="option.name for option in procSearchViewCtrl.procSrchActivities"
+									ng-options="option.name for option in procSearchViewCtrl.procSrchActivities | orderBy: ['order', 'name']"
 									multiple="multiple" style="height: 100px; width: 250px;"></select>
 								</td>
 								<td></td>

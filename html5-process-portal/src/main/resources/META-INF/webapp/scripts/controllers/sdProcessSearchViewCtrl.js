@@ -36,10 +36,6 @@
 				this);
 
 		// Preserve to use later in life-cycle
-		/**
-		 * @author Aditya.Gaikwad
-		 * 
-		 */
 		_sdViewUtilService = sdViewUtilService;
 		_sdProcessSearchService = sdProcessSearchService;
 		_q = $q;
@@ -77,6 +73,7 @@
 					.getI18MessageString('business-control-center-messages.views-processSearchView-allActivities'),
 			name : _sdProcessSearchService
 					.getI18MessageString('business-control-center-messages.views-processSearchView-allActivities'),
+			order : 0,
 		};
 
 		this.defaultProcess = {
@@ -85,6 +82,7 @@
 					.getI18MessageString('business-control-center-messages.messages-common-allProcesses'),
 			name : _sdProcessSearchService
 					.getI18MessageString('business-control-center-messages.messages-common-allProcesses'),
+			order : 0,
 		};
 
 		this.processDataTable = null;
@@ -116,15 +114,9 @@
 				.getAllBusinessProcesses(false)
 				.then(
 						function(processes) {
-							processes = _filter('orderBy')(processes, 'name');
+							setOrder(processes);
 							self.allBusinessProcesses
-									.push({
-										value : "All",
-										label : _sdProcessSearchService
-												.getI18MessageString('business-control-center-messages.messages-common-allProcesses'),
-										name : _sdProcessSearchService
-												.getI18MessageString('business-control-center-messages.messages-common-allProcesses'),
-									});
+									.push(self.defaultProcess);
 							self.allBusinessProcesses = self.allBusinessProcesses
 									.concat(processes);
 							self.procSrchProcessSelected = [ self.allBusinessProcesses[0] ];
@@ -135,8 +127,7 @@
 							if (casePresentPos > -1) {
 								self.caseProcDef = self.procSrchProcess[casePresentPos];
 							}
-							// Remove Case process as defualt Hiearchy is
-							// excluding Case Process
+							// Remove Case process as defualt Hiearchy is excluding Case Process
 							self.filterCaseProcess();
 						});
 
@@ -150,6 +141,7 @@
 										label : _sdProcessSearchService
 												.getI18MessageString('business-control-center-messages.views-processSearchView-chooseProcess-options-all-label'),
 										name : "all",
+										order: 0,
 
 									});
 							self.priorities = self.priorities
@@ -183,7 +175,6 @@
 										label : _sdProcessSearchService
 												.getI18MessageString('business-control-center-messages.views-processSearchView-chooseProcess-options-all-label'),
 										name : "all",
-
 									});
 
 							self.activitySrchCriticality = self.activitySrchCriticality
@@ -315,7 +306,6 @@
 		this.descritorCols = [];
 		if (this.query.processSearchCriteria.filterObject == 1) {
 			this.procSrchActivities = [];
-			// this.procSrchActivities.push(this.defaultActivity);
 			for (var i = 0; i < this.procSrchProcessSelected.length; i++) {
 				if (this.procSrchProcessSelected[i].value
 						&& this.procSrchProcessSelected[i].value == "All") {
@@ -323,8 +313,6 @@
 					this.procSrchActivities = this.procSrchActivities
 							.concat(allActivites);
 
-					this.procSrchActivities = _filter('orderBy')(
-							this.procSrchActivities, 'name');
 					break;
 				} else {
 					this.procSrchActivities = this.procSrchActivities
@@ -334,8 +322,6 @@
 
 			this.applyActivityFilters();
 
-			this.procSrchActivities = _filter('orderBy')(
-					this.procSrchActivities, 'name');
 			this.procSrchActivities.splice(0, 0, this.defaultActivity);
 			this.activitySrchSelected = [ this.procSrchActivities[0] ];
 
@@ -608,7 +594,7 @@
 				.getAllUniqueProcesses()
 				.then(
 						function(processes) {
-							processes = _filter('orderBy')(processes, 'name');
+							setOrder(processes);
 							self.procSrchAuxProcess
 									.push({
 										value : "All",
@@ -686,6 +672,19 @@
 			}
 		}
 		return allActivities;
+	}
+	
+	/*
+	 * 
+	 */
+	function setOrder(processes) {
+		angular.forEach(processes, function(proc) {
+			proc['order'] = 1;
+			var activities = proc.activities;  
+			angular.forEach(activities, function(activity) {
+				activity['order'] = 1;
+			});
+		});
 	}
 
 })();
