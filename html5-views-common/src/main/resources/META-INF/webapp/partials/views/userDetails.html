@@ -38,13 +38,13 @@
 									<td><label>{{i18n('views-common-messages.views-userDetails-validFrom-label')
 											+
 											i18n('views-common-messages.views-documentSearchView-colon')}}</label></td>
-									<td><span>{{docSearchViewCtrl.userDetails.validFrom}}</span></td>
+									<td><span>{{docSearchViewCtrl.userDetails.validFrom | date:'short'}}</span></td>
 								</tr>
 								<tr>
 									<td><label>{{i18n('views-common-messages.views-userDetails-validTo-label')
 											+
 											i18n('views-common-messages.views-documentSearchView-colon')}}</label></td>
-									<td><span>{{docSearchViewCtrl.userDetails.validTo}}</span></td>
+									<td><span>{{docSearchViewCtrl.userDetails.validTo | date:'short'}}</span></td>
 								</tr>
 								<tr>
 									<td><label>{{i18n('views-common-messages.views-userDetails-email-label')

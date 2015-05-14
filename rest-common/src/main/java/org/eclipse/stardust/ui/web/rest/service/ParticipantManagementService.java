@@ -57,6 +57,23 @@ public class ParticipantManagementService
       for (User user : users)
       {
          UserDTO userDTO = DTOBuilder.build(user, UserDTO.class);
+         if (user.getValidFrom() != null)
+         {
+            userDTO.validFrom = user.getValidFrom().getTime();
+         }
+         else
+         {
+            userDTO.validFrom = null;
+         }
+
+         if (user.getValidTo() != null)
+         {
+            userDTO.validTo = user.getValidTo().getTime();
+         }
+         else
+         {
+            userDTO.validTo = null;
+         }
          userDTO.displayName = UserUtils.getUserDisplayLabel(user);
          userDTOList.add(userDTO);
       }

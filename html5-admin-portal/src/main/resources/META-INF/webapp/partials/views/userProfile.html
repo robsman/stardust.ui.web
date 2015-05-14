@@ -13,7 +13,7 @@
 						+ i18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><div>
 						<input type="text" name="account" ng-model="ctrl.user.account"
-							ng-change="ctrl.initDisplayFormats()" required>
+							ng-change="ctrl.initDisplayFormats()" ng-disabled="ctrl.mode == 'MODIFY_USER' || ctrl.mode == 'MODIFY_PROFILE_CONFIGURATION'" required>
 						<div class="msg-error"
 							ng-show="ctrl.userProfileForm.account.$error.required">
 							<span>Required!</span>
@@ -56,7 +56,7 @@
 				<td><label class="label-form">{{i18n('admin-portal-messages.views-createUser-basicPanel-changePwd-label')
 						+ i18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><div>
-						<input disabled="disabled" ng-model="ctrl.user.changePassword"
+						<input ng-disabled="!ctrl.user.isPasswordEnabled" ng-model="ctrl.user.changePassword"
 							type="checkbox">
 					</div></td>
 			</tr>
@@ -65,7 +65,7 @@
 						+ i18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><div>
 						<input maxlength="20" name="password"
-							ng-model='ctrl.user.password' size="20" type="password" required>
+							ng-model='ctrl.user.password' size="20" type="password" ng-disabled="!ctrl.user.changePassword" ng-required="ctrl.user.changePassword">
 						<div class="msg-error"
 							ng-show="ctrl.userProfileForm.password.$error.required">
 							<span>Required!</span>
@@ -78,7 +78,7 @@
 						+ i18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><div>
 						<input maxlength="20" ng-model='ctrl.user.confirmPassword'
-							size="20" type="password" name="confirmPassword" required>
+							size="20" type="password" name="confirmPassword" ng-disabled="!ctrl.user.changePassword" ng-required="ctrl.user.changePassword">
 						<div class="msg-error"
 							ng-show="ctrl.userProfileForm.confirmPassword.$error.required">
 							<span>Required!</span>

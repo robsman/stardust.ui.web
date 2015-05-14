@@ -85,17 +85,26 @@
 				self.titleParams = '';
 			} else if (mode == 'COPY_USER') {
 				self.title = 'views-common-messages.views-copyUser-title';
-				self.titleParams = self.rowSelectionForAllUsersTable.displayName;
+				self.titleParams = self.rowSelectionForAllUsersTable[0].displayName;
 			} else if (mode == 'MODIFY_USER') {
 				self.title = 'views-common-messages.views-modifyUser-title';
 				self.titleParams = '';
 			}
+			self.user.isPasswordEnabled = self.isPasswordEnabled(mode, self.user.isInternalAuthentication);
 			self.initDisplayFormats();
 			self.showUserProfileDialog = true;
 		}, function(error) {
 			trace.log(error);
 		});
 	};
+
+	ParticipantManagementCtrl.prototype.isPasswordEnabled = function(mode, isInternalAuthentication) {
+		if ((mode == 'MODIFY_USER' && isInternalAuthentication) || mode == 'MODIFY_PROFILE_CONFIGURATION') {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	/**
 	 * 
@@ -136,7 +145,7 @@
 			if (error) {
 				return false;
 			} else {
-				var deferred= _q.defer();				
+				var deferred = _q.defer();
 				var user = {};
 				angular.extend(user, self.user);
 				delete user.allRealms;
@@ -156,9 +165,9 @@
 				}, function(error) {
 					trace.log(error);
 					deferred.reject();
-				}); 
+				});
 				return deferred.promise;
-				
+
 			}
 		} else {
 
@@ -182,13 +191,15 @@
 			self.userProfileForm.$error.invalidDateRange = false;
 		}
 
-		// Validate Authorizations
-		if (_sdUtilService.validatePassword(self.user.password, self.user.confirmPassword)) {
-			error = true;
-			self.userProfileForm.$error.passwordMismatch = true;
+		// Validate password
+		if (self.user.changePassword) {
+			if (_sdUtilService.validatePassword(self.user.password, self.user.confirmPassword)) {
+				error = true;
+				self.userProfileForm.$error.passwordMismatch = true;
 
-		} else {
-			self.userProfileForm.$error.passwordMismatch = false;
+			} else {
+				self.userProfileForm.$error.passwordMismatch = false;
+			}
 		}
 
 		return error;

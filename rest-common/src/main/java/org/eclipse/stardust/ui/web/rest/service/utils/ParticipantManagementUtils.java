@@ -15,6 +15,7 @@ package org.eclipse.stardust.ui.web.rest.service.utils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -311,13 +312,28 @@ public class ParticipantManagementUtils
          }
          // headerTitle = propsBean.getString("views.modifyUser.title");
          userDTO.changePassword = false;
+         userDTO.oid = user.getOID();
          userDTO.account = user.getAccount();
          userDTO.firstName = user.getFirstName();
          userDTO.lastName = user.getLastName();
          userDTO.realmId = user.getRealm().getId();
          userDTO.eMail = user.getEMail();
-         userDTO.validFrom = user.getValidFrom();
-         userDTO.validTo = user.getValidTo();
+         if (user.getValidFrom() != null)
+         {
+            userDTO.validFrom = user.getValidFrom().getTime();
+         }
+         else
+         {
+            userDTO.validFrom = null;
+         }
+         if (user.getValidTo() != null)
+         {
+            userDTO.validTo = user.getValidTo().getTime();
+         }
+         else
+         {
+            userDTO.validTo = null;
+         }
          userDTO.description = user.getDescription();
          userDTO.qaOverride = user.getQualityAssuranceProbability();
 
@@ -358,6 +374,7 @@ public class ParticipantManagementUtils
          }
       }
    }
+
    /**
     * 
     */
@@ -375,6 +392,7 @@ public class ParticipantManagementUtils
       }
       return allRealms;
    }
+
    /**
     * 
     * @return
@@ -400,6 +418,7 @@ public class ParticipantManagementUtils
       }
       return "";
    }
+
    /**
     * 
     * @param userDTO
@@ -421,7 +440,7 @@ public class ParticipantManagementUtils
             User newUser = createUser(userDTO);
             UserService userService = serviceFactoryUtils.getUserService();
             if (mode.equals("COPY_USER"))
-            {  
+            {
                User user = userService.getUser(userDTO.oid);
                newUser = UserUtils.copyGrantsAndUserGroups(user, newUser);// new user
             }
@@ -433,22 +452,11 @@ public class ParticipantManagementUtils
                newUser = userService.modifyUser(newUser);
             }
          }
-
-         /*
-          * else if (isModifyMode()) { // Validate email address if
-          * (StringUtils.isNotEmpty(getEmail()) && !getEmail().equals(user.getEMail()) &&
-          * !EMailAddressValidator.validateEmailAddress(getEmail())) { emailValidationMsg
-          * = propsBean.getString("views.createUser.invalideEmailAddress"); success =
-          * false; } else { newUser = modifyUser(user);
-          * updateUserDisplayFormatProperty(newUser); } }
-          */
-         /*
-          * else if (isModifyProfileConfiguration()) { if
-          * (!myPicturePreference.isSelectedImageValid()) { return; } newUser =
-          * modifyLoginUser(); myPicturePreference.save();
-          * MessageDialog.addInfoMessage(propsBean
-          * .getString("common.configuration.saveConfirmation")); }
-          */
+         else if (mode.equals("MODIFY_USER"))
+         {
+            User newUser = modifyUser(userDTO);
+            updateUserDisplayFormatProperty(newUser, userDTO.selectedDisplayFormat);
+         }
       }
       catch (InvalidPasswordException e)
       {
@@ -480,6 +488,61 @@ public class ParticipantManagementUtils
       userProfileStatus.validationMsg = validationMsg;
       return userProfileStatus;
    }
+
+   /**
+    * 
+    * @param userDTO
+    * @return
+    */
+   private User modifyUser(UserDTO userDTO)
+   {
+      User modifiedUser = null;
+      UserService userService = UserUtils.getUserService();
+      if (null != userDTO && null != userService)
+      {
+         User userToModify = UserUtils.getUser(userDTO.oid, UserDetailsLevel.Full);
+         SessionContext ctx = SessionContext.findSessionContext();
+         User loggedInUser = ctx != null ? ctx.getUser() : null;
+         boolean passwordChanged = userDTO.changePassword;
+         if (passwordChanged)
+         {
+            userToModify.setPassword(userDTO.password);
+         }
+         userToModify.setFirstName(userDTO.firstName);
+         userToModify.setLastName(userDTO.lastName);
+         userToModify.setDescription(userDTO.description);
+         userToModify.setEMail(userDTO.eMail);
+         if (userDTO.validFrom != null)
+         {
+            userToModify.setValidFrom(new Date(userDTO.validFrom));
+         }
+         else
+         {
+            userToModify.setValidFrom(null);
+         }
+         if (userDTO.validTo != null)
+         {
+            userToModify.setValidTo(new Date(userDTO.validTo));
+         }
+         else
+         {
+            userToModify.setValidTo(null);
+         }
+
+         userToModify.setQualityAssuranceProbability(userDTO.qaOverride);
+         modifiedUser = userService.modifyUser(userToModify);
+         if (modifiedUser != null && modifiedUser.equals(loggedInUser))
+         {
+            if (passwordChanged)
+            {
+               UserUtils.updateServiceFactory(userDTO.account, userDTO.password);
+            }
+            UserUtils.updateLoggedInUser();
+         }
+      }
+      return modifiedUser;
+   }
+
    /**
     * 
     * @param userToModify
@@ -528,8 +591,18 @@ public class ParticipantManagementUtils
       UserService userService = UserUtils.getUserService();
       if (userService != null)
       {
+         Date validFrom = null;
+         Date validTo = null;
+         if (userDTO.validFrom != null)
+         {
+            validFrom = new Date(userDTO.validFrom);
+         }
+         if (userDTO.validTo != null)
+         {
+            validTo = new Date(userDTO.validTo);
+         }
          User user = userService.createUser(userDTO.realmId, userDTO.account, userDTO.firstName, userDTO.lastName,
-               userDTO.description, userDTO.password, userDTO.eMail, userDTO.validFrom, userDTO.validTo);
+               userDTO.description, userDTO.password, userDTO.eMail, validFrom, validTo);
          return user;
       }
       return null;

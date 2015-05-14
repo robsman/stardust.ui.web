@@ -30,11 +30,9 @@ public class UserDTO extends AbstractDTO
    @DTOAttribute("name")
    public String displayName;
 
-   @DTOAttribute("validFrom")
-   public Date validFrom;
+   public Long validFrom;
 
-   @DTOAttribute("validTo")
-   public Date validTo;
+   public Long validTo;
 
    @DTOAttribute("description")
    public String description;

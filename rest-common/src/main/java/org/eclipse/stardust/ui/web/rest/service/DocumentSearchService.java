@@ -115,6 +115,15 @@ public class DocumentSearchService
    {
       User user = UserUtils.getUser(documentOwner);
       UserDTO userDTO = DTOBuilder.build(user, UserDTO.class);
+      if (user.getValidFrom() != null)
+      {
+         userDTO.validFrom = user.getValidFrom().getTime();
+      }
+
+      if (user.getValidTo() != null)
+      {
+         userDTO.validTo = user.getValidTo().getTime();
+      }
       userDTO.displayName = UserUtils.getUserDisplayLabel(user);
       userDTO.userImageURI = MyPicturePreferenceUtils.getUsersImageURI(user);
       return userDTO;
