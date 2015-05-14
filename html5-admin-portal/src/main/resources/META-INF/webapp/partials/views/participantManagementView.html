@@ -7,4 +7,16 @@
 	<div style="padding-top: 20px;"
 		ng-include="'plugins/html5-admin-portal/partials/views/participantMgtUsersTable.html'">
 	</div>
+	<div sd-dialog sda-modal="true"
+		sda-show="ctrl.showUserProfileDialog"
+		sda-type="confirm"
+		sda-title="{{sdI18n(ctrl.title,'',[ctrl.titleParams])}}"
+		sda-scope="this"
+		sda-template="plugins/html5-admin-portal/partials/views/createUser.html"
+		sda-on-confirm="ctrl.onConfirmFromCreateUser(res)"
+		sda-on-close="ctrl.onCloseFromCreateUser(res)"
+		sda-confirm-action-label = "{{i18n('admin-portal-messages.common-apply')}}"
+		sda-width="550px"
+		sda-height="600px">
+	</div>	
 </div>

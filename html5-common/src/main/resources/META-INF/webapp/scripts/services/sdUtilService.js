@@ -359,7 +359,19 @@
 				}
 			}
 			return true;
-		}
+		};
+		/**
+		 * 
+		 */
+		UtilService.prototype.validatePassword = function(password, passwordConfirmation) {
+			var passwordValidationMsg = "";
+				if (this.isEmpty(passwordConfirmation) || this.isEmpty(password)) {
+					passwordValidationMsg = "views.createUser.password.empty";
+				} else if (passwordConfirmation != password) {
+					passwordValidationMsg = "views.createUser.password.mismatch";
+				}
+			return passwordValidationMsg;
+		};
 
 	}
 	;

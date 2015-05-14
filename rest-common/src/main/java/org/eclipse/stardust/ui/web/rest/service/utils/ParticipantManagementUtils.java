@@ -13,27 +13,58 @@
  */
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import javax.annotation.Resource;
 
+import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
+import org.eclipse.stardust.common.error.PublicException;
+import org.eclipse.stardust.common.security.InvalidPasswordException;
+import org.eclipse.stardust.engine.api.dto.QualityAssuranceAdminServiceFacade;
 import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
+import org.eclipse.stardust.engine.api.query.PreferenceQuery;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.SubsetPolicy;
 import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.UserQuery;
+import org.eclipse.stardust.engine.api.runtime.AdministrationService;
+import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.engine.api.runtime.UserExistsException;
+import org.eclipse.stardust.engine.api.runtime.UserRealm;
+import org.eclipse.stardust.engine.api.runtime.UserService;
+import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
+import org.eclipse.stardust.engine.core.preferences.Preferences;
+import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
+import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
+import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserFilterDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.UserProfileStatusDTO;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.viewscommon.login.util.PasswordUtils;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.QueryUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ParticipantManagementUtils
 {
+   private static final String PREFERENCE_ID = "preference";
 
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
@@ -221,4 +252,287 @@ public class ParticipantManagementUtils
       }
 
    }
+
+   public UserDTO initializeView(String mode, Long oid)
+   {
+      UserService userService = UserUtils.getUserService();
+      UserDTO userDTO = new UserDTO();
+      userDTO.isInternalAuthentication = userService.isInternalAuthentication();
+      userDTO.oldPassword = "";
+      userDTO.password = "";
+      userDTO.confirmPassword = "";
+      // validationMsg = null;
+      // passwordValidationMsg = null;
+      // emailValidationMsg = null;
+      User user = null;
+      if (oid != null && oid != -1)
+      {
+         user = userService.getUser(oid);
+      }
+
+      if (mode.equals("CREATE_USER") || mode.equals("COPY_USER"))
+      {
+         /*
+          * if (isCreateMode()) { headerTitle =
+          * propsBean.getString("views.createUser.title"); } else { headerTitle =
+          * propsBean.getParamString("views.copyUser.title",
+          * I18nUtils.getUserLabel(user)); }
+          */
+
+         userDTO.changePassword = true;
+         userDTO.account = "";
+         userDTO.firstName = "";
+         userDTO.lastName = "";
+         userDTO.eMail = "";
+         userDTO.validFrom = null;
+         userDTO.validTo = null;
+         userDTO.description = "";
+         QualityAssuranceAdminServiceFacade qualityAssuranceAdminService = serviceFactoryUtils
+               .getQualityCheckAdminServiceFacade();
+         userDTO.qaOverride = qualityAssuranceAdminService.getQualityAssuranceUserDefaultProbability();
+
+         if (mode.equals("COPY_USER") && null != user)
+         {
+
+            userDTO.realmId = user.getRealm().getId();
+            userDTO.qaOverride = user.getQualityAssuranceProbability();
+         }
+         else
+         {
+            userDTO.realmId = setDefaultRealm();
+         }
+      }
+      else if (mode.equals("MODIFY_USER") && null != user)
+      {
+         Long userOid = user.getOID();
+         if (userOid != null)
+         {
+            user = UserUtils.getUser(userOid.longValue(), UserDetailsLevel.Full);
+         }
+         // headerTitle = propsBean.getString("views.modifyUser.title");
+         userDTO.changePassword = false;
+         userDTO.account = user.getAccount();
+         userDTO.firstName = user.getFirstName();
+         userDTO.lastName = user.getLastName();
+         userDTO.realmId = user.getRealm().getId();
+         userDTO.eMail = user.getEMail();
+         userDTO.validFrom = user.getValidFrom();
+         userDTO.validTo = user.getValidTo();
+         userDTO.description = user.getDescription();
+         userDTO.qaOverride = user.getQualityAssuranceProbability();
+
+         /*
+          * if (isModifyProfileConfiguration()) { //TODO will be used in user profile
+          * configuration myPicturePreference = new MyPicturePreferenceBean(user); }
+          */
+      }
+
+      // initDisplayFormats(); this will be implemented @ client side
+
+      userDTO.selectedDisplayFormat = initNameDisplayFormat(user, mode);
+      userDTO.allRealms = getAllRealms();
+      return userDTO;
+   }
+
+   /**
+    * 
+    * @param user
+    * @param mode
+    * @return
+    */
+   private String initNameDisplayFormat(User user, String mode)
+   {
+      if (mode.equals("CREATE_USER") || mode.equals("COPY_USER"))
+      {
+         return UserUtils.getDefaultUserNameDisplayFormat();
+      }
+      else
+      {
+         if (null != user.getProperty(UserUtils.USER_NAME_DISPLAY_FORMAT_PREF_ID))
+         {
+            return (String) user.getProperty(UserUtils.USER_NAME_DISPLAY_FORMAT_PREF_ID);
+         }
+         else
+         {
+            return UserUtils.getDefaultUserNameDisplayFormat();
+         }
+      }
+   }
+   /**
+    * 
+    */
+   private List<SelectItemDTO> getAllRealms()
+   {
+      UserService userService = serviceFactoryUtils.getUserService();
+      List<UserRealm> realms = userService.getUserRealms();
+      List<SelectItemDTO> allRealms = new ArrayList<SelectItemDTO>();
+      allRealms.add(0, new SelectItemDTO("", ""));
+      int count = 1;
+      for (UserRealm realm : realms)
+      {
+         allRealms.add(count, new SelectItemDTO(realm.getId(), realm.getId()));
+         count++;
+      }
+      return allRealms;
+   }
+   /**
+    * 
+    * @return
+    */
+   private String setDefaultRealm()
+   {
+      String defaultRealm = Parameters.instance().getString(SecurityProperties.DEFAULT_REALM,
+            PredefinedConstants.DEFAULT_REALM_ID);
+
+      UserService userService = serviceFactoryUtils.getUserService();
+      List<UserRealm> realms = userService.getUserRealms();
+
+      if (defaultRealm != null && defaultRealm.trim().length() > 0)
+      {
+         for (UserRealm userRealm : realms)
+         {
+            if (userRealm.getId().compareTo(defaultRealm) == 0)
+            {
+               return userRealm.getId();
+
+            }
+         }
+      }
+      return "";
+   }
+   /**
+    * 
+    * @param userDTO
+    * @param mode
+    * @return
+    */
+   public UserProfileStatusDTO createCopyModifyUser(UserDTO userDTO, String mode)
+   {
+      boolean success = true;
+      String passwordValidationMsg = null;
+      String validationMsg = null;
+
+      MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+      try
+      {
+         if (mode.equals("CREATE_USER") || mode.equals("COPY_USER"))
+         {
+            //
+            User newUser = createUser(userDTO);
+            UserService userService = serviceFactoryUtils.getUserService();
+            if (mode.equals("COPY_USER"))
+            {  
+               User user = userService.getUser(userDTO.oid);
+               newUser = UserUtils.copyGrantsAndUserGroups(user, newUser);// new user
+            }
+            updateUserDisplayFormatProperty(newUser, userDTO.selectedDisplayFormat);
+
+            if (null != userDTO.qaOverride)
+            {
+               newUser.setQualityAssuranceProbability(userDTO.qaOverride);
+               newUser = userService.modifyUser(newUser);
+            }
+         }
+
+         /*
+          * else if (isModifyMode()) { // Validate email address if
+          * (StringUtils.isNotEmpty(getEmail()) && !getEmail().equals(user.getEMail()) &&
+          * !EMailAddressValidator.validateEmailAddress(getEmail())) { emailValidationMsg
+          * = propsBean.getString("views.createUser.invalideEmailAddress"); success =
+          * false; } else { newUser = modifyUser(user);
+          * updateUserDisplayFormatProperty(newUser); } }
+          */
+         /*
+          * else if (isModifyProfileConfiguration()) { if
+          * (!myPicturePreference.isSelectedImageValid()) { return; } newUser =
+          * modifyLoginUser(); myPicturePreference.save();
+          * MessageDialog.addInfoMessage(propsBean
+          * .getString("common.configuration.saveConfirmation")); }
+          */
+      }
+      catch (InvalidPasswordException e)
+      {
+         success = false;
+         String errMessages = PasswordUtils.decodeInvalidPasswordMessage(e, null);
+         if (StringUtils.isNotEmpty(errMessages))
+         {
+            passwordValidationMsg = errMessages;
+         }
+         else
+         {
+            passwordValidationMsg = e.toString();
+         }
+      }
+      catch (UserExistsException e)
+      {
+         success = false;
+         validationMsg = propsBean.getParamString("views.createUser.userExistException", userDTO.account);
+      }
+      catch (PublicException e)
+      {
+         success = false;
+         validationMsg = ExceptionHandler.getExceptionMessage(e);
+      }
+
+      UserProfileStatusDTO userProfileStatus = new UserProfileStatusDTO();
+      userProfileStatus.success = success;
+      userProfileStatus.passwordValidationMsg = passwordValidationMsg;
+      userProfileStatus.validationMsg = validationMsg;
+      return userProfileStatus;
+   }
+   /**
+    * 
+    * @param userToModify
+    * @param selectedDisplayFormat
+    */
+   private void updateUserDisplayFormatProperty(User userToModify, String selectedDisplayFormat)
+   {
+      QueryService qService = SessionContext.findSessionContext().getServiceFactory().getQueryService();
+      List<Preferences> prefs = qService.getAllPreferences(PreferenceQuery.findPreferencesForUsers(userToModify
+            .getRealm().getId(), userToModify.getId(), UserPreferencesEntries.M_ADMIN_PORTAL, PREFERENCE_ID));
+      if (CollectionUtils.isEmpty(prefs))
+      {
+         Map<String, Serializable> prefMap = new HashMap<String, Serializable>();
+         prefMap.put(UserUtils.USER_NAME_DISPLAY_FORMAT_PREF_ID, selectedDisplayFormat);
+         Preferences newPref = new Preferences(PreferenceScope.USER, UserPreferencesEntries.M_ADMIN_PORTAL,
+               PREFERENCE_ID, prefMap);
+         newPref.setRealmId(userToModify.getRealm().getId());
+         newPref.setUserId(userToModify.getId());
+         prefs.add(newPref);
+      }
+      else
+      {
+         for (Preferences pref : prefs)
+         {
+            Map<String, Serializable> pMap = pref.getPreferences();
+            if (CollectionUtils.isEmpty(pMap))
+            {
+               pMap = new HashMap<String, Serializable>();
+            }
+            pMap.put(UserUtils.USER_NAME_DISPLAY_FORMAT_PREF_ID, selectedDisplayFormat);
+            pref.setPreferences(pMap);
+         }
+      }
+
+      AdministrationService adminService = SessionContext.findSessionContext().getServiceFactory()
+            .getAdministrationService();
+      adminService.savePreferences(prefs);
+   }
+
+   /**
+    * @param userBean
+    * @return
+    */
+   private User createUser(UserDTO userDTO)
+   {
+      UserService userService = UserUtils.getUserService();
+      if (userService != null)
+      {
+         User user = userService.createUser(userDTO.realmId, userDTO.account, userDTO.firstName, userDTO.lastName,
+               userDTO.description, userDTO.password, userDTO.eMail, userDTO.validFrom, userDTO.validTo);
+         return user;
+      }
+      return null;
+   }
+
 }

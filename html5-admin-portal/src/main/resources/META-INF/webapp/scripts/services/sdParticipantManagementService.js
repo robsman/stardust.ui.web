@@ -70,6 +70,49 @@
 
 		};
 
+		ParticipantManagementService.prototype.openCreateCopyModifyUser = function(mode, oid) {
+			var restUrl = REST_BASE_URL + "/:type/:mode/:oid";
+
+			var urlTemplateParams = {};
+			urlTemplateParams.type = "openCreateCopyModifyUser";
+			urlTemplateParams.mode = mode;
+			if (oid != undefined) {
+				urlTemplateParams.oid = oid;
+			} else {
+				urlTemplateParams.oid = -1;
+			}
+
+			return $resource(restUrl).get(urlTemplateParams).$promise;
+		};
+        
+		/**
+		 * 
+		 */
+		ParticipantManagementService.prototype.createCopyModifyUser = function(user, mode) {
+			// Prepare URL
+			var restUrl = REST_BASE_URL + "/:type/:mode";
+
+			var postData = {
+				user : user
+			};
+
+			var createCopyModifyUser = $resource(restUrl, {
+				type : '@type',
+				mode : '@mode'
+			}, {
+				fetch : {
+					method : 'POST'
+				}
+			});
+
+			var urlTemplateParams = {};
+			urlTemplateParams.type = "createCopyModifyUser";
+			urlTemplateParams.mode = mode;
+
+			return createCopyModifyUser.fetch(urlTemplateParams, postData).$promise;
+
+		};
+
 	}
 	;
 })();

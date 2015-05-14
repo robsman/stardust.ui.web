@@ -14,6 +14,7 @@
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 /**
@@ -63,6 +64,22 @@ public class UserDTO extends AbstractDTO
    
    @DTOAttribute("account")
    public String account;
+   
+   public boolean isInternalAuthentication;
+
+   public String oldPassword;
+
+   public String password;
+
+   public String confirmPassword;
+
+   public boolean changePassword;
+
+   public Integer qaOverride;
+
+   public List<SelectItemDTO> allRealms;
+
+   public String selectedDisplayFormat;
    
 
 }

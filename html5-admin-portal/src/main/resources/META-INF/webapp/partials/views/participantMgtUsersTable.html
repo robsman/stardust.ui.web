@@ -1,6 +1,16 @@
 <div class="participant-management-wrapper">
 	<div class="view-panel-toolbar tbl-title"
 		style="color: #708090; font-size: 11px">{{i18n('admin-portal-messages.views-participantMgmt-table-title')}}</div>
+	<div sda-toolbar>
+		<div class="tbl-toolbar-section">
+			<button
+				ng-click="bpmCommon.stopEvent($event); ctrl.openCreateCopyModifyUser('CREATE_USER');"
+				title="{{i18n('views-common-messages.common.create')}}"
+				class="button-link tbl-toolbar-item tbl-tool-link">
+				<i class="sc sc-fw sc-1x sc-users"></i>
+			</button>
+		</div>
+	</div>
 	<table sd-data-table="ctrl.allUsersTable"
 		sd-data="ctrl.getAllUsers(params)" sda-mode="remote"
 		sda-selectable="row" sda-selection="ctrl.rowSelectionForAllUsersTable"
@@ -17,7 +27,7 @@
 						<div sd-text-search-filter></div>
 					</div>
 				</th>
-				<th sda-name="realm">
+				<th sda-name="realmId" sda-label-key="realm">
 					<div sda-filter-template>
 						<div sd-text-search-filter></div>
 					</div>
