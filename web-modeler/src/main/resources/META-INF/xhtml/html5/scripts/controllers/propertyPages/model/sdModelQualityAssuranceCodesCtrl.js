@@ -24,7 +24,6 @@
   function ModelQualityAssuranceCodesCtrl($scope, sdUtilService, sdI18nService,
           sdModelerConstants) {
     this.initialized = false;
-    this.display = false;
 
     var self = this;
     $scope.sdI18nModeler = sdI18nService.getInstance('bpm-modeler-messages').translate;
@@ -82,6 +81,7 @@
 
       // TODO: remove
       qaCode.uuid = Math.random();
+      this.getModel().qualityAssuranceCodes = this.qaCodes;
     }
 
     /**
@@ -167,7 +167,7 @@
       var name = this.getModel().name + " " + i18n('modeler.propertyView.modelView.qualityAssuranceCodes.qaCodeSuffix');
       var id = name.replace(/\s+/g, "");
 
-      var index = 0;
+      var index = 1;
       var generateNew = true;
       while (generateNew) {
         generateNew = false;

@@ -18,30 +18,34 @@
 							<tr>
 								<td>
 									<table class="dataTable" style="width: 100%">
-										<tr>
-											<th>
-												{{sdI18nModeler('modeler.propertyView.modelView.qualityAssuranceCodes.codeName')}}
-											</th>
-											<th>
-												{{sdI18nModeler('modeler.propertyView.modelView.qualityAssuranceCodes.codeId')}}
-											</th>
-											<th>
-												{{sdI18nModeler('modeler.propertyView.modelView.qualityAssuranceCodes.codeDescription')}}
-											</th>
-										</tr>
-										<tr ng-repeat="qaCode in ctrl.qaCodes"
-											ng-click="ctrl.setSelected($index)"
-											aid="selectQaCode{{$index}}"
-											ng-class="{selected: qaCode.uuid == ctrl.selectedQaCode.uuid}">
-											<td><input type="text" ng-model="qaCode.name"
-												ng-blur="ctrl.qaCodeChange(qaCode.name)"
-												aid="qaCodeName{{$index}}" /></td>
-											<td><input type="text" ng-model="qaCode.id"
-												ng-blur="ctrl.qaCodeChange()" aid="qaCode{{$index}}" /></td>
-											<td><input type="text" ng-model="qaCode.description"
-												ng-blur="ctrl.qaCodeChange()"
-												aid="qaCodeDescription{{$index}}" /></td>
-										</tr>
+										<thead>
+											<tr>
+												<th>
+													{{sdI18nModeler('modeler.propertyView.modelView.qualityAssuranceCodes.codeName')}}
+												</th>
+												<th>
+													{{sdI18nModeler('modeler.propertyView.modelView.qualityAssuranceCodes.codeId')}}
+												</th>
+												<th>
+													{{sdI18nModeler('modeler.propertyView.modelView.qualityAssuranceCodes.codeDescription')}}
+												</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr ng-repeat="qaCode in ctrl.qaCodes"
+												ng-click="ctrl.setSelected($index)"
+												aid="selectQaCode{{$index}}"
+												ng-class="{selected: qaCode.uuid == ctrl.selectedQaCode.uuid}">
+												<td><input type="text" ng-model="qaCode.name"
+													ng-blur="ctrl.qaCodeChange(qaCode.name)"
+													aid="qaCodeName{{$index}}" /></td>
+												<td><input type="text" ng-model="qaCode.id"
+													ng-blur="ctrl.qaCodeChange()" aid="qaCode{{$index}}" /></td>
+												<td><input type="text" ng-model="qaCode.description"
+													ng-blur="ctrl.qaCodeChange()"
+													aid="qaCodeDescription{{$index}}" /></td>
+											</tr>
+										</tbody>
 									</table>
 								</td>
 							</tr>

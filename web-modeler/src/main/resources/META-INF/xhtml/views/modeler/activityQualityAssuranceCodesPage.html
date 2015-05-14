@@ -1,0 +1,40 @@
+<div ng-controller="sdActivityQualityAssuranceCodesCtrl as ctrl"
+	ng-cloak>
+	<div ng-if="ctrl.initialized">
+		<table>
+			<tr>
+				<td>
+					<div class="panelBorder" style="margin-bottom: 10px;">
+						<table class="dataTable" style="width: 100%">
+							<thead>
+								<tr>
+									<th>
+										{{sdI18nModeler('modeler.propertyView.modelView.qualityAssuranceCodes.use')}}
+									</th>
+									<th>
+										{{sdI18nModeler('modeler.propertyView.modelView.qualityAssuranceCodes.codeId')}}
+									</th>
+									<th>
+										{{sdI18nModeler('modeler.propertyView.modelView.qualityAssuranceCodes.codeDescription')}}
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="qaCode in ctrl.qaCodes"
+									ng-click="ctrl.setSelected($index)"
+									aid="selectQaCode{{$index}}"
+									ng-class="{selected: qaCode.uuid == ctrl.selectedQaCode.uuid}">
+									<td><input type="checkbox" ng-model="qaCode.selected"
+										ng-change="ctrl.qaCodeselected($index)"
+										aid="qaCodeSelected{{$index}}" /></td>
+									<td>{{qaCode.id}}</td>
+									<td>{{qaCode.description}}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+</div>

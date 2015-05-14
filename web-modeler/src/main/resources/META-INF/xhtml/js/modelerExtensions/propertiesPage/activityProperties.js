@@ -56,7 +56,18 @@ define(
                   imageUrl: "plugins/bpm-modeler/images/icons/user-invalidated.png",
                   title: m_i18nUtils.getProperty("modeler.propertiesPage.activity.excludedUsers.title"),
                   html5: true
-                }, {
+                },
+                {
+                  panelId: "activityPropertiesPanel",
+                  id: "qualityAssuranceCodesPage",
+                  provider: m_propertiesPageProvider,
+                  visibility: "always",
+                  pageHtmlUrl: "plugins/bpm-modeler/views/modeler/activityQualityAssuranceCodesPage.html",
+                  imageUrl: "plugins/bpm-modeler/images/icons/quality-assurance-code.png",
+                  title: m_i18nUtils.getProperty("modeler.propertyView.modelView.qualityAssuranceCodes.title"),
+                  html5: true
+                },
+                {
                   panelId: "activityPropertiesPanel",
                   id: "commentsPropertiesPage",
                   pageHtmlUrl: "plugins/bpm-modeler/views/modeler/modelElementCommentsPropertiesPage.html",

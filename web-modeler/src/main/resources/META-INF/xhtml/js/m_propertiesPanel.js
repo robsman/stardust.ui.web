@@ -184,6 +184,11 @@ define(
 					}
 				};
 
+		    PropertiesPanel.prototype.getElementUuid2 = function() {
+          if (this.element) {
+            return this.element.uuid;
+          }
+        };
 				/**
 				 *
 				 */
@@ -634,9 +639,10 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.submitChanges = function(changes) {
+				  //TODO this method does not actually uses UUID!
 					m_utils.debug("Changes to be submitted for UUID "
 							+ this.getElementUuid() + ":");
 					m_utils.debug(changes);
@@ -645,6 +651,19 @@ define(
 									this.getModel().id, this.getElementUuid(),
 									changes));
 				};
+
+				/**
+				 * 
+				 */
+				PropertiesPanel.prototype.submitChangesWithUUID = function(changes) {
+          m_utils.debug("Changes to be submitted for UUID "
+              + this.getElementUuid() + ":");
+          m_utils.debug(changes);
+          m_commandsController.submitCommand(m_command
+              .createUpdateModelElementWithUUIDCommand(
+                  this.getModel().id, this.getElementUuid2(),
+                  changes));
+        };
 				
 				/**
 				 * 
