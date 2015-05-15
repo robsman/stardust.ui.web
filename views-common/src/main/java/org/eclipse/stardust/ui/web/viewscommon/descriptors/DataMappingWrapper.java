@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.viewscommon.descriptors;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -172,6 +173,10 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
       else if(dataClass == Float.class || dataClass == Double.class)
       {
          type = ProcessPortalConstants.DOUBLE_TYPE;
+      }
+      else if(dataClass == BigDecimal.class)
+      {
+         type = ProcessPortalConstants.BIG_DECIMAL_TYPE;
       }
       else if (dataClass == String.class || dataClass == Character.class)
       {
@@ -495,6 +500,27 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
       trace.debug("set Double: " + this.value);
    }
 
+   public BigDecimal getDecimalValue()
+   {
+       try
+          {
+             return value != null ? new BigDecimal(value.toString()) : null;
+          }
+          catch (Exception e)
+          {
+             return null;
+          }
+   }
+   
+   public void setDecimalValue(BigDecimal value)
+   {
+          broadcastChange(value);
+
+          Class dataClass = dataMapping.getMappedType();
+          this.value = convertToNumber(value, dataClass);
+          trace.debug("set Big Decimal: " + this.value);
+   }
+   
    /**
     * method determine type and set value as per type
     * @param value
@@ -593,6 +619,10 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
             else if(type == Float.class)
             {
                localValue = new Float(value.floatValue());
+            }
+            else if( type == BigDecimal.class)
+            {
+                localValue = new BigDecimal(value.toString());
             }
          }
          catch (Exception e)

@@ -33,6 +33,7 @@ public interface ProcessPortalConstants
    public final static String TIMESTAMP_TYPE = "TimeStamp";
    public final static String LONG_TYPE = "Long";
    public final static String DOUBLE_TYPE = "Double";
+   public final static String BIG_DECIMAL_TYPE = "BigDecimal";
    public final static String STRUCTURED_TYPE = "Structured";
    public final static String PRIORITY_TYPE = "Priority";
    public final static String TIME_TYPE = "Time";
