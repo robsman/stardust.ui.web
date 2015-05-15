@@ -13,7 +13,9 @@
  */
 package org.eclipse.stardust.ui.web.rest.service;
 
-import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.activate;
+
+import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isActivatable;
+import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isSupportsWeb;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
@@ -23,6 +25,10 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.eclipse.stardust.common.error.AccessForbiddenException;
+import org.eclipse.stardust.common.error.ConcurrencyException;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
@@ -32,6 +38,7 @@ import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
+import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.CriticalityDTO;
@@ -79,7 +86,11 @@ public class ActivityInstanceService
 
    @Resource
    CriticalityUtils criticalityUtils;
+   
+   @Resource
+   private RestCommonClientMessages restCommonClientMessages;
 
+   private static final Logger trace = LogManager.getLogger(ActivityInstanceService.class);
    /**
     * @param activityInstanceOid
     * @return
@@ -352,19 +363,64 @@ public class ActivityInstanceService
    public NotificationMap reactivate(Long activityOID)
    {
       NotificationMap notification = new NotificationMap();
+      ActivityInstance ai = null;
       try
       {
-         ActivityInstance ai = activityInstanceUtils.getActivityInstance(activityOID);
-         ai = activate(ai);
+         notification = activityInstanceUtils.activate(activityOID);
          serviceFactoryUtils.getWorkflowService().unbindActivityEventHandler(ai.getOID(), "Resubmission");
          notification.addSuccess(new NotificationDTO(activityOID, ai.getActivity().getName(), null));
+      }
+      catch (ConcurrencyException ce)
+      {
+         trace.error("Unable to activate Activity, activity not in worklist", ce);
+         String msg = restCommonClientMessages.getString("activity.concurrencyError");
+         notification.addFailure(new NotificationDTO(activityOID, activityInstanceUtils.getActivityLabel(ai), msg));
+      }
+      catch (AccessForbiddenException af)
+      {
+         trace.error("User not authorized to activate", af);
+         String msg = restCommonClientMessages.getString("activity.acccessForbiddenError");
+         notification.addFailure(new NotificationDTO(activityOID, activityInstanceUtils.getActivityLabel(ai), msg));
       }
       catch (Exception exception)
       {
          notification.addFailure(new NotificationDTO(activityOID, null, exception.getMessage()));
       }
       return notification;
+   }
 
+   /**
+    * 
+    * @param activityOID
+    * @return
+    */
+   public NotificationMap activate(Long activityOID)
+   {
+      NotificationMap notification = new NotificationMap();
+      ActivityInstance ai = null;
+      try
+      {
+         notification = activityInstanceUtils.activate(activityOID);
+      }
+      catch (ConcurrencyException ce)
+      {
+         trace.error("Unable to activate Activity, activity not in worklist", ce);
+         String msg = restCommonClientMessages.getString("activity.concurrencyError");
+         notification.addFailure(new NotificationDTO(activityOID, activityInstanceUtils.getActivityLabel(ai), msg));
+      }
+      catch (AccessForbiddenException af)
+      {
+         trace.error("User not authorized to activate", af);
+         String msg = restCommonClientMessages.getString("activity.acccessForbiddenError");
+         notification.addFailure(new NotificationDTO(activityOID, activityInstanceUtils.getActivityLabel(ai), msg));
+      }
+      catch (Exception e)
+      {
+         trace.error("Exception occurred while activating", e);
+         String msg = e.getMessage();
+         notification.addFailure(new NotificationDTO(activityOID, activityInstanceUtils.getActivityLabel(ai), msg));
+      }
+      return notification;
    }
 
 }

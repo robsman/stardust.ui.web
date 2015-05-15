@@ -11,6 +11,8 @@
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
+import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isActivatable;
+import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isSupportsWeb;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -59,7 +61,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheMan
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
 import org.springframework.stereotype.Component;
-
 /**
  * @author Anoop.Nair
  * @author Subodh.Godbole
@@ -541,5 +542,32 @@ public class ActivityInstanceUtils
 	      return activityInstance.getPerformedByName();
 	   }
 	}
-   
+	
+	
+	/**
+     * 
+     */
+
+   public NotificationMap activate(Long activityOID)
+   {
+      NotificationMap notification = new NotificationMap();
+      ActivityInstance ai = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils .getActivityInstance(activityOID);
+      if (!isSupportsWeb(ai.getActivity()))
+      {
+         notification.addFailure(new NotificationDTO(activityOID, ai.getActivity().getName(), MessagesViewsCommonBean
+               .getInstance().getString("views.common.notSupportedOnWeb")));
+         return notification;
+      }
+
+      if (!isActivatable(ai))
+      {
+         notification.addFailure(new NotificationDTO(activityOID, ai.getActivity().getName(), MessagesViewsCommonBean
+               .getInstance().getString("views.common.notActivatable")));
+         return notification;
+      }
+      ai = serviceFactoryUtils.getWorkflowService().activate(activityOID);
+      notification.addSuccess(new NotificationDTO(activityOID, ai.getActivity().getName(), null));
+      return notification;
+   }
+
 }

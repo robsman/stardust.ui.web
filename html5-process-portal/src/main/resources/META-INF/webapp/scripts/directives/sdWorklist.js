@@ -381,6 +381,26 @@
 
 		sdDialogService.dialog(scope, options, html)
 	    };
+	    
+	    /**
+	     * 
+	     * @param rowItem
+	     */
+	    this.activateAndOpenView = function( rowItem ) {
+		sdActivityInstanceService.activate(rowItem.activityOID).then(
+			function(result) {
+			    if (result.failure.length > 0) {
+				trace.error("Error in activating worklist item : "+rowItem.activityOID+".Error : " + result.failure[0].message);
+				var title = sgI18nService.translate('views-common-messages.common-error', 'Error');
+				var message = result.failure[0].message;
+				sdDialogService.error(scope, message, title)
+			    } else {
+				trace.debug("Activation successfull : ",rowItem.activityOID);
+				sdCommonViewUtilService.openActivityView(rowItem.activityOID);
+				self.refresh();
+			    }
+			});
+	    };
 
 	    this.fetchDescriptorCols(attr);
 	    this.fetchAllProcesses();
@@ -794,7 +814,7 @@
 		this.showResubmissionConfirmation(rowItem);
 	    }else{
 		trace.debug("Activate :",rowItem.activityOID);
-		sdCommonViewUtilService.openActivityView(rowItem.activityOID);
+		this.activateAndOpenView(rowItem);
 	    }
 	    
 	};

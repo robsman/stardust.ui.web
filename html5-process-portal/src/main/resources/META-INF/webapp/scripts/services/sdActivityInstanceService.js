@@ -37,6 +37,17 @@
 		    return ajax(REST_BASE_URL,'reactivate' , data);
 		};
 		
+
+		/*
+		 * 
+		 */
+		ActivityInstanceService.prototype.activate = function(activityOID) {
+
+		    var data = {activityOID : activityOID}
+		    return ajax(REST_BASE_URL,'activate' , data);
+		};
+		
+		
 		/*
 		 * 
 		 */
