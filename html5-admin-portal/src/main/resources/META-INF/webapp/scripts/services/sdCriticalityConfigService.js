@@ -16,8 +16,8 @@
 	'use strict';
 
 	angular.module('admin-ui.services').provider('sdCriticalityConfigService', function () {
-		this.$get = ['$resource', function ($resource) {
-			var service = new CriticalityConfigService($resource);
+		this.$get = ['$resource', 'sdUtilService', function ($resource, sdUtilService) {
+			var service = new CriticalityConfigService($resource, sdUtilService);
 			return service;
 		}];
 	});
@@ -25,8 +25,8 @@
 	/*
 	 *
 	 */
-	function CriticalityConfigService($resource) {
-		var REST_BASE_URL = "services/rest/portal/criticality-config/";
+	function CriticalityConfigService($resource, sdUtilService) {
+		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/criticality-config/";
 
 		/*
 		 *

@@ -21,9 +21,10 @@
 				this.$get = [
 						'$resource',
 						'sgI18nService',
-						function($resource, sgI18nService) {
+						'sdUtilService',
+						function($resource, sgI18nService, sdUtilService) {
 							var service = new DaemonService($resource,
-									sgI18nService);
+									sgI18nService, sdUtilService);
 							return service;
 						} ];
 			});
@@ -43,8 +44,8 @@
 	/*
 	 * 
 	 */
-	function DaemonService($resource, sgI18nService) {
-		var REST_BASE_URL = 'services/rest/portal/daemons';
+	function DaemonService($resource, sgI18nService, sdUtilService) {
+		var REST_BASE_URL = sdUtilService.getBaseUrl() + 'services/rest/portal/daemons';
 
 		// TODO refactor
 		this.daemonType = new Object();

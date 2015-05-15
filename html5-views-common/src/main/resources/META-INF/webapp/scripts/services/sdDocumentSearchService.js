@@ -25,9 +25,10 @@
 						'$q',
 						'$http',
 						'sdDataTableHelperService',
-						function($rootScope, $resource, sdLoggerService, $q, $http, sdDataTableHelperService) {
+						'sdUtilService',
+						function($rootScope, $resource, sdLoggerService, $q, $http, sdDataTableHelperService, sdUtilService) {
 							var service = new DocumentSearchService($rootScope, $resource, sdLoggerService, $q, $http,
-									sdDataTableHelperService);
+									sdDataTableHelperService, sdUtilService);
 							return service;
 						} ];
 			});
@@ -35,8 +36,8 @@
 	/*
 	 * 
 	 */
-	function DocumentSearchService($rootScope, $resource, sdLoggerService, $q, $http, sdDataTableHelperService) {
-		var REST_BASE_URL = "services/rest/portal/documentSearch";
+	function DocumentSearchService($rootScope, $resource, sdLoggerService, $q, $http, sdDataTableHelperService, sdUtilService) {
+		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/documentSearch";
 		var trace = sdLoggerService.getLogger('viewscommon-ui.services.sdDocumentSearchService');
 
 		/**

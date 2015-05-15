@@ -29,18 +29,19 @@
 								'sgI18nService',
 								'sdCriticalityService',
 								'sdDataTableHelperService',
+								'sdUtilService',
 								function($rootScope, $resource,
 										sdProcessDefinitionService,
 										sdPriorityService, sdStatusService, $q,
 										sgI18nService, sdCriticalityService,
-										sdDataTableHelperService) {
+										sdDataTableHelperService, sdUtilService) {
 									var service = new ProcessSearchService(
 											$rootScope, $resource,
 											sdProcessDefinitionService,
 											sdPriorityService, sdStatusService,
 											$q, sgI18nService,
 											sdCriticalityService,
-											sdDataTableHelperService);
+											sdDataTableHelperService, sdUtilService);
 									return service;
 								} ];
 					});
@@ -50,7 +51,7 @@
 	 */
 	function ProcessSearchService($rootScope, $resource,
 			sdProcessDefinitionService, sdPriorityService, sdStatusService, $q,
-			sgI18nService, sdCriticalityService, sdDataTableHelperService) {
+			sgI18nService, sdCriticalityService, sdDataTableHelperService, sdUtilService) {
 
 		this.hierarchyTypes = [
 				{
@@ -138,7 +139,7 @@
 					"name" : "false"
 				} ];
 
-		var REST_BASE_URL = "services/rest/portal/processActivity";
+		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/processActivity";
 
 		/*
 		 * 

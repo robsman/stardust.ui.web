@@ -49,16 +49,16 @@
 			 title: '@sdaTitle',
 			 bindModel: '=ngModel'
 		 },
-         controller : [ '$scope', '$attrs', '$element', 'sgI18nService', 'sdLoggerService', FileUploadController ]
+         controller : [ '$scope', '$attrs', '$element', 'sgI18nService', 'sdLoggerService', 'sdUtilService', FileUploadController ]
       };
 
    }
 
-	function FileUploadController($scope, $attrs, $element, sgI18nService, sdLoggerService) {
+	function FileUploadController($scope, $attrs, $element, sgI18nService, sdLoggerService, sdUtilService) {
 		var trace = sdLoggerService.getLogger('bpm-common.sdFileUpload');
 		
 		var self = this;
-		var REST_END_POINT = "services/rest/portal/file-upload/upload";
+		var REST_END_POINT = sdUtilService.getBaseUrl() + "services/rest/portal/file-upload/upload";
 
 		FileUploadController.prototype.initialise = function() {
 			

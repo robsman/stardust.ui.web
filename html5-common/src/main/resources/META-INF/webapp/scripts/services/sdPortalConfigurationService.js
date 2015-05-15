@@ -28,7 +28,7 @@
      * 
      */
     function WorklistService( sdUtilService) {
-	var REST_BASE_URL = "services/rest/portal/portalConfiguration/";
+	var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/portalConfiguration/";
 	/*
 	 * 
 	 */

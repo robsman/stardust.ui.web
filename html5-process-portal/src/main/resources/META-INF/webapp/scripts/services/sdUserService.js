@@ -15,8 +15,8 @@
 	'use strict';
 
 	angular.module('workflow-ui.services').provider('sdUserService', function () {
-		this.$get = ['$resource', 'sdLoggerService', function ($resource, sdLoggerService) {
-			var service = new UserService($resource, sdLoggerService);
+		this.$get = ['$resource', 'sdLoggerService', 'sdUtilService', function ($resource, sdLoggerService, sdUtilService) {
+			var service = new UserService($resource, sdLoggerService, sdUtilService);
 			return service;
 		}];
 	});
@@ -24,8 +24,8 @@
 	/*
 	 * 
 	 */
-	function UserService($resource, sdLoggerService) {
-		var REST_BASE_URL = "services/rest/portal/user/search";
+	function UserService($resource, sdLoggerService, sdUtilService) {
+		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/user/search";
 
 		var trace = sdLoggerService.getLogger('workflow-ui.services.sdUserService');
 		

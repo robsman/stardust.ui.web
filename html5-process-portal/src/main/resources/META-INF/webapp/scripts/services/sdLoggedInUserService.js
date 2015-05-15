@@ -23,12 +23,13 @@
 	} ];
     });
 
-    var REST_BASE_URL = "services/rest/portal/user";
     var user = null;
     /**
      * 
      */
     function LoggedInUserService(sdUtilService) {
+    	
+    	var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/user";
 
 	/**
 	 * 

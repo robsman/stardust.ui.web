@@ -16,8 +16,8 @@
 	'use strict';
 
 	angular.module('workflow-ui.services').provider('sdProcessDefinitionService', function () {
-		this.$get = ['$rootScope', '$resource', function ($rootScope, $resource) {
-			var service = new ProcessDefinitionService($rootScope, $resource);
+		this.$get = ['$rootScope', '$resource', 'sdUtilService', function ($rootScope, $resource, sdUtilService) {
+			var service = new ProcessDefinitionService($rootScope, $resource, sdUtilService);
 			return service;
 		}];
 	});
@@ -25,8 +25,8 @@
 	/*
 	 *
 	 */
-	function ProcessDefinitionService($rootScope, $resource) {
-		var REST_BASE_URL = "services/rest/portal/process-definitions/";
+	function ProcessDefinitionService($rootScope, $resource, sdUtilService) {
+		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/process-definitions/";
 
 		/*
 		 *

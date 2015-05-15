@@ -23,13 +23,13 @@
 	} ];
     });
 
-    var REST_BASE_URL = "services/rest/portal/localization";
     var localizationInfo = null;
     /**
      * 
      */
     function LocalizationService(sdUtilService) {
 
+    	var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/localization";
 	/**
 	 * 
 	 */

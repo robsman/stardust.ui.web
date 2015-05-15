@@ -23,9 +23,10 @@
 						'$resource',
 						'sdLoggerService',
 						'sdDataTableHelperService',
-						function($resource, sdLoggerService, sdDataTableHelperService) {
+						'sdUtilService',
+						function($resource, sdLoggerService, sdDataTableHelperService, sdUtilService) {
 							var service = new ParticipantManagementService($resource, sdLoggerService,
-									sdDataTableHelperService);
+									sdDataTableHelperService, sdUtilService);
 							return service;
 						} ];
 			});
@@ -33,8 +34,8 @@
 	/*
 	 * 
 	 */
-	function ParticipantManagementService($resource, sdLoggerService, sdDataTableHelperService) {
-		var REST_BASE_URL = "services/rest/portal/participantManagement";
+	function ParticipantManagementService($resource, sdLoggerService, sdDataTableHelperService, sdUtilService) {
+		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/participantManagement";
 		var trace = sdLoggerService.getLogger('admin-ui.services.sdParticipantManagementService');
 
 		/**

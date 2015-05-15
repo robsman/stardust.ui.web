@@ -16,8 +16,8 @@
     'use strict';
 
     angular.module('admin-ui.services').provider('sdQualityAssuranceService', function() {
-	this.$get = [ '$resource', 'sgI18nService', function($resource, sgI18nService) {
-	    var service = new QualityAssuranceService($resource, sgI18nService);
+	this.$get = [ '$resource', 'sgI18nService', 'sdUtilService', function($resource, sgI18nService, sdUtilService) {
+	    var service = new QualityAssuranceService($resource, sgI18nService, sdUtilService);
 	    return service;
 	} ];
     });
@@ -25,8 +25,8 @@
     /*
      * 
      */
-    function QualityAssuranceService($resource, sgI18nService) {
-	var REST_BASE_URL = 'services/rest/portal/qualityAssuranceManagement';
+    function QualityAssuranceService($resource, sgI18nService, sdUtilService) {
+	var REST_BASE_URL = sdUtilService.getBaseUrl() + 'services/rest/portal/qualityAssuranceManagement';
 	var self = this;
 
 	/**

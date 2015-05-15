@@ -16,8 +16,8 @@
 	'use strict';
 
 	angular.module('admin-ui.services').provider('sdRealmManagementService', function () {
-		this.$get = ['$resource', function ($resource) {
-			var service = new RealmManagementService($resource);
+		this.$get = ['$resource', 'sdUtilService', function ($resource, sdUtilService) {
+			var service = new RealmManagementService($resource, sdUtilService);
 			return service;
 		}];
 	});
@@ -25,8 +25,8 @@
 	/*
 	 *
 	 */
-	function RealmManagementService($resource) {
-		var REST_BASE_URL = "services/rest/portal/realm/";
+	function RealmManagementService($resource, sdUtilService) {
+		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/realm/";
 
 		/*
 		 *

@@ -17,21 +17,21 @@
 	 * 
 	 */
 	angular.module('workflow-ui.services').provider( 'sdStatusService', function() {
-		this.$get = [ '$q', '$resource', function ( $q, $resource) {
-			var service = new StatusService($q, $resource);
+		this.$get = [ '$q', '$resource', 'sdUtilService', function ( $q, $resource, sdUtilService) {
+			var service = new StatusService($q, $resource, sdUtilService);
 			return service;
 		}];
 	});
 	/**
 	 *
 	 */
-	function StatusService( $q, $resource) {
+	function StatusService( $q, $resource, sdUtilService) {
 		StatusService.prototype.getAllActivityStates = function() {
-			return  $resource('services/rest/portal/activity-instances/allActivityStates').query().$promise;
+			return  $resource(sdUtilService.getBaseUrl() + 'services/rest/portal/activity-instances/allActivityStates').query().$promise;
 		};
 		
 		StatusService.prototype.getAllProcessStates = function() {
-			return  $resource('services/rest/portal/process-instances/allProcessStates').query().$promise;
+			return  $resource(sdUtilService.getBaseUrl() + 'services/rest/portal/process-instances/allProcessStates').query().$promise;
 		};
 	};
 })();

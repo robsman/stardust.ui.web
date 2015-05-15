@@ -16,16 +16,16 @@
    'use strict';
 
    angular.module('workflow-ui.services').provider('sdWorklistService', function() {
-      this.$get = [ '$rootScope', '$resource','sdDataTableHelperService', function($rootScope, $resource, sdDataTableHelperService) {
-         var service = new WorklistService($rootScope, $resource, sdDataTableHelperService);
+      this.$get = [ '$rootScope', '$resource','sdDataTableHelperService', 'sdUtilService', function($rootScope, $resource, sdDataTableHelperService, sdUtilService) {
+         var service = new WorklistService($rootScope, $resource, sdDataTableHelperService, sdUtilService);
          return service;
       } ];
    });
    /*
     * 
     */
-   function WorklistService($rootScope, $resource, sdDataTableHelperService) {
-	   var REST_BASE_URL = "services/rest/portal/worklist/";
+   function WorklistService($rootScope, $resource, sdDataTableHelperService, sdUtilService) {
+	   var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/worklist/";
 	   /*
 	    * 
 	    */

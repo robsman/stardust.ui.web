@@ -66,7 +66,7 @@
 			 * 
 			 */
 			function downloadDocument(res) {
-				var REST_BASE_URL = "services/rest/portal/documents";
+				var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/documents";
 				window.location = sdUtilService.getRootUrl() + "/" + REST_BASE_URL + "/downloadDocument" + "/"
 						+ scope.documentId + "/" + scope.documentName;
 			}

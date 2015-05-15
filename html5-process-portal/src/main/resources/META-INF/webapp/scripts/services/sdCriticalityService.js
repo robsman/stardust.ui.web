@@ -11,8 +11,8 @@
    'use strict';
 
    angular.module('workflow-ui.services').provider('sdCriticalityService', function() {
-      this.$get = [ '$q', '$resource', function($q, $resource) {
-         var service = new CriticalityService($q, $resource);
+      this.$get = [ '$q', '$resource', 'sdUtilService', function($q, $resource, sdUtilService) {
+         var service = new CriticalityService($q, $resource, sdUtilService);
          return service;
       } ];
    });
@@ -20,8 +20,8 @@
    /**
     * 
     */
-   function CriticalityService($q, $resource) {
-      var REST_URL = "services/rest/portal/activity-instances/availableCriticalities";
+   function CriticalityService($q, $resource, sdUtilService) {
+      var REST_URL = sdUtilService.getBaseUrl() + "services/rest/portal/activity-instances/availableCriticalities";
 
       CriticalityService.prototype.getAllCriticalities = function() {
          return $resource(REST_URL).query().$promise;

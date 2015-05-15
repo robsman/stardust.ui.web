@@ -40,7 +40,7 @@
 		 * 
 		 */
 		PreferenceService.prototype.getTenantPreferences = function() {
-		    var restUrl = "services/rest/portal/preference/partition";
+		    var restUrl = sdUtilService.getBaseUrl() + "services/rest/portal/preference/partition";
 		    return $resource(restUrl).query().$promise;
 		};
 		
@@ -48,7 +48,7 @@
 		 * 
 		 */
 		PreferenceService.prototype.getUserPreferences = function(realmId,userId) {
-		    var restUrl = "services/rest/portal/preference/user";
+		    var restUrl = sdUtilService.getBaseUrl() + "services/rest/portal/preference/user";
 		    if (realmId && userId) {
 			restUrl =restUrl + "?realmId="+realmId +"&userId="+ userId;
 		    }
@@ -63,7 +63,7 @@
 			this.module = module;
 			this.preferenceId = preferenceId;
 
-			this.url = "services/rest/portal/preference/:scope/:moduleId/:preferenceId";
+			this.url = sdUtilService.getBaseUrl() + "services/rest/portal/preference/:scope/:moduleId/:preferenceId";
 			this.url = this.url.replace(':scope', this.scope);
 			this.url = this.url.replace(':moduleId', this.module);
 			this.url = this.url.replace(':preferenceId', this.preferenceId);

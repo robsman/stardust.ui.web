@@ -16,8 +16,8 @@
 	'use strict';
 
 	angular.module('workflow-ui.services').provider('sdProcessInstanceService', function () {
-		this.$get = ['$rootScope', '$resource', '$filter', function ($rootScope, $resource, $filter) {
-			var service = new ProcessInstanceService($rootScope, $resource, $filter);
+		this.$get = ['$rootScope', '$resource', '$filter', 'sdUtilService', function ($rootScope, $resource, $filter, sdUtilService) {
+			var service = new ProcessInstanceService($rootScope, $resource, $filter, sdUtilService);
 			return service;
 		}];
 	});
@@ -25,8 +25,8 @@
 	/*
 	 *
 	 */
-	function ProcessInstanceService($rootScope, $resource, $filter) {
-		var REST_BASE_URL = "services/rest/portal/process-instances/";
+	function ProcessInstanceService($rootScope, $resource, $filter, sdUtilService) {
+		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/process-instances/";
 
 		/*
 		 *
@@ -75,7 +75,7 @@
 
 	         if (descriptorColumns) {
 	            angular.forEach(descriptorColumns, function(column) {
-	               postData.descriptors.visbleColumns.push(column.name);
+	               postData.descriptors.visibleColumns.push(column.name);
 	            });
 	         }
 
