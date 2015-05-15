@@ -1465,6 +1465,13 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
          key = replaceSpecialChars(key);
          var value = record[selColumn];
          b[key] = value;
+         
+         if (selectedColumns[selColumn].type.id == this.reportingService.metadata.decimalType.id) {
+        	 if (record[selColumn]) {
+        		 // First applying Math.floor to avoid rounding performed by toFixed
+        		 record[selColumn] = (Math.floor(record[selColumn] * 100) / 100).toFixed(2);
+        	 }
+         }
       }
       a.push(b);
    }
