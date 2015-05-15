@@ -30,9 +30,13 @@
     $scope.sdI18nModeler = sdI18nService.getInstance('bpm-modeler-messages').translate;
     var i18n = $scope.sdI18nModeler;
 
-    $scope.$on('REFRESH_PROPERTIES_PANEL', function(event, propertiesPanel) {
+    $scope.$on('REFRESH_PROPERTIES_PANEL', function(event, propertiesPanel, initialize) {
       if (!self.initialized) {
         self.dataMappingIndex = 0;
+      }else{
+        if (!initialize && (self.propertiesPanel.diagram.process.uuid != propertiesPanel.diagram.process.uuid)) { 
+          return; 
+        }
       }
       self.propertiesPanel = propertiesPanel;
       self.refresh();
@@ -45,18 +49,14 @@
     DataFlowPropertiesPageCtrl.prototype.refresh = function() {
       this.element = this.propertiesPanel.element;
       if (!this.element) { return; }
+      
 
       this.modelElement = this.element.modelElement;
       this.unifiedDataMappings = transformDMs(this.modelElement.dataMappings);
       this.unifiedDataMappings = sdUtilService.convertToSortedArray(
               this.unifiedDataMappings, "id", true);
 
-      if (this.selectedDataMapping
-              && this.selectedDataMapping.uuid != this.element.uuid) {
-        this.setSelected(0);
-      } else {
-        this.setSelected(this.dataMappingIndex);
-      }
+      this.setSelected(this.dataMappingIndex);
 
       if (this.propertiesPanel.getCurrentRole() != constants.INTEGRATOR_ROLE) {
         this.integrator = false;

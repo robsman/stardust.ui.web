@@ -25,8 +25,8 @@ define(["bpm-modeler/js/m_utils", "bpm-modeler/js/m_propertiesPage"], function(
     m_utils.inheritFields(this, propertiesPage);
     m_utils.inheritMethods(PropertiesPageProvider.prototype, propertiesPage);
 
-    PropertiesPageProvider.prototype.setElement = function() {
-      this.broadcastElementChangedEvent();
+    PropertiesPageProvider.prototype.setElement = function(initialize) {
+      this.broadcastElementChangedEvent(initialize);
     }
     
   }

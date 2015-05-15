@@ -56,7 +56,7 @@ define(
 							m_utils.markControlsReadonly('modelerPropertiesPanelWrapper');
 						}
 
-						currentPropertiesPanel.setElement(element);
+						currentPropertiesPanel.setElement(element, true);
 						currentPropertiesPanel.show(page);
 						currentPropertiesPanel.refreshElementInAngularContext();
 					}
