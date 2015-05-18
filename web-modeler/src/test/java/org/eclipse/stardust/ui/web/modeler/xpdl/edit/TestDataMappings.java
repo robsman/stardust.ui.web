@@ -131,7 +131,7 @@ public class TestDataMappings extends RecordingTestcase
 
       List<DataMappingType> dataMappings = activity.getDataMapping();
       assertThat(dataMappings, is(not(nullValue())));
-      assertThat(dataMappings.size(), is(6));
+      assertThat(dataMappings.size(), is(5));
 
       DataType data = GenericModelingAssertions.assertPrimitiveData(providerModel, "InPrimitiveTypeLong", "InPrimitiveTypeLong", "long");
       assertApplicationDataMapping(activity, "InPrimitiveTypeLong", "InPrimitiveTypeLong", "PrimitiveParameterIN", "externalWebApp", DirectionType.IN_LITERAL, data);
@@ -143,10 +143,6 @@ public class TestDataMappings extends RecordingTestcase
       data = GenericModelingAssertions.assertStructData(providerModel, "InStructType", "InStructType", "InStructType");
       assertApplicationDataMapping(activity, "InStructType", "InStructType", "StructParameterIN", "externalWebApp", DirectionType.IN_LITERAL, data);
       assertApplicationDataMapping(activity, "InStructType", "InStructType", "StructParameterOUT", "externalWebApp", DirectionType.OUT_LITERAL, data);
-
-      data = GenericModelingAssertions.assertStructData(providerModel, "OutStructType", "OutStructType", "OutStructType");
-      assertApplicationDataMapping(activity, "OutStructType", "OutStructType", "StructParameterIN", "externalWebApp", DirectionType.IN_LITERAL, data);
-
    }
 
    public void changeDataMappingsGeneralCallback(TestResponse response)

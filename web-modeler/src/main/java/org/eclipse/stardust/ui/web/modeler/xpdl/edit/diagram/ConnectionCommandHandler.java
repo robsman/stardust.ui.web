@@ -438,7 +438,7 @@ public class ConnectionCommandHandler
             {
                activity.getDataMapping().remove(dataMapping);
                // Remove corresponding IN/OUT datamapping as well if it exists
-               /*DataMappingType foundDM = null;
+               DataMappingType foundDM = null;
                for (Iterator<DataMappingType> i = activity.getDataMapping().iterator(); i
                      .hasNext();)
                {
@@ -460,7 +460,7 @@ public class ConnectionCommandHandler
                if (foundDM != null)
                {
                   activity.getDataMapping().remove(foundDM);
-               }*/
+               }
             }
          }
       }
