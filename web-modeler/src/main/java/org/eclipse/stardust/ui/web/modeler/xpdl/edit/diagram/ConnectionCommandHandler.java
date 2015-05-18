@@ -19,6 +19,7 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractLo
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.hasNotJsonNull;
 
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -436,6 +437,30 @@ public class ConnectionCommandHandler
             if (activity != null)
             {
                activity.getDataMapping().remove(dataMapping);
+               // Remove corresponding IN/OUT datamapping as well if it exists
+               DataMappingType foundDM = null;
+               for (Iterator<DataMappingType> i = activity.getDataMapping().iterator(); i
+                     .hasNext();)
+               {
+                  DataMappingType dm = i.next();
+                  if (dm.getData() != null)
+                  {
+                     if (dm.getData().getId() != null)
+                     {
+                        if (dm.getData().getId().equals(dataMapping.getData().getId()))
+                        {
+                           if (dm.getId().equals(dataMapping.getId()))
+                           {
+                              foundDM = dm;
+                           }
+                        }
+                     }
+                  }
+               }
+               if (foundDM != null)
+               {
+                  activity.getDataMapping().remove(foundDM);
+               }
             }
          }
       }
