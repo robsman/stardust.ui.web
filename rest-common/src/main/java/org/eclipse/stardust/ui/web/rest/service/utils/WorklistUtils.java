@@ -27,7 +27,6 @@ import org.eclipse.stardust.engine.api.query.EvaluateByWorkitemsPolicy;
 import org.eclipse.stardust.engine.api.query.ExcludeUserPolicy;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.FilterTerm;
-import org.eclipse.stardust.engine.api.query.HistoricalStatesPolicy;
 import org.eclipse.stardust.engine.api.query.PerformedByUserFilter;
 import org.eclipse.stardust.engine.api.query.PerformingParticipantFilter;
 import org.eclipse.stardust.engine.api.query.PerformingUserFilter;

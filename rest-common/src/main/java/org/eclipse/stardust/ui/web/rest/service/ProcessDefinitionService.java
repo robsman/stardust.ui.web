@@ -101,7 +101,8 @@ public class ProcessDefinitionService
 	         boolean sortable = DescriptorFilterUtils.isDataSortable(dataPath);
 	         boolean filterable = DescriptorFilterUtils.isDataFilterable(dataPath);
 
-	         DescriptorColumnDTO descriptorColumn = new DescriptorColumnDTO("descriptorValues." +descriptorId,I18nUtils.getDataPathName(dataPath),columnType.toString(),sortable,filterable);
+	         DescriptorColumnDTO descriptorColumn = new DescriptorColumnDTO(descriptorId,
+	               I18nUtils.getDataPathName(dataPath), columnType.toString(), sortable, filterable);
 	         descriptorColumns.add(descriptorColumn);
 	      }
 	      return descriptorColumns;

@@ -90,7 +90,7 @@
 					sda-visible="{{processTableCtrl.isColumnVisible('caseOwner')}}">
 				</th>
 				<th ng-repeat="descCol in processTableCtrl.descritorCols"
-					sda-name="{{descCol.key}}" sda-label="{{descCol.title}}"
+					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}"
 					sda-sortable="{{descCol.sortable}}" sda-visible="{{processTableCtrl.isColumnVisible(descCol.id)}}">
 					<div sda-filter-template ng-if="descCol.filterable">
 						<div ng-if="colData.dataType =='NUMBER'"><div sd-number-filter></div></div>
@@ -148,8 +148,8 @@
 				<td sda-field="endTime" sda-data-type="dateTime" style="text-align: center; white-space: nowrap;"></td>
 				<td sda-field="caseOwner" ></td>
 				<td ng-repeat="descCol in processTableCtrl.descritorCols"
-					 style="text-align: center; white-space: nowrap;"  sda-data-type="{{descCol.dataType}}" sda-exporter="processTableCtrl.getDescriptorValueForExport( rowData.descriptorValues[colData.title])">
-					<div sd-descriptor-content sda-value="rowData.descriptorValues[colData.title]" sda-data-type = "colData.dataType"> </div>
+					 style="text-align: center; white-space: nowrap;"  sda-data-type="{{descCol.dataType}}" sda-exporter="processTableCtrl.getDescriptorValueForExport( rowData.descriptorValues[colData.field])">
+					<div sd-descriptor-content sda-value="rowData.descriptorValues[colData.field]" sda-data-type = "colData.dataType"> </div>
 				</td>
 				
 				<td>

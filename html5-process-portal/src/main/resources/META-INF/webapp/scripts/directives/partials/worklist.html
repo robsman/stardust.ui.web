@@ -109,7 +109,7 @@
 				</th>
 					
 				<th sda-column="DESCRIPTOR_COLUMNS" ng-repeat="descCol in activityTableCtrl.descritorCols" sda-visible="{{activityTableCtrl.isColumnVisible('descritorCols')}}" 
-					sda-name="{{descCol.key}}" sda-label="{{descCol.title}}" sda-sortable="{{descCol.sortable}}">
+					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}" sda-sortable="{{descCol.sortable}}">
 					<div sda-filter-template ng-if="descCol.filterable">
 						<div ng-if="colData.dataType =='NUMBER'"><div sd-number-filter></div></div>
 						<div ng-if="colData.dataType =='DATE'"><div sd-date-filter></div></div>
@@ -207,8 +207,8 @@
 				</td>
 				
 				<td sda-column="DESCRIPTOR_COLUMNS" ng-repeat="descCol in activityTableCtrl.descritorCols" sda-data-type="{{descCol.dataType}}" 
-					sda-exporter="activityTableCtrl.getDescriptorValueForExport( rowData.descriptorValues[colData.title])" style="text-align: center; white-space: nowrap;">
-					<div sd-descriptor-content sda-value="rowData.descriptorValues[colData.title]" sda-data-type ="colData.dataType"> </div>
+					sda-exporter="activityTableCtrl.getDescriptorValueForExport( rowData.descriptorValues[colData.field])" style="text-align: center; white-space: nowrap;">
+					<div sd-descriptor-content sda-value="rowData.descriptorValues[colData.field]" sda-data-type ="colData.dataType"> </div>
 				</td>
 				
 				<td sda-column="TRIVIAL_DATA">

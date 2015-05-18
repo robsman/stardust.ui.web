@@ -143,9 +143,6 @@ public class ProcessInstanceUtils
    @Resource
    private ProcessDefinitionUtils processDefinitionUtils;
    
-   @Resource
-   private ProcessDefinitionUtils processDefUtils;
-
    /**
     * @param oid
     * @return
@@ -1657,20 +1654,18 @@ public class ProcessInstanceUtils
          trace.debug("options.orderBy = " + options.orderBy);
       }
 
-      if (options.orderBy.startsWith("descriptorValues."))
+      if (options.visibleDescriptorColumns.contains(options.orderBy))
       {
-         Map<String, DataPath> allDescriptors = processDefUtils.getAllDescriptors(false);
-         String[] descriptorNames = options.orderBy.split("\\.");
-         String descriptorName = descriptorNames[1];
-
+         Map<String, DataPath> allDescriptors = ProcessDefinitionUtils.getAllDescriptors(false);
+         String descriptorName = options.orderBy;
          if (allDescriptors.containsKey(descriptorName))
          {
-            applyDescriptorPolicy(query, options);
-            String columnName = getDescriptorColumnName(descriptorName, allDescriptors);
+            DescriptorUtils.applyDescriptorPolicy(query, options);
+            String columnName = DescriptorUtils.getDescriptorColumnName(descriptorName, allDescriptors);
             if (CommonDescriptorUtils.isStructuredData(allDescriptors.get(descriptorName)))
             {
                query.orderBy(new DataOrder(columnName,
-                     getXpathName(descriptorName, allDescriptors), options.asc));
+                     DescriptorUtils.getXpathName(descriptorName, allDescriptors), options.asc));
             }
             else
             {
@@ -1885,6 +1880,7 @@ public class ProcessInstanceUtils
          }
          else
          {
+          
             ProcessDescriptor desc = (ProcessDescriptor) descriptor;
             DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey(), desc.getValue(), false, null);
             descriptors.put(desc.getId(), descriptorDto);
@@ -1893,48 +1889,8 @@ public class ProcessInstanceUtils
       return descriptors;
    }
 
-   /**
-    * @param query
-    */
-   private void applyDescriptorPolicy(Query query, Options options)
-   {
-      if (options.allDescriptorsVisible)
-      {
-         query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
-      }
-      else if (CollectionUtils.isEmpty(options.visibleDescriptorColumns))
-      {
-         query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
-      }
-      else
-      {
-         query.setPolicy(DescriptorPolicy.withIds(new HashSet<String>(options.visibleDescriptorColumns)));
-      }
-   }
+
    
-   private static String getXpathName(String descriptorName, Map<String, DataPath> descriptorNameAndDataPathMap)
-   {
-      if (descriptorNameAndDataPathMap.containsKey(descriptorName))
-      {
-         DataPath columnNameDataPath = (DataPath) descriptorNameAndDataPathMap.get(descriptorName);
-
-         return columnNameDataPath.getAccessPath();
-      }
-      else
-         return null;
-   }
-
-   private static String getDescriptorColumnName(String descriptorName, Map<String, DataPath> descriptorNameAndDataPathMap)
-   {
-      if (descriptorNameAndDataPathMap.containsKey(descriptorName))
-      {
-         DataPath columnNameDataPath = (DataPath) descriptorNameAndDataPathMap.get(descriptorName);
-
-         return columnNameDataPath.getData();
-      }
-      else
-         return null;
-   }
    
    /**
     * Populate the options with the post data.
@@ -2009,7 +1965,7 @@ public class ProcessInstanceUtils
       for (DescriptorColumnDTO descriptorColumnDTO : descriptorColumns)
       {
          Object filterDTO = null;
-         String id = StringUtils.substringAfterLast(descriptorColumnDTO.id, "descriptorValues.");
+         String id = descriptorColumnDTO.id;
          if (null != descriptorColumnsFilterJson.get(id))
          {
             // String TYPE

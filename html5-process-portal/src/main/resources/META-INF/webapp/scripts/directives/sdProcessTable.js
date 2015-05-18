@@ -285,12 +285,11 @@
 					angular.forEach(descriptors, function(descriptor) {
 						self.descritorCols.push({
 							id : descriptor.id,
-							field : "descriptorValues['" + descriptor.title + "'].value",
+							field : "descriptorValues['" + descriptor.id + "'].value",
 							title : descriptor.title,
 							dataType : descriptor.type,
 							sortable : descriptor.sortable,
-							filterable : descriptor.filterable,
-							key : descriptor.title.replace(/ /g, '')
+							filterable : descriptor.filterable
 						});
 					});
 

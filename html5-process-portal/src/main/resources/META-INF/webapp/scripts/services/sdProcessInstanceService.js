@@ -16,8 +16,8 @@
 	'use strict';
 
 	angular.module('workflow-ui.services').provider('sdProcessInstanceService', function () {
-		this.$get = ['$rootScope', '$resource', '$filter', 'sdUtilService', function ($rootScope, $resource, $filter, sdUtilService) {
-			var service = new ProcessInstanceService($rootScope, $resource, $filter, sdUtilService);
+		this.$get = ['$rootScope', '$resource', '$filter', 'sdUtilService','sdDataTableHelperService', function ($rootScope, $resource, $filter, sdUtilService, sdDataTableHelperService) {
+			var service = new ProcessInstanceService($rootScope, $resource, $filter, sdUtilService, sdDataTableHelperService);
 			return service;
 		}];
 	});
@@ -25,73 +25,41 @@
 	/*
 	 *
 	 */
-	function ProcessInstanceService($rootScope, $resource, $filter, sdUtilService) {
+	function ProcessInstanceService($rootScope, $resource, $filter, sdUtilService, sdDataTableHelperService) {
 		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/process-instances/";
 
 		/*
-		 *
+		 * 
 		 */
 		ProcessInstanceService.prototype.getProcesslist = function(query) {
-			var restUrl = REST_BASE_URL + "search";
-			
-			// Add Query String Params. TODO: Can this be sent as stringified JSON?
-	         var options = "";
-	         if (query.options.skip != undefined) {
-	            options += "&skip=" + query.options.skip;
-	         }
-	         if (query.options.pageSize != undefined) {
-	            options += "&pageSize=" + query.options.pageSize;
-	         }
-	         if (query.options.order != undefined) {
-	            // Supports only single column sort
-	            var index = query.options.order.length - 1;
-	            options += "&orderBy=" + query.options.order[index].name;
-	            options += "&orderByDir=" + query.options.order[index].dir;
-	         }
+		    var restUrl = REST_BASE_URL + "search";
 
-	         if (options.length > 0) {
-	            restUrl = restUrl + "?" + options.substr(1);
-	         }
+		    // Add Query String Params. TODO: Can this be sent as stringified
+		    // JSON?
+		    var queryParams = sdDataTableHelperService.convertToQueryParams(query.options);
 
-	         var postData = {
-	            filters : query.options.filters,
-	            descriptors : {
-	               fetchAll : false,
-	               visibleColumns : []
-	            }
-	         };
+		    if (queryParams.length > 0) {
+			var separator = "?";
+			if (/[?]/.test(restUrl)) {
+			    separator = "&";
+			}
+			restUrl = restUrl + separator + queryParams.substr(1);
+		    }
+		    var postData = sdDataTableHelperService.convertToPostParams(query.options);
 
-	         var found = $filter('filter')(query.options.columns, {
-	            field : 'descriptors'
-	         }, true);
+		    var processList = $resource(restUrl, {
 
-	         if (found && found.length > 0) {
-	            postData.descriptors.fetchAll = true;
-	         }
+		    }, {
+			fetch : {
+			    method : 'POST'
+			}
+		    });
 
-	         var descriptorColumns = $filter('filter')(query.options.columns, {
-	            name : 'descriptorValues'
-	         });
-
-	         if (descriptorColumns) {
-	            angular.forEach(descriptorColumns, function(column) {
-	               postData.descriptors.visibleColumns.push(column.name);
-	            });
-	         }
-
-			var processList = $resource(restUrl, {
-				
-			}, {
-				fetch : {
-					method : 'POST'
-				}
-			});
-
-			return processList.fetch({}, postData).$promise;
+		    return processList.fetch({}, postData).$promise;
 		};
-		
+
 		/*
-		 *
+		 * 
 		 */
 		ProcessInstanceService.prototype.getProcessInstanceCounts = function(query) {
 			var restUrl = REST_BASE_URL + "allCounts";

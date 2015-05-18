@@ -345,7 +345,7 @@
 															.push({
 																id : descriptor.id,
 																field : "descriptorValues['"
-																		+ descriptor.title
+																		+ descriptor.id
 																		+ "'].value",
 																title : descriptor.title,
 																dataType : descriptor.type,
@@ -430,7 +430,7 @@
 							obj['from'] = this.selected[this.descritorCols[index].id];
 							obj['to'] = this.selected[this.descritorCols[index].title];
 						}
-						this.query.processSearchCriteria.descriptors.formatted[item.substr('descriptorValues.'.length)] = obj;
+						this.query.processSearchCriteria.descriptors.formatted[item] = obj;
 						break;
 					}
 				}
