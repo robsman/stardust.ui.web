@@ -54,8 +54,7 @@ table.layoutTable td {
 							<tr>
 								<td colspan="3">
 									<div class="heading view-panel-toolbar">
-										<label>{{i18n('business-control-center-messages.views-processSearchView-processCriteria-label')
-											+ i18n('business-control-center-messages.common-colon')}}</label>
+										<label>{{i18n('business-control-center-messages.views-processSearchView-processCriteria-label')}}</label>
 									</div>
 								</td>
 
@@ -146,7 +145,7 @@ table.layoutTable td {
 							<tr>
 								<td style="vertical-align: top;"><label>{{i18n('business-control-center-messages.views-processOverviewView-processTable-column-priority')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
-								<td><select id="priority"
+								<td><select id="priority" class="activity-table-priority-combo"
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.processSrchPrioritySelected"
 									ng-options="option.value as option.label for option in procSearchViewCtrl.priorities | orderBy: 'order'">
 								</select></td>
@@ -196,8 +195,7 @@ table.layoutTable td {
 							<tr>
 								<td colspan="3">
 									<div class="heading view-panel-toolbar">
-										<label>{{i18n('business-control-center-messages.views-processSearchView-activityCriteria-label')
-											+ i18n('business-control-center-messages.common-colon')}}</label>
+										<label>{{i18n('business-control-center-messages.views-processSearchView-activityCriteria-label')}}</label>
 									</div>
 								</td>
 							</tr>
