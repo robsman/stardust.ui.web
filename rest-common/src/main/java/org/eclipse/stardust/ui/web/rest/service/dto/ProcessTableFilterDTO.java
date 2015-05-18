@@ -14,9 +14,9 @@ import com.google.gson.reflect.TypeToken;
 public class ProcessTableFilterDTO implements FilterDTO
 {
 
-   public RangeDTO oid;
+   public RangeDTO processOID;
    
-   public RangeDTO processInstanceRootOID;
+   public RangeDTO rootPOID;
 
    public RangeDTO startTime;
 

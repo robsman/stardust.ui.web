@@ -32,8 +32,8 @@
 
 		//Defaults
 		var DEFAULT_VALUES = {
-			VISIBLE_COLUMNS : [ 'oid', 'processName', 'priority', 'descriptors', 'startingUser', 'startTime',
-					'duration', 'status', 'processInstanceRootOID', 'endTime' ],
+			VISIBLE_COLUMNS : [ 'processName', 'processOID', 'priority', 'descriptors', 'startingUser', 'startTime',
+					'duration' ],
 			PREFERENCE_MODULE : 'ipp-views-common'
 		};
 
@@ -89,7 +89,7 @@
 				self.exportFileName = "Processes";
 				self.columnSelector = 'admin'; //TODO
 				self.initialSort = {
-					name : 'oid',
+					name : 'startTime',
 					dir : 'desc'
 				};
 

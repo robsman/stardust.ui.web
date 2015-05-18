@@ -120,9 +120,9 @@ public class ProcessInstanceUtils
    
    private static final String COL_PROCESS_NAME = "processName";
 
-   private static final String COL_PROCESS_INSTANCE_OID = "oid";
+   private static final String COL_PROCESS_INSTANCE_OID = "processOID";
    
-   private static final String PROCESS_INSTANCE_ROOT_OID = "processInstanceRootOID";
+   private static final String PROCESS_INSTANCE_ROOT_OID = "rootPOID";
 
    private static final String COL_START_TIME = "startTime";
 
@@ -1443,28 +1443,28 @@ public class ProcessInstanceUtils
       FilterAndTerm filter = query.getFilter().addAndTerm();
 
       // Root process instance OID
-      if (null != filterDTO.processInstanceRootOID)
+      if (null != filterDTO.rootPOID)
       {
 
-         if (null != filterDTO.processInstanceRootOID.from)
+         if (null != filterDTO.rootPOID.from)
          {
-            filter.and(ProcessInstanceQuery.ROOT_PROCESS_INSTANCE_OID.greaterOrEqual(filterDTO.processInstanceRootOID.from));
+            filter.and(ProcessInstanceQuery.ROOT_PROCESS_INSTANCE_OID.greaterOrEqual(filterDTO.rootPOID.from));
          }
-         if (null != filterDTO.processInstanceRootOID.to)
+         if (null != filterDTO.rootPOID.to)
          {
-            filter.and(ProcessInstanceQuery.ROOT_PROCESS_INSTANCE_OID.lessOrEqual(filterDTO.processInstanceRootOID.to));
+            filter.and(ProcessInstanceQuery.ROOT_PROCESS_INSTANCE_OID.lessOrEqual(filterDTO.rootPOID.to));
          }
       }
       // process instance OID
-      if (null != filterDTO.oid)
+      if (null != filterDTO.processOID)
       {
-         if (null != filterDTO.oid.from)
+         if (null != filterDTO.processOID.from)
          {
-            filter.and(ProcessInstanceQuery.OID.greaterOrEqual(filterDTO.oid.from));
+            filter.and(ProcessInstanceQuery.OID.greaterOrEqual(filterDTO.processOID.from));
          }
-         if (null != filterDTO.oid.to)
+         if (null != filterDTO.processOID.to)
          {
-            filter.and(ProcessInstanceQuery.OID.lessOrEqual(filterDTO.oid.to));
+            filter.and(ProcessInstanceQuery.OID.lessOrEqual(filterDTO.processOID.to));
          }
       }
 

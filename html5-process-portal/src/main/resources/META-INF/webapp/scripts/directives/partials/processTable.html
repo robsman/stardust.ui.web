@@ -50,16 +50,16 @@
 		sda-on-select="processTableCtrl.onSelect(info)" sda-on-pagination="processTableCtrl.onPagination(info)"
 		sda-column-selector="{{processTableCtrl.columnSelector}}" sda-preference-delegate="processTableCtrl.preferenceDelegate(prefInfo)"
 		sda-on-column-reorder="processTableCtrl.onColumnReorder(info)"
-		sda-sortable="true" sda-sort-by="{processName : 'desc'}" sda-on-sorting="processTableCtrl.onSorting(info)"
+		sda-sortable="true" sda-sort-by="processTableCtrl.initialSort" sda-on-sorting="processTableCtrl.onSorting(info)"
 		sda-exports="true" sda-exports-file-name="processTable-{{processTableCtrl.exportFileName}}">
 		<thead sda-i18n-scope="views-common-messages.views-processTable-column">
 			<tr>
-				<th sda-name="oid" sda-label-key="pOID" sda-sortable="true" sda-filterable="true" sda-visible="{{processTableCtrl.isColumnVisible('oid')}}"></th>
 				<th sda-name="processName" sda-sortable="true" sda-visible="{{processTableCtrl.isColumnVisible('processName')}}">
 					<div sda-filter-template>
 						<div sd-process-activity-filter sda-filter-type='process' sda-processes="processTableCtrl.allAccessibleProcesses"></div>
 					</div>
 				</th>
+				<th sda-name="processOID" sda-field="oid" sda-label-key="pOID" sda-sortable="true" sda-filterable="true" sda-visible="{{processTableCtrl.isColumnVisible('processOID')}}"></th>
 				<th sda-name="priority" sda-sortable="true" sda-visible="{{processTableCtrl.isColumnVisible('priority')}}">
 					<div sda-filter-template>
 						<div sd-priority-filter></div>
@@ -80,8 +80,8 @@
 					</div>
 				</th>
 				
-				<th sda-name="processInstanceRootOID" sda-label-key="rootPOID" sda-sortable="true" sda-filterable="true"
-					sda-visible="{{processTableCtrl.isColumnVisible('processInstanceRootOID')}}">
+				<th sda-name="rootPOID" sda-field="processInstanceRootOID" sda-label-key="rootPOID" sda-sortable="true" sda-filterable="true"
+					sda-visible="{{processTableCtrl.isColumnVisible('rootPOID')}}">
 				</th>
 				<th sda-name="endTime" sda-label-key="endTime"	sda-sortable="true" sda-filterable="true" 
 					sda-visible="{{processTableCtrl.isColumnVisible('endTime')}}"></th>
@@ -105,7 +105,6 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td sda-data-type="int" style="text-align: center;"></td>
 				<td>
 					<img src="plugins/views-common/images/icons/process-history/processrootblue.png"
 						style="border: none;"
@@ -124,6 +123,7 @@
 						class="button-link tbl-tool-link"> {{rowData.processName}}
 					</a>
 				</td>
+				<td sda-data-type="int" style="text-align: center;" sda-field="oid"></td>
 				<td style="text-align: center; width:110px;" sda-exporter="rowData.priority.label">
 					<div sd-process-priority sda-priority="rowData.priority" sda-editable="true" 
 					 sda-available-priorities ="processTableCtrl.availablePriorities" 
@@ -144,7 +144,7 @@
 				<td sda-field="startTime" sda-data-type="dateTime" style="text-align: center; white-space: nowrap;"></td>
 				<td sda-field="duration"></td>
 				<td sda-field="status.label" ></td>
-				<td sda-field="processInstanceRootOID"></td>
+				<td sda-field="processInstanceRootOID" sda-data-type="int"></td>
 				<td sda-field="endTime" sda-data-type="dateTime" style="text-align: center; white-space: nowrap;"></td>
 				<td sda-field="caseOwner" ></td>
 				<td ng-repeat="descCol in processTableCtrl.descritorCols"
