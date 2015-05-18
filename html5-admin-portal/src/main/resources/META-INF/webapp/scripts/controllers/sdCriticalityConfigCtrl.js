@@ -16,12 +16,12 @@
 	'use strict';
 
 	angular.module('admin-ui').controller('sdCriticalityConfigCtrl',
-			['sdLoggerService', 'sdCriticalityConfigService', 'sdDialogService', 'sgI18nService', 'sdUtilService', '$scope', Controller]);
+			['sdLoggerService', 'sdCriticalityConfigService', 'sdDialogService', 'sgI18nService', 'sdUtilService', '$scope', '$sce', Controller]);
 
 	/*
 	 * 
 	 */
-	function Controller(sdLoggerService, sdCriticalityConfigService, sdDialogService, sgI18nService, sdUtilService, $scope) {
+	function Controller(sdLoggerService, sdCriticalityConfigService, sdDialogService, sgI18nService, sdUtilService, $scope, $sce) {
 		
 		var trace = sdLoggerService.getLogger('admin-ui.sdCriticalityConfigCtrl');
 		
@@ -226,7 +226,7 @@
 				errorMessages = errorMessages.concat("<br/>");
 			});
 			
-			return errorMessages;
+			return $sce.trustAsHtml(errorMessages);
 		};
 
 		/*
