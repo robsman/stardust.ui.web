@@ -647,7 +647,7 @@
 	    self.cleanLocals();
 
 	    var query = angular.extend({}, this.query);
-	    options.descriptorColumns = self.descritorCols;
+	    options.descriptorColumns = self.descriptorCols;
 	    query.options = options;
 	    
 	    var showResubmitLink = false;
@@ -740,9 +740,9 @@
 	    var self = this;
 
 	    sdProcessDefinitionService.getDescriptorColumns().then(function(descriptors) {
-		self.descritorCols = [];
+		self.descriptorCols = [];
 		angular.forEach(descriptors, function(descriptor) {
-		    self.descritorCols.push({
+		    self.descriptorCols.push({
 			id : descriptor.id,
 			field : "descriptorValues['" + descriptor.id + "'].value",
 			title : descriptor.title,

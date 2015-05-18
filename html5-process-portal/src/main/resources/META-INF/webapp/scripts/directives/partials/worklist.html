@@ -108,7 +108,7 @@
 					sda-visible="{{activityTableCtrl.isColumnVisible('participantPerformer')}}" sda-label="{{i18n('views-common-messages.views-activityTable-activityTable-column-participantPerformer')}}">
 				</th>
 					
-				<th sda-column="DESCRIPTOR_COLUMNS" ng-repeat="descCol in activityTableCtrl.descritorCols" sda-visible="{{activityTableCtrl.isColumnVisible('descritorCols')}}" 
+				<th sda-column="DESCRIPTOR_COLUMNS" ng-repeat="descCol in activityTableCtrl.descriptorCols" sda-visible="{{activityTableCtrl.isColumnVisible('descriptorCols')}}" 
 					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}" sda-sortable="{{descCol.sortable}}">
 					<div sda-filter-template ng-if="descCol.filterable">
 						<div ng-if="colData.dataType =='NUMBER'"><div sd-number-filter></div></div>
@@ -206,7 +206,7 @@
 				<td ng-if ="activityTableCtrl.isActivityTableMode();"  sda-field="participantPerformer" style="text-align: left;">
 				</td>
 				
-				<td sda-column="DESCRIPTOR_COLUMNS" ng-repeat="descCol in activityTableCtrl.descritorCols" sda-data-type="{{descCol.dataType}}" 
+				<td sda-column="DESCRIPTOR_COLUMNS" ng-repeat="descCol in activityTableCtrl.descriptorCols" sda-data-type="{{descCol.dataType}}" 
 					sda-exporter="activityTableCtrl.getDescriptorValueForExport( rowData.descriptorValues[colData.field])" style="text-align: center; white-space: nowrap;">
 					<div sd-descriptor-content sda-value="rowData.descriptorValues[colData.field]" sda-data-type ="colData.dataType"> </div>
 				</td>
