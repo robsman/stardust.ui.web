@@ -12,88 +12,84 @@
  * @author Marc.Gille
  */
 define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_model" ],
-		function(m_utils, m_constants, m_model) {
+    function(m_utils, m_constants, m_model) {
 
-			return {
-				createDataFlow : function(process, data, activity) {
-					var dataFlow = new DataFlow();
+      return {
+        createDataFlow : function(process, data, activity) {
+          var dataFlow = new DataFlow();
 
-					dataFlow.initialize(data, activity);
+          dataFlow.initialize(data, activity);
 
-					return dataFlow;
-				},
-				initializeFromJson : function(process, json) {
-					// TODO Ugly, use prototype
-					m_utils.typeObject(json, new DataFlow());
+          return dataFlow;
+        },
+        initializeFromJson : function(process, json) {
+          // TODO Ugly, use prototype
+          m_utils.typeObject(json, new DataFlow());
 
-					json.initializeFromJson(process);
+          json.initializeFromJson(process);
 
-					return json;
-				},
-				prototype : DataFlow.prototype
-			};
+          return json;
+        },
+        prototype : DataFlow.prototype
+      };
 
-			/**
-			 *
-			 */
-			function DataFlow(id) {
-				this.type = m_constants.DATA_FLOW;
-				this.id = id;
-				this.description = null;
-				this.inputDataPath = null;
-				this.outputDataPath = null;
-				this.inputAccessPointId = null;
-				this.inputAccessPointContext = null;
-				this.outputAccessPointId = null;
-				this.outputAccessPointContext = null;
+      /**
+       *
+       */
+      function DataFlow(id) {
+        this.type = m_constants.DATA_FLOW;
+        this.id = id;
+        this.description = null;
+        this.inputDataPath = null;
+        this.outputDataPath = null;
+        this.inputAccessPointId = null;
+        this.inputAccessPointContext = null;
+        this.outputAccessPointId = null;
+        this.outputAccessPointContext = null;
 
-				/**
-				 *
-				 */
-				DataFlow.prototype.toString = function() {
-					return "Lightdust.DataFlow";
-				};
+        /**
+         *
+         */
+        DataFlow.prototype.toString = function() {
+          return "Lightdust.DataFlow";
+        };
 
-				/**
-				 *
-				 */
-				DataFlow.prototype.initialize = function(data, activity) {
-					this.data = data;
-					this.activity = activity;
-				};
+        /**
+         *
+         */
+        DataFlow.prototype.initialize = function(data, activity) {
+          this.data = data;
+          this.activity = activity;
+        };
 
-				/**
-				 *
-				 */
-				DataFlow.prototype.initializeFromJson = function(process) {
-					this.activity = process.activities[this.activityId];
-					this.data = m_model.findData(this.dataFullId);
-				};
+        /**
+         *
+         */
+        DataFlow.prototype.initializeFromJson = function(process) {
+          this.activity = process.activities[this.activityId];
+          this.data = m_model.findData(this.dataFullId);
+        };
 
-				/**
-				 *
-				 */
-				DataFlow.prototype.createTransferObject = function() {
-					var transferObject = {};
+        /**
+         *
+         */
+        DataFlow.prototype.createTransferObject = function() {
+          var transferObject = {};
 
-					m_utils.inheritFields(transferObject, this);
+          m_utils.inheritFields(transferObject, this);
 
-					transferObject.dataFullId = this.data.getFullId();
-					transferObject.activityId = this.activity.id;
+          transferObject.dataFullId = this.data.getFullId();
+          transferObject.activityId = this.activity.id;
 
-					transferObject.data = null;
-					transferObject.activity = null;
+          transferObject.data = null;
+          transferObject.activity = null;
 
-					transferObject.direction = transferObject.dataMappings[0].direction;
-					
-					delete transferObject.dataMappings;
-					
-					return transferObject;
-				};
+          return transferObject;
+        };
 
-				/**
-				 * 
-				 */
+        /**
+         * 
+         */
         DataFlow.prototype.inputOutputMappingExists = function() {
           var inputMappingExist = false;
           var outputMappingExist = false;
@@ -116,5 +112,5 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
           };
         }            
 
-			}
-		});
+      }
+    });
