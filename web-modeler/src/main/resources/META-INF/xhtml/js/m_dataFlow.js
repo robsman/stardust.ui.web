@@ -84,6 +84,9 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
           transferObject.data = null;
           transferObject.activity = null;
 
+          transferObject.direction = transferObject.dataMappings[0].direction;
+          delete transferObject.dataMappings;
+          
           return transferObject;
         };
 

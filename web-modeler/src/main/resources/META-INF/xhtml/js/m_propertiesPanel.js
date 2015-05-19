@@ -665,6 +665,17 @@ define(
                   changes));
         };
 				
+        /**
+         * 
+         */
+        PropertiesPanel.prototype.submitChangesWithUUIDForCommandType = function(
+                commandType, uuid, changes) {
+          m_utils.debug("Changes to be submitted for UUID "+ uuid + ":");
+          m_utils.debug(changes);
+          m_commandsController.submitCommand(m_command.createCommand(
+                  commandType, this.getModel().id, uuid, changes));
+        };
+        
 				/**
 				 * 
 				 */
