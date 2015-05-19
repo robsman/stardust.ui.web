@@ -1,22 +1,50 @@
-<div style="padding-left: 20px;" ng-controller="sdParticipantManagementCtrl as ctrl">
+<div style="padding-left: 20px;"
+	ng-controller="sdParticipantManagementCtrl as ctrl">
 	<div class="view-panel-toolbar toolbar-buttons">
-		<div class="view-toolbar-section" >
+		<div class="view-toolbar-section">
 			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
 		</div>
 	</div>
 	<div style="padding-top: 20px;"
 		ng-include="'plugins/html5-admin-portal/partials/views/participantMgtUsersTable.html'">
 	</div>
-	<div sd-dialog sda-modal="true"
-		sda-show="ctrl.showUserProfileDialog"
-		sda-type="confirm"
-		sda-title="{{sdI18n(ctrl.title,'',[ctrl.titleParams])}}"
+	<div ng-if="ctrl.loadUserProfileDialog">
+		<div sd-dialog sda-modal="true" sda-show="ctrl.showUserProfileDialog"
+			sda-type="confirm"
+			sda-title="{{sdI18n(ctrl.title,'',[ctrl.titleParams])}}"
+			sda-scope="this"
+			sda-template="plugins/html5-admin-portal/partials/views/createUser.html"
+			sda-on-confirm="ctrl.onConfirmFromCreateUser(res)"
+			sda-on-close="ctrl.onCloseFromCreateUser(res)"
+			sda-confirm-action-label="{{i18n('admin-portal-messages.common-apply')}}"
+			sda-width="550px" sda-height="600px"></div>
+	</div>
+	<div sd-dialog sda-modal="true" sda-show="ctrl.showNotificationDialog"
+		sda-type="alert"
+		sda-title="{{i18n('admin-portal-messages.common-notification-title')}}"
 		sda-scope="this"
-		sda-template="plugins/html5-admin-portal/partials/views/createUser.html"
-		sda-on-confirm="ctrl.onConfirmFromCreateUser(res)"
-		sda-on-close="ctrl.onCloseFromCreateUser(res)"
-		sda-confirm-action-label = "{{i18n('admin-portal-messages.common-apply')}}"
-		sda-width="550px"
-		sda-height="600px">
-	</div>	
-</div>titleParams
+		sda-template="plugins/html5-admin-portal/partials/views/invalidateUsersNotificationDialog.html"
+		sda-cancel-action-label="{{i18n('admin-portal-messages.common-close')}}"
+		sda-width="520px" sda-height="400px">
+    </div>
+	<div sd-dialog sda-modal="true"
+		sda-show="ctrl.showDefaultDelegateDialog" sda-type="confirm"
+		sda-title="{{i18n('admin-portal-messages.common-defaultDelegateDialog-title')}}"
+		sda-scope="this"
+		sda-template="plugins/html5-admin-portal/partials/views/delegateActivitiesConfirmationDialog.html"
+		sda-cancel-action-label="{{i18n('admin-portal-messages.common-no')}}"		
+		sda-confirm-action-label="{{i18n('admin-portal-messages.common-yes')}}"
+		sda-on-close="ctrl.onCloseFromDefaultDelegateDialog(res)"
+		sda-on-confirm="ctrl.onConfrimFromDefaultDelegateDialog(res)"
+		sda-width="520px" sda-height="50px">
+	</div>
+	<div sd-dialog sda-modal="true"
+		sda-show="ctrl.showStrandedActivitiesAlert" sda-type="alert"
+		sda-title="{{i18n('admin-portal-messages.common-strandedActivitiesAlert-title')}}"
+		sda-scope="this"
+		sda-template="plugins/html5-admin-portal/partials/views/strandedActivitiesAlertDialog.html"
+		sda-cancel-action-label="{{i18n('admin-portal-messages.common-ok')}}"
+		sda-on-close="ctrl.onConfirmFromStrandedActivitiesAlert(res)"
+		sda-width="520px" sda-height="50px">
+	</div>
+</div>

@@ -21,6 +21,8 @@ import javax.annotation.Resource;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.rest.Options;
+import org.eclipse.stardust.ui.web.rest.service.dto.InvalidateUserStatusDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserProfileStatusDTO;
@@ -106,5 +108,25 @@ public class ParticipantManagementService
    public UserProfileStatusDTO createCopyModifyUser(UserDTO userDTO, String mode)
    {
       return participantManagementUtils.createCopyModifyUser(userDTO, mode);
+   }
+   /**
+    * 
+    * @param userOids
+    * @return
+    */
+   public InvalidateUserStatusDTO invalidateUser(List<Long> userOids)
+   {
+      return participantManagementUtils.invalidateUser(userOids);
+   }
+   
+   /**
+    * 
+    * @param activityInstanceOids
+    * @param userOids
+    * @return
+    */
+   public NotificationMessageDTO delegateToDefaultPerformer(List<Long> activityInstanceOids, List<Long> userOids){
+      return participantManagementUtils.delegateToDefaultPerformer(activityInstanceOids, userOids);
+      
    }
 }

@@ -13,6 +13,10 @@
  */
 package org.eclipse.stardust.ui.web.rest;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Resource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -31,6 +35,8 @@ import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantManagementService;
+import org.eclipse.stardust.ui.web.rest.service.dto.InvalidateUserStatusDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserFilterDTO;
@@ -39,7 +45,9 @@ import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 @Component
 @Path("/participantManagement")
@@ -149,6 +157,91 @@ public class ParticipantManagementResource
          trace.error("", e);
          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
+   }
+
+   /**
+    * 
+    * @param postData
+    * @return
+    */
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("/invalidateUsers")
+   public Response invalidateUsers(String postData)
+   {
+      try
+      {
+         List<Long> userOids = populateOids(postData, "userOids");
+         InvalidateUserStatusDTO resultDTO = participantManagementService.invalidateUser(userOids);
+
+         return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (ObjectNotFoundException onfe)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+   }
+
+   /**
+    * 
+    * @param postData
+    * @return
+    */
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("/delegateToDefaultPerformer")
+   public Response delegateToDefaultPerformer(String postData)
+   {
+      try
+      {
+         List<Long> userOids = populateOids(postData, "userOids");
+         List<Long> activityInstanceOids = populateOids(postData, "activityInstanceOids");
+         NotificationMessageDTO resultDTO = participantManagementService.delegateToDefaultPerformer(
+               activityInstanceOids, userOids);
+
+         return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (ObjectNotFoundException onfe)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+   }
+
+   /**
+    * Populate the options with the post data.
+    * 
+    * @param options
+    * @param postData
+    * @return
+    */
+   private List<Long> populateOids(String postData, String collectionName)
+   {
+      JsonMarshaller jsonIo = new JsonMarshaller();
+      JsonObject postJSON = jsonIo.readJsonObject(postData);
+
+      JsonArray oidsArray = postJSON.getAsJsonArray(collectionName);
+      Type type = new TypeToken<List<Long>>()
+      {
+      }.getType();
+      List<Long> oids = new ArrayList<Long>();
+      if (null != oidsArray)
+      {
+         oids = new Gson().fromJson(oidsArray.toString(), type);
+
+      }
+      return oids;
    }
 
    /**

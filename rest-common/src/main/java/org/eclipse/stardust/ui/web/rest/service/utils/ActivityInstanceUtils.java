@@ -37,6 +37,8 @@ import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.SubsetPolicy;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
+import org.eclipse.stardust.engine.api.runtime.AdministrationService;
+import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.UserInfo;
@@ -53,9 +55,11 @@ import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.Notification
 import org.eclipse.stardust.ui.web.rest.service.dto.PathDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ClientContextBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
@@ -570,4 +574,54 @@ public class ActivityInstanceUtils
       return notification;
    }
 
+   /**
+    * 
+    * @param ais
+    */
+   public void delegateToDefaultPerformer(List<ActivityInstance> ais)
+   {
+      if (null != ais)
+      {
+         try
+         {
+            WorkflowService workflowService = serviceFactoryUtils.getWorkflowService();
+            for (ActivityInstance activityInstance : ais)
+            {
+               if (ActivityInstanceState.Application.equals(activityInstance.getState()))
+               {
+                  forceSuspend(activityInstance);
+               }
+               workflowService.delegateToDefaultPerformer(activityInstance.getOID());
+            }
+         }
+         catch (Exception e)
+         {
+            ExceptionHandler.handleException(e);
+         }
+      }
+   }
+   
+   /**
+    * Activity instance is in Application state, force suspend will be done
+    * 
+    * @param ai
+    */
+   public void forceSuspend(ActivityInstance ai)
+   {
+      AdministrationService adminService = serviceFactoryUtils.getAdministrationService();
+      DeployedModel model = ModelCache.findModelCache().getModel(ai.getModelOID());
+
+      boolean forceSuspend = AuthorizationUtils.canForceSuspend();
+      try
+      {
+         if (forceSuspend && adminService != null)
+         {
+            ai = adminService.forceSuspendToDefaultPerformer(ai.getOID());
+         }
+      }
+      catch (Exception e)
+      {
+         ExceptionHandler.handleException(e);
+      }
+   }
 }

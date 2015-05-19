@@ -93,6 +93,7 @@
 			self.user.isPasswordEnabled = self.isPasswordEnabled(mode, self.user.isInternalAuthentication);
 			self.initDisplayFormats();
 			self.showUserProfileDialog = true;
+			self.loadUserProfileDialog = true;
 		}, function(error) {
 			trace.log(error);
 		});
@@ -205,4 +206,87 @@
 		return error;
 
 	};
+
+	ParticipantManagementCtrl.prototype.onCloseFromCreateUser = function(res) {
+		var self = this;
+		self.loadUserProfileDialog = false;
+		delete self.user;
+	};
+
+	ParticipantManagementCtrl.prototype.invalidateUsers = function() {
+		var self = this;
+		var oids = this.getSelectedUserOids(self.rowSelectionForAllUsersTable);
+		_sdParticipantManagementService.invalidateUsers(oids).then(function(data) {
+			self.activityInstances = data.activityInstances;
+			self.notificationMap = data.notificationMap;
+
+			if (self.activityInstances != undefined && self.activityInstances.length > 0) {
+				self.showDefaultDelegateDialog = true;
+			} else {
+				self.showNotificationDialog = true;
+			}
+
+		}, function(error) {
+			trace.log(error);
+
+		});
+
+	};
+
+	ParticipantManagementCtrl.prototype.onConfrimFromDefaultDelegateDialog = function(res) {
+		var self = this;
+		var userOids = this.getInvalidatedUserOids(self.notificationMap.success);
+		_sdParticipantManagementService.delegateToDefaultPerformer(self.activityInstances, userOids).then(
+				function(data) {
+
+					if (data.success != undefined && data.success) {
+						self.showNotificationDialog = true;
+					} else {
+						self.showStrandedActivitiesAlert = true;
+					}
+
+				}, function(error) {
+					trace.log(error);
+
+				});
+	};
+	/**
+	 * 
+	 * @param res
+	 */
+	ParticipantManagementCtrl.prototype.onCloseFromDefaultDelegateDialog = function(res) {
+		var self = this;
+		self.showStrandedActivitiesAlert = true;
+	};
+	/**
+	 * 
+	 * @param res
+	 */
+	ParticipantManagementCtrl.prototype.onConfirmFromStrandedActivitiesAlert = function(res) {
+		var self = this;
+		self.showNotificationDialog = true;
+	};
+
+	/**
+	 * 
+	 */
+	ParticipantManagementCtrl.prototype.getSelectedUserOids = function(selectedUsers) {
+		var oids = [];
+		for ( var user in selectedUsers) {
+			oids.push(selectedUsers[user].oid);
+		}
+		return oids;
+	};
+
+	/**
+	 * 
+	 */
+	ParticipantManagementCtrl.prototype.getInvalidatedUserOids = function(successNotificationList) {
+		var oids = [];
+		for ( var index in successNotificationList) {
+			oids.push(successNotificationList[index].OID);
+		}
+		return oids;
+	};
+
 })();

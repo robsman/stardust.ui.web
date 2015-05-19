@@ -17,11 +17,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.common.error.PublicException;
@@ -29,14 +31,19 @@ import org.eclipse.stardust.common.security.InvalidPasswordException;
 import org.eclipse.stardust.engine.api.dto.QualityAssuranceAdminServiceFacade;
 import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
+import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
+import org.eclipse.stardust.engine.api.query.ActivityInstances;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
+import org.eclipse.stardust.engine.api.query.FilterTerm;
+import org.eclipse.stardust.engine.api.query.PerformingUserFilter;
 import org.eclipse.stardust.engine.api.query.PreferenceQuery;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.SubsetPolicy;
 import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.UserQuery;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
@@ -46,9 +53,13 @@ import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.engine.core.preferences.Preferences;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
-import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
+import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
+import org.eclipse.stardust.ui.web.rest.service.dto.InvalidateUserStatusDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserFilterDTO;
@@ -69,6 +80,12 @@ public class ParticipantManagementUtils
 
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
+
+   @Resource
+   private RestCommonClientMessages restCommonClientMessages;
+
+   @Resource
+   private ActivityInstanceUtils activityInstanceUtils;
 
    public QueryResult<User> getAllUsers(Boolean hideInvalidatedUsers, Options options)
    {
@@ -606,6 +623,144 @@ public class ParticipantManagementUtils
          return user;
       }
       return null;
+   }
+
+   /**
+    * 
+    * @param userOids
+    * @return
+    */
+   public InvalidateUserStatusDTO invalidateUser(List<Long> userOids)
+   {
+      List<User> invalidatedUsers = new ArrayList<User>();
+      List<Long> invalidatedUserOids = new ArrayList<Long>();
+      List<User> skippedUsers = new ArrayList<User>();
+      UserService service = UserUtils.getUserService();
+      for (Long oid : userOids)
+      {
+
+         User user = service.getUser(oid);
+         if (user != null && !user.getAccount().equals("motu") && user.getValidTo() == null)
+         {
+            User u = service.invalidateUser(user.getRealm().getId(), user.getAccount());
+            invalidatedUsers.add(u);
+            invalidatedUserOids.add(u.getOID());
+         }
+         else
+         {
+            skippedUsers.add(user);
+         }
+
+      }
+      ActivityInstances activityInstances = prepareActivitiesforInvalideUsers(invalidatedUserOids);
+      List<Long> activityInstanceOidList = new ArrayList<Long>();
+      if (activityInstances.getSize() > 0)
+      {
+         for (ActivityInstance activityInstance : activityInstances)
+         {
+            activityInstanceOidList.add(activityInstance.getOID());
+         }
+      }
+
+      NotificationMap notificationMap = createNotificationMap(invalidatedUsers, skippedUsers);
+
+      InvalidateUserStatusDTO invalidateUserStatusDTO = new InvalidateUserStatusDTO();
+      invalidateUserStatusDTO.activityInstances = activityInstanceOidList;
+      invalidateUserStatusDTO.notificationMap = notificationMap;
+      return invalidateUserStatusDTO;
+   }
+
+   /**
+    * Retrieves activities assigned to invalidated users
+    * 
+    * @param invalidatedUserOids
+    * @return
+    */
+   private ActivityInstances prepareActivitiesforInvalideUsers(List<Long> invalidatedUserOids)
+   {
+      ActivityInstanceQuery aiQuery = ActivityInstanceQuery.findAll();
+      FilterTerm filter = aiQuery.getFilter().addOrTerm();
+      if (CollectionUtils.isNotEmpty(invalidatedUserOids))
+      {
+         for (Long userOid : invalidatedUserOids)
+         {
+            filter.add(new PerformingUserFilter(userOid));
+         }
+      }
+      else
+      {
+         filter.add(ActivityInstanceQuery.OID.isEqual(0));
+      }
+
+      QueryService queryService = serviceFactoryUtils.getQueryService();
+      return queryService.getAllActivityInstances(aiQuery);
+   }
+
+   private NotificationMap createNotificationMap(List<User> invalidatedUsers, List<User> skippedUsers)
+   {
+      NotificationMap notificationMap = new NotificationMap();
+      if (invalidatedUsers != null && !invalidatedUsers.isEmpty())
+      {
+         for (Iterator<User> iterator = invalidatedUsers.iterator(); iterator.hasNext();)
+         {
+            User user = (User) iterator.next();
+
+            notificationMap.addSuccess(new NotificationDTO(user.getOID(), user.getAccount(), restCommonClientMessages
+                  .getString("views.participantMgmt.notifyUserInvalidate")));
+         }
+      }
+
+      if (skippedUsers != null && !skippedUsers.isEmpty())
+      {
+         for (Iterator<User> iterator = skippedUsers.iterator(); iterator.hasNext();)
+         {
+            User user = (User) iterator.next();
+            if (user.getAccount().equals("motu"))
+            {
+               notificationMap.addFailure(new NotificationDTO(user.getOID(), user.getAccount(),
+                     restCommonClientMessages.getString("views.participantMgmt.notifyMotuNotValidateMsg")));
+            }
+            else
+            {
+               notificationMap.addFailure(new NotificationDTO(user.getOID(), user.getAccount(),
+                     restCommonClientMessages.getString("views.participantMgmt.notifyUserCannotBeInvalidatedMsg")));
+            }
+         }
+      }
+      return notificationMap;
+   }
+
+   /**
+    * Delegates to default performer
+    * 
+    * @param ae
+    */
+   public NotificationMessageDTO delegateToDefaultPerformer(List<Long> activityInstanceOids, List<Long> userOids)
+   {
+      NotificationMessageDTO notificationMessageDTO = new NotificationMessageDTO();
+      List<ActivityInstance> ais = new ArrayList<ActivityInstance>();
+      if (CollectionUtils.isNotEmpty(activityInstanceOids))
+      {
+         for (Long activityOid : activityInstanceOids)
+         {
+            ActivityInstance ai = activityInstanceUtils.getActivityInstance(activityOid);
+            if (!ActivityInstanceUtils.isDefaultCaseActivity(ai))
+            {
+               ais.add(ai);
+            }
+         }
+      }
+      activityInstanceUtils.delegateToDefaultPerformer(ais);
+      ActivityInstances activityInstances = prepareActivitiesforInvalideUsers(userOids);
+      if (activityInstances.size() > 0)
+      {
+         notificationMessageDTO.success = false;
+      }
+      else
+      {
+         notificationMessageDTO.success = true;
+      }
+      return notificationMessageDTO;
    }
 
 }

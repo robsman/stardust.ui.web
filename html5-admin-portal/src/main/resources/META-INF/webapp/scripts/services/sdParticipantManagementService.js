@@ -85,7 +85,7 @@
 
 			return $resource(restUrl).get(urlTemplateParams).$promise;
 		};
-        
+
 		/**
 		 * 
 		 */
@@ -114,6 +114,58 @@
 
 		};
 
+		/**
+		 * 
+		 */
+		ParticipantManagementService.prototype.invalidateUsers = function(userOids) {
+			// Prepare URL
+			var restUrl = REST_BASE_URL + "/:type";
+
+			var postData = {
+				userOids : userOids
+			};
+
+			var invalidateUsers = $resource(restUrl, {
+				type : '@type'
+			}, {
+				fetch : {
+					method : 'POST'
+				}
+			});
+
+			var urlTemplateParams = {};
+			urlTemplateParams.type = "invalidateUsers";
+
+			return invalidateUsers.fetch(urlTemplateParams, postData).$promise;
+
+		};
+
+		/**
+		 * 
+		 */
+		ParticipantManagementService.prototype.delegateToDefaultPerformer = function(activityInstanceOids, userOids) {
+			// Prepare URL
+			var restUrl = REST_BASE_URL + "/:type";
+
+			var postData = {
+				userOids : userOids,
+				activityInstanceOids : activityInstanceOids
+			};
+
+			var delegateToDefaultPerformer = $resource(restUrl, {
+				type : '@type'
+			}, {
+				fetch : {
+					method : 'POST'
+				}
+			});
+
+			var urlTemplateParams = {};
+			urlTemplateParams.type = "delegateToDefaultPerformer";
+
+			return delegateToDefaultPerformer.fetch(urlTemplateParams, postData).$promise;
+
+		};
 	}
 	;
 })();

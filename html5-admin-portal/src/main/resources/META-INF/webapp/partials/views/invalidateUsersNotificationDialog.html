@@ -1,0 +1,93 @@
+<div>
+	<div ng-if="ctrl.notificationMap.success.length > 0">
+	  <span class="form-lable">{{i18n('admin-portal-messages.views-participantMgmt-notifySuccessMsg') + i18n('admin-portal-messages.common-colon')}}</span>
+	  <div class="clearing"></div>
+	  <table cellspacing="0" border="1">
+
+				<tr ng-repeat="obj in ctrl.notificationMap.success">
+					<td style="padding-left: 10px;padding-right: 10px;"><span>{{obj.name}}</span></td>
+					<td style="padding-left: 10px;padding-right: 10px;"><span>{{obj.message}}</span></td>
+				</tr>
+		</table>
+	</div>
+	 <div class="clearing"></div>
+	 <div class="clearing"></div>
+	<div ng-if="ctrl.notificationMap.failure.length > 0">
+	  <span class="form-lable">{{i18n('admin-portal-messages.views-participantMgmt-notifyNonValidateMsg') + i18n('admin-portal-messages.common-colon')}}</span>
+	  <div class="clearing"></div>
+	  <table cellspacing="0" border="1">
+
+				<tr ng-repeat="obj in ctrl.notificationMap.failure">
+					<td style="padding-left: 10px;padding-right: 10px;"><span>{{obj.name}}</span></td>
+					<td style="padding-left: 10px;padding-right: 10px;"><span>{{obj.message}}</span></td>
+				</tr>
+		</table>
+	</div>
+	<!-- <span class="iceOutTxt form-lable"
+		id="subView:portalContentForm:_id707">Success in Invalidating
+		Users :</span>
+	<div class="icePnlGrp clearing" id="subView:portalContentForm:_id709"></div>
+	<div class="icePnlGrp" id="subView:portalContentForm:_id711">
+		<table cellspacing="0" class="iceDatTbl"
+			id="subView:portalContentForm:_id712">
+			<thead id="subView:portalContentForm:_id712:thead">
+				<tr>
+					<th class="iceDatTblColHdr1" scope="col"><span
+						class="iceOutTxt" id="subView:portalContentForm:_id712:_id714"></span></th>
+					<th class="iceDatTblColHdr2" scope="col"><span
+						class="iceOutTxt" id="subView:portalContentForm:_id712:_id717"></span></th>
+				</tr>
+			</thead>
+			<tbody id="subView:portalContentForm:_id712:tbody">
+				<tr class="iceDatTblRow1" id="subView:portalContentForm:_id712:0"
+					tabindex="0">
+					<td class="iceDatTblCol1"><span class="iceOutTxt"
+						id="subView:portalContentForm:_id712:0:_id715">NK</span></td>
+					<td class="iceDatTblCol2"><span class="iceOutTxt"
+						id="subView:portalContentForm:_id712:0:_id718">Invalidated
+							User</span></td>
+				</tr>
+				<tr class="iceDatTblRow2" id="subView:portalContentForm:_id712:1"
+					tabindex="0">
+					<td class="iceDatTblCol1"><span class="iceOutTxt"
+						id="subView:portalContentForm:_id712:1:_id715">NC</span></td>
+					<td class="iceDatTblCol2"><span class="iceOutTxt"
+						id="subView:portalContentForm:_id712:1:_id718">Invalidated
+							User</span></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="icePnlGrp clearing" id="subView:portalContentForm:_id719"></div>
+	<div class="icePnlGrp clearing" id="subView:portalContentForm:_id720"></div>
+	<span class="iceOutTxt form-lable"
+		id="subView:portalContentForm:_id721">Failure in Invalidating
+		Users.:</span>
+	<div class="icePnlGrp clearing" id="subView:portalContentForm:_id723"></div>
+	<div class="icePnlGrp" id="subView:portalContentForm:_id725">
+		<table cellspacing="0" class="iceDatTbl"
+			id="subView:portalContentForm:_id726">
+			<thead id="subView:portalContentForm:_id726:thead">
+				<tr>
+					<th class="iceDatTblColHdr1" scope="col"><span
+						class="iceOutTxt" id="subView:portalContentForm:_id726:_id728"></span></th>
+					<th class="iceDatTblColHdr2" scope="col"><span
+						class="iceOutTxt" id="subView:portalContentForm:_id726:_id731"></span></th>
+				</tr>
+			</thead>
+			<tbody id="subView:portalContentForm:_id726:tbody">
+				<tr class="iceDatTblRow1" id="subView:portalContentForm:_id726:0"
+					tabindex="0">
+					<td class="iceDatTblCol1"><span class="iceOutTxt"
+						id="subView:portalContentForm:_id726:0:_id729">BM</span></td>
+					<td class="iceDatTblCol2"><span class="iceOutTxt"
+						id="subView:portalContentForm:_id726:0:_id732">User cannot
+							be invalidated.</span></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="icePnlGrp clearing" id="subView:portalContentForm:_id733"></div>
+	<div class="icePnlGrp clearing" id="subView:portalContentForm:_id734"></div>
+	<div class="icePnlGrp clearing" id="subView:portalContentForm:_id170"></div> -->
+</div>

@@ -16,6 +16,13 @@
 				class="button-link tbl-toolbar-item tbl-tool-link">
 				<i class="sc sc-fw sc-1x sc-users"></i>
 			</button>
+			<button
+			    ng-disabled="!(ctrl.rowSelectionForAllUsersTable.length > 0)"
+				ng-click="bpmCommon.stopEvent($event); ctrl.invalidateUsers();"
+				title="{{i18n('admin-portal-messages.common-copy')}}"
+				class="button-link tbl-toolbar-item tbl-tool-link">
+				<i class="sc sc-fw sc-1x sc-minus-circle"></i>
+			</button>
 		</div>
 	</div>
 	<table sd-data-table="ctrl.allUsersTable"
