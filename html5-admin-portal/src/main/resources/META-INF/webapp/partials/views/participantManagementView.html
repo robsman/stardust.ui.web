@@ -26,13 +26,13 @@
 		sda-template="plugins/html5-admin-portal/partials/views/invalidateUsersNotificationDialog.html"
 		sda-cancel-action-label="{{i18n('admin-portal-messages.common-close')}}"
 		sda-width="520px" sda-height="400px">
-    </div>
+	</div>
 	<div sd-dialog sda-modal="true"
 		sda-show="ctrl.showDefaultDelegateDialog" sda-type="confirm"
 		sda-title="{{i18n('admin-portal-messages.common-defaultDelegateDialog-title')}}"
 		sda-scope="this"
 		sda-template="plugins/html5-admin-portal/partials/views/delegateActivitiesConfirmationDialog.html"
-		sda-cancel-action-label="{{i18n('admin-portal-messages.common-no')}}"		
+		sda-cancel-action-label="{{i18n('admin-portal-messages.common-no')}}"
 		sda-confirm-action-label="{{i18n('admin-portal-messages.common-yes')}}"
 		sda-on-close="ctrl.onCloseFromDefaultDelegateDialog(res)"
 		sda-on-confirm="ctrl.onConfrimFromDefaultDelegateDialog(res)"

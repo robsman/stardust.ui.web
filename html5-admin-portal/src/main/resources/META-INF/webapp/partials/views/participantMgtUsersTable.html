@@ -19,9 +19,24 @@
 			<button
 			    ng-disabled="!(ctrl.rowSelectionForAllUsersTable.length > 0)"
 				ng-click="bpmCommon.stopEvent($event); ctrl.invalidateUsers();"
-				title="{{i18n('admin-portal-messages.common-copy')}}"
+				title="{{i18n('admin-portal-messages.views-participantMgmt-invalidateUser-title')}}"
 				class="button-link tbl-toolbar-item tbl-tool-link">
 				<i class="sc sc-fw sc-1x sc-minus-circle"></i>
+			</button>
+		</div>
+		<div class="tbl-toolbar-section">
+			<button ng-if="!ctrl.hideInvalidatedUsers"
+				ng-click="bpmCommon.stopEvent($event); ctrl.changeHideInvalidatedUsersFlag();"
+				title="{{i18n('admin-portal-messages.views-participantMgmt-filters-invalidatedUsers-hideUser')}}"
+				class="button-link tbl-toolbar-item tbl-tool-link">
+				<i class="sc sc-fw sc-1x sc-ban" style="color:Red"></i>
+			</button>
+			
+			<button ng-if="ctrl.hideInvalidatedUsers"
+				ng-click="bpmCommon.stopEvent($event); ctrl.changeHideInvalidatedUsersFlag();"
+				title="{{i18n('admin-portal-messages.views-participantMgmt-filters-invalidatedUsers-showUser')}}"
+				class="button-link tbl-toolbar-item tbl-tool-link">
+				<i class="sc sc-fw sc-1x sc-ban"></i>
 			</button>
 		</div>
 	</div>

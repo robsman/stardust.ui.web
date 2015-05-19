@@ -61,16 +61,19 @@
 
 		return deferred.promise;
 	};
-
+    /**
+     * 
+     */
 	ParticipantManagementCtrl.prototype.refresh = function() {
 		var self = this;
 		self.allUsersTable.refresh();
 	};
-	/**
-	 * 
-	 * @param mode
-	 * @param oid
-	 */
+
+	ParticipantManagementCtrl.prototype.changeHideInvalidatedUsersFlag = function(){
+		var self = this;
+		self.hideInvalidatedUsers = !self.hideInvalidatedUsers;
+		self.allUsersTable.refresh();
+	};
 	/**
 	 * @param mode
 	 * @param oid
@@ -98,7 +101,12 @@
 			trace.log(error);
 		});
 	};
-
+	/**
+	 * 
+	 * @param mode
+	 * @param isInternalAuthentication
+	 * @returns {Boolean}
+	 */
 	ParticipantManagementCtrl.prototype.isPasswordEnabled = function(mode, isInternalAuthentication) {
 		if ((mode == 'MODIFY_USER' && isInternalAuthentication) || mode == 'MODIFY_PROFILE_CONFIGURATION') {
 			return true;
@@ -153,6 +161,7 @@
 				_sdParticipantManagementService.createCopyModifyUser(user, self.mode).then(function(data) {
 					if (data.success == true) {
 						deferred.resolve();
+						self.allUsersTable.refresh();
 					} else if (data.success == false) {
 						if (data.passwordValidationMsg != undefined) {
 							self.passwordValidationMsg = data.passwordValidationMsg;
@@ -206,20 +215,25 @@
 		return error;
 
 	};
-
+	/**
+	 * 
+	 * @param res
+	 */
 	ParticipantManagementCtrl.prototype.onCloseFromCreateUser = function(res) {
 		var self = this;
 		self.loadUserProfileDialog = false;
 		delete self.user;
 	};
-
+	/**
+	 * 
+	 */
 	ParticipantManagementCtrl.prototype.invalidateUsers = function() {
 		var self = this;
 		var oids = this.getSelectedUserOids(self.rowSelectionForAllUsersTable);
 		_sdParticipantManagementService.invalidateUsers(oids).then(function(data) {
 			self.activityInstances = data.activityInstances;
 			self.notificationMap = data.notificationMap;
-
+			self.allUsersTable.refresh();
 			if (self.activityInstances != undefined && self.activityInstances.length > 0) {
 				self.showDefaultDelegateDialog = true;
 			} else {
@@ -232,7 +246,10 @@
 		});
 
 	};
-
+	/**
+	 * 
+	 * @param res
+	 */
 	ParticipantManagementCtrl.prototype.onConfrimFromDefaultDelegateDialog = function(res) {
 		var self = this;
 		var userOids = this.getInvalidatedUserOids(self.notificationMap.success);
