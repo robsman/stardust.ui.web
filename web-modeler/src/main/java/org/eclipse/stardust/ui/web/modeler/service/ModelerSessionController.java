@@ -515,7 +515,7 @@ public class ModelerSessionController
       ModelBinding<EObject> modelBinding = currentSession().modelRepository().getModelBinding(model);
       for (ChangeDescriptionJto changeDescrJto : commandJto.changeDescriptions)
       {
-         EObject targetElement = findTargetElement(model, changeDescrJto);
+         EObject targetElement = findTargetElement(currentSession(), model, changeDescrJto);
 
          changeDescriptors.add(new CommandHandlingMediator.ChangeRequest(model,
                targetElement, changeDescrJto.changes));
@@ -564,15 +564,15 @@ public class ModelerSessionController
       }
    }
 
-   private EObject findTargetElement(EObject model, ChangeDescriptionJto changeDescrJto)
+   public static EObject findTargetElement(ModelingSession currentSession, EObject model, ChangeDescriptionJto changeDescrJto)
    {
       if (model instanceof ModelType)
       {
-         return findTargetElement((ModelType) model, changeDescrJto);
+         return findTargetElement(currentSession, (ModelType) model, changeDescrJto);
       }
       else
       {
-         ModelBinding<EObject> modelBinding = currentSession().modelRepository().getModelBinding(model);
+         ModelBinding<EObject> modelBinding = currentSession.modelRepository().getModelBinding(model);
          ModelNavigator<EObject> modelNavigator = modelBinding.getNavigator();
          if ( !isEmpty(changeDescrJto.uuid))
          {
@@ -596,14 +596,14 @@ public class ModelerSessionController
       }
    }
 
-   private EObject findTargetElement(ModelType model, ChangeDescriptionJto changeDescrJto)
+   private static EObject findTargetElement(ModelingSession currentSession, ModelType model, ChangeDescriptionJto changeDescrJto)
    {
       EObject targetElement = null;
       // existing target, identified by uuid
       if (null != changeDescrJto.uuid)
       {
          String uuid = changeDescrJto.uuid;
-         targetElement = currentSession().uuidMapper().getEObject(uuid);
+         targetElement = currentSession.uuidMapper().getEObject(uuid);
 
          if (null == targetElement)
          {
@@ -702,7 +702,7 @@ public class ModelerSessionController
       };
    }
 
-   private ModelingSession currentSession()
+   public ModelingSession currentSession()
    {
       return sessionLocator.currentModelingSession();
    }
