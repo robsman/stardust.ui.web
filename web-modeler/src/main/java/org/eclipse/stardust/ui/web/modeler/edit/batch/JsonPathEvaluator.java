@@ -2,14 +2,16 @@ package org.eclipse.stardust.ui.web.modeler.edit.batch;
 
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 
+import java.util.Iterator;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.google.common.base.Splitter;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
+import org.eclipse.stardust.common.StringUtils;
 
 public class JsonPathEvaluator
 {
@@ -21,12 +23,12 @@ public class JsonPathEvaluator
 
    public JsonElement resolveExpression(JsonElement inputJson, String path)
    {
-      Iterable<String> steps = Splitter.on("/").split(path);
-
       JsonElement currentValue = inputJson;
 
-      for (String step : steps)
+      for (Iterator<String> steps = StringUtils.split(path, "/"); steps.hasNext();)
       {
+         String step = steps.next();
+
          JsonElement resolvedValue = null;
 
          String property;
