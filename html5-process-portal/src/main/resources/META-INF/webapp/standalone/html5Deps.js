@@ -39,6 +39,7 @@ var html5Deps = function() {
 				'jquery' : ['../portal-shell/js/libs/jquery/1.9.1/jquery'],
 				'jquery.dataTables' : [ "html5-common/libs/datatables/1.9.4/jquery.dataTables" ],
 				'angularjs' : ['../portal-shell/js/libs/angular/1.2.11/angular'],
+				'angularResource' : ['../portal-shell/js/libs/angular/1.2.11/angular-resource'],
 				'bootstrap' : [ 'html5-common/libs/bootstrap/bootstrap' ],
 				'portalApplication' : [ 'common/html5/portalApplication' ],
 				'html5CommonMain' : [ 'html5-common/scripts/main' ],
@@ -62,6 +63,7 @@ var html5Deps = function() {
 					deps : ["jquery"],
 					exports : "angular"
 				},
+				'angularResource' : ['angularjs'],
 				'bootstrap' : ['jquery'],
 				'html5CommonMain' : [ 'angularjs', 'portalApplication'],
 				'sdEventBusService' : [ 'html5CommonMain' ],
@@ -71,14 +73,14 @@ var html5Deps = function() {
 				'sdDataTable' : [ 'html5CommonMain', 'sdLoggerService' ],
 				'sdUtilService' : [ 'html5CommonMain' ],
 				'sdViewUtilService' : [ 'html5CommonMain' ],
-				'sdPreferenceService' : [ 'html5CommonMain' ],
+				'sdPreferenceService' : [ 'html5CommonMain','angularResource'],
 				'sdDialog' : [ 'html5CommonMain', 'sdLoggerService', 'bootstrap' ],
 				'sdDialogService' : [ 'sdDialog' ],
 				'sdPortalConfigurationService' : [ 'html5CommonMain' ],
 			    'sdLocalizationService' : [ 'html5CommonMain' ],
 			    'sdDatePicker' : [ 'html5CommonMain', 'sdLocalizationService' ],
 			},
-			deps : [ "jquery.dataTables", "angularjs", "bootstrap", "portalApplication",
+			deps : [ "jquery.dataTables", "angularjs", "angularResource","bootstrap", "portalApplication",
 					"html5CommonMain", "sdEventBusService", "httpInterceptorProvider",
 					"sdLoggerService", "sdData", "sdDataTable",
 					'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'sdDialog', 'sdDialogService', 'sdPortalConfigurationService' ]
@@ -92,7 +94,7 @@ var html5Deps = function() {
 	}
 
 	function bootstrapAngular(applicationModules) {
-		var module = angular.module("dummyBootstrapModule", []);
+		var module = angular.module("dummyBootstrapModule", ['ngResource']);
 		
 		module.provider('sgViewPanelService', function () {
 		      this.$get = ['$rootScope', function ($rootScope) {
