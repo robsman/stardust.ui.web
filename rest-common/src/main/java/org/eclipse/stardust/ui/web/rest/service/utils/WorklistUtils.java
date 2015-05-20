@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.rest.service.utils;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -35,13 +36,13 @@ import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.Worklist;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
-import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ResubmissionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ResubmissionUtils.ModelResubmissionActivity;
 import org.springframework.stereotype.Component;
@@ -127,18 +128,19 @@ public class WorklistUtils
 
       if (null != user)
       {
-         // TODO: User WorklistQuery?
          ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
                ActivityInstanceState.Application, ActivityInstanceState.Suspended});
-         // Remove role activities
+         
          FilterOrTerm or = query.getFilter().addOrTerm();
          or.add(new PerformingUserFilter(user.getOID()));
-         List<Grant> allGrants = user.getAllGrants();
-         for (Grant grant : allGrants)
+         Set<ParticipantInfo> participants =  ParticipantWorklistCacheManager.getInstance().getWorklistParticipants()
+               .get(user.getQualifiedId());
+         for (ParticipantInfo participantInfo : participants)
          {
-            if (!(grant instanceof UserInfo))
-               or.add(PerformingParticipantFilter.forParticipant(serviceFactoryUtils.getQueryService().getParticipant(
-                  grant.getId())));
+            if (!(participantInfo instanceof UserInfo))
+            {
+               or.add(PerformingParticipantFilter.forParticipant(participantInfo));
+            }
          }
          ActivityTableUtils.addCriterias(query, options);
          ActivityInstances activityInstances = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
