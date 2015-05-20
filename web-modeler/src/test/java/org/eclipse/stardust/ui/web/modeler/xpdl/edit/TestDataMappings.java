@@ -131,7 +131,7 @@ public class TestDataMappings extends RecordingTestcase
 
       List<DataMappingType> dataMappings = activity.getDataMapping();
       assertThat(dataMappings, is(not(nullValue())));
-      assertThat(dataMappings.size(), is(5));
+      assertThat(dataMappings.size(), is(6));
 
       DataType data = GenericModelingAssertions.assertPrimitiveData(providerModel, "InPrimitiveTypeLong", "InPrimitiveTypeLong", "long");
       assertApplicationDataMapping(activity, "InPrimitiveTypeLong", "InPrimitiveTypeLong", "PrimitiveParameterIN", "externalWebApp", DirectionType.IN_LITERAL, data);
@@ -143,6 +143,9 @@ public class TestDataMappings extends RecordingTestcase
       data = GenericModelingAssertions.assertStructData(providerModel, "InStructType", "InStructType", "InStructType");
       assertApplicationDataMapping(activity, "InStructType", "InStructType", "StructParameterIN", "externalWebApp", DirectionType.IN_LITERAL, data);
       assertApplicationDataMapping(activity, "InStructType", "InStructType", "StructParameterOUT", "externalWebApp", DirectionType.OUT_LITERAL, data);
+
+      data = GenericModelingAssertions.assertStructData(providerModel, "OutStructType", "OutStructType", "OutStructType");
+      assertApplicationDataMapping(activity, "OutStructType", "OutStructType", "StructParameterIN", "externalWebApp", DirectionType.IN_LITERAL, data);
    }
 
    public void changeDataMappingsGeneralCallback(TestResponse response)
@@ -178,6 +181,29 @@ public class TestDataMappings extends RecordingTestcase
       GenericModelingAssertions.assertDataMapping(activity, "PrimitiveData_3", "PrimitiveData_3", "engine", DirectionType.OUT_LITERAL, data, "activityInstance", "getAttributes()", "charAt(int)");
 
       //saveReplayModel("C:/development/");
+   }
+
+   @Test
+   public void testRenameDatamappings() throws Exception
+   {
+      providerModel = modelService.findModel(PROVIDER_MODEL_ID);
+
+      InputStream requestInput = getClass().getResourceAsStream(
+            "../../service/rest/requests/renameDataMappings.txt");
+      InputStreamReader requestStream = new InputStreamReader(requestInput);
+
+      replay(requestStream, "renameDataMappings", false);
+
+      DataType data = GenericModelingAssertions.assertPrimitiveData(providerModel, "PrimitiveData", "Primitive Data", "String");
+      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "ProviderProcess", "Provider Process");
+      ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
+      GenericModelingAssertions.assertDataMapping(activity, "PrimitiveData_3", "PrimitiveData_31", "engine", DirectionType.OUT_LITERAL, data, "activityInstance", null, null);
+      GenericModelingAssertions.assertDataMapping(activity, "PrimitiveData_3", "PrimitiveData_31", "default", DirectionType.IN_LITERAL, data, null, null, null);
+      GenericModelingAssertions.assertDataMapping(activity, "PrimitiveData_2", "PrimitiveData_2", "engine", DirectionType.OUT_LITERAL, data, "activityInstance", null, null);
+      GenericModelingAssertions.assertDataMapping(activity, "PrimitiveData_3", "PrimitiveData_3", "engine", DirectionType.OUT_LITERAL, data, "activityInstance", "getAttributes()", "charAt(int)");
+
+      //saveReplayModel("C:/development/");
+
    }
 
 

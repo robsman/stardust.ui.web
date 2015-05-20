@@ -47,6 +47,7 @@ import org.eclipse.stardust.ui.web.modeler.xpdl.marshalling.EventMarshallingUtil
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -423,44 +424,23 @@ public class ConnectionCommandHandler
    }
 
    @OnCommand(commandId = "datamapping.delete")
-   public void deleteDatamapping(ModelType model, DataMappingConnectionType dataFlowConnection,
-         JsonObject request)
+   public void deleteDatamapping(ModelType model,
+         DataMappingConnectionType dataFlowConnection, JsonObject request)
    {
       if (request.has(ModelerConstants.UUID_PROPERTY))
       {
-         String uuid = request.get(ModelerConstants.UUID_PROPERTY).getAsString();
-         if (uuid != null)
+         JsonArray uuidArray = request.get(ModelerConstants.UUID_PROPERTY)
+               .getAsJsonArray();
+         if (uuidArray != null)
          {
-            DataMappingType dataMapping = (DataMappingType) modelService().uuidMapper()
-                  .getEObject(uuid);
-            ActivityType activity = ModelUtils.findContainingActivity(dataMapping);
-            if (activity != null)
+            for (Iterator<JsonElement> i = uuidArray.iterator(); i.hasNext();)
             {
+               JsonElement element = i.next();
+               String uuid = element.getAsString();
+               DataMappingType dataMapping = (DataMappingType) modelService()
+                     .uuidMapper().getEObject(uuid);
+               ActivityType activity = ModelUtils.findContainingActivity(dataMapping);
                activity.getDataMapping().remove(dataMapping);
-               // Remove corresponding IN/OUT datamapping as well if it exists
-               DataMappingType foundDM = null;
-               for (Iterator<DataMappingType> i = activity.getDataMapping().iterator(); i
-                     .hasNext();)
-               {
-                  DataMappingType dm = i.next();
-                  if (dm.getData() != null)
-                  {
-                     if (dm.getData().getId() != null)
-                     {
-                        if (dm.getData().getId().equals(dataMapping.getData().getId()))
-                        {
-                           if (dm.getId().equals(dataMapping.getId()))
-                           {
-                              foundDM = dm;
-                           }
-                        }
-                     }
-                  }
-               }
-               if (foundDM != null)
-               {
-                  activity.getDataMapping().remove(foundDM);
-               }
             }
          }
       }

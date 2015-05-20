@@ -707,8 +707,58 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
       if (hasNotJsonNull(dataMappingJson, ModelerConstants.NAME_PROPERTY))
       {
-         dataMapping.setName(dataMappingJson.get(ModelerConstants.NAME_PROPERTY)
-               .getAsString());
+
+         String name = dataMappingJson.get(ModelerConstants.NAME_PROPERTY)
+               .getAsString();
+
+         dataMapping.setName(name);
+
+         ActivityType activity = ModelUtils.findContainingActivity(dataMapping);
+
+         List<DataMappingType> dataMappings = new ArrayList<DataMappingType>();
+         for (Iterator<DataMappingType> i = activity.getDataMapping().iterator(); i
+               .hasNext();)
+         {
+            DataMappingType dm = i.next();
+            if (dm.getData() != null
+                  && dm.getData().getId().equals(dataMapping.getData().getId()))
+            {
+               dataMappings.add(dm);
+            }
+         }
+
+         String id = NameIdUtils.createIdFromName(dataMappings, dataMapping);
+
+         if (activity != null)
+         {
+            DataMappingType foundDM = null;
+            for (Iterator<DataMappingType> i = activity.getDataMapping().iterator(); i
+                  .hasNext();)
+            {
+               DataMappingType dm = i.next();
+               if (dm.getData() != null)
+               {
+                  if (dm.getData().getId() != null)
+                  {
+                     if (dm.getData().getId().equals(dataMapping.getData().getId()))
+                     {
+                        if (!dm.equals(dataMapping) && dm.getId().equals(dataMapping.getId()))
+                        {
+                           foundDM = dm;
+                        }
+                     }
+                  }
+               }
+            }
+            if (foundDM != null)
+            {
+               foundDM.setName(dataMappingJson.get(ModelerConstants.NAME_PROPERTY)
+                     .getAsString());
+               foundDM.setId(id);
+            }
+         }
+
+         dataMapping.setId(id);
       }
 
       if (hasNotJsonNull(dataMappingJson, ModelerConstants.ACCESS_POINT_ID_PROPERTY))
