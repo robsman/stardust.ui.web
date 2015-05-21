@@ -47,7 +47,10 @@
         dataSelected: '=sdaDataSelected',
         dataPathSelectedStr: '=sdaDataPathSelected',
         onDataChangeClbk: '&sdaOnDataChange',
-        m_model: '=sdaDataModelService'
+        m_model: '=sdaDataModelService',
+        supportExternalData: '=sdaSupportExternalData'
+          //optional parameter
+          //sda-data-embed -> indicates if data to be embedded as rows otherwise as table 
       },
       link: function(scope, element, attrs) {
         var templ = template;
@@ -68,7 +71,12 @@
     var self = this;
     self.sdI18nModeler = sdI18nService.getInstance('bpm-modeler-messages').translate;
     var i18n = self.sdI18nModeler;
-
+    if ($scope.supportExternalData == 'false'
+            || $scope.supportExternalData == false) {
+      $scope.supportExternalData = false;
+    } else {
+      $scope.supportExternalData = true;
+    }
     DataPathController.prototype.safeApply = function() {
       sdUtilService.safeApply($scope);
     };
@@ -218,7 +226,7 @@
           var data = this.dataList[i];
           // Show only data items from this model and not
           // external references.
-          if (!data.externalReference) {
+          if ($scope.supportExternalData || !data.externalReference) {
             var supportsDataPath = true;
             if (data.dataType == sdModelerConstants.PRIMITIVE_DATA_TYPE) {
               supportsDataPath = false;
