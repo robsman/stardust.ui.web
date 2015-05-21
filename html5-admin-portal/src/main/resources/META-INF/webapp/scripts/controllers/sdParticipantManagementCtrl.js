@@ -32,6 +32,7 @@
 		_sdParticipantManagementService = sdParticipantManagementService;
 		_sdUtilService = sdUtilService;
 		this.allUsersTable = null;
+		this.showAllUsersTable = true;
 		this.hideInvalidatedUsers = false;
 		this.columnSelector = "admin";
 		this.rowSelectionForAllUsersTable = null;
@@ -53,6 +54,8 @@
 		_sdParticipantManagementService.getAllUsers(query).then(function(data) {
 			self.allUsers.list = data.list;
 			self.allUsers.totalCount = data.totalCount;
+			self.allUsers.activeCount = data.activeCount;
+			self.allUsers.allCount = data.allCount;
 			deferred.resolve(self.allUsers);
 		}, function(error) {
 			trace.log(error);
@@ -304,6 +307,17 @@
 			oids.push(successNotificationList[index].OID);
 		}
 		return oids;
+	};
+	
+	/**
+	 * 
+	 */
+	/**
+	 * 
+	 */
+	ParticipantManagementCtrl.prototype.setShowAllUsersTable = function() {
+		var self = this;
+		self.showAllUsersTable = !self.showAllUsersTable;
 	};
 
 })();

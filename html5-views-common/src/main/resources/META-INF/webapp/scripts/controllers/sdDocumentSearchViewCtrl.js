@@ -518,13 +518,6 @@
 		self.showDocumentSearchCriteria = !self.showDocumentSearchCriteria;
 	};
 
-	/**
-	 * 
-	 */
-	DocumentSearchViewCtrl.prototype.setShowDocumentSearchCriteria = function() {
-		var self = this;
-		self.showDocumentSearchCriteria = !self.showDocumentSearchCriteria;
-	};
 
 	/**
 	 * 

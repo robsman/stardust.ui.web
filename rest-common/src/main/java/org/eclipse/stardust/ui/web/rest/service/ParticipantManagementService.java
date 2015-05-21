@@ -13,22 +13,22 @@
  */
 package org.eclipse.stardust.ui.web.rest.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.eclipse.stardust.engine.api.query.QueryResult;
-import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.engine.api.query.UserQuery;
+import org.eclipse.stardust.engine.api.runtime.QueryService;
+import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.dto.InvalidateUserStatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.UserGroupQueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserProfileStatusDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.ParticipantManagementUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -41,50 +41,9 @@ public class ParticipantManagementService
     * 
     * @return
     */
-   public QueryResultDTO getAllUsers(Boolean hideInvalidatedUsers, Options options)
+   public UserGroupQueryResultDTO getAllUsers(Boolean hideInvalidatedUsers, Options options)
    {
-      QueryResult<User> users = participantManagementUtils.getAllUsers(hideInvalidatedUsers, options);
-      return buildAllUsersResult(users);
-   }
-
-   /**
-    * 
-    * @param users
-    * @return
-    */
-   private QueryResultDTO buildAllUsersResult(QueryResult<User> users)
-   {
-      List<UserDTO> userDTOList = new ArrayList<UserDTO>();
-
-      for (User user : users)
-      {
-         UserDTO userDTO = DTOBuilder.build(user, UserDTO.class);
-         if (user.getValidFrom() != null)
-         {
-            userDTO.validFrom = user.getValidFrom().getTime();
-         }
-         else
-         {
-            userDTO.validFrom = null;
-         }
-
-         if (user.getValidTo() != null)
-         {
-            userDTO.validTo = user.getValidTo().getTime();
-         }
-         else
-         {
-            userDTO.validTo = null;
-         }
-         userDTO.displayName = UserUtils.getUserDisplayLabel(user);
-         userDTOList.add(userDTO);
-      }
-
-      QueryResultDTO resultDTO = new QueryResultDTO();
-      resultDTO.list = userDTOList;
-      resultDTO.totalCount = users.getTotalCount();
-
-      return resultDTO;
+      return participantManagementUtils.getAllUsers(hideInvalidatedUsers, options);
    }
 
    /**
@@ -109,6 +68,7 @@ public class ParticipantManagementService
    {
       return participantManagementUtils.createCopyModifyUser(userDTO, mode);
    }
+
    /**
     * 
     * @param userOids
@@ -118,15 +78,16 @@ public class ParticipantManagementService
    {
       return participantManagementUtils.invalidateUser(userOids);
    }
-   
+
    /**
     * 
     * @param activityInstanceOids
     * @param userOids
     * @return
     */
-   public NotificationMessageDTO delegateToDefaultPerformer(List<Long> activityInstanceOids, List<Long> userOids){
+   public NotificationMessageDTO delegateToDefaultPerformer(List<Long> activityInstanceOids, List<Long> userOids)
+   {
       return participantManagementUtils.delegateToDefaultPerformer(activityInstanceOids, userOids);
-      
+
    }
 }

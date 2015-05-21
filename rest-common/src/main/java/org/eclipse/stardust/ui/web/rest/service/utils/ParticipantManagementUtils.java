@@ -63,7 +63,9 @@ import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserFilterDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.UserGroupQueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserProfileStatusDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.login.util.PasswordUtils;
@@ -87,7 +89,7 @@ public class ParticipantManagementUtils
    @Resource
    private ActivityInstanceUtils activityInstanceUtils;
 
-   public QueryResult<User> getAllUsers(Boolean hideInvalidatedUsers, Options options)
+   public UserGroupQueryResultDTO getAllUsers(Boolean hideInvalidatedUsers, Options options)
    {
       UserQuery query = (UserQuery) createQuery(hideInvalidatedUsers);
 
@@ -100,8 +102,7 @@ public class ParticipantManagementUtils
 
       QueryResult<User> users = performSearch(query);
 
-      return users;
-
+      return buildAllUsersResult(users);
    }
 
    public Query createQuery(Boolean hideInvalidatedUsers)
@@ -115,6 +116,11 @@ public class ParticipantManagementUtils
       return query;
    }
 
+   /**
+    * 
+    * @param query
+    * @return
+    */
    public QueryResult<User> performSearch(Query query)
    {
       try
@@ -125,6 +131,69 @@ public class ParticipantManagementUtils
       {
          return null;
       }
+   }
+
+   /**
+    * 
+    * @param users
+    * @return
+    */
+   private UserGroupQueryResultDTO buildAllUsersResult(QueryResult<User> users)
+   {
+      List<UserDTO> userDTOList = new ArrayList<UserDTO>();
+
+      for (User user : users)
+      {
+         UserDTO userDTO = DTOBuilder.build(user, UserDTO.class);
+         if (user.getValidFrom() != null)
+         {
+            userDTO.validFrom = user.getValidFrom().getTime();
+         }
+         else
+         {
+            userDTO.validFrom = null;
+         }
+
+         if (user.getValidTo() != null)
+         {
+            userDTO.validTo = user.getValidTo().getTime();
+         }
+         else
+         {
+            userDTO.validTo = null;
+         }
+         userDTO.displayName = UserUtils.getUserDisplayLabel(user);
+         userDTOList.add(userDTO);
+      }
+
+      UserGroupQueryResultDTO resultDTO = new UserGroupQueryResultDTO();
+      resultDTO.list = userDTOList;
+      resultDTO.totalCount = users.getTotalCount();
+      resultDTO.activeCount = getActiveUsersCount();
+      resultDTO.allCount = getAllUsersCount();
+      return resultDTO;
+   }
+
+   /**
+    * 
+    * @return
+    */
+   private Long getActiveUsersCount()
+   {
+      QueryService service = serviceFactoryUtils.getQueryService();
+      Long count = new Long(service.getUsersCount(UserQuery.findActive()));
+      return count;
+   }
+
+   /**
+    * 
+    * @return
+    */
+   private Long getAllUsersCount()
+   {
+      QueryService service = serviceFactoryUtils.getQueryService();
+      Long count = new Long(service.getUsersCount(UserQuery.findAll()));
+      return count;
    }
 
    /**
@@ -200,10 +269,10 @@ public class ParticipantManagementUtils
          }
       }
       // user name filter
-      if (null != filterDTO.name)
+      if (null != filterDTO.displayName)
       {
-         String fn = filterDTO.name.firstName;
-         String ln = filterDTO.name.lastName;
+         String fn = filterDTO.displayName.firstName;
+         String ln = filterDTO.displayName.lastName;
          if (StringUtils.isNotEmpty(fn) && StringUtils.isNotEmpty(ln))
          {
             FilterAndTerm nameAnd = filter.addAndTerm();

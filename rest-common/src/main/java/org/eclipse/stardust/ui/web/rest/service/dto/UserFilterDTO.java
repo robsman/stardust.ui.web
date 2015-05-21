@@ -26,6 +26,6 @@ public class UserFilterDTO implements FilterDTO
 
    public TextSearchDTO realm;
 
-   public NameDTO name;
+   public NameDTO displayName;
 
 }
