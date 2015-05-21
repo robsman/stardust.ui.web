@@ -13,7 +13,6 @@
  */
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
-import java.util.Date;
 import java.util.List;
 
 import org.eclipse.stardust.common.Pair;
@@ -31,9 +30,9 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
 @DTOClass
 public class DocumentSearchResultDTO extends AbstractDTO
 {
-   public Date createDate;
+   public Long createDate = null;
 
-   public Date modificationDate;
+   public Long modificationDate = null;
 
    public String author = "";
 
@@ -68,8 +67,8 @@ public class DocumentSearchResultDTO extends AbstractDTO
       this.documentName = doc.getName();
       this.fileType = doc.getContentType();
       this.documentType = TypedDocumentsUtil.getDocumentTypeLabel(doc.getDocumentType());
-      this.createDate = doc.getDateCreated();
-      this.modificationDate = doc.getDateLastModified();
+      this.createDate = doc.getDateCreated().getTime();
+      this.modificationDate = doc.getDateLastModified().getTime();
       this.fileSize = doc.getSize();
       this.documentPath = getFolderFromFullPath(doc.getPath());
       this.repositoryId = RepositoryIdUtils.extractRepositoryId(doc);

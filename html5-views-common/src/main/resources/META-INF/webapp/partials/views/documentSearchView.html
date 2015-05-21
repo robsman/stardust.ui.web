@@ -24,8 +24,8 @@ table.formTable td {
 						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-createDate-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
-						<td><input type="text" sd-date-picker sda-change-year="true"
-							sda-milliseconds="true" ng-model-onblur
+						<td><div sd-date-time-picker
+							 ng-model-onblur
 							ng-model="docSearchViewCtrl.query.documentSearchCriteria.createDateFrom"
 							name="createDateFrom" /></td>
 					</tr>
@@ -33,8 +33,7 @@ table.formTable td {
 						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-createDateTo-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
-						<td><input type="text" sd-date-picker sda-change-year="true"
-							sda-milliseconds="true" ng-model-onblur name="createDateTo"
+						<td><div sd-date-time-picker ng-model-onblur name="createDateTo"
 							ng-model="docSearchViewCtrl.query.documentSearchCriteria.createDateTo" /></td>
 					</tr>
 					<tr>
@@ -48,8 +47,7 @@ table.formTable td {
 						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-modificationDate-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
-						<td><input type="text" sd-date-picker sda-change-year="true"
-							sda-milliseconds="true" ng-model-onblur
+						<td><div sd-date-time-picker ng-model-onblur
 							name="modificationDateFrom"
 							ng-model="docSearchViewCtrl.query.documentSearchCriteria.modificationDateFrom" /></td>
 					</tr>
@@ -57,8 +55,7 @@ table.formTable td {
 						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-modificationDateTo-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
-						<td><input type="text" sd-date-picker sda-change-year="true"
-							sda-milliseconds="true" ng-model-onblur name="modificationDateTo"
+						<td><div sd-date-time-picker ng-model-onblur name="modificationDateTo"
 							ng-model="docSearchViewCtrl.query.documentSearchCriteria.modificationDateTo" /></td>
 					</tr>
 					<tr>
