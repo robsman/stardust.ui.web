@@ -13,12 +13,14 @@ package org.eclipse.stardust.ui.web.rest.service.utils;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
+import org.eclipse.stardust.engine.api.model.ModelParticipant;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.query.ActivityFilter;
@@ -39,6 +41,7 @@ import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.web.rest.Options;
+import org.eclipse.stardust.ui.web.rest.service.UserService;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
@@ -60,6 +63,9 @@ public class WorklistUtils
 
    @Resource
    private ProcessDefinitionUtils processDefUtils;
+   
+   @Resource
+   private UserService userService;
 
    /**
     * @param participantQId
@@ -67,20 +73,15 @@ public class WorklistUtils
     */
    public QueryResult< ? > getWorklistForParticipant(String participantQId, Options options)
    {
-      Participant participant = serviceFactoryUtils.getQueryService().getParticipant(participantQId);
-      if (null != participant)
-      {
-         WorklistQuery query = org.eclipse.stardust.ui.web.viewscommon.utils.WorklistUtils
-               .createWorklistQuery(participant);
 
-         ActivityTableUtils.addCriterias(query, options);
+      String userID =  userService.getLoggedInUser().id;
+      ParticipantInfo participantInfo =   ParticipantWorklistCacheManager.getInstance().getParticipantInfoFromCache(participantQId);
+      WorklistQuery query  = (WorklistQuery)ParticipantWorklistCacheManager.getInstance().getWorklistQuery(participantInfo, userID);
+      ActivityTableUtils.addCriterias(query, options);
+      Worklist worklist = serviceFactoryUtils.getWorkflowService().getWorklist((WorklistQuery)query);
+      QueryResult< ? > queryResult = extractParticipantWorklist(worklist, participantInfo);
+      return queryResult;
 
-         Worklist worklist = serviceFactoryUtils.getWorkflowService().getWorklist((WorklistQuery) query);
-         QueryResult< ? > queryResult = extractParticipantWorklist(worklist, participant);
-
-         return queryResult;
-      }
-      return null;
    }
 
    /**

@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -27,7 +28,6 @@ import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
-import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.html5.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler.MessageDisplayMode;
 import org.springframework.beans.factory.InitializingBean;
@@ -46,6 +46,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
 
    private Map<ParticipantInfoWrapper, ParticipantWorklistCacheEntry> participantWorklists;
    
+   private Map<String, ParticipantInfo> participantInfoMap;
    /**
     * @return
     */
@@ -77,6 +78,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
             for (Worklist worklist : entry.getValue())
             {
                worklistOwner = worklist.getOwner();
+               addParticipantInfoToCache( worklistOwner.getQualifiedId(), worklistOwner);
                if(entry.getKey().equals(worklistOwner.getQualifiedId()) && (worklistOwner instanceof UserInfo))
                {
                   // Using the userParticipantId i.e entry.getKey() along with
@@ -286,6 +288,35 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
          {
             trace.debug("\t" + entry.getKey().getParticipantInfo() + "=>" + entry.getValue());
          }
+      }
+   }
+   
+   
+   /**
+    * 
+    * @param participantQID
+    * @return
+    */
+   public ParticipantInfo getParticipantInfoFromCache(String participantQID)
+   {
+      return participantInfoMap.get(participantQID);
+   }
+
+   /**
+    * 
+    * @param participantQID
+    * @param participantInfo
+    */
+   private void addParticipantInfoToCache(String participantQID, ParticipantInfo participantInfo)
+   {
+      if (null == participantInfoMap)
+      {
+         participantInfoMap = new HashMap<String, ParticipantInfo>();
+      }
+      
+      if (!participantInfoMap.containsKey(participantQID))
+      {
+         participantInfoMap.put(participantQID, participantInfo);
       }
    }
    
