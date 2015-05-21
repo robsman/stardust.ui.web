@@ -60,7 +60,8 @@
       this.noImplementation = null;
       this.ruleSet = false;
       this.application = false;
-
+      this.noOfRetries = null;
+      this.retryInterval = null;
       if (this.modelElement.taskType == sdModelerConstants.NONE_TASK_TYPE
               || this.modelElement.taskType == sdModelerConstants.MANUAL_TASK_TYPE) {
 
@@ -79,6 +80,11 @@
                 ? sdModelerConstants.TO_BE_DEFINED
                 : this.modelElement.applicationFullId;
         this.application = true;
+
+        if (this.modelElement.attributes && this.modelElement.attributes['synchronous:retry:enable']) {
+        	this.noOfRetries = parseInt(this.modelElement.attributes['synchronous:retry:number']);
+        	this.retryInterval = parseInt(this.modelElement.attributes['synchronous:retry:time']);
+        }
       }
     }
 
@@ -125,7 +131,7 @@
       var modelsSorted = sdUtilService.convertToSortedArray(this.propertiesPanel
               .getModels(), "name", true);
 
-      var otherModel = i18n('modeler.general.otherModel');
+      var otherModel = i18n('modeler.general.otherModels');
 
       for ( var n in modelsSorted) {
         if (modelsSorted[n] == this.getModel()) {
@@ -215,6 +221,34 @@
       this.submitImplementionChanges();
     }
 
+
+    /**
+     * 
+     */
+    ActivityImplementationTaskCtrl.prototype.onRetryChange = function() {
+    	var activity = this.propertiesPanel.element.modelElement;
+        if (this.noOfRetries > 0) {
+            if (this.noOfRetries !== activity.attributes['synchronous:retry:number']) {
+              activity.attributes['synchronous:retry:number'] = this.noOfRetries;
+            }
+            if (!activity.attributes['synchronous:retry:enable']) {
+              activity.attributes['synchronous:retry:enable'] = true;
+            }
+            if (this.retryInterval && this.retryInterval != activity.attributes['synchronous:retry:time']) {
+              activity.attributes['synchronous:retry:time'] = this.retryInterval;
+            } else if (!this.retryInterval) {
+              this.retryInterval = 5;
+              activity.attributes['synchronous:retry:time'] = 5;
+            }
+          } else {
+            this.retryInterval = "";
+            activity.attributes['synchronous:retry:enable'] = false;
+            activity.attributes['synchronous:retry:number'] = null;
+            activity.attributes['synchronous:retry:time'] = null;
+          }
+      this.submitRetryChanges();
+    };
+
     /**
      * 
      */
@@ -242,6 +276,17 @@
                 }
               });
     }
+
+    /**
+     * 
+     */
+    ActivityImplementationTaskCtrl.prototype.submitRetryChanges = function() {
+        this.propertiesPanel.submitChanges({
+            modelElement: {
+              attributes: this.propertiesPanel.element.modelElement.attributes
+            }
+          });
+        }
 
     /**
      * 
