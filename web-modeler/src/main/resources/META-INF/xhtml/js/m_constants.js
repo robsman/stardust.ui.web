@@ -306,6 +306,7 @@ define(function() {
 		STOP_EVENT_TYPE : "stopEvent",
 		GENERIC_CAMEL_ROUTE_EVENT_CLASS : "genericCamelRouteEvent",
 		NONE_EVENT_CLASS : "none",
+		IMPLEMENTATION_NONE : "none",
 		TIMER_EVENT_CLASS : "timer",
 		MESSAGE_EVENT_CLASS : "message",
 		ERROR_EVENT_CLASS : "exception",

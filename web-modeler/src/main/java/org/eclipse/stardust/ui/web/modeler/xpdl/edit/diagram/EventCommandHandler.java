@@ -93,7 +93,10 @@ public class EventCommandHandler
             StartEventSymbol startEventSymbol = updateAndAddSymbol(parentLaneSymbol, request,
                   AbstractElementBuilder.F_CWM.createStartEventSymbol());
 
-            if (implementation == null || !implementation.equalsIgnoreCase("none"))
+            // Create a manual trigger if the implementation is not set to none and 
+            // there is no participant assigned to the parent lane.
+            if ((implementation == null || !implementation.equalsIgnoreCase("none"))
+                     && null != parentLaneSymbol.getParticipantReference())
             {
                TriggerType manualTrigger = newManualTrigger(processDefinition) //
                      .accessibleTo(LaneParticipantUtil.getParticipant(parentLaneSymbol))
