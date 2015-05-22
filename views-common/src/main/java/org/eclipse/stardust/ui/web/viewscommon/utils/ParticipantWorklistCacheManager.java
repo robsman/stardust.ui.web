@@ -311,7 +311,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
    {
       if (null == participantInfoMap)
       {
-         participantInfoMap = new HashMap<String, ParticipantInfo>();
+         participantInfoMap = new LinkedHashMap<String, ParticipantInfo>();
       }
       
       if (!participantInfoMap.containsKey(participantQID))

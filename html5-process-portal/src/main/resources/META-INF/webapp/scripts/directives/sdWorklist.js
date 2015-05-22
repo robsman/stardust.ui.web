@@ -628,7 +628,6 @@
 	 */
 	ActivityTableCompiler.prototype.refresh = function() {
 	    this.dataTable.refresh(true);
-	    sdViewUtilService.syncLaunchPanels();
 	};
 
 	/*
@@ -663,6 +662,7 @@
 		    deferred.resolve(self.activities);
 		    self.safeApply();
 		    self.storePriorities(self.activities.list);
+		    sdViewUtilService.syncLaunchPanels();
 		}, function(error) {
 		    deferred.reject(error);
 		});
@@ -692,6 +692,7 @@
 		    sdActivityInstanceService.getTrivialManualActivitiesDetails(activityOIDs).then(function(data) {
 			self.activities.trivialManualActivities = data;
 			deferred.resolve(self.activities);
+			sdViewUtilService.syncLaunchPanels();
 			self.safeApply();
 		    }, function(error) {
 			deferred.reject(error);

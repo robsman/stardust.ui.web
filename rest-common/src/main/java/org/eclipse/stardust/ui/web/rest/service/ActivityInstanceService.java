@@ -14,9 +14,6 @@
 package org.eclipse.stardust.ui.web.rest.service;
 
 
-import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isActivatable;
-import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isSupportsWeb;
-
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -363,11 +360,11 @@ public class ActivityInstanceService
    public NotificationMap reactivate(Long activityOID)
    {
       NotificationMap notification = new NotificationMap();
-      ActivityInstance ai = null;
+      ActivityInstance ai = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getActivityInstance(activityOID);
       try
       {
          notification = activityInstanceUtils.activate(activityOID);
-         serviceFactoryUtils.getWorkflowService().unbindActivityEventHandler(ai.getOID(), "Resubmission");
+         serviceFactoryUtils.getWorkflowService().unbindActivityEventHandler(activityOID , "Resubmission");
          notification.addSuccess(new NotificationDTO(activityOID, ai.getActivity().getName(), null));
       }
       catch (ConcurrencyException ce)

@@ -555,7 +555,7 @@ public class ActivityInstanceUtils
    public NotificationMap activate(Long activityOID)
    {
       NotificationMap notification = new NotificationMap();
-      ActivityInstance ai = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils .getActivityInstance(activityOID);
+      ActivityInstance ai = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getActivityInstance(activityOID);
       if (!isSupportsWeb(ai.getActivity()))
       {
          notification.addFailure(new NotificationDTO(activityOID, ai.getActivity().getName(), MessagesViewsCommonBean

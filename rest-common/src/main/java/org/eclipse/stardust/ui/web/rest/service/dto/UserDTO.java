@@ -27,6 +27,9 @@ public class UserDTO extends AbstractDTO
    @DTOAttribute("id")
    public String id;
 
+   @DTOAttribute("qualifiedId")
+   public String qualifiedId;
+
    @DTOAttribute("name")
    public String displayName;
 

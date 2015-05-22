@@ -81,6 +81,8 @@
 			   restUrl = restUrl + separator + queryParams.substr(1);
 		   }
 		   var postData = sdDataTableHelperService.convertToPostParams(query.options);
+		   postData['worklistId'] = query.id;
+		   
 		   var worklist = $resource(restUrl, {
 			   type : '@type',
 			   id : '@id'

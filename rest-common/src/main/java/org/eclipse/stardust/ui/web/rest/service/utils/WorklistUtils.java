@@ -13,15 +13,12 @@ package org.eclipse.stardust.ui.web.rest.service.utils;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
-import org.eclipse.stardust.engine.api.model.ModelParticipant;
-import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.query.ActivityFilter;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
@@ -42,12 +39,15 @@ import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.UserService;
+import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ResubmissionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ResubmissionUtils.ModelResubmissionActivity;
+import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
 import org.springframework.stereotype.Component;
 
 /**
@@ -77,9 +77,16 @@ public class WorklistUtils
       String userID =  userService.getLoggedInUser().id;
       ParticipantInfo participantInfo =   ParticipantWorklistCacheManager.getInstance().getParticipantInfoFromCache(participantQId);
       WorklistQuery query  = (WorklistQuery)ParticipantWorklistCacheManager.getInstance().getWorklistQuery(participantInfo, userID);
+    
       ActivityTableUtils.addCriterias(query, options);
       Worklist worklist = serviceFactoryUtils.getWorkflowService().getWorklist((WorklistQuery)query);
       QueryResult< ? > queryResult = extractParticipantWorklist(worklist, participantInfo);
+      
+      if (options.filter == null)
+      {
+         updateParticipantManagerCache(participantInfo, userID, queryResult);
+      }
+      
       return queryResult;
 
    }
@@ -104,12 +111,31 @@ public class WorklistUtils
             query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
                   ActivityInstanceState.Application, ActivityInstanceState.Suspended});
          }
+         
          FilterOrTerm or = query.getFilter().addOrTerm();
          or.add(ActivityInstanceQuery.CURRENT_USER_PERFORMER_OID.isEqual(user.getOID()));
 
          ActivityTableUtils.addCriterias(query, options);
 
          ActivityInstances activityInstances = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+         
+         ParticipantInfo participantInfo =  ParticipantWorklistCacheManager.getInstance().getParticipantInfoFromCache(user.getQualifiedId());
+         
+         if (options.filter == null)
+         {
+            if (fetchAllStates)
+            {
+
+               updateActivitiyQueryCache(options.worklistId, activityInstances);
+            }
+            else
+            {
+
+               updateParticipantManagerCache(participantInfo, userId, activityInstances);
+            }
+
+         }
+         
          return activityInstances;
       }
       else
@@ -144,6 +170,7 @@ public class WorklistUtils
             }
          }
          ActivityTableUtils.addCriterias(query, options);
+         
          ActivityInstances activityInstances = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
 
          return activityInstances;
@@ -178,7 +205,13 @@ public class WorklistUtils
 
       ActivityTableUtils.addCriterias(criticalActivitiesQuery, options);
 
-      return serviceFactoryUtils.getQueryService().getAllActivityInstances(criticalActivitiesQuery);
+      QueryResult<?> result  =  serviceFactoryUtils.getQueryService().getAllActivityInstances(criticalActivitiesQuery);
+
+      if(null == options.filter ){
+         updateActivitiyQueryCache(options.worklistId, result);
+      }
+      return result;
+
    }
 
    /**
@@ -197,8 +230,13 @@ public class WorklistUtils
       query.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
 
       ActivityTableUtils.addCriterias(query, options);
-
-      return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+    
+      QueryResult<?> result  =  serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+      
+      if(null == options.filter ){
+         updateActivitiyQueryCache(options.worklistId, result);
+      }
+      return result;
    }
 
    /**
@@ -240,8 +278,13 @@ public class WorklistUtils
       query.where(new ProcessDefinitionFilter(processQId, false));
 
       ActivityTableUtils.addCriterias(query, options);
-
-      return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+      
+      QueryResult<?> result  =  serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+      
+      if(null == options.filter ){
+         updateActivitiyQueryCache(options.worklistId, result);
+      }
+      return result;
    }
 
    /**
@@ -276,7 +319,13 @@ public class WorklistUtils
 
       ActivityTableUtils.addCriterias(query, options);
 
-      return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+      QueryResult<?> result  =  serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+
+      if(null == options.filter ){
+         updateActivitiyQueryCache(options.worklistId, result);
+      }
+      
+      return result;
    }
 
    /**
@@ -293,7 +342,17 @@ public class WorklistUtils
 
       ActivityTableUtils.addCriterias(query, options);
 
-      return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+      QueryResult<?> result  =  serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+      
+      UserDTO loggedInUser = userService.getLoggedInUser();
+      
+      ParticipantInfo participantInfo = ParticipantWorklistCacheManager.getInstance().getParticipantInfoFromCache(loggedInUser.qualifiedId);
+
+      if(null == options.filter ){
+         updateParticipantManagerCache(participantInfo, loggedInUser.id, result);
+      }
+      
+      return result;
    }
 
    /**
@@ -309,7 +368,51 @@ public class WorklistUtils
 
       ActivityTableUtils.addCriterias(query, options);
 
-      return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+      QueryResult<?> result  =  serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+     
+      if(null == options.filter ) {
+         updateActivitiyQueryCache(options.worklistId, result);
+      }
+      
+      return result;
+   }
+   
+   
+   /**
+    * 
+    * @param participantInfo
+    * @param userId
+    * @param queryResult
+    */
+   private <T> void updateParticipantManagerCache(ParticipantInfo participantInfo, String userId, QueryResult<T> queryResult)
+   {
+      ParticipantWorklistCacheManager.getInstance().setWorklistCount(participantInfo, userId,
+            queryResult.getTotalCount());
+      ParticipantWorklistCacheManager.getInstance().setWorklistThresholdCount(participantInfo, userId,
+            queryResult.getTotalCountThreshold());
+   }
+   
+   /**
+    * 
+    * @param worklistId
+    * @param queryResult
+    */
+   private <T> void updateActivitiyQueryCache(String worklistId, QueryResult<T> queryResult)
+   {
+      if (SpecialWorklistCacheManager.isSpecialWorklist(worklistId))
+      {
+         SpecialWorklistCacheManager.getInstance().setWorklistCount(worklistId, queryResult.getTotalCount());
+         SpecialWorklistCacheManager.getInstance().setWorklistThresholdCount(worklistId, queryResult.getTotalCountThreshold());
+      }
+      else
+      {
+         if (ProcessWorklistCacheManager.isInitialized())
+         {
+            ProcessWorklistCacheManager.getInstance().setWorklistCount(worklistId, queryResult.getTotalCount());
+            ProcessWorklistCacheManager.getInstance().setWorklistThresholdCount(worklistId,
+                  queryResult.getTotalCountThreshold());
+         }
+      }
    }
 
    /**

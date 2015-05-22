@@ -574,7 +574,8 @@ public class ActivityTableUtils
       }
       options.visibleDescriptorColumns = columnsList;
       options.allDescriptorsVisible = postJSON.getAsJsonObject("descriptors").get("fetchAll").getAsBoolean();
-
+      options.worklistId = postJSON.get("worklistId").getAsString();
+      
       return options;
    }
 
