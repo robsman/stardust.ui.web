@@ -578,7 +578,7 @@
 	    self.cleanLocals();
 
 	    var query = angular.extend({}, this.query);
-	    options.descriptorColumns = self.descritorCols;
+	    options.descriptorColumns = self.descriptorCols;
 	    query.options = options;
 
 	    if (angular.isDefined(this.sdDataCtrl)) {
@@ -665,16 +665,15 @@
 	    var self = this;
 
 	    sdProcessDefinitionService.getDescriptorColumns().then(function(descriptors) {
-		self.descritorCols = [];
+		self.descriptorCols = [];
 		angular.forEach(descriptors, function(descriptor) {
-		    self.descritorCols.push({
+		    self.descriptorCols.push({
 			id : descriptor.id,
-			field : "descriptorValues['" + descriptor.title + "'].value",
+			field : "descriptorValues['" + descriptor.id + "'].value",
 			title : descriptor.title,
 			dataType : descriptor.type,
 			sortable : descriptor.sortable,
-			filterable : descriptor.filterable,
-			key : descriptor.title.replace(/ /g, '')
+			filterable : descriptor.filterable
 		    });
 		});
 

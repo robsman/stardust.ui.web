@@ -22,13 +22,14 @@ public class ProcessDescriptor extends DefaultRowModel
 
    public ProcessDescriptor(String id, String key, String value)
    {
+      this.id = id;
       this.key = key;
       this.value = value;
    }
 
    public String getId()
    {
-      return key;
+      return id;
    }
 
    public String getKey()

@@ -72,11 +72,11 @@
 		   var visibleDescriptors = [];
 		   
 		   angular.forEach(options.descriptorColumns,function(descriptor){
-		      var found =  $filter('filter')(options.columns, { name : descriptor.key
+		      var found =  $filter('filter')(options.columns, { name : descriptor.id
 		       },true);
 		      
 		      if(found && found.length > 0){
-			  visibleDescriptors.push(descriptor.key);
+			  visibleDescriptors.push(descriptor.id);
 		      }
 		   });
 
