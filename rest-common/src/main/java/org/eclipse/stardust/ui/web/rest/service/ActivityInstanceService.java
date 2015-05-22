@@ -360,10 +360,10 @@ public class ActivityInstanceService
    public NotificationMap reactivate(Long activityOID)
    {
       NotificationMap notification = new NotificationMap();
-      ActivityInstance ai = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getActivityInstance(activityOID);
+      ActivityInstance ai = null;
       try
       {
-         notification = activityInstanceUtils.activate(activityOID);
+         ai = serviceFactoryUtils.getWorkflowService().activate(activityOID);
          serviceFactoryUtils.getWorkflowService().unbindActivityEventHandler(activityOID , "Resubmission");
          notification.addSuccess(new NotificationDTO(activityOID, ai.getActivity().getName(), null));
       }
