@@ -605,7 +605,7 @@
 			var contents = 'rowData.' + colDef.field;
 
 			if (colDef.dataType === 'int') {
-				contents = 'rowData.' + colDef.field + ' | number';
+				contents = 'rowData.' + colDef.field;
 			} else if (colDef.dataType === 'dateTime') {
 				contents = 'rowData.' + colDef.field + ' | sdDateTimeFilter';
 			} else if (colDef.dataType === 'date') {
