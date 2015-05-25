@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -326,6 +328,37 @@ public class WorklistResource
          Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          QueryResultDTO resultDTO = getWorklistService().getAllActivable(options);
+         return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (ObjectNotFoundException onfe)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+   }
+   
+   
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("/processInstance")
+   public Response getWorklistForProcessInstances(@QueryParam("skip") @DefaultValue(DEFAULT_SKIP_STEP) Integer skip,
+         @QueryParam("pageSize") @DefaultValue(DEFAULT_PAGE_SIZE) Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue(DEFAULT_ORDER_BY_FIELD) String orderBy,
+         @QueryParam("orderByDir") @DefaultValue(DEFAULT_ORDER) String orderByDir,
+         @QueryParam("pInstanceOids") @DefaultValue(DEFAULT_ORDER) String pInstanceOids,
+         String postData)
+   {
+      try
+      {
+         List<String> pInstanceOidList = new ArrayList<String>(Arrays.asList(pInstanceOids.split(",")));
+         Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
+         populatePostData(options, postData);
+         QueryResultDTO resultDTO = getWorklistService().getWorklistForProcessInstances(options, pInstanceOidList);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }
       catch (ObjectNotFoundException onfe)

@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.engine.api.query.QueryResult;
@@ -143,6 +145,17 @@ public class WorklistService
    public QueryResultDTO getAllActivable(Options options)
    {
       QueryResult< ? > queryResult = worklistUtils.getAllActivable(options);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
+   }
+   
+   /***
+    * 
+    * @param options
+    * @return
+    */
+   public QueryResultDTO getWorklistForProcessInstances(Options options, List<String> pInstanceOids)
+   {
+      QueryResult< ? > queryResult = worklistUtils.getForProcessInstances(options, pInstanceOids);
       return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
    }
 }

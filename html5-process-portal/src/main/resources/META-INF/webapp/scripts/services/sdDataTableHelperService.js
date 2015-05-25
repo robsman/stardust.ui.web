@@ -85,6 +85,18 @@
 		   }
 		   return postData;
 	   };
+	   
+	   /**
+	    * Append Query params to Rest url
+	    */
+	   TableHelperService.prototype.appendQueryParamsToURL = function (restURL, param) {
+	       var separator = "?";
+	       if(/[?]/.test(restURL)) {
+		   separator =  "&";
+	       }
+		return restURL+ separator + param;
+	   }
+	   
    };
    
 })();

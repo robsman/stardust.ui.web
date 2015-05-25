@@ -35,6 +35,7 @@ import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.Worklist;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
+import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.web.rest.Options;
@@ -376,6 +377,34 @@ public class WorklistUtils
       
       return result;
    }
+   
+   
+   /**
+    * 
+    * @param options
+    * @return
+    */
+   public QueryResult< ? > getForProcessInstances(Options options, List<String> pInstanceOids)
+   {
+
+      ActivityInstanceQuery query = ActivityInstanceQuery.findAlive();
+      FilterOrTerm orTerm = query.getFilter().addOrTerm();
+      for (String oid : pInstanceOids)
+      {
+         orTerm.add(ActivityInstanceQuery.PROCESS_INSTANCE_OID.isEqual(Long.valueOf(oid)));
+      }
+
+      ActivityTableUtils.addCriterias(query, options);
+
+      QueryResult<?> result  =  serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+     
+      if(null == options.filter ) {
+         updateActivitiyQueryCache(options.worklistId, result);
+      }
+      
+      return result;
+   }
+   
    
    
    /**

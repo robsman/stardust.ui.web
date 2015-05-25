@@ -61,28 +61,32 @@
 			   restUrl = restUrl  + ":type/:id";
 			   urlTemplateParams.type = "user";
 			   urlTemplateParams.id = query.userId;
-		   }else{
+		   }else if (query.pInstanceOids) {
+		       	   restUrl = restUrl  + ":type";
+		       	   urlTemplateParams.type = "processInstance";
+		       	   var params = "pInstanceOids="+query.pInstanceOids;
+		       	   restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, params);
+		   }
+		   else{
 			   if(!query.url){
 				   throw "Illegal type passed to getWorklist : "+query;
 			   }
 		   }
 		   
+		   
 		   if(query.queryParams){
-		       restUrl = restUrl+ '?'+ query.queryParams;
+		       restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, queryParams);
 		   }
 		   
 		   var queryParams = sdDataTableHelperService.convertToQueryParams(query.options);
 
 		   if (queryParams.length > 0) {
-			   var separator = "?";
-			   if(/[?]/.test(restUrl)){
-				   separator =  "&";
-			   }
-			   restUrl = restUrl + separator + queryParams.substr(1);
+		       restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, queryParams.substr(1));
 		   }
+		   
 		   var postData = sdDataTableHelperService.convertToPostParams(query.options);
 		   postData['worklistId'] = query.id;
-		   
+		
 		   var worklist = $resource(restUrl, {
 			   type : '@type',
 			   id : '@id'

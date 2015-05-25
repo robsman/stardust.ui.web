@@ -15,17 +15,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.CollectionUtils;
-import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
-import org.eclipse.stardust.engine.api.query.FilterOrTerm;
-import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.SubprocessSpawnInfo;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
-import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.table.DataTable;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
@@ -206,19 +204,16 @@ public class SpawnProcessHelper
       {
          if (CollectionUtils.isNotEmpty(subprocessInstances))
          {
-
             Map<String, Object> params = CollectionUtils.newTreeMap();
-            ActivityInstanceQuery query = ActivityInstanceQuery.findAlive();
-
-            FilterOrTerm orTerm = query.getFilter().addOrTerm();
+            List<Long> pInstanceOids = new ArrayList<Long>();
             for (ProcessInstance pInstance : subprocessInstances)
             {
-               orTerm.add(ActivityInstanceQuery.PROCESS_INSTANCE_OID.isEqual(pInstance.getOID()));
+               pInstanceOids.add(pInstance.getOID());
             }
-            params.put(Query.class.getName(), query);
             params.put("name", workListTitle);
+            params.put("pInstanceOids", StringUtils.join(pInstanceOids, ','));
             long id = new Date().getTime();//to make view unique
-            PortalApplication.getInstance().openViewById("worklistPanel", "id=" + id, params, null, false);
+            PortalApplication.getInstance().openViewById("worklistViewHtml5", "id=" + id, params, null, false);
          }
       }
       catch (Exception e)
