@@ -350,7 +350,7 @@ public class WorklistResource
          @QueryParam("pageSize") @DefaultValue(DEFAULT_PAGE_SIZE) Integer pageSize,
          @QueryParam("orderBy") @DefaultValue(DEFAULT_ORDER_BY_FIELD) String orderBy,
          @QueryParam("orderByDir") @DefaultValue(DEFAULT_ORDER) String orderByDir,
-         @QueryParam("pInstanceOids") @DefaultValue(DEFAULT_ORDER) String pInstanceOids,
+         @QueryParam("oids") @DefaultValue("") String pInstanceOids,
          String postData)
    {
       try

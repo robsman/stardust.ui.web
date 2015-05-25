@@ -64,7 +64,7 @@
 		   }else if (query.pInstanceOids) {
 		       	   restUrl = restUrl  + ":type";
 		       	   urlTemplateParams.type = "processInstance";
-		       	   var params = "pInstanceOids="+query.pInstanceOids;
+		       	   var params = "oids="+query.pInstanceOids;
 		       	   restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, params);
 		   }
 		   else{

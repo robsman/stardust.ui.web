@@ -452,8 +452,12 @@
 	    self.switchCompleted = function(result) {
 		self.refresh();
 		if (angular.isDefined(result)) {
-		    // TODO pass result as an argument to below view
-		    sdViewUtilService.openView('worklistViewHtml5', true);
+		    var name  =  sgI18nService.translate('views-common-messages.views-switchProcessDialog-worklist-title');
+		    var params = {
+			    pInstanceOids :  result.join(','),
+			    name : name   
+		    }  
+		    sdViewUtilService.openView('worklistViewHtml5', 'id='+new Date().getTime(), params, true);
 		}
 	    };
 
