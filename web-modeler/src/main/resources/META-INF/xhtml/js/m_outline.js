@@ -960,7 +960,13 @@ define(
 																				.attr("modelUUID"));
 															});
 												}
-											}
+											},
+											"cloneProcess" : {
+                        "label" : m_i18nUtils.getProperty("modeler.outline.contextMenu.clone"),
+                          "action" : function(obj) {
+                          cloneProcess(obj.attr("elementId"), obj.attr("modelUUID"));
+                        }
+                      }
 										};
 
 										addMenuOptions(options,
@@ -2240,6 +2246,17 @@ define(
 							"id" : processId
 						}));
 			};
+			
+			/**
+			 * 
+			 */
+	    function cloneProcess(processId, modelUUID) {
+        var model = m_model.findModelByUuid(modelUUID);
+        m_commandsController.submitCommand(m_command
+            .createCloneProcessCommand(model.id, model.id, {
+              "id" : processId
+            }));
+      };
 
 			/**
 			 */
