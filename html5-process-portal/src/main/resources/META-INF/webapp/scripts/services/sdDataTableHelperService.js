@@ -12,7 +12,9 @@
  * @author johnson.quadras
  */
 (function() {
-	'use strict';
+
+    'use strict';
+	
 	angular.module('workflow-ui.services').provider('sdDataTableHelperService',function() {
 		this.$get = ['$filter', function($filter) {
 			var service = new TableHelperService($filter);
@@ -32,19 +34,19 @@
 		   	var queryParams = "";
 	       
 		   	if (options.skip != undefined) {
-	        	 queryParams += "&skip=" + options.skip;
-	         }
-	        
+		   	    queryParams += "&skip=" + options.skip;
+		   	}
+
 		   	if (options.pageSize != undefined) {
-	        	 queryParams += "&pageSize=" + options.pageSize;
-	         }
-	        
+		   	    queryParams += "&pageSize=" + options.pageSize;
+		   	}
+
 		   	if (options.order != undefined) {
-	            // Supports only single column sort
-	            var index = options.order.length - 1;
-	            queryParams += "&orderBy=" + options.order[index].name;
-	            queryParams += "&orderByDir=" + options.order[index].dir;
-	         }
+		   	    // Supports only single column sort
+		   	    var index = options.order.length - 1;
+		   	    queryParams += "&orderBy=" + options.order[index].name;
+		   	    queryParams += "&orderByDir=" + options.order[index].dir;
+		   	}
 	         return queryParams
 	   };
 	   
@@ -89,14 +91,14 @@
 	   /**
 	    * Append Query params to Rest url
 	    */
-	   TableHelperService.prototype.appendQueryParamsToURL = function (restURL, param) {
+	   TableHelperService.prototype.appendQueryParamsToURL = function (restURL, params) {
 	       var separator = "?";
 	       if(/[?]/.test(restURL)) {
 		   separator =  "&";
 	       }
-		return restURL+ separator + param;
+	       return restURL+ separator + params;
 	   }
-	   
+
    };
    
 })();

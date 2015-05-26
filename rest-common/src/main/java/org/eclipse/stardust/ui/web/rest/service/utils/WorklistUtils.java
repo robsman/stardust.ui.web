@@ -35,7 +35,6 @@ import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.Worklist;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
-import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.web.rest.Options;
@@ -246,7 +245,7 @@ public class WorklistUtils
     * @param options
     * @return
     */
-   public QueryResult< ? > getItemtWorkingFromDate(String dateId, Options options)
+   public QueryResult< ? > getWorklistItemsFromDate(String dateId, Options options)
    {
       Date fromDate = ActivityTableUtils.determineDate(dateId);
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
@@ -311,9 +310,7 @@ public class WorklistUtils
          for (Iterator<ModelResubmissionActivity> as = resubmissionActivities.iterator(); as.hasNext();)
          {
             ModelResubmissionActivity activity = as.next();
-            or.add(ActivityFilter.forProcess(activity.getActivityId(), activity.getProcessId(),// TODO:check
-                                                                                               // FQID
-                                                                                               // change
+            or.add(ActivityFilter.forProcess(activity.getActivityId(), activity.getProcessId(),
                   activity.getModelOids(), false));
          }
       }
@@ -384,9 +381,8 @@ public class WorklistUtils
     * @param options
     * @return
     */
-   public QueryResult< ? > getForProcessInstances(Options options, List<String> pInstanceOids)
+   public QueryResult< ? > getWorklistForProcessInstances(Options options, List<String> pInstanceOids)
    {
-
       ActivityInstanceQuery query = ActivityInstanceQuery.findAlive();
       FilterOrTerm orTerm = query.getFilter().addOrTerm();
       for (String oid : pInstanceOids)
@@ -397,11 +393,7 @@ public class WorklistUtils
       ActivityTableUtils.addCriterias(query, options);
 
       QueryResult<?> result  =  serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
-     
-      if(null == options.filter ) {
-         updateActivitiyQueryCache(options.worklistId, result);
-      }
-      
+
       return result;
    }
    

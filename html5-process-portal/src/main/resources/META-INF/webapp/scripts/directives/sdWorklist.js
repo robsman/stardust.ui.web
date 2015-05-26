@@ -500,7 +500,7 @@
 	ActivityTableCompiler.prototype.initializeWorklistMode = function(attr, scope) {
 	    trace.debug("Table intialized in worklist mode.");
 	    this.priorityEditable = false;
-	    this.visbleColumns = DEFAULT_VALUES.WORKLIST.VISIBLE_COLUMNS;
+	    this.visibleColumns = DEFAULT_VALUES.WORKLIST.VISIBLE_COLUMNS;
 	    this.preferenceModule = DEFAULT_VALUES.WORKLIST.PREFERENCE_MODULE;
 	    this.exportFileName = "Worklist";
 	    this.initialSort = {
@@ -549,7 +549,7 @@
 		error : false,
 		result : {}
 	    };
-	    this.visbleColumns = DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.VISIBLE_COLUMNS;
+	    this.visibleColumns = DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.VISIBLE_COLUMNS;
 	    this.exportFileName = "Activity_Table";
 
 	    if (!attr.sdaPreferenceModule) {
@@ -622,8 +622,8 @@
 
 	    if (attr.sdaVisibleColumns) {
 		var visibleColumnGetter = $parse(attr.sdaVisibleColumns);
-		this.visbleColumns = visibleColumnGetter(scopeToUse);
-		trace.debug("Visible columns - ",this.visbleColumns);
+		this.visibleColumns = visibleColumnGetter(scopeToUse);
+		trace.debug("Visible columns - ",this.visibleColumns);
 	    }
 	};
 
@@ -849,26 +849,27 @@
 	 */
 	ActivityTableCompiler.prototype.containsAllTrivialManualActivities = function() {
 	    var self = this;
-	    var selectedtems = [];
+	    var selectedItems = [];
 	    var dataTable = self.dataTable;
 	    if (dataTable != null) {
-		selectedtems = dataTable.getSelection();
+		selectedItems = dataTable.getSelection();
 	    }
 
-	    if (selectedtems.length < 1) {
+	    if (selectedItems.length < 1) {
 		return false;
 	    }
 	    var activitiesData = [];
-	    angular.forEach(selectedtems, function(item) {
+	    angular.forEach(selectedItems, function(item) {
 		var trivialActivityInfo = self.activities.trivialManualActivities[item.activityOID];
 		if (trivialActivityInfo) {
 		    activitiesData.push(item.activityOID);
 		}
 	    });
 
-	    if (selectedtems.length == activitiesData.length) {
+	    if (selectedItems.length == activitiesData.length) {
 		return true;
 	    }
+	    
 	    return false;
 	};
 
