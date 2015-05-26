@@ -60,6 +60,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.InvalidateUserStatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserFilterDTO;
@@ -89,7 +90,7 @@ public class ParticipantManagementUtils
    @Resource
    private ActivityInstanceUtils activityInstanceUtils;
 
-   public UserGroupQueryResultDTO getAllUsers(Boolean hideInvalidatedUsers, Options options)
+   public QueryResultDTO getAllUsers(Boolean hideInvalidatedUsers, Options options)
    {
       UserQuery query = (UserQuery) createQuery(hideInvalidatedUsers);
 
@@ -138,7 +139,7 @@ public class ParticipantManagementUtils
     * @param users
     * @return
     */
-   private UserGroupQueryResultDTO buildAllUsersResult(QueryResult<User> users)
+   private QueryResultDTO buildAllUsersResult(QueryResult<User> users)
    {
       List<UserDTO> userDTOList = new ArrayList<UserDTO>();
 
@@ -166,35 +167,14 @@ public class ParticipantManagementUtils
          userDTOList.add(userDTO);
       }
 
-      UserGroupQueryResultDTO resultDTO = new UserGroupQueryResultDTO();
+      QueryResultDTO resultDTO = new QueryResultDTO();
       resultDTO.list = userDTOList;
       resultDTO.totalCount = users.getTotalCount();
-      resultDTO.activeCount = getActiveUsersCount();
-      resultDTO.allCount = getAllUsersCount();
       return resultDTO;
    }
 
-   /**
-    * 
-    * @return
-    */
-   private Long getActiveUsersCount()
-   {
-      QueryService service = serviceFactoryUtils.getQueryService();
-      Long count = new Long(service.getUsersCount(UserQuery.findActive()));
-      return count;
-   }
 
-   /**
-    * 
-    * @return
-    */
-   private Long getAllUsersCount()
-   {
-      QueryService service = serviceFactoryUtils.getQueryService();
-      Long count = new Long(service.getUsersCount(UserQuery.findAll()));
-      return count;
-   }
+ 
 
    /**
     * Apply table level filters

@@ -109,8 +109,7 @@
 				<td sda-exporter="rowData.repositoryId"><div
 						ng-bind="rowData.repositoryId"></div></td>
 				<td></td>
-				<td sda-exporter="rowData.author"><a href="#"
-					ng-click="docSearchViewCtrl.openUserDetails(rowData.documentOwner)">{{rowData.author}}</a>
+				<td sda-exporter="rowData.author"><sd-user-details sda-user-oid="rowData.userOID" sda-account="rowData.author"></sd-user-details>
 				</td>
 				<td>
 					<div style="text-align: right; white-space: nowrap;">
@@ -156,13 +155,6 @@
 		sda-template="plugins/html5-views-common/partials/views/attachDocumentResult.html"
 		sda-cancel-action-label="{{i18n('views-common-messages.common-ok')}}">
 	</div>
-	<div sd-dialog sda-modal="true"
-		sda-show="docSearchViewCtrl.showUserDetails" sda-type="custom"
-		sda-title="{{i18n('views-common-messages.views-userDetails-title')}}"
-		sda-scope="this"
-		sda-template="plugins/html5-views-common/partials/views/userDetails.html"
-		sda-width="400px">
-    </div>
 	<div sd-dialog="docSearchViewCtrl.documentHistory" sda-modal="true"
 		sda-show="docSearchViewCtrl.showDocumentVersions" sda-type="custom"
 		sda-title="{{i18n('views-common-messages.views-documentView-documentVersion-versionHistory')+ ' ' + docSearchViewCtrl.documentVersions.documentName}}"

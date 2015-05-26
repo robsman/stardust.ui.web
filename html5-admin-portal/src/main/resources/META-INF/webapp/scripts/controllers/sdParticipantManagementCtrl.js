@@ -15,28 +15,35 @@
 (function() {
 	'use strict';
 
-	angular.module("admin-ui").controller('sdParticipantManagementCtrl',
-			[ '$q', 'sdParticipantManagementService', 'sdLoggerService', 'sdUtilService', ParticipantManagementCtrl ]);
+	angular.module("admin-ui").controller(
+			'sdParticipantManagementCtrl',
+			[ '$q', 'sdParticipantManagementService', 'sdLoggerService', 'sdUtilService', 'sdUserService',
+					ParticipantManagementCtrl ]);
 
 	var _q;
 	var _sdParticipantManagementService
 	var trace;
 	var _sdUtilService;
+	var _sdUserService;
 
 	/**
 	 * 
 	 */
-	function ParticipantManagementCtrl($q, sdParticipantManagementService, sdLoggerService, sdUtilService) {
+	function ParticipantManagementCtrl($q, sdParticipantManagementService, sdLoggerService, sdUtilService,
+			sdUserService) {
 		trace = sdLoggerService.getLogger('admin-ui.sdParticipantManagementCtrl');
 		_q = $q;
 		_sdParticipantManagementService = sdParticipantManagementService;
 		_sdUtilService = sdUtilService;
+		_sdUserService = sdUserService;
 		this.allUsersTable = null;
 		this.showAllUsersTable = true;
 		this.hideInvalidatedUsers = false;
 		this.columnSelector = "admin";
 		this.rowSelectionForAllUsersTable = null;
 		this.exportFileNameForAllUsers = "AllUsers";
+
+		this.getAllCounts();
 	}
 
 	/**
@@ -54,8 +61,6 @@
 		_sdParticipantManagementService.getAllUsers(query).then(function(data) {
 			self.allUsers.list = data.list;
 			self.allUsers.totalCount = data.totalCount;
-			self.allUsers.activeCount = data.activeCount;
-			self.allUsers.allCount = data.allCount;
 			deferred.resolve(self.allUsers);
 		}, function(error) {
 			trace.log(error);
@@ -64,15 +69,27 @@
 
 		return deferred.promise;
 	};
-    /**
-     * 
-     */
+
+	ParticipantManagementCtrl.prototype.getAllCounts = function() {
+		var self = this;
+		_sdUserService.getAllCounts().then(function(data) {
+			self.activeCount = data.activeCount;
+			self.allCount = data.totalCount;
+		}, function(error) {
+			trace.log(error);
+		});
+	}
+
+	/**
+	 * 
+	 */
 	ParticipantManagementCtrl.prototype.refresh = function() {
 		var self = this;
 		self.allUsersTable.refresh();
+		self.getAllCounts();
 	};
 
-	ParticipantManagementCtrl.prototype.changeHideInvalidatedUsersFlag = function(){
+	ParticipantManagementCtrl.prototype.changeHideInvalidatedUsersFlag = function() {
 		var self = this;
 		self.hideInvalidatedUsers = !self.hideInvalidatedUsers;
 		self.allUsersTable.refresh();
@@ -165,6 +182,7 @@
 					if (data.success == true) {
 						deferred.resolve();
 						self.allUsersTable.refresh();
+						self.getAllCounts();
 					} else if (data.success == false) {
 						if (data.passwordValidationMsg != undefined) {
 							self.passwordValidationMsg = data.passwordValidationMsg;
@@ -237,6 +255,7 @@
 			self.activityInstances = data.activityInstances;
 			self.notificationMap = data.notificationMap;
 			self.allUsersTable.refresh();
+			self.getAllCounts();
 			if (self.activityInstances != undefined && self.activityInstances.length > 0) {
 				self.showDefaultDelegateDialog = true;
 			} else {
@@ -308,7 +327,7 @@
 		}
 		return oids;
 	};
-	
+
 	/**
 	 * 
 	 */

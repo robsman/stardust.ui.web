@@ -105,21 +105,6 @@
 		/**
 		 * 
 		 */
-		DocumentSearchService.prototype.getUserDetails = function(documentOwner) {
-			var restUrl = REST_BASE_URL + "/:type/:documentOwner";
-
-			var urlTemplateParams = {};
-
-			urlTemplateParams.type = "loadUserDetails";
-			urlTemplateParams.documentOwner = documentOwner;
-
-			return $resource(restUrl).get(urlTemplateParams).$promise;
-
-		};
-
-		/**
-		 * 
-		 */
 		DocumentSearchService.prototype.getAvailableProcessDefns = function() {
 			var restUrl = REST_BASE_URL + "/:type";
 

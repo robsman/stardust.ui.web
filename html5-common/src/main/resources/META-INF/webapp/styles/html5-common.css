@@ -8,7 +8,7 @@
  * Contributors:
  *     SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
- /************** General *****************/
+/************** General *****************/
 .msg-error {
 	color: red;
 	padding-left: 2px;
@@ -73,111 +73,110 @@
 }
 
 /************** popup dialog *****************/
-
 .popup-dlg {
-   position: absolute;
-   z-index: 10;
-   padding: 10px;
-   border-top: 1px solid #CCCCCC;
-   border-left: 1px solid #CCCCCC;
-   border-bottom: 1px solid #999999;
-   border-right: 1px solid #999999;
-   background: #FFFFFF;
-   overflow: auto;
-   box-shadow: 5px 5px 25px #888888; 
+	position: absolute;
+	z-index: 10;
+	padding: 10px;
+	border-top: 1px solid #CCCCCC;
+	border-left: 1px solid #CCCCCC;
+	border-bottom: 1px solid #999999;
+	border-right: 1px solid #999999;
+	background: #FFFFFF;
+	overflow: auto;
+	box-shadow: 5px 5px 25px #888888;
 }
 
 .popup-dlg-bgImg {
-	background: url('./css-images/notes-background.png') top repeat-x #FFFFE0;
+	background: url('./css-images/notes-background.png') top repeat-x
+		#FFFFE0;
 }
 
 .popup-dlg-hdr {
-   border-bottom: 1px solid #CCCCCC;
-   padding: 5px;
+	border-bottom: 1px solid #CCCCCC;
+	padding: 5px;
 }
 
 .popup-dlg-hdr-txt {
-   color: #A69A88;
-   font-size: 15px;
-   font-weight: bold;
+	color: #A69A88;
+	font-size: 15px;
+	font-weight: bold;
 }
 
 .popup-dlg-cls {
-   float: right;
-   margin: 5px 0px 0px 10px;
-   cursor: pointer;
+	float: right;
+	margin: 5px 0px 0px 10px;
+	cursor: pointer;
 }
 
 .popup-dlg-cnt {
-   padding-top: 10px;
-   padding-bottom: 10px;
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
 
 .popup-dlg-footer {
-   border-top: 1px solid #CCCCCC;
-   padding-top: 10px;
-   text-align: right;
-   white-space: nowrap;
+	border-top: 1px solid #CCCCCC;
+	padding-top: 10px;
+	text-align: right;
+	white-space: nowrap;
 }
 
 .popup-dlg-footer .button {
-   margin-left: 5px;
+	margin-left: 5px;
 }
 
 .popup-dlg-footer .button .primary {
-   margin-right: 5px;
-   border-radius: 3px;
-   color: white;
-   background: #24415E;
-   border-color: #21659d;
+	margin-right: 5px;
+	border-radius: 3px;
+	color: white;
+	background: #24415E;
+	border-color: #21659d;
 }
 
 .popup-dlg-footer .button .secondary {
-   background: #FFF !important;
-   color: #333 !important;
+	background: #FFF !important;
+	color: #333 !important;
 }
 
 .popup-error-icon {
 	color: red;
-	font-size:25px;
+	font-size: 25px;
 }
 
 .popup-info-icon {
-	font-size:25px;
+	font-size: 25px;
 }
 
 .popup-warning-icon {
-	font-size:25px;
-	color : #F7CA18;
+	font-size: 25px;
+	color: #F7CA18;
 	padding-right: 10px;
 }
 
 /************** Input Components *****************/
-
 .inp-sel-one {
-   border-color: #AAAAAA;
-   margin: 2px;
-   width: auto;
+	border-color: #AAAAAA;
+	margin: 2px;
+	width: auto;
 }
 
 .inp-check-box {
-    margin: 0 5px 2px 2px;
-    padding: 2px;
-    vertical-align: middle;
+	margin: 0 5px 2px 2px;
+	padding: 2px;
+	vertical-align: middle;
 }
 
 .inp-text-box {
-    margin: 2px;
-    padding: 3px;
-    font: 11px tahoma;
-    background: #FFF;
-    border: 1px solid #d9d9d9;
+	margin: 2px;
+	padding: 3px;
+	font: 11px tahoma;
+	background: #FFF;
+	border: 1px solid #d9d9d9;
 }
 
 .ui-section {
-   border-right: 1px dotted gray;
-   padding-right: 10px;
-   margin-right: 10px;
+	border-right: 1px dotted gray;
+	padding-right: 10px;
+	margin-right: 10px;
 }
 
 .button-link {
@@ -186,41 +185,39 @@
 }
 
 .button-link[disabled='disabled'] {
-	cursor: default;	
+	cursor: default;
 }
 
 /************** Behaviors *****************/
-
 .right {
-	float:right;
+	float: right;
 }
 
 .left {
-	float:left;
+	float: left;
 }
 
 /*Clear Fix*/
-.cf:before,
-.cf:after {
-    content: " "; /* 1 */
-    display: table; /* 2 */
+.cf:before, .cf:after {
+	content: " "; /* 1 */
+	display: table; /* 2 */
 }
 
 .cf:after {
-    clear: both;
+	clear: both;
 }
 
 /************** COMMON CLASSES *****************/
 .section {
 	border-bottom: solid 1px #ddd;
-	display:block;
-	margin-bottom:1em;
+	display: block;
+	margin-bottom: 1em;
 	padding-left: 10px;
 	padding-right: 10px;
 }
 
 /*Base for all button type elements*/
-.button{
+.button {
 	border-radius: 3px;
 	background: #24415E !important;
 	color: white !important;
@@ -228,13 +225,13 @@
 }
 
 /*Any .button preceeded by a .button will have this styling*/
-.button ~ .button{
+.button ~ .button {
 	background: #FFF !important;
 	color: #333 !important;
 }
 
 /*Text headers, TODO: split out font-size and line height*/
-.header{
+.header {
 	font-family: Lato, Arial, Helvetica, sans-serif;
 	font-size: 15px;
 	font-weight: 400 !important;
@@ -247,7 +244,7 @@
 }
 
 /*Bubble container for simple counts, icons*/
-.bubble{
+.bubble {
 	display: inline-block;
 	min-width: 10px;
 	padding: 3px 7px;
@@ -263,99 +260,94 @@
 }
 
 /***********Backgrounds*/
-.dark{
-	background-color:#777;
-	color:#fff;
+.dark {
+	background-color: #777;
+	color: #fff;
 }
 
-.transparent{
-	background-color:transparent;
+.transparent {
+	background-color: transparent;
 }
 
-.message{
-	width:calc(100% -10px);
-	padding:5px;
-	border-radius:5px;
-	border:solid 1px #999;
+.message {
+	width: calc(100% -10px);
+	padding: 5px;
+	border-radius: 5px;
+	border: solid 1px #999;
 	cursor: pointer;
 }
 
-.warning{
-	background:orange;
-	color:#fff;
+.warning {
+	background: orange;
+	color: #fff;
 }
-
-
-
-
 
 /********* Classes for HTTP loading and animation ***************/
-.loading{
-  background:#00F;
-  width:100%;
-  height:2px;
-  overflow:hidden;
-  position:relative;
+.loading {
+	background: #00F;
+	width: 100%;
+	height: 2px;
+	overflow: hidden;
+	position: relative;
 }
 
-.loading-inner{
-  background:#EEF;
-  -webkit-animation-duration: 1s;
-  -webkit-animation-name: slideLeft;
-  -webkit-animation-iteration-count: infinite;
-  -moz-animation-duration: 1s;
-  -moz-animation-name: slideLeft;
-  -moz-animation-iteration-count: infinite;
-  animation-duration: 1s;
-  animation-name: slideLeft;
-  animation-iteration-count: infinite;
-  
-  width:20px;
-  height:2px;
-  border-radius:50%;
+.loading-inner {
+	background: #EEF;
+	-webkit-animation-duration: 1s;
+	-webkit-animation-name: slideLeft;
+	-webkit-animation-iteration-count: infinite;
+	-moz-animation-duration: 1s;
+	-moz-animation-name: slideLeft;
+	-moz-animation-iteration-count: infinite;
+	animation-duration: 1s;
+	animation-name: slideLeft;
+	animation-iteration-count: infinite;
+	width: 20px;
+	height: 2px;
+	border-radius: 50%;
 }
 /********Animations and transitions**************/
-@-webkit-keyframes slideLeft {
-  from {
-    margin-left:0;
-  }
-
-  to {
-   margin-left:100%;
-  }
+@
+-webkit-keyframes slideLeft {from { margin-left:0;
+	
 }
 
-@-moz-keyframes slideLeft {
-  from {
-    margin-left:0;
-  }
-
-  to {
-   margin-left:100%;
-  }
+to {
+	margin-left: 100%;
 }
 
-@keyframes slideLeft {
-  from {
-    margin-left:0;
-  }
+}
+@
+-moz-keyframes slideLeft {from { margin-left:0;
+	
+}
 
-  to {
-   margin-left:100%;
-  }
+to {
+	margin-left: 100%;
+}
+
+}
+@
+keyframes slideLeft {from { margin-left:0;
+	
+}
+
+to {
+	margin-left: 100%;
+}
+
 }
 
 /********sd-dialog*******************************/
-
 .sd-dialog {
-	width: auto; 
-	background: none; 
+	width: auto;
+	background: none;
 	top: 0;
-	overflow: visible; 
-	border: 0; 
-	box-shadow: none; 
-	margin:0; 
-	position:absolute;
+	overflow: visible;
+	border: 0;
+	box-shadow: none;
+	margin: 0;
+	position: absolute;
 }
 
 .no-modal {
@@ -438,7 +430,14 @@ button.close {
 .modal-header .close {
 	margin-top: -2px;
 }
-	
+
 .iconDisabled {
 	color: gray;
+}
+
+.trimText {
+	white-space: nowrap;
+	width: 22em;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }

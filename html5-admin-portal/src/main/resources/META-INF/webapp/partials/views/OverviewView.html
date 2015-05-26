@@ -1,0 +1,99 @@
+<div style="padding-left: 20px;" ng-controller="sdOverviewCtrl as ctrl">
+	<div class="view-panel-toolbar toolbar-buttons">
+		<div class="view-toolbar-section">
+			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+		</div>
+	</div>
+	<div style="padding-top: 20px;">
+		<div class="overview-wrapper">
+			<div>
+				<div class="view-panel-toolbar">
+					<span style="color: #2F6871; font-weight: bold; font-size: 11px;">{{i18n('admin-portal-messages.views-common-processes-label')}}</span>
+				</div>
+				<table>
+					<tr>
+						<td><label class="form-lable">{{i18n('admin-portal-messages.views-common-total-label')}}:</label></td>
+						<td style="padding-bottom: 5px;">{{ctrl.processInstanceCounts.total}}</td>
+						<td style="padding-left: 5px;"><label class="form-lable">{{i18n('admin-portal-messages.views-common-active-label')}}:</label></td>
+						<td style="padding-bottom: 5px;">{{ctrl.processInstanceCounts.active}}</td>
+						<td style="padding-left: 5px;"><label class="form-lable">{{i18n('admin-portal-messages.views-common-interrupted-label')}}:</label></td>
+						<td style="padding-bottom: 5px;">{{ctrl.processInstanceCounts.waiting}}</td>
+						<td style="padding-left: 5px;"><label class="form-lable">{{i18n('admin-portal-messages.views-common-aborted-label')}}:</label></td>
+						<td style="padding-bottom: 5px;">{{ctrl.processInstanceCounts.aborted}}</td>
+						<td style="padding-left: 5px;"><label class="form-lable">{{i18n('admin-portal-messages.views-common-completed-label')}}:</label></td>
+						<td style="padding-bottom: 5px;">{{ctrl.processInstanceCounts.completed}}</td>
+					</tr>
+				</table>
+			</div>
+			<div>
+				<div class="view-panel-toolbar">
+					<span style="color: #2F6871; font-weight: bold; font-size: 11px;">{{i18n('admin-portal-messages.views-common-activities-label')}}</span>
+				</div>
+				<table>
+					<tr>
+						<td><label class="form-lable">{{i18n('admin-portal-messages.views-common-total-label')}}:</label></td>
+						<td style="padding-bottom: 5px;">{{ctrl.activityInstanceCounts.total}}</td>
+						<td style="padding-left: 5px;"><label class="form-lable">{{i18n('admin-portal-messages.views-common-active-label')}}:</label></td>
+						<td style="padding-bottom: 5px;">{{ctrl.activityInstanceCounts.active}}</td>
+						<td style="padding-left: 5px;"><label class="form-lable">{{i18n('admin-portal-messages.views-common-waiting-label')}}:</label></td>
+						<td style="padding-bottom: 5px;">{{ctrl.activityInstanceCounts.waiting}}</td>
+						<td style="padding-left: 5px;"><label class="form-lable">{{i18n('admin-portal-messages.views-common-aborted-label')}}:</label></td>
+						<td style="padding-bottom: 5px;">{{ctrl.activityInstanceCounts.aborted}}</td>
+						<td style="padding-left: 5px;"><label class="form-lable">{{i18n('admin-portal-messages.views-common-completed-label')}}:</label></td>
+						<td style="padding-bottom: 5px;">{{ctrl.activityInstanceCounts.completed}}</td>
+					</tr>
+				</table>
+			</div>
+			<div>
+				<div class="view-panel-toolbar">
+					<span style="color: #2F6871; font-weight: bold; font-size: 11px;">{{i18n('admin-portal-messages.views-common-users-label')}}</span>
+				</div>
+				<table>
+					<tr>
+						<td><label class="form-lable">{{i18n('admin-portal-messages.views-common-total-label')}}:</label></td>
+						<td style="padding-bottom: 5px;">{{ctrl.userCounts.totalCount}}</td>
+						<td style="padding-left: 5px;"><label class="form-lable">{{i18n('admin-portal-messages.views-common-valid-label')}}:</label></td>
+						<td style="padding-bottom: 5px;">{{ctrl.userCounts.activeCount}}</td>
+					</tr>
+				</table>
+			</div>
+			<div class="view-panel-toolbar">
+				<span style="color: #2F6871; font-weight: bold; font-size: 11px;">{{i18n('admin-portal-messages.views-overview-logTable-title')}}
+				</span>
+			</div>
+			<table sd-data-table="ctrl.allLogEntriesTable"
+				sd-data="ctrl.getAllLogEntries(params)" sda-mode="remote"
+				sda-selectable="multiple"
+				sda-selection="ctrl.rowSelectionForAllLogEntriesTable"
+				sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
+				sda-sort-by="{name : 'timeStamp', dir : 'desc'}" sda-exports="true"
+				sda-exports-file-name="{{ctrl.exportFileNameForAllLogEntries}}">
+				<thead
+					sda-i18n-scope="admin-portal-messages.views-overview-logTable-column">
+					<tr>
+						<th sda-name="timeStamp" sda-sortable="true"></th>
+						<th sda-name="type"></th>
+						<th sda-name="code"></th>
+						<th sda-name="context"></th>
+						<th sda-name="subject"></th>
+						<th sda-name="account"></th>
+				</thead>
+				<tbody>
+					<tr>
+						<td sda-data-type="dateTime" style="text-align: center;"></td>
+						<td style="text-align: center;"></td>
+						<td style="text-align: center;"></td>
+						<td style="text-align: center;"></td>
+						<td style="text-align: center;">
+						   <div title="{{rowData.subject}}" class="trimText tbl-tool-link">{{rowData.subject}}</div>
+						</td>
+						<td sda-exporter="rowData.account">
+						    <sd-user-details sda-user-oid="rowData.userOID" sda-account="rowData.account" sda-link-disabled="rowData.linkDisabled">
+						    </sd-user-details>
+					    </td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>

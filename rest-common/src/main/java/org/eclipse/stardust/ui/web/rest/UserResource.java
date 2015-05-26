@@ -26,10 +26,10 @@ import javax.ws.rs.core.Response.Status;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.rest.service.UserService;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.UserCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
@@ -113,6 +113,7 @@ public class UserResource
 
    /**
     * This method returns the logged In user
+    * 
     * @return
     */
    @GET
@@ -123,6 +124,50 @@ public class UserResource
       {
          UserDTO loggedInUser = userService.getLoggedInUser();
          return Response.ok(loggedInUser.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+
+   }
+
+   /**
+    * This method returns the logged In user
+    * 
+    * @return
+    */
+   @GET
+   @Path("/allCounts")
+   public Response getAllCounts()
+   {
+      try
+      {
+         UserCountsDTO userCountsDTO = userService.getAllCounts();
+         return Response.ok(userCountsDTO.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+
+   }
+
+   /**
+    * This method returns the logged In user
+    * 
+    * @return
+    */
+   @GET
+   @Path("/loadUserDetails/{userOID}")
+   public Response getUserDetails(@PathParam("userOID") Long userOID)
+   {
+      try
+      {
+         UserDTO userDTO = userService.getUserDetails(userOID);
+         return Response.ok(userDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {

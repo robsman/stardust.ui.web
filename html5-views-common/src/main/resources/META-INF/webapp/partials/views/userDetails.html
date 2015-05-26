@@ -4,13 +4,13 @@
 		<tbody>
 			<tr>
 				<td colspan="2" style="border-bottom: 1px dotted grey;"><label
-					style="float: left;">{{docSearchViewCtrl.userDetails.displayName}}</label></td>
+					style="float: left;">{{userDetailsCtrl.userDetails.displayName}}</label></td>
 			</tr>
 			<tr>
 				<td colspan="1"><div
 						style="width: 128px; height: 128px; border: 1px solid #CCCCCC;">
 						<img alt="" height="128px"
-							ng-src="{{docSearchViewCtrl.userDetails.userImageURI}}"
+							ng-src="{{userDetailsCtrl.userDetails.userImageURI}}"
 							width="128px">
 					</div></td>
 				<td colspan="1"><div>
@@ -20,37 +20,37 @@
 									<td><label>{{i18n('views-common-messages.views-userDetails-descr-label')
 											+
 											i18n('views-common-messages.views-documentSearchView-colon')}}</label></td>
-									<td><span>{{docSearchViewCtrl.userDetails.description}}</span></td>
+									<td><span>{{userDetailsCtrl.userDetails.description}}</span></td>
 								</tr>
 								<tr>
 									<td><label>{{i18n('views-common-messages.views-userDetails-account-label')
 											+
 											i18n('views-common-messages.views-documentSearchView-colon')}}</label></td>
-									<td><span>{{docSearchViewCtrl.userDetails.id}}</span></td>
+									<td><span>{{userDetailsCtrl.userDetails.id}}</span></td>
 								</tr>
 								<tr>
 									<td><label>{{i18n('views-common-messages.views-userDetails-realm-label')
 											+
 											i18n('views-common-messages.views-documentSearchView-colon')}}</label></td>
-									<td><span>{{docSearchViewCtrl.userDetails.realm}}</span></td>
+									<td><span>{{userDetailsCtrl.userDetails.realm}}</span></td>
 								</tr>
 								<tr>
 									<td><label>{{i18n('views-common-messages.views-userDetails-validFrom-label')
 											+
 											i18n('views-common-messages.views-documentSearchView-colon')}}</label></td>
-									<td><span>{{docSearchViewCtrl.userDetails.validFrom | date:'short'}}</span></td>
+									<td><span>{{userDetailsCtrl.userDetails.validFrom | date:'short'}}</span></td>
 								</tr>
 								<tr>
 									<td><label>{{i18n('views-common-messages.views-userDetails-validTo-label')
 											+
 											i18n('views-common-messages.views-documentSearchView-colon')}}</label></td>
-									<td><span>{{docSearchViewCtrl.userDetails.validTo | date:'short'}}</span></td>
+									<td><span>{{userDetailsCtrl.userDetails.validTo | date:'short'}}</span></td>
 								</tr>
 								<tr>
 									<td><label>{{i18n('views-common-messages.views-userDetails-email-label')
 											+
 											i18n('views-common-messages.views-documentSearchView-colon')}}</label></td>
-									<td><a href="mailto:"><span class="iceOutTxt action-link">{{docSearchViewCtrl.userDetails.eMail}}</span></a></td>
+									<td><a href="mailto:"><span class="iceOutTxt action-link">{{userDetailsCtrl.userDetails.eMail}}</span></a></td>
 								</tr>
 							</tbody>
 						</table>

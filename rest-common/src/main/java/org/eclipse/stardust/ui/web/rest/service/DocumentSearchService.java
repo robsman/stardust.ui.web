@@ -24,7 +24,6 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.Document;
-import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentSearchCriteriaDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentSearchResultDTO;
@@ -33,12 +32,8 @@ import org.eclipse.stardust.ui.web.rest.service.dto.InfoDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.DocumentSearchUtils;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
-import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -104,29 +99,6 @@ public class DocumentSearchService
 
       return resultDTO;
 
-   }
-
-   /**
-    * 
-    * @param documentOwner
-    * @return
-    */
-   public UserDTO getUserDetails(String documentOwner)
-   {
-      User user = UserUtils.getUser(documentOwner);
-      UserDTO userDTO = DTOBuilder.build(user, UserDTO.class);
-      if (user.getValidFrom() != null)
-      {
-         userDTO.validFrom = user.getValidFrom().getTime();
-      }
-
-      if (user.getValidTo() != null)
-      {
-         userDTO.validTo = user.getValidTo().getTime();
-      }
-      userDTO.displayName = UserUtils.getUserDisplayLabel(user);
-      userDTO.userImageURI = MyPicturePreferenceUtils.getUsersImageURI(user);
-      return userDTO;
    }
 
    /**

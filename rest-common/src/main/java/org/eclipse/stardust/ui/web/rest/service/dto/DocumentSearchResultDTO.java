@@ -52,7 +52,7 @@ public class DocumentSearchResultDTO extends AbstractDTO
 
    public String repositoryId;
 
-   public String documentOwner = "";
+   public Long userOID;
 
    public long fileSize;
 
@@ -72,12 +72,11 @@ public class DocumentSearchResultDTO extends AbstractDTO
       this.fileSize = doc.getSize();
       this.documentPath = getFolderFromFullPath(doc.getPath());
       this.repositoryId = RepositoryIdUtils.extractRepositoryId(doc);
-
-      this.documentOwner = doc.getOwner();
-
+      
       User user = DocumentMgmtUtility.getOwnerOfDocument(doc);
+      
       if (null != user)
-      {
+      {  userOID = user.getOID();
          author = FormatterUtils.getUserLabel(user);
       }
       else if (StringUtils.isNotEmpty(doc.getOwner()))

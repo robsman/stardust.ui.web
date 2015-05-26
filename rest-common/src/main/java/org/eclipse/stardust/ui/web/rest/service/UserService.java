@@ -15,10 +15,14 @@ import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.query.UserQuery;
+import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.ui.web.rest.service.dto.UserCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.stereotype.Component;
 
@@ -37,6 +41,7 @@ public class UserService
 
    /**
     * Gets the logged In User
+    * 
     * @return
     */
    public UserDTO getLoggedInUser()
@@ -47,4 +52,60 @@ public class UserService
       return userDTO;
    }
 
+   /**
+    * 
+    * @return
+    */
+   public UserCountsDTO getAllCounts()
+   {
+      UserCountsDTO userCountsDTO = new UserCountsDTO();
+      userCountsDTO.totalCount = getTotalUsersCount();
+      userCountsDTO.activeCount = getActiveUsersCount();
+      return userCountsDTO;
+
+   }
+
+   /**
+    * 
+    * @return
+    */
+   private Long getActiveUsersCount()
+   {
+      QueryService service = serviceFactoryUtils.getQueryService();
+      Long count = new Long(service.getUsersCount(UserQuery.findActive()));
+      return count;
+   }
+
+   /**
+    * 
+    * @return
+    */
+   private Long getTotalUsersCount()
+   {
+      QueryService service = serviceFactoryUtils.getQueryService();
+      Long count = new Long(service.getUsersCount(UserQuery.findAll()));
+      return count;
+   }
+   /**
+    * 
+    * @param userOID
+    * @return
+    */
+   public UserDTO getUserDetails(Long userOID)
+   {
+      User user = serviceFactoryUtils.getUserService().getUser(userOID);
+      UserDTO userDTO = DTOBuilder.build(user, UserDTO.class);
+      if (user.getValidFrom() != null)
+      {
+         userDTO.validFrom = user.getValidFrom().getTime();
+      }
+
+      if (user.getValidTo() != null)
+      {
+         userDTO.validTo = user.getValidTo().getTime();
+      }
+      userDTO.displayName = UserUtils.getUserDisplayLabel(user);
+      userDTO.userImageURI = MyPicturePreferenceUtils.getUsersImageURI(user);
+      return userDTO;
+   }
 }

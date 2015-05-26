@@ -1,0 +1,14 @@
+
+<div>
+	<div ng-if="!linkDisabled">
+		<a href="#" style="color: #08c;"
+			ng-click="userDetailsCtrl.openUserDetails()">{{account}}</a>
+	</div>
+	<div ng-if="linkDisabled">{{account}}</div>
+	<div sd-dialog sda-modal="true"
+		sda-show="userDetailsCtrl.showUserDetails" sda-type="custom"
+		sda-title="{{i18n('views-common-messages.views-userDetails-title')}}"
+		sda-scope="this"
+		sda-template="plugins/html5-views-common/partials/views/userDetails.html"
+		sda-width="400px"></div>
+</div>

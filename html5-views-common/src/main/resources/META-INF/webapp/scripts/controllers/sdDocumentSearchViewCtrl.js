@@ -191,21 +191,6 @@
 
 	/**
 	 * 
-	 * @param documentOwner
-	 */
-	DocumentSearchViewCtrl.prototype.openUserDetails = function(documentOwner) {
-		var self = this;
-		_sdDocumentSearchService.getUserDetails(documentOwner).then(function(data) {
-			self.userDetails = data;
-			self.userDetails.userImageURI = _sdUtilService.getRootUrl() + data.userImageURI;
-			self.showUserDetails = true;
-		}, function(error) {
-			trace.log(error);
-		});
-	}
-
-	/**
-	 * 
 	 */
 	DocumentSearchViewCtrl.prototype.validateSearchCriteria = function() {
 		var self = this;

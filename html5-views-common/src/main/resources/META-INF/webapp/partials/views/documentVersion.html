@@ -24,7 +24,8 @@
 			<tr>
 				<td><a href="#" ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openDocumentView(rowData.revisionId);docSearchViewCtrl.documentHistory.close();">{{rowData.versionNo}}</a></td>
 				<td></td>
-				<td><a href="#" ng-click="docSearchViewCtrl.openUserDetails(rowData.documentOwner)">{{rowData.author}}</a></td>
+				<td><sd-user-details sda-user-oid="rowData.userOID" sda-account="rowData.author"></sd-user-details>
+				</td>
 				<td></td>
 				<td></td>
 			</tr>

@@ -17,18 +17,13 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.eclipse.stardust.engine.api.query.UserQuery;
-import org.eclipse.stardust.engine.api.runtime.QueryService;
-import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.dto.InvalidateUserStatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.UserGroupQueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserProfileStatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ParticipantManagementUtils;
-import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
-import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -41,7 +36,7 @@ public class ParticipantManagementService
     * 
     * @return
     */
-   public UserGroupQueryResultDTO getAllUsers(Boolean hideInvalidatedUsers, Options options)
+   public QueryResultDTO getAllUsers(Boolean hideInvalidatedUsers, Options options)
    {
       return participantManagementUtils.getAllUsers(hideInvalidatedUsers, options);
    }

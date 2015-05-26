@@ -65,6 +65,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheMan
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
 import org.springframework.stereotype.Component;
+
 /**
  * @author Anoop.Nair
  * @author Subodh.Godbole
@@ -74,9 +75,9 @@ import org.springframework.stereotype.Component;
 public class ActivityInstanceUtils
 {
    private static final Logger trace = LogManager.getLogger(ActivityInstanceUtils.class);
-   
+
    private static final String STATUS_PREFIX = "views.activityTable.statusFilter.";
-   
+
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
 
@@ -85,7 +86,7 @@ public class ActivityInstanceUtils
 
    @Resource
    private DocumentUtils documentUtils;
-   
+
    /**
     * @param oid
     * @return
@@ -95,8 +96,7 @@ public class ActivityInstanceUtils
       ActivityInstance ai = null;
       ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
       query.where(ActivityInstanceQuery.OID.isEqual(oid));
-      ActivityInstances ais = serviceFactoryUtils.getQueryService()
-            .getAllActivityInstances(query);
+      ActivityInstances ais = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
 
       if (!ais.isEmpty())
       {
@@ -116,7 +116,7 @@ public class ActivityInstanceUtils
       {
          return new ArrayList<ActivityInstance>();
       }
-      
+
       ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
       FilterOrTerm filterOrTerm = query.getFilter().addOrTerm();
       for (Long oid : oids)
@@ -128,12 +128,12 @@ public class ActivityInstanceUtils
 
       return ais;
    }
-   
+
    /**
     * @param userId
     * @return
     */
-   public QueryResult< ? > getActivityInstances( Options options)
+   public QueryResult< ? > getActivityInstances(Options options)
    {
       ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
 
@@ -143,12 +143,10 @@ public class ActivityInstanceUtils
 
       ActivityTableUtils.addFilterCriteria(query, options);
 
-      SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip,
-            true);
+      SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip, true);
       query.setPolicy(subsetPolicy);
 
-      ActivityInstances activityInstances = serviceFactoryUtils.getQueryService()
-            .getAllActivityInstances(query);
+      ActivityInstances activityInstances = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
 
       return activityInstances;
    }
@@ -163,19 +161,20 @@ public class ActivityInstanceUtils
       // TODO: Add process-portal dependency. Till then use reflection!
       try
       {
-         Object manualActivityUi = Reflect.createInstance("org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityUi", 
-               new Class<?>[]{ActivityInstance.class, ApplicationContext.class, QueryService.class}, 
-               new Object[]{ai, ai.getActivity().getApplicationContext(context), serviceFactoryUtils.getQueryService()});
-         
-         Object manualActivityPath = ReflectionUtils.invokeGetterMethod(manualActivityUi, "manualActivityPath");    
+         Object manualActivityUi = Reflect.createInstance(
+               "org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityUi", new Class< ? >[] {
+                     ActivityInstance.class, ApplicationContext.class, QueryService.class}, new Object[] {
+                     ai, ai.getActivity().getApplicationContext(context), serviceFactoryUtils.getQueryService()});
+
+         Object manualActivityPath = ReflectionUtils.invokeGetterMethod(manualActivityUi, "manualActivityPath");
          Object json = ReflectionUtils.invokeMethod(manualActivityPath, "toJsonString");
-         
+
          return json.toString();
       }
       catch (Exception e)
       {
          trace.error("Error in processing data mappings", e);
-      }    
+      }
 
       return "";
    }
@@ -190,7 +189,7 @@ public class ActivityInstanceUtils
       Map<String, TrivialManualActivityDTO> ret = new LinkedHashMap<String, TrivialManualActivityDTO>();
 
       Map<String, List<PathDTO>> cache = new LinkedHashMap<String, List<PathDTO>>();
-      
+
       List<ActivityInstance> ais = getActivityInstances(oids);
       for (ActivityInstance ai : ais)
       {
@@ -212,7 +211,7 @@ public class ActivityInstanceUtils
                      it.remove();
                   }
                }
-               
+
                cache.put(cacheKey, dataMappings);
             }
 
@@ -252,7 +251,7 @@ public class ActivityInstanceUtils
     */
    public static boolean isTrivialManualActivity(ActivityInstance ai)
    {
-      Boolean trivialManualActivity = (Boolean)ai.getActivity().getAttribute("trivialManualActivity");
+      Boolean trivialManualActivity = (Boolean) ai.getActivity().getAttribute("trivialManualActivity");
       return (null != trivialManualActivity && trivialManualActivity == true);
    }
 
@@ -288,8 +287,10 @@ public class ActivityInstanceUtils
 
       if (ai != null)
       {
-         /*processAttachments = processInstanceUtils.getProcessAttachments(ai
-               .getProcessInstanceOID());*/
+         /*
+          * processAttachments = processInstanceUtils.getProcessAttachments(ai
+          * .getProcessInstanceOID());
+          */
       }
 
       return processAttachments;
@@ -309,8 +310,8 @@ public class ActivityInstanceUtils
 
       if (ai != null && document != null)
       {
-         ApplicationContext defaultContext = ai.getActivity().getApplicationContext(
-               PredefinedConstants.DEFAULT_CONTEXT);
+         ApplicationContext defaultContext = ai.getActivity()
+               .getApplicationContext(PredefinedConstants.DEFAULT_CONTEXT);
 
          if (defaultContext != null)
          {
@@ -326,9 +327,8 @@ public class ActivityInstanceUtils
                Map<String, Object> outData = CollectionUtils.newHashMap();
                outData.put(dataMappingId, (Object) document);
 
-               completedAi = serviceFactoryUtils.getWorkflowService()
-                     .activateAndComplete(oid, PredefinedConstants.DEFAULT_CONTEXT,
-                           outData);
+               completedAi = serviceFactoryUtils.getWorkflowService().activateAndComplete(oid,
+                     PredefinedConstants.DEFAULT_CONTEXT, outData);
             }
          }
       }
@@ -337,8 +337,8 @@ public class ActivityInstanceUtils
    }
 
    /**
-    * @author Yogesh.Manware
-    * note: copied from AbortActivityBean#private boolean abortActivities(AbortScope abortScope)
+    * @author Yogesh.Manware note: copied from AbortActivityBean#private boolean
+    *         abortActivities(AbortScope abortScope)
     * 
     * @param abortScope
     * @param activitiesToBeAborted
@@ -363,11 +363,11 @@ public class ActivityInstanceUtils
                   try
                   {
                      workflowService.abortActivityInstance(activityInstanceOid, abortScope);
-                     
-                     //publish event
+
+                     // publish event
                      ClientContextBean.getCurrentInstance().getClientContext()
                            .sendActivityEvent(ActivityEvent.aborted(activityInstance));
-                     
+
                      notificationMap.addSuccess(new NotificationDTO(activityInstanceOid,
                            getActivityLabel(activityInstance), getActivityStateLabel(activityInstance)));
                   }
@@ -412,20 +412,20 @@ public class ActivityInstanceUtils
       return notificationMap;
    }
 
-	/**
-	 * to check Activity of type is Default Case Activity
-	 * 
-	 * @param ai
-	 * @return
-	 */
-	public static boolean isDefaultCaseActivity(ActivityInstance ai) {
-		if (null != ai
-				&& PredefinedConstants.DEFAULT_CASE_ACTIVITY_ID.equals(ai
-						.getActivity().getId())) {
-			return true;
-		}
-		return false;
-	}
+   /**
+    * to check Activity of type is Default Case Activity
+    * 
+    * @param ai
+    * @return
+    */
+   public static boolean isDefaultCaseActivity(ActivityInstance ai)
+   {
+      if (null != ai && PredefinedConstants.DEFAULT_CASE_ACTIVITY_ID.equals(ai.getActivity().getId()))
+      {
+         return true;
+      }
+      return false;
+   }
 
    /**
     * @param ai
@@ -455,7 +455,7 @@ public class ActivityInstanceUtils
       sendActivityEvent(ai, ActivityEvent.suspended(suspendedAi));
       return suspendedAi;
    }
-	
+
    /**
     * @param oldAi
     * @param activityEvent
@@ -470,26 +470,29 @@ public class ActivityInstanceUtils
       SpecialWorklistCacheManager.getInstance().handleActivityEvent(oldAi, activityEvent);
       ClientContextBean.getCurrentInstance().getClientContext().sendActivityEvent(activityEvent);
    }
-	/**
-	 * @param instance
-	 * @return localized activity name with OID appended
-	 */
-	public String getActivityLabel(ActivityInstance instance) {
-		if (null != instance) {
-			return I18nUtils.getActivityName(instance.getActivity());
-		}
-		return "";
-	}
 
-	/**
-	 * @param ai
-	 * @return Localized activity state name
-	 */
-	public static String getActivityStateLabel(ActivityInstance ai) {
-		return MessagesViewsCommonBean.getInstance().getString(
-				STATUS_PREFIX + ai.getState().getName().toLowerCase());
-	}
-	
+   /**
+    * @param instance
+    * @return localized activity name with OID appended
+    */
+   public String getActivityLabel(ActivityInstance instance)
+   {
+      if (null != instance)
+      {
+         return I18nUtils.getActivityName(instance.getActivity());
+      }
+      return "";
+   }
+
+   /**
+    * @param ai
+    * @return Localized activity state name
+    */
+   public static String getActivityStateLabel(ActivityInstance ai)
+   {
+      return MessagesViewsCommonBean.getInstance().getString(STATUS_PREFIX + ai.getState().getName().toLowerCase());
+   }
+
    /**
     * @param activities
     * @return
@@ -512,50 +515,49 @@ public class ActivityInstanceUtils
       }
       return activityInstances;
    }
-   
-	/**
-	 * gets the duration
-	 * @param ai
-	 * @return
-	 */
-	public static String getDuration(ActivityInstance ai)
-	{
-		long timeInMillis = Calendar.getInstance().getTimeInMillis();
-		if (ai.getState() == ActivityInstanceState.Completed
-				|| ai.getState() == ActivityInstanceState.Aborted)
-		{
-			timeInMillis = ai.getLastModificationTime().getTime();
-		}
-		return DateUtils.formatDurationInHumanReadableFormat(timeInMillis
-				- ai.getStartTime().getTime());
-	}
-	
-	/**
+
+   /**
+    * gets the duration
+    * 
+    * @param ai
+    * @return
+    */
+   public static String getDuration(ActivityInstance ai)
+   {
+      long timeInMillis = Calendar.getInstance().getTimeInMillis();
+      if (ai.getState() == ActivityInstanceState.Completed || ai.getState() == ActivityInstanceState.Aborted)
+      {
+         timeInMillis = ai.getLastModificationTime().getTime();
+      }
+      return DateUtils.formatDurationInHumanReadableFormat(timeInMillis - ai.getStartTime().getTime());
+   }
+
+   /**
 	 * 
 	 */
 
-	public  static String getPerformedByName(ActivityInstance activityInstance)
-	{
-	   UserInfo userInfo = activityInstance.getPerformedBy();
-	   if (null != userInfo)
-	   {
-	      return ParticipantUtils.getParticipantName(userInfo);
-	   }
-	   else
-	   {
-	      return activityInstance.getPerformedByName();
-	   }
-	}
-	
-	
-	/**
+   public static String getPerformedByName(ActivityInstance activityInstance)
+   {
+      UserInfo userInfo = activityInstance.getPerformedBy();
+      if (null != userInfo)
+      {
+         return ParticipantUtils.getParticipantName(userInfo);
+      }
+      else
+      {
+         return activityInstance.getPerformedByName();
+      }
+   }
+
+   /**
      * 
      */
 
    public NotificationMap activate(Long activityOID)
    {
       NotificationMap notification = new NotificationMap();
-      ActivityInstance ai = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getActivityInstance(activityOID);
+      ActivityInstance ai = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils
+            .getActivityInstance(activityOID);
       if (!isSupportsWeb(ai.getActivity()))
       {
          notification.addFailure(new NotificationDTO(activityOID, ai.getActivity().getName(), MessagesViewsCommonBean
@@ -600,7 +602,7 @@ public class ActivityInstanceUtils
          }
       }
    }
-   
+
    /**
     * Activity instance is in Application state, force suspend will be done
     * 
