@@ -44,6 +44,12 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
             changes : changes
          } ]);
       },
+      createCloneProcessCommand : function(modelId, oid, changes) {
+        return new ChangeDescriptor("process.clone", modelId, [ {
+           oid : oid,
+           changes : changes
+        } ]);
+     },
       createCreatePrimitiveDataCommand : function(modelId, oid, changes) {
          return new ChangeDescriptor("primitiveData.create", modelId, [ {
             oid : oid,
