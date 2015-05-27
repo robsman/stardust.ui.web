@@ -348,7 +348,6 @@ public class ActivityInstanceResource
 	@Path("/abort")
    public Response abortActivities(String postedData)
    {
-      //postedData = "{scope: 'activity', activities : [11]}";
       return Response.ok(getActivityInstanceService().abortActivities(postedData), MediaType.APPLICATION_JSON).build();
    }
 

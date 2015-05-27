@@ -203,13 +203,17 @@ public class ActivityInstanceService
             listType);
       NotificationMap notificationMap = new NotificationMap();
 
-      if ("activity".equalsIgnoreCase(scope))
+      if (AbortScope.SubHierarchy.toString().equalsIgnoreCase(scope))
       {
          notificationMap = activityInstanceUtils.abortActivities(AbortScope.SubHierarchy, activities);
       }
-      else if ("rootProcess".equalsIgnoreCase(scope))
+      else if (AbortScope.RootHierarchy.toString().equalsIgnoreCase(scope))
       {
          notificationMap = activityInstanceUtils.abortActivities(AbortScope.RootHierarchy, activities);
+      }
+      else 
+      {
+         throw new IllegalArgumentException("Scope not valid : "+scope);
       }
       return GsonUtils.toJsonHTMLSafeString(notificationMap);
    }

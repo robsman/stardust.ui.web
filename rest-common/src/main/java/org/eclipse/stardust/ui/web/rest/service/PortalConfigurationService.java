@@ -25,6 +25,7 @@ import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.ui.web.common.IPerspectiveDefinition;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
@@ -34,8 +35,11 @@ import org.eclipse.stardust.ui.web.common.spi.theme.ThemeProvider;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.rest.service.dto.PortalConfigurationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.WorkflowConfigurationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.WorklistViewConfigurationDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -82,6 +86,11 @@ public class PortalConfigurationService
 
    private static final Logger trace = LogManager.getLogger(PortalConfigurationService.class);
 
+   /**
+    * 
+    * @param scope
+    * @return
+    */
    public PortalConfigurationDTO getPortalConfiguration(String scope)
    {
 
@@ -155,7 +164,11 @@ public class PortalConfigurationService
       return config;
    }
 
-  
+  /**
+   * 
+   * @param scope
+   * @return
+   */
    public WorklistViewConfigurationDTO getWorklistViewConfiguration(String scope)
    {
       PreferenceScope pScope = getPreferenceScope(scope);
@@ -164,6 +177,30 @@ public class PortalConfigurationService
       dto.autoRefreshInterval = userPrefsHelper.getInteger(V_WORKLIST, F_REFRESH_INTERVAL, 0);
       return dto;
    }
+   
+   
+   /**
+    * 
+    * @param scope
+    * @return
+    */
+   public WorkflowConfigurationDTO getWorkflowPerspectiveConfiguration(String scope)
+   {
+      WorkflowConfigurationDTO dto = new WorkflowConfigurationDTO();
+      AbortScope abortActivityScope = ActivityInstanceUtils.getAbortActivityScope();
+      if (null != abortActivityScope)
+      {
+         dto.abortActivityScope = abortActivityScope.toString();
+      }
+      
+      AbortScope abortProcessScope = ProcessInstanceUtils.getAbortProcessScope();
+      if (null != abortProcessScope)
+      {
+         dto.abortProcessScope = abortProcessScope.toString();
+      }
+      return dto;
+   }
+   
    
    /**
     * @param userPrefsHelper

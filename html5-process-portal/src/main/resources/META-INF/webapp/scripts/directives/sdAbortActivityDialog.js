@@ -14,12 +14,12 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive( 'sdAbortActivityDialog', [ 'sdActivityInstanceService','sdLoggerService', 'sdUtilService', AbortActivity]);
+	angular.module('bpm-common').directive( 'sdAbortActivityDialog', [ 'sdActivityInstanceService','sdLoggerService', 'sdUtilService', 'sdPortalConfigurationService', AbortActivity]);
 
 	/**
 	 * 
 	 */
-	function AbortActivity(sdActivityInstanceService, sdLoggerService, sdUtilService){
+	function AbortActivity(sdActivityInstanceService, sdLoggerService, sdUtilService, sdPortalConfigurationService){
 
 		return {
 			restrict: 'A',
@@ -28,8 +28,8 @@
 							'sda-type="confirm" '+
 							'sda-title="{{abortActivityCtrl.i18n(\'views-common-messages.views-common-activity-abortActivity-label\')}}" '+
 							'sda-scope="this" '+
-							'sda-confirm-action-label="{{abortActivityCtrl.i18n(\'views-common-messages.common-ok\')}}" ' +
-							'sda-cancel-action-label="{{abortActivityCtrl.i18n(\'views-common-messages.common-close\')}}" ' +
+							'sda-confirm-action-label="{{abortActivityCtrl.abortActivity.isPromptRequired ?  abortActivityCtrl.i18n(\'views-common-messages.common-ok\') : abortActivityCtrl.i18n(\'views-common-messages.common-yes\' )}}" ' +
+							'sda-cancel-action-label="{{abortActivityCtrl.abortActivity.isPromptRequired ?  abortActivityCtrl.i18n(\'views-common-messages.common-close\') : abortActivityCtrl.i18n(\'views-common-messages.common-no\' )}}" ' +
 							'sda-on-open="abortActivityCtrl.onConfirm(res)" '+
 							'sda-template="' +
 							 sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/abortActivityDialogBody.html"> '+
@@ -47,7 +47,7 @@
 				showDialog : '=sdaShowDialog',
 				abortCompleted: '&sdaOnAbortComplete'
 			},
-			controller: [ '$scope', 'sdActivityInstanceService', 'sdLoggerService', AbortActivityController]
+			controller: [ '$scope', 'sdActivityInstanceService', 'sdLoggerService','sdUtilService','sdPortalConfigurationService', AbortActivityController]
 		};
 	};
 
@@ -56,11 +56,11 @@
 	 */
 
 	var trace = null;
-	var AbortActivityController = function( $scope, sdActivityInstanceService, sdLoggerService){
+	var AbortActivityController = function( $scope, sdActivityInstanceService, sdLoggerService, sdUtilService, sdPortalConfigurationService){
 
 	    var self = this;
 	    trace = sdLoggerService.getLogger('bpm-common.sdAbortActivityDialog');
-	    this.intialize( $scope, sdActivityInstanceService);
+	    this.intialize( $scope, sdActivityInstanceService, sdPortalConfigurationService);
 
 	    /**
 	     * 
@@ -100,7 +100,7 @@
 	/**
 	 * 
 	 */
-	AbortActivityController.prototype.intialize = function ( $scope, sdActivityInstanceService){
+	AbortActivityController.prototype.intialize = function ( $scope, sdActivityInstanceService, sdPortalConfigurationService){
 
 	    this.i18n = $scope.$parent.i18n;
 	    this.sdActivityInstanceService = sdActivityInstanceService;
@@ -108,10 +108,22 @@
 		    result : null,
 		    error : false
 	    };
+	    var abortScope =  sdPortalConfigurationService.getAbortActivityScope();
+	    var isPromptRequired = false;
+	    if(abortScope == ''){
+		isPromptRequired = true;
+		this.configuredScope = 'SubHierarchy'; 
+	    }else{
+		this.configuredScope = abortScope;
+	    } 
+	    
+	    
 	    this.abortActivity = {
-		    scope : 'activity',
-		    activities : []
+		    scope : abortScope,
+		    activities : [],
+		    isPromptRequired : isPromptRequired
 	    };
+	   
 	};
 
 	/**
@@ -126,7 +138,7 @@
 	 * 
 	 */
 	AbortActivityController.prototype.resetValues = function (){
-	    this.abortActivity.scope ='activity';
+	    this.abortActivity.scope = this.configuredScope;
 	    this.notification.result = {};
 	    this.notification.error = false;
 	};
