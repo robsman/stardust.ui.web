@@ -16,21 +16,29 @@
 	'use strict';
 
 	angular.module('workflow-ui').controller('sdWorklistViewCtrl', 
-			['$scope', 'sdUtilService', 'sdViewUtilService', WorklistViewCtrl]);
+			['$scope', 'sdUtilService', 'sdViewUtilService', '$interval', 'sdPortalConfigurationService', WorklistViewCtrl]);
 
 	var _sdViewUtilService;
+	var  _$interval;
+	var _sdPortalConfigurationService;
+	
 	
 	/*
 	 * 
 	 */
-	function WorklistViewCtrl($scope, sdUtilService, sdViewUtilService) {
+	function WorklistViewCtrl($scope, sdUtilService, sdViewUtilService, $interval, sdPortalConfigurationService) {
+	    	var self = this;
 		// Register for View Events
 		sdViewUtilService.registerForViewEvents($scope, this.handleViewEvents, this);
 
 		// Preserve to use later in life-cycle
 		_sdViewUtilService = sdViewUtilService;
+		_$interval = $interval;
+		_sdPortalConfigurationService = sdPortalConfigurationService;
 
 		this.initialize();
+		
+		this.registerForAutoRefresh();
 		
 		/*
 		 * This needs to be defined here as it requires access to $scope
@@ -39,6 +47,24 @@
 			sdUtilService.safeApply($scope);
 		};
 	}
+	
+	
+
+	/*
+	 * 
+	 */
+	WorklistViewCtrl.prototype.registerForAutoRefresh = function($interval) {
+	    var self = this;
+	    var refreshInterval = _sdPortalConfigurationService.getRefreshIntervalInMillis();
+	    if (refreshInterval > 0) {
+		this.timer = _$interval(function() {
+		    if (self.dataTable) {
+			self.dataTable.refresh(true);
+		    }
+		}, refreshInterval);
+	    }
+	};
+
 
 	/*
 	 * 
@@ -46,8 +72,11 @@
 	WorklistViewCtrl.prototype.handleViewEvents = function(event) {
 		if (event.type == "ACTIVATED") {
 			this.refresh();
+			this.registerForAutoRefresh();
 		} else if (event.type == "DEACTIVATED") {
-			// TODO
+		    if(this.timer){
+			_$interval.cancel(this.timer);
+		    }
 		}
 	};
 

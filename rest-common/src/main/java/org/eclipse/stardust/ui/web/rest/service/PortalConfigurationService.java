@@ -34,6 +34,7 @@ import org.eclipse.stardust.ui.web.common.spi.theme.ThemeProvider;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.rest.service.dto.PortalConfigurationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.WorklistViewConfigurationDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -50,6 +51,8 @@ public class PortalConfigurationService
     * Constants
     */
    public static final String M_PORTAL = "ipp-portal-common";
+   
+   public static final String M_WORKFLOW = "ipp-workflow-perspective";
 
    public static final String V_PORTAL_CONFIG = "configuration";
 
@@ -63,7 +66,13 @@ public class PortalConfigurationService
 
    public static final String F_PAGINATOR_MAX_PAGES = "prefs.paginatorMaxPages";
 
+   public static final String F_REFRESH_INTERVAL = "prefs.refreshInterval"; 
+   
    public static final String F_PAGINATOR_FAST_STEP = "prefs.paginatorFastStep";
+   
+   public static final String V_WORKLIST = "worklist";
+   
+
 
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
@@ -76,9 +85,7 @@ public class PortalConfigurationService
    public PortalConfigurationDTO getPortalConfiguration(String scope)
    {
 
-      PreferenceScope pScope = scope.equalsIgnoreCase(PreferenceScope.USER.toString())
-            ? PreferenceScope.USER
-            : PreferenceScope.PARTITION;
+      PreferenceScope pScope = getPreferenceScope(scope);
 
       UserPreferencesHelper userPrefsHelper = UserPreferencesHelper.getInstance(M_PORTAL, pScope);
 
@@ -148,6 +155,16 @@ public class PortalConfigurationService
       return config;
    }
 
+  
+   public WorklistViewConfigurationDTO getWorklistViewConfiguration(String scope)
+   {
+      PreferenceScope pScope = getPreferenceScope(scope);
+      UserPreferencesHelper userPrefsHelper = UserPreferencesHelper.getInstance( M_WORKFLOW, pScope);
+      WorklistViewConfigurationDTO dto = new WorklistViewConfigurationDTO();
+      dto.autoRefreshInterval = userPrefsHelper.getInteger(V_WORKLIST, F_REFRESH_INTERVAL, 0);
+      return dto;
+   }
+   
    /**
     * @param userPrefsHelper
     * @param featureId
@@ -159,4 +176,18 @@ public class PortalConfigurationService
       String value = userPrefsHelper.getSingleString(V_PORTAL_CONFIG, featureId);
       return StringUtils.isEmpty(value) ? defaultValue : Integer.valueOf(value);
    }
+   
+   /**
+    * 
+    * @param scope
+    * @return
+    */
+   private PreferenceScope getPreferenceScope(String scope)
+   {
+      PreferenceScope pScope = scope.equalsIgnoreCase(PreferenceScope.USER.toString())
+            ? PreferenceScope.USER
+            : PreferenceScope.PARTITION;
+      return pScope;
+   }
+   
 }

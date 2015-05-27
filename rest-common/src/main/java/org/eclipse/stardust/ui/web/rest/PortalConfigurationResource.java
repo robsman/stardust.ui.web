@@ -21,6 +21,7 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.service.PortalConfigurationService;
 import org.eclipse.stardust.ui.web.rest.service.dto.PortalConfigurationDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.WorklistViewConfigurationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -48,6 +49,27 @@ public class PortalConfigurationResource
       try
       {
          PortalConfigurationDTO result = portalConfigurationService.getPortalConfiguration(scope);
+         return Response.ok(result.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+         return Response.serverError().build();
+      }
+   }
+   
+   
+   /**
+    * 
+    */
+   @GET
+   @Path("/views/worklist/{scope}")
+   @Produces(MediaType.APPLICATION_JSON)
+   public Response getConfigurationForWorklistView(@PathParam("scope") String scope )
+   {
+      try
+      {
+         WorklistViewConfigurationDTO result = portalConfigurationService.getWorklistViewConfiguration( scope );
          return Response.ok(result.toJson(), MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)

@@ -23,6 +23,9 @@
     });
 
     var portalConfig = null;
+    var worklistView = null;
+    
+    var REFRESH_INTERVAL_MULTIPLIER = 60000;
 
     /*
      * 
@@ -48,6 +51,28 @@
 	    var config = this.getConfiguration("USER");
 	    return config.pageSize;
 	};
+	
+	/*
+	 * 
+	 */
+	WorklistService.prototype.getWorklistView = function(scope) {
+	    var restUrl = REST_BASE_URL + "views/worklist/" + scope;
+	    var self = this;
+
+	    if (!worklistView) {
+		worklistView = sdUtilService.syncAjax(restUrl);
+	    }
+	    return worklistView;
+	};
+	
+	/**
+	 * 
+	 */
+	WorklistService.prototype.getRefreshIntervalInMillis  = function() {
+	    var view = this.getWorklistView("USER");
+	    return view.autoRefreshInterval * REFRESH_INTERVAL_MULTIPLIER;
+	};
+	
     }
 
 })();

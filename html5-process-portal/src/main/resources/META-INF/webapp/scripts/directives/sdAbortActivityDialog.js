@@ -36,7 +36,7 @@
 					 '<\/div> ' +
 					 '<span style="float: left;" ' +
 					 		'sd-dialog="abortActivityCtrl.abortActivityNotification" ' +
-					 		'sda-title="{{abortActivityCtrl.i18n(\'admin-portal-messages.common-notification-title\')}}" '+
+					 		'sda-title="{{abortActivityCtrl.i18n(\'views-common-messages.common-notification-title\')}}" '+
 					 		'sda-type="custom" ' +
 					 		'sda-scope="this" ' +
 					 		'sda-template="' +
