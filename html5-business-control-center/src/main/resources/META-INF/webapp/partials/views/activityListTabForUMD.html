@@ -1,3 +1,6 @@
-<div class="view-panel-toolbar tbl-title" style="color: #708090;font-size:11px">{{i18n('business-control-center-messages.views-userManagerDetailView-activityList-table-title')}} {{ctrl.userManagerDetails.userAccount}}</div>
-<div sd-activity-table="ctrl.activityTable" sda-mode="activityTable" sd-data="ctrl.getActivitiesForUser(params);"
-			sda-preference-module ="ipp-views-common" sda-preference-id="preference" sda-preference-name = "ipp-views-common.activityWithPrio.selectedColumns" ></div>
+<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-userManagerDetailView-activityList-table-title')}}
+	{{ctrl.userManagerDetails.userAccount}}</div>
+<div sd-activity-table="ctrl.activityTable" sda-mode="activityTable"
+	sd-data="ctrl.getActivitiesForUser(params);"
+	sda-preference-module="ipp-views-common" sda-preference-id="preference"
+	sda-preference-name="ipp-views-common.activityWithPrio.selectedColumns"></div>

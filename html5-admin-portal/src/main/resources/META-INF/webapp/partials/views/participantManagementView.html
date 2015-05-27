@@ -1,11 +1,11 @@
-<div style="padding-left: 20px;"
-	ng-controller="sdParticipantManagementCtrl as ctrl">
+<div class="view-panel"
+	ng-controller="sdParticipantManagementCtrl as ctrl" sg-stretch-to-bottom>
 	<div class="view-panel-toolbar toolbar-buttons">
 		<div class="view-toolbar-section">
 			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
 		</div>
 	</div>
-	<div style="padding-top: 20px;"
+	<div
 		ng-include="'plugins/html5-admin-portal/partials/views/participantMgtUsersTable.html'">
 	</div>
 	<div ng-if="ctrl.loadUserProfileDialog">

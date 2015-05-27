@@ -1,13 +1,11 @@
-<div class="res-availability-wrapper">
+<div class="view-panel-content">
 	<div>
-		<label class="form-lable"
-			style="display: inline-block; margin-bottom: 5px; padding-left: 1px; vertical-align: text-top;">{{i18n('business-control-center-messages.views-common-showLoggedInUser-label')}}</label>
+		<span class="form-lable">{{i18n('business-control-center-messages.views-common-showLoggedInUser-label')}}</span>
 		<input type="checkbox" ng-model="ctrl.showLoggedInAssignedUsers"
 			ng-change="ctrl.refreshLoggedInAssignedUsers()"
-			style="vertical-align: middle" />
+			style="margin: 4px" />
 	</div>
-	<div class="view-panel-toolbar tbl-title"
-		style="color: #708090; font-size: 11px">{{i18n('business-control-center-messages.views-common-assignedUser-title')}}</div>
+	<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-common-assignedUser-title')}}</div>
 	<div sda-toolbar>
 		<div class="tbl-toolbar-section">
 			<button

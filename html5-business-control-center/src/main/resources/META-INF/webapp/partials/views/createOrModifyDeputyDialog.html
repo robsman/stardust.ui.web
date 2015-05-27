@@ -25,18 +25,18 @@
 		<table>
 			<tbody>
 				<tr>
-					<td class="table-columnVertical" style="padding-top: 10px;"><label
-						class="form-lable" style="padding-top: 8px;">{{i18n('views-common-messages.views-deputyManagementView-dialog-deputyName')}}</label></td>
-					<td class="table-columnVertical">
+					<td><span
+						class="label-item">{{i18n('views-common-messages.views-deputyManagementView-dialog-deputyName')}}</span></td>
+					<td>
 						<div ng-if="ctrl.deputy.mode != 'EDIT'" sd-participant-selector
 							sda-selected-data="ctrl.deputy.participantDataSelected"
 							sda-multiple="false" sd-data="ctrl.getDeputyUsersData(params)">
 						</div>
-						<div ng-if="ctrl.deputy.mode == 'EDIT'" style='padding-top: 10px;'>
+						<div ng-if="ctrl.deputy.mode == 'EDIT'">
 							<span>{{ctrl.deputy.deputyDisplayName}}</span>
 						</div>
 					</td>
-					<td class="table-columnVertical">
+					<td>
 						<div ng-if="ctrl.deputy.mode != 'EDIT'">
 							<table cellpadding="0" cellspacing="0">
 								<tbody>
@@ -46,12 +46,12 @@
 												<table border="0" cellpadding="0" cellspacing="0">
 													<tbody>
 														<tr>
-															<td><input type="radio" ng-model="ctrl.searchMode"
-																value="ALL_USERS"> <span class="form-lable">{{i18n('views-common-messages.views-deputyManagementView-dialog-searchMode-allUsers')}}</span></td>
+															<td><input type="radio" ng-model="ctrl.searchMode" style="margin-bottom: 4px;"
+																value="ALL_USERS"> <span class="label-item">{{i18n('views-common-messages.views-deputyManagementView-dialog-searchMode-allUsers')}}</span></td>
 														</tr>
 														<tr>
-															<td><input type="radio" ng-model="ctrl.searchMode"
-																value="SIMILAR_USERS"> <span class="form-lable">{{i18n('views-common-messages.views-deputyManagementView-dialog-searchMode-similarUsers')}}</span></td>
+															<td><input type="radio" ng-model="ctrl.searchMode" style="margin-bottom: 4px;"
+																value="SIMILAR_USERS"> <span class="label-item">{{i18n('views-common-messages.views-deputyManagementView-dialog-searchMode-similarUsers')}}</span></td>
 														</tr>
 													</tbody>
 												</table>
@@ -64,8 +64,8 @@
 					</td>
 				</tr>
 				<tr>
-					<td><label class="form-lable">{{i18n('business-control-center-messages.views-deputyManagementView-validFrom')}}</label></td>
-					<td class="table-columnVertical"><div sd-date-time-picker
+					<td><span class="label-item">{{i18n('business-control-center-messages.views-deputyManagementView-validFrom')}}</span></td>
+					<td><div sd-date-time-picker
 							ng-model="ctrl.deputy.validFrom" name="validFrom" ng-model-onblur></div>
 					</td>
 				</tr>
@@ -76,7 +76,7 @@
 						{{i18n('html5-common.date-error')}}</td>
 				</tr>
 				<tr>
-					<td class="table-columnVertical"><label class="form-lable">{{i18n('business-control-center-messages.views-deputyManagementView-validTo')}}</label></td>
+					<td class="table-columnVertical"><span class="label-item">{{i18n('business-control-center-messages.views-deputyManagementView-validTo')}}</span></td>
 					<td class="table-columnVertical"><div sd-date-time-picker
 							ng-model="ctrl.deputy.validTo" name="validTo" ng-model-onblur>
 						</div></td>
@@ -90,17 +90,17 @@
 			</tbody>
 		</table>
 		<br>
-		<div class="view-panel-toolbar">
-			<span class="form-lable" style='font-weight: bold;''>{{i18n('views-common-messages.views-deputyManagementView-dialog-authorizations')}}</span>
+		<div class="view-panel-toolbar heading">
+			{{i18n('views-common-messages.views-deputyManagementView-dialog-authorizations')}}
 		</div>
 		<div>
 			<table
 				style="vertical-align: top; white-space: nowrap; text-align: center;">
 				<tbody>
 					<tr>
-						<td><label>{{i18n('views-common-messages.dualList-available-header')}}</label></td>
-						<td><label></label></td>
-						<td><label>{{i18n('views-common-messages.dualList-selected-header')}}</label></td>
+						<td><span>{{i18n('views-common-messages.dualList-available-header')}}</span></td>
+						<td><span></span></td>
+						<td><span>{{i18n('views-common-messages.dualList-selected-header')}}</span></td>
 					</tr>
 					<tr>
 						<td><select multiple="multiple"

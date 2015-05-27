@@ -45,6 +45,7 @@ public class LogEntryDTO extends AbstractDTO
       subject = logEntry.getSubject();
       type = logEntry.getType().getName();
       code = logEntry.getCode().getName();
+      context = logEntry.getContext();
       userOID = logEntry.getUserOID();
       initUser(logEntry.getUser());
    }
