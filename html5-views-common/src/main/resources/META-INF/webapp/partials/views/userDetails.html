@@ -1,56 +1,57 @@
-<div>
-	<table cellpadding="0" cellspacing="0"
-		style="width:300px;">
+<div class="section">
+	<table cellpadding="0" cellspacing="0">
 		<tbody>
 			<tr>
-				<td colspan="2" style="border-bottom: 1px dotted grey;"><label
-					style="float: left;">{{userDetailsCtrl.userDetails.displayName}}</label></td>
+				<td colspan="2" style="border-bottom: 1px dotted grey;"><span
+					style="float: left;">{{userDetailsCtrl.userDetails.displayName}}</span></td>
 			</tr>
 			<tr>
 				<td colspan="1"><div
-						style="width: 128px; height: 128px; border: 1px solid #CCCCCC;">
-						<img alt="" height="128px"
-							ng-src="{{userDetailsCtrl.userDetails.userImageURI}}"
-							width="128px">
+						style="width: 128px; height: 128px; border: 1px solid #CCCCCC; margin-top: 5px;">
+						<img alt="" style="height: 128px; width: 128px;"
+							ng-src="{{userDetailsCtrl.userDetails.userImageURI}}">
 					</div></td>
-				<td colspan="1"><div>
+				<td colspan="1"><div style="padding-left: 5px;">
 						<table>
 							<tbody>
-								<tr >
-									<td><label>{{i18n('views-common-messages.views-userDetails-descr-label')
+								<tr>
+									<td><span class="label-item">{{i18n('views-common-messages.views-userDetails-descr-label')
 											+
-											i18n('views-common-messages.views-documentSearchView-colon')}}</label></td>
+											i18n('views-common-messages.views-documentSearchView-colon')}}</span></td>
 									<td><span>{{userDetailsCtrl.userDetails.description}}</span></td>
 								</tr>
 								<tr>
-									<td><label>{{i18n('views-common-messages.views-userDetails-account-label')
+									<td><span class="label-item">{{i18n('views-common-messages.views-userDetails-account-label')
 											+
-											i18n('views-common-messages.views-documentSearchView-colon')}}</label></td>
+											i18n('views-common-messages.views-documentSearchView-colon')}}</span></td>
 									<td><span>{{userDetailsCtrl.userDetails.id}}</span></td>
 								</tr>
 								<tr>
-									<td><label>{{i18n('views-common-messages.views-userDetails-realm-label')
+									<td><span class="label-item">{{i18n('views-common-messages.views-userDetails-realm-label')
 											+
-											i18n('views-common-messages.views-documentSearchView-colon')}}</label></td>
-									<td><span>{{userDetailsCtrl.userDetails.realm}}</span></td>
+											i18n('views-common-messages.views-documentSearchView-colon')}}</span></td>
+									<td><span>{{userDetailsCtrl.userDetails.realmId}}</span></td>
 								</tr>
 								<tr>
-									<td><label>{{i18n('views-common-messages.views-userDetails-validFrom-label')
+									<td><span class="label-item">{{i18n('views-common-messages.views-userDetails-validFrom-label')
 											+
-											i18n('views-common-messages.views-documentSearchView-colon')}}</label></td>
-									<td><span>{{userDetailsCtrl.userDetails.validFrom | date:'short'}}</span></td>
+											i18n('views-common-messages.views-documentSearchView-colon')}}</span></td>
+									<td><span>{{userDetailsCtrl.userDetails.validFrom |
+											date:'short'}}</span></td>
 								</tr>
 								<tr>
-									<td><label>{{i18n('views-common-messages.views-userDetails-validTo-label')
+									<td><span class="label-item">{{i18n('views-common-messages.views-userDetails-validTo-label')
 											+
-											i18n('views-common-messages.views-documentSearchView-colon')}}</label></td>
-									<td><span>{{userDetailsCtrl.userDetails.validTo | date:'short'}}</span></td>
+											i18n('views-common-messages.views-documentSearchView-colon')}}</span></td>
+									<td><span>{{userDetailsCtrl.userDetails.validTo |
+											date:'short'}}</span></td>
 								</tr>
 								<tr>
-									<td><label>{{i18n('views-common-messages.views-userDetails-email-label')
+									<td><span class="label-item">{{i18n('views-common-messages.views-userDetails-email-label')
 											+
-											i18n('views-common-messages.views-documentSearchView-colon')}}</label></td>
-									<td><a href="mailto:"><span class="iceOutTxt action-link">{{userDetailsCtrl.userDetails.eMail}}</span></a></td>
+											i18n('views-common-messages.views-documentSearchView-colon')}}</span></td>
+									<td><a href="mailto:"><span
+											class="iceOutTxt action-link">{{userDetailsCtrl.userDetails.eMail}}</span></a></td>
 								</tr>
 							</tbody>
 						</table>

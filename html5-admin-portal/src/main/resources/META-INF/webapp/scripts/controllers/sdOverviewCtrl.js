@@ -69,7 +69,9 @@
 
 		return deferred.promise;
 	};
-
+    /**
+     * 
+     */
 	OverviewCtrl.prototype.getAllUserCounts = function() {
 		var self = this;
 		_sdUserService.getAllCounts().then(function(data) {
@@ -78,7 +80,9 @@
 			trace.log(error);
 		});
 	};
-
+    /**
+     * 
+     */
 	OverviewCtrl.prototype.getAllProcessInstanceCounts = function() {
 		var self = this;
 		_sdProcessInstanceService.getProcessInstanceCounts().then(function(data) {
@@ -87,7 +91,9 @@
 			trace.log(error);
 		});
 	};
-
+    /**
+     * 
+     */
 	OverviewCtrl.prototype.getAllActivityInstanceCounts = function() {
 		var self = this;
 		_sdActivityInstanceService.getAllCounts().then(function(data) {
@@ -95,6 +101,17 @@
 		}, function(error) {
 			trace.log(error);
 		});
+	};
+	
+	/**
+	 * 
+	 */
+	OverviewCtrl.prototype.refresh = function() {
+		var self = this;
+		self.getAllProcessInstanceCounts();
+		self.getAllActivityInstanceCounts();
+		self.getAllUserCounts();
+		self.allLogEntriesTable.refresh();
 	};
 	
 })();

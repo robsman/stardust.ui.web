@@ -15,6 +15,7 @@ import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
@@ -86,6 +87,7 @@ public class UserService
       Long count = new Long(service.getUsersCount(UserQuery.findAll()));
       return count;
    }
+
    /**
     * 
     * @param userOID
@@ -93,7 +95,7 @@ public class UserService
     */
    public UserDTO getUserDetails(Long userOID)
    {
-      User user = serviceFactoryUtils.getUserService().getUser(userOID);
+      User user = UserUtils.getUser(userOID, UserDetailsLevel.WithProperties);
       UserDTO userDTO = DTOBuilder.build(user, UserDTO.class);
       if (user.getValidFrom() != null)
       {
