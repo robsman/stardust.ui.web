@@ -99,5 +99,14 @@
 	    var workflowPerspective =  this.getWorkflowPerspective('user');
 	    return workflowPerspective.abortActivityScope;
 	};
+	
+	
+	/*
+	 * 
+	 */
+	WorklistService.prototype.getAbortProcessScope = function( ) {
+	    var workflowPerspective =  this.getWorkflowPerspective('user');
+	    return workflowPerspective.abortProcessScope;
+	};
     }
 })();

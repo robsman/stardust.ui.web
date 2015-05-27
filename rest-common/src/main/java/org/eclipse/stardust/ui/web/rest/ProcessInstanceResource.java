@@ -249,7 +249,6 @@ public class ProcessInstanceResource
    @Path("/abort")
    public Response abortProcesses(String postedData)
    {
-      // postedData = "{scope: 'root', processes : [11]}";
       return Response.ok(getProcessInstanceService().abortProcesses(postedData), MediaType.APPLICATION_JSON).build();
    }
    

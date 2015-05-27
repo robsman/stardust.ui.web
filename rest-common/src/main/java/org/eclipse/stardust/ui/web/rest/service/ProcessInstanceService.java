@@ -270,7 +270,7 @@ public class ProcessInstanceService
       @SuppressWarnings("unchecked")
       List<Long> processes = (List<Long>) GsonUtils.extractList(GsonUtils.extractJsonArray(json, "processes"), listType);
 
-      if ("root".equalsIgnoreCase(scope))
+      if (AbortScope.RootHierarchy.toString().equalsIgnoreCase(scope))
       {
          notificationMap = processInstanceUtilsREST.abortProcesses(AbortScope.RootHierarchy, processes);
       }

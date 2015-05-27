@@ -14,17 +14,17 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive( 'sdAbortProcessDialog', [ 'sdProcessInstanceService', 'sdUtilService', AbortProcess]);
+	angular.module('bpm-common').directive( 'sdAbortProcessDialog', [ 'sdProcessInstanceService', 'sdUtilService', 'sdPortalConfigurationService', AbortProcess]);
 	
 	var ABORT_SCOPE = {
-			ROOT : 'root',
-			SUB : 'sub'
+			ROOT :'RootHierarchy',
+			SUB : 'SubHierarchy'
 		};
 
 	/**
     * 
     */
-	function AbortProcess(sdProcessInstanceService, sdUtilService){
+	function AbortProcess(sdProcessInstanceService, sdUtilService, sdPortalConfigurationService){
 		
 		return {
 			restrict: 'A',
@@ -33,8 +33,8 @@
 							'sda-type="confirm" '+
 							'sda-title="{{abortProcessCtrl.i18n(\'views-common-messages.views-common-process-abortProcess-label\')}}" '+
 							'sda-scope="this" '+
-							'sda-confirm-action-label="{{abortProcessCtrl.i18n(\'views-common-messages.common-ok\')}}" ' +
-							'sda-cancel-action-label="{{abortProcessCtrl.i18n(\'views-common-messages.common-close\')}}" ' +
+							'sda-confirm-action-label="{{abortProcessCtrl.abortProcess.isPromptRequired ? abortProcessCtrl.i18n(\'views-common-messages.common-ok\') : abortProcessCtrl.i18n(\'views-common-messages.common-yes\') }}" ' +
+							'sda-cancel-action-label="{{abortProcessCtrl.abortProcess.isPromptRequired ? abortProcessCtrl.i18n(\'views-common-messages.common-close\') : abortProcessCtrl.i18n(\'views-common-messages.common-no\')}}" ' +
 							'sda-on-open="abortProcessCtrl.onConfirm(res)" '+
 							'sda-template="' +
 							 sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/abortProcessDialogBody.html"> '+
@@ -52,18 +52,18 @@
 				showDialog : '=sdaShowDialog',
 				abortCompleted: '&sdaOnAbortComplete'
 			},
-			controller: [ '$scope', 'sdProcessInstanceService', AbortProcessController]
+			controller: [ '$scope', 'sdProcessInstanceService', 'sdUtilService', 'sdPortalConfigurationService', AbortProcessController]
 		};
 	};
 
 	/**
     * 
     */
-	var AbortProcessController = function( $scope, sdProcessInstanceService){
+	var AbortProcessController = function( $scope, sdProcessInstanceService, sdUtilService, sdPortalConfigurationService){
 		
 		var self = this;
 
-		this.intialize( $scope, sdProcessInstanceService);
+		this.intialize( $scope, sdProcessInstanceService, sdPortalConfigurationService);
 		
 		/**
 		 * 
@@ -103,7 +103,7 @@
 	/**
     * 
     */
-	AbortProcessController.prototype.intialize = function ( $scope, sdProcessInstanceService){
+	AbortProcessController.prototype.intialize = function ( $scope, sdProcessInstanceService, sdPortalConfigurationService){
 
 		this.i18n = $scope.$parent.i18n;
 		this.sdProcessInstanceService = sdProcessInstanceService;
@@ -111,9 +111,22 @@
 			result : null,
 			error : false
 		};
+		
+		var abortScope =  sdPortalConfigurationService.getAbortProcessScope();
+
+		var isPromptRequired = false;
+
+		if (abortScope == '') {
+		    isPromptRequired = true;
+		    this.configuredScope = ABORT_SCOPE.SUB;
+		} else {
+		    this.configuredScope = abortScope;
+		}
+
 		this.abortProcess = {
-			scope : ABORT_SCOPE.SUB,
-			processes : []
+			scope : abortScope,
+			processes : [],
+			isPromptRequired : isPromptRequired
 		};
 	};
 
@@ -128,7 +141,7 @@
     * 
     */
 	AbortProcessController.prototype.resetValues = function (){
-		this.abortProcess.scope = ABORT_SCOPE.SUB;
+		this.abortProcess.scope =  this.configuredScope;
 		this.notification.result = {};
 		this.notification.error = false;
 	};
