@@ -1466,7 +1466,10 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
          var value = record[selColumn];
          b[key] = value;
          
-         if (selectedColumns[selColumn].type.id == this.reportingService.metadata.decimalType.id) {
+         if (selectedColumns[selColumn].metadata && selectedColumns[selColumn].metadata.javaType && 
+        				 selectedColumns[selColumn].metadata.javaType == "java.math.BigDecimal" && 
+        				 selectedColumns[selColumn].metadata.xPath && 
+        				 selectedColumns[selColumn].metadata.xPath == "Price") {
         	 if (record[selColumn]) {
         		 // First applying Math.floor to avoid rounding performed by toFixed
         		 record[selColumn] = (Math.floor(record[selColumn] * 100) / 100).toFixed(2);
