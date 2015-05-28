@@ -14,12 +14,12 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive( 'sdAbortActivityDialog', [ 'sdActivityInstanceService','sdLoggerService', 'sdUtilService', 'sdPortalConfigurationService', AbortActivity]);
+	angular.module('bpm-common').directive( 'sdAbortActivityDialog', [ 'sdActivityInstanceService','sdLoggerService', 'sdUtilService', 'sdWorkflowPerspectiveConfigService', AbortActivity]);
 
 	/**
 	 * 
 	 */
-	function AbortActivity(sdActivityInstanceService, sdLoggerService, sdUtilService, sdPortalConfigurationService){
+	function AbortActivity(sdActivityInstanceService, sdLoggerService, sdUtilService, sdWorkflowPerspectiveConfigService){
 
 		return {
 			restrict: 'A',
@@ -47,7 +47,7 @@
 				showDialog : '=sdaShowDialog',
 				abortCompleted: '&sdaOnAbortComplete'
 			},
-			controller: [ '$scope', 'sdActivityInstanceService', 'sdLoggerService','sdUtilService','sdPortalConfigurationService', AbortActivityController]
+			controller: [ '$scope', 'sdActivityInstanceService', 'sdLoggerService','sdUtilService','sdWorkflowPerspectiveConfigService', AbortActivityController]
 		};
 	};
 
@@ -56,11 +56,11 @@
 	 */
 
 	var trace = null;
-	var AbortActivityController = function( $scope, sdActivityInstanceService, sdLoggerService, sdUtilService, sdPortalConfigurationService){
+	var AbortActivityController = function( $scope, sdActivityInstanceService, sdLoggerService, sdUtilService, sdWorkflowPerspectiveConfigService){
 
 	    var self = this;
 	    trace = sdLoggerService.getLogger('bpm-common.sdAbortActivityDialog');
-	    this.intialize( $scope, sdActivityInstanceService, sdPortalConfigurationService);
+	    this.intialize( $scope, sdActivityInstanceService, sdWorkflowPerspectiveConfigService);
 
 	    /**
 	     * 
@@ -100,7 +100,7 @@
 	/**
 	 * 
 	 */
-	AbortActivityController.prototype.intialize = function ( $scope, sdActivityInstanceService, sdPortalConfigurationService){
+	AbortActivityController.prototype.intialize = function ( $scope, sdActivityInstanceService, sdWorkflowPerspectiveConfigService){
 
 	    this.i18n = $scope.$parent.i18n;
 	    this.sdActivityInstanceService = sdActivityInstanceService;
@@ -108,7 +108,7 @@
 		    result : null,
 		    error : false
 	    };
-	    var abortScope =  sdPortalConfigurationService.getAbortActivityScope();
+	    var abortScope =  sdWorkflowPerspectiveConfigService.getAbortActivityScope();
 	    var isPromptRequired = false;
 	    if(abortScope == ''){
 		isPromptRequired = true;

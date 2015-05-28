@@ -16,25 +16,21 @@
 	'use strict';
 
 	angular.module('workflow-ui').controller('sdWorklistViewCtrl', 
-			['$scope', 'sdUtilService', 'sdViewUtilService', '$interval', 'sdPortalConfigurationService', WorklistViewCtrl]);
+			['$scope', 'sdUtilService', 'sdViewUtilService', '$interval', 'sdWorklistViewConfigService', WorklistViewCtrl]);
 
-	var _sdViewUtilService;
-	var  _$interval;
-	var _sdPortalConfigurationService;
-	
+	var  _$interval = null ;
+	var _sdWorklistViewConfigService = null;
 	
 	/*
 	 * 
 	 */
-	function WorklistViewCtrl($scope, sdUtilService, sdViewUtilService, $interval, sdPortalConfigurationService) {
-	    	var self = this;
+	function WorklistViewCtrl($scope, sdUtilService, sdViewUtilService, $interval, sdWorklistViewConfigService) {
 		// Register for View Events
 		sdViewUtilService.registerForViewEvents($scope, this.handleViewEvents, this);
 
 		// Preserve to use later in life-cycle
-		_sdViewUtilService = sdViewUtilService;
 		_$interval = $interval;
-		_sdPortalConfigurationService = sdPortalConfigurationService;
+		_sdWorklistViewConfigService = sdWorklistViewConfigService;
 
 		this.initialize();
 		
@@ -53,9 +49,9 @@
 	/*
 	 * 
 	 */
-	WorklistViewCtrl.prototype.registerForAutoRefresh = function($interval) {
+	WorklistViewCtrl.prototype.registerForAutoRefresh = function() {
 	    var self = this;
-	    var refreshInterval = _sdPortalConfigurationService.getRefreshIntervalInMillis();
+	    var refreshInterval = _sdWorklistViewConfigService.getRefreshIntervalInMillis();
 	    if (refreshInterval > 0) {
 		this.timer = _$interval(function() {
 		    if (self.dataTable) {

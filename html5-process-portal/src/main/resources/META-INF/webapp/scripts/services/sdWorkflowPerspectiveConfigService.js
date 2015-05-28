@@ -11,28 +11,26 @@
 /**
  * @author Johnson.Quadras
  */
-
 (function(){
     'use strict';
-    
-
-    angular.module('bpm-common.services').provider('sdPortalConfigurationService', function() {
-	this.$get = [ 'sdPreferenceService', function( sdPreferenceService) {
+    angular.module('workflow-ui.services').provider('sdWorkflowPerspectiveConfigService', function() {
+	this.$get = ['sdPreferenceService', function( sdPreferenceService) {
 	    var service = new ConfigurationService( sdPreferenceService);
 	    return service;
 	} ];
     });
 
     var DEFAULTS = {
-	pageSize : 8,
-	maxPages : 4,
-	fastStep : 3
+	activityAbortScope : '',
+	processAbortScope : '',
     }
     /*
      * 
      */
     function ConfigurationService( sdPreferenceService) {
+	
 	 var configCache = null;
+	 
 	/**
 	 * 
 	 */
@@ -41,63 +39,48 @@
 	    if (configCache != null) {
 		return configCache;
 	    }
-	    
-	    var moduleId = 'ipp-portal-common';
+	    var moduleId = 'ipp-views-common';
 	    var preferenceId = 'preference';
 	    var scope = 'USER';
 	    var config =  sdPreferenceService.getStore(scope, moduleId, preferenceId);
 	    config.fetch();
 	    return config;
-	}
+	};
 	
 	configCache = this.getConfig();
 
 	/**
-	 * Gets the page size
+	 * Gets the activity abort scope
 	 */
-	this.getPageSize = function( scope ) {
+	this.getAbortActivityScope = function(scope) {
+
 	    var fromParent = false;
 	    if(scope && scope == 'PARTITION'){
 		fromParent = true;
 	    }
 	    var config = this.getConfig();
-	    var pageSize = config.getValue('ipp-portal-common.configuration.prefs.pageSize', fromParent);
-	    if (!pageSize) {
-		pageSize = DEFAULTS.pageSize;
+	    var abortScope = config.getValue('ipp-views-common.workflowExecutionConfigurationPanel.prefs.activityAbortScope', fromParent);
+	    if (!abortScope) {
+		abortScope = DEFAULTS.activityAbortScope;
 	    }
-	    return pageSize;
-	};
-	/**
-	 * Gets the Max Pages
-	 */
-	this.getMaxPages = function(scope) {
-	    var fromParent = false;
-	    if(scope && scope == 'PARTITION'){
-		fromParent = true;
-	    }
-	    var config = this.getConfig();
-	    var maxPages = config.getValue('ipp-portal-common.configuration.prefs.paginatorMaxPages', fromParent);
-	    if (!pageSize) {
-		maxPages = DEFAULTS.maxPages;
-	    }
-	    return maxPages;
+	    return abortScope;
 	};
 	
 	/**
-	 * Gets the fast step size
+	 * Gets the process abort scope
 	 */
-	this.getFastStepSize = function(scope) {
+	this.getAbortProcessScope = function(scope) {
+
 	    var fromParent = false;
 	    if(scope && scope == 'PARTITION'){
 		fromParent = true;
 	    }
 	    var config = this.getConfig();
-	    var fastStep = config.getValue('ipp-portal-common.configuration.prefs.paginatorFastStep', fromParent);
-	    if (!fastStep) {
-		fastStep = DEFAULTS.fastStep;
+	    var abortScope = config.getValue('ipp-views-common.workflowExecutionConfigurationPanel.prefs.processAbortScope', fromParent);
+	    if (!abortScope) {
+		abortScope = DEFAULTS.activityAbortScope;
 	    }
-	    return fastStep;
+	    return abortScope;
 	};
     }
-
 })();

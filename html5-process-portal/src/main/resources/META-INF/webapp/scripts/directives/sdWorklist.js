@@ -278,9 +278,9 @@
 		    return value;
 		};
 		// Override
-		preferenceStore.marshalName = function(scope) {
+		preferenceStore.marshalName = function(scope, name) {
 		    var name = self.preferenceName;
-		    if (scope == 'PARTITION') {
+		    if (scope == 'PARTITION' && !this.parentStore[name]) {
 			name = 'Default';
 		    }
 		    return name;

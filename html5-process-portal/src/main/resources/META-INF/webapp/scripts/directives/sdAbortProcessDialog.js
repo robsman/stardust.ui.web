@@ -14,7 +14,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive( 'sdAbortProcessDialog', [ 'sdProcessInstanceService', 'sdUtilService', 'sdPortalConfigurationService', AbortProcess]);
+	angular.module('bpm-common').directive( 'sdAbortProcessDialog', [ 'sdProcessInstanceService', 'sdUtilService', 'sdWorkflowPerspectiveConfigService', AbortProcess]);
 	
 	var ABORT_SCOPE = {
 			ROOT :'RootHierarchy',
@@ -24,7 +24,7 @@
 	/**
     * 
     */
-	function AbortProcess(sdProcessInstanceService, sdUtilService, sdPortalConfigurationService){
+	function AbortProcess(sdProcessInstanceService, sdUtilService, sdWorkflowPerspectiveConfigService){
 		
 		return {
 			restrict: 'A',
@@ -52,18 +52,18 @@
 				showDialog : '=sdaShowDialog',
 				abortCompleted: '&sdaOnAbortComplete'
 			},
-			controller: [ '$scope', 'sdProcessInstanceService', 'sdUtilService', 'sdPortalConfigurationService', AbortProcessController]
+			controller: [ '$scope', 'sdProcessInstanceService', 'sdUtilService', 'sdWorkflowPerspectiveConfigService', AbortProcessController]
 		};
 	};
 
 	/**
     * 
     */
-	var AbortProcessController = function( $scope, sdProcessInstanceService, sdUtilService, sdPortalConfigurationService){
+	var AbortProcessController = function( $scope, sdProcessInstanceService, sdUtilService, sdWorkflowPerspectiveConfigService){
 		
 		var self = this;
 
-		this.intialize( $scope, sdProcessInstanceService, sdPortalConfigurationService);
+		this.intialize( $scope, sdProcessInstanceService, sdWorkflowPerspectiveConfigService);
 		
 		/**
 		 * 
@@ -103,7 +103,7 @@
 	/**
     * 
     */
-	AbortProcessController.prototype.intialize = function ( $scope, sdProcessInstanceService, sdPortalConfigurationService){
+	AbortProcessController.prototype.intialize = function ( $scope, sdProcessInstanceService, sdWorkflowPerspectiveConfigService){
 
 		this.i18n = $scope.$parent.i18n;
 		this.sdProcessInstanceService = sdProcessInstanceService;
@@ -112,7 +112,7 @@
 			error : false
 		};
 		
-		var abortScope =  sdPortalConfigurationService.getAbortProcessScope();
+		var abortScope =  sdWorkflowPerspectiveConfigService.getAbortProcessScope();
 
 		var isPromptRequired = false;
 

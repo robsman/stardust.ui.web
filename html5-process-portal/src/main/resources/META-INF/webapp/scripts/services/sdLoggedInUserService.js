@@ -23,26 +23,23 @@
 	} ];
     });
 
-    var user = null;
     /**
      * 
      */
     function LoggedInUserService(sdUtilService) {
-    	
-    	var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/user";
+	var userCache = null;
 
+	var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/user";
 	/**
 	 * 
 	 */
-	LoggedInUserService.prototype.getUserInfo = function() {
+	this.getUserInfo = function() {
 	    var restUrl = REST_BASE_URL + "/whoAmI";
-	    var self = this;
-
-	    if (!user) {
-		user = sdUtilService.syncAjax(restUrl);
+	    if (!userCache) {
+		userCache = sdUtilService.syncAjax(restUrl);
 	    }
-	    return user;
+	    return userCache;
 	};
-
+	this.getUserInfo();
     }
 })();
