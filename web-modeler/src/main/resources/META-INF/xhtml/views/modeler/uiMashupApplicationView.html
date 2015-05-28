@@ -131,6 +131,13 @@
 												</td>
 												<td><label for="embeddedInput">Embedded</label>
 												</td>
+												<td ng-repeat="generator in uiMashupGenerator.extensions">
+													<input id="{{generator.id}}" type="radio" style="margin-right: 2px !important;"
+														ng-model="uiMashupGenerator.visibility[generator.id]" ng-value="true" 
+														ng-click="showUiMashupGeneratorExtension(generator)"></input>
+													<label style="margin-right: 10px; display: inline;" 
+														ng-click="showUiMashupGeneratorExtension(generator)">{{generator.name}}</label>
+												</td>
 											</tr>
 										</table>
 									</td>
@@ -266,6 +273,12 @@
 												</td>
 											</tr>
 										</table>
+									</td>
+								</tr>
+								<tr ng-repeat="generator in uiMashupGenerator.extensions" ng-show="uiMashupGenerator.visibility[generator.id]">
+									<td>
+										<sd-include src="generator.pageHtmlUrl" 
+											onload="uiMashupGenerator.onload(generator)" onfail="uiMashupGenerator.onfail(generator)" />
 									</td>
 								</tr>
 							</table>

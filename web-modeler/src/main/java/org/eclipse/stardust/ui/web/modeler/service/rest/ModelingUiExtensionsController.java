@@ -47,6 +47,9 @@ public class ModelingUiExtensionsController
       buffer.append("    // Integration Overlays\n");
       listExtensionDependencies(buffer, registry.getIntegrationOverlayExtensions());
 
+      buffer.append("    // UI Mashup Generators\n");
+      listExtensionDependencies(buffer, registry.getUiMashupGeneratorExtensions());
+
       buffer.append("    // Rule Set Providers\n");
       listExtensionDependencies(buffer, registry.getRuleSetProviderExtensions());
 
@@ -59,6 +62,7 @@ public class ModelingUiExtensionsController
       listExtensionInitialization(buffer, "registerMetaModelExtensions", registry.getMetaModelExtensions());
       listExtensionInitialization(buffer, "registerModelDecorationExtensions", registry.getModelDecorations());
       listExtensionInitialization(buffer, "registerIntegrationOverlayExtensions", registry.getIntegrationOverlayExtensions());
+      listExtensionInitialization(buffer, "registerUiMashupGeneratorExtensions", registry.getUiMashupGeneratorExtensions());
       listExtensionInitialization(buffer, "registerRuleSetProviderExtensions", registry.getRuleSetProviderExtensions());
 
       buffer.append("\n")
@@ -92,6 +96,9 @@ public class ModelingUiExtensionsController
 
       buffer.append("    // Integration Overlays\n");
       listExtensionDependencies(buffer, registry.getIntegrationOverlayExtensions());
+
+      buffer.append("    // UI Mashup Generators\n");
+      listExtensionDependencies(buffer, registry.getUiMashupGeneratorExtensions());
 
       buffer.append("], function(m_extensionManager) {\n")
             .append("\n");
@@ -132,6 +139,9 @@ public class ModelingUiExtensionsController
       buffer.append("    // Views\n");
       listExtensionDependencies(buffer, registry.getViewExtensions());
 
+      buffer.append("    // UI Mashup Generators\n");
+      listExtensionDependencies(buffer, registry.getUiMashupGeneratorExtensions());
+
       buffer.append("], function(m_extensionManager) {\n")
             .append("\n");
 
@@ -139,6 +149,7 @@ public class ModelingUiExtensionsController
       listExtensionInitialization(buffer, "registerMetaModelExtensions", registry.getMetaModelExtensions());
       listExtensionInitialization(buffer, "registerPropertyPageExtensions", registry.getPropertiesPageExtensions());
       listExtensionInitialization(buffer, "registerIntegrationOverlayExtensions", registry.getIntegrationOverlayExtensions());
+      listExtensionInitialization(buffer, "registerUiMashupGeneratorExtensions", registry.getUiMashupGeneratorExtensions());
       listExtensionInitialization(buffer, "registerViewExtensions", registry.getViewExtensions());
 
       buffer.append("\n")

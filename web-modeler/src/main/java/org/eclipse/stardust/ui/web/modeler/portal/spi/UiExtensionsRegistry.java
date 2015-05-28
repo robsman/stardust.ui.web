@@ -66,4 +66,9 @@ public class UiExtensionsRegistry
    {
       return findExtensions("ruleSetProvider");
    }
+
+   public List<String> getUiMashupGeneratorExtensions()
+   {
+      return findExtensions("uiMashupGenerator");
+   }
 }
