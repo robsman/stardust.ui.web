@@ -20,6 +20,11 @@
 				escape="false" />
 		</ice:commandLink>
 		<ice:commandLink action="#{ippPortalApp.openView}">
+             <f:param name="viewId" value="benchmarkViewHtml5" />
+             <ice:outputText value="Benchmark Management (HTML5)" styleClass="action-link"
+                   escape="false" />
+        </ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
 			<f:param name="viewId" value="trafficLightViewNew" />
 			<ice:outputText value="Traffic Light View" styleClass="action-link"
 				escape="false" />

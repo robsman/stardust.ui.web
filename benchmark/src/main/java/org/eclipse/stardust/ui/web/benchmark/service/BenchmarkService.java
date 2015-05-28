@@ -17,11 +17,14 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceAttributes;
+import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
 import org.eclipse.stardust.engine.api.model.Activity;
+import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.ImplementationType;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
@@ -45,6 +48,7 @@ import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.ui.web.benchmark.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 
@@ -881,4 +885,59 @@ public class BenchmarkService {
 
 		return folder;
 	}
+	
+	public JsonObject getProcessInstanceDocumentToken(long processInstanceOid,
+            String dataPathId, String documentId)
+{
+     JsonObject resultJson = new JsonObject();
+     String downloadToken = "";
+
+     // Special case for PROCESS_ATTACHMENTS
+     if (CommonProperties.PROCESS_ATTACHMENTS.equals(dataPathId))
+     {
+            downloadToken = getDocumentManagementService().requestDocumentContentDownload(documentId); 
+     }
+     // Handle other Document Data Paths
+     else
+     {
+            // Find Process Definition for provided PI OID
+         ProcessInstanceQuery processInstanceQuery = ProcessInstanceQuery.findAll();
+
+         processInstanceQuery.where(ProcessInstanceQuery.OID.isEqual(processInstanceOid));
+         ProcessInstanceDetails processInstance = (ProcessInstanceDetails) getQueryService().getAllProcessInstances(processInstanceQuery).get(0);
+
+         ProcessDefinition processDefinition = getQueryService().getProcessDefinition(
+                 processInstance.getModelOID(), processInstance.getProcessID());
+         
+         // Get Specific Documents for Process Definition
+         @SuppressWarnings("unchecked")
+         List<DataPath> dataPaths = (List<DataPath>) processDefinition.getAllDataPaths();
+         
+         String dataId;
+         DeployedModel deployedModel; 
+         Data data;
+         for (DataPath dataPath : dataPaths)
+         {
+           dataId = dataPath.getData();
+           deployedModel = ModelCache.findModelCache().getModel(processDefinition.getModelOID());
+           data = deployedModel.getData(dataId);
+           
+           // Only consider data with type DOCUMENT_DATA (dmsDocument) with Direction.IN 
+            if (!dataPath.getDirection().equals(Direction.OUT)
+                  || !PredefinedConstants.DOCUMENT_DATA.equals(data.getTypeId()))
+            {
+               continue;
+            }
+
+            if (dataPath.getId().equals(dataPathId))
+            {
+                  Document doc = (Document) getWorkflowService().getInDataPath(processInstanceOid, dataPath.getId());
+                  downloadToken = getDocumentManagementService().requestDocumentContentDownload(doc.getId());
+            }
+         }
+     }
+   
+  resultJson.addProperty("downloadToken", downloadToken); 
+     return resultJson;
+}
 }

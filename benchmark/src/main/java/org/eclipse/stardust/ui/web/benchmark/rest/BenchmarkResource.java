@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -82,4 +83,27 @@ public class BenchmarkResource {
 			return Response.serverError().build();
 		}
 	}
+	
+	@GET
+	   @Produces(MediaType.APPLICATION_JSON)
+	   @Path("processes/{processInstanceOid: \\d+}/documents/{dataPathId}{documentId: (/documentId)?}")
+	   public Response getDocument(@PathParam("processInstanceOid")
+	              String processInstanceOid, @PathParam("dataPathId")
+	              String dataPathId, @PathParam("documentId")
+	              String documentId)
+	   {
+	      try
+	      {
+	         return Response.ok(
+	        		 getBenchmarkService().getProcessInstanceDocumentToken(
+	                     Long.parseLong(processInstanceOid), dataPathId, documentId)
+	                     .toString(), MediaType.APPLICATION_JSON).build();
+	      }
+	      catch (Exception e)
+	      {
+	         trace.error(e, e);
+
+	         return Response.serverError().build();
+	      }
+	   }
 }

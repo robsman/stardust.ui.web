@@ -1,0 +1,73 @@
+
+<div class="view-panel" ng-controller="benchmarkCtrl as ctrl"
+	sg-stretch-to-bottom>
+	
+	<div>
+		<table sd-data-table
+			   sda-mode="local"
+			   sda-selectable="row"
+			   sda-page-size = "5"
+			   sda-on-select="ctrl.benchmarkSelected(d)"
+			   sd-data ="ctrl.benchmarks">
+			   <thead>
+				   	<tr>
+				   		<th sda-name="name" sda-label="Name"></th>
+				   		<th sda-name="description" sda-label="Description"></th>
+				   		<th sda-name="author" sda-label="Author"></th>
+				   		<th sda-name="lastModified" sda-label="Last Modified"></th>
+				   		<th sda-name="validFrom" sda-label="Valid From"></th>
+				   	</tr>
+			   </thead>
+			   <tbody>
+			   		<tr>
+			   			<td sda-field="benchmark.name"></td>
+			   			<td sda-field="benchmark.description"></td>
+			   			<td sda-field="benchmark.author"></td>
+			   			<td sda-field="benchmark.lastModified"></td>
+			   			<td sda-field="benchmark.validFrom"></td>
+			   		</tr>
+			   </tbody>
+		</table>
+	</div>
+	
+	<div style="width:100%;position:relative">
+		<div style="width:200px">
+		    <ul sd-tree="treeCtrl.onInit(api)"
+		       	sda-event-callback="ctrl.treeCallback(data,e)"
+		       	sda-icon-callback="ctrl.iconCallback(item)"
+		       	sda-menu-callback="ctrl.menuCallback(item)">
+		      <li sd-tree-node 
+		          sda-is-leaf = "model.processDefinitions.length == 0"
+		          sda-label="model.name" 
+		          sda-node-id="model.nodeId" 
+		          ng-repeat="model in ctrl.models">
+		        <ul>
+		          <li sd-tree-node
+		              sda-is-leaf="process.activities.length==0"
+		              sda-label="process.name"
+		              sda-node-id="process.nodeId"
+		              ng-repeat="process in model.processDefinitions">
+		            <ul>
+		              <li sd-tree-node
+		                  sda-is-leaf="true"
+		                  sda-draggable="true"
+		                  sda-label="activity.name"
+		                  sda-menu-items="(start,Start Activity),(suspend,Suspend Activity)"
+		                  sda-node-id="activity.nodeId"
+		                  ng-repeat="activity in process.activities">
+		              </li><!-- activity structure ends -->
+		            </ul>
+		          </li><!-- process structure ends -->
+		        </ul>
+		      </li><!-- model structure ends -->
+		    </ul>
+	    </div>
+	    <div style="width:calc(100% - 200px);background:#ddd;">
+	    
+	    </div>
+	</div>
+	
+	<pre>{{ctrl.benchmarks | json}}</pre>
+	
+</div>
+
