@@ -1,9 +1,30 @@
 
-<div class="view-panel" ng-controller="benchmarkCtrl as ctrl"
-	sg-stretch-to-bottom>
+<div class="view-panel" 
+     ng-controller="benchmarkCtrl as ctrl"
+	 sg-stretch-to-bottom>
 	
-	<div>
-		<table sd-data-table
+	<i style="position:absolute;" 
+	   ng-click="ctrl.showBenchmarks = !ctrl.showBenchmarks" 
+	   ng-class="{'sc-arrow-d': ctrl.showBenchmarks,'sc-arrow-r': !ctrl.showBenchmarks}"
+	   class="sc sc-fw sc-2x sc-arrow-d">
+	</i>
+	<span style="margin:2em;" class="header">Benchmark Definitions</span>
+	
+	<!-- Data Table for Benchmarks -->
+	<div ng-show="ctrl.showBenchmarks">
+	
+		<select ng-model="ctrl.benchmarkFilter" ng-change="ctrl.loadBenchmarks(ctrl.benchmarkFilter)">
+			<option selected value="Design">Designs</option>
+			<option value="Published">Published</option>
+		</select>
+		
+		<div sda-toolbar>
+		    <a href="#" ng-click="ctrl.createBenchmark()" title="Add Benchmark" class="tbl-toolbar-item tbl-tool-link">
+		       <i class="glyphicon glyphicon-plus">Add</i>
+		    </a>
+		</div>
+		
+		<table sd-data-table="ctrl.dataTableApi"
 			   sda-mode="local"
 			   sda-selectable="row"
 			   sda-page-size = "5"
@@ -30,44 +51,118 @@
 		</table>
 	</div>
 	
-	<div style="width:100%;position:relative">
-		<div style="width:200px">
-		    <ul sd-tree="treeCtrl.onInit(api)"
-		       	sda-event-callback="ctrl.treeCallback(data,e)"
-		       	sda-icon-callback="ctrl.iconCallback(item)"
-		       	sda-menu-callback="ctrl.menuCallback(item)">
-		      <li sd-tree-node 
-		          sda-is-leaf = "model.processDefinitions.length == 0"
-		          sda-label="model.name" 
-		          sda-node-id="model.nodeId" 
-		          ng-repeat="model in ctrl.models">
-		        <ul>
-		          <li sd-tree-node
-		              sda-is-leaf="process.activities.length==0"
-		              sda-label="process.name"
-		              sda-node-id="process.nodeId"
-		              ng-repeat="process in model.processDefinitions">
-		            <ul>
-		              <li sd-tree-node
-		                  sda-is-leaf="true"
-		                  sda-draggable="true"
-		                  sda-label="activity.name"
-		                  sda-menu-items="(start,Start Activity),(suspend,Suspend Activity)"
-		                  sda-node-id="activity.nodeId"
-		                  ng-repeat="activity in process.activities">
-		              </li><!-- activity structure ends -->
-		            </ul>
-		          </li><!-- process structure ends -->
-		        </ul>
-		      </li><!-- model structure ends -->
-		    </ul>
-	    </div>
-	    <div style="width:calc(100% - 200px);background:#ddd;">
-	    
-	    </div>
+	<!-- Display for currently selected benchmark -->
+	<div ng-show="ctrl.selectedBenchmark">
+		<div>
+			<span style="font-size:12px;" class="header">{{ctrl.selectedBenchmark.name}}</span>
+		</div>
+		<div>
+			<i class="sc sc-clock"></i> 
+			<span>Last Saved {{ctrl.getLastSaveTime()}}</span>
+		</div>
+		<div>
+			<i ng-class="{'glyphicon-floppy-disk' : ctrl.benchmarkIsDirty,'glyphicon-floppy-saved' : !ctrl.benchmarkIsDirty}" 
+			   ng-click="saveBenchmarks()"
+			   class="glyphicon">
+			</i>
+			<i class="glyphicon glyphicon-remove"></i>
+		</div>
 	</div>
 	
-	<pre>{{ctrl.benchmarks | json}}</pre>
+	<!--Bottom Container - Tabs - > Model Tree and Categories  -->
+	<div style="width:100%;position:relative;margin-top:1em;">
+		
+	    <!-- Tabs -->
+	    <div style="width:100%;border-bottom:solid 1px #ddd;position:relative;">
+	    
+		    <div class="tab"
+		    	 ng-class="{selected: ctrl.selectedTab==='General'}"
+		    	 ng-click="ctrl.selectedTab = 'General'">
+		    	 <span class="header">General</span>
+		    	 <div class="tab-arrow" ng-show="ctrl.selectedTab === 'General'"></div>
+		    </div>
+		    
+		    <div class="tab"
+		    	 ng-class="{selected: ctrl.selectedTab === 'Categories'}"
+		    	 ng-click="ctrl.selectedTab ='Categories'">
+		    	 <span class="header">Categories</span>
+		    	 <div class="tab-arrow" ng-show="ctrl.selectedTab === 'Categories'"></div>
+		    </div>
+		    
+	    </div>
+	    
+	    <div ng-show="ctrl.selectedTab ==='Categories'">
+	    
+		    <!-- Model Tree Container -->
+			<div style="width:225px;display:inline-table;">
+			
+				<!-- sdTree Implementation of Model Tree -->
+			    <ul sd-tree="ctrl.onTreeInit(api)"
+			       	sda-event-callback="ctrl.treeCallback(data,e)"
+			       	sda-icon-callback="ctrl.iconCallback(item)"
+			       	sda-menu-callback="ctrl.menuCallback(item)">
+			      <li sd-tree-node 
+			          sda-is-leaf = "model.processDefinitions.length == 0"
+			          sda-label="model.name" 
+			          sda-node-id="model.nodeId" 
+			          ng-repeat="model in ctrl.models">
+			        <ul>
+			          <li sd-tree-node
+			              sda-is-leaf="process.activities.length==0"
+			              sda-label="process.name"
+			              sda-node-id="process.nodeId"
+			              ng-repeat="process in model.processDefinitions">
+			            <ul>
+			              <li sd-tree-node
+			                  sda-is-leaf="true"
+			                  sda-draggable="true"
+			                  sda-label="activity.name"
+			                  sda-menu-items="(start,Start Activity),(suspend,Suspend Activity)"
+			                  sda-node-id="activity.nodeId"
+			                  ng-repeat="activity in process.activities">
+			              </li><!-- activity structure ends -->
+			            </ul>
+			          </li><!-- process structure ends -->
+			        </ul>
+			      </li><!-- model structure ends -->
+			    </ul>
+			    
+		    </div>
+		    
+		    <!-- Categories Table-->
+		    <div style="width:calc(100% - 350px);display:inline-table;">
+		    	<table>
+		    		<thead>
+		    			<th>Element</th>
+		    			<th ng-repeat="category in ctrl.selectedBenchmark.categories">
+		    				<span>{{category.name}}</span>
+		    				<div style="display:inline-block;background-color:{{category.color}};width:50px;"></div>
+		    			</th>
+		    		</thead>
+		    		<tbody>
+		    			<tr></tr>
+		    		</tbody>
+		    	</table>
+		    	<pre>{{ctrl.benchmarkDataRows | json}}</pre>
+	    	</div>
+	    	
+		sb{{ ctrl.selectedBenchmark}}
+	</div>
+	
+	<!-- General Elements of the Benchmark -->
+	<div ng-show="ctrl.selectedTab ==='General'">
+    	<label>Name</label> 
+    	<input ng-disabled="!ctrl.selectedBenchmark" ng-model="ctrl.selectedBenchmark.name" type="text">
+    	
+    	<label>Description</label>
+    	<textarea ng-disabled="!ctrl.selectedBenchmark" ng-model="ctrl.selectedBenchmark.description"></textarea>
+    	
+    	<label>Business Calendar</label>
+    	<select ng-disabled="!ctrl.selectedBenchmark">
+    		<option>TODO: Load Business Calendars</option>
+    		<option>TODO: Load Even More Business Calendars</option>
+    	</select>
+    </div>
 	
 </div>
 

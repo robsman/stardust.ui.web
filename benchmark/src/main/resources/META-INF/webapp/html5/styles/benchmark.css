@@ -1,0 +1,63 @@
+/*Arrow Tabs*/
+/**************************/
+.tab {
+	display: inline;
+  	position: relative;
+  	cursor: pointer;
+}
+.tab .header {
+	opacity:0.5;
+}
+
+.tab.selected .header{
+	opacity:1;
+}
+
+.tab-arrow {
+	position: absolute;
+	left: calc(50% - 5px);
+	bottom:0px;
+	background: #fff;
+	border: 1px solid transparent;
+}
+
+.tab-arrow:after, .tab-arrow:before {
+	bottom: -6px;
+	left: 50%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+
+.tab-arrow:after {
+	border-bottom-color: #fff;
+	border-width: 8px;
+	margin-left: -8px;
+}
+.tab-arrow:before {
+	border-bottom-color: #999;
+	border-width: 9px;
+	margin-left: -9px;
+}
+/*Arrow Tabs End*/
+/**************************/
+
+/*starclipse font icon adjustments*/
+/**********************************/
+.sc {
+	color:rgb(166, 154, 136)
+}
+
+.sc:hover {
+	color:rgb(146, 134, 116)
+}
+
+/*sd-Tree adjustments*/
+/**************************/
+ul.sd-tree {
+	margin:0;
+	border:none;
+}
