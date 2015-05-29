@@ -22,7 +22,7 @@
 	    [ '$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sdPreferenceService',
 		    'sdWorklistService', 'sdActivityInstanceService', 'sdProcessDefinitionService',
 		    'sdCriticalityService', 'sdStatusService', 'sdPriorityService', '$filter', 'sgI18nService',
-		    '$timeout', 'sdLoggedInUserService', 'sdDialogService', 'sdCommonViewUtilService','sdPortalConfigurationService',
+		    '$timeout', 'sdLoggedInUserService', 'sdDialogService', 'sdCommonViewUtilService',
 		    ActivityTableDirective ]);
 
     /*
@@ -280,8 +280,12 @@
 		// Override
 		preferenceStore.marshalName = function(scope, name) {
 		    var name = self.preferenceName;
-		    if (scope == 'PARTITION' && !this.parentStore[name]) {
-			name = 'Default';
+		    if (scope == 'PARTITION') {
+			if (self.isWorklistMode() && !this.parentStore[name]) {
+			    name = 'Default';
+			}else if(self.isActivityTableMode()) {
+			    name = 'Default';
+			}
 		    }
 		    return name;
 		}
