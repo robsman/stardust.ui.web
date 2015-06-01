@@ -324,7 +324,7 @@
 	     * 
 	     */
 	    ActivityTableCompiler.prototype.isColumnVisible = function(columnName) {
-		var found = $filter('filter')(self.visbleColumns, columnName);
+		var found = $filter('filter')(self.visibleColumns, columnName);
 		if (found && found.length === 1) {
 		    return true;
 		}
