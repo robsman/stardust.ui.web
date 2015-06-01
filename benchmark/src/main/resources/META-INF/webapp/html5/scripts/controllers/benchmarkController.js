@@ -80,17 +80,62 @@
 		});
 	};
 	
-	//TODO: remove
-	benchmarkController.prototype.getLastSaveTime = function(){
-		var currentTime = (new Date()).getTime();
+	/**
+	 * As our category priority is implicit based upon the ordinal position in the benchmarks
+	 * top level category array, we need a way to specify position for the category data which
+	 * is linked by id within our benchmarkData properties of our procDefs and  activities.
+	 * This function will be utilized to provide priority based positioning to a sort function 
+	 * for category instances (@see getSortedCategories).
+	 * @param item - The category from our benchmarkData categories
+	 * @param source - The top level Category array for the benchmark, position is implicit here based on ordianl position.
+	 * @returns {Number} - index position the benchmark category data should have based on its link to the parent category.
+	 */
+	benchmarkController.prototype.getCategoryPosition = function(item){
+		var i,
+      		pos=-1,
+      		temp,
+      		source;
 		
-		if(this.lastSaveTime === Number.NEGATIVE_INFINITY){
-			return "Never";
+		if(!this.selectedBenchmark){
+			return;
 		}
-		else{
-			return "x minutes ago";
+		
+		source = this.selectedBenchmark.categories;
+	      
+		for(i=0;i<source.length;i++){
+		  temp = source[i];
+		  if(temp.id === item.categoryId){
+		    pos=i;
+		    break;
+		  }
+		  return pos;
 		}
-	}
+	  
+	};
+	
+	/**
+	 * Given a category array from benchmarkData compare the elements in that array
+	 * with the ordinal positions of the top level benchmark Categories and return 
+	 * a new array sorted to match those ordianl positions.
+	 * @param categoryData
+	 * @returns
+	 */
+	benchmarkController.prototype.getSortedCategories = function(categoryData){
+		return categoryData.sort(function(a,b){
+			
+			var posA,
+		      posB;
+		  
+			posA = fxc(a,a1);
+			posB = fxc(b,a1);
+		  
+			if(posA < posB){return -1;}
+			else if(posA===posB){return 0;}
+			else{return 1;}
+			
+		});
+		
+	};
 	
 	/**
 	 * callback for the data table to handle when a benchmark has
@@ -111,6 +156,7 @@
 		}
 		else if(d.action==="deselect"){
 			this.selectedBenchmark = undefined;
+			this.benchmarkDataRows=[];
 		}
 	}
 	
@@ -194,6 +240,7 @@
 	 */
 	benchmarkController.prototype.buildOutProcDef = function(model,procDefId,treeProcDef){
 		var searchArray,
+			categories,
 			procDef;
 		
 		searchArray = model.processDefinitions.filter(function(v){
@@ -201,7 +248,8 @@
 		});
 		
 		if(searchArray.length === 0){
-			procDef = this.benchmarkBuilderService.getBaseProcessDefinition();
+			categories = this.selectedBenchmark.categories;
+			procDef = this.benchmarkBuilderService.getBaseProcessDefinition(categories);
 			procDef.id = treeProcDef.id;
 			procDef.oid = treeProcDef.oid;
 			model.processDefinitions.push(procDef);
@@ -223,14 +271,16 @@
 	 */
 	benchmarkController.prototype.buildOutActivity = function(procDef,activityId,treeActivity){
 		var searchArray,
+			categories,
 			activity;
-
+		
 		searchArray = procDef.activities.filter(function(v){
 			return (v.id === activityId);
 		});
 		
 		if(searchArray.length === 0){
-			activity = this.benchmarkBuilderService.getBaseActivity();
+			categories = this.selectedBenchmark.categories;
+			activity = this.benchmarkBuilderService.getBaseActivity(categories);
 			activity.id = treeActivity.id;
 			activity.oid = treeActivity.oid;
 			procDef.activities.push(activity);

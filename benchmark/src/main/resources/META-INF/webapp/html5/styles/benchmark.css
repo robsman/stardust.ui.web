@@ -4,6 +4,7 @@
 	display: inline;
   	position: relative;
   	cursor: pointer;
+  	margin:1em;
 }
 .tab .header {
 	opacity:0.5;
@@ -60,4 +61,16 @@
 ul.sd-tree {
 	margin:0;
 	border:none;
+}
+
+/*Benchmark table styles*/
+#benchmarkTable input,
+#benchmarkTable select
+{
+	padding:2px;
+	margin:2px;
+}
+
+#benchmarkTable tr:nth-child(even) td {
+  background: #F4F4F4;
 }

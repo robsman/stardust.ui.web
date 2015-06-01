@@ -130,23 +130,84 @@
 		    </div>
 		    
 		    <!-- Categories Table-->
-		    <div style="width:calc(100% - 350px);display:inline-table;">
-		    	<table>
+		    <div style="width:calc(100% - 230px);display:inline-table;">
+		    
+		    	<table class="tbl ng-scope dataTable" id="benchmarkTable" style="width:100%;">
+		    	<colgroup>
+			       <col span="1" style="width: 5%;">
+			       <col span="1" style="width: 15%;">
+			    </colgroup>
 		    		<thead>
-		    			<th>Element</th>
-		    			<th ng-repeat="category in ctrl.selectedBenchmark.categories">
-		    				<span>{{category.name}}</span>
-		    				<div style="display:inline-block;background-color:{{category.color}};width:50px;"></div>
+		    			<th class="tbl-hdr-col">
+		    				<span class="tbl-hdr-col-label">Element</span>
+		    			</th>
+		    			<th class="tbl-hdr-col">
+		    				<span class="tbl-hdr-col-label">Options</span>
+		    			</th>
+		    			<th class="tbl-hdr-col" ng-repeat="category in ctrl.selectedBenchmark.categories">
+		    				<span class="tbl-hdr-col-label">{{category.name}}</span>
+		    				<div style="display:inline-block;background-color:{{category.color}};width:25px;">&nbsp;</div>
 		    			</th>
 		    		</thead>
 		    		<tbody>
-		    			<tr></tr>
+		    			<tr ng-class-even="even" class="tbl-row" ng-repeat="data in ctrl.benchmarkDataRows">
+		    				<td style="vertical-align:top;">
+			    				<a href="#" title="{{data.nodePath}}">{{data.element}}</a>
+		    				</td>
+		    				<td style="vertical-align:top;">
+		    					<label><input type="checkbox"/>No Benchmark</label>
+		    					<label><input ng-model="data.benchmarkData.enableDueDate" type="checkbox"/>Enable Due Date</label>
+		    				</td>
+		    				<td ng-repeat="catInst in data.benchmarkData.categories | orderBy:getCategoryPosition">
+		    					<select ng-model="catInst.condition.lhs">
+		    						<option value="Default">Default</option>
+		    						<option value="FreeForm">Free-Form</option>
+		    						<option value="CurrentTime">Current Time</option>
+		    					</select>
+		    					<select ng-model="catInst.condition.operator">
+		    						<option value="!LaterThan">Not Later Than</option>
+		    						<option value="LaterThan">Later Than</option>
+		    					</select>
+		    					<select ng-model="catInst.condition.rhs">
+		    						<option value="PrimitiveData">TODO: Get Primitive Data</option>
+		    					</select>
+		    					
+		    					<p></p>
+		    					
+			    				<label style="display:inline-table;">
+			    					<input ng-model="catInst.useBusinessDays" 
+					    				   value="true" 
+					    				   name="{{data.nodePath}}{{$index}}ubd"
+					    				   type="radio"/>
+					    				   Business Days
+			    				</label>
+			    				
+			    				<label style="display:inline-table;">
+			    					<input ng-model ="catInst.useBusinessDays" 
+			    					       name="{{data.nodePath}}{{$index}}ubd" 
+			    					       value="false" 
+			    					       type="radio"/>
+			    					       Calendar Days
+			    				</label>
+			    				
+		    					<label><input ng-model="catInst.applyOffset" type="checkbox"/>Apply Offset</label>
+		    					<input style="padding-right" ng-model="catInst.offset.amount" type="number"/>
+		    					
+		    					<select ng-model="catInst.offset.unit">
+		    						<option value="d">Days</option>
+		    						<option value="w">Weeks</option>
+		    						<option value="m">Months</option>
+		    					</select>
+		    					
+		    					<label>At <input type="time" ng-model="catInst.offset.offsetTime"/></label>
+		    				   <!--pre>{{catInst | json}}</pre-->
+		    				   
+		    				</td>
+		    			</tr>
 		    		</tbody>
 		    	</table>
-		    	<pre>{{ctrl.benchmarkDataRows | json}}</pre>
+		    	<!--pre>{{ctrl.benchmarkDataRows | json}}</pre-->
 	    	</div>
-	    	
-		sb{{ ctrl.selectedBenchmark}}
 	</div>
 	
 	<!-- General Elements of the Benchmark -->

@@ -113,6 +113,12 @@
 		//Stubbed
 	}
 	
+	benchmarkBuilderService.prototype.cloneCategories = function(categories){
+		var clonedCats = {};
+		angular.copy(categories, clonedCats);
+		return clonedCats;
+	};
+	
 	/**
 	 * Return a RC4 compliant UUID
 	 */
@@ -159,10 +165,20 @@
 	 * Returns the base Process Definition structure
 	 * @returns
 	 */
-	benchmarkBuilderService.prototype.getBaseProcessDefinition = function(procDef,categories){
+	benchmarkBuilderService.prototype.getBaseProcessDefinition = function(categories){
 		var baseCopy={};
 		angular.copy(baseProcessDefinition, baseCopy);
 		baseCopy.benchmarkData = this.getBaseBenchmarkData(categories);
+		
+		//If not categories passed in then use a single default
+		if(!categories){
+			baseCopy.categories.push(this.getBaseCategoryData());
+		}
+		//else match the number of categories and link with categoryId; 
+		else{
+			this.populateCategories(baseCopy,categories)
+		}
+		
 		return baseCopy;
 	}
 	
@@ -170,26 +186,53 @@
 	 * Returns the base Activity structure
 	 * @returns
 	 */
-	benchmarkBuilderService.prototype.getBaseActivity = function(activity,categories){
-		var baseCopy={};
+	benchmarkBuilderService.prototype.getBaseActivity = function(categories){
+		var baseCopy={},
+			tempCatBase,
+			tempCatNew,
+			i;
+		
 		angular.copy(baseActivity, baseCopy);
-		baseCopy.benchmarkData = this.getBaseBenchmarkData(categories);
+		baseCopy.benchmarkData = this.getBaseBenchmarkData();
+		
+		//If not categories passed in then use a single default
+		if(!categories){
+			baseCopy.categories.push(this.getBaseCategoryData());
+		}
+		//else match the number of categories and link with categoryId; 
+		else{
+			this.populateCategories(baseCopy,categories)
+		}
+		
 		return baseCopy;
+	}
+	
+	/**
+	 * Given an array of categories and an element containing a baseCopy element containing a categories
+	 * array with N elements, populate the baseCopy's categories with N elements and seed with the 
+	 * correct category Id.
+	 * @param baseCopy
+	 * @param categories
+	 */
+	benchmarkBuilderService.prototype.populateCategories = function(baseCopy,categories){
+		var tempCatBase,
+			tempCatNew,
+			i;
+		
+		for(i=0;i<categories.length;i++){
+			tempCatBase = categories[i];
+			tempCatNew = this.getBaseCategoryData();
+			tempCatNew.categoryId = tempCatBase.id;
+			baseCopy.benchmarkData.categories.push(tempCatNew);
+		}
 	}
 	
 	/**
 	 * @returns default JSON representing the benchmark data  of an element
 	 */
-	benchmarkBuilderService.prototype.getBaseBenchmarkData = function(categories){
-		var baseCopy={}; 
+	benchmarkBuilderService.prototype.getBaseBenchmarkData = function(){
+		var baseCopy={}
 		angular.copy(baseBenchmarkData, baseCopy);
-		
-		if(!categories){
-			baseCopy.categories.push(this.getBaseCategoryData());
-		}
-		else{
-			baseCopy.categories = baseCopy.categories.concat(categories);
-		}
 		return baseCopy;
 	}
 	
