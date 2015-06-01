@@ -49,6 +49,9 @@ define(
 			        multi_headers : false, //dont change this
 			      };
 
+			      this.previewMaxFetchSize = 500;
+			      this.previewRetrieveAll = false;
+
 				/**
 				 * 
 				 */
@@ -852,8 +855,17 @@ define(
                 	document.body.style.cursor = "default";
                    return deferred.resolve(this.reportData);
                 }else{
+                     var clonedReport = jQuery.extend(true, {}, report);
+
+					if (this.previewRetrieveAll) {
+						// Do not insert maxFetchSize into report object.
+						this.previewRetrieveAll = false;
+					} else {
+						clonedReport.dataSet.maxFetchSize = this.previewMaxFetchSize;
+					}
+					
                 	var self = this;
-                    self.reportingService.retrieveData(report, parameters)
+                    self.reportingService.retrieveData(clonedReport, parameters)
                     .done(
                           function(data) {
                         	document.body.style.cursor = "default";
@@ -1119,10 +1131,23 @@ define(
 			            count: 5
 			        };
 			
+			        var sumIndex = this.report.dataSet.factPolicies.indexOf(this.reportingService.metadata.cumulants.sum.id);
+	        		if (sumIndex > -1) {
+	        			INDEX = {
+	    			            maximum: 1,
+	    			            minimum: 2,
+	    			            average: 3,
+	    			            stdDeviation: 4,
+	    			            sum: 5,
+	    			            count: 6
+	    			        };
+	        		}
+			
 			        var PROP_KEY_PREFIX = "reporting.definitionView.layout.table.cumulant.";
 			
 			        var CUMULANTS_MSG = {
 			            maximum: this.getI18N(PROP_KEY_PREFIX + "maximum"),
+			            sum: this.getI18N(PROP_KEY_PREFIX + "sum"),
 			            average: this.getI18N(PROP_KEY_PREFIX + "average"),
 			            minimum: this.getI18N(PROP_KEY_PREFIX + "minimum"),
 			            stdDeviation: this.getI18N(PROP_KEY_PREFIX + "stdDeviation"),
@@ -1474,6 +1499,9 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
         	this.parameters = parameters;
 
         	if (this.report.storage.state == "saved") {
+
+        		this.previewRetrieveAll = true;	
+
         		this.getReportData(this.report, this.parameters)
                 .done(
                       function(data) {
@@ -1516,6 +1544,9 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
 		 */
 		ReportRenderingController.prototype.saveReportInstanceAdhoc = function(reportMetadata) {
 			var self = this;
+
+			this.previewRetrieveAll = true;
+
 			this.getReportData(this.report, this.parameters)
             .done(
                   function(data) {
@@ -1606,6 +1637,13 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
             		}
             	};
              };	
+             
+             /**
+              * 
+              */             
+             ReportRenderingController.prototype.retrieveAllRecords = function(retrieveAllResults) {
+            	 this.reportingService.previewRetrieveAll = retrieveAllResults;
+             };
            };
 			
 			function transposeArray(aInput) {
