@@ -1131,11 +1131,24 @@ define(
 			            stdDeviation: 4,
 			            count: 5
 			        };
+			        
+			        var sumIndex = this.report.dataSet.factPolicies.indexOf(this.reportingService.metadata.cumulants.sum.id);
+	        		if (sumIndex > -1) {
+	        			INDEX = {
+	    			            maximum: 1,
+	    			            minimum: 2,
+	    			            average: 3,
+	    			            stdDeviation: 4,
+	    			            sum: 5,
+	    			            count: 6
+	    			        };
+	        		}
 			
 			        var PROP_KEY_PREFIX = "reporting.definitionView.layout.table.cumulant.";
 			
 			        var CUMULANTS_MSG = {
 			            maximum: this.getI18N(PROP_KEY_PREFIX + "maximum"),
+			            sum: this.getI18N(PROP_KEY_PREFIX + "sum"),
 			            average: this.getI18N(PROP_KEY_PREFIX + "average"),
 			            minimum: this.getI18N(PROP_KEY_PREFIX + "minimum"),
 			            stdDeviation: this.getI18N(PROP_KEY_PREFIX + "stdDeviation"),
