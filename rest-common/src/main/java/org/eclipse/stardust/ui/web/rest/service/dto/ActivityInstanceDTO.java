@@ -77,6 +77,8 @@ public class ActivityInstanceDTO extends AbstractDTO
    public String participantPerformer;
 
    public int notesCount;
+   
+   public BenchmarkDTO benchmark;
 
    public void setQualityAssuranceState(QualityAssuranceState state)
    {

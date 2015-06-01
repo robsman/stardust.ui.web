@@ -61,6 +61,9 @@
 					</div>
 				</th>
 				
+				<th sda-name="benchmark" sda-sortable="true" sda-visible="{{activityTableCtrl.isColumnVisible('benchmark')}}">
+				</th> 
+				
 				<th sda-name="descriptors" sda-sortable="false"  sda-filterable="false"  sda-visible="{{activityTableCtrl.isColumnVisible('descriptors')}}">
 				</th>
 				
@@ -166,6 +169,11 @@
 					    sda-value-changed="activityTableCtrl.isPriorityChangedForRow(rowData.activityOID);">
 					</div>
 				</td>
+				
+				<td style="text-align: center;" sda-exporter="rowData.benchmark.label">
+					<div sd-benchmark sda-benchmark-value="rowData.benchmark"> </div>
+				</td>
+				
 
 				<td sda-exporter="activityTableCtrl.getDescriptorExportText(rowData.descriptorValues)" style="text-align: left;">
 					<table>

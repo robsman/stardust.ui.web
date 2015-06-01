@@ -56,7 +56,7 @@
 	    MODE : 'worklist',
 	    WORKLIST : {
 		NAME : 'worklist',
-		VISIBLE_COLUMNS : [ 'activityName', 'activityOID', 'criticality', 'priority', 'descriptors',
+		VISIBLE_COLUMNS : [ 'activityName', 'activityOID', 'criticality', 'priority','benchmark','descriptors',
 			'startTime', 'lastModified', 'duration', 'lastPerformer', 'data' ],
 		PREFERENCE_MODULE : 'ipp-workflow-perspective',
 		SHOW_TRIVIAL_DATA_COLUMNS : true,
@@ -69,7 +69,7 @@
 	    },
 	    ACITIVITY_INSTANCE_VIEW : {
 		NAME : 'activityTable',
-		VISIBLE_COLUMNS : [ 'activityName', 'activityOID', 'assignedTo', 'priority', 'criticality',
+		VISIBLE_COLUMNS : [ 'activityName', 'activityOID', 'assignedTo', 'priority', 'criticality','benchmark',
 			'descriptors', 'startTime', 'LastModified', 'duration', 'assignedTo' ],
 		SHOW_TRIVIAL_DATA_COLUMNS : false,
 		COLUMN_NAME_MAP : {

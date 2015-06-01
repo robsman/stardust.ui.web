@@ -283,3 +283,13 @@ padding : 5px;;
 	background-color: #91C6D0;
 	height: 20px;
 }
+
+/* ********** Benchmark Priority flags ********** */
+
+.benchmark-flag-GREEN{
+  color :green;
+}
+
+.benchmark-flag{
+  font-size: 18px;
+}

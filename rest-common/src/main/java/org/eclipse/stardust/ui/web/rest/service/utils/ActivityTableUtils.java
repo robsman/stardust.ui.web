@@ -71,6 +71,7 @@ import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.CriticalityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorDTO;
@@ -670,7 +671,8 @@ public class ActivityTableUtils
                dto.status.label = ActivityInstanceUtils.getActivityStateLabel(ai);
                dto.descriptorValues = getProcessDescriptors(modelCache, ai);
                dto.activatable = findIfActivatable(ai);
-
+               dto.benchmark = getBenchmarkDTO(ai);
+               
                List<Note> notes = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getNotes(ai
                      .getProcessInstance());
                if (null != notes)
@@ -836,6 +838,21 @@ public class ActivityTableUtils
       criticalityDTO.value = criticalityValue;
       return criticalityDTO;
    }
+   
+ /**
+  * 
+  * @param ai
+  * @return
+  */
+   public static BenchmarkDTO getBenchmarkDTO(ActivityInstance ai)
+   {
+      BenchmarkDTO dto = new BenchmarkDTO();
+      //TODO Stub values 
+      dto.value =  ai.getBenchmarkValue();
+      dto.color = "GREEN";
+      dto.label = "ON TIME";
+      return dto;
+   }
 
    /**
     * 
@@ -897,7 +914,7 @@ public class ActivityTableUtils
          else
          {
             processDescriptorsList = CommonDescriptorUtils.createProcessDescriptors(descriptorValues,
-                  processDefinition, true ,true);
+                  processDefinition, true );
 
          }
 
