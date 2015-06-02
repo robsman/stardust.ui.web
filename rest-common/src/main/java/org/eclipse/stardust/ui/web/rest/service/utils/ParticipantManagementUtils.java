@@ -26,11 +26,17 @@ import javax.annotation.Resource;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
+import org.eclipse.stardust.common.error.InvalidArgumentException;
 import org.eclipse.stardust.common.error.PublicException;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.common.security.InvalidPasswordException;
 import org.eclipse.stardust.engine.api.dto.QualityAssuranceAdminServiceFacade;
 import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
+import org.eclipse.stardust.engine.api.model.ModelParticipant;
+import org.eclipse.stardust.engine.api.model.OrganizationInfo;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
+import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
@@ -45,26 +51,32 @@ import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
+import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserExistsException;
+import org.eclipse.stardust.engine.api.runtime.UserGroup;
 import org.eclipse.stardust.engine.api.runtime.UserRealm;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.engine.core.preferences.Preferences;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
+import org.eclipse.stardust.ui.web.html5.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
+import org.eclipse.stardust.ui.web.rest.exception.ExceptionHelper;
 import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
+import org.eclipse.stardust.ui.web.rest.service.dto.DepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InvalidateUserStatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ParticipantNodeDetailsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.UserAuthorizationStatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserFilterDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.UserGroupQueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserProfileStatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
@@ -72,6 +84,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferen
 import org.eclipse.stardust.ui.web.viewscommon.login.util.PasswordUtils;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.QueryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.stereotype.Component;
@@ -79,6 +92,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class ParticipantManagementUtils
 {
+   private static final Logger trace = LogManager.getLogger(ParticipantManagementUtils.class);
+
    private static final String PREFERENCE_ID = "preference";
 
    @Resource
@@ -89,6 +104,9 @@ public class ParticipantManagementUtils
 
    @Resource
    private ActivityInstanceUtils activityInstanceUtils;
+
+   @Resource
+   private ExceptionHelper exceptionHelper;
 
    public QueryResultDTO getAllUsers(Boolean hideInvalidatedUsers, Options options)
    {
@@ -172,9 +190,6 @@ public class ParticipantManagementUtils
       resultDTO.totalCount = users.getTotalCount();
       return resultDTO;
    }
-
-
- 
 
    /**
     * Apply table level filters
@@ -810,6 +825,256 @@ public class ParticipantManagementUtils
          notificationMessageDTO.success = true;
       }
       return notificationMessageDTO;
+   }
+
+   public UserAuthorizationStatusDTO addUserToParticipant(long userOID, ParticipantNodeDetailsDTO participantNodeDetails)
+   {
+      boolean userGrantsChanged = false;
+      boolean userAuthorizationChanged = false;
+      User user = null;
+
+      switch (participantNodeDetails.nodeType)
+      {
+      case ORGANIZATION_UNSCOPED:
+      case ORGANIZATON_SCOPED_IMPLICIT:
+      case DEPARTMENT_DEFAULT:
+      case ROLE_UNSCOPED:
+      case ROLE_SCOPED:
+
+         ModelParticipant participant = (ModelParticipant) ModelCache.findModelCache().getParticipant(
+               participantNodeDetails.id, null);
+         Department department = null;
+         if (participantNodeDetails.departmentOid != null)
+         {
+            department = serviceFactoryUtils.getAdministrationService().getDepartment(
+                  participantNodeDetails.departmentOid);
+         }
+
+         QualifiedModelParticipantInfo modelParticipantInfo = (QualifiedModelParticipantInfo) ((department == null)
+               ? participant
+               : department.getScopedParticipant(participant));
+
+         user = addUserToModelParticipant(userOID, modelParticipantInfo);
+         userGrantsChanged = true;
+         break;
+
+      case USERGROUP:
+
+         UserGroup userGroup = serviceFactoryUtils.getUserService().getUserGroup(participantNodeDetails.id);
+         user = addUserToUserGroup(userOID, userGroup);
+         userGrantsChanged = true;
+         break;
+
+      case DEPARTMENT:
+
+         Department dropDepartment = serviceFactoryUtils.getAdministrationService().getDepartment(
+               participantNodeDetails.departmentOid);
+         QualifiedModelParticipantInfo qualifiedParticipantInfo = dropDepartment.getScopedParticipant(dropDepartment
+               .getOrganization());
+         user = addUserToModelParticipant(userOID, qualifiedParticipantInfo);
+         userGrantsChanged = true;
+         break;
+
+      default:
+         trace.debug("Invalid DropTarget");
+         break;
+      }
+
+      if (userGrantsChanged && UserUtils.isLoggedInUser(user))
+      {
+         userAuthorizationChanged = true;
+      }
+      UserAuthorizationStatusDTO userAuthorizationStatus = new UserAuthorizationStatusDTO();
+      userAuthorizationStatus.userAuthorization = userAuthorizationChanged;
+      return userAuthorizationStatus;
+
+   }
+
+   /**
+    * @param user
+    * @param userGroup
+    * @return
+    */
+   private User addUserToUserGroup(long userOID, UserGroup userGroup)
+   {
+      UserService userService = serviceFactoryUtils.getUserService();
+
+      User updatedUser = userService.getUser(userOID);
+      updatedUser.joinGroup(userGroup.getId());
+      userService.modifyUser(updatedUser);
+      return updatedUser;
+   }
+
+   /**
+    * @param user
+    * @param qualifiedParticipantInfo
+    * @return
+    */
+   private User addUserToModelParticipant(long userOID, QualifiedModelParticipantInfo qualifiedParticipantInfo)
+   {
+      UserService userService = serviceFactoryUtils.getUserService();
+
+      User userToModify = userService.getUser(userOID);
+      userToModify.addGrant(qualifiedParticipantInfo);
+      userService.modifyUser(userToModify);
+      return userToModify;
+   }
+
+   /*
+    * Methods to remove Users from Participants (via right click Context Menu)
+    */
+
+   /**
+    * 
+    */
+   public UserAuthorizationStatusDTO removeUserFromParticipant(long userOID,
+         ParticipantNodeDetailsDTO participantNodeDetails)
+   {
+      boolean userAuthorizationChanged = false;
+      User user = null;
+      switch (participantNodeDetails.nodeType)
+      {
+      case ORGANIZATION_UNSCOPED:
+      case ORGANIZATON_SCOPED_IMPLICIT:
+      case DEPARTMENT_DEFAULT:
+      case ROLE_UNSCOPED:
+      case ROLE_SCOPED:
+         ModelParticipant participant = (ModelParticipant) ModelCache.findModelCache().getParticipant(
+               participantNodeDetails.id, null);
+         Department department = null;
+         if (participantNodeDetails.departmentOid != null)
+         {
+            department = serviceFactoryUtils.getAdministrationService().getDepartment(
+                  participantNodeDetails.departmentOid);
+         }
+
+         QualifiedModelParticipantInfo modelParticipantInfo = (QualifiedModelParticipantInfo) ((department == null)
+               ? participant
+               : department.getScopedParticipant(participant));
+
+         user = removeUserFromModelParticipant(userOID, modelParticipantInfo);
+         break;
+
+      case USERGROUP:
+         UserGroup userGroup = serviceFactoryUtils.getUserService().getUserGroup(participantNodeDetails.id);
+         user = removeUserFromUserGroup(userOID, userGroup);
+         break;
+
+      case DEPARTMENT:
+         Department dropDepartment = serviceFactoryUtils.getAdministrationService().getDepartment(
+               participantNodeDetails.departmentOid);
+         QualifiedModelParticipantInfo qualifiedParticipantInfo = dropDepartment.getScopedParticipant(dropDepartment
+               .getOrganization());
+         user = removeUserFromModelParticipant(userOID, qualifiedParticipantInfo);
+         break;
+      }
+
+      // If user is currently logged in User, notify to re-login
+      if (UserUtils.isLoggedInUser(user))
+      {
+         userAuthorizationChanged = true;
+      }
+      UserAuthorizationStatusDTO userAuthorizationStatus = new UserAuthorizationStatusDTO();
+      userAuthorizationStatus.userAuthorization = userAuthorizationChanged;
+      return userAuthorizationStatus;
+   }
+
+   /**
+    * @param user
+    * @param qualifiedParticipantInfo
+    */
+   private User removeUserFromModelParticipant(long userOID, QualifiedModelParticipantInfo qualifiedParticipantInfo)
+   {
+      UserService userService = serviceFactoryUtils.getUserService();
+      User userToModify = userService.getUser(userOID);
+      userToModify.removeGrant(qualifiedParticipantInfo);
+      userService.modifyUser(userToModify);
+      return userToModify;
+   }
+
+   /**
+    * @param user
+    * @param userGroup
+    */
+   private User removeUserFromUserGroup(long userOID, UserGroup userGroup)
+   {
+      UserService userService = serviceFactoryUtils.getUserService();
+      User userToModify = userService.getUser(userOID);
+      userToModify.leaveGroup(userGroup.getId());
+      userService.modifyUser(userToModify);
+      return userToModify;
+   }
+
+   public NotificationMap createOrModifyDepartment(DepartmentDTO department)
+   {
+      NotificationMap notificationMap = new NotificationMap();
+      try
+      {
+         AdministrationService adminService = serviceFactoryUtils.getAdministrationService();
+         Department newOrModifiedDepartment;
+         if (!department.modifyMode)
+         {
+            Department parentDepartment = null;
+            if (department.parentDepartmentOID != null)
+            {
+               parentDepartment = adminService.getDepartment(department.parentDepartmentOID);
+            }
+            ModelParticipant participant = (ModelParticipant) ModelCache.findModelCache().getParticipant(
+                  department.orgId, null);
+            QualifiedModelParticipantInfo modelParticipantInfo = (QualifiedModelParticipantInfo) ((parentDepartment == null)
+                  ? participant
+                  : parentDepartment.getScopedParticipant(participant));
+
+            newOrModifiedDepartment = adminService.createDepartment(department.departmentId, department.name,
+                  department.description, parentDepartment, (OrganizationInfo) modelParticipantInfo);
+            notificationMap.addSuccess(new NotificationDTO(newOrModifiedDepartment.getOID(), newOrModifiedDepartment
+                  .getName(), "success"));
+
+         }
+         else
+         {
+            newOrModifiedDepartment = adminService.modifyDepartment(department.departmentOID, department.name,
+                  department.description);
+            notificationMap.addSuccess(new NotificationDTO(newOrModifiedDepartment.getOID(), newOrModifiedDepartment
+                  .getName(), "success"));
+         }
+
+      }
+      catch (Exception e)
+      {
+         String msg = exceptionHelper.getMessageFromProvider(e, ManagedBeanUtils.getLocale(), null).getMessage();
+         notificationMap.addFailure(new NotificationDTO(null, department.name, msg));
+      }
+      return notificationMap;
+   }
+
+   public NotificationMap deleteDepartment(long deleteDepartmentOID)
+   {
+      NotificationMap notificationMap = new NotificationMap();
+      if (deleteDepartmentOID >= 0)
+      {
+         try
+         {
+            AdministrationService adminService = serviceFactoryUtils.getAdministrationService();
+            adminService.removeDepartment(deleteDepartmentOID);
+            notificationMap.addSuccess(new NotificationDTO(deleteDepartmentOID, null, "success"));
+         }
+         catch (InvalidArgumentException aex)
+         {
+
+            String msg = MessagesViewsCommonBean.getInstance().getString(
+                  "views.participantTree.deleteDepartment.error.inUse");
+
+            notificationMap.addFailure(new NotificationDTO(deleteDepartmentOID, null, msg));
+         }
+         catch (Exception ex)
+         {
+            String msg = MessagesViewsCommonBean.getInstance().getString(
+                  "views.participantTree.deleteDepartment.error.generic");
+            notificationMap.addFailure(new NotificationDTO(deleteDepartmentOID, null, msg));
+         }
+      }
+      return notificationMap;
    }
 
 }

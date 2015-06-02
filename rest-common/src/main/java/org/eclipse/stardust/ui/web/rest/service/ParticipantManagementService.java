@@ -18,9 +18,13 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.ui.web.rest.Options;
+import org.eclipse.stardust.ui.web.rest.service.dto.DepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InvalidateUserStatusDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ParticipantNodeDetailsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.UserAuthorizationStatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserProfileStatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ParticipantManagementUtils;
@@ -84,5 +88,26 @@ public class ParticipantManagementService
    {
       return participantManagementUtils.delegateToDefaultPerformer(activityInstanceOids, userOids);
 
+   }
+
+   public UserAuthorizationStatusDTO addUserToParticipant(long userOID, ParticipantNodeDetailsDTO participantNodeDetails)
+   {
+      return participantManagementUtils.addUserToParticipant(userOID, participantNodeDetails);
+   }
+
+   public UserAuthorizationStatusDTO removeUserFromParticipant(long userOID,
+         ParticipantNodeDetailsDTO participantNodeDetails)
+   {
+      return participantManagementUtils.removeUserFromParticipant(userOID, participantNodeDetails);
+   }
+
+   public NotificationMap createOrModifyDepartment(DepartmentDTO department)
+   {
+      return participantManagementUtils.createOrModifyDepartment(department);
+   }
+
+   public NotificationMap deleteDepartment(long deleteDepartmentOID)
+   {
+      return participantManagementUtils.deleteDepartment(deleteDepartmentOID);
    }
 }

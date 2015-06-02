@@ -241,7 +241,7 @@ public class UserManagerDetailUtils
     */
    private RoleItem getRoleItem(String roleId, WorkflowFacade facade)
    {
-      ModelParticipant participant = (ModelParticipant) ModelCache.findModelCache().getParticipant(roleId);
+      ModelParticipant participant = (ModelParticipant) ModelCache.findModelCache().getParticipant(roleId,null);
       RoleItem roleItem = facade.getRoleItem(participant);
       return roleItem;
    }

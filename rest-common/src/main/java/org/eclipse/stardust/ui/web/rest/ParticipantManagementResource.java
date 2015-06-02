@@ -19,6 +19,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -34,12 +35,18 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantManagementService;
+import org.eclipse.stardust.ui.web.rest.service.dto.DepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InvalidateUserStatusDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ParticipantNodeDetailsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.UserAuthorizationStatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserFilterDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.UserGroupDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserProfileStatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.springframework.stereotype.Component;
@@ -98,6 +105,109 @@ public class ParticipantManagementResource
          trace.error("", e);
          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
+   }
+
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("/addUserToParticipant/{userOID}")
+   public Response addUserToParticipant(@PathParam("userOID") long userOID, String postData)
+   {
+      try
+      {
+         ParticipantNodeDetailsDTO participantNodeDetails = populateParticipantNodeDetails(postData);
+
+         UserAuthorizationStatusDTO result = participantManagementService.addUserToParticipant(userOID,
+               participantNodeDetails);
+         return Response.ok(result.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (ObjectNotFoundException onfe)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+   }
+
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("/removeUserFromParticipant/{userOID}")
+   public Response removeUserFromParticipant(@PathParam("userOID") long userOID, String postData)
+   {
+      try
+      {
+         ParticipantNodeDetailsDTO participantNodeDetails = populateParticipantNodeDetails(postData);
+
+         UserAuthorizationStatusDTO result = participantManagementService.removeUserFromParticipant(userOID,
+               participantNodeDetails);
+         return Response.ok(result.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (ObjectNotFoundException onfe)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+   }
+
+   private ParticipantNodeDetailsDTO populateParticipantNodeDetails(String postData)
+   {
+      JsonMarshaller jsonIo = new JsonMarshaller();
+      JsonObject postJSON = jsonIo.readJsonObject(postData);
+
+      // For filter
+      JsonObject participantNodeDetails = postJSON.getAsJsonObject("participantNodeDetails");
+      ParticipantNodeDetailsDTO participantNodeDetailsDTO = null;
+      if (null != participantNodeDetails)
+      {
+         participantNodeDetailsDTO = new Gson().fromJson(postJSON.get("participantNodeDetails"),
+               ParticipantNodeDetailsDTO.class);
+      }
+      return participantNodeDetailsDTO;
+   }
+
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("/createOrModifyDepartment")
+   public Response createOrModifyDepartment(String postData)
+   {
+      DepartmentDTO department = populateDepartment(postData);
+
+      NotificationMap result = participantManagementService.createOrModifyDepartment(department);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(result), MediaType.APPLICATION_JSON).build();
+   }
+
+   private DepartmentDTO populateDepartment(String postData)
+   {
+      JsonMarshaller jsonIo = new JsonMarshaller();
+      JsonObject postJSON = jsonIo.readJsonObject(postData);
+
+      // For filter
+      JsonObject department = postJSON.getAsJsonObject("department");
+      DepartmentDTO departmentDTO = null;
+      if (null != department)
+      {
+         departmentDTO = new Gson().fromJson(postJSON.get("department"), DepartmentDTO.class);
+      }
+      return departmentDTO;
+   }
+   
+   
+   @DELETE
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/deleteDepartment/{departmentOID}")
+   public Response deleteDepartment(@PathParam("departmentOID") long departmentOID)
+   {
+      NotificationMap result = participantManagementService.deleteDepartment(departmentOID);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(result), MediaType.APPLICATION_JSON).build();
    }
 
    /**
