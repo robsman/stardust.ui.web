@@ -134,6 +134,8 @@ public class ProcessInstanceUtils
    private static final String COL_PRIOIRTY = "priority";
    
    private static final String STARTING_USER = "startingUser";
+   
+   private static final String COL_BENCHMARK = "benchmark";
 
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
@@ -1706,6 +1708,10 @@ public class ProcessInstanceUtils
       {
          CustomOrderCriterion o = ProcessInstanceQuery.USER_ACCOUNT.ascendig(options.asc);
          query.orderBy(o);
+      }
+      else if (COL_BENCHMARK.equals(options.orderBy))
+      {
+        // TODO add sort criteria when the engine api for sorting is ready
       }
       else
       {

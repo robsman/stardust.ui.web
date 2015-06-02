@@ -142,6 +142,8 @@ public class ActivityTableUtils
    private static final String LAST_YEAR = "lastYear";
 
    private static final String ALL = "all";
+   
+   private static final String BENCHMARK = "benchmark";
 
    public static double PORTAL_CRITICALITY_MUL_FACTOR = 1000;
 
@@ -518,6 +520,13 @@ public class ActivityTableUtils
          query.orderBy(worklistQuery
                ? WorklistQuery.PROCESS_INSTANCE_OID
                      : ActivityInstanceQuery.PROCESS_INSTANCE_OID, options.asc);
+      }
+      else if (BENCHMARK.equals(options.orderBy))
+      {
+         //TODO add sort criteria for benchmark when engine api is ready
+        /* query.orderBy(worklistQuery
+               ? WorklistQuery.PROCESS_INSTANCE_OID
+                     : ActivityInstanceQuery.PROCESS_INSTANCE_OID, options.asc);*/
       }
    }
 
