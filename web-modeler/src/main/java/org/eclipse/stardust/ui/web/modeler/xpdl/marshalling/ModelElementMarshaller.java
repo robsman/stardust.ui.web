@@ -3472,6 +3472,8 @@ public class ModelElementMarshaller implements ModelMarshaller
             codeJson.addProperty(ModelerConstants.QC_CODE, code.getCode());
             codeJson.addProperty(ModelerConstants.QC_NAME, code.getName());
             codeJson.addProperty(ModelerConstants.QC_VALUE, code.getValue());
+            codeJson.addProperty(ModelerConstants.UUID_PROPERTY,
+                  eObjectUUIDMapper().getUUID(code));
             codesJson.add(codeJson);
          }
          qcJson.add(ModelerConstants.QC_CODES, codesJson);
