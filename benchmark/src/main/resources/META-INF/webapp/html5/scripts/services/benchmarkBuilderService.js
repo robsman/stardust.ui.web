@@ -42,14 +42,15 @@
 	//Private: base structure of a benchmark
 	var baseBenchmark =  
 	{
+		"meta" : {
+			"lastModified" : "",
+			"modifiedBy" : ""
+		},
 		"benchmark":
 		{
 		  "id": "",
 		  "name": "Default Benchmark",
 		  "description": "",
-		  "author": "",
-		  "lastModified": "",
-		  "validFrom": "",
 		  "categories": [],
 		  "models": []
 		}
@@ -59,7 +60,6 @@
 	var baseModel =
 	{
 		"id" : "",
-		"oid": "",
 		"processDefinitions" : []
 	};
 	
@@ -67,17 +67,27 @@
 	var baseProcessDefinition = 
 	{
 		"id": "",
-		"oid": "",
-		"benchmarkData" : undefined,
-		"activities": []
+		"categoryConditions" : [],
+		"enableBenchmark": true,
+		"activities": [],
+		"dueDate": {
+            "enabled": true,
+            "dataReference": "",
+            "offset": {
+              "useBusinessDays": true,
+              "amount": 0,
+              "unit": "d",
+              "time": "12:00 AM"
+            }
+          }
 	};
 	
 	//Activity with undefined benchmark data, builder should initialize as needed
 	var baseActivity = 
 	{
 		"id": "",
-		"oid": "",
-		"benchmarkData" : undefined
+		"enableBenchmark": true,
+		"categoryConditions" : []
 	};
 	
 	//Top level category structure.
@@ -92,18 +102,22 @@
 	var baseCategoryData = 
 	{
         "categoryId": "0000-0000-0000-0000",
-        "condition": {
-          "lhs": "CurrentTime",
-          "operator": "NotLaterThan",
-          "rhs": "BusinessDate"
-        },
-        "useBusinessDays": false,
-        "applyOffset": false,
-        "offset": {
-          "amount": 0,
-          "unit": "d",
-          "offsetTime": "00:00 AM"
-        }
+        "type" : "default",
+        "freeFormExpression" : "",
+        "details" : {
+	        "condition": {
+	          "lhs": "CurrentTime",
+	          "operator": "NotLaterThan",
+	          "rhs": "BusinessDate",
+	          "offset": {
+	        	  "applyOffset": false,
+		          "useBusinessDays": false,
+		          "amount": 0,
+		          "unit": "d",
+		          "offsetTime": "00:00 AM"
+		        }
+	        }
+         }
       };
 	
 	/**
@@ -168,15 +182,15 @@
 	benchmarkBuilderService.prototype.getBaseProcessDefinition = function(categories){
 		var baseCopy={};
 		angular.copy(baseProcessDefinition, baseCopy);
-		baseCopy.benchmarkData = this.getBaseBenchmarkData(categories);
+		//baseCopy.categoryConditions = this.getBaseBenchmarkData(categories);
 		
 		//If not categories passed in then use a single default
 		if(!categories){
-			baseCopy.categories.push(this.getBaseCategoryData());
+			baseCopy.categoryConditions.push(this.getBaseCategoryData());
 		}
 		//else match the number of categories and link with categoryId; 
 		else{
-			this.populateCategories(baseCopy,categories)
+			this.populateCategories(baseCopy,categories);
 		}
 		
 		return baseCopy;
@@ -193,15 +207,15 @@
 			i;
 		
 		angular.copy(baseActivity, baseCopy);
-		baseCopy.benchmarkData = this.getBaseBenchmarkData();
+		//baseCopy.categoryConditions = this.getBaseBenchmarkData();
 		
 		//If not categories passed in then use a single default
 		if(!categories){
-			baseCopy.categories.push(this.getBaseCategoryData());
+			baseCopy.categoryConditions.push(this.getBaseCategoryData());
 		}
 		//else match the number of categories and link with categoryId; 
 		else{
-			this.populateCategories(baseCopy,categories)
+			this.populateCategories(baseCopy,categories);
 		}
 		
 		return baseCopy;
@@ -223,7 +237,7 @@
 			tempCatBase = categories[i];
 			tempCatNew = this.getBaseCategoryData();
 			tempCatNew.categoryId = tempCatBase.id;
-			baseCopy.benchmarkData.categories.push(tempCatNew);
+			baseCopy.categoryConditions.push(tempCatNew);
 		}
 	}
 	

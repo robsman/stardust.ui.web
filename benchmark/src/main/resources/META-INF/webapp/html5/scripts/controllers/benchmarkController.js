@@ -146,18 +146,12 @@
 		var that = this;
 
 		if(d.action==="select"){
-			/*
-			this.benchmarkService.getBenchmark(d.current.benchmark.id)
-			.then(function(data){
-				that.selectedBenchmark = data.benchmark;
-			});
-			*/ 
-			that.selectedBenchmark = d.current.benchmark;
+			this.selectedBenchmark = d.current.benchmark;
 		}
 		else if(d.action==="deselect"){
 			this.selectedBenchmark = undefined;
-			this.benchmarkDataRows=[];
 		}
+		this.benchmarkDataRows=[];
 	}
 	
 	
@@ -219,7 +213,6 @@
 		if(searchArray.length ===0){
 			model = this.benchmarkBuilderService.getBaseModel();
 			model.id = treeModel.id;
-			model.oid = treeModel.oid
 			benchmark.models.push(model);
 		}
 		else{
@@ -251,7 +244,6 @@
 			categories = this.selectedBenchmark.categories;
 			procDef = this.benchmarkBuilderService.getBaseProcessDefinition(categories);
 			procDef.id = treeProcDef.id;
-			procDef.oid = treeProcDef.oid;
 			model.processDefinitions.push(procDef);
 		}
 		else{
@@ -282,7 +274,6 @@
 			categories = this.selectedBenchmark.categories;
 			activity = this.benchmarkBuilderService.getBaseActivity(categories);
 			activity.id = treeActivity.id;
-			activity.oid = treeActivity.oid;
 			procDef.activities.push(activity);
 		}
 		else{
@@ -318,8 +309,10 @@
 			this.benchmarkDataRows.push({
 				"benchmark" : benchmark, 
 				"element" : "Process Definition",
+				"dueDate" : procDef.dueDate,
 				"nodePath" : "{" + model.id + "}" + procDef.id, 
-				"benchmarkData": procDef.benchmarkData});
+				"breadCrumbs" : [parentModel.name,item.valueItem.name],
+				"categoryConditions": procDef.categoryConditions});
 		}
 		
 		//Activity clicks should build out model/procDef/activity structures as
@@ -332,12 +325,13 @@
 			model = this.buildOutModel(benchmark,parentModel.id,parentModel);
 			procDef = this.buildOutProcDef(model,parentProcDef.id,parentProcDef);
 			activity = this.buildOutActivity(procDef,item.valueItem.id,item.valueItem);
-			
+			console.log(JSON.stringify(model));
 			this.benchmarkDataRows.push({
 				"benchmark" : benchmark, 
 				"element" : "Activity",
+				"breadCrumbs" : [parentModel.name,parentProcDef.name,item.valueItem.name],
 				"nodePath" : "{" + model.id + "}" + procDef.id + ":" + activity.id, 
-				"benchmarkData": activity.benchmarkData});
+				"categoryConditions": activity.categoryConditions});
 		}
 	}
 	
@@ -374,10 +368,9 @@
 		var bmark = this.benchmarkBuilderService.getBaseBenchmark();
 		
 		//Default values
-		bmark.benchmark.author = this.currentUser.displayName;
+		bmark.meta.modifiedBy = this.currentUser.displayName;
 		bmark.benchmark.name = "Default Benchmark"; //TODO i18N
-		bmark.benchmark.lastModified = (new Date()).toString();
-		bmark.benchmark.validFrom = (new Date()).toString();
+		bmark.meta.lastModified = (new Date()).toString();
 		
 		this.addToBenchmarks(bmark);
 	};

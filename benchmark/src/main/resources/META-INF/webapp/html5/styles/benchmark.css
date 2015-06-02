@@ -67,8 +67,17 @@ ul.sd-tree {
 #benchmarkTable input,
 #benchmarkTable select
 {
-	padding:2px;
+	padding:0px;
 	margin:2px;
+	width: initial;
+}
+
+#benchmarkTable textarea{
+	width: calc(100% - 20px)
+}
+
+#benchmarkTable td {
+  vertical-align: top;
 }
 
 #benchmarkTable tr:nth-child(even) td {
