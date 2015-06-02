@@ -314,7 +314,10 @@ public class TestChecklistEditing
             + "      'width': 16," //
             + "      'x': 10," //
             + "      'y': 10" //
-            + "    }" //
+            + "    }," //
+            + "    'variables': [" //
+            + "      {'name': 'stopEventSymbol.oid', 'expression': \"added[type='eventSymbol']/oid\"}" //
+            + "    ]" //
             + "  }" //
             + "]";
 

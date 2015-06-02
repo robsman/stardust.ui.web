@@ -79,8 +79,15 @@ public class CommandBatchHandler
          // TODO this needs to be a session for the subCommand's actual target model
          EditingSession editingSession = currentSession.getEditSession(model);
 
+         // start a local editing session to determine the change set from only the batch step
+         EditingSession localSession = new EditingSession(editingSession.getId() + "-batchStep");
+         for (EObject trackedModel : editingSession.getTrackedModels())
+         {
+            localSession.trackModel(trackedModel);
+         }
+
          // dispatch to actual command handler
-         Modification change = sessionController.commandHandlingMediator().handleCommand(editingSession,
+         Modification change = sessionController.commandHandlingMediator().handleCommand(localSession,
                subCommand.commandId, changeDescriptors);
          if (null != change)
          {
@@ -92,10 +99,9 @@ public class CommandBatchHandler
             change.getMetadata().put("commandId", subCommand.commandId);
             change.getMetadata().put("modelId", modelBinding.getModelId(model));
 
-            editingSession.beginEdit();
+            localSession.beginEdit();
             sessionController.postprocessChange(change);
-            editingSession.endEdit(true);
-
+            localSession.endEdit(false);
 
             if (null != subCommand.account)
             {
@@ -110,9 +116,6 @@ public class CommandBatchHandler
                // evaluate given expressions against current step's output
                variables.putAll(extractVariables(batchStep.variables, changeJson));
             }
-
-            sessionController.commandHandlingMediator().broadcastChange(change.getSession(), subCommand,
-                  changeJson);
          }
          else
          {
