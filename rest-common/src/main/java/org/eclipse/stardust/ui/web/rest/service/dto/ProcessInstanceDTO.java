@@ -66,4 +66,6 @@ public class ProcessInstanceDTO extends AbstractDTO
 
    public PriorityDTO oldPriority;
    
+   public BenchmarkDTO benchmark;
+   
 }

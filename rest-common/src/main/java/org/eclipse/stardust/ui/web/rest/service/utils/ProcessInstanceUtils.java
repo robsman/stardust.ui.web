@@ -65,6 +65,7 @@ import org.eclipse.stardust.ui.web.rest.FilterDTO.TextSearchDTO;
 import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbortNotificationDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
@@ -1776,6 +1777,7 @@ public class ProcessInstanceUtils
             }
             
             dto.oldPriority = dto.priority;
+            dto.benchmark = getProcessBenchmark(processInstance);
 
             list.add(dto);
          }
@@ -1788,6 +1790,21 @@ public class ProcessInstanceUtils
       return resultDTO;
    }
    
+   /**
+    * 
+    * @param processInstance
+    * @return
+    */
+   private BenchmarkDTO getProcessBenchmark(ProcessInstance processInstance)
+   {
+      BenchmarkDTO dto = new BenchmarkDTO();
+      //TODO Stub values 
+      dto.value =  processInstance.getBenchmarkValue();
+      dto.color = "GREEN";
+      dto.label = "ON TIME";
+      return dto;
+   }
+
    /*
     * 
     */

@@ -671,7 +671,7 @@ public class ActivityTableUtils
                dto.status.label = ActivityInstanceUtils.getActivityStateLabel(ai);
                dto.descriptorValues = getProcessDescriptors(modelCache, ai);
                dto.activatable = findIfActivatable(ai);
-               dto.benchmark = getBenchmarkDTO(ai);
+               dto.benchmark = getBenchmarkForActivity(ai);
                
                List<Note> notes = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getNotes(ai
                      .getProcessInstance());
@@ -844,7 +844,7 @@ public class ActivityTableUtils
   * @param ai
   * @return
   */
-   public static BenchmarkDTO getBenchmarkDTO(ActivityInstance ai)
+   public static BenchmarkDTO getBenchmarkForActivity(ActivityInstance ai)
    {
       BenchmarkDTO dto = new BenchmarkDTO();
       //TODO Stub values 
