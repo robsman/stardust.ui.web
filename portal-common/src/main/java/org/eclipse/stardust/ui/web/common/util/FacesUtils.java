@@ -13,7 +13,9 @@ package org.eclipse.stardust.ui.web.common.util;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -467,13 +469,27 @@ public class FacesUtils implements Constants
    {
       FacesContext facesContext = FacesContext.getCurrentInstance();
       ExternalContext externalContext = facesContext.getExternalContext();
+      String encodeURL = null;
       try
       {
          String requestURI = ((HttpServletRequest) externalContext.getRequest()).getRequestURI();
          if (requestURI.endsWith("portalSingleViewMain.iface"))
          {
-            String url = "portalSingleViewMain.iface" + PortalApplicationSingleView.getSingleViewParams();
+            String url = "portalSingleViewMain.iface";
+            String viewParam = PortalApplicationSingleView.getSingleViewParams();
+            if (StringUtils.isNotEmpty(viewParam) && viewParam.contains("&singleViewKey="))
+            {
+               String[] viewParams = viewParam.split("&singleViewKey=");
+               // singleViewKey is encoded to handle special chars ex. '&'
+               encodeURL = encodeUrl(viewParams[1]);
+               url = "portalSingleViewMain.iface" + viewParams[0] + "&singleViewKey=" + encodeURL;
+            }
+            else if (StringUtils.isNotEmpty(viewParam))
+            {
+               url = "portalSingleViewMain.iface" + viewParam;
+            }
             externalContext.redirect(url);
+
          }
          else if (requestURI.endsWith("portalMain.iface"))
          {
@@ -488,6 +504,26 @@ public class FacesUtils implements Constants
       {
          trace.error("Failed navigation for request URI", e);
       }
+   }
+
+   /**
+    * @param str
+    * @return
+    */
+   public static String encodeUrl(String str)
+   {
+      if (str != null)
+      {
+         try
+         {
+            return URLEncoder.encode(str, "UTF-8");
+         }
+         catch (UnsupportedEncodingException e)
+         {
+         }
+      }
+
+      return str;
    }
 
    /**
