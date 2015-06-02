@@ -66,7 +66,6 @@
 
       var qaCodeName = this.generateQACodeName();
 
-      // TODO remove hard coding
       var qaCode = {
         id: qaCodeName.replace(/\s+/g, ""),
         name: qaCodeName,
@@ -74,14 +73,6 @@
       }
 
       this.propertiesPanel.submitAddQACode(qaCode);
-
-      // TODO: remove
-      this.qaCodes.push(qaCode);
-      this.setSelected(this.tableRowIndex);
-
-      // TODO: remove
-      qaCode.uuid = Math.random();
-      this.getModel().qualityAssuranceCodes = this.qaCodes;
     }
 
     /**
@@ -95,7 +86,6 @@
 
       this.setSelected(this.tableRowIndex);
 
-      // TODO submit the request to engine
       this.propertiesPanel.submitDeleteQACode({
         "uuid": qaCodeTobeDeltd.uuid
       });
@@ -139,7 +129,6 @@
         this.qaCodes[this.tableRowIndex].id = name.replace(/\s+/g, "");
       }
 
-      // TODO: fire server request
       this.propertiesPanel.submitChangeswithUUID({
         "modelElement": this.qaCodes[this.tableRowIndex]
       }, this.qaCodes[this.tableRowIndex].uuid);
