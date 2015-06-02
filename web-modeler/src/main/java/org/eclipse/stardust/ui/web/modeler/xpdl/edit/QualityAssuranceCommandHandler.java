@@ -79,6 +79,18 @@ public class QualityAssuranceCommandHandler
    @OnCommand(commandId = "qualityAssuranceCode.delete")
    public void deleteQualityAssuranceCode(ModelType model, JsonObject request)
    {
+      String uuid = extractString(request, ModelerConstants.UUID_PROPERTY);
+      if(!StringUtils.isEmpty(uuid))
+      {
+         Code code = (Code) modelService().uuidMapper().getEObject(uuid);
+         if(code != null)
+         {
+            synchronized (model)
+            {            
+               model.getQualityControl().getCode().remove(code);
+            }
+         }      
+      }
    }
       
    private ModelService modelService()

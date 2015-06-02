@@ -1125,16 +1125,13 @@ public class ModelElementMarshaller implements ModelMarshaller
                   if (resolvedCode != null)
                   {
                      JsonObject codeJson = new JsonObject();
-                     codeJson.addProperty(ModelerConstants.QC_CODE, resolvedCode.getCode());
-                     codeJson.addProperty(ModelerConstants.QC_NAME, resolvedCode.getName());
-                     codeJson
-                           .addProperty(ModelerConstants.QC_VALUE, resolvedCode.getValue());
+                     codeJson.addProperty(ModelerConstants.UUID_PROPERTY,
+                           eObjectUUIDMapper().getUUID(resolvedCode));                     
                      validCodesJson.add(codeJson);
                   }
                }
-               qcJson.add(ModelerConstants.QC_VALID_CODES, validCodesJson);
+               activityJson.add(ModelerConstants.QUALITYASSURANCECODES, validCodesJson);               
             }
-            activityJson.add(ModelerConstants.QUALITYCONTROL, qcJson);
 
             JsonObject attributes;
             if (!hasNotJsonNull(activityJson, ModelerConstants.ATTRIBUTES_PROPERTY))
@@ -3462,22 +3459,20 @@ public class ModelElementMarshaller implements ModelMarshaller
 
       if (model.getQualityControl() != null)
       {
-         JsonObject qcJson = new JsonObject();
          JsonArray codesJson = new JsonArray();
          for (Iterator<Code> i = model.getQualityControl().getCode().iterator(); i
                .hasNext();)
          {
             JsonObject codeJson = new JsonObject();
             Code code = i.next();
-            codeJson.addProperty(ModelerConstants.QC_CODE, code.getCode());
-            codeJson.addProperty(ModelerConstants.QC_NAME, code.getName());
-            codeJson.addProperty(ModelerConstants.QC_VALUE, code.getValue());
+            codeJson.addProperty(ModelerConstants.ID_PROPERTY, code.getCode());
+            codeJson.addProperty(ModelerConstants.NAME_PROPERTY, code.getName());
+            codeJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, code.getValue());
             codeJson.addProperty(ModelerConstants.UUID_PROPERTY,
                   eObjectUUIDMapper().getUUID(code));
             codesJson.add(codeJson);
          }
-         qcJson.add(ModelerConstants.QC_CODES, codesJson);
-         modelJson.add(ModelerConstants.QUALITYCONTROL, qcJson);
+         modelJson.add(ModelerConstants.QUALITYASSURANCECODES, codesJson);
       }
 
       if (!excludeCVs)

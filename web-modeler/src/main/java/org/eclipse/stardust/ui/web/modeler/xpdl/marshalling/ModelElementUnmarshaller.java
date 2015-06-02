@@ -151,7 +151,11 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
    {
       logger.debug("Unmarshalling: " + element + " " + json);
 
-      if (element instanceof ProcessDefinitionType)
+      if (element instanceof Code)
+      {
+         updateQualityAssuranceCode((Code) element, json.getAsJsonObject("modelElement"));
+      }      
+      else if (element instanceof ProcessDefinitionType)
       {
          updateProcessDefinition((ProcessDefinitionType) element, json);
       }
@@ -485,6 +489,22 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       }
    }
 
+   public void updateQualityControlCodes(ActivityType activity, JsonObject activityJson)
+   {
+      JsonArray qcCodes = activityJson.getAsJsonArray(ModelerConstants.QUALITYASSURANCECODES);      
+      activity.getValidQualityCodes().clear();
+      for (Iterator<JsonElement> i = qcCodes.iterator(); i.hasNext();)
+      {
+         JsonPrimitive qcCode = (JsonPrimitive) i.next();
+         String uuid = qcCode.toString();         
+         Code code = (Code) modelService.uuidMapper().getEObject(uuid);
+         if (code != null)
+         {
+            activity.getValidQualityCodes().add(code);
+         }
+      }
+   }
+      
    public void updateQualityControl(ActivityType activity, JsonObject activityJson)
    {
       JsonObject qcJson = activityJson
@@ -502,20 +522,6 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       if(EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT) != null)
       {
          AttributeUtil.setCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, (String) EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT));
-      }
-
-      JsonArray qcCodes = qcJson.getAsJsonArray(ModelerConstants.QC_VALID_CODES);
-      for (Iterator<JsonElement> i = qcCodes.iterator(); i.hasNext();)
-      {
-         JsonObject qcCode = (JsonObject) i.next();
-         Code code = resolveCode(activity, qcCode.get(ModelerConstants.QC_CODE)
-               .getAsString());
-
-         if (code != null)
-         {
-            activity.getValidQualityCodes().add(code);
-         }
-
       }
    }
 
@@ -1552,6 +1558,12 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       ActivityType activity = activitySymbol.getActivity();
       JsonObject activityJson = activitySymbolJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
 
+      
+      if (hasNotJsonNull(activitySymbolJson, ModelerConstants.QUALITYASSURANCECODES))
+      {
+         updateQualityControlCodes(activity, activitySymbolJson);
+      }
+      
       updateActivity(activity, activityJson);
    }
 
@@ -3199,6 +3211,26 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
+    * @param code
+    * @param modelJson
+    */   
+   private void updateQualityAssuranceCode(Code code, JsonObject json)
+   {
+      if (json.has(ModelerConstants.ID_PROPERTY))
+      {
+         code.setCode(json.get(ModelerConstants.ID_PROPERTY).getAsString());
+      }
+      if (json.has(ModelerConstants.NAME_PROPERTY))
+      {
+         code.setName(json.get(ModelerConstants.NAME_PROPERTY).getAsString());         
+      }
+      if (json.has(ModelerConstants.DESCRIPTION_PROPERTY))
+      {
+         code.setValue(json.get(ModelerConstants.DESCRIPTION_PROPERTY).getAsString());         
+      }      
+   }   
+   
+   /**
     * @param model
     * @param modelJson
     */
@@ -3235,28 +3267,29 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             model.setDescription(dt);
          }
       }
-
-      if (modelJson.has(ModelerConstants.QUALITYCONTROL))
+      
+      if (modelJson.has(ModelerConstants.QUALITYASSURANCECODES))
       {
-         QualityControlType qualityControl = CarnotWorkflowModelFactory.eINSTANCE
-               .createQualityControlType();
-         model.setQualityControl(qualityControl);
-         JsonObject qcJson = modelJson.getAsJsonObject(ModelerConstants.QUALITYCONTROL);
-         if (qcJson.has(ModelerConstants.QC_CODES))
+         QualityControlType qualityControl = model.getQualityControl();
+         if(qualityControl == null)
          {
-            JsonArray qcCodes = qcJson.getAsJsonArray(ModelerConstants.QC_CODES);
-            for (Iterator<JsonElement> i = qcCodes.iterator(); i.hasNext();)
+            qualityControl = CarnotWorkflowModelFactory.eINSTANCE.createQualityControlType();
+            model.setQualityControl(qualityControl);
+         }
+         qualityControl.getCode().clear();
+            
+         JsonArray qcCodes = modelJson.getAsJsonArray(ModelerConstants.QUALITYASSURANCECODES);
+         for (Iterator<JsonElement> i = qcCodes.iterator(); i.hasNext();)
+         {
+            JsonObject qcCode = (JsonObject) i.next();
+            Code code = CarnotWorkflowModelFactory.eINSTANCE.createCode();
+            code.setCode(qcCode.get(ModelerConstants.ID_PROPERTY).getAsString());
+            code.setName(qcCode.get(ModelerConstants.NAME_PROPERTY).getAsString());
+            if (qcCode.get(ModelerConstants.DESCRIPTION_PROPERTY) != null)
             {
-               JsonObject qcCode = (JsonObject) i.next();
-               Code code = CarnotWorkflowModelFactory.eINSTANCE.createCode();
-               code.setCode(qcCode.get(ModelerConstants.QC_CODE).getAsString());
-               code.setName(qcCode.get(ModelerConstants.QC_NAME).getAsString());
-               if (qcCode.get(ModelerConstants.QC_VALUE) != null)
-               {
-                  code.setValue(qcCode.get(ModelerConstants.QC_VALUE).getAsString());
-               }
-               qualityControl.getCode().add(code);
+               code.setValue(qcCode.get(ModelerConstants.DESCRIPTION_PROPERTY).getAsString());
             }
+            qualityControl.getCode().add(code);
          }
       }
    }
