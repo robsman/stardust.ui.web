@@ -15,6 +15,8 @@ import java.io.InputStreamReader;
 
 
 
+
+import org.junit.Ignore;
 //import org.eclipse.stardust.ui.web.modeler.utils.test.GenericModelingAssertions;
 import org.junit.Test;
 
@@ -26,6 +28,7 @@ import org.eclipse.stardust.ui.web.modeler.utils.test.GenericModelingAssertions;
 public class TestQualityControl extends RecordingTestcase
 {
    @Test
+   @Ignore
    public void testQualityControlPerformer() throws Exception
    {
       providerModel = modelService.findModel(PROVIDER_MODEL_ID);

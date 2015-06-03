@@ -314,6 +314,14 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                   
          updateQualityControl(activity, activityJson);
       }
+      else if (activityJson.has(ModelerConstants.QUALITYCONTROL)
+            && (activityJson.get(ModelerConstants.QUALITYCONTROL) instanceof JsonNull))
+      {
+         AttributeUtil.setAttribute(activity, PredefinedConstants.ACTIVITY_IS_QUALITY_ASSURANCE_ATT, null);      
+         AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, null);
+         AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, null);
+         activity.setQualityControlPerformer(null);         
+      }
 
       if (isGateway)
       {
