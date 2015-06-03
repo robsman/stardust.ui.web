@@ -104,9 +104,10 @@
         }
       }
 
-      this.propertiesPanel.submitChangesWithUUID({
-        "qualityAssuranceCodes": this.selectedQaCodes
-      });
+      this.propertiesPanel.submitChangesWithUUIDForCommandType(
+              "modelElement.update", this.element.modelElement.uuid, {
+                "qualityAssuranceCodes": this.selectedQaCodes
+              });
     }
 
     /**
