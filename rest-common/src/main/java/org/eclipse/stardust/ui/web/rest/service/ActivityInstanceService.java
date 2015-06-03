@@ -385,6 +385,7 @@ public class ActivityInstanceService
       }
       catch (Exception exception)
       {
+         trace.error("Exception occurred while reactivating activity", exception);
          notification.addFailure(new NotificationDTO(activityOID, null, exception.getMessage()));
       }
       return notification;

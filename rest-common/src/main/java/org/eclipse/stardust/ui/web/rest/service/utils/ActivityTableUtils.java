@@ -128,6 +128,8 @@ public class ActivityTableUtils
    private static final String COL_CRITICALITY = "criticality";
 
    private static final String COL_PRIOIRTY = "priority";
+   
+   private static final String COL_BENCHMARK = "benchmark";
 
    private static final String TODAY = "today";
 
@@ -143,8 +145,6 @@ public class ActivityTableUtils
 
    private static final String ALL = "all";
    
-   private static final String BENCHMARK = "benchmark";
-
    public static double PORTAL_CRITICALITY_MUL_FACTOR = 1000;
 
    public static enum MODE {
@@ -521,7 +521,7 @@ public class ActivityTableUtils
                ? WorklistQuery.PROCESS_INSTANCE_OID
                      : ActivityInstanceQuery.PROCESS_INSTANCE_OID, options.asc);
       }
-      else if (BENCHMARK.equals(options.orderBy))
+      else if (COL_BENCHMARK.equals(options.orderBy))
       {
          //TODO add sort criteria for benchmark when engine api is ready
         /* query.orderBy(worklistQuery
@@ -858,8 +858,8 @@ public class ActivityTableUtils
       BenchmarkDTO dto = new BenchmarkDTO();
       //TODO Stub values 
       dto.value =  ai.getBenchmarkValue();
-      dto.color = "GREEN";
-      dto.label = "ON TIME";
+      dto.color = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getBenchmarkColor(ai);
+      dto.label = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getBenchmarkLabel(ai);;
       return dto;
    }
 

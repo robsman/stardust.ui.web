@@ -56,6 +56,8 @@ public class ActivityInstanceWithPrioTableEntry extends DefaultRowModel
    private String status;
    private boolean abortProcess;
    private CriticalityCategory criticality;
+   private String benchmark;
+   private String benchmarkColor;
    
    private List<ProcessDescriptor> processDescriptorsList = new ArrayList<ProcessDescriptor>();
    private Map<String, Object> descriptorValues = new HashMap<String, Object>();
@@ -99,6 +101,8 @@ public class ActivityInstanceWithPrioTableEntry extends DefaultRowModel
       criticality = CriticalityConfigurationHelper.getInstance().getCriticality(getCriticalityValue());
       caseInstance = aiWithPrio.getActivityInstance().getProcessInstance().isCaseProcessInstance();
       abortActivity =!caseInstance && ActivityInstanceUtils.isAbortable(aiWithPrio.getActivityInstance());
+      benchmark = ActivityInstanceUtils.getBenchmarkLabel(aiWithPrio.getActivityInstance());
+      benchmarkColor = ActivityInstanceUtils.getBenchmarkColor(aiWithPrio.getActivityInstance());
     }
 
    
@@ -339,5 +343,26 @@ public class ActivityInstanceWithPrioTableEntry extends DefaultRowModel
    {
       return caseInstance;
    }
+   
+   public String getBenchmark()
+   {
+      return benchmark;
+   }
+
+   public void setBenchmark(String benchmark)
+   {
+      this.benchmark = benchmark;
+   }
+   
+   public String getBenchmarkColor()
+   {
+      return benchmarkColor;
+   }
+
+   public void setBenchmarkColor(String benchmarkColor)
+   {
+      this.benchmarkColor = benchmarkColor;
+   }
+
 
 }

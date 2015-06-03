@@ -445,6 +445,12 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
             ResourcePaths.V_ACTIVITY_TABLE_COLUMNS, true, true);
       criticalityCol.setColumnAlignment(ColumnAlignment.CENTER);
       criticalityCol.setColumnDataFilterPopup(new TableDataFilterPopup(new CriticalityAutocompleteTableDataFilter()));
+      
+      ColumnPreference colBenchmark = new ColumnPreference("Benchmark", "benchmark",
+               propsBean.getString("views.processTable.column.benchmark"), ResourcePaths.V_ACTIVITY_TABLE_COLUMNS,
+            false, true);
+      colBenchmark.setColumnAlignment(ColumnAlignment.CENTER);
+
             
       ColumnPreference descriptorsCol = new ColumnPreference(DESCRIPTOR_COL_NAME,
             "processDescriptorsList", propsBean
@@ -538,6 +544,7 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
       activityCols.add(aOIDCol);
       activityCols.add(prioCol);
       activityCols.add(criticalityCol);
+      activityCols.add(colBenchmark);
       activityCols.add(descriptorsCol);
       if(showResubmissionTime)
       {
@@ -552,6 +559,7 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
       activityCols.add(pIDCol);
       activityCols.add(pOIDCol);
       activityCols.add(participantPerformerCol);
+    
 
       // Adding Descriptor Columns
       List<ColumnPreference> descriptorColumns = DescriptorColumnUtils.createDescriptorColumns(activityTable, allDescriptors, ResourcePaths.V_DOCUMENT_DESC_COLUMNS);
@@ -1039,6 +1047,10 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
             {
                query.orderBy(ActivityInstanceQuery.STATE,
                      sortCriterion.isAscending());
+            }
+            else if ("benchmark".equals(sortCriterion.getProperty()))
+            {
+               //TODO add benchmark sorting
             }
             else
             {

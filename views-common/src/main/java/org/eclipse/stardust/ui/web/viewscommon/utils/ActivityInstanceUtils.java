@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -937,5 +938,26 @@ public class ActivityInstanceUtils
          notes = ProcessInstanceUtils.getNotes2(ai.getProcessInstance());
       }
       return notes;
+   }
+   
+   
+   /**
+    * @param ai
+    * @return
+    */
+   public static String getBenchmarkLabel(ActivityInstance ai)
+   {
+      //TODO replace with actual values 
+      return "ON TIME";
+   }
+   
+   /**
+    * @param ai
+    * @return
+    */
+   public static String getBenchmarkColor(ActivityInstance ai)
+   { 
+      //TODO replace with actual values 
+      return "#66CD00";
    }
 }

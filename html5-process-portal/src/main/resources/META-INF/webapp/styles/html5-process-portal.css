@@ -284,12 +284,8 @@ padding : 5px;;
 	height: 20px;
 }
 
-/* ********** Benchmark Priority flags ********** */
+/* ********** Benchmark flag ********** */
 
-.benchmark-flag-GREEN{
-  color :green;
-}
-
-.benchmark-flag{
+.benchmark-flag {
   font-size: 18px;
 }

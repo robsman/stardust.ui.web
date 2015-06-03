@@ -1806,8 +1806,8 @@ public class ProcessInstanceUtils
       BenchmarkDTO dto = new BenchmarkDTO();
       //TODO Stub values 
       dto.value =  processInstance.getBenchmarkValue();
-      dto.color = "GREEN";
-      dto.label = "ON TIME";
+      dto.color = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getBenchmarkColor(processInstance);
+      dto.label = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getBenchmarkLabel(processInstance);
       return dto;
    }
 

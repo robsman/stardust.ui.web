@@ -88,6 +88,11 @@ public class WorklistTableEntry extends DefaultRowModel
    private String priorityIcon;
    
    private boolean showResubmissionLink;
+   
+   private String benchmark;
+   
+   private String benchmarkColor;
+   
 
    public WorklistTableEntry()
    {
@@ -136,7 +141,9 @@ public class WorklistTableEntry extends DefaultRowModel
       ProcessDefinition pd=ProcessDefinitionUtils.getProcessDefinition(activityInstance.getModelOID(), activityInstance.getProcessDefinitionId());
       this.processDefinition = I18nUtils.getProcessName(pd);
       this.showResubmissionLink = showResubmissionLink;
-
+      this.benchmark = ActivityInstanceUtils.getBenchmarkLabel(activityInstance);
+      this.benchmarkColor = ActivityInstanceUtils.getBenchmarkColor(activityInstance);
+      
       if (!defaultCaseActivity)
       {
          this.abortActivity = ActivityInstanceUtils.isAbortable(activityInstance);
@@ -407,6 +414,26 @@ public class WorklistTableEntry extends DefaultRowModel
    public void setShowResubmissionLink(boolean showResubmissionLink)
    {
       this.showResubmissionLink = showResubmissionLink;
+   }
+
+   public String getBenchmark()
+   {
+      return benchmark;
+   }
+
+   public void setBenchmark(String benchmark)
+   {
+      this.benchmark = benchmark;
+   }
+
+   public String getBenchmarkColor()
+   {
+      return benchmarkColor;
+   }
+
+   public void setBenchmarkColor(String benchmarkColor)
+   {
+      this.benchmarkColor = benchmarkColor;
    }
 
 }

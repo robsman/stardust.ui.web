@@ -691,6 +691,11 @@ public class WorklistTableBean extends UIComponentBean
             true, true);
       colPriority.setColumnAlignment(ColumnAlignment.CENTER);
       colPriority.setColumnDataFilterPopup(new TableDataFilterPopup(new PriorityAutocompleteTableDataFilter()));
+      
+      ColumnPreference colBenchmark = new ColumnPreference(Constants.COL_BENCHMARK, "benchmark", this
+            .getMessages().getString("column.benchmark"), Resources.VIEW_WORKLIST_COLUMNS,
+            false, true);
+      colBenchmark.setColumnAlignment(ColumnAlignment.CENTER);
 
       ColumnPreference colStarted = new ColumnPreference(Constants.COL_STARTED, "startDate",
             ColumnDataType.DATE, this.getMessages().getString("column.started"),
@@ -731,7 +736,8 @@ public class WorklistTableBean extends UIComponentBean
       standardColumns.add(activityNameCol);
       standardColumns.add(colOid);
       standardColumns.add(processDefnCol);
-      standardColumns.add(criticalityCol);
+      standardColumns.add(criticalityCol);      
+      standardColumns.add(colBenchmark);
       standardColumns.add(colPriority);
       standardColumns.add(colDescriptors);
       standardColumns.add(colStarted);
@@ -1398,6 +1404,10 @@ public class WorklistTableBean extends UIComponentBean
                CustomOrderCriterion o = ActivityInstanceQuery.ACTIVITY_NAME
                      .ascendig(sortCriterion.isAscending());
                query.orderBy(o);
+            }
+            else if ("benchmark".equals(sortCriterion.getProperty()))
+            {
+               //TODO add sort 
             }
             // Is this a descriptor column?
             else if (sortCriterion.getProperty().startsWith("descriptorValues."))

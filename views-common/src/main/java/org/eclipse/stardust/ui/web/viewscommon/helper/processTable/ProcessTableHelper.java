@@ -511,6 +511,12 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
             ResourcePaths.V_PROCESS_TABLE_COLUMNS, true, true);
       prioCol.setColumnAlignment(ColumnAlignment.CENTER);
       prioCol.setColumnDataFilterPopup(new TableDataFilterPopup(new PriorityAutocompleteTableDataFilter()));
+      
+      ColumnPreference benchmarkCol = new ColumnPreference("Benchmark", "benchmark", propsBean
+            .getString("views.processTable.column.benchmark"),
+            ResourcePaths.V_PROCESS_TABLE_COLUMNS, false, true);
+      benchmarkCol.setColumnAlignment(ColumnAlignment.CENTER);
+
 
       ColumnPreference descriptorsCol = new ColumnPreference(DESCRIPTOR_COL_NAME,
             "processDescriptorsList", propsBean
@@ -591,6 +597,7 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
       procCols.add(processNameCol);
       procCols.add(pOIDCol);
       procCols.add(prioCol);
+      procCols.add(benchmarkCol);
       procCols.add(descriptorsCol);
       procCols.add(userCol);
       procCols.add(startTimeCol);
@@ -1025,6 +1032,10 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
             {
                CustomOrderCriterion o = ProcessInstanceQuery.USER_ACCOUNT.ascendig(sortCriterion.isAscending());
                query.orderBy(o);
+            }
+            else if ("benchmark".equals(sortCriterion.getProperty()))
+            {
+               //TODO add benchmark sorting
             }
 
             else

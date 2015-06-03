@@ -26,7 +26,7 @@
 			   sdaBenchmarkValue : '=',
 		   },
 		   template : '<i class="glyphicon glyphicon-flag benchmark-flag" '+
-		   						'ng-class="\'benchmark-flag-\'+sdaBenchmarkValue.color" '+
+		   						'ng-style="benchmarkCtrl.flagStyle" '+
 		   						'ng-mouseenter=\'benchmarkCtrl.toolTip.show = true\' '+
 		   						'ng-mouseleave=\'benchmarkCtrl.toolTip.show = false\'> '+
 		   			  '<\/i>'+
@@ -44,6 +44,8 @@
 	   this.toolTip = {
          show : false
       };
+	   
+	   this.flagStyle = {color : $scope.sdaBenchmarkValue.color};
       
       this.i18n = $scope.$parent.i18n;
       $scope.benchmarkCtrl = this;

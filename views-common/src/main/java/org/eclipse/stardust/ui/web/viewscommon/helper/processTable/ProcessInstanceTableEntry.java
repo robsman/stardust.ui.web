@@ -105,6 +105,9 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
    
    private String caseOwner;   
 
+   private String benchmark;
+   
+   private String benchmarkColor;
 
    
    
@@ -153,6 +156,9 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
       }      
     
       oldPriority = priority;
+      
+      this.benchmark = ProcessInstanceUtils.getBenchmarkLabel(processInstance);
+      this.benchmarkColor = ProcessInstanceUtils.getBenchmarkColor(processInstance);
    }
 
 
@@ -482,6 +488,28 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
       this.oldPriority = priority;
    }
    
+   public String getBenchmark()
+   {
+      return benchmark;
+   }
+
+
+   public void setBenchmark(String benchmark)
+   {
+      this.benchmark = benchmark;
+   }
+
+   public String getBenchmarkColor()
+   {
+      return benchmarkColor;
+   }
+
+
+   public void setBenchmarkColor(String benchmarkColor)
+   {
+      this.benchmarkColor = benchmarkColor;
+   }
+
    /**
     * @author Sidharth.Singh
     * @version $Revision: $

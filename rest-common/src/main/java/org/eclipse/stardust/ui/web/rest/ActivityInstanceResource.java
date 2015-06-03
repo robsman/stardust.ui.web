@@ -523,21 +523,9 @@ public class ActivityInstanceResource
     @Path("/reactivate")
    public Response reactivate(String postedData)
    {
-       try
-       {
           Map<String, Object> data = JsonDTO.getAsMap(postedData);
           NotificationMap result =  activityInstanceService.reactivate(Long.valueOf(data.get("activityOID").toString()));
           return Response.ok(GsonUtils.toJsonHTMLSafeString(result), MediaType.APPLICATION_JSON).build();
-       }
-       catch (ObjectNotFoundException onfe)
-       {
-          return Response.status(Status.NOT_FOUND).build();
-       }
-       catch (Exception e)
-       {
-          trace.error("", e);
-          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-       }
    }
     
     
@@ -554,21 +542,9 @@ public class ActivityInstanceResource
     @Path("/activate")
    public Response activate(String postedData)
    {
-       try
-       {
           Map<String, Object> data = JsonDTO.getAsMap(postedData);
           NotificationMap result =  activityInstanceService.activate(Long.valueOf(data.get("activityOID").toString()));
           return Response.ok(GsonUtils.toJsonHTMLSafeString(result), MediaType.APPLICATION_JSON).build();
-       }
-       catch (ObjectNotFoundException onfe)
-       {
-          return Response.status(Status.NOT_FOUND).build();
-       }
-       catch (Exception e)
-       {
-          trace.error("", e);
-          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-       }
    }
 	
 	/**

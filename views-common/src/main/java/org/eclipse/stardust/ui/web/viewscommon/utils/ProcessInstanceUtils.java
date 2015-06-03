@@ -1216,4 +1216,24 @@ public class ProcessInstanceUtils
       }
       return false;
    }
+   
+   /**
+    * @param ai
+    * @return
+    */
+   public static String getBenchmarkLabel(ProcessInstance pi)
+   {
+      //TODO replace with actual values 
+      return "ON TIME";
+   }
+   
+   /**
+    * @param ai
+    * @return
+    */
+   public static String getBenchmarkColor(ProcessInstance pi)
+   { 
+      //TODO replace with actual values 
+      return "#66CD00";
+   }
 }
