@@ -71,7 +71,7 @@
       }
 
       // set selection from activity model element
-      this.selectedQaCodes = this.element.modelElement.selectedQaCodes;
+      this.selectedQaCodes = this.element.modelElement.qualityAssuranceCodes;
       if (!this.selectedQaCodes) {
         this.selectedQaCodes = [];
       }
