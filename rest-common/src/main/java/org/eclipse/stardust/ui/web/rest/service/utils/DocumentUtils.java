@@ -13,10 +13,10 @@ package org.eclipse.stardust.ui.web.rest.service.utils;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
-
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
+import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 
@@ -36,6 +36,16 @@ public class DocumentUtils
       return serviceFactoryUtils.getDocumentManagementService().getDocument(documentId);
    }
 
+   public byte[] getDocumentContents(String documentId)
+   {
+      return serviceFactoryUtils.getDocumentManagementService().retrieveDocumentContent(documentId);
+   }
+   
+   public Folder getFolder(String path)
+   {
+      return serviceFactoryUtils.getDocumentManagementService().getFolder(path);
+   }
+   
    public int getNumPages(Document document)
    {
       int numPages = 0;
