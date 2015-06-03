@@ -51,6 +51,13 @@
     /**
      * 
      */
+    ActivityQualityAssuranceCodesCtrl.prototype.isInteractive = function() {
+      return this.element.modelElement.taskType == "manual" || this.element.modelElement.taskType == "user"; 
+    }
+    
+    /**
+     * 
+     */
     ActivityQualityAssuranceCodesCtrl.prototype.refresh = function() {
       this.element = this.propertiesPanel.element;
       if (!this.element) { return; }
