@@ -1,18 +1,20 @@
-<div class="view-panel" ng-controller="sdDeputyManagementCtrl as ctrl" sg-stretch-to-bottom>
+<div class="view-panel" ng-controller="sdDeputyManagementCtrl as ctrl"
+	sg-stretch-to-bottom>
 	<div
 		ng-include="'plugins/html5-business-control-center/partials/views/deputyManagementUsersTable.html'">
 	</div>
 	<div style="padding-top: 20px;"
 		ng-include="'plugins/html5-business-control-center/partials/views/deputyManagementUserDeputiesTable.html'">
 	</div>
-	<div sd-dialog sda-modal="true"
-		sda-show="ctrl.showCreateOrModifyDeputyDialog"
-		sda-type="confirm"
-		sda-title="{{sdI18n(ctrl.deputy.title,'',[ctrl.rowSelectionForUsers.userDisplayName])}}"
-		sda-scope="this"
-		sda-template="plugins/html5-business-control-center/partials/views/createOrModifyDeputyDialog.html"
-		sda-on-confirm="ctrl.onConfirmAddEditDeputy(res)"
-		sda-confirm-action-label="{{i18n('views-common-messages.common-apply')}}"
-		sda-width="750px">
-	</div>	
+	<div ng-if="ctrl.loadCreateOrModifyDeputyDialog">
+		<div sd-dialog sda-modal="true"
+			sda-show="ctrl.showCreateOrModifyDeputyDialog" sda-type="confirm"
+			sda-title="{{sdI18n(ctrl.deputy.title,'',[ctrl.deputy.titleParams])}}"
+			sda-scope="this"
+			sda-template="plugins/html5-business-control-center/partials/views/createOrModifyDeputyDialog.html"
+			sda-on-confirm="ctrl.onConfirmAddEditDeputy(res)"
+			sda-on-close="ctrl.onCloseAddEditDeputy(res)"
+			sda-confirm-action-label="{{i18n('views-common-messages.common-apply')}}"
+			sda-width="750px"></div>
+	</div>
 </div>

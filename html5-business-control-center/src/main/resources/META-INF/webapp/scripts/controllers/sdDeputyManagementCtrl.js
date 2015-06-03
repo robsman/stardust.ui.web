@@ -184,16 +184,28 @@
 				self.deputy.deputyDisplayName = rowData.userDisplayName;
 				self.deputy.deputyOID = rowData.userOID;
 				self.deputy.title = 'views-common-messages.views-deputyManagementView-dialog-modify-title';
-			}else{
+				self.deputy.titleParams = self.rowSelectionForUsers.userDisplayName;
+			} else {
 				self.deputy.title = 'views-common-messages.views-deputyManagementView-dialog-create-title';
+				self.deputy.titleParams = self.rowSelectionForUsers.userDisplayName;
 			}
 
 			self.showCreateOrModifyDeputyDialog = true;
+			self.loadCreateOrModifyDeputyDialog = true;
 		}, function(result) {
 			// Error occurred
 			trace.log('An error occurred while fetching authorization.\n Caused by: ' + result);
 		});
 
+	};
+
+	/**
+	 * 
+	 * @param res
+	 */
+	DeputyManagementCtrl.prototype.onCloseAddEditDeputy = function(res) {
+		var self = this;
+		self.loadCreateOrModifyDeputyDialog = false;
 	};
 
 	/**
@@ -297,6 +309,7 @@
 				};
 
 				delete self.deputy;
+				self.loadCreateOrModifyDeputyDialog = false;
 
 				_sdDeputyManagementService.addOrModifyDeputy(userOID, deputyOID, validFrom, validTo,
 						modelParticipantIds, mode).then(function(data) {
