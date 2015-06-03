@@ -1100,12 +1100,29 @@ public class ModelElementMarshaller implements ModelMarshaller
                      {
                         createJavaAccessPoints(activity.getApplication(),
                               accessPointsJson);
+                     }
+                  }
                }
             }
          }
-      }
-         }
 
+         if(activity.getValidQualityCodes() != null)
+         {
+            JsonArray validCodesJson = new JsonArray();
+            for (Iterator<Code> i = activity.getValidQualityCodes().iterator(); i
+                  .hasNext();)
+            {
+               Code code = i.next();
+               Code resolvedCode = resolveCode(activity, code);
+               if (resolvedCode != null)
+               {
+                  JsonPrimitive codeJson = new JsonPrimitive(eObjectUUIDMapper().getUUID(resolvedCode));
+                  validCodesJson.add(codeJson);
+               }
+            }
+            activityJson.add(ModelerConstants.QUALITYASSURANCECODES, validCodesJson);               
+         }
+                  
          if (activity.getQualityControlPerformer() != null)
          {
             JsonObject qcJson = new JsonObject();
@@ -1114,24 +1131,7 @@ public class ModelElementMarshaller implements ModelMarshaller
                   getModelBuilderFacade().createFullId(
                         ModelUtils.findContainingModel(activity),
                         activity.getQualityControlPerformer()));
-            if(activity.getValidQualityCodes() != null)
-            {
-               JsonArray validCodesJson = new JsonArray();
-               for (Iterator<Code> i = activity.getValidQualityCodes().iterator(); i
-                     .hasNext();)
-               {
-                  Code code = i.next();
-                  Code resolvedCode = resolveCode(activity, code);
-                  if (resolvedCode != null)
-                  {
-                     JsonObject codeJson = new JsonObject();
-                     codeJson.addProperty(ModelerConstants.UUID_PROPERTY,
-                           eObjectUUIDMapper().getUUID(resolvedCode));                     
-                     validCodesJson.add(codeJson);
-                  }
-               }
-               activityJson.add(ModelerConstants.QUALITYASSURANCECODES, validCodesJson);               
-            }
+            activityJson.add(ModelerConstants.QUALITYCONTROL, qcJson);
 
             JsonObject attributes;
             if (!hasNotJsonNull(activityJson, ModelerConstants.ATTRIBUTES_PROPERTY))

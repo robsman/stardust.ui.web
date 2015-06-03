@@ -150,7 +150,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
    public void populateFromJson(EObject element, JsonObject json)
    {
       logger.debug("Unmarshalling: " + element + " " + json);
-
+      
       if (element instanceof Code)
       {
          updateQualityAssuranceCode((Code) element, json.getAsJsonObject("modelElement"));
@@ -298,14 +298,20 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       mapDeclaredProperties(activity, activityJson, propertiesMap.get(ActivityType.class));
       storeAttributes(activity, activityJson);
       storeDescription(activity, activityJson);
-
-      AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, null);
-      AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, null);
-      activity.setQualityControlPerformer(null);
-      activity.getValidQualityCodes().clear();
+       
+      if (hasNotJsonNull(activityJson, ModelerConstants.QUALITYASSURANCECODES))
+      {
+         updateQualityControlCodes(activity, activityJson);
+      }
+            
       if (activityJson.has(ModelerConstants.QUALITYCONTROL)
             && !(activityJson.get(ModelerConstants.QUALITYCONTROL) instanceof JsonNull))
       {
+         AttributeUtil.setAttribute(activity, PredefinedConstants.ACTIVITY_IS_QUALITY_ASSURANCE_ATT, null);      
+         AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, null);
+         AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, null);
+         activity.setQualityControlPerformer(null);
+                  
          updateQualityControl(activity, activityJson);
       }
 
@@ -496,7 +502,8 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       for (Iterator<JsonElement> i = qcCodes.iterator(); i.hasNext();)
       {
          JsonPrimitive qcCode = (JsonPrimitive) i.next();
-         String uuid = qcCode.toString();         
+         String uuid = qcCode.toString();    
+         uuid = uuid.substring(1, uuid.length() - 1);
          Code code = (Code) modelService.uuidMapper().getEObject(uuid);
          if (code != null)
          {
@@ -507,21 +514,28 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       
    public void updateQualityControl(ActivityType activity, JsonObject activityJson)
    {
-      JsonObject qcJson = activityJson
-            .getAsJsonObject(ModelerConstants.QUALITYCONTROL);
-      String fullParticipantID = qcJson.get(ModelerConstants.PARTICIPANT_FULL_ID)
-            .getAsString();
-
-      IModelParticipant importParticipant = getModelBuilderFacade().importParticipant(ModelUtils.findContainingModel(activity), fullParticipantID);
-      activity.setQualityControlPerformer(importParticipant);
-
-      if(EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT) != null)
+      JsonObject qcJson = activityJson.getAsJsonObject(ModelerConstants.QUALITYCONTROL);
+      if(EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.ACTIVITY_IS_QUALITY_ASSURANCE_ATT) != null)
       {
-         AttributeUtil.setCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, (String) EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT));
-      }
-      if(EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT) != null)
-      {
-         AttributeUtil.setCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, (String) EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT));
+         boolean isQualityAssurance = (Boolean) EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.ACTIVITY_IS_QUALITY_ASSURANCE_ATT);
+         if(isQualityAssurance)
+         {
+            AttributeUtil.setBooleanAttribute((IExtensibleElement) activity, PredefinedConstants.ACTIVITY_IS_QUALITY_ASSURANCE_ATT, true);         
+         
+            String fullParticipantID = qcJson.get(ModelerConstants.PARTICIPANT_FULL_ID).getAsString();
+      
+            IModelParticipant importParticipant = getModelBuilderFacade().importParticipant(ModelUtils.findContainingModel(activity), fullParticipantID);
+            activity.setQualityControlPerformer(importParticipant);
+      
+            if(EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT) != null)
+            {
+               AttributeUtil.setCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, (String) EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT));
+            }
+            if(EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT) != null)
+            {
+               AttributeUtil.setCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, (String) EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT));
+            }
+         }
       }
    }
 
@@ -1557,12 +1571,6 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
       ActivityType activity = activitySymbol.getActivity();
       JsonObject activityJson = activitySymbolJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
-
-      
-      if (hasNotJsonNull(activitySymbolJson, ModelerConstants.QUALITYASSURANCECODES))
-      {
-         updateQualityControlCodes(activity, activitySymbolJson);
-      }
       
       updateActivity(activity, activityJson);
    }
