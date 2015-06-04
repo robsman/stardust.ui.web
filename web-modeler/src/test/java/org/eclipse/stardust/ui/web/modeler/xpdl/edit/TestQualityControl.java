@@ -73,12 +73,24 @@ public class TestQualityControl extends RecordingTestcase
                assertThat(code.getName(), is("ConsumerModel QA Code 2"));
                assertThat(code.getValue(), is(nullValue()));
                break;         
-               
+            case 1: 
+               assertThat(code.getCode(), is(not(nullValue())));
+               assertThat(code.getCode(), is("ConsumerModelQACode3"));
+               assertThat(code.getName(), is(not(nullValue())));
+               assertThat(code.getName(), is("ConsumerModel QA Code 3"));
+               assertThat(code.getValue(), is(not(nullValue())));
+               assertThat(code.getValue(), is("comment"));               
+               break;         
+            case 2: 
+               assertThat(code.getCode(), is(not(nullValue())));
+               assertThat(code.getCode(), is("test1"));
+               assertThat(code.getName(), is(not(nullValue())));
+               assertThat(code.getName(), is("test1"));
+               assertThat(code.getValue(), is(nullValue()));
+               break;                        
          }
-         cnt++;
-         
-      }
-      
+         cnt++;         
+      }      
    }
 
    private void assertQualityControlPerformer(ActivityType activity, ModelType providerModel, boolean exists)
