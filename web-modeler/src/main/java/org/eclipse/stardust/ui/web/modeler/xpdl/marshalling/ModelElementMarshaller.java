@@ -1116,7 +1116,7 @@ public class ModelElementMarshaller implements ModelMarshaller
                Code resolvedCode = resolveCode(activity, code);
                if (resolvedCode != null)
                {
-                  String uuid = eObjectUUIDMapper().getUUID(resolvedCode);
+                  String uuid = getModelBuilderFacade().getModelManagementStrategy().uuidMapper().getUUID(resolvedCode);
                   if(!StringUtils.isEmpty(uuid))
                   {
                      JsonPrimitive codeJson = new JsonPrimitive(uuid);
@@ -3473,7 +3473,7 @@ public class ModelElementMarshaller implements ModelMarshaller
             codeJson.addProperty(ModelerConstants.NAME_PROPERTY, code.getName());
             codeJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, code.getValue());
             codeJson.addProperty(ModelerConstants.UUID_PROPERTY,
-                  eObjectUUIDMapper().getUUID(code));
+                  getModelBuilderFacade().getModelManagementStrategy().uuidMapper().getUUID(code));
             codesJson.add(codeJson);
          }
          modelJson.add(ModelerConstants.QUALITYASSURANCECODES, codesJson);

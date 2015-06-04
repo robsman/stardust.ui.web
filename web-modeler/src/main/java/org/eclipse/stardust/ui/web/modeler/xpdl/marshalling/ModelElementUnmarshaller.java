@@ -151,8 +151,6 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
    {
       logger.debug("Unmarshalling: " + element + " " + json);
       
-      System.err.println("### " + element + " / " + json);
-      
       if (element instanceof Code)
       {
          updateQualityAssuranceCode((Code) element, json.getAsJsonObject("modelElement"));
@@ -259,25 +257,6 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          logger.warn("===> Unsupported Symbol " + element);
       }
-   }
-
-   private Code resolveCode(ActivityType activity, String code)
-   {
-      ModelType model = ModelUtils.findContainingModel(activity);
-
-      if (model.getQualityControl() != null)
-      {
-         for (Iterator<Code> i = model.getQualityControl().getCode().iterator(); i
-               .hasNext();)
-         {
-            Code modelCode = i.next();
-            if (modelCode != null && modelCode.getCode().equals(code))
-            {
-               return modelCode;
-            }
-         }
-      }
-      return null;
    }
 
    /**
@@ -514,7 +493,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          JsonPrimitive qcCode = (JsonPrimitive) i.next();
          String uuid = qcCode.toString();    
          uuid = uuid.substring(1, uuid.length() - 1);
-         Code code = (Code) modelService.uuidMapper().getEObject(uuid);
+         Code code = (Code) modelService.getModelBuilderFacade().getModelManagementStrategy().uuidMapper().getEObject(uuid);
          if (code != null)
          {
             activity.getValidQualityCodes().add(code);
@@ -3294,12 +3273,25 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             qualityControl = CarnotWorkflowModelFactory.eINSTANCE.createQualityControlType();
             model.setQualityControl(qualityControl);
          }
+
+         Map<String, Code> codes = newHashMap();
+         for(Code theCode : qualityControl.getCode())
+         {
+            codes.put(theCode.getCode(), theCode);
+         }
          qualityControl.getCode().clear();
-            
+         
          JsonArray qcCodes = modelJson.getAsJsonArray(ModelerConstants.QUALITYASSURANCECODES);
          for (Iterator<JsonElement> i = qcCodes.iterator(); i.hasNext();)
-         {
+         {            
             JsonObject qcCode = (JsonObject) i.next();
+            Code reuseCode = codes.get(qcCode.get(ModelerConstants.ID_PROPERTY).getAsString());
+            if(reuseCode != null)
+            {
+               qualityControl.getCode().add(reuseCode);               
+            }
+            
+            /*
             Code code = CarnotWorkflowModelFactory.eINSTANCE.createCode();
             code.setCode(qcCode.get(ModelerConstants.ID_PROPERTY).getAsString());
             code.setName(qcCode.get(ModelerConstants.NAME_PROPERTY).getAsString());
@@ -3308,6 +3300,9 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                code.setValue(qcCode.getAsJsonPrimitive(ModelerConstants.DESCRIPTION_PROPERTY).getAsString());
             }
             qualityControl.getCode().add(code);
+            EObjectUUIDMapper mapper = modelService.getModelBuilderFacade().getModelManagementStrategy().uuidMapper();
+            mapper.map(code);      
+            */
          }
       }
    }

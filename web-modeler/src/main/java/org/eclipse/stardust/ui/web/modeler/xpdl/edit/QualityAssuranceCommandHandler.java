@@ -68,7 +68,7 @@ public class QualityAssuranceCommandHandler
          qualityControl.getCode().add(code);
       }      
       
-      EObjectUUIDMapper mapper = modelService().uuidMapper();
+      EObjectUUIDMapper mapper = modelService().getModelBuilderFacade().getModelManagementStrategy().uuidMapper();
       mapper.map(code);      
    }
 
@@ -82,7 +82,7 @@ public class QualityAssuranceCommandHandler
       String uuid = extractString(request, ModelerConstants.UUID_PROPERTY);
       if(!StringUtils.isEmpty(uuid))
       {
-         Code code = (Code) modelService().uuidMapper().getEObject(uuid);
+         Code code = (Code) modelService().getModelBuilderFacade().getModelManagementStrategy().uuidMapper().getEObject(uuid);
          if(code != null)
          {
             synchronized (model)
