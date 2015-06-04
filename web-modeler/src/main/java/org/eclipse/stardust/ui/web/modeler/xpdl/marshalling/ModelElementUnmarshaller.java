@@ -3303,7 +3303,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             code.setName(qcCode.get(ModelerConstants.NAME_PROPERTY).getAsString());
             if (qcCode.get(ModelerConstants.DESCRIPTION_PROPERTY) != null)
             {
-               code.setValue(qcCode.get(ModelerConstants.DESCRIPTION_PROPERTY).getAsString());
+               code.setValue(qcCode.getAsJsonPrimitive(ModelerConstants.DESCRIPTION_PROPERTY).getAsString());
             }
             qualityControl.getCode().add(code);
          }
