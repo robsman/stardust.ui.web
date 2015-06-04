@@ -623,10 +623,13 @@ define(
 										var provider = ext.provider.create(api, ext.id, self);
 										self.uiMashupGeneratorProviders[ext.id] = provider;
 
-										//var markup = self.getContext().attributes["carnot:engine:ui:externalWebApp:markup"];
-										//if (provider && provider.setMarkup) {
-										//	provider.setMarkup(markup);
-										//}
+										var genId = self.getContext().attributes["carnot:engine:ui:externalWebApp:generatorId"];
+										if (genId == ext.id) {
+											var markup = self.getContext().attributes["carnot:engine:ui:externalWebApp:markup"];
+											if (provider && provider.setMarkup) {
+												provider.setMarkup(markup);
+											}
+										}
 									} catch (e) {
 										m_utils.debug("Error in creating UI Mashup Generator Provider");
 										m_utils.debug(e);
@@ -663,12 +666,6 @@ define(
 					if (this.isCustomEmbeddedConfiguration()) {
 						var generatorId = this.getContext().attributes["carnot:engine:ui:externalWebApp:generatorId"];
 						this.setUiMashupGeneratorExtension(generatorId);
-
-						var provider = this.uiMashupGeneratorProviders[generatorId];
-						if (provider && provider.setMarkup) {
-							var markup = this.getContext().attributes["carnot:engine:ui:externalWebApp:markup"];
-							provider.setMarkup(markup);
-						}
 					} else if (this.isEmbeddedConfiguration()) {
 						this.setEmbedded();
 						var self = this;
