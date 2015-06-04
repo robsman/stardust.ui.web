@@ -33,8 +33,10 @@ import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.engine.core.preferences.Preferences;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.service.AuthorizationManagerService;
 import org.eclipse.stardust.ui.web.rest.service.PreferenceService;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.PermissionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PreferenceDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +59,9 @@ public class PreferenceResource
 
    @Autowired
    private PreferenceService PreferenceService;
+   
+   @Autowired
+   private AuthorizationManagerService authorizationManagerService;
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
@@ -166,5 +171,15 @@ public class PreferenceResource
          trace.error("Exception when fetching Uuser preferences", e);
          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
+   }
+   
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/permissions")
+   public Response getAllPermissions()
+   {
+      List<PermissionDTO> permissions = authorizationManagerService.fetchPermissions();
+      Gson gson = new Gson();
+      return Response.ok(gson.toJson(permissions), MediaType.APPLICATION_JSON).build();
    }
 }

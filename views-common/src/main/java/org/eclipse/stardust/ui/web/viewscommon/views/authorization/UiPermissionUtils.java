@@ -73,15 +73,17 @@ public class UiPermissionUtils
    private static final String UI = "ui";
 
    private final static Map<String, String> defaultPermissions;
-
+   
    /**
     * Constants for Administrator role as used by engine permissions. Can be changed to a
     * portal related constant.
     */
    private final static String ADMINISTRATOR = PredefinedConstants.ADMINISTRATOR_ROLE;
+   private final static String AUDITOR = "Auditor";
    private static final String PREFIX = "portal.ui.";
-   private static final String POSTFIX_ALLOW = ".allow";
-   private static final String POSTFIX_DENY = ".deny";
+   public static final String POSTFIX_ALLOW = ".allow";
+   public static final String POSTFIX_DENY = ".deny";
+   public static final String PREFIX_DENY = "deny:";
    private static final String PERIOD = ".";
    private static final String SPACE = " ";
 
@@ -90,6 +92,9 @@ public class UiPermissionUtils
       defaultPermissions = new HashMap<String, String>();
       // Set Administrator default
       defaultPermissions.put("portal.ui.ippAdminPerspective.allow", ADMINISTRATOR);
+      defaultPermissions.put("portal.ui.checklistManagement.deny", AUDITOR);
+      defaultPermissions.put("portal.ui.ippBpmModeler.deny", AUDITOR);
+      defaultPermissions.put("portal.ui.stardustRulesManager.deny", AUDITOR);
    }
 
    /**
@@ -141,6 +146,16 @@ public class UiPermissionUtils
       Preferences preferences = new Preferences(PreferenceScope.PARTITION, PERMISSIONS, preferenceId, preferencesMap);
 
       administrationService.savePreferences(preferences);
+   }
+   
+   
+   /**
+    * @param permissionId
+    * @return
+    */
+   public static String getPermissionId(String permissionId)
+   {
+      return PREFIX + permissionId;
    }
 
    /**
