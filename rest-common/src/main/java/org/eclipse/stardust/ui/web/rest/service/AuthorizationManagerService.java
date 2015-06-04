@@ -22,11 +22,11 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
-import org.eclipse.stardust.engine.api.dto.RuntimePermissionsDetails;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
+import org.eclipse.stardust.engine.api.runtime.RuntimePermissions;
 import org.eclipse.stardust.ui.web.common.IPerspectiveDefinition;
 import org.eclipse.stardust.ui.web.common.LaunchPanel;
 import org.eclipse.stardust.ui.web.common.PerspectiveDefinition;
@@ -78,7 +78,7 @@ public class AuthorizationManagerService
       PermissionsDetails permissions = new PermissionsDetails(UiPermissionUtils.getAllPermissions(
             administrationService, true));
       // general Permissions
-      RuntimePermissionsDetails runtimePermissionsDetails = (RuntimePermissionsDetails) administrationService
+      RuntimePermissions runtimePermissionsDetails = (RuntimePermissions) administrationService
             .getGlobalPermissions();
       permissions.setGeneralPermission(runtimePermissionsDetails);
 
@@ -95,7 +95,7 @@ public class AuthorizationManagerService
     */
    private PermissionDTO buildGeneralPermissions(PermissionsDetails permissions)
    {
-      RuntimePermissionsDetails runtimePermissions = permissions.getGeneralPermission();
+      RuntimePermissions runtimePermissions = permissions.getGeneralPermission();
 
       PermissionDTO pdto = new PermissionDTO();
       pdto.label = MessagesViewsCommonBean.getInstance().get("views.authorizationManagerView.generalPermissions");

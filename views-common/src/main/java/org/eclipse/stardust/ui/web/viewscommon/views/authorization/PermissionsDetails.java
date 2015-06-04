@@ -18,8 +18,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.eclipse.stardust.engine.api.dto.RuntimePermissionsDetails;
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
+import org.eclipse.stardust.engine.api.runtime.RuntimePermissions;
 import org.eclipse.stardust.engine.core.runtime.utils.Authorization2;
 
 /**
@@ -35,7 +35,7 @@ public class PermissionsDetails
 
    private Map<String, List<String>> uiPermissions;
 
-   private RuntimePermissionsDetails generalPermission;
+   private RuntimePermissions generalPermission;
 
    /**
     * @param permissions
@@ -154,12 +154,12 @@ public class PermissionsDetails
       return Collections.unmodifiableMap(permissionMap);
    }
 
-   public RuntimePermissionsDetails getGeneralPermission()
+   public RuntimePermissions getGeneralPermission()
    {
       return generalPermission;
    }
 
-   public void setGeneralPermission(RuntimePermissionsDetails generalPermission)
+   public void setGeneralPermission(RuntimePermissions generalPermission)
    {
       this.generalPermission = generalPermission;
    }
