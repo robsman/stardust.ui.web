@@ -857,7 +857,6 @@ public class ActivityTableUtils
    {
       BenchmarkDTO dto = new BenchmarkDTO();
       //TODO Stub values 
-      dto.value =  ai.getBenchmarkValue();
       dto.color = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getBenchmarkColor(ai);
       dto.label = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getBenchmarkLabel(ai);;
       return dto;
