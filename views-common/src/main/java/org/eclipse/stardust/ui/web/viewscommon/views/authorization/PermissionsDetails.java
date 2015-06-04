@@ -49,6 +49,7 @@ public class PermissionsDetails
     * @param permissionId
     * @return
     */
+   @Deprecated
    public Set<ModelParticipantInfo> getGrants(String permissionId)
    {
       Set<ModelParticipantInfo> externalGrants;
@@ -60,6 +61,50 @@ public class PermissionsDetails
       else
       {
          externalGrants = UiPermissionUtils.externalize(uiPermissions.get(permissionId));
+      }
+
+      return externalGrants;
+   }
+   
+   /**
+    * 
+    * @param permissionId
+    * @return
+    */
+   public Set<ModelParticipantInfo> getGrants2(String permissionId)
+   {
+      Set<ModelParticipantInfo> externalGrants;
+
+      if (UiPermissionUtils.isGeneralPermissionId(permissionId))
+      {
+         externalGrants = generalPermission.getGrants(permissionId);
+      }
+      else
+      {
+         externalGrants = UiPermissionUtils.externalize(uiPermissions.get(permissionId
+               + UiPermissionUtils.POSTFIX_ALLOW));
+      }
+
+      return externalGrants;
+   }
+   
+   /**
+    * 
+    * @param permissionId
+    * @return
+    */
+   public Set<ModelParticipantInfo> getDeniedGrants(String permissionId)
+   {
+      Set<ModelParticipantInfo> externalGrants;
+
+      if (UiPermissionUtils.isGeneralPermissionId(permissionId))
+      {
+         externalGrants = generalPermission.getDeniedGrants(permissionId);
+      }
+      else
+      {
+         externalGrants = UiPermissionUtils.externalize(uiPermissions
+               .get(permissionId + UiPermissionUtils.POSTFIX_DENY));
       }
 
       return externalGrants;

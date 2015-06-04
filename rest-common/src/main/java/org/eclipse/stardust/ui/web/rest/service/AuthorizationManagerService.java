@@ -59,7 +59,7 @@ public class AuthorizationManagerService
    private static final String PROPERTY_KEY_PREFIX = "views.authorizationManagerView.permission.model.";
 
    private static enum PermissionType {
-      GeneralPermissions, UIPermissions, Perspective, LaunchPanels, LaunchPanel, Views, View, GlobalExtensions, GlobalExtension
+      GeneralPermissions, UIPermissions, ModelPermissions, Perspective, LaunchPanels, LaunchPanel, Views, View, GlobalExtensions, GlobalExtension, generalPermission, Process, Activity, Data
    }
 
    @Resource
@@ -78,12 +78,11 @@ public class AuthorizationManagerService
       PermissionsDetails permissions = new PermissionsDetails(UiPermissionUtils.getAllPermissions(
             administrationService, true));
       // general Permissions
-      RuntimePermissions runtimePermissionsDetails = (RuntimePermissions) administrationService
-            .getGlobalPermissions();
+      RuntimePermissions runtimePermissionsDetails = (RuntimePermissions) administrationService.getGlobalPermissions();
       permissions.setGeneralPermission(runtimePermissionsDetails);
 
       List<PermissionDTO> allPermissions = new ArrayList<PermissionDTO>();
-      allPermissions.add(buildGeneralPermissions(permissions));
+      allPermissions.addAll(buildGeneralAndModelPermissions(permissions));
       allPermissions.add(buildUiPermissions(permissions));
 
       return allPermissions;
@@ -93,27 +92,59 @@ public class AuthorizationManagerService
     * @param permissions
     * @return
     */
-   private PermissionDTO buildGeneralPermissions(PermissionsDetails permissions)
+   private List<PermissionDTO> buildGeneralAndModelPermissions(PermissionsDetails permissions)
    {
+      List<PermissionDTO> GeneralAndModelPermissions = new ArrayList<PermissionDTO>();
+
       RuntimePermissions runtimePermissions = permissions.getGeneralPermission();
 
-      PermissionDTO pdto = new PermissionDTO();
-      pdto.label = MessagesViewsCommonBean.getInstance().get("views.authorizationManagerView.generalPermissions");
-      pdto.type = PermissionType.GeneralPermissions.name();
+      PermissionDTO generalPermissions = new PermissionDTO();
+      GeneralAndModelPermissions.add(generalPermissions);
+      generalPermissions.label = MessagesViewsCommonBean.getInstance().get(
+            "views.authorizationManagerView.generalPermissions");
+      generalPermissions.type = PermissionType.GeneralPermissions.name();
+      generalPermissions.permissions = new ArrayList<PermissionDTO>();
 
-      pdto.permissions = new ArrayList<PermissionDTO>();
+      PermissionDTO modelPermissions = new PermissionDTO();
+      GeneralAndModelPermissions.add(modelPermissions);
+      modelPermissions.label = MessagesViewsCommonBean.getInstance().get(
+            "views.authorizationManagerView.modelPermissions");
+      modelPermissions.type = PermissionType.ModelPermissions.name();
+      modelPermissions.permissions = new ArrayList<PermissionDTO>();
 
       List<String> permissionIds = new ArrayList<String>(runtimePermissions.getAllPermissionIds());
 
       for (String permissionId : permissionIds)
       {
-         PermissionDTO p = new PermissionDTO(MessagesViewsCommonBean.getInstance().getString(
-               PROPERTY_KEY_PREFIX + permissionId), permissionId);
-         updateGrants(p, permissions, false);
-         pdto.permissions.add(p);
+         if (UiPermissionUtils.isGeneralPermissionId(permissionId))
+         {
+            PermissionDTO p = new PermissionDTO(MessagesViewsCommonBean.getInstance().getString(
+                  PROPERTY_KEY_PREFIX + permissionId), permissionId);
+            p.type = PermissionType.generalPermission.name();
+            updateGrants(p, permissions, false);
+            generalPermissions.permissions.add(p);
+         }
+         else
+         {
+            PermissionDTO p = new PermissionDTO(MessagesViewsCommonBean.getInstance().getString(
+                  PROPERTY_KEY_PREFIX + permissionId), permissionId);
+            if (UiPermissionUtils.isProcessPermissionId(permissionId))
+            {
+               p.type = PermissionType.Process.name();
+            }
+            else if (UiPermissionUtils.isActivityPermissionId(permissionId))
+            {
+               p.type = PermissionType.Activity.name();
+            }
+            else
+            {
+               p.type = PermissionType.Data.name();
+            }
+            updateGrants(p, permissions, false);
+            modelPermissions.permissions.add(p);
+         }
       }
-
-      return pdto;
+      return GeneralAndModelPermissions;
    }
 
    /**
@@ -300,23 +331,9 @@ public class AuthorizationManagerService
 
       String permissionId = p.id;
 
-      if (uiPermissions)
-      {
-         permissionId = p.id + UiPermissionUtils.POSTFIX_ALLOW;
-      }
-
-      Set<ModelParticipantInfo> grants = permissions.getGrants(permissionId);
+      Set<ModelParticipantInfo> grants = permissions.getGrants2(permissionId);
       p.allow.addAll(transformGrantsToDTO(grants));
-
-      if (uiPermissions)
-      {
-         permissionId = p.id + UiPermissionUtils.POSTFIX_DENY;
-      }
-      else
-      {
-         permissionId = UiPermissionUtils.PREFIX_DENY + p.id;
-      }
-      Set<ModelParticipantInfo> deny = permissions.getGrants(permissionId);
+      Set<ModelParticipantInfo> deny = permissions.getDeniedGrants(permissionId);
       p.deny.addAll(transformGrantsToDTO(deny));
    }
 

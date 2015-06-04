@@ -86,6 +86,9 @@ public class UiPermissionUtils
    public static final String PREFIX_DENY = "deny:";
    private static final String PERIOD = ".";
    private static final String SPACE = " ";
+   public static final String PROCESS = "processDefinition.";
+   public static final String ACTIVITY = "activity.";
+   public static final String DATA = "data.";
 
    static
    {
@@ -270,7 +273,7 @@ public class UiPermissionUtils
     */
    public static boolean isGeneralPermissionId(String permissionId)
    {
-      if (!permissionId.startsWith(PREFIX))
+      if (!isUIPermissionId(permissionId) && !isModelPermissionId(permissionId))
       {
          return true;
       }
@@ -280,6 +283,83 @@ public class UiPermissionUtils
       }
    }
 
+   /**
+    * 
+    * @param permissionId
+    * @return
+    */
+   public static boolean isUIPermissionId(String permissionId)
+   {
+      if (permissionId.startsWith(PREFIX))
+      {
+         return true;
+      }
+      else
+      {
+         return false;
+      }
+   }
+   
+   /**
+    * 
+    * @param permissionId
+    * @return
+    */
+   public static boolean isModelPermissionId(String permissionId)
+   {
+      if (isProcessPermissionId(permissionId) || isActivityPermissionId(permissionId)
+            || isDataPermissionId(permissionId))
+      {
+         return true;
+      }
+      else
+      {
+         return false;
+      }
+   }
+
+   /**
+    * 
+    * @param permissionId
+    * @return
+    */
+   public static boolean isProcessPermissionId(String permissionId)
+   {
+      if (permissionId.startsWith(PROCESS))
+      {
+         return true;
+      }
+      return false;
+   }
+
+   /**
+    * 
+    * @param permissionId
+    * @return
+    */
+   public static boolean isActivityPermissionId(String permissionId)
+   {
+      if (permissionId.startsWith(ACTIVITY))
+      {
+         return true;
+      }
+      return false;
+   }
+
+   /**
+    * 
+    * @param permissionId
+    * @return
+    */
+   public static boolean isDataPermissionId(String permissionId)
+   {
+      if (permissionId.startsWith(DATA))
+      {
+         return true;
+      }
+      return false;
+   }
+   
    /**
     * @param grants
     * @return
