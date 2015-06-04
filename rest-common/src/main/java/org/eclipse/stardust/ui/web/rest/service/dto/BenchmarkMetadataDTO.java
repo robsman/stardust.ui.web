@@ -25,24 +25,4 @@ public class BenchmarkMetadataDTO extends AbstractDTO
    @DTOAttribute("dateLastModified.time")
    public long lastModifiedDate;
 
-   public String getAuthor()
-   {
-      return author;
-   }
-
-   public void setAuthor(String author)
-   {
-      this.author = author;
-   }
-
-   public long getLastModifiedDate()
-   {
-      return lastModifiedDate;
-   }
-
-   public void setLastModifiedDate(long lastModifiedDate)
-   {
-      this.lastModifiedDate = lastModifiedDate;
-   }
-
 }

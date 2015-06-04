@@ -17,12 +17,15 @@ import javax.annotation.Resource;
 
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.Folder;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkMetadataDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.DocumentUtils;
 import org.springframework.stereotype.Component;
+
+import com.google.gson.JsonObject;
 
 /**
  * 
@@ -34,6 +37,8 @@ public class BenchmarkDefinitionService
 {
 
    public static final String BENCHMARK_DEFINITION_FOLDER = "/benchmark-definitions";
+   public static final String BENCHMARK_DEFINITION = "benchmark-definition";
+   private static final String UTF_ENCODING = "utf-8";
 
    private final JsonMarshaller jsonIo = new JsonMarshaller();
 
@@ -53,15 +58,106 @@ public class BenchmarkDefinitionService
       {
          byte[] documentContents = documentUtils.getDocumentContents(doc.getId());
          String fileContents = new String(documentContents);
-         BenchmarkDefinitionDTO benchmarkDto = new BenchmarkDefinitionDTO();
-         BenchmarkMetadataDTO metadata = DTOBuilder.build(doc, BenchmarkMetadataDTO.class);
-         benchmarkDto.metadata = metadata;
-         if (null != documentContents)
-         {
-            benchmarkDto.contents = jsonIo.readJsonObject(fileContents);
-         }
+         JsonObject benchmarkJSON = jsonIo.readJsonObject(fileContents);
+         BenchmarkDefinitionDTO benchmarkDto = buildBenchmarkDTO(doc, null, benchmarkJSON);
          list.add(benchmarkDto);
       }
       return list;
+   }
+
+   /**
+    * 
+    * @return
+    */
+   public BenchmarkDefinitionDTO createBenchmarkDefinition(JsonObject benchmarkJSON)
+   {
+      if (null != benchmarkJSON)
+      {
+         try
+         {
+            String benchmarkId = GsonUtils.extractString(benchmarkJSON, "id");
+            Folder benchmarkFolder = documentUtils.getFolder(BENCHMARK_DEFINITION_FOLDER);
+            String fileName = BENCHMARK_DEFINITION + "-" + benchmarkId + ".json";
+            byte[] byteContents;
+            byteContents = benchmarkJSON.toString().getBytes(UTF_ENCODING);
+
+            Document doc = documentUtils.createDocument(benchmarkFolder.getId(), fileName, null, byteContents);
+            BenchmarkDefinitionDTO benchmarkDto = buildBenchmarkDTO(doc, null, benchmarkJSON);
+            return benchmarkDto;
+         }
+         catch (Exception e)
+         {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+         }
+      }
+      return null;
+   }
+
+   /**
+    * 
+    * @param benchmarkId
+    * @param benchmarkJSON
+    * @return
+    */
+   public BenchmarkDefinitionDTO updateBenchmarkDefinition(String benchmarkId, JsonObject benchmarkJSON)
+   {
+      if (null != benchmarkJSON)
+      {
+         try
+         {
+            Document doc = getBenchmarkDefinitionContent(benchmarkId);
+            if (null != doc)
+            {
+               byte[] contents = benchmarkJSON.toString().getBytes(UTF_ENCODING);
+               Document updatedDocument = documentUtils.updateDocument(doc, contents, "", false);
+               BenchmarkDefinitionDTO benchmarkDto = buildBenchmarkDTO(updatedDocument, null, benchmarkJSON);
+               return benchmarkDto;
+            }
+         }
+         catch (Exception e)
+         {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+         }
+      }
+      return null;
+   }
+   
+   private Document getBenchmarkDefinitionContent(String benchmarkId)
+   {
+      Folder folder = documentUtils.getFolder(BENCHMARK_DEFINITION_FOLDER);
+      if (null != folder)
+      {
+         List<Document> documents = folder.getDocuments();
+         String fileName = BENCHMARK_DEFINITION + "-" + benchmarkId + ".json";
+         for (Document document : documents)
+         {
+            if (document.getName().equalsIgnoreCase(fileName))
+            {
+              return document;
+            }
+         }
+      }
+      return null;
+
+   }
+   /**
+    * 
+    * @param doc
+    * @param benchmarkDto
+    * @param benchmarkJSON
+    * @return
+    */
+   private BenchmarkDefinitionDTO buildBenchmarkDTO(Document doc, BenchmarkDefinitionDTO benchmarkDto,
+         JsonObject benchmarkJSON)
+   {
+      if (null == benchmarkDto)
+      {
+         benchmarkDto = new BenchmarkDefinitionDTO();
+      }
+      benchmarkDto.metadata = DTOBuilder.build(doc, BenchmarkMetadataDTO.class);
+      benchmarkDto.contents = benchmarkJSON;
+      return benchmarkDto;
    }
 }

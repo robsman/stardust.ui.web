@@ -13,7 +13,10 @@ package org.eclipse.stardust.ui.web.rest;
 import java.util.List;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -43,6 +46,8 @@ public class BenchmarkDefinitionResource
    @Autowired
    private BenchmarkDefinitionService benchmarkDefinitionService;
 
+   private JsonMarshaller jsonIo = new JsonMarshaller();
+
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/design-time")
@@ -53,15 +58,13 @@ public class BenchmarkDefinitionResource
          List<BenchmarkDefinitionDTO> benchmarkDefs = benchmarkDefinitionService.getBenchmarkDefinitions();
          JsonObject benchmarkDefinitions = new JsonObject();
          JsonArray jsonArray = new JsonArray();
-         for (BenchmarkDefinitionDTO dto : benchmarkDefs)
+         for (BenchmarkDefinitionDTO benchmarkDefinition : benchmarkDefs)
          {
-            JsonObject benchmark = new JsonObject();
-            benchmark.add("metadata", new Gson().toJsonTree(dto.metadata));
-            benchmark.add("contents", dto.contents);
+            JsonObject benchmark = createBenchmarkJSON(benchmarkDefinition);
             jsonArray.add(benchmark);
          }
          benchmarkDefinitions.add("benchmark-definitions", jsonArray);
-         
+
          return Response.ok(benchmarkDefinitions.toString(), MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
@@ -71,4 +74,43 @@ public class BenchmarkDefinitionResource
          return Response.serverError().build();
       }
    }
+
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/design-time")
+   public Response createBenchmarkDefinition(String postedData)
+   {
+      JsonObject benchmarkData = jsonIo.readJsonObject(postedData);
+      BenchmarkDefinitionDTO benchmarkDefinition = benchmarkDefinitionService.createBenchmarkDefinition(benchmarkData);
+      
+      return Response.ok(createBenchmarkJSON(benchmarkDefinition).toString(), MediaType.APPLICATION_JSON).build();
+
+   }
+
+   @PUT
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/design-time/{id}")
+   public Response updateBenchmarkDefinition(@PathParam("id") String benchmarkId, String postedData)
+   {
+      JsonObject benchmarkData = jsonIo.readJsonObject(postedData);
+      BenchmarkDefinitionDTO benchmarkDefinition = benchmarkDefinitionService.updateBenchmarkDefinition(benchmarkId,
+            benchmarkData);
+
+      return Response.ok(createBenchmarkJSON(benchmarkDefinition).toString(), MediaType.APPLICATION_JSON).build();
+
+   }
+   
+   /**
+    * 
+    * @param benchmarkDefinition
+    * @return
+    */
+   private JsonObject createBenchmarkJSON(BenchmarkDefinitionDTO benchmarkDefinition)
+   {
+      JsonObject benchmarkDefinitionJson = new JsonObject();
+      benchmarkDefinitionJson.add("metadata", new Gson().toJsonTree(benchmarkDefinition.metadata));
+      benchmarkDefinitionJson.add("contents", benchmarkDefinition.contents);
+      return benchmarkDefinitionJson;
+   }
+
 }

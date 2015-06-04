@@ -24,5 +24,4 @@ public class BenchmarkDefinitionDTO extends AbstractDTO
 
    public JsonElement contents;
    
-   
 }
