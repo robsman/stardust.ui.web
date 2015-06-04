@@ -47,11 +47,11 @@ public class TestQualityControl extends RecordingTestcase
             "../../service/rest/requests/createQualityAssuranceCodes.txt");
       requestStream = new InputStreamReader(requestInput);
 
-      //replay(requestStream, "createQualityAssuranceCodes", false);
+      replay(requestStream, "createQualityAssuranceCodes", false);
       
-      //assertQualityControlCodes(consumerModel);
+      assertQualityControlCodes(consumerModel);
       
-       saveReplayModel("C:/tmp");
+      // saveReplayModel("C:/tmp");
    }
 
    private void assertQualityControlCodes(ModelType consumerModel)
@@ -61,6 +61,23 @@ public class TestQualityControl extends RecordingTestcase
       EList<Code> codes = qualityControl.getCode();
       assertThat(codes.size(), is(3));
       
+      int cnt = 0;
+      for(Code code : codes)
+      {
+         switch (cnt)
+         {
+            case 0: 
+               assertThat(code.getCode(), is(not(nullValue())));
+               assertThat(code.getCode(), is("test2"));
+               assertThat(code.getName(), is(not(nullValue())));
+               assertThat(code.getName(), is("ConsumerModel QA Code 2"));
+               assertThat(code.getValue(), is(nullValue()));
+               break;         
+               
+         }
+         cnt++;
+         
+      }
       
    }
 
