@@ -922,7 +922,7 @@ public class ActivityTableUtils
          else
          {
             processDescriptorsList = CommonDescriptorUtils.createProcessDescriptors(descriptorValues,
-                  processDefinition, true );
+                  processDefinition, true ,true);
 
          }
 

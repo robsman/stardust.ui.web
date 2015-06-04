@@ -1,3 +1,4 @@
+
 /*******************************************************************************
  * Copyright (c) 2014 SunGard CSA LLC and others.
  * All rights reserved. This program and the accompanying materials
@@ -47,8 +48,8 @@
 		/**
 		 * Declared here for accessing the $scope variable
 		 */
-		this.openDocument = function() {
-			sdUtilService.stopEvent(event);
+		this.openDocument = function($event) {
+			sdUtilService.stopEvent($event);
 			this.openDocumentView($scope.documentId, sdCommonViewUtilService);
 		};
 
