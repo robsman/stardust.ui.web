@@ -38,11 +38,12 @@ public class WorklistService
 
    /**
     * @param participantQId
+    * @param string 
     * @return
     */
-   public QueryResultDTO getWorklistForParticipant(String participantQId, String context, Options options)
+   public QueryResultDTO getWorklistForParticipant(String participantQId, String userId,  Options options)
    {
-      QueryResult< ? > queryResult = worklistUtils.getWorklistForParticipant(participantQId, options);
+      QueryResult< ? > queryResult = worklistUtils.getWorklistForParticipant(participantQId, userId, options);
       return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
    }
 

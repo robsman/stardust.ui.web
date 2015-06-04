@@ -78,6 +78,13 @@
 		       restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, queryParams);
 		   }
 		   
+		   
+		   //Checking for deputy userId along with participant Id in case of deputy user
+		   if( query.participantQId && query.userId ) {
+			   restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl,  'userId='+query.userId);
+		   }
+		   
+		   
 		   var queryParams = sdDataTableHelperService.convertToQueryParams(query.options);
 
 		   if (queryParams.length > 0) {

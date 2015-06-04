@@ -69,14 +69,14 @@ public class WorklistResource
          @QueryParam("skip") @DefaultValue(DEFAULT_SKIP_STEP) Integer skip,
          @QueryParam("pageSize") @DefaultValue(DEFAULT_PAGE_SIZE) Integer pageSize,
          @QueryParam("orderBy") @DefaultValue(DEFAULT_ORDER_BY_FIELD) String orderBy,
-         @QueryParam("orderByDir") @DefaultValue(DEFAULT_ORDER) String orderByDir, String postData)
+         @QueryParam("orderByDir") @DefaultValue(DEFAULT_ORDER) String orderByDir, @QueryParam("userId") String userId,String postData)
    {
       try
       {
          Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
 
-         QueryResultDTO resultDTO = getWorklistService().getWorklistForParticipant(participantQId, "default", options);
+         QueryResultDTO resultDTO = getWorklistService().getWorklistForParticipant( participantQId, userId, options);
 
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }

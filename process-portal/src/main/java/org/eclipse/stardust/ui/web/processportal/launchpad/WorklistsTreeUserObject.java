@@ -141,6 +141,7 @@ public class WorklistsTreeUserObject extends IceUserObject
          else
          {
             params.put("participantQId", participantInfo.getQualifiedId());
+            params.put("userId", userParticipantId);
             labelName = label.getLabel();
          }
       }
