@@ -160,6 +160,7 @@
                             <tokenfilter>
                                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/handbooks/" replace="../../bpm/"/>
                                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/toc.html" replace="../../toc.html"/>
+                               <replaceregex pattern="PLUGINS_ROOT/com.infinity.bpm.docs.modeler/html/" replace="../../../ippdoc/"/>
                             </tokenfilter>
                         </filterchain>
                      </copy>
@@ -174,6 +175,7 @@
                             <tokenfilter>
                                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/handbooks/" replace="../../../bpm/"/>
                                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/toc.html" replace="../../../toc.html"/>
+                               <replaceregex pattern="PLUGINS_ROOT/com.infinity.bpm.docs.modeler/html/" replace="../../../../ippdoc/"/>
                             </tokenfilter>
                         </filterchain>
                      </copy>
