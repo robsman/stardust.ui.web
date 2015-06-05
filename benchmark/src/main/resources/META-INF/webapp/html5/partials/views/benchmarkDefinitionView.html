@@ -3,10 +3,10 @@
      ng-controller="benchmarkCtrl as ctrl"
 	 sg-stretch-to-bottom>
 	
-	<i style="position:absolute;" 
+	<i style="position:absolute;font-size:1.5em;cursor:pointer;" 
 	   ng-click="ctrl.showBenchmarks = !ctrl.showBenchmarks" 
 	   ng-class="{'sc-arrow-d': ctrl.showBenchmarks,'sc-arrow-r': !ctrl.showBenchmarks}"
-	   class="sc sc-fw sc-2x sc-arrow-d">
+	   class="sc sc-fw sc-arrow-d">
 	</i>
 	<span style="margin:2em;" class="header">Benchmark Definitions</span>
 	
@@ -20,8 +20,11 @@
 		
 		<div sda-toolbar>
 		    <a href="#" ng-click="ctrl.createBenchmark()" title="Add Benchmark" class="tbl-toolbar-item tbl-tool-link">
-		       <i class="glyphicon glyphicon-plus">Add</i>
+		       <i class="glyphicon glyphicon-plus-sign"></i>
 		    </a>
+		    <a href="#" ng-click="ctrl.deleteBenchmark()" title="Delete Benchmark" class="tbl-toolbar-item tbl-tool-link">
+		       <i class="glyphicon glyphicon-minus-sign"></i>
+		    </a>		    
 		</div>
 		
 		<table sd-data-table="ctrl.dataTableApi"
@@ -40,15 +43,16 @@
 			   </thead>
 			   <tbody>
 			   		<tr>
-			   			<td sda-field="benchmark.name"></td>
-			   			<td sda-field="benchmark.description"></td>
-			   			<td sda-field="meta.modifiedBy"></td>
-			   			<td sda-field="meta.lastModified"></td>
+			   			<td sda-field="content.name"></td>
+			   			<td sda-field="content.description"></td>
+			   			<td sda-field="metadata.modifiedBy"></td>
+			   			<td sda-field="metadata.lastModified"></td>
 			   		</tr>
 			   </tbody>
 		</table>
 	</div>
 	
+
 	<!-- Display for currently selected benchmark -->
 	<div ng-show="ctrl.selectedBenchmark">
 		<div>
@@ -127,8 +131,10 @@
 			    
 		    </div>
 		    
+		    <div ng-show="!ctrl.selectedBenchmark"  style="width:calc(100% - 230px);display:inline-table;"> No Benchmark Selected</div>
+		    
 		    <!-- Categories Table-->
-		    <div style="width:calc(100% - 230px);display:inline-table;">
+		    <div ng-show="ctrl.selectedBenchmark" style="width:calc(100% - 230px);display:inline-table;">
 		    
 		    	<table class="tbl ng-scope dataTable" id="benchmarkTable" style="width:100%;">
 		    	<colgroup>
@@ -142,21 +148,38 @@
 		    			<th class="tbl-hdr-col">
 		    				<span class="tbl-hdr-col-label">Options</span>
 		    			</th>
-		    			<th class="tbl-hdr-col" ng-repeat="category in ctrl.selectedBenchmark.categories">
-		    				<span class="tbl-hdr-col-label">{{category.name}}</span>
-		    				<div style="display:inline-block;background-color:{{category.color}};width:25px;">&nbsp;</div>
+		    			<th class="tbl-hdr-col" ng-repeat="category in ctrl.selectedBenchmark.categories | orderBy:'index'">
+		    			
+		    				<div sd-drop-down-menu 
+		    				     sda-menu-callback="ctrl.categoryMenuCallback(menuItem,e)"
+		    					 sda-menu-items="[{value:'Add', action: 'ADD_CAT', cat: category, bm: ctrl.selectedBenchmark},
+		    					 				  {value:'Delete', action: 'KILL_CAT', cat: category, bm: ctrl.selectedBenchmark},
+		    					 				  {value:'Move Right', action: 'MOVER_CAT', cat: category, bm: ctrl.selectedBenchmark},
+		    					 				  {value:'Move Left', action: 'MOVEL_CAT', cat: category, bm: ctrl.selectedBenchmark},
+		    					                  {value:'Clone', action: 'CLONE_CAT', cat: category, bm: ctrl.selectedBenchmark}]"
+		    					 style="display:inline-table;">
+		    				     <i class="sc sc-flag"></i>
+		    				     <i class="sc sc-arrow-d"></i>
+		    				</div>
+		    				<input type="text" size="{{category.name.length}}" ng-model="category.name" class="tbl-hdr-col-label"/>
+		    				<input type="color" ng-model="category.color"/>
+
+		    				<!--div style="display:inline-block;background-color:{{category.color}};width:25px;">&nbsp;</div-->
 		    			</th>
 		    		</thead>
 		    		<tbody>
 		    			<tr ng-class-even="even" class="tbl-row" ng-repeat="data in ctrl.benchmarkDataRows">
+		    			
 		    				<td style="vertical-align:top;">
 			    				<a href="#" title="{{data.breadCrumbs.join('&#x2F;')}}">
 			    					{{data.breadCrumbs[data.breadCrumbs.length-1]}}
 			    				</a>
 		    				</td>
+		    				
 		    				<td style="vertical-align:top;">
 		    					<label>
-		    						<input ng-model="data.enableBenchmark" type="checkbox"/>No Benchmark
+		    						<input ng-model="data.enableBenchmark" type="checkbox"/>
+		    						No Benchmark
 		    					</label>
 		    					<label ng-show="data.element==='Process Definition'">
 		    						<input ng-model="data.dueDate.enabled" type="checkbox"/>
@@ -171,11 +194,11 @@
 		    						</label>
 		    						
 		    						<label style="display:inline-table;">
-			    					<input ng-model="data.dueDate.offset.useBusinessDays" 
-					    				   value="true" 
-					    				   name="{{data.nodePath}}{{$index}}dd_ubd"
-					    				   type="radio"/>
-					    				   Business Days
+				    					<input ng-model="data.dueDate.offset.useBusinessDays" 
+						    				   value="true" 
+						    				   name="{{data.nodePath}}{{$index}}dd_ubd"
+						    				   type="radio"/>
+						    				   Business Days
 			    					</label>
 			    				
 				    				<label style="display:inline-table;">
@@ -191,25 +214,21 @@
 			    						Apply Offset
 			    					</label>
 			    					
-			    					<input style="width:40px;"
-			    					       ng-model="data.dueDate.offset.amount" type="number"/>
-			    					
-			    					<select style="width:calc(100% - 55px);" ng-model="data.dueDate.offset.unit">
-			    						<option value="d">Days</option>
-			    						<option value="w">Weeks</option>
-			    						<option value="m">Months</option>
-			    					</select>
-			    					
-			    					<label>At 
-			    						<input type="time" ng-model="data.dueDate.offset.offsetTime"/>
-			    					</label>
-		    						
+			    					<div ng-show="data.dueDate.offset.applyOffset===true">
+				    					<input ng-model="data.dueDate.offset.amount" type="number"/>
+				    					
+				    					<label>Days At 
+				    						<input type="time" ng-model="data.dueDate.offset.offsetTime"/>
+				    					</label>
+		    						</div>
 		    						
 		    					</div>
 		    					<!-- pre>{{data | json}}</pre-->
 		    				</td>
-		    				<td ng-repeat="catInst in data.categoryConditions | orderBy:getCategoryPosition">
-		    				
+		    				<td ng-repeat="catInst in data.categoryConditions | orderBy:'categoryRef.index'">
+	
+		    					<label>{{catInst.categoryRef.name}}</label>
+		    					
 		    					<select ng-model="catInst.details.condition.lhs">
 		    						<option value="Default">Default</option>
 		    						<option value="FreeForm">Free-Form</option>
@@ -222,16 +241,18 @@
 		    					
 		    					<div ng-show="catInst.details.condition.lhs==='CurrentTime'">
 		    					
-			    					<select ng-model="catInst.details.condition.operator">
-			    						<option value="!LaterThan">Not Later Than</option>
-			    						<option value="LaterThan">Later Than</option>
-			    					</select>
+		    						<div>
+				    					<select ng-model="catInst.details.condition.operator">
+				    						<option value="!LaterThan">Not Later Than</option>
+				    						<option value="LaterThan">Later Than</option>
+				    					</select>
+			    					</div>
 			    					
-			    					<select ng-model="catInst.details.condition.rhs">
-			    						<option value="PrimitiveData">TODO: Get Primitive Data</option>
-			    					</select>
-			    					
-			    					<p></p>
+			    					<div>
+				    					<select ng-model="catInst.details.condition.rhs">
+				    						<option value="PrimitiveData">TODO: Get Primitive Data</option>
+				    					</select>
+			    					</div>
 			    					
 				    				<label style="display:inline-table;">
 				    					<input ng-model="catInst.details.condition.offset.useBusinessDays" 
@@ -254,41 +275,55 @@
 			    						Apply Offset
 			    					</label>
 			    					
-			    					<input style="padding-right" ng-model="catInst.details.condition.offset.amount" type="number"/>
+			    					<div ng-show="catInst.details.condition.offset.applyOffset===true">
 			    					
-			    					<select ng-model="catInst.details.condition.offset.unit">
-			    						<option value="d">Days</option>
-			    						<option value="w">Weeks</option>
-			    						<option value="m">Months</option>
-			    					</select>
-			    					
-			    					<label>At 
-			    						<input type="time" ng-model="catInst.details.condition.offset.offsetTime"/>
-			    					</label>
-		    					
+				    					<input  ng-model="catInst.details.condition.offset.amount" type="number"/>
+				    					
+				    					<label style="display:inline-table;">
+				    						Days At 
+				    						<input type="time" ng-model="catInst.details.condition.offset.offsetTime"/>
+				    					</label>
+				    					
+		    						</div>
+		    						
 								</div>
+
 		    				</td>
 		    			</tr>
 		    		</tbody>
 		    	</table>
-		    	<!--pre>{{ctrl.benchmarkDataRows | json}}</pre-->
+		    	
+		    	<!--table>
+		    		<thead>
+		    			<th>Selected Benchmark</th>
+		    			<th>Benchmarks from Server</th>
+		    		</thead>
+		    		<tr>
+		    			<td><pre>{{ctrl.selectedBenchmark | json}}</pre></td>
+		    			<td><pre>{{ctrl.benchmarks | json}}</pre></td>
+		    		</tr>
+		    	</table-->
+		    	
 	    	</div>
 	</div>
 	
 	<!-- General Elements of the Benchmark -->
 	<div ng-show="ctrl.selectedTab ==='General'">
-    	<label>Name</label> 
-    	<input ng-disabled="!ctrl.selectedBenchmark" ng-model="ctrl.selectedBenchmark.name" type="text">
-    	
-    	<label>Description</label>
-    	<textarea ng-disabled="!ctrl.selectedBenchmark" ng-model="ctrl.selectedBenchmark.description"></textarea>
-    	
-    	<label>Business Calendar</label>
-    	<select ng-disabled="!ctrl.selectedBenchmark">
-    		<option>TODO: Load Business Calendars</option>
-    		<option>TODO: Load Even More Business Calendars</option>
-    	</select>
-    </div>
+	
+		<div sd-drop-down-menu sda-menu-items="[{value:'insert'},{value:'delete'},{value:'create'}]"></div>
+	    	<label>Name</label> 
+	    	<input ng-disabled="!ctrl.selectedBenchmark" ng-model="ctrl.selectedBenchmark.name" type="text">
+	    	
+	    	<label>Description</label>
+	    	<textarea ng-disabled="!ctrl.selectedBenchmark" ng-model="ctrl.selectedBenchmark.description"></textarea>
+	    	
+	    	<label>Business Calendar</label>
+	
+	    	<select ng-options="item as item.name for item in ctrl.calendars" 
+	    	        ng-model="todo"  
+	    	        ng-disabled="!ctrl.selectedBenchmark">
+	    	</select>
+	    </div>
 	
 </div>
 

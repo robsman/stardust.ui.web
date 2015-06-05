@@ -64,6 +64,29 @@ ul.sd-tree {
 }
 
 /*Benchmark table styles*/
+#benchmarkTable th {
+	text-align:left;	
+}
+
+#benchmarkTable th input[type='text']{
+	width:auto;
+	border:none !important;
+}
+
+#benchmarkTable input[type='color']{
+	border:none !important;
+	width:25px;
+	height:25px;
+}
+
+#benchmarkTable input[type='number']{
+	width:40px;
+}
+
+#benchmarkTable input[type='number'] + select {
+	width:calc(100% - 55px);
+}
+
 #benchmarkTable input,
 #benchmarkTable select
 {

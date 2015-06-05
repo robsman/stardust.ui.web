@@ -32,7 +32,7 @@
 	    "dayType": "",
 	    "offset": {
 	      "amount": 0,
-	      "unit": "h",
+	      "unit": "d",
 	      "offsetTime": "00:00 AM"
 	    }
 	  },
@@ -42,11 +42,11 @@
 	//Private: base structure of a benchmark
 	var baseBenchmark =  
 	{
-		"meta" : {
+		"metadata" : {
 			"lastModified" : "",
 			"modifiedBy" : ""
 		},
-		"benchmark":
+		"content":
 		{
 		  "id": "",
 		  "name": "Default Benchmark",
@@ -94,7 +94,8 @@
 	var baseCategory = {
 			"id" : "0000-0000-0000-0000",
 			"name" : "Default Category",
-			"color" : "#00FF00"
+			"color" : "#00FF00",
+			"index" : 0
 	}
 	
 	//Basic JSON structure of a Category
@@ -127,6 +128,41 @@
 		//Stubbed
 	}
 	
+	
+	benchmarkBuilderService.prototype.generateUniqueCategoryName = function(categories,testName,suffix){
+		var i,
+		  	found=false,
+			temp;
+			
+		suffix = !suffix ? 0 : suffix;
+		
+		for(i=0;i<categories.length;i++){
+			temp = categories[i];
+			if(suffix===0){
+				if(temp.name===testName){
+					found=true;
+				}
+			}
+			else{
+				if(temp.name===testName + " " + suffix){
+					found = true;
+				}
+			}
+		}
+		
+		if(found){
+			return this.generateUniqueCategoryName(categories,testName,suffix + 1);
+		}
+		else{
+			return testName + " " + suffix;
+		}
+	}
+	
+	/**
+	 * TODO can this be removed???
+	 * @param categories
+	 * @returns
+	 */
 	benchmarkBuilderService.prototype.cloneCategories = function(categories){
 		var clonedCats = {};
 		angular.copy(categories, clonedCats);
@@ -150,7 +186,8 @@
 	benchmarkBuilderService.prototype.getBaseBenchmark = function(){
 		var baseCopy={};
 		angular.copy(baseBenchmark, baseCopy);
-		baseCopy.benchmark.categories.push(this.getBaseCategory());
+		baseCopy.content.categories.push(this.getBaseCategory());
+		baseCopy.content.id = this.getUUID();
 		return baseCopy;
 	}
 	
@@ -162,6 +199,7 @@
 	benchmarkBuilderService.prototype.getBaseCategory = function(){
 		var baseCopy={};
 		angular.copy(baseCategory, baseCopy);
+		baseCopy.id = this.getUUID();
 		return baseCopy;
 	}
 	
@@ -258,6 +296,203 @@
 		var baseCopy={};
 		angular.copy(baseCategoryData, baseCopy);
 		return baseCopy;
+	}
+	
+	
+	/**
+	 * internal helper function that iterates over the entire benchmark structure looking
+	 * for categoryDetail instances which match the category.id. When it finds one it 
+	 * executes the callback passing the array and the index the match was found in.
+	 * @param benchmark
+	 * @param category
+	 * @param callback
+	 */
+	benchmarkBuilderService.prototype.__internalIterator = function(benchmark,category,callback){
+		
+		//var index = benchmark.categories.indexOf(category);
+		//benchmark.categories.splice(index,1);
+
+		//now loop over all models
+		benchmark.models.forEach(function(model){
+			
+			//then remove instanced data from all processes and definitions as well.
+			model.processDefinitions.forEach(function(procDef){
+				
+				//loop over all category conditions in our current process definition
+				procDef.categoryConditions.forEach(function(catCond,catIndex,catCondArray){
+					if(catCond.categoryId===category.id){
+						//catCondArray.splice(catIndex,1);
+						callback(catCondArray,catIndex);
+					}
+				});
+				
+				procDef.activities.forEach(function(activity){
+					//loop over all category conditions in our current activity
+					activity.categoryConditions.forEach(function(catCond,catIndex,catCondArray){
+						if(catCond.categoryId===category.id){
+							callback(catCondArray,catIndex);
+						}
+					});
+				});
+				
+			});//process definitions loop ends
+		})//models loop ends
+	};
+	
+	/**
+	 * Removes a category from the benchmarks top level category array as well as from 
+	 * instances found in the benchmarks processes and definitions.
+	 * @param benchmark - parent benchmark
+	 * @param category - category to remove
+	 */
+	benchmarkBuilderService.prototype.removeCategory = function(benchmark,category){
+		
+		//First remove from the benchmarks top level Category collection
+		var index = benchmark.categories.indexOf(category);
+		
+		benchmark.categories.splice(index,1);
+		benchmark.categories.forEach(function(v,i){v.index=i;});
+		
+		//now loop over all models
+		benchmark.models.forEach(function(model){
+			
+			//then remove instanced data from all processes and definitions as well.
+			model.processDefinitions.forEach(function(procDef){
+				
+				//loop over all category conditions in our current process definition
+				procDef.categoryConditions.forEach(function(catCond,catIndex,catCondArray){
+					if(catCond.categoryId===category.id){
+						catCondArray.splice(catIndex,1);
+					}
+				});
+				
+				procDef.activities.forEach(function(activity){
+					//loop over all category conditions in our current activity
+					activity.categoryConditions.forEach(function(catCond,catIndex,catCondArray){
+						if(catCond.categoryId===category.id){
+							catCondArray.splice(catIndex,1);
+						}
+					});
+				});
+				
+			});//process definitions loop ends
+		})//models loop ends
+		
+		
+	}
+	
+	/**
+	 * Removes a category from the benchmarks top level category array as well as from 
+	 * instances found in the benchmarks processes and definitions.
+	 * @param categories - array of top level categories
+	 * @param from - index of our target category we will move
+	 * @param to - location we will move our target category to.
+	 */
+	benchmarkBuilderService.prototype.moveCategory = function(categories,from,to){
+		//move target from->to
+		categories.splice(to,0,categories.splice(from,1)[0]);
+		
+		//update indexes
+		categories.forEach(function(v,i){v.index=i;});
+
+	}
+	
+	/**
+	 * Adds a category at a specified index to the benchmarks top level category array as 
+	 * well as adding instances to the benchmarks processes and definitions. If doClone is set
+	 * @param benchmark
+	 * @param index
+	 * @param doClone 
+	 */
+	benchmarkBuilderService.prototype.addCategory = function(benchmark,category){
+		//first add to top level category collection
+		var index,
+			newCat,
+			newCatData,
+			that = this;
+		
+		index = benchmark.categories.indexOf(category);
+		newCat = this.getBaseCategory();
+		//newCat.name = "Added BMark - "  + (new Date()).toTimeString().split("GMT")[0];
+		newCat.name = this.generateUniqueCategoryName(benchmark.categories,newCat.name,false);
+		benchmark.categories.splice(index,0,newCat);
+		
+		//update indexes
+		benchmark.categories.forEach(function(v,i){v.index=i;});
+		
+		//now loop over all models
+		benchmark.models.forEach(function(model){
+			
+			//now loop over all process defintions 
+			model.processDefinitions.forEach(function(procDef){
+				
+				newCatData = that.getBaseCategoryData();
+				newCatData.categoryId = newCat.id;
+				newCatData.categoryRef = newCat; //add transient reference property
+				procDef.categoryConditions.push(newCatData);
+				
+				procDef.activities.forEach(function(activity){
+					
+					newCatData = that.getBaseCategoryData();
+					newCatData.categoryId = newCat.id;
+					newCatData.categoryRef = newCat; //add transient reference property
+					activity.categoryConditions.push(newCatData);
+				});
+				
+			});//process definitions loop ends
+		})//models loop ends
+	}
+	
+	/**
+	 *First clones the top level category and performs an add but when adding to instances
+	 *uses the sources instance data instead of the default data.
+	 * @param benchmark
+	 * @param index
+	 */
+	benchmarkBuilderService.prototype.cloneCategory = function(benchmark,category){
+		
+		//first add to top level category collection
+		var index,
+			newCat,
+			newCatData,
+			tempCat,
+			that = this;
+		
+		index = benchmark.categories.indexOf(category);
+		newCat = this.getBaseCategory();
+		newCat.name = "Added BMark - "  + (new Date()).toTimeString().split("GMT")[0];
+		benchmark.categories.splice(index,0,newCat);
+		
+		//update indexes
+		benchmark.categories.forEach(function(v,i){v.index=i;});
+		
+		//now loop over all models
+		benchmark.models.forEach(function(model){
+			
+			//now loop over all process defintions 
+			model.processDefinitions.forEach(function(procDef){
+				
+				tempCat = procDef.categoryConditions
+							.filter(function(v){return v.categoryId===category.id})[0];
+				
+				newCatData = angular.copy(tempCat);
+				newCatData.categoryId = newCat.id;
+				newCatData.categoryRef = newCat; //add transient reference property
+				procDef.categoryConditions.push(newCatData);
+				
+				procDef.activities.forEach(function(activity){
+					
+					tempCat = activity.categoryConditions
+								.filter(function(v){return v.categoryId===category.id})[0];
+		
+					newCatData = angular.copy(tempCat);
+					newCatData.categoryId = newCat.id;
+					newCatData.categoryRef = newCat; //add transient reference property
+					activity.categoryConditions.push(newCatData);
+				});
+				
+			});//process definitions loop ends
+		})//models loop ends
 	}
 	
 	//Angular dependency injection

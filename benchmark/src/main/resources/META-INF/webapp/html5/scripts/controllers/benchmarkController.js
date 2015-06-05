@@ -22,7 +22,7 @@
 	 * them to our prototypes.
 	 * @param benchmarkService - Service to interact with our REST layer.
 	 */
-	function benchmarkController(benchmarkService,benchmarkBuilderService,sdLoggedInUserService){
+	function benchmarkController(benchmarkService,benchmarkBuilderService,sdLoggedInUserService,$scope){
 		
 		//Self reference
 		var that = this; 
@@ -45,11 +45,17 @@
 		this.benchmarkFilter ="Design"; //Filter value for our benchmark service call.
 		this.benchmarkIsDirty = false;
 		this.lastSaveTime = Number.NEGATIVE_INFINITY;
+		this.calendars = []; //timeoff calendars
 		
 		//Retrieve all benchmarks
 		benchmarkService.getBenchmarks()
 		.then(function(data){
-			that.benchmarks = data;
+			that.benchmarks = data.benchmarkDefinitions;
+		});
+		
+		benchmarkService.getCalendars()
+		.then(function(data){
+			that.calendars = data.calendars;
 		});
 		
 		//retrieve all deployed models, add additional data to help
@@ -79,6 +85,55 @@
 			that.dataTableApi.refresh();
 		});
 	};
+	
+	/**
+	 * Handle all call-backs from our sdDropDownMenu attached to the category
+	 * headers in our benchmark data rows table.
+	 * @param v - value item from the directive
+	 * @param e - original event 
+	 */
+	benchmarkController.prototype.categoryMenuCallback = function(v,e){
+		
+		var categories,
+			benchmark = v.item.bm,
+			index,
+		    category;
+		
+		categories = v.item.bm.categories;
+		category = v.item.cat;
+		index = categories.indexOf(category);
+		
+		if(v.menuEvent==="menuItem.clicked"){
+			
+			switch (v.item.action){
+				case "KILL_CAT":
+					this.benchmarkBuilderService.removeCategory(benchmark,category);
+					break;
+				case "ADD_CAT":
+					this.benchmarkBuilderService.addCategory(benchmark,category);
+					break;
+				case "CLONE_CAT":
+					this.benchmarkBuilderService.cloneCategory(benchmark,category);
+					break;
+				case "MOVER_CAT":
+					if(index < benchmark.categories.length-1){
+						this.benchmarkBuilderService
+						.moveCategory(benchmark.categories,index,index + 1);
+					}
+					break;
+				case "MOVEL_CAT":
+					if(index > 0){
+						this.benchmarkBuilderService
+						.moveCategory(benchmark.categories,index,index - 1);
+					}
+					break;
+				default:
+					break;
+			}
+			
+	      v.deferred.resolve();
+	    }
+	}
 	
 	/**
 	 * As our category priority is implicit based upon the ordinal position in the benchmarks
@@ -121,6 +176,7 @@
 	 * @returns
 	 */
 	benchmarkController.prototype.getSortedCategories = function(categoryData){
+
 		return categoryData.sort(function(a,b){
 			
 			var posA,
@@ -137,16 +193,26 @@
 		
 	};
 	
+	benchmarkController.prototype.benchmarkSelected2 = function(bm){
+		this.selectedBenchmark = bm.content;
+		this.benchmarkDataRows=[];
+	}
+	
 	/**
 	 * callback for the data table to handle when a benchmark has
 	 * been selected.
 	 * @param d
 	 */
 	benchmarkController.prototype.benchmarkSelected = function(d){
-		var that = this;
-
+		var that = this,
+			bm;
+		
 		if(d.action==="select"){
-			this.selectedBenchmark = d.current.benchmark;
+			bm=this.benchmarks.filter(function(v){return v.content.id===d.current.content.id})[0];
+			this.selectedBenchmark = bm.content ;
+			//this.selectedBenchmark = d.current.content;
+			console.log("Benchmark Selected");
+			console.log(JSON.stringify(this.selectedBenchmark));
 		}
 		else if(d.action==="deselect"){
 			this.selectedBenchmark = undefined;
@@ -283,13 +349,42 @@
 		return activity;
 	}
 	
+	/**
+	 * Helper function to link an array of categoryConditions back to their parent categories.
+	 * THis is used to add a runtime property to the categoryCondition to allow reference to
+	 * its parent category. Use case for this is to allow the parent category be referenced when in 
+	 * the context of an angular orderBy function callback as the context of the callback does
+	 * not allow us to access our controller. By adding a reference on the catCondition we work
+	 * around this. This property will not be transmitted to the server.
+	 */
+	benchmarkController.prototype.linkCategoryConditions = function(categories,catConditions){
+		var i,
+			tempCat;
+		
+		catConditions.forEach(function(v){
+			for(i = 0; i < categories.length; i++){
+				tempCat = categories[i];
+				if(v.categoryId === tempCat.id){
+					v.categoryRef = tempCat;
+				}
+			}
+		});
+	}
+	
+	/**
+	 * Handles the process of building out the JSON structure for a benchmark
+	 * based on a users click of a model tree node (captured as the item param).
+	 * @param benchmark -
+	 * @param item - this should be the item corresponding to an sd-tree click event
+	 */
 	benchmarkController.prototype.buildOutBenchmark = function(benchmark,item){
 		var searchArray,
 			model,
 			parentModel,
 			parentProcDef,
 			procDef,
-			activity;
+			activity,
+			i;
 		
 		//Model level clicks should only build out a new model element
 		// in the parent benchmark's models array, no benchmarkData at
@@ -302,9 +397,12 @@
 		//needed and enter a row into our benchmarkDataRows collection.
 		else if(item.valueItem.nodeType==="process"){
 			
+			//build out structure
 			parentModel = this.treeApi.getParentItem(item.valueItem.nodeId);
 			model = this.buildOutModel(benchmark,parentModel.id,parentModel);
 			procDef = this.buildOutProcDef(model,item.valueItem.id,item.valueItem);
+			
+			this.linkCategoryConditions(benchmark.categories,procDef.categoryConditions);
 			
 			this.benchmarkDataRows.push({
 				"benchmark" : benchmark, 
@@ -325,7 +423,10 @@
 			model = this.buildOutModel(benchmark,parentModel.id,parentModel);
 			procDef = this.buildOutProcDef(model,parentProcDef.id,parentProcDef);
 			activity = this.buildOutActivity(procDef,item.valueItem.id,item.valueItem);
-			console.log(JSON.stringify(model));
+			
+			this.linkCategoryConditions(benchmark.categories, activity.categoryConditions);
+			
+			console.log(JSON.stringify(benchmark));
 			this.benchmarkDataRows.push({
 				"benchmark" : benchmark, 
 				"element" : "Activity",
@@ -366,11 +467,11 @@
 	benchmarkController.prototype.createBenchmark = function(){
 		
 		var bmark = this.benchmarkBuilderService.getBaseBenchmark();
-		
+		console.log(JSON.stringify(bmark));
 		//Default values
-		bmark.meta.modifiedBy = this.currentUser.displayName;
-		bmark.benchmark.name = "Default Benchmark"; //TODO i18N
-		bmark.meta.lastModified = (new Date()).toString();
+		bmark.metadata.modifiedBy = this.currentUser.displayName;
+		bmark.content.name = "Default Benchmark"; //TODO i18N
+		bmark.metadata.lastModified = (new Date()).toString();
 		
 		this.addToBenchmarks(bmark);
 	};
@@ -414,7 +515,7 @@
 	};
 	
 	//angular dependencies
-	benchmarkController.$inject = ["benchmarkService","benchmarkBuilderService","sdLoggedInUserService"];
+	benchmarkController.$inject = ["benchmarkService","benchmarkBuilderService","sdLoggedInUserService","$scope"];
 	
 	//add controller to our app
 	angular.module("benchmark-app")
