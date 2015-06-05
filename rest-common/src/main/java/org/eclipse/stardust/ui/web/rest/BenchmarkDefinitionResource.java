@@ -63,7 +63,7 @@ public class BenchmarkDefinitionResource
             JsonObject benchmark = createBenchmarkJSON(benchmarkDefinition);
             jsonArray.add(benchmark);
          }
-         benchmarkDefinitions.add("benchmark-definitions", jsonArray);
+         benchmarkDefinitions.add("benchmarkDefinitions", jsonArray);
 
          return Response.ok(benchmarkDefinitions.toString(), MediaType.APPLICATION_JSON).build();
       }
