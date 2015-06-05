@@ -97,10 +97,6 @@ padding : 5px;;
   color:#CFCFCF;
 }
 
-.criticality-flag{
-  font-size: 18px;
-}
-
 /* ********** Process Priority flags ********** */
 
 .priority-flag-high{
@@ -115,9 +111,6 @@ padding : 5px;;
   color :#3D66E0;
 }
 
-.priority-flag{
-  font-size: 18px;
-}
 /* ********** Process Activity Filter ********** */
 
  .auxillaryGearDisabled{
@@ -286,6 +279,3 @@ padding : 5px;;
 
 /* ********** Benchmark flag ********** */
 
-.benchmark-flag {
-  font-size: 18px;
-}

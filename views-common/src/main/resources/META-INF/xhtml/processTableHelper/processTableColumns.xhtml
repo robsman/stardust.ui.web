@@ -88,15 +88,15 @@
 		
 			<!--	Benchmark	-->
 		<ice:panelGroup rendered="#{col.columnName == 'Benchmark'}" >
-			<ice:panelGroup panelTooltip="benchmarkToolTip" style="padding-left:30px;">
-				 <ice:outputText  style="height: 10px; width: 10px;overflow: hidden;  background-color: #{row.benchmarkColor}"></ice:outputText>
+			<ice:panelGroup panelTooltip="benchmarkToolTip" >
+				<i class="glyphicon glyphicon-flag portal-glyph-icon" style="color: #{row.benchmarkColor}"> </i>
 			</ice:panelGroup>
 			<ice:panelTooltip id="benchmarkToolTip"
 				styleClass="tooltip viewTooltipPanel">
 				<f:facet name="body">
 					<ice:panelGrid columns="2">
 						<ice:outputText
-							value="#{views_common_msgPropsBean['views.processTable.column.benchmark']}:"
+							value="#{views_common_msgPropsBean['views.processTable.benchmark.tooltip.categoryLabel']}:"
 							style="text-align: left; padding-left: 0px;font-weight: bold;" />
 						<ice:outputText value="#{row.benchmark}"
 							style="text-align: left; font-weight: bold; padding-left: 0px;text-transform: capitalize" />

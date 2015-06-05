@@ -25,13 +25,13 @@
 		   scope : {
 			   sdaBenchmarkValue : '=',
 		   },
-		   template : '<i class="glyphicon glyphicon-flag benchmark-flag" '+
+		   template : '<i class="glyphicon glyphicon-flag portal-glyph-icon" '+
 		   						'ng-style="benchmarkCtrl.flagStyle" '+
 		   						'ng-mouseenter=\'benchmarkCtrl.toolTip.show = true\' '+
 		   						'ng-mouseleave=\'benchmarkCtrl.toolTip.show = false\'> '+
 		   			  '<\/i>'+
 		   			  '<div class="popup-dlg worklist-tooltip" style="color: black" ng-show="benchmarkCtrl.toolTip.show">'+
-		   			  		'<span class="worklist-tooltip-label" ng-bind="benchmarkCtrl.i18n(\'processportal.views-worklistPanel-column-benchmark-tooltip-benchmarkLabel\')"><\/span> '+
+		   			  		'<span class="worklist-tooltip-label" ng-bind="benchmarkCtrl.i18n(\'views-common-messages.views-processTable-benchmark-tooltip-categoryLabel\')"><\/span> '+
 		   			  		': <span ng-bind="sdaBenchmarkValue.label"><\/span>' +
 		   			  '<\/div>',
 		   controller : [ '$scope', BenchmarkController ]

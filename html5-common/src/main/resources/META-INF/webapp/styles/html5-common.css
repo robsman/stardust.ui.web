@@ -441,3 +441,7 @@ button.close {
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
+
+.portal-glyph-icon {
+	font-size: 16px;
+}

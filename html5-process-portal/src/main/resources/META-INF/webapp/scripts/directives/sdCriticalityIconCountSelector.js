@@ -28,7 +28,7 @@
         	 '<span ng-repeat="count in criticalityIconCountSelectorCtrl.flagCounts">'
 				+ '<button ng-click="criticalityIconCountSelectorCtrl.setIconCount(count)"'
 					+ ' class="button-link tbl-tool-link" ng-disabled="editMode != true"> '
-					+ '<i class="glyphicon glyphicon-flag criticality-flag" '
+					+ '<i class="glyphicon glyphicon-flag portal-glyph-icon" '
 					+ 'ng-class="\'criticality-flag-\'+ (count <= bindModel && icon != undefined? icon : \'NO-COLOR\')"><\/i>'
 				+ '<\/button>'
 			+ '</span>',
