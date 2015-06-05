@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
+import java.util.List;
+
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 
 /**
@@ -17,14 +19,20 @@ import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
  * @author Sidharth.Singh
  * @version $Revision: $
  */
-public class BenchmarkMetadataDTO extends AbstractDTO
+public class ModelDTO extends AbstractDTO
 {
-   @DTOAttribute("owner")
-   public String author;
 
-   @DTOAttribute("dateLastModified.time")
-   public long lastModifiedDate;
-   
-   public long runtimeOid;
+   @DTOAttribute("modelOID")
+   public Integer oid;
 
+   @DTOAttribute("id")
+   public String id;
+
+   @DTOAttribute("name")
+   public String name;
+
+   @DTOAttribute("description")
+   public String description;
+
+   public List<ProcessDefinitionDTO> processDefinitions;
 }

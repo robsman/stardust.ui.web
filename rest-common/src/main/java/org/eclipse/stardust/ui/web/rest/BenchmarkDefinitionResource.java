@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.rest;
 
 import java.util.List;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -80,11 +81,20 @@ public class BenchmarkDefinitionResource
    @Path("/design-time")
    public Response createBenchmarkDefinition(String postedData)
    {
-      JsonObject benchmarkData = jsonIo.readJsonObject(postedData);
-      BenchmarkDefinitionDTO benchmarkDefinition = benchmarkDefinitionService.createBenchmarkDefinition(benchmarkData);
-      
-      return Response.ok(createBenchmarkJSON(benchmarkDefinition).toString(), MediaType.APPLICATION_JSON).build();
+      try
+      {
+         JsonObject benchmarkData = jsonIo.readJsonObject(postedData);
+         BenchmarkDefinitionDTO benchmarkDefinition = benchmarkDefinitionService
+               .createBenchmarkDefinition(benchmarkData);
 
+         return Response.ok(createBenchmarkJSON(benchmarkDefinition).toString(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
    }
 
    @PUT
@@ -92,14 +102,41 @@ public class BenchmarkDefinitionResource
    @Path("/design-time/{id}")
    public Response updateBenchmarkDefinition(@PathParam("id") String benchmarkId, String postedData)
    {
-      JsonObject benchmarkData = jsonIo.readJsonObject(postedData);
-      BenchmarkDefinitionDTO benchmarkDefinition = benchmarkDefinitionService.updateBenchmarkDefinition(benchmarkId,
-            benchmarkData);
+      try
+      {
+         JsonObject benchmarkData = jsonIo.readJsonObject(postedData);
+         BenchmarkDefinitionDTO benchmarkDefinition = benchmarkDefinitionService.updateBenchmarkDefinition(benchmarkId,
+               benchmarkData);
 
-      return Response.ok(createBenchmarkJSON(benchmarkDefinition).toString(), MediaType.APPLICATION_JSON).build();
+         return Response.ok(createBenchmarkJSON(benchmarkDefinition).toString(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+
+   @DELETE
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/design-time/{id}")
+   public Response deleteBenchmarkDefinition(@PathParam("id") String benchmarkId)
+   {
+      try
+      {
+         benchmarkDefinitionService.deleteBenchmarkDefinition(benchmarkId);
+         return Response.ok("Benchmark " + benchmarkId + " deleted.", MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
 
    }
-   
+
    /**
     * 
     * @param benchmarkDefinition

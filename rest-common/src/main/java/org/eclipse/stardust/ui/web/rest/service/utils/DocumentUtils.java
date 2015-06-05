@@ -143,6 +143,21 @@ public class DocumentUtils
    }
    
    /**
+    * 
+    * @param doc
+    * @param byteContents
+    * @param comments
+    * @param overwrite
+    * @return
+    */
+   public Document deleteDocument(Document doc, byte[] byteContents, String comments, boolean overwrite)
+   {
+      Document document = getDocumentManagementService().updateDocument(doc, byteContents, "", !overwrite,
+            comments, null, false);
+      return  document;
+   }
+   
+   /**
     * @return
     */
    private DocumentManagementService getDocumentManagementService()

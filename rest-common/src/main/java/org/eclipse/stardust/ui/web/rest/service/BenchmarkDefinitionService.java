@@ -23,6 +23,8 @@ import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkMetadataDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.DocumentUtils;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
@@ -49,18 +51,25 @@ public class BenchmarkDefinitionService
     * 
     * @return
     */
-   public List<BenchmarkDefinitionDTO> getBenchmarkDefinitions()
+   public List<BenchmarkDefinitionDTO> getBenchmarkDefinitions() throws Exception
    {
       List<BenchmarkDefinitionDTO> list = new ArrayList<BenchmarkDefinitionDTO>();
-      Folder folder = documentUtils.getFolder(BENCHMARK_DEFINITION_FOLDER);
-      List<Document> documents = folder.getDocuments();
-      for (Document doc : documents)
+      try
       {
-         byte[] documentContents = documentUtils.getDocumentContents(doc.getId());
-         String fileContents = new String(documentContents);
-         JsonObject benchmarkJSON = jsonIo.readJsonObject(fileContents);
-         BenchmarkDefinitionDTO benchmarkDto = buildBenchmarkDTO(doc, null, benchmarkJSON);
-         list.add(benchmarkDto);
+         Folder folder = documentUtils.getFolder(BENCHMARK_DEFINITION_FOLDER);
+         List<Document> documents = folder.getDocuments();
+         for (Document doc : documents)
+         {
+            byte[] documentContents = documentUtils.getDocumentContents(doc.getId());
+            String fileContents = new String(documentContents);
+            JsonObject benchmarkJSON = jsonIo.readJsonObject(fileContents);
+            BenchmarkDefinitionDTO benchmarkDto = buildBenchmarkDTO(doc, null, benchmarkJSON);
+            list.add(benchmarkDto);
+         }
+      }
+      catch (Exception e)
+      {
+         throw e;
       }
       return list;
    }
@@ -69,7 +78,7 @@ public class BenchmarkDefinitionService
     * 
     * @return
     */
-   public BenchmarkDefinitionDTO createBenchmarkDefinition(JsonObject benchmarkJSON)
+   public BenchmarkDefinitionDTO createBenchmarkDefinition(JsonObject benchmarkJSON) throws Exception
    {
       if (null != benchmarkJSON)
       {
@@ -87,8 +96,7 @@ public class BenchmarkDefinitionService
          }
          catch (Exception e)
          {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw e;
          }
       }
       return null;
@@ -100,7 +108,7 @@ public class BenchmarkDefinitionService
     * @param benchmarkJSON
     * @return
     */
-   public BenchmarkDefinitionDTO updateBenchmarkDefinition(String benchmarkId, JsonObject benchmarkJSON)
+   public BenchmarkDefinitionDTO updateBenchmarkDefinition(String benchmarkId, JsonObject benchmarkJSON) throws Exception
    {
       if (null != benchmarkJSON)
       {
@@ -117,16 +125,32 @@ public class BenchmarkDefinitionService
          }
          catch (Exception e)
          {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+           throw e;
          }
       }
       return null;
    }
    
-   private Document getBenchmarkDefinitionContent(String benchmarkId)
+   public void deleteBenchmarkDefinition(String benchmarkId) throws Exception
+   {
+      try
+      {
+         Document doc = getBenchmarkDefinitionContent(benchmarkId);
+         if (null != doc)
+         {
+            DocumentMgmtUtility.deleteDocumentWithVersions(doc);
+         }
+      }
+      catch (Exception e)
+      {
+         throw e;
+      }
+   }
+   
+   private Document getBenchmarkDefinitionContent(String benchmarkId) throws Exception
    {
       Folder folder = documentUtils.getFolder(BENCHMARK_DEFINITION_FOLDER);
+      Document doc = null;
       if (null != folder)
       {
          List<Document> documents = folder.getDocuments();
@@ -135,11 +159,16 @@ public class BenchmarkDefinitionService
          {
             if (document.getName().equalsIgnoreCase(fileName))
             {
-              return document;
+               doc =  document;
+               break;
             }
          }
       }
-      return null;
+      if(null == doc)
+      {
+         throw new ResourceNotFoundException("Benchmark definition not found");
+      }
+      return doc;
 
    }
    /**
