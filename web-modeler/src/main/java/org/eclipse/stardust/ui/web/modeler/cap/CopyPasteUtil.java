@@ -275,22 +275,6 @@ public class CopyPasteUtil
             {
                private static final long serialVersionUID = 1L;
 
-
-
-               @Override
-               /*protected void copyReference(EReference eReference, EObject eObject,
-                     EObject copyEObject)
-               {
-                  // TODO Auto-generated method stub
-                  if (eObject instanceof ApplicationType) {
-                     if (eReference.getName().equals("executedActivities")) {
-                        super.copyReference(eReference, eObject, copyEObject);
-                     }
-                  }
-               }*/
-
-
-
                public EObject copy(EObject object)
                {
                   if (object instanceof XSDConcreteComponent)
@@ -309,25 +293,6 @@ public class CopyPasteUtil
                      return clone;
                   }
 
-                  if (object instanceof ActivityType) {
-                     ActivityType activity = (ActivityType)object;
-                     if (activity.getId().equals("ConsumerUIMashup")) {
-                        System.out.println("Copy !!!");
-                     }
-                     ActivityType clone = (ActivityType) super.copy(object);
-                     System.out.println();
-                     return clone;
-                  }
-
-                  if (object instanceof AttributeType) {
-                     AttributeType attribute = (AttributeType)object;
-                     if (attribute.getName().equals("carnot:connection:uri")) {
-                        if (attribute.getValue().indexOf("ProvidedUIMashup") > -1) {
-                           System.out.println();
-                        }
-                     }
-                  }
-                  Object c = super.copy(object);
                   return super.copy(object);
                }
             };
