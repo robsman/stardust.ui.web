@@ -36,6 +36,7 @@ import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
 import org.eclipse.stardust.ui.web.modeler.utils.test.GenericModelingAssertions;
+
 import org.junit.Test;
 
 public class TestCrossModelSupport extends TestGeneralModeling
@@ -68,7 +69,6 @@ public class TestCrossModelSupport extends TestGeneralModeling
       //saveReplayModel("C:/development/");
    }
 
-
    @Test
    public void testCrossModelingByDropDown() throws Exception
    {
@@ -91,7 +91,6 @@ public class TestCrossModelSupport extends TestGeneralModeling
       GenericModelingAssertions.assertDocumentData(consumerModel, "ConsumerDocData", "ConsumerDocData", "ProviderModel{ProvidedTypeDeclaration}");
 
       //saveReplayModel("C:/development/");
-
    }
 
    @Test
@@ -115,6 +114,8 @@ public class TestCrossModelSupport extends TestGeneralModeling
       //saveReplayModel("C:/development/");
 
    }
+
+
 
    @Test
    public void testSwitchSubprocessFromLocalToRemote() throws Exception
@@ -159,7 +160,6 @@ public class TestCrossModelSupport extends TestGeneralModeling
 
       //saveReplayModel("C:/development/");
    }
-
 
    @Test
    public void testCrossModelingUIMashupParameter() throws Exception
@@ -228,6 +228,149 @@ public class TestCrossModelSupport extends TestGeneralModeling
       consumerModel = brokenModel;
 
       //saveReplayModel("C:/development/");
+   }
+
+   @Test
+   public void testCloneProcessSwitchSubprocessFromLocalToRemote() throws Exception
+   {
+      providerModel = modelService.findModel(PROVIDER_MODEL_ID);
+      consumerModel = modelService.findModel(CONSUMER_MODEL_ID);
+   
+      testCrossModelingByDropDown();
+      initUUIDMap();
+   
+      InputStream requestInput = getClass().getResourceAsStream(
+            "../../service/rest/requests/switchSubprocessFromLocalToRemote.txt");
+      InputStreamReader requestStream = new InputStreamReader(requestInput);
+      replay(requestStream, "testSwitchSubprocessFromLocalToRemote", false);
+   
+      String command = "{\"commandId\":\"process.clone\",\"modelId\":\"ConsumerModel\",\"changeDescriptions\":[{\"oid\":\"ConsumerModel\",\"changes\":{\"id\":\"ConsumerProcess\"}}]}";
+   
+      replaySimple(command, "testCloneProcessDragAndDropFromProviderToConsumer", null);
+   
+      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(consumerModel, "ConsumerProcessCloned", "CLONE - ConsumerProcess");
+      ActivityType activity = GenericModelingAssertions.assertActivity(process, "ProvidedProcess", "ProvidedProcess", ActivityImplementationType.SUBPROCESS_LITERAL);
+      assertReferencedProcess(consumerModel, providerModel, process, activity, "ProvidedProcess", "cnx://file/processDefinition/ProvidedProcess");
+   
+      // saveReplayModel("C:/development/");
+   
+   }
+
+   @Test
+   public void testCloneProcessSwitchSubprocessFromRemoteToLocal() throws Exception
+   {
+      providerModel = modelService.findModel(PROVIDER_MODEL_ID);
+      consumerModel = modelService.findModel(CONSUMER_MODEL_ID);
+   
+      testCrossModelingByDropDown();
+      initUUIDMap();
+   
+      InputStream requestInput = getClass().getResourceAsStream(
+            "../../service/rest/requests/switchSubprocessFromRemoteToLocal.txt");
+      InputStreamReader requestStream = new InputStreamReader(requestInput);
+      replay(requestStream, "testSwitchSubprocessFromRemoteToLocal", false);
+   
+      String command = "{\"commandId\":\"process.clone\",\"modelId\":\"ConsumerModel\",\"changeDescriptions\":[{\"oid\":\"ConsumerModel\",\"changes\":{\"id\":\"ConsumerProcess\"}}]}";
+   
+      replaySimple(command, "testCloneProcessDragAndDropFromProviderToConsumer", null);
+   
+      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(consumerModel, "ConsumerProcessCloned", "CLONE - ConsumerProcess");
+      ActivityType activity = GenericModelingAssertions.assertActivity(process, "ProvidedProcess", "ProvidedProcess", ActivityImplementationType.SUBPROCESS_LITERAL);
+      GenericModelingAssertions.assertSubProcess(activity, "ConsumerSubProcess");
+   
+      saveReplayModel("C:/development/");
+   
+      System.out.println();
+   
+   }
+
+   @Test
+   public void testCloneProcessCrossModelingByDropDown() throws Exception
+   {
+      providerModel = modelService.findModel(PROVIDER_MODEL_ID);
+      consumerModel = modelService.findModel(CONSUMER_MODEL_ID);
+   
+      testDragAndDropFromProviderToConsumer();
+      initUUIDMap();
+   
+      InputStream requestInput = getClass().getResourceAsStream(
+            "../../service/rest/requests/crossModelingByDropDown.txt");
+      InputStreamReader requestStream = new InputStreamReader(requestInput);
+      replay(requestStream, "testCloneProcessCrossModelingByDropDown", false);
+   
+      String command = "{\"commandId\":\"process.clone\",\"modelId\":\"ConsumerModel\",\"changeDescriptions\":[{\"oid\":\"ConsumerModel\",\"changes\":{\"id\":\"ConsumerSubProcess\"}}]}";
+   
+      replaySimple(command, "testCloneProcessDragAndDropFromProviderToConsumer", null);
+   
+      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(consumerModel, "ConsumerSubProcessCloned", "CLONE - ConsumerSubProcess");
+      ActivityType activity = GenericModelingAssertions.assertActivity(process, "ConsumerUIMashup", "ConsumerUIMashup", ActivityImplementationType.APPLICATION_LITERAL);
+      assertReferencedApplication(consumerModel, providerModel, process, activity, "ProvidedUIMashup", "cnx://file/application/ProvidedUIMashup");
+      assertReferencedTypeDeclaration(consumerModel, providerModel, "ConsumerStructData", "ConsumerStructData", "struct", "ProvidedTypeDeclaration", "cnx://file/typeDeclaration/ProvidedTypeDeclaration");
+      assertReferencedTypeDeclaration(consumerModel, providerModel, "ConsumerDocData", "ConsumerDocData", "dmsDocument", "ProvidedTypeDeclaration", "cnx://file/typeDeclaration/ProvidedTypeDeclaration");
+      GenericModelingAssertions.assertDocumentData(consumerModel, "ConsumerDocData", "ConsumerDocData", "ProviderModel{ProvidedTypeDeclaration}");
+   
+      //saveReplayModel("C:/development/");
+   }
+
+   @Test
+   public void testCloneProcessDragAndDropFromProviderToConsumer() throws Exception
+   {
+      providerModel = modelService.findModel(PROVIDER_MODEL_ID);
+      consumerModel = modelService.findModel(CONSUMER_MODEL_ID);
+   
+      testBasicModelElementsInProvider();
+      initUUIDMap();
+   
+      InputStream requestInput = getClass().getResourceAsStream(
+            "../../service/rest/requests/dragAndDropFromProviderToConsumer.txt");
+      InputStreamReader requestStream = new InputStreamReader(requestInput);
+   
+      replay(requestStream, "testCloneProcessDragAndDropFromProviderToConsumer", false);
+   
+      String command = "{\"commandId\":\"process.clone\",\"modelId\":\"ConsumerModel\",\"changeDescriptions\":[{\"oid\":\"ConsumerModel\",\"changes\":{\"id\":\"ConsumerProcess\"}}]}";
+   
+      replaySimple(command, "testCloneProcessDragAndDropFromProviderToConsumer", null);
+   
+      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(consumerModel, "ConsumerProcessCloned", "CLONE - ConsumerProcess");
+      assertReferencedPrimitiveData(consumerModel, providerModel, "ProvidedPrimitive", "ProvidedPrimitive", "String");
+      assertReferencedTypeDeclaration(consumerModel, providerModel, "ProvidedTypeDeclaration", "ProvidedTypeDeclaration", "struct", "ProvidedTypeDeclaration", "cnx://file/typeDeclaration/ProvidedTypeDeclaration");
+      assertReferencedDocumentData(consumerModel, providerModel, "ProvidedDocument", "ProvidedDocument", "ProvidedTypeDeclaration", "cnx://file/typeDeclaration/ProvidedTypeDeclaration");
+      ActivityType activity = GenericModelingAssertions.assertActivity(process, "ProvidedUIMashup", "ProvidedUIMashup", ActivityImplementationType.APPLICATION_LITERAL);
+      assertReferencedApplication(consumerModel, providerModel, process, activity, "ProvidedUIMashup", "cnx://file/application/ProvidedUIMashup");
+      activity = GenericModelingAssertions.assertActivity(process, "ProvidedProcess", "ProvidedProcess", ActivityImplementationType.SUBPROCESS_LITERAL);
+      assertReferencedProcess(consumerModel, providerModel, process, activity, "ProvidedProcess", "cnx://file/processDefinition/ProvidedProcess");
+      GenericModelingAssertions.assertReferencedRole(consumerModel, providerModel, "ProvidedRole", "ProvidedRole");
+   
+      //saveReplayModel("C:/development/");
+   
+   
+   }
+
+   @Test
+   public void testCloneProcessProcessInterfaceUsesReferencedTypedeclarations() throws Exception
+   {
+      providerModel = modelService.findModel(PROVIDER_MODEL_ID);
+      consumerModel = modelService.findModel(CONSUMER_MODEL_ID);
+   
+      testCrossModelingByDropDown();
+      initUUIDMap();
+   
+      InputStream requestInput = getClass().getResourceAsStream(
+            "../../service/rest/requests/processInterfaceUsesReferencedTypedeclarations.txt");
+      InputStreamReader requestStream = new InputStreamReader(requestInput);
+      replay(requestStream, "processInterfaceUsesReferencedTypedeclarations", false);
+   
+      String command = "{\"commandId\":\"process.clone\",\"modelId\":\"ConsumerModel\",\"changeDescriptions\":[{\"oid\":\"ConsumerModel\",\"changes\":{\"id\":\"ConsumerSubProcess\"}}]}";
+   
+      replaySimple(command, "testCloneProcessDragAndDropFromProviderToConsumer", null);
+   
+      ProcessDefinitionType process = GenericModelingAssertions.assertProcessInterface(consumerModel, "ConsumerSubProcessCloned", "CLONE - ConsumerSubProcess", 2);
+   
+      assertReferencedDocumentFormalParameter(process, "InDocument", "In Document", ModeType.IN, providerModel, "ProvidedTypeDeclaration");
+      assertReferencedStructFormalParameter(process, "OutStruct", "Out Struct", ModeType.OUT, providerModel, "ProvidedTypeDeclaration");
+   
+      //saveReplayModel("C:/development/");
+   
    }
 
    public static void assertReferencedApplication(ModelType consumerModel, ModelType providerModel,  ProcessDefinitionType process, ActivityType activity, String refApplicationID, String uri)

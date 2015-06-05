@@ -47,6 +47,40 @@ public class TestGeneralModeling extends RecordingTestcase
    }
 
    @Test
+   public void testCloneProcessBasicModelElementsInProvider() throws Exception
+   {
+      providerModel = modelService.findModel(PROVIDER_MODEL_ID);
+      consumerModel = modelService.findModel(CONSUMER_MODEL_ID);
+
+      InputStream requestInput = getClass().getResourceAsStream(
+            "../../service/rest/requests/createBasicModelElementsInProvider.txt");
+      InputStreamReader requestStream = new InputStreamReader(requestInput);
+
+      replay(requestStream, "testCloneProcessBasicModelElementsInProvider", false);
+
+      String command = "{\"commandId\":\"process.clone\",\"modelId\":\"ProviderModel\",\"changeDescriptions\":[{\"oid\":\"ProviderModel\",\"changes\":{\"id\":\"ProvidedProcess\"}}]}";
+
+      replaySimple(command, "Clone Process", null);
+
+      GenericModelingAssertions.assertPrimitiveData(providerModel, "ProvidedPrimitive", "ProvidedPrimitive", "String");
+      GenericModelingAssertions.assertStructData(providerModel, "ProvidedStructData", "ProvidedStructData", "ProvidedTypeDeclaration");
+      GenericModelingAssertions.assertDocumentData(providerModel, "ProvidedDocument", "ProvidedDocument", "ProvidedTypeDeclaration");
+      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "ProvidedProcessCloned", "CLONE - ProvidedProcess");
+      GenericModelingAssertions.assertProcessInterface(providerModel, "ProvidedProcessCloned", "CLONE - ProvidedProcess", 2);
+      GenericModelingAssertions.assertPrimitiveFormalParameter(process, "InString", "InString", ModeType.IN, TypeType.STRING);
+      GenericModelingAssertions.assertStructFormalParameter(process, "OutStruct", "OutStruct", ModeType.IN, "ProvidedTypeDeclaration");
+      GenericModelingAssertions.assertRole(providerModel, "ProvidedRole", "ProvidedRole");
+      GenericModelingAssertions.assertTypeDeclaration(providerModel, "ProvidedTypeDeclaration", "ProvidedTypeDeclaration");
+      ActivityType activity1 = GenericModelingAssertions.assertActivity(process, "Activity1",  "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
+      ActivityType activity2 = GenericModelingAssertions.assertActivity(process, "Activity2",  "Activity 2", ActivityImplementationType.MANUAL_LITERAL);
+      GenericModelingAssertions.assertRole(providerModel, "ProvidedRole", "ProvidedRole");
+
+      GenericModelingAssertions.assertTransition(activity1, activity2);
+      //saveReplayModel("C:/development/");
+
+   }
+
+   @Test
    public void testDeleteConnections() throws Exception
    {
       providerModel = modelService.findModel(PROVIDER_MODEL_ID);

@@ -11,6 +11,7 @@ import static org.junit.Assert.assertThat;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -181,6 +182,31 @@ public class RecordingTestcase
       }
    }
 
+
+   protected void replaySimple(String command, String testScenarioName, String parameter)
+   {
+      if (parameter != null)
+      {
+         //command = MessageFormat.format("Blah {0}", parameter);
+         command = MessageFormat.format(command, "Blah");
+      }
+      System.out.println("Fire single command for '" + this.getClass().getSimpleName()
+            + "." + testScenarioName + "'");
+      System.out.println(" COMMAND : " + command);
+      CommandJto newJto = jsonIo.gson().fromJson(command, CommandJto.class);
+      if (newJto != null)
+      {
+         newJto = jsonIo.gson().fromJson(command, CommandJto.class);
+         try
+         {
+            changeApiDriver.performChange(newJto);
+         }
+         catch (ModelerException e)
+         {
+         }
+      }
+      System.out.println("Replay finished.");
+   }
 
    protected String[] replay(InputStreamReader requestStream, String testScenarioName, boolean performResponseCallback) throws IOException
    {
