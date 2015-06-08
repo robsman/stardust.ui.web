@@ -22,6 +22,6 @@ public class BenchmarkDefinitionDTO extends AbstractDTO
 
    public BenchmarkMetadataDTO metadata;
 
-   public JsonElement contents;
+   public JsonElement content;
    
 }

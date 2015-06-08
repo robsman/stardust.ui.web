@@ -146,7 +146,7 @@ public class BenchmarkDefinitionResource
    {
       JsonObject benchmarkDefinitionJson = new JsonObject();
       benchmarkDefinitionJson.add("metadata", new Gson().toJsonTree(benchmarkDefinition.metadata));
-      benchmarkDefinitionJson.add("contents", benchmarkDefinition.contents);
+      benchmarkDefinitionJson.add("content", benchmarkDefinition.content);
       return benchmarkDefinitionJson;
    }
 

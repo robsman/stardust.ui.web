@@ -186,7 +186,7 @@ public class BenchmarkDefinitionService
          benchmarkDto = new BenchmarkDefinitionDTO();
       }
       benchmarkDto.metadata = DTOBuilder.build(doc, BenchmarkMetadataDTO.class);
-      benchmarkDto.contents = benchmarkJSON;
+      benchmarkDto.content = benchmarkJSON;
       return benchmarkDto;
    }
 }
