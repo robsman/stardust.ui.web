@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.eclipse.stardust.engine.api.model.OrganizationInfo;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.Worklist;
@@ -78,7 +79,6 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
             for (Worklist worklist : entry.getValue())
             {
                worklistOwner = worklist.getOwner();
-               addParticipantInfoToCache( worklistOwner.getQualifiedId(), worklistOwner);
                if(entry.getKey().equals(worklistOwner.getQualifiedId()) && (worklistOwner instanceof UserInfo))
                {
                   // Using the userParticipantId i.e entry.getKey() along with
@@ -89,6 +89,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
                         new ParticipantWorklistCacheEntry(worklist.getTotalCount(), WorklistUtils
                               .createWorklistQuery(worklistOwner), WorklistUtils.getAllUserAssignedActivities(),
                               worklist.getTotalCountThreshold(), entry.getKey()));
+                  addParticipantInfoToCache( worklistOwner.getQualifiedId(), worklistOwner);
                }
                else
                {
@@ -99,6 +100,19 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
                         new ParticipantInfoWrapper(worklistOwner, entry.getKey()),
                         new ParticipantWorklistCacheEntry(worklist.getTotalCount(), WorklistUtils
                               .createWorklistQuery(worklistOwner), worklist.getTotalCountThreshold(), entry.getKey()));
+
+                  if (worklistOwner instanceof OrganizationInfo
+                        && null != ((OrganizationInfo) worklistOwner).getDepartment())
+                  {
+                     OrganizationInfo organization = (OrganizationInfo) worklistOwner;
+                     addParticipantInfoToCache(worklistOwner.getQualifiedId() + organization.getDepartment().getId(),
+                           worklistOwner);
+                  }
+                  else
+                  {
+                     addParticipantInfoToCache(worklistOwner.getQualifiedId(), worklistOwner);
+                  }
+
                }
             }
          }
