@@ -150,11 +150,11 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
    public void populateFromJson(EObject element, JsonObject json)
    {
       logger.debug("Unmarshalling: " + element + " " + json);
-      
+
       if (element instanceof Code)
       {
          updateQualityAssuranceCode((Code) element, json.getAsJsonObject("modelElement"));
-      }      
+      }
       else if (element instanceof ProcessDefinitionType)
       {
          updateProcessDefinition((ProcessDefinitionType) element, json);
@@ -279,29 +279,29 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       mapDeclaredProperties(activity, activityJson, propertiesMap.get(ActivityType.class));
       storeAttributes(activity, activityJson);
       storeDescription(activity, activityJson);
-       
+
       if (hasNotJsonNull(activityJson, ModelerConstants.QUALITYASSURANCECODES))
       {
          updateQualityControlCodes(activity, activityJson);
       }
-            
+
       if (activityJson.has(ModelerConstants.QUALITYCONTROL)
             && !(activityJson.get(ModelerConstants.QUALITYCONTROL) instanceof JsonNull))
       {
-         AttributeUtil.setAttribute(activity, PredefinedConstants.ACTIVITY_IS_QUALITY_ASSURANCE_ATT, null);      
+         AttributeUtil.setAttribute(activity, PredefinedConstants.ACTIVITY_IS_QUALITY_ASSURANCE_ATT, null);
          AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, null);
          AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, null);
          activity.setQualityControlPerformer(null);
-                  
+
          updateQualityControl(activity, activityJson);
       }
       else if (activityJson.has(ModelerConstants.QUALITYCONTROL)
             && (activityJson.get(ModelerConstants.QUALITYCONTROL) instanceof JsonNull))
       {
-         AttributeUtil.setAttribute(activity, PredefinedConstants.ACTIVITY_IS_QUALITY_ASSURANCE_ATT, null);      
+         AttributeUtil.setAttribute(activity, PredefinedConstants.ACTIVITY_IS_QUALITY_ASSURANCE_ATT, null);
          AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, null);
          AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, null);
-         activity.setQualityControlPerformer(null);         
+         activity.setQualityControlPerformer(null);
       }
 
       if (isGateway)
@@ -486,12 +486,12 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
    public void updateQualityControlCodes(ActivityType activity, JsonObject activityJson)
    {
-      JsonArray qcCodes = activityJson.getAsJsonArray(ModelerConstants.QUALITYASSURANCECODES);      
+      JsonArray qcCodes = activityJson.getAsJsonArray(ModelerConstants.QUALITYASSURANCECODES);
       activity.getValidQualityCodes().clear();
       for (Iterator<JsonElement> i = qcCodes.iterator(); i.hasNext();)
       {
          JsonPrimitive qcCode = (JsonPrimitive) i.next();
-         String uuid = qcCode.toString();    
+         String uuid = qcCode.toString();
          uuid = uuid.substring(1, uuid.length() - 1);
          Code code = (Code) modelService.getModelBuilderFacade().getModelManagementStrategy().uuidMapper().getEObject(uuid);
          if (code != null)
@@ -500,7 +500,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          }
       }
    }
-      
+
    public void updateQualityControl(ActivityType activity, JsonObject activityJson)
    {
       JsonObject qcJson = activityJson.getAsJsonObject(ModelerConstants.QUALITYCONTROL);
@@ -509,13 +509,13 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          boolean isQualityAssurance = (Boolean) EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.ACTIVITY_IS_QUALITY_ASSURANCE_ATT);
          if(isQualityAssurance)
          {
-            AttributeUtil.setBooleanAttribute((IExtensibleElement) activity, PredefinedConstants.ACTIVITY_IS_QUALITY_ASSURANCE_ATT, true);         
-         
+            AttributeUtil.setBooleanAttribute((IExtensibleElement) activity, PredefinedConstants.ACTIVITY_IS_QUALITY_ASSURANCE_ATT, true);
+
             String fullParticipantID = qcJson.get(ModelerConstants.PARTICIPANT_FULL_ID).getAsString();
-      
+
             IModelParticipant importParticipant = getModelBuilderFacade().importParticipant(ModelUtils.findContainingModel(activity), fullParticipantID);
             activity.setQualityControlPerformer(importParticipant);
-      
+
             if(EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT) != null)
             {
                AttributeUtil.setCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, (String) EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT));
@@ -719,6 +719,11 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
          String name = dataMappingJson.get(ModelerConstants.NAME_PROPERTY)
                .getAsString();
+
+         if (StringUtils.isEmpty(name))
+         {
+            throw new ModelerException(ModelerErrorClass.MODEL_ID_INVALID);
+         }
 
          dataMapping.setName(name);
 
@@ -1560,7 +1565,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
       ActivityType activity = activitySymbol.getActivity();
       JsonObject activityJson = activitySymbolJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
-      
+
       updateActivity(activity, activityJson);
    }
 
@@ -3210,7 +3215,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
    /**
     * @param code
     * @param modelJson
-    */   
+    */
    private void updateQualityAssuranceCode(Code code, JsonObject json)
    {
       if (json.has(ModelerConstants.ID_PROPERTY))
@@ -3219,14 +3224,14 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       }
       if (json.has(ModelerConstants.NAME_PROPERTY))
       {
-         code.setName(json.get(ModelerConstants.NAME_PROPERTY).getAsString());         
+         code.setName(json.get(ModelerConstants.NAME_PROPERTY).getAsString());
       }
       if (json.has(ModelerConstants.DESCRIPTION_PROPERTY))
       {
-         code.setValue(json.get(ModelerConstants.DESCRIPTION_PROPERTY).getAsString());         
-      }      
-   }   
-   
+         code.setValue(json.get(ModelerConstants.DESCRIPTION_PROPERTY).getAsString());
+      }
+   }
+
    /**
     * @param model
     * @param modelJson
@@ -3264,7 +3269,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             model.setDescription(dt);
          }
       }
-      
+
       if (modelJson.has(ModelerConstants.QUALITYASSURANCECODES))
       {
          QualityControlType qualityControl = model.getQualityControl();
@@ -3280,17 +3285,17 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             codes.put(theCode.getCode(), theCode);
          }
          qualityControl.getCode().clear();
-         
+
          JsonArray qcCodes = modelJson.getAsJsonArray(ModelerConstants.QUALITYASSURANCECODES);
          for (Iterator<JsonElement> i = qcCodes.iterator(); i.hasNext();)
-         {            
+         {
             JsonObject qcCode = (JsonObject) i.next();
             Code reuseCode = codes.get(qcCode.get(ModelerConstants.ID_PROPERTY).getAsString());
             if(reuseCode != null)
             {
-               qualityControl.getCode().add(reuseCode);               
+               qualityControl.getCode().add(reuseCode);
             }
-            
+
             /*
             Code code = CarnotWorkflowModelFactory.eINSTANCE.createCode();
             code.setCode(qcCode.get(ModelerConstants.ID_PROPERTY).getAsString());
@@ -3301,7 +3306,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             }
             qualityControl.getCode().add(code);
             EObjectUUIDMapper mapper = modelService.getModelBuilderFacade().getModelManagementStrategy().uuidMapper();
-            mapper.map(code);      
+            mapper.map(code);
             */
          }
       }
