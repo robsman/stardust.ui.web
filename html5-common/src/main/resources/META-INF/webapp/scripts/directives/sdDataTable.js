@@ -17,7 +17,7 @@
 	'use strict';
 
 	angular.module('bpm-common').directive('sdDataTable', 
-			['$parse', '$q', '$compile', '$timeout', 'sgI18nService', 'sdUtilService', 'sdLoggerService', 'sdPreferenceService','sdPortalConfigurationService',
+			['$parse', '$q', '$compile', '$timeout', 'sgI18nService', 'sdUtilService', 'sdLoggerService', 'sdPreferenceService','sdPortalConfigurationService','sdDialogService',
 			 DataTableDirective]);
 
 	var trace;
@@ -37,7 +37,7 @@
 	/*
 	 * 
 	 */
-	function DataTableDirective($parse, $q, $compile, $timeout, sgI18nService, sdUtilService, sdLoggerService, sdPreferenceService, sdPortalConfigurationService) {
+	function DataTableDirective($parse, $q, $compile, $timeout, sgI18nService, sdUtilService, sdLoggerService, sdPreferenceService, sdPortalConfigurationService, sdDialogService) {
 		trace = sdLoggerService.getLogger('bpm-common.sdDataTable');
 
 		return {
@@ -51,7 +51,7 @@
 					post : function(scope, element, attr, ctrl) {
 						var dataTableCompiler = new DataTableCompiler(
 								$parse, $q, $compile, $timeout, sgI18nService, sdUtilService, sdPreferenceService, 
-								scope, element, attr, ctrl, sdPortalConfigurationService);
+								scope, element, attr, ctrl, sdPortalConfigurationService, sdDialogService);
 					}
 				};
 			}
@@ -104,7 +104,7 @@
 	 * 
 	 */
 	function DataTableCompiler($parse, $q, $compile, $timeout, sgI18nService, sdUtilService, sdPreferenceService, 
-			scope, element, attr, ctrl, sdPortalConfigurationService) {
+			scope, element, attr, ctrl, sdPortalConfigurationService, sdDialogService) {
 		var TOOLBAR_TEMPLATE =
 			'<div class="tbl-toolbar-section">\n' +
 				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSelectColumns" ng-click="$dtApi.toggleColumnSelector()"' + 
@@ -1868,7 +1868,9 @@
 				}
 
 				if (message.key != undefined) {
-					alert(sgI18nService.translate('html5-common.' + message.key, message.val));
+					sdDialogService.alert(scope, 
+							sgI18nService.translate('html5-common.' + message.key, message.val),
+							sgI18nService.translate('portal-common-messages.common-info'));
 				}
 			}, function(error) {
 				alert(error);

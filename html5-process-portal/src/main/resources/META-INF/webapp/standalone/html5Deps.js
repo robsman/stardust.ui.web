@@ -70,7 +70,7 @@ var html5Deps = function() {
 				'httpInterceptorProvider' : [ 'html5CommonMain' ],
 				'sdLoggerService' : [ 'html5CommonMain' ],
 				'sdData' : [ 'html5CommonMain' ],
-				'sdDataTable' : [ 'html5CommonMain', 'sdLoggerService' ],
+				'sdDataTable' : [ 'html5CommonMain', 'sdLoggerService', 'sdDialogService'],
 				'sdUtilService' : [ 'html5CommonMain' ],
 				'sdViewUtilService' : [ 'html5CommonMain' ],
 				'sdPreferenceService' : [ 'html5CommonMain','angularResource'],
