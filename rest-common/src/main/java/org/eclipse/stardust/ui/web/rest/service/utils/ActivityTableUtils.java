@@ -848,17 +848,20 @@ public class ActivityTableUtils
       return criticalityDTO;
    }
    
- /**
-  * 
-  * @param ai
-  * @return
-  */
+   /**
+    * 
+    * @param ai
+    * @return
+    */
    public static BenchmarkDTO getBenchmarkForActivity(ActivityInstance ai)
    {
       BenchmarkDTO dto = new BenchmarkDTO();
-      //TODO Stub values 
-      dto.color = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getBenchmarkColor(ai);
-      dto.label = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getBenchmarkLabel(ai);;
+      if (null != ai.getBenchmarkResult())
+      {
+         dto.color = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getBenchmarkColor(ai);
+         dto.label = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getBenchmarkLabel(ai);
+         dto.value = ai.getBenchmarkResult().getCategory();
+      }
       return dto;
    }
 

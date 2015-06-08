@@ -14,7 +14,7 @@
 (function() {
    'use strict';
 
-   angular.module('bpm-common').directive( 'sdBenchmark', [ BenchmarkDirective]);
+   angular.module('bpm-common').directive( 'sdBenchmarkCategory', [ BenchmarkDirective]);
 
    /*
     * 
@@ -23,16 +23,16 @@
 	   return {
 		   restrict : 'A',
 		   scope : {
-			   sdaBenchmarkValue : '=',
+			   sdaValue : '=',
 		   },
-		   template : '<i class="glyphicon glyphicon-flag portal-glyph-icon" '+
+		   template : '<i ng-if="sdaValue.color" class="glyphicon glyphicon-flag portal-glyph-icon" '+
 		   						'ng-style="benchmarkCtrl.flagStyle" '+
 		   						'ng-mouseenter=\'benchmarkCtrl.toolTip.show = true\' '+
 		   						'ng-mouseleave=\'benchmarkCtrl.toolTip.show = false\'> '+
 		   			  '<\/i>'+
 		   			  '<div class="popup-dlg worklist-tooltip" style="color: black" ng-show="benchmarkCtrl.toolTip.show">'+
 		   			  		'<span class="worklist-tooltip-label" ng-bind="benchmarkCtrl.i18n(\'views-common-messages.views-processTable-benchmark-tooltip-categoryLabel\')"><\/span> '+
-		   			  		': <span ng-bind="sdaBenchmarkValue.label"><\/span>' +
+		   			  		': <span ng-bind="sdaValue.label"><\/span>' +
 		   			  '<\/div>',
 		   controller : [ '$scope', BenchmarkController ]
 	   };
@@ -45,7 +45,7 @@
          show : false
       };
 	   
-	   this.flagStyle = {color : $scope.sdaBenchmarkValue.color};
+	   this.flagStyle = {color : $scope.sdaValue.color};
       
       this.i18n = $scope.$parent.i18n;
       $scope.benchmarkCtrl = this;

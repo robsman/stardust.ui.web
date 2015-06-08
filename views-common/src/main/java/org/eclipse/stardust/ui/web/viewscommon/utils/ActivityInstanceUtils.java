@@ -50,6 +50,7 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
+import org.eclipse.stardust.engine.core.benchmark.BenchmarkResult;
 import org.eclipse.stardust.engine.core.model.utils.ActivityReportUtils;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.engine.core.runtime.beans.ActivityInstanceProperty;
@@ -947,8 +948,8 @@ public class ActivityInstanceUtils
     */
    public static String getBenchmarkLabel(ActivityInstance ai)
    {
-      //TODO replace with actual values 
-      return "ON TIME";
+      return getPropertyFromBenchmarkResult(ai.getBenchmarkResult(), "UI_LABEL");
+     // return "ON TIME";
    }
    
    /**
@@ -957,7 +958,27 @@ public class ActivityInstanceUtils
     */
    public static String getBenchmarkColor(ActivityInstance ai)
    { 
-      //TODO replace with actual values 
-      return "#66CD00";
+      return getPropertyFromBenchmarkResult(ai.getBenchmarkResult(), "UI_COLOR");
+     // return "#66CD00";
+   }
+   
+   /**
+    * 
+    * @param result
+    * @param property
+    * @return
+    */
+   private static String getPropertyFromBenchmarkResult(BenchmarkResult result, String property)
+   {
+      String value = null;
+      if (null != result)
+      {
+         Map<String, Serializable> properties = result.getProperties();
+         if (properties.containsKey(property))
+         {
+            return (String) properties.get(property);
+         }
+      }
+      return value;
    }
 }

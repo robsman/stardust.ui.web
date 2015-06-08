@@ -1804,9 +1804,14 @@ public class ProcessInstanceUtils
    private BenchmarkDTO getProcessBenchmark(ProcessInstance processInstance)
    {
       BenchmarkDTO dto = new BenchmarkDTO();
-      //TODO Stub values 
-      dto.color = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getBenchmarkColor(processInstance);
-      dto.label = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getBenchmarkLabel(processInstance);
+      if (null != processInstance.getBenchmarkResult())
+      {
+         dto.color = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+               .getBenchmarkColor(processInstance);
+         dto.label = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+               .getBenchmarkLabel(processInstance);
+         dto.value = processInstance.getBenchmarkResult().getCategory();
+      }
       return dto;
    }
 
