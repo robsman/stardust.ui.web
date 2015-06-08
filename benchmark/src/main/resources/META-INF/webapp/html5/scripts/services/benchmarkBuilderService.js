@@ -154,7 +154,12 @@
 			return this.generateUniqueCategoryName(categories,testName,suffix + 1);
 		}
 		else{
-			return testName + " " + suffix;
+			if(suffix === 0){
+				return testName;
+			}
+			else{
+				return testName + " " + suffix;
+			}
 		}
 	}
 	

@@ -22,7 +22,7 @@
 	 * them to our prototypes.
 	 * @param benchmarkService - Service to interact with our REST layer.
 	 */
-	function benchmarkController(benchmarkService,benchmarkBuilderService,sdLoggedInUserService,$scope){
+	function benchmarkController(benchmarkService, benchmarkBuilderService, sdLoggedInUserService, $scope, $timeout){
 		
 		//Self reference
 		var that = this; 
@@ -35,6 +35,7 @@
 		this.benchmarkCache = {}; //cache of benchmarks pulled from server.
 		this.selectedBenchmark = undefined; //Currently selected benchmark from our data table
 		this.benchmarks = []; //Benchmarks pulled from the server
+		this.benchmarks2 = []; //Benchmarks pulled from the server
 		this.models = []; //models used to populate our model tree
 		this.treeApi = {};//model tree api returned to our callback
 		this.selectedTab = "General"; //Default tab
@@ -47,15 +48,27 @@
 		this.lastSaveTime = Number.NEGATIVE_INFINITY;
 		this.calendars = []; //timeoff calendars
 		
+		//TODO: wrap the following 3 calls up in a $q.all call
+		
 		//Retrieve all benchmarks
-		benchmarkService.getBenchmarks()
+		benchmarkService.getBenchmarkDefinitions()
 		.then(function(data){
 			that.benchmarks = data.benchmarkDefinitions;
+			$timeout(function(){
+				that.dataTableApi.refresh();
+			},0);
+		})
+		["catch"](function(err){
+			//TODO: handle error
 		});
+		
 		
 		benchmarkService.getCalendars()
 		.then(function(data){
 			that.calendars = data.calendars;
+		})
+		["catch"](function(err){
+			//TODO: handle error
 		});
 		
 		//retrieve all deployed models, add additional data to help
@@ -63,8 +76,26 @@
 		benchmarkService.getModels()
 		.then(function(data){
 			that.models = that.treeifyModels(data.models);
+		})
+		["catch"](function(err){
+			//TODO: handle error
 		});
 	}
+	
+	/**
+	 * Save the benchmark to the document repository
+	 * @param benchmark
+	 */
+	benchmarkController.prototype.saveBenchmark = function(benchmark){
+		this.benchmarkService.saveBenchmarks(benchmark)
+		.then(function(data){
+			//TODO: Dirty-bit implementation and clearing.
+			alert("saved");
+		})
+		["catch"](function(err){
+			//TODO: handle error
+		});
+	};
 	
 	/**
 	 * Load benchmarks from our Service, passing a status of
@@ -466,14 +497,24 @@
 	 */
 	benchmarkController.prototype.createBenchmark = function(){
 		
-		var bmark = this.benchmarkBuilderService.getBaseBenchmark();
+		var bmark,
+			that;
+		
+		bmark = this.benchmarkBuilderService.getBaseBenchmark();
+		that = this;
+		
 		console.log(JSON.stringify(bmark));
 		//Default values
-		bmark.metadata.modifiedBy = this.currentUser.displayName;
+		//bmark.metadata.modifiedBy = this.currentUser.displayName;
 		bmark.content.name = "Default Benchmark"; //TODO i18N
-		bmark.metadata.lastModified = (new Date()).toString();
+		//bmark.metadata.lastModified = (new Date()).toString();
 		
-		this.addToBenchmarks(bmark);
+		this.benchmarkService.createBenchmarkDefinition(bmark.content)
+		.then(function(data){
+			that.addToBenchmarks(data);
+		});
+		
+		//this.addToBenchmarks(bmark);
 	};
 	
 	/**
@@ -515,7 +556,11 @@
 	};
 	
 	//angular dependencies
-	benchmarkController.$inject = ["benchmarkService","benchmarkBuilderService","sdLoggedInUserService","$scope"];
+	benchmarkController.$inject = ["benchmarkService",
+	                               "benchmarkBuilderService",
+	                               "sdLoggedInUserService",
+	                               "$scope", 
+	                               "$timeout"];
 	
 	//add controller to our app
 	angular.module("benchmark-app")

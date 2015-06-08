@@ -2,6 +2,15 @@
 <div class="view-panel" 
      ng-controller="benchmarkCtrl as ctrl"
 	 sg-stretch-to-bottom>
+	 
+	<!--table>
+		<tr>
+			<th>Benchmarks</th>
+		</tr>
+		<tr>
+			<td><pre>{{ctrl.benchmarks | json}}</pre></td>
+		</tr>
+	</table-->
 	
 	<i style="position:absolute;font-size:1.5em;cursor:pointer;" 
 	   ng-click="ctrl.showBenchmarks = !ctrl.showBenchmarks" 
@@ -45,8 +54,8 @@
 			   		<tr>
 			   			<td sda-field="content.name"></td>
 			   			<td sda-field="content.description"></td>
-			   			<td sda-field="metadata.modifiedBy"></td>
-			   			<td sda-field="metadata.lastModified"></td>
+			   			<td sda-field="metadata.author"></td>
+			   			<td sda-field="metadata.lastModifiedDate"></td>
 			   		</tr>
 			   </tbody>
 		</table>
@@ -64,7 +73,7 @@
 		</div>
 		<div>
 			<i ng-class="{'glyphicon-floppy-disk' : ctrl.benchmarkIsDirty,'glyphicon-floppy-saved' : !ctrl.benchmarkIsDirty}" 
-			   ng-click="saveBenchmarks()"
+			   ng-click="ctrl.saveBenchmark(ctrl.selectedBenchmark)"
 			   class="glyphicon">
 			</i>
 			<i class="glyphicon glyphicon-remove"></i>
