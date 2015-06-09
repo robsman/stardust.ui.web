@@ -178,7 +178,7 @@ public class PreferenceResource
    @Path("/permissions")
    public Response getAllPermissions()
    {
-      List<PermissionDTO> permissions = authorizationManagerService.fetchPermissions();
+      Map<String, List<PermissionDTO>> permissions = authorizationManagerService.fetchPermissions();
       Gson gson = new Gson();
       return Response.ok(gson.toJson(permissions), MediaType.APPLICATION_JSON).build();
    }

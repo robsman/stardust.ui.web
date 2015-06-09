@@ -21,21 +21,20 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
  */
 public class PermissionDTO extends AbstractDTO
 {
-   public String label = MessagesViewsCommonBean.getInstance().getString("common.unknown");
+   public String name = MessagesViewsCommonBean.getInstance().getString("common.unknown");
    public String id = null;
-   public String type;
    public List<ParticipantDTO> allow;
    public List<ParticipantDTO> deny;
-   public List<PermissionDTO> permissions;
-   public boolean containsDefaultParticipant;
+   public List<PermissionDTO> views;
+   public List<PermissionDTO> launchPanels;
 
    public PermissionDTO()
    {}
 
-   public PermissionDTO(String label, String id)
+   public PermissionDTO(String id, String name)
    {
       super();
-      this.label = label;
+      this.name = name;
       this.id = id;
    }
 
@@ -48,15 +47,15 @@ public class PermissionDTO extends AbstractDTO
    {
       public static ParticipantDTO ALL = new ParticipantDTO("all", MessagesViewsCommonBean.getInstance().getString(
             "views.common.all"));
-      public String qid;
+      public String participantQualifiedId;
 
-      public ParticipantDTO(String qid, String label)
+      public ParticipantDTO(String qid, String name)
       {
          super();
-         this.qid = qid;
-         this.label = label;
+         this.participantQualifiedId = qid;
+         this.name = name;
       }
 
-      public String label;
+      public String name;
    }
 }

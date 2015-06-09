@@ -14,10 +14,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -59,7 +57,7 @@ public class AuthorizationManagerService
    private static final String PROPERTY_KEY_PREFIX = "views.authorizationManagerView.permission.model.";
 
    private static enum PermissionType {
-      GeneralPermissions, UIPermissions, ModelPermissions, Perspective, LaunchPanels, LaunchPanel, Views, View, GlobalExtensions, GlobalExtension, generalPermission, Process, Activity, Data
+      general, perspectives, launchPanels, views, processDefinitions, activities, data, globalExtensions
    }
 
    @Resource
@@ -69,7 +67,7 @@ public class AuthorizationManagerService
     * 
     * @return
     */
-   public List<PermissionDTO> fetchPermissions()
+   public Map<String, List<PermissionDTO>> fetchPermissions()
    {
       // fetch permission
       AdministrationService administrationService = serviceFactoryUtils.getAdministrationService();
@@ -81,9 +79,9 @@ public class AuthorizationManagerService
       RuntimePermissions runtimePermissionsDetails = (RuntimePermissions) administrationService.getGlobalPermissions();
       permissions.setGeneralPermission(runtimePermissionsDetails);
 
-      List<PermissionDTO> allPermissions = new ArrayList<PermissionDTO>();
-      allPermissions.addAll(buildGeneralAndModelPermissions(permissions));
-      allPermissions.add(buildUiPermissions(permissions));
+      Map<String, List<PermissionDTO>> allPermissions = new HashMap<String, List<PermissionDTO>>();
+      allPermissions.putAll(buildGeneralAndModelPermissions(permissions));
+      allPermissions.putAll(buildUiPermissions(permissions));
 
       return allPermissions;
    }
@@ -92,25 +90,23 @@ public class AuthorizationManagerService
     * @param permissions
     * @return
     */
-   private List<PermissionDTO> buildGeneralAndModelPermissions(PermissionsDetails permissions)
+   private Map<String, List<PermissionDTO>> buildGeneralAndModelPermissions(PermissionsDetails permissions)
    {
-      List<PermissionDTO> GeneralAndModelPermissions = new ArrayList<PermissionDTO>();
+      Map<String, List<PermissionDTO>> GeneralAndModelPermissions = new HashMap<String, List<PermissionDTO>>();
 
       RuntimePermissions runtimePermissions = permissions.getGeneralPermission();
 
-      PermissionDTO generalPermissions = new PermissionDTO();
-      GeneralAndModelPermissions.add(generalPermissions);
-      generalPermissions.label = MessagesViewsCommonBean.getInstance().get(
-            "views.authorizationManagerView.generalPermissions");
-      generalPermissions.type = PermissionType.GeneralPermissions.name();
-      generalPermissions.permissions = new ArrayList<PermissionDTO>();
+      List<PermissionDTO> generalPermissions = new ArrayList<PermissionDTO>();
+      GeneralAndModelPermissions.put(PermissionType.general.name(), generalPermissions);
 
-      PermissionDTO modelPermissions = new PermissionDTO();
-      GeneralAndModelPermissions.add(modelPermissions);
-      modelPermissions.label = MessagesViewsCommonBean.getInstance().get(
-            "views.authorizationManagerView.modelPermissions");
-      modelPermissions.type = PermissionType.ModelPermissions.name();
-      modelPermissions.permissions = new ArrayList<PermissionDTO>();
+      List<PermissionDTO> processes = new ArrayList<PermissionDTO>();
+      GeneralAndModelPermissions.put(PermissionType.processDefinitions.name(), processes);
+
+      List<PermissionDTO> activities = new ArrayList<PermissionDTO>();
+      GeneralAndModelPermissions.put(PermissionType.activities.name(), activities);
+
+      List<PermissionDTO> datas = new ArrayList<PermissionDTO>();
+      GeneralAndModelPermissions.put(PermissionType.data.name(), datas);
 
       List<String> permissionIds = new ArrayList<String>(runtimePermissions.getAllPermissionIds());
 
@@ -118,30 +114,31 @@ public class AuthorizationManagerService
       {
          if (UiPermissionUtils.isGeneralPermissionId(permissionId))
          {
-            PermissionDTO p = new PermissionDTO(MessagesViewsCommonBean.getInstance().getString(
-                  PROPERTY_KEY_PREFIX + permissionId), permissionId);
-            p.type = PermissionType.generalPermission.name();
-            updateGrants(p, permissions, false);
-            generalPermissions.permissions.add(p);
+            PermissionDTO p = new PermissionDTO(permissionId, MessagesViewsCommonBean.getInstance().getString(
+                  PROPERTY_KEY_PREFIX + permissionId));
+            /* p.type = PermissionType.generalPermission.name(); */
+            updateGrants(p, permissions);
+            generalPermissions.add(p);
          }
          else
          {
-            PermissionDTO p = new PermissionDTO(MessagesViewsCommonBean.getInstance().getString(
-                  PROPERTY_KEY_PREFIX + permissionId), permissionId);
+            PermissionDTO p = new PermissionDTO(permissionId, MessagesViewsCommonBean.getInstance().getString(
+                  PROPERTY_KEY_PREFIX + permissionId));
+
+            updateGrants(p, permissions);
+
             if (UiPermissionUtils.isProcessPermissionId(permissionId))
             {
-               p.type = PermissionType.Process.name();
+               processes.add(p);
             }
             else if (UiPermissionUtils.isActivityPermissionId(permissionId))
             {
-               p.type = PermissionType.Activity.name();
+               activities.add(p);
             }
             else
             {
-               p.type = PermissionType.Data.name();
+               datas.add(p);
             }
-            updateGrants(p, permissions, false);
-            modelPermissions.permissions.add(p);
          }
       }
       return GeneralAndModelPermissions;
@@ -152,7 +149,7 @@ public class AuthorizationManagerService
     * @param permissions
     * @return
     */
-   private PermissionDTO buildUiPermissions(PermissionsDetails permissions)
+   private Map<String, List<PermissionDTO>> buildUiPermissions(PermissionsDetails permissions)
    {
       Map<String, PerspectiveDefinition> perspectives = PortalUiController.getInstance().getSystemPerspectives();
 
@@ -174,138 +171,96 @@ public class AuthorizationManagerService
          }
       });
 
-      // global elements
-      Map<String, Map<String, Set<UiElement>>> globalElements = new HashMap<String, Map<String, Set<UiElement>>>();
+      Map<String, List<PermissionDTO>> uiPermissions = new HashMap<String, List<PermissionDTO>>();
 
-      PermissionDTO pdto = new PermissionDTO();
-      pdto.label = MessagesViewsCommonBean.getInstance().get("views.authorizationManagerView.uiPermissions");
-      pdto.type = PermissionType.UIPermissions.name();
+      Map<String, PermissionDTO> globalElements = new HashMap<String, PermissionDTO>();
 
-      pdto.permissions = new ArrayList<PermissionDTO>();
+      List<PermissionDTO> perspectivePermissions = new ArrayList<PermissionDTO>();
+      uiPermissions.put(PermissionType.perspectives.name(), perspectivePermissions);
+
+      List<PermissionDTO> globalExtnPermissions = new ArrayList<PermissionDTO>();
+      uiPermissions.put(PermissionType.globalExtensions.name(), perspectivePermissions);
 
       for (IPerspectiveDefinition perspective : allPerspectives)
       {
          // add perspectives
-         PermissionDTO perspectiveDTO = new PermissionDTO(perspective.getLabel(),
-               UiPermissionUtils.getPermissionId(perspective.getName()));
-         pdto.permissions.add(perspectiveDTO);
-         perspectiveDTO.type = PermissionType.Perspective.name();
-
-         updateGrants(perspectiveDTO, permissions, true);
-         perspectiveDTO.permissions = new ArrayList<PermissionDTO>();
+         PermissionDTO perspectiveDTO = new PermissionDTO(UiPermissionUtils.getPermissionId(perspective.getName()),
+               perspective.getLabel());
+         perspectivePermissions.add(perspectiveDTO);
+         updateGrants(perspectiveDTO, permissions);
 
          // add launch panels
-         PermissionDTO launchPanelsDTO = new PermissionDTO();
-         perspectiveDTO.permissions.add(launchPanelsDTO);
-         launchPanelsDTO.label = MessagesViewsCommonBean.getInstance().get(
-               "views.authorizationManagerView.launchPanels");
-         launchPanelsDTO.type = PermissionType.LaunchPanels.name();
-         launchPanelsDTO.permissions = new ArrayList<PermissionDTO>();
+         perspectiveDTO.launchPanels = new ArrayList<PermissionDTO>();
          List<LaunchPanel> launchPanels = perspective.getLaunchPanels();
-
          for (LaunchPanel launchPanel : launchPanels)
          {
             if (launchPanel.isGlobal())
             {
-               addGlobalElement(globalElements, launchPanel, UiPermissionUtils.LAUNCH_PANEL);
+               if (!globalElements.containsKey(launchPanel.getDefinedIn()))
+               {
+                  PermissionDTO gPerspectiveDTO = new PermissionDTO(UiPermissionUtils.getPermissionId(perspective
+                        .getName()), perspective.getLabel());
+                  globalExtnPermissions.add(gPerspectiveDTO);
+                  globalElements.put(launchPanel.getDefinedIn(), gPerspectiveDTO);
+               }
+
+               if (globalElements.get(launchPanel.getDefinedIn()).launchPanels == null)
+               {
+                  globalElements.get(launchPanel.getDefinedIn()).launchPanels = new ArrayList<PermissionDTO>();
+               }
+
+               PermissionDTO lPanelDto = new PermissionDTO(UiPermissionUtils.getPermissionId(launchPanel.getName()),
+                     getUiElementLabel(launchPanel));
+               updateGrants(lPanelDto, permissions);
+               globalElements.get(launchPanel.getDefinedIn()).launchPanels.add(lPanelDto);
             }
             else
             {
-               PermissionDTO lPanelDto = new PermissionDTO(getUiElementLabel(launchPanel),
-                     UiPermissionUtils.getPermissionId(launchPanel.getName()));
-               lPanelDto.type = PermissionType.LaunchPanel.name();
-               updateGrants(lPanelDto, permissions, true);
-               launchPanelsDTO.permissions.add(lPanelDto);
+               PermissionDTO lPanelDto = new PermissionDTO(UiPermissionUtils.getPermissionId(launchPanel.getName()),
+                     getUiElementLabel(launchPanel));
+               updateGrants(lPanelDto, permissions);
+               perspectiveDTO.launchPanels.add(lPanelDto);
             }
          }
 
          // add view definitions
-         PermissionDTO viewsDTO = new PermissionDTO();
-         perspectiveDTO.permissions.add(viewsDTO);
-
-         viewsDTO.label = MessagesViewsCommonBean.getInstance().get("views.authorizationManagerView.views");
-         viewsDTO.type = PermissionType.Views.name();
-         viewsDTO.permissions = new ArrayList<PermissionDTO>();
-
+         perspectiveDTO.views = new ArrayList<PermissionDTO>();
          List<ViewDefinition> viewDefinitions = perspective.getViews();
 
          for (ViewDefinition viewDefinition : viewDefinitions)
          {
             if (viewDefinition.isGlobal())
             {
-               addGlobalElement(globalElements, viewDefinition, UiPermissionUtils.VIEW);
+               if (!globalElements.containsKey(viewDefinition.getDefinedIn()))
+               {
+                  PermissionDTO gPerspectiveDTO = new PermissionDTO(UiPermissionUtils.getPermissionId(perspective
+                        .getName()), perspective.getLabel());
+                  globalExtnPermissions.add(gPerspectiveDTO);
+                  globalElements.put(viewDefinition.getDefinedIn(), gPerspectiveDTO);
+               }
+
+               if (globalElements.get(viewDefinition.getDefinedIn()).views == null)
+               {
+                  globalElements.get(viewDefinition.getDefinedIn()).views = new ArrayList<PermissionDTO>();
+               }
+
+               PermissionDTO viewDto = new PermissionDTO(UiPermissionUtils.getPermissionId(viewDefinition.getName()),
+                     getUiElementLabel(viewDefinition));
+               updateGrants(viewDto, permissions);
+               globalElements.get(viewDefinition.getDefinedIn()).views.add(viewDto);
             }
             else
             {
                // add view and its permissions
-               PermissionDTO viewDto = new PermissionDTO(getUiElementLabel(viewDefinition),
-                     UiPermissionUtils.getPermissionId(viewDefinition.getName()));
-               updateGrants(viewDto, permissions, true);
-               viewDto.type = PermissionType.View.name();
-               viewsDTO.permissions.add(viewDto);
+               PermissionDTO viewDto = new PermissionDTO(UiPermissionUtils.getPermissionId(viewDefinition.getName()),
+                     getUiElementLabel(viewDefinition));
+               updateGrants(viewDto, permissions);
+               perspectiveDTO.views.add(viewDto);
             }
          }
       }
 
-      // Global permissions
-      PermissionDTO globalExtnPermissions = new PermissionDTO();
-      pdto.permissions.add(globalExtnPermissions);
-
-      globalExtnPermissions.label = MessagesViewsCommonBean.getInstance().get(
-            "views.authorizationManagerView.globalExtensions");
-      globalExtnPermissions.type = PermissionType.GlobalExtensions.name();
-      globalExtnPermissions.permissions = new ArrayList<PermissionDTO>();
-
-      for (Entry<String, Map<String, Set<UiElement>>> entry : globalElements.entrySet())
-      {
-         // add extension
-         PermissionDTO extnDto = new PermissionDTO();
-         globalExtnPermissions.permissions.add(extnDto);
-
-         extnDto.label = UiPermissionUtils.getPermisionLabel(entry.getKey());
-         extnDto.type = PermissionType.GlobalExtension.name();
-         extnDto.permissions = new ArrayList<PermissionDTO>();
-
-         Map<String, Set<UiElement>> elementPermissions = entry.getValue();
-
-         // add launch panels and views if available
-         for (Entry<String, Set<UiElement>> elementsEntry : elementPermissions.entrySet())
-         {
-            // add Launch Panel / View
-            PermissionDTO extnElementsDto = new PermissionDTO();
-            String type = "";
-            if (elementsEntry.getKey().equals(UiPermissionUtils.LAUNCH_PANEL))
-            {
-               extnElementsDto.type = PermissionType.LaunchPanels.name();
-               type = PermissionType.LaunchPanel.name();
-               extnElementsDto.label = MessagesViewsCommonBean.getInstance().get(
-                     "views.authorizationManagerView.launchPanels");
-            }
-            else
-            {
-               extnElementsDto.type = PermissionType.Views.name();
-               type = PermissionType.View.name();
-               extnElementsDto.label = MessagesViewsCommonBean.getInstance()
-                     .get("views.authorizationManagerView.views");
-            }
-
-            extnDto.permissions.add(extnElementsDto);
-
-            // add views
-            extnElementsDto.permissions = new ArrayList<PermissionDTO>();
-            Set<UiElement> elements = elementsEntry.getValue();
-            for (UiElement uiElement : elements)
-            {
-               PermissionDTO viewsDto = new PermissionDTO(getUiElementLabel(uiElement),
-                     UiPermissionUtils.getPermissionId(uiElement.getName()));
-               viewsDto.type = type;
-               updateGrants(viewsDto, permissions, true);
-               extnElementsDto.permissions.add(viewsDto);
-            }
-         }
-      }
-
-      return pdto;
+      return uiPermissions;
    }
 
    /**
@@ -313,7 +268,7 @@ public class AuthorizationManagerService
     * @param p
     * @param permissions
     */
-   private void updateGrants(PermissionDTO p, PermissionsDetails permissions, boolean uiPermissions)
+   private void updateGrants(PermissionDTO p, PermissionsDetails permissions)
    {
       p.allow = new ArrayList<ParticipantDTO>();
       p.deny = new ArrayList<ParticipantDTO>();
@@ -323,16 +278,18 @@ public class AuthorizationManagerService
          p.allow.add(ParticipantDTO.ALL);
       }
 
-      // check if it contains default participants
-      if (permissions.isDefaultGrant(p.id))
-      {
-         p.containsDefaultParticipant = true;
-      }
+      /*
+       * // check if it contains default participants if
+       * (permissions.isDefaultGrant(p.id)) { p.containsDefaultParticipant = true; }
+       */
 
       String permissionId = p.id;
 
+      // update grants
       Set<ModelParticipantInfo> grants = permissions.getGrants2(permissionId);
       p.allow.addAll(transformGrantsToDTO(grants));
+
+      // update denied grants
       Set<ModelParticipantInfo> deny = permissions.getDeniedGrants(permissionId);
       p.deny.addAll(transformGrantsToDTO(deny));
    }
@@ -345,35 +302,6 @@ public class AuthorizationManagerService
    private static String getUiElementLabel(UiElement vd)
    {
       return UiPermissionUtils.getUiElementLabel(vd);
-   }
-
-   /**
-    * @param uiElementDefs
-    * @param uiElement
-    * @param elementType
-    */
-   private void addGlobalElement(Map<String, Map<String, Set<UiElement>>> uiElementDefs, UiElement uiElement,
-         String elementType)
-   {
-      // global launch panels and views
-      String extension = uiElement.getDefinedIn();
-
-      // add extension
-      if (!uiElementDefs.containsKey(extension))
-      {
-         uiElementDefs.put(extension, new HashMap<String, Set<UiElement>>());
-      }
-
-      Map<String, Set<UiElement>> extensionMap = uiElementDefs.get(extension);
-
-      // add Launch panel or views map
-      if (!extensionMap.containsKey(elementType))
-      {
-         extensionMap.put(elementType, new HashSet<UiElement>());
-      }
-
-      // add actual view definition or launch panel definition
-      extensionMap.get(elementType).add(uiElement);
    }
 
    /**
