@@ -49,12 +49,12 @@ public class TestQualityControl extends RecordingTestcase
 
       replay(requestStream, "createQualityAssuranceCodes", false);
       
-      assertQualityControlCodes(consumerModel);
+      assertQualityControlCodes(consumerModel, activity);
       
       // saveReplayModel("C:/tmp");
    }
 
-   private void assertQualityControlCodes(ModelType consumerModel)
+   private void assertQualityControlCodes(ModelType consumerModel, ActivityType activity)
    {
       QualityControlType qualityControl = consumerModel.getQualityControl();
       assertThat(qualityControl, is(not(nullValue())));
@@ -90,7 +90,12 @@ public class TestQualityControl extends RecordingTestcase
                break;                        
          }
          cnt++;         
-      }      
+      }   
+      
+      EList<Code> validQualityCodes = activity.getValidQualityCodes();
+      assertThat(validQualityCodes.size(), is(1));      
+      Code code = validQualityCodes.get(0);
+      assertThat(code.getCode(), is("test1"));
    }
 
    private void assertQualityControlPerformer(ActivityType activity, ModelType providerModel, boolean exists)
