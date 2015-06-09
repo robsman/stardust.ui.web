@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -49,6 +50,7 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstancePriority;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
+import org.eclipse.stardust.engine.core.benchmark.BenchmarkResult;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
@@ -1223,8 +1225,7 @@ public class ProcessInstanceUtils
     */
    public static String getBenchmarkLabel(ProcessInstance pi)
    {
-      //TODO replace with actual values 
-      return "ON TIME";
+      return getPropertyFromBenchmarkResult(pi.getBenchmarkResult(), "UI_LABEL");
    }
    
    /**
@@ -1233,7 +1234,27 @@ public class ProcessInstanceUtils
     */
    public static String getBenchmarkColor(ProcessInstance pi)
    { 
-      //TODO replace with actual values 
-      return "#66CD00";
+      return getPropertyFromBenchmarkResult(pi.getBenchmarkResult(), "UI_COLOR");
+   }
+   
+   
+   /**
+    * 
+    * @param result
+    * @param property
+    * @return
+    */
+   private static String getPropertyFromBenchmarkResult(BenchmarkResult result, String property)
+   {
+      String value = null;
+      if (null != result)
+      {
+         Map<String, Serializable> properties = result.getProperties();
+         if (properties.containsKey(property))
+         {
+            return (String) properties.get(property);
+         }
+      }
+      return value;
    }
 }

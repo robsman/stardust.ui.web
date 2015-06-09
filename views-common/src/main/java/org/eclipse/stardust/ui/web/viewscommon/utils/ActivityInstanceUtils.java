@@ -949,7 +949,6 @@ public class ActivityInstanceUtils
    public static String getBenchmarkLabel(ActivityInstance ai)
    {
       return getPropertyFromBenchmarkResult(ai.getBenchmarkResult(), "UI_LABEL");
-     // return "ON TIME";
    }
    
    /**
@@ -959,7 +958,6 @@ public class ActivityInstanceUtils
    public static String getBenchmarkColor(ActivityInstance ai)
    { 
       return getPropertyFromBenchmarkResult(ai.getBenchmarkResult(), "UI_COLOR");
-     // return "#66CD00";
    }
    
    /**
