@@ -92,13 +92,19 @@
 	float: left;
 }
 
-.tbl-toolbar-item {
-}
-
 .tbl-tool-link {
 	margin-right: 6px;
 	padding: 0px;
 	cursor: pointer;
+	color: #A69A88;
+}
+
+.tbl-tool-link:hover {
+	color: #906C37;
+}
+
+.tbl-tool-link[disabled='disabled'] {
+	color: #A69A88 !important;
 }
 
 .tbl-row {
@@ -181,18 +187,6 @@
 
 .tbl-hdr-col.sorting .tbl-hdr-col-label:hover, .tbl-hdr-col.sorting_asc .tbl-hdr-col-label:hover, .tbl-hdr-col.sorting_desc .tbl-hdr-col-label:hover {
 	color: #2B2865;
-}
-
-.tbl-toolbar-item {
-	opacity: 0.7;
-}
-
-.button-link[disabled='disabled']:hover {
-	opacity: 0.7 !important;
-}
-
-.tbl-toolbar-item:hover {
-	opacity: 1.0;
 }
 
 /* ********** dataTables Overridden classes ********** */
