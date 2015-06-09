@@ -42,13 +42,13 @@
 					</div>
 				</div>
 				<!-- Money -->
-				<div  ng-if="mapping.typeName == 'org.eclipse.stardust.common.Money'">
-					<input name="moneyField"  ng-model-on-blur ng-pattern="/^[-+]?\d{0,308}(\.\d{1,309})?%?$/"
+				<div  ng-if="mapping.typeName == 'java.lang.Double'">
+					<input name="doubleField"  ng-model-on-blur ng-pattern="/^[-+]?\d{0,308}(\.\d{1,309})?%?$/"
 						ng-click="bpmCommon.stopEvent($event); " ng-change="dataCtrl.onChange();"
 					    ng-model="dataCtrl.outData[mapping.id]" />
 					<div
-						ng-show="subForm.moneyField.$error.pattern"
-						class="msg-error">{{i18n('html5-common.money-error')}} 
+						ng-show="subForm.doubleField.$error.pattern"
+						class="msg-error">{{i18n('html5-common.double-error')}} 
 					</div>
 				</div>
 				
