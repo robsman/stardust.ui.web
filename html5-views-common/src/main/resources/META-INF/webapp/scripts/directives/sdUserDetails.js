@@ -24,7 +24,7 @@
 			restrict : 'EA',
 			scope : { // Creates a new sub scope
 				userOID : '=sdaUserOid',
-				linkDisabled : '=sdaLinkDisabled',
+				linkDisabled : '=?sdaLinkDisabled',
 				account: '=sdaAccount'					
 			},
 			transclude : true,

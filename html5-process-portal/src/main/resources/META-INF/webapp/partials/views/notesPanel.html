@@ -1,0 +1,75 @@
+<div class="view-panel" ng-controller="sdNotesCtrl as ctrl"
+	sg-stretch-to-bottom>
+	<div class="view-panel-toolbar heading">{{i18n('processportal.views-notesPanel-title')}}</div>
+	<div sda-toolbar>
+		<div class="tbl-toolbar-section">
+			<button
+			    ng-disabled="ctrl.isAddMode"
+				ng-click="bpmCommon.stopEvent($event); ctrl.addNote();"
+				title="{{i18n('processportal.views-notesPanel-button-addNote')}}"
+				class="button-link tbl-toolbar-item tbl-tool-link">
+				<i class="sc sc-fw sc-1x sc-document"></i>
+			</button>
+		</div>
+	</div>
+	<table sd-data-table="ctrl.notesTable"
+		sd-data="ctrl.getNotesData(params)" sda-mode="local"
+		sda-ready="ctrl.showNotesTable" sda-selectable="row"
+		sda-selection="ctrl.rowSelectionNotesTable"
+		sda-on-select="ctrl.onSelect(info)"
+		sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
+		sda-sort-by="{name : 'teamMember', dir : 'desc'}" sda-exports="false">
+		<thead sda-i18n-scope="processportal.views-notesPanel-column">
+			<tr>
+				<th sda-name="noteNumber" sda-sortable="true"></th>
+				<th sda-name="creatorName" sda-label-key="createdBy"></th>
+				<th sda-name="created" sda-label-key="creationTime" sda-sortable="true"></th>
+				<th sda-name="note" sda-label-key="preview"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td style="text-align: center;"></td>
+				<td sda-exporter="rowData.creatorName" style="text-align: center;"><sd-user-details
+						sda-user-oid="rowData.userOID" sda-account="rowData.creatorName"></sd-user-details>
+				</td>
+				<td sda-data-type="dateTime" style="text-align: center;"></td>
+				<td style="text-align: center;"></td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div>
+		<textarea ng-disabled="!ctrl.isAddMode" ng-model="ctrl.note" cols="20" rows="2" style="height: 300px; width: 90%; background-color: rgb(247, 246, 178);"></textarea>
+		<div ng-if="ctrl.isAddMode">
+		<table>
+		<tr>
+		<td>
+		<a style="font-weight: bold;">
+			<table>
+				<tbody>
+					<tr>
+						<td><i class="sc sc-fw sc-1x sc-cloud-d"></i></td>
+						<td><span>{{i18n('processportal.views-notesPanel-button-save')}}</span></td>
+					</tr>
+				</tbody>
+			</table>
+		</a>
+		</td>
+		<td>
+		<a style="font-weight: bold;">
+			<table>
+				<tbody>
+					<tr>
+						<td><i class="sc sc-fw sc-1x sc-close" style="color:red;"></i></td>
+						<td><span>{{i18n('processportal.views-notesPanel-button-cancel')}}</span></td>
+					</tr>
+				</tbody>
+			</table>
+		</a>
+		</td>
+		</tr>
+		</table>
+	</div>
+	</div>
+</div>

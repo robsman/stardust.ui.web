@@ -95,6 +95,11 @@
 			}, nested);
 		};
 
+		CommonViewUtilService.prototype.openNotesViewHTML5 = function(processInstanceOid, nested) {
+			sdViewUtilService.openView("notesPanelHtml5", "oid=" + processInstanceOid, {
+				"oid" : "" + processInstanceOid
+			}, nested);
+		};
 		/**
 		 * 
 		 */
