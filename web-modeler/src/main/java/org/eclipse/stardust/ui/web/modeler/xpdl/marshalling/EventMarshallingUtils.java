@@ -26,6 +26,7 @@ import org.eclipse.stardust.engine.core.extensions.conditions.timer.TimeStampEmi
 import org.eclipse.stardust.engine.core.extensions.conditions.timer.TimerAccessPointProvider;
 import org.eclipse.stardust.engine.core.extensions.conditions.timer.TimerValidator;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
+import org.eclipse.stardust.engine.extensions.events.signal.SignalEventCondition;
 import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.model.BpmPackageBuilder;
@@ -341,6 +342,15 @@ public class EventMarshallingUtils
             {"carnot:engine:accessPointProvider", ExceptionConditionAccessPointProvider.class.getName()},
             {"carnot:engine:condition", ExceptionCondition.class.getName()},
             {"carnot:engine:validator", ExceptionConditionValidator.class.getName()}
+         });
+      }
+      else if ("signal".equals(conditionTypeId))
+      {
+         conditionType = newConditionType(conditionTypeId, "Catch Signal", false, true,
+            ImplementationType.ENGINE_LITERAL, new String[][] {
+            // TODO access point provider
+            {"carnot:engine:condition", SignalEventCondition.class.getName()}
+            // TODO validator
          });
       }
       else if (PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION.equals(conditionTypeId))
