@@ -73,8 +73,8 @@
 		 * 
 		 */
 		UtilService.prototype.stopEvent = function(event) {
-			if (event.stopPopogation) {
-				event.stopPopogation();
+			if (event.stopPropagation) {
+				event.stopPropagation();
 			} else if (window.event) {
 				window.event.cancelBubble = true;
 			}
