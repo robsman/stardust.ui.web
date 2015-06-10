@@ -122,6 +122,12 @@
   transform: scale(1, -1);
 }
 
+.sc-lg{
+	font-size: 1.33333333em;
+	line-height: 0.75em;
+	vertical-align: -15%;
+}
+
 .sc-2x{
     font-size:2em;
 }
