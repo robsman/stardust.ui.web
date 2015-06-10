@@ -64,7 +64,7 @@
 
 .tbl-col-flt {
 	margin-right: 5px;
-	color: gray;
+	color: #A69A88;
 }
 
 .tbl-col-flt-set {
@@ -173,12 +173,8 @@
    color: #333333;
 }
 
-.tbl-hdr-col .tbl-col-flt {
-	opacity: 0.7;
-}
-
 .tbl-hdr-col .tbl-col-flt:hover {
-	opacity: 1.0;
+	color: #906C37;
 }
 
 .tbl-hdr-col .tbl-col-flt-title:hover {
