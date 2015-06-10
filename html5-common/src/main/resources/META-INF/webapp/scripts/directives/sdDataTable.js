@@ -137,8 +137,8 @@
 								'</select>\n' +
 							'</span>\n' +
 							'<button class="button-link" ng-if="$dtApi.columnSelectorAdmin" ng-click="$dtApi.toggleColumnSelectorLock()" ng-disabled="$dtApi.isColumnSelectorLockDisabled()">\n' +
-								'<span class="glyphicon glyphicon-ban-circle" ng-show="$dtApi.lock"></span>\n' + 
-								'<span class="glyphicon glyphicon-ok-circle" ng-show="!$dtApi.lock"></span>\n' +
+								'<span class="sc sc-lg sc-lock" ng-show="$dtApi.lock" title="{{i18n(\'portal-common-messages.common-filterPopup-unlock\')}}"></span>\n' + 
+								'<span class="sc sc-lg sc-unlock" ng-show="!$dtApi.lock" title="{{i18n(\'portal-common-messages.common-filterPopup-lock\')}}"></span>\n' +
 							'</button>\n' +
 							'<button class="glyphicon glyphicon-repeat button-link" ng-click="$dtApi.resetColumnSelector()" style="cursor: pointer;"></button>\n' +
 						'</div>\n' +
