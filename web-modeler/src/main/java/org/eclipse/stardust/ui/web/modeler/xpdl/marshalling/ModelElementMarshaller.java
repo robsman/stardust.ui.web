@@ -1124,9 +1124,9 @@ public class ModelElementMarshaller implements ModelMarshaller
                   }
                }
             }
-            activityJson.add(ModelerConstants.QUALITYASSURANCECODES, validCodesJson);               
+            activityJson.add(ModelerConstants.QUALITYASSURANCECODES, validCodesJson);
          }
-                  
+
          if (activity.getQualityControlPerformer() != null)
          {
             JsonObject qcJson = new JsonObject();
@@ -2190,6 +2190,12 @@ public class ModelElementMarshaller implements ModelMarshaller
             {
                TypeDeclarationType typeDeclaration = StructuredTypeUtils.getTypeDeclaration(data);
 
+               if (typeDeclaration == null && data.getExternalReference() != null)
+               {
+                  ModelType refModel = getModelBuilderFacade().getModelManagementStrategy().getModels().get(data.getExternalReference().getLocation());
+                  typeDeclaration = refModel.getTypeDeclarations().getTypeDeclaration(data.getExternalReference().getXref());
+               }
+
                if (typeDeclaration == null && data.eIsProxy())
                {
                   typeDeclaration = ExternalReferenceUtils
@@ -2311,6 +2317,10 @@ public class ModelElementMarshaller implements ModelMarshaller
             eObjectUUIDMapper().getUUID(dataSymbol));
       dataSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
             ModelerConstants.DATA_SYMBOL);
+      dataSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY,
+            dataSymbol.getWidth());
+      dataSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY,
+            dataSymbol.getHeight());
 
       // Model returned will be null in case of data delete operation
 
