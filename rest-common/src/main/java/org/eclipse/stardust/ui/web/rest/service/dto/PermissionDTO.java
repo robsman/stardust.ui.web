@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
-import java.util.List;
+import java.util.Set;
 
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
@@ -23,10 +23,10 @@ public class PermissionDTO extends AbstractDTO
 {
    public String name = MessagesViewsCommonBean.getInstance().getString("common.unknown");
    public String id = null;
-   public List<ParticipantDTO> allow;
-   public List<ParticipantDTO> deny;
-   public List<PermissionDTO> views;
-   public List<PermissionDTO> launchPanels;
+   public Set<ParticipantDTO> allow;
+   public Set<ParticipantDTO> deny;
+   public Set<PermissionDTO> views;
+   public Set<PermissionDTO> launchPanels;
 
    public PermissionDTO()
    {}
@@ -57,5 +57,63 @@ public class PermissionDTO extends AbstractDTO
       }
 
       public String name;
+
+      @Override
+      public int hashCode()
+      {
+         final int prime = 31;
+         int result = 1;
+         result = prime * result + ((participantQualifiedId == null) ? 0 : participantQualifiedId.hashCode());
+         return result;
+      }
+
+      @Override
+      public boolean equals(Object obj)
+      {
+         if (this == obj)
+            return true;
+         if (obj == null)
+            return false;
+         if (getClass() != obj.getClass())
+            return false;
+         ParticipantDTO other = (ParticipantDTO) obj;
+         if (participantQualifiedId == null)
+         {
+            if (other.participantQualifiedId != null)
+               return false;
+         }
+         else if (!participantQualifiedId.equals(other.participantQualifiedId))
+            return false;
+         return true;
+      }
+   }
+
+   @Override
+   public int hashCode()
+   {
+      final int prime = 31;
+      int result = 1;
+      result = prime * result + ((id == null) ? 0 : id.hashCode());
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj)
+   {
+      if (this == obj)
+         return true;
+      if (obj == null)
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      PermissionDTO other = (PermissionDTO) obj;
+      if (id == null)
+      {
+         if (other.id != null)
+            return false;
+      }
+      else if (!id.equals(other.id))
+         return false;
+      return true;
    }
 }

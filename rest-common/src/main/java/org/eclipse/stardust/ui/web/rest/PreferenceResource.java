@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.ws.rs.GET;
@@ -178,7 +179,7 @@ public class PreferenceResource
    @Path("/permissions")
    public Response getAllPermissions()
    {
-      Map<String, List<PermissionDTO>> permissions = authorizationManagerService.fetchPermissions();
+      Map<String, Set<PermissionDTO>> permissions = authorizationManagerService.fetchPermissions();
       Gson gson = new Gson();
       return Response.ok(gson.toJson(permissions), MediaType.APPLICATION_JSON).build();
    }

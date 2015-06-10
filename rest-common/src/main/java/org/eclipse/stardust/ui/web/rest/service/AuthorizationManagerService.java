@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,7 +68,7 @@ public class AuthorizationManagerService
     * 
     * @return
     */
-   public Map<String, List<PermissionDTO>> fetchPermissions()
+   public Map<String, Set<PermissionDTO>> fetchPermissions()
    {
       // fetch permission
       AdministrationService administrationService = serviceFactoryUtils.getAdministrationService();
@@ -79,7 +80,7 @@ public class AuthorizationManagerService
       RuntimePermissions runtimePermissionsDetails = (RuntimePermissions) administrationService.getGlobalPermissions();
       permissions.setGeneralPermission(runtimePermissionsDetails);
 
-      Map<String, List<PermissionDTO>> allPermissions = new HashMap<String, List<PermissionDTO>>();
+      Map<String, Set<PermissionDTO>> allPermissions = new HashMap<String, Set<PermissionDTO>>();
       allPermissions.putAll(buildGeneralAndModelPermissions(permissions));
       allPermissions.putAll(buildUiPermissions(permissions));
 
@@ -90,22 +91,22 @@ public class AuthorizationManagerService
     * @param permissions
     * @return
     */
-   private Map<String, List<PermissionDTO>> buildGeneralAndModelPermissions(PermissionsDetails permissions)
+   private Map<String, Set<PermissionDTO>> buildGeneralAndModelPermissions(PermissionsDetails permissions)
    {
-      Map<String, List<PermissionDTO>> GeneralAndModelPermissions = new HashMap<String, List<PermissionDTO>>();
+      Map<String, Set<PermissionDTO>> GeneralAndModelPermissions = new HashMap<String, Set<PermissionDTO>>();
 
       RuntimePermissions runtimePermissions = permissions.getGeneralPermission();
 
-      List<PermissionDTO> generalPermissions = new ArrayList<PermissionDTO>();
+      Set<PermissionDTO> generalPermissions = new HashSet<PermissionDTO>();
       GeneralAndModelPermissions.put(PermissionType.general.name(), generalPermissions);
 
-      List<PermissionDTO> processes = new ArrayList<PermissionDTO>();
+      Set<PermissionDTO> processes = new HashSet<PermissionDTO>();
       GeneralAndModelPermissions.put(PermissionType.processDefinitions.name(), processes);
 
-      List<PermissionDTO> activities = new ArrayList<PermissionDTO>();
+      Set<PermissionDTO> activities = new HashSet<PermissionDTO>();
       GeneralAndModelPermissions.put(PermissionType.activities.name(), activities);
 
-      List<PermissionDTO> datas = new ArrayList<PermissionDTO>();
+      Set<PermissionDTO> datas = new HashSet<PermissionDTO>();
       GeneralAndModelPermissions.put(PermissionType.data.name(), datas);
 
       List<String> permissionIds = new ArrayList<String>(runtimePermissions.getAllPermissionIds());
@@ -149,7 +150,7 @@ public class AuthorizationManagerService
     * @param permissions
     * @return
     */
-   private Map<String, List<PermissionDTO>> buildUiPermissions(PermissionsDetails permissions)
+   private Map<String, Set<PermissionDTO>> buildUiPermissions(PermissionsDetails permissions)
    {
       Map<String, PerspectiveDefinition> perspectives = PortalUiController.getInstance().getSystemPerspectives();
 
@@ -171,15 +172,15 @@ public class AuthorizationManagerService
          }
       });
 
-      Map<String, List<PermissionDTO>> uiPermissions = new HashMap<String, List<PermissionDTO>>();
+      Map<String, Set<PermissionDTO>> uiPermissions = new HashMap<String, Set<PermissionDTO>>();
 
       Map<String, PermissionDTO> globalElements = new HashMap<String, PermissionDTO>();
 
-      List<PermissionDTO> perspectivePermissions = new ArrayList<PermissionDTO>();
+      Set<PermissionDTO> perspectivePermissions = new HashSet<PermissionDTO>();
       uiPermissions.put(PermissionType.perspectives.name(), perspectivePermissions);
 
-      List<PermissionDTO> globalExtnPermissions = new ArrayList<PermissionDTO>();
-      uiPermissions.put(PermissionType.globalExtensions.name(), perspectivePermissions);
+      Set<PermissionDTO> globalExtnPermissions = new HashSet<PermissionDTO>();
+      uiPermissions.put(PermissionType.globalExtensions.name(), globalExtnPermissions);
 
       for (IPerspectiveDefinition perspective : allPerspectives)
       {
@@ -190,7 +191,7 @@ public class AuthorizationManagerService
          updateGrants(perspectiveDTO, permissions);
 
          // add launch panels
-         perspectiveDTO.launchPanels = new ArrayList<PermissionDTO>();
+         perspectiveDTO.launchPanels = new HashSet<PermissionDTO>();
          List<LaunchPanel> launchPanels = perspective.getLaunchPanels();
          for (LaunchPanel launchPanel : launchPanels)
          {
@@ -206,7 +207,7 @@ public class AuthorizationManagerService
 
                if (globalElements.get(launchPanel.getDefinedIn()).launchPanels == null)
                {
-                  globalElements.get(launchPanel.getDefinedIn()).launchPanels = new ArrayList<PermissionDTO>();
+                  globalElements.get(launchPanel.getDefinedIn()).launchPanels = new HashSet<PermissionDTO>();
                }
 
                PermissionDTO lPanelDto = new PermissionDTO(UiPermissionUtils.getPermissionId(launchPanel.getName()),
@@ -224,24 +225,29 @@ public class AuthorizationManagerService
          }
 
          // add view definitions
-         perspectiveDTO.views = new ArrayList<PermissionDTO>();
+         perspectiveDTO.views = new HashSet<PermissionDTO>();
          List<ViewDefinition> viewDefinitions = perspective.getViews();
 
          for (ViewDefinition viewDefinition : viewDefinitions)
          {
             if (viewDefinition.isGlobal())
             {
-               if (!globalElements.containsKey(viewDefinition.getDefinedIn()))
+               System.out.println("ViewName: " + viewDefinition.getName() + " defined in: "
+                     + viewDefinition.getDefinedIn() + " Perspective: " + perspective.getName());
+
+               String extName = viewDefinition.getDefinedIn();
+
+               if (!globalElements.containsKey(extName))
                {
-                  PermissionDTO gPerspectiveDTO = new PermissionDTO(UiPermissionUtils.getPermissionId(perspective
-                        .getName()), perspective.getLabel());
+                  PermissionDTO gPerspectiveDTO = new PermissionDTO(UiPermissionUtils.getPermissionId(extName),
+                        UiPermissionUtils.getPermisionLabel(extName));
                   globalExtnPermissions.add(gPerspectiveDTO);
                   globalElements.put(viewDefinition.getDefinedIn(), gPerspectiveDTO);
                }
 
                if (globalElements.get(viewDefinition.getDefinedIn()).views == null)
                {
-                  globalElements.get(viewDefinition.getDefinedIn()).views = new ArrayList<PermissionDTO>();
+                  globalElements.get(viewDefinition.getDefinedIn()).views = new HashSet<PermissionDTO>();
                }
 
                PermissionDTO viewDto = new PermissionDTO(UiPermissionUtils.getPermissionId(viewDefinition.getName()),
@@ -270,8 +276,8 @@ public class AuthorizationManagerService
     */
    private void updateGrants(PermissionDTO p, PermissionsDetails permissions)
    {
-      p.allow = new ArrayList<ParticipantDTO>();
-      p.deny = new ArrayList<ParticipantDTO>();
+      p.allow = new HashSet<ParticipantDTO>();
+      p.deny = new HashSet<ParticipantDTO>();
 
       if (permissions.hasAllGrant(p.id))
       {
