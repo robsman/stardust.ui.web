@@ -165,7 +165,6 @@ public class TestSignalEventEditing
             + "        'eventClass': 'signal'," //
             + "        'interrupting': false," //
             + "        'attributes': {" //
-            + "          'stardust.bpmn.signal': 'stardust.bpmn.signal',"
             + "          'stardust:bpmn:signal:pastSignalsGracePeriod': 10" //
             + "        }" //
             + "      }" //
