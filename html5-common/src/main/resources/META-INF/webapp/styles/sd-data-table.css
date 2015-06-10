@@ -156,6 +156,18 @@
    cursor: n-resize;
 }
 
+.tbl-col-sel-link {
+	color: #A69A88;
+}
+
+.tbl-col-sel-link:hover {
+	color: #906C37;
+}
+
+.tbl-col-sel-link[disabled='disabled'] {
+	color: #A69A88 !important;
+}
+
 .tbl-col-sel-list {
    max-height: 400px;
    margin-top: 10px;
