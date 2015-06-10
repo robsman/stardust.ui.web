@@ -11,12 +11,19 @@
 package org.eclipse.stardust.ui.web.rest.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.eclipse.stardust.engine.api.query.DeployedRuntimeArtifactQuery;
+import org.eclipse.stardust.engine.api.query.DeployedRuntimeArtifacts;
+import org.eclipse.stardust.engine.api.runtime.ArtifactType;
+import org.eclipse.stardust.engine.api.runtime.DeployedRuntimeArtifact;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.Folder;
+import org.eclipse.stardust.engine.api.runtime.RuntimeArtifact;
+import org.eclipse.stardust.engine.core.spi.artifact.impl.BenchmarkDefinitionArtifactType;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkDefinitionDTO;
@@ -72,6 +79,79 @@ public class BenchmarkDefinitionService
          throw e;
       }
       return list;
+   }
+   
+   /**
+    * 
+    * @return
+    * @throws Exception
+    */
+   public List<BenchmarkDefinitionDTO> getRuntimeBenchmarkDefinitions() throws Exception
+   {
+      List<BenchmarkDefinitionDTO> list = new ArrayList<BenchmarkDefinitionDTO>();
+      try
+      {
+         DeployedRuntimeArtifactQuery query = DeployedRuntimeArtifactQuery.findActive(
+               BenchmarkDefinitionArtifactType.TYPE_ID, new Date());
+         DeployedRuntimeArtifacts artifacts = documentUtils.getDeployedBenchmarkDefinitions(query);
+         for (DeployedRuntimeArtifact artifact : artifacts)
+         {
+            BenchmarkDefinitionDTO dto = new BenchmarkDefinitionDTO();
+            BenchmarkMetadataDTO metadata = new BenchmarkMetadataDTO();
+            metadata.lastModifiedDate = artifact.getValidFrom().getTime();
+            metadata.runtimeOid = artifact.getOid();
+            RuntimeArtifact runtimeArtifact = documentUtils.getRuntimeArtifacts(artifact.getOid());
+            String contents = new String(runtimeArtifact.getContent());
+            dto.metadata = metadata;
+            dto.content = jsonIo.readJsonObject(contents);
+            list.add(dto);
+         }
+      }
+      catch (Exception e)
+      {
+         throw e;
+      }
+      return list;
+   }
+
+   /**
+    * 
+    * @param benchmarkId
+    * @throws Exception
+    */
+   public void publishBenchmarkDefinition(String benchmarkId) throws Exception
+   {
+      try
+      {
+         RuntimeArtifact artifact = null;
+         DeployedRuntimeArtifact deployedArtifacts = null;
+         Document document = getBenchmarkDefinitionContent(benchmarkId);
+         String benchmarkName = document.getName();
+         byte[] content = documentUtils.getDocumentContents(document.getId());
+         // Check if runtime benchmark Def exist for current Benchmark Definition
+         ArtifactType artifactType = new BenchmarkDefinitionArtifactType();
+         DeployedRuntimeArtifactQuery query = DeployedRuntimeArtifactQuery.findActive(benchmarkId,
+               BenchmarkDefinitionArtifactType.TYPE_ID, new Date());
+         DeployedRuntimeArtifacts runtimeArtifacts = documentUtils.getDeployedBenchmarkDefinitions(query);
+         // overwrite runtime artifact
+         if (null != runtimeArtifacts && runtimeArtifacts.getTotalCount() > 0)
+         {
+            DeployedRuntimeArtifact runtimeArtifact = runtimeArtifacts.get(0);
+            artifact = documentUtils.getRuntimeArtifacts(runtimeArtifacts.get(0).getOid());
+            artifact.setContent(content);
+            deployedArtifacts = documentUtils.deployBenchmarkDocument(runtimeArtifact.getOid(), artifact);
+         }
+         else
+         {
+            artifact = new RuntimeArtifact(artifactType.getId(), benchmarkId, benchmarkName, content,
+                  new java.util.Date());
+            deployedArtifacts = documentUtils.deployBenchmarkDocument(0, artifact);
+         }
+      }
+      catch (Exception e)
+      {
+         throw e;
+      }
    }
 
    /**
@@ -131,6 +211,11 @@ public class BenchmarkDefinitionService
       return null;
    }
    
+   /**
+    * 
+    * @param benchmarkId
+    * @throws Exception
+    */
    public void deleteBenchmarkDefinition(String benchmarkId) throws Exception
    {
       try

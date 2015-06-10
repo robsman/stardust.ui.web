@@ -14,11 +14,15 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Component;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.engine.api.query.DeployedRuntimeArtifactQuery;
+import org.eclipse.stardust.engine.api.query.DeployedRuntimeArtifacts;
+import org.eclipse.stardust.engine.api.runtime.DeployedRuntimeArtifact;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
+import org.eclipse.stardust.engine.api.runtime.RuntimeArtifact;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 
@@ -155,6 +159,48 @@ public class DocumentUtils
       Document document = getDocumentManagementService().updateDocument(doc, byteContents, "", !overwrite,
             comments, null, false);
       return  document;
+   }
+   
+   /**
+    * 
+    * @param oid
+    * @param artifact
+    * @return
+    */
+   public DeployedRuntimeArtifact deployBenchmarkDocument(long oid, RuntimeArtifact artifact)
+   {
+      DeployedRuntimeArtifact runtimeArtifacts = null;
+      if(oid > 0)
+      {
+         
+      }
+      else
+      {
+         runtimeArtifacts = serviceFactoryUtils.getAdministrationService().deployRuntimeArtifact(artifact);   
+      }
+      
+      return runtimeArtifacts;
+   }
+   
+   /**
+    * 
+    * @param query
+    * @return
+    */
+   public DeployedRuntimeArtifacts getDeployedBenchmarkDefinitions(DeployedRuntimeArtifactQuery query)
+   {
+      DeployedRuntimeArtifacts runtimeArtifacts = serviceFactoryUtils.getQueryService().getRuntimeArtifacts(query);
+      return runtimeArtifacts;
+   }
+   
+   /**
+    * 
+    * @param oid
+    * @return
+    */
+   public RuntimeArtifact getRuntimeArtifacts(long oid)
+   {
+      return serviceFactoryUtils.getAdministrationService().getRuntimeArtifact(oid);
    }
    
    /**

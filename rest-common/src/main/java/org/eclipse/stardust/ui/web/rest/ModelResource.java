@@ -42,7 +42,7 @@ public class ModelResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("/models.json")
+   @Path("/models")
    public Response getModels()
    {
       try
