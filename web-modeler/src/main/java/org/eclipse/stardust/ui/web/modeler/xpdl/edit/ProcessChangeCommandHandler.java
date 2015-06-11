@@ -27,6 +27,7 @@ import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
 import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.util.NameIdUtils;
 import org.eclipse.stardust.ui.web.modeler.cap.AbstractMerger;
 import org.eclipse.stardust.ui.web.modeler.cap.CopyPasteUtil;
 import org.eclipse.stardust.ui.web.modeler.cap.OutlineMerger;
@@ -92,6 +93,10 @@ public class ProcessChangeCommandHandler
 
       ProcessDefinitionType clonedProcess = cloneProcess(model, processDefinition);
 
+      //Make sure id of the new process is unique
+      String id = NameIdUtils.createIdFromName(model.getProcessDefinition(), clonedProcess);
+      clonedProcess.setId(id);
+
       //Post clone operations
 
       fixReferencesForIntermediateEvents(processDefinition, clonedProcess);
@@ -130,6 +135,7 @@ public class ProcessChangeCommandHandler
 
    }
 
+   @SuppressWarnings({"rawtypes", "unchecked"})
    public ProcessDefinitionType cloneProcess(ModelType model,
          ProcessDefinitionType processDefinition)
    {
@@ -231,6 +237,7 @@ public class ProcessChangeCommandHandler
 
    }
 
+   @SuppressWarnings({"rawtypes", "unchecked"})
    protected List extractStorage(List currentContent)
    {
       List copySet = new ArrayList();

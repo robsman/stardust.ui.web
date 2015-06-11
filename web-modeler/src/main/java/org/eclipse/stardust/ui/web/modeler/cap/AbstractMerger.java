@@ -1079,24 +1079,6 @@ public abstract class AbstractMerger
          eClassNameIdCache.put(eClass, localNameIdCache);
          nameIdCache.put(parent, eClassNameIdCache);
          return true;
-
-
-         /*NameIdDialog nameIdDialog = new NameIdDialog(null, id, name, (HashMap) localNameIdCache);
-
-         // add modified EObjects to newElements
-         if (Dialog.OK == nameIdDialog.open())
-         {
-            ((IIdentifiableElement) copy).setId(nameIdDialog.getId());
-            ((IIdentifiableElement) copy).setName(nameIdDialog.getName());
-            ((HashMap) localNameIdCache).put(nameIdDialog.getId(), nameIdDialog.getName());
-            eClassNameIdCache.put(eClass, localNameIdCache);
-            nameIdCache.put(parent, eClassNameIdCache);
-            return true;
-         }
-         else
-         {
-            return false;
-         }*/
       }
       else if (copy instanceof TypeDeclarationType)
       {
