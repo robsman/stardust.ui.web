@@ -81,8 +81,8 @@ public class UiPermissionUtils
    private final static String ADMINISTRATOR = PredefinedConstants.ADMINISTRATOR_ROLE;
    private final static String AUDITOR = "Auditor";
    private static final String PREFIX = "portal.ui.";
-   public static final String POSTFIX_ALLOW = ".allow";
-   public static final String POSTFIX_DENY = ".deny";
+   public static final String SUFFIX_ALLOW = ".allow";
+   public static final String SUFFIX_DENY = ".deny";
    public static final String PREFIX_DENY = "deny:";
    private static final String PERIOD = ".";
    private static final String SPACE = " ";
@@ -168,7 +168,7 @@ public class UiPermissionUtils
     */
    public static String getPermissionIdAllow(String permissionId)
    {
-      return PREFIX + permissionId + POSTFIX_ALLOW;
+      return PREFIX + permissionId + SUFFIX_ALLOW;
    }
 
    /**
@@ -177,7 +177,7 @@ public class UiPermissionUtils
     */
    public static String getPermissionIdDeny(String permissionId)
    {
-      return PREFIX + permissionId + POSTFIX_DENY;
+      return PREFIX + permissionId + SUFFIX_DENY;
    }
 
    /**

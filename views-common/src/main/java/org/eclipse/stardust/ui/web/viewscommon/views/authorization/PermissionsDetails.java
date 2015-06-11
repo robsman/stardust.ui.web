@@ -82,7 +82,7 @@ public class PermissionsDetails
       else
       {
          externalGrants = UiPermissionUtils.externalize(uiPermissions.get(permissionId
-               + UiPermissionUtils.POSTFIX_ALLOW));
+               + UiPermissionUtils.SUFFIX_ALLOW));
       }
 
       return externalGrants;
@@ -104,7 +104,7 @@ public class PermissionsDetails
       else
       {
          externalGrants = UiPermissionUtils.externalize(uiPermissions
-               .get(permissionId + UiPermissionUtils.POSTFIX_DENY));
+               .get(permissionId + UiPermissionUtils.SUFFIX_DENY));
       }
 
       return externalGrants;
@@ -113,6 +113,7 @@ public class PermissionsDetails
    /**
     * @param permissionId
     * @param grants
+    * @deprecated
     */
    public void setGrants(String permissionId, Set<ModelParticipantInfo> grants)
    {
@@ -126,6 +127,39 @@ public class PermissionsDetails
       }
    }
 
+   /**
+    * @param permissionId
+    * @param grants
+    */
+   public void setGrants2(String permissionId, Set<ModelParticipantInfo> grants)
+   {
+      if (UiPermissionUtils.isGeneralPermissionId(permissionId))
+      {
+         generalPermission.setGrants(permissionId, grants);
+      }
+      else
+      {
+         uiPermissions.put(permissionId + UiPermissionUtils.SUFFIX_ALLOW, UiPermissionUtils.internalize(grants));
+      }
+   }
+
+   /**
+    * 
+    * @param permissionId
+    * @param grants
+    */
+   public void setDeniedGrants(String permissionId, Set<ModelParticipantInfo> grants)
+   {
+      if (UiPermissionUtils.isGeneralPermissionId(permissionId))
+      {
+         generalPermission.setDeniedGrants(permissionId, grants);
+      }
+      else
+      {
+         uiPermissions.put(permissionId + UiPermissionUtils.SUFFIX_DENY, UiPermissionUtils.internalize(grants));
+      }
+   }
+   
    /**
     * @param permissionId
     */

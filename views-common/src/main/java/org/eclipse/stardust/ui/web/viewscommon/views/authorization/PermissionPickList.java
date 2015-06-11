@@ -483,7 +483,11 @@ public class PermissionPickList
       if (!UiPermissionUtils.isGeneralPermissionId(permissionId))
       {
          // UI Permissions
-         return uiPermissionDefs.get(permissionId).getLabel();
+         UiPermission permission = uiPermissionDefs.get(permissionId);
+         if(permission != null){
+            return uiPermissionDefs.get(permissionId).getLabel();   
+         }
+         return permissionId;
       }
       else if (!labels.containsKey(permissionId))
       {

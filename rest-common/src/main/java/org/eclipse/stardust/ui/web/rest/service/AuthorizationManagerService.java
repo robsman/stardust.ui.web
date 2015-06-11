@@ -26,14 +26,15 @@ import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.RuntimePermissions;
+import org.eclipse.stardust.engine.core.runtime.utils.ParticipantInfoUtil;
 import org.eclipse.stardust.ui.web.common.IPerspectiveDefinition;
 import org.eclipse.stardust.ui.web.common.LaunchPanel;
 import org.eclipse.stardust.ui.web.common.PerspectiveDefinition;
 import org.eclipse.stardust.ui.web.common.UiElement;
 import org.eclipse.stardust.ui.web.common.ViewDefinition;
 import org.eclipse.stardust.ui.web.common.app.PortalUiController;
-import org.eclipse.stardust.ui.web.rest.service.dto.PermissionDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.PermissionDTO.ParticipantDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.PermissionDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.PermissionDTO.ParticipantDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
@@ -49,6 +50,7 @@ import org.springframework.stereotype.Component;
  * @author Yogesh.Manware
  * @version $Revision: $
  */
+
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class AuthorizationManagerService
@@ -70,6 +72,71 @@ public class AuthorizationManagerService
     */
    public Map<String, Set<PermissionDTO>> fetchPermissions()
    {
+      PermissionsDetails permissions = getPermissionDetails();
+      Map<String, Set<PermissionDTO>> allPermissions = new HashMap<String, Set<PermissionDTO>>();
+      allPermissions.putAll(buildGeneralAndModelPermissions(permissions));
+      allPermissions.putAll(buildUiPermissions(permissions));
+      return allPermissions;
+   }
+
+   /**
+    * @param allow
+    * @param deny
+    * @param selectedParticipants
+    */
+   public Map<String, Set<PermissionDTO>> updateGrants(List<String> allow, List<String> deny,
+         List<String> selectedParticipants)
+   {
+      PermissionsDetails permissions = getPermissionDetails();
+      if (allow != null)
+      {
+         updateGrants(allow, selectedParticipants, permissions);
+      }
+      if (deny != null)
+      {
+         updateDeniedGrants(deny, selectedParticipants, permissions);
+      }
+      savePermissions(permissions);
+      // TODO think of better response later
+      return fetchPermissions();
+   }
+
+   /**
+    * 
+    * @param permissionId
+    * @return
+    */
+   public Map<String, Set<PermissionDTO>> restoreGrants(String permissionIdStr)
+   {
+      String[] permissionIds = permissionIdStr.split(",");
+      PermissionsDetails permissions = getPermissionDetails();
+
+      for (String permissionId : permissionIds)
+      {
+         permissions.setGrants2(permissionId, null);
+         permissions.setDeniedGrants(permissionId, null);
+      }
+      savePermissions(permissions);
+      return fetchPermissions();
+   }
+
+   /**
+    * 
+    * @param permissions
+    */
+   private void savePermissions(PermissionsDetails permissions)
+   {
+      AdministrationService administrationService = serviceFactoryUtils.getAdministrationService();
+      administrationService.setGlobalPermissions(permissions.getGeneralPermission());
+      UiPermissionUtils.savePreferences(administrationService, permissions.getUIPermissionMap());
+   }
+
+   /**
+    * 
+    * @return
+    */
+   private PermissionsDetails getPermissionDetails()
+   {
       // fetch permission
       AdministrationService administrationService = serviceFactoryUtils.getAdministrationService();
 
@@ -80,11 +147,102 @@ public class AuthorizationManagerService
       RuntimePermissions runtimePermissionsDetails = (RuntimePermissions) administrationService.getGlobalPermissions();
       permissions.setGeneralPermission(runtimePermissionsDetails);
 
-      Map<String, Set<PermissionDTO>> allPermissions = new HashMap<String, Set<PermissionDTO>>();
-      allPermissions.putAll(buildGeneralAndModelPermissions(permissions));
-      allPermissions.putAll(buildUiPermissions(permissions));
+      return permissions;
+   }
 
-      return allPermissions;
+   /**
+    * @param permissionIds
+    * @param selectedParticipants
+    * @param permissions
+    */
+   private void updateGrants(List<String> permissionIds, List<String> selectedParticipants,
+         PermissionsDetails permissions)
+   {
+      for (String permissionId : permissionIds)
+      {
+         Set<ModelParticipantInfo> participants = permissions.getGrants2(permissionId);
+
+         for (String qualifiedParticipantId : selectedParticipants)
+         {
+            boolean isExist = false;
+
+            for (ModelParticipantInfo info : participants)
+            {
+               if (info instanceof QualifiedModelParticipantInfo)
+               {
+                  if (((QualifiedModelParticipantInfo) info).getQualifiedId().equals(qualifiedParticipantId))
+                  {
+                     isExist = true;
+                     break;
+                  }
+               }
+               else
+               {
+                  if (info.getId().equals(qualifiedParticipantId))
+                  {
+                     isExist = true;
+                     break;
+                  }
+               }
+            }
+
+            if (!isExist)
+            {
+               ModelParticipantInfo selectedParticipant = ParticipantInfoUtil
+                     .newModelParticipantInfo(qualifiedParticipantId);
+               participants.add(selectedParticipant);
+            }
+         }
+         permissions.setGrants2(permissionId, participants);
+      }
+   }
+
+   /**
+    * @param permissionIds
+    * @param selectedParticipants
+    * @param permissions
+    */
+   private void updateDeniedGrants(List<String> permissionIds, List<String> selectedParticipants,
+         PermissionsDetails permissions)
+   {
+      for (String permissionId : permissionIds)
+      {
+         Set<ModelParticipantInfo> participants = permissions.getDeniedGrants(permissionId);
+
+         for (String qualifiedParticipantId : selectedParticipants)
+         {
+            boolean isExist = false;
+
+            for (ModelParticipantInfo info : participants)
+            {
+               if (info instanceof QualifiedModelParticipantInfo)
+               {
+                  if (((QualifiedModelParticipantInfo) info).getQualifiedId().equals(qualifiedParticipantId))
+                  {
+                     isExist = true;
+                     break;
+                  }
+               }
+               else
+               {
+                  if (info.getId().equals(qualifiedParticipantId))
+                  {
+                     isExist = true;
+                     break;
+                  }
+               }
+            }
+
+            if (!isExist)
+            {
+               ModelParticipantInfo selectedParticipant = ParticipantInfoUtil
+                     .newModelParticipantInfo(qualifiedParticipantId);
+               participants.add(selectedParticipant);
+            }
+         }
+
+         permissions.setDeniedGrants(permissionId, participants);
+      }
    }
 
    /**

@@ -8,10 +8,11 @@
  * Contributors:
  *	Yogesh.Manware (SunGard CSA LLC) - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.stardust.ui.web.rest.service.dto;
+package org.eclipse.stardust.ui.web.rest.service.dto.response;
 
 import java.util.Set;
 
+import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
 /**

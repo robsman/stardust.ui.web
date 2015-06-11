@@ -37,8 +37,8 @@ import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.service.AuthorizationManagerService;
 import org.eclipse.stardust.ui.web.rest.service.PreferenceService;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.PermissionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PreferenceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.PermissionDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -60,7 +60,7 @@ public class PreferenceResource
 
    @Autowired
    private PreferenceService PreferenceService;
-   
+
    @Autowired
    private AuthorizationManagerService authorizationManagerService;
 
@@ -173,14 +173,48 @@ public class PreferenceResource
          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
    }
-   
+
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("/permissions")
-   public Response getAllPermissions()
+   @Path("/permissions/grants")
+   public Response getAllPermissionsAndGrants()
    {
       Map<String, Set<PermissionDTO>> permissions = authorizationManagerService.fetchPermissions();
-      Gson gson = new Gson();
-      return Response.ok(gson.toJson(permissions), MediaType.APPLICATION_JSON).build();
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(permissions), MediaType.APPLICATION_JSON).build();
+   }
+
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/permissions/grants")
+   public Response setGrants(String postedData)
+   {
+      Map grantsMap = null;
+      if (StringUtils.isNotEmpty(postedData))
+      {
+         grantsMap = JsonDTO.getAsMap(postedData);
+      }
+      Map<String, Set<PermissionDTO>> permissions = authorizationManagerService.updateGrants(
+            (List<String>) grantsMap.get("allow"), (List<String>) grantsMap.get("deny"),
+            (List<String>) grantsMap.get("participants"));
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(permissions), MediaType.APPLICATION_JSON).build();
+   }
+
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/permissions/grants/restore/{permisionId}")
+   public Response restoreGrants(@PathParam("permisionId") String permissionId)
+   {
+      Map<String, Set<PermissionDTO>> permissions = authorizationManagerService.restoreGrants(permissionId);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(permissions), MediaType.APPLICATION_JSON).build();
+   }
+   
+   //To restore multiple permissions
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/permissions/grants/restore")
+   public Response restoreGrants2(@QueryParam("permissionIds") String permissionIds)
+   {
+      Map<String, Set<PermissionDTO>> permissions = authorizationManagerService.restoreGrants(permissionIds);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(permissions), MediaType.APPLICATION_JSON).build();
    }
 }
