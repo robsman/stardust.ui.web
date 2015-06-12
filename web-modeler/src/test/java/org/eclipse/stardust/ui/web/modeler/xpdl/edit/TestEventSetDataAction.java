@@ -106,7 +106,7 @@ public class TestEventSetDataAction extends RecordingTestcase
 
       replaySimple(command, "testCloneProcessCreateSimpleIntermediateEvent", null);
 
-      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "Process1Cloned", "CLONE - Process 1");
+      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "CLONE_Process1", "CLONE - Process 1");
       ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
       EventHandlerType eventHandler = assertEventHandler(activity, "MyEvent", "MyEvent", "exception");
       assertThat(eventHandler.getEventAction().size(),  is(1));
@@ -133,7 +133,7 @@ public class TestEventSetDataAction extends RecordingTestcase
 
       replaySimple(command, "testCloneProcessCreateSimpleIntermediateEvent", null);
 
-      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "Process1Cloned", "CLONE - Process 1");
+      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "CLONE_Process1", "CLONE - Process 1");
       ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
       EventHandlerType eventHandler = assertEventHandler(activity, "MyEvent", "MyEvent", "exception");
       assertThat(eventHandler.getEventAction().size(),  is(2));
