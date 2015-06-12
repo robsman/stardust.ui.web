@@ -223,7 +223,7 @@ public class TestDataMappings extends RecordingTestcase
       replaySimple(command, "testCloneModelMultipleDatamappings", null);
 
       DataType data = GenericModelingAssertions.assertPrimitiveData(providerModel, "PrimitiveData", "Primitive Data", "String");
-      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "ProviderProcessCloned", "CLONE - Provider Process");
+      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "CLONE_ProviderProcess", "CLONE - Provider Process");
       ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
       GenericModelingAssertions.assertDataMapping(activity, "PrimitiveData", "PrimitiveData", "engine", DirectionType.OUT_LITERAL, data, "activityInstance", null, null);
       GenericModelingAssertions.assertDataMapping(activity, "PrimitiveData", "PrimitiveData", "default", DirectionType.IN_LITERAL, data, null, null, null);
@@ -250,7 +250,7 @@ public class TestDataMappings extends RecordingTestcase
 
       replaySimple(command, "testCloneProcessUIMashUpDatamappings", null);
 
-      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "DatamappingProcessCloned","CLONE - Datamapping Process");
+      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "CLONE_DatamappingProcess","CLONE - Datamapping Process");
       ActivityType activity = assertUIMashupProcess(process);
       List<DataMappingType> dataMappings = activity.getDataMapping();
       assertThat(dataMappings, is(not(nullValue())));

@@ -65,8 +65,8 @@ public class TestGeneralModeling extends RecordingTestcase
       GenericModelingAssertions.assertPrimitiveData(providerModel, "ProvidedPrimitive", "ProvidedPrimitive", "String");
       GenericModelingAssertions.assertStructData(providerModel, "ProvidedStructData", "ProvidedStructData", "ProvidedTypeDeclaration");
       GenericModelingAssertions.assertDocumentData(providerModel, "ProvidedDocument", "ProvidedDocument", "ProvidedTypeDeclaration");
-      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "ProvidedProcessCloned", "CLONE - ProvidedProcess");
-      GenericModelingAssertions.assertProcessInterface(providerModel, "ProvidedProcessCloned", "CLONE - ProvidedProcess", 2);
+      ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "CLONE_ProvidedProcess", "CLONE - ProvidedProcess");
+      GenericModelingAssertions.assertProcessInterface(providerModel, "CLONE_ProvidedProcess", "CLONE - ProvidedProcess", 2);
       GenericModelingAssertions.assertPrimitiveFormalParameter(process, "InString", "InString", ModeType.IN, TypeType.STRING);
       GenericModelingAssertions.assertStructFormalParameter(process, "OutStruct", "OutStruct", ModeType.IN, "ProvidedTypeDeclaration");
       GenericModelingAssertions.assertRole(providerModel, "ProvidedRole", "ProvidedRole");
