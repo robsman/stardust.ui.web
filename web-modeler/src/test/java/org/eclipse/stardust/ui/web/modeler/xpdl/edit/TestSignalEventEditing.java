@@ -2,6 +2,9 @@ package org.eclipse.stardust.ui.web.modeler.xpdl.edit;
 
 import static java.util.Collections.EMPTY_LIST;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
+import static org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil.getAttribute;
+import static org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil.getAttributeValue;
+import static org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil.getBooleanValue;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -25,7 +28,6 @@ import org.mockito.Mockito;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.reflect.TypeToken;
@@ -35,16 +37,18 @@ import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserService;
+import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
+import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
 import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
+import org.eclipse.stardust.model.xpdl.carnot.EventHandlerType;
+import org.eclipse.stardust.model.xpdl.carnot.IntermediateEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
-import org.eclipse.stardust.model.xpdl.carnot.TriggerType;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.batch.BatchChangesJto;
 import org.eclipse.stardust.ui.web.modeler.edit.batch.BatchStepJto;
-import org.eclipse.stardust.ui.web.modeler.edit.batch.VarSpecJto;
 import org.eclipse.stardust.ui.web.modeler.edit.jto.ChangeDescriptionJto;
 import org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
@@ -55,7 +59,6 @@ import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.service.ModelerSessionController;
 import org.eclipse.stardust.ui.web.modeler.utils.test.ChangeApiDriver;
 import org.eclipse.stardust.ui.web.modeler.utils.test.MockServiceFactoryLocator;
-import org.eclipse.stardust.ui.web.modeler.xpdl.XpdlPersistenceHandler;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"../../web-modeler-test-context.xml"})
@@ -222,6 +225,34 @@ public class TestSignalEventEditing
       assertThat(defaultLane.getEndEventSymbols().size(), is(0));
 
       assertThat(defaultLane.getIntermediateEventSymbols().size(), is(1));
+      IntermediateEventSymbol catchSignalEventSymbol = defaultLane.getIntermediateEventSymbols().get(0);
+
+      assertThat(checklistProcess.getActivity().size(), is(1));
+      ActivityType catchSignalEvent = checklistProcess.getActivity().get(0);
+      assertThat(catchSignalEvent.getImplementation(), is(ActivityImplementationType.ROUTE_LITERAL));
+      assertThat(catchSignalEvent.isHibernateOnCreation(), is(true));
+      assertThat(getBooleanValue(catchSignalEvent, "stardust:bpmnIntermediateEventHost"),
+            is(true));
+      assertThat(
+            getAttribute(catchSignalEvent,
+                  "stardust:bpmnEvent:" + catchSignalEventSymbol.getElementOid()),
+            is(notNullValue()));
+
+      assertThat(catchSignalEvent.getEventHandler().size(), is(1));
+      EventHandlerType signalEventHandler = catchSignalEvent.getEventHandler().get(0);
+      assertThat(signalEventHandler.getType().getId(), is("signal"));
+      assertThat(signalEventHandler.getName(), is("Wait for FileArrival"));
+      assertThat(signalEventHandler.isAutoBind(), is(false));
+      assertThat(signalEventHandler.isConsumeOnMatch(), is(false));
+      assertThat(
+            getAttributeValue(signalEventHandler,
+                  "stardust:bpmn:signal:pastSignalsGracePeriod"), is("10"));
+
+      assertThat(signalEventHandler.getBindAction().size(), is(0));
+      assertThat(signalEventHandler.getUnbindAction().size(), is(0));
+      assertThat(signalEventHandler.getEventAction().size(), is(1));
+      assertThat(signalEventHandler.getEventAction().get(0).getType().getId(),
+            is(PredefinedConstants.COMPLETE_ACTIVITY_ACTION));
 
       assertThat(defaultLane.getStartEventSymbols().size(), is(0));
       assertThat(defaultLane.getEndEventSymbols().size(), is(0));
