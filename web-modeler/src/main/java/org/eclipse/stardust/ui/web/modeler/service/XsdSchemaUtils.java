@@ -384,7 +384,7 @@ public final class XsdSchemaUtils
          }
 
          XSDTypeDefinition type = element.getTypeDefinition();
-
+         
          // elements are constructed similar with types
          JsonObject json = new JsonObject();
          if (type == element.getAnonymousTypeDefinition() && type != null
@@ -416,6 +416,7 @@ public final class XsdSchemaUtils
             {
                prefixedName = element.getName();
             }
+            
             json.addProperty("type", prefixedName);
          }
 
@@ -1509,21 +1510,21 @@ public final class XsdSchemaUtils
          }
          else
          {
-         QName qname = QName.valueOf(type);
-         localName = qname.getLocalPart();
-         namespace = qname.getNamespaceURI();
-         if (!prefix2Namespace.containsValue(namespace))
-         {
-            String nsPrefix = qname.getPrefix();
-            if (isEmpty(nsPrefix))
+            QName qname = QName.valueOf(type);
+            localName = qname.getLocalPart();
+            namespace = qname.getNamespaceURI();
+            if (!prefix2Namespace.containsValue(namespace))
             {
-               nsPrefix = TypeDeclarationUtils.computePrefix(localName.toLowerCase(), prefix2Namespace.keySet());
+               String nsPrefix = qname.getPrefix();
+               if (isEmpty(nsPrefix))
+               {
+                  nsPrefix = TypeDeclarationUtils.computePrefix(localName.toLowerCase(), prefix2Namespace.keySet());
+               }
+               prefix2Namespace.put(nsPrefix, namespace);
+               // propagate ns-prefix mappings to DOM
+               schema.updateElement(true);
             }
-            prefix2Namespace.put(nsPrefix, namespace);
-            // propagate ns-prefix mappings to DOM
-            schema.updateElement(true);
          }
-      }
       }
       else
       {
@@ -1533,57 +1534,61 @@ public final class XsdSchemaUtils
          {
             localName = type.substring(ix + 1);
          }
+         else
+         {
+            localName = type;                        
+         }
       }
 
       TypeDeclarationType useType = null;
-         // find target schema
-         ModelType model = ModelUtils.findContainingModel(def);
-         if (locations != null)
-         {
-            String location = GsonUtils.safeGetAsString(locations, namespace);
+      // find target schema
+      ModelType model = ModelUtils.findContainingModel(def);
+      if (locations != null)
+      {
+         String location = GsonUtils.safeGetAsString(locations, namespace);
          if(StringUtils.isEmpty(namespace))
          {
             location = GsonUtils.safeGetAsString(locations, "");
          }
 
-            if (location != null)
-            {
-               QName qname = QName.valueOf(location);
-               String refModelId = qname.getNamespaceURI();
-               if (XMLConstants.NULL_NS_URI != refModelId)
-               {
-               ModelType refModel = ModelUtils.getExternalModel(model, refModelId);
-                        if (refModel != null)
-                        {
-                           model = refModel;
-                        }
-                     }
-                  }
-               }
-
-         if (model != null)
+         if (location != null)
          {
-            TypeDeclarationsType declarations = model.getTypeDeclarations();
-            // (fh) try first an exact match
-            TypeDeclarationType decl = declarations.getTypeDeclaration(localName);
-            if (decl != null && canResolve(decl, namespace, localName))
+            QName qname = QName.valueOf(location);
+            String refModelId = qname.getNamespaceURI();
+            if (XMLConstants.NULL_NS_URI != refModelId)
             {
-               addImport(schema, namespace, decl);
-            useType = decl;
-            }
-            else
-            {
-               for (TypeDeclarationType typeDeclaration : declarations.getTypeDeclaration())
+               ModelType refModel = ModelUtils.getExternalModel(model, refModelId);
+               if (refModel != null)
                {
-                  if (canResolve(typeDeclaration, namespace, localName))
-                  {
-                     addImport(schema, namespace, typeDeclaration);
-                  useType = typeDeclaration;
-                     break;
-                  }
+                  model = refModel;
                }
             }
          }
+      }
+
+      if (model != null)
+      {
+         TypeDeclarationsType declarations = model.getTypeDeclarations();
+         // (fh) try first an exact match
+         TypeDeclarationType decl = declarations.getTypeDeclaration(localName);
+         if (decl != null && canResolve(decl, namespace, localName))
+         {
+            addImport(schema, namespace, decl);
+            useType = decl;
+         }
+         else
+         {
+            for (TypeDeclarationType typeDeclaration : declarations.getTypeDeclaration())
+            {
+               if (canResolve(typeDeclaration, namespace, localName))
+               {
+                  addImport(schema, namespace, typeDeclaration);
+                  useType = typeDeclaration;
+                  break;
+               }
+            }
+         }
+      }
 
       XSDNamedComponent findComponent = null;
       if (useType != null)
