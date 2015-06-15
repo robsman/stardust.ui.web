@@ -143,7 +143,6 @@ public class TestSignalEventEditing
             + "    'commandId': 'eventSymbol.create'," //
             + "    'oid': '${defaultLane.oid}'," //
             + "    'changes': {" //
-            + "      'height': 16," //
             + "      'modelElement': {" //
             + "        'eventType': 'intermediateEvent'," //
             + "        'implementation': null," //
@@ -151,6 +150,7 @@ public class TestSignalEventEditing
             + "      }," //
             + "      'parentSymbolId': '${defaultLane.id}'," //
             + "      'width': 16," //
+            + "      'height': 16," //
             + "      'x': 10," //
             + "      'y': 10" //
             + "    }," //
@@ -171,8 +171,38 @@ public class TestSignalEventEditing
             + "          'stardust:bpmn:signal:pastSignalsGracePeriod': 10" //
             + "        }" //
             + "      }" //
+            + "    }," //
+            + "    'variables': [" //
+            + "      {'name': 'signalEvent.uuid', 'expression': \"modified[type='eventSymbol']/modelElement/uuid\"}" //
+            + "    ]" //
+            + "  }," //
+            + "  {" //
+            + "    'commandId': 'dataFlow.create'," //
+            + "    'uuid': '${signalEvent.uuid}'," //
+            + "    'changes': {" //
+            + "      'id': 'signalProperty1'," //
+            + "      'name': 'Signal Property 1'," //
+            + "      'direction': 'IN'," //
+            + "      'dataFullId': '${model.id}:CURRENT_DATE'," //
+            + "      'dataPath': 'getTime().getTime()'" //
+            + "    }" //
+            + "  }," //
+            + "  {" //
+            + "    'commandId': 'dataFlow.create'," //
+            + "    'uuid': '${signalEvent.uuid}'," //
+            + "    'changes': {" //
+            + "      'id': 'signalProperty2'," //
+            + "      'name': 'Signal Property 2'," //
+            + "      'direction': 'OUT'," //
+            + "      'dataFullId': '${model.id}:CURRENT_DATE'," //
+            + "      'dataPath': 'getTime().setTime()'" //
             + "    }" //
             + "  }" //
+            + "  " //
+            + "  " //
+            + "  " //
+            + "  " //
+            + "  " //
             + "]";
 
       batchChange.steps = jsonIo.gson().fromJson(batchSteps, new TypeToken<List<BatchStepJto>>(){}.getType());

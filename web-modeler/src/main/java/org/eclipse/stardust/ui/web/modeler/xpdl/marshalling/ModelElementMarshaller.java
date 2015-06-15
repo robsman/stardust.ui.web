@@ -4,6 +4,7 @@ import static org.eclipse.emf.common.util.ECollections.sort;
 import static org.eclipse.stardust.common.CollectionUtils.isEmpty;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
+import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingActivity;
 import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingDiagram;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
@@ -1934,7 +1935,48 @@ public class ModelElementMarshaller implements ModelMarshaller
          eventJson.add("userExclusions", excludeUserActionsJson);
       }
 
+      JsonArray dataMappingsJson = toDataMappingsJson(eventHandler);
+      if (null != dataMappingsJson)
+      {
+         eventJson.add(ModelerConstants.DATAMAPPINGS_PROPERTY, dataMappingsJson);
+      }
+
       return eventJson;
+   }
+
+   public JsonArray toDataMappingsJson(EventHandlerType eventHandler)
+   {
+      JsonArray dataMappingsJson = null;
+
+      ActivityType activity = findContainingActivity(eventHandler);
+      if (null != activity)
+      {
+         String eventScope = "event-" + eventHandler.getId();
+
+         for (DataMappingType dataMapping : activity.getDataMapping())
+         {
+            if (eventScope.equals(dataMapping.getContext()))
+            {
+               if (null == dataMappingsJson)
+               {
+                  dataMappingsJson = new JsonArray();
+               }
+
+               JsonObject dataMappingJson = toDataMappingJson(dataMapping);
+               if (null != dataMapping.getData())
+               {
+                  DataType data = dataMapping.getData();
+                  dataMappingJson.addProperty(
+                        ModelerConstants.DATA_FULL_ID_PROPERTY,
+                        getModelBuilderFacade().createFullId(
+                              ModelUtils.findContainingModel(data), data));
+               }
+               dataMappingsJson.add(dataMappingJson);
+            }
+         }
+      }
+
+      return dataMappingsJson;
    }
 
    /**

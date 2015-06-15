@@ -138,6 +138,7 @@ public class EventCommandHandler
                   hostActivity, hostingConfig, eventClass);
             if (eventHandler != null)
             {
+               modelService().uuidMapper().map(eventHandler);
                EventMarshallingUtils.updateEventHandler(eventHandler, hostActivity, hostingConfig, eventJson);
             }
 

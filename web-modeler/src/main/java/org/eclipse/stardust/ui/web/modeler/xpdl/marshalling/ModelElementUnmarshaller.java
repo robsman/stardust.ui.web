@@ -929,7 +929,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
     * @param name
     * @return
     */
-   private DataMappingType createDataMapping(ActivityType activity, DataType data,
+   public DataMappingType createDataMapping(ActivityType activity, DataType data,
          JsonObject dataFlowJson, DirectionType direction, JsonObject dataMappingJson)
    {
       DataMappingType dataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
@@ -2206,7 +2206,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
          if (null != eventHandler)
          {
-
+            modelService.uuidMapper().map(eventHandler);
             EventMarshallingUtils.updateEventHandler(eventHandler, hostActivity, hostingConfig, eventJson);
 
             storeAttributes(eventHandler, eventJson, "carnot:engine:delayUnit");
