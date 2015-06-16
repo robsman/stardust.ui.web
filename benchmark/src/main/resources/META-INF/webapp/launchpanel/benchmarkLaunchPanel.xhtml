@@ -1,0 +1,39 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	<ice:panelGroup>
+		<ui:include src="/plugins/common/templates/launchPanelTemplate.xhtml">
+			<ui:param name="bean" value="#{myDocumentsPanelBean}" />
+			<ui:param name="title" value="Monitoring" />
+			<ui:param name="collapsible" value="true" />
+			<ui:param name="showRefreshLink" value="false" />
+		</ui:include>
+	</ice:panelGroup>
+	<ice:panelGrid columns="1" rendered="#{myDocumentsPanelBean.expanded}">
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<f:param name="viewId" value="benchmarkView" />
+			<ice:outputText value="Benchmark Management" styleClass="action-link"
+				escape="false" />
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
+             <f:param name="viewId" value="benchmarkViewHtml5" />
+             <ice:outputText value="Benchmark Management (HTML5)" styleClass="action-link"
+                   escape="false" />
+        </ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<f:param name="viewId" value="trafficLightViewNew" />
+			<ice:outputText value="Traffic Light View" styleClass="action-link"
+				escape="false" />
+		</ice:commandLink>
+		<ice:commandLink action="#{ippPortalApp.openView}">
+			<f:param name="viewId" value="ganttChartViewNew" />
+			<f:param name="viewParams" value="oid=1" />
+			<ice:outputText value="Gantt Chart View" styleClass="action-link"
+				escape="false" />
+		</ice:commandLink>
+	</ice:panelGrid>
+</f:view>

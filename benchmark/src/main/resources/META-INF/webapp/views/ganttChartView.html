@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<link
+	href='http://fonts.googleapis.com/css?family=Lato:400,700,300italic,400italic'
+	rel='stylesheet' type='text/css'>
+<title>Gantt Chart View</title>
+<link
+	href="../css/font-awesome-4.1.0/css/font-awesome.css"
+	rel="stylesheet">
+<link
+	href="../css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"
+	rel="stylesheet" type="text/css" />
+<link href="../css/stardust-modern.css"
+	rel="stylesheet" type="text/css"></link>
+<style>
+#statusTable {
+	position: relative;
+	left: 0px;
+	top: 0px;
+	border-collapse: collapse;
+	width: 100%;
+}
+
+#statusTable th {
+	border: #708090 1px solid;
+	color: #708090;
+	padding: 3px;
+}
+
+#statusTable td {
+	border: #708090 1px solid;
+	color: 24415E;
+	padding: 3px;
+}
+
+#ganttChartTable {
+	position: relative;
+	border: none;
+	left: 0px;
+	top: 0px;
+	border-collapse: collapse;
+	width: 100%;
+}
+
+#ganttChartTable td {
+	border-top: #708090 1px solid;
+	border-bottom: #708090 1px solid;
+}
+
+/* provide some minimal visual accomodation for IE8 and below */
+#ganttChartTable tr {
+	background: white;
+	min-height: 30px;
+}
+
+.nameCell {
+	padding: 2px;
+	font-size: 10px;
+}
+
+.descriptorCell {
+	padding: 2px;
+	font-size: 10px;
+}
+
+.userCell {
+	padding: 10px;
+}
+
+.userCell table {
+	font-size: 9px;
+}
+
+.controlCell {
+	padding: 2px;
+	border-right: #708090 1px solid;
+}
+
+.barCell {
+	width: 70%;
+}
+
+.barDivision {
+	position: relative;
+	border: none;
+	height: 10px;
+}
+
+.barDivision table {
+	border: none !important;
+}
+
+.barDivision table tr {
+	border: none !important;
+	background: none !important;
+}
+
+.barDivision table td {
+	border: none !important;
+	background: none !important;
+}
+
+#currentTimeDivision {
+	position: absolute;
+	border: none;
+	border-left: 1px dashed grey;
+	z-index: 999;
+}
+
+.tickTable {
+	position: absolute;
+}
+
+.tickTable td {
+	font-size: 8px !important;
+	color: #999999 !important;
+}
+
+.tickTable td.tickCell {
+	border-right: 1px solid #999999 !important;
+	height: 7px;
+}
+
+.handleLink {
+	font-size: 11px;
+	margin-left: 5px;
+	margin-right: 3px;
+}
+
+#activityInstanceTooltip {
+	border: 1px solid black;
+	padding: 10px;
+	background-color: white;
+	border: 1px solid #ccc;
+	box-shadow: 0 0 3px rgba(0, 0, 0, .3);
+	-webkit-box-shadow: 0 0 3px rgba(0, 0, 0, .3);
+	position: absolute;
+	top: 5px;
+	left: 50px;
+	display: none;
+	z-index: 999;
+}
+
+#activityInstanceTooltip .comments {
+	font-size: 9px;
+	color: #888888;
+}
+/* Animations */
+@-webkit-keyframes expand { 0% {
+	width: 0;
+}
+
+100%
+{
+width:
+100%;
+}
+}
+@-moz-keyframes expand { 0% {
+	opacity: 0;
+}
+
+100%
+{
+width
+:
+100%;
+}
+}
+@-o-keyframes expand { 0% {
+	opacity: 0;
+}
+
+100%
+{
+width
+:
+100%;
+}
+}
+@keyframes expand { 
+	0% {
+		opacity: 0;
+	}
+	100%
+	{
+width
+:
+100%;
+}
+}
+</style>
+<script src="../js/libs/require/2.0.5/require-min.js"></script>
+<script type="text/javascript">
+	require
+			.config({
+				baseUrl : "../../",
+				paths : {
+					'jquery' : [ 'benchmark/js/libs/jquery/jquery-1.11.0.min' ],
+					'jquery-ui' : [ 'benchmark/js/libs/jquery/plugins/jquery-ui-1.10.2.custom.min' ],
+					'json' : [ 'benchmark/js/libs/json/json2' ],
+					'angularjs' : [ 'benchmark/js/libs/angular/angular-1.0.2' ],
+					'jquery.base64' : [
+							'benchmark/js/libs/jquery/plugins/jquery.base64',
+							'' ],
+					'jstree' : [ 'benchmark/js/libs/jstree/jstree.min' ],
+					moments : [ 'business-calendar/html5/libs/moments/moments-with-langs.min' ],
+					fullcalendar : [ 'business-calendar/html5/libs/fullcalendar/fullcalendar' ],
+
+					'i18n' : 'common/InfinityBPMI18N'
+				},
+				shim : {
+					'jquery-ui' : [ 'jquery' ],
+					'angularjs' : {
+						require : "jquery",
+						exports : "angular"
+					},
+					'i18n' : {
+						exports : "InfinityBPMI18N"
+					},
+					'jquery.base64' : [ 'jquery' ],
+					'jstree' : [ 'jquery' ],
+					fullcalendar : [ "jquery-ui", "moments" ]
+				}
+			});
+
+	require([ "require", "jquery", "jquery-ui", "json", "angularjs", "moments",
+			"fullcalendar", "benchmark/js/Utils",
+			"benchmark/js/AngularDirectives",
+			"benchmark/js/GanttChartViewController" ], function(require,
+			jquery, jqueryUi, json, angularjs, moments, fullcalendar, Utils,
+			AngularDirectives, GanttChartViewController) {
+		jQuery(document).ready(
+				function() {
+					var module = angularjs.module("ganttChartViewApplication",
+							[]);
+
+					module.controller('ganttChartViewController', function(
+							$scope) {
+						Utils.inheritMethods($scope, GanttChartViewController
+								.create());
+
+						$scope.initialize();
+					});
+
+					AngularDirectives.initialize(module);
+
+					angular
+							.bootstrap(document,
+									[ "ganttChartViewApplication" ]);
+				});
+	});
+</script>
+</head>
+<body ng-controller="ganttChartViewController">
+	<div class="splash" ng-cloak>
+		<span id="loadingMsg">Loading...</span>
+	</div>
+	<div style="margin: 10px;" ng-cloak>
+		<h1 ng-show="checklist">Process Status and Progress -
+			{{checklist.rootProcessInstance.processDefinition.name}}</h1>
+		<h1 ng-hide="checklist">Process Status and Progress</h1>
+		<table class="formTable" style="margin-bottom: 10px;">
+			<tr>
+				<td><label>Process</label></td>
+				<td>{{processInstance.processDefinition.name}}
+					(#{{processInstance.oid}})</td>
+			</tr>
+			<tr>
+				<td><label>Start</label></td>
+				<td>{{formatTimeStamp(processInstance.start)}}</td>
+			</tr>
+		</table>
+		<h2>
+			<a href="#" ng-show="entityCollapsed"
+				ng-click="entityCollapsed = false"><i class="fa fa-chevron-down"></i></a>
+			<a href="#" ng-hide="entityCollapsed"
+				ng-click="entityCollapsed = true"><i class="fa fa-chevron-up"></i></a>
+			Fund 103245
+		</h2>
+		<table class="formTable" ng-hide="entityCollapsed">
+			<tr ng-repeat="(name, value) in entity">
+				<td><label>{{name}}</label></td>
+				<td>{{value}}</td>
+			</tr>
+		</table>
+		<table id="ganttChartTable" cellpadding="0" cellspacing="0"">
+			<tr>
+				<td colspan="2"><select ng-model="timeUnit"
+					ng-change="refreshTimeAxis()"><option value="h">Hours</option>
+						<option value="d">Days</option>
+						<option value="w">Weeks</option>
+						<option value="M">Months</option></select></td>
+				<td><div id="timeAxisDivision"
+						style="height: 19px; width: 100%; vertical-align: bottom;">
+					</div></td>
+			</tr>
+			<tr valign="center"
+				ng-repeat="activityInstance in flatActivityInstanceList"
+				ng-show="!activityInstance.superActivityInstanceOid || expandedActivityInstances['' + activityInstance.superActivityInstanceOid]"
+				class="{{activityInstance.activity.type}}">
+				<td class="nameCell"
+					style="padding-left: {{15* activityInstance.depth}}px;"><a href=""
+					class="iconLink handleLink"
+					ng-show="isExpandable(activityInstance)"
+					ng-click="expandActivityInstance(activityInstance)"><i
+						class="fa fa-plus-square-o"></i></a><a href=""
+					ng-show="isCollapsable(activityInstance)"
+					ng-click="collapseActivityInstance(activityInstance)"
+					class="iconLink handleLink"><i class="fa fa-minus-square-o"></i></a>
+					<span
+					ng-hide="isExpandable(activityInstance) || isCollapsable(activityInstance)"
+					style="margin-right: 15px;"></span> <i class="fa fa-gears"
+					ng-show="activityInstance.activity.type == 'Subprocess'"></i><i
+					class="fa fa-gear"
+					ng-show="activityInstance.activity.type == 'Application' && !activityInstance.activity.defaultPerformer"></i>
+					<i class="fa fa-check-square-o"
+					ng-show="activityInstance.activity.type == 'Application' && activityInstance.activity.defaultPerformer"></i>
+					{{activityInstance.activity.name}}</td>
+				<td ng-show="false" class="descriptorCell" ng-show="businessObject != '__All'">
+					{{getDescriptorValue(activityInstance, businessObject)}}</td>
+				<td ng-show="false" class="userCell">
+					<table cellpadding="0" cellspacing="0" class="layoutTable">
+						<tr>
+							<td colspan="5"
+								ng-show="activityInstance.performer || activityInstance.performedBy"><span
+								ng-show="activityInstance.performer">{{activityInstance.userPerformer.name}}</span><span
+								ng-show="activityInstance.performedBy">{{activityInstance.performedBy.name}}</span>
+							</td>
+						</tr>
+						<tr>
+							<td ng-show="activityInstance.start == null"><label>Not
+									yet started.</label></td>
+							<td ng-show="activityInstance.start != null">
+								{{formatTimeStamp(activityInstance.start)}}&nbsp;&mdash;&nbsp;</td>
+							<td
+								ng-show="activityInstance.state != 2 && activityInstance.state != 4">
+								Now</td>
+							<td
+								ng-show="activityInstance.state == 2 || activityInstance.state == 4">
+								{{formatTimeStamp(activityInstance.lastModification)}}</td>
+						</tr>
+					</table>
+				</td>
+				<td class="controlCell" align="center"><a href="#"
+					title="Work on Action Item"
+					ng-show="activityInstance.state == 'Suspended' && activityInstance.subProcessInstance == null"
+					ng-click="activateActivityInstance(activityInstance)"><i
+						class="fa fa-rocket iconLink"></i></a></td>
+				<td class="barCell"><div id="{{activityInstance.activity.id}}"
+						class="barDivision" style="visibility: hidden;"
+						ng-click="drillDown(activityInstance)">
+						<table class="{{calculateDelayState(activityInstance)}}"
+							style="width: 100%; height: 100%; -webkit-animation: expand 5s; -moz-animation: expand 5s; -o-animation: expand 5s; animation: expand 5s;">
+							<tr>
+								<td></td>
+							</tr>
+						</table>
+					</div></td>
+			</tr>
+		</table>
+		<div id="currentTimeDivision" style="visibility: hidden;"></div>
+	</div>
+	<div id="activityInstanceTooltip">
+		<table class="layoutTable">
+			<tr>
+				<td><div style="margin-bottom: 5px; color: #AFBCC8;">
+						<strong>{{tooltipActivityInstance.activity.name}}</strong>
+					</div></td>
+			</tr>
+			<tr>
+				<td>{{tooltipActivityInstance.state}}</td>
+			</tr>
+		</table>
+		<table class="formTable">
+			<tr>
+				<td><label
+					ng-hide="tooltipActivityInstance.state == 'Planned'">Start</label><label
+					ng-show="tooltipActivityInstance.state == 'Planned'">Expected
+						Start</label></td>
+				<td>{{formatTimeStamp(tooltipActivityInstance.start)}}</td>
+			</tr>
+			<tr>
+				<td><label
+					ng-show="tooltipActivityInstance.state == 'Completed' || tooltipActivityInstance.state == 'Aborted'">End</label><label
+					ng-hide="tooltipActivityInstance.state == 'Completed' || tooltipActivityInstance.state == 'Aborted'">Expected
+						End</label></td>
+				<td>{{formatTimeStamp(tooltipActivityInstance.end)}}</td>
+			</tr>
+		</table>
+	</div>
+</body>
+</html>

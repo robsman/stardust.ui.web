@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+   xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+   <modelVersion>4.0.0</modelVersion>
+
+   <parent>
+      <groupId>com.infinity.bpm</groupId>
+      <artifactId>product-parent</artifactId>
+      <version>8.2.0-RC1-SNAPSHOT</version>
+   </parent>
+
+   <groupId>org.eclipse.stardust.ui.web</groupId>
+   <artifactId>stardust-business-object-management</artifactId>
+
+   <packaging>jar</packaging>
+
+   <properties>
+      <maven.test.skip>true</maven.test.skip>
+   </properties>
+
+   <dependencies>
+
+      <dependency>
+         <groupId>com.google.code.gson</groupId>
+         <artifactId>gson</artifactId>
+         <version>${gson.version}</version>
+      </dependency>
+
+      <!-- <dependency>
+         <groupId>org.eclipse.stardust.engine</groupId>
+         <artifactId>engine-module</artifactId>
+         <version>${project.version}</version>
+         <type>pom</type>
+      </dependency> -->
+
+      <dependency>
+         <groupId>org.eclipse.stardust.ui.web</groupId>
+         <artifactId>ipp-portal-common</artifactId>
+         <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>org.eclipse.stardust.ui.web</groupId>
+         <artifactId>ipp-views-common</artifactId>
+         <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+         <groupId>javax.servlet</groupId>
+         <artifactId>servlet-api</artifactId>
+         <version>${servlet-api.version}</version>
+         <scope>provided</scope>
+      </dependency>
+
+   </dependencies>
+
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <version>2.3.2</version>
+            <configuration>
+               <encoding>UTF-8</encoding>
+               <source>1.6</source>
+               <target>1.6</target>
+            </configuration>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>2.4.3</version>
+            <configuration>
+               <encoding>UTF-8</encoding>
+            </configuration>
+         </plugin>
+      </plugins>
+   </build>
+</project>
