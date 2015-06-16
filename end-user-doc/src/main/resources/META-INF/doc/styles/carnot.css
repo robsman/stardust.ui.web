@@ -17,7 +17,13 @@ body, h1, h2, h3, h4, h5, p, table, th, td, ul, li, ol, dl, dd, dt {
 pre, tt, code {
 	font-family: "courier new", courier, monospace;
 	color: #000000;
-	font-size: 100%;
+}
+
+body {
+   font-size: 74%;
+   font-style: normal;
+   background-color: #ffffff;
+   padding: 0px 5px 2px 5px;
 }
 
 h1 {
@@ -55,7 +61,7 @@ h3 {
 }
 
 h4 {
-	font-size: 105%;
+	font-size: 101%;
 	font-weight: bold;
 	line-height: 15px;
 	margin-bottom: 4px;
@@ -66,13 +72,6 @@ h5 {
 	font-size: 100%;
 	font-weight: bold;
 	color: #104a5f;
-}
-
-body {
-	font-size: 74%;
-	font-style: normal;
-	background-color: #ffffff;
-	padding: 0px 5px 2px 5px;
 }
 
 p {
@@ -96,6 +95,10 @@ p.note {
 	padding: 9px;
 	border: 1px solid #104a5f;
 	line-height: 18px;
+}
+
+tt, code {
+   font-size: 100%;
 }
 
 a {
@@ -207,6 +210,7 @@ td.header {
 }
 
 pre {
+   font-size: 86%;
 	border: 1px solid #104a5f;
 	padding: 10px;
 	background-color: #eeeeee;
