@@ -32,8 +32,6 @@
 
 		var trace = sdLoggerService.getLogger('workflow-ui.services.sdNotesService');
 
-	
-
 		NotesService.prototype.getNotes = function(processInstanceOid) {
 			// Prepare URL
 			var restUrl = REST_BASE_URL + "/:processInstanceOid";
@@ -42,6 +40,29 @@
 			urlTemplateParams.processInstanceOid = processInstanceOid;
 
 			return $resource(restUrl).get(urlTemplateParams).$promise;
+		};
+
+		NotesService.prototype.saveNote = function(noteText, processInstanceOid) {
+			// Prepare URL
+			var restUrl = REST_BASE_URL + "/:type";
+
+			var postData = {
+				noteText : noteText,
+				processInstanceOid : processInstanceOid
+			};
+
+			var note = $resource(restUrl, {
+				type : '@type'
+			}, {
+				save : {
+					method : 'POST'
+				}
+			});
+
+			var urlTemplateParams = {};
+			urlTemplateParams.type = "save";
+
+			return note.save(urlTemplateParams, postData).$promise;
 		};
 	}
 	;

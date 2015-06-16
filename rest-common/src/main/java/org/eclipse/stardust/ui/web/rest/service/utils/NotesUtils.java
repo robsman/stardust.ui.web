@@ -11,20 +11,22 @@
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.dto.ContextKind;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceAttributes;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
-import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.dto.NoteDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.viewscommon.common.event.IppEventController;
+import org.eclipse.stardust.ui.web.viewscommon.common.event.NoteEvent;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -43,13 +45,7 @@ public class NotesUtils
       {
          return null;
       }
-      /*
-       * if (null == thisView.getViewParams().get("processName")) {
-       * thisView.getViewParams().put( "processName",
-       * I18nUtils.getProcessName(ProcessDefinitionUtils
-       * .getProcessDefinition(processInstance.getModelOID(),
-       * processInstance.getProcessID()))); thisView.resolveLabelAndDescription(); }
-       */
+
       ProcessInstance scopeProcessInstance = null;
       if (processInstance.getOID() != processInstance.getScopeProcessInstanceOID())
       {
@@ -78,39 +74,31 @@ public class NotesUtils
       return queryResultDTO;
    }
 
-   public class NotesComparator implements Comparator<Note>
+   public void saveNote(String noteText, long processInstanceOid) throws Exception
    {
-      private Options options;
-
-      /**
-       * @param sortCriterion
-       */
-      public NotesComparator(Options options)
+      if (!StringUtils.isEmpty(noteText) && (noteText.trim().length() > 0))
       {
-         this.options = options;
-      }
+         ProcessInstance processInstance = ProcessInstanceUtils.getProcessInstance(processInstanceOid, true);
 
-      /*
-       * (non-Javadoc)
-       * 
-       * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
-       */
-      public int compare(Note arg0, Note arg1)
-      {
-         // note number is generated dynamically: most latest note has greatest note
-         // number by default
-         if ("created".equals(options.orderBy) || "noteNumber".equals(options.orderBy))
+         ProcessInstance scopeProcessInstance = null;
+         if (processInstance.getOID() != processInstance.getScopeProcessInstanceOID())
          {
-            if (options.asc)
-            {
-               return arg0.getTimestamp().compareTo(arg1.getTimestamp());
-            }
-            else
-            {
-               return arg1.getTimestamp().compareTo(arg0.getTimestamp());
-            }
+            scopeProcessInstance = ProcessInstanceUtils.getProcessInstance(
+                  processInstance.getScopeProcessInstanceOID(), true);
          }
-         return 0;
+         else
+         {
+            scopeProcessInstance = ProcessInstanceUtils
+                  .getProcessInstance(processInstance.getScopeProcessInstanceOID());
+         }
+
+         ProcessInstanceAttributes attributes = fetchAttributes(scopeProcessInstance);
+         Note lastValidNote = attributes.addNote(noteText, ContextKind.ProcessInstance, processInstance.getOID());
+
+         ServiceFactoryUtils.getWorkflowService().setProcessInstanceAttributes(attributes);
+
+         IppEventController.getInstance().notifyEvent(
+               new NoteEvent(scopeProcessInstance.getOID(), lastValidNote, attributes.getNotes()));
       }
    }
 

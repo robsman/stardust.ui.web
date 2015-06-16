@@ -15,6 +15,7 @@ package org.eclipse.stardust.ui.web.rest.service.dto;
 
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
+import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 
 @DTOClass
@@ -32,6 +33,8 @@ public class NoteDTO extends AbstractDTO
    public String scopeType;
 
    public long userOID;
+   
+   public String avatarImageURI;
 
    public NoteDTO(Note note)
    {
@@ -40,6 +43,7 @@ public class NoteDTO extends AbstractDTO
       created = note.getTimestamp().getTime();
       this.note = note.getText();
       userOID = note.getUser().getOID();
+      avatarImageURI = MyPicturePreferenceUtils.getUsersImageURI(note.getUser());
    }
 
 }

@@ -29,4 +29,9 @@ public class NotesService
    {
       return notesUtils.getNotes(processInstanceOid);
    }
+   
+   public void saveNote(String noteText, long processInstanceOid)throws Exception
+   {
+      notesUtils.saveNote(noteText, processInstanceOid);
+   }
 }
