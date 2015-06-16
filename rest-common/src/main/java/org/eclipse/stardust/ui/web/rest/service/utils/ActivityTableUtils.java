@@ -638,7 +638,6 @@ public class ActivityTableUtils
    public static QueryResultDTO buildTableResult(QueryResult< ? > queryResult, MODE mode)
    {
       List<ActivityInstanceDTO> list = new ArrayList<ActivityInstanceDTO>();
-
       List<CriticalityCategory> criticalityConfigurations = CriticalityUtils.getCriticalityConfiguration();
 
       ModelCache modelCache = ModelCache.findModelCache();

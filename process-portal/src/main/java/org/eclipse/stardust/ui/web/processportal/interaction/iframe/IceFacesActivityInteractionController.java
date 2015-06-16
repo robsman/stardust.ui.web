@@ -14,8 +14,6 @@ import static org.eclipse.stardust.engine.core.interactions.Interaction.getInter
 import static org.eclipse.stardust.ui.web.processportal.interaction.iframe.IframePanelUtils.getContentFrameId;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Map;
 
 import javax.faces.context.FacesContext;
@@ -23,14 +21,15 @@ import javax.faces.context.FacesContext;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.common.reflect.Reflect;
 import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
+import org.eclipse.stardust.ui.web.processportal.view.ViewEventAwareInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
 import org.eclipse.stardust.ui.web.viewscommon.common.PanelIntegrationStrategy;
@@ -38,10 +37,8 @@ import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionCo
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.SpiUtils;
-import org.eclipse.stardust.ui.web.processportal.view.ViewEventAwareInteractionController;
 
 import com.icesoft.faces.context.BridgeFacesContext;
-import com.icesoft.faces.context.effects.JavascriptContext;
 
 
 
@@ -219,8 +216,7 @@ public class IceFacesActivityInteractionController implements IActivityInteracti
 
          if (facesContext instanceof BridgeFacesContext)
          {
-            System.out.println("************************ HERE2 **********************");
-            JavascriptContext.addJavascriptCall(facesContext,
+            PortalApplication.getInstance().addEventScript(
                   "parent.InfinityBpm.ProcessPortal.sendCloseCommandToExternalWebApp('"
                         + getContentFrameId(ai) + "', '" + scenario.getId() + "');");
          }

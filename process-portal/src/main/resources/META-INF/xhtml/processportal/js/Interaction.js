@@ -41,6 +41,7 @@ if (!window.bpm.portal.Interaction) {
 		 */
 		Interaction.prototype.fetchData = function(dataMapping, callbacks, controller) {
 			var endpoint = "/inData";
+			var result;
 			getData(interactionUri, endpoint, {
 				success : function(data) {
 					var json;
@@ -54,24 +55,33 @@ if (!window.bpm.portal.Interaction) {
 					}
 
 					log(json);
-					callbacks.success(json);
+					result = json;
+
+					if (callbacks && callbacks.success) {
+						callbacks.success(json);
+					}
 				}
 			});
+
+			return result;
 		};
 
 		/*
 		 * 
 		 */
 		Interaction.prototype.saveData = function(dataMapping, data, callbacks) {
-			var errors = [];
+			var retData = {};
 			var endpoint = "/outData";
 
 			if (mode == MODE_MODELER) {
 				var dataToPost = JSON.stringify(data);
 				log("PUTTING ->" + dataToPost);
 				putData(interactionUri, endpoint, dataToPost, "application/json", {
-					failure: function(e) {
-						errors.push({name: name, error: e});
+					failure : function(e) {
+						if (retData.errors == undefined) {
+							retData.errors = {};
+						}
+						retData.errors['all'] = e;
 					}
 				});
 			} else {
@@ -93,16 +103,25 @@ if (!window.bpm.portal.Interaction) {
 					log("PUTTING -> " + name + " = " + xml);
 					putData(interactionUri, endpoint + "/" + name, xml, type, {
 						failure: function(e) {
-							errors.push({name: name, error: e});
+							if (retData.errors == undefined) {
+								retData.errors = {};
+							}
+							retData.errors[name] = e;
 						}
 					});
 				}
 			}
 
-			if (errors.length == 0) {
-				callbacks.success();
+			if (retData.errors == undefined) {
+				if (callbacks) {
+					callbacks.success();
+				}
+				return true;
 			} else {
-				callbacks.failure(errors);
+				if (callbacks) {
+					callbacks.failure(retData);
+				}
+				return retData;
 			}
 		};
 
@@ -171,12 +190,53 @@ if (!window.bpm.portal.Interaction) {
 		}
 
 		/*
+		 * Copy of getBinding() from processportal/js/GenericController.js
+		 */
+		function getBinding(path, data, ignoreXPath, upToLastLevel) {
+			var ret;
+
+			var xPath = path.fullXPath;
+			if(ignoreXPath && xPath.indexOf(ignoreXPath) == 0) {
+				xPath = xPath.substring(ignoreXPath.length);
+			}
+
+			var parts = xPath.substring(1).split("/");
+			var lastPart = parts[parts.length - 1];
+			var currentBinding = data;
+			for(var i = 0; i < parts.length - 1; i++) {
+				currentBinding = currentBinding[parts[i]];
+				if (currentBinding == undefined) {
+					break;
+				}
+			}
+
+			if (upToLastLevel) {
+				if (currentBinding) {
+					ret = currentBinding[lastPart];
+				}
+			} else {
+				ret = {};
+				if (currentBinding) {
+					ret.binding = currentBinding;
+					ret.lastPart = lastPart;
+				}
+			}
+
+			return ret;
+		}
+
+		/*
 		 * 
 		 */
 		function processJson(data, controller) {
-			var arrPaths = controller.dataMappings;
+			// If controller is available get Data Mappings & bindings from there, for backward compatibility
+			// Else assume this variable contains data mappings itself
+			var controllerAvailable = controller.dataMappings != undefined;
+
+			var arrPaths = controllerAvailable ? controller.dataMappings : controller;
 			for (var key in arrPaths) {
-				var bindingInfo = controller.getBinding(arrPaths[key], data);
+				var bindingInfo = controllerAvailable ? controller.getBinding(
+						arrPaths[key], data) : getBinding(arrPaths[key], data);
 				var binding = bindingInfo.binding[bindingInfo.lastPart];
 				if (binding != undefined) {
 					if (!isPrimitiveTransferObject(binding)) {

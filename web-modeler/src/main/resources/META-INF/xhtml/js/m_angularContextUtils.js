@@ -35,7 +35,14 @@ define(["bpm-modeler/js/m_utils"], function(m_utils) {
 	/*
 	 * 
 	 */
-	function runInActiveViewContext(func) {
-		runInAngularContext(func, m_utils.activeViewElement());
+	function runInActiveViewContext(func, pattern) {
+		var context;
+		if (pattern) {
+			context = m_utils.jQuerySelect(pattern);
+		} else {
+			context = m_utils.activeViewElement();
+		}
+
+		runInAngularContext(func, context);
 	}
 });

@@ -73,6 +73,10 @@ define(
 							id : "count",
 							name : this.getI18N("reporting.definitionView.layout.table.cumulant.count"),
 						},
+						sum : {
+							id : "sum",
+							name : this.getI18N("reporting.definitionView.layout.table.cumulant.sum"),
+						},
 						average : {
 							id : "average",
 							name : this.getI18N("reporting.definitionView.layout.table.cumulant.average"),
@@ -96,6 +100,10 @@ define(
 	                     id : "average",
 	                     name : this.getI18N("reporting.definitionView.layout.table.recordSet.aggregation.average"),
 	                  },
+	                  sum : {
+                        id : "sum",
+                        name : this.getI18N("reporting.definitionView.layout.table.recordSet.aggregation.sum"),
+                     },
 	                  maximum : {
                         id : "maximum",
                         name : this.getI18N("reporting.definitionView.layout.table.recordSet.aggregation.maximum"),

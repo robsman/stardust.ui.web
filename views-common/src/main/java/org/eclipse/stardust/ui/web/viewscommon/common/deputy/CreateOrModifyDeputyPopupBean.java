@@ -154,6 +154,12 @@ public class CreateOrModifyDeputyPopupBean extends PopupUIComponentBean
             {
                model = ModelCache.findModelCache().getActiveModel(grant);
                role = model.getRole(grant.getId());
+               
+               if (role == null)
+               {
+                  continue;
+               }
+               
                department = grant.getDepartment();
 
                if (department != null)
@@ -164,6 +170,7 @@ public class CreateOrModifyDeputyPopupBean extends PopupUIComponentBean
                {
                   modelParticipantInfo = role;
                }
+
                modelParticipantInfoList.add(modelParticipantInfo);
                filter.add(ParticipantAssociationFilter.forParticipant(((RoleInfo) modelParticipantInfo)));
             }

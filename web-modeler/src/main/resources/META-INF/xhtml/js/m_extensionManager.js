@@ -75,6 +75,12 @@ define(
 					});
 				},
 
+				registerUiMashupGeneratorExtensions : function(extensionsConfig) {
+					loadExtensions({
+						uiMashupGenerator : extensionsConfig.uiMashupGenerator
+					});
+				},
+
 				registerRuleSetProviderExtensions : function(extensionsConfig) {
 					loadExtensions({
 						ruleSetProvider : extensionsConfig.ruleSetProvider

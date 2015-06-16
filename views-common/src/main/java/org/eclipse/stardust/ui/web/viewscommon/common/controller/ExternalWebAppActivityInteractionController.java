@@ -39,6 +39,7 @@ import org.eclipse.stardust.engine.api.runtime.BpmRuntimeError;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.engine.core.interactions.InteractionRegistry;
 import org.eclipse.stardust.engine.core.runtime.command.impl.ExtractSessionInfoCommand;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
 import org.eclipse.stardust.ui.web.viewscommon.common.PanelIntegrationStrategy;
@@ -49,8 +50,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ClientSideDataFlowUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
-
-import com.icesoft.faces.context.effects.JavascriptContext;
 
 /**
  * @author Robert.Sauer
@@ -382,7 +381,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
             return true;
          }
 
-         JavascriptContext.addJavascriptCall(facesContext,
+         PortalApplication.getInstance().addEventScript(
                "parent.InfinityBpm.ProcessPortal.sendCloseCommandToExternalWebApp('" + getContentFrameId(ai) + "', '"
                      + scenario.getId() + "', true);");
 
