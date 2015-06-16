@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--Created with Liquid XML Studio 6.1.18.0 - FREE Community Edition (http://www.liquid-technologies.com)-->
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="Customer">
+    <xs:complexType>
+      <xs:all>
+        <xs:element name="Cust_Code" type="xs:int" />
+        <xs:element name="Cust_Name" type="xs:string" />
+        <xs:element name="Cust_DOB" type="xs:date" />
+        <xs:element name="Cust_Address" type="Address" />
+      </xs:all>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Supplier">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Sup_Code" type="xs:integer" />
+        <xs:element name="Sup_Name" type="xs:string" />
+        <xs:element name="Sup_Address" type="Address" />
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="Address">
+    <xs:sequence>
+      <xs:element name="Line2" type="xs:string" />
+      <xs:element name="Line1" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
