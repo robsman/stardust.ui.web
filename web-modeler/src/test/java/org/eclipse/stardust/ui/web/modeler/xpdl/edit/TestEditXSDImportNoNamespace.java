@@ -31,7 +31,7 @@ public class TestEditXSDImportNoNamespace extends RecordingTestcase
 
       assertmodifiedXSD(providerModel);
 
-      saveReplayModel("C:/tmp");
+      //saveReplayModel("C:/tmp");
    }
 
    private void assertmodifiedXSD(ModelType providerModel)
