@@ -2,9 +2,13 @@ package org.eclipse.stardust.ui.web.modeler.xpdl.edit;
 
 import static java.util.Collections.EMPTY_LIST;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
+import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil.getAttribute;
 import static org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil.getAttributeValue;
 import static org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil.getBooleanValue;
+import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findData;
+import static org.eclipse.stardust.ui.web.modeler.xpdl.edit.batch.SignalEventSnippets.createInDataMapping;
+import static org.eclipse.stardust.ui.web.modeler.xpdl.edit.batch.SignalEventSnippets.createOutDataMapping;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -39,7 +43,10 @@ import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityImplementationType;
 import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
+import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
+import org.eclipse.stardust.model.xpdl.carnot.DataType;
 import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
+import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
 import org.eclipse.stardust.model.xpdl.carnot.EventHandlerType;
 import org.eclipse.stardust.model.xpdl.carnot.IntermediateEventSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
@@ -176,28 +183,11 @@ public class TestSignalEventEditing
             + "      {'name': 'signalEvent.uuid', 'expression': \"modified[type='eventSymbol']/modelElement/uuid\"}" //
             + "    ]" //
             + "  }," //
-            + "  {" //
-            + "    'commandId': 'dataFlow.create'," //
-            + "    'uuid': '${signalEvent.uuid}'," //
-            + "    'changes': {" //
-            + "      'id': 'signalProperty1'," //
-            + "      'name': 'Signal Property 1'," //
-            + "      'direction': 'IN'," //
-            + "      'dataFullId': '${model.id}:CURRENT_DATE'," //
-            + "      'dataPath': 'getTime().getTime()'" //
-            + "    }" //
-            + "  }," //
-            + "  {" //
-            + "    'commandId': 'dataFlow.create'," //
-            + "    'uuid': '${signalEvent.uuid}'," //
-            + "    'changes': {" //
-            + "      'id': 'signalProperty2'," //
-            + "      'name': 'Signal Property 2'," //
-            + "      'direction': 'OUT'," //
-            + "      'dataFullId': '${model.id}:CURRENT_DATE'," //
-            + "      'dataPath': 'getTime().setTime()'" //
-            + "    }" //
-            + "  }" //
+            + createInDataMapping("${signalEvent.uuid}", "${model.id}:CURRENT_DATE",
+                  "getTime().getTime()", "signalProperty1")
+            + "," //
+            + createOutDataMapping("${signalEvent.uuid}", "signalProperty2",
+                  "${model.id}:CURRENT_DATE") //
             + "  " //
             + "  " //
             + "  " //
@@ -205,7 +195,10 @@ public class TestSignalEventEditing
             + "  " //
             + "]";
 
-      batchChange.steps = jsonIo.gson().fromJson(batchSteps, new TypeToken<List<BatchStepJto>>(){}.getType());
+      batchChange.steps = jsonIo.gson().fromJson(batchSteps,
+            new TypeToken<List<BatchStepJto>>()
+            {
+            }.getType());
 
       CommandJto batchCommand = new CommandJto();
       batchCommand.commandId = "batchEdit.run";
@@ -217,21 +210,12 @@ public class TestSignalEventEditing
       batchCommand.changeDescriptions.get(0).changes = jsonIo.gson()
             .toJsonTree(batchChange).getAsJsonObject();
 
-      // TODO run batch
-      performCreateProcessBatchChange(batchCommand, checklistModel);
-
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
-      modelService.currentSession().modelPersistenceService().saveMode(checklistModel, baos);
-      System.out.println(baos.toString());
-   }
-
-   protected void performCreateProcessBatchChange(CommandJto cmdCreateProcess,
-         ModelType checklistModel)
-   {
-      JsonObject batchResults = changeApiDriver.performChange(cmdCreateProcess);
+      // run batch
+      JsonObject batchResults = changeApiDriver.performChange(batchCommand);
 
       System.out.println(batchResults);
 
+      // assert results
       assertThat(mySession.modelRepository().findModel("SimpleChecklist1"),
             is(sameInstance((EObject) checklistModel)));
       assertThat(checklistModel.getProcessDefinition().size(), is(1));
@@ -254,20 +238,42 @@ public class TestSignalEventEditing
       assertThat(defaultLane.getStartEventSymbols().size(), is(0));
       assertThat(defaultLane.getEndEventSymbols().size(), is(0));
 
-      assertThat(defaultLane.getIntermediateEventSymbols().size(), is(1));
-      IntermediateEventSymbol catchSignalEventSymbol = defaultLane.getIntermediateEventSymbols().get(0);
-
       assertThat(checklistProcess.getActivity().size(), is(1));
       ActivityType catchSignalEvent = checklistProcess.getActivity().get(0);
-      assertThat(catchSignalEvent.getImplementation(), is(ActivityImplementationType.ROUTE_LITERAL));
-      assertThat(catchSignalEvent.isHibernateOnCreation(), is(true));
-      assertThat(getBooleanValue(catchSignalEvent, "stardust:bpmnIntermediateEventHost"),
-            is(true));
+
+      assertCatchSignalIntermediateEventValidity(catchSignalEvent);
+
+      assertCatchSignalDataMappingValidity(catchSignalEvent, DirectionType.IN_LITERAL,
+            "signalProperty1", findData(checklistProcess, PredefinedConstants.CURRENT_DATE), "getTime().getTime()");
+      assertCatchSignalDataMappingValidity(catchSignalEvent, DirectionType.OUT_LITERAL,
+            "signalProperty2", findData(checklistProcess, PredefinedConstants.CURRENT_DATE), null);
+
+      // check the intermediate event is properly connected to its symbol
+      assertThat(defaultLane.getIntermediateEventSymbols().size(), is(1));
+      IntermediateEventSymbol catchSignalEventSymbol = defaultLane
+            .getIntermediateEventSymbols().get(0);
       assertThat(
             getAttribute(catchSignalEvent,
                   "stardust:bpmnEvent:" + catchSignalEventSymbol.getElementOid()),
             is(notNullValue()));
 
+      assertThat(defaultLane.getStartEventSymbols().size(), is(0));
+      assertThat(defaultLane.getEndEventSymbols().size(), is(0));
+
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      modelService.currentSession().modelPersistenceService()
+            .saveMode(checklistModel, baos);
+      System.out.println(baos.toString());
+   }
+
+   public static void assertCatchSignalIntermediateEventValidity(
+         ActivityType catchSignalEvent)
+   {
+      assertThat(catchSignalEvent.getImplementation(),
+            is(ActivityImplementationType.ROUTE_LITERAL));
+      assertThat(catchSignalEvent.isHibernateOnCreation(), is(true));
+      assertThat(getBooleanValue(catchSignalEvent, "stardust:bpmnIntermediateEventHost"),
+            is(true));
       assertThat(catchSignalEvent.getEventHandler().size(), is(1));
       EventHandlerType signalEventHandler = catchSignalEvent.getEventHandler().get(0);
       assertThat(signalEventHandler.getType().getId(), is("signal"));
@@ -283,9 +289,47 @@ public class TestSignalEventEditing
       assertThat(signalEventHandler.getEventAction().size(), is(1));
       assertThat(signalEventHandler.getEventAction().get(0).getType().getId(),
             is(PredefinedConstants.COMPLETE_ACTIVITY_ACTION));
+   }
 
-      assertThat(defaultLane.getStartEventSymbols().size(), is(0));
-      assertThat(defaultLane.getEndEventSymbols().size(), is(0));
+   public static void assertCatchSignalDataMappingValidity(ActivityType catchSignalEvent,
+         DirectionType inOrOut, String msgProperty, DataType data, String dataPath)
+   {
+      assertThat(catchSignalEvent.getEventHandler().size(), is(1));
+      EventHandlerType signalEventHandler = catchSignalEvent.getEventHandler().get(0);
+      assertThat(signalEventHandler.getType().getId(), is("signal"));
+
+      List<DataMappingType> mappings = newArrayList();
+      String signalContext = "event-" + signalEventHandler.getId();
+      for (DataMappingType dataMapping : catchSignalEvent.getDataMapping())
+      {
+         if (signalContext.equals(dataMapping.getContext())
+               && inOrOut.equals(dataMapping.getDirection())
+               && msgProperty.equals(dataMapping.getName()))
+         {
+            mappings.add(dataMapping);
+         }
+      }
+
+      assertThat(mappings.size(), is(1));
+
+      DataMappingType dataMapping = mappings.get(0);
+
+      assertThat(dataMapping.getApplicationAccessPoint(), is(nullValue()));
+      assertThat(dataMapping.getApplicationPath(), is(nullValue()));
+
+      assertThat(dataMapping.getData(), is(notNullValue()));
+      assertThat(dataMapping.getData(), is(sameInstance(data)));
+
+      if (!isEmpty(dataPath))
+      {
+         assertThat(dataMapping.getDataPath(), is(dataPath));
+      }
+      else
+      {
+         assertThat(dataMapping.getDataPath(), is(nullValue()));
+      }
+
+      // TODO more assertions
    }
 
    @Before
