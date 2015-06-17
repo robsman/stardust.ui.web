@@ -52,7 +52,9 @@
 		  "name": "Default Benchmark",
 		  "description": "",
 		  "categories": [],
-		  "models": []
+		  "models": [],
+		  "defaults" : {},
+		  "businessCalendar" : ""
 		}
 	};
 	
@@ -196,6 +198,42 @@
 		return baseCopy;
 	}
 	
+	/**
+	 * 
+	 * @param benchmark
+	 */
+	benchmarkBuilderService.prototype.cleanAndClone = function(benchmark){
+		var clone = {};
+		
+		clone = angular.copy(benchmark);
+		
+		clone.categories.forEach(function(v,i){delete v.$$hashKey});
+		
+		//now loop over all models
+		clone.models.forEach(function(model){
+			delete model.$$hashKey;
+			//then remove instanced data from all processes and definitions as well.
+			model.processDefinitions.forEach(function(procDef){
+				delete procDef.$$hashKey;
+				//loop over all category conditions in our current process definition
+				procDef.categoryConditions.forEach(function(catCond,catIndex,catCondArray){
+					delete catCond.$$hashKey;
+					delete catCond.categoryRef;
+				});
+				
+				procDef.activities.forEach(function(activity){
+					delete activity.$$hashKey;
+					activity.categoryConditions.forEach(function(catCond,catIndex,catCondArray){
+						delete catCond.$$hashKey;
+						delete catCond.categoryRef;
+					});
+				});
+				
+			});//process definitions loop ends
+		})//models loop ends
+		
+		return clone;
+	};
 	
 	/**
 	 * Returns the base Category structure of the top level benchmark.

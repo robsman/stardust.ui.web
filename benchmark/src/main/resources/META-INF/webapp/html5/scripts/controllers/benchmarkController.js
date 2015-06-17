@@ -87,10 +87,41 @@
 	 * @param benchmark
 	 */
 	benchmarkController.prototype.saveBenchmark = function(benchmark){
+		
+		benchmark = this.benchmarkBuilderService.cleanAndClone(benchmark);
+		
 		this.benchmarkService.saveBenchmarks(benchmark)
 		.then(function(data){
 			//TODO: Dirty-bit implementation and clearing.
 			alert("saved");
+		})
+		["catch"](function(err){
+			//TODO: handle error
+		});
+	};
+	
+	benchmarkController.prototype.deleteBenchmark = function(id){
+		this.benchmarkService.deleteBenchmark(id)
+		.then(function(data){
+			//TODO: Purge from all definitions
+			//TODO: Refresh UI
+			alert("deleted");
+		})
+		["catch"](function(err){
+			//TODO: handle error
+		});
+	};
+	
+	/**
+	 * Publish the benchmark
+	 * @param benchmark
+	 */
+	benchmarkController.prototype.publishBenchmark = function(id){
+		debugger;
+		this.benchmarkService.publishBenchmark(id)
+		.then(function(data){
+			//TODO: Dirty-bit implementation and clearing.
+			alert("published");
 		})
 		["catch"](function(err){
 			//TODO: handle error

@@ -37,12 +37,39 @@
 		this.portalBDComponent = "/benchmark-definitions";
 		
 		//TODO: plugins is not part of base url, find out why and fix
-		this.absRoot = "http://localhost:8080/ipp82rc1"; //this.absUrl.substring(0,this.absUrl.indexOf("/plugins"));
+		this.absRoot = this.absUrl.substring(0,this.absUrl.indexOf("/main.html#"));
 		
 		this.rootUrl = this.absRoot + "/services/rest/benchmark";
 		
 	}
 	
+	/**
+	 * Posts a benchmark to published state where it is now available to the system.
+	 */
+	benchmarkService.prototype.publishBenchmark = function(id){
+		var url,
+			data = {id: ''},
+			deferred = this.$q.defer();	
+		
+		url = url = this.absRoot + this.portalCommon + this.portalBDComponent + '/run-time';
+		data.id = id;
+		
+		this.$http.post(url,JSON.stringify(data))
+		.success(function(data){
+			deferred.resolve(data);
+		})
+		.error(function(err){
+			deferred.reject(data);
+		});
+		
+		return deferred.promise;
+	};
+	
+	/**
+	 * Save an already created benchmark to the server.
+	 * Creates a deep copy and cleans transient properties from the JSON
+	 * before the PUT operation is executed.
+	 */
 	benchmarkService.prototype.saveBenchmarks = function(benchmark){
 		var url,
 			deferred;
@@ -94,6 +121,25 @@
 		return deferred.promise;
 	}
 	
+	
+	benchmarkService.prototype.deleteBenchmark = function(id){
+		var url,
+			deferred = this.$q.defer();
+	
+		url = this.absRoot + this.portalCommon + this.portalBDComponent + '/design-time';
+		url += "/" + id;
+		
+		this.$http["delete"](url)
+		.success(function(data){
+			deferred.resolve(data);
+		})
+		.error(function(err){
+			deferred.reject(err);
+		});
+		
+		return deferred.promise;
+	};
+	
 	/**
 	 * Creates a new benchmark definition on the servers document repository.
 	 * This operation is only valid for design time.
@@ -129,7 +175,7 @@
 		
 		url = this.absRoot + '/services/rest/business-calendar/groups/' + pluginId + ".json";
 	
-		this.$http.post(url)
+		this.$http.get(url)
 		.success(function(data){
 			deferred.resolve(data);
 		})
@@ -147,11 +193,12 @@
 	 */
 	benchmarkService.prototype.getModels = function(){
 		var deferred = this.$q.defer(),
-			url = this.rootUrl + "/models.json";
+			//url = this.rootUrl + "/models.json";
+			url = this.absRoot + this.portalCommon + "/models";
 		
 		this.$http.get(url)
 		.success(function(data){
-			deferred.resolve(data);
+			deferred.resolve({models: data});
 		})
 		.error(function(err){
 			deferred.reject(err);

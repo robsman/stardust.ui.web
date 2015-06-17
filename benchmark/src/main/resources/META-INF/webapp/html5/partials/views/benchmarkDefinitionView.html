@@ -1,4 +1,4 @@
-
+<script src="http://localhost:8080/ipp90m4/plugins/html5-common/scripts/directives/sdDropDownMenu.js"></script>
 <div class="view-panel" 
      ng-controller="benchmarkCtrl as ctrl"
 	 sg-stretch-to-bottom>
@@ -11,12 +11,13 @@
 			<td><pre>{{ctrl.benchmarks | json}}</pre></td>
 		</tr>
 	</table-->
-	
+
 	<i style="position:absolute;font-size:1.5em;cursor:pointer;" 
 	   ng-click="ctrl.showBenchmarks = !ctrl.showBenchmarks" 
 	   ng-class="{'sc-arrow-d': ctrl.showBenchmarks,'sc-arrow-r': !ctrl.showBenchmarks}"
 	   class="sc sc-fw sc-arrow-d">
 	</i>
+	
 	<span style="margin:2em;" class="header">Benchmark Definitions</span>
 	
 	<!-- Data Table for Benchmarks -->
@@ -28,12 +29,21 @@
 		</select>
 		
 		<div sda-toolbar>
+		
 		    <a href="#" ng-click="ctrl.createBenchmark()" title="Add Benchmark" class="tbl-toolbar-item tbl-tool-link">
 		       <i class="glyphicon glyphicon-plus-sign"></i>
 		    </a>
+		    
 		    <a href="#" ng-click="ctrl.deleteBenchmark()" title="Delete Benchmark" class="tbl-toolbar-item tbl-tool-link">
 		       <i class="glyphicon glyphicon-minus-sign"></i>
-		    </a>		    
+		    </a>	
+		    
+		    <a href="#" 
+		       ng-click="ctrl.publishBenchmark(ctrl.selectedBenchmark.id)" 
+		       title="Publish Benchmark" class="tbl-toolbar-item tbl-tool-link">
+		       <i class="glyphicon glyphicon-globe"></i>
+		    </a>	    
+		    
 		</div>
 		
 		<table sd-data-table="ctrl.dataTableApi"
@@ -302,16 +312,14 @@
 		    		</tbody>
 		    	</table>
 		    	
-		    	<!--table>
+		    	<table>
 		    		<thead>
 		    			<th>Selected Benchmark</th>
-		    			<th>Benchmarks from Server</th>
 		    		</thead>
 		    		<tr>
 		    			<td><pre>{{ctrl.selectedBenchmark | json}}</pre></td>
-		    			<td><pre>{{ctrl.benchmarks | json}}</pre></td>
 		    		</tr>
-		    	</table-->
+		    	</table>
 		    	
 	    	</div>
 	</div>
@@ -328,8 +336,8 @@
 	    	
 	    	<label>Business Calendar</label>
 	
-	    	<select ng-options="item as item.name for item in ctrl.calendars" 
-	    	        ng-model="todo"  
+	    	<select ng-options="item.path as item.name for item in ctrl.calendars" 
+	    	        ng-model="ctrl.selectedBenchmark.businessCalendar"  
 	    	        ng-disabled="!ctrl.selectedBenchmark">
 	    	</select>
 	    </div>
