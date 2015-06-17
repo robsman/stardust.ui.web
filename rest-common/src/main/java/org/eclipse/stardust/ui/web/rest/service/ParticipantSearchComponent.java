@@ -45,6 +45,7 @@ import org.eclipse.stardust.ui.web.viewscommon.dialogs.DefaultDelegatesProvider;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.DepartmentDelegatesProvider;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.IDelegatesProvider;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.IDepartmentProvider;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.stereotype.Component;
 
@@ -72,7 +73,7 @@ public class ParticipantSearchComponent
    private Boolean disabledAdministrator = null;
 
    public enum PerformerTypeUI {
-      All(0), User(1), Role(2), Organization(3), Department(4);
+      All(0), Role(1), Organization(2), User(4), Department(8);
 
       private Integer val;
 
@@ -130,43 +131,63 @@ public class ParticipantSearchComponent
    }
    
    
-   
    /**
-    * @param request
+    * @param searchText
+    * @param maxMatches
     * @return
     */
    public String searchAllParticipants(String searchText, int maxMatches)
    {
-      
-     QueryService service = serviceFactoryUtils.getQueryService();
-      UserQuery userQuery = UserQuery.findActive();
-      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
-      userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL, UserPreferencesEntries.M_VIEWS_COMMON);
-      userQuery.setPolicy(userPolicy);
-      
-      if (!StringUtils.isEmpty(searchText))
-      {
-         String name = searchText.replaceAll("\\*", "%") + "%";
-         String nameFirstLetterCaseChanged = UserUtils.alternateFirstLetter(name);
-         FilterOrTerm or = userQuery.getFilter().addOrTerm();
-         or.add(UserQuery.LAST_NAME.like(name));
-         or.add(UserQuery.LAST_NAME.like(nameFirstLetterCaseChanged));
-         or.add(UserQuery.FIRST_NAME.like(name));
-         or.add(UserQuery.FIRST_NAME.like(nameFirstLetterCaseChanged));
-         or.add(UserQuery.ACCOUNT.like(name));
-         or.add(UserQuery.ACCOUNT.like(nameFirstLetterCaseChanged));
-      }
-      userQuery.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME).and(UserQuery.ACCOUNT);
-
-      Users matchingUsers = service.getAllUsers(userQuery);
+      return searchAllParticipants(searchText, maxMatches, 15);
+   }
+   
+   /**
+    * @param searchText
+    * @param maxMatches
+    * @param type 
+    * @return
+    */
+   public String searchAllParticipants(String searchText, int maxMatches, int type)
+   {
       List<ParticipantSearchResponseDTO> selectedParticipants = new ArrayList<ParticipantSearchResponseDTO>();
-      selectedParticipants.addAll(copyToParticipantSearchResponseDTOList(matchingUsers));
+      QueryService service = serviceFactoryUtils.getQueryService();
 
-      List<Participant> rolesAndOrgs = service.getAllParticipants();
-      selectedParticipants.addAll(copyToParticipantSearchResponseDTOList(rolesAndOrgs, searchText));      
+      if (containsUser(type))
+      {
+         UserQuery userQuery = UserQuery.findActive();
+         UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
+         userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL, UserPreferencesEntries.M_VIEWS_COMMON);
+         userQuery.setPolicy(userPolicy);
+
+         if (!StringUtils.isEmpty(searchText))
+         {
+            String name = searchText.replaceAll("\\*", "%") + "%";
+            String nameFirstLetterCaseChanged = UserUtils.alternateFirstLetter(name);
+            FilterOrTerm or = userQuery.getFilter().addOrTerm();
+            or.add(UserQuery.LAST_NAME.like(name));
+            or.add(UserQuery.LAST_NAME.like(nameFirstLetterCaseChanged));
+            or.add(UserQuery.FIRST_NAME.like(name));
+            or.add(UserQuery.FIRST_NAME.like(nameFirstLetterCaseChanged));
+            or.add(UserQuery.ACCOUNT.like(name));
+            or.add(UserQuery.ACCOUNT.like(nameFirstLetterCaseChanged));
+         }
+         userQuery.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME).and(UserQuery.ACCOUNT);
+         Users matchingUsers = service.getAllUsers(userQuery);
+         selectedParticipants.addAll(copyToParticipantSearchResponseDTOList(matchingUsers));
+      }
       
-      Set<DepartmentInfo> departments = getAllDepartments(rolesAndOrgs, service);
-      selectedParticipants.addAll(copyToParticipantSearchResponseDTOList(departments, searchText));
+      //TODO: is there a requirement for separate role and organizations?
+      if (containsOrganization(type) && containsRole(type))
+      {
+         List<Participant> rolesAndOrgs = ParticipantUtils.getAllUnScopedModelParticipant(true);
+         selectedParticipants.addAll(copyToParticipantSearchResponseDTOList(rolesAndOrgs, searchText));
+         
+         if (containsDepartment(type))
+         {
+            Set<DepartmentInfo> departments = getAllDepartments(rolesAndOrgs, service);
+            selectedParticipants.addAll(copyToParticipantSearchResponseDTOList(departments, searchText));
+         }
+      }
       
       return GsonUtils.toJsonHTMLSafeString(selectedParticipants);
    }
@@ -456,7 +477,7 @@ public class ParticipantSearchComponent
          }
       }
       return selectParticipants;
-   }
+   }    
 
    /**
     * @param allParticipants
@@ -470,7 +491,7 @@ public class ParticipantSearchComponent
       {
          for (Participant participant : allParticipants)
          {
-            if (participant.getName().matches(regex))
+            if (regex == null || participant.getName().matches(regex))
             {
                selectParticipants.add(new ParticipantSearchResponseDTO(participant));
             }
@@ -515,4 +536,23 @@ public class ParticipantSearchComponent
       this.disabledAdministrator = disabledAdministrator;
    }
    
+   private boolean containsRole(int input)
+   {
+      return ((input & PerformerTypeUI.Role.getValue()) == PerformerTypeUI.Role.getValue());
+   }
+   
+   private boolean containsOrganization(int input)
+   {
+      return ((input & PerformerTypeUI.Organization.getValue()) == PerformerTypeUI.Organization.getValue());
+   }
+   
+   private boolean containsUser(int input)
+   {
+      return ((input & PerformerTypeUI.User.getValue()) == PerformerTypeUI.User.getValue());
+   }
+   
+   private boolean containsDepartment(int input)
+   {
+      return ((input & PerformerTypeUI.Department.getValue()) == PerformerTypeUI.Department.getValue());
+   }
 }

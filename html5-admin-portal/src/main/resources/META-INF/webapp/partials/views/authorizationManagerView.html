@@ -1,0 +1,73 @@
+<div class="view-panel"
+	ng-controller="sdAuthorizationManagerCtrl as ctrl" sg-stretch-to-bottom>
+	<!-- 	<hgroup>
+		<header>
+			<div class="heading"
+				ng-bind="sdI18nHtml5Admin('views.authorizationManagerViewHtml5.label')"></div>
+		</header>
+		<div class="clearing"></div>
+	</hgroup> -->
+	<div style="clear: both">
+		<section style="clear: both; float: left; width: 60%">
+			<header>
+				<div class="heading"
+					ng-bind="sdI18nHtml5Admin('views.authorizationManagerViewHtml5.participant.label')"></div>
+			</header>
+			<div sda-toolbar>
+				<div class="tbl-toolbar-section">
+					<button ng-click="ctrl.cloneParticipant"
+						title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.cloneParticipant')}}"
+						class="button-link tbl-toolbar-item tbl-tool-link"
+						style="margin-right: 0px;">
+						<i class="sc sc-fw sc-user" style="font-size: 1.5em;"></i>
+					</button>
+				</div>
+				<span sd-refresh sda-on-refresh="ctrl.refreshParticipants();"></span>
+			</div>
+
+			<!-- Data table -->
+			<table sd-data-table="ctrl.dataTable" sd-data="ctrl.participants"
+				sda-mode="local" sda-selectable="multiple"
+				sda-selection="ctrl.selection" sda-no-pagination="true"
+				sda-sortable="true" sda-exports="true"
+				sda-column-selector="{{ctrl.columnSelector}}"
+				sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)">
+				<thead
+					sda-i18n-scope="html5-admin-portal.views-authorizationManagerViewHtml5-participants-columns">
+					<tr>
+						<th sda-name="name" sda-sortable="true"></th>
+						<th sda-name="type" sda-sortable="true"></th>
+						<th sda-name="description" sda-sortable="false"></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td sda-field="name"></td>
+						<td sda-field="type"></td>
+						<td sda-field="description"></td>
+					</tr>
+				</tbody>
+			</table>
+		</section>
+
+		<section style="float: left; padding-left: 30px; width: 30%">
+			<header>
+				<div class="heading"
+					ng-bind="sdI18nHtml5Admin('views.authorizationManagerViewHtml5.permissions.label')"></div>
+			</header>
+			<div sda-toolbar>
+				<div class="tbl-toolbar-section">
+					<button ng-click="ctrl.highlightParticipants"
+						title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.highlightParticipants')}}"
+						class="button-link tbl-toolbar-item tbl-tool-link"
+						style="margin-right: 0px;">
+						<i class="sc sc-fw sc-spin sc-spinner" style="font-size: 1.5em;"></i>
+					</button>
+				</div>
+				<div class="view-panel-toolbar toolbar-buttons">
+					<span sd-refresh sda-on-refresh="ctrl.refreshPermissions();"></span>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>

@@ -24,7 +24,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
  * @author Yogesh.Manware
  *
  */
-
+//TODO : rename it to ParticipantDTO for better reuse
 public class ParticipantSearchResponseDTO extends AbstractDTO
 {
    private static final String BASE_IMAGE_PATH = "/plugins/views-common/images/icons/";

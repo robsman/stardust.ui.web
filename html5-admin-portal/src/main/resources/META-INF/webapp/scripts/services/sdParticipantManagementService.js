@@ -166,6 +166,18 @@
 			return delegateToDefaultPerformer.fetch(urlTemplateParams, postData).$promise;
 
 		};
+	
+		/**
+		 * 
+		 */
+	  ParticipantManagementService.prototype.searchParticipants = function(queryParams) {
+      // Prepare URL
+      var restUrl = REST_BASE_URL + "/searchParticipants";
+
+      var participantSearchResult = $resource(restUrl, queryParams);
+
+      return participantSearchResult.query().$promise;
+    };
 	}
 	;
 })();
