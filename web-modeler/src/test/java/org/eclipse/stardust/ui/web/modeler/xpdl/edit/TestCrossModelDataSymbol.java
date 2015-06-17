@@ -82,7 +82,7 @@ public class TestCrossModelDataSymbol extends RecordingTestcase
       EList<ExternalPackage> externalPackage = consumerModel.getExternalPackages().getExternalPackage();
       assertThat(externalPackage.size(), is(1));
 
-      saveReplayModel("C:/tmp");
+      // saveReplayModel("C:/tmp");
    }
 
    protected boolean includeProviderModel2()
