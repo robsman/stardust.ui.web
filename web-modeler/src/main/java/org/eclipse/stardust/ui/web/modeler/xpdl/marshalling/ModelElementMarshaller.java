@@ -2270,11 +2270,27 @@ public class ModelElementMarshaller implements ModelMarshaller
                   IConnectionManager manager = model.getConnectionManager();
                   if (manager != null & uri != null)
                   {
+                     //ToDo: IMO (Rainer) we should try to get rid of those constructions.
+                     //This EObjectDecriptor / Connection stuff should not be necessary in Web modeler world
+                     //This is legacy from eclipse modeler file connection mechanism (St. Laurent)
+                     //See alternative section if eObject is null - it's simpler and should work in Pepper as we have access to all models.
+                     //It seems that that connection manager keeps an initial model copy which is never updated!
+
                      EObject eObject = manager.find(uri);
                      if (eObject instanceof EObjectDescriptor)
                      {
                         eObject = ((EObjectDescriptor) eObject).getEObject();
                      }
+
+                     if (eObject == null)
+                     {
+                        ModelType refModel = getModelBuilderFacade()
+                              .getModelManagementStrategy().getModels()
+                              .get(data.getExternalReference().getLocation());
+                        eObject = refModel.getTypeDeclarations().getTypeDeclaration(
+                              data.getExternalReference().getXref());
+                     }
+
                      ModelType containingModel = ModelUtils.findContainingModel(eObject);
 
                      String fullId = getModelBuilderFacade().createFullId(containingModel,
