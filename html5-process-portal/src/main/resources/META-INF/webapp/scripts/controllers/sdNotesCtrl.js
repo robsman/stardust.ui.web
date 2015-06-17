@@ -17,11 +17,9 @@
 
 	angular.module("workflow-ui").controller(
 			'sdNotesCtrl',
-			[ '$q', '$scope', '$element', 'sdNotesService', 'sdLoggerService', 'sdViewUtilService', 'sdUtilService',
+			['$scope', 'sdNotesService', 'sdLoggerService', 'sdViewUtilService', 'sdUtilService',
 					NotesCtrl ]);
-	var _q;
 	var _scope;
-	var _element;
 	var _sdNotesService;
 	var _sdViewUtilService;
 	var _sdUtilService;
@@ -31,11 +29,9 @@
 	/*
 	 * 
 	 */
-	function NotesCtrl($q, $scope, $element, sdNotesService, sdLoggerService, sdViewUtilService, sdUtilService) {
+	function NotesCtrl($scope, sdNotesService, sdLoggerService, sdViewUtilService, sdUtilService) {
 		trace = sdLoggerService.getLogger('workflow-ui.sdNotesCtrl');
-		_q = $q;
 		_scope = $scope;
-		_element = $element;
 		_sdNotesService = sdNotesService;
 		_sdViewUtilService = sdViewUtilService;
 		_sdUtilService = sdUtilService;
@@ -59,12 +55,20 @@
 	 */
 	NotesCtrl.prototype.handleViewEvents = function(event) {
 		if (event.type == "ACTIVATED") {
-			this.refreshOnlyActiveTab();
+			//TODO
 		} else if (event.type == "DEACTIVATED") {
 			// TODO
 		}
 	};
 
+	/**
+	 * 
+	 */
+	NotesCtrl.prototype.initialize = function() {
+		var self = this;
+		self.viewParams = _sdViewUtilService.getViewParams(_scope);
+		self.getNotes();
+	};
 	/**
 	 * 
 	 */
@@ -78,7 +82,11 @@
 		});
 
 	};
-
+	/**
+	 * 
+	 * @param options
+	 * @returns 
+	 */
 	NotesCtrl.prototype.getNotesData = function(options) {
 		var self = this;
 		var list = [];
@@ -96,12 +104,19 @@
 		return self.notes;
 	};
 
+	/**
+	 * 
+	 */
 	NotesCtrl.prototype.addNote = function() {
 		var self = this;
 		self.isAddMode = true;
 		self.note = '';
 	};
 
+	/**
+	 * 
+	 * @param info
+	 */
 	NotesCtrl.prototype.onSelect = function(info) {
 		var self = this;
 		if (info.action == "select") {
@@ -115,15 +130,6 @@
 
 	/**
 	 * 
-	 */
-	NotesCtrl.prototype.initialize = function() {
-		var self = this;
-		self.viewParams = _sdViewUtilService.getViewParams(_scope);
-		self.getNotes();
-	};
-
-	/**
-	 * 
 	 * @param userImageURI
 	 * @returns
 	 */
@@ -131,10 +137,14 @@
 		return rootURL + userImageURI;
 	};
 
+	/**
+	 * 
+	 * @returns {Boolean}
+	 */
 	NotesCtrl.prototype.saveNote = function() {
 		var self = this;
 		if (_sdUtilService.isEmpty(self.note)) {
-         return false;
+			return false;
 		} else {
 			_sdNotesService.saveNote(self.note, self.viewParams.oid).then(function(success) {
 				trace.info("Note saved sucessfully.");
@@ -155,12 +165,19 @@
 			});
 		}
 	};
-
+	/**
+	 * 
+	 */
 	NotesCtrl.prototype.cancelNote = function() {
 		var self = this;
-		self.notesTable.setSelection({
-			noteNumber : self.notes.totalCount
-		});
+		if(self.notes.totalCount > 0){
+			self.notesTable.setSelection({
+				noteNumber : self.notes.totalCount
+			});
+		}else{
+			self.isAddMode = false;
+		}
+		
 	};
 
 })();

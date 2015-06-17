@@ -832,7 +832,7 @@
 	 */
 	ActivityTableCompiler.prototype.openNotes = function(rowItem) {
 	   sdCommonViewUtilService.openNotesView(rowItem.processInstance.oid, true);
-	   //sdCommonViewUtilService.openNotesViewHTML5(rowItem.processInstance.oid, true);
+	   //sdCommonViewUtilService.openNotesViewHTML5(rowItem.processInstance.oid, rowItem.processInstance.processName, true); // do not remove this line
 	};
 
 	/*

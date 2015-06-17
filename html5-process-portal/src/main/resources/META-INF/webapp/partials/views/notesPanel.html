@@ -42,13 +42,12 @@
 							<tr style="vertical-align: top;">
 								<td><i class="sc sc-fw sc-1x sc-document"></i></td>
 								<td><div sd-tool-tip
-											sda-tool-tip-url="'plugins/html5-process-portal/partials/views/notePreviewToolTip.html'"
-											sda-title="rowData.note" sda-tool-tip-class="popup-dlg-bgImg"></div>
+										sda-tool-tip-url="'plugins/html5-process-portal/partials/views/notePreviewToolTip.html'"
+										sda-title="rowData.note" sda-tool-tip-class="popup-dlg-bgImg"></div>
 								</td>
 							</tr>
 						</tbody>
-					</table>
-				</td>
+					</table></td>
 			</tr>
 		</tbody>
 	</table>
@@ -69,13 +68,14 @@
 				</tr>
 			</table>
 		</div>
-		<textarea ng-disabled="!ctrl.isAddMode" ng-model="ctrl.note" cols="20"
-			rows="2"
+		<textarea ng-if="ctrl.notes.totalCount > 0 || ctrl.isAddMode"
+			ng-disabled="!ctrl.isAddMode" ng-model="ctrl.note" cols="20" rows="2"
 			style="height: 300px; width: 99%; background-color: rgb(247, 246, 178);"></textarea>
 		<div ng-if="ctrl.isAddMode">
 			<table>
 				<tr>
-					<td><a href="#" style="font-weight: bold;" ng-click="ctrl.saveNote()">
+					<td><a href="#" style="font-weight: bold;"
+						ng-click="ctrl.saveNote()">
 							<table>
 								<tbody>
 									<tr>
@@ -85,7 +85,8 @@
 								</tbody>
 							</table>
 					</a></td>
-					<td><a href="#" style="font-weight: bold;" ng-click="ctrl.cancelNote()">
+					<td><a href="#" style="font-weight: bold;"
+						ng-click="ctrl.cancelNote()">
 							<table>
 								<tbody>
 									<tr>
