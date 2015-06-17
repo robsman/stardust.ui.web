@@ -10,7 +10,7 @@
  *******************************************************************************/
  
 body, h1, h2, h3, h4, h5, p, table, th, td, ul, li, ol, dl, dd, dt {
-	font-family: geneva, arial, helvetica, sans-serif;
+	font-family: Geneva, Arial, Helvetica, sans-serif;
 	color: #000000
 }
 
@@ -20,7 +20,7 @@ pre, tt, code {
 }
 
 body {
-   font-size: 74%;
+   font-size: 83%;
    font-style: normal;
    background-color: #ffffff;
    padding: 0px 5px 2px 5px;
@@ -144,7 +144,7 @@ table.header {
 }
 
 /* use for smaller tables: auto table size and place table in the center */
-table.autowidth {
+table.autoWidth {
 	width: auto;
 	align: left;
 }
@@ -312,17 +312,17 @@ li.collapse {
 
 /* Hide links in portal documentation and replace with text containing 
    location in online documentation */
-.hidereference {
+.hideReference {
 }
 
-.showreference {
+.showReference {
    display: none;
 }
 
-li.hidereference {
+li.hideReference {
 }
 
-li.showreference {
+li.showReference {
    display: none;
 }
 
