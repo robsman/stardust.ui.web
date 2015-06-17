@@ -19,10 +19,6 @@
       <skip.i18n-bundle-copy>false</skip.i18n-bundle-copy>
    </properties>
 
-	<properties>
-      <skip.i18n-bundle-copy>false</skip.i18n-bundle-copy>
-   </properties>
-
    <dependencies>
       <dependency>
          <groupId>org.eclipse.stardust.engine</groupId>
