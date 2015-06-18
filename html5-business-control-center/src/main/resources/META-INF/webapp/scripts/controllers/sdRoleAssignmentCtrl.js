@@ -18,26 +18,29 @@
 	angular.module("bcc-ui").controller(
 			'sdRoleAssignmentCtrl',
 			[ '$q', '$timeout', 'sdRoleAssignmentService', 'sdLoggerService', 'sdCommonViewUtilService',
-					RoleAssignmentCtrl ]);
+					'sdLoggedInUserService', RoleAssignmentCtrl ]);
 
 	var _q;
 	var _sdRoleAssignmentService;
 	var _sdCommonViewUtilService;
 	var trace;
 	var _timeout;
+	var _sdLoggedInUserService;
 
 	/**
 	 * 
 	 */
-	function RoleAssignmentCtrl($q, $timeout, sdRoleAssignmentService, sdLoggerService, sdCommonViewUtilService) {
+	function RoleAssignmentCtrl($q, $timeout, sdRoleAssignmentService, sdLoggerService, sdCommonViewUtilService,
+			sdLoggedInUserService) {
 		trace = sdLoggerService.getLogger('bcc-ui.sdRoleAssignmentCtrl');
 		_q = $q;
 		_sdRoleAssignmentService = sdRoleAssignmentService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
-		_timeout = $timeout
+		_timeout = $timeout;
+		_sdLoggedInUserService = sdLoggedInUserService;
 
 		this.roleAssignmentTable = null;
-		this.columnSelector = 'admin';
+		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
 		this.exportFileNameForRoleAssignment = "RoleAssignment"
 		this.rowSelectionForRoleAssignment = null;
 		this.getRoleAssignments();

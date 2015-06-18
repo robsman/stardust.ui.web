@@ -18,7 +18,7 @@
 	angular.module("viewscommon-ui").controller(
 			'sdDocumentSearchViewCtrl',
 			[ '$q', 'sdDocumentSearchService', 'sdViewUtilService', 'sdUtilService', 'sdMimeTypeService',
-					'sdLoggerService','sdCommonViewUtilService', DocumentSearchViewCtrl ]);
+					'sdLoggerService','sdCommonViewUtilService','sdLoggedInUserService', DocumentSearchViewCtrl ]);
 	var _q;
 	var _sdDocumentSearchService;
 	var _sdViewUtilService;
@@ -26,12 +26,13 @@
 	var _sdMimeTypeService;
 	var trace;
 	var _sdCommonViewUtilService;
+	var _sdLoggedInUserService;
 	
 	/*
 	 * 
 	 */
 	function DocumentSearchViewCtrl($q, sdDocumentSearchService, sdViewUtilService, sdUtilService, sdMimeTypeService,
-			sdLoggerService, sdCommonViewUtilService) {
+			sdLoggerService, sdCommonViewUtilService, sdLoggedInUserService) {
 		// variable initialization for various services
 		trace = sdLoggerService.getLogger('viewscommon-ui.sdDocumentSearchViewCtrl');
 		_q = $q;
@@ -40,12 +41,13 @@
 		_sdUtilService = sdUtilService;
 		_sdMimeTypeService = sdMimeTypeService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
-
+		_sdLoggedInUserService = sdLoggedInUserService;
+		
 		// variable for search result table
 		this.documentSearchResult = {};
 		this.documentVersions = {};
 		this.docSrchRsltTable = null;
-		this.columnSelector = 'admin';
+		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ?  'admin' : true;
 		this.docVersionsdataTable = null;
 		this.exportFileNameForDocumentSearchResult = "DocumentSearchResult";
 		this.rowSelection = null;

@@ -117,7 +117,7 @@ public class RoleAssignmentUtils
 
       RoleAssignmentResultDTO result = new RoleAssignmentResultDTO();
 
-      if (roleAssignmentList.get(0) != null && !roleAssignmentList.get(0).columnsValue.isEmpty())
+      if (roleAssignmentList.get(0) != null)
       {
          Set<String> roles = roleAssignmentList.get(0).columnsValue.keySet();
          result.list = roleAssignmentList;

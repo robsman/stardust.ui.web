@@ -18,7 +18,7 @@
 	angular.module("bcc-ui").controller(
 			'sdRoleManagerDetailViewCtrl',
 			[ '$q', '$scope', '$filter', '$element', 'sdRoleManagerDetailService', 'sdLoggerService',
-					'sdViewUtilService', RoleManagerDetailViewCtrl ]);
+					'sdViewUtilService','sdLoggedInUserService', RoleManagerDetailViewCtrl ]);
 	var _q;
 	var _scope;
 	var _filter;
@@ -26,12 +26,13 @@
 	var _sdRoleManagerDetailService;
 	var _sdViewUtilService;
 	var trace;
+	var _sdLoggedInUserService;
 
 	/*
 	 * 
 	 */
 	function RoleManagerDetailViewCtrl($q, $scope, $filter, $element, sdRoleManagerDetailService, sdLoggerService,
-			sdViewUtilService) {
+			sdViewUtilService,sdLoggedInUserService) {
 		trace = sdLoggerService.getLogger('bcc-ui.sdRoleManagerDetailViewCtrl');
 		_q = $q;
 		_scope = $scope;
@@ -39,8 +40,9 @@
 		_element = $element;
 		_sdRoleManagerDetailService = sdRoleManagerDetailService;
 		_sdViewUtilService = sdViewUtilService;
+		_sdLoggedInUserService = sdLoggedInUserService;
 
-		this.columnSelector = 'admin';
+		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ?  'admin' : true;
 		this.exportFileNameForAssignedUsers = "AssignedUsers";
 		this.exportFileNameForAssignableUsers = "AssignableUsers";
 		this.assignedUsersTable = null;

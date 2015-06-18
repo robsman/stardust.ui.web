@@ -18,7 +18,7 @@
 	angular.module("admin-ui").controller(
 			'sdParticipantManagementCtrl',
 			[ '$q', 'sdParticipantManagementService', 'sdLoggerService', 'sdUtilService', 'sdUserService',
-					ParticipantManagementCtrl ]);
+					'sdLoggedInUserService', ParticipantManagementCtrl ]);
 
 	var _q;
 	var _sdParticipantManagementService
@@ -26,21 +26,24 @@
 	var _sdUtilService;
 	
 	var _sdUserService;
+	var _sdLoggedInUserService;
 
 	/**
 	 * 
 	 */
 	function ParticipantManagementCtrl($q, sdParticipantManagementService, sdLoggerService, sdUtilService,
-			sdUserService) {
+			sdUserService, sdLoggedInUserService) {
 		trace = sdLoggerService.getLogger('admin-ui.sdParticipantManagementCtrl');
 		_q = $q;
 		_sdParticipantManagementService = sdParticipantManagementService;
 		_sdUtilService = sdUtilService;
 		_sdUserService = sdUserService;
+		_sdLoggedInUserService = sdLoggedInUserService;
+
 		this.allUsersTable = null;
 		this.showAllUsersTable = true;
 		this.hideInvalidatedUsers = false;
-		this.columnSelector = "admin";
+		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
 		this.rowSelectionForAllUsersTable = null;
 		this.exportFileNameForAllUsers = "AllUsers";
 

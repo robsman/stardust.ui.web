@@ -17,28 +17,28 @@
 
 	angular.module("workflow-ui").controller(
 			'sdNotesCtrl',
-			['$scope', 'sdNotesService', 'sdLoggerService', 'sdViewUtilService', 'sdUtilService',
-					NotesCtrl ]);
+			[ '$scope', 'sdNotesService', 'sdLoggerService', 'sdViewUtilService', 'sdUtilService',
+					'sdLoggedInUserService', NotesCtrl ]);
 	var _scope;
 	var _sdNotesService;
 	var _sdViewUtilService;
 	var _sdUtilService;
 	var trace;
 	var rootURL;
-
+	var _sdLoggedInUserService;
 	/*
 	 * 
 	 */
-	function NotesCtrl($scope, sdNotesService, sdLoggerService, sdViewUtilService, sdUtilService) {
+	function NotesCtrl($scope, sdNotesService, sdLoggerService, sdViewUtilService, sdUtilService, sdLoggedInUserService) {
 		trace = sdLoggerService.getLogger('workflow-ui.sdNotesCtrl');
 		_scope = $scope;
 		_sdNotesService = sdNotesService;
 		_sdViewUtilService = sdViewUtilService;
 		_sdUtilService = sdUtilService;
-
+		_sdLoggedInUserService = sdLoggedInUserService;
 		rootURL = _sdUtilService.getRootUrl();
 
-		this.columnSelector = 'admin';
+		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
 		this.notesTable = null;
 		this.rowSelectionNotesTable = null;
 
@@ -55,7 +55,7 @@
 	 */
 	NotesCtrl.prototype.handleViewEvents = function(event) {
 		if (event.type == "ACTIVATED") {
-			//TODO
+			// TODO
 		} else if (event.type == "DEACTIVATED") {
 			// TODO
 		}
@@ -85,7 +85,7 @@
 	/**
 	 * 
 	 * @param options
-	 * @returns 
+	 * @returns
 	 */
 	NotesCtrl.prototype.getNotesData = function(options) {
 		var self = this;
@@ -170,14 +170,14 @@
 	 */
 	NotesCtrl.prototype.cancelNote = function() {
 		var self = this;
-		if(self.notes.totalCount > 0){
+		if (self.notes.totalCount > 0) {
 			self.notesTable.setSelection({
 				noteNumber : self.notes.totalCount
 			});
-		}else{
+		} else {
 			self.isAddMode = false;
 		}
-		
+
 	};
 
 })();

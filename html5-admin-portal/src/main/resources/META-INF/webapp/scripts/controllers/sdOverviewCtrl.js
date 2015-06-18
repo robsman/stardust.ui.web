@@ -18,7 +18,7 @@
 	angular.module("admin-ui").controller(
 			'sdOverviewCtrl',
 			[ '$q', 'sdOverviewService', 'sdLoggerService', 'sdUtilService', 'sdUserService',
-					'sdProcessInstanceService', 'sdActivityInstanceService', OverviewCtrl ]);
+					'sdProcessInstanceService', 'sdActivityInstanceService', 'sdLoggedInUserService', OverviewCtrl ]);
 
 	var _q;
 	var _sdOverviewService
@@ -27,11 +27,12 @@
 	var _sdUserService;
 	var _sdProcessInstanceService;
 	var _sdActivityInstanceService;
+	var _sdLoggedInUserService;
 	/**
 	 * 
 	 */
 	function OverviewCtrl($q, sdOverviewService, sdLoggerService, sdUtilService, sdUserService,
-			sdProcessInstanceService, sdActivityInstanceService) {
+			sdProcessInstanceService, sdActivityInstanceService, sdLoggedInUserService) {
 		trace = sdLoggerService.getLogger('admin-ui.sdOverviewCtrl');
 		_q = $q;
 		_sdOverviewService = sdOverviewService;
@@ -39,9 +40,11 @@
 		_sdUserService = sdUserService;
 		_sdProcessInstanceService = sdProcessInstanceService;
 		_sdActivityInstanceService = sdActivityInstanceService;
+		_sdLoggedInUserService = sdLoggedInUserService;
+		
 		this.allLogEntriesTable = null;
 		this.showAllLogEntriesTable = true;
-		this.columnSelector = "admin";
+		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ?  'admin' : true;
 		this.rowSelectionForAllLogEntriesTable = null;
 		this.exportFileNameForAllLogEntries = "AllLogEntries";
 
