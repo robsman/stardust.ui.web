@@ -38,6 +38,7 @@
       <module>html5-admin-portal</module>
       <module>html5-views-common</module>
       <module>rest-common</module>
+      <module>benchmark</module>
       <module>stardust-web-camel</module>
    </modules>
 
