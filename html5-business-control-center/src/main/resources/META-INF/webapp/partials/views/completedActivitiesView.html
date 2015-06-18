@@ -1,0 +1,47 @@
+<div class="view-panel" ng-controller="sdCompletedActivitiesCtrl as ctrl" sg-stretch-to-bottom>
+	<div class="toolbar-buttons">
+		<div class="view-toolbar-section">
+			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+		</div>
+	</div>
+
+
+	<div class="view-panel-content">
+		<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-completedActivities-title')}}</div>
+
+		<table sd-data-table="ctrl.dataTable" sda-no-pagination="true"
+			sd-data="ctrl.getCompletedActivities(params)" sda-ready="ctrl.ready" sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
+			sda-sortable="true" sda-sort-by="{name : 'teamMember', dir : 'desc'}"
+			sda-mode="remote" sda-no-pagination="true" sda-sortable="false" 
+			sda-exports="true" sda-exports-file-name="{{ctrl.exportFileName}}"  sda-column-selector="{{ctrl.columnSelector}}" >
+			<thead>
+				<tr>
+					<th sda-name="TeamMember" sda-sortable="true" sda-visible="true" sda-fixed="true"
+						sda-label="{{i18n('business-control-center-messages.views-common-column-teamMember')}}">
+							<div sda-filter-template>
+								<div sd-text-search-filter></div>
+							</div>
+					</th>
+					<th ng-repeat="col in ctrl.columns" sda-name="p{{$index}}"
+						sda-visible="{{$index < 5}}" sda-label="{{col.label}}"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td sda-exporter="rowData.teamMember.displayName">
+							<a href="#"
+								ng-click="ctrl.openUserManagerDetails(rowData.teamMember);"
+								title="{{i18n('business-control-center-messages.views-userManagerDetailView-title')}}"
+								class="button-link tbl-tool-link">
+									{{rowData.teamMember.displayName}} 
+							</a>
+					</td>
+					<td ng-repeat="col in ctrl.columns" sda-exporter="ctrl.getExportValue(rowData.statisticsByProcess[colData.title])"
+						sda-visible="{{$index < 5}}">
+						<div sd-activities-statistics-column-content sda-value="rowData.statisticsByProcess[colData.title]"></div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

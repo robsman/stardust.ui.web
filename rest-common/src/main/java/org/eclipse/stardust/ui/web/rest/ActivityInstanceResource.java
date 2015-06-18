@@ -43,6 +43,7 @@ import org.eclipse.stardust.ui.web.rest.service.DelegationComponent;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
 import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.CompletedActivitiesStatisticsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
@@ -546,7 +547,28 @@ public class ActivityInstanceResource
           NotificationMap result =  activityInstanceService.activate(Long.valueOf(data.get("activityOID").toString()));
           return Response.ok(GsonUtils.toJsonHTMLSafeString(result), MediaType.APPLICATION_JSON).build();
    }
-	
+    
+    
+    /**
+     * Gets the completed activities by process  
+     * @param postedData
+     * @return
+     */
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/completedActivities")
+    public Response getCompletedActivities(String postedData)
+    {
+       try{
+          List<CompletedActivitiesStatisticsDTO> result = activityInstanceService.getCompletedActivities();
+          return Response.ok(AbstractDTO.toJson(result), MediaType.APPLICATION_JSON).build();
+       } catch (Exception e)
+       {
+          trace.error("", e);
+          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+       }
+    }
+
 	/**
 	 * 
 	 * @param processInstanceOID

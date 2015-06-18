@@ -46,6 +46,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PriorityDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ProcessColumnsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
@@ -348,6 +349,23 @@ public class ProcessInstanceService
       List<Long> processInstOIDs = JsonDTO.getAsList(processData, Long.class);
       
       return GsonUtils.toJsonHTMLSafeString(processInstanceUtilsREST.getRelatedProcesses(processInstOIDs, matchAny, searchCases));
+   }
+   
+   /**
+    * 
+    */
+   public List<ProcessColumnsDTO> getAllRelevantProcesses()
+   {
+      List<ProcessDefinition> processes = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils
+            .getAllBusinessRelevantProcesses();
+      List<ProcessColumnsDTO> processColumns = new ArrayList<ProcessColumnsDTO>();
+
+      for (ProcessDefinition processDefinition : processes)
+      {
+         processColumns.add(new ProcessColumnsDTO(processDefinition.getId(), I18nUtils
+               .getProcessName(processDefinition)));
+      }
+      return processColumns;
    }
 
 }

@@ -210,6 +210,14 @@
 			return ajax(REST_BASE_URL, "abort", requestObj);
 			
 		};
+		
+		
+		/**
+		 * 
+		 */
+		ActivityInstanceService.prototype.getCompletedActivities = function( ) {
+			return ajax(REST_BASE_URL, "", 'completedActivities');
+		};
 
 		/*
 		 * 

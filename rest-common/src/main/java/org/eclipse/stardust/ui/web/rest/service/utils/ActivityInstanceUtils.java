@@ -17,6 +17,8 @@ import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtil
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -24,17 +26,24 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.annotation.Resource;
+import javax.print.attribute.HashAttributeSet;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.reflect.Reflect;
+import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.DataMapping;
+import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
+import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.SubsetPolicy;
+import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
+import org.eclipse.stardust.engine.api.query.UserQuery;
+import org.eclipse.stardust.engine.api.query.Users;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
@@ -43,8 +52,25 @@ import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
+import org.eclipse.stardust.engine.core.query.statistics.api.DateRange;
+import org.eclipse.stardust.engine.core.query.statistics.api.StatisticsDateRangePolicy;
+import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics;
+import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics.Contribution;
+import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics.PerformanceStatistics;
+import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatisticsQuery;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.ui.event.ActivityEvent;
+import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
+import org.eclipse.stardust.ui.web.bcc.common.configuration.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.bcc.jsf.RoleItem;
+import org.eclipse.stardust.ui.web.bcc.jsf.UserItem;
+import org.eclipse.stardust.ui.web.bcc.views.CompletedActivityDynamicUserObject;
+import org.eclipse.stardust.ui.web.bcc.views.CompletedActivityUserObject;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
+import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
+import org.eclipse.stardust.ui.web.common.filter.TableDataFilterSearch;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
@@ -52,8 +78,12 @@ import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.dto.CompletedActivitiesStatisticsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PathDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.PerformanceStatisticsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ClientContextBean;
@@ -62,8 +92,10 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -611,7 +643,6 @@ public class ActivityInstanceUtils
    public void forceSuspend(ActivityInstance ai)
    {
       AdministrationService adminService = serviceFactoryUtils.getAdministrationService();
-      DeployedModel model = ModelCache.findModelCache().getModel(ai.getModelOID());
 
       boolean forceSuspend = AuthorizationUtils.canForceSuspend();
       try
@@ -625,5 +656,127 @@ public class ActivityInstanceUtils
       {
          ExceptionHandler.handleException(e);
       }
+   }
+   
+   
+   /**
+    * 
+    * @return
+    */
+   private Users getRelevantUsers(){
+     
+      UserQuery query = WorkflowFacade.getWorkflowFacade().getTeamQuery(true);
+      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
+      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
+      userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
+      query.setPolicy(userPolicy);
+      
+      if (query.getOrderCriteria().getCriteria().size() == 0)
+      {
+         query.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME).and(UserQuery.ACCOUNT);
+      }
+
+      Users users = facade.getAllUsers((UserQuery) query);
+      
+      return users;
+   }
+   
+   
+   /**
+    * 
+    * @return
+    */
+   private UserPerformanceStatistics getUserStatistics(){
+      
+
+      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
+      
+      List<DateRange> dateRange = CollectionUtils.newArrayList();
+      dateRange.add(DateRange.TODAY);
+      dateRange.add(DateRange.THIS_WEEK);
+      dateRange.add(DateRange.THIS_MONTH);
+
+      
+      UserPerformanceStatisticsQuery userPerformanceStatisticsQuery = UserPerformanceStatisticsQuery.forAllUsers();
+      userPerformanceStatisticsQuery.setPolicy(new StatisticsDateRangePolicy(dateRange));
+
+      UserPerformanceStatistics userStatistics = (UserPerformanceStatistics) facade
+            .getAllUsers(userPerformanceStatisticsQuery);
+      
+      return userStatistics;
+   }
+   
+ 
+   /**
+    * @return 
+    * 
+    */
+   public List<CompletedActivitiesStatisticsDTO> getCompletedActivies()
+   {
+
+      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();   
+      Users users = getRelevantUsers();
+      UserPerformanceStatistics userStatistics = getUserStatistics();
+      Iterator<UserItem> userIter = facade.getAllUsersAsUserItems(users).iterator();
+      Collection participants = facade.getAllRolesExceptCasePerformer();
+      UserItem userItem;
+      List<ProcessDefinition> processes;
+
+      ProcessDefinition process;
+      PerformanceStatistics pStatistics;
+      Contribution con = null;
+      RoleItem roleItem;
+      
+      List<CompletedActivitiesStatisticsDTO> completedActivitiesList = new ArrayList<CompletedActivitiesStatisticsDTO>();
+      
+      processes = ProcessDefinitionUtils.getAllBusinessRelevantProcesses();
+      while (userIter.hasNext())
+      {
+         userItem = (UserItem) userIter.next();
+         CompletedActivitiesStatisticsDTO activityStatsDTO = new CompletedActivitiesStatisticsDTO();
+        
+         UserDTO userDTO = DTOBuilder.build(userItem.getUser(), UserDTO.class);
+         userDTO.displayName = UserUtils.getUserDisplayLabel(userItem.getUser());
+         activityStatsDTO.teamMember = userDTO;
+         PerformanceStatisticsDTO performanceStatsDTO = null;
+     
+         Map<String, PerformanceStatisticsDTO> processStats = new HashMap<String, PerformanceStatisticsDTO>();
+         if (processes != null)
+         {
+            for (int i = 0; i < processes.size(); i++)
+            {
+               process = (ProcessDefinition) processes.get(i);
+               pStatistics = userStatistics != null ? userStatistics.getStatisticsForUserAndProcess(userItem.getUser()
+                     .getOID(), process.getQualifiedId()) : null;
+
+               int nAisCompletedToday = 0;
+               int nAisCompletedWeek = 0;
+               int nAisCompletedMonth = 0;
+
+               if (pStatistics != null)
+               {
+                  for (Iterator<Participant> iter = participants.iterator(); iter.hasNext();)
+                  {
+                     roleItem = (RoleItem) iter.next();
+                     con = pStatistics.findContribution(roleItem.getRole());
+                     nAisCompletedToday += con.getOrCreatePerformanceInInterval(DateRange.TODAY).getnAisCompleted();
+                     nAisCompletedWeek += con.getOrCreatePerformanceInInterval(DateRange.THIS_WEEK).getnAisCompleted();
+                     nAisCompletedMonth += con.getOrCreatePerformanceInInterval(DateRange.THIS_MONTH)
+                           .getnAisCompleted();
+                  }
+               }
+               
+               performanceStatsDTO = new PerformanceStatisticsDTO(nAisCompletedToday, nAisCompletedWeek,
+                     nAisCompletedMonth);
+               processStats.put(I18nUtils.getProcessName(process), performanceStatsDTO);
+            }
+            
+            activityStatsDTO.statisticsByProcess = processStats;
+         }
+         
+         completedActivitiesList.add(activityStatsDTO);
+      }
+      
+      return completedActivitiesList;
    }
 }

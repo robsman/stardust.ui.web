@@ -261,5 +261,15 @@
 			
 			return res.save({}, payload).$promise;
 		};
+		
+		
+		/*
+		 * 
+		 */
+		ProcessInstanceService.prototype.getProcessColumns = function() {
+			var restUrl = REST_BASE_URL + "allProcessColumns";
+			var processes = $resource(restUrl);
+			return processes.query().$promise;
+		};
 	};
 })();
