@@ -222,6 +222,20 @@
 		/**
 		 * 
 		 */
+		ActivityInstanceService.prototype.getPendingActivities = function( ) {
+			return sdUtilService.ajax(REST_BASE_URL, "", 'pendingActivities');
+		};
+		
+		/**
+		 * 
+		 */
+		ActivityInstanceService.prototype.getRoleColumns = function( ) {
+			return sdUtilService.ajax(REST_BASE_URL, "", 'allRoleColumns');
+		};
+		
+		/**
+		 * 
+		 */
 		ActivityInstanceService.prototype.getPostponedActivities = function( ) {
 			return sdUtilService.ajax(REST_BASE_URL, "", 'postponedActivities');
 		};

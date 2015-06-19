@@ -55,6 +55,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
+import org.eclipse.stardust.ui.web.rest.service.dto.PendingActivitiesStatisticsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PostponedActivitiesResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
@@ -594,6 +595,35 @@ public class ActivityInstanceResource
           trace.error("", e);
           return Response.status(Status.INTERNAL_SERVER_ERROR).build();
        }
+    }
+    
+    /**
+     * Gets the completed activities by process  
+     * @param postedData
+     * @return
+     */
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/pendingActivities")
+    public Response getPendingActivities()
+    {
+       try{
+          List<PendingActivitiesStatisticsDTO> result = activityInstanceService.getPendingActivities();
+          return Response.ok(AbstractDTO.toJson(result), MediaType.APPLICATION_JSON).build();
+       } catch (Exception e)
+       {
+          trace.error("", e);
+          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+       }
+    }
+    
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/allRoleColumns")
+    public Response getRoleColumns( )
+    {
+       return Response
+             .ok(AbstractDTO.toJson( activityInstanceService.getAllRoles() ), MediaType.APPLICATION_JSON).build();
     }
 
     /**

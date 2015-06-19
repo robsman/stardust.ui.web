@@ -13,7 +13,6 @@
  */
 package org.eclipse.stardust.ui.web.rest.service;
 
-
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -26,7 +25,6 @@ import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.common.error.ConcurrencyException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
@@ -37,15 +35,16 @@ import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
-import org.eclipse.stardust.ui.web.rest.service.dto.ColumnDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.CompletedActivitiesStatisticsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ColumnDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.CompletedActivitiesStatisticsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.CriticalityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.PendingActivitiesStatisticsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PostponedActivitiesResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
@@ -60,8 +59,6 @@ import org.eclipse.stardust.ui.web.rest.service.utils.CriticalityUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
-import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
@@ -89,11 +86,12 @@ public class ActivityInstanceService
 
    @Resource
    CriticalityUtils criticalityUtils;
-   
+
    @Resource
    private RestCommonClientMessages restCommonClientMessages;
 
    private static final Logger trace = LogManager.getLogger(ActivityInstanceService.class);
+
    /**
     * @param activityInstanceOid
     * @return
@@ -217,9 +215,9 @@ public class ActivityInstanceService
       {
          notificationMap = activityInstanceUtils.abortActivities(AbortScope.RootHierarchy, activities);
       }
-      else 
+      else
       {
-         throw new IllegalArgumentException("Scope not valid : "+scope);
+         throw new IllegalArgumentException("Scope not valid : " + scope);
       }
       return GsonUtils.toJsonHTMLSafeString(notificationMap);
    }
@@ -256,7 +254,7 @@ public class ActivityInstanceService
       countDTO.total = getTotalActivityInstanceCount();
       countDTO.waiting = getWaitingAcitivityInstanceCount();
       countDTO.completed = getCompletedActivityInstanceCount();
-      
+
       return countDTO;
 
    }
@@ -314,24 +312,23 @@ public class ActivityInstanceService
             ActivityInstanceState.Interrupted, ActivityInstanceState.Suspended, ActivityInstanceState.Hibernated});
       return new Long(service.getActivityInstancesCount(query));
    }
-   
-   
+
    /**
     * @param userId
     * @return
     */
-   public QueryResultDTO getAllInstances( Options options)
+   public QueryResultDTO getAllInstances(Options options)
    {
-      QueryResult<?> queryResult = activityInstanceUtils.getActivityInstances( options);
+      QueryResult< ? > queryResult = activityInstanceUtils.getActivityInstances(options);
       return ActivityTableUtils.buildTableResult(queryResult, MODE.ACTIVITY_TABLE);
    }
-   
+
    /**
     * @return
     */
-   public QueryResultDTO getInstancesByOids( Options options, List<String> oids)
+   public QueryResultDTO getInstancesByOids(Options options, List<String> oids)
    {
-      QueryResult<?> queryResult = activityInstanceUtils.getActivitiesByOids(options, oids);
+      QueryResult< ? > queryResult = activityInstanceUtils.getActivitiesByOids(options, oids);
       return ActivityTableUtils.buildTableResult(queryResult, MODE.ACTIVITY_TABLE);
    }
 
@@ -370,7 +367,7 @@ public class ActivityInstanceService
             .getString("views.activityTable.statusFilter.suspended")));
       return allStatusList;
    }
-   
+
    /**
     * 
     * @param activityOID
@@ -383,7 +380,7 @@ public class ActivityInstanceService
       try
       {
          ai = serviceFactoryUtils.getWorkflowService().activate(activityOID);
-         serviceFactoryUtils.getWorkflowService().unbindActivityEventHandler(activityOID , "Resubmission");
+         serviceFactoryUtils.getWorkflowService().unbindActivityEventHandler(activityOID, "Resubmission");
          notification.addSuccess(new NotificationDTO(activityOID, ai.getActivity().getName(), null));
       }
       catch (ConcurrencyException ce)
@@ -446,16 +443,30 @@ public class ActivityInstanceService
     */
    public List<CompletedActivitiesStatisticsDTO> getCompletedActivities()
    {
-    return  activityInstanceUtils.getCompletedActivies( );
+      return activityInstanceUtils.getCompletedActivies();
    }
-   
+
+   /**
+    * 
+    * @return
+    */
+   public List<PendingActivitiesStatisticsDTO> getPendingActivities()
+   {
+      return activityInstanceUtils.getPendingActivities();
+   }
+
+   public List<ColumnDTO> getAllRoles()
+   {
+      return activityInstanceUtils.getAllRoles();
+   }
+
    /**
     * 
     * @return
     */
    public List<PostponedActivitiesResultDTO> getPostponedActivities()
    {
-    return  activityInstanceUtils.getPostponedActivities( );
+      return activityInstanceUtils.getPostponedActivities();
    }
 
    /**
@@ -464,7 +475,7 @@ public class ActivityInstanceService
     */
    public List<ColumnDTO> getParticipantColumns()
    {
-      return  activityInstanceUtils.getParticipantColumns();
+      return activityInstanceUtils.getParticipantColumns();
    }
-   
+
 }

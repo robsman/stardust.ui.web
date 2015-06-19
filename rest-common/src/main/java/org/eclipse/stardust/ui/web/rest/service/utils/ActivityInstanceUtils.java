@@ -62,6 +62,8 @@ import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.engine.core.query.statistics.api.CriticalExecutionTimePolicy;
 import org.eclipse.stardust.engine.core.query.statistics.api.DateRange;
+import org.eclipse.stardust.engine.core.query.statistics.api.OpenActivitiesStatistics;
+import org.eclipse.stardust.engine.core.query.statistics.api.OpenActivitiesStatisticsQuery;
 import org.eclipse.stardust.engine.core.query.statistics.api.PostponedActivitiesStatistics;
 import org.eclipse.stardust.engine.core.query.statistics.api.PostponedActivitiesStatistics.PostponedActivities;
 import org.eclipse.stardust.engine.core.query.statistics.api.PostponedActivitiesStatisticsQuery;
@@ -71,15 +73,13 @@ import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStat
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics.PerformanceStatistics;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatisticsQuery;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
-import org.eclipse.stardust.engine.core.runtime.utils.ParticipantInfoUtil;
 import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
 import org.eclipse.stardust.ui.web.bcc.common.configuration.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.bcc.jsf.OpenActivitiesCalculator;
 import org.eclipse.stardust.ui.web.bcc.jsf.PostponedActivitiesCalculator;
 import org.eclipse.stardust.ui.web.bcc.jsf.RoleItem;
 import org.eclipse.stardust.ui.web.bcc.jsf.UserItem;
-import org.eclipse.stardust.ui.web.bcc.views.ParticipantsTableEntry;
-import org.eclipse.stardust.ui.web.bcc.views.PostponedActivitiesTableEntry;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
@@ -89,15 +89,15 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.CompletedActivitiesStatisticsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.CompletedActivityPerformanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
-import org.eclipse.stardust.ui.web.rest.service.dto.PostponedActivitiesResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.OpenActivitiesDynamicUserObjectDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PathDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.PendingActivitiesStatisticsDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.PostponedActivitiesResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PostponedActivitiesStatsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.PermissionDTO.ParticipantDTO;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
@@ -105,7 +105,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ClientContextBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
@@ -198,15 +197,13 @@ public class ActivityInstanceUtils
 
       return activityInstances;
    }
-   
-   
+
    /**
     * @param userId
     * @return
     */
-   public QueryResult< ? > getActivitiesByOids(Options options,List<String> oids)
+   public QueryResult< ? > getActivitiesByOids(Options options, List<String> oids)
    {
-      
       ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
       FilterTerm filter = query.getFilter();
       if (oids != null)
@@ -214,7 +211,7 @@ public class ActivityInstanceUtils
          if (!oids.isEmpty())
          {
             FilterTerm orTerm = filter.addOrTerm();
-            
+
             for (String oid : oids)
             {
                orTerm.add(ActivityInstanceQuery.OID.isEqual(Long.valueOf(oid)));
@@ -239,8 +236,6 @@ public class ActivityInstanceUtils
 
       return activityInstances;
    }
-   
- 
 
    /**
     * @param ai
@@ -716,14 +711,15 @@ public class ActivityInstanceUtils
          ExceptionHandler.handleException(e);
       }
    }
+
    /**
-    * @return 
+    * @return
     * 
     */
    public List<CompletedActivitiesStatisticsDTO> getCompletedActivies()
    {
 
-      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();   
+      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
       Users users = getRelevantUsers();
       UserPerformanceStatistics userStatistics = getUserStatisticsForCompletedActivities();
       Iterator<UserItem> userIter = facade.getAllUsersAsUserItems(users).iterator();
@@ -735,20 +731,20 @@ public class ActivityInstanceUtils
       PerformanceStatistics pStatistics;
       Contribution con = null;
       RoleItem roleItem;
-      
+
       List<CompletedActivitiesStatisticsDTO> completedActivitiesList = new ArrayList<CompletedActivitiesStatisticsDTO>();
-      
+
       processes = ProcessDefinitionUtils.getAllBusinessRelevantProcesses();
       while (userIter.hasNext())
       {
          userItem = (UserItem) userIter.next();
          CompletedActivitiesStatisticsDTO activityStatsDTO = new CompletedActivitiesStatisticsDTO();
-        
+
          UserDTO userDTO = DTOBuilder.build(userItem.getUser(), UserDTO.class);
          userDTO.displayName = UserUtils.getUserDisplayLabel(userItem.getUser());
          activityStatsDTO.teamMember = userDTO;
          CompletedActivityPerformanceDTO performanceStatsDTO = null;
-     
+
          Map<String, CompletedActivityPerformanceDTO> processStats = new HashMap<String, CompletedActivityPerformanceDTO>();
          if (processes != null)
          {
@@ -774,22 +770,21 @@ public class ActivityInstanceUtils
                            .getnAisCompleted();
                   }
                }
-               
+
                performanceStatsDTO = new CompletedActivityPerformanceDTO(nAisCompletedToday, nAisCompletedWeek,
                      nAisCompletedMonth);
                processStats.put(I18nUtils.getProcessName(process), performanceStatsDTO);
             }
-            
+
             activityStatsDTO.statisticsByProcess = processStats;
          }
-         
+
          completedActivitiesList.add(activityStatsDTO);
       }
-      
+
       return completedActivitiesList;
    }
 
-   
    /**
     * 
     */
@@ -886,7 +881,7 @@ public class ActivityInstanceUtils
                exceededActivityOids = CollectionUtils.newHashSet();
                PostponedActivitiesStatsDTO statsDTO = new PostponedActivitiesStatsDTO(totalCount, avgDuration,
                      exceededDurationCount, allActivityOids, exceededActivityOids);
-               statsByParticipant.put( ModelHelper.getParticipantName(mp), statsDTO);
+               statsByParticipant.put(ModelHelper.getParticipantName(mp), statsDTO);
             }
 
          }
@@ -899,7 +894,7 @@ public class ActivityInstanceUtils
       }
       return resultList;
    }
-   
+
    /**
     * 
     * @return
@@ -919,7 +914,7 @@ public class ActivityInstanceUtils
       PostponedActivitiesStatistics pStat = (PostponedActivitiesStatistics) facade.getAllUsers(query);
       return pStat;
    }
-   
+
    /**
     * 
     */
@@ -932,7 +927,7 @@ public class ActivityInstanceUtils
       Participant participant;
       ModelParticipant modelParticipant;
       Department department;
-      
+
       Set<ModelParticipantInfo> participantList = new HashSet<ModelParticipantInfo>();
       for (Grant grant : userGrants)
       {
@@ -948,7 +943,7 @@ public class ActivityInstanceUtils
       }
       return participantList;
    }
-   
+
    /**
     * 
     * @return
@@ -993,6 +988,117 @@ public class ActivityInstanceUtils
             .getAllUsers(userPerformanceStatisticsQuery);
 
       return userStatistics;
+   }
+
+   public List<PendingActivitiesStatisticsDTO> getPendingActivities()
+   {
+      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
+      OpenActivitiesStatisticsQuery query = OpenActivitiesStatisticsQuery.forAllProcesses();
+      query.setPolicy(new CriticalExecutionTimePolicy(Constants.getCriticalDurationThreshold(
+            ProcessInstancePriority.LOW, 1.0f), Constants.getCriticalDurationThreshold(ProcessInstancePriority.NORMAL,
+            1.0f), Constants.getCriticalDurationThreshold(ProcessInstancePriority.HIGH, 1.0f)));
+      OpenActivitiesStatistics openActivityStatistics = (OpenActivitiesStatistics) facade
+            .getAllActivityInstances(query);
+
+      Collection<ProcessDefinition> processDefinition = facade.getAllProcessDefinitions();
+
+      OpenActivitiesCalculator openActivitiesCalculator = new OpenActivitiesCalculator(processDefinition,
+            openActivityStatistics);
+
+      String[] participantname = null;
+      // List<OpenActivitiesUserObject> pendingActList = new
+      // ArrayList<OpenActivitiesUserObject>();
+      List<PendingActivitiesStatisticsDTO> pendingActivitiesList = new ArrayList<PendingActivitiesStatisticsDTO>();
+      Map<String, OpenActivitiesDynamicUserObjectDTO> pendingActDynamicMap = new HashMap<String, OpenActivitiesDynamicUserObjectDTO>();
+      Map<String, OpenActivitiesDynamicUserObjectDTO> pendingCriticalActDynamicMap = new HashMap<String, OpenActivitiesDynamicUserObjectDTO>();
+      List<RoleItem> participantList = facade.getAllRolesExceptCasePerformer();
+
+      if (participantList != null)
+      {
+         participantname = new String[participantList.size()];
+      }
+
+      if (participantList != null)
+      {
+         RoleItem roleItem;
+         ModelParticipantInfo roledetails;
+         Map totalOpenActivities;
+         Map criticalOpenActivities;
+         // List<OpenActivitiesDynamicUserObject> pendingActDynamicList = new
+         // ArrayList<OpenActivitiesDynamicUserObject>();
+         // List<OpenActivitiesDynamicUserObject> pendingCriticalActDynamicList = new
+         // ArrayList<OpenActivitiesDynamicUserObject>();
+         for (int i = 0; i < participantList.size(); i++)
+         {
+            roleItem = participantList.get(i);
+            roledetails = roleItem.getRole();
+            participantname[i] = roleItem.getRoleName();
+
+            totalOpenActivities = openActivitiesCalculator.getTotalOpenActivities(roledetails);
+            criticalOpenActivities = openActivitiesCalculator.getCriticalOpenActivities(roledetails);
+
+            Long openActivitiesToday = new Long(
+                  ((Double) totalOpenActivities.get(OpenActivitiesCalculator.OPEN_ACTIVITIES_TODAY)).longValue());
+            Long openActivitiesYesterday = new Long(
+                  ((Double) totalOpenActivities.get(OpenActivitiesCalculator.OPEN_ACTIVITIES_YESTERDAY)).longValue());
+            Double openActivitiesAvg = (Double) totalOpenActivities.get(OpenActivitiesCalculator.OPEN_ACTIVITIES_AVG);
+            Long hibernatedActivitiesCount = (Long) totalOpenActivities
+                  .get(OpenActivitiesCalculator.OPEN_ACTIVITY_HIBERNATED);
+            Set<Long> openActivitiesOids = (Set<Long>) totalOpenActivities
+                  .get(OpenActivitiesCalculator.OPEN_ACTIVITIES_TODAY_OIDS);
+            Set<Long> openActivitiesYesterdayOids = (Set<Long>) totalOpenActivities
+                  .get(OpenActivitiesCalculator.OPEN_ACTIVITIES_YESTERDAY_OIDS);
+            Set<Long> openActivityHibernateOids = (Set<Long>) totalOpenActivities
+                  .get(OpenActivitiesCalculator.OPEN_ACTIVITY_HIBERNATE_OIDS);
+
+            OpenActivitiesDynamicUserObjectDTO dyna = new OpenActivitiesDynamicUserObjectDTO(openActivitiesToday,
+                  openActivitiesYesterday, openActivitiesAvg, hibernatedActivitiesCount);
+            dyna.setOpenActivitiesTodayOids(openActivitiesOids);
+            dyna.setOpenActivitiesYesterdayOids(openActivitiesYesterdayOids);
+            dyna.setOpenActivitiesHibernateOids(openActivityHibernateOids);
+            pendingActDynamicMap.put(roleItem.getRoleName(), dyna);
+            // pendingActDynamicList.add(dyna);
+
+            openActivitiesToday = new Long(
+                  ((Double) criticalOpenActivities.get(OpenActivitiesCalculator.OPEN_ACTIVITIES_TODAY)).longValue());
+            openActivitiesYesterday = new Long(
+                  ((Double) criticalOpenActivities.get(OpenActivitiesCalculator.OPEN_ACTIVITIES_YESTERDAY)).longValue());
+            openActivitiesAvg = (Double) criticalOpenActivities.get(OpenActivitiesCalculator.OPEN_ACTIVITIES_AVG);
+            hibernatedActivitiesCount = (Long) criticalOpenActivities
+                  .get(OpenActivitiesCalculator.OPEN_ACTIVITY_HIBERNATED);
+            openActivitiesOids = (Set<Long>) criticalOpenActivities
+                  .get(OpenActivitiesCalculator.OPEN_ACTIVITIES_TODAY_OIDS);
+            openActivitiesYesterdayOids = (Set<Long>) criticalOpenActivities
+                  .get(OpenActivitiesCalculator.OPEN_ACTIVITIES_YESTERDAY_OIDS);
+            openActivityHibernateOids = (Set<Long>) criticalOpenActivities
+                  .get(OpenActivitiesCalculator.OPEN_ACTIVITY_HIBERNATE_OIDS);
+
+            dyna = new OpenActivitiesDynamicUserObjectDTO(openActivitiesToday, openActivitiesYesterday,
+                  openActivitiesAvg, hibernatedActivitiesCount);
+            dyna.setOpenActivitiesTodayOids(openActivitiesOids);
+            dyna.setOpenActivitiesYesterdayOids(openActivitiesYesterdayOids);
+            dyna.setOpenActivitiesHibernateOids(openActivityHibernateOids);
+            pendingCriticalActDynamicMap.put(roleItem.getRoleName(), dyna);
+            // pendingCriticalActDynamicList.add(dyna);
+         }
+         pendingActivitiesList.add(new PendingActivitiesStatisticsDTO("Total Open Activities", pendingActDynamicMap));
+         pendingActivitiesList.add(new PendingActivitiesStatisticsDTO("Critical Open Activities",
+               pendingCriticalActDynamicMap));
+
+      }
+      return pendingActivitiesList;
+   }
+
+   public List<ColumnDTO> getAllRoles()
+   {
+      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
+      List<RoleItem> participantList = facade.getAllRolesExceptCasePerformer();
+      List<ColumnDTO> roleList = new ArrayList<ColumnDTO>();
+      for (RoleItem role : participantList)
+      {
+         roleList.add(new ColumnDTO(role.getRole().getId(), role.getRoleName()));
+      }
+      return roleList;
    }
 
 }
