@@ -63,7 +63,9 @@ public class BenchmarkDefinitionService
       List<BenchmarkDefinitionDTO> list = new ArrayList<BenchmarkDefinitionDTO>();
       try
       {
-         Folder folder = documentUtils.getFolder(BENCHMARK_DEFINITION_FOLDER);
+         // Create benchmark-definition folder in JCR if not present
+         DocumentMgmtUtility.createFolderIfNotExists(BENCHMARK_DEFINITION_FOLDER);
+         Folder folder = DocumentMgmtUtility.createFolderIfNotExists(BENCHMARK_DEFINITION_FOLDER);
          List<Document> documents = folder.getDocuments();
          for (Document doc : documents)
          {
@@ -112,6 +114,32 @@ public class BenchmarkDefinitionService
          throw e;
       }
       return list;
+   }
+   
+   /**
+    * 
+    * @param runtimeOid
+    * @return
+    * @throws Exception
+    */
+   public BenchmarkDefinitionDTO getRuntimeBenchmarkDefinition(long runtimeOid) throws Exception
+   {
+      BenchmarkDefinitionDTO benchmarkDto = new BenchmarkDefinitionDTO();
+      try
+      {
+         RuntimeArtifact artifact = documentUtils.getRuntimeArtifacts(runtimeOid);
+         BenchmarkMetadataDTO metadata = new BenchmarkMetadataDTO();
+         metadata.lastModifiedDate = artifact.getValidFrom().getTime();
+         metadata.runtimeOid = runtimeOid;
+         String contents = new String(artifact.getContent());
+         benchmarkDto.metadata = metadata;
+         benchmarkDto.content = jsonIo.readJsonObject(contents);
+      }
+      catch (Exception e)
+      {
+         throw e;
+      }
+      return benchmarkDto;
    }
 
    /**

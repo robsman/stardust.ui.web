@@ -72,7 +72,7 @@ public class BenchmarkDefinitionResource
       }
       catch (Exception e)
       {
-         trace.error(e, e);
+         trace.error("Exception while fetching design time Benchmark Definitions", e);
 
          return Response.serverError().build();
       }
@@ -99,13 +99,33 @@ public class BenchmarkDefinitionResource
       }
       catch (Exception e)
       {
-         trace.error(e, e);
+         trace.error("Exception while fetching Runtime Benchmark Definitions", e);
 
          return Response.serverError().build();
       }
 
    }
 
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/run-time/{runtimeOid}")
+   public Response getRuntimeBenchmarkDefinition(@PathParam("runtimeOid") long runtimeOid)
+   {
+      try
+      {
+         BenchmarkDefinitionDTO benchmarkDefinitionDTO = benchmarkDefinitionService.getRuntimeBenchmarkDefinition(runtimeOid);
+         JsonObject benchmark = createBenchmarkJSON(benchmarkDefinitionDTO);
+         return Response.ok(benchmark.toString()).build();   
+      }
+      catch (Exception e)
+      {
+         trace.error("Exception while fetching Runtime Benchmark Definition", e);
+
+         return Response.serverError().build();
+      }
+      
+   }
+   
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/run-time")
@@ -120,7 +140,7 @@ public class BenchmarkDefinitionResource
       }
       catch (Exception e)
       {
-         trace.error(e, e);
+         trace.error("Exception while publishing Benchmark Definitions", e);
 
          return Response.serverError().build();
       }
@@ -162,7 +182,7 @@ public class BenchmarkDefinitionResource
       }
       catch (Exception e)
       {
-         trace.error(e, e);
+         trace.error("Exception while updating design time Benchmark Definitions", e);
 
          return Response.serverError().build();
       }
@@ -180,7 +200,7 @@ public class BenchmarkDefinitionResource
       }
       catch (Exception e)
       {
-         trace.error(e, e);
+         trace.error("Exception while deleting design time Benchmark Definitions", e);
 
          return Response.serverError().build();
       }
@@ -191,13 +211,21 @@ public class BenchmarkDefinitionResource
     * 
     * @param benchmarkDefinition
     * @return
+    * @throws Exception
     */
-   private JsonObject createBenchmarkJSON(BenchmarkDefinitionDTO benchmarkDefinition)
+   private JsonObject createBenchmarkJSON(BenchmarkDefinitionDTO benchmarkDefinition) throws Exception
    {
       JsonObject benchmarkDefinitionJson = new JsonObject();
-      benchmarkDefinitionJson.add("metadata", new Gson().toJsonTree(benchmarkDefinition.metadata));
-      benchmarkDefinitionJson.add("content", benchmarkDefinition.content);
-      return benchmarkDefinitionJson;
+      try
+      {
+         benchmarkDefinitionJson.add("metadata", new Gson().toJsonTree(benchmarkDefinition.metadata));
+         benchmarkDefinitionJson.add("content", benchmarkDefinition.content);
+         return benchmarkDefinitionJson;
+      }
+      catch (Exception e)
+      {
+         throw e;
+      }
    }
 
 }
