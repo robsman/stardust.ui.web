@@ -64,7 +64,6 @@ public class BenchmarkDefinitionService
       try
       {
          // Create benchmark-definition folder in JCR if not present
-         DocumentMgmtUtility.createFolderIfNotExists(BENCHMARK_DEFINITION_FOLDER);
          Folder folder = DocumentMgmtUtility.createFolderIfNotExists(BENCHMARK_DEFINITION_FOLDER);
          List<Document> documents = folder.getDocuments();
          for (Document doc : documents)
