@@ -19,26 +19,30 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.annotation.Resource;
-import javax.print.attribute.HashAttributeSet;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.reflect.Reflect;
 import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.DataMapping;
+import org.eclipse.stardust.engine.api.model.ModelParticipant;
+import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
+import org.eclipse.stardust.engine.api.query.FilterTerm;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.SubsetPolicy;
 import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
@@ -47,43 +51,54 @@ import org.eclipse.stardust.engine.api.query.Users;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
-import org.eclipse.stardust.engine.api.runtime.DeployedModel;
+import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.Grant;
+import org.eclipse.stardust.engine.api.runtime.ProcessInstancePriority;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
+import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
+import org.eclipse.stardust.engine.core.query.statistics.api.CriticalExecutionTimePolicy;
 import org.eclipse.stardust.engine.core.query.statistics.api.DateRange;
+import org.eclipse.stardust.engine.core.query.statistics.api.PostponedActivitiesStatistics;
+import org.eclipse.stardust.engine.core.query.statistics.api.PostponedActivitiesStatistics.PostponedActivities;
+import org.eclipse.stardust.engine.core.query.statistics.api.PostponedActivitiesStatisticsQuery;
 import org.eclipse.stardust.engine.core.query.statistics.api.StatisticsDateRangePolicy;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics.Contribution;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics.PerformanceStatistics;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatisticsQuery;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
+import org.eclipse.stardust.engine.core.runtime.utils.ParticipantInfoUtil;
 import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
 import org.eclipse.stardust.ui.web.bcc.common.configuration.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.bcc.jsf.PostponedActivitiesCalculator;
 import org.eclipse.stardust.ui.web.bcc.jsf.RoleItem;
 import org.eclipse.stardust.ui.web.bcc.jsf.UserItem;
-import org.eclipse.stardust.ui.web.bcc.views.CompletedActivityDynamicUserObject;
-import org.eclipse.stardust.ui.web.bcc.views.CompletedActivityUserObject;
-import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
-import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
-import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
-import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
-import org.eclipse.stardust.ui.web.common.filter.TableDataFilterSearch;
+import org.eclipse.stardust.ui.web.bcc.views.ParticipantsTableEntry;
+import org.eclipse.stardust.ui.web.bcc.views.PostponedActivitiesTableEntry;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
-import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
-import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.dto.ColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.CompletedActivitiesStatisticsDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.CompletedActivityPerformanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
+import org.eclipse.stardust.ui.web.rest.service.dto.PostponedActivitiesResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PathDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.PerformanceStatisticsDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.PostponedActivitiesStatsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.PermissionDTO.ParticipantDTO;
+import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
+import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ClientContextBean;
@@ -182,6 +197,39 @@ public class ActivityInstanceUtils
 
       return activityInstances;
    }
+   
+   
+   /**
+    * @param userId
+    * @return
+    */
+   public QueryResult< ? > getActivitiesByOids(Options options,List<String> oids)
+   {
+      
+      ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
+      FilterTerm filter = query.getFilter();
+      if (oids != null)
+      {
+         if (!oids.isEmpty())
+         {
+            FilterTerm orTerm = filter.addOrTerm();
+            
+            for (String oid : oids)
+            {
+               orTerm.add(ActivityInstanceQuery.OID.isEqual(Long.valueOf(oid)));
+            }
+         }
+         else
+         {
+            filter.add(ActivityInstanceQuery.OID.isNull());
+         }
+      }
+      ActivityInstances activityInstances = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+
+      return activityInstances;
+   }
+   
+ 
 
    /**
     * @param ai
@@ -657,56 +705,6 @@ public class ActivityInstanceUtils
          ExceptionHandler.handleException(e);
       }
    }
-   
-   
-   /**
-    * 
-    * @return
-    */
-   private Users getRelevantUsers(){
-     
-      UserQuery query = WorkflowFacade.getWorkflowFacade().getTeamQuery(true);
-      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
-      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
-      userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
-      query.setPolicy(userPolicy);
-      
-      if (query.getOrderCriteria().getCriteria().size() == 0)
-      {
-         query.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME).and(UserQuery.ACCOUNT);
-      }
-
-      Users users = facade.getAllUsers((UserQuery) query);
-      
-      return users;
-   }
-   
-   
-   /**
-    * 
-    * @return
-    */
-   private UserPerformanceStatistics getUserStatistics(){
-      
-
-      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
-      
-      List<DateRange> dateRange = CollectionUtils.newArrayList();
-      dateRange.add(DateRange.TODAY);
-      dateRange.add(DateRange.THIS_WEEK);
-      dateRange.add(DateRange.THIS_MONTH);
-
-      
-      UserPerformanceStatisticsQuery userPerformanceStatisticsQuery = UserPerformanceStatisticsQuery.forAllUsers();
-      userPerformanceStatisticsQuery.setPolicy(new StatisticsDateRangePolicy(dateRange));
-
-      UserPerformanceStatistics userStatistics = (UserPerformanceStatistics) facade
-            .getAllUsers(userPerformanceStatisticsQuery);
-      
-      return userStatistics;
-   }
-   
- 
    /**
     * @return 
     * 
@@ -716,7 +714,7 @@ public class ActivityInstanceUtils
 
       WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();   
       Users users = getRelevantUsers();
-      UserPerformanceStatistics userStatistics = getUserStatistics();
+      UserPerformanceStatistics userStatistics = getUserStatisticsForCompletedActivities();
       Iterator<UserItem> userIter = facade.getAllUsersAsUserItems(users).iterator();
       Collection participants = facade.getAllRolesExceptCasePerformer();
       UserItem userItem;
@@ -738,9 +736,9 @@ public class ActivityInstanceUtils
          UserDTO userDTO = DTOBuilder.build(userItem.getUser(), UserDTO.class);
          userDTO.displayName = UserUtils.getUserDisplayLabel(userItem.getUser());
          activityStatsDTO.teamMember = userDTO;
-         PerformanceStatisticsDTO performanceStatsDTO = null;
+         CompletedActivityPerformanceDTO performanceStatsDTO = null;
      
-         Map<String, PerformanceStatisticsDTO> processStats = new HashMap<String, PerformanceStatisticsDTO>();
+         Map<String, CompletedActivityPerformanceDTO> processStats = new HashMap<String, CompletedActivityPerformanceDTO>();
          if (processes != null)
          {
             for (int i = 0; i < processes.size(); i++)
@@ -766,7 +764,7 @@ public class ActivityInstanceUtils
                   }
                }
                
-               performanceStatsDTO = new PerformanceStatisticsDTO(nAisCompletedToday, nAisCompletedWeek,
+               performanceStatsDTO = new CompletedActivityPerformanceDTO(nAisCompletedToday, nAisCompletedWeek,
                      nAisCompletedMonth);
                processStats.put(I18nUtils.getProcessName(process), performanceStatsDTO);
             }
@@ -779,4 +777,210 @@ public class ActivityInstanceUtils
       
       return completedActivitiesList;
    }
+
+   
+   /**
+    * 
+    */
+   public List<ColumnDTO> getParticipantColumns()
+   {
+      Set<ModelParticipantInfo> participantList = geUsertRelevantModelParticipants();
+
+      List<ColumnDTO> participantDTOList = new ArrayList<ColumnDTO>();
+
+      for (ModelParticipantInfo modelParticipantInfo : participantList)
+      {
+         ColumnDTO column = new ColumnDTO(modelParticipantInfo.getQualifiedId(),
+               ModelHelper.getParticipantName(modelParticipantInfo));
+         participantDTOList.add(column);
+      }
+      return participantDTOList;
+   }
+
+   /**
+    * 
+    * @return
+    */
+   public List<PostponedActivitiesResultDTO> getPostponedActivities()
+   {
+
+      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
+
+      Set<ModelParticipantInfo> participantList = geUsertRelevantModelParticipants();
+
+      User user = facade.getUser();
+
+      long totalCount, exceededDurationCount;
+      Set<Long> allActivityOids = CollectionUtils.newHashSet();
+      Set<Long> exceededActivityOids = CollectionUtils.newHashSet();
+      String avgDuration;
+      PostponedActivitiesStatistics pStat = getUserStatsForPostponedActivities();
+      Users users = getRelevantUsers();
+      List<UserItem> userItems = facade.getAllUsersAsUserItems(users);
+
+      List<PostponedActivitiesResultDTO> resultList = new ArrayList<PostponedActivitiesResultDTO>();
+
+      for (UserItem userItem : userItems)
+      {
+         user = userItem.getUser();
+
+         PostponedActivities pActivities = pStat != null
+               ? pStat.getPostponedActivities(userItem.getUser().getOID())
+               : null;
+
+         Collection<PostponedActivities> list = pStat.getPostponedActivities();
+         for (PostponedActivities postponedActivities : list)
+         {
+            if (userItem.getUser().getOID() == postponedActivities.userOid)
+            {
+               pActivities = postponedActivities;
+            }
+         }
+         Map<String, PostponedActivitiesStatsDTO> statsByParticipant = new HashMap<String, PostponedActivitiesStatsDTO>();
+         if (pActivities != null)
+         {
+            PostponedActivitiesCalculator calc = new PostponedActivitiesCalculator(pActivities);
+            for (ModelParticipantInfo mp : participantList)
+            {
+               if (calc != null)
+               {
+                  if (calc.getTotalCount(mp) != null && calc.getExceededDurationCount(mp) != null)
+                  {
+                     totalCount = calc.getTotalCount(mp);
+                     avgDuration = calc.getAvgDuration(mp);
+                     exceededDurationCount = calc.getExceededDurationCount(mp);
+                     allActivityOids = calc.getAllActivityOIDs(mp);
+                     exceededActivityOids = calc.getExceededActivityOIDs(mp);
+                     PostponedActivitiesStatsDTO statsDTO = new PostponedActivitiesStatsDTO(totalCount, avgDuration,
+                           exceededDurationCount, allActivityOids, exceededActivityOids);
+                     statsByParticipant.put(mp.getQualifiedId(), statsDTO);
+                  }
+                  else
+                  {
+                     PostponedActivitiesStatsDTO statsDTO = new PostponedActivitiesStatsDTO(0, null, 0, null, null);
+                     statsByParticipant.put(mp.getQualifiedId(), statsDTO);
+                  }
+               }
+            }
+         }
+         else
+         {
+            for (ModelParticipantInfo mp : participantList)
+            {
+               totalCount = 0;
+               avgDuration = "";
+               exceededDurationCount = 0;
+               allActivityOids = CollectionUtils.newHashSet();
+               exceededActivityOids = CollectionUtils.newHashSet();
+               PostponedActivitiesStatsDTO statsDTO = new PostponedActivitiesStatsDTO(totalCount, avgDuration,
+                     exceededDurationCount, allActivityOids, exceededActivityOids);
+               statsByParticipant.put( ModelHelper.getParticipantName(mp), statsDTO);
+            }
+
+         }
+         PostponedActivitiesResultDTO resultDTO = new PostponedActivitiesResultDTO();
+         UserDTO userDTO = DTOBuilder.build(user, UserDTO.class);
+         userDTO.displayName = UserUtils.getUserDisplayLabel(user);
+         resultDTO.teamMember = userDTO;
+         resultDTO.statsByParticipant = statsByParticipant;
+         resultList.add(resultDTO);
+      }
+      return resultList;
+   }
+   
+   /**
+    * 
+    * @return
+    */
+   private PostponedActivitiesStatistics getUserStatsForPostponedActivities()
+   {
+      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
+      PostponedActivitiesStatisticsQuery query = PostponedActivitiesStatisticsQuery.forAllUsers();
+      query.setPolicy(new CriticalExecutionTimePolicy(Constants.getCriticalDurationThreshold(
+            ProcessInstancePriority.LOW, 1.0f), Constants.getCriticalDurationThreshold(ProcessInstancePriority.NORMAL,
+            1.0f), Constants.getCriticalDurationThreshold(ProcessInstancePriority.HIGH, 1.0f)));
+
+      if (query.getOrderCriteria().getCriteria().size() == 0)
+      {
+         query.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME).and(UserQuery.ACCOUNT);
+      }
+      PostponedActivitiesStatistics pStat = (PostponedActivitiesStatistics) facade.getAllUsers(query);
+      return pStat;
+   }
+   
+   /**
+    * 
+    */
+   private Set<ModelParticipantInfo> geUsertRelevantModelParticipants()
+   {
+      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
+      User user = facade.getUser();
+      List<Grant> userGrants = user.getAllGrants();
+      ModelParticipantInfo modelParticipantInfo;
+      Participant participant;
+      ModelParticipant modelParticipant;
+      Department department;
+      
+      Set<ModelParticipantInfo> participantList = new HashSet<ModelParticipantInfo>();
+      for (Grant grant : userGrants)
+      {
+         participant = facade.getParticipant(grant.getQualifiedId());
+         if (participant instanceof ModelParticipant)
+         {
+            modelParticipant = (ModelParticipant) participant;
+            department = grant.getDepartment();
+            modelParticipantInfo = (department == null) ? modelParticipant : department
+                  .getScopedParticipant(modelParticipant);
+            participantList.add(modelParticipantInfo);
+         }
+      }
+      return participantList;
+   }
+   
+   /**
+    * 
+    * @return
+    */
+   private Users getRelevantUsers()
+   {
+
+      UserQuery query = WorkflowFacade.getWorkflowFacade().getTeamQuery(true);
+      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
+      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
+      userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
+      query.setPolicy(userPolicy);
+
+      if (query.getOrderCriteria().getCriteria().size() == 0)
+      {
+         query.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME).and(UserQuery.ACCOUNT);
+      }
+
+      Users users = facade.getAllUsers((UserQuery) query);
+
+      return users;
+   }
+
+   /**
+    * 
+    * @return
+    */
+   private UserPerformanceStatistics getUserStatisticsForCompletedActivities()
+   {
+
+      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
+
+      List<DateRange> dateRange = CollectionUtils.newArrayList();
+      dateRange.add(DateRange.TODAY);
+      dateRange.add(DateRange.THIS_WEEK);
+      dateRange.add(DateRange.THIS_MONTH);
+
+      UserPerformanceStatisticsQuery userPerformanceStatisticsQuery = UserPerformanceStatisticsQuery.forAllUsers();
+      userPerformanceStatisticsQuery.setPolicy(new StatisticsDateRangePolicy(dateRange));
+
+      UserPerformanceStatistics userStatistics = (UserPerformanceStatistics) facade
+            .getAllUsers(userPerformanceStatisticsQuery);
+
+      return userStatistics;
+   }
+
 }

@@ -33,12 +33,14 @@
 								ng-click="ctrl.openUserManagerDetails(rowData.teamMember);"
 								title="{{i18n('business-control-center-messages.views-userManagerDetailView-title')}}"
 								class="button-link tbl-tool-link">
-									{{rowData.teamMember.displayName}} 
+									{{rowData.teamMember.displayName}}   
 							</a>
 					</td>
-					<td ng-repeat="col in ctrl.columns" sda-exporter="ctrl.getExportValue(rowData.statisticsByProcess[colData.title])"
-						sda-visible="{{$index < 5}}">
-						<div sd-activities-statistics-column-content sda-value="rowData.statisticsByProcess[colData.title]"></div>
+					<td ng-repeat="col in ctrl.columns" sda-visible="{{$index < 5}}"
+						sda-exporter="ctrl.getExportValue(rowData.statisticsByProcess[colData.title])">
+						<div > <b>{{i18n("business-control-center-messages.views-common-column-today")}}: </b><span ng-bind="rowData.statisticsByProcess[colData.title].day"></span> </div>
+						<div > <b>{{i18n("business-control-center-messages.views-common-column-week")}} : </b> <span ng-bind="rowData.statisticsByProcess[colData.title].week"></span>  </div>
+						<div > <b>{{i18n("business-control-center-messages.views-common-column-month")}} : </b> <span ng-bind="rowData.statisticsByProcess[colData.title].month"></span> </div> 
 					</td>
 				</tr>
 			</tbody>

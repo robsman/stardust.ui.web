@@ -1,0 +1,57 @@
+<div class="view-panel" ng-controller="sdPostponedActivitiesCtrl as ctrl" sg-stretch-to-bottom>
+	<div class="toolbar-buttons">
+		<div class="view-toolbar-section">
+			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+		</div>
+	</div>
+
+
+	<div class="view-panel-content">
+		<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-postponedActivities-title')}}</div>
+
+		<table sd-data-table="ctrl.dataTable" sda-no-pagination="true"
+			sd-data="ctrl.getPostponedActivities(params)" sda-ready="ctrl.ready" sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
+			sda-sortable="true" sda-sort-by="{name : 'teamMember', dir : 'desc'}"
+			sda-mode="remote" sda-no-pagination="true" sda-sortable="false" 
+			sda-exports="true" sda-exports-file-name="{{ctrl.exportFileName}}"  sda-column-selector="{{ctrl.columnSelector}}" >
+			<thead>
+				<tr>
+					<th sda-name="TeamMember" sda-sortable="true" sda-visible="true" sda-fixed="true"
+						sda-label="{{i18n('business-control-center-messages.views-common-column-teamMember')}}">
+							<div sda-filter-template>
+								<div sd-text-search-filter></div>
+							</div>
+					</th>
+					<th ng-repeat="col in ctrl.columns" sda-name="p{{$index}}"
+						sda-visible="{{$index < 5}}" sda-label="{{col.label}}"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td sda-exporter="rowData.teamMember.displayName">
+							<a href="#"
+								ng-click="ctrl.openUserManagerDetails(rowData.teamMember);"
+								title="{{i18n('business-control-center-messages.views-userManagerDetailView-title')}}"
+								class="button-link tbl-tool-link">
+									{{rowData.teamMember.displayName}} 
+							</a>
+					</td>
+					<td ng-repeat="col in ctrl.columns" sda-exporter="ctrl.getExportValue(rowData.statsByParticipant[colData.title])"
+						sda-visible="{{$index < 5}}">
+						
+							<div > <b>{{i18n("business-control-center-messages.views-common-column-totalCount")}}: </b><span ng-bind="rowData.statsByParticipant[colData.title].totalCount"></span> </div>
+						<div > <b>{{i18n("business-control-center-messages.views-postponedActivities-column-duration")}} : </b> <span ng-bind="rowData.statsByParticipant[colData.title].avgDuration"></span>  </div>
+						<div > <b>{{i18n("business-control-center-messages.views-postponedActivities-column-durationExceed")}} : </b> <span ng-bind="rowData.statsByParticipant[colData.title].exceededDurationCount"></span> </div> 
+						
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+	
+	<div sd-activity-table="ctrl.activityTable" sda-mode="activityTable"
+	sd-data="ctrl.getActivitiesByOids(params);"
+	sda-preference-module="ipp-views-common" sda-preference-id="preference"
+	sda-preference-name="ipp-views-common.activityWithPrio.selectedColumns"></div>
+</div>

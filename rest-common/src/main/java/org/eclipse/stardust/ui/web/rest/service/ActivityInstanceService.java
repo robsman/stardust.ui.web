@@ -37,6 +37,7 @@ import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
+import org.eclipse.stardust.ui.web.rest.service.dto.ColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.CompletedActivitiesStatisticsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
@@ -45,6 +46,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.PostponedActivitiesResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.StatusDTO;
@@ -323,6 +325,15 @@ public class ActivityInstanceService
       QueryResult<?> queryResult = activityInstanceUtils.getActivityInstances( options);
       return ActivityTableUtils.buildTableResult(queryResult, MODE.ACTIVITY_TABLE);
    }
+   
+   /**
+    * @return
+    */
+   public QueryResultDTO getInstancesByOids( Options options, List<String> oids)
+   {
+      QueryResult<?> queryResult = activityInstanceUtils.getActivitiesByOids(options, oids);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.ACTIVITY_TABLE);
+   }
 
    /**
     * Returns all states
@@ -436,6 +447,24 @@ public class ActivityInstanceService
    public List<CompletedActivitiesStatisticsDTO> getCompletedActivities()
    {
     return  activityInstanceUtils.getCompletedActivies( );
+   }
+   
+   /**
+    * 
+    * @return
+    */
+   public List<PostponedActivitiesResultDTO> getPostponedActivities()
+   {
+    return  activityInstanceUtils.getPostponedActivities( );
+   }
+
+   /**
+    * 
+    * @return
+    */
+   public List<ColumnDTO> getParticipantColumns()
+   {
+      return  activityInstanceUtils.getParticipantColumns();
    }
    
 }

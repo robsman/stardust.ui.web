@@ -131,6 +131,6 @@
 		}
 
 		return preferenceStore;
-	}
+	};
 
 })();

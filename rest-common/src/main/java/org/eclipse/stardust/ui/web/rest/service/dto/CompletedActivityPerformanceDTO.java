@@ -19,7 +19,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
  *
  */
 @DTOClass
-public class PerformanceStatisticsDTO
+public class CompletedActivityPerformanceDTO
 {
    public int day;
 
@@ -27,7 +27,7 @@ public class PerformanceStatisticsDTO
 
    public int month;
 
-   public PerformanceStatisticsDTO()
+   public CompletedActivityPerformanceDTO()
    {
       // TODO Auto-generated constructor stub
    }
@@ -38,7 +38,7 @@ public class PerformanceStatisticsDTO
     * @param week
     * @param month
     */
-   public PerformanceStatisticsDTO(int day, int week, int month)
+   public CompletedActivityPerformanceDTO(int day, int week, int month)
    {
       super();
       this.day = day;

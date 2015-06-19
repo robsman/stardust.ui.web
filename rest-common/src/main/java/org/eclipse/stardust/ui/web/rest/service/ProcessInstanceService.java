@@ -339,7 +339,11 @@ public class ProcessInstanceService
    /**
     * 
     */
+<<<<<<< Upstream, based on origin/feature/ipp/portal-html5-contrib
    public List<ColumnDTO> getAllRelevantProcesses()
+=======
+   public List<ColumnDTO> getProcessesColumns()
+>>>>>>> 30ff258 [CRNT-35275] : Added screen for postponed activities view. Bug: CRNT-35275
    {
       List<ProcessDefinition> processes = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils
             .getAllBusinessRelevantProcesses();
@@ -347,7 +351,12 @@ public class ProcessInstanceService
 
       for (ProcessDefinition processDefinition : processes)
       {
+<<<<<<< Upstream, based on origin/feature/ipp/portal-html5-contrib
          processColumns.add(new ColumnDTO(processDefinition.getId(), I18nUtils.getProcessName(processDefinition)));
+=======
+         processColumns.add(new ColumnDTO(processDefinition.getId(), I18nUtils
+               .getProcessName(processDefinition)));
+>>>>>>> 30ff258 [CRNT-35275] : Added screen for postponed activities view. Bug: CRNT-35275
       }
       return processColumns;
    }

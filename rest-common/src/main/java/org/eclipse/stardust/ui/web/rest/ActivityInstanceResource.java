@@ -11,6 +11,8 @@
 package org.eclipse.stardust.ui.web.rest;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,14 +45,16 @@ import org.eclipse.stardust.ui.web.rest.service.DelegationComponent;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
 import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.CompletedActivitiesStatisticsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ColumnDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.CompletedActivitiesStatisticsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
+import org.eclipse.stardust.ui.web.rest.service.dto.PostponedActivitiesResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
@@ -551,7 +555,6 @@ public class ActivityInstanceResource
     
     /**
      * Gets the completed activities by process  
-     * @param postedData
      * @return
      */
     @GET
@@ -559,16 +562,94 @@ public class ActivityInstanceResource
     @Path("/completedActivities")
     public Response getCompletedActivities(String postedData)
     {
-       try{
+       try
+       {
           List<CompletedActivitiesStatisticsDTO> result = activityInstanceService.getCompletedActivities();
           return Response.ok(AbstractDTO.toJson(result), MediaType.APPLICATION_JSON).build();
-       } catch (Exception e)
+       }
+       catch (Exception e)
+       {
+          trace.error("", e);
+          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+       }
+    }
+    
+    /**
+     * Gets the postponed activities by participant  
+     * @return
+     */
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/postponedActivities")
+    public Response getPostponedActivities(String postedData)
+    {
+       try
+       {
+          List<PostponedActivitiesResultDTO> result = activityInstanceService.getPostponedActivities();
+          return Response.ok(AbstractDTO.toJson(result), MediaType.APPLICATION_JSON).build();
+       }
+       catch (Exception e)
        {
           trace.error("", e);
           return Response.status(Status.INTERNAL_SERVER_ERROR).build();
        }
     }
 
+    /**
+     * 
+     */
+    @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/participantColumns")
+   public Response getParticipantColumns(String postedData)
+   {
+      try
+      {
+         List<ColumnDTO> result = activityInstanceService.getParticipantColumns();
+         return Response.ok(AbstractDTO.toJson(result), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+   }
+    
+    /**
+     * 
+     */
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Path("/oids")
+    public Response getByActivityInstanceOids(
+          @QueryParam("skip") @DefaultValue("0") Integer skip,
+          @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
+          @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
+          @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, 
+          @QueryParam("oids") String oids,
+          String postData)
+    {
+       try
+       {
+          List<String> aInstanceOids = new ArrayList<String>(Arrays.asList(oids.split(",")));
+          Options options = new Options(pageSize, skip, orderBy,
+                "asc".equalsIgnoreCase(orderByDir));
+          populatePostData(options, postData);
+          QueryResultDTO resultDTO = getActivityInstanceService().getInstancesByOids(options, aInstanceOids);
+          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
+       }
+       catch (ObjectNotFoundException onfe)
+       {
+          return Response.status(Status.NOT_FOUND).build();
+       }
+       catch (Exception e)
+       {
+          trace.error("", e);
+          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+       }
+    }
+   
 	/**
 	 * 
 	 * @param processInstanceOID

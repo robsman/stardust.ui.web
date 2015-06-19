@@ -34,7 +34,7 @@
 		ActivityInstanceService.prototype.reactivate = function(activityOID) {
 
 		    var data = {activityOID : activityOID}
-		    return ajax(REST_BASE_URL,'reactivate' , data);
+		    return sdUtilService.ajax(REST_BASE_URL,'reactivate' , data);
 		};
 		
 
@@ -44,7 +44,7 @@
 		ActivityInstanceService.prototype.activate = function(activityOID) {
 
 		    var data = {activityOID : activityOID}
-		    return ajax(REST_BASE_URL,'activate' , data);
+		    return sdUtilService.ajax(REST_BASE_URL,'activate' , data);
 		};
 		
 		
@@ -52,7 +52,7 @@
 		 * 
 		 */
 		ActivityInstanceService.prototype.getAllCounts = function() {
-			return ajax(REST_BASE_URL,'' , "allCounts");
+			return sdUtilService.ajax(REST_BASE_URL,'' , "allCounts");
 		};
 		
 		/*
@@ -68,35 +68,35 @@
 			
 			var postData = sdDataTableHelperService.convertToPostParams(query.options);
 
-			return ajax(restUrl, '', postData);
+			return sdUtilService.ajax(restUrl, '', postData);
 		};
 
 		/*
 		 * 
 		 */
 		ActivityInstanceService.prototype.getDataMappings = function(oids) {
-			return ajax(REST_BASE_URL, "dataMappings", oids);
+			return sdUtilService.ajax(REST_BASE_URL, "dataMappings", oids);
 		};
 
 		/*
 		 * 
 		 */
 		ActivityInstanceService.prototype.getInData = function(oids) {
-			return ajax(REST_BASE_URL, "inData", oids);
+			return sdUtilService.ajax(REST_BASE_URL, "inData", oids);
 		};
 
 		/*
 		 * 
 		 */
 		ActivityInstanceService.prototype.getTrivialManualActivitiesDetails = function(oids) {
-			return ajax(REST_BASE_URL, "trivialManualActivitiesDetails", oids);
+			return sdUtilService.ajax(REST_BASE_URL, "trivialManualActivitiesDetails", oids);
 		};
 
 		/*
 		 * 
 		 */
 		ActivityInstanceService.prototype.completeAll = function(activities) {
-			return ajax(REST_BASE_URL, "completeAll", activities);
+			return sdUtilService.ajax(REST_BASE_URL, "completeAll", activities);
 		};
 		
 		/*
@@ -133,7 +133,7 @@
 				restUrl = restUrl + "?" + options.substr(1);
 			}
 			
-			return ajax(restUrl, '', query.data);
+			return sdUtilService.ajax(restUrl, '', query.data);
 		};
 		
 		
@@ -145,7 +145,7 @@
 			
 			var params = "searchAllParticipants/"+searchText+"/"+maxItems;
 			
-			return ajax(restUrl, '', params);
+			return sdUtilService.ajax(restUrl, '', params);
 		};
 		
 		
@@ -186,7 +186,7 @@
 					participantType: participantType
 			};
 			
-			return ajax(REST_BASE_URL, "delegate", delegateData);
+			return sdUtilService.ajax(REST_BASE_URL, "delegate", delegateData);
 		};
 		
 		
@@ -196,7 +196,7 @@
 		 * 
 		 */
 		ActivityInstanceService.prototype.performDefaultDelegate = function(delegateData) {
-			return ajax(REST_BASE_URL, "performDefaultDelegate", delegateData);
+			return sdUtilService.ajax(REST_BASE_URL, "performDefaultDelegate", delegateData);
 		};
 		
 		/**
@@ -207,7 +207,7 @@
 					scope : scope,
 					activities : activities
 			};
-			return ajax(REST_BASE_URL, "abort", requestObj);
+			return sdUtilService.ajax(REST_BASE_URL, "abort", requestObj);
 			
 		};
 		
@@ -216,40 +216,40 @@
 		 * 
 		 */
 		ActivityInstanceService.prototype.getCompletedActivities = function( ) {
-			return ajax(REST_BASE_URL, "", 'completedActivities');
+			return sdUtilService.ajax(REST_BASE_URL, "", 'completedActivities');
 		};
-
-		/*
+		
+		/**
 		 * 
 		 */
-		function ajax(restUrl, extension, value) {
-			var deferred = $q.defer();
-
-			var type;
-			var data;
-			if (angular.isObject(value) || angular.isArray(value)) {
-				restUrl += extension;
-				type = "POST";
-				data = JSON.stringify(value);
-			} else {
-				restUrl += value + "/" + extension;
-				type = "GET";
-			}
-			
-			var httpResponse;
-			if(type == "GET") {
-				httpResponse = $http.get(restUrl);
-			} else {
-				httpResponse = $http.post(restUrl, data);
-			}
-
-			httpResponse.success(function(data){
-				deferred.resolve(data);
-			}).error(function(data) {
-				deferred.reject(data);
-			});
-			
-			return deferred.promise;
+		ActivityInstanceService.prototype.getPostponedActivities = function( ) {
+			return sdUtilService.ajax(REST_BASE_URL, "", 'postponedActivities');
 		};
+		
+		/**
+		 * 
+		 */
+		ActivityInstanceService.prototype.getParticipantColumns = function( ) {
+			return sdUtilService.ajax(REST_BASE_URL, "", 'participantColumns');
+		};
+		
+		/**
+		 * 
+		 */
+		ActivityInstanceService.prototype.getByOids = function( query, oidsArray ) {
+			var oids = oidsArray.join(',');
+			var restUrl = REST_BASE_URL + "oids";
+		    restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, 'oids='+oids);
+		    
+			var queryParams = sdDataTableHelperService.convertToQueryParams(query.options);
+			if (queryParams.length > 0) {
+			    restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, queryParams.substr(1));
+			}
+
+			var postData = sdDataTableHelperService.convertToPostParams(query.options);
+
+			return sdUtilService.ajax(restUrl, '', postData);
+		};
+
 	};
 })();

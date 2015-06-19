@@ -20,10 +20,10 @@ import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
  *
  */
 @DTOClass
-public class CompletedActivitiesStatisticsDTO extends AbstractDTO
+public class PostponedActivitiesResultDTO extends AbstractDTO
 {
    public UserDTO teamMember;
 
-   public Map<String,CompletedActivityPerformanceDTO> statisticsByProcess;
+   public Map<String, PostponedActivitiesStatsDTO> statsByParticipant;
 
 }

@@ -72,11 +72,20 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			</ippui:view>
 		</ippui:viewsExtension>
 		<ippui:viewsExtension>
-			<ippui:view name="completedActivitiesHtml5" 
+			<ippui:view name="completedActivitiesViewHtml5" 
 				include="/plugins/html5-business-control-center/partials/views/completedActivitiesView.html" >
 				<ippui:preferences>
 					<ippui:preferencePage name="icon"
 						include="/plugins/views-common/images/icons/process-history/activity_completed.png" />
+				</ippui:preferences>
+			</ippui:view>
+		</ippui:viewsExtension>
+		<ippui:viewsExtension>
+			<ippui:view name="postponedActivitiesViewHtml5" 
+				include="/plugins/html5-business-control-center/partials/views/postponedActivitiesView.html" >
+				<ippui:preferences>
+					<ippui:preferencePage name="icon"
+						include="/plugins/views-common/images/icons/activity_postponed.png" />
 				</ippui:preferences>
 			</ippui:view>
 		</ippui:viewsExtension>
