@@ -108,8 +108,8 @@
 	 */
 	CompletedActivitiesCtrl.prototype.getExportValue = function(data) {
 		return (	_sgI18nService.translate('business-control-center-messages.views-common-column-today')+": "+data.day+
-					" "+_sgI18nService.translate('business-control-center-messages.views-common-column-week')+" "+data.week+
-					" "+_sgI18nService.translate('business-control-center-messages.views-common-column-month')+" "+data.month );
+					" "+_sgI18nService.translate('business-control-center-messages.views-common-column-week')+": "+data.week+
+					" "+_sgI18nService.translate('business-control-center-messages.views-common-column-month')+": "+data.month );
 	};
 	
 	/**

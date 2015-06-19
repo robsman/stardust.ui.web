@@ -29,6 +29,7 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.reflect.Reflect;
 import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
@@ -224,6 +225,16 @@ public class ActivityInstanceUtils
             filter.add(ActivityInstanceQuery.OID.isNull());
          }
       }
+      
+      ActivityTableUtils.addDescriptorPolicy(options, query);
+
+      ActivityTableUtils.addSortCriteria(query, options);
+
+      ActivityTableUtils.addFilterCriteria(query, options);
+
+      SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip, true);
+      query.setPolicy(subsetPolicy);
+
       ActivityInstances activityInstances = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
 
       return activityInstances;
@@ -853,12 +864,13 @@ public class ActivityInstanceUtils
                      exceededActivityOids = calc.getExceededActivityOIDs(mp);
                      PostponedActivitiesStatsDTO statsDTO = new PostponedActivitiesStatsDTO(totalCount, avgDuration,
                            exceededDurationCount, allActivityOids, exceededActivityOids);
-                     statsByParticipant.put(mp.getQualifiedId(), statsDTO);
+                     statsByParticipant.put( ModelHelper.getParticipantName(mp), statsDTO);
                   }
                   else
                   {
-                     PostponedActivitiesStatsDTO statsDTO = new PostponedActivitiesStatsDTO(0, null, 0, null, null);
-                     statsByParticipant.put(mp.getQualifiedId(), statsDTO);
+                     PostponedActivitiesStatsDTO statsDTO = new PostponedActivitiesStatsDTO(0, StringUtils.EMPTY, 0,
+                           allActivityOids, exceededActivityOids);
+                     statsByParticipant.put(ModelHelper.getParticipantName(mp), statsDTO);
                   }
                }
             }

@@ -16,14 +16,13 @@
 	'use strict';
 
 	angular.module("bcc-ui").controller('sdPostponedActivitiesCtrl',
-			['sdActivityInstanceService', 'sdCommonViewUtilService', '$q', 'sdProcessInstanceService', 'sdLoggerService', '$filter', 
+			['sdActivityInstanceService', 'sdCommonViewUtilService', '$q', 'sdLoggerService', '$filter', 
 			 'sgI18nService', 'sdLoggedInUserService','sdPreferenceService', PostponedActivitiesCtrl ]);
 
 
 	var _sdActivityInstanceService = null;
 	var _sdCommonViewUtilService = null;
 	var _q = null;
-	var _sdProcessInstanceService = null;
 	var trace = null;
 	var _filter = null;
 	var _sgI18nService = null;
@@ -32,13 +31,12 @@
 	/**
 	 * 
 	 */
-	function PostponedActivitiesCtrl( sdActivityInstanceService, sdCommonViewUtilService, $q, sdProcessInstanceService, 
+	function PostponedActivitiesCtrl( sdActivityInstanceService, sdCommonViewUtilService, $q, 
 									  sdLoggerService, $filter, sgI18nService, sdLoggedInUserService, sdPreferenceService) {
 	
 		_sdActivityInstanceService = sdActivityInstanceService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
 		_q = $q;
-		_sdProcessInstanceService = sdProcessInstanceService;
 		trace = sdLoggerService.getLogger('bcc-ui.sdPostponedActivitiesCtrl');
 		_filter = $filter; 
 		_sgI18nService =sgI18nService;
@@ -51,7 +49,8 @@
 		
 		this.activities = {
 				totalCount : 0,
-				list : []
+				list : [],
+				isTableVisible : false
 		}
 	
 		this.columnSelector = sdLoggedInUserService.getUserInfo().isAdministrator ?  'admin' : true;
@@ -60,8 +59,9 @@
 		this.ready = false;
 		this.dataTable = null;
 		this.activityTable = null;
-		this.selectedOids = [455];
 		
+		
+		this.selectedOids = [];
 		// Getting columns for the data table
 		this.getColumns( );
 		
@@ -118,8 +118,8 @@
 	 */
 	PostponedActivitiesCtrl.prototype.getExportValue = function(data) {
 		return (	_sgI18nService.translate('business-control-center-messages.views-common-column-totalCount')+": "+data.totalCount+
-					" "+_sgI18nService.translate('business-control-center-messages.views-postponedActivities-column-duration')+" "+data.avgDuration+
-					" "+_sgI18nService.translate('business-control-center-messages.views-postponedActivities-column-durationExceed')+" "+data.exceededDurationCount);
+					" "+_sgI18nService.translate('business-control-center-messages.views-postponedActivities-column-duration')+": "+data.avgDuration +
+					" "+_sgI18nService.translate('business-control-center-messages.views-postponedActivities-column-durationExceed')+": "+data.exceededDurationCount);
 	};
 	
 	/**
@@ -146,8 +146,36 @@
 	/**
 	 * 
 	 */
-	PostponedActivitiesCtrl.prototype.showActivityTable = function( ) {
+	PostponedActivitiesCtrl.prototype.showAllActivities = function( rowData ) {
+		if(!rowData.allActivityOIDs || rowData.allActivityOIDs.length < 1){
+			return;
+		}
+		var self = this;
+		self.showActivityTable(rowData.allActivityOIDs);
+	};
+	
+	/**
+	 * 
+	 */
+	PostponedActivitiesCtrl.prototype.showExceededActivities = function( rowData ) {
 		
+		if(!rowData.exceededActivityOIDs || rowData.exceededActivityOIDs.length < 1){
+			return;
+		}
+		var self = this;
+		self.showActivityTable(rowData.exceededActivityOIDs);
+	};
+	
+	/**
+	 * 
+	 */
+	PostponedActivitiesCtrl.prototype.showActivityTable = function( oids ) {
+		var self = this;
+		self.selectedOids = oids;
+		self.activities.isTableVisible = true;
+		if(self.activityTable){
+			self.activityTable.refresh();
+		} 
 	};
 	
 	/**

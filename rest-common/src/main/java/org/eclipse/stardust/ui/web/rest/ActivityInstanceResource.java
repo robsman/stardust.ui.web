@@ -34,6 +34,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -632,6 +633,9 @@ public class ActivityInstanceResource
     {
        try
        {
+          if(StringUtils.isEmpty(oids)){
+             throw new IllegalArgumentException("param oids cant be empty");
+          }
           List<String> aInstanceOids = new ArrayList<String>(Arrays.asList(oids.split(",")));
           Options options = new Options(pageSize, skip, orderBy,
                 "asc".equalsIgnoreCase(orderByDir));
