@@ -1483,9 +1483,16 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
         				 selectedColumns[selColumn].metadata.javaType == "java.math.BigDecimal" && 
         				 selectedColumns[selColumn].metadata.xPath && 
         				 selectedColumns[selColumn].metadata.xPath == "Price") {
-        	 if (record[selColumn]) {
-        		 // First applying Math.floor to avoid rounding performed by toFixed
-        		 record[selColumn] = (Math.floor(record[selColumn] * 100) / 100).toFixed(2);
+        	 if (record[selColumn] && !isNaN(record[selColumn])) {
+        		 var decimalPrecision = 2;
+        		 var recordStr = record[selColumn].toString();
+        		 var index = recordStr.indexOf(".");
+        		 if (index != -1 && (recordStr.length - index) >= 4) {
+        			 //Value is having more than 2 decimal precision
+        			 record[selColumn] = recordStr.slice(0, recordStr.indexOf(".") + decimalPrecision + 1);
+        		 } else {
+        			 record[selColumn] = ((record[selColumn] * 100) / 100).toFixed(decimalPrecision);
+        		 }
         	 }
          }
       }
