@@ -990,6 +990,10 @@ public class ActivityInstanceUtils
       return userStatistics;
    }
 
+   /**
+    * 
+    * @return
+    */
    public List<PendingActivitiesStatisticsDTO> getPendingActivities()
    {
       WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
@@ -1005,9 +1009,6 @@ public class ActivityInstanceUtils
       OpenActivitiesCalculator openActivitiesCalculator = new OpenActivitiesCalculator(processDefinition,
             openActivityStatistics);
 
-      String[] participantname = null;
-      // List<OpenActivitiesUserObject> pendingActList = new
-      // ArrayList<OpenActivitiesUserObject>();
       List<PendingActivitiesStatisticsDTO> pendingActivitiesList = new ArrayList<PendingActivitiesStatisticsDTO>();
       Map<String, OpenActivitiesDynamicUserObjectDTO> pendingActDynamicMap = new HashMap<String, OpenActivitiesDynamicUserObjectDTO>();
       Map<String, OpenActivitiesDynamicUserObjectDTO> pendingCriticalActDynamicMap = new HashMap<String, OpenActivitiesDynamicUserObjectDTO>();
@@ -1015,24 +1016,14 @@ public class ActivityInstanceUtils
 
       if (participantList != null)
       {
-         participantname = new String[participantList.size()];
-      }
-
-      if (participantList != null)
-      {
          RoleItem roleItem;
          ModelParticipantInfo roledetails;
          Map totalOpenActivities;
          Map criticalOpenActivities;
-         // List<OpenActivitiesDynamicUserObject> pendingActDynamicList = new
-         // ArrayList<OpenActivitiesDynamicUserObject>();
-         // List<OpenActivitiesDynamicUserObject> pendingCriticalActDynamicList = new
-         // ArrayList<OpenActivitiesDynamicUserObject>();
          for (int i = 0; i < participantList.size(); i++)
          {
             roleItem = participantList.get(i);
             roledetails = roleItem.getRole();
-            participantname[i] = roleItem.getRoleName();
 
             totalOpenActivities = openActivitiesCalculator.getTotalOpenActivities(roledetails);
             criticalOpenActivities = openActivitiesCalculator.getCriticalOpenActivities(roledetails);
@@ -1057,7 +1048,6 @@ public class ActivityInstanceUtils
             dyna.setOpenActivitiesYesterdayOids(openActivitiesYesterdayOids);
             dyna.setOpenActivitiesHibernateOids(openActivityHibernateOids);
             pendingActDynamicMap.put(roleItem.getRoleName(), dyna);
-            // pendingActDynamicList.add(dyna);
 
             openActivitiesToday = new Long(
                   ((Double) criticalOpenActivities.get(OpenActivitiesCalculator.OPEN_ACTIVITIES_TODAY)).longValue());
@@ -1079,7 +1069,6 @@ public class ActivityInstanceUtils
             dyna.setOpenActivitiesYesterdayOids(openActivitiesYesterdayOids);
             dyna.setOpenActivitiesHibernateOids(openActivityHibernateOids);
             pendingCriticalActDynamicMap.put(roleItem.getRoleName(), dyna);
-            // pendingCriticalActDynamicList.add(dyna);
          }
          pendingActivitiesList.add(new PendingActivitiesStatisticsDTO("Total Open Activities", pendingActDynamicMap));
          pendingActivitiesList.add(new PendingActivitiesStatisticsDTO("Critical Open Activities",
@@ -1089,6 +1078,10 @@ public class ActivityInstanceUtils
       return pendingActivitiesList;
    }
 
+   /**
+    * 
+    * @return
+    */
    public List<ColumnDTO> getAllRoles()
    {
       WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
