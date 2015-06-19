@@ -35,4 +35,7 @@ public class ModelDTO extends AbstractDTO
    public String description;
 
    public List<ProcessDefinitionDTO> processDefinitions;
+   
+   public List<ModelParticipantDTO> modelParticipants;
+   
 }

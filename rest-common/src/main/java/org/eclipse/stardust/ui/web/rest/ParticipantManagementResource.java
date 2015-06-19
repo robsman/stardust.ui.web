@@ -38,8 +38,10 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantManagementService;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
+import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InvalidateUserStatusDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ModelDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ParticipantNodeDetailsDTO;
@@ -347,6 +349,16 @@ public class ParticipantManagementResource
       // type binary integer, refer ParticipantSearchComponent.PerformerTypeUI
       return Response
             .ok(participantSearchComponent.searchAllParticipants(searchText, 0, type), MediaType.APPLICATION_JSON).build();
+   }
+   
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("/participantTree")
+   public Response getParticipantTree()
+   {
+      List<ModelDTO> models = participantSearchComponent.getParticipantTree();
+      return  Response.ok(AbstractDTO.toJson(models), MediaType.APPLICATION_JSON).build();
    }
    
    /**
