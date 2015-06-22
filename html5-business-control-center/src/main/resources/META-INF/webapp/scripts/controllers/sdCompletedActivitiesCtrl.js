@@ -45,7 +45,7 @@
 		
 		this.completedActivities = {
 				totalCount : 0,
-		 		data : []
+		 		list : []
 		}
 	
 		this.columnSelector = sdLoggedInUserService.getUserInfo().isAdministrator ?  'admin' : true;
@@ -56,6 +56,7 @@
 		
 		// Getting columns for the data table
 		this.getColumns( );
+		this.fetchCompletedActivities();
 	};
 	
 	/**
@@ -69,29 +70,39 @@
 			trace.log('Columns retrieved :' + self.columns);
 		});
 	};
+	
+	
+	/**
+	 * 
+	 */
+	CompletedActivitiesCtrl.prototype.fetchCompletedActivities = function( ) {
+		var self = this;
+		_sdActivityInstanceService.getCompletedActivities( ).then(function( result ){
+			trace.log('Completed activities retreived successfully.');
+			self.completedActivities.list = result;
+			self.completedActivities.totalCount = result.length;
+			self.dataTable.refresh();
+		})
+	};
+	
+	
 	/**
 	 * 
 	 */
 	CompletedActivitiesCtrl.prototype.getCompletedActivities = function( options ) {
-		trace.log('Fetching completed activities.');
 		var self = this;
-	    var deferred = _q.defer();
-		_sdActivityInstanceService.getCompletedActivities( ).then(function( result ){
-			trace.log('Completed activities retreived successfully.');
-			
-			if(options.filters && options.filters.TeamMember && options.filters.TeamMember.textSearch !=''){
-				trace.log("Applying filter with team member",options.filters.TeamMember.textSearch );
-				result = _filter('filter')(result, {'teamMember' : {'displayName': options.filters.TeamMember.textSearch }},false)
-			}
-			
-			self.completedActivities.list = result;
-			self.completedActivities.totalCount = result.length;
-			deferred.resolve(self.completedActivities);
-			console.log(self.completedActivities)
-		}).then(function(failure){
-			trace.log('Failed to retrive Completed activities.');
-			deferred.reject(self.completedActivities);
-		});
+		var deferred = _q.defer();
+		var result = {
+				list : [],
+				totalCount : self.completedActivities.totalCount
+		}
+		if(options.filters && options.filters.TeamMember && options.filters.TeamMember.textSearch !=''){
+			trace.log("Applying filter with team member",options.filters.TeamMember.textSearch );
+			result.list = _filter('filter')( self.completedActivities.list, {'teamMember' : {'displayName': options.filters.TeamMember.textSearch }},false)
+		}else{
+			result.list = self.completedActivities.list;
+		}
+		deferred.resolve(result);
 		return deferred.promise;
 	};
 	
@@ -116,7 +127,8 @@
 	 * 
 	 */
 	CompletedActivitiesCtrl.prototype.refresh = function( ) {
-		this.dataTable.refresh();
+		this.fetchPostponedActivities();
+	
 	};
 	
 	/**
