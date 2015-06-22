@@ -10,12 +10,12 @@
 	<div class="view-panel-content">
 		<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-pendingActivities-title')}}</div>
 
-		<table sd-data-table="ctrl.dataTable" sda-no-pagination="true"
+		<table sd-data-table="ctrl.dataTable" 
 			sd-data="ctrl.getPendingActivities(params)" sda-ready="ctrl.ready"
 			sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
 			sda-sortable="true"
 			sda-sort-by="{name : 'overviewLabel', dir : 'desc'}"
-			sda-mode="remote" sda-no-pagination="true" sda-sortable="false"
+			sda-mode="remote" sda-sortable="false"
 			sda-exports="true" sda-exports-file-name="{{ctrl.exportFileName}}"
 			sda-column-selector="{{ctrl.columnSelector}}">
 			<thead>

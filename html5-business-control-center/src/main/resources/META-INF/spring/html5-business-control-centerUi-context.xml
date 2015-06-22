@@ -52,7 +52,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 				</ippui:preferences>
 			</ippui:view>
 		</ippui:viewsExtension>
-		
+
 		<ippui:viewsExtension>
 			<ippui:view name="strandedActivitiesHtml5"
 				include="/plugins/html5-business-control-center/partials/views/strandedActivitiesView.html">
@@ -63,8 +63,8 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			</ippui:view>
 		</ippui:viewsExtension>
 		<ippui:viewsExtension>
-			<ippui:view name="processSearchViewHtml5" 
-				include="/plugins/html5-process-portal/partials/views/processSearchView.html" >
+			<ippui:view name="processSearchViewHtml5"
+				include="/plugins/html5-process-portal/partials/views/processSearchView.html">
 				<ippui:preferences>
 					<ippui:preferencePage name="icon"
 						include="/plugins/views-common/images/icons/cog_search.png" />
@@ -72,8 +72,8 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			</ippui:view>
 		</ippui:viewsExtension>
 		<ippui:viewsExtension>
-			<ippui:view name="completedActivitiesViewHtml5" 
-				include="/plugins/html5-business-control-center/partials/views/completedActivitiesView.html" >
+			<ippui:view name="completedActivitiesViewHtml5"
+				include="/plugins/html5-business-control-center/partials/views/completedActivitiesView.html">
 				<ippui:preferences>
 					<ippui:preferencePage name="icon"
 						include="/plugins/views-common/images/icons/process-history/activity_completed.png" />
@@ -81,23 +81,31 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			</ippui:view>
 		</ippui:viewsExtension>
 		<ippui:viewsExtension>
-			<ippui:view name="postponedActivitiesViewHtml5" 
-				include="/plugins/html5-business-control-center/partials/views/postponedActivitiesView.html" >
+			<ippui:view name="postponedActivitiesViewHtml5"
+				include="/plugins/html5-business-control-center/partials/views/postponedActivitiesView.html">
 				<ippui:preferences>
 					<ippui:preferencePage name="icon"
 						include="/plugins/views-common/images/icons/activity_postponed.png" />
-			    </ippui:preferences>
+				</ippui:preferences>
 			</ippui:view>
 		</ippui:viewsExtension>
 		<ippui:viewsExtension>
-			<ippui:view name="pendingActivitiesViewHtml5" 
-				include="/plugins/html5-business-control-center/partials/views/pendingActivitiesView.html" >
+			<ippui:view name="pendingActivitiesViewHtml5"
+				include="/plugins/html5-business-control-center/partials/views/pendingActivitiesView.html">
 				<ippui:preferences>
 					<ippui:preferencePage name="icon"
 						include="/plugins/views-common/images/icons/pending_activities.png" />
 				</ippui:preferences>
 			</ippui:view>
 		</ippui:viewsExtension>
-
+		<ippui:viewsExtension>
+			<ippui:view name="resourceLoginViewHtml5"
+				include="/plugins/html5-business-control-center/partials/views/resourceLoginView.html">
+				<ippui:preferences>
+					<ippui:preferencePage name="icon"
+						include="/plugins/views-common/images/icons/group_key.png" />
+				</ippui:preferences>
+			</ippui:view>
+		</ippui:viewsExtension>
 	</ippui:perspectiveExtension>
 </beans>

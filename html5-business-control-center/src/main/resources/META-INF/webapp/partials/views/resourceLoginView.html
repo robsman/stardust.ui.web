@@ -1,0 +1,41 @@
+<div class="view-panel" ng-controller="sdResourceLoginCtrl as ctrl"
+	sg-stretch-to-bottom>
+	<div class="toolbar-buttons">
+		<div class="view-toolbar-section">
+			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+		</div>
+	</div>
+
+
+	<div class="view-panel-content">
+		<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-resourceLoginView-title')}}</div>
+
+		<table sd-data-table="ctrl.dataTable"
+			sd-data="ctrl.getResourceLoginTimeInfo(params)"
+			sda-sortable="true" sda-sort-by="{name : 'name', dir : 'desc'}"
+			sda-mode="local" sda-sortable="false"
+			sda-exports="true" sda-exports-file-name="{{ctrl.exportFileName}}">
+			<thead
+				sda-i18n-scope="business-control-center-messages.views-common-column">
+				<tr>
+					<th sda-name="name" sda-sortable="true" sda-visible="true"
+						sda-fixed="true" sda-label-key="teamMember"></th>
+					<th sda-name="day" sda-fixed="true" sda-visible="true"></th>
+					<th sda-name="week" sda-fixed="true" sda-visible="true"></th>
+					<th sda-name="month" sda-fixed="true" sda-visible="true"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td sda-exporter="rowData.name"><a href="#"
+					ng-click="bpmCommon.stopEvent($event); ctrl.openUserManagerView(rowData.userOid,rowData.userId);"
+					title="{{i18n('business-control-center-messages.views-userManagerDetailView-title')}}"
+					class="tbl-tool-link">{{rowData.name}}</a></td>
+					<td style="text-align: center;"></td>
+					<td style="text-align: center;"></td>
+					<td style="text-align: center;"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

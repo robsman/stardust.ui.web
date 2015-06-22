@@ -77,7 +77,7 @@
 	 * 
 	 */
 	PendingActivitiesCtrl.prototype.getPendingActivities = function(options) {
-		trace.log('Fetching completed activities.');
+		trace.log('Fetching Pending activities.');
 		var self = this;
 		var deferred = _q.defer();
 		_sdActivityInstanceService.getPendingActivities().then(function(result) {

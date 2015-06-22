@@ -43,6 +43,7 @@
          <bean class="org.eclipse.stardust.ui.web.rest.NotesResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.BenchmarkDefinitionResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.ModelResource" />
+          <bean class="org.eclipse.stardust.ui.web.rest.LoginTimeInfoResource" />
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>
             <bean class="org.eclipse.stardust.ui.web.rest.exception.PortalRestExceptionMapper"/>
