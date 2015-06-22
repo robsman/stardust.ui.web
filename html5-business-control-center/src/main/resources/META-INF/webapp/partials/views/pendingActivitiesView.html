@@ -24,7 +24,7 @@
 						sda-fixed="true"
 						sda-label="{{i18n('business-control-center-messages.views-pendingActivities-column-overView')}}">
 					</th>
-					<th ng-repeat="col in ctrl.columns" sda-name="p{{$index}}"
+					<th ng-repeat="col in ctrl.columns" sda-name="participant{{$index}}"
 						sda-visible="{{$index < 5}}" sda-label="{{col.label}}"></th>
 				</tr>
 			</thead>

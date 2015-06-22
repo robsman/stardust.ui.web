@@ -117,13 +117,13 @@
 	 */
 	
 	PendingActivitiesCtrl.prototype.preferenceDelegate = function(prefInfo) {
-	  var preferenceStore = _sdPreferenceService.getStore('USER',
-	  'ipp-business-control-center', 'preference'); // Override
-	  preferenceStore.marshalName = function(scope) { return
-	 'ipp-business-control-center.pendingActivities.selectedColumns'; }
-	  
-	  return preferenceStore; 
-	  };
+		var preferenceStore = _sdPreferenceService.getStore('USER',
+				'ipp-business-control-center', 'preference'); // Override
+		preferenceStore.marshalName = function(scope) { 
+			return "ipp-business-control-center.pendingActivities.selectedColumns"; 
+		}
+		return preferenceStore; 
+	};
 	  
 	  /**
 	   * 
