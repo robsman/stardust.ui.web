@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.rest.service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,6 +25,7 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.model.DynamicParticipantInfo;
 import org.eclipse.stardust.engine.api.model.Model;
+import org.eclipse.stardust.engine.api.model.ModelParticipant;
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.Organization;
 import org.eclipse.stardust.engine.api.model.OrganizationInfo;
@@ -65,10 +67,14 @@ import org.eclipse.stardust.ui.web.viewscommon.dialogs.DefaultDelegatesProvider;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.DepartmentDelegatesProvider;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.IDelegatesProvider;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.IDepartmentProvider;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility.NodeType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils.ParticipantType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.stereotype.Component;
+
+import com.google.gson.JsonObject;
 
 /**
  * @author Yogesh.Manware
@@ -342,6 +348,33 @@ public class ParticipantSearchComponent
          }
       }
       return selectParticipants;
+   }
+   
+   /**
+    * 
+    * @param departmentOID
+    * @param modelParticipantJSON
+    * @return
+    */
+   public ModelParticipantDTO removeDepartmentFromParticipant(long departmentOID, JsonObject modelParticipantJSON)
+   {
+      ModelParticipantDTO modelParticipantDto = null;
+      Department dept = serviceFactoryUtils.getAdministrationService().getDepartment(departmentOID);
+      
+      String modelParticipantType = modelParticipantJSON.get("nodeType").getAsString(); 
+      String modelParticipantQualifierId = modelParticipantJSON.get("qualifiedId").getAsString();
+      // Remove the department using OID
+      serviceFactoryUtils.getAdministrationService().removeDepartment(departmentOID);
+      // TODO - convert nodeType to ParticipantTYpe and fetch the participant
+      Participant p = ParticipantUtils.getParticipant(modelParticipantQualifierId, ParticipantType.SCOPED_ORGANIZATION);
+      if(p instanceof ModelParticipant)
+      {
+         modelParticipantDto = DTOBuilder.build(p, ModelParticipantDTO.class);
+         modelParticipantDto.nodeType = NODE_TYPE.valueOf(modelParticipantType);
+         fetchChildNodes((QualifiedModelParticipantInfo)p, modelParticipantDto);
+      }
+        
+      return modelParticipantDto;
    }
    
    /**

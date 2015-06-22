@@ -41,7 +41,9 @@ import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InvalidateUserStatusDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ModelDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ModelParticipantDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ParticipantNodeDetailsDTO;
@@ -360,6 +362,17 @@ public class ParticipantManagementResource
       List<ModelDTO> models = participantSearchComponent.getParticipantTree();
       return  Response.ok(AbstractDTO.toJson(models), MediaType.APPLICATION_JSON).build();
    }
+   
+   @DELETE
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/participantTree/department/{departmentOID}")
+   public Response removeDepartment(@PathParam("departmentOID") long departmentOID, String postedData)
+   {
+      JsonObject modelParticipantJSON = JsonDTO.getJsonObject(postedData);
+      ModelParticipantDTO modelParticipant = participantSearchComponent.removeDepartmentFromParticipant(departmentOID, modelParticipantJSON);
+      return  Response.ok(GsonUtils.toJson(modelParticipant), MediaType.APPLICATION_JSON).build();
+   }
+
    
    /**
     * Populate the options with the post data.
