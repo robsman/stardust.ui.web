@@ -60,10 +60,10 @@
 		this.dataTable = null;
 		this.activityTable = null;
 		
-		
 		this.selectedOids = [];
 		// Getting columns for the data table
 		this.getColumns( );
+		this.fetchPostponedActivities();
 		
 	};
 	
@@ -74,37 +74,45 @@
 		var self = this;
 		_sdActivityInstanceService.getParticipantColumns().then(function(result){
 			self.columns = result;
-			trace.debug("Columns retreived : ",self.columns);
 			self.ready = true;
+			trace.debug("Columns retreived : ",self.columns);
 		});
 	};
+	
+	/**
+	 * 
+	 */
+	PostponedActivitiesCtrl.prototype.fetchPostponedActivities = function( ) {
+		var self = this;
+		_sdActivityInstanceService.getPostponedActivities( ).then(function( result ){
+			trace.log('Postponed activities retreived successfully.');
+			self.postponedActivities.list = result;
+			self.postponedActivities.totalCount = result.length;
+			self.dataTable.refresh();
+		});
+	};
+	
 	/**
 	 * 
 	 */
 	PostponedActivitiesCtrl.prototype.getPostponedActivities = function( options ) {
-		
+
 		var self = this;
-	    var deferred = _q.defer();
-		_sdActivityInstanceService.getPostponedActivities( ).then(function( result ){
-			trace.log('Postponed activities retreived successfully.');
-			
-			if(options.filters && options.filters.TeamMember && options.filters.TeamMember.textSearch !=''){
-				trace.log("Applying filter with team member : ",options.filters.TeamMember.textSearch );
-				result = _filter('filter')(result, {'teamMember' : {'displayName': options.filters.TeamMember.textSearch }},false)
-			}
-			
-			self.postponedActivities.list = result;
-			self.postponedActivities.totalCount = result.length;
-			deferred.resolve(self.postponedActivities);
-			console.log(self.completedActivities)
-		}).then(function(failure){
-			trace.log('Failed to retrive postponed activities.');
-			deferred.reject(self.postponedActivities);
-		});
+		var deferred = _q.defer();
+		var result = {
+			list : [],
+			totalCount : self.postponedActivities.totalCount
+		}
+		if(options.filters && options.filters.TeamMember && options.filters.TeamMember.textSearch !=''){
+			trace.log("Applying filter with team member : ",options.filters.TeamMember.textSearch );
+			result.list = _filter('filter')(self.postponedActivities.list, {'teamMember' : {'displayName': options.filters.TeamMember.textSearch }},false)
+		}else{
+			result.list = self.postponedActivities.list;
+		}
+		deferred.resolve(result);
 		return deferred.promise;
-		
 	};
-	
+
 	/**
 	 * 
 	 */
@@ -126,7 +134,7 @@
 	 * 
 	 */
 	PostponedActivitiesCtrl.prototype.refresh = function( ) {
-		this.dataTable.refresh();
+		this.fetchPostponedActivities();
 	};
 	
 	/**
@@ -142,6 +150,7 @@
 
 		return preferenceStore;
 	};
+	
 	
 	/**
 	 * 

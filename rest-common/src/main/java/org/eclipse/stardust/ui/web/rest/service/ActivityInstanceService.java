@@ -326,7 +326,7 @@ public class ActivityInstanceService
    /**
     * @return
     */
-   public QueryResultDTO getInstancesByOids(Options options, List<String> oids)
+   public QueryResultDTO getInstancesByOids( Options options, List<Long> oids)
    {
       QueryResult< ? > queryResult = activityInstanceUtils.getActivitiesByOids(options, oids);
       return ActivityTableUtils.buildTableResult(queryResult, MODE.ACTIVITY_TABLE);

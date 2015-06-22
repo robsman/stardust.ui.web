@@ -18,6 +18,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -141,10 +142,8 @@ public class ActivityInstanceUtils
    public ActivityInstance getActivityInstance(long oid)
    {
       ActivityInstance ai = null;
-      ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
-      query.where(ActivityInstanceQuery.OID.isEqual(oid));
-      ActivityInstances ais = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
-
+      ArrayList<Long> oids = new ArrayList<Long>(Collections.singletonList(oid));
+      List<ActivityInstance> ais = getActivityInstances(oids);
       if (!ais.isEmpty())
       {
          ai = ais.get(0);
@@ -157,23 +156,14 @@ public class ActivityInstanceUtils
     * @param activityOID
     * @return
     */
+   @SuppressWarnings("unchecked")
    public List<ActivityInstance> getActivityInstances(List<Long> oids)
    {
       if (oids.size() == 0)
       {
          return new ArrayList<ActivityInstance>();
       }
-
-      ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
-      FilterOrTerm filterOrTerm = query.getFilter().addOrTerm();
-      for (Long oid : oids)
-      {
-         filterOrTerm.add(ActivityInstanceQuery.OID.isEqual(oid));
-      }
-
-      ActivityInstances ais = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
-
-      return ais;
+      return (List<ActivityInstance>) getActivitiesByOids(null, oids);
    }
 
    /**
@@ -182,34 +172,28 @@ public class ActivityInstanceUtils
     */
    public QueryResult< ? > getActivityInstances(Options options)
    {
-      ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
-
-      ActivityTableUtils.addDescriptorPolicy(options, query);
-
-      ActivityTableUtils.addSortCriteria(query, options);
-
-      ActivityTableUtils.addFilterCriteria(query, options);
-
-      SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip, true);
-      query.setPolicy(subsetPolicy);
-
-      ActivityInstances activityInstances = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
-
-      return activityInstances;
+      return getActivitiesByOids(options, null);
    }
 
    /**
     * @param userId
     * @return
     */
+<<<<<<< Upstream, based on origin/feature/ipp/portal-html5-contrib
    public QueryResult< ? > getActivitiesByOids(Options options, List<String> oids)
+=======
+   public QueryResult< ? > getActivitiesByOids(Options options, List<Long> oids)
+>>>>>>> e927bc8 [CRNT-35275] : Removed redunant code for fetching activities using oids. Bug : CRNT-35275
    {
       ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
       FilterTerm filter = query.getFilter();
-      if (oids != null)
+      System.out.println(!CollectionUtils.isEmpty(oids));
+      if (!CollectionUtils.isEmpty(oids))
       {
-         if (!oids.isEmpty())
+         FilterTerm orTerm = filter.addOrTerm();
+         for (Long oid : oids)
          {
+<<<<<<< Upstream, based on origin/feature/ipp/portal-html5-contrib
             FilterTerm orTerm = filter.addOrTerm();
 
             for (String oid : oids)
@@ -220,17 +204,23 @@ public class ActivityInstanceUtils
          else
          {
             filter.add(ActivityInstanceQuery.OID.isNull());
+=======
+            orTerm.add(ActivityInstanceQuery.OID.isEqual(Long.valueOf(oid)));
+>>>>>>> e927bc8 [CRNT-35275] : Removed redunant code for fetching activities using oids. Bug : CRNT-35275
          }
       }
-      
-      ActivityTableUtils.addDescriptorPolicy(options, query);
 
-      ActivityTableUtils.addSortCriteria(query, options);
+      if (options != null)
+      {
+         ActivityTableUtils.addDescriptorPolicy(options, query);
 
-      ActivityTableUtils.addFilterCriteria(query, options);
+         ActivityTableUtils.addSortCriteria(query, options);
 
-      SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip, true);
-      query.setPolicy(subsetPolicy);
+         ActivityTableUtils.addFilterCriteria(query, options);
+
+         SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip, true);
+         query.setPolicy(subsetPolicy);
+      }
 
       ActivityInstances activityInstances = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
 
@@ -438,23 +428,23 @@ public class ActivityInstanceUtils
       if (CollectionUtils.isNotEmpty(activitiesToBeAborted))
       {
          WorkflowService workflowService = serviceFactoryUtils.getWorkflowService();
-         ActivityInstance activityInstance;
-         for (Long activityInstanceOid : activitiesToBeAborted)
+         
+         List<ActivityInstance> activityInstaces = getActivityInstances(activitiesToBeAborted);
+         for (ActivityInstance activityInstance : activityInstaces)
          {
-            if (null != activityInstanceOid)
+            if (null != activityInstance)
             {
-               activityInstance = this.getActivityInstance(activityInstanceOid.longValue());
                if (!isDefaultCaseActivity(activityInstance))
                {
                   try
                   {
-                     workflowService.abortActivityInstance(activityInstanceOid, abortScope);
+                     workflowService.abortActivityInstance(activityInstance.getOID(), abortScope);
 
                      // publish event
                      ClientContextBean.getCurrentInstance().getClientContext()
                            .sendActivityEvent(ActivityEvent.aborted(activityInstance));
 
-                     notificationMap.addSuccess(new NotificationDTO(activityInstanceOid,
+                     notificationMap.addSuccess(new NotificationDTO(activityInstance.getOID(),
                            getActivityLabel(activityInstance), getActivityStateLabel(activityInstance)));
                   }
                   catch (Exception e)
@@ -462,7 +452,7 @@ public class ActivityInstanceUtils
                      // It is very to rare that any exception would occur
                      // here
                      trace.error(e);
-                     notificationMap.addFailure(new NotificationDTO(activityInstanceOid,
+                     notificationMap.addFailure(new NotificationDTO(activityInstance.getOID(),
                            getActivityLabel(activityInstance), MessagesViewsCommonBean.getInstance().getParamString(
                                  "views.common.activity.abortActivity.failureMsg2",
                                  ExceptionHandler.getExceptionMessage(e))));
@@ -472,21 +462,21 @@ public class ActivityInstanceUtils
                {
                   if (isDefaultCaseActivity(activityInstance))
                   {
-                     notificationMap.addFailure(new NotificationDTO(activityInstanceOid,
+                     notificationMap.addFailure(new NotificationDTO(activityInstance.getOID(),
                            getActivityLabel(activityInstance), MessagesViewsCommonBean.getInstance().getString(
                                  "views.switchProcessDialog.caseAbort.message")));
                   }
                   else if (ActivityInstanceState.Aborted.equals(activityInstance.getState())
                         || ActivityInstanceState.Completed.equals(activityInstance.getState()))
                   {
-                     notificationMap.addFailure(new NotificationDTO(activityInstanceOid,
+                     notificationMap.addFailure(new NotificationDTO(activityInstance.getOID(),
                            getActivityLabel(activityInstance), MessagesViewsCommonBean.getInstance().getParamString(
                                  "views.common.activity.abortActivity.failureMsg3",
                                  ActivityInstanceUtils.getActivityStateLabel(activityInstance))));
                   }
                   else
                   {
-                     notificationMap.addFailure(new NotificationDTO(activityInstanceOid,
+                     notificationMap.addFailure(new NotificationDTO(activityInstance.getOID(),
                            getActivityLabel(activityInstance), MessagesViewsCommonBean.getInstance().getString(
                                  "views.common.activity.abortActivity.failureMsg1")));
                   }

@@ -653,36 +653,39 @@ public class ActivityInstanceResource
     @Produces(MediaType.APPLICATION_JSON)
     @Consumes(MediaType.APPLICATION_JSON)
     @Path("/oids")
-    public Response getByActivityInstanceOids(
-          @QueryParam("skip") @DefaultValue("0") Integer skip,
-          @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
-          @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
-          @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, 
-          @QueryParam("oids") String oids,
-          String postData)
-    {
-       try
-       {
-          if(StringUtils.isEmpty(oids)){
-             throw new IllegalArgumentException("param oids cant be empty");
-          }
-          List<String> aInstanceOids = new ArrayList<String>(Arrays.asList(oids.split(",")));
-          Options options = new Options(pageSize, skip, orderBy,
-                "asc".equalsIgnoreCase(orderByDir));
-          populatePostData(options, postData);
-          QueryResultDTO resultDTO = getActivityInstanceService().getInstancesByOids(options, aInstanceOids);
-          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
-       }
-       catch (ObjectNotFoundException onfe)
-       {
-          return Response.status(Status.NOT_FOUND).build();
-       }
-       catch (Exception e)
-       {
-          trace.error("", e);
-          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-       }
-    }
+   public Response getByActivityInstanceOids(@QueryParam("skip") @DefaultValue("0") Integer skip,
+         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
+         @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, @QueryParam("oids") String oids,
+         String postData)
+   {
+      try
+      {
+         if (StringUtils.isEmpty(oids))
+         {
+            throw new IllegalArgumentException("param oids cant be empty");
+         }
+         List<Long> aInstanceOids = new ArrayList<Long>();
+         
+         for (String oid : Arrays.asList(oids.split(",")))
+         {
+            aInstanceOids.add(Long.valueOf(oid));
+         }
+         Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
+         populatePostData(options, postData);
+         QueryResultDTO resultDTO = getActivityInstanceService().getInstancesByOids(options, aInstanceOids);
+         return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (ObjectNotFoundException onfe)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+   }
    
 	/**
 	 * 
