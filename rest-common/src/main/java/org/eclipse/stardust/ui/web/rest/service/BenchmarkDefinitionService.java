@@ -63,8 +63,12 @@ public class BenchmarkDefinitionService
       List<BenchmarkDefinitionDTO> list = new ArrayList<BenchmarkDefinitionDTO>();
       try
       {
-         // Create benchmark-definition folder in JCR if not present
-         Folder folder = DocumentMgmtUtility.createFolderIfNotExists(BENCHMARK_DEFINITION_FOLDER);
+    	 //Leverage this call to create the folder if it doesn't exist but as this
+    	 //method does not return folder contents (it returns the top level folder with no contents) 
+    	 //we still need to explicitly call getFolder to have access to our benchmark definitions.
+         DocumentMgmtUtility.createFolderIfNotExists(BENCHMARK_DEFINITION_FOLDER);
+         Folder folder = DocumentMgmtUtility.getFolder(BENCHMARK_DEFINITION_FOLDER);
+         
          List<Document> documents = folder.getDocuments();
          for (Document doc : documents)
          {
