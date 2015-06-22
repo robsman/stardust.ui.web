@@ -31,7 +31,7 @@ import org.eclipse.stardust.ui.web.rest.service.UserService;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -62,10 +62,10 @@ public class UserResource
    private String fetchUsers(String searchValue, boolean onlyActive, int maxMatches)
    {
       List<User> users = UserUtils.searchUsers(searchValue, onlyActive, maxMatches);
-      List<ParticipantSearchResponseDTO> userWrappers = new ArrayList<ParticipantSearchResponseDTO>();
+      List<ParticipantDTO> userWrappers = new ArrayList<ParticipantDTO>();
       for (User user : users)
       {
-         userWrappers.add(new ParticipantSearchResponseDTO(user));
+         userWrappers.add(new ParticipantDTO(user));
       }
 
       QueryResultDTO resultDTO = new QueryResultDTO();

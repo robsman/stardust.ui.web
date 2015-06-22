@@ -83,7 +83,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.TrivialActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO.DescriptorFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
@@ -341,7 +341,7 @@ public class ActivityTableUtils
       if (null != filterDTO.assignedTo)
       {
          FilterOrTerm or = filter.addOrTerm();
-         for (ParticipantSearchResponseDTO participant : filterDTO.assignedTo.participants)
+         for (ParticipantDTO participant : filterDTO.assignedTo.participants)
          {  
 
             if(ParticipantType.USER.toString().equals( participant.type) ){
@@ -367,7 +367,7 @@ public class ActivityTableUtils
       if ( null != filterDTO.completedBy)
       {
          FilterOrTerm or = filter.addOrTerm();
-         for (ParticipantSearchResponseDTO user : filterDTO.completedBy.participants)
+         for (ParticipantDTO user : filterDTO.completedBy.participants)
          {
             or.add(new org.eclipse.stardust.engine.api.query.PerformedByUserFilter(user.OID));
          }

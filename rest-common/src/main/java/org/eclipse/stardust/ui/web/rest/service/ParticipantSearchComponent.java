@@ -59,7 +59,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.ParticipantSearchRequestDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
@@ -141,7 +141,7 @@ public class ParticipantSearchComponent
       }
 
       // search participant
-      List<ParticipantSearchResponseDTO> response = getMatchingData(delegationDTO);
+      List<ParticipantDTO> response = getMatchingData(delegationDTO);
 
       QueryResultDTO result = new QueryResultDTO();
       result.totalCount = response.size();
@@ -178,7 +178,7 @@ public class ParticipantSearchComponent
     */
    public String searchAllParticipants(String searchText, int maxMatches, int type)
    {
-      List<ParticipantSearchResponseDTO> selectedParticipants = new ArrayList<ParticipantSearchResponseDTO>();
+      List<ParticipantDTO> selectedParticipants = new ArrayList<ParticipantDTO>();
       QueryService service = serviceFactoryUtils.getQueryService();
 
       if (containsUser(type))
@@ -202,19 +202,19 @@ public class ParticipantSearchComponent
          }
          userQuery.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME).and(UserQuery.ACCOUNT);
          Users matchingUsers = service.getAllUsers(userQuery);
-         selectedParticipants.addAll(copyToParticipantSearchResponseDTOList(matchingUsers));
+         selectedParticipants.addAll(copyToParticipantDTOList(matchingUsers));
       }
       
       //TODO: is there a requirement for separate role and organizations?
       if (containsOrganization(type) && containsRole(type))
       {
          List<Participant> rolesAndOrgs = ParticipantUtils.getAllUnScopedModelParticipant(true);
-         selectedParticipants.addAll(copyToParticipantSearchResponseDTOList(rolesAndOrgs, searchText));
+         selectedParticipants.addAll(copyToParticipantDTOList(rolesAndOrgs, searchText));
          
          if (containsDepartment(type))
          {
             Set<DepartmentInfo> departments = getAllDepartments(rolesAndOrgs, service);
-            selectedParticipants.addAll(copyToParticipantSearchResponseDTOList(departments, searchText));
+            selectedParticipants.addAll(copyToParticipantDTOList(departments, searchText));
          }
       }
       
@@ -225,7 +225,7 @@ public class ParticipantSearchComponent
     * @param participantSReqDTO
     * @return
     */
-   public List<ParticipantSearchResponseDTO> getMatchingData(ParticipantSearchRequestDTO participantSReqDTO)
+   public List<ParticipantDTO> getMatchingData(ParticipantSearchRequestDTO participantSReqDTO)
    {
       IDepartmentProvider.Options departmentOptions = null;
 
@@ -252,13 +252,13 @@ public class ParticipantSearchComponent
     * @param depOptions
     * @return
     */
-   public List<ParticipantSearchResponseDTO> getMatchingData(Long[] activities,
+   public List<ParticipantDTO> getMatchingData(Long[] activities,
          IDelegatesProvider.Options defualtOptions, IDepartmentProvider.Options depOptions)
    {
       // prepare activities
       List<ActivityInstance> activityInstances = activityInstanceUtils.getActivityInstancesFor(activities);
 
-      List<ParticipantSearchResponseDTO> result = new ArrayList<ParticipantSearchResponseDTO>();
+      List<ParticipantDTO> result = new ArrayList<ParticipantDTO>();
 
       if (defualtOptions != null)
       {
@@ -278,7 +278,7 @@ public class ParticipantSearchComponent
     * @param options
     * @return
     */
-   private List<ParticipantSearchResponseDTO> getMatchingDataDefault(List<ActivityInstance> activities,
+   private List<ParticipantDTO> getMatchingDataDefault(List<ActivityInstance> activities,
          IDelegatesProvider.Options options)
    {
       if (null == delegatesProvider)
@@ -286,15 +286,15 @@ public class ParticipantSearchComponent
          delegatesProvider = DefaultDelegatesProvider.INSTANCE;
       }
 
-      List<ParticipantSearchResponseDTO> selectedParticipants = new ArrayList<ParticipantSearchResponseDTO>();
+      List<ParticipantDTO> selectedParticipants = new ArrayList<ParticipantDTO>();
 
       // Add default participants
       Map<PerformerType, List< ? extends ParticipantInfo>> delegates = delegatesProvider.findDelegates(activities,
             options);
-      selectedParticipants.addAll(copyToParticipantSearchResponseDTOList(delegates.get(PerformerType.User)));
+      selectedParticipants.addAll(copyToParticipantDTOList(delegates.get(PerformerType.User)));
       selectedParticipants
-            .addAll(copyToParticipantSearchResponseDTOList(delegates.get(PerformerType.ModelParticipant)));
-      selectedParticipants.addAll(copyToParticipantSearchResponseDTOList(delegates.get(PerformerType.UserGroup)));
+            .addAll(copyToParticipantDTOList(delegates.get(PerformerType.ModelParticipant)));
+      selectedParticipants.addAll(copyToParticipantDTOList(delegates.get(PerformerType.UserGroup)));
 
       return selectedParticipants;
    }
@@ -304,11 +304,11 @@ public class ParticipantSearchComponent
     * @param options
     * @return
     */
-   private List<ParticipantSearchResponseDTO> getMatchingDepartment(List<ActivityInstance> activities,
+   private List<ParticipantDTO> getMatchingDepartment(List<ActivityInstance> activities,
          IDepartmentProvider.Options options)
    {
 
-      List<ParticipantSearchResponseDTO> selectedParticipants = new ArrayList<ParticipantSearchResponseDTO>();
+      List<ParticipantDTO> selectedParticipants = new ArrayList<ParticipantDTO>();
 
       // Add departments
       if (null == departmentDelegatesProvider)
@@ -322,7 +322,7 @@ public class ParticipantSearchComponent
 
       for (DepartmentInfo departmentInfo : selectedDepts)
       {
-         ParticipantSearchResponseDTO participantDTO = new ParticipantSearchResponseDTO(departmentInfo);
+         ParticipantDTO participantDTO = new ParticipantDTO(departmentInfo);
          selectedParticipants.add(participantDTO);
       }
 
@@ -333,17 +333,17 @@ public class ParticipantSearchComponent
     * @param allParticipants
     * @return
     */
-   private List<ParticipantSearchResponseDTO> copyToParticipantSearchResponseDTOList(
+   private List<ParticipantDTO> copyToParticipantDTOList(
          List< ? extends ParticipantInfo> allParticipants)
    {
-      List<ParticipantSearchResponseDTO> selectParticipants = new ArrayList<ParticipantSearchResponseDTO>();
+      List<ParticipantDTO> selectParticipants = new ArrayList<ParticipantDTO>();
       if (allParticipants != null)
       {
          for (ParticipantInfo participantInfo : allParticipants)
          {
             if (participantInfo instanceof Participant)
             {
-               selectParticipants.add(new ParticipantSearchResponseDTO((Participant) participantInfo));
+               selectParticipants.add(new ParticipantDTO((Participant) participantInfo));
             }
          }
       }
@@ -919,10 +919,10 @@ public class ParticipantSearchComponent
     * @param searchValue
     * @return
     */
-   private Collection< ? extends ParticipantSearchResponseDTO> copyToParticipantSearchResponseDTOList(Set<DepartmentInfo> departments,
+   private Collection< ? extends ParticipantDTO> copyToParticipantDTOList(Set<DepartmentInfo> departments,
          String searchValue)
    {
-      List<ParticipantSearchResponseDTO> selectParticipants = new ArrayList<ParticipantSearchResponseDTO>();
+      List<ParticipantDTO> selectParticipants = new ArrayList<ParticipantDTO>();
       String regex = !StringUtils.isEmpty(searchValue) ? searchValue.replaceAll("\\*", ".*") + ".*" : null;
       if (CollectionUtils.isNotEmpty(departments))
       {
@@ -930,7 +930,7 @@ public class ParticipantSearchComponent
          {
             if (deptInfo.getName().matches(regex))
             {
-               selectParticipants.add(new ParticipantSearchResponseDTO((Department) deptInfo));
+               selectParticipants.add(new ParticipantDTO((Department) deptInfo));
             }
          }
       }
@@ -942,14 +942,14 @@ public class ParticipantSearchComponent
     * @param allParticipants
     * @return
     */
-   private List<ParticipantSearchResponseDTO> copyToParticipantSearchResponseDTOList(Users allParticipants)
+   private List<ParticipantDTO> copyToParticipantDTOList(Users allParticipants)
    {
-      List<ParticipantSearchResponseDTO> selectParticipants = new ArrayList<ParticipantSearchResponseDTO>();
+      List<ParticipantDTO> selectParticipants = new ArrayList<ParticipantDTO>();
       if (allParticipants != null)
       {
          for (Participant participant : allParticipants)
          {
-            selectParticipants.add(new ParticipantSearchResponseDTO(participant));
+            selectParticipants.add(new ParticipantDTO(participant));
          }
       }
       return selectParticipants;
@@ -959,9 +959,9 @@ public class ParticipantSearchComponent
     * @param allParticipants
     * @return
     */
-   private List<ParticipantSearchResponseDTO> copyToParticipantSearchResponseDTOList(List<Participant> allParticipants, String searchValue)
+   private List<ParticipantDTO> copyToParticipantDTOList(List<Participant> allParticipants, String searchValue)
    {
-      List<ParticipantSearchResponseDTO> selectParticipants = new ArrayList<ParticipantSearchResponseDTO>();
+      List<ParticipantDTO> selectParticipants = new ArrayList<ParticipantDTO>();
       String regex = !StringUtils.isEmpty(searchValue) ? searchValue.replaceAll("\\*", ".*") + ".*" : null;
       if (allParticipants != null)
       {
@@ -969,7 +969,7 @@ public class ParticipantSearchComponent
          {
             if (regex == null || participant.getName().matches(regex))
             {
-               selectParticipants.add(new ParticipantSearchResponseDTO(participant));
+               selectParticipants.add(new ParticipantDTO(participant));
             }
          }
       }

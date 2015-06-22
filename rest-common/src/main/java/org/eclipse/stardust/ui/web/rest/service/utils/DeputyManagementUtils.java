@@ -42,7 +42,7 @@ import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.ui.web.rest.service.dto.DeputyMemberDetailDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
@@ -136,7 +136,7 @@ public class DeputyManagementUtils
     * @param searchMode
     * @return
     */
-   public List<ParticipantSearchResponseDTO> getDeputyUsersData(long userOID, String searchValue, String searchMode)
+   public List<ParticipantDTO> getDeputyUsersData(long userOID, String searchValue, String searchMode)
    {
       UserService userService = ServiceFactoryUtils.getUserService();
       User user = userService.getUser(userOID);
@@ -170,10 +170,10 @@ public class DeputyManagementUtils
     * @param searchValue
     * @return
     */
-   public static List<ParticipantSearchResponseDTO> buildSearchResult(List<User> users, List<String> selectedData,
+   public static List<ParticipantDTO> buildSearchResult(List<User> users, List<String> selectedData,
          String searchValue)
    {
-      List<ParticipantSearchResponseDTO> userItems = new ArrayList<ParticipantSearchResponseDTO>(users.size());
+      List<ParticipantDTO> userItems = new ArrayList<ParticipantDTO>(users.size());
 
       if (CollectionUtils.isNotEmpty(users))
       {
@@ -187,7 +187,7 @@ public class DeputyManagementUtils
          {
             if (!selectedData.contains(user.getAccount()))
             {
-               userItems.add(new ParticipantSearchResponseDTO((Participant) user));
+               userItems.add(new ParticipantDTO((Participant) user));
             }
          }
       }

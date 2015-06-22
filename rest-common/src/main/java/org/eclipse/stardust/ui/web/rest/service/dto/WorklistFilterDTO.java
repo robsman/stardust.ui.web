@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.stardust.ui.web.rest.FilterDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 
 import com.google.gson.reflect.TypeToken;
 
@@ -58,7 +58,7 @@ public class WorklistFilterDTO implements FilterDTO
 
    public static class ParticipantFilterDTO
    {
-      public List<ParticipantSearchResponseDTO> participants;
+      public List<ParticipantDTO> participants;
    }
    
    public static class DescriptorFilterDTO
@@ -88,7 +88,7 @@ public class WorklistFilterDTO implements FilterDTO
       {
       }.getType());
 
-      customTokens.put("participants", new TypeToken<List<ParticipantSearchResponseDTO>>()
+      customTokens.put("participants", new TypeToken<List<ParticipantDTO>>()
       {
       }.getType());
       return customTokens;

@@ -80,7 +80,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ProcessTableFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessTableFilterDTO.DescriptorFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.RelatedProcessesDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
@@ -1546,7 +1546,7 @@ public class ProcessInstanceUtils
       if (null != filterDTO.startingUser)
       {
          FilterOrTerm or = filter.addOrTerm();
-         for (ParticipantSearchResponseDTO user : filterDTO.startingUser.participants)
+         for (ParticipantDTO user : filterDTO.startingUser.participants)
          {
             or.add(new org.eclipse.stardust.engine.api.query.StartingUserFilter(user.OID));
          }

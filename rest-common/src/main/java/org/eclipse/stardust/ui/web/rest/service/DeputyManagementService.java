@@ -21,7 +21,7 @@ import javax.annotation.Resource;
 import org.eclipse.stardust.ui.web.rest.service.dto.DeputyMemberDetailDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.DeputyManagementUtils;
 import org.springframework.stereotype.Component;
 
@@ -69,7 +69,7 @@ public class DeputyManagementService
     */
    public QueryResultDTO getDeputyUsersData(long userOID, String searchValue, String searchMode)
    {
-      List<ParticipantSearchResponseDTO> userWrappers = deputyManagementUtils.getDeputyUsersData(userOID, searchValue,
+      List<ParticipantDTO> userWrappers = deputyManagementUtils.getDeputyUsersData(userOID, searchValue,
             searchMode);
 
       QueryResultDTO resultDTO = new QueryResultDTO();

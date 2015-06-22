@@ -884,7 +884,6 @@ public class ParticipantUtils
     */
    public static String getParticipantLabel(Participant participant)
    {
-      MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
       if (participant != null)
       {
          if (participant instanceof User)
@@ -894,13 +893,11 @@ public class ParticipantUtils
          }
          if (participant instanceof Role)
          {
-            return I18nUtils.getParticipantName(participant) + " ("
-                  + propsBean.getString("delegation.search.roleNamePostFix") + ")";
+            return I18nUtils.getParticipantName(participant);
          }
          if (participant instanceof Organization)
          {
-            return I18nUtils.getParticipantName(participant) + " ("
-                  + propsBean.getString("delegation.search.organizationNamePostFix") + ")";
+            return I18nUtils.getParticipantName(participant);
          }
       }
       return "";

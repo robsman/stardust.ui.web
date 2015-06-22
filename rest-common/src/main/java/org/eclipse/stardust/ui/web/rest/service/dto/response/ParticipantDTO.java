@@ -24,8 +24,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
  * @author Yogesh.Manware
  *
  */
-//TODO : rename it to ParticipantDTO for better reuse
-public class ParticipantSearchResponseDTO extends AbstractDTO
+public class ParticipantDTO extends AbstractDTO
 {
    private static final String BASE_IMAGE_PATH = "/plugins/views-common/images/icons/";
    // exposed properties
@@ -39,14 +38,14 @@ public class ParticipantSearchResponseDTO extends AbstractDTO
    public Long runtimeOrganizationOid;
    public String realmId;
    
-   public ParticipantSearchResponseDTO()
+   public ParticipantDTO()
    {
    }
 
    /**
     * @param participant
     */
-   public ParticipantSearchResponseDTO(Participant participant)
+   public ParticipantDTO(Participant participant)
    {
       this.id = participant.getId();
       this.qualifiedId = participant.getQualifiedId();
@@ -59,7 +58,7 @@ public class ParticipantSearchResponseDTO extends AbstractDTO
    /**
     * @param user
     */
-   public ParticipantSearchResponseDTO(User user)
+   public ParticipantDTO(User user)
    {
       this.id = user.getId();
       this.qualifiedId = user.getQualifiedId();
@@ -73,7 +72,7 @@ public class ParticipantSearchResponseDTO extends AbstractDTO
    /**
     * @param department
     */
-   public ParticipantSearchResponseDTO(DepartmentInfo department)
+   public ParticipantDTO(DepartmentInfo department)
    {
       this.id = department.getId();
       this.OID = department.getOID();
@@ -86,7 +85,7 @@ public class ParticipantSearchResponseDTO extends AbstractDTO
    /**
     * @param participant
     */
-   public ParticipantSearchResponseDTO(Participant participant, boolean online)
+   public ParticipantDTO(Participant participant, boolean online)
    {
       this(participant);
       this.onlineStatus = online;
