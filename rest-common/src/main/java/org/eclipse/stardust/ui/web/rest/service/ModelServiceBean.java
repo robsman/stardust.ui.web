@@ -15,9 +15,13 @@ import java.util.List;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.Activity;
+import org.eclipse.stardust.engine.api.model.Data;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
+import org.eclipse.stardust.engine.core.pojo.data.Type;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DataDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ModelDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
@@ -46,8 +50,23 @@ public class ModelServiceBean
          {
             ModelDTO modelDTO = DTOBuilder.build(model, ModelDTO.class);
             List<ProcessDefinitionDTO> processDefitionDTOList = CollectionUtils.newArrayList();
+            List<Data> modelData = model.getAllData();
             List<ProcessDefinition> processDefinitions = model.getAllProcessDefinitions();
             List<ActivityDTO> activityDTOList = CollectionUtils.newArrayList();
+            List<DataDTO> dataDTOList = CollectionUtils.newArrayList();
+            
+            // Create DataDTO list
+            for (Data data : modelData)
+            {
+               DataDTO dataDTO = DTOBuilder.build(data, DataDTO.class);
+               Type type = (Type) data.getAttribute(PredefinedConstants.TYPE_ATT);
+               if (type != null)
+               {
+            	   dataDTO.engineType = type.getId();
+            	   dataDTOList.add(dataDTO);
+               }
+            }
+            
             // Create ProcessDefinitionDTO list
             for (ProcessDefinition processDefinition : processDefinitions)
             {
@@ -64,6 +83,7 @@ public class ModelServiceBean
                processDefinitionDTO.activities = activityDTOList;
             }
             modelDTO.processDefinitions = processDefitionDTOList;
+            modelDTO.data = dataDTOList;
             modelList.add(modelDTO);
          }
       }

@@ -38,4 +38,5 @@ public class ModelDTO extends AbstractDTO
    
    public List<ModelParticipantDTO> modelParticipants;
    
+   public List<DataDTO> data;
 }
