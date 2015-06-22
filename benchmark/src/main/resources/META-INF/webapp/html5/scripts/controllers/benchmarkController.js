@@ -30,9 +30,10 @@
 		//Injected dependencies we need in our functions
 		this.benchmarkService = benchmarkService;
 		this.benchmarkBuilderService = benchmarkBuilderService;
+		this.$timeout = $timeout;
 		
 		//Function level properties
-		this.benchmarkCache = {}; //cache of benchmarks pulled from server.
+		this.benchmarkInitialStates = {}; //map of benchmarks pulled from server and stringified.
 		this.selectedBenchmark = undefined; //Currently selected benchmark from our data table
 		this.benchmarks = []; //Benchmarks pulled from the server
 		this.benchmarks2 = []; //Benchmarks pulled from the server
@@ -53,7 +54,11 @@
 		//Retrieve all benchmarks
 		benchmarkService.getBenchmarkDefinitions()
 		.then(function(data){
+			
 			that.benchmarks = data.benchmarkDefinitions;
+			that.benchmarks.forEach(function(v){
+				that.recordBenchmarkState(v.content);
+			});
 			$timeout(function(){
 				that.dataTableApi.refresh();
 			},0);
@@ -83,16 +88,58 @@
 	}
 	
 	/**
+	 * In order to support a dirtyState bit for each benchmark we will stringify the state 
+	 * of the benchmark and rely on a string compare to determine if a benchmark has been
+	 * modified. This function handles recording that state on our functions initial state
+	 * collection.
+	 * @param benchmark
+	 */
+	benchmarkController.prototype.recordBenchmarkState = function(benchmark){
+		this.benchmarkInitialStates[benchmark.id]=JSON.stringify(benchmark);
+	}
+	
+	
+	/**
+	 * Compare a benchmarks string representation against its state as recorded in the 
+	 * benchmarkInitial state collection. If the benchmark is, for any reason, not in the
+	 * initial states collection then we will return false.
+	 * @param benchmark
+	 * @returns {Boolean}
+	 */
+	benchmarkController.prototype.isBenchmarkDirty = function(id){
+		var result = false,
+			i,
+			benchmark,
+			temp="";
+		
+		for(i=0;i<this.benchmarks.length;i++){
+			if(this.benchmarks[i].content.id===id){
+				benchmark = this.benchmarks[i].content;
+				break;
+			}
+		}
+		
+		if(benchmark && this.benchmarkInitialStates[benchmark.id] ){
+			temp = JSON.stringify(benchmark);
+			//console.log(JSON.stringify(benchmark));
+			//console.log(this.benchmarkInitialStates[benchmark.id]);
+			result = !(this.benchmarkInitialStates[benchmark.id] == temp);
+		}
+		return result;
+	}
+	
+	/**
 	 * Save the benchmark to the document repository
 	 * @param benchmark
 	 */
 	benchmarkController.prototype.saveBenchmark = function(benchmark){
-		
+		var that = this;
 		benchmark = this.benchmarkBuilderService.cleanAndClone(benchmark);
 		
 		this.benchmarkService.saveBenchmarks(benchmark)
 		.then(function(data){
-			//TODO: Dirty-bit implementation and clearing.
+			//Update benchmark intial state
+			that.recordBenchmarkState(benchmark);
 			alert("saved");
 		})
 		["catch"](function(err){
@@ -100,11 +147,51 @@
 		});
 	};
 	
+	
+	/**
+	 * Handles the client side cleanup of a benchmark following the successful
+	 * server-side deletion of that benchmark.
+	 */
+	benchmarkController.prototype.deleteLocalBenchmark = function(id){
+		var index = -1,
+			that = this,
+			temp,
+			i;
+		
+		//Cleanup initial state cache
+		if(this.benchmarkInitialStates.hasOwnProperty(id)){
+			delete this.benchmarkInitialStates[id];
+		}
+		
+		//now locate the id in our benchmarks collection
+		for(i=0;i<this.benchmarks.length;i++){
+			temp = this.benchmarks[i];
+			if(temp.content.id==id){
+				index = i;
+				break;
+			}
+		}
+		
+		//If we found a match then remove it from the array
+		if(index > -1){
+			this.$timeout(function(){
+				that.benchmarks.splice(index,1);
+				that.dataTableApi.refresh();
+			},0);
+		}
+	}
+	
+	/**
+	 * Deletion of a benchmark from the remote
+	 * server repository.
+	 * @param id - id of benchmark to delete
+	 */
 	benchmarkController.prototype.deleteBenchmark = function(id){
+		var that = this;
+		
 		this.benchmarkService.deleteBenchmark(id)
 		.then(function(data){
-			//TODO: Purge from all definitions
-			//TODO: Refresh UI
+			that.deleteLocalBenchmark(id);
 			alert("deleted");
 		})
 		["catch"](function(err){
@@ -455,6 +542,8 @@
 			this.buildOutModel(benchmark,item.valueItem.id,item.valueItem);
 		}
 		
+		//TODO: These two blocks of code need to be consolidated
+		
 		//procDef clicks should build out model/procDef structures as
 		//needed and enter a row into our benchmarkDataRows collection.
 		else if(item.valueItem.nodeType==="process"){
@@ -466,8 +555,13 @@
 			
 			this.linkCategoryConditions(benchmark.categories,procDef.categoryConditions);
 			
+			//TODO: support multi-select in the tree
+			while(this.benchmarkDataRows.pop()){}
+			
 			this.benchmarkDataRows.push({
 				"benchmark" : benchmark, 
+				"modelData" : parentModel.data.filter(function(v){
+					return v.engineType==="Calendar" && v.typeId=="primitive"}),
 				"element" : "Process Definition",
 				"dueDate" : procDef.dueDate,
 				"nodePath" : "{" + model.id + "}" + procDef.id, 
@@ -488,9 +582,13 @@
 			
 			this.linkCategoryConditions(benchmark.categories, activity.categoryConditions);
 			
-			console.log(JSON.stringify(benchmark));
+			//TODO: support multi-select in the tree
+			while(this.benchmarkDataRows.pop()){}
+			
 			this.benchmarkDataRows.push({
 				"benchmark" : benchmark, 
+				"modelData" : parentModel.data.filter(function(v){
+					return v.engineType==="Calendar" && v.typeId=="primitive"}),
 				"element" : "Activity",
 				"breadCrumbs" : [parentModel.name,parentProcDef.name,item.valueItem.name],
 				"nodePath" : "{" + model.id + "}" + procDef.id + ":" + activity.id, 
@@ -534,7 +632,6 @@
 		bmark = this.benchmarkBuilderService.getBaseBenchmark();
 		that = this;
 		
-		console.log(JSON.stringify(bmark));
 		//Default values
 		//bmark.metadata.modifiedBy = this.currentUser.displayName;
 		bmark.content.name = "Default Benchmark"; //TODO i18N

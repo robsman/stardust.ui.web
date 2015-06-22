@@ -3,15 +3,6 @@
      ng-controller="benchmarkCtrl as ctrl"
 	 sg-stretch-to-bottom>
 	 
-	<!--table>
-		<tr>
-			<th>Benchmarks</th>
-		</tr>
-		<tr>
-			<td><pre>{{ctrl.benchmarks | json}}</pre></td>
-		</tr>
-	</table-->
-
 	<i style="position:absolute;font-size:1.5em;cursor:pointer;" 
 	   ng-click="ctrl.showBenchmarks = !ctrl.showBenchmarks" 
 	   ng-class="{'sc-arrow-d': ctrl.showBenchmarks,'sc-arrow-r': !ctrl.showBenchmarks}"
@@ -34,7 +25,7 @@
 		       <i class="glyphicon glyphicon-plus-sign"></i>
 		    </a>
 		    
-		    <a href="#" ng-click="ctrl.deleteBenchmark()" title="Delete Benchmark" class="tbl-toolbar-item tbl-tool-link">
+		    <a href="#" ng-click="ctrl.deleteBenchmark(ctrl.selectedBenchmark.id)" title="Delete Benchmark" class="tbl-toolbar-item tbl-tool-link">
 		       <i class="glyphicon glyphicon-minus-sign"></i>
 		    </a>	
 		    
@@ -62,7 +53,11 @@
 			   </thead>
 			   <tbody>
 			   		<tr>
-			   			<td sda-field="content.name"></td>
+			   			<td sda-field="content.name">
+				   			<span ng-class="{'dirty':ctrl.isBenchmarkDirty(rowData.content.id)}">
+				   			{{rowData.content.name}}
+				   			</span>
+			   			</td>
 			   			<td sda-field="content.description"></td>
 			   			<td sda-field="metadata.author"></td>
 			   			<td sda-field="metadata.lastModifiedDate"></td>
@@ -242,7 +237,6 @@
 		    						</div>
 		    						
 		    					</div>
-		    					<!-- pre>{{data | json}}</pre-->
 		    				</td>
 		    				<td ng-repeat="catInst in data.categoryConditions | orderBy:'categoryRef.index'">
 	
@@ -268,8 +262,8 @@
 			    					</div>
 			    					
 			    					<div>
-				    					<select ng-model="catInst.details.condition.rhs">
-				    						<option value="PrimitiveData">TODO: Get Primitive Data</option>
+				    					<select ng-options="item.qualifiedId as item.name for item in data.modelData" 
+				    					        ng-model="catInst.details.condition.rhs">
 				    					</select>
 			    					</div>
 			    					
@@ -311,16 +305,7 @@
 		    			</tr>
 		    		</tbody>
 		    	</table>
-		    	
-		    	<table>
-		    		<thead>
-		    			<th>Selected Benchmark</th>
-		    		</thead>
-		    		<tr>
-		    			<td><pre>{{ctrl.selectedBenchmark | json}}</pre></td>
-		    		</tr>
-		    	</table>
-		    	
+	
 	    	</div>
 	</div>
 	
@@ -328,19 +313,21 @@
 	<div ng-show="ctrl.selectedTab ==='General'">
 	
 		<div sd-drop-down-menu sda-menu-items="[{value:'insert'},{value:'delete'},{value:'create'}]"></div>
-	    	<label>Name</label> 
-	    	<input ng-disabled="!ctrl.selectedBenchmark" ng-model="ctrl.selectedBenchmark.name" type="text">
-	    	
-	    	<label>Description</label>
-	    	<textarea ng-disabled="!ctrl.selectedBenchmark" ng-model="ctrl.selectedBenchmark.description"></textarea>
-	    	
-	    	<label>Business Calendar</label>
-	
-	    	<select ng-options="item.path as item.name for item in ctrl.calendars" 
-	    	        ng-model="ctrl.selectedBenchmark.businessCalendar"  
-	    	        ng-disabled="!ctrl.selectedBenchmark">
-	    	</select>
-	    </div>
-	
-</div>
+    	<label>Name</label> 
+    	<input ng-disabled="!ctrl.selectedBenchmark" ng-model="ctrl.selectedBenchmark.name" type="text">
+    	
+    	<label>Description</label>
+    	<textarea ng-disabled="!ctrl.selectedBenchmark" ng-model="ctrl.selectedBenchmark.description"></textarea>
+    	
+    	<label>Business Calendar</label>
 
+    	<select ng-options="item.path as item.name for item in ctrl.calendars" 
+    	        ng-model="ctrl.selectedBenchmark.businessCalendar"  
+    	        ng-disabled="!ctrl.selectedBenchmark">
+    	</select>
+    </div>
+	
+</div><!-- Bottom Container End -->
+
+
+</div><!-- OuterMost Div end, controller scope ends -->
