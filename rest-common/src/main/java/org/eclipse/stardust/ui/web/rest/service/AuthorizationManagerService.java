@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -21,6 +23,7 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
@@ -40,6 +43,7 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.authorization.PermissionsDetails;
 import org.eclipse.stardust.ui.web.viewscommon.views.authorization.UiPermissionUtils;
 import org.springframework.context.annotation.Scope;
@@ -84,8 +88,8 @@ public class AuthorizationManagerService
     * @param deny
     * @param selectedParticipants
     */
-   public Map<String, Set<PermissionDTO>> updateGrants(List<String> allow, List<String> deny,
-         List<String> selectedParticipants)
+   public Map<String, Set<PermissionDTO>> updateGrants(Set<String> allow, Set<String> deny,
+         Set<String> selectedParticipants)
    {
       PermissionsDetails permissions = getPermissionDetails();
       if (allow != null)
@@ -97,7 +101,6 @@ public class AuthorizationManagerService
          updateDeniedGrants(deny, selectedParticipants, permissions);
       }
       savePermissions(permissions);
-      // TODO think of better response later
       return fetchPermissions();
    }
 
@@ -118,6 +121,236 @@ public class AuthorizationManagerService
       }
       savePermissions(permissions);
       return fetchPermissions();
+   }
+
+   /**
+    * 
+    * @param sourceParticipant
+    * @param targetParticipant
+    * @return
+    */
+   public Map<String, Set<PermissionDTO>> cloneParticipant(Set<String> sourceParticipants,
+         Set<String> targetParticipants)
+   {
+      PermissionsDetails permissions = getPermissionDetails();
+      Collection<ParticipantDTO> participants = fetchParticipantsExplicitPermissions(sourceParticipants, permissions);
+
+      Set<String> allow = new HashSet<String>();
+      Set<String> deny = new HashSet<String>();
+      for (ParticipantDTO participantDTO : participants)
+      {
+         allow.addAll(participantDTO.allow);
+         deny.addAll(participantDTO.deny);
+      }
+      updateGrants(allow, targetParticipants, permissions);
+      updateDeniedGrants(deny, targetParticipants, permissions);
+      savePermissions(permissions);
+      return fetchPermissions();
+   }
+
+   /**
+    * 
+    * @param participantQualifiedIds
+    * @return
+    */
+   public Collection<ParticipantDTO> fetchParticipantsExplicitPermissions(Set<String> participantQualifiedIds)
+   {
+      PermissionsDetails permissions = getPermissionDetails();
+      return fetchParticipantsExplicitPermissions(participantQualifiedIds, permissions);
+   }
+
+   /**
+    * Reset Participants meaning it removes all explicit permissions stored in Preference
+    * Table
+    * 
+    * @param participantQualifiedIds
+    * @return
+    */
+   public Map<String, Set<PermissionDTO>> restoreParticipants(Set<String> participantQualifiedIds)
+   {
+      PermissionsDetails permissions = getPermissionDetails();
+
+      if (CollectionUtils.isEmpty(participantQualifiedIds))
+      {
+         // TODO: throw exception
+      }
+
+      RuntimePermissions runtimePermissions = permissions.getGeneralPermission();
+      List<String> permissionIds = new ArrayList<String>(runtimePermissions.getAllPermissionIds());
+
+      Map<String, Serializable> uiPermissions = permissions.getUIPermissionMap();
+
+      for (String permissionIdT : uiPermissions.keySet())
+      {
+         String permissionId = StringUtils.substringBeforeLast(permissionIdT, ".");
+         permissionIds.add(permissionId);
+      }
+
+      for (String permissionId : permissionIds)
+      {
+         Set<ModelParticipantInfo> grants = permissions.getGrants2(permissionId);
+         restoreParticipant(participantQualifiedIds, grants);
+         permissions.setGrants2(permissionId, grants);
+         Set<ModelParticipantInfo> deniedGrants = permissions.getDeniedGrants(permissionId);
+         restoreParticipant(participantQualifiedIds, deniedGrants);
+         permissions.setDeniedGrants(permissionId, deniedGrants);
+      }
+      savePermissions(permissions);
+
+      return fetchPermissions();
+   }
+
+   /**
+    * Note this method returns only explicit permissions for the participant which
+    * persisted in preference table
+    * 
+    * @param participantQualifiedIds
+    * @param permissions
+    * @return
+    */
+   private Collection<ParticipantDTO> fetchParticipantsExplicitPermissions(Set<String> participantQualifiedIds,
+         PermissionsDetails permissions)
+   {
+      Map<String, ParticipantDTO> participantMap = new HashMap<String, PermissionDTO.ParticipantDTO>();
+
+      if (CollectionUtils.isEmpty(participantQualifiedIds))
+      {
+         return participantMap.values();
+      }
+
+      RuntimePermissions runtimePermissions = permissions.getGeneralPermission();
+      List<String> permissionIds = new ArrayList<String>(runtimePermissions.getAllPermissionIds());
+
+      Map<String, Serializable> uiPermissions = permissions.getUIPermissionMap();
+
+      for (String permissionIdT : uiPermissions.keySet())
+      {
+         String permissionId = StringUtils.substringBeforeLast(permissionIdT, ".");
+         permissionIds.add(permissionId);
+      }
+
+      for (String permissionId : permissionIds)
+      {
+         Set<ModelParticipantInfo> grants = permissions.getGrants2(permissionId);
+         updatePermissions(participantQualifiedIds, participantMap, grants, permissionId, true);
+         Set<ModelParticipantInfo> deniedGrants = permissions.getDeniedGrants(permissionId);
+         updatePermissions(participantQualifiedIds, participantMap, deniedGrants, permissionId, false);
+      }
+
+      return participantMap.values();
+   }
+
+   /**
+    * 
+    * @param participantQualifiedIds
+    * @param grants
+    */
+   private void restoreParticipant(Set<String> participantQualifiedIds, Set<ModelParticipantInfo> grants)
+   {
+      ModelParticipantInfo participantInfo = null;
+      if (grants == null)
+      {
+         return;
+      }
+      for (ModelParticipantInfo modelParticipantInfo : grants)
+      {
+         if (modelParticipantInfo instanceof QualifiedModelParticipantInfo)
+         {
+            if (participantQualifiedIds.contains(modelParticipantInfo.getQualifiedId()))
+            {
+               participantInfo = modelParticipantInfo;
+               break;
+            }
+         }
+         else
+         {
+            if (participantQualifiedIds.contains(modelParticipantInfo.getId()))
+            {
+               participantInfo = modelParticipantInfo;
+               break;
+            }
+         }
+      }
+      grants.remove(participantInfo);
+   }
+
+   /**
+    * @param participantQualifiedIds
+    * @param participantMap
+    * @param grants
+    * @param permissionId
+    * @param allow
+    */
+   private void updatePermissions(Set<String> participantQualifiedIds, Map<String, ParticipantDTO> participantMap,
+         Set<ModelParticipantInfo> grants, String permissionId, boolean allow)
+   {
+      ParticipantDTO participant;
+      String label;
+
+      if (grants == null)
+      {
+         return;
+      }
+
+      for (ModelParticipantInfo modelParticipantInfo : grants)
+      {
+         if (modelParticipantInfo instanceof QualifiedModelParticipantInfo)
+         {
+            if (participantQualifiedIds.contains(modelParticipantInfo.getQualifiedId()))
+            {
+               if (!participantMap.containsKey(modelParticipantInfo.getQualifiedId()))
+               {
+                  QualifiedModelParticipantInfo qualifiedParticipantInfo = (QualifiedModelParticipantInfo) modelParticipantInfo;
+                  String modelId = ModelUtils.extractModelId(qualifiedParticipantInfo.getQualifiedId());
+                  Model model = ModelCache.findModelCache().getActiveModel(modelId);
+                  label = I18nUtils.getParticipantName(model.getParticipant(modelParticipantInfo.getId()));
+                  participant = new ParticipantDTO(modelParticipantInfo.getQualifiedId(), label);
+                  participant.allow = new HashSet<String>();
+                  participant.deny = new HashSet<String>();
+                  participantMap.put(modelParticipantInfo.getQualifiedId(), participant);
+               }
+               else
+               {
+                  participant = participantMap.get(modelParticipantInfo.getQualifiedId());
+               }
+               if (allow)
+               {
+                  participant.allow.add(permissionId);
+               }
+               else
+               {
+                  participant.deny.add(permissionId);
+               }
+            }
+         }
+         else
+         {
+            if (participantQualifiedIds.contains(modelParticipantInfo.getId()))
+            {
+               if (!participantMap.containsKey(modelParticipantInfo.getId()))
+               {
+                  label = I18nUtils.getParticipantName(ModelCache.findModelCache().getParticipant(
+                        modelParticipantInfo.getId()));
+                  participant = new ParticipantDTO(modelParticipantInfo.getId(), label);
+                  participant.allow = new HashSet<String>();
+                  participant.deny = new HashSet<String>();
+                  participantMap.put(modelParticipantInfo.getId(), participant);
+               }
+               else
+               {
+                  participant = participantMap.get(modelParticipantInfo.getId());
+               }
+               if (allow)
+               {
+                  participant.allow.add(permissionId);
+               }
+               else
+               {
+                  participant.deny.add(permissionId);
+               }
+            }
+         }
+      }
    }
 
    /**
@@ -155,8 +388,7 @@ public class AuthorizationManagerService
     * @param selectedParticipants
     * @param permissions
     */
-   private void updateGrants(List<String> permissionIds, List<String> selectedParticipants,
-         PermissionsDetails permissions)
+   private void updateGrants(Set<String> permissionIds, Set<String> selectedParticipants, PermissionsDetails permissions)
    {
       for (String permissionId : permissionIds)
       {
@@ -202,7 +434,7 @@ public class AuthorizationManagerService
     * @param selectedParticipants
     * @param permissions
     */
-   private void updateDeniedGrants(List<String> permissionIds, List<String> selectedParticipants,
+   private void updateDeniedGrants(Set<String> permissionIds, Set<String> selectedParticipants,
          PermissionsDetails permissions)
    {
       for (String permissionId : permissionIds)
@@ -390,9 +622,6 @@ public class AuthorizationManagerService
          {
             if (viewDefinition.isGlobal())
             {
-               System.out.println("ViewName: " + viewDefinition.getName() + " defined in: "
-                     + viewDefinition.getDefinedIn() + " Perspective: " + perspective.getName());
-
                String extName = viewDefinition.getDefinedIn();
 
                if (!globalElements.containsKey(extName))

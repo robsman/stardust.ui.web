@@ -21,12 +21,13 @@ angular
 								scope : {
 									messageKey : '@sdMessage'
 								},
-								template : '<table ng-show="showError" style="width : 100%">'
+								template : '<table ng-show="showError" style="width : 100%;">'
 										+ '<tr>'
 											+ '<td style="width : 1em ; align:center">'
 												+ '<i ng-if="type == \'error\'" class="glyphicon glyphicon-remove-sign msg-{{type}}"></i>'
 												+ '<i ng-if="type == \'info\'" class="glyphicon glyphicon-exclamation-sign msg-{{type}}"></i>'
 												+ '<i ng-if="type == \'warn\'" class="glyphicon glyphicon-exclamation-sign msg-{{type}}"></i>'
+												+ '<i ng-if="type == \'ok\'" class="glyphicon glyphicon-ok" style="color:red"></i>'
 											+ '</td>'
 											+ '<td><span ng-bind="message" class="msg-{{type}}"></span</td>'
 										+ '</tr>'

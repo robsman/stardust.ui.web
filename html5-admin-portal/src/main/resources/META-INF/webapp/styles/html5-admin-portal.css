@@ -42,3 +42,7 @@
 	color: blue !important;
 	font-weight: normal;
 }
+
+.cloneParticipantSelector .sd-participant-selector .sd-ac-container {
+  width:400px;
+}

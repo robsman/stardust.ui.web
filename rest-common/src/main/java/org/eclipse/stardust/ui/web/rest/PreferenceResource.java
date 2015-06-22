@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.rest;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,14 +40,17 @@ import org.eclipse.stardust.ui.web.rest.service.PreferenceService;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PreferenceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.PermissionDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.PermissionDTO.ParticipantDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import static org.eclipse.stardust.ui.web.common.util.StringUtils.splitUnique;
 
 import com.google.gson.Gson;
 
 /**
  * @author Subodh.Godbole
+ * @author Yogesh.Manware
  *
  */
 @Component
@@ -194,8 +198,8 @@ public class PreferenceResource
          grantsMap = JsonDTO.getAsMap(postedData);
       }
       Map<String, Set<PermissionDTO>> permissions = authorizationManagerService.updateGrants(
-            (List<String>) grantsMap.get("allow"), (List<String>) grantsMap.get("deny"),
-            (List<String>) grantsMap.get("participants"));
+            (Set<String>) grantsMap.get("allow"), (Set<String>) grantsMap.get("deny"),
+            (Set<String>) grantsMap.get("participants"));
       return Response.ok(GsonUtils.toJsonHTMLSafeString(permissions), MediaType.APPLICATION_JSON).build();
    }
 
@@ -216,5 +220,40 @@ public class PreferenceResource
    {
       Map<String, Set<PermissionDTO>> permissions = authorizationManagerService.restoreGrants(permissionIds);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(permissions), MediaType.APPLICATION_JSON).build();
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/participants")
+   public Response getParticipantGrants(@QueryParam("participantIds") String participantIds)
+   {
+      Set<String> participantQualifiedIds = splitUnique(participantIds, ",");
+      Collection<ParticipantDTO> participants = authorizationManagerService
+            .fetchParticipantsExplicitPermissions(participantQualifiedIds);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(participants), MediaType.APPLICATION_JSON).build();
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/participants/clone")
+   public Response cloneParticipant(@QueryParam("sourceParticipantIds") String sourceParticipantIds,
+         @QueryParam("targetParticipantIds") String targetParticipantIds)
+   {
+      Set<String> sourceParticipantQualifiedIds = splitUnique(sourceParticipantIds, ",");
+      Set<String> targetParticipantQualifiedIds = splitUnique(targetParticipantIds, ",");
+      Map<String, Set<PermissionDTO>> participants = authorizationManagerService.cloneParticipant(
+            sourceParticipantQualifiedIds, targetParticipantQualifiedIds);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(participants), MediaType.APPLICATION_JSON).build();
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/participants/restore")
+   public Response restoreParticipants(@QueryParam("participantIds") String participantIds)
+   {
+      Set<String> participantQualifiedIds = splitUnique(participantIds, ",");
+      Map<String, Set<PermissionDTO>> participants = authorizationManagerService
+            .restoreParticipants(participantQualifiedIds);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(participants), MediaType.APPLICATION_JSON).build();
    }
 }

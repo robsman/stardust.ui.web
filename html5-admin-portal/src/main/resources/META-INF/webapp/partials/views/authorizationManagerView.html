@@ -7,15 +7,16 @@
 		</header>
 		<div class="clearing"></div>
 	</hgroup> -->
-	<div style="clear: both">
+	<div style="clear: both" class="authorizationManager">
 		<section style="clear: both; float: left; width: 60%">
 			<header>
 				<div class="heading"
 					ng-bind="sdI18nHtml5Admin('views.authorizationManagerViewHtml5.participant.label')"></div>
 			</header>
+			<div ng-show="ctrl.showMessage" sd-message></div>
 			<div sda-toolbar>
 				<div class="tbl-toolbar-section">
-					<button ng-click="ctrl.cloneParticipant"
+					<button ng-click="ctrl.cloneParticipant()"
 						title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.cloneParticipant')}}"
 						class="button-link tbl-toolbar-item tbl-tool-link"
 						style="margin-right: 0px;">
@@ -29,6 +30,7 @@
 			<table sd-data-table="ctrl.dataTable" sd-data="ctrl.participants"
 				sda-mode="local" sda-selectable="multiple"
 				sda-selection="ctrl.selection" sda-no-pagination="true"
+				sda-on-select="ctrl.onParticipantSelect(selectionInfo)"
 				sda-sortable="true" sda-exports="true"
 				sda-column-selector="{{ctrl.columnSelector}}"
 				sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)">
@@ -48,6 +50,29 @@
 					</tr>
 				</tbody>
 			</table>
+
+			<span sd-dialog sda-show="ctrl.showCloneParticipantDialog"
+				sda-title="Clone Participant" sda-type="confirm" sda-scope="this"
+				sda-confirm-action-label="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.clone')}}"
+				sda-on-confirm="ctrl.cloneParticipantConfirmed()"
+				class="view-tool-link">
+				<div>
+					<div>{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.specifyParticipantsMsg')}}</div>
+					<br>
+					<div class="cloneParticipantSelector">
+						<table style="width: 100%;">
+							<tr>
+								<td>
+									<div sd-participant-selector style="height: 120px"
+										sda-selected-data="ctrl.selectedTargetParticipants"
+										sda-multiple="true" sd-data="ctrl.fetchParticipants(params)"></div>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</span>
+
 		</section>
 
 		<section style="float: left; padding-left: 30px; width: 30%">

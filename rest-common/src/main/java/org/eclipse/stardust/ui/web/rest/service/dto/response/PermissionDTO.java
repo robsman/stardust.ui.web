@@ -49,6 +49,8 @@ public class PermissionDTO extends AbstractDTO
       public static ParticipantDTO ALL = new ParticipantDTO("all", MessagesViewsCommonBean.getInstance().getString(
             "views.common.all"));
       public String participantQualifiedId;
+      public Set<String> allow;
+      public Set<String> deny;
 
       public ParticipantDTO(String qid, String name)
       {
