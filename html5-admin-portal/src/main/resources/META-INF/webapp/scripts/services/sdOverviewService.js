@@ -57,7 +57,5 @@
 			return $resource(restUrl).get(urlTemplateParams).$promise;
 
 		};
-
 	}
-	;
 })();

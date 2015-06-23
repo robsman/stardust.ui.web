@@ -69,5 +69,4 @@
 			return note.save(urlTemplateParams, postData).$promise;
 		};
 	}
-	;
 })();

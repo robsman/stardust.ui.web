@@ -332,46 +332,6 @@ public class ActivityInstanceService
       return ActivityTableUtils.buildTableResult(queryResult, MODE.ACTIVITY_TABLE);
    }
 
-<<<<<<< Upstream, based on origin/feature/ipp/portal-html5-contrib
-   /**
-    * Returns all states
-    * 
-    * @return List
-    */
-   public List<StatusDTO> getAllActivityStates()
-   {
-      MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
-      List<StatusDTO> allStatusList = new ArrayList<StatusDTO>();
-
-      allStatusList.add(new StatusDTO(ActivityInstanceState.ABORTED, propsBean
-            .getString("views.activityTable.statusFilter.aborted")));
-
-      allStatusList.add(new StatusDTO(ActivityInstanceState.ABORTING, propsBean
-            .getString("views.activityTable.statusFilter.aborting")));
-
-      allStatusList.add(new StatusDTO(ActivityInstanceState.APPLICATION, propsBean
-            .getString("views.activityTable.statusFilter.application")));
-
-      allStatusList.add(new StatusDTO(ActivityInstanceState.COMPLETED, propsBean
-            .getString("views.activityTable.statusFilter.completed")));
-
-      allStatusList.add(new StatusDTO(ActivityInstanceState.CREATED, propsBean
-            .getString("views.activityTable.statusFilter.created")));
-
-      allStatusList.add(new StatusDTO(ActivityInstanceState.HIBERNATED, propsBean
-            .getString("views.activityTable.statusFilter.hibernated")));
-
-      allStatusList.add(new StatusDTO(ActivityInstanceState.INTERRUPTED, propsBean
-            .getString("views.activityTable.statusFilter.interrupted")));
-
-      allStatusList.add(new StatusDTO(ActivityInstanceState.SUSPENDED, propsBean
-            .getString("views.activityTable.statusFilter.suspended")));
-      return allStatusList;
-   }
-
-=======
-   
->>>>>>> f35aa9e [CRNT-35278] : Fetching trivial manual activity data along with the worklist data. Also trivial manual data is fetched only when the Data column is visible.
    /**
     * 
     * @param activityOID

@@ -25,24 +25,24 @@
     * 
     */
    function WorklistService($rootScope, $resource, sdDataTableHelperService, sdUtilService) {
-	   var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/worklist/";
+	   var REST_BASE_URL = "services/rest/portal/worklist/";
 	   /*
 	    * 
 	    */
 	   WorklistService.prototype.getWorklist = function(query) {
 
-		   var restUrl = "";
-		   
+		   var restUrl = sdUtilService.getBaseUrl();
+
 		   if(query.url) {
-			   restUrl = query.url;
+			   restUrl = restUrl + query.url;
 		   }else {
-			   restUrl = REST_BASE_URL;
+			   restUrl = restUrl + REST_BASE_URL;
 		   }
-		   
+
 		   // Prepare path Params
 		   var urlTemplateParams = {};
 		   if (query.criticality) {
-		       	   restUrl = restUrl  + ":type/:id";
+			   restUrl = restUrl  + ":type/:id";
 			   urlTemplateParams.type = "criticality";
 			   urlTemplateParams.id = query.criticality;
 		   }else  if (query.fromDate) {
@@ -62,38 +62,38 @@
 			   urlTemplateParams.type = "user";
 			   urlTemplateParams.id = query.userId;
 		   }else if (query.pInstanceOids) {
-		       	   restUrl = restUrl  + ":type";
-		       	   urlTemplateParams.type = "processInstance";
-		       	   var params = "oids="+query.pInstanceOids;
-		       	   restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, params);
+			   restUrl = restUrl  + ":type";
+			   urlTemplateParams.type = "processInstance";
+			   var params = "oids="+query.pInstanceOids;
+			   restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, params);
 		   }
 		   else{
 			   if(!query.url){
 				   throw "Illegal type passed to getWorklist : "+query;
 			   }
 		   }
-		   
-		   
+
+
 		   if(query.queryParams){
-		       restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, queryParams);
+			   restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, queryParams);
 		   }
-		   
-		   
+
+
 		   //Checking for deputy userId along with participant Id in case of deputy user
 		   if( query.participantQId && query.userId ) {
 			   restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl,  'userId='+query.userId);
 		   }
-		   
-		   
+
+
 		   var queryParams = sdDataTableHelperService.convertToQueryParams(query.options);
 
 		   if (queryParams.length > 0) {
-		       restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, queryParams.substr(1));
+			   restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, queryParams.substr(1));
 		   }
-		   
+
 		   var postData = sdDataTableHelperService.convertToPostParams(query.options);
 		   postData['worklistId'] = query.id;
-		
+
 		   var worklist = $resource(restUrl, {
 			   type : '@type',
 			   id : '@id'
@@ -102,7 +102,7 @@
 				   method : 'POST'
 			   }
 		   });
- 
+
 		   return worklist.fetch(urlTemplateParams, postData).$promise;
 	   };
    }   

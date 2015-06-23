@@ -13,40 +13,39 @@
  */
 
 (function() {
-    'use strict';
+	'use strict';
 
-    angular.module('workflow-ui.services').provider('sdParticipantTypeService', function() {
-	this.$get = [ function($q, $http) {
-	    var service = new PaticipantTypeService();
-	    return service;
-	} ];
-    });
+	angular.module('workflow-ui.services').provider('sdParticipantTypeService', function() {
+		this.$get = [ function($q, $http) {
+			var service = new PaticipantTypeService();
+			return service;
+		} ];
+	});
 
-    // TODO Replace icons when available for SCOPED_ORGANIZATION SCOPED_ROLE
-    // ROLE
-    var iconsForPaticipantType = {
-	'ORGANIZATION' : 'sc sc-organization',
-	'SCOPED_ORGANIZATION' : 'sc sc-organization',
-	'ROLE' : 'sc sc-user',
-	'SCOPED_ROLE' : 'sc sc-user',
-	'USER' : 'sc sc-user',
-	'USERGROUP' : 'sc sc-users',
-    };
-    /**
-     * 
-     */
-    function PaticipantTypeService() {
+	// TODO Replace icons when available for SCOPED_ORGANIZATION SCOPED_ROLE
+	// ROLE
+	var iconsForPaticipantType = {
+			'ORGANIZATION' : 'sc sc-organization',
+			'SCOPED_ORGANIZATION' : 'sc sc-organization',
+			'ROLE' : 'sc sc-user',
+			'SCOPED_ROLE' : 'sc sc-user',
+			'USER' : 'sc sc-user',
+			'USERGROUP' : 'sc sc-users',
+	};
 	/**
 	 * 
 	 */
-	PaticipantTypeService.prototype.getIcon = function(participantType) {
-	    var icon = iconsForPaticipantType[participantType];
-	    if (angular.isUndefined(icon)) {
-		// Default Icon
-		icon = "sc  sc-user";
-	    }
-	    return icon;
-	};
-    }
-    ;
+	function PaticipantTypeService() {
+		/**
+		 * 
+		 */
+		PaticipantTypeService.prototype.getIcon = function(participantType) {
+			var icon = iconsForPaticipantType[participantType];
+			if (angular.isUndefined(icon)) {
+				// Default Icon
+				icon = "sc  sc-user";
+			}
+			return icon;
+		};
+	}
 })();

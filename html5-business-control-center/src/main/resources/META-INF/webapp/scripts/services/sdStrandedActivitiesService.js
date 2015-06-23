@@ -27,7 +27,7 @@
 	 * 
 	 */
 	function StrandedActivitiesService($resource, sdLoggerService, sdDataTableHelperService, sdUtilService) {
-		var REST_BASE_URL = "services/rest/portal/strandedActivities";
+		var REST_BASE_URL = sdUtilService.getBaseUrl() +"services/rest/portal/strandedActivities";
 		var trace = sdLoggerService.getLogger('bcc-ui.services.sdStrandedActivitiesService');
 
 		/**

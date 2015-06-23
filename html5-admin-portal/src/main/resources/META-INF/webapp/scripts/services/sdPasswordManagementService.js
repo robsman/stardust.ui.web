@@ -23,29 +23,28 @@ angular.module('admin-ui.services').provider('sdPasswordManagementService', func
 });
 
 function PasswordManagementService($resource, sgI18nService, sdUtilService) {
-    var REST_BASE_URL = sdUtilService.getBaseUrl() + 'services/rest/portal/passwordManagement';
-    var self = this;
+	var REST_BASE_URL = sdUtilService.getBaseUrl() + 'services/rest/portal/passwordManagement';
+	var self = this;
 
-    /**
-     * 
-     */
-    PasswordManagementService.prototype.getPasswordRules = function() {
-	var restUrl = REST_BASE_URL + "/rules";
-	return $resource(restUrl).get().$promise;
-    };
+	/**
+	 * 
+	 */
+	PasswordManagementService.prototype.getPasswordRules = function() {
+		var restUrl = REST_BASE_URL + "/rules";
+		return $resource(restUrl).get().$promise;
+	};
 
-    /**
-     * 
-     */
-    PasswordManagementService.prototype.savePasswordRules = function(passwordRules) {
-	var restUrl = REST_BASE_URL + "/rules";
-	var postData = passwordRules;
-	var departments = $resource(restUrl, {}, {
-	    fetch : {
-		method : 'POST'
-	    }
-	});
-	return departments.fetch({}, postData).$promise;
-    };
-
+	/**
+	 * 
+	 */
+	PasswordManagementService.prototype.savePasswordRules = function(passwordRules) {
+		var restUrl = REST_BASE_URL + "/rules";
+		var postData = passwordRules;
+		var departments = $resource(restUrl, {}, {
+			fetch : {
+				method : 'POST'
+			}
+		});
+		return departments.fetch({}, postData).$promise;
+	};
 }

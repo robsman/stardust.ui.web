@@ -179,11 +179,7 @@ public class ActivityInstanceUtils
     * @param userId
     * @return
     */
-<<<<<<< Upstream, based on origin/feature/ipp/portal-html5-contrib
-   public QueryResult< ? > getActivitiesByOids(Options options, List<String> oids)
-=======
    public QueryResult< ? > getActivitiesByOids(Options options, List<Long> oids)
->>>>>>> e927bc8 [CRNT-35275] : Removed redunant code for fetching activities using oids. Bug : CRNT-35275
    {
       ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
       FilterTerm filter = query.getFilter();
@@ -192,20 +188,7 @@ public class ActivityInstanceUtils
          FilterTerm orTerm = filter.addOrTerm();
          for (Long oid : oids)
          {
-<<<<<<< Upstream, based on origin/feature/ipp/portal-html5-contrib
-            FilterTerm orTerm = filter.addOrTerm();
-
-            for (String oid : oids)
-            {
-               orTerm.add(ActivityInstanceQuery.OID.isEqual(Long.valueOf(oid)));
-            }
-         }
-         else
-         {
-            filter.add(ActivityInstanceQuery.OID.isNull());
-=======
-            orTerm.add(ActivityInstanceQuery.OID.isEqual(Long.valueOf(oid)));
->>>>>>> e927bc8 [CRNT-35275] : Removed redunant code for fetching activities using oids. Bug : CRNT-35275
+            orTerm.add(ActivityInstanceQuery.OID.isEqual(oid));
          }
       }
 

@@ -17,8 +17,8 @@
 	'use strict';
 
 	angular.module('bcc-ui.services').provider('sdDeputyManagementService', function() {
-		this.$get = [ '$resource', 'sdLoggerService', function($resource, sdLoggerService) {
-			var service = new DeputyManagementService($resource, sdLoggerService);
+		this.$get = [ '$resource', 'sdLoggerService', 'sdUtilService', function($resource, sdLoggerService, sdUtilService) {
+			var service = new DeputyManagementService($resource, sdLoggerService, sdUtilService);
 			return service;
 		} ];
 	});
@@ -26,8 +26,8 @@
 	/*
 	 * 
 	 */
-	function DeputyManagementService($resource, sdLoggerService) {
-		var REST_BASE_URL = "services/rest/portal/deputyManagement";
+	function DeputyManagementService($resource, sdLoggerService, sdUtilService) {
+		var REST_BASE_URL = sdUtilService.getBaseUrl() +"services/rest/portal/deputyManagement";
 		var trace = sdLoggerService.getLogger('bcc-ui.services.sdDeputyManagementService');
 
 		/**

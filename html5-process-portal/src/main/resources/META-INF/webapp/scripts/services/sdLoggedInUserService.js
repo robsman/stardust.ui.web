@@ -11,35 +11,35 @@
  * @author Johnson.Quadras
  */
 (function() {
-    'use strict';
+	'use strict';
 
-    /**
-     * 
-     */
-    angular.module('workflow-ui.services').provider('sdLoggedInUserService', function() {
-	this.$get = [ 'sdUtilService', function(sdUtilService) {
-	    var service = new LoggedInUserService(sdUtilService);
-	    return service;
-	} ];
-    });
-
-    /**
-     * 
-     */
-    function LoggedInUserService(sdUtilService) {
-	var userCache = null;
-
-	var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/user";
 	/**
 	 * 
 	 */
-	this.getUserInfo = function() {
-	    var restUrl = REST_BASE_URL + "/whoAmI";
-	    if (!userCache) {
-		userCache = sdUtilService.syncAjax(restUrl);
-	    }
-	    return userCache;
-	};
-	this.getUserInfo();
-    }
+	angular.module('workflow-ui.services').provider('sdLoggedInUserService', function() {
+		this.$get = [ 'sdUtilService', function(sdUtilService) {
+			var service = new LoggedInUserService(sdUtilService);
+			return service;
+		} ];
+	});
+
+	/**
+	 * 
+	 */
+	function LoggedInUserService(sdUtilService) {
+		var userCache = null;
+
+		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/user";
+		/**
+		 * 
+		 */
+		this.getUserInfo = function() {
+			var restUrl = REST_BASE_URL + "/whoAmI";
+			if (!userCache) {
+				userCache = sdUtilService.syncAjax(restUrl);
+			}
+			return userCache;
+		};
+		this.getUserInfo();
+	}
 })();
