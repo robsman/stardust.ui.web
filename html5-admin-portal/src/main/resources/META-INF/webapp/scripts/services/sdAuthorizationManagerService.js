@@ -14,7 +14,7 @@
   'use strict';
 
   angular.module('admin-ui.services').provider(
-          'sdAuthorizationManagementService',
+          'sdAuthorizationManagerService',
           function() {
             this.$get = [
                 '$resource',
@@ -37,12 +37,15 @@
     var PREF_REST_BASE_URL = sdUtilService.getBaseUrl()
             + "services/rest/portal/preference";
 
+    var GRANT_REST_BASE_URL = sdUtilService.getBaseUrl()
+            + "services/rest/portal/preference/permissions/grants";
+
+    var grantResource = $resource(GRANT_REST_BASE_URL);
+
     var trace = sdLoggerService
             .getLogger('admin-ui.services.sdAuthorizationManagerService');
 
-    /**
-     * 
-     */
+    // Search Participant
     AMService.prototype.searchParticipants = function(queryParams) {
       // Prepare URL
       var restUrl = PART_REST_BASE_URL + "/searchParticipants";
@@ -52,9 +55,7 @@
       return participantSearchResult.query().$promise;
     };
 
-    /**
-     * 
-     */
+    // Clone Participant
     AMService.prototype.cloneParticipant = function(sourceParticipants,
             targetParticipants) {
       if (sourceParticipants.constructor === Array) {
@@ -76,6 +77,18 @@
 
       return participantSearchResult.query().$promise;
     };
+
+    // return permissions and relevant participants
+    AMService.prototype.getPermissions = function(sourceParticipants,
+            targetParticipants) {
+      return grantResource.get().$promise;
+    }
+
+    // update permissions with participants (allow/deny)
+    AMService.prototype.savePermissions = function(postedData) {
+      return grantResource.save({}, postedData).$promise;
+    }
+
   }
 
 })();
