@@ -104,8 +104,9 @@ public class WorkflowTimerHandler implements TimerEventHandler
                String controllerName = worklistView.getDefinition().getController();
                if (controllerName != null)
                {
-                  WorklistTableBean worklistTableBean = (WorklistTableBean) FacesUtils
-                        .getBeanFromContext(controllerName);
+                  WorklistTableBean worklistTableBean = (WorklistTableBean) worklistView.getCurrentTabScope().get(
+                        controllerName);
+                  
                   // for inactive tab, set the flag for refresh on activation
                   if (currentView.getViewState().equals(ViewState.INACTIVE))
                   {
