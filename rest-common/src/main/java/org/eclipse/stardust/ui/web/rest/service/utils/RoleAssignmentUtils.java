@@ -94,7 +94,7 @@ public class RoleAssignmentUtils
          roleAssignmentData.userOid = String.valueOf(user.getOID());
 
          Map<String, Boolean> columnsValue = CollectionUtils.newHashMap();
-
+         Map<String, String> columnsLabel = CollectionUtils.newHashMap();
          List<ParticipantDepartmentPair> paitList = userPairMap.get(user);
          Set<ParticipantDepartmentPair> roles = roleNameMap.keySet();
          for (ParticipantDepartmentPair participantDepartmentPair : roles)
@@ -110,8 +110,10 @@ public class RoleAssignmentUtils
             }
 
             columnsValue.put(roleNameMap.get(participantDepartmentPair), found);
+            columnsLabel.put(roleNameMap.get(participantDepartmentPair),participantDepartmentPair.getFirst() + "_" + participantDepartmentPair.getSecond());
          }
          roleAssignmentData.columnsValue = columnsValue;
+         roleAssignmentData.columnsLabel = columnsLabel;
          roleAssignmentList.add(roleAssignmentData);
       }
 
@@ -119,10 +121,15 @@ public class RoleAssignmentUtils
 
       if (roleAssignmentList.get(0) != null)
       {
-         Set<String> roles = roleAssignmentList.get(0).columnsValue.keySet();
+         result.columnsLabel = roleAssignmentList.get(0).columnsLabel;
+         result.roleColumns = roleAssignmentList.get(0).columnsValue.keySet();
+         for (int i = 0; i < roleAssignmentList.size(); i++)
+         {
+            roleAssignmentList.get(i).columnsLabel = null;
+         }
          result.list = roleAssignmentList;
          result.totalCount = roleAssignmentList.size();
-         result.roleColumns = roles;
+
       }
 
       userPairMap = null;

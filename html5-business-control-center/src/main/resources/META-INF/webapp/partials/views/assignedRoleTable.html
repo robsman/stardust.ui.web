@@ -14,19 +14,20 @@
 	<table sd-data-table="ctrl.assignedRolesTable"
 		sd-data="ctrl.getAssignedRoles()" sda-mode="local"
 		sda-ready="ctrl.showAssignedRolesTable" sda-selectable="multiple"
+		sda-preference-delegate="ctrl.preferenceForAssignedRoleTable(prefInfo)"
 		sda-selection="ctrl.rowSelectionAssignedRolesTable"
 		sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
-		sda-sort-by="{name : 'roleName', dir : 'desc'}" sda-exports="true"
+		sda-sort-by="{name : 'name', dir : 'desc'}" sda-exports="true"
 		sda-exports-file-name="{{ctrl.exportFileNameForAssignedRoles}}">
 		<thead
 			sda-i18n-scope="business-control-center-messages.views-resourceAvailabilityView-rolesTable-column">
 			<tr>
-				<th sda-name="roleName"
+				<th sda-name="name"
 					sda-label="{{i18n('business-control-center-messages.views-common-column-name')}}"
 					sda-sortable="true"></th>
-				<th sda-name="itemsCount" sda-label-key="items" sda-sortable="true">
+				<th sda-name="items" sda-sortable="true">
 				</th>
-				<th sda-name="roleAccount" sda-label-key="account"
+				<th sda-name="account" 
 					sda-sortable="true"></th>
 				<th sda-name="itemsPerUser" sda-label-key="itemsperUser"
 					sda-sortable="true"></th>

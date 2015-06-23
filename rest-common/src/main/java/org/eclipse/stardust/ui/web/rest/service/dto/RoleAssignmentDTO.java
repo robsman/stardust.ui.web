@@ -27,4 +27,5 @@ public class RoleAssignmentDTO extends AbstractDTO
    public String userOid;
 
    public Map<String, Boolean> columnsValue;
+   public Map<String, String> columnsLabel;
 }

@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -19,4 +20,5 @@ import java.util.Set;
 public class RoleAssignmentResultDTO extends QueryResultDTO
 {
    public Set<String> roleColumns;
+   public Map<String, String> columnsLabel;
 }

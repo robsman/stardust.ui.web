@@ -2,6 +2,7 @@
 <table sd-data-table="docSearchViewCtrl.docVersionsdataTable"
 		sd-data="docSearchViewCtrl.getDocumentVersions()"  sda-mode="local" sda-ready="docSearchViewCtrl.showDocumentVersion"	
 		sda-sortable="true"
+		sda-preference-delegate="docSearchViewCtrl.preferenceDelegateForVersionHistory(prefInfo)"
 		sda-sort-by="{name : 'versionNo', dir : 'desc'}" 
 		sda-column-selector="{{docSearchViewCtrl.columnSelector}}"
 		sda-exports="false">

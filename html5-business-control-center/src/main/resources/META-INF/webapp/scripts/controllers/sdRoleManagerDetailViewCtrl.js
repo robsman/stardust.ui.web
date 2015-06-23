@@ -18,7 +18,7 @@
 	angular.module("bcc-ui").controller(
 			'sdRoleManagerDetailViewCtrl',
 			[ '$q', '$scope', '$filter', '$element', 'sdRoleManagerDetailService', 'sdLoggerService',
-					'sdViewUtilService','sdLoggedInUserService', RoleManagerDetailViewCtrl ]);
+					'sdViewUtilService', 'sdLoggedInUserService', 'sdPreferenceService', RoleManagerDetailViewCtrl ]);
 	var _q;
 	var _scope;
 	var _filter;
@@ -27,12 +27,13 @@
 	var _sdViewUtilService;
 	var trace;
 	var _sdLoggedInUserService;
+	var _sdPreferenceService;
 
 	/*
 	 * 
 	 */
 	function RoleManagerDetailViewCtrl($q, $scope, $filter, $element, sdRoleManagerDetailService, sdLoggerService,
-			sdViewUtilService,sdLoggedInUserService) {
+			sdViewUtilService, sdLoggedInUserService, sdPreferenceService) {
 		trace = sdLoggerService.getLogger('bcc-ui.sdRoleManagerDetailViewCtrl');
 		_q = $q;
 		_scope = $scope;
@@ -41,8 +42,9 @@
 		_sdRoleManagerDetailService = sdRoleManagerDetailService;
 		_sdViewUtilService = sdViewUtilService;
 		_sdLoggedInUserService = sdLoggedInUserService;
+		_sdPreferenceService = sdPreferenceService;
 
-		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ?  'admin' : true;
+		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
 		this.exportFileNameForAssignedUsers = "AssignedUsers";
 		this.exportFileNameForAssignableUsers = "AssignableUsers";
 		this.assignedUsersTable = null;
@@ -264,5 +266,30 @@
 		var self = this;
 		self.activeTab = 1;
 
+	};
+    /**
+     * 
+     * @param prefInfo
+     * @returns preferenceStore
+     */
+	RoleManagerDetailViewCtrl.prototype.preferenceForAssignedUserTable = function(prefInfo) {
+		var preferenceStore = _sdPreferenceService.getStore('USER', 'ipp-business-control-center', 'preference'); // Override
+		preferenceStore.marshalName = function(scope) {
+			return "ipp-business-control-center.userAssigned.selectedColumns";
+		}
+		return preferenceStore;
+	};
+    
+	/**
+     * 
+     * @param prefInfo
+     * @returns
+     */
+	RoleManagerDetailViewCtrl.prototype.preferenceForAssignableUserTable = function(prefInfo) {
+		var preferenceStore = _sdPreferenceService.getStore('USER', 'ipp-business-control-center', 'preference'); // Override
+		preferenceStore.marshalName = function(scope) {
+			return "ipp-business-control-center.userAssignable.selectedColumns";
+		}
+		return preferenceStore;
 	};
 })();

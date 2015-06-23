@@ -18,14 +18,15 @@
 	<table sd-data-table="ctrl.assignableUsersTable"
 		sd-data="ctrl.getAssignableUsers()" sda-mode="local"
 		sda-ready="ctrl.table2" sda-selectable="multiple"
+		sda-preference-delegate="ctrl.preferenceForAssignableUserTable(prefInfo)"
 		sda-selection="ctrl.rowSelectionAssignableUsersTable"
 		sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
-		sda-sort-by="{name : 'userName', dir : 'desc'}" sda-exports="true"
+		sda-sort-by="{name : 'name', dir : 'desc'}" sda-exports="true"
 		sda-exports-file-name="{{ctrl.exportFileNameForAssignableUsers}}">
 		<thead
 			sda-i18n-scope="business-control-center-messages.views-resourceAvailabilityView-accountTable-column">
 			<tr>
-				<th sda-name="userName"
+				<th sda-name="name"
 					sda-label="{{i18n('business-control-center-messages.views-common-column-name')}}"
 					sda-sortable="true">
 				</th>

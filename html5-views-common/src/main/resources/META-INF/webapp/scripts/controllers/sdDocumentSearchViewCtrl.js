@@ -18,7 +18,8 @@
 	angular.module("viewscommon-ui").controller(
 			'sdDocumentSearchViewCtrl',
 			[ '$q', 'sdDocumentSearchService', 'sdViewUtilService', 'sdUtilService', 'sdMimeTypeService',
-					'sdLoggerService','sdCommonViewUtilService','sdLoggedInUserService', DocumentSearchViewCtrl ]);
+					'sdLoggerService', 'sdCommonViewUtilService', 'sdLoggedInUserService', 'sdPreferenceService',
+					DocumentSearchViewCtrl ]);
 	var _q;
 	var _sdDocumentSearchService;
 	var _sdViewUtilService;
@@ -27,12 +28,13 @@
 	var trace;
 	var _sdCommonViewUtilService;
 	var _sdLoggedInUserService;
-	
+	var _sdPreferenceService;
+
 	/*
 	 * 
 	 */
 	function DocumentSearchViewCtrl($q, sdDocumentSearchService, sdViewUtilService, sdUtilService, sdMimeTypeService,
-			sdLoggerService, sdCommonViewUtilService, sdLoggedInUserService) {
+			sdLoggerService, sdCommonViewUtilService, sdLoggedInUserService, sdPreferenceService) {
 		// variable initialization for various services
 		trace = sdLoggerService.getLogger('viewscommon-ui.sdDocumentSearchViewCtrl');
 		_q = $q;
@@ -42,12 +44,13 @@
 		_sdMimeTypeService = sdMimeTypeService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
 		_sdLoggedInUserService = sdLoggedInUserService;
-		
+		_sdPreferenceService = sdPreferenceService;
+
 		// variable for search result table
 		this.documentSearchResult = {};
 		this.documentVersions = {};
 		this.docSrchRsltTable = null;
-		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ?  'admin' : true;
+		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
 		this.docVersionsdataTable = null;
 		this.exportFileNameForDocumentSearchResult = "DocumentSearchResult";
 		this.rowSelection = null;
@@ -180,7 +183,7 @@
 	 */
 	DocumentSearchViewCtrl.prototype.openProcessHistory = function(oid) {
 		this.processDialog.close();
-		_sdCommonViewUtilService.openProcessInstanceDetailsView(oid,true);
+		_sdCommonViewUtilService.openProcessInstanceDetailsView(oid, true);
 	};
 
 	/**
@@ -188,7 +191,7 @@
 	 * @param documentId
 	 */
 	DocumentSearchViewCtrl.prototype.openDocumentView = function(documentId) {
-		_sdCommonViewUtilService.openDocumentView(documentId,true);
+		_sdCommonViewUtilService.openDocumentView(documentId, true);
 	}
 
 	/**
@@ -505,7 +508,6 @@
 		self.showDocumentSearchCriteria = !self.showDocumentSearchCriteria;
 	};
 
-
 	/**
 	 * 
 	 * @param metadata
@@ -519,4 +521,21 @@
 		});
 		return metadataToExport.join(',');
 	};
+
+	DocumentSearchViewCtrl.prototype.preferenceDelegate = function(prefInfo) {
+		var preferenceStore = _sdPreferenceService.getStore('USER', 'workflow-perspective', 'preference'); // Override
+		preferenceStore.marshalName = function(scope) {
+			return "workflow-perspective.documentSearch.selectedColumns";
+		}
+		return preferenceStore;
+	};
+	
+	DocumentSearchViewCtrl.prototype.preferenceDelegateForVersionHistory = function(prefInfo) {
+		var preferenceStore = _sdPreferenceService.getStore('USER', 'contextPortal', 'preference'); // Override
+		preferenceStore.marshalName = function(scope) {
+			return "contextPortal.VersionHistory.selectedColumns";
+		}
+		return preferenceStore;
+	};
+	
 })();

@@ -2,6 +2,7 @@
 	<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-resourceAvailabilityView-rolesTable-title')}}</div>
 	<table sd-data-table="ctrl.rolesTable"
 		sd-data="ctrl.getProcessResourceRoles()" sda-mode="local"
+		sda-preference-delegate="ctrl.preferenceDelegateForRolesTable(prefInfo)"
 		sda-ready="ctrl.showRolesTable" sda-selectable="row"
 		sda-selection="ctrl.rowSelectionForRoles"
 		sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"

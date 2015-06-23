@@ -17,7 +17,7 @@
 
 	angular.module("bcc-ui").controller(
 			'sdUserManagerDetailViewCtrl',
-			[ '$q', '$scope', '$element', 'sdUserManagerDetailService', 'sdLoggerService', 'sdViewUtilService', 'sdLoggedInUserService',
+			[ '$q', '$scope', '$element', 'sdUserManagerDetailService', 'sdLoggerService', 'sdViewUtilService', 'sdLoggedInUserService', 'sdPreferenceService',
 					UserManagerDetailViewCtrl ]);
 	var _q;
 	var _scope;
@@ -26,11 +26,12 @@
 	var _sdViewUtilService;
 	var trace;
 	var _sdLoggedInUserService;
+	var _sdPreferenceService;
 	/*
 	 * 
 	 */
 	function UserManagerDetailViewCtrl($q, $scope, $element, sdUserManagerDetailService, sdLoggerService,
-			sdViewUtilService,sdLoggedInUserService) {
+			sdViewUtilService,sdLoggedInUserService,sdPreferenceService) {
 		trace = sdLoggerService.getLogger('bcc-ui.sdUserManagerDetailViewCtrl');
 		_q = $q;
 		_scope = $scope;
@@ -38,6 +39,7 @@
 		_sdUserManagerDetailService = sdUserManagerDetailService;
 		_sdViewUtilService = sdViewUtilService;
 		_sdLoggedInUserService = sdLoggedInUserService;
+		_sdPreferenceService = sdPreferenceService;
 
 		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ?  'admin' : true;
 		this.exportFileNameForAssignedRoles = "AssignedRoles";
@@ -225,6 +227,27 @@
 		var self = this;
 		self.activeTab = 1;
 
+	};
+	
+
+	/**
+	 * 
+	 */
+
+	UserManagerDetailViewCtrl.prototype.preferenceForAssignedRoleTable = function(prefInfo) {
+		var preferenceStore = _sdPreferenceService.getStore('USER', 'ipp-business-control-center', 'preference'); // Override
+		preferenceStore.marshalName = function(scope) {
+			return "ipp-business-control-center.roleAssigned.selectedColumns";
+		}
+		return preferenceStore;
+	};
+
+	UserManagerDetailViewCtrl.prototype.preferenceForAssignableRoleTable = function(prefInfo) {
+		var preferenceStore = _sdPreferenceService.getStore('USER', 'ipp-business-control-center', 'preference'); // Override
+		preferenceStore.marshalName = function(scope) {
+			return "ipp-business-control-center.roleAssignable.selectedColumns";
+		}
+		return preferenceStore;
 	};
 
 })();

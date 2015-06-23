@@ -15,10 +15,12 @@
 (function() {
 	'use strict';
 
-	angular.module("bcc-ui").controller(
-			'sdProcessResourceMgmtCtrl',
-			[ '$q', '$filter', 'sdProcessResourceMgmtService', 'sdLoggerService', 'sdViewUtilService',
-					'sdCommonViewUtilService', 'sdLoggedInUserService', ProcessResourceMgmtCtrl ]);
+	angular.module("bcc-ui")
+			.controller(
+					'sdProcessResourceMgmtCtrl',
+					[ '$q', '$filter', 'sdProcessResourceMgmtService', 'sdLoggerService', 'sdViewUtilService',
+							'sdCommonViewUtilService', 'sdLoggedInUserService', 'sdPreferenceService',
+							ProcessResourceMgmtCtrl ]);
 
 	var _q;
 	var _filter;
@@ -27,12 +29,13 @@
 	var trace;
 	var _sdCommonViewUtilService
 	var _sdLoggedInUserService;
+	var _sdPreferenceService;
 
 	/**
 	 * 
 	 */
 	function ProcessResourceMgmtCtrl($q, $filter, sdProcessResourceMgmtService, sdLoggerService, sdViewUtilService,
-			sdCommonViewUtilService, sdLoggedInUserService) {
+			sdCommonViewUtilService, sdLoggedInUserService, sdPreferenceService) {
 		trace = sdLoggerService.getLogger('bcc-ui.sdProcessResourceMgmtCtrl');
 		_q = $q;
 		_filter = $filter;
@@ -40,6 +43,7 @@
 		_sdViewUtilService = sdViewUtilService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
 		_sdLoggedInUserService = sdLoggedInUserService;
+		_sdPreferenceService = sdPreferenceService;
 
 		this.rolesTable = null;
 		this.usersTable = null;
@@ -155,5 +159,25 @@
 	 */
 	ProcessResourceMgmtCtrl.prototype.openUserManagerView = function(userOid, userId) {
 		_sdCommonViewUtilService.openUserManagerDetailView(userOid, userId, true);
+	};
+
+	/**
+	 * 
+	 */
+
+	ProcessResourceMgmtCtrl.prototype.preferenceDelegateForRolesTable = function(prefInfo) {
+		var preferenceStore = _sdPreferenceService.getStore('USER', 'ipp-business-control-center', 'preference'); // Override
+		preferenceStore.marshalName = function(scope) {
+			return "ipp-business-control-center.ProcessResourceRoleMgmt.selectedColumns";
+		}
+		return preferenceStore;
+	};
+
+	ProcessResourceMgmtCtrl.prototype.preferenceDelegateForUsersTable = function(prefInfo) {
+		var preferenceStore = _sdPreferenceService.getStore('USER', 'ipp-business-control-center', 'preference'); // Override
+		preferenceStore.marshalName = function(scope) {
+			return "ipp-business-control-center.ProcessResourceUserMgmt.selectedColumns";
+		}
+		return preferenceStore;
 	};
 })();

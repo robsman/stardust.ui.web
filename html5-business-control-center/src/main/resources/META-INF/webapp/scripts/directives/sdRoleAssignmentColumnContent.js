@@ -27,7 +27,7 @@
 			},
 
 			template : '<div><i ng-if="ctrl.value == true" class="sc sc-fw sc-2x sc-check"  style="color: green"><\/i>'
-					+ '<i ng-if="ctrl.value == false" class="sc sc-fw sc-2x sc-close" style="color: green"><\/i>'
+					+ '<i ng-if="ctrl.value == false" class="sc sc-fw sc-2x sc-close" style="color: red"><\/i>'
 					+ '<\/div>',
 			controller : [ '$scope', '$parse', '$attrs', RoleAssignmentColumnContentCtrl ]
 		};

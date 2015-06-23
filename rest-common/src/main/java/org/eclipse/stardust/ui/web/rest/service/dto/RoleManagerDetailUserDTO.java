@@ -20,7 +20,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 @DTOClass
 public class RoleManagerDetailUserDTO extends AbstractDTO
 {
-   public String userName;
+   public String name;
 
    public String userOid;
 
@@ -45,7 +45,7 @@ public class RoleManagerDetailUserDTO extends AbstractDTO
          String totalItemCount, boolean loggedIn, String roleCount)
    {
       super();
-      this.userName = userName;
+      this.name = userName;
       this.userOid = userOid;
       this.directItemCount = directItemCount;
       this.inDirectItemCount = inDirectItemCount;

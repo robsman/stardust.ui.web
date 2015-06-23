@@ -18,7 +18,7 @@
 	angular.module("bcc-ui").controller(
 			'sdRoleAssignmentCtrl',
 			[ '$q', '$timeout', 'sdRoleAssignmentService', 'sdLoggerService', 'sdCommonViewUtilService',
-					'sdLoggedInUserService', RoleAssignmentCtrl ]);
+					'sdLoggedInUserService', 'sdPreferenceService', RoleAssignmentCtrl ]);
 
 	var _q;
 	var _sdRoleAssignmentService;
@@ -26,18 +26,20 @@
 	var trace;
 	var _timeout;
 	var _sdLoggedInUserService;
+	var _sdPreferenceService;
 
 	/**
 	 * 
 	 */
 	function RoleAssignmentCtrl($q, $timeout, sdRoleAssignmentService, sdLoggerService, sdCommonViewUtilService,
-			sdLoggedInUserService) {
+			sdLoggedInUserService, sdPreferenceService) {
 		trace = sdLoggerService.getLogger('bcc-ui.sdRoleAssignmentCtrl');
 		_q = $q;
 		_sdRoleAssignmentService = sdRoleAssignmentService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
 		_timeout = $timeout;
 		_sdLoggedInUserService = sdLoggedInUserService;
+		_sdPreferenceService = sdPreferenceService;
 
 		this.roleAssignmentTable = null;
 		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
@@ -57,6 +59,7 @@
 			self.roleAssignments.list = data.list;
 			self.roleAssignments.totalCount = data.totalCount;
 			self.columns = data.roleColumns;
+			self.columnsLabelMap = data.columnsLabel;
 			self.showRoleAssignmentTable = true;
 			_timeout(function() {
 				self.createTable = true;
@@ -104,5 +107,18 @@
 		} else {
 			return 'No';
 		}
+	};
+	
+	/**
+	 * 
+	 */
+	
+	RoleAssignmentCtrl.prototype.preferenceDelegate = function(prefInfo) {
+		var preferenceStore = _sdPreferenceService.getStore('USER',
+				'ipp-business-control-center', 'preference'); // Override
+		preferenceStore.marshalName = function(scope) { 
+			return "ipp-business-control-center.roleAssignment.selectedColumns"; 
+		}
+		return preferenceStore; 
 	};
 })();
