@@ -910,6 +910,15 @@ public class PortalApplication
    }
    
    /**
+    * 
+    */
+   public void renderLaunchPanels()
+   {
+      String script = "parent.BridgeUtils.View.syncLaunchPanels();";
+      addEventScript(script);
+   }
+
+   /**
     * If UI is already Pinned, Restore Pin View and Focus View too
     * And then Pin UI again on Focus View with new mode
     * @param mode

@@ -54,7 +54,9 @@ public class WorkflowTimerHandler implements TimerEventHandler
    {
       updateWorklistTable();
       updateWorkflowLaunchPanel();
-      PortalApplication.getInstance().renderPortalSession();
+      
+      PortalApplication.getInstance().renderActiveView();
+      PortalApplication.getInstance().renderLaunchPanels();
    }
 
    /**
