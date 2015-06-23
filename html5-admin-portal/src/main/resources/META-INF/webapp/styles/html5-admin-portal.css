@@ -53,4 +53,8 @@
 
 .permission-tree ul {
 	margin: 0 0 0 0;	
-} 
+} }
+
+.overview-report-field-value {
+	padding-right: 10px;
+}

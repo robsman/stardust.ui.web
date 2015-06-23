@@ -608,7 +608,7 @@ public class ProcessInstanceUtils
          countDTO.aborted = getAbortedProcessInstancesCount();
          countDTO.active = getActiveProcessInstancesCount();
          countDTO.total = getTotalProcessInstancesCount();
-         countDTO.waiting = getInterruptedProcessInstancesCount();
+         countDTO.interrupted = getInterruptedProcessInstancesCount();
          countDTO.completed = getCompletedProcessInstancesCount();
       }
       catch (PortalException e)
