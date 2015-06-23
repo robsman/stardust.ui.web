@@ -28,6 +28,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.log.LogManager;
@@ -80,6 +82,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.PriorityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.StatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialActivityInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO.DescriptorFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
@@ -152,6 +155,9 @@ public class ActivityTableUtils
    }
 
    private static final Logger trace = LogManager.getLogger(ActivityTableUtils.class);
+   
+   @Resource
+   private ActivityInstanceUtils activityInstanceUtils;
 
    /**
     * Adds filter criteria to the query
@@ -563,7 +569,8 @@ public class ActivityTableUtils
     * @param postData
     * @return
     */
-   public static Options populatePostData(Options options, String postData, List<DescriptorColumnDTO> availableDescriptorColumns)
+   public static Options populatePostData(Options options, String postData,
+         List<DescriptorColumnDTO> availableDescriptorColumns)
    {
       JsonMarshaller jsonIo = new JsonMarshaller();
       JsonObject postJSON = jsonIo.readJsonObject(postData);
@@ -575,7 +582,6 @@ public class ActivityTableUtils
          options.filter = getFilters(filters.toString(), availableDescriptorColumns);
       }
 
-
       JsonArray visbleColumns = postJSON.getAsJsonObject("descriptors").get("visibleColumns").getAsJsonArray();
       List<String> columnsList = new ArrayList<String>();
       for (JsonElement jsonElement : visbleColumns)
@@ -584,10 +590,15 @@ public class ActivityTableUtils
       }
       options.visibleDescriptorColumns = columnsList;
       options.allDescriptorsVisible = postJSON.getAsJsonObject("descriptors").get("fetchAll").getAsBoolean();
-      if(null != postJSON.get("worklistId")) {
+      if (null != postJSON.get("worklistId"))
+      {
          options.worklistId = postJSON.get("worklistId").getAsString();
       }
-      
+
+      if (null != postJSON.get("fetchTrivialManualActivities"))
+      {
+         options.fetchTrivialManualActivities = postJSON.get("fetchTrivialManualActivities").getAsBoolean();
+      }
       return options;
    }
 
@@ -640,16 +651,27 @@ public class ActivityTableUtils
       worklistFilter.descriptorFilterMap = descriptorColumnMap;
    }
 
-
+   
    /**
+    * 
     * @param queryResult
+    * @param mode
     * @return
     */
    public static QueryResultDTO buildTableResult(QueryResult< ? > queryResult, MODE mode)
    {
+      return buildTableResult(queryResult, mode, null);
+   }
+   /**
+    * @param queryResult
+    * @return
+    */
+   public static QueryResultDTO buildTableResult(QueryResult< ? > queryResult, MODE mode, Map<String, TrivialManualActivityDTO> trivialManualActivityDetails)
+   {
       List<ActivityInstanceDTO> list = new ArrayList<ActivityInstanceDTO>();
       List<CriticalityCategory> criticalityConfigurations = CriticalityUtils.getCriticalityConfiguration();
-
+    
+      
       ModelCache modelCache = ModelCache.findModelCache();
       QueryResultDTO resultDTO = new QueryResultDTO();
       if (null != queryResult)
@@ -661,15 +683,26 @@ public class ActivityTableUtils
                ActivityInstance ai = (ActivityInstance) object;
 
                ActivityInstanceDTO dto;
-               if (!ActivityInstanceUtils.isTrivialManualActivity(ai))
-               {
-                  dto = DTOBuilder.build(ai, ActivityInstanceDTO.class);
-               }
-               else
+               
+               if (ActivityInstanceUtils.isTrivialManualActivity(ai))
                {
                   TrivialActivityInstanceDTO trivialDto = DTOBuilder.build(ai, TrivialActivityInstanceDTO.class);
                   trivialDto.trivial = true;
+                 
+                  if (null != trivialManualActivityDetails
+                        && trivialManualActivityDetails.keySet().contains(String.valueOf(ai.getOID())))
+                  {
+                     TrivialManualActivityDTO tivialManualActivity = trivialManualActivityDetails.get(String.valueOf(ai
+                           .getOID()));
+                     trivialDto.dataMappings = tivialManualActivity.dataMappings;
+                     trivialDto.inOutData = tivialManualActivity.inOutData;
+                  }
+
                   dto = trivialDto;
+               }
+               else 
+               {
+                  dto = DTOBuilder.build(ai, ActivityInstanceDTO.class);
                }
 
                dto.duration = ActivityInstanceUtils.getDuration(ai);

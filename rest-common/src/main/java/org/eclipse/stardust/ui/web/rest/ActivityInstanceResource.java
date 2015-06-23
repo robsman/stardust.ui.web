@@ -453,24 +453,6 @@ public class ActivityInstanceResource
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/allActivityStates")
-    public Response getAllActivityStates()
-    {
-       try
-       {
-          
-          return Response.ok(AbstractDTO.toJson(getActivityInstanceService().getAllActivityStates()), MediaType.APPLICATION_JSON).build();
-       }
-       catch (Exception e)
-       {
-          trace.error(e, e);
-
-          return Response.serverError().build();
-       }
-    }
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
     @Path("/allCounts")
     public Response getAllCounts( )
     {

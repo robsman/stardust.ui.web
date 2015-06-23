@@ -25,6 +25,7 @@ public class Options {
 	public List<String> visibleDescriptorColumns;
 	public boolean allDescriptorsVisible;
 	public String worklistId;
+	public boolean fetchTrivialManualActivities;
 
 	public Options() {
 
@@ -41,17 +42,4 @@ public class Options {
 		this.orderBy = orderBy;
 		this.asc = asc;
 	}
-	
-	/**
-     * @param pageSize
-     * @param skip
-     */
-    public Options(int pageSize, int skip, String orderBy, boolean asc,String worklistId) {
-        super();
-        this.pageSize = pageSize;
-        this.skip = skip;
-        this.orderBy = orderBy;
-        this.asc = asc;
-        this.worklistId = worklistId;
-    }
 }

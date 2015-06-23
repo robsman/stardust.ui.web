@@ -332,6 +332,7 @@ public class ActivityInstanceService
       return ActivityTableUtils.buildTableResult(queryResult, MODE.ACTIVITY_TABLE);
    }
 
+<<<<<<< Upstream, based on origin/feature/ipp/portal-html5-contrib
    /**
     * Returns all states
     * 
@@ -368,6 +369,9 @@ public class ActivityInstanceService
       return allStatusList;
    }
 
+=======
+   
+>>>>>>> f35aa9e [CRNT-35278] : Fetching trivial manual activity data along with the worklist data. Also trivial manual data is fetched only when the Data column is visible.
    /**
     * 
     * @param activityOID

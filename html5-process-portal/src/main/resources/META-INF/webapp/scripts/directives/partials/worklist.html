@@ -220,9 +220,9 @@
 				</td>
 				
 				<td sda-column="TRIVIAL_DATA">
-					<div ng-if="activityTableCtrl.activities.trivialManualActivities[rowData.activityOID]">
-						<div sd-trivial-manual-activity-data sda-data-mappings="activityTableCtrl.activities.trivialManualActivities[rowData.activityOID].dataMappings"
-							sda-out-data="activityTableCtrl.activities.trivialManualActivities[rowData.activityOID].inOutData" sda-on-change=activityTableCtrl.changeFormStatus(rowData.activityOID)>
+					<div ng-if="rowData.dataMappings">
+						<div sd-trivial-manual-activity-data sda-data-mappings="rowData.dataMappings"
+							sda-out-data="rowData.inOutData" sda-on-change=activityTableCtrl.changeFormStatus(rowData.activityOID)>
 						</div>
 					</div>
 				</td>
@@ -237,14 +237,14 @@
 							    ng-disabled="!rowData.activatable"	title="{{i18n('processportal.views-worklistPanel-tooltip-openActivity')}}" class="button-link tbl-tool-link">
 							<i class="sc sc-gear-lightning action-column-icon"></i>
 						</button>
-						<button ng-if=" activityTableCtrl.defaultDelegateEnabled" 
+						<button ng-if="activityTableCtrl.defaultDelegateEnabled" 
 							href="#" ng-click="activityTableCtrl.$openDefaultDelegationDialog([rowData]);" 
 							title="{{i18n('views-common-messages.common-toolTip-delegateToDefaultPerformer')}}"
 							class="button-link tbl-toolbar-item tbl-tool-link">
 							<i class="glyphicon glyphicon-user action-column-icon"></i>
 						</button>
 						<button sda-column="TRIVIAL_DATA" ng-if="activityTableCtrl.isWorklistMode();"
-							ng-disabled="activityTableCtrl.activities.trivialManualActivities[rowData.activityOID] == undefined"
+							ng-disabled="(rowData.dataMappings == undefined) || !rowData.activatable"
 							ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openCompleteDialog(rowData);"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-complete')}}" class="button-link tbl-tool-link">
 							<i class="glyphicon glyphicon-share-alt action-column-icon"></i>
@@ -293,10 +293,10 @@
 		sda-template="plugins/html5-process-portal/scripts/directives/partials/updatePriorityNotification.html">
 	</div>
 	<span sd-delegate-activity-dialog sda-show-dialog="activityTableCtrl.showDelegateDialog" sda-activity-list="activityTableCtrl.selectedActivity"
-		sda-on-confirm="activityTableCtrl.onDelegateConfirm()">
+		sda-on-confirm="activityTableCtrl.refresh()">
 	</span>
 	<!--Dialog for abort Activity  -->
-	<div sd-abort-activity-dialog sda-show-dialog="activityTableCtrl.showAbortActivityDialog" sda-on-abort-complete="activityTableCtrl.abortCompleted()" 
+	<div sd-abort-activity-dialog sda-show-dialog="activityTableCtrl.showAbortActivityDialog" sda-on-abort-complete="activityTableCtrl.refresh()" 
 	     sda-activities-to-abort="activityTableCtrl.activitiesToAbort" >
 	</div>
 

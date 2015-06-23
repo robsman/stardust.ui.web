@@ -85,6 +85,17 @@
 		   if (visibleDescriptors) {
 		       postData.descriptors.visibleColumns = visibleDescriptors;
 		   }
+
+		   // fetch trivialManualActivities if data column is visible
+		   var dataColumnFound = $filter('filter')(options.columns, {
+			   field : 'data'
+		   }, true);
+
+		   if (dataColumnFound && dataColumnFound.length > 0) {
+			   postData.fetchTrivialManualActivities = true;
+		   } else {
+			   postData.fetchTrivialManualActivities = false;
+		   }
 		   return postData;
 	   };
 	   

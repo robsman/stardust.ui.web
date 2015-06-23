@@ -187,7 +187,6 @@ public class ActivityInstanceUtils
    {
       ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
       FilterTerm filter = query.getFilter();
-      System.out.println(!CollectionUtils.isEmpty(oids));
       if (!CollectionUtils.isEmpty(oids))
       {
          FilterTerm orTerm = filter.addOrTerm();
@@ -262,11 +261,25 @@ public class ActivityInstanceUtils
     */
    public Map<String, TrivialManualActivityDTO> getTrivialManualActivitiesDetails(List<Long> oids, String context)
    {
-      Map<String, TrivialManualActivityDTO> ret = new LinkedHashMap<String, TrivialManualActivityDTO>();
+      List<ActivityInstance> ais = getActivityInstances(oids);
+      
+      Map<String, TrivialManualActivityDTO> ret = getTrivialManualActivities(ais, context);
 
+      return ret;
+   }
+
+   /**
+    * 
+    * @param ais
+    * @param context
+    * @return
+    */
+   public Map<String, TrivialManualActivityDTO> getTrivialManualActivities(List<ActivityInstance> ais,
+         String context)
+   {
+      Map<String, TrivialManualActivityDTO> ret = new LinkedHashMap<String, TrivialManualActivityDTO>();
       Map<String, List<PathDTO>> cache = new LinkedHashMap<String, List<PathDTO>>();
 
-      List<ActivityInstance> ais = getActivityInstances(oids);
       for (ActivityInstance ai : ais)
       {
          if (isTrivialManualActivity(ai))
@@ -316,7 +329,6 @@ public class ActivityInstanceUtils
             trace.debug("Skipping Activity Instance.. Not trivial... OID: " + ai.getOID());
          }
       }
-
       return ret;
    }
 
