@@ -239,7 +239,7 @@ define(
 					this
 							.registerCheckboxInputForModelElementAttributeChangeSubmission(
 									this.allowBulkCompletion,
-									"trivialManualActivity");
+									"stardust:model:trivialManualActivity");
 					this
 							.registerCheckboxInputForModelElementAttributeChangeSubmission(
 									this.copyDataInput,
@@ -519,11 +519,11 @@ define(
 										};
 						
 						if (this.taskTypeList.val() !== m_constants.MANUAL_TASK_TYPE
-								&& this.getModelElement().attributes["trivialManualActivity"] == true) {
+								&& this.getModelElement().attributes["stardust:model:trivialManualActivity"] == true) {
 							if (!submitObj.modelElement.attributes) {
 								submitObj.modelElement.attributes = {};
 							}
-							submitObj.modelElement.attributes["trivialManualActivity"] = null;
+							submitObj.modelElement.attributes["stardust:model:trivialManualActivity"] = null;
 						}
 
 						// Reset loop (processing type) object if it exists
@@ -656,7 +656,7 @@ define(
 						this.allowBulkCompletion
 								.attr(
 										"checked",
-										this.getModelElement().attributes["trivialManualActivity"] == true);
+										this.getModelElement().attributes["stardust:model:trivialManualActivity"] == true);
 					} else {
 						this.allowBulkCompletion.attr("checked", false);
 						this.allowBulkCompletion.attr("disabled", true);

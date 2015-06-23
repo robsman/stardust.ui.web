@@ -322,7 +322,7 @@ define(
         jQuery.each(m_utils.convertToSortedArray(m_model.getModels(), "name", true),
             function(index, model) {
         	  try{
-        		  if (!(model.attributes && model.attributes['simpleModel'])
+        		  if (!(model.attributes && model.attributes['stardust:model:simpleModel'])
         				  || sessionRef.showSimpleModels) {
     	              newOutlineTreeDomBuilder(model).buildModelNode(outlineRoot);
     	              refreshModelStatus(model);
@@ -3070,7 +3070,7 @@ define(
 								if (link) {
 									if (modelElement.type === "model"
 											&& !sessionRef.showSimpleModels
-											&& modelElement.attributes && modelElement.attributes["simpleModel"]) {
+											&& modelElement.attributes && modelElement.attributes["stardust:model:simpleModel"]) {
 										m_utils.jQuerySelect(displayScope + "#outline").jstree("remove", "#" + uuid);
 										deleted = true;
 									}

@@ -251,7 +251,7 @@ public class ActivityInstanceUtils
     */
    public static boolean isTrivialManualActivity(ActivityInstance ai)
    {
-      Boolean trivialManualActivity = (Boolean) ai.getActivity().getAttribute("trivialManualActivity");
+      Boolean trivialManualActivity = (Boolean) ai.getActivity().getAttribute("stardust:model:trivialManualActivity");
       return (null != trivialManualActivity && trivialManualActivity == true);
    }
 

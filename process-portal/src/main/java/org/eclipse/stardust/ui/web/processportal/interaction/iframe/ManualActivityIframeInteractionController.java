@@ -76,7 +76,7 @@ public class ManualActivityIframeInteractionController implements IActivityInter
       contextUri = contextUri.replace("/${request.contextPath}", req.getContextPath());
       
       String panelUri = PANEL_URI;
-      String manualActivityFacet = (String) ai.getActivity().getAttribute("manualActivityFacet");
+      String manualActivityFacet = (String) ai.getActivity().getAttribute("stardust:model:manualActivityFacet");
       if(CHECKLIST_FACET.equals(manualActivityFacet))
       {
          panelUri = CHECKLIST_FACET_URI;

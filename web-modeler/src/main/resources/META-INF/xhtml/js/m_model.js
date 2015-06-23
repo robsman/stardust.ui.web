@@ -455,7 +455,7 @@ define(
 
 				Model.prototype.isSimple = function() {
 					if (this.attributes
-							&& this.attributes['simpleModel']) {
+							&& this.attributes['stardust:model:simpleModel']) {
 						return true;
 					}
 

@@ -135,7 +135,7 @@ public class TestChecklistEditing
                         "defaultPool.oid",
                         "added/[orientation='DIAGRAM_FLOW_ORIENTATION_VERTICAL']/poolSymbols/_default_pool__1/oid"));
 
-      // TODO add change to set 'simpleModel' attribute for newly created model
+      // TODO add change to set 'stardust:model:simpleModel' attribute for newly created model
 
       // now create a second lane to hold all interactive tasks
       BatchStepJto adminLaneDescriptor = new BatchStepJto();
