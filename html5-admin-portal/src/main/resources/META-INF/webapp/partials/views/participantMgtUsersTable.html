@@ -65,13 +65,14 @@
 				sd-data="ctrl.getAllUsers(params)" sda-mode="remote"
 				sda-selectable="multiple"
 				sda-selection="ctrl.rowSelectionForAllUsersTable"
+				sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
 				sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
 				sda-sort-by="{name : 'oid', dir : 'desc'}" sda-exports="true"
 				sda-exports-file-name="{{ctrl.exportFileNameForAllUsers}}">
 				<thead
 					sda-i18n-scope="admin-portal-messages.views-participantMgmt-column">
 					<tr>
-						<th sda-name="displayName" sda-label-key="name">
+						<th sda-name="name">
 							<div sda-filter-template>
 								<div sd-name-filter></div>
 							</div>
@@ -82,7 +83,7 @@
 								<div sd-text-search-filter></div>
 							</div>
 						</th>
-						<th sda-name="realmId" sda-label-key="realm">
+						<th sda-name="realm">
 							<div sda-filter-template>
 								<div sd-text-search-filter></div>
 							</div>
@@ -107,7 +108,7 @@
 							class="tbl-tool-link">{{rowData.displayName}}</a></td>
 						<td style="text-align: center;"></td>
 						<td style="text-align: center;"></td>
-						<td style="text-align: center;"></td>
+						<td style="text-align: center;" sda-exporter="rowData.realmId">{{rowData.realmId}}</td>
 						<td sda-data-type="dateTime" style="text-align: center;"></td>
 						<td sda-data-type="dateTime" style="text-align: center;"></td>
 						<td style="text-align: center;"></td>

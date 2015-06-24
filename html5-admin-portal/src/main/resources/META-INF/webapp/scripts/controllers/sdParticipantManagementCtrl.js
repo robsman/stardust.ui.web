@@ -18,7 +18,7 @@
 	angular.module("admin-ui").controller(
 			'sdParticipantManagementCtrl',
 			[ '$q', 'sdParticipantManagementService', 'sdLoggerService', 'sdUtilService', 'sdUserService',
-					'sdLoggedInUserService', ParticipantManagementCtrl ]);
+					'sdLoggedInUserService', 'sdPreferenceService', ParticipantManagementCtrl ]);
 
 	var _q;
 	var _sdParticipantManagementService
@@ -27,18 +27,20 @@
 	
 	var _sdUserService;
 	var _sdLoggedInUserService;
+	var _sdPreferenceService;
 
 	/**
 	 * 
 	 */
 	function ParticipantManagementCtrl($q, sdParticipantManagementService, sdLoggerService, sdUtilService,
-			sdUserService, sdLoggedInUserService) {
+			sdUserService, sdLoggedInUserService, sdPreferenceService) {
 		trace = sdLoggerService.getLogger('admin-ui.sdParticipantManagementCtrl');
 		_q = $q;
 		_sdParticipantManagementService = sdParticipantManagementService;
 		_sdUtilService = sdUtilService;
 		_sdUserService = sdUserService;
 		_sdLoggedInUserService = sdLoggedInUserService;
+		_sdPreferenceService = sdPreferenceService;
 
 		this.allUsersTable = null;
 		this.showAllUsersTable = true;
@@ -343,4 +345,15 @@
 		self.showAllUsersTable = !self.showAllUsersTable;
 	};
 
+	/**
+	 * 
+	 */
+
+	ParticipantManagementCtrl.prototype.preferenceDelegate = function(prefInfo) {
+		var preferenceStore = _sdPreferenceService.getStore('USER', 'ipp-administration-perspective', 'preference'); // Override
+		preferenceStore.marshalName = function(scope) {
+			return "ipp-administration-perspective.userMgmt.selectedColumns";
+		}
+		return preferenceStore;
+	};
 })();

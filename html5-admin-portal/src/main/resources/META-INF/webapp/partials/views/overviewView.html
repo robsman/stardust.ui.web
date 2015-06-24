@@ -60,6 +60,7 @@
 					sd-data="ctrl.getAllLogEntries(params)" sda-mode="remote"
 					sda-selectable="multiple"
 					sda-selection="ctrl.rowSelectionForAllLogEntriesTable"
+					sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
 					sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
 					sda-sort-by="{name : 'timeStamp', dir : 'desc'}" sda-exports="true"
 					sda-exports-file-name="{{ctrl.exportFileNameForAllLogEntries}}">

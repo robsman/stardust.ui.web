@@ -18,7 +18,8 @@
 	angular.module("admin-ui").controller(
 			'sdOverviewCtrl',
 			[ '$q', 'sdOverviewService', 'sdLoggerService', 'sdUtilService', 'sdUserService',
-					'sdProcessInstanceService', 'sdActivityInstanceService', 'sdLoggedInUserService', OverviewCtrl ]);
+					'sdProcessInstanceService', 'sdActivityInstanceService', 'sdLoggedInUserService',
+					'sdPreferenceService', OverviewCtrl ]);
 
 	var _q;
 	var _sdOverviewService
@@ -28,11 +29,12 @@
 	var _sdProcessInstanceService;
 	var _sdActivityInstanceService;
 	var _sdLoggedInUserService;
+	var _sdPreferenceService;
 	/**
 	 * 
 	 */
 	function OverviewCtrl($q, sdOverviewService, sdLoggerService, sdUtilService, sdUserService,
-			sdProcessInstanceService, sdActivityInstanceService, sdLoggedInUserService) {
+			sdProcessInstanceService, sdActivityInstanceService, sdLoggedInUserService, sdPreferenceService) {
 		trace = sdLoggerService.getLogger('admin-ui.sdOverviewCtrl');
 		_q = $q;
 		_sdOverviewService = sdOverviewService;
@@ -41,10 +43,11 @@
 		_sdProcessInstanceService = sdProcessInstanceService;
 		_sdActivityInstanceService = sdActivityInstanceService;
 		_sdLoggedInUserService = sdLoggedInUserService;
-		
+		_sdPreferenceService = sdPreferenceService;
+
 		this.allLogEntriesTable = null;
 		this.showAllLogEntriesTable = true;
-		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ?  'admin' : true;
+		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
 		this.rowSelectionForAllLogEntriesTable = null;
 		this.exportFileNameForAllLogEntries = "AllLogEntries";
 
@@ -72,9 +75,9 @@
 
 		return deferred.promise;
 	};
-    /**
-     * 
-     */
+	/**
+	 * 
+	 */
 	OverviewCtrl.prototype.getAllUserCounts = function() {
 		var self = this;
 		_sdUserService.getAllCounts().then(function(data) {
@@ -83,9 +86,9 @@
 			trace.log(error);
 		});
 	};
-    /**
-     * 
-     */
+	/**
+	 * 
+	 */
 	OverviewCtrl.prototype.getAllProcessInstanceCounts = function() {
 		var self = this;
 		_sdProcessInstanceService.getProcessInstanceCounts().then(function(data) {
@@ -94,9 +97,9 @@
 			trace.log(error);
 		});
 	};
-    /**
-     * 
-     */
+	/**
+	 * 
+	 */
 	OverviewCtrl.prototype.getAllActivityInstanceCounts = function() {
 		var self = this;
 		_sdActivityInstanceService.getAllCounts().then(function(data) {
@@ -105,7 +108,7 @@
 			trace.log(error);
 		});
 	};
-	
+
 	/**
 	 * 
 	 */
@@ -116,5 +119,17 @@
 		self.getAllUserCounts();
 		self.allLogEntriesTable.refresh();
 	};
-	
+
+	/**
+	 * 
+	 */
+
+	OverviewCtrl.prototype.preferenceDelegate = function(prefInfo) {
+		var preferenceStore = _sdPreferenceService.getStore('USER', 'ipp-administration-perspective', 'preference'); // Override
+		preferenceStore.marshalName = function(scope) {
+			return "ipp-administration-perspective.overview.selectedColumns";
+		}
+		return preferenceStore;
+	};
+
 })();
