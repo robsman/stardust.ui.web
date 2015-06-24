@@ -24,16 +24,17 @@
 	//This is common to activities and processes.
 	var baseBenchmarkData = 
 	{
-	  "enableDueDate": true,
+	  "enableDueDate": false,
 	  "isFreeForm": false,
 	  "freeFormScript": "",
 	  "dueDate": {
 	    "dataReference": "",
+	    "dataReferenceDeref" : "",
 	    "dayType": "",
 	    "offset": {
-	      "amount": 0,
+	      "amount": 10,
 	      "unit": "d",
-	      "offsetTime": "00:00 AM"
+	      "offsetTime": "00:01"
 	    }
 	  },
 	  "categories": []
@@ -73,13 +74,14 @@
 		"enableBenchmark": true,
 		"activities": [],
 		"dueDate": {
-            "enabled": true,
+            "enabled": false,
             "dataReference": "",
+            "dataReferenceDeref" : "",
             "offset": {
               "useBusinessDays": true,
-              "amount": 0,
+              "amount": 10,
               "unit": "d",
-              "time": "12:00 AM"
+              "time": "00:01"
             }
           }
 	};
@@ -109,15 +111,15 @@
         "freeFormExpression" : "",
         "details" : {
 	        "condition": {
-	          "lhs": "CurrentTime",
-	          "operator": "NotLaterThan",
-	          "rhs": "BusinessDate",
+	          "lhs": "Default",
+	          "operator": "gt",
+	          "rhs": "",
 	          "offset": {
 	        	  "applyOffset": false,
-		          "useBusinessDays": false,
-		          "amount": 0,
+		          "useBusinessDays": true,
+		          "amount": 10,
 		          "unit": "d",
-		          "offsetTime": "00:00 AM"
+		          "offsetTime": "00:01"
 		        }
 	        }
          }
@@ -199,7 +201,8 @@
 	}
 	
 	/**
-	 * 
+	 * Cleanup our angular $$hashkeys and other transitory properties that
+	 * were added to the benchmark by our controller and UI layer.
 	 * @param benchmark
 	 */
 	benchmarkBuilderService.prototype.cleanAndClone = function(benchmark){
@@ -207,6 +210,7 @@
 		
 		clone = angular.copy(benchmark);
 		
+		delete clone.isDirty;
 		clone.categories.forEach(function(v,i){delete v.$$hashKey});
 		
 		//now loop over all models

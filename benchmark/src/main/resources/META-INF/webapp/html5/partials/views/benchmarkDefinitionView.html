@@ -1,7 +1,49 @@
-<script src="http://localhost:8080/ipp90m4/plugins/html5-common/scripts/directives/sdDropDownMenu.js"></script>
+<!-- script src="http://localhost:8080/ipp90m4/plugins/html5-common/scripts/directives/sdDropDownMenu.js"></script-->
 <div class="view-panel" 
      ng-controller="benchmarkCtrl as ctrl"
 	 sg-stretch-to-bottom>
+	 
+	<!-- Markup for our sdDialog Directives -->
+
+	<!-- Delete Confirmation -->
+	<div sd-dialog="ctrl.deleteDialog"
+		 sda-title="Confirm"
+	     sda-type="confirm"
+	     sda-template="plugins/benchmark/html5/partials/dialogs/deleteConfirmation.html"
+	     sda-on-open="ctrl.onOpenDeleteDialog(res)"
+	     sda-scope="this"> 
+	</div>
+	
+	<!-- Publish Confirmation -->
+	<div sd-dialog="ctrl.publishDialog"
+		 sda-title="Publish New Benchmark Definition"
+		 sda-confirm-action-label="Publish"
+		 sda-cancel-action-label="Cancel"
+	     sda-type="confirm"
+	     sda-template="plugins/benchmark/html5/partials/dialogs/publishConfirmation.html"
+	     sda-on-open="ctrl.onOpenPublishDialog(res)"
+	     sda-scope="this"> 
+	</div>
+	
+	<!-- Publish Success-->
+	<div sd-dialog="ctrl.publishSuccessDialog"
+		 sda-title="Success"
+		 sda-cancel-action-label="OK"
+	     sda-type="alert"
+	     sda-template="plugins/benchmark/html5/partials/dialogs/publishSuccess.html"
+	     sda-scope="this"> 
+	</div>
+	
+	<!-- Save Success-->
+	<div sd-dialog="ctrl.saveSuccessDialog"
+		 sda-title="Success"
+		 sda-cancel-action-label="OK"
+	     sda-type="alert"
+	     sda-template="plugins/benchmark/html5/partials/dialogs/saveSuccess.html"
+	     sda-scope="this"> 
+	</div>
+	
+	<!-- sdDialog Directives End -->
 	 
 	<i style="position:absolute;font-size:1.5em;cursor:pointer;" 
 	   ng-click="ctrl.showBenchmarks = !ctrl.showBenchmarks" 
@@ -14,22 +56,27 @@
 	<!-- Data Table for Benchmarks -->
 	<div ng-show="ctrl.showBenchmarks">
 	
-		<select ng-model="ctrl.benchmarkFilter" ng-change="ctrl.loadBenchmarks(ctrl.benchmarkFilter)">
+		<select ng-model="ctrl.benchmarkFilter" 
+		        ng-change="ctrl.loadBenchmarks(ctrl.benchmarkFilter)">
 			<option selected value="Design">Designs</option>
 			<option value="Published">Published</option>
 		</select>
 		
-		<div sda-toolbar>
+		<div ng-if="ctrl.benchmarkFilter==='Design'" sda-toolbar>
 		
-		    <a href="#" ng-click="ctrl.createBenchmark()" title="Add Benchmark" class="tbl-toolbar-item tbl-tool-link">
+		    <a href="" ng-click="ctrl.createBenchmark()" title="Add Benchmark" class="tbl-toolbar-item tbl-tool-link">
 		       <i class="glyphicon glyphicon-plus-sign"></i>
 		    </a>
 		    
-		    <a href="#" ng-click="ctrl.deleteBenchmark(ctrl.selectedBenchmark.id)" title="Delete Benchmark" class="tbl-toolbar-item tbl-tool-link">
+		    <a href="" ng-click="ctrl.deleteBenchmark(ctrl.selectedBenchmark.id)" title="Delete Benchmark" class="tbl-toolbar-item tbl-tool-link">
 		       <i class="glyphicon glyphicon-minus-sign"></i>
 		    </a>	
 		    
-		    <a href="#" 
+		    <a href="" ng-click="ctrl.cloneBenchmark(ctrl.selectedBenchmark.id)" title="CloneBenchmark" class="tbl-toolbar-item tbl-tool-link">
+		       <i class="glyphicon glyphicon-copy"></i>
+		    </a>
+		    
+		    <a href="" 
 		       ng-click="ctrl.publishBenchmark(ctrl.selectedBenchmark.id)" 
 		       title="Publish Benchmark" class="tbl-toolbar-item tbl-tool-link">
 		       <i class="glyphicon glyphicon-globe"></i>
@@ -81,7 +128,6 @@
 			   ng-click="ctrl.saveBenchmark(ctrl.selectedBenchmark)"
 			   class="glyphicon">
 			</i>
-			<i class="glyphicon glyphicon-remove"></i>
 		</div>
 	</div>
 	
@@ -151,10 +197,10 @@
 		    <div ng-show="ctrl.selectedBenchmark" style="width:calc(100% - 230px);display:inline-table;">
 		    
 		    	<table class="tbl ng-scope dataTable" id="benchmarkTable" style="width:100%;">
-		    	<colgroup>
-			       <col span="1" style="width: 5%;">
-			       <col span="1" style="width: 15%;">
-			    </colgroup>
+			    	<colgroup>
+				       <col span="1" style="width: 10%;">
+				       <col span="1" style="width: 20%;">
+				    </colgroup>
 		    		<thead>
 		    			<th class="tbl-hdr-col">
 		    				<span class="tbl-hdr-col-label">Element</span>
@@ -164,7 +210,8 @@
 		    			</th>
 		    			<th class="tbl-hdr-col" ng-repeat="category in ctrl.selectedBenchmark.categories | orderBy:'index'">
 		    			
-		    				<div sd-drop-down-menu 
+		    				<div ng-if="ctrl.benchmarkFilter==='Design'"
+		    				     sd-drop-down-menu 
 		    				     sda-menu-callback="ctrl.categoryMenuCallback(menuItem,e)"
 		    					 sda-menu-items="[{value:'Add', action: 'ADD_CAT', cat: category, bm: ctrl.selectedBenchmark},
 		    					 				  {value:'Delete', action: 'KILL_CAT', cat: category, bm: ctrl.selectedBenchmark},
@@ -175,132 +222,209 @@
 		    				     <i class="sc sc-flag"></i>
 		    				     <i class="sc sc-arrow-d"></i>
 		    				</div>
-		    				<input type="text" size="{{category.name.length}}" ng-model="category.name" class="tbl-hdr-col-label"/>
-		    				<input type="color" ng-model="category.color"/>
-
-		    				<!--div style="display:inline-block;background-color:{{category.color}};width:25px;">&nbsp;</div-->
+		    				<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+		    					   ng-disabled="ctrl.benchmarkFilter==='Published'"
+		    				       type="text" 
+		    				       size="{{category.name.length}}" 
+		    				       ng-model="category.name" 
+		    				       class="tbl-hdr-col-label"/>
+		    				<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+		    					   ng-disabled="ctrl.benchmarkFilter==='Published'"
+		    				       type="color" 
+		    				       ng-model="category.color"/>
 		    			</th>
 		    		</thead>
 		    		<tbody>
 		    			<tr ng-class-even="even" class="tbl-row" ng-repeat="data in ctrl.benchmarkDataRows">
-		    			
+		    				
 		    				<td style="vertical-align:top;">
-			    				<a href="#" title="{{data.breadCrumbs.join('&#x2F;')}}">
+			    				<span  title="{{data.breadCrumbs.join('&#x2F;')}}">
 			    					{{data.breadCrumbs[data.breadCrumbs.length-1]}}
-			    				</a>
+			    				</span>
 		    				</td>
 		    				
 		    				<td style="vertical-align:top;">
 		    					<label>
-		    						<input ng-model="data.enableBenchmark" type="checkbox"/>
+		    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+		    						       ng-model="data.elementRef.enableBenchmark" 
+		    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
+		    						       ng-true-value="false"
+		    						       ng-false-value="true"
+		    						       type="checkbox"/>
 		    						No Benchmark
 		    					</label>
-		    					<label ng-show="data.element==='Process Definition'">
-		    						<input ng-model="data.dueDate.enabled" type="checkbox"/>
-		    						Enable Due Date
-		    					</label>
-		    					<div ng-show="data.dueDate.enabled">
 		    					
-		    						<label>Reference
-		    							<select style="width:60%;" ng-model="data.dueDate.dateReference">
-		    								<option value="businessDate">Business Date3</option>
-		    							</select>
-		    						</label>
-		    						
-		    						<label style="display:inline-table;">
-				    					<input ng-model="data.dueDate.offset.useBusinessDays" 
-						    				   value="true" 
-						    				   name="{{data.nodePath}}{{$index}}dd_ubd"
-						    				   type="radio"/>
-						    				   Business Days
+		    					<div ng-show="data.elementRef.enableBenchmark">
+		    					
+			    					<label ng-show="data.element==='Process Definition'">
+			    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+			    							   ng-disabled="ctrl.benchmarkFilter==='Published'"
+			    						       ng-model="data.dueDate.enabled" 
+			    						       type="checkbox"/>
+			    						Enable Due Date
 			    					</label>
-			    				
-				    				<label style="display:inline-table;">
-				    					<input ng-model ="data.dueDate.offset.useBusinessDays" 
-				    					       name="{{data.nodePath}}{{$index}}dd_ubd" 
-				    					       value="false" 
-				    					       type="radio"/>
-				    					       Calendar Days
-				    				</label>
-				    				
-			    					<label>
-			    						<input ng-model="data.dueDate.offset.applyOffset" type="checkbox"/>
-			    						Apply Offset
-			    					</label>
+			    					<div ng-show="data.dueDate.enabled">
 			    					
-			    					<div ng-show="data.dueDate.offset.applyOffset===true">
-				    					<input ng-model="data.dueDate.offset.amount" type="number"/>
-				    					
-				    					<label>Days At 
-				    						<input type="time" ng-model="data.dueDate.offset.offsetTime"/>
+			 
+			    						<div>
+					    					<select ng-options="item.qualifiedId as item.name for item in data.modelData"
+					    					        ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+					    					        ng-disabled="ctrl.benchmarkFilter==='Published'"
+					    					        ng-model="data.dueDate.dataReference">
+					    					</select>
+					    					<label ng-show="!ctrl.isPrimitive(data.modelData,data.dueDate.dataReference)" 
+					    					       style="display:inline-table;">
+					    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+					    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
+					    						       ng-model="data.dueDate.dataReferenceDeref"
+					    						       placeHolder="Data Path"
+					    						       type="text"/>
+					    					</label>
+				    					</div>
+			    						
+			    						
+			    						<label style="display:inline-table;">
+					    					<input ng-model="data.dueDate.offset.useBusinessDays"
+					    					       ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"  
+					    					       ng-disabled="ctrl.benchmarkFilter==='Published'"
+							    				   name="{{data.nodePath}}{{$index}}dd_ubd"
+							    				   ng-value="true"
+							    				   type="radio"/>
+							    				   Business Days
 				    					</label>
+				    				
+					    				<label style="display:inline-table;">
+					    					<input ng-model ="data.dueDate.offset.useBusinessDays" 
+					    					       ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+					    					       ng-disabled="ctrl.benchmarkFilter==='Published'"
+					    					       name="{{data.nodePath}}{{$index}}dd_ubd"
+					    					       ng-value="false" 
+					    					       type="radio"/>
+					    					       Calendar Days
+					    				</label>
+					    				
+				    					<label>
+				    						<input ng-model="data.dueDate.offset.applyOffset" 
+				    							   ng-disabled="ctrl.benchmarkFilter==='Published'"
+				    							   ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+				    						       type="checkbox"/>
+				    						Apply Offset
+				    					</label>
+				    					
+				    					<div ng-show="data.dueDate.offset.applyOffset===true">
+				    					
+					    					<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+					    					       ng-disabled="ctrl.benchmarkFilter==='Published'"
+					    						   ng-model="data.dueDate.offset.amount" 
+					    						   type="number"/>
+					    					
+					    					<label style="display:inline-table;">Days At 
+					    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+					    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
+					    						       type="time" 
+					    						       ng-model="data.dueDate.offset.offsetTime"/>
+					    					</label>
+			    						</div>
 		    						</div>
-		    						
 		    					</div>
 		    				</td>
 		    				<td ng-repeat="catInst in data.categoryConditions | orderBy:'categoryRef.index'">
 	
-		    					<label>{{catInst.categoryRef.name}}</label>
+		    					<div ng-show="data.elementRef.enableBenchmark">
 		    					
-		    					<select ng-model="catInst.details.condition.lhs">
-		    						<option value="Default">Default</option>
-		    						<option value="FreeForm">Free-Form</option>
-		    						<option value="CurrentTime">Current Time</option>
-		    					</select>
-		    					
-		    					<div ng-show="catInst.details.condition.lhs==='FreeForm'">
-		    						<textarea ng-model="catInst.freeFormExpression" rows="" cols=""></textarea>
-		    					</div>
-		    					
-		    					<div ng-show="catInst.details.condition.lhs==='CurrentTime'">
-		    					
-		    						<div>
-				    					<select ng-model="catInst.details.condition.operator">
-				    						<option value="!LaterThan">Not Later Than</option>
-				    						<option value="LaterThan">Later Than</option>
-				    					</select>
+			    					<select ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+			    					        ng-disabled="ctrl.benchmarkFilter==='Published'"
+			    					        ng-model="catInst.details.condition.lhs">
+			    						<option value="Default">Default</option>
+			    						<option value="FreeForm">Free-Form</option>
+			    						<option value="CurrentTime">Current Time</option>
+			    					</select>
+			    					
+			    					<div ng-show="catInst.details.condition.lhs==='FreeForm'">
+			    						<textarea ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+			    						          ng-disabled="ctrl.benchmarkFilter==='Published'"
+			    						          ng-model="catInst.freeFormExpression" 
+			    						          rows="" 
+			    						          cols="">
+	   						          	</textarea>
 			    					</div>
 			    					
-			    					<div>
-				    					<select ng-options="item.qualifiedId as item.name for item in data.modelData" 
-				    					        ng-model="catInst.details.condition.rhs">
-				    					</select>
-			    					</div>
+			    					<div ng-show="catInst.details.condition.lhs==='CurrentTime'">
 			    					
-				    				<label style="display:inline-table;">
-				    					<input ng-model="catInst.details.condition.offset.useBusinessDays" 
-						    				   value="true" 
-						    				   name="{{data.nodePath}}{{$index}}ubd"
-						    				   type="radio"/>
-						    				   Business Days
-				    				</label>
-				    				
-				    				<label style="display:inline-table;">
-				    					<input ng-model ="catInst.details.condition.offset.useBusinessDays" 
-				    					       name="{{data.nodePath}}{{$index}}ubd" 
-				    					       value="false" 
-				    					       type="radio"/>
-				    					       Calendar Days
-				    				</label>
-				    				
-			    					<label>
-			    						<input ng-model="catInst.details.condition.offset.applyOffset" type="checkbox"/>
-			    						Apply Offset
-			    					</label>
-			    					
-			    					<div ng-show="catInst.details.condition.offset.applyOffset===true">
-			    					
-				    					<input  ng-model="catInst.details.condition.offset.amount" type="number"/>
+			    						<div>
+					    					<select ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+					    					        ng-disabled="ctrl.benchmarkFilter==='Published'"
+					    					        ng-model="catInst.details.condition.operator">
+					    						<option value="gt">Later Than</option>
+					    						<option value="gte">On or Later Than</option>
+					    						<option value="lt">Before</option>
+					    						<option value="lte">On or Before</option>
+					    					</select>
+				    					</div>
 				    					
-				    					<label style="display:inline-table;">
-				    						Days At 
-				    						<input type="time" ng-model="catInst.details.condition.offset.offsetTime"/>
+				    					<div>
+					    					<select ng-options="item.qualifiedId as item.name for item in data.modelData"
+					    					        ng-disabled="ctrl.benchmarkFilter==='Published'"
+					    					        ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+					    					        ng-model="catInst.details.condition.rhs">
+					    					</select>
+					    					<label ng-show="!ctrl.isPrimitive(data.modelData,catInst.details.condition.rhs)" 
+					    					       style="display:inline-table;">
+					    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+					    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
+					    						       ng-model="catInst.details.condition.dataReferenceDeref"
+					    						       placeHolder="Data Path"
+					    						       type="text"/>
+					    					</label>
+				    					</div>
+				    					
+					    				<label style="display:inline-table;">
+					    					<input ng-model="catInst.details.condition.offset.useBusinessDays" 
+					    					       ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+					    					       ng-disabled="ctrl.benchmarkFilter==='Published'"
+							    				   ng-value="true" 
+							    				   name="{{data.nodePath}}{{$index}}ubd"
+							    				   type="radio"/>
+							    				   Business Days
+					    				</label>
+					    				
+					    				<label style="display:inline-table;">
+					    					<input ng-model ="catInst.details.condition.offset.useBusinessDays" 
+					    					       ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+					    					       ng-disabled="ctrl.benchmarkFilter==='Published'"
+					    					       name="{{data.nodePath}}{{$index}}ubd" 
+					    					       ng-value="false" 
+					    					       type="radio"/>
+					    					       Calendar Days
+					    				</label>
+					    				
+				    					<label>
+				    						<input ng-model="catInst.details.condition.offset.applyOffset" 
+				    							   ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+				    							   ng-disabled="ctrl.benchmarkFilter==='Published'"
+				    						       type="checkbox"/>
+				    						Apply Offset
 				    					</label>
 				    					
-		    						</div>
-		    						
+				    					<div ng-show="catInst.details.condition.offset.applyOffset===true">
+				    					
+					    					<input  ng-model="catInst.details.condition.offset.amount"
+					    					        ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+					    					        ng-disabled="ctrl.benchmarkFilter==='Published'" 
+					    					        type="number"/>
+					    					
+					    					<label style="display:inline-table;">
+					    						Days At 
+					    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+					    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
+					    							   type="time" 
+					    							   ng-model="catInst.details.condition.offset.offsetTime"/>
+					    					</label>
+					    					
+			    						</div>
+			    						
+									</div>
 								</div>
-
 		    				</td>
 		    			</tr>
 		    		</tbody>
@@ -314,20 +438,26 @@
 	
 		<div sd-drop-down-menu sda-menu-items="[{value:'insert'},{value:'delete'},{value:'create'}]"></div>
     	<label>Name</label> 
-    	<input ng-disabled="!ctrl.selectedBenchmark" ng-model="ctrl.selectedBenchmark.name" type="text">
+    	<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark,true)"
+    	       ng-disabled="!ctrl.selectedBenchmark || ctrl.benchmarkFilter==='Published'"
+    	       ng-model="ctrl.selectedBenchmark.name" 
+    	       type="text">
     	
     	<label>Description</label>
-    	<textarea ng-disabled="!ctrl.selectedBenchmark" ng-model="ctrl.selectedBenchmark.description"></textarea>
+    	<textarea ng-disabled="!ctrl.selectedBenchmark || ctrl.benchmarkFilter==='Published'" 
+    			  ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark,true)"
+    			  ng-model="ctrl.selectedBenchmark.description"></textarea>
     	
     	<label>Business Calendar</label>
 
     	<select ng-options="item.path as item.name for item in ctrl.calendars" 
-    	        ng-model="ctrl.selectedBenchmark.businessCalendar"  
-    	        ng-disabled="!ctrl.selectedBenchmark">
+    			ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+    			ng-disabled="!ctrl.selectedBenchmark || ctrl.benchmarkFilter==='Published'"
+    	        ng-model="ctrl.selectedBenchmark.businessCalendar">
     	</select>
     </div>
 	
 </div><!-- Bottom Container End -->
 
-
+<pre>{{ctrl.selectedBenchmark | json}}</pre>
 </div><!-- OuterMost Div end, controller scope ends -->

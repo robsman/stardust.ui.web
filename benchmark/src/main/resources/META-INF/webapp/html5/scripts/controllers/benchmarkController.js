@@ -22,7 +22,8 @@
 	 * them to our prototypes.
 	 * @param benchmarkService - Service to interact with our REST layer.
 	 */
-	function benchmarkController(benchmarkService, benchmarkBuilderService, sdLoggedInUserService, $scope, $timeout){
+	function benchmarkController(benchmarkService, benchmarkBuilderService, 
+								 sdLoggedInUserService, $scope, $timeout, sdDialogService){
 		
 		//Self reference
 		var that = this; 
@@ -31,6 +32,8 @@
 		this.benchmarkService = benchmarkService;
 		this.benchmarkBuilderService = benchmarkBuilderService;
 		this.$timeout = $timeout;
+		this.sdDialogService = sdDialogService;
+		this.$scope = $scope;
 		
 		//Function level properties
 		this.benchmarkInitialStates = {}; //map of benchmarks pulled from server and stringified.
@@ -51,21 +54,7 @@
 		
 		//TODO: wrap the following 3 calls up in a $q.all call
 		
-		//Retrieve all benchmarks
-		benchmarkService.getBenchmarkDefinitions()
-		.then(function(data){
-			
-			that.benchmarks = data.benchmarkDefinitions;
-			that.benchmarks.forEach(function(v){
-				that.recordBenchmarkState(v.content);
-			});
-			$timeout(function(){
-				that.dataTableApi.refresh();
-			},0);
-		})
-		["catch"](function(err){
-			//TODO: handle error
-		});
+		this.loadBenchmarks("DESIGN");
 		
 		
 		benchmarkService.getCalendars()
@@ -88,21 +77,21 @@
 	}
 	
 	/**
-	 * In order to support a dirtyState bit for each benchmark we will stringify the state 
-	 * of the benchmark and rely on a string compare to determine if a benchmark has been
-	 * modified. This function handles recording that state on our functions initial state
-	 * collection.
-	 * @param benchmark
+	 * Callback for ng-change directives on our UI which need to mark a 
+	 * benchmark as having been modified. Optional secondary parameter
 	 */
-	benchmarkController.prototype.recordBenchmarkState = function(benchmark){
-		this.benchmarkInitialStates[benchmark.id]=JSON.stringify(benchmark);
+	benchmarkController.prototype.markBenchmarkDirty = function(benchmark,refresh){
+		if(!benchmark) return;
+		benchmark.isDirty = true;
+		if(refresh===true){
+			this.dataTableApi.refresh();
+		}
 	}
 	
-	
 	/**
-	 * Compare a benchmarks string representation against its state as recorded in the 
-	 * benchmarkInitial state collection. If the benchmark is, for any reason, not in the
-	 * initial states collection then we will return false.
+	 * Look up a benchmark in our function level benchmarks collection and 
+	 * return the value of its isDirty property. Returns false if benchmark not
+	 * found or if the isDirty property is undefined (falsey in latter case).
 	 * @param benchmark
 	 * @returns {Boolean}
 	 */
@@ -119,28 +108,30 @@
 			}
 		}
 		
-		if(benchmark && this.benchmarkInitialStates[benchmark.id] ){
-			temp = JSON.stringify(benchmark);
-			//console.log(JSON.stringify(benchmark));
-			//console.log(this.benchmarkInitialStates[benchmark.id]);
-			result = !(this.benchmarkInitialStates[benchmark.id] == temp);
-		}
+		if(benchmark){result = benchmark.isDirty;}
+		
 		return result;
+
 	}
+	
 	
 	/**
 	 * Save the benchmark to the document repository
 	 * @param benchmark
 	 */
 	benchmarkController.prototype.saveBenchmark = function(benchmark){
-		var that = this;
-		benchmark = this.benchmarkBuilderService.cleanAndClone(benchmark);
+		var clone_benchmark,
+			that=this;
 		
-		this.benchmarkService.saveBenchmarks(benchmark)
+		//Create clean copy of our benchmark to save server-side
+		clone_benchmark = this.benchmarkBuilderService.cleanAndClone(benchmark);
+		
+		this.benchmarkService.saveBenchmarks(clone_benchmark)
 		.then(function(data){
-			//Update benchmark intial state
-			that.recordBenchmarkState(benchmark);
-			alert("saved");
+			//Now mark our original benchmark as clean
+			benchmark.isDirty = false;
+			//and inform the user of their success!
+			that.saveSuccessDialog.open();
 		})
 		["catch"](function(err){
 			//TODO: handle error
@@ -157,11 +148,6 @@
 			that = this,
 			temp,
 			i;
-		
-		//Cleanup initial state cache
-		if(this.benchmarkInitialStates.hasOwnProperty(id)){
-			delete this.benchmarkInitialStates[id];
-		}
 		
 		//now locate the id in our benchmarks collection
 		for(i=0;i<this.benchmarks.length;i++){
@@ -182,37 +168,133 @@
 	}
 	
 	/**
-	 * Deletion of a benchmark from the remote
-	 * server repository.
-	 * @param id - id of benchmark to delete
+	 * Callback for publish confirmation dialog
+	 * @param res
 	 */
-	benchmarkController.prototype.deleteBenchmark = function(id){
-		var that = this;
+	benchmarkController.prototype.onOpenPublishDialog = function(res){
+		var that = this,
+			name,
+			id;
 		
-		this.benchmarkService.deleteBenchmark(id)
-		.then(function(data){
-			that.deleteLocalBenchmark(id);
-			alert("deleted");
-		})
-		["catch"](function(err){
-			//TODO: handle error
+		name = this.selectedBenchmark.name;
+		id = this.selectedBenchmark.id;
+		
+		if(id){
+			res.promise.then(function(){
+				that.benchmarkService.publishBenchmark(id)
+				.then(function(data){
+					//TODO: SUCCESS dialog
+					that.deleteLocalBenchmark(id);
+					that.publishSuccessDialog.open();
+					that.selectedBenchmark = undefined;
+				})
+				["catch"](function(err){
+					//TODO: handle error
+				});
+			});
+		}
+	}
+	
+	/**
+	 * Callback for the sdDialog delete confirmation directive.
+	 * On confirmation will delete the benchmark from both the server
+	 * and client stores.
+	 * @param res
+	 */
+	benchmarkController.prototype.onOpenDeleteDialog = function(res){
+		var that = this,
+			id;
+
+		if(!this.selectedBenchmark){return;}
+		
+		id = this.selectedBenchmark.id;
+		
+		res.promise.then(function(){
+			
+			that.benchmarkService.deleteBenchmark(id)
+			.then(function(data){
+				that.deleteLocalBenchmark(id);
+				that.selectedBenchmark = undefined;
+			})
+			["catch"](function(err){
+				//TODO: handle error
+			});
+			
 		});
 	};
 	
 	/**
-	 * Publish the benchmark
+	 * GIven the id of a benchmark, make a clone of the benchmark,
+	 * change the name to the default benchmark name, save it to the server
+	 * and update our local UI.
+	 * @param id
+	 */
+	benchmarkController.prototype.cloneBenchmark = function(id){
+		var benchmark,
+			that = this;
+		
+		//retrieve benchmark to clone
+		benchmark = this.getLocalBenchmark(id);
+		if(!benchmark){return;}//guard clause
+		
+		//Make a clean copy to save to the server
+		benchmark = this.benchmarkBuilderService.cleanAndClone(benchmark.content);
+		benchmark.id = this.benchmarkBuilderService.getUUID();
+		benchmark.name = "Cloned Benchmark"; //TODO i18N
+
+		//Save to server and update locally on success
+		this.benchmarkService.createBenchmarkDefinition(benchmark)
+		.then(function(data){
+			that.addToBenchmarks(data);
+		});
+		
+	};
+	
+	/**
+	 * Given a benchmarks id, this function will look in our 
+	 * local objects this.benchmarks array and return the corresponding 
+	 * benchmark.
+	 */
+	benchmarkController.prototype.getLocalBenchmark = function(id){
+		var index = -1,
+			temp,
+			result = false,
+			i;
+	
+		//now locate the id in our benchmarks collection
+		for(i=0;i<this.benchmarks.length;i++){
+			temp = this.benchmarks[i];
+			if(temp.content.id==id){
+				index = i;
+				result = temp;
+				break;
+			}
+		}
+		return result;
+	}
+	
+	/**
+	 * Deletion of a benchmark from the remote
+	 * server repository and local store. Wraps our
+	 * deleteDialog API to open the dialog when a benchmark is selected.
+	 * @param id - id of benchmark to delete
+	 */
+	benchmarkController.prototype.deleteBenchmark = function(id){
+		if(this.selectedBenchmark){
+			this.deleteDialog.open();
+		}
+		return;
+	};
+	
+	/**
+	 * Wrapper for our publishDialog confirmation API.
+	 * See callback 'onOpenPublishDialog' for actual
+	 * publish implementation.
 	 * @param benchmark
 	 */
 	benchmarkController.prototype.publishBenchmark = function(id){
-		debugger;
-		this.benchmarkService.publishBenchmark(id)
-		.then(function(data){
-			//TODO: Dirty-bit implementation and clearing.
-			alert("published");
-		})
-		["catch"](function(err){
-			//TODO: handle error
-		});
+		this.publishDialog.open();
+		return;
 	};
 	
 	/**
@@ -224,20 +306,34 @@
 		var that = this;
 		
 		//Default to Design
-		status = !status ? "Design" : status;
+		status = !status ? "DESIGN" : status;
 		
-		//load models and reset UI
-		this.benchmarkService.getBenchmarkStubs(status)
-		.then(function(data){ 
-			that.selectedBenchmark = undefined;
-			that.benchmarks = data;
-			that.dataTableApi.refresh();
+		//ensure we clear out our selected benchmark
+		this.selectedBenchmark = undefined;
+		
+		//pop all existing benchmarks.
+		while(this.benchmarks.pop()){};
+		
+		//Retrieve all benchmarks
+		this.benchmarkService.getBenchmarkDefinitions(status)
+		.then(function(data){
+			data.benchmarkDefinitions.forEach(function(bm){
+				bm.key = bm.content.id;
+				that.benchmarks.push(bm);
+			});
+			that.$timeout(function(){
+				that.dataTableApi.refresh();
+			},0);
+		})
+		["catch"](function(err){
+			//TODO: handle error
 		});
 	};
 	
 	/**
 	 * Handle all call-backs from our sdDropDownMenu attached to the category
-	 * headers in our benchmark data rows table.
+	 * headers in our benchmark data rows table. Also marks the target benchmark
+	 * as dirty.
 	 * @param v - value item from the directive
 	 * @param e - original event 
 	 */
@@ -253,7 +349,7 @@
 		index = categories.indexOf(category);
 		
 		if(v.menuEvent==="menuItem.clicked"){
-			
+			v.item.bm.isDirty = true;
 			switch (v.item.action){
 				case "KILL_CAT":
 					this.benchmarkBuilderService.removeCategory(benchmark,category);
@@ -560,9 +656,9 @@
 			
 			this.benchmarkDataRows.push({
 				"benchmark" : benchmark, 
-				"modelData" : parentModel.data.filter(function(v){
-					return v.engineType==="Calendar" && v.typeId=="primitive"}),
+				"modelData" : parentModel.data,
 				"element" : "Process Definition",
+				"elementRef" : procDef,
 				"dueDate" : procDef.dueDate,
 				"nodePath" : "{" + model.id + "}" + procDef.id, 
 				"breadCrumbs" : [parentModel.name,item.valueItem.name],
@@ -587,9 +683,9 @@
 			
 			this.benchmarkDataRows.push({
 				"benchmark" : benchmark, 
-				"modelData" : parentModel.data.filter(function(v){
-					return v.engineType==="Calendar" && v.typeId=="primitive"}),
+				"modelData" : parentModel.data,
 				"element" : "Activity",
+				"elementRef" : activity,
 				"breadCrumbs" : [parentModel.name,parentProcDef.name,item.valueItem.name],
 				"nodePath" : "{" + model.id + "}" + procDef.id + ":" + activity.id, 
 				"categoryConditions": activity.categoryConditions});
@@ -645,13 +741,46 @@
 		//this.addToBenchmarks(bmark);
 	};
 	
+	/**Given the modelData on a benchmarkRow test whether the qualified ID matching that
+	 * data represents a primitive data type. This is used to drive the visibility of 
+	 * the dataReferenceDref input field.
+	 * 
+	 * @param modelData
+	 * @param qualifiedId
+	 * @returns
+	 */
+	benchmarkController.prototype.isPrimitive = function(modelData,qualifiedId){
+		var result = false,
+			temp,
+			i;
+		
+		//this will evalaute before the user has selected a valid qualifiedID
+		if(!modelData || !qualifiedId){return true;}
+		
+		for(i=0;i<modelData.length;i++){
+			temp = modelData[i];
+			if(temp.qualifiedId === qualifiedId && temp.typeId==="primitive" ){
+				result = true;
+				break;
+			}
+		}
+		
+		return result;
+	}
+	
 	/**
 	 * adds a benchmark to our controllers benchmarks array. Checks first for
 	 * name collisions and appends a numeral to the name in that event.
 	 */
 	benchmarkController.prototype.addToBenchmarks = function(bmark){
+		var that = this;
+		bmark.key = bmark.content.id; //add key so we can select with dataTable api
 		this.benchmarks.push(bmark);
 		this.dataTableApi.refresh();
+		this.$timeout(function(){
+			that.dataTableApi.setSelection({key:bmark.key});
+		},0);
+		
 	}
 	
 	/**
@@ -688,7 +817,8 @@
 	                               "benchmarkBuilderService",
 	                               "sdLoggedInUserService",
 	                               "$scope", 
-	                               "$timeout"];
+	                               "$timeout",
+	                               "sdDialogService"];
 	
 	//add controller to our app
 	angular.module("benchmark-app")

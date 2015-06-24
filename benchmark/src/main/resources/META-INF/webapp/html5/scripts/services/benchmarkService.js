@@ -100,8 +100,10 @@
 			endPoint,
 			deferred = this.$q.defer();
 		
-		filter = filter ? filter : 'design'; //design || publish
-		endPoint = filter==='design' ? '/design-time' : '/run-time';
+		filter=filter.toUpperCase();
+		filter = filter ? filter : 'DESIGN'; //design || publish
+		
+		endPoint = filter==='DESIGN' ? '/design-time' : '/run-time';
 		
 		url = this.absRoot + this.portalCommon + this.portalBDComponent + endPoint;
 
