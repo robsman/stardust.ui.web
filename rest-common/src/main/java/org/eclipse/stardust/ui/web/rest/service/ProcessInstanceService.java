@@ -24,7 +24,6 @@ import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
-import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
@@ -43,7 +42,6 @@ import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.StatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SwitchProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessDefinitionUtils;
@@ -136,33 +134,6 @@ public class ProcessInstanceService
          }
       }
       return GsonUtils.toJsonHTMLSafeString(notificationMap);
-   }
-
-   /**
-    * Returns all states
-    * 
-    * @return List
-    */
-   public List<StatusDTO> getAllProcessStates()
-   {
-      MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
-      List<StatusDTO> allStatusList = new ArrayList<StatusDTO>();
-
-      allStatusList.add(new StatusDTO(ProcessInstanceState.CREATED, propsBean
-            .getString("views.processTable.statusFilter.created")));
-      allStatusList.add(new StatusDTO(ProcessInstanceState.ACTIVE, propsBean
-            .getString("views.processTable.statusFilter.active")));
-
-      allStatusList.add(new StatusDTO(ProcessInstanceState.INTERRUPTED, propsBean
-            .getString("views.processTable.statusFilter.interrupted")));
-      allStatusList.add(new StatusDTO(ProcessInstanceState.ABORTED, propsBean
-            .getString("views.processTable.statusFilter.aborted")));
-      allStatusList.add(new StatusDTO(ProcessInstanceState.COMPLETED, propsBean
-            .getString("views.processTable.statusFilter.completed")));
-      allStatusList.add(new StatusDTO(ProcessInstanceState.ABORTING, propsBean
-            .getString("views.processTable.statusFilter.aborting")));
-
-      return allStatusList;
    }
 
    /**

@@ -17,19 +17,20 @@
 	 * 
 	 */
 	angular.module('workflow-ui.services').provider( 'sdStatusService', function() {
-		this.$get = [ '$q', '$resource', 'sdUtilService', 'sgI18nService', function ( $q, $resource, sdUtilService, sgI18nService ) {
-			var service = new StatusService($q, $resource, sdUtilService, sgI18nService );
+		this.$get = [ '$q', 'sgI18nService', function ( $q, sgI18nService ) {
+			var service = new StatusService( $q, sgI18nService );
 			return service;
 		}];
 		
 	});
 	
 	var ACTIVITY_STATUSES = null;
+	var PROCESS_STATUSES = null;
 	
 	/**
 	 * 
 	 */
-	function StatusService( $q, $resource, sdUtilService, sgI18nService ) {
+	function StatusService( $q, sgI18nService ) {
 		
 		if(!ACTIVITY_STATUSES) {
 			ACTIVITY_STATUSES = [
@@ -76,6 +77,42 @@
 		             	];
 		}
 		
+		if(!PROCESS_STATUSES) {
+			PROCESS_STATUSES = [
+		             			{
+		             				value : -1,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-processTable-statusFilter-created')
+		             			},
+		             			{
+		             				value : 0,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-processTable-statusFilter-active')
+		             			},
+		             			{
+		             				value : 1,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-processTable-statusFilter-aborted')
+		             			},
+		             			{
+		             				value : 2,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-processTable-statusFilter-completed')
+		             			},
+		             			{
+		             				value : 3,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-processTable-statusFilter-interrupted')
+		             			},
+		             			{
+		             				value : 4,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-processTable-statusFilter-aborting')
+		             			},
+		             			
+		             	];
+		}
+		
 		/**
 		 * 
 		 */
@@ -88,7 +125,9 @@
 		 * 
 		 */
 		StatusService.prototype.getAllProcessStates = function() {
-			return  $resource(sdUtilService.getBaseUrl() + 'services/rest/portal/process-instances/allProcessStates').query().$promise;
+			var deferred = $q.defer();
+			deferred.resolve(PROCESS_STATUSES);
+			return deferred.promise;
 		};
 	};
 })();

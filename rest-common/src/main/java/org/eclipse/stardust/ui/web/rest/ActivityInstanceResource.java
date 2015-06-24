@@ -612,21 +612,21 @@ public class ActivityInstanceResource
      * 
      */
     @GET
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("/participantColumns")
-   public Response getParticipantColumns(String postedData)
-   {
-      try
-      {
-         List<ColumnDTO> result = activityInstanceService.getParticipantColumns();
-         return Response.ok(AbstractDTO.toJson(result), MediaType.APPLICATION_JSON).build();
-      }
-      catch (Exception e)
-      {
-         trace.error("", e);
-         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-      }
-   }
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/participantColumns")
+    public Response getParticipantColumns( )
+    {
+       try
+       {
+          List<ColumnDTO> result = activityInstanceService.getParticipantColumns();
+          return Response.ok(AbstractDTO.toJson(result), MediaType.APPLICATION_JSON).build();
+       }
+       catch (Exception e)
+       {
+          trace.error("", e);
+          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+       }
+    }
     
     /**
      * 

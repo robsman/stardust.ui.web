@@ -211,23 +211,6 @@ public class ProcessInstanceResource
       }
    }
    
-   @GET
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("/allProcessStates")
-   public Response getAllProcessStates()
-   {
-      try
-      {
-         return Response.ok(AbstractDTO.toJson(getProcessInstanceService().getAllProcessStates()), MediaType.APPLICATION_JSON).build();
-      }
-      catch (Exception e)
-      {
-         trace.error(e, e);
-
-         return Response.serverError().build();
-      }
-   }
-   
    /**
     * @param postedData
     * @return
