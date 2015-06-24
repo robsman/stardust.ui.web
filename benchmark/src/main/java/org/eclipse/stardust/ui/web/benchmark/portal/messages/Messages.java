@@ -17,8 +17,8 @@ public class Messages extends AbstractMessageBean {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final String BUNDLE_NAME = "benchmark-management-messages";
-	private static final String BEAN_NAME = "benchmarkManagementMessages";
+	private static final String BUNDLE_NAME = "benchmark-messages";
+	private static final String BEAN_NAME = "benchmarkMessages";
 
 	public Messages() {
 		super("carnot");

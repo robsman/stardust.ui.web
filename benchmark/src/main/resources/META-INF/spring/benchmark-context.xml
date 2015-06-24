@@ -36,5 +36,15 @@
 	<bean id="ganttChartViewNew"
 		class="org.eclipse.stardust.ui.web.benchmark.portal.GanttChartView">
 	</bean>
+	
+	<bean name="benchmarkConfigurationBean"
+		class="org.eclipse.stardust.ui.web.benchmark.view.BenchmarkConfigurationBean"
+		scope="session">
+	</bean>
+
+	<bean name="benchmarkConfigurationTableBean"
+		class="org.eclipse.stardust.ui.web.benchmark.view.BenchmarkConfigurationTableBean"
+		scope="session">
+	</bean>
 
 </beans>

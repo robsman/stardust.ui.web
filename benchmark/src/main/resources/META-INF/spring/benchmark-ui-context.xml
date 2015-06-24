@@ -6,7 +6,7 @@
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
 	<ippui:perspectiveExtension
-		targetPerspective="ippBccPerspective" id="benchmarkPerspective">
+		targetPerspective="ippBccPerspective" id="benchmarkPerspective" messageBundles="benchmark-messages">
 		<ippui:launchpadExtension after="myReportsViewPanel">
 			<ippui:launchPanel name="benchmarkLaunchPanel"
 				include="/plugins/benchmark/launchpanel/benchmarkLaunchPanel.xhtml" />
@@ -23,6 +23,18 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			<ippui:view name="ganttChartViewNew"
 				include="/plugins/benchmark/views/ganttChartViewFrameAdapter.xhtml"
 				controller="ganttChartViewNew" />
+				
+	 		<ippui:view name="benchmarkPanelView"
+				include="/plugins/benchmark/views/benchmarkPanel.xhtml" 
+				controller="benchmarkConfigurationBean">	
+				<ippui:preferences>
+					<ippui:preferencePage name="icon"
+						include="/plugins/views-common/images/icons/clipboard-task.png" />
+					<ippui:preferencePage name="configuration"
+						include="/plugins/benchmark/views/benchmarkPanelConfiguration.xhtml" />
+				</ippui:preferences>
+			</ippui:view> 
+		
 		</ippui:viewsExtension>
 	</ippui:perspectiveExtension>
 </beans>
