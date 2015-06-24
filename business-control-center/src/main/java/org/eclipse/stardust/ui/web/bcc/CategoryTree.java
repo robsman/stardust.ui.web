@@ -64,10 +64,10 @@ public class CategoryTree extends UIViewComponentBean
       iconMap.put("pendingActivities", "pending_activities.png");
       iconMap.put("completedActivities", "/plugins/views-common/images/icons/process-history/activity_completed.png");
       iconMap.put("postponedActivities", "activity_postponed.png");
-      iconMap.put("strandedActivities", "activity_stranded.png");
-      iconMap.put("resourceAvailabilityView", "group.png");
-      iconMap.put("roleAssignmentView", "role.png");
-      iconMap.put("deputyTeamMemberView", "user-silhouette.png");
+      iconMap.put(ResourcePaths.V_strandedActivitiesView, "activity_stranded.png");
+      iconMap.put(ResourcePaths.V_resourceAvailability, "group.png");
+      iconMap.put(ResourcePaths.V_roleAssignment, "role.png");
+      iconMap.put(ResourcePaths.V_deputyTeamMemberView, "user-silhouette.png");
       iconMap.put("resourceLoginView", "group_key.png");
       iconMap.put("resourcePerformance", "chart-up.png");
       iconMap.put("performanceTeamleader", "chart-up-color.png");
@@ -138,13 +138,13 @@ public class CategoryTree extends UIViewComponentBean
          GenericCategory resourcesNode = tree.getRootCategory().addSubCategory("resources",
                messageBean.getString(PRE_NODE + "resources"), "portalConfig");
 
-         resourcesNode.addItem("resourceAvailabilityView", messageBean.getString(PRE_LEAF + "resourceAvailabilityView"
-               + POST_LEAF), getItem("resourceAvailabilityView", null), getIconPath("resourceAvailabilityView"));
-         resourcesNode.addItem("roleAssignmentView",
-               messageBean.getString(PRE_LEAF + "roleAssignmentView" + POST_LEAF), getItem("roleAssignmentView", null),
-               getIconPath("roleAssignmentView"));
-         resourcesNode.addItem("deputyTeamMemberView", messageBean.getString(PRE_LEAF + "deputyTeamMemberView" + POST_LEAF),
-               getItem("deputyTeamMemberView", null), getIconPath("deputyTeamMemberView"));
+         resourcesNode.addItem(ResourcePaths.V_resourceAvailability, messageBean.getString(PRE_LEAF + ResourcePaths.V_resourceAvailability
+               + POST_LEAF), getItem(ResourcePaths.V_resourceAvailability, null), getIconPath(ResourcePaths.V_resourceAvailability));
+         resourcesNode.addItem(ResourcePaths.V_roleAssignment,
+               messageBean.getString(PRE_LEAF + ResourcePaths.V_roleAssignment + POST_LEAF), getItem(ResourcePaths.V_roleAssignment, null),
+               getIconPath(ResourcePaths.V_roleAssignment));
+         resourcesNode.addItem(ResourcePaths.V_deputyTeamMemberView, messageBean.getString(PRE_LEAF + ResourcePaths.V_deputyTeamMemberView + POST_LEAF),
+               getItem(ResourcePaths.V_deputyTeamMemberView, null), getIconPath(ResourcePaths.V_deputyTeamMemberView));
          resourcesNode.addItem("resourceLoginView", messageBean.getString(PRE_LEAF + "resourceLoginView" + POST_LEAF),
                getItem("resourceLoginView", null), getIconPath("resourceLoginView"));
          resourcesNode.addItem("resourcePerformance", messageBean.getString(PRE_LEAF + "resourcePerformance"
