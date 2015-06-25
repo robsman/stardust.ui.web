@@ -543,12 +543,12 @@ public class ActivityInstanceResource
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/completedActivities")
-    public Response getCompletedActivities(String postedData)
+    @Path("statistics/completedActivities")
+    public Response getStatsForCompletedActivities(String postedData)
     {
        try
        {
-          List<CompletedActivitiesStatisticsDTO> result = activityInstanceService.getCompletedActivities();
+          List<CompletedActivitiesStatisticsDTO> result = activityInstanceService.getStatsForCompletedActivities();
           return Response.ok(AbstractDTO.toJson(result), MediaType.APPLICATION_JSON).build();
        }
        catch (Exception e)

@@ -10,7 +10,7 @@
 		<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-completedActivities-title')}}</div>
 
 		<table sd-data-table="ctrl.dataTable" sda-no-pagination="true"
-			sd-data="ctrl.getCompletedActivities(params)" sda-ready="ctrl.ready" sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
+			sd-data="ctrl.fetchData(params)" sda-ready="ctrl.ready" sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
 			sda-sortable="true" sda-sort-by="{name : 'teamMember', dir : 'desc'}"
 			sda-mode="remote" sda-no-pagination="true" sda-sortable="false" 
 			sda-exports="true" sda-exports-file-name="{{ctrl.exportFileName}}"  sda-column-selector="{{ctrl.columnSelector}}" >

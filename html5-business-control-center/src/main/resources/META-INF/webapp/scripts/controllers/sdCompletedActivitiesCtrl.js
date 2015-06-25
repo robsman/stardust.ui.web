@@ -16,7 +16,8 @@
 	'use strict';
 
 	angular.module("bcc-ui").controller('sdCompletedActivitiesCtrl',
-			['sdActivityInstanceService', 'sdCommonViewUtilService', '$q', 'sdProcessInstanceService', 'sdLoggerService', '$filter', 'sgI18nService', 'sdLoggedInUserService','sdPreferenceService',CompletedActivitiesCtrl ]);
+			['sdActivityInstanceService', 'sdCommonViewUtilService', '$q', 'sdProcessInstanceService', 
+			 'sdLoggerService', '$filter', 'sgI18nService', 'sdLoggedInUserService','sdPreferenceService',CompletedActivitiesCtrl ]);
 
 
 	var _sdActivityInstanceService = null;
@@ -56,7 +57,7 @@
 		
 		// Getting columns for the data table
 		this.getColumns( );
-		this.fetchCompletedActivities();
+		this.getStatsForCompletedActivities();
 	};
 	
 	/**
@@ -75,9 +76,9 @@
 	/**
 	 * 
 	 */
-	CompletedActivitiesCtrl.prototype.fetchCompletedActivities = function( ) {
+	CompletedActivitiesCtrl.prototype.getStatsForCompletedActivities = function( ) {
 		var self = this;
-		_sdActivityInstanceService.getCompletedActivities( ).then(function( result ){
+		_sdActivityInstanceService.getStatsForCompletedActivities( ).then(function( result ){
 			trace.log('Completed activities retreived successfully.');
 			self.completedActivities.list = result;
 			self.completedActivities.totalCount = result.length;
@@ -89,7 +90,7 @@
 	/**
 	 * 
 	 */
-	CompletedActivitiesCtrl.prototype.getCompletedActivities = function( options ) {
+	CompletedActivitiesCtrl.prototype.fetchData = function( options ) {
 		var self = this;
 		var deferred = _q.defer();
 		var result = {
@@ -127,7 +128,8 @@
 	 * 
 	 */
 	CompletedActivitiesCtrl.prototype.refresh = function( ) {
-		this.getCompletedActivities();
+		trace.log('Refreshing view.');
+		this.getStatsForCompletedActivities();
 	};
 	
 	/**

@@ -69,8 +69,6 @@ import org.eclipse.stardust.engine.core.query.statistics.api.PostponedActivities
 import org.eclipse.stardust.engine.core.query.statistics.api.PostponedActivitiesStatisticsQuery;
 import org.eclipse.stardust.engine.core.query.statistics.api.StatisticsDateRangePolicy;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics;
-import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics.Contribution;
-import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics.PerformanceStatistics;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatisticsQuery;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.ui.event.ActivityEvent;
@@ -86,8 +84,6 @@ import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.dto.ColumnDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.CompletedActivitiesStatisticsDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.CompletedActivityPerformanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.OpenActivitiesDynamicUserObjectDTO;
@@ -108,7 +104,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
@@ -697,77 +692,7 @@ public class ActivityInstanceUtils
       }
    }
 
-   /**
-    * @return
-    * 
-    */
-   public List<CompletedActivitiesStatisticsDTO> getCompletedActivies()
-   {
-
-      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
-      Users users = getRelevantUsers();
-      UserPerformanceStatistics userStatistics = getUserStatisticsForCompletedActivities();
-      Iterator<UserItem> userIter = facade.getAllUsersAsUserItems(users).iterator();
-      Collection participants = facade.getAllRolesExceptCasePerformer();
-      UserItem userItem;
-      List<ProcessDefinition> processes = ProcessDefinitionUtils.getAllBusinessRelevantProcesses();
-
-      ProcessDefinition process;
-      PerformanceStatistics pStatistics;
-      Contribution con = null;
-      RoleItem roleItem;
-
-      List<CompletedActivitiesStatisticsDTO> completedActivitiesList = new ArrayList<CompletedActivitiesStatisticsDTO>();
-
-      while (userIter.hasNext())
-      {
-         userItem = (UserItem) userIter.next();
-         CompletedActivitiesStatisticsDTO activityStatsDTO = new CompletedActivitiesStatisticsDTO();
-
-         UserDTO userDTO = DTOBuilder.build(userItem.getUser(), UserDTO.class);
-         userDTO.displayName = UserUtils.getUserDisplayLabel(userItem.getUser());
-         activityStatsDTO.teamMember = userDTO;
-         CompletedActivityPerformanceDTO performanceStatsDTO = null;
-
-         Map<String, CompletedActivityPerformanceDTO> processStats = new HashMap<String, CompletedActivityPerformanceDTO>();
-         if (processes != null)
-         {
-            for (int i = 0; i < processes.size(); i++)
-            {
-               process = (ProcessDefinition) processes.get(i);
-               pStatistics = userStatistics != null ? userStatistics.getStatisticsForUserAndProcess(userItem.getUser()
-                     .getOID(), process.getQualifiedId()) : null;
-
-               int nAisCompletedToday = 0;
-               int nAisCompletedWeek = 0;
-               int nAisCompletedMonth = 0;
-
-               if (pStatistics != null)
-               {
-                  for (Iterator<Participant> iter = participants.iterator(); iter.hasNext();)
-                  {
-                     roleItem = (RoleItem) iter.next();
-                     con = pStatistics.findContribution(roleItem.getRole());
-                     nAisCompletedToday += con.getOrCreatePerformanceInInterval(DateRange.TODAY).getnAisCompleted();
-                     nAisCompletedWeek += con.getOrCreatePerformanceInInterval(DateRange.THIS_WEEK).getnAisCompleted();
-                     nAisCompletedMonth += con.getOrCreatePerformanceInInterval(DateRange.THIS_MONTH)
-                           .getnAisCompleted();
-                  }
-               }
-
-               performanceStatsDTO = new CompletedActivityPerformanceDTO(nAisCompletedToday, nAisCompletedWeek,
-                     nAisCompletedMonth);
-               processStats.put(I18nUtils.getProcessName(process), performanceStatsDTO);
-            }
-
-            activityStatsDTO.statisticsByProcess = processStats;
-         }
-
-         completedActivitiesList.add(activityStatsDTO);
-      }
-
-      return completedActivitiesList;
-   }
+ 
 
    /**
     * 
@@ -878,6 +803,29 @@ public class ActivityInstanceUtils
       }
       return resultList;
    }
+   
+   /**
+    * 
+    * @return
+    */
+   private Users getRelevantUsers()
+   {
+
+      UserQuery query = WorkflowFacade.getWorkflowFacade().getTeamQuery(true);
+      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
+      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
+      userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
+      query.setPolicy(userPolicy);
+
+      if (query.getOrderCriteria().getCriteria().size() == 0)
+      {
+         query.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME).and(UserQuery.ACCOUNT);
+      }
+
+      Users users = facade.getAllUsers((UserQuery) query);
+
+      return users;
+   }
 
    /**
     * 
@@ -926,52 +874,6 @@ public class ActivityInstanceUtils
          }
       }
       return participantList;
-   }
-
-   /**
-    * 
-    * @return
-    */
-   private Users getRelevantUsers()
-   {
-
-      UserQuery query = WorkflowFacade.getWorkflowFacade().getTeamQuery(true);
-      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
-      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
-      userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
-      query.setPolicy(userPolicy);
-
-      if (query.getOrderCriteria().getCriteria().size() == 0)
-      {
-         query.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME).and(UserQuery.ACCOUNT);
-      }
-
-      Users users = facade.getAllUsers((UserQuery) query);
-
-      return users;
-   }
-
-   /**
-    * 
-    * @return
-    */
-   private UserPerformanceStatistics getUserStatisticsForCompletedActivities()
-   {
-
-      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
-
-      List<DateRange> dateRange = CollectionUtils.newArrayList();
-      dateRange.add(DateRange.TODAY);
-      dateRange.add(DateRange.THIS_WEEK);
-      dateRange.add(DateRange.THIS_MONTH);
-
-      UserPerformanceStatisticsQuery userPerformanceStatisticsQuery = UserPerformanceStatisticsQuery.forAllUsers();
-      userPerformanceStatisticsQuery.setPolicy(new StatisticsDateRangePolicy(dateRange));
-
-      UserPerformanceStatistics userStatistics = (UserPerformanceStatistics) facade
-            .getAllUsers(userPerformanceStatisticsQuery);
-
-      return userStatistics;
    }
 
    /**

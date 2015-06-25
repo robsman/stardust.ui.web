@@ -408,9 +408,9 @@ public class ActivityInstanceService
     * 
     * @return
     */
-   public List<CompletedActivitiesStatisticsDTO> getCompletedActivities()
+   public List<CompletedActivitiesStatisticsDTO> getStatsForCompletedActivities()
    {
-      return activityInstanceUtils.getCompletedActivies();
+      return activityStatisticsUtils.getForCompletedActivies();
    }
 
    /**

@@ -215,8 +215,8 @@
 		/**
 		 * 
 		 */
-		ActivityInstanceService.prototype.getCompletedActivities = function( ) {
-			return sdUtilService.ajax(REST_BASE_URL, "", 'completedActivities');
+		ActivityInstanceService.prototype.getStatsForCompletedActivities = function( ) {
+			return sdUtilService.ajax(REST_BASE_URL, "", 'statistics/completedActivities');
 		};
 		
 		/**

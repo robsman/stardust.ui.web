@@ -223,8 +223,8 @@ public class ActivityStatisticsUtils
                }
             }
          }
-
       }
+      
       List<ProcessDefinition> processes = ProcessDefinitionUtils.getAllBusinessRelevantProcesses();
 
       if (CollectionUtils.isNotEmpty(teamleaders))
@@ -257,6 +257,78 @@ public class ActivityStatisticsUtils
          }
       }
       return resultList;
+   }
+   
+   /**
+    * @return
+    * 
+    */
+   public List<CompletedActivitiesStatisticsDTO> getForCompletedActivies()
+   {
+
+      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
+      Users users = getRelevantUsers();
+      UserPerformanceStatistics userStatistics = getUserStatistics();
+      Iterator<UserItem> userIter = facade.getAllUsersAsUserItems(users).iterator();
+      Collection participants = facade.getAllRolesExceptCasePerformer();
+      UserItem userItem;
+      List<ProcessDefinition> processes = ProcessDefinitionUtils.getAllBusinessRelevantProcesses();
+
+      ProcessDefinition process;
+      PerformanceStatistics pStatistics;
+      Contribution con = null;
+      RoleItem roleItem;
+
+      List<CompletedActivitiesStatisticsDTO> completedActivitiesList = new ArrayList<CompletedActivitiesStatisticsDTO>();
+
+      while (userIter.hasNext())
+      {
+         userItem = (UserItem) userIter.next();
+         CompletedActivitiesStatisticsDTO activityStatsDTO = new CompletedActivitiesStatisticsDTO();
+
+         UserDTO userDTO = DTOBuilder.build(userItem.getUser(), UserDTO.class);
+         userDTO.displayName = UserUtils.getUserDisplayLabel(userItem.getUser());
+         activityStatsDTO.teamMember = userDTO;
+         CompletedActivityPerformanceDTO performanceStatsDTO = null;
+
+         Map<String, CompletedActivityPerformanceDTO> processStats = new HashMap<String, CompletedActivityPerformanceDTO>();
+         if (processes != null)
+         {
+            for (int i = 0; i < processes.size(); i++)
+            {
+               process = (ProcessDefinition) processes.get(i);
+               pStatistics = userStatistics != null ? userStatistics.getStatisticsForUserAndProcess(userItem.getUser()
+                     .getOID(), process.getQualifiedId()) : null;
+
+               int nAisCompletedToday = 0;
+               int nAisCompletedWeek = 0;
+               int nAisCompletedMonth = 0;
+
+               if (pStatistics != null)
+               {
+                  for (Iterator<Participant> iter = participants.iterator(); iter.hasNext();)
+                  {
+                     roleItem = (RoleItem) iter.next();
+                     con = pStatistics.findContribution(roleItem.getRole());
+                     nAisCompletedToday += con.getOrCreatePerformanceInInterval(DateRange.TODAY).getnAisCompleted();
+                     nAisCompletedWeek += con.getOrCreatePerformanceInInterval(DateRange.THIS_WEEK).getnAisCompleted();
+                     nAisCompletedMonth += con.getOrCreatePerformanceInInterval(DateRange.THIS_MONTH)
+                           .getnAisCompleted();
+                  }
+               }
+
+               performanceStatsDTO = new CompletedActivityPerformanceDTO(nAisCompletedToday, nAisCompletedWeek,
+                     nAisCompletedMonth);
+               processStats.put(I18nUtils.getProcessName(process), performanceStatsDTO);
+            }
+
+            activityStatsDTO.statisticsByProcess = processStats;
+         }
+
+         completedActivitiesList.add(activityStatsDTO);
+      }
+
+      return completedActivitiesList;
    }
 
    /**
@@ -406,6 +478,29 @@ public class ActivityStatisticsUtils
       query.setPolicy(userPolicy);
       WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
       return facade.getAllUsers(query);
+   }
+   
+   /**
+    * 
+    * @return
+    */
+   private Users getRelevantUsers()
+   {
+
+      UserQuery query = WorkflowFacade.getWorkflowFacade().getTeamQuery(true);
+      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
+      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
+      userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
+      query.setPolicy(userPolicy);
+
+      if (query.getOrderCriteria().getCriteria().size() == 0)
+      {
+         query.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME).and(UserQuery.ACCOUNT);
+      }
+
+      Users users = facade.getAllUsers((UserQuery) query);
+
+      return users;
    }
 
 
