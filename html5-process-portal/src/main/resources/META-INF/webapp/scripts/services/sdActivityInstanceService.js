@@ -250,6 +250,13 @@
 		/**
 		 * 
 		 */
+		ActivityInstanceService.prototype.getCompletedActivityStatsByTeamLead = function( ) {
+			return sdUtilService.ajax(REST_BASE_URL, "", 'statistics/completedActivitiesByTeamLead');
+		};
+		
+		/**
+		 * 
+		 */
 		ActivityInstanceService.prototype.getByOids = function( query, oidsArray ) {
 			var oids = oidsArray.join(',');
 			var restUrl = REST_BASE_URL + "oids";

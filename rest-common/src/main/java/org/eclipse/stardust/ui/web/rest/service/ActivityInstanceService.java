@@ -53,6 +53,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
+import org.eclipse.stardust.ui.web.rest.service.utils.ActivityStatisticsUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils.MODE;
 import org.eclipse.stardust.ui.web.rest.service.utils.CriticalityUtils;
@@ -85,6 +86,9 @@ public class ActivityInstanceService
 
    @Resource
    CriticalityUtils criticalityUtils;
+   
+   @Resource
+   private ActivityStatisticsUtils activityStatisticsUtils;
 
    @Resource
    private RestCommonClientMessages restCommonClientMessages;
@@ -439,6 +443,15 @@ public class ActivityInstanceService
    public List<ColumnDTO> getParticipantColumns()
    {
       return activityInstanceUtils.getParticipantColumns();
+   }
+   
+   /**
+    * 
+    * @return
+    */
+   public List<CompletedActivitiesStatisticsDTO> getPerformanceStatsByTeamLead()
+   {
+      return activityStatisticsUtils.getPerformanceStatsByTeamLead();
    }
 
 }

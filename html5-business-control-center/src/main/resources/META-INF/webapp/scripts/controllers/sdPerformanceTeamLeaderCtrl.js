@@ -15,8 +15,9 @@
 (function() {
 	'use strict';
 
-	angular.module("bcc-ui").controller('sdCompletedActivitiesCtrl',
-			['sdActivityInstanceService', 'sdCommonViewUtilService', '$q', 'sdProcessInstanceService', 'sdLoggerService', '$filter', 'sgI18nService', 'sdLoggedInUserService','sdPreferenceService',CompletedActivitiesCtrl ]);
+	angular.module("bcc-ui").controller('sdPerformanceTeamLeaderCtrl',
+			['sdActivityInstanceService', 'sdCommonViewUtilService', '$q', 'sdProcessInstanceService',
+			 'sdLoggerService', '$filter','sgI18nService', 'sdLoggedInUserService','sdPreferenceService', Controller ]);
 
 
 	var _sdActivityInstanceService = null;
@@ -27,42 +28,42 @@
 	var _filter = null;
 	var _sgI18nService = null;
 	var _sdPreferenceService = null;
-	
+
 	/**
 	 * 
 	 */
-	function CompletedActivitiesCtrl( sdActivityInstanceService, sdCommonViewUtilService, $q, sdProcessInstanceService, 
-									  sdLoggerService, $filter, sgI18nService, sdLoggedInUserService, sdPreferenceService) {
-	
+	function Controller( sdActivityInstanceService, sdCommonViewUtilService, $q, sdProcessInstanceService, 
+			sdLoggerService, $filter, sgI18nService, sdLoggedInUserService, sdPreferenceService) {
+
 		_sdActivityInstanceService = sdActivityInstanceService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
 		_q = $q;
 		_sdProcessInstanceService = sdProcessInstanceService;
-		trace = sdLoggerService.getLogger('bcc-ui.sdCompletedActivitiesCtrl');
+		trace = sdLoggerService.getLogger('bcc-ui.sdController');
 		_filter = $filter; 
 		_sgI18nService =sgI18nService;
 		_sdPreferenceService = sdPreferenceService;
-		
-		this.completedActivities = {
+
+		this.statistics = {
 				totalCount : 0,
-		 		list : []
+				list : []
 		}
-	
+
 		this.columnSelector = sdLoggedInUserService.getUserInfo().isAdministrator ?  'admin' : true;
-		this.exportFileName = "Completed Activities";
+		this.exportFileName = "Performance Team Leader";
 		this.columns = [];
 		this.ready = false;
 		this.dataTable = null;
-		
+
 		// Getting columns for the data table
 		this.getColumns( );
-		this.fetchCompletedActivities();
+		this.fetchStatistics();
 	};
-	
+
 	/**
 	 * 
 	 */
-	CompletedActivitiesCtrl.prototype.getColumns = function( ) {
+	Controller.prototype.getColumns = function( ) {
 		var self = this;
 		_sdProcessInstanceService.getProcessColumns().then(function(result){
 			self.columns = result;
@@ -70,77 +71,69 @@
 			trace.log('Columns retrieved :' + self.columns);
 		});
 	};
-	
-	
 	/**
 	 * 
 	 */
-	CompletedActivitiesCtrl.prototype.fetchCompletedActivities = function( ) {
+	Controller.prototype.fetchStatistics = function( ) {
 		var self = this;
-		_sdActivityInstanceService.getCompletedActivities( ).then(function( result ){
+		_sdActivityInstanceService.getCompletedActivityStatsByTeamLead( ).then(function( result ){
 			trace.log('Completed activities retreived successfully.');
-			self.completedActivities.list = result;
-			self.completedActivities.totalCount = result.length;
+			self.statistics.list = result;
+			self.statistics.totalCount = result.length;
 			self.dataTable.refresh();
 		})
 	};
-	
-	
 	/**
 	 * 
 	 */
-	CompletedActivitiesCtrl.prototype.getCompletedActivities = function( options ) {
+	Controller.prototype.getStatistics = function( options ) {
 		var self = this;
 		var deferred = _q.defer();
 		var result = {
 				list : [],
-				totalCount : self.completedActivities.totalCount
+				totalCount : self.statistics.totalCount
 		}
 		if(options.filters && options.filters.TeamMember && options.filters.TeamMember.textSearch !=''){
 			trace.log("Applying filter with team member",options.filters.TeamMember.textSearch );
-			result.list = _filter('filter')( self.completedActivities.list, {'teamMember' : {'displayName': options.filters.TeamMember.textSearch }},false)
+			result.list = _filter('filter')( self.statistics.list, {'teamMember' : {'displayName': options.filters.TeamMember.textSearch }},false)
 		}else{
-			result.list = self.completedActivities.list;
+			result.list = self.statistics.list;
 		}
 		deferred.resolve(result);
 		return deferred.promise;
 	};
-	
 	/**
 	 * 
 	 */
-	CompletedActivitiesCtrl.prototype.openUserManagerDetails = function(user) {
-		trace.log('Opening user management details view.');
+	Controller.prototype.openUserManagerDetails = function(user) {
+		trace.debug('Opening user management details view');
 		_sdCommonViewUtilService.openUserManagerDetailView( user.oid, user.id, true);
 	};
-	
 	/**
 	 * 
 	 */
-	CompletedActivitiesCtrl.prototype.getExportValue = function(data) {
+	Controller.prototype.getExportValue = function(data) {
 		return (	_sgI18nService.translate('business-control-center-messages.views-common-column-today')+": "+data.day+
-					" "+_sgI18nService.translate('business-control-center-messages.views-common-column-week')+": "+data.week+
-					" "+_sgI18nService.translate('business-control-center-messages.views-common-column-month')+": "+data.month );
+				" "+_sgI18nService.translate('business-control-center-messages.views-common-column-week')+": "+data.week+
+				" "+_sgI18nService.translate('business-control-center-messages.views-common-column-month')+": "+data.month );
 	};
-	
 	/**
 	 * 
 	 */
-	CompletedActivitiesCtrl.prototype.refresh = function( ) {
-		this.getCompletedActivities();
+	Controller.prototype.refresh = function( ) {
+		this.fetchStatistics();
+
 	};
-	
 	/**
 	 * 
 	 */
-	CompletedActivitiesCtrl.prototype.preferenceDelegate = function(prefInfo) {
+	Controller.prototype.preferenceDelegate = function(prefInfo) {
 		var preferenceStore = _sdPreferenceService.getStore('USER', 'ipp-business-control-center',
-				'preference');
+		'preference');
 		// Override
 		preferenceStore.marshalName = function(scope) {
-			return 'ipp-business-control-center.CompletedActivity.selectedColumns';
+			return 'ipp-business-control-center.performanceTeamLeader.selectedColumns';
 		}
-
 		return preferenceStore;
 	};
 

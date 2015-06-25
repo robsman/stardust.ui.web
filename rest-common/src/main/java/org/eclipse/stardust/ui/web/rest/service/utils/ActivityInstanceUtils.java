@@ -43,7 +43,6 @@ import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
-import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.FilterTerm;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.SubsetPolicy;
@@ -711,7 +710,7 @@ public class ActivityInstanceUtils
       Iterator<UserItem> userIter = facade.getAllUsersAsUserItems(users).iterator();
       Collection participants = facade.getAllRolesExceptCasePerformer();
       UserItem userItem;
-      List<ProcessDefinition> processes;
+      List<ProcessDefinition> processes = ProcessDefinitionUtils.getAllBusinessRelevantProcesses();
 
       ProcessDefinition process;
       PerformanceStatistics pStatistics;
@@ -720,7 +719,6 @@ public class ActivityInstanceUtils
 
       List<CompletedActivitiesStatisticsDTO> completedActivitiesList = new ArrayList<CompletedActivitiesStatisticsDTO>();
 
-      processes = ProcessDefinitionUtils.getAllBusinessRelevantProcesses();
       while (userIter.hasNext())
       {
          userItem = (UserItem) userIter.next();

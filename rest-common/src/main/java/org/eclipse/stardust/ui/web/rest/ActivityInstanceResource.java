@@ -668,18 +668,38 @@ public class ActivityInstanceResource
          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
    }
-   
-	/**
-	 * 
-	 * @param processInstanceOID
-	 * @return
-	 */
-	private ProcessInstance getProcessInstance(long processInstanceOID)
-	{
-	    return ProcessInstanceUtils.getProcessInstance(Long.valueOf(processInstanceOID));
-	}
     
-   /** 
+    /**
+     * Gets the completed activities by process  
+     * @param postedData
+     * @return
+     */
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/statistics/completedActivitiesByTeamLead")
+    public Response getPerformanceStatsByTeamLead()
+    {
+       try{
+          List<CompletedActivitiesStatisticsDTO> result = activityInstanceService.getPerformanceStatsByTeamLead();
+          return Response.ok(AbstractDTO.toJson(result), MediaType.APPLICATION_JSON).build();
+       } catch (Exception e)
+       {
+          trace.error("", e);
+          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+       }
+    }
+    
+    /**
+     * 
+     * @param processInstanceOID
+     * @return
+     */
+    private ProcessInstance getProcessInstance(long processInstanceOID)
+    {
+        return ProcessInstanceUtils.getProcessInstance(Long.valueOf(processInstanceOID));
+    }
+    
+    /** 
     * @author Yogesh.Manware
     * @param httpRequest
     * @param paramName
