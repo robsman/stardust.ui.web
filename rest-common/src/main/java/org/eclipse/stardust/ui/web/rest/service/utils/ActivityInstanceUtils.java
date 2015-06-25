@@ -96,6 +96,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.PathDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PendingActivitiesStatisticsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PostponedActivitiesResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PostponedActivitiesStatsDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
@@ -1067,14 +1068,14 @@ public class ActivityInstanceUtils
     * 
     * @return
     */
-   public List<ColumnDTO> getAllRoles()
+   public List<SelectItemDTO> getAllRoles()
    {
       WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
       List<RoleItem> participantList = facade.getAllRolesExceptCasePerformer();
-      List<ColumnDTO> roleList = new ArrayList<ColumnDTO>();
+      List<SelectItemDTO> roleList = new ArrayList<SelectItemDTO>();
       for (RoleItem role : participantList)
       {
-         roleList.add(new ColumnDTO(role.getRole().getId(), role.getRoleName()));
+         roleList.add(new SelectItemDTO(role.getRole().getId(), role.getRoleName()));
       }
       return roleList;
    }

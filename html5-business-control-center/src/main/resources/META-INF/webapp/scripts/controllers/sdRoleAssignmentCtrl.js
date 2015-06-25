@@ -58,8 +58,8 @@
 		_sdRoleAssignmentService.getRoleAssignments().then(function(data) {
 			self.roleAssignments.list = data.list;
 			self.roleAssignments.totalCount = data.totalCount;
-			self.columns = data.roleColumns;
-			self.columnsLabelMap = data.columnsLabel;
+			self.columns = data.columns;
+			self.columnsLabelMap = data.columnsDefinition;
 			self.showRoleAssignmentTable = true;
 			_timeout(function() {
 				self.createTable = true;

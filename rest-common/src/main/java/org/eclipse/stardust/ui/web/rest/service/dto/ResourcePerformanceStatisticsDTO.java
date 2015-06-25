@@ -8,29 +8,27 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
+package org.eclipse.stardust.ui.web.rest.service.dto;
+
+import java.util.Map;
+
+import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
+
 /**
+ * 
  * @author Abhay.Thappan
+ *
  */
-package org.eclipse.stardust.ui.web.rest.service;
-
-import javax.annotation.Resource;
-
-import org.eclipse.stardust.ui.web.rest.service.dto.GenericQueryResultDTO;
-import org.eclipse.stardust.ui.web.rest.service.utils.RoleAssignmentUtils;
-import org.springframework.stereotype.Component;
-
-@Component
-public class RoleAssignmentService
+@DTOClass
+public class ResourcePerformanceStatisticsDTO extends AbstractDTO
 {
-   @Resource
-   private RoleAssignmentUtils roleAssignmentUtils;
+   public String processDefinitionId;
 
-   /**
-    * 
-    * @return
-    */
-   public GenericQueryResultDTO getRoleAssignments()
+   public Map<String, ProcessingTimeDTO> statisticsByColumns;
+
+   public ResourcePerformanceStatisticsDTO(String label, Map<String, ProcessingTimeDTO> map)
    {
-      return roleAssignmentUtils.getRoleAssignments();
+      processDefinitionId = label;
+      statisticsByColumns = map;
    }
 }

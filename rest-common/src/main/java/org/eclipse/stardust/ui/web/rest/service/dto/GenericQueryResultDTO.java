@@ -8,29 +8,17 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
+package org.eclipse.stardust.ui.web.rest.service.dto;
+
+import java.util.Map;
+import java.util.Set;
+
 /**
  * @author Abhay.Thappan
+ * @version $Revision: $
  */
-package org.eclipse.stardust.ui.web.rest.service;
-
-import javax.annotation.Resource;
-
-import org.eclipse.stardust.ui.web.rest.service.dto.GenericQueryResultDTO;
-import org.eclipse.stardust.ui.web.rest.service.utils.RoleAssignmentUtils;
-import org.springframework.stereotype.Component;
-
-@Component
-public class RoleAssignmentService
+public class GenericQueryResultDTO extends QueryResultDTO
 {
-   @Resource
-   private RoleAssignmentUtils roleAssignmentUtils;
-
-   /**
-    * 
-    * @return
-    */
-   public GenericQueryResultDTO getRoleAssignments()
-   {
-      return roleAssignmentUtils.getRoleAssignments();
-   }
+   public Set<String> columns;
+   public Map<String, ?> columnsDefinition;
 }

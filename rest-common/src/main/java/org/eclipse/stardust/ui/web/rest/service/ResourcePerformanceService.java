@@ -8,17 +8,26 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.stardust.ui.web.rest.service.dto;
-
-import java.util.Map;
-import java.util.Set;
-
 /**
  * @author Abhay.Thappan
- * @version $Revision: $
  */
-public class RoleAssignmentResultDTO extends QueryResultDTO
+package org.eclipse.stardust.ui.web.rest.service;
+
+import javax.annotation.Resource;
+
+import org.eclipse.stardust.ui.web.rest.service.dto.GenericQueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.utils.ResourcePerformanceUtils;
+import org.springframework.stereotype.Component;
+
+@Component
+public class ResourcePerformanceService
 {
-   public Set<String> roleColumns;
-   public Map<String, String> columnsLabel;
+   @Resource
+   private ResourcePerformanceUtils resourcePerformanceUtils;
+
+   public GenericQueryResultDTO getResourcePerformanceData(String roleId)
+   {
+      return resourcePerformanceUtils.createUserStatistics(roleId);
+   }
+
 }

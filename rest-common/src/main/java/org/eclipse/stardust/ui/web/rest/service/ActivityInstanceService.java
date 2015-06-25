@@ -48,6 +48,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.PendingActivitiesStatisticsD
 import org.eclipse.stardust.ui.web.rest.service.dto.PostponedActivitiesResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
@@ -417,7 +418,7 @@ public class ActivityInstanceService
       return activityInstanceUtils.getPendingActivities();
    }
 
-   public List<ColumnDTO> getAllRoles()
+   public List<SelectItemDTO> getAllRoles()
    {
       return activityInstanceUtils.getAllRoles();
    }
