@@ -1,29 +1,35 @@
-<div class="view-panel" ng-controller="sdResourcePerformanceCtrl as ctrl"
-	sg-stretch-to-bottom>
+<div class="view-panel"
+	ng-controller="sdResourcePerformanceCtrl as ctrl" sg-stretch-to-bottom>
 	<div class="toolbar-buttons">
 		<div class="view-toolbar-section">
 			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
 		</div>
 	</div>
 
-
+	<div>
+		<span>{{i18n("business-control-center-messages.views-resourcePerformance-roleOrOrg-label")}}:</span>
+		<select size="1" style="white-space: nowrap; margin: 3px;"
+			ng-model="ctrl.selectedRole" ng-change="ctrl.roleChanged()"
+			ng-options="opt.value as opt.label for opt in ctrl.roles"></select>
+	</div>
 	<div class="view-panel-content">
-		<table sd-data-table="ctrl.dataTable" 
-			sd-data="ctrl.getResourcePerformanceData(params)" sda-ready="ctrl.ready"
+		<table sd-data-table="ctrl.dataTable"
+			sd-data="ctrl.getResourcePerformanceData(params)"
+			sda-ready="ctrl.ready"
 			sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
 			sda-sortable="true"
 			sda-sort-by="{name : 'processDefinitionId', dir : 'desc'}"
-			sda-mode="remote" sda-sortable="false"
-			sda-exports="true" sda-exports-file-name="{{ctrl.exportFileName}}"
+			sda-mode="remote" sda-sortable="false" sda-exports="true"
+			sda-exports-file-name="{{ctrl.exportFileName}}"
 			sda-column-selector="{{ctrl.columnSelector}}">
 			<thead>
 				<tr>
-					<th sda-name="processDefinitionId" sda-sortable="true" sda-visible="true"
-						sda-fixed="true"
+					<th sda-name="processDefinitionId" sda-sortable="true"
+						sda-visible="true" sda-fixed="true"
 						sda-label="{{i18n('business-control-center-messages.views-resourcePerformance-column-processDefinition')}}">
 					</th>
 					<th ng-repeat="col in ctrl.columns" sda-name="{{col}}"
-						 sda-label="{{ctrl.columnsDefinition[col]}}"></th>
+						sda-label="{{ctrl.columnsDefinition[col]}}"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -34,24 +40,31 @@
 						sda-exporter="ctrl.getExportValue(rowData.statisticsByColumns[colData.title])">
 						<div>
 							<b>{{i18n("business-control-center-messages.views-resourcePerformance-column-waitingTime")}}
-								: </b> 
-							<span
+								: </b> <span
 								ng-bind="rowData.statisticsByColumns[colData.title].averageTime">
-						   </span>
+							</span>
 						</div>
 						<div>
 							<b>{{i18n("business-control-center-messages.views-resourcePerformance-column-processingTime")}}
-								: </b> 
-							<span
+								: </b> <span
 								ng-bind="rowData.statisticsByColumns[colData.title].averageWaitingTime">
-						   </span>
+							</span>
 						</div>
 						<div>
 							<b>{{i18n("business-control-center-messages.views-common-column-status")}}
-								: </b> 
-							<span
-								ng-bind="rowData.statisticsByColumns[colData.title].state">
-						   </span>
+								: </b> <span
+								ng-if="rowData.statisticsByColumns[colData.title].state == 1"
+								title="{{i18n('business-control-center-messages.views-trafficLightView-critical')}}">
+								<i class="sc sc-fw sc-2x sc-circle" style="color: red"></i>
+							</span> <span
+								ng-if="rowData.statisticsByColumns[colData.title].state == 2"
+								title="{{i18n('business-control-center-messages.views-trafficLightView-warning')}}">
+								<i class="sc sc-fw sc-2x sc-circle" style="color: yellow"></i>
+							</span> <span
+								ng-if="rowData.statisticsByColumns[colData.title].state == 3"
+								title="{{i18n('business-control-center-messages.views-trafficLightView-normal')}}">
+								<i class="sc sc-fw sc-1x sc-circle" style="color: green"></i>
+							</span>
 						</div>
 					</td>
 				</tr>

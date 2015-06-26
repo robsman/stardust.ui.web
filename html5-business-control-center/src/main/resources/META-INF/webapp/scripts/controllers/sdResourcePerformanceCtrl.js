@@ -55,7 +55,6 @@
 		this.columns = [];
 		this.ready = false;
 		this.dataTable = null;
-		this.activityTable = null;
 
 		// Getting columns for the data table
 		this.getRoles();
@@ -69,7 +68,8 @@
 		var self = this;
 		_sdActivityInstanceService.getRoleColumns().then(function(result) {
 			self.roles = result;
-			self.getResourcePerformance(self.roles[0].value);
+			self.selectedRole = self.roles[0].value;
+			self.getResourcePerformance(self.selectedRole);
 			trace.log('Columns retrieved :' + self.roles);
 		}).then(function(failure) {
 			trace.log(failure);
@@ -88,7 +88,11 @@
 			self.resourcePerformance.totalCount = result.totalCount;
 			self.columns = result.columns;
 			self.columnsDefinition = result.columnsDefinition;
+			if(self.dataTable != undefined){
+				self.dataTable.refresh();
+			}else {
 			self.ready = true;
+			}
 			//deferred.resolve(self.pendingActivities);
 			console.log(self.resourcePerformance)
 		}).then(function(failure) {
@@ -101,6 +105,14 @@
 	ResourcePerformanceCtrl.prototype.getResourcePerformanceData = function(options){
 		var self = this;
 		return self.resourcePerformance;
+	};
+	
+	/**
+	 * 
+	 */
+	ResourcePerformanceCtrl.prototype.roleChanged = function(){
+		var self = this;
+		self.getResourcePerformance(self.selectedRole);
 	};
 
 	/**
