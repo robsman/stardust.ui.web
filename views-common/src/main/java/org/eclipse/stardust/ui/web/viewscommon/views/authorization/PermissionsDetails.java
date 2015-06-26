@@ -178,6 +178,7 @@ public class PermissionsDetails
    /**
     * @param permissionId
     * @return
+    * @deprecated
     */
    public boolean hasAllGrant(String permissionId)
    {
@@ -204,6 +205,36 @@ public class PermissionsDetails
       return false;
    }
 
+   /**
+    * 
+    * @param permissionId
+    * @return
+    */
+   public boolean hasAllGrant2(String permissionId)
+   {
+      if (UiPermissionUtils.isGeneralPermissionId(permissionId))
+      {
+         return generalPermission.hasAllGrant(permissionId);
+      }
+      else
+      {
+         List<String> grants = uiPermissions.get(permissionId + UiPermissionUtils.SUFFIX_ALLOW);
+
+         if (grants != null)
+         {
+            if (grants.contains(Authorization2.ALL))
+            {
+               return true;
+            }
+         }
+         else
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+   
    /**
     * @param permissionId
     * @return

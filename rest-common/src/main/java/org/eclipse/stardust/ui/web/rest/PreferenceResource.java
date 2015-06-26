@@ -10,9 +10,12 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest;
 
+import static org.eclipse.stardust.ui.web.common.util.StringUtils.splitUnique;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,7 +47,6 @@ import org.eclipse.stardust.ui.web.rest.service.dto.response.PermissionDTO.Parti
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import static org.eclipse.stardust.ui.web.common.util.StringUtils.splitUnique;
 
 import com.google.gson.Gson;
 
@@ -197,9 +199,20 @@ public class PreferenceResource
       {
          grantsMap = JsonDTO.getAsMap(postedData);
       }
-      Map<String, Set<PermissionDTO>> permissions = authorizationManagerService.updateGrants(
-            (Set<String>) grantsMap.get("allow"), (Set<String>) grantsMap.get("deny"),
-            (Set<String>) grantsMap.get("participants"));
+      
+      HashSet<String> participant = new HashSet<String>((Collection< ? extends String>) grantsMap.get("participants"));
+      HashSet<String> allow = new HashSet<String>((Collection< ? extends String>) grantsMap.get("allow"));
+      HashSet<String> deny = new HashSet<String>((Collection< ? extends String>) grantsMap.get("deny"));
+      
+      boolean overwrite = false;
+      if (grantsMap.containsKey("overwrite"))
+      {
+         overwrite = (Boolean) grantsMap.get("overwrite");
+      }
+      
+      
+      Map<String, Set<PermissionDTO>> permissions = authorizationManagerService.updateGrants(allow, deny, participant,
+            overwrite);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(permissions), MediaType.APPLICATION_JSON).build();
    }
 

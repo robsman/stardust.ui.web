@@ -89,16 +89,16 @@ public class AuthorizationManagerService
     * @param selectedParticipants
     */
    public Map<String, Set<PermissionDTO>> updateGrants(Set<String> allow, Set<String> deny,
-         Set<String> selectedParticipants)
+         Set<String> selectedParticipants, boolean overwrite)
    {
       PermissionsDetails permissions = getPermissionDetails();
       if (allow != null)
       {
-         updateGrants(allow, selectedParticipants, permissions);
+         updateGrants(allow, selectedParticipants, permissions, overwrite);
       }
       if (deny != null)
       {
-         updateDeniedGrants(deny, selectedParticipants, permissions);
+         updateDeniedGrants(deny, selectedParticipants, permissions, overwrite);
       }
       savePermissions(permissions);
       return fetchPermissions();
@@ -142,8 +142,8 @@ public class AuthorizationManagerService
          allow.addAll(participantDTO.allow);
          deny.addAll(participantDTO.deny);
       }
-      updateGrants(allow, targetParticipants, permissions);
-      updateDeniedGrants(deny, targetParticipants, permissions);
+      updateGrants(allow, targetParticipants, permissions, false);
+      updateDeniedGrants(deny, targetParticipants, permissions, false);
       savePermissions(permissions);
       return fetchPermissions();
    }
@@ -388,11 +388,15 @@ public class AuthorizationManagerService
     * @param selectedParticipants
     * @param permissions
     */
-   private void updateGrants(Set<String> permissionIds, Set<String> selectedParticipants, PermissionsDetails permissions)
+   private void updateGrants(Set<String> permissionIds, Set<String> selectedParticipants, PermissionsDetails permissions, boolean overwrite)
    {
       for (String permissionId : permissionIds)
       {
          Set<ModelParticipantInfo> participants = permissions.getGrants2(permissionId);
+         if (overwrite)
+         {
+            participants.clear();
+         }
 
          for (String qualifiedParticipantId : selectedParticipants)
          {
@@ -435,12 +439,17 @@ public class AuthorizationManagerService
     * @param permissions
     */
    private void updateDeniedGrants(Set<String> permissionIds, Set<String> selectedParticipants,
-         PermissionsDetails permissions)
+         PermissionsDetails permissions, boolean overwrite)
    {
       for (String permissionId : permissionIds)
       {
          Set<ModelParticipantInfo> participants = permissions.getDeniedGrants(permissionId);
 
+         if (overwrite)
+         {
+            participants.clear();
+         }
+         
          for (String qualifiedParticipantId : selectedParticipants)
          {
             boolean isExist = false;

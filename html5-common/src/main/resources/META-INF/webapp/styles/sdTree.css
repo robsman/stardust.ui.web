@@ -161,7 +161,9 @@ ul.sd-tree a.tree-node:hover{
   background:#ddd;
 }
 
-
-
-
-
+ul.sd-tree .tree-node.selected span{
+  background:grey;
+  color:#fff;
+  border-radius:5px;
+}
+	

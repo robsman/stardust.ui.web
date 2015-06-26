@@ -30,6 +30,7 @@
     ORGANIZATION: "ORGANIZATION",
     ROLE: "ROLE"
   }
+  var All = null;
 
   /**
    * 
@@ -49,23 +50,36 @@
     i18n = $scope.sdI18nHtml5Admin = sdI18nService
             .getInstance('html5-admin-portal').translate;
 
+    All = {
+      name: sdI18nService.getInstance('views-common-messages').translate(
+              "views.common.all"),
+      id: 'all',
+      participantQualifiedId: 'all',
+      qualifiedId: 'all'
+    };
+    
     _sdAuthorizationManagerService = sdAuthorizationManagerService;
 
     this.participants = {
       list: [],
       totalCount: 0
     };
-   
+
     // Track our multi selectable roles
-    this.selectedRoles = [];
-    
+    this.selectedParticipants = [];
+
     this.refreshParticipants();
 
-    _sdAuthorizationManagerService.getPermissions().then(function(permissions) {
-      self.initializePermissionTree($interval, $timeout, permissions);
-    }, function(err) {
-      // handle error
-    });
+    // expose our injected dependencies for use on our prototype chain.
+    this.$interval = $interval;
+    this.$timeout = $timeout;
+    this.refreshPermissions();
+
+    // initialize heavily used labels to reduce the size of html
+    this.labels = {};
+    this.labels.removeParticipant = i18n("views.authorizationManagerViewHtml5.permissionTree.removeParticipant");
+    this.labels.removeAllParticipants = i18n("views.authorizationManagerViewHtml5.permissionTree.removeAll");
+    this.labels.restore = i18n("views.authorizationManagerViewHtml5.permissionTree.restore");
 
     AMCtrl.prototype.safeApply = function() {
       sdUtilService.safeApply($scope);
@@ -79,21 +93,23 @@
     this.showMessage = true;
     // count organizations and roles
     var orgs = 0, roles = 0;
+    this.selectedParticipants = [];
     for (var i = 0; i < selectInfo.all.length; i++) {
       if (selectInfo.all[i].type == ParticipantType.ORGANIZATION) {
         orgs++;
       } else if (selectInfo.all[i].type == ParticipantType.ROLE) {
         roles++;
       }
-      this.selectedRoles.push(selectInfo.all[i]);
+      this.selectedParticipants.push(selectInfo.all[i]);
     }
-
-    this.participantsMsg = {};
-    this.participantsMsg.message = i18n(
+    
+    this.showMessage = true;
+    var participantsMsg = {};
+    participantsMsg.message = i18n(
             "views.authorizationManagerViewHtml5.selectedParticipantInfo",
             "Selected Participants", [orgs, roles]);
-    this.participantsMsg.type = "ok";
-    _sdMessageService.showMessage(this.participantsMsg);
+    participantsMsg.type = "ok";
+    _sdMessageService.showMessage(participantsMsg);
   }
 
   /**
@@ -191,13 +207,9 @@
   }
 
   // Permission Tree related code
-  AMCtrl.prototype.initializePermissionTree = function($interval, $timeout,
-          permissions) {
+  AMCtrl.prototype.initializePermissionTree = function(permissions) {
 
     var that = this; // self reference
-
-    // Linking to our global data (see globalData.js) this would normally be in
-    // as a service call but I'm just hardcoding in the POC.
     this.data = permissions;
 
     // Classic DOM references to our tree which we wil leverage for filtering.
@@ -208,22 +220,6 @@
     // Track our multi selected permissions
     this.selectedAllow = [];
     this.selectedDeny = [];
-
-    // Test roles for drag-n-drop
-    this.roles = [{
-      "participantQualifiedId": "TestRole1",
-      name: "Test Role 1"
-    }, {
-      "participantQualifiedId": "TestRole2",
-      name: "Test Role 2"
-    }, {
-      "participantQualifiedId": "TestRole3",
-      name: "Test Role 3"
-    }];
-
-    // expose our injected dependencies for use on our prototype chain.
-    this.$interval = $interval;
-    this.$timeout = $timeout;
 
     // labels for our tree node. We put them in an array so we
     // can ng-repeat over a single node and generate its own scope.
@@ -335,7 +331,7 @@
   }
 
   // Handle select and multi selects of our permissions.
-  AMCtrl.prototype.addSelectedPermission = function(role, e, target) {
+  AMCtrl.prototype.addSelectedPermission = function(permission, e, target) {
 
     var srcArray = this.selectedAllow;
 
@@ -343,19 +339,19 @@
       srcArray = this.selectedDeny;
     }
 
-    var roleIndex = srcArray.indexOf(role);
+    var permissionIndex = srcArray.indexOf(permission);
 
     if (e.ctrlKey) {
-      if (roleIndex >= 0) {
-        srcArray.splice(roleIndex, 1);
+      if (permissionIndex >= 0) {
+        srcArray.splice(permissionIndex, 1);
       } else {
-        srcArray.push(role);
+        srcArray.push(permission);
       }
     } else {
       while (srcArray.pop()) {
       }
-      if (roleIndex === -1) {
-        srcArray.push(role);
+      if (permissionIndex === -1) {
+        srcArray.push(permission);
       }
     }
   };
@@ -363,11 +359,11 @@
   // Handle the drag start event from our role objects
   AMCtrl.prototype.roleDragStart = function(data, e) {
     var that = this;
-    if (this.selectedRoles.indexOf(data) === -1) {
+    if (this.selectedParticipants.indexOf(data) === -1) {
       that.$timeout(function() {
-        while (that.selectedRoles.pop()) {
+        while (that.selectedParticipants.pop()) {
         }
-        that.selectedRoles.push(data);
+        that.selectedParticipants.push(data);
 
       }, 0);
     }
@@ -417,70 +413,136 @@
   // Add a role to a permission ALLOW,
   // this is a callback wired to the sd-data-drop directive
   // and as such we need to invoke $timeout to initiate a digest.
-  AMCtrl.prototype.addRole = function(data, e) {
-
-    var scope, that = this, permission;
-
-    scope = angular.element(e.srcElement).scope();
-    permission = scope.$parent.$parent.genItem;
-    // Do service call and on 200 update UI
-    this.$timeout(function() {
-      // TODO: need to add to our allNodes array or it isnt filterable
-      that.selectedRoles.forEach(function(role) {
-        // adding to permission we dropped on
-        if (permission.allow.indexOf(role) === -1) {
-          permission.allow.push(role);
-        }
-        // adding to permissiosn in our multiselect collection
-        that.selectedAllow.forEach(function(p) {
-          if (p.allow.indexOf(role) === -1) {
-            p.allow.push(role);
-          }
-        });
-      });
-      scope.$parent.isVisible = true;
-    }, 0);
-
+  AMCtrl.prototype.allowRole = function(data, e) {
+    var scope = angular.element(e.srcElement).scope();
+    var permission = scope.$parent.$parent.genItem;
+    if (this.selectedAllow.indexOf(permission) == -1) {
+      this.selectedAllow.push(permission);
+    }
+    this.updatePermissions(scope);
   };
 
   // Deny a role to a permission DENY
   // this is a callback wired to the sd-data-drop directive
   // and as such we need to invoke $timeout to initiate a digest.
   AMCtrl.prototype.denyRole = function(data, e) {
+    var scope = angular.element(e.srcElement).scope();
+    var permission = scope.$parent.$parent.genItem;
+    if (this.selectedDeny.indexOf(permission) == -1) {
+      this.selectedDeny.push(permission);
+    }
+    this.updatePermissions(scope);
+  };
 
-    var scope, that = this, permission;
+  // update permissions pertaining to all selected nodes
+  AMCtrl.prototype.updatePermissions = function(scope) {
+    var self = this;
+    this.showMessage2 = false;
+    
+    this.$timeout(
+    function() {
+      // TODO: need to add to our allNodes array or it isnt
+      // filterable
+      self.selectedParticipants.forEach(function(participant) {
+        // adding to permissiosn in our multiselect
+        // collection
+        
+        // Allow
+        self.selectedAllow.forEach(function(p, i, arr) {
+          var exist = false;
+          var allindex = null;
+          
+          p.allow.forEach(function(participant2, j, arr) {
+            if (participant2.participantQualifiedId == participant.qualifiedId) {
+              exist = true;
+            } else if (participant2.participantQualifiedId == 'all') {
+              allindex = j;
+            }
+          });
 
-    scope = angular.element(e.srcElement).scope();
-    permission = scope.$parent.$parent.genItem;
-    // Do service call and on 200 update UI
-    this.$timeout(function() {
-      // TODO: need to add to our allNodes array or it isnt filterable
-      that.selectedRoles.forEach(function(role) {
-        // adding to permission we dropped on
-        if (permission.deny.indexOf(role) === -1) {
-          permission.deny.push(role);
-        }
-        // adding to permissiosn in our multiselect collection
-        that.selectedDeny.forEach(function(p) {
-          if (p.deny.indexOf(role) === -1) {
-            p.deny.push(role);
+          if (!exist) {
+            //check there exist "All", if yes, remove it.
+            if(allindex != null){
+              p.allow.splice(allindex, 1);  
+            }
+
+            p.allow.push({
+              name: participant.name,
+              participantQualifiedId: participant.qualifiedId
+            });
+          }
+        });
+
+        // Deny
+        self.selectedDeny.forEach(function(p) {
+          var exist = false;
+          var allindex = null;
+ 
+          p.deny.forEach(function(participant2, j, arr) {
+            if (participant2.participantQualifiedId == participant.qualifiedId) {
+              exist = true;
+            } else if (participant2.participantQualifiedId == 'all') {
+              allindex = j;
+            }
+          });
+
+          if (!exist) {
+          //check there exist "All", if yes, remove it.
+            if(allindex){
+              p.deny.splice(allindex, 1);  
+            }
+            p.deny.push({
+              name: participant.name,
+              participantQualifiedId: participant.qualifiedId
+            });
           }
         });
       });
       scope.$parent.isVisible = true;
-    }, 0);
+      _sdAuthorizationManagerService.savePermissions(
+      self.selectedParticipants, self.selectedAllow,
+      self.selectedDeny);
 
-  };
+    }, 0);
+  }
 
   // handles removing items from our allow or deny arrays
-  AMCtrl.prototype.menuCallback = function(v, e) {
+  AMCtrl.prototype.removeParticipant = function(v, e) {
+    var self = this;
+    this.showMessage2 = false;
+    var scope = angular.element(e.srcElement).scope();
+    var permission = scope.$parent.$parent.genItem;
+    
     if (v.menuEvent === "menuItem.clicked") {
       v.item.ref[v.item.target].forEach(function(w, i, arr) {
-        // //TODO: Remove from allNodes array
         if (w.participantQualifiedId === v.item.role.participantQualifiedId) {
-          arr.splice(i, 1);
+          if(w.participantQualifiedId == All.id){
+            self.showMessage2 = true;
+            var warning = {};
+            warning.message = i18n("views.authorizationManagerViewHtml5.permissionTree.warning.removeAll");
+            warning.type = "warn";
+            _sdMessageService.showMessage(warning);
+          } 
+
+          arr.splice(i, 1);  
         }
       });
+      
+      var allow = null;
+      var deny = null;
+      if (v.item.target === "allow") {
+        //if (selectedAll) { v.deferred.resolve(); return; }
+        allow = [permission];
+      }
+      if (v.item.target === "deny") {
+        deny = [permission];
+      }
+      
+      var participants = angular.copy(v.item.ref[v.item.target]);
+      if (v.item.ref[v.item.target].length == 0) {
+        v.item.ref[v.item.target].push(All);
+      }
+      _sdAuthorizationManagerService.savePermissions(participants, allow, deny, true);
     }
     v.deferred.resolve();
   };
@@ -492,8 +554,13 @@
   /**
    * 
    */
-  AMCtrl.prototype.refreshPermissionsTree = function() {
-    alert('Refresh Permissions tree');
+  AMCtrl.prototype.refreshPermissions = function() {
+    var self = this;
+    _sdAuthorizationManagerService.getPermissions().then(function(permissions) {
+      self.initializePermissionTree(permissions);
+    }, function(err) {
+      // handle error
+    });
   };
 
   /**

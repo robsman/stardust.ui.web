@@ -50,7 +50,6 @@
       // Prepare URL
       var restUrl = PART_REST_BASE_URL + "/searchParticipants";
       var participantSearchResult = $resource(restUrl, queryParams);
-      var query = participantSearchResult.query();
 
       return participantSearchResult.query().$promise;
     };
@@ -85,8 +84,36 @@
     }
 
     // update permissions with participants (allow/deny)
-    AMService.prototype.savePermissions = function(postedData) {
-      return grantResource.save({}, postedData).$promise;
+    AMService.prototype.savePermissions = function(participants, allow, deny, overwrite) {
+      // format data
+      var data = {};
+      data.participants = [];
+      data.allow = [];
+      data.deny = [];
+      data.overwrite = overwrite;
+      for (var i = 0; i < participants.length; i++) {
+        if (participants[i].qualifiedId) {
+          data.participants.push(participants[i].qualifiedId);
+        } else {
+          data.participants.push(participants[i].participantQualifiedId);
+        }
+      }
+      for (var j = 0; j < allow.length; j++) {
+        if (allow[j].id) {
+          data.allow.push(allow[j].id);
+        } else {
+          data.allow.push(allow[j]);
+        }
+      }
+      for (var k = 0; deny != null && k < deny.length; k++) {
+        if (deny[k].id) {
+          data.deny.push(deny[k].id);
+        } else {
+          data.deny.push(deny[k]);
+        }
+      }
+
+      return grantResource.save({}, data).$promise;
     }
 
   }
