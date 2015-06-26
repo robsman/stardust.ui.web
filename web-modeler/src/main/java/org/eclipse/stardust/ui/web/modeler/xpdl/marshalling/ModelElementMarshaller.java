@@ -790,11 +790,14 @@ public class ModelElementMarshaller implements ModelMarshaller
                   if ((null == EventMarshallingUtils.resolveHostedEvent(handler))
                         && !isEmpty(EventMarshallingUtils.encodeEventHandlerType(handler.getType())))
                   {
-                     JsonObject boundaryEventJson = toBoundaryEventJson(handler,
-                           boundaryEventHostSymbol);
-                     eventSymbols.add(
-                           boundaryEventJson.get(ModelerConstants.OID_PROPERTY)
-                                 .getAsString(), boundaryEventJson);
+                     if (!handler.getId().equals("Resubmission"))
+                     {
+                        JsonObject boundaryEventJson = toBoundaryEventJson(handler,
+                              boundaryEventHostSymbol);
+                        eventSymbols.add(
+                              boundaryEventJson.get(ModelerConstants.OID_PROPERTY)
+                                    .getAsString(), boundaryEventJson);
+                     }
                   }
                }
             }
