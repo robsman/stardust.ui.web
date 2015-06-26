@@ -1,4 +1,4 @@
-<!-- script src="http://localhost:8080/ipp90m4/plugins/html5-common/scripts/directives/sdDropDownMenu.js"></script-->
+<!-- BenchMark Definitions CRUD View -->
 <div class="view-panel" 
      ng-controller="benchmarkCtrl as ctrl"
 	 sg-stretch-to-bottom>
@@ -44,7 +44,6 @@
 	</div>
 	
 	<!-- sdDialog Directives End -->
-	 
 	<i style="position:absolute;font-size:1.5em;cursor:pointer;" 
 	   ng-click="ctrl.showBenchmarks = !ctrl.showBenchmarks" 
 	   ng-class="{'sc-arrow-d': ctrl.showBenchmarks,'sc-arrow-r': !ctrl.showBenchmarks}"
@@ -53,64 +52,113 @@
 	
 	<span style="margin:2em;" class="header">Benchmark Definitions</span>
 	
-	<!-- Data Table for Benchmarks -->
+	<!-- Design Mode Data Table for Benchmarks -->
 	<div ng-show="ctrl.showBenchmarks">
 	
 		<select ng-model="ctrl.benchmarkFilter" 
-		        ng-change="ctrl.loadBenchmarks(ctrl.benchmarkFilter)">
+		        ng-change="ctrl.onStatusChange(ctrl.benchmarkFilter)">
 			<option selected value="Design">Designs</option>
 			<option value="Published">Published</option>
 		</select>
 		
-		<div ng-if="ctrl.benchmarkFilter==='Design'" sda-toolbar>
+		<div ng-show="ctrl.benchmarkFilter==='Design'">
 		
-		    <a href="" ng-click="ctrl.createBenchmark()" title="Add Benchmark" class="tbl-toolbar-item tbl-tool-link">
-		       <i class="glyphicon glyphicon-plus-sign"></i>
-		    </a>
-		    
-		    <a href="" ng-click="ctrl.deleteBenchmark(ctrl.selectedBenchmark.id)" title="Delete Benchmark" class="tbl-toolbar-item tbl-tool-link">
-		       <i class="glyphicon glyphicon-minus-sign"></i>
-		    </a>	
-		    
-		    <a href="" ng-click="ctrl.cloneBenchmark(ctrl.selectedBenchmark.id)" title="CloneBenchmark" class="tbl-toolbar-item tbl-tool-link">
-		       <i class="glyphicon glyphicon-copy"></i>
-		    </a>
-		    
-		    <a href="" 
-		       ng-click="ctrl.publishBenchmark(ctrl.selectedBenchmark.id)" 
-		       title="Publish Benchmark" class="tbl-toolbar-item tbl-tool-link">
-		       <i class="glyphicon glyphicon-globe"></i>
-		    </a>	    
-		    
+			<div  sda-toolbar>
+			
+			    <a href="" ng-click="ctrl.createBenchmark()" title="Add Benchmark" class="tbl-toolbar-item tbl-tool-link">
+			       <i class="glyphicon glyphicon-plus-sign"></i>
+			    </a>
+
+			    <a href="" ng-click="ctrl.deleteBenchmark(ctrl.selectedBenchmark.id)" title="Delete Benchmark" class="tbl-toolbar-item tbl-tool-link">
+			       <i class="glyphicon glyphicon-minus-sign"></i>
+			    </a>	
+			    
+			    <span>|</span>
+			    
+			    <a href="" ng-click="ctrl.cloneBenchmark(ctrl.selectedBenchmark.id)" title="CloneBenchmark" class="tbl-toolbar-item tbl-tool-link">
+			       <i class="glyphicon glyphicon-copy"></i>
+			    </a>
+
+			    <a href="" ng-click="ctrl.saveBenchmark(ctrl.selectedBenchmark)" title="Save Benchmark" class="tbl-toolbar-item tbl-tool-link">
+			       <i class="glyphicon glyphicon-floppy-disk"></i>
+			    </a>
+			    
+			    <span>|</span>
+			    
+			    <a href="" 
+			       ng-click="ctrl.publishBenchmark(ctrl.selectedBenchmark.id)" 
+			       title="Publish Benchmark" class="tbl-toolbar-item tbl-tool-link">
+			       <i class="glyphicon glyphicon-globe"></i>
+			    </a>	    
+			    
+			</div>
+			
+			<table sd-data-table="ctrl.dataTableApi"
+				   sda-mode="local"
+				   sda-selectable="row"
+				   sda-page-size = "5"
+				   sda-on-select="ctrl.benchmarkSelected(d)"
+				   sd-data ="ctrl.benchmarks">
+				   <thead>
+					   	<tr>
+					   		<th sda-name="name" sda-label="Name"></th>
+					   		<th sda-name="description" sda-label="Description"></th>
+					   		<th sda-name="modifiedBy" sda-label="Modified By"></th>
+					   		<th sda-name="lastModified" sda-label="Last Modified"></th>
+					   	</tr>
+				   </thead>
+				   <tbody>
+				   		<tr>
+				   			<td sda-field="content.name">
+					   			<span ng-class="{'dirty':ctrl.isBenchmarkDirty(rowData.content.id)}">
+					   			{{rowData.content.name}}
+					   			</span>
+				   			</td>
+				   			<td sda-field="content.description"></td>
+				   			<td sda-field="metadata.author"></td>
+				   			<td sda-field="metadata.lastModifiedDate">
+				   				<span>
+				   				{{rowData.metadata.lastModifiedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}
+				   				</span>
+				   			</td>
+				   		</tr>
+				   </tbody>
+			</table>
+			
 		</div>
+		<!-- Design Mode Data Table End -->
 		
-		<table sd-data-table="ctrl.dataTableApi"
-			   sda-mode="local"
-			   sda-selectable="row"
-			   sda-page-size = "5"
-			   sda-on-select="ctrl.benchmarkSelected(d)"
-			   sd-data ="ctrl.benchmarks">
-			   <thead>
-				   	<tr>
-				   		<th sda-name="name" sda-label="Name"></th>
-				   		<th sda-name="description" sda-label="Description"></th>
-				   		<th sda-name="modifiedBy" sda-label="Modified By"></th>
-				   		<th sda-name="lastModified" sda-label="Last Modified"></th>
-				   	</tr>
-			   </thead>
-			   <tbody>
-			   		<tr>
-			   			<td sda-field="content.name">
-				   			<span ng-class="{'dirty':ctrl.isBenchmarkDirty(rowData.content.id)}">
-				   			{{rowData.content.name}}
-				   			</span>
-			   			</td>
-			   			<td sda-field="content.description"></td>
-			   			<td sda-field="metadata.author"></td>
-			   			<td sda-field="metadata.lastModifiedDate"></td>
-			   		</tr>
-			   </tbody>
-		</table>
+		<!-- Published Mode Data Table for Benchmarks -->
+		<div ng-show="ctrl.benchmarkFilter==='Published'">
+			<table sd-data-table="ctrl.dataTableApiPublished"
+				   sda-mode="local"
+				   sda-selectable="row"
+				   sda-page-size = "5"
+				   sda-on-select="ctrl.benchmarkSelected(d)"
+				   sd-data ="ctrl.publishedBenchmarks">
+				   <thead>
+					   	<tr>
+					   		<th sda-name="name" sda-label="Name"></th>
+					   		<th sda-name="runtimeOid" sda-label="OID"></th>
+					   		<th sda-name="description" sda-label="Description"></th>
+					   		<th sda-name="lastModifiedDate" sda-label="Last Modified"></th>
+					   	</tr>
+				   </thead>
+				   <tbody>
+				   		<tr>
+				   			<td sda-field="content.name"></td>
+				   			<td sda-field="metadata.runtimeOid"></td>
+				   			<td sda-field="content.description"></td>
+				   			<td sda-field="metadata.lastModifiedDate">
+				   				<span>
+				   				{{rowData.metadata.lastModifiedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}
+				   				</span>
+				   			</td>
+				   		</tr>
+				   </tbody>
+			</table>
+		</div>
+		<!-- Published Mode Data Table for Benchmarks End-->
 	</div>
 	
 
@@ -118,16 +166,6 @@
 	<div ng-show="ctrl.selectedBenchmark">
 		<div>
 			<span style="font-size:12px;" class="header">{{ctrl.selectedBenchmark.name}}</span>
-		</div>
-		<div>
-			<i class="sc sc-clock"></i> 
-			<span>Last Saved {{ctrl.getLastSaveTime()}}</span>
-		</div>
-		<div>
-			<i ng-class="{'glyphicon-floppy-disk' : ctrl.benchmarkIsDirty,'glyphicon-floppy-saved' : !ctrl.benchmarkIsDirty}" 
-			   ng-click="ctrl.saveBenchmark(ctrl.selectedBenchmark)"
-			   class="glyphicon">
-			</i>
 		</div>
 	</div>
 	
@@ -179,7 +217,6 @@
 			                  sda-is-leaf="true"
 			                  sda-draggable="true"
 			                  sda-label="activity.name"
-			                  sda-menu-items="(start,Start Activity),(suspend,Suspend Activity)"
 			                  sda-node-id="activity.nodeId"
 			                  ng-repeat="activity in process.activities">
 			              </li><!-- activity structure ends -->
@@ -248,13 +285,13 @@
 		    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
 		    						       ng-model="data.elementRef.enableBenchmark" 
 		    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
-		    						       ng-true-value="false"
-		    						       ng-false-value="true"
+		    						       ng-true-value="true"
+		    						       ng-false-value="false"
 		    						       type="checkbox"/>
-		    						No Benchmark
+		    						Enable Benchmark
 		    					</label>
 		    					
-		    					<div ng-show="data.elementRef.enableBenchmark">
+		    					<div ng-show="false && data.elementRef.enableBenchmark">
 		    					
 			    					<label ng-show="data.element==='Process Definition'">
 			    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
@@ -335,7 +372,6 @@
 			    					<select ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
 			    					        ng-disabled="ctrl.benchmarkFilter==='Published'"
 			    					        ng-model="catInst.details.condition.lhs">
-			    						<option value="Default">Default</option>
 			    						<option value="FreeForm">Free-Form</option>
 			    						<option value="CurrentTime">Current Time</option>
 			    					</select>
@@ -355,10 +391,8 @@
 					    					<select ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
 					    					        ng-disabled="ctrl.benchmarkFilter==='Published'"
 					    					        ng-model="catInst.details.condition.operator">
-					    						<option value="gt">Later Than</option>
-					    						<option value="gte">On or Later Than</option>
-					    						<option value="lt">Before</option>
-					    						<option value="lte">On or Before</option>
+					    						<option value=">">Later Than</option>
+					    						<option value="<">Before</option>
 					    					</select>
 				    					</div>
 				    					
@@ -459,5 +493,4 @@
 	
 </div><!-- Bottom Container End -->
 
-<pre>{{ctrl.selectedBenchmark | json}}</pre>
 </div><!-- OuterMost Div end, controller scope ends -->

@@ -23,7 +23,8 @@
 	 * @param benchmarkService - Service to interact with our REST layer.
 	 */
 	function benchmarkController(benchmarkService, benchmarkBuilderService, 
-								 sdLoggedInUserService, $scope, $timeout, sdDialogService){
+								 sdLoggedInUserService, $scope, $timeout, 
+								 sdDialogService,$interval){
 		
 		//Self reference
 		var that = this; 
@@ -34,12 +35,13 @@
 		this.$timeout = $timeout;
 		this.sdDialogService = sdDialogService;
 		this.$scope = $scope;
+		this.$interval = $interval;
 		
 		//Function level properties
 		this.benchmarkInitialStates = {}; //map of benchmarks pulled from server and stringified.
 		this.selectedBenchmark = undefined; //Currently selected benchmark from our data table
-		this.benchmarks = []; //Benchmarks pulled from the server
-		this.benchmarks2 = []; //Benchmarks pulled from the server
+		this.benchmarks = []; //Design mode Benchmarks pulled from the server
+		this.publishedBenchmarks = []; //Published Benchmarks pulled from the server
 		this.models = []; //models used to populate our model tree
 		this.treeApi = {};//model tree api returned to our callback
 		this.selectedTab = "General"; //Default tab
@@ -51,12 +53,13 @@
 		this.benchmarkIsDirty = false;
 		this.lastSaveTime = Number.NEGATIVE_INFINITY;
 		this.calendars = []; //timeoff calendars
-		
+
 		//TODO: wrap the following 3 calls up in a $q.all call
 		
 		this.loadBenchmarks("DESIGN");
 		
 		
+		//Load our time-off calendars
 		benchmarkService.getCalendars()
 		.then(function(data){
 			that.calendars = data.calendars;
@@ -79,6 +82,7 @@
 	/**
 	 * Callback for ng-change directives on our UI which need to mark a 
 	 * benchmark as having been modified. Optional secondary parameter
+	 * this should only be called from the desing mode data table
 	 */
 	benchmarkController.prototype.markBenchmarkDirty = function(benchmark,refresh){
 		if(!benchmark) return;
@@ -86,6 +90,35 @@
 		if(refresh===true){
 			this.dataTableApi.refresh();
 		}
+	}
+	
+	/**
+	 * Given a benchmark and a process definition Id, this function will search the 
+	 * benchmarks process definitions to determine if that process is present.
+	 * If actId is present as a parameter the search will traverse down the 
+	 * process defintions activities when a match is found. 
+	 * 
+	 *FYI: because the JSON structure is built out top down, applying
+	 *a benchmark to an activity neccesitates adding a default benchmark 
+	 *to its parent process definition. By default default behcmarks are not 
+	 *enabled but it will still result in that node reporting a benchmark present.
+	 */
+	benchmarkController.prototype.isBenchmarked = function(bm,pdId,actId){
+		
+		if(!bm || !pdId){return false;}
+		
+		//Short circuit search
+		return bm.models.some(function(model){
+			return model.processDefinitions.some(function(procDef){
+				if(actId && procDef.id === pdId){
+					return procDef.activities.some(function(act){
+						return act.id === actId;
+					});
+				}
+				else{return procDef.id === pdId;}
+			});
+		});
+		
 	}
 	
 	/**
@@ -98,12 +131,17 @@
 	benchmarkController.prototype.isBenchmarkDirty = function(id){
 		var result = false,
 			i,
+			benchmarkArr = this.benchmarks,
 			benchmark,
 			temp="";
 		
-		for(i=0;i<this.benchmarks.length;i++){
-			if(this.benchmarks[i].content.id===id){
-				benchmark = this.benchmarks[i].content;
+		if(this.benchmarkFilter==="Published"){
+			benchmarkArr = this.publishedBenchmarks;
+		}
+		
+		for(i=0;i<benchmarkArr.length;i++){
+			if(benchmarkArr[i].content.id===id){
+				benchmark = benchmarkArr[i].content;
 				break;
 			}
 		}
@@ -116,14 +154,17 @@
 	
 	
 	/**
-	 * Save the benchmark to the document repository
+	 * Save the benchmark to the document repository. Only applicable for
+	 * design mode benchmarks.
 	 * @param benchmark
 	 */
 	benchmarkController.prototype.saveBenchmark = function(benchmark){
 		var clone_benchmark,
 			that=this;
 		
-		//Create clean copy of our benchmark to save server-side
+		//Create clean copy of our benchmark to save server-side, we have to
+		//remove transient properties such as angular $$hashKey and our book-keeping
+		//properties like 'key' and 'isDirty'.
 		clone_benchmark = this.benchmarkBuilderService.cleanAndClone(benchmark);
 		
 		this.benchmarkService.saveBenchmarks(clone_benchmark)
@@ -298,32 +339,88 @@
 	};
 	
 	/**
+	 * when the user changes from design mode to published mode, or vice versa
+	 * we will load benchmarks using the following logic.
+	 * If changing from Publish to design we will only attempt to load benchmarks
+	 * if the design benchmark array is empty. When changing from design to publish
+	 * we will always reload the published benchmarks collection.
+	 * @param status
+	 */
+	benchmarkController.prototype.onStatusChange = function(status){
+		
+		//on any status change clear all benchmarkData rows
+		while(this.benchmarkDataRows.pop()){}
+		
+		status = status.toUpperCase();
+		status = !status ? "DESIGN" : status;
+		
+		if(status==="DESIGN" && this.benchmarks.length > 0){
+			return;
+		}
+		
+		this.loadBenchmarks(status);
+	};
+	
+	/**
 	 * Load benchmarks from our Service, passing a status of
 	 * 'Design' or 'Published' to filter.
 	 * @param status - string ['Design' | 'Publish']
 	 */
 	benchmarkController.prototype.loadBenchmarks = function(status){
-		var that = this;
+		var that = this,
+			activeApi,
+			refreshAttempts = 0,
+			activeBenchmarkArr;
 		
 		//Default to Design
 		status = !status ? "DESIGN" : status;
+		status = status.toUpperCase();
 		
 		//ensure we clear out our selected benchmark
 		this.selectedBenchmark = undefined;
 		
-		//pop all existing benchmarks.
-		while(this.benchmarks.pop()){};
+		//Choose our active array and API so we can operate
+		//agnostically later
+		if(status==="DESIGN"){
+			activeBenchmarkArr = this.benchmarks;
+		}
+		else{
+			activeBenchmarkArr = this.publishedBenchmarks;
+		}
+		
+		//clear out all elements on our active benchmark array as we are about to reload them.
+		while(activeBenchmarkArr.pop()){};
 		
 		//Retrieve all benchmarks
 		this.benchmarkService.getBenchmarkDefinitions(status)
 		.then(function(data){
+			var promise; //our interval promise
+			
+			//load benchmarks into our active benchmark array (based on mode, publish or design).
+			//Add book-keeping keys to each benchmark. This is only done
+			//so that we can use the datatable api to select a row programatically.
+			//keys must be cleaned before they are sent to the server.
 			data.benchmarkDefinitions.forEach(function(bm){
 				bm.key = bm.content.id;
-				that.benchmarks.push(bm);
+				activeBenchmarkArr.push(bm);
 			});
-			that.$timeout(function(){
-				that.dataTableApi.refresh();
-			},0);
+			
+			//Issue with the dataApi actually being available from the 
+			//dataTable on inital page load. To work around this we test
+			//for the api on an interval of 125 milliseconds for a max of
+			//24 attempts (3 seconds);
+			promise = that.$interval(function(){
+				activeApi = (status==="DESIGN")?that.dataTableApi:that.dataTableApiPublished;
+				if(refreshAttempts >24){
+					that.$interval.cancel(promise);
+				}
+				if(activeApi.refresh ){
+					that.$interval.cancel(promise);
+					activeApi.refresh();
+				}
+				refreshAttempts++;
+			},125);
+
 		})
 		["catch"](function(err){
 			//TODO: handle error
@@ -450,10 +547,15 @@
 	 */
 	benchmarkController.prototype.benchmarkSelected = function(d){
 		var that = this,
+			benchmarkArr = this.benchmarks,
 			bm;
 		
+		if(this.benchmarkFilter==="Published"){
+			benchmarkArr = this.publishedBenchmarks;
+		}
+		
 		if(d.action==="select"){
-			bm=this.benchmarks.filter(function(v){return v.content.id===d.current.content.id})[0];
+			bm = benchmarkArr.filter(function(v){return v.content.id===d.current.content.id})[0];
 			this.selectedBenchmark = bm.content ;
 			//this.selectedBenchmark = d.current.content;
 			console.log("Benchmark Selected");
@@ -498,7 +600,29 @@
 	benchmarkController.prototype.treeCallback = function(d){
 		//based on the nodeType interrogate the currently selected benchmark (if any)
 		//to determine any existing benchmarks, if not present the empty ui.
-		if(d.treeEvent==="node-click" && this.selectedBenchmark){
+		var hasBenchmark = true,
+			parentPd;
+		
+		//If we are in publish mode we do not wish to show any build-outs for items
+		//that do not have a benchmark. Items that do have benchmarks will show as 
+		//usual just with the relevant UI disabled.
+		if(this.benchmarkFilter === "Published"){
+			if(d.valueItem.nodeType === "process"){
+				hasBenchmark = this.isBenchmarked(this.selectedBenchmark,d.valueItem.id);
+			}
+			else if(d.valueItem.nodeType==="activity"){
+				parentPd = this.treeApi.getParentItem(d.nodeId);
+				hasBenchmark = this.isBenchmarked(this.selectedBenchmark,parentPd.id,d.valueItem.id);
+			}
+		}
+		
+		if(d.treeEvent==="node-click" && this.selectedBenchmark && hasBenchmark){
+			//TODO: support multi-select in the tree
+			//Always clear out our category table rows.
+			
+			//while(this.benchmarkDataRows.pop()){}
+			
+			//now build out!
 			this.buildOutBenchmark(this.selectedBenchmark,d);
 		}
 		d.deferred.resolve();
@@ -624,6 +748,7 @@
 	 */
 	benchmarkController.prototype.buildOutBenchmark = function(benchmark,item){
 		var searchArray,
+			rhsDefault,
 			model,
 			parentModel,
 			parentProcDef,
@@ -648,17 +773,24 @@
 			parentModel = this.treeApi.getParentItem(item.valueItem.nodeId);
 			model = this.buildOutModel(benchmark,parentModel.id,parentModel);
 			procDef = this.buildOutProcDef(model,item.valueItem.id,item.valueItem);
-			
+
 			this.linkCategoryConditions(benchmark.categories,procDef.categoryConditions);
 			
-			//TODO: support multi-select in the tree
-			while(this.benchmarkDataRows.pop()){}
+			//Now we need to find our default model data's qualifiedId so as
+			//to initialize the condition.lhs value of new buidlout with this value.
+			rhsDefault = parentModel.data.filter(function(v){return v.id==="CURRENT_DATE"})[0];
+			procDef.categoryConditions.forEach(function(c){
+				if(c.details.condition.rhs===""){
+					c.details.condition.rhs=rhsDefault.qualifiedId;
+				}
+			});
 			
 			this.benchmarkDataRows.push({
 				"benchmark" : benchmark, 
 				"modelData" : parentModel.data,
 				"element" : "Process Definition",
 				"elementRef" : procDef,
+				"treeNodeRef" : item,
 				"dueDate" : procDef.dueDate,
 				"nodePath" : "{" + model.id + "}" + procDef.id, 
 				"breadCrumbs" : [parentModel.name,item.valueItem.name],
@@ -678,14 +810,21 @@
 			
 			this.linkCategoryConditions(benchmark.categories, activity.categoryConditions);
 			
-			//TODO: support multi-select in the tree
-			while(this.benchmarkDataRows.pop()){}
-			
+			//Now we need to find our default model data's qualifiedId so as
+			//to initialize the condition.lhs value of new buidlout with this value.
+			rhsDefault = parentModel.data.filter(function(v){return v.id==="CURRENT_DATE"})[0];
+			activity.categoryConditions.forEach(function(c){
+				if(c.details.condition.rhs===""){
+					c.details.condition.rhs=rhsDefault.qualifiedId;
+				}
+			});
+
 			this.benchmarkDataRows.push({
 				"benchmark" : benchmark, 
 				"modelData" : parentModel.data,
 				"element" : "Activity",
 				"elementRef" : activity,
+				"treeNodeRef" : item,
 				"breadCrumbs" : [parentModel.name,parentProcDef.name,item.valueItem.name],
 				"nodePath" : "{" + model.id + "}" + procDef.id + ":" + activity.id, 
 				"categoryConditions": activity.categoryConditions});
@@ -700,20 +839,43 @@
 	 * @returns {String}
 	 */
 	benchmarkController.prototype.iconCallback = function(d,e){
-		var iconCss = "";
+		var iconCss = "", //classes we will apply to the tree node
+			parentPd,     //Parent process definition
+			isSelected=false,   //if the benchmark element is on our benchmarkDataRows collection
+			hasBenchmark = false;
+		
 		
 		//TODO-ZZM: need appropriate icons
 		if(d.nodeType === "model"){
 			iconCss = "sc sc-wrench";
 		}
 		else if(d.nodeType === "process"){
+			hasBenchmark = this.isBenchmarked(this.selectedBenchmark,d.id);
+			isSelected = this.isNodeOnDataRows(d);
 			iconCss = "sc sc-cog";
 		}
 		else{
+			parentPd = this.treeApi.getParentItem(d.nodeId);
+			hasBenchmark = this.isBenchmarked(this.selectedBenchmark,parentPd.id,d.id);
+			isSelected = this.isNodeOnDataRows(d);
 			iconCss = "sc sc-cogs";
 		}
 		
+		if(hasBenchmark){
+			iconCss += " has-benchmark"
+		}
+		
+		if(isSelected){
+			iconCss += " selected"
+		}
 		return iconCss;
+	};
+	
+	
+	benchmarkController.prototype.isNodeOnDataRows = function(d){
+		return this.benchmarkDataRows.some(function(dataRow){
+			return dataRow.treeNodeRef.nodeId===d.nodeId;
+		});
 	};
 	
 	/**
@@ -818,7 +980,8 @@
 	                               "sdLoggedInUserService",
 	                               "$scope", 
 	                               "$timeout",
-	                               "sdDialogService"];
+	                               "sdDialogService",
+	                               "$interval"];
 	
 	//add controller to our app
 	angular.module("benchmark-app")

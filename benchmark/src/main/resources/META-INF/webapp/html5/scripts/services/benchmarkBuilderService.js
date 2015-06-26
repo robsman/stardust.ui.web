@@ -54,8 +54,37 @@
 		  "description": "",
 		  "categories": [],
 		  "models": [],
-		  "defaults" : {},
-		  "businessCalendar" : ""
+		  "businessCalendar" : "",
+		  //TODO: REMOVE once server side is upated
+		  "defaults" : {
+			    "processDefinitions": {
+			        "dueDate": {
+			          "enabled": false,
+			          "dataReference": "BUSINESS_DATE",
+			          "useBusinessDays": true,
+			          "offset": {
+			            "amount": 10,
+			            "unit": "d",
+			            "time": "12:01 AM"
+			          }
+			        },
+			        "categoryConditions": [
+			          {
+			            "categoryId": "77df2bb8-af69-426e-be59-84b18f04cc30",
+			            "type": "none"
+			          }
+			        ]
+			      },
+			      "activities": {
+			        "categoryConditions": [
+			          {
+			            "categoryId": "77df2bb8-af69-426e-be59-84b18f04cc30",
+			            "type": "freeform",
+			            "freeformExpression": "false;"
+			          }
+			        ]
+			      }
+			    }//Default object ends
 		}
 	};
 	
@@ -71,7 +100,7 @@
 	{
 		"id": "",
 		"categoryConditions" : [],
-		"enableBenchmark": true,
+		"enableBenchmark": false,
 		"activities": [],
 		"dueDate": {
             "enabled": false,
@@ -90,7 +119,7 @@
 	var baseActivity = 
 	{
 		"id": "",
-		"enableBenchmark": true,
+		"enableBenchmark": false,
 		"categoryConditions" : []
 	};
 	
@@ -111,8 +140,8 @@
         "freeFormExpression" : "",
         "details" : {
 	        "condition": {
-	          "lhs": "Default",
-	          "operator": "gt",
+	          "lhs": "FreeForm",
+	          "operator": ">",
 	          "rhs": "",
 	          "offset": {
 	        	  "applyOffset": false,
