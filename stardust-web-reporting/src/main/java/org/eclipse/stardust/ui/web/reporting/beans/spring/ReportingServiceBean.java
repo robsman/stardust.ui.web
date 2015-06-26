@@ -684,7 +684,7 @@ public class ReportingServiceBean
             participantSubFolder = findOrCreateFolder(participantSubFolder.getPath());
 
             // check the permissions to current user
-            if (loggedInUser.isInRole(participantSubFolder.getName()) || loggedInUser.isAdministrator())
+            if (loggedInUser.isAdministrator() || loggedInUser.isInOrganization(participantSubFolder.getName()))
             {
                Participant  participant = modelService.getParticipant(participantSubFolder.getName(), null);
                JsonObject participantFolderJson = null;
