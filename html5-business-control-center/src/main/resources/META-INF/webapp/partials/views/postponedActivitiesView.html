@@ -6,12 +6,11 @@
 		</div>
 	</div>
 
-
 	<div class="view-panel-content">
 		<div class="view-panel-toolbar">{{i18n('business-control-center-messages.views-postponedActivities-title')}}</div>
 
 		<table sd-data-table="ctrl.dataTable" sda-no-pagination="true"
-			sd-data="ctrl.getPostponedActivities(params)" sda-ready="ctrl.ready"
+			sd-data="ctrl.fetchData(params)" sda-ready="ctrl.ready"
 			sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
 			sda-sortable="true" sda-sort-by="{name : 'teamMember', dir : 'desc'}"
 			sda-mode="remote" sda-no-pagination="true" sda-sortable="false"

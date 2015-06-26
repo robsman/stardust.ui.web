@@ -236,8 +236,8 @@
 		/**
 		 * 
 		 */
-		ActivityInstanceService.prototype.getPostponedActivities = function( ) {
-			return sdUtilService.ajax(REST_BASE_URL, "", 'postponedActivities');
+		ActivityInstanceService.prototype.getStatsForPostponedActivities = function( ) {
+			return sdUtilService.ajax(REST_BASE_URL, "", 'statistics/postponedActivities');
 		};
 		
 		/**

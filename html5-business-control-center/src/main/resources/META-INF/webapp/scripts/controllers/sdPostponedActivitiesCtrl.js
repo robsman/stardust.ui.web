@@ -42,7 +42,7 @@
 		_sgI18nService =sgI18nService;
 		_sdPreferenceService = sdPreferenceService;
 		
-		this.postponedActivities = {
+		this.statistics = {
 				totalCount : 0,
 		 		list : []
 		}
@@ -63,7 +63,7 @@
 		this.selectedOids = [];
 		// Getting columns for the data table
 		this.getColumns( );
-		this.fetchPostponedActivities();
+		this.fetchStatistics();
 		
 	};
 	
@@ -82,32 +82,33 @@
 	/**
 	 * 
 	 */
-	PostponedActivitiesCtrl.prototype.fetchPostponedActivities = function( ) {
+	PostponedActivitiesCtrl.prototype.fetchStatistics = function( ) {
 		var self = this;
-		_sdActivityInstanceService.getPostponedActivities( ).then(function( result ){
+		_sdActivityInstanceService.getStatsForPostponedActivities( ).then(function( result ){
 			trace.log('Postponed activities retreived successfully.');
-			self.postponedActivities.list = result;
-			self.postponedActivities.totalCount = result.length;
-			self.dataTable.refresh();
+			self.statistics.list = result;
+			self.statistics.totalCount = result.length;
+			if(self.dataTable)
+				self.dataTable.refresh();
 		});
 	};
 	
 	/**
 	 * 
 	 */
-	PostponedActivitiesCtrl.prototype.getPostponedActivities = function( options ) {
+	PostponedActivitiesCtrl.prototype.fetchData = function( options ) {
 
 		var self = this;
 		var deferred = _q.defer();
 		var result = {
 			list : [],
-			totalCount : self.postponedActivities.totalCount
+			totalCount : self.statistics.totalCount
 		}
 		if(options.filters && options.filters.TeamMember && options.filters.TeamMember.textSearch !=''){
 			trace.log("Applying filter with team member : ",options.filters.TeamMember.textSearch );
-			result.list = _filter('filter')(self.postponedActivities.list, {'teamMember' : {'displayName': options.filters.TeamMember.textSearch }},false)
+			result.list = _filter('filter')(self.statistics.list, {'teamMember' : {'displayName': options.filters.TeamMember.textSearch }},false)
 		}else{
-			result.list = self.postponedActivities.list;
+			result.list = self.statistics.list;
 		}
 		deferred.resolve(result);
 		return deferred.promise;
@@ -134,7 +135,7 @@
 	 * 
 	 */
 	PostponedActivitiesCtrl.prototype.refresh = function( ) {
-		this.fetchPostponedActivities();
+		this.fetchStatistics();
 	};
 	
 	/**

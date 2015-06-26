@@ -431,9 +431,9 @@ public class ActivityInstanceService
     * 
     * @return
     */
-   public List<PostponedActivitiesResultDTO> getPostponedActivities()
+   public List<PostponedActivitiesResultDTO> getStatsByPostponedActivities()
    {
-      return activityInstanceUtils.getPostponedActivities();
+      return activityStatisticsUtils.getForPostponedActivities();
    }
 
    /**

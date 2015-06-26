@@ -543,7 +543,7 @@ public class ActivityInstanceResource
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("statistics/completedActivities")
+    @Path("/statistics/completedActivities")
     public Response getStatsForCompletedActivities(String postedData)
     {
        try
@@ -564,12 +564,12 @@ public class ActivityInstanceResource
      */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("/postponedActivities")
-    public Response getPostponedActivities(String postedData)
+    @Path("/statistics/postponedActivities")
+    public Response getStatsByPostponedActivities(String postedData)
     {
        try
        {
-          List<PostponedActivitiesResultDTO> result = activityInstanceService.getPostponedActivities();
+          List<PostponedActivitiesResultDTO> result = activityInstanceService.getStatsByPostponedActivities();
           return Response.ok(AbstractDTO.toJson(result), MediaType.APPLICATION_JSON).build();
        }
        catch (Exception e)

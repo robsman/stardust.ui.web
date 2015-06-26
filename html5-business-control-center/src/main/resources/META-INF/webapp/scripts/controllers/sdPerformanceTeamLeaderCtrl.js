@@ -80,7 +80,8 @@
 			trace.log('Completed activities retreived successfully.');
 			self.statistics.list = result;
 			self.statistics.totalCount = result.length;
-			self.dataTable.refresh();
+			if(self.dataTable)
+				self.dataTable.refresh();
 		})
 	};
 	/**

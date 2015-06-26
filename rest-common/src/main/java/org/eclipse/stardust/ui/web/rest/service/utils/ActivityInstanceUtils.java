@@ -712,170 +712,7 @@ public class ActivityInstanceUtils
       return participantDTOList;
    }
 
-   /**
-    * 
-    * @return
-    */
-   public List<PostponedActivitiesResultDTO> getPostponedActivities()
-   {
-
-      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
-
-      Set<ModelParticipantInfo> participantList = geUsertRelevantModelParticipants();
-
-      User user = facade.getUser();
-
-      long totalCount, exceededDurationCount;
-      Set<Long> allActivityOids = CollectionUtils.newHashSet();
-      Set<Long> exceededActivityOids = CollectionUtils.newHashSet();
-      String avgDuration;
-      PostponedActivitiesStatistics pStat = getUserStatsForPostponedActivities();
-      Users users = getRelevantUsers();
-      List<UserItem> userItems = facade.getAllUsersAsUserItems(users);
-
-      List<PostponedActivitiesResultDTO> resultList = new ArrayList<PostponedActivitiesResultDTO>();
-
-      for (UserItem userItem : userItems)
-      {
-         user = userItem.getUser();
-
-         PostponedActivities pActivities = pStat != null
-               ? pStat.getPostponedActivities(userItem.getUser().getOID())
-               : null;
-
-         Collection<PostponedActivities> list = pStat.getPostponedActivities();
-         for (PostponedActivities postponedActivities : list)
-         {
-            if (userItem.getUser().getOID() == postponedActivities.userOid)
-            {
-               pActivities = postponedActivities;
-            }
-         }
-         Map<String, PostponedActivitiesStatsDTO> statsByParticipant = new HashMap<String, PostponedActivitiesStatsDTO>();
-         if (pActivities != null)
-         {
-            PostponedActivitiesCalculator calc = new PostponedActivitiesCalculator(pActivities);
-            for (ModelParticipantInfo mp : participantList)
-            {
-               if (calc != null)
-               {
-                  if (calc.getTotalCount(mp) != null && calc.getExceededDurationCount(mp) != null)
-                  {
-                     totalCount = calc.getTotalCount(mp);
-                     avgDuration = calc.getAvgDuration(mp);
-                     exceededDurationCount = calc.getExceededDurationCount(mp);
-                     allActivityOids = calc.getAllActivityOIDs(mp);
-                     exceededActivityOids = calc.getExceededActivityOIDs(mp);
-                     PostponedActivitiesStatsDTO statsDTO = new PostponedActivitiesStatsDTO(totalCount, avgDuration,
-                           exceededDurationCount, allActivityOids, exceededActivityOids);
-                     statsByParticipant.put( ModelHelper.getParticipantName(mp), statsDTO);
-                  }
-                  else
-                  {
-                     PostponedActivitiesStatsDTO statsDTO = new PostponedActivitiesStatsDTO(0, StringUtils.EMPTY, 0,
-                           allActivityOids, exceededActivityOids);
-                     statsByParticipant.put(ModelHelper.getParticipantName(mp), statsDTO);
-                  }
-               }
-            }
-         }
-         else
-         {
-            for (ModelParticipantInfo mp : participantList)
-            {
-               totalCount = 0;
-               avgDuration = "";
-               exceededDurationCount = 0;
-               allActivityOids = CollectionUtils.newHashSet();
-               exceededActivityOids = CollectionUtils.newHashSet();
-               PostponedActivitiesStatsDTO statsDTO = new PostponedActivitiesStatsDTO(totalCount, avgDuration,
-                     exceededDurationCount, allActivityOids, exceededActivityOids);
-               statsByParticipant.put(ModelHelper.getParticipantName(mp), statsDTO);
-            }
-
-         }
-         PostponedActivitiesResultDTO resultDTO = new PostponedActivitiesResultDTO();
-         UserDTO userDTO = DTOBuilder.build(user, UserDTO.class);
-         userDTO.displayName = UserUtils.getUserDisplayLabel(user);
-         resultDTO.teamMember = userDTO;
-         resultDTO.statsByParticipant = statsByParticipant;
-         resultList.add(resultDTO);
-      }
-      return resultList;
-   }
-   
-   /**
-    * 
-    * @return
-    */
-   private Users getRelevantUsers()
-   {
-
-      UserQuery query = WorkflowFacade.getWorkflowFacade().getTeamQuery(true);
-      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
-      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
-      userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
-      query.setPolicy(userPolicy);
-
-      if (query.getOrderCriteria().getCriteria().size() == 0)
-      {
-         query.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME).and(UserQuery.ACCOUNT);
-      }
-
-      Users users = facade.getAllUsers((UserQuery) query);
-
-      return users;
-   }
-
-   /**
-    * 
-    * @return
-    */
-   private PostponedActivitiesStatistics getUserStatsForPostponedActivities()
-   {
-      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
-      PostponedActivitiesStatisticsQuery query = PostponedActivitiesStatisticsQuery.forAllUsers();
-      query.setPolicy(new CriticalExecutionTimePolicy(Constants.getCriticalDurationThreshold(
-            ProcessInstancePriority.LOW, 1.0f), Constants.getCriticalDurationThreshold(ProcessInstancePriority.NORMAL,
-            1.0f), Constants.getCriticalDurationThreshold(ProcessInstancePriority.HIGH, 1.0f)));
-
-      if (query.getOrderCriteria().getCriteria().size() == 0)
-      {
-         query.orderBy(UserQuery.LAST_NAME).and(UserQuery.FIRST_NAME).and(UserQuery.ACCOUNT);
-      }
-      PostponedActivitiesStatistics pStat = (PostponedActivitiesStatistics) facade.getAllUsers(query);
-      return pStat;
-   }
-
-   /**
-    * 
-    */
-   private Set<ModelParticipantInfo> geUsertRelevantModelParticipants()
-   {
-      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
-      User user = facade.getUser();
-      List<Grant> userGrants = user.getAllGrants();
-      ModelParticipantInfo modelParticipantInfo;
-      Participant participant;
-      ModelParticipant modelParticipant;
-      Department department;
-
-      Set<ModelParticipantInfo> participantList = new HashSet<ModelParticipantInfo>();
-      for (Grant grant : userGrants)
-      {
-         participant = facade.getParticipant(grant.getQualifiedId());
-         if (participant instanceof ModelParticipant)
-         {
-            modelParticipant = (ModelParticipant) participant;
-            department = grant.getDepartment();
-            modelParticipantInfo = (department == null) ? modelParticipant : department
-                  .getScopedParticipant(modelParticipant);
-            participantList.add(modelParticipantInfo);
-         }
-      }
-      return participantList;
-   }
-
+  
    /**
     * 
     * @return
@@ -978,6 +815,36 @@ public class ActivityInstanceUtils
          roleList.add(new SelectItemDTO(role.getRole().getId(), role.getRoleName()));
       }
       return roleList;
+   }
+   
+   
+   /**
+    * 
+    */
+   private Set<ModelParticipantInfo> geUsertRelevantModelParticipants()
+   {
+      WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
+      User user = facade.getUser();
+      List<Grant> userGrants = user.getAllGrants();
+      ModelParticipantInfo modelParticipantInfo;
+      Participant participant;
+      ModelParticipant modelParticipant;
+      Department department;
+
+      Set<ModelParticipantInfo> participantList = new HashSet<ModelParticipantInfo>();
+      for (Grant grant : userGrants)
+      {
+         participant = facade.getParticipant(grant.getQualifiedId());
+         if (participant instanceof ModelParticipant)
+         {
+            modelParticipant = (ModelParticipant) participant;
+            department = grant.getDepartment();
+            modelParticipantInfo = (department == null) ? modelParticipant : department
+                  .getScopedParticipant(modelParticipant);
+            participantList.add(modelParticipantInfo);
+         }
+      }
+      return participantList;
    }
 
 }
