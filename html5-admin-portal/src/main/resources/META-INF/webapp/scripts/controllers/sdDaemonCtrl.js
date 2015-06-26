@@ -16,22 +16,23 @@
 	'use strict';
 
 	angular.module('admin-ui').controller('sdDaemonCtrl',
-			[ 'sdDaemonService', controller ]);
+			[ 'sdDaemonService', 'sdLoggedInUserService' ,controller ]);
 
 	var _sdDaemonService;
+	var _sdLoggedInUserService;
 
 	/*
 	 * 
 	 */
-	function controller(sdDaemonService) {
+	function controller(sdDaemonService,sdLoggedInUserService) {
 		_sdDaemonService = sdDaemonService;
-
+		_sdLoggedInUserService = sdLoggedInUserService;
 		this.initialize();
 
 		this.data = {};
 		this.title = "Daemons";
 
-		this.columnSelector = "admin"; // TODO
+		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ?  'admin' : true; 
 	}
 
 	/*

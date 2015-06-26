@@ -16,7 +16,7 @@
 	'use strict';
 
 	angular.module('admin-ui').controller('sdUserGroupCtrl',
-			[ '$q', 'sdUserGroupService', controller ]);
+			[ '$q', 'sdUserGroupService', 'sdLoggedInUserService', controller ]);
 
 	// Closures for our dependencies injected by the DI subsystem.
 	var _sdUserGroupService;
@@ -25,17 +25,17 @@
 	/*
 	 * 
 	 */
-	function controller($q, sdUserGroupService) {
+	function controller($q, sdUserGroupService, sdLoggedInUserService) {
 		_sdUserGroupService = sdUserGroupService;
 		_q = $q;
 
-		this.initialize();
+		this.initialize(sdLoggedInUserService);
 	}
 
 	/*
 	 * 
 	 */
-	controller.prototype.initialize = function() {
+	controller.prototype.initialize = function(sdLoggedInUserService) {
 		this.userGroupDataTable = null; // This will be set to underline data
 		// table instance automatically
 
@@ -43,7 +43,7 @@
 		this.selectionExpr = null;
 		this.showCreateUserGroup = false;
 		this.showModifyUserGroup = false;
-		this.columnSelector = "admin"; // TODO
+		this.columnSelector = sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
 
 		this.ready = false;
 
@@ -108,8 +108,7 @@
 				},
 				function(error) {
 					self.errorExists = true;
-					self.errorMessage = error.data.message.substr(
-							error.data.message.indexOf(" - ") + 2,
+					self.errorMessage = error.data.message.substr(error.data.message.indexOf(" - ") + 2,
 							error.data.message.length);
 					self.showCreateUserGroup = true;
 				});
