@@ -16,14 +16,14 @@
 	'use strict';
 
 	angular.module('admin-ui').controller('sdActivityOverviewCtrl',
-			[ '$q', '$filter', 'sdActivityInstanceService', 'sdLoggedInUserService', Controller ]);
+			['$q', '$filter', 'sdActivityInstanceService', Controller]);
 
 	/*
 	 * 
 	 */
-	function Controller($q, $filter, sdActivityInstanceService, sdLoggedInUserService) {
+	function Controller($q, $filter, sdActivityInstanceService) {
 
-		this.initialize(sdActivityInstanceService, sdLoggedInUserService);
+		this.initialize(sdActivityInstanceService);
 
 		/*
 		 * 
@@ -36,13 +36,14 @@
 
 			this.fetchActivityInstanceCounts(sdActivityInstanceService);
 
-			sdActivityInstanceService.getAllActivities(params).then(function(data) {
-				self.activities.list = data.list;
-				self.activities.totalCount = data.totalCount;
-				deferred.resolve(self.activities);
-			}, function(error) {
-				deferred.reject(error);
-			});
+			sdActivityInstanceService.getAllActivities(params).then(
+					function(data) {
+						self.activities.list = data.list;
+						self.activities.totalCount = data.totalCount;
+						deferred.resolve(self.activities);
+					}, function(error) {
+						deferred.reject(error);
+					});
 
 			return deferred.promise;
 		}
@@ -59,7 +60,8 @@
 	/**
 	 * 
 	 */
-	Controller.prototype.fetchActivityInstanceCounts = function(sdActivityInstanceService) {
+	Controller.prototype.fetchActivityInstanceCounts = function(
+			sdActivityInstanceService) {
 		var self = this;
 
 		sdActivityInstanceService.getAllCounts().then(function(result) {
@@ -70,7 +72,7 @@
 	/*
 	 * 
 	 */
-	Controller.prototype.initialize = function(sdActivityInstanceService, sdLoggedInUserService) {
+	Controller.prototype.initialize = function(sdActivityInstanceService) {
 
 		this.count = {
 			active : '',
@@ -86,7 +88,6 @@
 		};
 
 		this.dataTable = null; // This will be set to underline data
-		this.columnSelector = sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
 	};
 
 })();

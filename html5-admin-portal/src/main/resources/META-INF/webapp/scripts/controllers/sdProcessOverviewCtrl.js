@@ -16,14 +16,14 @@
 	'use strict';
 
 	angular.module('admin-ui').controller('sdProcessOverviewCtrl',
-			[ '$q', '$filter', 'sdProcessInstanceService', 'sdLoggedInUserService', Controller ]);
+			['$q', '$filter', 'sdProcessInstanceService', Controller]);
 
 	/*
 	 * 
 	 */
-	function Controller($q, $filter, sdProcessInstanceService, sdLoggedInUserService) {
+	function Controller($q, $filter, sdProcessInstanceService) {
 
-		this.initialize(sdProcessInstanceService, sdLoggedInUserService);
+		this.initialize(sdProcessInstanceService);
 
 		/*
 		 * 
@@ -60,7 +60,8 @@
 	/**
 	 * 
 	 */
-	Controller.prototype.fetchProcessInstanceCounts = function(sdProcessInstanceService) {
+	Controller.prototype.fetchProcessInstanceCounts = function(
+			sdProcessInstanceService) {
 		var self = this;
 
 		sdProcessInstanceService.getProcessInstanceCounts().then(function(result) {
@@ -71,7 +72,7 @@
 	/*
 	 * 
 	 */
-	Controller.prototype.initialize = function(sdProcessInstanceService, sdLoggedInUserService) {
+	Controller.prototype.initialize = function(sdProcessInstanceService) {
 
 		this.count = {
 			active : '',
@@ -87,8 +88,7 @@
 		};
 
 		this.dataTable = null; // This will be set to underline data
-		this.columnSelector = sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
-
+		
 		this.fetchProcessInstanceCounts(sdProcessInstanceService);
 	};
 
