@@ -108,7 +108,6 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			</ippui:view>
 		</ippui:viewsExtension>
 		<ippui:viewsExtension>
-<<<<<<< Upstream, based on origin/feature/ipp/portal-html5-contrib
 			<ippui:view name="resourcePerformanceViewHtml5"
 				include="/plugins/html5-business-control-center/partials/views/resourcePerformanceView.html">
 				<ippui:preferences>
@@ -117,16 +116,14 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 				</ippui:preferences>
 			</ippui:view>
 		</ippui:viewsExtension>
-=======
-		<ippui:view name="performanceTeamLeaderViewHtml5"
-			include="/plugins/html5-business-control-center/partials/views/performanceTeamLeaderView.html">
+		<ippui:viewsExtension>
+			<ippui:view name="performanceTeamLeaderViewHtml5"
+				include="/plugins/html5-business-control-center/partials/views/performanceTeamLeaderView.html">
 				<ippui:preferences>
 					<ippui:preferencePage name="icon"
 						include="/plugins/views-common/images/icons/chart-up-color.png" />
 				</ippui:preferences>
 			</ippui:view>
 		</ippui:viewsExtension>
-		
->>>>>>> 50f9179 [CRNT-37157] : Intial commit for Performance team leader view. Bug: CRNT-37157  Signed-off-by: Johnson Quadras <johnson.quadras@sungard.com>
 	</ippui:perspectiveExtension>
 </beans>
