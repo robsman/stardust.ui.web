@@ -24,6 +24,7 @@
 	var _sdParticipantManagementService
 	var trace;
 	var _sdUtilService;
+	
 	var _sdUserService;
 
 	/**
