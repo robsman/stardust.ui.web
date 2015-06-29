@@ -65,7 +65,7 @@
       
       
       return {
-        template: "<div style='position:relative;' class='sd-drop-down-menu'>" +
+        template: "<div class='sd-drop-down-menu'>" +
                     "<div class='dd-header' ng-right-click='showMenu = !showMenu' ng-transclude></div>" +
                     "<ul style='position:absolute;' ng-show='showMenu'>" +
                       "<span ng-click='showMenu=false'>x</span>" +

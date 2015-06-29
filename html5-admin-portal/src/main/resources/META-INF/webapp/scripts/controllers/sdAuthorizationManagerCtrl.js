@@ -57,7 +57,7 @@
       participantQualifiedId: 'all',
       qualifiedId: 'all'
     };
-    
+
     _sdAuthorizationManagerService = sdAuthorizationManagerService;
 
     this.participants = {
@@ -102,7 +102,7 @@
       }
       this.selectedParticipants.push(selectInfo.all[i]);
     }
-    
+
     this.showMessage = true;
     var participantsMsg = {};
     participantsMsg.message = i18n(
@@ -416,10 +416,16 @@
   AMCtrl.prototype.allowRole = function(data, e) {
     var scope = angular.element(e.srcElement).scope();
     var permission = scope.$parent.$parent.genItem;
+    var allow = null;
+    var deny = null;
     if (this.selectedAllow.indexOf(permission) == -1) {
-      this.selectedAllow.push(permission);
+      allow = [permission];
+      deny = [];
+    } else {
+      allow = this.selectedAllow;
+      deny = this.selectedDeny;
     }
-    this.updatePermissions(scope);
+    this.updatePermissions(scope, allow, deny);
   };
 
   // Deny a role to a permission DENY
@@ -428,82 +434,100 @@
   AMCtrl.prototype.denyRole = function(data, e) {
     var scope = angular.element(e.srcElement).scope();
     var permission = scope.$parent.$parent.genItem;
+    var deny = null;
+    var allow = null;
     if (this.selectedDeny.indexOf(permission) == -1) {
-      this.selectedDeny.push(permission);
+      deny = [permission];
+      allow = [];
+    } else {
+      deny = this.selectedDeny;
+      allow = this.selectedAllow;
     }
-    this.updatePermissions(scope);
+    this.updatePermissions(scope, allow, deny);
   };
 
   // update permissions pertaining to all selected nodes
-  AMCtrl.prototype.updatePermissions = function(scope) {
+  AMCtrl.prototype.updatePermissions = function(scope, allow, deny) {
     var self = this;
     this.showMessage2 = false;
-    
-    this.$timeout(
-    function() {
-      // TODO: need to add to our allNodes array or it isnt
-      // filterable
-      self.selectedParticipants.forEach(function(participant) {
-        // adding to permissiosn in our multiselect
-        // collection
-        
-        // Allow
-        self.selectedAllow.forEach(function(p, i, arr) {
-          var exist = false;
-          var allindex = null;
-          
-          p.allow.forEach(function(participant2, j, arr) {
-            if (participant2.participantQualifiedId == participant.qualifiedId) {
-              exist = true;
-            } else if (participant2.participantQualifiedId == 'all') {
-              allindex = j;
-            }
-          });
 
-          if (!exist) {
-            //check there exist "All", if yes, remove it.
-            if(allindex != null){
-              p.allow.splice(allindex, 1);  
-            }
+    this
+            .$timeout(
+                    function() {
+                      // TODO: need to add to our allNodes array or it isnt
+                      // filterable
+                      self.selectedParticipants
+                              .forEach(function(participant) {
+                                // adding to permissiosn in our multiselect
+                                // collection
 
-            p.allow.push({
-              name: participant.name,
-              participantQualifiedId: participant.qualifiedId
-            });
-          }
-        });
+                                // Allow
+                                allow
+                                        .forEach(function(p, i, arr) {
+                                          var exist = false;
+                                          var allindex = null;
 
-        // Deny
-        self.selectedDeny.forEach(function(p) {
-          var exist = false;
-          var allindex = null;
- 
-          p.deny.forEach(function(participant2, j, arr) {
-            if (participant2.participantQualifiedId == participant.qualifiedId) {
-              exist = true;
-            } else if (participant2.participantQualifiedId == 'all') {
-              allindex = j;
-            }
-          });
+                                          p.allow
+                                                  .forEach(function(
+                                                          participant2, j, arr) {
+                                                    if (participant2.participantQualifiedId == participant.qualifiedId) {
+                                                      exist = true;
+                                                    } else if (participant2.participantQualifiedId == 'all') {
+                                                      allindex = j;
+                                                    }
+                                                  });
 
-          if (!exist) {
-          //check there exist "All", if yes, remove it.
-            if(allindex){
-              p.deny.splice(allindex, 1);  
-            }
-            p.deny.push({
-              name: participant.name,
-              participantQualifiedId: participant.qualifiedId
-            });
-          }
-        });
-      });
-      scope.$parent.isVisible = true;
-      _sdAuthorizationManagerService.savePermissions(
-      self.selectedParticipants, self.selectedAllow,
-      self.selectedDeny);
+                                          if (!exist) {
+                                            // check there exist "All", if yes,
+                                            // remove it.
+                                            if (allindex != null) {
+                                              p.allow.splice(allindex, 1);
+                                            }
 
-    }, 0);
+                                            p.allow
+                                                    .push({
+                                                      name: participant.name,
+                                                      participantQualifiedId: participant.qualifiedId
+                                                    });
+                                          }
+                                        });
+
+                                // Deny
+                                deny
+                                        .forEach(function(p) {
+                                          var exist = false;
+                                          var allindex = null;
+
+                                          p.deny
+                                                  .forEach(function(
+                                                          participant2, j, arr) {
+                                                    if (participant2.participantQualifiedId == participant.qualifiedId) {
+                                                      exist = true;
+                                                    } else if (participant2.participantQualifiedId == 'all') {
+                                                      allindex = j;
+                                                    }
+                                                  });
+
+                                          if (!exist) {
+                                            // check there exist "All", if yes,
+                                            // remove it.
+                                            if (allindex) {
+                                              p.deny.splice(allindex, 1);
+                                            }
+                                            p.deny
+                                                    .push({
+                                                      name: participant.name,
+                                                      participantQualifiedId: participant.qualifiedId
+                                                    });
+                                          }
+                                        });
+                              });
+                      scope.$parent.isVisible = true;
+                      _sdAuthorizationManagerService.savePermissions(
+                              self.selectedParticipants, self.selectedAllow,
+                              self.selectedDeny);
+
+                    }, 0);
   }
 
   // handles removing items from our allow or deny arrays
@@ -512,40 +536,93 @@
     this.showMessage2 = false;
     var scope = angular.element(e.srcElement).scope();
     var permission = scope.$parent.$parent.genItem;
-    
-    if (v.menuEvent === "menuItem.clicked") {
-      v.item.ref[v.item.target].forEach(function(w, i, arr) {
-        if (w.participantQualifiedId === v.item.role.participantQualifiedId) {
-          if(w.participantQualifiedId == All.id){
-            self.showMessage2 = true;
-            var warning = {};
-            warning.message = i18n("views.authorizationManagerViewHtml5.permissionTree.warning.removeAll");
-            warning.type = "warn";
-            _sdMessageService.showMessage(warning);
-          } 
 
-          arr.splice(i, 1);  
-        }
-      });
-      
+    if (v.menuEvent === "menuItem.clicked") {
+      v.item.ref[v.item.target]
+              .forEach(function(w, i, arr) {
+                if (w.participantQualifiedId === v.item.role.participantQualifiedId) {
+                  if (w.participantQualifiedId == All.id) {
+                    self.showMessage2 = true;
+                    var warning = {};
+                    warning.message = i18n("views.authorizationManagerViewHtml5.permissionTree.warning.removeAll");
+                    warning.type = "warn";
+                    _sdMessageService.showMessage(warning);
+                  }
+
+                  arr.splice(i, 1);
+                }
+              });
+
+      var participants = angular.copy(v.item.ref[v.item.target]);
+
       var allow = null;
       var deny = null;
       if (v.item.target === "allow") {
-        //if (selectedAll) { v.deferred.resolve(); return; }
+        // TODO: set the defailt participants
         allow = [permission];
+
+        if (v.item.ref[v.item.target].length == 0) {
+          v.item.ref[v.item.target].push(All);
+        }
       }
       if (v.item.target === "deny") {
         deny = [permission];
       }
-      
-      var participants = angular.copy(v.item.ref[v.item.target]);
-      if (v.item.ref[v.item.target].length == 0) {
-        v.item.ref[v.item.target].push(All);
-      }
-      _sdAuthorizationManagerService.savePermissions(participants, allow, deny, true);
+
+      _sdAuthorizationManagerService.savePermissions(participants, allow, deny,
+              true);
     }
     v.deferred.resolve();
   };
+
+  // Remove All Participants
+  AMCtrl.prototype.removeAllParticipants = function(v, e) {
+    var scope = angular.element(e.srcElement).scope();
+    var permission = scope.$parent.$parent.genItem;
+
+    v.item.ref[v.item.target] = [];
+
+    if (v.menuEvent === "menuItem.clicked") {
+      var allow = null;
+      var deny = null;
+      if (v.item.target === "allow") {
+        // if (selectedAll) { v.deferred.resolve(); return; }
+        allow = [permission];
+
+        // TODO: set actual default participant for this node
+        v.item.ref[v.item.target].push(All);
+      }
+      if (v.item.target === "deny") {
+        deny = [permission];
+      }
+
+      _sdAuthorizationManagerService.savePermissions([], allow, deny, true);
+    }
+    v.deferred.resolve();
+  }
+
+  // Restore All permissions
+  AMCtrl.prototype.restorePermission = function(v, e) {
+    var scope = angular.element(e.srcElement).scope();
+    var permission = scope.$parent.$parent.genItem;
+
+    if (v.menuEvent === "menuItem.clicked") {
+      var allow = null;
+      var deny = null;
+      allow = [permission];
+      deny = [permission];
+
+      v.item.ref['allow'] = [];
+      v.item.ref['deny'] = [];
+
+      // TODO: set actual default participant for this node
+      // Same applies to Deny
+      v.item.ref['allow'].push(All);
+
+      _sdAuthorizationManagerService.savePermissions([], allow, deny, true);
+    }
+    v.deferred.resolve();
+  }
 
   AMCtrl.prototype.filterTree = function(val) {
     matches = this.rootElement.querySelectorAll(val)

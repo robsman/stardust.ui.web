@@ -110,7 +110,7 @@
 			<br>
 
 			<!-- Permission Tree related code -->
-			<div>
+			<div class="permission-tree">
 				<ul class="sd-tree">
 					<!--General Permissions Start-->
 					<li ng-repeat="labelItem in ctrl.treeLabels.gp"
@@ -138,16 +138,19 @@
 											ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 											class="glyphicons glyphicon sd-tree-expand"></i>
 									</div>
-									<a title="" class="tree-node"> <i
-										class="js-icon glyphicon glyphicon-cog"></i> <span
-										class="js-filterable">{{genItem.name}}</span>
-									</a>
+									<div sd-right-click-menu
+										sda-menu-items="[{'value' :ctrl.labels.restore,
+                                               'ref': genItem}]"
+										sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
+										<a title="" class="tree-node"> <i
+											class="js-icon glyphicon glyphicon-cog"></i> <span
+											class="js-filterable">{{genItem.name}}</span>
+										</a>
+									</div>
 								</div> <!--Allow Deny Start-->
 								<ul ng-show="isVisible" ng-init="isVisible=false">
-
 									<!--Allow Root Label and List Starts-->
 									<li ng-repeat="item in ctrl.treeLabels.allow">
-
 										<div class="title-section">
 											<div class="expand-section">
 												<i ng-click="isVisible=!isVisible"
@@ -155,12 +158,18 @@
 													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 													class="glyphicons glyphicon sd-tree-expand"></i>
 											</div>
-											<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
-												ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
-												ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
-												title="" class="tree-node"> <i
-												class="js-icon glyphicon glyphicon-ok-circle"></i> <span>{{item.name}}</span>
-											</a>
+											<div sd-right-click-menu
+												sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'allow'}]"
+												sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+												<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
+													ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
+													ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
+													title="" class="tree-node"> <i
+													class="js-icon glyphicon glyphicon-ok-circle"></i> <span>{{item.name}}</span>
+												</a>
+											</div>
 										</div>
 
 										<ul ng-show="isVisible" ng-init="isVisible=false">
@@ -193,12 +202,18 @@
 													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 													class="glyphicons glyphicon sd-tree-expand"></i>
 											</div>
-											<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
-												ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
-												ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
-												title="" class="tree-node"> <i
-												class="js-icon glyphicon glyphicon-ban-circle"></i> <span>{{labelItem.name}}</span>
-											</a>
+											<div sd-right-click-menu
+												sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'deny'}]"
+												sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+												<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
+													ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
+													ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
+													title="" class="tree-node"> <i
+													class="js-icon glyphicon glyphicon-ban-circle"></i> <span>{{labelItem.name}}</span>
+												</a>
+											</div>
 										</div>
 
 										<ul ng-show="isVisible">
@@ -272,10 +287,15 @@
 													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 													class="glyphicons glyphicon sd-tree-expand"></i>
 											</div>
-											<a title="" class="tree-node"> <i
-												class="js-icon glyphicon glyphicon-cog"></i> <span
-												class="js-filterable">{{genItem.name}}</span>
-											</a>
+											<div sd-right-click-menu
+												sda-menu-items="[{'value' :ctrl.labels.restore,
+                                               'ref': genItem}]"
+												sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
+												<a title="" class="tree-node"> <i
+													class="js-icon glyphicon glyphicon-cog"></i> <span
+													class="js-filterable">{{genItem.name}}</span>
+												</a>
+											</div>
 										</div> <!--Allow Deny Start-->
 										<ul ng-show="isVisible">
 
@@ -289,12 +309,18 @@
 															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 															class="glyphicons glyphicon sd-tree-expand"></i>
 													</div>
-													<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
-														ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
-														ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
-														title="" class="tree-node"> <i
-														class="js-icon glyphicon glyphicon-ok-circle"></i> <span>{{labelItem.name}}</span>
-													</a>
+													<div sd-right-click-menu
+														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'allow'}]"
+														sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+														<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
+															ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
+															ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
+															title="" class="tree-node"> <i
+															class="js-icon glyphicon glyphicon-ok-circle"></i> <span>{{labelItem.name}}</span>
+														</a>
+													</div>
 												</div>
 
 												<ul ng-show="isVisible">
@@ -325,13 +351,19 @@
 															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 															class="glyphicons glyphicon sd-tree-expand"></i>
 													</div>
-													<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
-														ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
-														ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
-														title="" class="tree-node"> <i
-														class="js-icon glyphicon glyphicon-ok-circle"></i> <span
-														class="js-filterable">{{labelItem.name}}</span>
-													</a>
+													<div sd-right-click-menu
+														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'deny'}]"
+														sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+														<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
+															ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
+															ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
+															title="" class="tree-node"> <i
+															class="js-icon glyphicon glyphicon-ok-circle"></i> <span
+															class="js-filterable">{{labelItem.name}}</span>
+														</a>
+													</div>
 												</div>
 
 												<ul ng-show="isVisible">
@@ -388,10 +420,15 @@
 													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 													class="glyphicons glyphicon sd-tree-expand"></i>
 											</div>
-											<a title="" class="tree-node"> <i
-												class="js-icon glyphicon glyphicon-cog"></i> <span
-												class="js-filterable">{{genItem.name}}</span>
-											</a>
+											<div sd-right-click-menu
+												sda-menu-items="[{'value' :ctrl.labels.restore,
+                                               'ref': genItem}]"
+												sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
+												<a title="" class="tree-node"> <i
+													class="js-icon glyphicon glyphicon-cog"></i> <span
+													class="js-filterable">{{genItem.name}}</span>
+												</a>
+											</div>
 										</div>
 
 										<ul ng-show="isVisible">
@@ -406,12 +443,18 @@
 															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 															class="glyphicons glyphicon sd-tree-expand"></i>
 													</div>
-													<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
-														ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
-														ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
-														title="" class="tree-node"> <i
-														class="js-icon glyphicon glyphicon-ok-circle"></i> <span>{{labelItem.name}}</span>
-													</a>
+													<div sd-right-click-menu
+														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'allow'}]"
+														sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+														<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
+															ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
+															ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
+															title="" class="tree-node"> <i
+															class="js-icon glyphicon glyphicon-ok-circle"></i> <span>{{labelItem.name}}</span>
+														</a>
+													</div>
 												</div>
 
 												<ul ng-show="isVisible">
@@ -445,12 +488,18 @@
 															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 															class="glyphicons glyphicon sd-tree-expand"></i>
 													</div>
-													<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
-														ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
-														ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
-														title="" class="tree-node"> <i
-														class="js-icon glyphicon glyphicon-ok-circle"></i> <span>{{labelItem.name}}</span>
-													</a>
+													<div sd-right-click-menu
+														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'deny'}]"
+														sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+														<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
+															ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
+															ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
+															title="" class="tree-node"> <i
+															class="js-icon glyphicon glyphicon-ok-circle"></i> <span>{{labelItem.name}}</span>
+														</a>
+													</div>
 												</div>
 
 												<ul ng-show="isVisible">
@@ -507,10 +556,15 @@
 													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 													class="glyphicons glyphicon sd-tree-expand"></i>
 											</div>
-											<a title="" class="tree-node"> <i
-												class="js-icon glyphicon glyphicon-cog"></i> <span
-												class="js-filterable">{{genItem.name}}</span>
-											</a>
+											<div sd-right-click-menu
+												sda-menu-items="[{'value' :ctrl.labels.restore,
+                                               'ref': genItem}]"
+												sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
+												<a title="" class="tree-node"> <i
+													class="js-icon glyphicon glyphicon-cog"></i> <span
+													class="js-filterable">{{genItem.name}}</span>
+												</a>
+											</div>
 										</div>
 
 										<ul ng-show="isVisible">
@@ -525,12 +579,18 @@
 															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 															class="glyphicons glyphicon sd-tree-expand"></i>
 													</div>
-													<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
-														ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
-														ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
-														title="" class="tree-node"> <i
-														class="js-icon glyphicon glyphicon-ok-circle"></i> <span>{{labelItem.name}}</span>
-													</a>
+													<div sd-right-click-menu
+														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'allow'}]"
+														sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+														<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
+															ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
+															ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
+															title="" class="tree-node"> <i
+															class="js-icon glyphicon glyphicon-ok-circle"></i> <span>{{labelItem.name}}</span>
+														</a>
+													</div>
 												</div>
 
 												<ul ng-show="isVisible">
@@ -564,12 +624,18 @@
 															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 															class="glyphicons glyphicon sd-tree-expand"></i>
 													</div>
-													<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
-														ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
-														ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
-														title="" class="tree-node"> <i
-														class="js-icon glyphicon glyphicon-ok-circle"></i> <span>{{labelItem.name}}</span>
-													</a>
+													<div sd-right-click-menu
+														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'deny'}]"
+														sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+														<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
+															ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
+															ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
+															title="" class="tree-node"> <i
+															class="js-icon glyphicon glyphicon-ok-circle"></i> <span>{{labelItem.name}}</span>
+														</a>
+													</div>
 												</div>
 
 												<ul ng-show="isVisible">
@@ -628,10 +694,15 @@
 											ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 											class="glyphicons glyphicon sd-tree-expand"></i>
 									</div>
-									<a title="" class="tree-node"> <i
-										class="js-icon glyphicon glyphicon-cog"></i> <span
-										class="js-filterable">{{genItem.name}}</span>
-									</a>
+									<div sd-right-click-menu
+										sda-menu-items="[{'value' :ctrl.labels.restore,
+                                               'ref': genItem}]"
+										sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
+										<a title="" class="tree-node"> <i
+											class="js-icon glyphicon glyphicon-cog"></i> <span
+											class="js-filterable">{{genItem.name}}</span>
+										</a>
+									</div>
 								</div> <!--Top level permissions-->
 								<ul ng-show="isVisible">
 
@@ -645,12 +716,18 @@
 													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 													class="glyphicons glyphicon sd-tree-expand"></i>
 											</div>
-											<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
-												ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
-												ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
-												title="" class="tree-node"> <i
-												class="js-icon glyphicon glyphicon-ok-circle"></i> <span>{{labelItem.name}}</span>
-											</a>
+											<div sd-right-click-menu
+												sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'allow'}]"
+												sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+												<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
+													ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
+													ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
+													title="" class="tree-node"> <i
+													class="js-icon glyphicon glyphicon-ok-circle"></i> <span>{{labelItem.name}}</span>
+												</a>
+											</div>
 										</div>
 
 
@@ -683,12 +760,18 @@
 													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 													class="glyphicons glyphicon sd-tree-expand"></i>
 											</div>
-											<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
-												ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
-												ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
-												title="" class="tree-node"> <i
-												class="js-icon glyphicon glyphicon-ban-circle"></i> <span>{{labelItem.name}}</span>
-											</a>
+											<div sd-right-click-menu
+												sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'deny'}]"
+												sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+												<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
+													ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
+													ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
+													title="" class="tree-node"> <i
+													class="js-icon glyphicon glyphicon-ban-circle"></i> <span>{{labelItem.name}}</span>
+												</a>
+											</div>
 										</div>
 
 
@@ -739,10 +822,15 @@
 															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 															class="glyphicons glyphicon sd-tree-expand"></i>
 													</div>
-													<a title="" class="tree-node"> <i
-														class="js-icon glyphicon glyphicon-cog"></i> <span
-														class="js-filterable">{{genItem.name}}</span>
-													</a>
+													<div sd-right-click-menu
+														sda-menu-items="[{'value' :ctrl.labels.restore,
+                                               'ref': genItem}]"
+														sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
+														<a title="" class="tree-node"> <i
+															class="js-icon glyphicon glyphicon-cog"></i> <span
+															class="js-filterable">{{genItem.name}}</span>
+														</a>
+													</div>
 												</div> <!--Allow-->
 												<ul ng-show="isVisible">
 													<li ng-repeat="labelItem in ctrl.treeLabels.allow"
@@ -753,12 +841,18 @@
 																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 																	class="glyphicons glyphicon sd-tree-expand"></i>
 															</div>
-															<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
-																ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
-																ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
-																title="" class="tree-node"> <i
-																class="js-icon glyphicon glyphicon-cog"></i> <span>{{labelItem.name}}</span>
-															</a>
+															<div sd-right-click-menu
+																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'allow'}]"
+																sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+																<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
+																	ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
+																	ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
+																	title="" class="tree-node"> <i
+																	class="js-icon glyphicon glyphicon-cog"></i> <span>{{labelItem.name}}</span>
+																</a>
+															</div>
 														</div>
 
 														<ul ng-show="isVisible">
@@ -790,12 +884,18 @@
 																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 																	class="glyphicons glyphicon sd-tree-expand"></i>
 															</div>
-															<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
-																ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
-																ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
-																title="" class="tree-node"> <i
-																class="js-icon glyphicon glyphicon-cog"></i> <span>{{labelItem.name}}</span>
-															</a>
+															<div sd-right-click-menu
+																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'deny'}]"
+																sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+																<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
+																	ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
+																	ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
+																	title="" class="tree-node"> <i
+																	class="js-icon glyphicon glyphicon-cog"></i> <span>{{labelItem.name}}</span>
+																</a>
+															</div>
 														</div>
 
 														<ul ng-show="isVisible">
@@ -853,10 +953,15 @@
 															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 															class="glyphicons glyphicon sd-tree-expand"></i>
 													</div>
-													<a title="" class="tree-node"> <i
-														class="js-icon glyphicon glyphicon-cog"></i> <span
-														class="js-filterable">{{genItem.name}}</span>
-													</a>
+													<div sd-right-click-menu
+														sda-menu-items="[{'value' :ctrl.labels.restore,
+                                               'ref': genItem}]"
+														sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
+														<a title="" class="tree-node"> <i
+															class="js-icon glyphicon glyphicon-cog"></i> <span
+															class="js-filterable">{{genItem.name}}</span>
+														</a>
+													</div>
 												</div> <!--Allow-->
 												<ul ng-show="isVisible">
 													<li ng-repeat="labelItem in ctrl.treeLabels.allow"
@@ -868,12 +973,18 @@
 																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 																	class="glyphicons glyphicon sd-tree-expand"></i>
 															</div>
-															<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
-																ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
-																ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
-																title="" class="tree-node"> <i
-																class="js-icon glyphicon glyphicon-cog"></i> <span>{{labelItem.name}}</span>
-															</a>
+															<div sd-right-click-menu
+																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'allow'}]"
+																sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+																<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
+																	ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
+																	ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
+																	title="" class="tree-node"> <i
+																	class="js-icon glyphicon glyphicon-cog"></i> <span>{{labelItem.name}}</span>
+																</a>
+															</div>
 														</div>
 
 														<ul ng-show="isVisible">
@@ -905,13 +1016,19 @@
 																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 																	class="glyphicons glyphicon sd-tree-expand"></i>
 															</div>
-															<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
-																ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
-																ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
-																title="" class="tree-node"> <i
-																class="js-icon glyphicon glyphicon-cog"></i> <span
-																class="js-filterable">{{labelItem.name}}</span>
-															</a>
+															<div sd-right-click-menu
+																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'deny'}]"
+																sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+																<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
+																	ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
+																	ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
+																	title="" class="tree-node"> <i
+																	class="js-icon glyphicon glyphicon-cog"></i> <span
+																	class="js-filterable">{{labelItem.name}}</span>
+																</a>
+															</div>
 														</div>
 
 														<ul ng-show="isVisible">
@@ -974,10 +1091,15 @@
 											ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 											class="glyphicons glyphicon sd-tree-expand"></i>
 									</div>
-									<a title="" class="tree-node"> <i
-										class="js-icon glyphicon glyphicon-cog"></i> <span
-										class="js-filterable">{{genItem.name}}</span>
-									</a>
+									<div sd-right-click-menu
+										sda-menu-items="[{'value' :ctrl.labels.restore,
+                                               'ref': genItem}]"
+										sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
+										<a title="" class="tree-node"> <i
+											class="js-icon glyphicon glyphicon-cog"></i> <span
+											class="js-filterable">{{genItem.name}}</span>
+										</a>
+									</div>
 								</div> <!--Top level permissions-->
 								<ul ng-show="isVisible">
 
@@ -991,12 +1113,18 @@
 													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 													class="glyphicons glyphicon sd-tree-expand"></i>
 											</div>
-											<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
-												ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
-												ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
-												title="" class="tree-node"> <i
-												class="js-icon glyphicon glyphicon-ok-circle"></i> <span>{{labelItem.name}}</span>
-											</a>
+											<div sd-right-click-menu
+												sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'allow'}]"
+												sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+												<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
+													ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
+													ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
+													title="" class="tree-node"> <i
+													class="js-icon glyphicon glyphicon-ok-circle"></i> <span>{{labelItem.name}}</span>
+												</a>
+											</div>
 										</div>
 
 
@@ -1029,12 +1157,18 @@
 													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 													class="glyphicons glyphicon sd-tree-expand"></i>
 											</div>
-											<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
-												ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
-												ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
-												title="" class="tree-node"> <i
-												class="js-icon glyphicon glyphicon-ban-circle"></i> <span>{{labelItem.name}}</span>
-											</a>
+											<div sd-right-click-menu
+												sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'deny'}]"
+												sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+												<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
+													ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
+													ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
+													title="" class="tree-node"> <i
+													class="js-icon glyphicon glyphicon-ban-circle"></i> <span>{{labelItem.name}}</span>
+												</a>
+											</div>
 										</div>
 
 
@@ -1085,10 +1219,15 @@
 															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 															class="glyphicons glyphicon sd-tree-expand"></i>
 													</div>
-													<a title="" class="tree-node"> <i
-														class="js-icon glyphicon glyphicon-cog"></i> <span
-														class="js-filterable">{{genItem.name}}</span>
-													</a>
+													<div sd-right-click-menu
+														sda-menu-items="[{'value' :ctrl.labels.restore,
+                                               'ref': genItem}]"
+														sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
+														<a title="" class="tree-node"> <i
+															class="js-icon glyphicon glyphicon-cog"></i> <span
+															class="js-filterable">{{genItem.name}}</span>
+														</a>
+													</div>
 												</div> <!--Allow-->
 												<ul ng-show="isVisible">
 													<li ng-repeat="labelItem in ctrl.treeLabels.allow"
@@ -1099,12 +1238,18 @@
 																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 																	class="glyphicons glyphicon sd-tree-expand"></i>
 															</div>
-															<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
-																ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
-																ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
-																title="" class="tree-node"> <i
-																class="js-icon glyphicon glyphicon-cog"></i> <span>{{labelItem.name}}</span>
-															</a>
+															<div sd-right-click-menu
+																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'allow'}]"
+																sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+																<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
+																	ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
+																	ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
+																	title="" class="tree-node"> <i
+																	class="js-icon glyphicon glyphicon-cog"></i> <span>{{labelItem.name}}</span>
+																</a>
+															</div>
 														</div>
 
 														<ul ng-show="isVisible">
@@ -1136,12 +1281,18 @@
 																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 																	class="glyphicons glyphicon sd-tree-expand"></i>
 															</div>
-															<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
-																ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
-																ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
-																title="" class="tree-node"> <i
-																class="js-icon glyphicon glyphicon-cog"></i> <span>{{labelItem.name}}</span>
-															</a>
+															<div sd-right-click-menu
+																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'deny'}]"
+																sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+																<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
+																	ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
+																	ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
+																	title="" class="tree-node"> <i
+																	class="js-icon glyphicon glyphicon-cog"></i> <span>{{labelItem.name}}</span>
+																</a>
+															</div>
 														</div>
 
 														<ul ng-show="isVisible">
@@ -1199,10 +1350,15 @@
 															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 															class="glyphicons glyphicon sd-tree-expand"></i>
 													</div>
-													<a title="" class="tree-node"> <i
-														class="js-icon glyphicon glyphicon-cog"></i> <span
-														class="js-filterable">{{genItem.name}}</span>
-													</a>
+													<div sd-right-click-menu
+														sda-menu-items="[{'value' :ctrl.labels.restore,
+                                               'ref': genItem}]"
+														sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
+														<a title="" class="tree-node"> <i
+															class="js-icon glyphicon glyphicon-cog"></i> <span
+															class="js-filterable">{{genItem.name}}</span>
+														</a>
+													</div>
 												</div> <!--Allow-->
 												<ul ng-show="isVisible">
 													<li ng-repeat="labelItem in ctrl.treeLabels.allow"
@@ -1214,12 +1370,18 @@
 																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 																	class="glyphicons glyphicon sd-tree-expand"></i>
 															</div>
-															<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
-																ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
-																ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
-																title="" class="tree-node"> <i
-																class="js-icon glyphicon glyphicon-cog"></i> <span>{{labelItem.name}}</span>
-															</a>
+															<div sd-right-click-menu
+																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'allow'}]"
+																sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+																<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
+																	ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
+																	ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
+																	title="" class="tree-node"> <i
+																	class="js-icon glyphicon glyphicon-cog"></i> <span>{{labelItem.name}}</span>
+																</a>
+															</div>
 														</div>
 
 														<ul ng-show="isVisible">
@@ -1251,13 +1413,19 @@
 																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 																	class="glyphicons glyphicon sd-tree-expand"></i>
 															</div>
-															<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
-																ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
-																ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
-																title="" class="tree-node"> <i
-																class="js-icon glyphicon glyphicon-cog"></i> <span
-																class="js-filterable">{{labelItem.name}}</span>
-															</a>
+															<div sd-right-click-menu
+																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
+                                               'ref': genItem,
+                                               'target' : 'deny'}]"
+																sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
+																<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
+																	ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
+																	ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
+																	title="" class="tree-node"> <i
+																	class="js-icon glyphicon glyphicon-cog"></i> <span
+																	class="js-filterable">{{labelItem.name}}</span>
+																</a>
+															</div>
 														</div>
 
 														<ul ng-show="isVisible">
@@ -1292,9 +1460,6 @@
 
 					</li>
 					<!--GLobal Extensions End-->
-
-
-
 				</ul>
 			</div>
 			<!--Tree Ends-->

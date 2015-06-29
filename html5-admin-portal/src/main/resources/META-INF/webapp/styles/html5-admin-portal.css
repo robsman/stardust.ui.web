@@ -44,5 +44,13 @@
 }
 
 .cloneParticipantSelector .sd-participant-selector .sd-ac-container {
-  width:400px;
+	width:400px;
 }
+
+.permission-tree .sd-tree .expand-section {
+	float: left;
+}  
+
+.permission-tree ul {
+	margin: 0 0 0 0;	
+} 

@@ -98,7 +98,7 @@
           data.participants.push(participants[i].participantQualifiedId);
         }
       }
-      for (var j = 0; j < allow.length; j++) {
+      for (var j = 0; allow != null && j < allow.length; j++) {
         if (allow[j].id) {
           data.allow.push(allow[j].id);
         } else {
