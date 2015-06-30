@@ -50,36 +50,48 @@
 	   class="sc sc-fw sc-arrow-d">
 	</i>
 	
-	<span style="margin:2em;" class="header">Benchmark Definitions</span>
+	<span style="margin:2em;" class="header">{{ctrl.textMap.benchmarkDefinitions}}</span>
 	
 	<!-- Design Mode Data Table for Benchmarks -->
 	<div ng-show="ctrl.showBenchmarks">
 	
 		<select ng-model="ctrl.benchmarkFilter" 
 		        ng-change="ctrl.onStatusChange(ctrl.benchmarkFilter)">
-			<option selected value="Design">Designs</option>
-			<option value="Published">Published</option>
+			<option selected value="Design">{{ctrl.textMap.design}}</option>
+			<option value="Published">{{ctrl.textMap.published}}</option>
 		</select>
 		
 		<div ng-show="ctrl.benchmarkFilter==='Design'">
 		
 			<div  sda-toolbar>
 			
-			    <a href="" ng-click="ctrl.createBenchmark()" title="Add Benchmark" class="tbl-toolbar-item tbl-tool-link">
+			    <a href="" 
+			       ng-click="ctrl.createBenchmark()" 
+			       title="{{ctrl.textMap.addBenchmark}}" 
+			       class="tbl-toolbar-item tbl-tool-link">
 			       <i class="glyphicon glyphicon-plus-sign"></i>
 			    </a>
 
-			    <a href="" ng-click="ctrl.deleteBenchmark(ctrl.selectedBenchmark.id)" title="Delete Benchmark" class="tbl-toolbar-item tbl-tool-link">
+			    <a href="" 
+			       ng-click="ctrl.deleteBenchmark(ctrl.selectedBenchmark.id)" 
+			       title="{{ctrl.textMap.delelteBenchmark}}" 
+			       class="tbl-toolbar-item tbl-tool-link">
 			       <i class="glyphicon glyphicon-minus-sign"></i>
 			    </a>	
 			    
 			    <span>|</span>
 			    
-			    <a href="" ng-click="ctrl.cloneBenchmark(ctrl.selectedBenchmark.id)" title="CloneBenchmark" class="tbl-toolbar-item tbl-tool-link">
+			    <a href="" 
+			       ng-click="ctrl.cloneBenchmark(ctrl.selectedBenchmark.id)" 
+			       title="{{ctrl.textMap.cloneBenchmark}}" 
+			       class="tbl-toolbar-item tbl-tool-link">
 			       <i class="glyphicon glyphicon-copy"></i>
 			    </a>
 
-			    <a href="" ng-click="ctrl.saveBenchmark(ctrl.selectedBenchmark)" title="Save Benchmark" class="tbl-toolbar-item tbl-tool-link">
+			    <a href="" 
+			       ng-click="ctrl.saveBenchmark(ctrl.selectedBenchmark)" 
+			       title="{{ctrl.textMap.saveBenchmark}}" 
+			       class="tbl-toolbar-item tbl-tool-link">
 			       <i class="glyphicon glyphicon-floppy-disk"></i>
 			    </a>
 			    
@@ -87,7 +99,8 @@
 			    
 			    <a href="" 
 			       ng-click="ctrl.publishBenchmark(ctrl.selectedBenchmark.id)" 
-			       title="Publish Benchmark" class="tbl-toolbar-item tbl-tool-link">
+			       title="{{ctrl.textMap.publishBenchmark}}" 
+			       class="tbl-toolbar-item tbl-tool-link">
 			       <i class="glyphicon glyphicon-globe"></i>
 			    </a>	    
 			    
@@ -101,10 +114,10 @@
 				   sd-data ="ctrl.benchmarks">
 				   <thead>
 					   	<tr>
-					   		<th sda-name="name" sda-label="Name"></th>
-					   		<th sda-name="description" sda-label="Description"></th>
-					   		<th sda-name="modifiedBy" sda-label="Modified By"></th>
-					   		<th sda-name="lastModified" sda-label="Last Modified"></th>
+					   		<th sda-name="name" sda-label="{{ctrl.textMap.name}}"></th>
+					   		<th sda-name="description" sda-label="{{ctrl.textMap.description}}"></th>
+					   		<th sda-name="modifiedBy" sda-label="{{ctrl.textMap.modifiedBy}}"></th>
+					   		<th sda-name="lastModified" sda-label="{{ctrl.textMap.lastModified}}"></th>
 					   	</tr>
 				   </thead>
 				   <tbody>
@@ -178,14 +191,14 @@
 		    <div class="tab"
 		    	 ng-class="{selected: ctrl.selectedTab==='General'}"
 		    	 ng-click="ctrl.selectedTab = 'General'">
-		    	 <span class="header">General</span>
+		    	 <span class="header">{{ctrl.textMap.general}}</span>
 		    	 <div class="tab-arrow" ng-show="ctrl.selectedTab === 'General'"></div>
 		    </div>
 		    
 		    <div class="tab"
 		    	 ng-class="{selected: ctrl.selectedTab === 'Categories'}"
 		    	 ng-click="ctrl.selectedTab ='Categories'">
-		    	 <span class="header">Categories</span>
+		    	 <span class="header">{{ctrl.textMap.categories}}</span>
 		    	 <div class="tab-arrow" ng-show="ctrl.selectedTab === 'Categories'"></div>
 		    </div>
 		    
@@ -240,21 +253,17 @@
 				    </colgroup>
 		    		<thead>
 		    			<th class="tbl-hdr-col">
-		    				<span class="tbl-hdr-col-label">Element</span>
+		    				<span class="tbl-hdr-col-label">{{ctrl.textMap.element}}</span>
 		    			</th>
 		    			<th class="tbl-hdr-col">
-		    				<span class="tbl-hdr-col-label">Options</span>
+		    				<span class="tbl-hdr-col-label">{{ctrl.textMap.options}}</span>
 		    			</th>
 		    			<th class="tbl-hdr-col" ng-repeat="category in ctrl.selectedBenchmark.categories | orderBy:'index'">
 		    			
 		    				<div ng-if="ctrl.benchmarkFilter==='Design'"
 		    				     sd-drop-down-menu 
 		    				     sda-menu-callback="ctrl.categoryMenuCallback(menuItem,e)"
-		    					 sda-menu-items="[{value:'Add', action: 'ADD_CAT', cat: category, bm: ctrl.selectedBenchmark},
-		    					 				  {value:'Delete', action: 'KILL_CAT', cat: category, bm: ctrl.selectedBenchmark},
-		    					 				  {value:'Move Right', action: 'MOVER_CAT', cat: category, bm: ctrl.selectedBenchmark},
-		    					 				  {value:'Move Left', action: 'MOVEL_CAT', cat: category, bm: ctrl.selectedBenchmark},
-		    					                  {value:'Clone', action: 'CLONE_CAT', cat: category, bm: ctrl.selectedBenchmark}]"
+		    					 sda-menu-items="ctrl.categoryMenu"
 		    					 style="display:inline-table;">
 		    				     <i class="sc sc-flag"></i>
 		    				     <i class="sc sc-arrow-d"></i>
@@ -288,7 +297,7 @@
 		    						       ng-true-value="true"
 		    						       ng-false-value="false"
 		    						       type="checkbox"/>
-		    						Enable Benchmark
+		    						       {{ctrl.textMap.enableBenchmark}}
 		    					</label>
 		    					
 		    					<div ng-show="false && data.elementRef.enableBenchmark">
@@ -372,8 +381,8 @@
 			    					<select ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
 			    					        ng-disabled="ctrl.benchmarkFilter==='Published'"
 			    					        ng-model="catInst.details.condition.lhs">
-			    						<option value="FreeForm">Free-Form</option>
-			    						<option value="CurrentTime">Current Time</option>
+			    						<option value="FreeForm">{{ctrl.textMap.freeForm}}</option>
+			    						<option value="CurrentTime">{{ctrl.textMap.currentTime}}</option>
 			    					</select>
 			    					
 			    					<div ng-show="catInst.details.condition.lhs==='FreeForm'">
@@ -391,8 +400,8 @@
 					    					<select ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
 					    					        ng-disabled="ctrl.benchmarkFilter==='Published'"
 					    					        ng-model="catInst.details.condition.operator">
-					    						<option value=">">Later Than</option>
-					    						<option value="<">Before</option>
+					    						<option value=">">{{ctrl.textMap.laterThan}}</option>
+					    						<option value="<">{{ctrl.textMap.before}}</option>
 					    					</select>
 				    					</div>
 				    					
@@ -419,7 +428,7 @@
 							    				   ng-value="true" 
 							    				   name="{{data.nodePath}}{{$index}}ubd"
 							    				   type="radio"/>
-							    				   Business Days
+							    				   {{ctrl.textMap.businessDays}}
 					    				</label>
 					    				
 					    				<label style="display:inline-table;">
@@ -429,7 +438,7 @@
 					    					       name="{{data.nodePath}}{{$index}}ubd" 
 					    					       ng-value="false" 
 					    					       type="radio"/>
-					    					       Calendar Days
+					    					       {{ctrl.textMap.calendarDays}}
 					    				</label>
 					    				
 				    					<label>
@@ -437,7 +446,7 @@
 				    							   ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
 				    							   ng-disabled="ctrl.benchmarkFilter==='Published'"
 				    						       type="checkbox"/>
-				    						Apply Offset
+			    								   {{ctrl.textMap.applyOffset}}
 				    					</label>
 				    					
 				    					<div ng-show="catInst.details.condition.offset.applyOffset===true">
@@ -448,7 +457,7 @@
 					    					        type="number"/>
 					    					
 					    					<label style="display:inline-table;">
-					    						Days At 
+					    						{{ctrl.textMap.daysAt}} 
 					    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
 					    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
 					    							   type="time" 
@@ -471,18 +480,18 @@
 	<div ng-show="ctrl.selectedTab ==='General'">
 	
 		<div sd-drop-down-menu sda-menu-items="[{value:'insert'},{value:'delete'},{value:'create'}]"></div>
-    	<label>Name</label> 
+    	<label>{{ctrl.textMap.name}}</label> 
     	<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark,true)"
     	       ng-disabled="!ctrl.selectedBenchmark || ctrl.benchmarkFilter==='Published'"
     	       ng-model="ctrl.selectedBenchmark.name" 
     	       type="text">
     	
-    	<label>Description</label>
+    	<label>{{ctrl.textMap.description}}</label>
     	<textarea ng-disabled="!ctrl.selectedBenchmark || ctrl.benchmarkFilter==='Published'" 
     			  ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark,true)"
     			  ng-model="ctrl.selectedBenchmark.description"></textarea>
     	
-    	<label>Business Calendar</label>
+    	<label>{{ctrl.textMap.businessCalendar}}</label>
 
     	<select ng-options="item.path as item.name for item in ctrl.calendars" 
     			ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"

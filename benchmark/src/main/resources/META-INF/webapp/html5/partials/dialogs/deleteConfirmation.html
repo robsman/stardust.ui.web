@@ -1,5 +1,6 @@
 <i class='glyphicon glyphicon-info-sign'></i>
-Are you sure you want to delete Benchmark Definition {{ctrl.selectedBenchmark.name}}
+{{ctrl.textMap.deleteDialogQuery.replace('{0}',ctrl.selectedBenchmark.name)}}
 <br>
-This Change cannot be undone.
-<br>Continue?
+{{ctrl.textMap.deleteDialogStatement}}
+<br>
+{{ctrl.textMap.deleteDialogContinue}}

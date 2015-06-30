@@ -64,6 +64,7 @@
 	          menuItem.item = item;
 	          menuItem.deferred = deferred;
 	          menuItem.menuEvent ="menuItem.clicked";
+	          menuItem.scopeRef = scope;
 	          
 	          //invoke
 	          this.callback({"menuItem" : menuItem,"e" : e});

@@ -24,10 +24,11 @@
 	 */
 	function benchmarkController(benchmarkService, benchmarkBuilderService, 
 								 sdLoggedInUserService, $scope, $timeout, 
-								 sdDialogService,$interval){
+								 sdDialogService,$interval,sdI18nService){
 		
-		//Self reference
-		var that = this; 
+		
+		var that = this,   //Self reference
+			sdI18nModeler; //
 		
 		//Injected dependencies we need in our functions
 		this.benchmarkService = benchmarkService;
@@ -36,8 +37,10 @@
 		this.sdDialogService = sdDialogService;
 		this.$scope = $scope;
 		this.$interval = $interval;
+		this.i18N = sdI18nService.getInstance('benchmark-messages').translate;
 		
 		//Function level properties
+		this.textMap = {};
 		this.benchmarkInitialStates = {}; //map of benchmarks pulled from server and stringified.
 		this.selectedBenchmark = undefined; //Currently selected benchmark from our data table
 		this.benchmarks = []; //Design mode Benchmarks pulled from the server
@@ -47,17 +50,32 @@
 		this.selectedTab = "General"; //Default tab
 		this.dataTableApi = {}; //Api retrieved from our dataTable directive
 		this.showBenchmarks = true; //should we show the benchmarks data table
-		this.benchmarkDataRows = []; //???
+		this.benchmarkDataRows = []; //Array of objects which populate our category-benchmark table
 		this.currentUser = sdLoggedInUserService.getUserInfo(); //current user
 		this.benchmarkFilter ="Design"; //Filter value for our benchmark service call.
-		this.benchmarkIsDirty = false;
+		this.benchmarkIsDirty = false; 
 		this.lastSaveTime = Number.NEGATIVE_INFINITY;
 		this.calendars = []; //timeoff calendars
 
-		//TODO: wrap the following 3 calls up in a $q.all call
-		
+		//by default load our design time benchmarks
 		this.loadBenchmarks("DESIGN");
 		
+		//initializing text map using our i18n method
+		this.initTextMap();
+		
+		//initialize our menu structure that we will pass back to our category table.
+		//we do this in our constructor so that the object reference evaluates correctly
+		//during an angular digest. If our menu retrieval function always generated a new
+		//menu object then the angular digests would never stop until it hit the digest limit
+		//as each invocation would be returning a new object. By returning the same object we
+		//avoid this and the considerable performance issues which arise.
+		this.categoryMenu = [  
+              {'value':this.textMap.add, 'action': 'ADD_CAT'},
+			  {'value':this.textMap["delete"], 'action': 'KILL_CAT'},
+			  {'value':this.textMap.moveRight, 'action': 'MOVER_CAT'},
+			  {'value':this.textMap.moveLeft, 'action': 'MOVEL_CAT'},
+			  {'value':this.textMap.clone, 'action': 'CLONE_CAT'}
+		];
 		
 		//Load our time-off calendars
 		benchmarkService.getCalendars()
@@ -79,16 +97,105 @@
 		});
 	}
 	
+	benchmarkController.prototype.getCategoryMenu = function(category,benchmark){
+
+	}
+	
+	//handles initialization of the i18n text map we will make available to our UI.
+	benchmarkController.prototype.initTextMap = function(){
+		
+		this.textMap.benchmarkDefinitions = this.i18N("views.main.benchmarkDataTable.title");
+		this.textMap.addBenchmark = this.i18N("views.main.benchmarkDataTable.toolbar.add");
+		this.textMap.delelteBenchmark = this.i18N("views.main.benchmarkDataTable.toolbar.delete");
+		this.textMap.cloneBenchmark = this.i18N("views.main.benchmarkDataTable.toolbar.clone");
+		this.textMap.saveBenchmark = this.i18N("views.main.benchmarkDataTable.toolbar.save");
+		this.textMap.publishBenchmark = this.i18N("views.main.benchmarkDataTable.toolbar.publish");
+		this.textMap.name = this.i18N("views.main.benchmarkDataTable.colhdr.name");
+		this.textMap.description = this.i18N("views.main.benchmarkDataTable.colhdr.description");
+		this.textMap.modifiedBy = this.i18N("views.main.benchmarkDataTable.colhdr.modifiedBy");
+		this.textMap.lastModified = this.i18N("views.main.benchmarkDataTable.colhdr.lastModified");
+		this.textMap.general = this.i18N("views.main.tabs.general.title");
+		this.textMap.categories = this.i18N("views.main.tabs.general.categories");
+		this.textMap.businessCalendar = this.i18N("views.main.tabs.general.form.businessCalendar");
+		this.textMap.published = this.i18N("views.main.mode.option.published");
+		this.textMap.design = this.i18N("views.main.mode.option.design");
+		this.textMap.element = this.i18N("views.main.categoryDataTable.colhdr.element");
+		this.textMap.options = this.i18N("views.main.categoryDataTable.colhdr.options");
+		this.textMap.add =  this.i18N("views.main.categoryDataTable.colhdr.menu.add");
+		this.textMap["delete"] =  this.i18N("views.main.categoryDataTable.colhdr.menu.delete");
+		this.textMap.clone = this.i18N("views.main.categoryDataTable.colhdr.menu.clone");
+		this.textMap.moveRight = this.i18N("views.main.categoryDataTable.colhdr.menu.moveRight");
+		this.textMap.moveLeft = this.i18N("views.main.categoryDataTable.colhdr.menu.moveLeft");
+		this.textMap.enableBenchmark= this.i18N("views.main.categoryDataTable.cell.enableBenchmark");
+		this.textMap.currentTime= this.i18N("views.main.categoryDataTable.cell.lhs.currentTime");
+		this.textMap.freeForm= this.i18N("views.main.categoryDataTable.cell.lhs.freeForm");
+		this.textMap.laterThan= this.i18N("views.main.categoryDataTable.cell.operator.laterThan");
+		this.textMap.before= this.i18N("views.main.categoryDataTable.cell.operator.before");
+		this.textMap.businessDays= this.i18N("views.main.categoryDataTable.cell.dateType.businessDays");
+		this.textMap.calendarDays = this.i18N("views.main.categoryDataTable.cell.dateType.calendarDays");
+		this.textMap.applyOffset= this.i18N("views.main.categoryDataTable.cell.applyOffset");
+		this.textMap.daysAt= this.i18N("views.main.categoryDataTable.cell.daysAt");
+		this.textMap.deleteDialogQuery = this.i18N("views.main.dialog.delete.query");
+		this.textMap.deleteDialogStatement = this.i18N("views.main.dialog.delete.statement");
+		this.textMap.deleteDialogContinue = this.i18N("views.main.dialog.delete.continue");
+		this.textMap.publishDialogStatement = this.i18N("views.main.dialog.publish.statement")
+		this.textMap.publishSuccessStatement = this.i18N("views.main.dialog.publishSuccess.statement");
+		this.textMap.saveSuccessStatement = this.i18N("views.main.dialog.saveSuccess.statement");
+	};
+	
+	/**
+	 * The model tree supports mutliple selection mechanics and this is the function which 
+	 * handles that function. Single select is default unless the ctrl key is pressed in
+	 * which case we operate as a multiselect tree. 
+	 * @param node
+	 * @param e
+	 * @param bmDataRow
+	 */
+	benchmarkController.prototype.handleTreeSelection = function(node,e,bmDataRow){
+		console.log(e.ctrlKey);
+		
+		var bmDataRowIndex=-1,
+			temp,
+			i;
+		
+		//Find if the node is currently on our benchmarkDataRows array
+		for(i=0;i<this.benchmarkDataRows.length;i++){
+			temp= this.benchmarkDataRows[i].treeNodeRef;
+			if(temp.nodeId === node.valueItem.nodeId){
+				bmDataRowIndex=i;
+				break;
+			}
+		}
+		
+		//Multi-Select Mode
+	    if(e.ctrlKey){
+	    	//if node is already selected then remove
+	      if(bmDataRowIndex >= 0){this.benchmarkDataRows.splice(bmDataRowIndex,1);}
+	      //else push in onto our collection
+	      else{this.benchmarkDataRows.push(bmDataRow);}
+	    }
+	    
+	    //Single Select Mode
+	    else{
+	      //clear all previously selected rows.
+	      while(this.benchmarkDataRows.pop()){}
+	      //and push our new row.
+	      if(bmDataRowIndex===-1){this.benchmarkDataRows.push(bmDataRow);}
+	    }
+	}
+	
 	/**
 	 * Callback for ng-change directives on our UI which need to mark a 
 	 * benchmark as having been modified. Optional secondary parameter
-	 * this should only be called from the desing mode data table
+	 * this should only be called from the design mode data table as it
+	 * makes no sense to mark a published benchmark as dirty.
 	 */
 	benchmarkController.prototype.markBenchmarkDirty = function(benchmark,refresh){
 		if(!benchmark) return;
 		benchmark.isDirty = true;
 		if(refresh===true){
-			this.dataTableApi.refresh();
+			//this.dataTableApi.refresh(true);
+			this.refreshDataTable(this.dataTableApi,true,benchmark.id);
 		}
 	}
 	
@@ -203,7 +310,8 @@
 		if(index > -1){
 			this.$timeout(function(){
 				that.benchmarks.splice(index,1);
-				that.dataTableApi.refresh();
+				//that.dataTableApi.refresh(true);
+				that.refreshDataTable(that.dataTableApi,true);
 			},0);
 		}
 	}
@@ -396,6 +504,19 @@
 		.then(function(data){
 			var promise; //our interval promise
 			
+			//sort benchmark definitons by last Modified
+			data.benchmarkDefinitions.sort(function(a,b){
+				if(a.metadata.lastModifiedDate < b.metadata.lastModifiedDate){
+					return 1;
+				}
+				
+				if(a.metadata.lastModifiedDate > b.metadata.lastModifiedDate){
+					return -1;
+				}
+				
+				return 0;
+			});
+			
 			//load benchmarks into our active benchmark array (based on mode, publish or design).
 			//Add book-keeping keys to each benchmark. This is only done
 			//so that we can use the datatable api to select a row programatically.
@@ -416,7 +537,8 @@
 				}
 				if(activeApi.refresh ){
 					that.$interval.cancel(promise);
-					activeApi.refresh();
+					//activeApi.refresh(true);
+					that.refreshDataTable(activeApi,true);
 				}
 				refreshAttempts++;
 			},125);
@@ -437,16 +559,18 @@
 	benchmarkController.prototype.categoryMenuCallback = function(v,e){
 		
 		var categories,
-			benchmark = v.item.bm,
+			benchmark = this.selectedBenchmark,//v.item.bm,
 			index,
 		    category;
 		
-		categories = v.item.bm.categories;
-		category = v.item.cat;
+		if(!benchmark){v.deferred.resolve();return;}
+		
+		categories = benchmark.categories;// v.item.bm.categories;
+		category = v.scopeRef.$parent.category;// v.item.cat;
 		index = categories.indexOf(category);
 		
 		if(v.menuEvent==="menuItem.clicked"){
-			v.item.bm.isDirty = true;
+			benchmark.isDirty = true;//v.item.bm.isDirty = true;
 			switch (v.item.action){
 				case "KILL_CAT":
 					this.benchmarkBuilderService.removeCategory(benchmark,category);
@@ -535,10 +659,6 @@
 		
 	};
 	
-	benchmarkController.prototype.benchmarkSelected2 = function(bm){
-		this.selectedBenchmark = bm.content;
-		this.benchmarkDataRows=[];
-	}
 	
 	/**
 	 * callback for the data table to handle when a benchmark has
@@ -596,8 +716,9 @@
 	 * Callback function tied to our model tree through which we will
 	 * mediate all of our tree events.
 	 * @param d - the treeNode which was the original target of the event.
+	 * @param e - event object from original DOM event
 	 */
-	benchmarkController.prototype.treeCallback = function(d){
+	benchmarkController.prototype.treeCallback = function(d,e){
 		//based on the nodeType interrogate the currently selected benchmark (if any)
 		//to determine any existing benchmarks, if not present the empty ui.
 		var hasBenchmark = true,
@@ -617,14 +738,10 @@
 		}
 		
 		if(d.treeEvent==="node-click" && this.selectedBenchmark && hasBenchmark){
-			//TODO: support multi-select in the tree
-			//Always clear out our category table rows.
-			
-			//while(this.benchmarkDataRows.pop()){}
-			
 			//now build out!
-			this.buildOutBenchmark(this.selectedBenchmark,d);
+			this.buildOutBenchmark(this.selectedBenchmark,d,e);
 		}
+		
 		d.deferred.resolve();
 		console.log(d);
 	}
@@ -746,8 +863,9 @@
 	 * @param benchmark -
 	 * @param item - this should be the item corresponding to an sd-tree click event
 	 */
-	benchmarkController.prototype.buildOutBenchmark = function(benchmark,item){
+	benchmarkController.prototype.buildOutBenchmark = function(benchmark,item,e){
 		var searchArray,
+			bmarkDataRow,
 			rhsDefault,
 			model,
 			parentModel,
@@ -785,16 +903,18 @@
 				}
 			});
 			
-			this.benchmarkDataRows.push({
-				"benchmark" : benchmark, 
-				"modelData" : parentModel.data,
-				"element" : "Process Definition",
-				"elementRef" : procDef,
-				"treeNodeRef" : item,
-				"dueDate" : procDef.dueDate,
-				"nodePath" : "{" + model.id + "}" + procDef.id, 
-				"breadCrumbs" : [parentModel.name,item.valueItem.name],
-				"categoryConditions": procDef.categoryConditions});
+			bmarkDataRow = {
+					"benchmark" : benchmark, 
+					"modelData" : parentModel.data,
+					"element" : "Process Definition",
+					"elementRef" : procDef,
+					"treeNodeRef" : item,
+					"dueDate" : procDef.dueDate,
+					"nodePath" : "{" + model.id + "}" + procDef.id, 
+					"breadCrumbs" : [parentModel.name,item.valueItem.name],
+					"categoryConditions": procDef.categoryConditions};
+			
+			this.handleTreeSelection(item,e,bmarkDataRow);
 		}
 		
 		//Activity clicks should build out model/procDef/activity structures as
@@ -818,8 +938,8 @@
 					c.details.condition.rhs=rhsDefault.qualifiedId;
 				}
 			});
-
-			this.benchmarkDataRows.push({
+			
+			bmarkDataRow ={
 				"benchmark" : benchmark, 
 				"modelData" : parentModel.data,
 				"element" : "Activity",
@@ -827,7 +947,10 @@
 				"treeNodeRef" : item,
 				"breadCrumbs" : [parentModel.name,parentProcDef.name,item.valueItem.name],
 				"nodePath" : "{" + model.id + "}" + procDef.id + ":" + activity.id, 
-				"categoryConditions": activity.categoryConditions});
+				"categoryConditions": activity.categoryConditions};
+			
+			this.handleTreeSelection(item,e,bmarkDataRow);
+			
 		}
 	}
 	
@@ -871,7 +994,12 @@
 		return iconCss;
 	};
 	
-	
+	/**
+	 * Designed to test a treeNode to determine if the treeNode has 
+	 * a corresponding member in the benchmarkDataRows array.
+	 * @param d
+	 * @returns
+	 */
 	benchmarkController.prototype.isNodeOnDataRows = function(d){
 		return this.benchmarkDataRows.some(function(dataRow){
 			return dataRow.treeNodeRef.nodeId===d.nodeId;
@@ -931,18 +1059,31 @@
 	}
 	
 	/**
+	 * Refresh the dataTable
+	 * @param dataTableApi - Data Table API to operate against
+	 * @param retainPageIndex - Whether or not we should retain the current page
+	 * @param selectionKey - Key of the item to autoselect at the end of the refresh.
+	 */
+	benchmarkController.prototype.refreshDataTable = function(dataTableApi,retainPageIndex,selectionKey){
+		if(!dataTableApi){return;}
+		retainPageIndex = retainPageIndex || false;
+		dataTableApi.refresh(retainPageIndex || false);
+		if(selectionKey){
+			this.$timeout(function(){
+				dataTableApi.setSelection({'key':selectionKey});
+			},0);
+		}
+	};
+	
+	/**
 	 * adds a benchmark to our controllers benchmarks array. Checks first for
 	 * name collisions and appends a numeral to the name in that event.
 	 */
 	benchmarkController.prototype.addToBenchmarks = function(bmark){
 		var that = this;
 		bmark.key = bmark.content.id; //add key so we can select with dataTable api
-		this.benchmarks.push(bmark);
-		this.dataTableApi.refresh();
-		this.$timeout(function(){
-			that.dataTableApi.setSelection({key:bmark.key});
-		},0);
-		
+		this.benchmarks.unshift(bmark); //add to front of benchmarks
+		this.refreshDataTable(this.dataTableApi,true,bmark.key);
 	}
 	
 	/**
@@ -958,7 +1099,7 @@
 		for(i = 0;i < data.length;i++){
 			tempModel = data[i];
 			tempModel.nodeType = "model";
-			tempModel.nodeId = tempModel.id;
+			tempModel.nodeId = tempModel.id + "-" + tempModel.oid;
 			for(j = 0; j < tempModel.processDefinitions.length;j++){
 				tempProcess = tempModel.processDefinitions[j];
 				tempProcess.nodeType = "process";
@@ -981,7 +1122,8 @@
 	                               "$scope", 
 	                               "$timeout",
 	                               "sdDialogService",
-	                               "$interval"];
+	                               "$interval",
+	                               "sdI18nService"];
 	
 	//add controller to our app
 	angular.module("benchmark-app")
