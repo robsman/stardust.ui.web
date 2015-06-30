@@ -1225,7 +1225,7 @@ public class ProcessInstanceUtils
     */
    public static String getBenchmarkLabel(ProcessInstance pi)
    {
-      return getPropertyFromBenchmarkResult(pi.getBenchmarkResult(), "UI_LABEL");
+      return getPropertyFromBenchmarkResult(pi.getBenchmarkResult(), "name");
    }
    
    /**
@@ -1234,7 +1234,7 @@ public class ProcessInstanceUtils
     */
    public static String getBenchmarkColor(ProcessInstance pi)
    { 
-      return getPropertyFromBenchmarkResult(pi.getBenchmarkResult(), "UI_COLOR");
+      return getPropertyFromBenchmarkResult(pi.getBenchmarkResult(), "color");
    }
    
    

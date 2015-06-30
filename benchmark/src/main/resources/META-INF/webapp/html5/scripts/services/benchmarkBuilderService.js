@@ -55,7 +55,7 @@
 		  "categories": [],
 		  "models": [],
 		  "businessCalendar" : "",
-		  //TODO: REMOVE once server side is upated
+		  //TODO: REMOVE once server side is updated
 		  "defaults" : {
 			    "processDefinitions": {
 			        "dueDate": {
@@ -68,21 +68,10 @@
 			            "time": "12:01 AM"
 			          }
 			        },
-			        "categoryConditions": [
-			          {
-			            "categoryId": "77df2bb8-af69-426e-be59-84b18f04cc30",
-			            "type": "none"
-			          }
-			        ]
+			        "categoryConditions": []
 			      },
 			      "activities": {
-			        "categoryConditions": [
-			          {
-			            "categoryId": "77df2bb8-af69-426e-be59-84b18f04cc30",
-			            "type": "freeform",
-			            "freeformExpression": "false;"
-			          }
-			        ]
+			        "categoryConditions": []
 			      }
 			    }//Default object ends
 		}
