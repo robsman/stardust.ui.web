@@ -201,9 +201,17 @@ public class PreferenceResource
       }
       
       HashSet<String> participant = new HashSet<String>((Collection< ? extends String>) grantsMap.get("participants"));
-      HashSet<String> allow = new HashSet<String>((Collection< ? extends String>) grantsMap.get("allow"));
-      HashSet<String> deny = new HashSet<String>((Collection< ? extends String>) grantsMap.get("deny"));
+      HashSet<String> allow = null;
+      if (grantsMap.get("allow") != null)
+      {
+         allow = new HashSet<String>((Collection< ? extends String>) grantsMap.get("allow"));
+      }
       
+      HashSet<String> deny = null;
+      if (grantsMap.get("deny") != null)
+      {
+         deny = new HashSet<String>((Collection< ? extends String>) grantsMap.get("deny"));
+      }      
       boolean overwrite = false;
       if (grantsMap.containsKey("overwrite"))
       {

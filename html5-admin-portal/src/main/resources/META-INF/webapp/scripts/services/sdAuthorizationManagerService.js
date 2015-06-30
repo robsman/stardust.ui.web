@@ -88,8 +88,8 @@
       // format data
       var data = {};
       data.participants = [];
-      data.allow = [];
-      data.deny = [];
+      data.allow = null;
+      data.deny = null;
       data.overwrite = overwrite;
       for (var i = 0; i < participants.length; i++) {
         if (participants[i].qualifiedId) {
@@ -98,21 +98,28 @@
           data.participants.push(participants[i].participantQualifiedId);
         }
       }
-      for (var j = 0; allow != null && j < allow.length; j++) {
-        if (allow[j].id) {
-          data.allow.push(allow[j].id);
-        } else {
-          data.allow.push(allow[j]);
+      if (allow != null) {
+        data.allow = [];  
+        for (var j = 0; allow != null && j < allow.length; j++) {
+          if (allow[j].id) {
+            data.allow.push(allow[j].id);
+          } else {
+            data.allow.push(allow[j]);
+          }
         }
       }
-      for (var k = 0; deny != null && k < deny.length; k++) {
-        if (deny[k].id) {
-          data.deny.push(deny[k].id);
-        } else {
-          data.deny.push(deny[k]);
+      
+      if (deny != null) {
+        data.deny = [];
+        for (var k = 0; deny != null && k < deny.length; k++) {
+          if (deny[k].id) {
+            data.deny.push(deny[k].id);
+          } else {
+            data.deny.push(deny[k]);
+          }
         }
       }
-
+      
       return grantResource.save({}, data).$promise;
     }
 

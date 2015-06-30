@@ -675,7 +675,7 @@ public class AuthorizationManagerService
       p.allow = new HashSet<ParticipantDTO>();
       p.deny = new HashSet<ParticipantDTO>();
 
-      if (permissions.hasAllGrant(p.id))
+      if (permissions.hasAllGrant2(p.id))
       {
          p.allow.add(ParticipantDTO.ALL);
       }
