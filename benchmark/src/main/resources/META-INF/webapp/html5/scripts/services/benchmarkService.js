@@ -196,7 +196,7 @@
 	benchmarkService.prototype.getModels = function(){
 		var deferred = this.$q.defer(),
 			//url = this.rootUrl + "/models.json";
-			url = this.absRoot + this.portalCommon + "/models";
+			url = this.absRoot + this.portalCommon + "/models?allActive=true";
 		
 		this.$http.get(url)
 		.success(function(data){

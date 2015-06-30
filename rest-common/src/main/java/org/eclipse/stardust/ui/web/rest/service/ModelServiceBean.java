@@ -40,12 +40,20 @@ public class ModelServiceBean
     * 
     * @return
     */
-   public List<ModelDTO> getModels() throws Exception
+   public List<ModelDTO> getModels(Boolean allActive) throws Exception
    {
       List<ModelDTO> modelList = CollectionUtils.newArrayList();
       try
       {
-         Collection<DeployedModel> models = ModelCache.findModelCache().getAllModels();
+         Collection<DeployedModel> models = CollectionUtils.newArrayList();
+         if (allActive.equals(true))
+         {
+            models = ModelCache.findModelCache().getActiveModels();
+         }
+         else
+         {
+            models = ModelCache.findModelCache().getAllModels();
+         }
          for (DeployedModel model : models)
          {
             ModelDTO modelDTO = DTOBuilder.build(model, ModelDTO.class);

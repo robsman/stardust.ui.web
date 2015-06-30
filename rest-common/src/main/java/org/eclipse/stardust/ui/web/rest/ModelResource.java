@@ -12,9 +12,11 @@ package org.eclipse.stardust.ui.web.rest;
 
 import java.util.List;
 
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -43,11 +45,11 @@ public class ModelResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/")
-   public Response getModels()
+   public Response getModels(@QueryParam("allActive") @DefaultValue("false") Boolean allActive)
    {
       try
       {
-         List<ModelDTO> models = modelService.getModels();
+         List<ModelDTO> models = modelService.getModels(allActive);
          return Response.ok(AbstractDTO.toJson(models), MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)

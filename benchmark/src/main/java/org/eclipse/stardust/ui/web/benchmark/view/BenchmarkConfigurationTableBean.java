@@ -168,17 +168,7 @@ public class BenchmarkConfigurationTableBean extends UIComponentBean implements 
       {
          benchmarkPreferences = loadPreferences();
 
-         Collection<DeployedModel> deployedModels = ModelCache.findModelCache().getAllModels();
-         Collection<Model> models = new ArrayList<Model>(deployedModels.size());
-         Set<String> idSet = new HashSet<String>();
-
-         for (Model model : deployedModels)
-         {
-            if (idSet.add(model.getId()))
-            {
-               models.add(model);
-            }
-         }
+         Collection<DeployedModel> models = ModelCache.findModelCache().getActiveModels();
 
          for (Model model : models)
          {
