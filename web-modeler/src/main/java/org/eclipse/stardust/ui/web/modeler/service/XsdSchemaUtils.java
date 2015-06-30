@@ -1029,7 +1029,11 @@ public final class XsdSchemaUtils
 
       if (schemaJson.has("targetNamespace"))
       {
-         schema.setTargetNamespace(GsonUtils.safeGetAsString(schemaJson, "targetNamespace"));
+         String tns = GsonUtils.safeGetAsString(schemaJson, "targetNamespace");
+         if (!CompareHelper.areEqual(tns, schema.getTargetNamespace()))
+         {
+            schema.setTargetNamespace(tns);
+         }
       }
 
       JsonObject locations = GsonUtils.safeGetAsJsonObject(schemaJson, LOCATIONS);

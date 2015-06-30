@@ -8,12 +8,14 @@ import java.lang.reflect.Type;
 import java.util.List;
 
 import org.eclipse.emf.ecore.EObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.model.xpdl.builder.defaults.DefaultElementsInitializer;
+import org.eclipse.stardust.model.xpdl.builder.spi.ModelInitializer;
+import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelPersistenceHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ModelPersistenceService
@@ -39,6 +41,11 @@ public class ModelPersistenceService
                   modelContentName, modelContent);
             if (null != descriptor)
             {
+               if (descriptor.model instanceof ModelType)
+               {
+                  ModelInitializer initializer = new DefaultElementsInitializer();
+                  initializer.initializeModel((ModelType) descriptor.model);
+               }
                return descriptor;
             }
          }
