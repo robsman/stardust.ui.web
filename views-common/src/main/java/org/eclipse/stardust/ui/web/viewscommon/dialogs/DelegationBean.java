@@ -408,7 +408,8 @@ public class DelegationBean extends PopupUIComponentBean
       fireCloseEvent = true;
       limitedSearch = true;
       delegationMode = DELEGATION_MODE.SEARCH_PARTICIPANTS;
-      autoCompleteSelector.setSearchValue(EMPTY_STRING);
+      //For IE - In IE the delegation didn't work the second time
+      autoCompleteSelector = null;
    }
 
    /**
