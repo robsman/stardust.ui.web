@@ -127,7 +127,7 @@
 	 * 
 	 */
 	controller.prototype.openModifyUserGroup = function(selectedUserGroup) {
-		this.newUserGroup = selectedUserGroup;
+		this.newUserGroup = angular.copy(selectedUserGroup);
 		this.showModifyUserGroup = true;
 	};
 
@@ -135,10 +135,19 @@
 	 * 
 	 */
 	controller.prototype.onConfirmModifyUser = function(res) {
-		_sdUserGroupService.modifyUserGroup(this.newUserGroup);
+		var self = this;
+		_sdUserGroupService.modifyUserGroup(this.newUserGroup).then(
+				function(data) {
+					self.showCreateUserGroup = false;
+					self.refresh();
+				},
+				function(error) {
+					self.errorExists = true;
+					self.errorMessage = error.data.message.substr(error.data.message.indexOf(" - ") + 2,
+							error.data.message.length);
+					self.showCreateUserGroup = true;
+				});
 		this.newUserGroup = {};
-		this.showCreateUserGroup = false;
-		this.refresh();
 	};
 
 	/*

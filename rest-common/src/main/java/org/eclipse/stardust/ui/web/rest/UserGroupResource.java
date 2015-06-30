@@ -32,6 +32,9 @@ import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 /**
  * @author Aditya.Gaikwad
  *
@@ -67,6 +70,24 @@ public class UserGroupResource
    {
       UserGroupDTO userGroupDTO;
       UserGroupDTO modifiedUserGroup = null;
+      
+      JsonMarshaller jsonIo = new JsonMarshaller();
+      JsonObject postJSON = jsonIo.readJsonObject(postData);
+
+      JsonElement validTo = postJSON.get("validTo");
+      if (validTo == null || validTo.getAsString().isEmpty())
+      {
+         postJSON.remove("validTo");
+         postData = postJSON.toString();
+      }
+      
+      JsonElement validFrom = postJSON.get("validFrom");
+      if (validFrom == null || validFrom.getAsString().isEmpty())
+      {
+         postJSON.remove("validFrom");
+         postData = postJSON.toString();
+      }
+      
       userGroupDTO = DTOBuilder.buildFromJSON(postData, UserGroupDTO.class);
       modifiedUserGroup = getUserGroupService().modifyUserGroup(userGroupDTO);
       return Response.status(202).entity(modifiedUserGroup.toJson()).build();
