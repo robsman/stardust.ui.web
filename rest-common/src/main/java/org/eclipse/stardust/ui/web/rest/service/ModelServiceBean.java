@@ -56,43 +56,46 @@ public class ModelServiceBean
          }
          for (DeployedModel model : models)
          {
-            ModelDTO modelDTO = DTOBuilder.build(model, ModelDTO.class);
-            List<ProcessDefinitionDTO> processDefitionDTOList = CollectionUtils.newArrayList();
-            List<Data> modelData = model.getAllData();
-            List<ProcessDefinition> processDefinitions = model.getAllProcessDefinitions();
-            List<ActivityDTO> activityDTOList = CollectionUtils.newArrayList();
-            List<DataDTO> dataDTOList = CollectionUtils.newArrayList();
-            
-            // Create DataDTO list
-            for (Data data : modelData)
+            if (!(PredefinedConstants.PREDEFINED_MODEL_ID.equals(model.getId())))
             {
-               DataDTO dataDTO = DTOBuilder.build(data, DataDTO.class);
-               Type type = (Type) data.getAttribute(PredefinedConstants.TYPE_ATT);
-               if (type != null)
+               ModelDTO modelDTO = DTOBuilder.build(model, ModelDTO.class);
+               List<ProcessDefinitionDTO> processDefitionDTOList = CollectionUtils.newArrayList();
+               List<Data> modelData = model.getAllData();
+               List<ProcessDefinition> processDefinitions = model.getAllProcessDefinitions();
+               List<ActivityDTO> activityDTOList = CollectionUtils.newArrayList();
+               List<DataDTO> dataDTOList = CollectionUtils.newArrayList();
+               
+               // Create DataDTO list
+               for (Data data : modelData)
                {
-            	   dataDTO.engineType = type.getId();
-            	   dataDTOList.add(dataDTO);
+                  DataDTO dataDTO = DTOBuilder.build(data, DataDTO.class);
+                  Type type = (Type) data.getAttribute(PredefinedConstants.TYPE_ATT);
+                  if (type != null)
+                  {
+               	   dataDTO.engineType = type.getId();
+               	   dataDTOList.add(dataDTO);
+                  }
                }
-            }
-            
-            // Create ProcessDefinitionDTO list
-            for (ProcessDefinition processDefinition : processDefinitions)
-            {
-               ProcessDefinitionDTO processDefinitionDTO = DTOBuilder.build(processDefinition,
-                     ProcessDefinitionDTO.class);
-               processDefitionDTOList.add(processDefinitionDTO);
-               List<Activity> activities = processDefinition.getAllActivities();
-               // Create ActivityDTO list
-               for (Activity activity : activities)
+               
+               // Create ProcessDefinitionDTO list
+               for (ProcessDefinition processDefinition : processDefinitions)
                {
-                  ActivityDTO activityDTO = DTOBuilder.build(activity, ActivityDTO.class);
-                  activityDTOList.add(activityDTO);
+                  ProcessDefinitionDTO processDefinitionDTO = DTOBuilder.build(processDefinition,
+                        ProcessDefinitionDTO.class);
+                  processDefitionDTOList.add(processDefinitionDTO);
+                  List<Activity> activities = processDefinition.getAllActivities();
+                  // Create ActivityDTO list
+                  for (Activity activity : activities)
+                  {
+                     ActivityDTO activityDTO = DTOBuilder.build(activity, ActivityDTO.class);
+                     activityDTOList.add(activityDTO);
+                  }
+                  processDefinitionDTO.activities = activityDTOList;
                }
-               processDefinitionDTO.activities = activityDTOList;
+               modelDTO.processDefinitions = processDefitionDTOList;
+               modelDTO.data = dataDTOList;
+               modelList.add(modelDTO);
             }
-            modelDTO.processDefinitions = processDefitionDTOList;
-            modelDTO.data = dataDTOList;
-            modelList.add(modelDTO);
          }
       }
       catch (Exception e)

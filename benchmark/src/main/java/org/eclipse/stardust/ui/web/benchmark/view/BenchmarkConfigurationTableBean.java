@@ -24,6 +24,7 @@ import javax.faces.model.SelectItem;
 import javax.swing.tree.DefaultTreeModel;
 
 import org.eclipse.stardust.engine.api.model.Model;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
@@ -172,21 +173,23 @@ public class BenchmarkConfigurationTableBean extends UIComponentBean implements 
 
          for (Model model : models)
          {
-            List<BenchmarkConfiguration> benchmarkConfigurationList = new ArrayList<BenchmarkConfiguration>();
-            List<ProcessDefinition> allProcessDefinitions = ProcessDefinitionUtils.getAllProcessDefinitions(model,
-                  false);
-            for (ProcessDefinition processDefinition : allProcessDefinitions)
+            if (!(PredefinedConstants.PREDEFINED_MODEL_ID.equals(model.getId())))
             {
-               String defBenchmarkId = getBenchmarkFromPreferences(benchmarkPreferences,
-                     processDefinition.getId());
-               BenchmarkConfiguration bc = new BenchmarkConfiguration(model.getId(), processDefinition.getId(),
-                     processDefinition.getName(), defBenchmarkId);
-               benchmarkConfigurationList.add(bc);
+               List<BenchmarkConfiguration> benchmarkConfigurationList = new ArrayList<BenchmarkConfiguration>();
+               List<ProcessDefinition> allProcessDefinitions = ProcessDefinitionUtils.getAllProcessDefinitions(model,
+                     false);
+               for (ProcessDefinition processDefinition : allProcessDefinitions)
+               {
+                  String defBenchmarkId = getBenchmarkFromPreferences(benchmarkPreferences, processDefinition.getId());
+                  BenchmarkConfiguration bc = new BenchmarkConfiguration(model.getId(), processDefinition.getId(),
+                        processDefinition.getName(), defBenchmarkId);
+                  benchmarkConfigurationList.add(bc);
+               }
+               String defBenchmarkId = getBenchmarkFromPreferences(benchmarkPreferences, model.getId());
+               BenchmarkConfigurations benchmarkConfigurations = new BenchmarkConfigurations(model.getId(),
+                     defBenchmarkId, benchmarkConfigurationList);
+               buildModelTree(benchmarkConfigurations, rootModelNode);
             }
-            String defBenchmarkId = getBenchmarkFromPreferences(benchmarkPreferences, model.getId());
-            BenchmarkConfigurations benchmarkConfigurations = new BenchmarkConfigurations(model.getId(),
-                  defBenchmarkId, benchmarkConfigurationList);
-            buildModelTree(benchmarkConfigurations, rootModelNode);
          }
       }
       catch (Exception e)
