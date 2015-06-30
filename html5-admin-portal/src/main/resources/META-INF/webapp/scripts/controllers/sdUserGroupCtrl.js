@@ -105,6 +105,7 @@
 		_sdUserGroupService.createUserGroup(this.newUserGroup).then(
 				function(data) {
 					self.showCreateUserGroup = false;
+					self.refresh();
 				},
 				function(error) {
 					self.errorExists = true;
@@ -137,6 +138,7 @@
 		_sdUserGroupService.modifyUserGroup(this.newUserGroup);
 		this.newUserGroup = {};
 		this.showCreateUserGroup = false;
+		this.refresh();
 	};
 
 	/*
@@ -152,6 +154,7 @@
 	 */
 	controller.prototype.invalidateUserGroup = function() {
 		_sdUserGroupService.invalidateUserGroup(this.selectionExpr.id);
+		this.refresh();
 	}
 
 })();
