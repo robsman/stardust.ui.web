@@ -388,6 +388,56 @@
 			
 			return baseURL;
 		};
+		
+		
+		/**
+		 * Given an array of names generate a unique name with collisions being resolved
+		 * by appending a numeric increment to the name and then recursing until no collisions occur.
+		 * 
+		 * @usage: generateUniqueName(['Anne','Bob'], 'Frank');
+		 * @param names - array of names we are testing against.
+		 * @param testName - name we are testing for uniqueness
+		 * @param suffix - OPTIONAL Defaults to zero.
+		 * 				 - MUST BE AN INTEGER --99.99% sure you should leave this blank as 
+		 * 				   it is designed to be passed on subsequent recursive calls. 
+		 *                 Passing a value in on the user invocation
+		 *                 results in the increment starting at that suffix value.
+		 * @returns a unique name!
+		 */
+		UtilService.prototype.generateUniqueName = function(names,testName,suffix){
+			var i,
+			  	found=false,
+				temp;
+				
+			suffix = !suffix ? 0 : suffix;
+			
+			for(i=0;i<names.length;i++){
+				temp = names[i];
+				if(suffix === 0){
+					if(temp === testName){
+						found=true;
+					}
+				}
+				else{
+					if(temp === testName + " " + suffix){
+						found = true;
+					}
+				}
+			}
+			
+			if(found){
+				return this.generateUniqueName(names,testName,suffix + 1);
+			}
+			else{
+				if(suffix === 0){
+					return testName;
+				}
+				else{
+					return testName + " " + suffix;
+				}
+			}
+		}
+		
 
 	}
 	;
