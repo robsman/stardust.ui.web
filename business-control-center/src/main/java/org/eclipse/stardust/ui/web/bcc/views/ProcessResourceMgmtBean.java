@@ -474,8 +474,9 @@ public class ProcessResourceMgmtBean extends UIComponentBean implements Resource
                      ? processResourceUserList
                      : filterResult(processResourceUserList, userFilterNamePattern);
                applySorting(resultList);
+               List<ProcessResourceMgmtUserTableEntry> pageList = retrievePageList(resultList, startRow, pageSize);
                RawQueryResult<ProcessResourceMgmtUserTableEntry> queryResult = new RawQueryResult<ProcessResourceMgmtUserTableEntry>(
-                     resultList, null, false, Long.valueOf(resultList.size()));
+                     pageList, null, true, Long.valueOf(resultList.size()));
 
                return (IQueryResult) new IppQueryResult(queryResult);
             }
@@ -489,8 +490,9 @@ public class ProcessResourceMgmtBean extends UIComponentBean implements Resource
                   ? processResourceRoleList
                   : filterResult(processResourceRoleList, roleFilterNamePattern);
             applySorting(resultList);
+            List<ProcessResourceMgmtRoleTableEntry> pageList = retrievePageList(resultList, startRow, pageSize);
             RawQueryResult<ProcessResourceMgmtRoleTableEntry> queryResult = new RawQueryResult<ProcessResourceMgmtRoleTableEntry>(
-                  resultList, null, false, Long.valueOf(resultList.size()));
+                  pageList, null, true, Long.valueOf(resultList.size()));
             return (IQueryResult) new IppQueryResult(queryResult);
          }
       }
@@ -524,7 +526,31 @@ public class ProcessResourceMgmtBean extends UIComponentBean implements Resource
          }
 
       }
-      
+
+      /**
+       * @param list
+       * @param startRow
+       * @param pageSize
+       * @return
+       */
+      @SuppressWarnings({"rawtypes", "unchecked"})
+      private List retrievePageList(List list, int startRow, int pageSize)
+      {
+         List pageList = new ArrayList();
+
+         int end = startRow + pageSize;
+         if (end > list.size())
+         {
+            end = list.size();
+         }
+
+         for(int i = startRow; i < end; i++)
+         {
+            pageList.add(list.get(i));
+         }
+         
+         return pageList;
+      }
    }
    
    /**
