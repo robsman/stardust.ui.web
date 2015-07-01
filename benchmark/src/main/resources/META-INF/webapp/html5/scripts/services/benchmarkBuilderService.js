@@ -146,44 +146,14 @@
 	/**
 	 * Constructor
 	 */
-	function benchmarkBuilderService(){
-		//Stubbed
+	function benchmarkBuilderService(sdUtilService,sdI18nService){
+		var i18N;
+		
+		i18N = sdI18nService.getInstance('benchmark-messages').translate;
+		this.sdUtilService = sdUtilService;
+		this.defaultCategoryName = i18N("views.main.category.defaultName");
 	}
 	
-	
-	benchmarkBuilderService.prototype.generateUniqueCategoryName = function(categories,testName,suffix){
-		var i,
-		  	found=false,
-			temp;
-			
-		suffix = !suffix ? 0 : suffix;
-		
-		for(i=0;i<categories.length;i++){
-			temp = categories[i];
-			if(suffix===0){
-				if(temp.name===testName){
-					found=true;
-				}
-			}
-			else{
-				if(temp.name===testName + " " + suffix){
-					found = true;
-				}
-			}
-		}
-		
-		if(found){
-			return this.generateUniqueCategoryName(categories,testName,suffix + 1);
-		}
-		else{
-			if(suffix === 0){
-				return testName;
-			}
-			else{
-				return testName + " " + suffix;
-			}
-		}
-	}
 	
 	/**
 	 * TODO can this be removed???
@@ -264,7 +234,8 @@
 	benchmarkBuilderService.prototype.getBaseCategory = function(){
 		var baseCopy={};
 		angular.copy(baseCategory, baseCopy);
-		baseCopy.id = this.getUUID();
+		baseCopy.id = this.getUUID(); //apply a new UUID
+		baseCopy.name  = this.defaultCategoryName; //apply our i18N default name
 		return baseCopy;
 	}
 	
@@ -474,12 +445,15 @@
 		var index,
 			newCat,
 			newCatData,
+			names,
 			that = this;
 		
 		index = benchmark.categories.indexOf(category);
 		newCat = this.getBaseCategory();
-		//newCat.name = "Added BMark - "  + (new Date()).toTimeString().split("GMT")[0];
-		newCat.name = this.generateUniqueCategoryName(benchmark.categories,newCat.name,false);
+		
+		names = benchmark.categories.map(function(bm){return bm.name});
+		newCat.name = this.sdUtilService.generateUniqueName(names,newCat.name);
+
 		benchmark.categories.splice(index,0,newCat);
 		
 		//update indexes
@@ -521,11 +495,13 @@
 			newCat,
 			newCatData,
 			tempCat,
+			names,
 			that = this;
 		
+		names = benchmark.categories.map(function(cat){return cat.name});
 		index = benchmark.categories.indexOf(category);
 		newCat = this.getBaseCategory();
-		newCat.name = "Added BMark - "  + (new Date()).toTimeString().split("GMT")[0];
+		newCat.name = this.sdUtilService.generateUniqueName(names,category.name);  //"Added BMark - "  + (new Date()).toTimeString().split("GMT")[0];
 		benchmark.categories.splice(index,0,newCat);
 		
 		//update indexes
@@ -561,7 +537,7 @@
 	}
 	
 	//Angular dependency injection
-	benchmarkBuilderService.$inject = [];
+	benchmarkBuilderService.$inject = ["sdUtilService","sdI18nService"];
 	
 	angular.module("benchmark-app.services")
 	.service("benchmarkBuilderService",benchmarkBuilderService);

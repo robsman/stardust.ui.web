@@ -24,7 +24,7 @@
 	 */
 	function benchmarkController(benchmarkService, benchmarkBuilderService, 
 								 sdLoggedInUserService, $scope, $timeout, 
-								 sdDialogService,$interval,sdI18nService){
+								 sdDialogService,$interval,sdI18nService,sdUtilService){
 		
 		
 		var that = this,   //Self reference
@@ -38,6 +38,7 @@
 		this.$scope = $scope;
 		this.$interval = $interval;
 		this.i18N = sdI18nService.getInstance('benchmark-messages').translate;
+		this.sdUtilService = sdUtilService;
 		
 		//Function level properties
 		this.textMap = {};
@@ -97,11 +98,10 @@
 		});
 	}
 	
-	benchmarkController.prototype.getCategoryMenu = function(category,benchmark){
-
-	}
-	
-	//handles initialization of the i18n text map we will make available to our UI.
+	/**
+	 * More of a subroutine than a function in that all this does is compartmentalize
+	 * the initialization of our i18N textmap.
+	 */
 	benchmarkController.prototype.initTextMap = function(){
 		
 		this.textMap.benchmarkDefinitions = this.i18N("views.main.benchmarkDataTable.title");
@@ -141,6 +141,7 @@
 		this.textMap.publishDialogStatement = this.i18N("views.main.dialog.publish.statement")
 		this.textMap.publishSuccessStatement = this.i18N("views.main.dialog.publishSuccess.statement");
 		this.textMap.saveSuccessStatement = this.i18N("views.main.dialog.saveSuccess.statement");
+		this.textMap.defaultName = this.i18N("views.main.benchmark.defaultName");
 	};
 	
 	/**
@@ -214,7 +215,7 @@
 		
 		if(!bm || !pdId){return false;}
 		
-		//Short circuit search
+		//Short circuit search leveraging array.some
 		return bm.models.some(function(model){
 			return model.processDefinitions.some(function(procDef){
 				if(actId && procDef.id === pdId){
@@ -971,6 +972,11 @@
 		//TODO-ZZM: need appropriate icons
 		if(d.nodeType === "model"){
 			iconCss = "sc sc-wrench";
+			if(this.selectedBenchmark){
+				hasBenchmark = this.selectedBenchmark.models.some(function(model){
+					return model.id === d.id;
+				});
+			}
 		}
 		else if(d.nodeType === "process"){
 			hasBenchmark = this.isBenchmarked(this.selectedBenchmark,d.id);
@@ -1013,22 +1019,29 @@
 	benchmarkController.prototype.createBenchmark = function(){
 		
 		var bmark,
+			uniqueName,
+			testNames,
 			that;
 		
 		bmark = this.benchmarkBuilderService.getBaseBenchmark();
 		that = this;
 		
-		//Default values
-		//bmark.metadata.modifiedBy = this.currentUser.displayName;
-		bmark.content.name = "Default Benchmark"; //TODO i18N
-		//bmark.metadata.lastModified = (new Date()).toString();
+		//create a simple string array of current benchmark names
+		testNames = this.benchmarks.map(function(bm){
+			return bm.content.name;
+		});
+		//now pass the array and our default name to sdUtils to return a unique name within the
+		//names array we just constructed.
+		uniqueName = this.sdUtilService.generateUniqueName(testNames,this.textMap.defaultName);
+		
+		bmark.content.name = uniqueName;
+		
 		
 		this.benchmarkService.createBenchmarkDefinition(bmark.content)
 		.then(function(data){
 			that.addToBenchmarks(data);
 		});
-		
-		//this.addToBenchmarks(bmark);
+
 	};
 	
 	/**Given the modelData on a benchmarkRow test whether the qualified ID matching that
@@ -1123,7 +1136,8 @@
 	                               "$timeout",
 	                               "sdDialogService",
 	                               "$interval",
-	                               "sdI18nService"];
+	                               "sdI18nService",
+	                               "sdUtilService"];
 	
 	//add controller to our app
 	angular.module("benchmark-app")
