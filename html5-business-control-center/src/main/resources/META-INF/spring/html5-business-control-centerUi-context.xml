@@ -125,5 +125,14 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 				</ippui:preferences>
 			</ippui:view>
 		</ippui:viewsExtension>
+		<ippui:viewsExtension>
+			<ippui:view name="trafficLightViewHtml5"
+				include="/plugins/html5-business-control-center/partials/views/trafficLightView.html">
+				<ippui:preferences>
+					<ippui:preferencePage name="icon"
+						include="/plugins/views-common/images/icons/traffic_light.png" />
+				</ippui:preferences>
+			</ippui:view>
+		</ippui:viewsExtension>
 	</ippui:perspectiveExtension>
 </beans>
