@@ -22,7 +22,7 @@ public class ModelPersistenceService
 {
    private static final Logger trace = LogManager.getLogger(ModelPersistenceService.class);
 
-   private final List<ModelPersistenceHandler<? extends EObject>> persistenceHandlers;
+   protected final List<ModelPersistenceHandler<? extends EObject>> persistenceHandlers;
 
    @Autowired
    public ModelPersistenceService(
