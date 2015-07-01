@@ -89,6 +89,53 @@
 		return deferred.promise;
 	};
 	
+	benchmarkService.prototype.__fileDownload = function(benchmark){
+		
+		if(!benchmark && ! benchmark.content){return;}
+		
+		var exportAnchor = document.createElement("a");
+		var downloadMetaData = 'data:application/csv;charset=utf-8,';
+		var downloadUrl = downloadMetaData + encodeURIComponent(JSON.stringify(benchmark));
+		var fileName = benchmark.content.id + ".json";
+		
+		try {
+			if (exportAnchor.download != undefined) {
+				exportAnchor.download = fileName;
+				exportAnchor.href = downloadUrl;
+				exportAnchor.target = '_blank';
+
+				var mouseEvent = document.createEvent("MouseEvents");
+				mouseEvent.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+				exportAnchor.dispatchEvent(mouseEvent);
+			} else if (navigator.msSaveBlob) {
+				var index = downloadUrl.indexOf(',');
+				var contentType = downloadUrl.substr(0, index);
+				var data = downloadUrl.substr(index + 1);
+				data = decodeURIComponent(data);
+
+				var blob = new Blob([data], {type : contentType});
+				navigator.msSaveBlob(blob, fileName);
+			} else {
+				//not supported
+			}
+		} catch (e) {
+			trace.error(theTableId + ': Failed to download as file', e);
+		}
+	}
+	
+	benchmarkService.prototype.downloadBenchmarkAsFile = function(benchmark,mode){
+		var that = this;
+		this.getBenchmarkDefinitions(mode)
+		.then(function(bmarks){
+			var bmark = bmarks.benchmarkDefinitions.filter(function(bm){
+				return bm.content.id === benchmark.id;
+			});
+			if(bmark.length > 0){
+				that.__fileDownload(bmark[0]);
+			}
+		});
+	}
+	
 	/**
 	 * Retrieve all benchmark definitions from rest-common
 	 * @param filter - [('design' | 'publish')], defaults to design if undefined

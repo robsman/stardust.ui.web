@@ -61,10 +61,30 @@
 			<option value="Published">{{ctrl.textMap.published}}</option>
 		</select>
 		
+		<div ng-show="ctrl.benchmarkFilter==='Published'">
+		
+			<a href="" 
+			       ng-click="ctrl.downloadBenchmarkAsFile(ctrl.selectedBenchmark,ctrl.benchmarkFilter)" 
+			       title="{{ctrl.textMap.downloadBenchmark}}" 
+			       class="tbl-toolbar-item tbl-tool-link">
+			       <i class="glyphicon glyphicon-download"></i>
+		    </a>
+		    
+		</div>
+		
 		<div ng-show="ctrl.benchmarkFilter==='Design'">
 		
 			<div  sda-toolbar>
-			
+				
+				<a href="" 
+			       ng-click="ctrl.downloadBenchmarkAsFile(ctrl.selectedBenchmark,ctrl.benchmarkFilter)" 
+			       title="{{ctrl.textMap.downloadBenchmark}}" 
+			       class="tbl-toolbar-item tbl-tool-link">
+			       <i class="glyphicon glyphicon-download"></i>
+			    </a>
+			    
+				<span>|</span>
+				
 			    <a href="" 
 			       ng-click="ctrl.createBenchmark()" 
 			       title="{{ctrl.textMap.addBenchmark}}" 
@@ -104,11 +124,13 @@
 			       <i class="glyphicon glyphicon-globe"></i>
 			    </a>	    
 			    
+			    
 			</div>
 			
 			<table sd-data-table="ctrl.dataTableApi"
 				   sda-mode="local"
 				   sda-selectable="row"
+				   sda-exports="true"
 				   sda-page-size = "5"
 				   sda-on-select="ctrl.benchmarkSelected(d)"
 				   sd-data ="ctrl.benchmarks">

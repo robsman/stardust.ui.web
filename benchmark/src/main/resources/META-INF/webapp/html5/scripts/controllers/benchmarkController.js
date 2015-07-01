@@ -110,6 +110,7 @@
 		this.textMap.cloneBenchmark = this.i18N("views.main.benchmarkDataTable.toolbar.clone");
 		this.textMap.saveBenchmark = this.i18N("views.main.benchmarkDataTable.toolbar.save");
 		this.textMap.publishBenchmark = this.i18N("views.main.benchmarkDataTable.toolbar.publish");
+		this.textMap.downloadBenchmark = this.i18N("views.main.benchmarkDataTable.toolbar.download");
 		this.textMap.name = this.i18N("views.main.benchmarkDataTable.colhdr.name");
 		this.textMap.description = this.i18N("views.main.benchmarkDataTable.colhdr.description");
 		this.textMap.modifiedBy = this.i18N("views.main.benchmarkDataTable.colhdr.modifiedBy");
@@ -143,6 +144,18 @@
 		this.textMap.saveSuccessStatement = this.i18N("views.main.dialog.saveSuccess.statement");
 		this.textMap.defaultName = this.i18N("views.main.benchmark.defaultName");
 	};
+	
+	/**
+	 * Initiate a file download of the benchmark to the users computer.
+	 * this will always retrieve the benchmark from the server so as to get
+	 * the current saved state.
+	 * @param benchmark - benchmark to download
+	 * @param - Design or Publish mode
+	 */
+	benchmarkController.prototype.downloadBenchmarkAsFile = function(benchmark,mode){
+		if(!benchmark){return;}
+		this.benchmarkService.downloadBenchmarkAsFile(benchmark,mode);
+	}
 	
 	/**
 	 * The model tree supports mutliple selection mechanics and this is the function which 
