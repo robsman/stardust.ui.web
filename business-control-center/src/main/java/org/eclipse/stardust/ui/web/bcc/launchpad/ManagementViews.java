@@ -37,9 +37,9 @@ public class ManagementViews extends AbstractLaunchPanel implements ResourcePath
    {
       PortalApplication portalApp = PortalApplication.getInstance();
 
-      portalApp.openViewById(V_processOverview, "", null, null, false);
-      portalApp.openViewById(V_processSearch, "", null, null, false);
-      portalApp.openViewById(V_trafficLight, "", null, null, false);
+      openViewIfAvailable(portalApp, V_processOverview);
+      openViewIfAvailable(portalApp, V_processSearch);
+      openViewIfAvailable(portalApp, V_trafficLight);
    }
 
    /**
@@ -49,11 +49,11 @@ public class ManagementViews extends AbstractLaunchPanel implements ResourcePath
    {
       PortalApplication portalApp = PortalApplication.getInstance();
       
-      portalApp.openViewById("activityCriticalityManagerView", "", null, null, false);
-      portalApp.openViewById(V_pendingActivitiesView, "", null, null, false);
-      portalApp.openViewById(V_completedActivitiesView, "", null, null, false);
-      portalApp.openViewById(V_postponedActivitiesView, "", null, null, false);
-      portalApp.openViewById(V_strandedActivitiesView, "", null, null, false);
+      openViewIfAvailable(portalApp, "activityCriticalityManagerView");
+      openViewIfAvailable(portalApp, V_pendingActivitiesView);
+      openViewIfAvailable(portalApp, V_completedActivitiesView);
+      openViewIfAvailable(portalApp, V_postponedActivitiesView);
+      openViewIfAvailable(portalApp, V_strandedActivitiesView);
    }
 
    /**
@@ -63,12 +63,24 @@ public class ManagementViews extends AbstractLaunchPanel implements ResourcePath
    {
       PortalApplication portalApp = PortalApplication.getInstance();
 
-      portalApp.openViewById(V_resourceAvailability, "", null, null, false);
-      portalApp.openViewById(V_roleAssignment, "", null, null, false);
-      portalApp.openViewById(V_deputyTeamMemberView, "", null, null, false);
-      portalApp.openViewById(V_resourceLogin, "", null, null, false);
-      portalApp.openViewById(V_resourcePerformanceView, "", null, null, false);
-      portalApp.openViewById(V_performanceTeamleaderView, "", null, null, false);
+      openViewIfAvailable(portalApp, V_resourceAvailability);
+      openViewIfAvailable(portalApp, V_roleAssignment);
+      openViewIfAvailable(portalApp, V_deputyTeamMemberView);
+      openViewIfAvailable(portalApp, V_resourceLogin);
+      openViewIfAvailable(portalApp, V_resourcePerformanceView);
+      openViewIfAvailable(portalApp, V_performanceTeamleaderView);
+   }
+
+   /**
+    * @param portalApp
+    * @param viewId
+    */
+   private void openViewIfAvailable(PortalApplication portalApp, String viewId)
+   {
+      if (portalApp.isViewAvailable(viewId))
+      {
+         portalApp.openViewById(viewId, "", null, null, false);
+      }
    }
 
    @Override
