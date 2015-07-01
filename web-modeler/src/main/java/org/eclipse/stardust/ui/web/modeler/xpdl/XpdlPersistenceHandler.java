@@ -88,4 +88,9 @@ public class XpdlPersistenceHandler implements ModelPersistenceHandler<ModelType
    {
       saveModel(model, modelContent);
    }
+
+   public ModelService getModelService()
+   {
+      return modelService;
+   }
 }

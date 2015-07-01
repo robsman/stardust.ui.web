@@ -24,7 +24,6 @@ import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.ui.web.modeler.common.ModelPersistenceService;
-import org.eclipse.stardust.ui.web.modeler.common.RecordingModelPersistenceService;
 import org.eclipse.stardust.ui.web.modeler.common.ServiceFactoryLocator;
 import org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
@@ -46,7 +45,7 @@ public class RecordingModelManagementStrategy extends DefaultModelManagementStra
    Gson jsonIo = new JsonMarshaller().gson();
 
    @Autowired
-   public RecordingModelManagementStrategy(RecordingModelPersistenceService persistenceService,
+   public RecordingModelManagementStrategy(ModelPersistenceService persistenceService,
          ServiceFactoryLocator serviceFactoryLocator)
    {
       super(persistenceService, serviceFactoryLocator);
