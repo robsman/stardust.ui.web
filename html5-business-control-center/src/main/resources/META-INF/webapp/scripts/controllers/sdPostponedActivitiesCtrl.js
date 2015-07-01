@@ -142,7 +142,7 @@
 	 * 
 	 */
 	PostponedActivitiesCtrl.prototype.preferenceDelegate = function(prefInfo) {
-		var preferenceStore = _sdPreferenceService.getStore('USER',
+		var preferenceStore = _sdPreferenceService.getStore( prefInfo.scope,
 				'ipp-business-control-center', 'preference');
 		// Override
 		preferenceStore.marshalName = function(scope) {
