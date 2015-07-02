@@ -10,7 +10,7 @@ table.formTable td {
 	<div class="view-panel"
 		ng-controller="sdDocumentSearchViewCtrl as docSearchViewCtrl">
 		<div class="view-panel-toolbar"
-			ng-click="docSearchViewCtrl.setShowDocumentSearchCriteria()">
+			ng-click="docSearchViewCtrl.setShowDocumentSearchCriteria()" aid="COM-SrchDoc-ShowHideCriteria">
 			<i ng-show="docSearchViewCtrl.showDocumentSearchCriteria"
 				class="sc sc-arrow-d"></i> <i
 				ng-show="!docSearchViewCtrl.showDocumentSearchCriteria"
@@ -24,17 +24,17 @@ table.formTable td {
 						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-createDate-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
-						<td><div sd-date-time-picker
+						<td><div sd-date-time-picker 
 							 ng-model-onblur
 							ng-model="docSearchViewCtrl.query.documentSearchCriteria.createDateFrom"
-							name="createDateFrom" /></td>
+							name="createDateFrom" sda-aid-prefix="COM-SrchDoc-CreateDateFrom" /></td>
 					</tr>
 					<tr>
 						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-createDateTo-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
 						<td><div sd-date-time-picker ng-model-onblur name="createDateTo"
-							ng-model="docSearchViewCtrl.query.documentSearchCriteria.createDateTo" /></td>
+							ng-model="docSearchViewCtrl.query.documentSearchCriteria.createDateTo" sda-aid-prefix="COM-SrchDoc-CreateDateTo" /></td>
 					</tr>
 					<tr>
 						<td></td>
@@ -49,14 +49,14 @@ table.formTable td {
 						</td>
 						<td><div sd-date-time-picker ng-model-onblur
 							name="modificationDateFrom"
-							ng-model="docSearchViewCtrl.query.documentSearchCriteria.modificationDateFrom" /></td>
+							ng-model="docSearchViewCtrl.query.documentSearchCriteria.modificationDateFrom" sda-aid-prefix="COM-SrchDoc-ModificationDateFrom" /></td>
 					</tr>
 					<tr>
 						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-modificationDateTo-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
 						<td><div sd-date-time-picker ng-model-onblur name="modificationDateTo"
-							ng-model="docSearchViewCtrl.query.documentSearchCriteria.modificationDateTo" /></td>
+							ng-model="docSearchViewCtrl.query.documentSearchCriteria.modificationDateTo" sda-aid-prefix="COM-SrchDoc-ModificationDateTo" /></td>
 					</tr>
 					<tr>
 						<td></td>
@@ -73,7 +73,7 @@ table.formTable td {
 							ng-model="docSearchViewCtrl.query.documentSearchCriteria.selectedDocumentTypes"
 							name="txtDocumentType"
 							style="height: 75px; width: 210px; align: center;"
-							ng-options="opt.value as opt.label for opt in docSearchViewCtrl.documentTypes">
+							ng-options="opt.value as opt.label for opt in docSearchViewCtrl.documentTypes" aid="COM-SrchDoc-DocumentTypesSel">
 						</select></td>
 					</tr>
 					<tr>
@@ -87,12 +87,12 @@ table.formTable td {
 									<td><input type="checkbox"
 										ng-model="docSearchViewCtrl.query.documentSearchCriteria.showAll"
 										ng-change="docSearchViewCtrl.getFileTypes()"
-										style="vertical-align: middle" /> <label class="form-lable"
+										style="vertical-align: middle" aid="COM-SrchDoc-FileType-ShowAll" /> <label class="form-lable"
 										style="display: inline-block; margin-bottom: 5px; padding-left: 1px; vertical-align: text-top;">{{i18n('views-common-messages.views-documentSearchView-showAll-label')}}</label>
 									</td>
 									<td><a href="#"
 										ng-click="docSearchViewCtrl.advancedFileTypes()"
-										style="margin-left: 70px">
+										style="margin-left: 70px" aid="COM-SrchDoc-FileType-Advanced">
 											{{i18n('views-common-messages.views-documentSearchView-advanced-label')
 											+ ">>"}} </a></td>
 								</tr>
@@ -103,7 +103,7 @@ table.formTable td {
 									<td width="30px"></td>
 									<td><a href="#"
 										ng-click="docSearchViewCtrl.pickFromList()"
-										style="margin-left: 70px">
+										style="margin-left: 70px" aid="COM-SrchDoc-FileType-SelFrmList" >
 											{{i18n('views-common-messages.views-documentSearchView-pickFromList-label')
 											+ ">>"}} </a></td>
 								</tr>
@@ -117,14 +117,14 @@ table.formTable td {
 							<select multiple="multiple"
 							ng-model="docSearchViewCtrl.query.documentSearchCriteria.selectedFileTypes"
 							style="height: 75px; width: 210px; align: center;"
-							ng-options="opt.value as opt.label for opt in docSearchViewCtrl.fileTypes">
+							ng-options="opt.value as opt.label for opt in docSearchViewCtrl.fileTypes" aid="COM-SrchDoc-FileType-TypeSel">
 						</select>
 						</td>
 						<td
 							ng-show="docSearchViewCtrl.query.documentSearchCriteria.selectFileTypeAdvance">
 							<input type="text"
 							ng-model="docSearchViewCtrl.query.documentSearchCriteria.advancedFileType"
-							value="{{docSearchViewCtrl.query.documentSearchCriteria.advancedFileType}}" />
+							value="{{docSearchViewCtrl.query.documentSearchCriteria.advancedFileType}}" aid="COM-SrchDoc-FileType-AdvFileType" />
 						</td>
 					</tr>
 					<tr>
@@ -135,17 +135,17 @@ table.formTable td {
 							<table>
 								<tr>
 									<td><input type="checkbox"
-										ng-model="docSearchViewCtrl.query.documentSearchCriteria.searchContent" />
+										ng-model="docSearchViewCtrl.query.documentSearchCriteria.searchContent"  aid="COM-SrchDoc-ContTxt-SrchContent"/>
 										<label class="form-lable"
 										style="display: inline-block; margin-bottom: 5px; padding-left: 1px; vertical-align: text-top;">{{i18n('views-common-messages.views-documentSearchView-searchContent-label')}}</label>
 									</td>
 									<td><input type="checkbox"
-										ng-model="docSearchViewCtrl.query.documentSearchCriteria.searchData" />
+										ng-model="docSearchViewCtrl.query.documentSearchCriteria.searchData" aid="COM-SrchDoc-ContTxt-SrchData"/>
 										<label class="form-lable"
 										style="display: inline-block; margin-bottom: 5px; padding-left: 1px; vertical-align: text-top;">{{i18n('views-common-messages.views-documentSearchView-searchData-label')}}</label>
 									</td>
 									<td><a href="#"
-										ng-click="docSearchViewCtrl.setShowAdvancedTextSearch()">
+										ng-click="docSearchViewCtrl.setShowAdvancedTextSearch()" aid="COM-SrchDoc-ContTxt-AdvTxtSrch">
 											{{i18n('views-common-messages.views-documentSearchView-advanced-label')
 											+ ">>"}} </a></td>
 								</tr>
@@ -156,6 +156,7 @@ table.formTable td {
 						<td></td>
 						<td><textarea
 								ng-model="docSearchViewCtrl.query.documentSearchCriteria.containingText"
+								aid="COM-SrchDoc-ContTxt"
 								cols="20" rows="2" style="width:260px"></textarea></td>
 					</tr>
 					<tr>
@@ -164,7 +165,8 @@ table.formTable td {
 						</td>
 						<td><div sd-user-selector
 								sda-selected-data="docSearchViewCtrl.selectedAuthors"
-								sda-active-only="true" sda-multiple="false" sda-max="20">
+								sda-active-only="true" sda-multiple="false" sda-max="20"
+								sda-aid-prefix="COM-SrchDoc">
 							</div></td>
 					</tr>
 					<tr>
@@ -173,7 +175,7 @@ table.formTable td {
 						</td>
 						<td><input type="text"
 							ng-model="docSearchViewCtrl.query.documentSearchCriteria.documentName"
-							value="{{docSearchViewCtrl.query.documentSearchCriteria.documentName}}" /></td>
+							value="{{docSearchViewCtrl.query.documentSearchCriteria.documentName}}" aid="COM-SrchDoc-DocName"/></td>
 					</tr>
 					<tr>
 						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-documentId-label')
@@ -181,7 +183,7 @@ table.formTable td {
 						</td>
 						<td><input type="text"
 							ng-model="docSearchViewCtrl.query.documentSearchCriteria.documentId"
-							value="{{docSearchViewCtrl.query.documentSearchCriteria.documentId}}" /></td>
+							value="{{docSearchViewCtrl.query.documentSearchCriteria.documentId}}" aid="COM-SrchDoc-DocId"/></td>
 					</tr>
 					<tr ng-show="docSearchViewCtrl.repositories.length>1">
 						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-repository-label')
@@ -190,7 +192,7 @@ table.formTable td {
 						<td><select multiple="multiple"
 							ng-model="docSearchViewCtrl.query.documentSearchCriteria.selectedRepository"
 							style="height: 75px; width: 210px; align: center;"
-							ng-options="opt.value as opt.label for opt in docSearchViewCtrl.repositories">
+							ng-options="opt.value as opt.label for opt in docSearchViewCtrl.repositories" aid="COM-SrchDoc-RepoSel">
 						</select></td>
 					</tr>
 					<tr>
@@ -200,9 +202,9 @@ table.formTable td {
 									<tbody>
 										<tr>
 											<td><input class="button" type="submit" value="Search"
-												ng-click="docSearchViewCtrl.validateSearchCriteria()"></td>
+												ng-click="docSearchViewCtrl.validateSearchCriteria()" aid="COM-SrchDoc-BtnSearch"></td>
 											<td><input type="submit" value="Reset"
-												ng-click="docSearchViewCtrl.resetSearchCriteria()"></td>
+												ng-click="docSearchViewCtrl.resetSearchCriteria()" aid="COM-SrchDoc-BtnReset"></td>
 										</tr>
 									</tbody>
 								</table>
@@ -220,7 +222,8 @@ table.formTable td {
 			sda-template="plugins/html5-views-common/partials/views/advancedTextSearch.html"
 			sda-on-confirm="docSearchViewCtrl.onConfirmFromAdvanceText(res)"
 			sda-on-close="docSearchViewCtrl.onCancelFromAdvanceText(res)"
-			sda-width="800px"></div>
+			sda-width="800px"
+			sda-aid-prefix="COM-AdvSrchDlg"></div>
 		<div ng-show="docSearchViewCtrl.showDocumentSearchResult"
 			ng-include="'plugins/html5-views-common/partials/views/documentSearchResult.html'">
 		</div>

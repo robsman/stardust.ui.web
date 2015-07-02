@@ -23,9 +23,10 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td><a href="#" ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openDocumentView(rowData.revisionId);docSearchViewCtrl.documentHistory.close();">{{rowData.versionNo}}</a></td>
+				<td><a href="#" ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openDocumentView(rowData.revisionId);docSearchViewCtrl.documentHistory.close();"
+				       aid="COM-DocVersionDlg-DocVersionTbl-VersionNo">{{rowData.versionNo}}</a></td>
 				<td></td>
-				<td><sd-user-details sda-user-oid="rowData.userOID" sda-account="rowData.author"></sd-user-details>
+				<td><sd-user-details sda-user-oid="rowData.userOID" sda-account="rowData.author" sda-aid-prefix="COM-DocVersionDlg-DocVersionTbl-Author"></sd-user-details>
 				</td>
 				<td></td>
 				<td></td>

@@ -25,7 +25,8 @@
 			scope : { // Creates a new sub scope
 				userOID : '=sdaUserOid',
 				linkDisabled : '=?sdaLinkDisabled',
-				account: '=sdaAccount'					
+				account: '=sdaAccount',
+				autoIdPrefix: '@sdaAidPrefix'
 			},
 			transclude : true,
 			replace : true,

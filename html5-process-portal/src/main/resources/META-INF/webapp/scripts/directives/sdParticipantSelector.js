@@ -29,7 +29,8 @@
 				require: ['sdData'],
 				scope: {  // Creates a new sub scope
 					dataSelected: '=sdaSelectedData',
-					allowMultiple: '=sdaMultiple'
+					allowMultiple: '=sdaMultiple',
+					autoIdPrefix : '@sdaAidPrefix'
 				},
 				transclude: true,
 				template: '<div sd-auto-complete class="sd-participant-selector"'
@@ -42,7 +43,8 @@
 				          + ' sda-selected-matches="dataSelected"'
 				          + ' sda-allow-multiple="allowMultiple"'
 				          + ' sda-tag-pre-class="participantSelectorCtlr.tagPreMapper(item,index)"'
-				          + ' sda-item-pre-class="participantSelectorCtlr.tagPreMapper(item,index)">'
+				          + ' sda-item-pre-class="participantSelectorCtlr.tagPreMapper(item,index)"'
+				      	  + ' sda-aid-prefix="{{autoIdPrefix}}">'
 				          + '</div>',
 				link: function(scope, element, attrs, ctrl) {
 					new ParticipantSelectorLink(scope, element, attrs, ctrl);

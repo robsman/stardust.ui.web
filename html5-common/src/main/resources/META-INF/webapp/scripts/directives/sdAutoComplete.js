@@ -185,18 +185,18 @@ angular.module('bpm-common.directives')
   
   var tpl = '<div name="sd-ac-Container"\
                ng-class="containerClass"\
-               ng-keyDown="keyMonitor($event)">\
+               ng-keyDown="keyMonitor($event)" aid="{{autoIdPrefix}}-sd-ac-Container">\
               <div name="sd-ac-tag"\
                    ng-click="popData(item)"\
                    ng-repeat="item in dataSelected track by $index"\
-                   ng-class="classWrapper(\'tagClass\',item)">\
+                   ng-class="classWrapper(\'tagClass\',item)" aid="{{autoIdPrefix}}-sd-ac-tag">\
                    <i ng-class="classGeneratorTPC(item,$index)"></i>\
                      {{item[textProperty] || item}}\
               </div>\
               <input ng-model="matchStr"\
                      ng-keyUp="changeWrapper(matchStr)"\
                      style="outline-width:0px;border:none; margin-left:4px"\
-                     type="text" />\
+                     type="text" aid="{{autoIdPrefix}}-MatchStr" />\
               <div  ng-show="dataList.length >0 && matchStr.length>0"\
                     name="sd-ac-selectList"\
                     style="z-index:9999"\
@@ -204,7 +204,7 @@ angular.module('bpm-common.directives')
                   <div ng-click="pushData(item)"\
                        ng-mouseover="ui.selectedIndex=$index"\
                        ng-class="{ \'{{itemHotClass}}\' : ui.selectedIndex==$index}"\
-                       ng-repeat="item in dataList | orderBy:orderPredicate">\
+                       ng-repeat="item in dataList | orderBy:orderPredicate" aid="{{autoIdPrefix}}-PushData" >\
                        <i ng-class="classGeneratorIPC(item, $index)"></i>\
                        {{item[textProperty]||item}}\
                   </div>\
@@ -262,7 +262,8 @@ angular.module('bpm-common.directives')
         orderPredicate     : "@sdaOrderPredicate",
         closeDelay         : "@sdaCloseDelay",
         keyDelay           : "@sdaKeyDelay",
-        onSelectionChange : "&sdaOnSelectionChange"    
+        onSelectionChange : "&sdaOnSelectionChange",
+        autoIdPrefix : '@sdaAidPrefix'
       }
   }
   

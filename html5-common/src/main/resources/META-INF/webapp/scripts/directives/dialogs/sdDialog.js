@@ -51,7 +51,8 @@
 				confirmActionLabel: '@sdaConfirmActionLabel',
 				cancelActionLabel: '@sdaCancelActionLabel',
 				dialogScope: '=sdaScope',
-				showDialog: '=sdaShow'
+				showDialog: '=sdaShow',
+				autoIdPrefix: '@sdaAidPrefix'
 			},
 			transclude: true,
 			templateUrl: templateURL,

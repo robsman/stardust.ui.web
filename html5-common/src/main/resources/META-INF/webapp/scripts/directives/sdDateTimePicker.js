@@ -25,7 +25,8 @@
 	return {
 	    restrict : 'A',
 	    scope : {
-		selectedDateTime : '=ngModel'
+		selectedDateTime : '=ngModel',
+		autoIdPrefix : '@sdaAidPrefix'
 	    },
 	    require : 'ngModel',
 	    link : function(scope, elem, attr, ngModelCtrl) {
@@ -60,16 +61,16 @@
 	    controller : [ '$scope','sdLocalizationService', 'sgI18nService', Controller ],
 	    template : '<span id="date">'+
 	    			'<input  type="text" sd-date-picker  sda-milliseconds="true" style="width:100px"' + 
-	    				' id="selectDate" name="selectDate"   ng-change="ctrl.onChange()" ng-model="ctrl.selectedDate.date"  / >'+
+	    				' id="selectDate" name="selectDate"   ng-change="ctrl.onChange()" ng-model="ctrl.selectedDate.date" aid="{{ctrl.aidDate}}" / >'+
 	    		'<span>'+
 	    		'<span id="time">'+
         	    		' <select  ng-change="ctrl.onChange()" style = "width : 55px"  ng-model="ctrl.selectedDate.hours" '+
-        	    				' ng-options="option as option for option in ctrl.hoursOptions"></select> : '+
+        	    				' ng-options="option as option for option in ctrl.hoursOptions" aid="{{ctrl.aidHours}}"></select> : '+
         		        '<select  ng-change="ctrl.onChange()"  style = "width : 55px"  ng-model="ctrl.selectedDate.mins" '+
-        	    				' ng-options="option as option for option in ctrl.minsOptions"></select>'+
+        	    				' ng-options="option as option for option in ctrl.minsOptions" aid="{{ctrl.aidMins}}"></select>'+
         	    		' <select ng-show ="!ctrl.is24HourClock" ng-change="ctrl.onChange()"  style = "width : 60px"'+  
         	    				' ng-model="ctrl.selectedDate.meridian" '+
-        		    				' ng-options="option as option for option in ctrl.meridianOptions"></select>'+	
+        		    				' ng-options="option as option for option in ctrl.meridianOptions" aid="{{ctrl.aidMeridian}}"></select>'+	
 		        '<span>'
 	}
     }
@@ -115,6 +116,13 @@
 	    self.selectedDate = getDateTimeObj(new Date($scope.selectedDateTime), true, self.is24HourClock);
 	} else {
 	    self.selectedDate = getDateTimeObj(currentDate, false, self.is24HourClock);
+	}
+	
+	if($scope.autoIdPrefix){
+		self.aidDate = $scope.autoIdPrefix + "-Date";
+		self.aidHours = $scope.autoIdPrefix + "-Hours";
+		self.aidMins =  $scope.autoIdPrefix + "-Mins";
+		self.aidMeridian = $scope.autoIdPrefix + "-Meridian";
 	}
 
 	$scope.ctrl = this;

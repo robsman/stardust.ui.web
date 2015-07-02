@@ -24,7 +24,8 @@
 			restrict : 'EA',
 			scope : { // Creates a new sub scope
 				documentName : '=sdaDocumentName',
-				documentId : '=sdaDocumentId'
+				documentId : '=sdaDocumentId',
+				autoIdPrefix: '@sdaAidPrefix'
 			},
 			transclude : true,
 			replace : true,

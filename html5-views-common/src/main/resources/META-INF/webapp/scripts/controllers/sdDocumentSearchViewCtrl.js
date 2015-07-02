@@ -523,7 +523,7 @@
 	};
 
 	DocumentSearchViewCtrl.prototype.preferenceDelegate = function(prefInfo) {
-		var preferenceStore = _sdPreferenceService.getStore('USER', 'workflow-perspective', 'preference'); // Override
+		var preferenceStore = _sdPreferenceService.getStore(prefInfo.scope, 'workflow-perspective', 'preference'); // Override
 		preferenceStore.marshalName = function(scope) {
 			return "workflow-perspective.documentSearch.selectedColumns";
 		}
@@ -531,7 +531,7 @@
 	};
 	
 	DocumentSearchViewCtrl.prototype.preferenceDelegateForVersionHistory = function(prefInfo) {
-		var preferenceStore = _sdPreferenceService.getStore('USER', 'contextPortal', 'preference'); // Override
+		var preferenceStore = _sdPreferenceService.getStore(prefInfo.scope, 'contextPortal', 'preference'); // Override
 		preferenceStore.marshalName = function(scope) {
 			return "contextPortal.VersionHistory.selectedColumns";
 		}
