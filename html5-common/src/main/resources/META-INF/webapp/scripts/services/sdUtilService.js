@@ -438,7 +438,83 @@
 			}
 		}
 		
+	   /**
+	    * Returns true if browser is IE and browser is below version 10
+	    */
+		UtilService.prototype.isIEBelow10 = function(){
+		    var myNav = navigator.userAgent.toLowerCase();
+		    return (myNav.indexOf('msie') != -1) ? parseInt(myNav.split('msie')[1]) < 10 : false;
+		};
+		  
+		  
+	  /**
+	   *Downloads the content as a file. Tested with UTF-8 (text) content.
+	   *Still to be determined how this works with binary content (images/wav files).
+	   *Note:ref ng-grid
+	   *@param: content - data to save to file
+	   *@param: filename - name of file, if not provided with = {timestamp}.txt
+	   *@param: mimeType - defaults to UTF-8 charset
+	   */
+		UtilService.prototype.downloadAsFile = function(content,filename,mimeType){
 
-	}
-	;
+		    var a = document.createElement('a');
+		    var strMimeType = mimeType || 'application/octet-stream;charset=utf-8';
+		    var rawFile;
+		  
+		    if (!filename) {
+		      filename = new Date().getTime() + ".txt";
+		    }
+		  
+		    if (this.isIEBelow10()) {
+		      var frame = document.createElement('iframe');
+		      document.body.appendChild(frame);
+		      frame.contentWindow.document.open("text/html", "replace");
+		      frame.contentWindow.document.write(content);
+		      frame.contentWindow.document.close();
+		      frame.contentWindow.focus();
+		      frame.contentWindow.document.execCommand('SaveAs', true, filename);
+		      document.body.removeChild(frame);
+		      return true;
+		    }
+		  
+		    // IE10+
+		    if (navigator.msSaveBlob) {
+		      return navigator.msSaveBlob(new Blob(["\ufeff", content], {
+		        type: strMimeType
+		      }), filename);
+		    }
+		  
+		    //html5 A[download]
+		    if ('download' in a) {
+		      var blob = new Blob([content], {
+		        type: strMimeType
+		      });
+		      rawFile = URL.createObjectURL(blob);
+		      a.setAttribute('download', filename);
+		    } else {
+		      rawFile = 'data:' + strMimeType + ',' + encodeURIComponent(content);
+		      a.setAttribute('target', '_blank');
+		      a.setAttribute('download', filename);
+		    }
+		  
+		  
+		    a.href = rawFile;
+		    a.setAttribute('style', 'display:none;');
+		    document.body.appendChild(a);
+		    setTimeout(function() {
+		      if (a.click) {
+		        a.click();
+		        // Safari 5
+		      } else if (document.createEvent) {
+		        var eventObj = document.createEvent('MouseEvents');
+		        eventObj.initEvent('click', true, true);
+		        a.dispatchEvent(eventObj);
+		      }
+		      document.body.removeChild(a);
+		  
+		    }, 100);
+	   	};
+		
+
+	};
 })();
