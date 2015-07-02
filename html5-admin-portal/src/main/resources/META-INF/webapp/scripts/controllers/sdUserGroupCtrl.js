@@ -59,7 +59,7 @@
 			description : ''
 		};
 
-	}
+	};
 
 	/*
 	 * 
@@ -79,7 +79,7 @@
 		});
 
 		return deferred.promise;
-	}
+	};
 
 	/*
 	 * 
@@ -102,6 +102,16 @@
 	 */
 	controller.prototype.onConfirmCreateUser = function(res) {
 		var self = this;
+		self.submitted = true;
+		if (!(self.createUserGroupForm.$valid)) {
+			self.showCreateUserGroup = true;
+			return;
+		}
+		if (!(self.validateDateRange(this.newUserGroup.validFrom, this.newUserGroup.validTo))) {
+			self.showDateError();
+			self.showCreateUserGroup = true;
+			return;
+		}
 		_sdUserGroupService.createUserGroup(this.newUserGroup).then(
 				function(data) {
 					self.showCreateUserGroup = false;
@@ -119,6 +129,7 @@
 	 * 
 	 */
 	controller.prototype.onCancelCreateUser = function() {
+		this.submitted = false;
 		this.newUserGroup = {};
 		this.showCreateUserGroup = false;
 	};
@@ -127,6 +138,7 @@
 	 * 
 	 */
 	controller.prototype.openModifyUserGroup = function(selectedUserGroup) {
+		this.errorExists = null;
 		this.newUserGroup = angular.copy(selectedUserGroup);
 		this.showModifyUserGroup = true;
 	};
@@ -136,16 +148,21 @@
 	 */
 	controller.prototype.onConfirmModifyUser = function(res) {
 		var self = this;
+		if (!(self.validateDateRange(this.newUserGroup.validFrom, this.newUserGroup.validTo))) {
+			self.showDateError();
+			self.showModifyUserGroup = true;
+			return;
+		}
 		_sdUserGroupService.modifyUserGroup(this.newUserGroup).then(
 				function(data) {
-					self.showCreateUserGroup = false;
+					self.showModifyUserGroup = false;
 					self.refresh();
 				},
 				function(error) {
 					self.errorExists = true;
 					self.errorMessage = error.data.message.substr(error.data.message.indexOf(" - ") + 2,
 							error.data.message.length);
-					self.showCreateUserGroup = true;
+					self.showModifyUserGroup = true;
 				});
 		this.newUserGroup = {};
 	};
@@ -155,15 +172,64 @@
 	 */
 	controller.prototype.onCancelModifyUser = function() {
 		this.newUserGroup = {};
-		this.showCreateUserGroup = false;
+		this.showModifyUserGroup = false;
 	};
 
 	/*
 	 * 
 	 */
 	controller.prototype.invalidateUserGroup = function() {
-		_sdUserGroupService.invalidateUserGroup(this.selectionExpr.id);
+		var self = this;
+		if (self.selectionExpr.validTo == null) {
+			_sdUserGroupService.invalidateUserGroup(self.selectionExpr.id).then(
+					function(data) {
+						self.showNotificationUserGroup = true;
+						self.notificationStatus = "admin-portal-messages.views-userGroupMgmt-notifySuccessMsg";
+						self.notificationMessage = "admin-portal-messages.views-userGroupMgmt-notifyUserGroupInvalidate";
+					});
+		} else {//Already Validated
+			self.showNotificationUserGroup = true;
+			self.notificationStatus = "admin-portal-messages.views-userGroupMgmt-notifyNonValidateMsg";
+			self.notificationMessage = "admin-portal-messages.views-userGroupMgmt-notifyUserGroupNotValidateMsg";
+		}
+	};
+	
+	/*
+	 * 
+	 */
+	controller.prototype.onCloseNotificationUserGroup = function() {
+		this.showNotificationUserGroup = false;
 		this.refresh();
-	}
+	};
+	
+	/*
+	 * 
+	 */
+	controller.prototype.validateDateRange = function(validFrom, validTo) {
+		if (!(validFrom && validTo)) {
+			return true;
+		}
+		if (validFrom && validFrom == null || validTo && validTo == null) {
+			return true;
+		}
+		if ((validFrom != null && validFrom != "")
+				&& (validTo != null && validTo != "")) {
+			if (validTo >= validFrom) {
+				return true;
+			}
+		}
+		return false;
+	};
+	
+	/*
+	 * 
+	 */
+	controller.prototype.showDateError = function() {
+		this.errorExists = true;
+		this.errorMessage = "admin-portal-messages.views-userGroupMgmt-invalidDate";
+	};
+	
+	
+	
 
 })();
