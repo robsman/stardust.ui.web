@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
+import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -27,6 +28,7 @@ import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
 import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.util.ModelOidUtil;
 import org.eclipse.stardust.model.xpdl.util.NameIdUtils;
 import org.eclipse.stardust.ui.web.modeler.cap.AbstractMerger;
 import org.eclipse.stardust.ui.web.modeler.cap.CopyPasteUtil;
@@ -90,7 +92,6 @@ public class ProcessChangeCommandHandler
    {
       String processID = request.get("id").getAsString();
       ProcessDefinitionType processDefinition = XPDLFinderUtils.findProcessDefinition(model, processID);
-
       ProcessDefinitionType clonedProcess = cloneProcess(model, processDefinition);
 
       //Make sure id of the new process is unique
@@ -103,6 +104,20 @@ public class ProcessChangeCommandHandler
       fixExternalReferences(processDefinition, clonedProcess);
       addUUIDs(clonedProcess);
 
+
+
+   }
+
+   private void setCopyAndPaste(ModelType model, boolean copyAndPaste)
+   {
+      for (Iterator<Adapter> i = model.eAdapters().iterator(); i.hasNext();)
+      {
+         Adapter adapter = i.next();
+         if (adapter instanceof ModelOidUtil)
+         {
+            ((ModelOidUtil) adapter).setCopyPaste(copyAndPaste);
+         }
+      }
    }
 
    private void fixExternalReferences(ProcessDefinitionType processDefinition,
@@ -139,6 +154,7 @@ public class ProcessChangeCommandHandler
    public ProcessDefinitionType cloneProcess(ModelType model,
          ProcessDefinitionType processDefinition)
    {
+      setCopyAndPaste(model, true);
       List copySet = null;
       ArrayList list = new ArrayList();
       list.add(processDefinition);
@@ -148,6 +164,7 @@ public class ProcessChangeCommandHandler
       util = new OutlineMerger(model, copySet, storage);
       util.merge();
       ProcessDefinitionType clonedProcess = util.getClonedProcess(processDefinition.getId());
+      setCopyAndPaste(model, false);
       return clonedProcess;
    }
 
