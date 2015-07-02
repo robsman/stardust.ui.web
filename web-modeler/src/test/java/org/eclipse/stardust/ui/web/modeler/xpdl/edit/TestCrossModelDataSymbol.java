@@ -74,11 +74,10 @@ public class TestCrossModelDataSymbol extends RecordingTestcase
       EList<DataSymbolType> dataSymbol = laneSymbol.getDataSymbol();
       assertThat(dataSymbol.size(), is(2));
 
-      //@Barry: Please have a look while this is failing!
       DataSymbolType symbol1 = dataSymbol.get(0);
-      //assertThat(symbol1.getData(), is(primitiveData1));
+      assertThat(symbol1.getData(), is(primitiveData1));
       DataSymbolType symbol2 = dataSymbol.get(1);
-      //assertThat(symbol2.getData(), is(primitiveData1));
+      assertThat(symbol2.getData(), is(primitiveData1));
 
 
       EList<ExternalPackage> externalPackage = consumerModel.getExternalPackages().getExternalPackage();

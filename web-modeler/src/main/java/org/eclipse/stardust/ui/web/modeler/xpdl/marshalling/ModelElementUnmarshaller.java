@@ -711,8 +711,13 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
    private void updateDataMapping(DataMappingType dataMapping, JsonObject dataMappingJson)
    {
-      dataMappingJson = dataMappingJson
-            .getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+      //Todo: Remove this code when client calls are adapted accordingly
+      if (dataMappingJson.has(ModelerConstants.MODEL_ELEMENT_PROPERTY))
+      {
+         dataMappingJson = dataMappingJson
+               .getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+      }
+      ///
 
       if (hasNotJsonNull(dataMappingJson, ModelerConstants.NAME_PROPERTY))
       {
