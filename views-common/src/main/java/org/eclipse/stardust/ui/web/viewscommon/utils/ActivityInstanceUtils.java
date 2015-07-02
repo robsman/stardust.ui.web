@@ -948,7 +948,7 @@ public class ActivityInstanceUtils
     */
    public static String getBenchmarkLabel(ActivityInstance ai)
    {
-      return getPropertyFromBenchmarkResult(ai.getBenchmarkResult(), "UI_LABEL");
+      return getPropertyFromBenchmarkResult(ai.getBenchmarkResult(), "name");
    }
    
    /**
@@ -957,7 +957,7 @@ public class ActivityInstanceUtils
     */
    public static String getBenchmarkColor(ActivityInstance ai)
    { 
-      return getPropertyFromBenchmarkResult(ai.getBenchmarkResult(), "UI_COLOR");
+      return getPropertyFromBenchmarkResult(ai.getBenchmarkResult(), "color");
    }
    
    /**
