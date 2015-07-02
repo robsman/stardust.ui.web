@@ -65,7 +65,7 @@
 			          "offset": {
 			            "amount": 10,
 			            "unit": "d",
-			            "time": "12:01 AM"
+			            "offsetTime": "12:01 AM"
 			          }
 			        },
 			        "categoryConditions": []
@@ -99,7 +99,7 @@
               "useBusinessDays": true,
               "amount": 10,
               "unit": "d",
-              "time": "00:01"
+              "offsetTime": "00:01"
             }
           }
 	};
@@ -125,11 +125,11 @@
 	var baseCategoryData = 
 	{
         "categoryId": "0000-0000-0000-0000",
-        "type" : "default",
+        "type" : "FreeForm",
         "freeFormExpression" : "",
         "details" : {
 	        "condition": {
-	          "lhs": "FreeForm",
+	          "lhs": "CurrentTime",
 	          "operator": ">",
 	          "rhs": "",
 	          "offset": {

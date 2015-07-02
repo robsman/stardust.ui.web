@@ -20,12 +20,13 @@
 	 * Constructor for the benchmarkService. Expose required injected
 	 * dependencies and set up our URL values we will need.
 	 */
-	function benchmarkService($q, $http, $location){
+	function benchmarkService($q, $http, $location, sdUtilService){
 		
 		//Add dependencies to self so we can reference them in prototypes.
 		this.$q = $q;
 		this.$http = $http;
 		this.$location = $location;
+		this.sdUtilService = sdUtilService;
 		
 		//Calculate URLs we will need.
 		this.absUrl = $location.absUrl();
@@ -125,13 +126,18 @@
 	
 	benchmarkService.prototype.downloadBenchmarkAsFile = function(benchmark,mode){
 		var that = this;
+		
+		if(!benchmark){return;}
+		
 		this.getBenchmarkDefinitions(mode)
 		.then(function(bmarks){
 			var bmark = bmarks.benchmarkDefinitions.filter(function(bm){
 				return bm.content.id === benchmark.id;
 			});
+			
 			if(bmark.length > 0){
-				that.__fileDownload(bmark[0]);
+				//that.__fileDownload(bmark[0]);
+				that.sdUtilService.downloadAsFile(JSON.stringify(bmark[0]),bmark[0].content.name + ".json");
 			}
 		});
 	}
@@ -312,7 +318,7 @@
 	}
 	
 	//our dependencies injected by the Angular DI system.
-	benchmarkService.$inject = ["$q", "$http", "$location"];
+	benchmarkService.$inject = ["$q", "$http", "$location","sdUtilService"];
 	
 	angular.module("benchmark-app.services")
 	.service("benchmarkService",benchmarkService);

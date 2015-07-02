@@ -143,6 +143,7 @@
 		this.textMap.publishSuccessStatement = this.i18N("views.main.dialog.publishSuccess.statement");
 		this.textMap.saveSuccessStatement = this.i18N("views.main.dialog.saveSuccess.statement");
 		this.textMap.defaultName = this.i18N("views.main.benchmark.defaultName");
+		this.textMap.dataExpression = this.i18N("views.main.categoryDataTable.cell.type.dataExpression");
 	};
 	
 	/**
