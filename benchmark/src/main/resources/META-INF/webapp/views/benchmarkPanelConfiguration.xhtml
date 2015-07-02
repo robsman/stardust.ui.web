@@ -6,78 +6,98 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
-	<ice:panelGroup rendered="#{ippPortalApp.loggedInUser.administrator}">
-		<ui:include
-			src="/plugins/common/views/dialog/confirmationDialog.xhtml">
-			<ui:param name="dialogBean"
-				value="#{benchmarkConfigurationBean.benchmarkConfirmationDialog}" />
-		</ui:include>
-		<ice:panelGroup styleClass="heading">
-			<ice:outputText
-				value="#{benchmarkMessages['views.benchmarkPanelConfiguration.recalculationEvents.title']}">
-			</ice:outputText>
-		</ice:panelGroup>
-		
-		<ice:panelGroup styleClass="clearing" />
-		
-		<ice:outputText
-				value="#{benchmarkMessages['views.benchmarkPanelConfiguration.recalculateBenchmarksOn.title']}#{common_msgPropsBean['common.colon']}">
-		</ice:outputText>
-		
-		<ice:panelGroup styleClass="clearing" />
-		
-		<ice:panelGrid columns="2">
-			<ice:selectBooleanCheckbox partialSubmit="true" value="#{benchmarkConfigurationBean.activityCreation}">
-				<pc:automationTag value="auto-PP-BmkPnlConf-ActivityCreation" standAlone="false" />
-			</ice:selectBooleanCheckbox>
-			<ice:outputLabel styleClass="label-form"
-				value="#{benchmarkMessages['views.benchmarkPanel.config.activityCreation']}">
-			</ice:outputLabel>
+	<c:if test="${ippPortalApp.loggedInUser.administrator=='true'}">
+		<ice:panelGroup>
+			<ui:include
+				src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+				<ui:param name="dialogBean"
+					value="#{benchmarkConfigurationBean.benchmarkConfirmationDialog}" />
+			</ui:include>
+			<ice:panelGroup styleClass="heading">
+				<ice:outputText
+					value="#{benchmarkMessages['views.benchmarkPanelConfiguration.recalculationEvents.title']}">
+				</ice:outputText>
+			</ice:panelGroup>
 			
-			<ice:selectBooleanCheckbox partialSubmit="true" value="#{benchmarkConfigurationBean.activitySuspendAndSave}">
-				<pc:automationTag value="auto-PP-BmkPnlConf-ActivitySuspendAndSave" standAlone="false" />
-			</ice:selectBooleanCheckbox>
-			<ice:outputLabel styleClass="label-form"
-				value="#{benchmarkMessages['views.benchmarkPanel.config.activitySuspendAndSave']}">
-			</ice:outputLabel>
-		</ice:panelGrid>
-
-		<ice:panelGroup styleClass="clearing" />
-		
-		<ice:outputText value="#{benchmarkMessages['views.benchmarkPanelConfiguration.defaultBenchmarks.title']}" />
-		
-		<ice:panelGroup styleClass="clearing" />
-
-		<ice:panelGroup
-				style="max-height: 20em; height: auto !important; height: 7em; overflow-y: auto; overflow-x: visible; border: 1px solid #D3D3D3">
-			<c:if test="#{not empty benchmarkConfigurationTableBean.treeTable}">
-				<pc:genericDataTable bean="#{benchmarkConfigurationTableBean}"  id="benchmarkConfView"
-					table="#{benchmarkConfigurationTableBean.treeTable}" treeColumn="Model"
-					renderColumnHeaders = "false"
-					exportExcel="false" exportCsv="false">
-				</pc:genericDataTable>
-			 </c:if>
-		 </ice:panelGroup>
-		
-		<ice:panelGroup styleClass="clearing" />
-
-		<ice:panelGrid columns="2" style="text-align: left">
-			<pc:automationTag value="auto-PP-WorklistPnlConf-BtnsBar"
-				standAlone="false" />
-			<ice:commandButton
-				value="#{common_msgPropsBean['views.configurationPanel.button.save']}"
-				action="#{benchmarkConfigurationBean.save}" partialSubmit="true"
-				styleClass="button" />
-
-			<ice:commandButton
-				value="#{common_msgPropsBean['views.configurationPanel.button.reset']}"
-				action="#{benchmarkConfigurationBean.openConfirmationDialog}"
-				partialSubmit="true" styleClass="button secondary" />
-		</ice:panelGrid>
-	</ice:panelGroup>
+			<ice:panelGroup styleClass="clearing" />
+			
+			<ice:outputText
+					value="#{benchmarkMessages['views.benchmarkPanelConfiguration.recalculateBenchmarksOn.title']}#{common_msgPropsBean['common.colon']}">
+			</ice:outputText>
+			
+			<ice:panelGroup styleClass="clearing" />
+			
+			<ice:panelGrid columns="2">
+				<ice:selectBooleanCheckbox partialSubmit="true" value="#{benchmarkConfigurationBean.activityCreation}">
+					<pc:automationTag value="auto-PP-BmkPnlConf-ActivityCreation" standAlone="false" />
+				</ice:selectBooleanCheckbox>
+				<ice:outputLabel styleClass="label-form"
+					value="#{benchmarkMessages['views.benchmarkPanel.config.activityCreation']}">
+				</ice:outputLabel>
+				
+				<ice:selectBooleanCheckbox partialSubmit="true" value="#{benchmarkConfigurationBean.activitySuspendAndSave}">
+					<pc:automationTag value="auto-PP-BmkPnlConf-ActivitySuspendAndSave" standAlone="false" />
+				</ice:selectBooleanCheckbox>
+				<ice:outputLabel styleClass="label-form"
+					value="#{benchmarkMessages['views.benchmarkPanel.config.activitySuspendAndSave']}">
+				</ice:outputLabel>
+			</ice:panelGrid>
+	
+			<ice:panelGroup styleClass="clearing" />
+			
+			<ice:panelGroup styleClass="heading">
+				<ice:outputText value="#{benchmarkMessages['views.benchmarkPanelConfiguration.defaultBenchmarks.title']}" />
+			</ice:panelGroup>
+	
+			<c:if test="#{not empty benchmarkConfigurationTableBean}">
+				<ice:commandButton
+					actionListener="#{benchmarkConfigurationTableBean.toggleAuxPDFilter}"
+					title="#{benchmarkMessages['views.benchmarkPanelConfiguration.defaultBenchmarks.showAuxProcess.title']}"
+					image="/plugins/views-common/images/icons/eye.png"
+					rendered="#{benchmarkConfigurationTableBean.nonAuxiliaryProcessDefs}">
+				</ice:commandButton>
+				<ice:commandButton styleClass="iceCmdBtn-dis"
+					actionListener="#{benchmarkConfigurationTableBean.toggleAuxPDFilter}"
+					title="#{benchmarkMessages['views.benchmarkPanelConfiguration.defaultBenchmarks.hideAuxProcess.title']}"
+					image="/plugins/views-common/images/icons/eye.png"
+					rendered="#{!benchmarkConfigurationTableBean.nonAuxiliaryProcessDefs}">
+				</ice:commandButton>
+			</c:if>
+	
+			<ice:panelGroup styleClass="clearing" />
+	
+			<ice:panelGroup
+					style="max-height: 20em; height: auto !important; height: 7em; overflow-y: auto; overflow-x: visible; border: 1px solid #D3D3D3">
+				<c:if test="#{not empty benchmarkConfigurationTableBean.treeTable}">
+					<pc:genericDataTable bean="#{benchmarkConfigurationTableBean}"  id="benchmarkConfView"
+						table="#{benchmarkConfigurationTableBean.treeTable}" treeColumn="Model"
+						renderColumnHeaders = "false"
+						exportExcel="false" exportCsv="false">
+					</pc:genericDataTable>
+				 </c:if>
+			 </ice:panelGroup>
+			
+			<ice:panelGroup styleClass="clearing" />
+	
+			<ice:panelGrid columns="2" style="text-align: left">
+				<pc:automationTag value="auto-PP-WorklistPnlConf-BtnsBar"
+					standAlone="false" />
+				<ice:commandButton
+					value="#{common_msgPropsBean['views.configurationPanel.button.save']}"
+					action="#{benchmarkConfigurationBean.save}" partialSubmit="true"
+					styleClass="button" />
+	
+				<ice:commandButton
+					value="#{common_msgPropsBean['views.configurationPanel.button.reset']}"
+					action="#{benchmarkConfigurationBean.openConfirmationDialog}"
+					partialSubmit="true" styleClass="button secondary" />
+			</ice:panelGrid>
+		</ice:panelGroup>
+	</c:if>
+	
 	<ice:panelGroup
 		rendered="#{not ippPortalApp.loggedInUser.administrator}">
 		<ice:outputText
-			value="#{benchmarkMessages['views.worklistPanelConfiguration.noAuthorization']}" />
+			value="#{benchmarkMessages['views.benchmarkPanelConfiguration.noAuthorization']}" />
 	</ice:panelGroup>
 </f:view>

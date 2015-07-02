@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import javax.faces.event.ActionEvent;
 import javax.faces.event.ValueChangeEvent;
 import javax.faces.model.SelectItem;
 import javax.swing.tree.DefaultTreeModel;
@@ -63,7 +64,7 @@ public class BenchmarkConfigurationTableBean extends UIComponentBean implements 
 {
    private static final long serialVersionUID = 1L;
    private static final String DEFAULT_BENCHMARK = "-1"; // None
-   private static final String BENCHMARK_MODEL_DEFAULT = "0";
+   private static final String BENCHMARK_MODEL_DEFAULT = "0";// Model Default
 
    private IColumnModel modelVariablesColumnModel;
    private Preferences benchmarkPreferences;
@@ -75,6 +76,7 @@ public class BenchmarkConfigurationTableBean extends UIComponentBean implements 
    private List<SelectItem> availableBenchmarkDefs;
    private List<SelectItem> benchmarkDefsForModel;
    private String defaultBenchmarkId;
+   private Boolean nonAuxiliaryProcessDefs = true;
 
    /**
     * Constructor for ModelVariablesViewBean
@@ -177,15 +179,15 @@ public class BenchmarkConfigurationTableBean extends UIComponentBean implements 
             {
                List<BenchmarkConfiguration> benchmarkConfigurationList = new ArrayList<BenchmarkConfiguration>();
                List<ProcessDefinition> allProcessDefinitions = ProcessDefinitionUtils.getAllProcessDefinitions(model,
-                     false);
+                     nonAuxiliaryProcessDefs);
                for (ProcessDefinition processDefinition : allProcessDefinitions)
                {
-                  String defBenchmarkId = getBenchmarkFromPreferences(benchmarkPreferences, processDefinition.getId());
+                  String defBenchmarkId = getBenchmarkFromPreferences(benchmarkPreferences, processDefinition.getId(), false);
                   BenchmarkConfiguration bc = new BenchmarkConfiguration(model.getId(), processDefinition.getId(),
                         processDefinition.getName(), defBenchmarkId);
                   benchmarkConfigurationList.add(bc);
                }
-               String defBenchmarkId = getBenchmarkFromPreferences(benchmarkPreferences, model.getId());
+               String defBenchmarkId = getBenchmarkFromPreferences(benchmarkPreferences, model.getId(), true);
                BenchmarkConfigurations benchmarkConfigurations = new BenchmarkConfigurations(model.getId(),
                      defBenchmarkId, benchmarkConfigurationList);
                buildModelTree(benchmarkConfigurations, rootModelNode);
@@ -417,11 +419,11 @@ public class BenchmarkConfigurationTableBean extends UIComponentBean implements 
     * @param id
     * @return
     */
-   private String getBenchmarkFromPreferences(Preferences preferences, String id)
+   private String getBenchmarkFromPreferences(Preferences preferences, String id, Boolean isModel)
    {
       Map<String, Serializable> bmPreferencesMap = preferences.getPreferences();
       Serializable serializable = bmPreferencesMap.get(id);
-      return (serializable != null) ? serializable.toString() : DEFAULT_BENCHMARK;
+      return (serializable != null) ? serializable.toString() : (isModel) ? DEFAULT_BENCHMARK : BENCHMARK_MODEL_DEFAULT;
    }
 
    /**
@@ -431,18 +433,34 @@ public class BenchmarkConfigurationTableBean extends UIComponentBean implements 
    {
       Map<String, Serializable> benchmarkPreferencesMap = benchmarkPreferences.getPreferences();
       Set<Entry<String, Serializable>> bmEntrySet = benchmarkPreferencesMap.entrySet();
-      for (Entry<String, Serializable> entry : bmEntrySet)
+      bmEntrySet.clear();
+      /*for (Entry<String, Serializable> entry : bmEntrySet)
       {
          if (!(entry.getKey().equals(ActivityInstanceStateChangeMonitor.BENCHMARK_PREF_RECALC_ONCREATE) || entry
                .getKey().equals(ActivityInstanceStateChangeMonitor.BENCHMARK_PREF_RECALC_ONSUSPEND)))
          {
             entry.setValue(DEFAULT_BENCHMARK);
          }
-      }
+      }*/
       FacesUtils.clearFacesTreeValues();
       AdministrationService administrationService = ServiceFactoryUtils.getServiceFactory().getAdministrationService();
       administrationService.savePreferences(benchmarkPreferences);
       initialize();
+   }
+   
+   public void toggleAuxPDFilter(ActionEvent ae) {
+      nonAuxiliaryProcessDefs = (nonAuxiliaryProcessDefs) ? false : true;
+      initialize();
+   }
+
+   public Boolean getNonAuxiliaryProcessDefs()
+   {
+      return nonAuxiliaryProcessDefs;
+   }
+
+   public void setNonAuxiliaryProcessDefs(Boolean nonAuxiliaryProcessDefs)
+   {
+      this.nonAuxiliaryProcessDefs = nonAuxiliaryProcessDefs;
    }
 
 }
