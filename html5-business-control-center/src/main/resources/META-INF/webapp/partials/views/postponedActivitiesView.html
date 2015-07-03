@@ -2,14 +2,14 @@
 	ng-controller="sdPostponedActivitiesCtrl as ctrl" sg-stretch-to-bottom>
 	<div class="toolbar-buttons">
 		<div class="view-toolbar-section">
-			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+			<span sd-refresh sda-on-refresh="ctrl.refresh();" aid="BCC-PostponedActvities-Refresh"></span>
 		</div>
 	</div>
 
 	<div class="view-panel-content">
 		<div class="view-panel-toolbar">{{i18n('business-control-center-messages.views-postponedActivities-title')}}</div>
 
-		<table sd-data-table="ctrl.dataTable" sda-no-pagination="true"
+		<table sd-data-table="ctrl.dataTable" sda-no-pagination="true" aid="BCC-PostponedActvities-DataTbl"
 			sd-data="ctrl.fetchData(params)" sda-ready="ctrl.ready"
 			sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
 			sda-sortable="true" sda-sort-by="{name : 'teamMember', dir : 'desc'}"
@@ -31,7 +31,8 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td sda-exporter="rowData.teamMember.displayName"><a href="#"
+					<td sda-exporter="rowData.teamMember.displayName">
+					<a href="#" aid="BCC-PostponedActvities-OpenUserMngrDetails"
 						ng-click="ctrl.openUserManagerDetails(rowData.teamMember);"
 						title="{{i18n('business-control-center-messages.views-userManagerDetailView-title')}}"
 						class="button-link tbl-tool-link">
@@ -43,7 +44,7 @@
 							</b>
 							<span ng-if="rowData.statsByParticipant[colData.title].totalCount == 0"
 								ng-bind="rowData.statsByParticipant[colData.title].totalCount"></span>
-							<a ng-if="rowData.statsByParticipant[colData.title].totalCount > 0" 
+							<a ng-if="rowData.statsByParticipant[colData.title].totalCount > 0"  aid="BCC-PostponedActvities-ShowAllActivities"
 								href="#" ng-click="bpmCommon.stopEvent($event); ctrl.showAllActivities(rowData.statsByParticipant[colData.title])">
 								{{rowData.statsByParticipant[colData.title].totalCount}}</a>
 						</div>
@@ -58,7 +59,7 @@
 								: </b> 
 								<span ng-if="rowData.statsByParticipant[colData.title].exceededDurationCount == 0"
 								ng-bind="rowData.statsByParticipant[colData.title].exceededDurationCount"></span>
-								<a ng-if="rowData.statsByParticipant[colData.title].exceededDurationCount > 0" 
+								<a ng-if="rowData.statsByParticipant[colData.title].exceededDurationCount > 0" aid="BCC-PostponedActvities-ShowExceededDurationActivities"
 								href="#" ng-click="bpmCommon.stopEvent($event); ctrl.showExceededActivities(rowData.statsByParticipant[colData.title])">
 								{{rowData.statsByParticipant[colData.title].exceededDurationCount}}</a>
 						</div>
@@ -71,7 +72,7 @@
 	<div class="view-panel-content" ng-if="ctrl.activities.isTableVisible">
 		<div class="view-panel-toolbar">{{i18n('business-control-center-messages.views-postponedActivities-selectedActivitiesTable-title')}}</div>
 
-		<div sd-activity-table="ctrl.activityTable" sda-mode="activityTable"
+		<div sd-activity-table="ctrl.activityTable" sda-mode="activityTable" aid="BCC-PostponedActvities-Activity-DataTable"
 			sd-data="ctrl.getActivitiesByOids(params);"
 			sda-preference-module="ipp-views-common"
 			sda-preference-id="preference"

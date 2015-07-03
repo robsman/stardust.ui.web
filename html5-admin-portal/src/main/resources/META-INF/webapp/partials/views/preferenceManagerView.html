@@ -3,7 +3,7 @@
 		<tr>
 			<td>
 				<input ng-change="ctrl.changeView()" type="radio" ng-model="ctrl.selectedPreference.value" value="partition"
-				    	name="preferenceSelectView" style="margin: 4px" />
+				    	name="preferenceSelectView" style="margin: 4px" aid="ADM-PrefMngrView-SelectView-Partition"/>
 			</td>
 			<td>
 				<span class="label-item"
@@ -15,7 +15,7 @@
 		<tr>
 			<td>
 				<input ng-change="ctrl.changeView()" type="radio" ng-model="ctrl.selectedPreference.value" value="user"
-				       name="preferenceSelectView" style="margin: 4px" />
+				       name="preferenceSelectView" style="margin: 4px" aid="ADM-PrefMngrView-SelectView-User"/>
 			</td>
 			<td>
 				<span class="label-item"
@@ -34,17 +34,17 @@
 	
 	<span class="label-item"
 		ng-bind="i18n('admin-portal-messages.views-prefManagerBean-search-filter')"></span><span ng-bind="i18n('admin-portal-messages.common-colon')"></span> 
-		<input style="width: 350px" type="text" name="filterCriteria" ng-model="ctrl.searchText"></input>
+		<input style="width: 350px" type="text" name="filterCriteria" ng-model="ctrl.searchText"  aid="ADM-PrefMngrView-Filter"></input>
 		
 	 <br/>
 	<div style="padding-top: 15px;">
-		<button class="button primary" ng-click="ctrl.filterTable()">{{i18n('admin-portal-messages.views-prefManagerBean-searchPrefStore-label')}}
+		<button class="button primary"  aid="ADM-PrefMngrView-SearchBtn" ng-click="ctrl.filterTable()">{{i18n('admin-portal-messages.views-prefManagerBean-searchPrefStore-label')}}
 		</button>
 	</div>
 	<br />
 	<div>
 		<!-- Preferences Table -->
-		<table sd-data-table="ctrl.dataTable"
+		<table sd-data-table="ctrl.dataTable"  aid="ADM-PrefMngrView-PreferenceMngrTable"
 			sd-data="ctrl.fetchPreferences(params)" sda-mode="local"
 			 sda-selectable="row" sda-no-pagination="true"
 			 sda-exports="true" sda-exports-file-name="Preference store manager">

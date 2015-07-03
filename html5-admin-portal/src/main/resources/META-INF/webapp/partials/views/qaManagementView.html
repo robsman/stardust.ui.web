@@ -2,7 +2,7 @@
 	<!-- Save Button -->
 	<div class="view-panel-toolbar toolbar-buttons">
 		<div class="view-toolbar-section" >
-			<span sd-save sda-on-save="qaManagementCtrl.saveChanges();"></sapn>
+			<span sd-save sda-on-save="qaManagementCtrl.saveChanges();" aid="ADM-QAMgmt-SaveChanges"></sapn>
 		</div>
 	</div>
 	<!-- Activities -->
@@ -17,14 +17,14 @@
 		<!-- ToolBar -->
 		<div sda-toolbar>
 			<div class="tbl-toolbar-section">
-				<button ng-click="qaManagementCtrl.showHideObsoleteActivities();"
+				<button ng-click="qaManagementCtrl.showHideObsoleteActivities();" aid="ADM-QAMgmt-ShowObsoleteActivities"
 					title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-showHideAbsActivites-title')}}"
 					class="button-link tbl-toolbar-item tbl-tool-link">
 					<!-- 	Replace with pen book icon for show obsolete activities -->
 					<i class="toolbar-icon sc sc-book toolbar-icon" ng-class="{iconDisabled:qaManagementCtrl.showObsoleteActivities }"></i>
 				</button>
 				<button ng-click="qaManagementCtrl.editActivityQa();" ng-disabled="qaManagementCtrl.activityTable.getSelection() < 1"
-					title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-editQA-title')}}"
+					title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-editQA-title')}}"  aid="ADM-QAMgmt-EditActivityQA"
 					class="button-link tbl-toolbar-item tbl-tool-link">
 					<i class="glyphicon glyphicon-pencil toolbar-icon"></i>
 				</button>
@@ -87,7 +87,7 @@
 						<td>
 							<span ng-hide="rowData.isEditMode" ng-bind="rowData.qaPercentage"></span> 
 							<span ng-show="rowData.isEditMode">
-								<input type="text" ng-model="rowData.qaPercentage" style="width: 30px;"/> 
+								<input type="text" ng-model="rowData.qaPercentage" style="width: 30px;" aid="ADM-QAMgmt-ActivityQA"/> 
 								 <span ng-show=" !rowData.qaPercentage || rowData.qaPercentage === ''" 
 								 class="qa-management-emptyCell-warning "> * </span>
 							</span>
@@ -111,14 +111,14 @@
 			<div sda-toolbar>
 				<div class="tbl-toolbar-section">
 					<button ng-click="qaManagementCtrl.editDepartmentQa();" ng-disabled="qaManagementCtrl.departmentTable.getSelection() < 1"
-						title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-editQA-title')}}"
+						title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-editQA-title')}}" aid="ADM-QAMgmt-EditDepartmentQA"
 						class="button-link tbl-toolbar-item tbl-tool-link">
 						<i class="glyphicon glyphicon-pencil toolbar-icon"></i>
 					</button>
 				</div>
 			</div>
 			<!-- Departments Table	 -->
-			<table sd-data-table="qaManagementCtrl.departmentTable" 
+			<table sd-data-table="qaManagementCtrl.departmentTable"  aid="ADM-QAMgmt-DepartmentQATable"
 				   sd-data="qaManagementCtrl.fetchQaDepartments(qaManagementCtrl.activityTable.getSelection())"
 				   sda-mode="local" sda-ready="qaManagementCtrl.searchDepartments" sda-selectable="row" sda-no-pagination="true" sda-sortable="true">
 				<thead>
@@ -142,7 +142,7 @@
 						<td>
 							<span ng-hide="rowData.isEditMode" ng-bind="rowData.qaPercentage"></span> 
 							<span ng-show="rowData.isEditMode">
-								<input type="text" ng-model="rowData.qaPercentage" style="width: 30px;"></input> 
+								<input type="text" ng-model="rowData.qaPercentage" style="width: 30px;"  aid="ADM-QAMgmt-DepartmentQA"></input> 
 								<span ng-show=" !rowData.qaPercentage || rowData.qaPercentage === ''" style="color: orange; font-size: 25px;"> * </span>
 							</span>
 						</td>
