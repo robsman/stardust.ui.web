@@ -13,103 +13,123 @@
  */
 (function() {
 
-    'use strict';
-	
-	angular.module('workflow-ui.services').provider('sdDataTableHelperService',function() {
-		this.$get = ['$filter', function($filter) {
-			var service = new TableHelperService($filter);
-			return service;
-		}];
-	});
+	'use strict';
+
+	angular.module('workflow-ui.services').provider('sdDataTableHelperService',
+			function() {
+				this.$get = [ '$filter', function($filter) {
+					var service = new TableHelperService($filter);
+					return service;
+				} ];
+			});
 
 	/*
 	 * 
 	 */
-   function TableHelperService( $filter) {
-	   /**
-	    * Construct the query params from the options
-	    */
-	   TableHelperService.prototype.convertToQueryParams = function(options){
-		   		
-		   	var queryParams = "";
-	       
-		   	if (options.skip != undefined) {
-		   	    queryParams += "&skip=" + options.skip;
-		   	}
+	function TableHelperService($filter) {
+		/**
+		 * Construct the query params from the options
+		 */
+		TableHelperService.prototype.convertToQueryParams = function(options) {
 
-		   	if (options.pageSize != undefined) {
-		   	    queryParams += "&pageSize=" + options.pageSize;
-		   	}
+			var queryParams = "";
 
-		   	if (options.order != undefined) {
-		   	    // Supports only single column sort
-		   	    var index = options.order.length - 1;
-		   	    queryParams += "&orderBy=" + options.order[index].name;
-		   	    queryParams += "&orderByDir=" + options.order[index].dir;
-		   	}
-	         return queryParams
-	   };
-	   
-	   /**
-	    * Construct the post params from the options
-	    */
-	   TableHelperService.prototype.convertToPostParams = function(options){
+			if (options.skip != undefined) {
+				queryParams += "&skip=" + options.skip;
+			}
 
-		   var postData = {
-				   filters : options.filters,
-				   descriptors : {
-					   fetchAll : false,
-					   visibleColumns : []
-				   }
-		   };
-		   
-		   var found = $filter('filter')(options.columns, {
-			   field : 'descriptors'
-		   }, true);
+			if (options.pageSize != undefined) {
+				queryParams += "&pageSize=" + options.pageSize;
+			}
 
-		   if (found && found.length > 0) {
-			   postData.descriptors.fetchAll = true;
-		   }
-		   
-		   var visibleDescriptors = [];
-		   
-		   angular.forEach(options.descriptorColumns,function(descriptor){
-		      var found =  $filter('filter')(options.columns, { name : descriptor.id
-		       },true);
-		      
-		      if(found && found.length > 0){
-			  visibleDescriptors.push(descriptor.id);
-		      }
-		   });
+			if (options.order != undefined) {
+				// Supports only single column sort
+				var index = options.order.length - 1;
+				queryParams += "&orderBy=" + options.order[index].name;
+				queryParams += "&orderByDir=" + options.order[index].dir;
+			}
+			return queryParams
+		};
 
-		   if (visibleDescriptors) {
-		       postData.descriptors.visibleColumns = visibleDescriptors;
-		   }
+		/**
+		 * Construct the post params from the options
+		 */
+		TableHelperService.prototype.convertToPostParams = function(options) {
 
-		   // fetch trivialManualActivities if data column is visible
-		   var dataColumnFound = $filter('filter')(options.columns, {
-			   field : 'data'
-		   }, true);
+			var postData = {
+				filters : options.filters,
+				descriptors : {
+					fetchAll : false,
+					visibleColumns : []
+				}
+			};
 
-		   if (dataColumnFound && dataColumnFound.length > 0) {
-			   postData.fetchTrivialManualActivities = true;
-		   } else {
-			   postData.fetchTrivialManualActivities = false;
-		   }
-		   return postData;
-	   };
-	   
-	   /**
-	    * Append Query params to Rest url
-	    */
-	   TableHelperService.prototype.appendQueryParamsToURL = function (restURL, params) {
-	       var separator = "?";
-	       if(/[?]/.test(restURL)) {
-		   separator =  "&";
-	       }
-	       return restURL+ separator + params;
-	   }
+			var found = $filter('filter')(options.columns, {
+				field : 'descriptors'
+			}, true);
 
-   };
-   
+			if (found && found.length > 0) {
+				postData.descriptors.fetchAll = true;
+			}
+
+			var visibleDescriptors = [];
+
+			angular.forEach(options.descriptorColumns, function(descriptor) {
+				var found = $filter('filter')(options.columns, {
+					name : descriptor.id
+				}, true);
+
+				if (found && found.length > 0) {
+					visibleDescriptors.push(descriptor.id);
+				}
+			});
+
+			if (visibleDescriptors) {
+				postData.descriptors.visibleColumns = visibleDescriptors;
+			}
+
+			// fetch trivialManualActivities if data column is visible
+			var dataColumnFound = $filter('filter')(options.columns, {
+				field : 'data'
+			}, true);
+
+			if (dataColumnFound && dataColumnFound.length > 0) {
+				postData.fetchTrivialManualActivities = true;
+			} else {
+				postData.fetchTrivialManualActivities = false;
+			}
+			return postData;
+		};
+
+		/**
+		 * Append Query params to Rest url
+		 */
+		TableHelperService.prototype.appendQueryParamsToURL = function(restURL,
+				params) {
+			var separator = "?";
+			if (/[?]/.test(restURL)) {
+				separator = "&";
+			}
+			return restURL + separator + params;
+		}
+
+		TableHelperService.prototype.columnSort = function(options, list) {
+
+			if (options.order != undefined) {
+				var reverse = false;
+				var index = options.order.length - 1;
+				if (options.order[index].dir == 'desc') {
+					reverse = true;
+				}
+				var rows = $filter('orderBy')(list, options.order[index].name,
+						reverse);
+				return rows;
+			} else {
+				return list;
+			}
+		}
+
+	}
+	;
+
 })();
