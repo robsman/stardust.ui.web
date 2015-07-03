@@ -34,6 +34,7 @@ import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.CustomOrderCriterion;
 import org.eclipse.stardust.engine.api.query.DataOrder;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
@@ -1711,7 +1712,7 @@ public class ProcessInstanceUtils
       }
       else if (COL_BENCHMARK.equals(options.orderBy))
       {
-        // TODO add sort criteria when the engine api for sorting is ready
+         query.orderBy(ProcessInstanceQuery.BENCHMARK_VALUE, options.asc);
       }
       else
       {

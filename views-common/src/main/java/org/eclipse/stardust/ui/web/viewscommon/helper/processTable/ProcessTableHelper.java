@@ -28,6 +28,7 @@ import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.CustomOrderCriterion;
 import org.eclipse.stardust.engine.api.query.DataOrder;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
@@ -1035,7 +1036,7 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
             }
             else if ("benchmark".equals(sortCriterion.getProperty()))
             {
-               //TODO add benchmark sorting
+               query.orderBy(ProcessInstanceQuery.BENCHMARK_VALUE, sortCriterion.isAscending());
             }
 
             else

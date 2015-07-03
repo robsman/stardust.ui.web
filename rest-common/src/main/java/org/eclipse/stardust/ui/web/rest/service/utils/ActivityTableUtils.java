@@ -64,6 +64,7 @@ import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.QualityAssuranceUtils.QualityAssuranceState;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.engine.core.benchmark.BenchmarkDefinition;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.rest.FilterDTO.BooleanDTO;
@@ -529,10 +530,7 @@ public class ActivityTableUtils
       }
       else if (COL_BENCHMARK.equals(options.orderBy))
       {
-         //TODO add sort criteria for benchmark when engine api is ready
-        /* query.orderBy(worklistQuery
-               ? WorklistQuery.PROCESS_INSTANCE_OID
-                     : ActivityInstanceQuery.PROCESS_INSTANCE_OID, options.asc);*/
+         query.orderBy(ActivityInstanceQuery.BENCHMARK_VALUE, options.asc);
       }
    }
 

@@ -1050,7 +1050,7 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
             }
             else if ("benchmark".equals(sortCriterion.getProperty()))
             {
-               //TODO add benchmark sorting
+               query.orderBy(ActivityInstanceQuery.BENCHMARK_VALUE, sortCriterion.isAscending());
             }
             else
             {
