@@ -118,6 +118,7 @@
   AMCtrl.prototype.refreshParticipants = function() {
     this.showMessage = false;
     var self = this;
+    this.selectedParticipants = [];
     _sdAuthorizationManagerService.searchParticipants({
       type: 3
     }).then(function(result) {
@@ -389,7 +390,7 @@
     this.allNodes.forEach(function(v) {
       v.scope.isVisible = false;
       v.elem.removeClass("match");
-      if (v.filterable && v.text && v.text.indexOf(filter) > -1) {
+      if (v.filterable && v.text &&  v.text.search(filter) > -1) {
         matches.push(v);
       }
     });
@@ -644,7 +645,10 @@
    * 
    */
   AMCtrl.prototype.highlightParticipants = function() {
-    alert('highlight participant');
+    var participants = [];
+    for (var i = 0; i < this.selectedParticipants.length; i++) {
+      participants.push(this.selectedParticipants[i].name);
+    }
+    this.applyFilter(participants.join('|'));
   }
-
 })();
