@@ -91,93 +91,6 @@
 	/*
 	 * 
 	 */
-	controller.prototype.openCreateUserGroupDialog = function() {
-		this.newUserGroup = {};
-		this.errorExists = null;
-		this.showCreateUserGroup = true;
-	};
-
-	/*
-	 * 
-	 */
-	controller.prototype.onConfirmCreateUser = function(res) {
-		var self = this;
-		self.submitted = true;
-		if (!(self.createUserGroupForm.$valid)) {
-			self.showCreateUserGroup = true;
-			return;
-		}
-		if (!(self.validateDateRange(this.newUserGroup.validFrom, this.newUserGroup.validTo))) {
-			self.showDateError();
-			self.showCreateUserGroup = true;
-			return;
-		}
-		_sdUserGroupService.createUserGroup(this.newUserGroup).then(
-				function(data) {
-					self.showCreateUserGroup = false;
-					self.refresh();
-				},
-				function(error) {
-					self.errorExists = true;
-					self.errorMessage = error.data.message.substr(error.data.message.indexOf(" - ") + 2,
-							error.data.message.length);
-					self.showCreateUserGroup = true;
-				});
-	};
-
-	/*
-	 * 
-	 */
-	controller.prototype.onCancelCreateUser = function() {
-		this.submitted = false;
-		this.newUserGroup = {};
-		this.showCreateUserGroup = false;
-	};
-
-	/*
-	 * 
-	 */
-	controller.prototype.openModifyUserGroup = function(selectedUserGroup) {
-		this.errorExists = null;
-		this.newUserGroup = angular.copy(selectedUserGroup);
-		this.showModifyUserGroup = true;
-	};
-
-	/*
-	 * 
-	 */
-	controller.prototype.onConfirmModifyUser = function(res) {
-		var self = this;
-		if (!(self.validateDateRange(this.newUserGroup.validFrom, this.newUserGroup.validTo))) {
-			self.showDateError();
-			self.showModifyUserGroup = true;
-			return;
-		}
-		_sdUserGroupService.modifyUserGroup(this.newUserGroup).then(
-				function(data) {
-					self.showModifyUserGroup = false;
-					self.refresh();
-				},
-				function(error) {
-					self.errorExists = true;
-					self.errorMessage = error.data.message.substr(error.data.message.indexOf(" - ") + 2,
-							error.data.message.length);
-					self.showModifyUserGroup = true;
-				});
-		this.newUserGroup = {};
-	};
-
-	/*
-	 * 
-	 */
-	controller.prototype.onCancelModifyUser = function() {
-		this.newUserGroup = {};
-		this.showModifyUserGroup = false;
-	};
-
-	/*
-	 * 
-	 */
 	controller.prototype.invalidateUserGroup = function() {
 		var self = this;
 		if (self.selectionExpr.validTo == null) {
@@ -229,6 +142,77 @@
 		this.errorMessage = "admin-portal-messages.views-userGroupMgmt-invalidDate";
 	};
 	
+	/*
+	 * 
+	 */
+	controller.prototype.openCreateModifyUserGroupDialog = function(mode, userGroup) {
+		this.mode = mode;
+		this.submitted = false;
+		if (mode == 'CREATE_USER') {
+			this.newUserGroup = {};
+			this.errorExists = null;
+			this.title = 'admin-portal-messages.views-userGroupMgmt-createUserGroup-title';
+			this.showCreateModifyUserGroup = true;
+		} else if (mode == 'MODIFY_USER') {
+			this.errorExists = null;
+			this.newUserGroup = angular.copy(userGroup);
+			this.title = 'admin-portal-messages.views-userGroupMgmt-modifyUserGroup-title';
+			this.showCreateModifyUserGroup = true;
+		}
+	};
+	
+	/*
+	 * 
+	 */
+	controller.prototype.onConfirmCreateModifyUser = function(res) {
+		var self = this;
+		self.submitted = true;
+		if (!(self.createModifyUserGroupForm.$valid)) {
+			return false;
+		}
+		if (!(self.validateDateRange(self.newUserGroup.validFrom, self.newUserGroup.validTo))) {
+			self.showDateError();
+			return false;
+		}
+		
+		var deferred = _q.defer();
+		if (self.mode == 'CREATE_USER') {
+			_sdUserGroupService.createUserGroup(self.newUserGroup).then(
+					function(data) {
+						self.refresh();
+						deferred.resolve();
+					},
+					function(error) {
+						self.errorExists = true;
+						self.errorMessage = error.data.message.substr(error.data.message.indexOf(" - ") + 2,
+								error.data.message.length);
+						deferred.reject();
+					});
+		} else if (self.mode == 'MODIFY_USER') {
+			_sdUserGroupService.modifyUserGroup(self.newUserGroup).then(
+					function(data) {
+						self.refresh();
+						deferred.resolve();
+						self.newUserGroup = {};
+					},
+					function(error) {
+						self.errorExists = true;
+						self.errorMessage = error.data.message.substr(error.data.message.indexOf(" - ") + 2,
+								error.data.message.length);
+						deferred.reject();
+					});
+		}
+		return deferred.promise;
+	};
+	
+	/*
+	 * 
+	 */
+	controller.prototype.onCancelCreateModifyUser = function() {
+		this.newUserGroup = {};
+		this.showCreateModifyUserGroup = false;
+		this.submitted = true;
+	};
 	
 	
 

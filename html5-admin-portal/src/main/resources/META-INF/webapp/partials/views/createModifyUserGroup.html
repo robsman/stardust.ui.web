@@ -1,6 +1,6 @@
-<form name="ctrl.modifyUserGroupForm">
+<form name="ctrl.createModifyUserGroupForm">
 	<div>
-	<div ng-show="ctrl.errorExists != null && ctrl.newUserGroup.id != ''">
+		<div ng-show="ctrl.errorExists != null && ctrl.newUserGroup.id != ''">
 			<div>
 				<div id=msg class="msg-error">{{i18n('' + ctrl.errorMessage)}}</div>
 			</div>
@@ -9,21 +9,22 @@
 			<tr>
 				<td><label>*{{i18n('admin-portal-messages.views-common-id-label')+
 						i18n('admin-portal-messages.common-colon')}}</label></td>
-				<td><input type="text" ng-disabled="true" name="id"
+				<td><input name="id" type="text"
 					ng-model="ctrl.newUserGroup.id" required>
 					<div class="msg-error"
-						ng-show="ctrl.modifyUserGroupForm.id.$error.required">
-						<span>{{i18n('html5-common.required-value')}}</span>
+						ng-show="ctrl.createModifyUserGroupForm.id.$error.required && ctrl.submitted">
+						<span ng-bind="i18n('html5-common.required-value')"></span>
 					</div></td>
 			</tr>
 			<tr>
 				<td><label>*{{i18n('admin-portal-messages.views-common-name-label')+
 						i18n('admin-portal-messages.common-colon')}}</label></td>
-				<td><input type="text" name="name" ng-model="ctrl.newUserGroup.name" required>
+				<td><input name="name" type="text"
+					ng-model="ctrl.newUserGroup.name" required>
 					<div class="msg-error"
-						ng-show="ctrl.modifyUserGroupForm.name.$error.required">
-						<span>{{i18n('html5-common.required-value')}}</span>
-					</div></td> 
+						ng-show="ctrl.createModifyUserGroupForm.name.$error.required && ctrl.submitted">
+						<span ng-bind="i18n('html5-common.required-value')"></span>
+					</div></td>
 			</tr>
 			<tr>
 				<td><label>{{i18n('admin-portal-messages.views-common-validFrom-label')+

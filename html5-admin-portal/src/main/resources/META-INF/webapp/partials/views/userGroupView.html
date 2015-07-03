@@ -33,7 +33,7 @@
 
 		<div sda-toolbar>
 			<div class="tbl-toolbar-section">
-				<button ng-click="ctrl.openCreateUserGroupDialog()"
+				<button ng-click="ctrl.openCreateModifyUserGroupDialog('CREATE_USER')"
 					title="{{i18n('admin-portal-messages.common-create')}}"
 					class="button-link tbl-toolbar-item tbl-tool-link">
 					<i class="glyphicon glyphicon-plus"></i>
@@ -70,7 +70,7 @@
 				<tr>
 					<td style="white-space: nowrap;" sda-exporter="rowData.name"><a
 						href="#"
-						ng-click="bpmCommon.stopEvent($event); ctrl.openModifyUserGroup(rowData);">
+						ng-click="bpmCommon.stopEvent($event); ctrl.openCreateModifyUserGroupDialog('MODIFY_USER', rowData);">
 							{{rowData.name}} </a></td>
 					<td sda-data-type="int" style="text-align: center;"></td>
 					<td></td>
@@ -82,27 +82,18 @@
 			</tbody>
 		</table>
 		<div sd-dialog sd-show-overlay="true"
-			sda-show="ctrl.showCreateUserGroup" sda-type="confirm"
-			sda-title="{{i18n('admin-portal-messages.views-userGroupMgmt-createUserGroup-title')}}"
-			sda-scope="this"
-			sda-template="plugins/html5-admin-portal/partials/views/createUserGroup.html"
-			sda-confirm-action-label="{{i18n('views-common-messages.common-apply')}}"
-			sda-on-confirm="ctrl.onConfirmCreateUser(res)"
-			sda-on-close="ctrl.onCancelCreateUser(res)"></div>
-		<div sd-dialog sd-show-overlay="true"
-			sda-show="ctrl.showModifyUserGroup" sda-type="confirm"
-			sda-title="{{i18n('admin-portal-messages.views-userGroupMgmt-modifyUserGroup-title')}}"
-			sda-scope="this"
-			sda-template="plugins/html5-admin-portal/partials/views/modifyUserGroup.html"
-			sda-confirm-action-label="{{i18n('views-common-messages.common-apply')}}"
-			sda-on-confirm="ctrl.onConfirmModifyUser(res)"
-			sda-on-close="ctrl.onCancelModifyUser(res)"></div>
-		<div sd-dialog sd-show-overlay="true"
 			sda-show="ctrl.showNotificationUserGroup" sda-type="alert"
 			sda-title="{{i18n('views-common-messages.common-notification-title')}}"
 			sda-scope="this"
 			sda-template="plugins/html5-admin-portal/partials/views/userGroupNotification.html"
 			sda-cancel-action-label="{{i18n('views-common-messages.common-close')}}"
 			sda-on-close="ctrl.onCloseNotificationUserGroup(res)"></div>
+		<div sd-dialog sd-show-overlay="true"
+			sda-show="ctrl.showCreateModifyUserGroup" sda-type="confirm"
+			sda-title="{{sdI18n(ctrl.title)}}" sda-scope="this"
+			sda-template="plugins/html5-admin-portal/partials/views/createModifyUserGroup.html"
+			sda-confirm-action-label="{{i18n('views-common-messages.common-apply')}}"
+			sda-on-confirm="ctrl.onConfirmCreateModifyUser(res)"
+			sda-on-close="ctrl.onCancelCreateModifyUser(res)"></div>
 	</div>
 </div>
