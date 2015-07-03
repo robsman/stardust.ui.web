@@ -786,6 +786,42 @@ define(
 								});
 			}
 
+			function upgradeAllModels(modelId) {
+        if (!modelId) {
+          modelId = "All";
+        }
+			  
+        m_communicationController
+            .syncGetData(
+                {
+                  url : require("bpm-modeler/js/m_urlUtils")
+                      .getModelerEndpointUrl()
+                      + "/models/upgrade/" + modelId 
+                },
+                new function() {
+                  return {
+                    success : function(data) {
+                      parent.iPopupDialog
+                      .openPopup(prepareErrorDialogPoupupData(
+                          "Success in upgrading models.",
+                          "OK"));
+                      window.parent.EventHub.events.publish("CONTEXT_UPDATED");
+                    },
+                    failure : function(data) {
+                      if (parent.iPopupDialog) {
+                        parent.iPopupDialog
+                            .openPopup(prepareErrorDialogPoupupData(
+                                "Error upgrading models.",
+                                "OK"));
+                      } else {
+                        alert("Error upgrading models.");
+                      }
+                    }
+                  }
+                });
+      }
+
+			
 			// TODO - delete
 			// var getTreeNodeId = function (modelId, nodeType, nodeId) {
 			// return modelId + "__" + nodeType + "__" + nodeId;
@@ -2756,7 +2792,9 @@ define(
 						redoLastUndo();
 					} else if ("saveAllModels" == data.id) {
 						saveAllModels();
-					} else if ("refreshModels" == data.id) {
+					} else if ("upgradeAllModels" == data.id) {
+            upgradeAllModels();
+          } else if ("refreshModels" == data.id) {
 						refresh();
 					}
 				};

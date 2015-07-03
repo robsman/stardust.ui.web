@@ -409,6 +409,35 @@ public class ModelerResource
       }
    }
 
+
+   @GET
+   @Path("models/upgrade/{modelId}")
+   public Response upgradeModels(@PathParam("modelId") String modelId)
+   {
+      try
+      {
+         if("All".equals(modelId)){
+            //upgrade All
+         }else{
+            //upgrade one
+         }
+
+         ResponseBuilder response = Response.ok("Upgraded");
+
+         return response.build();
+      }
+      catch (MissingWritePermissionException mwpe)
+      {
+         return Response.status(Status.CONFLICT)
+               .entity("Missing write permission: " + mwpe.getMessage()).build();
+      }
+      catch (Exception e)
+      {
+         e.printStackTrace();
+         throw new RuntimeException(e);
+      }
+   }
+
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)

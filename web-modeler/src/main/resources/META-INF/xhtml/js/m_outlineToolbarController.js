@@ -33,6 +33,9 @@ define([ "bpm-modeler/js/m_toolbarManager", "bpm-modeler/js/m_constants", "bpm-m
 		saveAllModelsToolSelected : function(data) {
 			fireToolSelectedEvent(data);
 		},
+		upgradeAllModelsToolSelected : function(data) {
+      fireToolSelectedEvent(data);
+    },
 		refreshModelsToolSelected : function(data) {
 			fireToolSelectedEvent(data);
 		}
