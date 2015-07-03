@@ -18,7 +18,7 @@
 	angular.module("bcc-ui").controller(
 			'sdPendingActivitiesCtrl',
 			[ 'sdActivityInstanceService', 'sdCommonViewUtilService', '$q', 'sdProcessInstanceService',
-					'sdLoggerService', '$filter', 'sgI18nService', 'sdLoggedInUserService', 'sdPreferenceService',
+					'sdLoggerService', '$filter', 'sgI18nService', 'sdLoggedInUserService', 'sdPreferenceService', 'sdDataTableHelperService',
 					PendingActivitiesCtrl ]);
 
 	var _sdActivityInstanceService = null;
@@ -29,12 +29,13 @@
 	var _filter = null;
 	var _sgI18nService = null;
 	var _sdPreferenceService = null;
+	var _sdDataTableHelperService = null;
 
 	/**
 	 * 
 	 */
 	function PendingActivitiesCtrl(sdActivityInstanceService, sdCommonViewUtilService, $q, sdProcessInstanceService,
-			sdLoggerService, $filter, sgI18nService, sdLoggedInUserService, sdPreferenceService) {
+			sdLoggerService, $filter, sgI18nService, sdLoggedInUserService, sdPreferenceService,sdDataTableHelperService) {
 
 		_sdActivityInstanceService = sdActivityInstanceService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
@@ -44,6 +45,7 @@
 		_filter = $filter;
 		_sgI18nService = sgI18nService;
 		_sdPreferenceService = sdPreferenceService;
+		_sdDataTableHelperService = sdDataTableHelperService;
 
 		this.pendingActivities = {
 			totalCount : 0,
@@ -59,6 +61,7 @@
 
 		// Getting columns for the data table
 		this.getColumns();
+		this.getPendingActivitiesData();
 	}
 	;
 
@@ -69,7 +72,6 @@
 		var self = this;
 		_sdActivityInstanceService.getRoleColumns().then(function(result) {
 			self.columns = result;
-			self.ready = true;
 			trace.log('Columns retrieved :' + self.columns);
 		});
 	};
@@ -79,37 +81,51 @@
 	PendingActivitiesCtrl.prototype.getPendingActivities = function(options) {
 		trace.log('Fetching Pending activities.');
 		var self = this;
-		var deferred = _q.defer();
+		var result = {
+				list : [],
+				totalCount : self.pendingActivities.totalCount
+		}
+		result.list = _sdDataTableHelperService.columnSort(options, self.pendingActivities.list);
+		result.list = _sdDataTableHelperService.paginate(options,result.list);
+		return result;
+	};
+	
+	PendingActivitiesCtrl.prototype.getPendingActivitiesData = function() {
+		trace.log('Fetching Pending activities.');
+		var self = this;
 		_sdActivityInstanceService.getPendingActivities().then(function(result) {
 			trace.log('Pending activities retreived successfully.');
 			self.pendingActivities.list = result;
 			self.pendingActivities.totalCount = result.length;
-			deferred.resolve(self.pendingActivities);
-			console.log(self.pendingActivities)
-		}).then(function(failure) {
+			if(self.dataTable != undefined){
+				self.dataTable.refresh();	
+			}else {
+				self.ready = true;
+			}
+			
+		}).then(function(error) {
 			trace.log('Failed to retrive Pending activities.');
-			deferred.reject(self.pendingActivities);
 		});
-		return deferred.promise;
 	};
-
+	
+	
 	/**
 	 * 
 	 */
 	PendingActivitiesCtrl.prototype.getExportValue = function(data) {
 		return (_sgI18nService.translate('business-control-center-messages.views-common-column-today') + ": "
 				+ data.today + " "
-				+ _sgI18nService.translate('business-control-center-messages.views-pendingActivities-column-yesterday') + " "
+				+ _sgI18nService.translate('business-control-center-messages.views-pendingActivities-column-yesterday') + ": "
 				+ data.yesterday + " "
-				+ _sgI18nService.translate('business-control-center-messages.views-common-column-dayMonth') + " " + data.month + " "
-				+ _sgI18nService.translate('business-control-center-messages.views-common-column-hibernated') + " " + data.hibernated);
+				+ _sgI18nService.translate('business-control-center-messages.views-common-column-dayMonth') + ": " + data.month + " "
+				+ _sgI18nService.translate('business-control-center-messages.views-common-column-hibernated') + ": " + data.hibernated);
 	};
 
 	/**
 	 * 
 	 */
-	PendingActivitiesCtrl.prototype.refresh = function() {
-		this.dataTable.refresh();
+	PendingActivitiesCtrl.prototype.refresh = function() {		
+		this.getPendingActivitiesData();
 	};
 
 	/**

@@ -18,7 +18,7 @@
 	angular.module("bcc-ui").controller(
 			'sdRoleAssignmentCtrl',
 			[ '$q', '$timeout', 'sdRoleAssignmentService', 'sdLoggerService', 'sdCommonViewUtilService',
-					'sdLoggedInUserService', 'sdPreferenceService', RoleAssignmentCtrl ]);
+					'sdLoggedInUserService', 'sdPreferenceService','sdDataTableHelperService', RoleAssignmentCtrl ]);
 
 	var _q;
 	var _sdRoleAssignmentService;
@@ -27,12 +27,13 @@
 	var _timeout;
 	var _sdLoggedInUserService;
 	var _sdPreferenceService;
+	var _sdDataTableHelperService;
 
 	/**
 	 * 
 	 */
 	function RoleAssignmentCtrl($q, $timeout, sdRoleAssignmentService, sdLoggerService, sdCommonViewUtilService,
-			sdLoggedInUserService, sdPreferenceService) {
+			sdLoggedInUserService, sdPreferenceService ,sdDataTableHelperService) {
 		trace = sdLoggerService.getLogger('bcc-ui.sdRoleAssignmentCtrl');
 		_q = $q;
 		_sdRoleAssignmentService = sdRoleAssignmentService;
@@ -40,6 +41,7 @@
 		_timeout = $timeout;
 		_sdLoggedInUserService = sdLoggedInUserService;
 		_sdPreferenceService = sdPreferenceService;
+		_sdDataTableHelperService = sdDataTableHelperService;
 
 		this.roleAssignmentTable = null;
 		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
@@ -73,9 +75,16 @@
 	 * 
 	 * @returns
 	 */
-	RoleAssignmentCtrl.prototype.getRoleAssignmentData = function() {
-		var self = this;
-		return self.roleAssignments;
+	RoleAssignmentCtrl.prototype.getRoleAssignmentData = function(options) {
+		var self = this;		
+		var result = {
+				list : [],
+				totalCount : self.roleAssignments.totalCount
+		}
+		result.list = _sdDataTableHelperService.columnSort(options,self.roleAssignments.list)
+		result.list = _sdDataTableHelperService.paginate(options,result.list);
+		return result;
+
 	};
 
 	/**
@@ -114,7 +123,7 @@
 	 */
 	
 	RoleAssignmentCtrl.prototype.preferenceDelegate = function(prefInfo) {
-		var preferenceStore = _sdPreferenceService.getStore('USER',
+		var preferenceStore = _sdPreferenceService.getStore(prefInfo.scope,
 				'ipp-business-control-center', 'preference'); // Override
 		preferenceStore.marshalName = function(scope) { 
 			return "ipp-business-control-center.roleAssignment.selectedColumns"; 
