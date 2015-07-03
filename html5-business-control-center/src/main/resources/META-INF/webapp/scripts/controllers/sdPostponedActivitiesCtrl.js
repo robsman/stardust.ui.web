@@ -17,7 +17,7 @@
 
 	angular.module("bcc-ui").controller('sdPostponedActivitiesCtrl',
 			['sdActivityInstanceService', 'sdCommonViewUtilService', '$q', 'sdLoggerService', '$filter', 
-			 'sgI18nService', 'sdLoggedInUserService','sdPreferenceService', PostponedActivitiesCtrl ]);
+			 'sgI18nService', 'sdLoggedInUserService','sdPreferenceService', 'sdDataTableHelperService', PostponedActivitiesCtrl ]);
 
 
 	var _sdActivityInstanceService = null;
@@ -27,12 +27,13 @@
 	var _filter = null;
 	var _sgI18nService = null;
 	var _sdPreferenceService = null;
+	var _sdDataTableHelperService = null;
 	
 	/**
 	 * 
 	 */
 	function PostponedActivitiesCtrl( sdActivityInstanceService, sdCommonViewUtilService, $q, 
-									  sdLoggerService, $filter, sgI18nService, sdLoggedInUserService, sdPreferenceService) {
+									  sdLoggerService, $filter, sgI18nService, sdLoggedInUserService, sdPreferenceService, sdDataTableHelperService) {
 	
 		_sdActivityInstanceService = sdActivityInstanceService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
@@ -41,7 +42,7 @@
 		_filter = $filter; 
 		_sgI18nService =sgI18nService;
 		_sdPreferenceService = sdPreferenceService;
-		
+		_sdDataTableHelperService= sdDataTableHelperService;
 		this.statistics = {
 				totalCount : 0,
 		 		list : []
@@ -104,12 +105,23 @@
 			list : [],
 			totalCount : self.statistics.totalCount
 		}
+		//Filter
 		if(options.filters && options.filters.TeamMember && options.filters.TeamMember.textSearch !=''){
 			trace.log("Applying filter with team member : ",options.filters.TeamMember.textSearch );
 			result.list = _filter('filter')(self.statistics.list, {'teamMember' : {'displayName': options.filters.TeamMember.textSearch }},false)
 		}else{
 			result.list = self.statistics.list;
 		}
+		
+		//Sorting 
+		if (options.order != undefined) {
+			if(options.order[0].field == 'TeamMember' ){
+				result.list= _sdDataTableHelperService.columnSort(options, result.list, 'teamMember.displayName');
+			}
+		}
+		//paginate
+		result.list = _sdDataTableHelperService.paginate( options, result.list);
+		
 		deferred.resolve(result);
 		return deferred.promise;
 	};
@@ -205,5 +217,6 @@
 
 		return deferred.promise;
 	};
+	
 	
 })();

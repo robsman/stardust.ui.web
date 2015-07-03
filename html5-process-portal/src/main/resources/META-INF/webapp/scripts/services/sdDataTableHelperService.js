@@ -113,23 +113,36 @@
 			return restURL + separator + params;
 		}
 
-		TableHelperService.prototype.columnSort = function(options, list) {
+		/**
+		 *  predicate is optional : Pass in case the filtered object is a JSON and a not a value.
+		 */
+		TableHelperService.prototype.columnSort = function(options, list, predicate) {
 
 			if (options.order != undefined) {
 				var reverse = false;
 				var index = options.order.length - 1;
+				
+				if(!predicate || predicate == null){
+					predicate = options.order[index].name;
+				}
 				if (options.order[index].dir == 'desc') {
 					reverse = true;
 				}
-				var rows = $filter('orderBy')(list, options.order[index].name,
+				var rows = $filter('orderBy')(list, predicate,
 						reverse);
 				return rows;
 			} else {
 				return list;
 			}
-		}
+		};
+		
+		/**
+		 * 
+		 */
+		TableHelperService.prototype.paginate = function(options, list) {
+			return list.slice(options.skip ,options.skip + parseInt(options.pageSize) );
+		};
 
 	}
-	;
 
 })();

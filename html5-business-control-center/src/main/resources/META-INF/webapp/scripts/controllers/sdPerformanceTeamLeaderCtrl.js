@@ -17,7 +17,7 @@
 
 	angular.module("bcc-ui").controller('sdPerformanceTeamLeaderCtrl',
 			['sdActivityInstanceService', 'sdCommonViewUtilService', '$q', 'sdProcessInstanceService',
-			 'sdLoggerService', '$filter','sgI18nService', 'sdLoggedInUserService','sdPreferenceService', Controller ]);
+			 'sdLoggerService', '$filter','sgI18nService', 'sdLoggedInUserService','sdPreferenceService', 'sdDataTableHelperService', Controller ]);
 
 
 	var _sdActivityInstanceService = null;
@@ -28,12 +28,13 @@
 	var _filter = null;
 	var _sgI18nService = null;
 	var _sdPreferenceService = null;
+	var _sdDataTableHelperService = null;
 
 	/**
 	 * 
 	 */
 	function Controller( sdActivityInstanceService, sdCommonViewUtilService, $q, sdProcessInstanceService, 
-			sdLoggerService, $filter, sgI18nService, sdLoggedInUserService, sdPreferenceService) {
+			sdLoggerService, $filter, sgI18nService, sdLoggedInUserService, sdPreferenceService, sdDataTableHelperService) {
 
 		_sdActivityInstanceService = sdActivityInstanceService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
@@ -43,6 +44,7 @@
 		_filter = $filter; 
 		_sgI18nService =sgI18nService;
 		_sdPreferenceService = sdPreferenceService;
+		_sdDataTableHelperService = sdDataTableHelperService
 
 		this.statistics = {
 				totalCount : 0,
@@ -100,6 +102,17 @@
 		}else{
 			result.list = self.statistics.list;
 		}
+		
+		//Sorting 
+		if (options.order != undefined) {
+			if(options.order[0].field == 'TeamMember' ){
+				result.list= _sdDataTableHelperService.columnSort(options, result.list, 'teamMember.displayName');
+			}
+		}
+		
+		//paginate
+		result.list = _sdDataTableHelperService.paginate( options, result.list);
+		
 		deferred.resolve(result);
 		return deferred.promise;
 	};
