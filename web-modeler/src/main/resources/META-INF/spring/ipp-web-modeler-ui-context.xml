@@ -7,7 +7,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
 
 	<ippui:perspective id="ippBpmModeler" messageBundles="bpm-modeler-messages"
-		controller="processesView">
+		controller="processesView" excludeRoles="Auditor">
 		<ippui:preferences>
 			<ippui:preferencePage name="configuration"
 				include="/plugins/bpm-modeler/preferences/modelingConfigurationPanel.xhtml" />

@@ -10,8 +10,12 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.common.spi.user.impl;
 
+import java.util.Set;
+
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.spi.user.IAuthorizationProvider;
 import org.eclipse.stardust.ui.web.common.spi.user.User;
+import org.eclipse.stardust.ui.web.viewscommon.views.authorization.UiPermissionUtils;
 
 /**
  * @author Yogesh.Manware
@@ -19,6 +23,9 @@ import org.eclipse.stardust.ui.web.common.spi.user.User;
  */
 public class IppAuthorizationProvider implements IAuthorizationProvider
 {
+   /**
+    *
+    */
    public Boolean isAuthorized(User user, String permissionId)
    {
       if (user instanceof IppUser)
@@ -28,15 +35,21 @@ public class IppAuthorizationProvider implements IAuthorizationProvider
       return null;
    }
 
-   /**
-    * @author Yogesh.Manware
-    * 
-    */
    public static class IppFactory implements Factory
    {
       public IAuthorizationProvider getAuthorizationProvider()
       {
          return new IppAuthorizationProvider();
       }
+   }
+
+   @Override
+   public void addDefaultPermissions(String permissionId, Set<String> roles, boolean allow)
+   {
+      if (CollectionUtils.isEmpty(roles))
+      {
+         return;
+      }
+      UiPermissionUtils.populateDefaultPermissions(permissionId, roles, allow);
    }
 }

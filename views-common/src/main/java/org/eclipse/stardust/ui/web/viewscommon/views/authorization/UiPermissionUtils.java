@@ -59,7 +59,7 @@ public class UiPermissionUtils
    public static final String VIEW = "view";
    public static final String GLOBAL_EXTNS = "globalExtensions";
    public static final String PERSPECTIVE = "perspective";
-   
+
    public static final String PROPERTY_C_KEY = "views.authorizationManagerView.";
 
    /**
@@ -72,14 +72,12 @@ public class UiPermissionUtils
     */
    private static final String UI = "ui";
 
-   private final static Map<String, String> defaultPermissions;
-   
    /**
     * Constants for Administrator role as used by engine permissions. Can be changed to a
     * portal related constant.
     */
    private final static String ADMINISTRATOR = PredefinedConstants.ADMINISTRATOR_ROLE;
-   private final static String AUDITOR = "Auditor";
+   public final static String AUDITOR = "Auditor";
    private static final String PREFIX = "portal.ui.";
    public static final String SUFFIX_ALLOW = ".allow";
    public static final String SUFFIX_DENY = ".deny";
@@ -90,15 +88,7 @@ public class UiPermissionUtils
    public static final String ACTIVITY = "activity.";
    public static final String DATA = "data.";
 
-   static
-   {
-      defaultPermissions = new HashMap<String, String>();
-      // Set Administrator default
-      defaultPermissions.put("portal.ui.ippAdminPerspective.allow", ADMINISTRATOR);
-      defaultPermissions.put("portal.ui.checklistManagement.deny", AUDITOR);
-      defaultPermissions.put("portal.ui.ippBpmModeler.deny", AUDITOR);
-      defaultPermissions.put("portal.ui.stardustRulesManager.deny", AUDITOR);
-   }
+   private final static Map<String, Set<String>> defaultPermissions = new HashMap<String, Set<String>>();
 
    /**
     * @param permissionId
@@ -109,10 +99,17 @@ public class UiPermissionUtils
    {
       if (CollectionUtils.isNotEmpty(grants))
       {
-         String permission = defaultPermissions.get(permissionId);
-         if (permission != null && grants.size() == 1 && grants.get(0).equals(permission))
+         Set<String> permissions = defaultPermissions.get(permissionId);
+         if (permissions == null)
          {
-            return true;
+            return false;
+         }
+         for (String permission : permissions)
+         {
+            if (permission != null && grants.contains(permission))
+            {
+               return true;
+            }
          }
       }
       return false;
@@ -150,8 +147,7 @@ public class UiPermissionUtils
 
       administrationService.savePreferences(preferences);
    }
-   
-   
+
    /**
     * @param permissionId
     * @return
@@ -299,7 +295,7 @@ public class UiPermissionUtils
          return false;
       }
    }
-   
+
    /**
     * 
     * @param permissionId
@@ -359,7 +355,7 @@ public class UiPermissionUtils
       }
       return false;
    }
-   
+
    /**
     * @param grants
     * @return
@@ -497,6 +493,32 @@ public class UiPermissionUtils
    }
 
    /**
+    * 
+    * @param permissionId
+    * @param roles
+    * @param allow
+    */
+   public static void populateDefaultPermissions(String permissionId, Set<String> roles, boolean allow)
+   {
+      if (allow)
+      {
+         String allowId = UiPermissionUtils.getPermissionIdAllow(permissionId);
+         if (!defaultPermissions.containsKey(allowId))
+         {
+            defaultPermissions.put(allowId, roles);
+         }
+      }
+      else
+      {
+         String denyId = UiPermissionUtils.getPermissionIdDeny(permissionId);
+         if (!defaultPermissions.containsKey(denyId))
+         {
+            defaultPermissions.put(denyId, roles);
+         }
+      }
+   }
+
+   /**
     * @param key
     * @return
     */
@@ -534,19 +556,21 @@ public class UiPermissionUtils
       extensionMap.get(elementType).add(uiElement);
    }
 
+
    /**
     * @param permissions
+    * @param defaultPermissions
     */
    @SuppressWarnings({"rawtypes", "unchecked"})
    private static void addDefaultPermissions(Map<String, List<String>> permissions)
    {
-      for (Entry<String, String> entry : defaultPermissions.entrySet())
+      for (Entry<String, Set<String>> entry : defaultPermissions.entrySet())
       {
          List value = permissions.get(entry.getKey());
          if (value == null)
          {
             List values = new LinkedList<String>();
-            values.add(entry.getValue());
+            values.addAll(entry.getValue());
             permissions.put(entry.getKey(), values);
          }
       }
@@ -566,6 +590,7 @@ public class UiPermissionUtils
       return preferences != null ? preferences.getPreferences() : null;
    }
 
+ 
    /**
     * @param preferencesMap
     * @param includeDefaultPermissions

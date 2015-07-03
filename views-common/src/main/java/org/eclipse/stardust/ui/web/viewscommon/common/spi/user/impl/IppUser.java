@@ -258,7 +258,7 @@ public class IppUser implements User
       {
          uiPermissionsCache = new HashMap<String, Boolean>();
          Map<String, List<String>> allUiPermissionsCache = UiPermissionUtils.getAllPermissions(
-               ServiceFactoryUtils.getAdministrationService(), false);
+               ServiceFactoryUtils.getAdministrationService(), true);
 
          Map<String, List<String>> allDeniedGrants = new HashMap<String, List<String>>();
 
@@ -274,6 +274,7 @@ public class IppUser implements User
                allDeniedGrants.put(permission.getKey(), permission.getValue());
             }
          }
+         
          // check all denied grants
          for (Entry<String, List<String>> permission : allDeniedGrants.entrySet())
          {

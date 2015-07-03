@@ -69,7 +69,7 @@ public class AuthorizationManagerService
 
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
-
+   
    /**
     * 
     * @return
@@ -517,7 +517,7 @@ public class AuthorizationManagerService
             PermissionDTO p = new PermissionDTO(permissionId, MessagesViewsCommonBean.getInstance().getString(
                   PROPERTY_KEY_PREFIX + permissionId));
             /* p.type = PermissionType.generalPermission.name(); */
-            updateGrants(p, permissions);
+            populateGrants(p, permissions);
             generalPermissions.add(p);
          }
          else
@@ -525,7 +525,7 @@ public class AuthorizationManagerService
             PermissionDTO p = new PermissionDTO(permissionId, MessagesViewsCommonBean.getInstance().getString(
                   PROPERTY_KEY_PREFIX + permissionId));
 
-            updateGrants(p, permissions);
+            populateGrants(p, permissions);
 
             if (UiPermissionUtils.isProcessPermissionId(permissionId))
             {
@@ -587,7 +587,7 @@ public class AuthorizationManagerService
          PermissionDTO perspectiveDTO = new PermissionDTO(UiPermissionUtils.getPermissionId(perspective.getName()),
                perspective.getLabel());
          perspectivePermissions.add(perspectiveDTO);
-         updateGrants(perspectiveDTO, permissions);
+         populateGrants(perspectiveDTO, permissions);
 
          // add launch panels
          perspectiveDTO.launchPanels = new HashSet<PermissionDTO>();
@@ -611,14 +611,14 @@ public class AuthorizationManagerService
 
                PermissionDTO lPanelDto = new PermissionDTO(UiPermissionUtils.getPermissionId(launchPanel.getName()),
                      getUiElementLabel(launchPanel));
-               updateGrants(lPanelDto, permissions);
+               populateGrants(lPanelDto, permissions);
                globalElements.get(launchPanel.getDefinedIn()).launchPanels.add(lPanelDto);
             }
             else
             {
                PermissionDTO lPanelDto = new PermissionDTO(UiPermissionUtils.getPermissionId(launchPanel.getName()),
                      getUiElementLabel(launchPanel));
-               updateGrants(lPanelDto, permissions);
+               populateGrants(lPanelDto, permissions);
                perspectiveDTO.launchPanels.add(lPanelDto);
             }
          }
@@ -648,7 +648,7 @@ public class AuthorizationManagerService
 
                PermissionDTO viewDto = new PermissionDTO(UiPermissionUtils.getPermissionId(viewDefinition.getName()),
                      getUiElementLabel(viewDefinition));
-               updateGrants(viewDto, permissions);
+               populateGrants(viewDto, permissions);
                globalElements.get(viewDefinition.getDefinedIn()).views.add(viewDto);
             }
             else
@@ -656,7 +656,7 @@ public class AuthorizationManagerService
                // add view and its permissions
                PermissionDTO viewDto = new PermissionDTO(UiPermissionUtils.getPermissionId(viewDefinition.getName()),
                      getUiElementLabel(viewDefinition));
-               updateGrants(viewDto, permissions);
+               populateGrants(viewDto, permissions);
                perspectiveDTO.views.add(viewDto);
             }
          }
@@ -670,7 +670,7 @@ public class AuthorizationManagerService
     * @param p
     * @param permissions
     */
-   private void updateGrants(PermissionDTO p, PermissionsDetails permissions)
+   private void populateGrants(PermissionDTO p, PermissionsDetails permissions)
    {
       p.allow = new HashSet<ParticipantDTO>();
       p.deny = new HashSet<ParticipantDTO>();

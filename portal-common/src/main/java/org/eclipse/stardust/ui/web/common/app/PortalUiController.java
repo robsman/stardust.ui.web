@@ -247,6 +247,7 @@ public class PortalUiController
       // Collect Perspectives based on Role
       PerspectiveDefinition pd;
       systemPerspectives = appContext.getBeansOfType(PerspectiveDefinition.class);
+      
       for (String key : systemPerspectives.keySet())
       {
          pd = systemPerspectives.get(key);
@@ -279,7 +280,8 @@ public class PortalUiController
          });
 
          initPerspectiveItems();
-
+         recordConfiguredPermissions();
+         
          if (null == currentPerspective)
          {
             // Show first perspective by default
@@ -303,7 +305,7 @@ public class PortalUiController
       this.perspectiveItems = new ArrayList<MenuItem>();
 
       Map<String, PerspectiveExtension> extensions = appContext.getBeansOfType(PerspectiveExtension.class);
-      
+
       for (IPerspectiveDefinition perspective : allPerspectives)
       {
          if (null == currentPerspective && perspective.isDefaultPerspective())
@@ -316,10 +318,41 @@ public class PortalUiController
 
          for (PerspectiveExtension extension : extensions.values())
          {
+            //populate default Authorization
+            authorizationProvider.addDefaultPermissions(extension.getName(), extension.getRequiredRolesSet(), true);
+            authorizationProvider.addDefaultPermissions(extension.getName(), extension.getExcludeRolesSet(), false);
+
             if (isAuthorized(extension))
             {
                perspective.addExtension(extension);
             }
+         }
+      }
+   }
+   
+   //store default permissions
+   private void recordConfiguredPermissions()
+   {
+      IAuthorizationProvider authorizationProvider = getAuthorizationProvider();
+      
+      for (String key : systemPerspectives.keySet())
+      {
+         IPerspectiveDefinition perspective = systemPerspectives.get(key);
+         authorizationProvider.addDefaultPermissions(perspective.getName(), perspective.getRequiredRolesSet(), true);
+         authorizationProvider.addDefaultPermissions(perspective.getName(), perspective.getExcludeRolesSet(), false);
+
+         // Launch Panels
+         for (ViewDefinition view : perspective.getViews())
+         {
+            authorizationProvider.addDefaultPermissions(view.getName(), view.getRequiredRolesSet(), true);
+            authorizationProvider.addDefaultPermissions(view.getName(), view.getExcludeRolesSet(), false);
+         }
+
+         // Views
+         for (LaunchPanel lp : perspective.getLaunchPanels())
+         {
+            authorizationProvider.addDefaultPermissions(lp.getName(), lp.getRequiredRolesSet(), true);
+            authorizationProvider.addDefaultPermissions(lp.getName(), lp.getExcludeRolesSet(), false);
          }
       }
    }
@@ -615,6 +648,7 @@ public class PortalUiController
    public View openViewById(String viewId, String viewKey,
          Map<String, Object> viewParams, AbstractMessageBean msgBean, boolean nested)
    {
+      
       ViewDefinition viewDefinition = lookupViewID(viewId);
 
       if (null == viewDefinition)
