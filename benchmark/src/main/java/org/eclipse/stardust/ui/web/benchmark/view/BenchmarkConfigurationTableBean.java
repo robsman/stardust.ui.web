@@ -30,7 +30,6 @@ import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.ModelReconfigurationInfo;
-import org.eclipse.stardust.engine.core.monitoring.ActivityInstanceStateChangeMonitor;
 import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.engine.core.preferences.Preferences;
 import org.eclipse.stardust.engine.core.preferences.PreferencesConstants;
@@ -182,8 +181,8 @@ public class BenchmarkConfigurationTableBean extends UIComponentBean implements 
                      nonAuxiliaryProcessDefs);
                for (ProcessDefinition processDefinition : allProcessDefinitions)
                {
-                  String defBenchmarkId = getBenchmarkFromPreferences(benchmarkPreferences, processDefinition.getId(), false);
-                  BenchmarkConfiguration bc = new BenchmarkConfiguration(model.getId(), processDefinition.getId(),
+                  String defBenchmarkId = getBenchmarkFromPreferences(benchmarkPreferences, processDefinition.getQualifiedId(), false);
+                  BenchmarkConfiguration bc = new BenchmarkConfiguration(model.getId(), processDefinition.getQualifiedId(),
                         processDefinition.getName(), defBenchmarkId);
                   benchmarkConfigurationList.add(bc);
                }
