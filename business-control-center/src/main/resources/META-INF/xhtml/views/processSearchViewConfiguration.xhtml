@@ -1,0 +1,44 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+		<ui:include
+			src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+			<ui:param name="dialogBean"
+				value="#{processSearchConfigurationBean.processSearchConfirmationDialog}" />
+		</ui:include>
+	</ice:panelGroup>
+
+	<!-- Activity Closes Section -->
+	<ice:panelGroup styleClass="heading" style="width: 100%">
+		<ice:outputText
+			value="#{processSearchConfigurationBean.messages['config.archiveSearch.label']}" />
+	</ice:panelGroup>
+	<ice:panelGrid columns="2">
+		<ice:outputLabel styleClass="label-form"
+			value="#{processSearchConfigurationBean.messages['config.archiveSearch.auditTrailUrl']}"  />
+		<ice:inputText partialSubmit="true" immediate="true" style="width: 300px;" 
+			value="#{processSearchConfigurationBean.archiveAuditTrailUrl}">
+			<pc:automationTag value="auto-PP-ProcSrchConf-ArchiveAuditTrailUrl" standAlone="false" />
+		</ice:inputText>
+	</ice:panelGrid>
+	
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+	<ice:panelGroup styleClass="clearing" />
+
+	<ice:panelGrid columns="3">
+		<pc:automationTag value="auto-PP-ProcSrchConf-BtnsBar" standAlone="false" />
+		<ice:commandButton value="#{common_msgPropsBean['views.configurationPanel.button.save']}"
+			action="#{processSearchConfigurationBean.saveConfiguration}" styleClass="button" />
+		<ice:commandButton value="#{common_msgPropsBean['views.configurationPanel.button.reset']}" immediate="true"
+			action="#{processSearchConfigurationBean.openConfirmationDialog}" styleClass="button secondary" />
+	</ice:panelGrid>
+
+</f:view>

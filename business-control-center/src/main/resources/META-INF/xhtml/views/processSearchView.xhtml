@@ -437,11 +437,17 @@
 				<td style="vertical-align: top;">
 					<ice:panelGroup style="white-space: nowrap;">
 						<pc:automationTag value="auto-BCC-ProcSrch-SearchBtn" standAlone="false"/>
-						<ice:panelGrid columns="2" rendered="true">
+						<ice:panelGrid columns="3" rendered="true">
 							<ice:commandButton id="submitSearch"
 								value="#{processSearchBean.messages['button.searchProcess']}"
 								action="#{processSearchBean.performSearch}" styleClass="button" />
 							
+							<ice:commandButton id="submitArchiveSearch"
+								rendered="#{not empty processSearchBean.archiveAuditTrailURL}"
+								value="#{processSearchBean.messages['button.searchArchiveProcess']}"
+								action="#{processSearchBean.performArchiveSearch}"
+								styleClass="button" />
+
 							<ice:commandButton id="resetSearch"
 								value="#{views_common_msgPropsBean['common.reset']}"
 								action="#{processSearchBean.resetSearch}" styleClass="button secondary" />									
@@ -484,7 +490,8 @@
 			<ui:param name="bean" value="#{processSearchBean.activityTableHelper}"/>
 		</ui:include>
 	</ice:panelGroup>
-	
+
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}//plugins/business-control-center/js/processSearch.js" />
 	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}//plugins/business-control-center/js/processSearchEnterKeyHandler.js" />
-	
+
 </f:view>
