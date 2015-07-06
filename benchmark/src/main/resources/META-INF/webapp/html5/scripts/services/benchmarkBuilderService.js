@@ -20,25 +20,6 @@
 	
 	'use strict';
 	
-	//Private: base structure of benchmark data.
-	//This is common to activities and processes.
-	var baseBenchmarkData = 
-	{
-	  "enableDueDate": false,
-	  "isFreeForm": false,
-	  "freeFormScript": "",
-	  "dueDate": {
-	    "dataReference": "",
-	    "dataReferenceDeref" : "",
-	    "dayType": "",
-	    "offset": {
-	      "amount": 10,
-	      "unit": "d",
-	      "offsetTime": "00:01"
-	    }
-	  },
-	  "categories": []
-	};
 	
 	//Private: base structure of a benchmark
 	var baseBenchmark =  
@@ -54,26 +35,8 @@
 		  "description": "",
 		  "categories": [],
 		  "models": [],
-		  "businessCalendar" : "",
-		  //TODO: REMOVE once server side is updated
-		  "defaults" : {
-			    "processDefinitions": {
-			        "dueDate": {
-			          "enabled": false,
-			          "dataReference": "BUSINESS_DATE",
-			          "useBusinessDays": true,
-			          "offset": {
-			            "amount": 10,
-			            "unit": "d",
-			            "offsetTime": "12:01 AM"
-			          }
-			        },
-			        "categoryConditions": []
-			      },
-			      "activities": {
-			        "categoryConditions": []
-			      }
-			    }//Default object ends
+		  "businessCalendar" : ""
+
 		}
 	};
 	
@@ -90,18 +53,7 @@
 		"id": "",
 		"categoryConditions" : [],
 		"enableBenchmark": false,
-		"activities": [],
-		"dueDate": {
-            "enabled": false,
-            "dataReference": "",
-            "dataReferenceDeref" : "",
-            "offset": {
-              "useBusinessDays": true,
-              "amount": 10,
-              "unit": "d",
-              "offsetTime": "00:01"
-            }
-          }
+		"activities": []
 	};
 	
 	//Activity with undefined benchmark data, builder should initialize as needed
@@ -117,7 +69,7 @@
 			"id" : "0000-0000-0000-0000",
 			"name" : "Default Category",
 			"color" : "#00FF00",
-			"index" : 0
+			"index" : 1
 	}
 	
 	//Basic JSON structure of a Category
@@ -125,11 +77,11 @@
 	var baseCategoryData = 
 	{
         "categoryId": "0000-0000-0000-0000",
-        "type" : "FreeForm",
-        "freeFormExpression" : "",
+        "type" : "freeform",
+        "freeformExpression" : "",
         "details" : {
 	        "condition": {
-	          "lhs": "CurrentTime",
+	          "lhs": "CURRENT_TIME",
 	          "operator": ">",
 	          "rhs": "",
 	          "offset": {
@@ -137,7 +89,7 @@
 		          "useBusinessDays": true,
 		          "amount": 10,
 		          "unit": "d",
-		          "offsetTime": "00:01"
+		          "time": "00:01"
 		        }
 	        }
          }
@@ -256,7 +208,6 @@
 	benchmarkBuilderService.prototype.getBaseProcessDefinition = function(categories){
 		var baseCopy={};
 		angular.copy(baseProcessDefinition, baseCopy);
-		//baseCopy.categoryConditions = this.getBaseBenchmarkData(categories);
 		
 		//If not categories passed in then use a single default
 		if(!categories){
@@ -281,7 +232,6 @@
 			i;
 		
 		angular.copy(baseActivity, baseCopy);
-		//baseCopy.categoryConditions = this.getBaseBenchmarkData();
 		
 		//If not categories passed in then use a single default
 		if(!categories){
@@ -313,15 +263,6 @@
 			tempCatNew.categoryId = tempCatBase.id;
 			baseCopy.categoryConditions.push(tempCatNew);
 		}
-	}
-	
-	/**
-	 * @returns default JSON representing the benchmark data  of an element
-	 */
-	benchmarkBuilderService.prototype.getBaseBenchmarkData = function(){
-		var baseCopy={}
-		angular.copy(baseBenchmarkData, baseCopy);
-		return baseCopy;
 	}
 	
 	/**
@@ -387,7 +328,7 @@
 		var index = benchmark.categories.indexOf(category);
 		
 		benchmark.categories.splice(index,1);
-		benchmark.categories.forEach(function(v,i){v.index=i;});
+		benchmark.categories.forEach(function(v,i){v.index=i+1;});
 		
 		//now loop over all models
 		benchmark.models.forEach(function(model){
@@ -429,7 +370,7 @@
 		categories.splice(to,0,categories.splice(from,1)[0]);
 		
 		//update indexes
-		categories.forEach(function(v,i){v.index=i;});
+		categories.forEach(function(v,i){v.index=i+1;});
 
 	}
 	
@@ -457,7 +398,7 @@
 		benchmark.categories.splice(index,0,newCat);
 		
 		//update indexes
-		benchmark.categories.forEach(function(v,i){v.index=i;});
+		benchmark.categories.forEach(function(v,i){v.index=i+1;});
 		
 		//now loop over all models
 		benchmark.models.forEach(function(model){
@@ -505,7 +446,7 @@
 		benchmark.categories.splice(index,0,newCat);
 		
 		//update indexes
-		benchmark.categories.forEach(function(v,i){v.index=i;});
+		benchmark.categories.forEach(function(v,i){v.index=i+1;});
 		
 		//now loop over all models
 		benchmark.models.forEach(function(model){

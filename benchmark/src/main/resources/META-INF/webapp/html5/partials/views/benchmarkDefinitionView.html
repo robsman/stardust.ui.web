@@ -332,25 +332,25 @@
 		    						<select ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
 		    						        ng-disabled="ctrl.benchmarkFilter==='Published'"
 		    						        ng-model="catInst.type">
-	    						        <option value="FreeForm">{{ctrl.textMap.freeForm}}</option>
-			    						<option value="CurrentTime">{{ctrl.textMap.dataExpression}}</option>
+	    						        <option value="freeform">{{ctrl.textMap.freeForm}}</option>
+			    						<option value="dataExpression">{{ctrl.textMap.dataExpression}}</option>
 		    						</select>
 		    						
-		    						<div ng-show="catInst.type==='FreeForm'">
+		    						<div ng-show="catInst.type==='freeform'">
 			    						<textarea ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
 			    						          ng-disabled="ctrl.benchmarkFilter==='Published'"
-			    						          ng-model="catInst.freeFormExpression" 
+			    						          ng-model="catInst.freeformExpression" 
 			    						          rows="" 
 			    						          cols="">
 	   						          	</textarea>
 			    					</div>
 			    					
-		    						<div ng-show="catInst.type==='CurrentTime'">
+		    						<div ng-show="catInst.type==='dataExpression'">
 		    						
 			    					<select ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
 			    					        ng-disabled="ctrl.benchmarkFilter==='Published'"
 			    					        ng-model="catInst.details.condition.lhs">
-			    						<option value="CurrentTime">{{ctrl.textMap.currentTime}}</option>
+			    						<option value="CURRENT_TIME">{{ctrl.textMap.currentTime}}</option>
 			    					</select>
 			    					
 			    					
@@ -422,7 +422,7 @@
 					    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
 					    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
 					    							   type="time" 
-					    							   ng-model="catInst.details.condition.offset.offsetTime"/>
+					    							   ng-model="catInst.details.condition.offset.time"/>
 					    					</label>
 					    					
 			    						</div>

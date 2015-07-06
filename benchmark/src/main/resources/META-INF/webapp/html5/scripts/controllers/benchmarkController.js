@@ -924,7 +924,6 @@
 					"element" : "Process Definition",
 					"elementRef" : procDef,
 					"treeNodeRef" : item,
-					"dueDate" : procDef.dueDate,
 					"nodePath" : "{" + model.id + "}" + procDef.id, 
 					"breadCrumbs" : [parentModel.name,item.valueItem.name],
 					"categoryConditions": procDef.categoryConditions};
