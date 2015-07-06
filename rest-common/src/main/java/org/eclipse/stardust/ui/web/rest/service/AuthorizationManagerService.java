@@ -155,9 +155,6 @@ public class AuthorizationManagerService
          deny.addAll(participantDTO.deny);
       }
 
-      // fetched again to not to update default permissions to preference store
-      permissions = getPermissionDetails(false);
-
       updateGrants(allow, targetParticipants, permissions, false);
       updateDeniedGrants(deny, targetParticipants, permissions, false);
       savePermissions(permissions);

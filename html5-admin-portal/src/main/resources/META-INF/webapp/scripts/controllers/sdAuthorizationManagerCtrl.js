@@ -68,12 +68,12 @@
     // Track our multi selectable roles
     this.selectedParticipants = [];
 
-    this.refreshParticipants();
+    this.refreshParticipants(true);
 
     // expose our injected dependencies for use on our prototype chain.
     this.$interval = $interval;
     this.$timeout = $timeout;
-    this.refreshPermissions();
+    this.refreshPermissions(true);
 
     // initialize heavily used labels to reduce the size of html
     this.labels = {};
@@ -90,7 +90,7 @@
    * 
    */
   AMCtrl.prototype.onParticipantSelect = function(selectInfo) {
-    this.hideMessages();
+    this.resetMessages();
     // count organizations and roles
     var orgs = 0, roles = 0;
     this.selectedParticipants = [];
@@ -103,19 +103,17 @@
       this.selectedParticipants.push(selectInfo.all[i]);
     }
 
-    var participantsMsg = {};
-    participantsMsg.message = i18n(
+    var participantsMsg = i18n(
             "views.authorizationManagerViewHtml5.selectedParticipantInfo",
             "Selected Participants", [orgs, roles]);
-    participantsMsg.type = "ok";
-    this.showParticipantMessage(participantsMsg);
+    this.showParticipantMessage(participantsMsg, "ok");
   }
 
   /**
    * 
    */
-  AMCtrl.prototype.refreshParticipants = function() {
-    this.hideMessages();
+  AMCtrl.prototype.refreshParticipants = function(init) {
+    this.resetMessages();
 
     var self = this;
     this.selectedParticipants = [];
@@ -126,6 +124,9 @@
         self.participants.totalCount = result.length;
         if (angular.isDefined(self.dataTable)) {
           self.dataTable.refresh(true);
+          if(!init){
+            self.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");  
+          }
         }
       },
       function(error) {
@@ -135,6 +136,24 @@
       })
   };
 
+  //Reset Participants
+  AMCtrl.prototype.resetParticipants = function() {
+    this.resetMessages();
+
+    var self = this;
+    _sdAuthorizationManagerService
+    .resetParticipants(this.selectedParticipants)
+    .then(
+      function(permissions) {
+        self.initializePermissionTree(permissions);
+        self.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
+      },
+      function(error) {
+        trace.error(error);
+        self.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.participants.fetch.error"));
+      })
+  };
+  
   /**
    * @param matchStr
    * @returns
@@ -166,7 +185,7 @@
    * 
    */
   AMCtrl.prototype.cloneParticipant = function() {
-    this.hideMessages();
+    this.resetMessages();
     if (!this.selection || this.selection.length < 1) {
       this.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.selectedParticipant.clone.warning"));
     } else {
@@ -178,7 +197,8 @@
    * 
    */
   AMCtrl.prototype.cloneParticipantConfirmed = function() {
-    this.hideMessages();
+    var self = this;
+    this.resetMessages();
     if (!this.selectedTargetParticipants
             || this.selectedTargetParticipants.length == 0) {
       this.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.cloneParticipant.targetNotSelected"));
@@ -198,7 +218,13 @@
     this.selectedTargetParticipants = [];
 
     _sdAuthorizationManagerService.cloneParticipant(sourceParticipantsIds,
-            targetParticipantsIds);
+            targetParticipantsIds).then(function(permissions) {
+              self.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
+              self.initializePermissionTree(permissions);
+            }, function(error) {
+              trace.error(error);
+              self.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.save.error"));
+            });
   }
 
   // Permission Tree related code
@@ -444,7 +470,7 @@
   // update permissions pertaining to all selected nodes
   AMCtrl.prototype.updatePermissions = function(scope, allow, deny) {
     var self = this;
-    this.hideMessages();
+    this.resetMessages();
 
     scope.$parent.isVisible = true;
     _sdAuthorizationManagerService.savePermissions(self.selectedParticipants, allow, deny)
@@ -465,6 +491,7 @@
                 }
               }
             }
+            self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
           },
           function(error) {
             trace.error(error);
@@ -475,10 +502,12 @@
   // handles removing items from our allow or deny arrays
   AMCtrl.prototype.removeParticipant = function(v, e) {
     var self = this;
-    this.hideMessages();
+    this.resetMessages();
     var scope = angular.element(e.srcElement).scope();
     var permission = scope.$parent.$parent.genItem;
-
+    
+    var allExist = false;
+    
     if (v.menuEvent === "menuItem.clicked") {
       v.item.ref[v.item.target]
               .forEach(function(w, i, arr) {
@@ -488,11 +517,15 @@
                     warning.message = i18n("views.authorizationManagerViewHtml5.permissionTree.warning.removeAll");
                     warning.type = "warn";
                     self.showPermissionMessage(warning);
+                    allExist = true;
+                  } else {
+                    arr.splice(i, 1);
                   }
-                  arr.splice(i, 1);
                 }
               });
 
+      if (allExist) { v.deferred.resolve(); return; }
+      
       var participants = angular.copy(v.item.ref[v.item.target]);
 
       var allow = null;
@@ -511,6 +544,7 @@
             var permissions = result.permissions;
             v.item.ref['allow'] = permissions[0].allow;
             v.item.ref['deny'] = permissions[0].deny;
+            self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
           },
           function(error) {
             trace.error(error);
@@ -545,6 +579,7 @@
           var permissions = result.permissions;
           v.item.ref['allow'] = permissions[0].allow;
           v.item.ref['deny'] = permissions[0].deny;
+          self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
           v.deferred.resolve();
         },
         function(error) {
@@ -559,7 +594,7 @@
   // Restore All permissions
   AMCtrl.prototype.restorePermission = function(v, e) {
     var self = this;
-    this.hideMessages();
+    this.resetMessages();
     var scope = angular.element(e.srcElement).scope();
     var permission = scope.$parent.$parent.genItem;
 
@@ -583,6 +618,7 @@
             var permissions = result.permissions;
             v.item.ref['allow'] = permissions[0].allow;
             v.item.ref['deny'] = permissions[0].deny;
+            self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
             v.deferred.resolve();
           },
           function(error) {
@@ -599,14 +635,17 @@
   /**
    * 
    */
-  AMCtrl.prototype.refreshPermissions = function() {
+  AMCtrl.prototype.refreshPermissions = function(init) {
     var self = this;
-    this.hideMessages();
+    this.resetMessages();
     _sdAuthorizationManagerService
     .getPermissions()
     .then(
         function(permissions) {
           self.initializePermissionTree(permissions);
+          if(!init) {
+            self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");  
+          }
         },
         function(err) {
           trace.error(err);
@@ -625,22 +664,33 @@
     this.applyFilter(participants.join('|'));
   }
 
-  AMCtrl.prototype.hideMessages = function() {
+  AMCtrl.prototype.resetMessages = function() {
     this.showMessage = false;
     this.showMessage2 = false;
     _sdMessageService.showMessage({type:"error"});
   }
 
-  AMCtrl.prototype.showParticipantMessage = function(msg) {
+  AMCtrl.prototype.showParticipantMessage = function(msg, type) {
     this.showMessage = true;
     this.showMessage2 = false;
-    _sdMessageService.showMessage(msg);
+    this.showMessage_(msg, type);
   }
 
-  AMCtrl.prototype.showPermissionMessage = function(msg) {
+  AMCtrl.prototype.showPermissionMessage = function(msg, type) {
     this.showMessage = false;
     this.showMessage2 = true;
-    _sdMessageService.showMessage(msg);
+    this.showMessage_(msg, type);
+  }
+  
+  AMCtrl.prototype.showMessage_ = function(msg, type) {
+    if (!type) {
+      _sdMessageService.showMessage(msg);
+    } else {
+      _sdMessageService.showMessage({
+        message: msg,
+        type: type
+      });
+    }
   }
 
 })();

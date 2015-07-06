@@ -268,7 +268,7 @@ public class PreferenceResource
       return Response.ok(GsonUtils.toJsonHTMLSafeString(participants), MediaType.APPLICATION_JSON).build();
    }
 
-   /*@GET
+   @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/participants/restore")
    public Response restoreParticipants(@QueryParam("participantIds") String participantIds)
@@ -277,5 +277,5 @@ public class PreferenceResource
       Map<String, Set<PermissionDTO>> participants = authorizationManagerService
             .restoreParticipants(participantQualifiedIds);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(participants), MediaType.APPLICATION_JSON).build();
-   }*/
+   }
 }

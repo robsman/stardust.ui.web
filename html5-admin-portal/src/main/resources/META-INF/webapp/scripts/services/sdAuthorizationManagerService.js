@@ -74,7 +74,7 @@
 
       var participantSearchResult = $resource(restUrl, queryParams);
 
-      return participantSearchResult.query().$promise;
+      return participantSearchResult.get().$promise;
     };
 
     // return permissions and relevant participants
@@ -119,10 +119,27 @@
           }
         }
       }
-      
       return grantResource.save({}, data).$promise;
     }
+    
+    //Reset participant
+    AMService.prototype.resetParticipants = function(participants) {
+      var restUrl = PREF_REST_BASE_URL + "/participants/restore";
+      var participantIds = [];
+      for (var i = 0; i < participants.length; i++) {
+        if (participants[i].qualifiedId) {
+          participantIds.push(participants[i].qualifiedId);
+        } else {
+          participantIds.push(participants[i].participantQualifiedId);
+        }
+      }
 
+      var participantIdsStr = participantIds.join(",");
+      
+      return $resource(restUrl, {
+        participantIds: participantIdsStr
+      }).get().$promise;
+    }
   }
 
 })();
