@@ -140,7 +140,7 @@
 								'<span class="sc sc-lg sc-lock" ng-show="$dtApi.lock" title="{{i18n(\'portal-common-messages.common-filterPopup-unlock\')}}"></span>\n' + 
 								'<span class="sc sc-lg sc-unlock" ng-show="!$dtApi.lock" title="{{i18n(\'portal-common-messages.common-filterPopup-lock\')}}"></span>\n' +
 							'</button>\n' +
-							'<button class="button-link tbl-col-sel-link glyphicon glyphicon-repeat" ng-click="$dtApi.resetColumnSelector()" style="cursor: pointer;"></button>\n' +
+							'<button class="button-link tbl-col-sel-link glyphicon glyphicon-repeat" ng-click="$dtApi.resetColumnSelector()" title ="{{i18n(\'portal-common-messages.common-filterPopup-resetFilter-tooltip\')}}" style="cursor: pointer;"></button>\n' +
 						'</div>\n' +
 						'<div class="tbl-col-sel-list">\n' +
 							'<div ng-repeat="col in $dtApi.columns" class="tbl-col-sel-row" ng-model="$index" sd-data-drag sd-data-drop on-drop="$dtApi.moveColumns($data, $index, $event)">\n' +
@@ -2233,6 +2233,17 @@
 			 */
 			this.toggleColumnSelectorLock = function() {
 				self.lock = !self.lock;				
+			}
+			
+			/*
+			 * 
+			 */
+			this.isLocked = function() {
+				if(self.lock){
+					return self.lock;	
+				}
+
+				return false;
 			}
 
 			/*
