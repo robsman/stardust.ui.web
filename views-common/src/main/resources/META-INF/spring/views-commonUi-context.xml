@@ -145,14 +145,9 @@
 						include="/plugins/views-common/views/document/imageViewerConfiguration.xhtml" />
 				</ippui:preferences>
 			</ippui:view>						<ippui:view name="deputyManagementView"			include="/plugins/views-common/deputy/deputyManagementView.xhtml"			controller="deputyManagementBean">	   		<ippui:preferences>				<ippui:preferencePage name="configuration"					include="/plugins/views-common/deputy/deputyManagementView.xhtml" />				<ippui:preferencePage name="icon"					include="/plugins/views-common/images/icons/user-silhouette.png" />			</ippui:preferences>		</ippui:view>
-			
-			<ippui:view name="authorizationManagerView"
-			include="/plugins/views-common/views/authorization/authorizationManagerView.xhtml" controller="authorizationManagerBean"/>			
-		
-<!-- 			<ippui:view name="caseManagerView"
+		<ippui:view name="authorizationManagerViewIF"			include="/plugins/views-common/views/authorization/authorizationManagerView.xhtml"			controller="authorizationManagerBean" />	<!-- 			<ippui:view name="caseManagerView"
 			include="/plugins/views-common/views/case/caseManagerView.xhtml" controller="authorizationManagerBean"/>	 -->		
-			
-			
+								
 		</ippui:viewsExtension>
 
 
