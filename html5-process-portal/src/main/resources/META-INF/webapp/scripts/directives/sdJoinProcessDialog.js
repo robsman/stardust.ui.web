@@ -16,7 +16,8 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdJoinProcessDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'sdMessageService', 'sdViewUtilService', '$sce',
+	angular.module('bpm-common').directive('sdJoinProcessDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'sdMessageService', 'sdViewUtilService', '$sce', 
+	                                                               '$filter','sgI18nService',
 	                                                                    JoinProcessDialogDirective]);
 
 	var trace;
@@ -24,10 +25,10 @@
 	/*
 	 * Directive class
 	 */
-	function JoinProcessDialogDirective($parse, $q, sdUtilService, sdProcessInstanceService, sdLoggerService, sdMessageService, sdViewUtilService, $sce) {
+	function JoinProcessDialogDirective($parse, $q, sdUtilService, sdProcessInstanceService, sdLoggerService, sdMessageService, sdViewUtilService, $sce, $filter, sgI18nService) {
 		
 		trace = sdLoggerService.getLogger('bpm-common.sdJoinProcessDialog');
-		
+		var interpolate = $filter('interpolate');
 		var SUPPORTED_NOTIFICATION_TYPES = {
 				ERROR: 'error',
 				WARNING: 'warning',
@@ -323,14 +324,19 @@
 			function openNotificationDialog(result) {
 				// Show notification dialog for abort & Join
 				if (self.joinProcess.joinCompleted == true && angular.isDefined(result)) {
-					self.joinProcess.notificationMsg = $sce.trustAsHtml(self
-							.i18n('views-common-messages.views-joinProcessDialog-processJoined'));
+					
 					if (angular.isDefined(result.abortedProcess) && angular.isDefined(result.targetProcess)) {
-						self.joinProcess.notificationMsg = $sce.trustAsHtml(sdUtilService.format(self.joinProcess.notificationMsg, [
-								result.abortedProcess.processName, result.targetProcess.processName ]));
+						  self.joinProcess.notificationMsg = interpolate(sgI18nService.translate(
+								    'views-common-messages.views-joinProcessDialog-processJoined', 'Error'),
+								    [ result.abortedProcess.processName, result.targetProcess.processName]);
 					}
 					self.notificationTitle = self.i18n('portal-common-messages.common-'
 							+ SUPPORTED_NOTIFICATION_TYPES.INFO);
+					if(result.targetProcess) {
+						self.abortNotification.targetProcessOid = result.targetProcess.oid
+					}
+					
+					
 				} else if (angular.isArray(result)) {
 					self.abortNotification = {
 						list : result,
@@ -437,15 +443,19 @@
 			 */
 			function okNotification(scope) {
 				self.notificationDialog.confirm();
-				
+
 				// Join finished
-				var oids = [];
-				angular.forEach(self.abortNotification.list, function(abortData) {
-					oids.push(abortData.targetProcess.oid);
-				});
-				
-				if (angular.isDefined(self.onConfirm)) {
-					self.onConfirm()(oids);
+				if (angular.isDefined(self.abortNotification.targetProcessOid)) {
+					self.onConfirm()(self.abortNotification.targetProcessOid);
+				}else {
+					var oids = [];
+					angular.forEach(self.abortNotification.list, function(abortData) {
+						oids.push(abortData.targetProcess.oid);
+					});
+
+					if (angular.isDefined(self.onConfirm)) {
+						self.onConfirm()(oids);
+					}
 				}
 			}
 

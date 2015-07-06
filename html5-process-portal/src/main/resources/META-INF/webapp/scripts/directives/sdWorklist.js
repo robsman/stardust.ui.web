@@ -416,60 +416,61 @@
 	     * 
 	     */
 	    self.openAbortPopover = function(event, rowItem) {
-		var selectedItems = [];
-		if (angular.isDefined(rowItem)) {
-		    selectedItems = [ rowItem ];
-		} else {
-		    selectedItems = self.dataTable.getSelection();
-		}
+	    	var selectedItems = [];
+	    	if (angular.isDefined(rowItem)) {
+	    		selectedItems = [ rowItem ];
+	    	} else {
+	    		selectedItems = self.dataTable.getSelection();
+	    	}
 
-		var processesToAbort = [];
-		angular.forEach(selectedItems, function(item) {
-		    processesToAbort.push(item.processInstance);
-		});
-		self.processesToAbort = processesToAbort;
+	    	var processesToAbort = [];
+	    	angular.forEach(selectedItems, function(item) {
+	    		processesToAbort.push(item.processInstance);
+	    	});
+	    	self.processesToAbort = processesToAbort;
 
-		self.popoverDirective.show(event);
+	    	self.popoverDirective.show(event);
 	    };
 
 	    /*
 	     * 
 	     */
 	    self.joinCompleted = function(result) {
-		self.refresh();
-		if (angular.isDefined(result)) {
-		    // TODO pass result as an argument to below view
-		    sdViewUtilService.openView('processDefinitionView', true);
-		}
+	    	self.refresh();
+	    	if (angular.isDefined(result)) {
+	    		if (angular.isDefined(result)) {
+					sdCommonViewUtilService.openProcessInstanceDetailsView(result,true);
+				}
+	    	}
 	    };
 
 	    /*
 	     * 
 	     */
 	    self.openJoinDialog = function() {
-		self.showJoinProcessDialog = true;
+	    	self.showJoinProcessDialog = true;
 	    };
 
 	    /*
 	     * 
 	     */
 	    self.switchCompleted = function(result) {
-		self.refresh();
-		if (angular.isDefined(result)) {
-		    var name  =  sgI18nService.translate('views-common-messages.views-switchProcessDialog-worklist-title');
-		    var params = {
-			    pInstanceOids :  result.join(','),
-			    name : name   
-		    }  
-		    sdViewUtilService.openView('worklistViewHtml5', 'id='+new Date().getTime(), params, true);
-		}
+	    	self.refresh();
+	    	if (angular.isDefined(result)) {
+	    		var name  =  sgI18nService.translate('views-common-messages.views-switchProcessDialog-worklist-title');
+	    		var params = {
+	    				pInstanceOids :  result.join(','),
+	    				name : name   
+	    		}  
+	    		sdViewUtilService.openView('worklistViewHtml5', 'id='+new Date().getTime(), params, true);
+	    	}
 	    };
 
 	    /*
 	     * 
 	     */
 	    self.openSwitchDialog = function() {
-		self.showSwitchProcessDialog = true;
+	    	self.showSwitchProcessDialog = true;
 	    };
 
 	    /**
@@ -477,23 +478,23 @@
 	     * @param rowItems
 	     */
 	    self.openDefaultDelegationDialog = function(rowItems) {
-		var self = this;
+	    	var self = this;
 
-		var title = sgI18nService.translate('views-common-messages.common-confirm', 'Confirm');
-		var html = sgI18nService.translate(
-			'views-common-messages.views-strandedActivities-confirmDefaultDelegate', 'Confirm');
-		var options = {
-		    title : title,
-		    type : 'confirm',
-		    onConfirm : function() {
-			self.performDefaultDelegate(scope, sdActivityInstanceService, sdDialogService, sgI18nService,
-				rowItems);
-		    },
-		    confirmActionLabel : sgI18nService.translate('views-common-messages.common-yes', 'Yes'),
-		    cancelActionLabel : sgI18nService.translate('views-common-messages.common-no', 'No')
-		};
+	    	var title = sgI18nService.translate('views-common-messages.common-confirm', 'Confirm');
+	    	var html = sgI18nService.translate(
+	    			'views-common-messages.views-strandedActivities-confirmDefaultDelegate', 'Confirm');
+	    	var options = {
+	    			title : title,
+	    			type : 'confirm',
+	    			onConfirm : function() {
+	    				self.performDefaultDelegate(scope, sdActivityInstanceService, sdDialogService, sgI18nService,
+	    						rowItems);
+	    			},
+	    			confirmActionLabel : sgI18nService.translate('views-common-messages.common-yes', 'Yes'),
+	    			cancelActionLabel : sgI18nService.translate('views-common-messages.common-no', 'No')
+	    	};
 
-		sdDialogService.dialog(scope, options, html)
+	    	sdDialogService.dialog(scope, options, html)
 
 	    };
 	};
