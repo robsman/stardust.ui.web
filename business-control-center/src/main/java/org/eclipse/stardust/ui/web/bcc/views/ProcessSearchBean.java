@@ -284,7 +284,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
             filterAttributes.setOid(Long.parseLong((String)params.get(OID)));
          
          if (StringUtils.isNotEmpty((String)params.get(HIERARCHY)))
-            setHierarchyValue((String)params.get(HIERARCHY));
+            doHierarchyTypeChange((String)params.get(HIERARCHY));
 
          if (StringUtils.isNotEmpty((String)params.get(CASE_OWNER)))
             ownerSelector.searchAndPreSelect((String)params.get(CASE_OWNER));
@@ -365,7 +365,12 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
             procs.add(proc);
          }
       }
-      selectedProcesses = procs.toArray(new String[1]);
+      selectedProcesses = procs.size() > 0 ? procs.toArray(new String[1]) : null;
+      if (null == selectedProcesses)
+      {
+         selectedProcesses = new String[1];
+         selectedProcesses[0] = "ALL";
+      }
       processesSelectionChanged();
    }
 
@@ -382,7 +387,13 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
             acts.add(act);
          }
       }
-      selectedActivities = acts.toArray(new String[1]);
+
+      selectedActivities = acts.size() > 0 ? acts.toArray(new String[1]) : null;
+      if (null == selectedActivities)
+      {
+         selectedActivities = new String[1];
+         selectedActivities[0] = "ALL";
+      }
    }
 
    /**
@@ -487,12 +498,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
          selectedSearchOption = SEARCH_OPTION.PROCESSES;
       }
       // Will reset the hierarchy filter on change from Activity to Process
-      setHierarchyValue(HIERARCHY_PROCESS);
-      filterProcessDefinitionList();
-      // This is just to remove/add case related descriptors
-      // TODO: Review following code - separate filter can be used show/hide case
-      // descriptors
-      refreshDescriptorTable(getSelectedProcessDefs());
+      doHierarchyTypeChange(HIERARCHY_PROCESS);
    }
 
    /**
@@ -1156,14 +1162,22 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       else
       {
          String selectedOption = event.getNewValue().toString();
-         setHierarchyValue(selectedOption);
-         filterProcessDefinitionList();
-         // TODO: Review following code - separate filter can be used show/hide case
-         // descriptors
-         refreshDescriptorTable(getSelectedProcessDefs());
+         doHierarchyTypeChange(selectedOption);
       }
    }
-   
+
+   /**
+    * @param hierarchy
+    */
+   private void doHierarchyTypeChange(String hierarchy)
+   {
+      setHierarchyValue(hierarchy);
+      filterProcessDefinitionList();
+      // TODO: Review following code - separate filter can be used show/hide case
+      // descriptors
+      refreshDescriptorTable(getSelectedProcessDefs());
+   }
+
    /**
     * @param filterToolbarItems
     * @param ae
