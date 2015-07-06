@@ -560,8 +560,12 @@
 				self.refresh();
 				sdViewUtilService.syncLaunchPanels();
 				if (angular.isDefined(result)) {
-					// TODO pass result as an argument to below view
-					sdViewUtilService.openView('worklistViewHtml5', true);
+					var viewKey = new Date().getTime();
+					var params = {
+							name : sgI18nService.translate('views-common-messages.views-switchProcessDialog-worklist-title', 'Abort and Join Process'),
+							pInstanceOids : result.join(",")
+					};
+					sdViewUtilService.openView('worklistViewHtml5', 'id='+viewKey, params, true);
 				}
 			};
 
