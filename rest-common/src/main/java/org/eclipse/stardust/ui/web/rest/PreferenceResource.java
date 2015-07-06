@@ -43,7 +43,6 @@ import org.eclipse.stardust.ui.web.rest.service.PreferenceService;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PreferenceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.PermissionDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.PermissionDTO.ParticipantDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -183,7 +182,7 @@ public class PreferenceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/permissions/grants")
-   public Response getAllPermissionsAndGrants()
+   public Response getAllPermissions()
    {
       Map<String, Set<PermissionDTO>> permissions = authorizationManagerService.fetchPermissions();
       return Response.ok(GsonUtils.toJsonHTMLSafeString(permissions), MediaType.APPLICATION_JSON).build();
@@ -192,7 +191,7 @@ public class PreferenceResource
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/permissions/grants")
-   public Response setGrants(String postedData)
+   public Response updatePermissions(String postedData)
    {
       Map grantsMap = null;
       if (StringUtils.isNotEmpty(postedData))
@@ -218,22 +217,24 @@ public class PreferenceResource
          overwrite = (Boolean) grantsMap.get("overwrite");
       }
       
-      
-      Map<String, Set<PermissionDTO>> permissions = authorizationManagerService.updateGrants(allow, deny, participant,
+      Set<PermissionDTO> permissions = authorizationManagerService.updatePermissions(allow, deny, participant,
             overwrite);
-      return Response.ok(GsonUtils.toJsonHTMLSafeString(permissions), MediaType.APPLICATION_JSON).build();
+      Map<String, Set<PermissionDTO>> result = new HashMap<String, Set<PermissionDTO>>();
+      result.put("permissions", permissions);
+      
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(result), MediaType.APPLICATION_JSON).build();
    }
 
-   @POST
+ /*  @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/permissions/grants/restore/{permisionId}")
    public Response restoreGrants(@PathParam("permisionId") String permissionId)
    {
       Map<String, Set<PermissionDTO>> permissions = authorizationManagerService.restoreGrants(permissionId);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(permissions), MediaType.APPLICATION_JSON).build();
-   }
+   }*/
    
-   //To restore multiple permissions
+  /* //To restore multiple permissions
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/permissions/grants/restore")
@@ -246,13 +247,13 @@ public class PreferenceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/participants")
-   public Response getParticipantGrants(@QueryParam("participantIds") String participantIds)
+   public Response getPermissionsForParticipants(@QueryParam("participantIds") String participantIds)
    {
       Set<String> participantQualifiedIds = splitUnique(participantIds, ",");
       Collection<ParticipantDTO> participants = authorizationManagerService
-            .fetchParticipantsExplicitPermissions(participantQualifiedIds);
+            .fetchPermissionsForParticipants(participantQualifiedIds);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(participants), MediaType.APPLICATION_JSON).build();
-   }
+   }*/
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
@@ -267,7 +268,7 @@ public class PreferenceResource
       return Response.ok(GsonUtils.toJsonHTMLSafeString(participants), MediaType.APPLICATION_JSON).build();
    }
 
-   @GET
+   /*@GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/participants/restore")
    public Response restoreParticipants(@QueryParam("participantIds") String participantIds)
@@ -276,5 +277,5 @@ public class PreferenceResource
       Map<String, Set<PermissionDTO>> participants = authorizationManagerService
             .restoreParticipants(participantQualifiedIds);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(participants), MediaType.APPLICATION_JSON).build();
-   }
+   }*/
 }

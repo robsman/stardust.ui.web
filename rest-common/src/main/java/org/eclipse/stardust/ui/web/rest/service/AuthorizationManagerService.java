@@ -69,14 +69,14 @@ public class AuthorizationManagerService
 
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
-   
+
    /**
     * 
     * @return
     */
    public Map<String, Set<PermissionDTO>> fetchPermissions()
    {
-      PermissionsDetails permissions = getPermissionDetails();
+      PermissionsDetails permissions = getPermissionDetails(true);
       Map<String, Set<PermissionDTO>> allPermissions = new HashMap<String, Set<PermissionDTO>>();
       allPermissions.putAll(buildGeneralAndModelPermissions(permissions));
       allPermissions.putAll(buildUiPermissions(permissions));
@@ -88,20 +88,36 @@ public class AuthorizationManagerService
     * @param deny
     * @param selectedParticipants
     */
-   public Map<String, Set<PermissionDTO>> updateGrants(Set<String> allow, Set<String> deny,
-         Set<String> selectedParticipants, boolean overwrite)
+   public Set<PermissionDTO> updatePermissions(Set<String> allow, Set<String> deny, Set<String> selectedParticipants,
+         boolean overwrite)
    {
-      PermissionsDetails permissions = getPermissionDetails();
+      PermissionsDetails permissions = getPermissionDetails(false);
+      Set<String> permissionsToBeUpdated = new HashSet<String>();
       if (allow != null)
       {
+         permissionsToBeUpdated.addAll(allow);
          updateGrants(allow, selectedParticipants, permissions, overwrite);
       }
       if (deny != null)
       {
+         permissionsToBeUpdated.addAll(deny);
          updateDeniedGrants(deny, selectedParticipants, permissions, overwrite);
       }
+
       savePermissions(permissions);
-      return fetchPermissions();
+
+      // return flat permissionDTO
+      permissions = getPermissionDetails(true);
+      Set<PermissionDTO> updatedPermissions = new HashSet<PermissionDTO>();
+
+      for (String permissionId : permissionsToBeUpdated)
+      {
+         PermissionDTO p = new PermissionDTO(permissionId, permissionId);
+         populateGrants(p, permissions);
+         updatedPermissions.add(p);
+      }
+
+      return updatedPermissions;
    }
 
    /**
@@ -109,20 +125,16 @@ public class AuthorizationManagerService
     * @param permissionId
     * @return
     */
-   public Map<String, Set<PermissionDTO>> restoreGrants(String permissionIdStr)
-   {
-      String[] permissionIds = permissionIdStr.split(",");
-      PermissionsDetails permissions = getPermissionDetails();
-
-      for (String permissionId : permissionIds)
-      {
-         permissions.setGrants2(permissionId, null);
-         permissions.setDeniedGrants(permissionId, null);
-      }
-      savePermissions(permissions);
-      return fetchPermissions();
-   }
-
+   /*
+    * public Map<String, Set<PermissionDTO>> restoreGrants(String permissionIdStr) {
+    * String[] permissionIds = permissionIdStr.split(","); PermissionsDetails permissions
+    * = getPermissionDetails(false);
+    * 
+    * for (String permissionId : permissionIds) { permissions.setGrants2(permissionId,
+    * null); permissions.setDeniedGrants(permissionId, null); }
+    * 
+    * savePermissions(permissions); return fetchPermissions(); }
+    */
    /**
     * 
     * @param sourceParticipant
@@ -132,8 +144,8 @@ public class AuthorizationManagerService
    public Map<String, Set<PermissionDTO>> cloneParticipant(Set<String> sourceParticipants,
          Set<String> targetParticipants)
    {
-      PermissionsDetails permissions = getPermissionDetails();
-      Collection<ParticipantDTO> participants = fetchParticipantsExplicitPermissions(sourceParticipants, permissions);
+      PermissionsDetails permissions = getPermissionDetails(true);
+      Collection<ParticipantDTO> participants = fetchPermissionsForParticipants(sourceParticipants, permissions);
 
       Set<String> allow = new HashSet<String>();
       Set<String> deny = new HashSet<String>();
@@ -142,23 +154,27 @@ public class AuthorizationManagerService
          allow.addAll(participantDTO.allow);
          deny.addAll(participantDTO.deny);
       }
+
+      // fetched again to not to update default permissions to preference store
+      permissions = getPermissionDetails(false);
+
       updateGrants(allow, targetParticipants, permissions, false);
       updateDeniedGrants(deny, targetParticipants, permissions, false);
       savePermissions(permissions);
       return fetchPermissions();
    }
 
-   /**
+/*   *//**
     * 
     * @param participantQualifiedIds
     * @return
-    */
-   public Collection<ParticipantDTO> fetchParticipantsExplicitPermissions(Set<String> participantQualifiedIds)
+    *//*
+   public Collection<ParticipantDTO> fetchPermissionsForParticipants(Set<String> participantQualifiedIds)
    {
-      PermissionsDetails permissions = getPermissionDetails();
-      return fetchParticipantsExplicitPermissions(participantQualifiedIds, permissions);
+      PermissionsDetails permissions = getPermissionDetails(true);
+      return fetchPermissionsForParticipants(participantQualifiedIds, permissions);
    }
-
+*/
    /**
     * Reset Participants meaning it removes all explicit permissions stored in Preference
     * Table
@@ -168,7 +184,7 @@ public class AuthorizationManagerService
     */
    public Map<String, Set<PermissionDTO>> restoreParticipants(Set<String> participantQualifiedIds)
    {
-      PermissionsDetails permissions = getPermissionDetails();
+      PermissionsDetails permissions = getPermissionDetails(false);
 
       if (CollectionUtils.isEmpty(participantQualifiedIds))
       {
@@ -208,7 +224,7 @@ public class AuthorizationManagerService
     * @param permissions
     * @return
     */
-   private Collection<ParticipantDTO> fetchParticipantsExplicitPermissions(Set<String> participantQualifiedIds,
+   private Collection<ParticipantDTO> fetchPermissionsForParticipants(Set<String> participantQualifiedIds,
          PermissionsDetails permissions)
    {
       Map<String, ParticipantDTO> participantMap = new HashMap<String, PermissionDTO.ParticipantDTO>();
@@ -368,14 +384,14 @@ public class AuthorizationManagerService
     * 
     * @return
     */
-   private PermissionsDetails getPermissionDetails()
+   private PermissionsDetails getPermissionDetails(boolean fetchDefaultPermissions)
    {
       // fetch permission
       AdministrationService administrationService = serviceFactoryUtils.getAdministrationService();
 
       // UI permissions
       PermissionsDetails permissions = new PermissionsDetails(UiPermissionUtils.getAllPermissions(
-            administrationService, true));
+            administrationService, fetchDefaultPermissions));
       // general Permissions
       RuntimePermissions runtimePermissionsDetails = (RuntimePermissions) administrationService.getGlobalPermissions();
       permissions.setGeneralPermission(runtimePermissionsDetails);
@@ -388,7 +404,8 @@ public class AuthorizationManagerService
     * @param selectedParticipants
     * @param permissions
     */
-   private void updateGrants(Set<String> permissionIds, Set<String> selectedParticipants, PermissionsDetails permissions, boolean overwrite)
+   private void updateGrants(Set<String> permissionIds, Set<String> selectedParticipants,
+         PermissionsDetails permissions, boolean overwrite)
    {
       for (String permissionId : permissionIds)
       {
@@ -449,7 +466,7 @@ public class AuthorizationManagerService
          {
             participants.clear();
          }
-         
+
          for (String qualifiedParticipantId : selectedParticipants)
          {
             boolean isExist = false;

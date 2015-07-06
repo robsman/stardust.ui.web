@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.RuntimePermissions;
 import org.eclipse.stardust.engine.core.runtime.utils.Authorization2;
@@ -139,7 +140,14 @@ public class PermissionsDetails
       }
       else
       {
-         uiPermissions.put(permissionId + UiPermissionUtils.SUFFIX_ALLOW, UiPermissionUtils.internalize(grants));
+         if (CollectionUtils.isEmpty(grants))
+         {
+            uiPermissions.remove(permissionId + UiPermissionUtils.SUFFIX_ALLOW);
+         }
+         else
+         {
+            uiPermissions.put(permissionId + UiPermissionUtils.SUFFIX_ALLOW, UiPermissionUtils.internalize(grants));
+         }
       }
    }
 
@@ -152,11 +160,19 @@ public class PermissionsDetails
    {
       if (UiPermissionUtils.isGeneralPermissionId(permissionId))
       {
+         //TODO: engine API to delete the preference entry is not exposed
          generalPermission.setDeniedGrants(permissionId, grants);
       }
       else
       {
-         uiPermissions.put(permissionId + UiPermissionUtils.SUFFIX_DENY, UiPermissionUtils.internalize(grants));
+         if (CollectionUtils.isEmpty(grants))
+         {
+            uiPermissions.remove(permissionId + UiPermissionUtils.SUFFIX_DENY);
+         }
+         else
+         {
+            uiPermissions.put(permissionId + UiPermissionUtils.SUFFIX_DENY, UiPermissionUtils.internalize(grants));
+         }
       }
    }
    

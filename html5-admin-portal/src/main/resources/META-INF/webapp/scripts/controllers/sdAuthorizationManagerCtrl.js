@@ -90,7 +90,7 @@
    * 
    */
   AMCtrl.prototype.onParticipantSelect = function(selectInfo) {
-    this.showMessage = true;
+    this.hideMessages();
     // count organizations and roles
     var orgs = 0, roles = 0;
     this.selectedParticipants = [];
@@ -103,33 +103,36 @@
       this.selectedParticipants.push(selectInfo.all[i]);
     }
 
-    this.showMessage = true;
     var participantsMsg = {};
     participantsMsg.message = i18n(
             "views.authorizationManagerViewHtml5.selectedParticipantInfo",
             "Selected Participants", [orgs, roles]);
     participantsMsg.type = "ok";
-    _sdMessageService.showMessage(participantsMsg);
+    this.showParticipantMessage(participantsMsg);
   }
 
   /**
    * 
    */
   AMCtrl.prototype.refreshParticipants = function() {
-    this.showMessage = false;
+    this.hideMessages();
+
     var self = this;
     this.selectedParticipants = [];
     _sdAuthorizationManagerService.searchParticipants({
-      type: 3
-    }).then(function(result) {
-      self.participants.list = result;
-      self.participants.totalCount = result.length;
-      if (angular.isDefined(self.dataTable)) {
-        self.dataTable.refresh(true);
-      }
-    }, function(error) {
-      trace.error("Error occured while fetching Participants!")
-    })
+              type: 3
+     }).then(function(result) {
+        self.participants.list = result;
+        self.participants.totalCount = result.length;
+        if (angular.isDefined(self.dataTable)) {
+          self.dataTable.refresh(true);
+        }
+      },
+      function(error) {
+        trace.error(error);
+        self
+                .showParticipantMessage(i18n("views.authorizationManagerViewHtml5.participants.fetch.error"));
+      })
   };
 
   /**
@@ -163,15 +166,10 @@
    * 
    */
   AMCtrl.prototype.cloneParticipant = function() {
+    this.hideMessages();
     if (!this.selection || this.selection.length < 1) {
-      _sdMessageService
-              .showMessage({
-                message: i18n("views.authorizationManagerViewHtml5.selectedParticipant.clone.warning"),
-                type: "error"
-              });
-      this.showMessage = true;
+      this.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.selectedParticipant.clone.warning"));
     } else {
-      this.showMessage = false;
       this.showCloneParticipantDialog = true;
     }
   }
@@ -180,14 +178,10 @@
    * 
    */
   AMCtrl.prototype.cloneParticipantConfirmed = function() {
+    this.hideMessages();
     if (!this.selectedTargetParticipants
             || this.selectedTargetParticipants.length == 0) {
-      _sdMessageService
-              .showMessage({
-                message: i18n("views.authorizationManagerViewHtml5.cloneParticipant.targetNotSelected"),
-                type: "error"
-              });
-      this.showMessage = true;
+      this.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.cloneParticipant.targetNotSelected"));
       return;
     }
 
@@ -390,7 +384,7 @@
     this.allNodes.forEach(function(v) {
       v.scope.isVisible = false;
       v.elem.removeClass("match");
-      if (v.filterable && v.text &&  v.text.search(filter) > -1) {
+      if (v.filterable && v.text && v.text.search(filter) > -1) {
         matches.push(v);
       }
     });
@@ -450,91 +444,38 @@
   // update permissions pertaining to all selected nodes
   AMCtrl.prototype.updatePermissions = function(scope, allow, deny) {
     var self = this;
-    this.showMessage2 = false;
+    this.hideMessages();
 
-    this
-            .$timeout(
-                    function() {
-                      // TODO: need to add to our allNodes array or it isnt
-                      // filterable
-                      self.selectedParticipants
-                              .forEach(function(participant) {
-                                // adding to permissiosn in our multiselect
-                                // collection
-
-                                // Allow
-                                allow
-                                        .forEach(function(p, i, arr) {
-                                          var exist = false;
-                                          var allindex = null;
-
-                                          p.allow
-                                                  .forEach(function(
-                                                          participant2, j, arr) {
-                                                    if (participant2.participantQualifiedId == participant.qualifiedId) {
-                                                      exist = true;
-                                                    } else if (participant2.participantQualifiedId == 'all') {
-                                                      allindex = j;
-                                                    }
-                                                  });
-
-                                          if (!exist) {
-                                            // check there exist "All", if yes,
-                                            // remove it.
-                                            if (allindex != null) {
-                                              p.allow.splice(allindex, 1);
-                                            }
-
-                                            p.allow
-                                                    .push({
-                                                      name: participant.name,
-                                                      participantQualifiedId: participant.qualifiedId
-                                                    });
-                                          }
-                                        });
-
-                                // Deny
-                                deny
-                                        .forEach(function(p) {
-                                          var exist = false;
-                                          var allindex = null;
-
-                                          p.deny
-                                                  .forEach(function(
-                                                          participant2, j, arr) {
-                                                    if (participant2.participantQualifiedId == participant.qualifiedId) {
-                                                      exist = true;
-                                                    } else if (participant2.participantQualifiedId == 'all') {
-                                                      allindex = j;
-                                                    }
-                                                  });
-
-                                          if (!exist) {
-                                            // check there exist "All", if yes,
-                                            // remove it.
-                                            if (allindex) {
-                                              p.deny.splice(allindex, 1);
-                                            }
-                                            p.deny
-                                                    .push({
-                                                      name: participant.name,
-                                                      participantQualifiedId: participant.qualifiedId
-                                                    });
-                                          }
-                                        });
-                              });
-                      scope.$parent.isVisible = true;
-                      _sdAuthorizationManagerService.savePermissions(
-                              self.selectedParticipants, self.selectedAllow,
-                              self.selectedDeny);
-
-                    }, 0);
+    scope.$parent.isVisible = true;
+    _sdAuthorizationManagerService.savePermissions(self.selectedParticipants, allow, deny)
+      .then(function(result) {
+            var permissions = result.permissions;
+            // update all selected nodes
+            for (var i = 0; i < permissions.length; i++) {
+              for (var j = 0; allow.length; j++) {
+                if (permissions[i].id == allow[j].id) {
+                  allow[j].allow = permissions[i].allow;
+                  break;
+                }
+              }
+              for (var j = 0; deny.length; j++) {
+                if (permissions[i].id == deny[j].id) {
+                  deny[j].deny = permissions[i].deny;
+                  break;
+                }
+              }
+            }
+          },
+          function(error) {
+            trace.error(error);
+            self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.save.error"));
+          });
   }
 
   // handles removing items from our allow or deny arrays
   AMCtrl.prototype.removeParticipant = function(v, e) {
     var self = this;
-    this.showMessage2 = false;
+    this.hideMessages();
     var scope = angular.element(e.srcElement).scope();
     var permission = scope.$parent.$parent.genItem;
 
@@ -543,13 +484,11 @@
               .forEach(function(w, i, arr) {
                 if (w.participantQualifiedId === v.item.role.participantQualifiedId) {
                   if (w.participantQualifiedId == All.id) {
-                    self.showMessage2 = true;
                     var warning = {};
                     warning.message = i18n("views.authorizationManagerViewHtml5.permissionTree.warning.removeAll");
                     warning.type = "warn";
-                    _sdMessageService.showMessage(warning);
+                    self.showPermissionMessage(warning);
                   }
-
                   arr.splice(i, 1);
                 }
               });
@@ -559,25 +498,31 @@
       var allow = null;
       var deny = null;
       if (v.item.target === "allow") {
-        // TODO: set the defailt participants
         allow = [permission];
-
-        if (v.item.ref[v.item.target].length == 0) {
-          v.item.ref[v.item.target].push(All);
-        }
       }
       if (v.item.target === "deny") {
         deny = [permission];
       }
 
-      _sdAuthorizationManagerService.savePermissions(participants, allow, deny,
-              true);
+      _sdAuthorizationManagerService
+      .savePermissions(participants, allow, deny, true)
+      .then(
+          function(result) {
+            var permissions = result.permissions;
+            v.item.ref['allow'] = permissions[0].allow;
+            v.item.ref['deny'] = permissions[0].deny;
+          },
+          function(error) {
+            trace.error(error);
+            self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.save.error"));
+          });
     }
     v.deferred.resolve();
   };
 
   // Remove All Participants
   AMCtrl.prototype.removeAllParticipants = function(v, e) {
+    var self = this;
     var scope = angular.element(e.srcElement).scope();
     var permission = scope.$parent.$parent.genItem;
 
@@ -587,23 +532,34 @@
       var allow = null;
       var deny = null;
       if (v.item.target === "allow") {
-        // if (selectedAll) { v.deferred.resolve(); return; }
         allow = [permission];
-
-        // TODO: set actual default participant for this node
-        v.item.ref[v.item.target].push(All);
       }
       if (v.item.target === "deny") {
         deny = [permission];
       }
 
-      _sdAuthorizationManagerService.savePermissions([], allow, deny, true);
+      _sdAuthorizationManagerService
+      .savePermissions([], allow, deny, true)
+      .then(
+        function(result) {
+          var permissions = result.permissions;
+          v.item.ref['allow'] = permissions[0].allow;
+          v.item.ref['deny'] = permissions[0].deny;
+          v.deferred.resolve();
+        },
+        function(error) {
+          trace.error(error);
+          self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.save.error"));
+        });
+
     }
     v.deferred.resolve();
   }
 
   // Restore All permissions
   AMCtrl.prototype.restorePermission = function(v, e) {
+    var self = this;
+    this.hideMessages();
     var scope = angular.element(e.srcElement).scope();
     var permission = scope.$parent.$parent.genItem;
 
@@ -620,9 +576,20 @@
       // Same applies to Deny
       v.item.ref['allow'].push(All);
 
-      _sdAuthorizationManagerService.savePermissions([], allow, deny, true);
+      _sdAuthorizationManagerService
+      .savePermissions([], allow, deny, true)
+      .then(
+          function(result) {
+            var permissions = result.permissions;
+            v.item.ref['allow'] = permissions[0].allow;
+            v.item.ref['deny'] = permissions[0].deny;
+            v.deferred.resolve();
+          },
+          function(error) {
+            trace.error(error);
+            self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.save.error"));
+          });
     }
-    v.deferred.resolve();
   }
 
   AMCtrl.prototype.filterTree = function(val) {
@@ -634,11 +601,17 @@
    */
   AMCtrl.prototype.refreshPermissions = function() {
     var self = this;
-    _sdAuthorizationManagerService.getPermissions().then(function(permissions) {
-      self.initializePermissionTree(permissions);
-    }, function(err) {
-      // handle error
-    });
+    this.hideMessages();
+    _sdAuthorizationManagerService
+    .getPermissions()
+    .then(
+        function(permissions) {
+          self.initializePermissionTree(permissions);
+        },
+        function(err) {
+          trace.error(err);
+          self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.fetch.error"));
+        });
   };
 
   /**
@@ -651,4 +624,23 @@
     }
     this.applyFilter(participants.join('|'));
   }
+
+  AMCtrl.prototype.hideMessages = function() {
+    this.showMessage = false;
+    this.showMessage2 = false;
+    _sdMessageService.showMessage({type:"error"});
+  }
+
+  AMCtrl.prototype.showParticipantMessage = function(msg) {
+    this.showMessage = true;
+    this.showMessage2 = false;
+    _sdMessageService.showMessage(msg);
+  }
+
+  AMCtrl.prototype.showPermissionMessage = function(msg) {
+    this.showMessage = false;
+    this.showMessage2 = true;
+    _sdMessageService.showMessage(msg);
+  }
+
 })();
