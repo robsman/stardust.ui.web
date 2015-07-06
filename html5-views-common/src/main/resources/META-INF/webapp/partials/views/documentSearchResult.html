@@ -23,7 +23,7 @@
 		<thead
 			sda-i18n-scope="views-common-messages.views-documentSearchView-documentSearchTable-column">
 			<tr>
-				<th sda-name="documentName" sda-sortable="true">
+				<th sda-name="documentName" sda-sortable="true" sda-fixed="true">
 					<div sda-filter-template>
 						<div sd-text-search-filter></div>
 					</div>
@@ -38,7 +38,7 @@
 						<div sd-date-filter></div>
 					</div>
 				</th>
-				<th sda-name="fileType" sda-sortable="true">
+				<th sda-name="fileType" sda-sortable="true" sda-visible="false">
 					<div sda-filter-template>
 						<div sd-text-search-filter></div>
 					</div>
@@ -51,9 +51,9 @@
 				</th>
 				<th sda-name="fileSize"></th>
 				<th sda-name="metadata"></th>
-				<th sda-name="documentPath"></th>
-				<th sda-name="repository"></th>
-				<th sda-name="documentId" sda-sortable="true">
+				<th sda-name="documentPath" sda-visible="false"></th>
+				<th sda-name="repository" sda-visible="false"></th>
+				<th sda-name="documentId" sda-sortable="true" sda-visible="false">
 					<div sda-filter-template>
 						<div sd-text-search-filter></div>
 					</div>
