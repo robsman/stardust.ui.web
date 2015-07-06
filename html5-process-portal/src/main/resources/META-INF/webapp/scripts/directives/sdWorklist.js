@@ -281,7 +281,7 @@
 	    	preferenceStore.marshalName = function(scope, name) {
 	    		var name = self.preferenceName;
 	    		if (scope == 'PARTITION') {
-	    			if (self.isWorklistMode() && !this.parentStore[name]) {
+	    			if (self.isWorklistMode() && this.parentStore && !this.parentStore[name]) {
 	    				name = 'Default';
 	    			}else if(self.isActivityTableMode()) {
 	    				name = 'Default';

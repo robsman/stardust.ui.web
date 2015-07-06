@@ -143,7 +143,7 @@
 							'<button class="button-link tbl-col-sel-link glyphicon glyphicon-repeat" ng-click="$dtApi.resetColumnSelector()" title ="{{i18n(\'portal-common-messages.common-filterPopup-resetFilter-tooltip\')}}" style="cursor: pointer;"></button>\n' +
 						'</div>\n' +
 						'<div class="tbl-col-sel-list">\n' +
-							'<div ng-repeat="col in $dtApi.columns" class="tbl-col-sel-row" ng-model="$index" sd-data-drag sd-data-drop on-drop="$dtApi.moveColumns($data, $index, $event)">\n' +
+							'<div ng-repeat="col in $dtApi.columns" class="tbl-col-sel-row" ng-model="$index" sd-data-drag sd-data-drop sda-drop="$dtApi.moveColumns($data, $index, $event)">\n' +
 								'<input type="checkbox" class="tbl-col-sel-input" ng-model="col.visible"></span>\n' +
 								'<span class="tbl-col-sel-label">{{col.title}}</span>\n' +
 							'</div>\n' +
