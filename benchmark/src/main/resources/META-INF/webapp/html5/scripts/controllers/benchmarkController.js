@@ -347,10 +347,7 @@
 			res.promise.then(function(){
 				that.benchmarkService.publishBenchmark(id)
 				.then(function(data){
-					//TODO: SUCCESS dialog
-					that.deleteLocalBenchmark(id);
 					that.publishSuccessDialog.open();
-					that.selectedBenchmark = undefined;
 				})
 				["catch"](function(err){
 					//TODO: handle error
