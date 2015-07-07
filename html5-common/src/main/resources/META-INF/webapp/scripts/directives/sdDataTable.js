@@ -283,7 +283,7 @@
 			if (attr.sdaPageSize != undefined && attr.sdaPageSize != '') {
 				pageSize = parseInt(attr.sdaPageSize);
 			} else {
-			    pageSize =  sdPortalConfigurationService.getPageSize();
+			    pageSize =  parseInt(sdPortalConfigurationService.getPageSize());
 			}
 
 			if (attr.sdaNoPagination == '' || attr.sdaNoPagination == 'true') {
@@ -787,12 +787,12 @@
 			dtOptions.sPaginationType = "full_numbers";
 			dtOptions.iDisplayLength = pageSize;
 			dtOptions.oLanguage = {
-				 "oPaginate": {
-					 "sFirst": "<<",
-					 "sPrevious": "<",
-					 "sNext": ">",
-					 "sLast": ">>"
-				 }
+					"oPaginate": {
+						"sFirst": "<i class='glyphicon glyphicon-step-backward' style='top: 0px;' aria-hidden='true'></i>",
+						"sPrevious": "<i class='glyphicon  glyphicon-triangle-left' style='top: 0px;'  aria-hidden='true'></i>",
+						"sNext": "<i class='glyphicon glyphicon-triangle-right' style='top: 0px;'  aria-hidden='true'></i>",
+						"sLast": "<i class='glyphicon glyphicon-step-forward' style='top: 0px;' aria-hidden='true'></i>"
+					}
 			};
 			
 			dtOptions.aoColumns = dtColumns;
