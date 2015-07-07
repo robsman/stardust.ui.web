@@ -844,12 +844,15 @@ define(
 				 *
 				 */
 				ParameterDefinitionsPanel.prototype.populateParameterDefinitionFields = function() {
-					if (!this.currentParameterDefinition
-							|| (this.currentParameterDefinition.attributes && this.currentParameterDefinition.attributes["stardust:predefined"])) {
-						this.parameterDefinitionNameInput
-								.attr("disabled", true);
-						this.parameterDefinitionDirectionSelect.attr(
-								"disabled", true);
+					
+					if (this.isPredefinedAccessPoint(this.currentParameterDefinition)) {
+						if(this.currentParameterDefinition){
+							this.parameterDefinitionNameInput.val(this.currentParameterDefinition.name);
+							this.parameterDefinitionDirectionSelect.val(this.currentParameterDefinition.direction);
+							this.dataTypeSelector.setDataType(this.currentParameterDefinition);
+						}
+						this.parameterDefinitionNameInput.attr("disabled", true);
+						this.parameterDefinitionDirectionSelect.attr("disabled", true);
 
 						if (this.options.supportsDataTypeSelection) {
 							this.dataTypeSelector.disable();
@@ -861,27 +864,20 @@ define(
 						}
 
 						if (this.options.supportsDataMappings) {
-							this.parameterDefinitionDataSelect.attr("disabled",
-									true);
+							this.parameterDefinitionDataSelect.attr("disabled",true);
 							if (this.options.supportsDataPathes) {
-								this.parameterDefinitionPathInput.attr(
-										"disabled", true);
+								this.parameterDefinitionPathInput.attr("disabled", true);
 							}
 						}
 
-						this.deleteParameterDefinitionButton.attr("disabled",
-								true);
+						this.deleteParameterDefinitionButton.attr("disabled",true);
 					} else {
 						if (this.options.readOnlyParameterList) {
-							this.parameterDefinitionNameInput.attr("disabled",
-									true);
-							this.parameterDefinitionDirectionSelect.attr(
-									"disabled", true);
+							this.parameterDefinitionNameInput.attr("disabled",true);
+							this.parameterDefinitionDirectionSelect.attr("disabled", true);
 						} else {
-							this.parameterDefinitionNameInput
-									.removeAttr("disabled");
-							this.parameterDefinitionDirectionSelect
-									.removeAttr("disabled");
+							this.parameterDefinitionNameInput.removeAttr("disabled");
+							this.parameterDefinitionDirectionSelect.removeAttr("disabled");
 						}
 
 						this.displayParameterId();
@@ -898,37 +894,26 @@ define(
 								this.dataTypeSelector.enable();
 							}
 
-							this.dataTypeSelector
-									.setDataType(this.currentParameterDefinition);
+							this.dataTypeSelector.setDataType(this.currentParameterDefinition);
 						}
 
 						if (this.options.supportsDescriptors) {
 							if (this.currentParameterDefinition.direction == "IN") {
 								if (!this.options.readOnlyParameterList) {
 									this.descriptorInput.removeAttr("disabled");
-									this.keyDescriptorInput
-											.removeAttr("disabled");
+									this.keyDescriptorInput.removeAttr("disabled");
 								} else {
 									this.descriptorInput.attr("disabled", true);
-									this.keyDescriptorInput.attr("disabled",
-											true);
+									this.keyDescriptorInput.attr("disabled",true);
 								}
 
-								this.descriptorInput
-										.prop(
-												"checked",
-												this.currentParameterDefinition.descriptor);
+								this.descriptorInput.prop("checked",this.currentParameterDefinition.descriptor);
 
 								if (this.currentParameterDefinition.descriptor) {
-									this.keyDescriptorInput
-											.prop(
-													"checked",
-													this.currentParameterDefinition.keyDescriptor);
+									this.keyDescriptorInput.prop("checked",this.currentParameterDefinition.keyDescriptor);
 								} else {
-									this.keyDescriptorInput.attr("disabled",
-											true);
-									this.keyDescriptorInput.prop("checked",
-											false);
+									this.keyDescriptorInput.attr("disabled",true);
+									this.keyDescriptorInput.prop("checked",false);
 								}
 							} else {
 								this.descriptorInput.attr("disabled", true);
@@ -939,8 +924,7 @@ define(
 						}
 
 						if (this.options.supportsDataMappings) {
-							this.parameterDefinitionDataSelect
-									.removeAttr("disabled");
+							this.parameterDefinitionDataSelect.removeAttr("disabled");
 
 							this.populateDataItemsList();
 
@@ -960,31 +944,21 @@ define(
 						// May be data paths themselves can have parameter
 						// indicating whether
 						// they are read only or not?
-						if (this.currentParameterDefinition.dataFullId
-								&& (-1 != this.currentParameterDefinition.dataFullId
-										.indexOf("PROCESS_ATTACHMENTS"))) {
-							this.parameterDefinitionNameInput.attr(
-									"disabled", true);
-							this.parameterDefinitionDirectionSelect.attr(
-									"disabled", true);
-							this.parameterDefinitionDataSelect.attr("disabled",
-									true);
+						if (this.currentParameterDefinition.dataFullId && (-1 != this.currentParameterDefinition.dataFullId.indexOf("PROCESS_ATTACHMENTS"))) {
+							this.parameterDefinitionNameInput.attr("disabled", true);
+							this.parameterDefinitionDirectionSelect.attr("disabled", true);
+							this.parameterDefinitionDataSelect.attr("disabled",true);
 							if (this.options.supportsDataPathes) {
-								this.parameterDefinitionPathInput.attr(
-										"disabled", true);
+								this.parameterDefinitionPathInput.attr("disabled", true);
 							}
 						} else {
-							this.parameterDefinitionNameInput
-									.removeAttr("disabled");
-							this.parameterDefinitionDirectionSelect
-									.removeAttr("disabled");
+							this.parameterDefinitionNameInput.removeAttr("disabled");
+							this.parameterDefinitionDirectionSelect.removeAttr("disabled");
 
 							if (this.options.supportsDataMappings) {
-								this.parameterDefinitionDataSelect
-										.removeAttr("disabled");
+								this.parameterDefinitionDataSelect.removeAttr("disabled");
 								if (this.options.supportsDataPathes && !this.isCurrentSelectionEnum()) {
-									this.parameterDefinitionPathInput
-											.removeAttr("disabled");
+									this.parameterDefinitionPathInput.removeAttr("disabled");
 								}
 							}
 						}
@@ -1017,17 +991,24 @@ define(
 					//for Implements Process scope
 					if (this.options.disableParameterDefinitionNameInput) {
   					  this.parameterDefinitionNameInput.attr("disabled", true);  
-          }else{
-            this.parameterDefinitionNameInput.removeAttr("disabled");
-          }
-					
-          if (this.options.disableParameterDefinitionDirectionSelect) {
-            this.parameterDefinitionDirectionSelect.attr("disabled", true);
-          } else {
-            this.parameterDefinitionDirectionSelect.removeAttr("disabled");
-          }
+			          }else{
+			        	  if(!this.isPredefinedAccessPoint(this.currentParameterDefinition))
+			        		  this.parameterDefinitionNameInput.removeAttr("disabled");
+			          }
+								
+			          if (this.options.disableParameterDefinitionDirectionSelect) {
+			            this.parameterDefinitionDirectionSelect.attr("disabled", true);
+			          } else {
+			        	  if(!this.isPredefinedAccessPoint(this.currentParameterDefinition))
+			        		  this.parameterDefinitionDirectionSelect.removeAttr("disabled");
+			          }
 				};
 
+				ParameterDefinitionsPanel.prototype.isPredefinedAccessPoint = function(currentParameterDefinition) {
+					if (!currentParameterDefinition || (currentParameterDefinition.attributes && currentParameterDefinition.attributes["stardust:predefined"]))
+							return true
+					return false;
+				}
 				/**
 				 * 
 				 */
@@ -1118,8 +1099,8 @@ define(
 				 *
 				 */
 				ParameterDefinitionsPanel.prototype.deleteParameterDefinition = function() {
-					m_utils.debug("Deleting "
-							+ this.currentParameterDefinition.id);
+					if(this.currentParameterDefinition)
+						m_utils.debug("Deleting "+ this.currentParameterDefinition.id);
 
 					var changedParameterDefinitions = [];
 
