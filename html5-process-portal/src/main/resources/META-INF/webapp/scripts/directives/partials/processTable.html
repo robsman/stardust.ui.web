@@ -146,7 +146,7 @@
 					<table>
 						<tr ng-repeat="desc in rowData.descriptorValues">
 							<td ng-if ="!desc.isDocument" style="white-space: nowrap;">{{desc.key}}:</td>
-							<td ng-if ="!desc.isDocument" style="white-space: nowrap;">{{desc.value}}</td>
+							<td ng-if ="!desc.isDocument" style="white-space: normal;">{{desc.value}}</td>
 						</tr>
 					</table>
 					<div sd-editor-template></div>
@@ -159,7 +159,7 @@
 				<td sda-field="endTime" sda-data-type="dateTime" style="text-align: center; white-space: nowrap;"></td>
 				<td sda-field="caseOwner" ></td>
 				<td ng-repeat="descCol in processTableCtrl.descritorCols"
-					 style="text-align: center; white-space: nowrap;"  sda-data-type="{{descCol.dataType}}" sda-exporter="processTableCtrl.getDescriptorValueForExport( rowData.descriptorValues[colData.field])">
+					 style="text-align: center; white-space: normal;"  sda-data-type="{{descCol.dataType}}" sda-exporter="processTableCtrl.getDescriptorValueForExport( rowData.descriptorValues[colData.field])">
 					<div sd-descriptor-content sda-value="rowData.descriptorValues[colData.field]" sda-data-type = "colData.dataType"> </div>
 				</td>
 				

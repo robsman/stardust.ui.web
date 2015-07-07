@@ -181,7 +181,7 @@
 					<table>
 						<tr ng-repeat="desc in rowData.descriptorValues">
 							<td ng-if ="!desc.isDocument" style="white-space: nowrap;">{{desc.key}}:</td>
-							<td ng-if ="!desc.isDocument" style="white-space: nowrap;">{{desc.value}}</td>
+							<td ng-if ="!desc.isDocument" style="white-space: normal;">{{desc.value}}</td>
 						</tr>
 					</table>
 					<div sd-editor-template></div>
@@ -217,7 +217,7 @@
 				</td>
 				
 				<td sda-column="DESCRIPTOR_COLUMNS" ng-repeat="descCol in activityTableCtrl.descriptorCols" sda-data-type="{{descCol.dataType}}" 
-					sda-exporter="activityTableCtrl.getDescriptorValueForExport( rowData.descriptorValues[colData.field])" style="text-align: center; white-space: nowrap;">
+					sda-exporter="activityTableCtrl.getDescriptorValueForExport( rowData.descriptorValues[colData.field])" style="text-align: center; white-space: normal;">
 					<div sd-descriptor-content sda-value="rowData.descriptorValues[colData.field]" sda-data-type ="colData.dataType"> </div>
 				</td>
 				
