@@ -76,10 +76,15 @@
 	 * 
 	 */
 	controller.prototype.toggleDaemonAction = function(daemonItem) {
+		var self = this;
 		if (daemonItem.running) {
-			return _sdDaemonService.stopDaemon(daemonItem.type);
+			_sdDaemonService.stopDaemon(daemonItem.type).then(function(data) {
+				self.refresh();
+			});
 		} else {
-			return _sdDaemonService.startDaemon(daemonItem.type);
+			_sdDaemonService.startDaemon(daemonItem.type).then(function(data) {
+				self.refresh();
+			});
 		}
 	};
 
