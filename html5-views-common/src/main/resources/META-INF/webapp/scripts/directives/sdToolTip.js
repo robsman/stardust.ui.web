@@ -14,7 +14,8 @@
 (function() {
 	'use strict';
 
-	angular.module('viewscommon-ui').directive('sdToolTip', [ 'sdUtilService', ToolTip]);
+	angular.module('viewscommon-ui').directive('sdToolTip',
+			[ 'sdUtilService', ToolTip ]);
 
 	/*
 	 * 
@@ -25,23 +26,26 @@
 			restrict : 'EA',
 			transclude : true,
 			replace : true,
-			templateUrl : sdUtilService.getBaseUrl() + 'plugins/html5-views-common/scripts/directives/partials/toolTip.html',
-			controller : [ '$scope', '$parse', '$attrs', ToolTipController ]
+			templateUrl : sdUtilService.getBaseUrl()
+					+ 'plugins/html5-views-common/scripts/directives/partials/toolTip.html',
+			controller : [ '$scope', '$parse', '$attrs', '$element',
+					ToolTipController ]
 		};
 	}
 	/**
 	 * 
 	 */
-	function ToolTipController($scope, $parse, $attrs) {
+	function ToolTipController($scope, $parse, $attrs, $element) {
 		this.toolTip = {
 			show : false
 		};
 		this.i18n = $scope.i18n;
 
-		this.toolTipClass = 'popup-dlg';
+		this.toolTipClass = 'toolTip-dlg';
 		if (angular.isDefined($attrs.sdaToolTipClass)) {
 
-			this.toolTipClass = this.toolTipClass + " " + $attrs.sdaToolTipClass;
+			this.toolTipClass = this.toolTipClass + " "
+					+ $attrs.sdaToolTipClass;
 		}
 
 		if (angular.isDefined($attrs.sdaToolTipUrl)) {
@@ -53,6 +57,33 @@
 		}
 		var title = $parse($attrs.sdaTitle);
 		this.title = title($scope);
+
+		this.showToolTip = function() {
+			var marginTop = 0;
+			var top = $element.offset().top;
+			if (top > 200) {
+				marginTop = -141;
+			}
+
+			var toolTipWidth = 300;
+			var documentWidth = $(document).width();
+			var left = $element.offset().left;
+			var elementOffsetWidth = $element[0].offsetWidth;
+
+			if (left + toolTipWidth > documentWidth) {
+				// shift the tool tip position to the left of the object 
+				// so it won't go out of width of current HTML document width
+				// and show up in the correct place
+				elementOffsetWidth = documentWidth - (toolTipWidth + left)
+						- (2 * 10);
+			}
+
+			$('.toolTip-dlg').css({
+				'margin-top' : marginTop,
+				'margin-left' : elementOffsetWidth
+			});
+			this.toolTip.show = true;
+		};
 
 		$scope.toolTipCtrl = this;
 	}

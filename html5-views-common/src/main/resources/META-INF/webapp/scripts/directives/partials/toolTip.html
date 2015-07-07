@@ -1,5 +1,6 @@
+
 <div>
-	<div ng-mouseenter="toolTipCtrl.toolTip.show = true"
+	<div ng-mouseenter="toolTipCtrl.showToolTip()"
 		ng-mouseleave="toolTipCtrl.toolTip.show = false" class="trimText">{{toolTipCtrl.title}}</div>
 	<div class="{{toolTipCtrl.toolTipClass}}"
 		ng-show="toolTipCtrl.toolTip.show">

@@ -444,3 +444,32 @@ button.close {
 .portal-glyph-icon {
 	font-size: 16px;
 }
+
+.toolTip-dlg {
+	position: absolute;
+	z-index: 10;
+	padding: 10px;
+	border-top: 1px solid #CCCCCC;
+	border-left: 1px solid #CCCCCC;
+	border-bottom: 1px solid #999999;
+	border-right: 1px solid #999999;
+	background: #F5F5F5;
+	overflow: auto;
+	box-shadow: 5px 5px 25px #888888;
+}
+
+.tooltip2Label{
+	padding: 3px 0;
+    vertical-align: top;
+	font-weight:normal;
+	color:#CC6600 !important;
+	white-space:nowrap;
+	padding-right:5px !important;
+}
+
+.tooltip2Data{
+	color:#000;
+	padding: 3px 0;
+    vertical-align: top;
+    white-space: normal !important;
+}

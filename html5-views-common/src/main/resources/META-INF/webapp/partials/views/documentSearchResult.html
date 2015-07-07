@@ -75,11 +75,10 @@
 								<td><i
 									class="{{docSearchViewCtrl.getGlyphiconClass(rowData.fileType)}}"></i></td>
 								<td><a href="#"
-									ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openDocumentView(rowData.documentId);" aid="COM-SrchDoc-DocSrchTbl-DocName">
+									ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openDocumentView(rowData.documentId);" data-placement="right" aid="COM-SrchDoc-DocSrchTbl-DocName">
 										<div sd-tool-tip
 											sda-tool-tip-url="'plugins/html5-views-common/partials/views/documentDetailToolTip.html'"
-											sda-title="rowData.documentName"
-											sda-tool-tip-class="popup-dlg-bgImg"></div>
+											sda-title="rowData.documentName"></div>
 								</a></td>
 							</tr>
 						</tbody>
