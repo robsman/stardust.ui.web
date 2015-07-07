@@ -2238,17 +2238,6 @@
 			/*
 			 * 
 			 */
-			this.isLocked = function() {
-				if(self.lock){
-					return self.lock;	
-				}
-
-				return false;
-			}
-
-			/*
-			 * 
-			 */
 			this.isColumnSelectorLockDisabled = function() {
 				return self.applyTo == 'USER';
 			}
