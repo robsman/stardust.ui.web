@@ -30,7 +30,8 @@
 		<table sd-data-table="ctrl.dataTable" sd-data="ctrl.realms"
 			sda-mode="local" sda-selectable="multiple" sda-selection="ctrl.selection" sda-no-pagination="true"
 			sda-sortable="true" sda-exports="true" sda-column-selector="{{ctrl.columnSelector}}"
-			sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)">
+			sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
+			sda-exports-file-name="{{ctrl.exportFileNameForRealmManagement}}">
 			<thead sda-i18n-scope="admin-portal-messages.views-realmMgmt-userRealmsTable-column">
 				<tr>
 					<th sda-name="name" sda-sortable="true"></th>
@@ -79,5 +80,9 @@
 				</tr>
 			</table>
 		</form>
+	</div>
+	<div sd-dialog sda-show="ctrl.showErrorMsg" sda-type="alert" sda-title="{{i18n('admin-portal-messages.views-common-error-label')}}"
+	     sda-cancel-action-label="{{i18n('views-common-messages.common-close')}}">
+	    <div><i class="sc sc-fw sc-2x sc-close-circle" style="color: Red;"></i>{{ctrl.errorMsg}}</div>
 	</div>
 </div>

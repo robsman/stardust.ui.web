@@ -16,13 +16,13 @@
 	'use strict';
 
 	angular.module('admin-ui').controller('sdRealmManagementCtrl',
-			['sdLoggerService', 'sdRealmManagementService', 'sdDialogService', 'sgI18nService', 'sdPreferenceService', '$scope', '$q', 'sdMessageService',
+			['sdLoggerService', 'sdRealmManagementService', 'sdDialogService', 'sgI18nService', 'sdPreferenceService', '$scope', '$q', 'sdMessageService', 'sdLoggedInUserService' ,
 			 RealmManagementController]);
 
 	/*
 	 * 
 	 */
-	function RealmManagementController(sdLoggerService, sdRealmManagementService, sdDialogService, sgI18nService, sdPreferenceService, $scope, $q, sdMessageService) {
+	function RealmManagementController(sdLoggerService, sdRealmManagementService, sdDialogService, sgI18nService, sdPreferenceService, $scope, $q, sdMessageService,sdLoggedInUserService) {
 		
 		var trace = sdLoggerService.getLogger('admin-ui.sdRealmManagementCtrl');
 		
@@ -37,7 +37,8 @@
 			this.realmPrefModule = 'ipp-administration-perspective';
 			this.realmPrefId = 'preference';
 			this.realmPrefName = 'ipp-administration-perspective.realm.selectedColumns';
-			this.columnSelector = 'admin'; //TODO
+			this.columnSelector = sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
+			this.exportFileNameForRealmManagement = "RealmManagement"
 			
 			this.realms = {
 				list : [],
@@ -97,6 +98,8 @@
 					
 					deferred.resolve();
 				}, function(error) {
+					self.errorMsg = error.data;
+					self.showErrorMsg = true;
 					trace.error('Error occured while saving Realm : ', error);
 					// show error to the user
 					sdMessageService.showMessage(sgI18nService.translate('admin-portal-messages.views-realmMgmt-cannotCreateRealm'));
@@ -136,6 +139,8 @@
 					self.resetValues();
 					self.fetchRealms();
 				}, function(error) {
+					self.errorMsg = error.data;
+					self.showErrorMsg = true;
 					trace.error('Error occured while deleting Realms : ', error);
 					// show error to the user
 					sdMessageService.showMessage(sgI18nService.translate('admin-portal-messages.views-realmMgmt-cannotDeleteRealm',
