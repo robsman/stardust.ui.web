@@ -37,7 +37,7 @@
 				},
 				transclude: true,
 				template: '<span sd-dialog'
-							+ ' sda-show="showDelegateDialog"'
+							+ ' sda-show="showDelegateDialog" sda-enable-key-events = "false"'
 							+ ' sda-title="{{i18n(\'views-common-messages.delegation-title\')}}"'
 							+ ' sda-type="custom"'
 							+ ' sda-scope="this"'

@@ -31,6 +31,7 @@
 	 * 		sda-on-close: (@) Eg: func(res)
 	 * 		sda-on-confirm: (@) Eg: func(res)
 	 * 		sda-modal (String)
+	 *      sda-enable-key-events (@) (boolean)
 	 */
 	function DialogDirectiveFn(sdLoggerService, $compile, $document, sdUtilService) {
 		var trace = sdLoggerService.getLogger('bpm-common.directives.sdDialog');
@@ -52,7 +53,8 @@
 				cancelActionLabel: '@sdaCancelActionLabel',
 				dialogScope: '=sdaScope',
 				showDialog: '=sdaShow',
-				autoIdPrefix: '@sdaAidPrefix'
+				autoIdPrefix: '@sdaAidPrefix',
+				enableKeyEvents : '@sdaEnableKeyEvents'
 			},
 			transclude: true,
 			templateUrl: templateURL,
@@ -161,6 +163,11 @@
 				if (!angular.isDefined(self.dialogType)) {
 					self.dialogType = SUPPORTED_TYPES.CUSTOM;
 				}
+				if(angular.isDefined($scope.enableKeyEvents)){
+					self.enableKeyEvents =($scope.enableKeyEvents == 'true') ? true : false ;
+				}else{
+					self.enableKeyEvents = false;
+				}
 				
 				self.onOpenFn = $parse($attrs.sdaOnOpen);
 				self.onCloseFn = $parse($attrs.sdaOnClose);
@@ -170,10 +177,11 @@
 				self.isOpen = false;
 				
 				self.onKeyUp = function(evt){
-					if (angular.equals(evt.keyCode, 13)){
+
+					if (self.enableKeyEvents && angular.equals(evt.keyCode, 13)){
 						self.confirmAction(); 
 					}
-					if (angular.equals(evt.keyCode, 27)){
+					if (self.enableKeyEvents && angular.equals(evt.keyCode, 27)){
 						self.cancelAction(); 
 					}
 				}
