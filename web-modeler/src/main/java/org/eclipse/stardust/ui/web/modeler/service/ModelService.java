@@ -50,6 +50,7 @@ import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
 import org.eclipse.stardust.ui.web.modeler.spi.ThreadInitializer;
+import org.eclipse.stardust.ui.web.modeler.upgrade.ModelUpgrader;
 
 /**
  *
@@ -325,6 +326,33 @@ public class ModelService
       currentSession().reset();
    }
 
+   /**
+   *
+   */   
+   public void upgradeModel(String modelId)
+   {
+      ModelType model = findModel(modelId);
+
+      ModelUpgrader modelUpgrader = new ModelUpgrader(model);
+      if(modelUpgrader.upgradeNeeded())
+      {
+         ModelType upgradedModel = modelUpgrader.doUpgradeModel();
+         getModelManagementStrategy().saveModel(upgradedModel);         
+      }
+   }
+
+   /**
+   *
+   */   
+   public void upgradeAllModels()
+   {
+      Map<String, ModelType> models = getModelManagementStrategy().getModels();
+      for (ModelType xpdlModel : models.values())
+      {
+         upgradeModel(xpdlModel.getId());
+      }      
+   }
+         
    /**
     *
     * @param id

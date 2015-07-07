@@ -59,6 +59,7 @@ import org.eclipse.stardust.ui.web.modeler.service.RecordingModelManagementStrat
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
+import org.eclipse.stardust.ui.web.modeler.upgrade.ModelUpgrader;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ClassesHelper;
 
 /**
@@ -3447,7 +3448,12 @@ public class ModelElementMarshaller implements ModelMarshaller
     */
    public JsonObject toModelOnlyJson(ModelType model)
    {
+      ModelUpgrader modelUpgrader = new ModelUpgrader(model);
+      boolean upgradeNeeded = modelUpgrader.upgradeNeeded();
+      
       JsonObject modelJson = new JsonObject();
+      modelJson.addProperty(
+            ModelerConstants.IS_UPGRADE_NEEDED, upgradeNeeded);
 
       JsonObject lockInfoJson = new JsonObject();
       LockInfo lockInfo = modelingSession.getEditLockInfo(model);

@@ -416,10 +416,13 @@ public class ModelerResource
    {
       try
       {
-         if("All".equals(modelId)){
-            //upgrade All
-         }else{
-            //upgrade one
+         if("All".equals(modelId))
+         {
+            modelService.upgradeAllModels();
+         }
+         else
+         {
+            modelService.upgradeModel(modelId);
          }
 
          ResponseBuilder response = Response.ok("Upgraded");
