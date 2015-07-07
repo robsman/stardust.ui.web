@@ -465,6 +465,7 @@
 /* Style for Autocomplete Component */
 .iceSelInpTxtList {
     z-index: 8888;
+    overflow: hidden;
 }
 
 .participant-tree-highlight-style-common{
