@@ -270,19 +270,14 @@ define(
                                           var outputAccessPoint = m_routeDefinitionUtils.findAccessPoint(accessPoints,
                                                             "defaultOutputAp");
                                           outputAccessPoint = {
-                                             id : "defaultOutputAp",
-                                             name : "output",
-                                             dataType : "dmsDocument",
-                                             direction : "OUT",
-                                             structuredDataTypeFullId : selectedDataItem
-                                                      .getFullId(),
-                                             attributes : {
-                                                "stardust:predefined" : true,
-                                                "carnot:engine:dataType" : m_model
-                                                         .stripElementId(selectedDataItem
-                                                                  .getFullId())
-                                             }
-                                          };
+                                                   id : "defaultOutputAp",
+                                                   name : "output",
+                                                   dataType : "dmsDocument",
+                                                   direction : "OUT",
+                                                   attributes : {
+                                                      "stardust:predefined" : true
+                                                   }
+                                                };
                                           filteredAccessPoints.push(outputAccessPoint);
                                           event.data.panel.view.submitChanges({
                                              contexts : {
@@ -322,7 +317,6 @@ define(
                                        }
                                     });
                               }else{
-                                 var selectedDataItem = event.data.panel.findTypeDeclaration(event.data.panel.getScopeModel().typeDeclarations,event.data.panel.sourceTypeInput.val());
                                  if(defaultInputAp!=null){
                                     accessPointList=m_routeDefinitionUtils.filterAccessPoint(accessPointList, "defaultInputAp");
                                  }
@@ -332,13 +326,8 @@ define(
                                              name : "template",
                                              dataType : "dmsDocument",
                                              direction : "IN",
-                                             structuredDataTypeFullId : selectedDataItem
-                                                      .getFullId(),
                                              attributes : {
-                                                "stardust:predefined" : true,
-                                                "carnot:engine:dataType" : m_model
-                                                         .stripElementId(selectedDataItem
-                                                                  .getFullId())
+                                                "stardust:predefined" : true
                                              }
                                           });
                               }
@@ -504,27 +493,15 @@ define(
                   this.outputAccessPointInput.empty();
                   this.outputAccessPointInput.append("<option value='" + m_constants.TO_BE_DEFINED + "'>" + m_i18nUtils
                            .getProperty("modeler.model.applicationOverlay.templating.formatInput.text.label") + "</option>");
-                  var typeDeclarations = this.getScopeModel().typeDeclarations;
-                  for ( var i in typeDeclarations)
-                  {
-                     var typeDeclaration = typeDeclarations[i];
-                     this.outputAccessPointInput.append("<option value='"
-                              + typeDeclaration.getFullId() + "'>" + typeDeclaration.name
-                              + "</option>");
-                  }
+                  this.outputAccessPointInput.append("<option value='dmsDocument'>" + m_i18nUtils
+                           .getProperty("modeler.model.applicationOverlay.templating.formatInput.document.label") + "</option>");
                   // ////////////////////////////////////////////////////////////
 
                   this.sourceTypeInput.empty();
                   this.sourceTypeInput.append("<option value='" + m_constants.TO_BE_DEFINED + "'>" + m_i18nUtils
                            .getProperty("modeler.model.applicationOverlay.templating.formatInput.text.label") + "</option>");
-                  var typeDeclarations = this.getScopeModel().typeDeclarations;
-                  for ( var i in typeDeclarations)
-                  {
-                     var typeDeclaration = typeDeclarations[i];
-                     this.sourceTypeInput.append("<option value='"
-                              + typeDeclaration.getFullId() + "'>" + typeDeclaration.name
-                              + "</option>");
-                  }
+                  this.sourceTypeInput.append("<option value='dmsDocument'>" + m_i18nUtils
+                           .getProperty("modeler.model.applicationOverlay.templating.formatInput.document.label") + "</option>");
 
                   /////////////////////////////////////
                   this.populateFormatInputField();
@@ -577,13 +554,13 @@ define(
                      {
                         if (outputAccessPoint.dataType == "dmsDocument")
                            this.outputAccessPointInput
-                                    .val(outputAccessPoint.structuredDataTypeFullId);
+                                    .val("dmsDocument");
                      }
                      if (inAccessPoint)
                      {
                         if (inAccessPoint.dataType == "dmsDocument")
                            this.sourceTypeInput
-                                    .val(inAccessPoint.structuredDataTypeFullId);
+                                    .val("dmsDocument");
                      }
                   }
                   // update the view
