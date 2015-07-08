@@ -62,16 +62,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		<ippui:toolbarSection name="participantMgmtViewToolbar"
 			include="/plugins/admin-portal/extensions/toolbar/participantMgmtViewToolbar.xhtml"
 			requiredView="participantMgmt" />
-		<ippui:toolbarSection name="qaManagementViewToolbar"
-			include="/plugins/admin-portal/extensions/toolbar/qualityAssuranceManagementViewToolbar.xhtml"
-			requiredView="qaManagementView" />
-		<ippui:toolbarSection name="criticalityConfViewToolbar"
-			include="/plugins/admin-portal/views/criticalityConfigurationViewToolbar.xhtml"
-			requiredView="criticalityConf" />
-		<ippui:toolbarSection name="passwordMgmtViewToolbar"
-			include="/plugins/admin-portal/views/passwordMgmtViewToolbar.xhtml"
-			requiredView="passwordMgmt" />	
-
+		
 		<!-- VIEWS -->
 		<ippui:view name="overview"
 			include="/plugins/admin-portal/views/overviewView.xhtml" controller="overviewBean" />
@@ -106,13 +97,10 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			</ippui:preferences>
 		</ippui:view>
 		<ippui:view name="passwordMgmt"
-			include="/plugins/admin-portal/views/passwordMgmtView.xhtml" controller="passwordMgmtBean"/>
-		<ippui:view name="criticalityConf"
-			include="/plugins/admin-portal/views/criticalityConfigurationView.xhtml" controller="criticalityConfigurationBean"/>			
-
+			include="/plugins/html5-admin-portal/partials/views/passwordManagementView.html" />		<ippui:view name="criticalityConf"
+			include="/plugins/html5-admin-portal/partials/views/criticalityConfig.html"/>			
 		<ippui:view name="qaManagementView" 
-			include="/plugins/admin-portal/views/qualityAssuranceManagementView.xhtml" 
-			controller="qaManagementBean"/>					<ippui:view name="prefManagerBean" 			include="/plugins/admin-portal/views/preferenceManagerView.xhtml" 			controller="prefManagerBean"/>	
+			include="/plugins/html5-admin-portal/partials/views/qaManagementView.html" />		<ippui:view name="prefManagerBean" 			include="/plugins/html5-admin-portal/partials/views/preferenceManagerView.html"/>
 			
 	</ippui:perspective>
 

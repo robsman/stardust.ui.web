@@ -29,18 +29,6 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			<ippui:view name="processViewHtml5" include="/plugins/html5-admin-portal/partials/views/processOverview.html" />
 		</ippui:viewsExtension>
 		<ippui:viewsExtension>
-			<ippui:view name="qaManagementViewHTML5" include="/plugins/html5-admin-portal/partials/views/qaManagementView.html" />
-		</ippui:viewsExtension>
-		<ippui:viewsExtension>
-			<ippui:view name="criticalityConfigHtml5" include="/plugins/html5-admin-portal/partials/views/criticalityConfig.html" />
-		</ippui:viewsExtension>
-		<ippui:viewsExtension>
-			<ippui:view name="passwordManagementViewHTML5" include="/plugins/html5-admin-portal/partials/views/passwordManagementView.html" />
-		</ippui:viewsExtension>
-		<ippui:viewsExtension>
-			<ippui:view name="preferenceManagerViewHTML5" include="/plugins/html5-admin-portal/partials/views/preferenceManagerView.html" />
-		</ippui:viewsExtension>
-		<ippui:viewsExtension>
 			<ippui:view name="realmManagementHtml5" include="/plugins/html5-admin-portal/partials/views/realmManagement.html" />
 		</ippui:viewsExtension>
 		<ippui:viewsExtension>
