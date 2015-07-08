@@ -21,10 +21,10 @@ define(
                   "bpm-modeler/js/m_typeDeclaration",
                   "bpm-modeler/js/m_parameterDefinitionsPanel",
                   "bpm-modeler/js/m_codeEditorAce",
-                  "bpm-modeler/js/m_routeDefinitionUtils" ],
+                  "bpm-modeler/js/m_routeDefinitionUtils","bpm-modeler/js/m_user" ],
          function(m_utils, m_urlUtils, m_i18nUtils, m_constants, m_commandsController,
                   m_command, m_model, m_accessPoint, m_typeDeclaration,
-                  m_parameterDefinitionsPanel, m_codeEditorAce, m_routeDefinitionUtils)
+                  m_parameterDefinitionsPanel, m_codeEditorAce, m_routeDefinitionUtils,m_user)
          {
             return {
                create : function(view)
@@ -71,6 +71,8 @@ define(
                            .jQuerySelect("#templatingIntegrationOverlay #configurationTab #convertToPdfRow");
                   this.convertToPdfInput = m_utils
                            .jQuerySelect("#templatingIntegrationOverlay #configurationTab #convertToPdfInput");
+                  this.autoStartupRow = m_utils
+                  .jQuerySelect("#templatingIntegrationOverlay #configurationTab #autoStartupRow");
                   this.autoStartupInput = m_utils
                            .jQuerySelect("#templatingIntegrationOverlay #configurationTab #autoStartupInput");
                   this.deleteParameterDefinitionButton = m_utils
@@ -493,6 +495,10 @@ define(
                   this.parameterDefinitionsPanel.setScopeModel(this.getScopeModel());
                   this.parameterDefinitionsPanel.setParameterDefinitions(this
                            .getApplication().contexts.application.accessPoints);
+                  
+                  this.autoStartupRow.hide();
+                  if(this.isIntegrator())
+                    this.autoStartupRow.show();
 
                   // intiailize dropdown list with typeDeclarations
                   this.outputAccessPointInput.empty();
@@ -805,5 +811,8 @@ define(
 
                   return valid;
                };
+               TemplatingIntegrationOverlay.prototype.isIntegrator = function(){
+            	   return m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE;
+            	}
             }
          });

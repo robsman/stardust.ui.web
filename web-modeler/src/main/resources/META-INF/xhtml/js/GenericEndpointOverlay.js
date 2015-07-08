@@ -8,10 +8,10 @@ define(
         "bpm-modeler/js/m_accessPoint",
         "bpm-modeler/js/m_typeDeclaration",
         "bpm-modeler/js/m_parameterDefinitionsPanel",
-        "bpm-modeler/js/m_codeEditorAce" ],
+        "bpm-modeler/js/m_codeEditorAce","bpm-modeler/js/m_user" ],
       function(m_utils,m_urlUtils, m_i18nUtils, m_constants, m_commandsController,
             m_command, m_model, m_accessPoint, m_typeDeclaration,
-            m_parameterDefinitionsPanel, m_codeEditorAce) {
+            m_parameterDefinitionsPanel, m_codeEditorAce,m_user) {
          return {
             create : function(view) {
                var overlay = new GenericEndpointOverlay();
@@ -122,6 +122,8 @@ define(
                this.consumerRouteTextarea = m_utils.jQuerySelect("#consumerRouteTab #consumerRouteTextarea");
                this.requestDataInput = m_utils.jQuerySelect("#genericEndpointOverlay #requestDataInput");
                this.responseDataInput = m_utils.jQuerySelect("#genericEndpointOverlay #responseDataInput");
+               this.transactedRouteRow = m_utils.jQuerySelect("#genericEndpointOverlay #transactedRouteRow");
+               this.autoStartupRow = m_utils.jQuerySelect("#genericEndpointOverlay #autoStartupRow");
                this.transactedRouteInput = m_utils.jQuerySelect("#genericEndpointOverlay #transactedRouteInput");
                this.autoStartupInput = m_utils.jQuerySelect("#genericEndpointOverlay #autoStartupInput");
                this.inputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #inputBodyAccessPointInput");
@@ -638,7 +640,12 @@ define(
                
                this.parameterDefinitionsPanel.setScopeModel(this.getScopeModel());
                this.parameterDefinitionsPanel.setParameterDefinitions(this.getApplication().contexts.application.accessPoints);
-
+               this.autoStartupRow.hide();
+               this.transactedRouteRow.hide();
+               if(this.isIntegrator()){
+                 this.autoStartupRow.show();
+               	this.transactedRouteRow.show();
+               }
                this.inputBodyAccessPointInput.empty();
                this.inputBodyAccessPointInput.append("<option value='"
                      + m_constants.TO_BE_DEFINED + "'>"
@@ -1369,6 +1376,10 @@ define(
                }
                return true;
             };
+            
+            GenericEndpointOverlay.prototype.isIntegrator = function(){
+            	   return m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE;
+            }
 
          }
       });

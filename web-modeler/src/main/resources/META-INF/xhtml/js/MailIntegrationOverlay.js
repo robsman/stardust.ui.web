@@ -10,13 +10,13 @@ define(
                   "bpm-modeler/js/m_mailRouteDefinitionHandler",
                   "bpm-modeler/js/m_angularContextUtils",
                   "bpm-modeler/js/MailIntegrationOverlayTestTabHandler",
-                  "bpm-modeler/js/MailIntegrationOverlayResponseTabHandler" ],
+                  "bpm-modeler/js/MailIntegrationOverlayResponseTabHandler","bpm-modeler/js/m_user" ],
          function(m_utils, m_i18nUtils, m_constants, m_urlUtils, m_commandsController,
                   m_command, m_model, m_accessPoint, m_typeDeclaration,
                   m_parameterDefinitionsPanel, m_codeEditorAce, m_modelElementUtils,
                   m_routeDefinitionUtils, m_mailRouteDefinitionHandler,
                   m_angularContextUtils, mailIntegrationOverlayTestTabHandler,
-                  mailIntegrationOverlayResponseTabHandler)
+                  mailIntegrationOverlayResponseTabHandler,m_user)
          {
             return {
                create : function(view)
@@ -231,7 +231,10 @@ define(
                   this.parameterDefinitionsPanel.setScopeModel(this.getScopeModel());
                   this.parameterDefinitionsPanel.setParameterDefinitions(this.getApplication().contexts.application.accessPoints);
                   
-                  
+                  this.autoStartupRow.hide();
+                  if(this.isIntegrator()){
+                    this.autoStartupRow.show();
+                  }
                   this.serverInput.val(this
                            .getExtendedAttributeValue("stardust:emailOverlay::server"));
                   this.mailFormatSelect
@@ -1358,6 +1361,8 @@ define(
                            .jQuerySelect("#mailIntegrationOverlay #storeEmailInput");
                   this.storeAttachmentsInput = m_utils
                            .jQuerySelect("#mailIntegrationOverlay #storeAttachmentsInput");
+                  this.autoStartupRow = m_utils
+                  .jQuerySelect("#mailIntegrationOverlay #autoStartupRow");
                   this.autoStartupInput = m_utils
                            .jQuerySelect("#mailIntegrationOverlay #autoStartupInput");
                   this.templateSourceSelect = m_utils
@@ -2013,5 +2018,8 @@ define(
                {
                   m_utils.jQuerySelect("#typeErrorMessagesTab").hide();
                };
+               MailIntegrationOverlay.prototype.isIntegrator = function(){
+                  return m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE;
+               }
             }
          });

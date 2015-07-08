@@ -21,11 +21,11 @@ define(
                   "bpm-modeler/js/m_parameterDefinitionsPanel",
                   "bpm-modeler/js/m_codeEditorAce",
                   "bpm-modeler/js/m_routeDefinitionUtils",
-				  "bpm-modeler/js/m_smsRouteDefinitionHandler"],
+				  "bpm-modeler/js/m_smsRouteDefinitionHandler","bpm-modeler/js/m_user"],
          function(m_utils, m_i18nUtils, m_constants, m_commandsController, m_command,
                   m_model, m_accessPoint, m_typeDeclaration, m_parameterDefinitionsPanel,
                   m_codeEditorAce, m_routeDefinitionUtils,
-				  m_smsRouteDefinitionHandler)
+				  m_smsRouteDefinitionHandler,m_user)
          {
             return {
                create : function(view)
@@ -74,6 +74,7 @@ define(
                   this.useSSLInput = m_utils.jQuerySelect("#dataSourceTab #useSSLInput");
                   this.inputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #inputBodyAccessPointInput");
               		this.camelConfigurationTab = $('a[href="#configurationTab"]');
+              		this.autoStartupRow = m_utils.jQuerySelect("#autoStartupRow");
                   this.autoStartupInput = m_utils.jQuerySelect("#autoStartupInput");
                   this.editorAnchor = m_utils.jQuerySelect("#codeEditorDiv").get(0);
                   this.editorAnchor.id = "codeEditorDiv"
@@ -348,6 +349,10 @@ define(
                   this.parameterDefinitionsPanel.setScopeModel(this.getScopeModel());
                   this.parameterDefinitionsPanel.setParameterDefinitions(this
                            .getApplication().contexts.application.accessPoints);
+                  this.autoStartupRow.hide();
+                  if(this.isIntegrator()){
+                    this.autoStartupRow.show();
+                  }
                   this.codeEditor
                            .getEditor()
                            .getSession()
@@ -546,5 +551,8 @@ define(
                      }
                      return valid;
                };
+               SmsIntegrationOverlay.prototype.isIntegrator = function(){
+                  return m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE;
+               }
             }
          });

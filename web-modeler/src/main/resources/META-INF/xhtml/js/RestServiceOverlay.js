@@ -6,10 +6,10 @@ define(
                   "bpm-modeler/js/m_typeDeclaration",
                   "bpm-modeler/js/m_parameterDefinitionsPanel",
                   "bpm-modeler/js/m_communicationController",
-                  "bpm-modeler/js/m_codeEditorAce" ],
+                  "bpm-modeler/js/m_codeEditorAce","bpm-modeler/js/m_user" ],
          function(m_utils, m_i18nUtils, m_constants, m_dialog, m_commandsController,
                   m_command, m_model, m_accessPoint, m_typeDeclaration,
-                  m_parameterDefinitionsPanel,m_communicationController, m_codeEditorAce)
+                  m_parameterDefinitionsPanel,m_communicationController, m_codeEditorAce,m_user)
          {
             return {
                create : function(view)
@@ -52,8 +52,12 @@ define(
                            .jQuerySelect("#restServiceOverlay #responseTypeSelect");
                   this.crossDomainInput = m_utils
                            .jQuerySelect("#restServiceOverlay #crossDomainInput");
+                  this.transactedRouteRow = m_utils
+                           .jQuerySelect("#restServiceOverlay #transactedRouteRow");
                   this.transactedRouteInput = m_utils
                            .jQuerySelect("#restServiceOverlay #transactedRouteInput");
+                  this.autoStartupRow = m_utils
+                           .jQuerySelect("#restServiceOverlay #autoStartupRow");
                   this.autoStartupInput = m_utils
                            .jQuerySelect("#restServiceOverlay #autoStartupInput");
                   this.resetButton = m_utils.jQuerySelect("#testTab #resetButton");
@@ -1151,6 +1155,12 @@ define(
                   this.parameterDefinitionsPanel.setScopeModel(this.getScopeModel());
                   this.parameterDefinitionsPanel.setParameterDefinitions(this
                            .getApplication().contexts.application.accessPoints);
+                  this.autoStartupRow.hide();
+                  this.transactedRouteRow.hide();
+                  if(this.isIntegrator()){
+                    this.autoStartupRow.show();
+                    this.transactedRouteRow.show();
+                  }
                   this.inputBodyAccessPointInput.empty();
                   this.inputBodyAccessPointInput.append("<option value='"
                            + m_constants.TO_BE_DEFINED + "'>"
@@ -1480,5 +1490,8 @@ define(
                      
                   return true;
                };
+               RestServiceOverlay.prototype.isIntegrator = function(){
+                  return m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE;
+               }
             }
          });

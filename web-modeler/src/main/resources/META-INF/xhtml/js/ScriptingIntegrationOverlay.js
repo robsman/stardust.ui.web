@@ -8,11 +8,11 @@ define(
             "bpm-modeler/js/m_parameterDefinitionsPanel",
             "bpm-modeler/js/m_codeEditorAce",
             "bpm-modeler/js/m_parsingUtils",
-            "bpm-modeler/js/m_autoCompleters"],
+            "bpm-modeler/js/m_autoCompleters","bpm-modeler/js/m_user"],
       function(m_utils, m_i18nUtils, m_constants, m_commandsController,
             m_command, m_model, m_accessPoint, m_typeDeclaration,
             m_parameterDefinitionsPanel, m_codeEditorAce,
-            m_parsingUtils,m_autoCompleters) {
+            m_parsingUtils,m_autoCompleters,m_user) {
          return {
             create : function(view) {
                var overlay = new ScriptingIntegrationOverlay();
@@ -51,7 +51,9 @@ define(
 
                this.scriptCodeHeading = m_utils.jQuerySelect("#scriptingIntegrationOverlay #scriptCodeHeading");
                this.languageSelect = m_utils.jQuerySelect("#scriptingIntegrationOverlay #languageSelect");
+               this.transactedRouteRow = m_utils.jQuerySelect("#scriptingIntegrationOverlay #transactedRouteRow");
                this.transactedRouteInput = m_utils.jQuerySelect("#scriptingIntegrationOverlay #transactedRouteInput");
+               this.autoStartupRow = m_utils.jQuerySelect("#scriptingIntegrationOverlay #autoStartupRow");
                this.autoStartupInput = m_utils.jQuerySelect("#scriptingIntegrationOverlay #autoStartupInput");
                this.editorAnchor = m_utils.jQuerySelect("#codeEditorDiv").get(0);
                this.editorAnchor.id = "codeEditorDiv" + Math.floor((Math.random()*100000) + 1);
@@ -411,6 +413,12 @@ define(
                      .getScopeModel());
                this.parameterDefinitionsPanel
                      .setParameterDefinitions(this.getApplication().contexts.application.accessPoints);
+               this.autoStartupRow.hide();
+               this.transactedRouteRow.hide();
+               if(this.isIntegrator()){
+                 this.autoStartupRow.show();
+                 this.transactedRouteRow.show();
+               }
                this.languageSelect
                      .val(this.getApplication().attributes["stardust:scriptingOverlay::language"]);         
                this.codeEditor
@@ -551,5 +559,8 @@ define(
                }
                return true;
             };
+            ScriptingIntegrationOverlay.prototype.isIntegrator = function(){
+               return m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE;
+            }
          }
       });

@@ -21,10 +21,10 @@ define(
             "bpm-modeler/js/m_accessPoint",
             "bpm-modeler/js/m_typeDeclaration",
             "bpm-modeler/js/m_parameterDefinitionsPanel",
-            "bpm-modeler/js/m_codeEditorAce" ],
+            "bpm-modeler/js/m_codeEditorAce","bpm-modeler/js/m_user" ],
       function(m_utils, m_i18nUtils, m_constants, m_commandsController,
             m_command, m_model, m_accessPoint, m_typeDeclaration,
-            m_parameterDefinitionsPanel, m_codeEditorAce) {
+            m_parameterDefinitionsPanel, m_codeEditorAce,m_user) {
          return {
             create : function(view) {
                var overlay = new SqlIntegrationOverlay();
@@ -60,6 +60,7 @@ define(
 
                this.sqlQueryHeading = m_utils
                      .jQuerySelect("#sqlIntegrationOverlay #sqlQueryHeading");
+               this.integratorSetupRow= m_utils.jQuerySelect("#sqlIntegrationOverlay #integratorSetupRow");
                this.transactedRouteInput = m_utils.jQuerySelect("#sqlIntegrationOverlay #transactedRouteInput");
                this.autoStartupInput = m_utils.jQuerySelect("#sqlIntegrationOverlay #autoStartupInput");
                this.inputBodyAccessPointInput = m_utils
@@ -733,6 +734,10 @@ define(
                this.parameterDefinitionsPanel.setScopeModel(this.getScopeModel());
                this.parameterDefinitionsPanel.setParameterDefinitions(this.getApplication().contexts.application.accessPoints);
 
+               this.integratorSetupRow.hide();
+               if(this.isIntegrator())
+             	  this.integratorSetupRow.show();
+               
                this.inputBodyAccessPointInput.empty();
                this.inputBodyAccessPointInput.append("<option value='"
                      + m_constants.TO_BE_DEFINED + "'>"
@@ -1334,5 +1339,9 @@ define(
             }
 			return valid;  
             };
+            
+            SqlIntegrationOverlay.prototype.isIntegrator = function(){
+          	   return m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE;
+            }
          }
       });
