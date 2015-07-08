@@ -117,8 +117,6 @@ public class PortalUiController
 
    private CommonMenuIframeHandler commonMenuIframeHandler;
    
-   private PerspectiveMenuIframeHandler perspectiveMenuIframeHandler;
-
    private transient Map<View, List<ViewDataEventHandler>> viewDataEventHandlers;
    
    private List<IPerspectiveDefinition> allPerspectives;
@@ -132,7 +130,6 @@ public class PortalUiController
       this.openViews = new ArrayList<View>();
       this.recreatableViews = new HashMap<String, View>();
       this.viewDataEventHandlers = new HashMap<View, List<ViewDataEventHandler>>();
-      this.perspectiveMenuIframeHandler = new PerspectiveMenuIframeHandler();
    }
    
    /**
@@ -465,26 +462,6 @@ public class PortalUiController
    }
 
    /**
-    * @param ae
-    * @throws AbortProcessingException
-    */
-   public void processPerspectiveMenuAction(ActionEvent ae) throws AbortProcessingException
-   {
-      processPerspectiveChange(ae.getComponent().getId());
-   }
-
-   /**
-    *
-    * @param ae
-    * @throws AbortProcessingException
-    */
-   public void perspectiveChangeActionListener(ValueChangeEvent ae) throws AbortProcessingException
-   {
-      String perspectiveId = (String)ae.getNewValue();
-      processPerspectiveChange(perspectiveId);
-   }
-
-   /**
     *
     * @param ae
     */
@@ -520,8 +497,6 @@ public class PortalUiController
             break;
          }
       }
-      perspectiveMenuIframeHandler.closeIframePopup();
-      
    }
 
    /**
@@ -1529,16 +1504,6 @@ public class PortalUiController
    public CommonMenuIframeHandler getCommonMenuIframeHandler()
    {
       return this.commonMenuIframeHandler;
-   }
-   
-   /**
-    * Implementation class handles Perspective menu Iframe
-    *
-    * @return
-    */
-   public PerspectiveMenuIframeHandler getPerspectiveMenuIframeHandler()
-   {
-      return perspectiveMenuIframeHandler;
    }
 
    /**
