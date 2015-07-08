@@ -1459,11 +1459,19 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
    
    for ( var selColumn in selectedColumns)
    {
-	  if (selectedColumns[selColumn].type.id == this.reportingService.metadata.timestampType.id) 
+         if (selectedColumns[selColumn].type.id == this.reportingService.metadata.timestampType.id) 
       {
-         tableOptions.aoColumnDefs.push(getColumnDefForDate(selColumn, this.reportingService.dateFormats.minutes));
+                if (selectedColumns[selColumn].metadata && selectedColumns[selColumn].metadata.isDescriptor &&
+                             selectedColumns[selColumn].metadata.isStructuredType &&
+                             selectedColumns[selColumn].metadata.xPath && 
+                             selectedColumns[selColumn].metadata.xPath == "Date" ) {
+                       tableOptions.aoColumnDefs.push(getColumnDefForDate(selColumn, this.reportingService.dateFormats.date));
+                } else {
+                       tableOptions.aoColumnDefs.push(getColumnDefForDate(selColumn, this.reportingService.dateFormats.minutes));
+              }
       }
    }
+
 		
    
    var a = [];
