@@ -1,14 +1,4 @@
-/*******************************************************************************
- * Copyright (c) 2015 SunGard CSA LLC and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *    SunGard CSA LLC - initial API and implementation and/or initial documentation
- *******************************************************************************/
- @font-face{
+@font-face{
         font-family: starclipse;
         src: url(fonts/starclipse.woff);
 }
@@ -35,6 +25,60 @@
   -o-animation: spin 2s infinite linear;
   animation: spin 2s infinite linear;
 }
+
+.sc-badge{
+    position:relative;
+    display:inline-table;
+}
+
+.sc-badge-portrait{
+    position:relative;
+    display:inline-table;
+    z-index:997;
+}
+
+.sc-badge-bg{
+    position:absolute;
+    z-index:998;
+}
+
+.sc-badge-icon{
+    position:absolute;
+    z-index:999;
+    top:0;
+}
+
+.sc-left *{
+    left:0;
+}
+
+.sc-right *{
+    right:0;
+}
+
+.sc-top *{
+    line-height:0;
+}
+
+.sc-stroke{
+   -webkit-text-stroke: 1px green;
+   text-stroke: 1px #fff;
+   text-shadow:
+      1px 1px 0 #fff,
+     -1px -1px 0 #fff,  
+      1px -1px 0 #fff,
+     -1px 1px 0 #fff,
+      1px 1px 0 #fff;
+}
+
+.sc-mirror{
+     display:block; 
+    -webkit-transform: matrix(-1, 0, 0, 1, 0, 0);
+    -moz-transform: matrix(-1, 0, 0, 1, 0, 0);
+    -o-transform: matrix(-1, 0, 0, 1, 0, 0);
+    transform: matrix(-1, 0, 0, 1, 0, 0);
+}
+
 
 @-moz-keyframes spin {
   0% {
@@ -122,26 +166,32 @@
   transform: scale(1, -1);
 }
 
-.sc-lg{
-	font-size: 1.33333333em;
-	line-height: 0.75em;
-	vertical-align: -15%;
+.sc-1x{
+    font-size:16px;
 }
-
+.sc-1-5x{
+    font-size:24px;
+}
 .sc-2x{
-    font-size:2em;
+    font-size:32px;
 }
-
+.sc-2-5x{
+    font-size:40px;
+}
 .sc-3x{
-    font-size:3em;
+    font-size:48px;
 }
-
+.sc-3-5x{
+    font-size:56px;
+}
 .sc-4x{
-    font-size:4em;
+    font-size:64px;
 }
-
+.sc-4-5x{
+    font-size:72px;
+}
 .sc-5x{
-    font-size:5em;
+    font-size:80px;
 }
 
 .sc-archive:before{
@@ -541,5 +591,117 @@
 .sc-document-zip-o:before{
     content:'\F083';
 }
-
-
+.sc-badge-bg-square:before{
+    content:'\F084';
+}
+.sc-badge-bg-circle:before{
+    content:'\F085';
+}
+.sc-badge-icon-plus:before{
+    content:'\F086';
+}
+.sc-badge-icon-minus:before{
+    content:'\F087';
+}
+.sc-badge-icon-exclamation:before{
+    content:'\F088';
+}
+.sc-badge-icon-times:before{
+    content:'\F089';
+}
+.sc-badge-icon-clock:before{
+    content:'\F08A';
+}
+.sc-badge-icon-info:before{
+    content:'\F08B';
+}
+.sc-badge-icon-search:before{
+    content:'\F08C';
+}
+.sc-badge-icon-check:before{
+    content:'\F08D';
+}
+.sc-badge-icon-arrow-r:before{
+    content:'\F08E';
+}
+.sc-badge-icon-cog:before{
+    content:'\F08F';
+}
+.sc-badge-icon-arrow-l:before{
+    content:'\F090';
+}
+.sc-badge-icon-arrow-u:before{
+    content:'\F091';
+}
+.sc-badge-icon-arrow-d:before{
+    content:'\F092';
+}
+.sc-badge-icon-pencil:before{
+    content:'\F093';
+}
+.sc-badge-icon-folder:before{
+    content:'\F094';
+}
+.sc-badge-icon-key:before{
+    content:'\F095';
+}
+.sc-badge-icon-tag:before{
+    content:'\F096';
+}
+.sc-badge-icon-book:before{
+    content:'\F097';
+}
+.sc-badge-icon-lightning:before{
+    content:'\F098';
+}
+.sc-badge-icon-ban:before{
+    content:'\F099';
+}
+.sc-badge-icon-user:before{
+    content:'\F09A';
+}
+.sc-badge-icon-star:before{
+    content:'\F09B';
+}
+.sc-badge-icon-globe-americas:before{
+    content:'\F09C';
+}
+.sc-envelope-alt:before{
+    content:'\F09D';
+}
+.sc-spiral:before{
+    content:'\F09E';
+}
+.sc-torch:before{
+    content:'\F09F';
+}
+.sc-chain:before{
+    content:'\F0A0';
+}
+.sc-hand:before{
+    content:'\F0A1';
+}
+.sc-badge-icon-torch:before{
+    content:'\F0A2';
+}
+.sc-badge-icon-chain:before{
+    content:'\F0A3';
+}
+.sc-badge-icon-hand:before{
+    content:'\F0A4';
+}
+.sc-book-open:before{
+    content:'\F0A5';
+}
+.sc-scroll:before{
+    content:'\F0A6';
+}
+.sc-parens:before{
+    content:'\F0A7';
+}
+.sc-badge-icon-radio-false:before{
+    content:'\F0A8';
+}
+.sc-badge-icon-radio-true:before{
+    content:'\F0A9';
+}
