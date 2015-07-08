@@ -25,9 +25,8 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.runtime.Document;
-import org.eclipse.stardust.engine.api.runtime.Folder;
-import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.api.query.DocumentQuery;
+import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
@@ -79,7 +78,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
    private boolean quickSearchApplicable = false;
    private boolean isBackupAllowed = false;
    private RepositoryResourceUserObject editingResource = null;
-   
+
    private IppEventController ippEventController;
    private EventHandler eventHandler;
    private boolean registred;
@@ -138,7 +137,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
          }
          else if (RepositoryMode.CASE_DOCUMENTS == this.repositoryMode)
          {
-            this.processInstances=ProcessInstanceUtils.findChildren(processInstance); 
+            this.processInstances=ProcessInstanceUtils.findChildren(processInstance);
             model = RepositoryUtility.createCaseDocumentsModel(this.processInstances,this.processInstance);
             if (null != ippEventController)
             {
@@ -159,7 +158,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
          else if (RepositoryMode.MY_REPORTS == this.repositoryMode)
          {
            model = RepositoryUtility.createMyReportsModel();
-         } 
+         }
       }
       catch (Exception e)
       {
@@ -168,7 +167,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
    }
 
    /**
-    * 
+    *
     */
    public void destroy()
    {
@@ -182,7 +181,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
 
    /**
     * returns current instance
-    * 
+    *
     * @return
     */
    public static GenericRepositoryTreeViewBean getInstance()
@@ -197,7 +196,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
 
    /**
     * gets invoked when user expands or collapse the tree node
-    * 
+    *
     * @param ae
     */
    public void treeEvent(ActionEvent ae)
@@ -232,7 +231,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
    /**
     * Handles the intra tree drag-drop operation Copies/Moves the selected document into
     * target folder
-    * 
+    *
     * @param dropEvent
     */
    public void dropPanelListener(DropEvent dropEvent)
@@ -309,34 +308,54 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
       }
       else
       {
-         newQuery = newQuery.toLowerCase();
-         newQuery = DocumentMgmtUtility.replaceIllegalXpathSearchChars(newQuery);
-         if (logger.isDebugEnabled())
+         try
          {
-            logger.debug("Searching for: " + newQuery);
+            newQuery = newQuery.toLowerCase();
+            newQuery = DocumentMgmtUtility.replaceIllegalXpathSearchChars(newQuery);
+            if (logger.isDebugEnabled())
+            {
+               logger.debug("Searching for: " + newQuery);
+            }
+            String xPathQuery = "//*[jcr:like(fn:lower-case(@vfs:metaData/vfs:name), '%"
+                  + newQuery + "%')]";
+
+            this.resourceMatchPossibilities.clear();
+
+            List<Document> documents = DocumentMgmtUtility.getDocumentManagementService()
+                  .findDocuments(xPathQuery);
+            for (Document document : documents)
+            {
+               this.resourceMatchPossibilities.add(new SelectItem(document.getPath(),
+                     document.getPath()));
+               matchPossibilitiesSet.add(document.getPath());
+
+            }
+            List<Folder> folders = DocumentMgmtUtility.getDocumentManagementService()
+                  .findFolders(xPathQuery, Folder.LOD_NO_MEMBERS);
+            for (Folder folder : folders)
+            {
+               this.resourceMatchPossibilities.add(new SelectItem(folder.getPath(),
+                     folder.getPath()));
+               matchPossibilitiesSet.add(folder.getPath());
+            }
          }
-         String xPathQuery = "//*[jcr:like(fn:lower-case(@vfs:metaData/vfs:name), '%" + newQuery + "%')]";
-
-         this.resourceMatchPossibilities.clear();
-
-         List<Document> documents = DocumentMgmtUtility.getDocumentManagementService().findDocuments(xPathQuery);
-         for (Document document : documents)
+         catch (Exception e)
          {
-            this.resourceMatchPossibilities.add(new SelectItem(document.getPath(), document.getPath()));
-            matchPossibilitiesSet.add(document.getPath());
+            DocumentQuery query = DocumentQuery.findAll();
+            query.where(DocumentQuery.NAME.like("%" + (String) event.getNewValue() + "%"));
 
-         }
-         List<Folder> folders = DocumentMgmtUtility.getDocumentManagementService().findFolders(xPathQuery,
-               Folder.LOD_NO_MEMBERS);
-         for (Folder folder : folders)
-         {
-            this.resourceMatchPossibilities.add(new SelectItem(folder.getPath(), folder.getPath()));
-            matchPossibilitiesSet.add(folder.getPath());
+            Documents documents = DocumentMgmtUtility.getDocumentManagementService().findDocuments(query);
+            for (Document document : documents)
+            {
+               this.resourceMatchPossibilities.add(new SelectItem(document.getPath(),
+                     document.getPath()));
+               matchPossibilitiesSet.add(document.getPath());
+            }
          }
       }
       resourceMatchPossibilities = getUniquePossibilitiesList(matchPossibilitiesSet);
    }
-   
+
    /**
     * @return
     */
@@ -369,15 +388,15 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
 
    /**
     * creates model - root node
-    * 
+    *
     * @return DefaultTreeModel
     */
    public DefaultTreeModel getModel()
    {
       return model;
    }
-   
-   
+
+
    /**
     * @param event
     */
@@ -390,7 +409,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
    /**
     * This function handles the create folder operation and also keeps a check on rename
     * operation
-    * 
+    *
     * @param event
     */
    public void createSubfolder(ActionEvent event)
@@ -403,7 +422,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
 
    /**
     * This function handles the create new file operation and also keeps a check on rename
-    * 
+    *
     * @param event
     */
    public void createTextDocument(ActionEvent event)
@@ -438,7 +457,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
       dialog.setUserObject(userObject);
       dialog.openPopup();
    }
-   
+
    public void showRepositoryProperties(ActionEvent event)
    {
       BindRepositoryDialog dialog = BindRepositoryDialog.getInstance();
@@ -447,7 +466,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
       dialog.setRepositoryId(repositoryId);
       dialog.openPopup();
    }
-   
+
    /**
     * @param event
     */
@@ -459,7 +478,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
    /**
     * This function helps to complete rename file/folder operation before starting other
     * operations
-    * 
+    *
     * @return
     */
    public boolean isEditingModeOff()
@@ -478,19 +497,19 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
       }
       return true;
    }
-   
-   
+
+
    /**
     * @param event
     */
    private void rename()
    {
       if(null != editingResource){
-         editingResource.renameStart();   
+         editingResource.renameStart();
       }
    }
 
-   
+
    /**
     * @param possibilitiesSet
     * @return
@@ -521,7 +540,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
    {
       this.skipDocumentEvents = skipDocumentEvents;
    }
-   
+
    public void setResourceMatchPossibilities(List<SelectItem> resourceMatchPossibilities)
    {
       this.resourceMatchPossibilities = resourceMatchPossibilities;
@@ -563,9 +582,9 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
          return false;
       }
    }
-   
-   
-	public void confirmDeleteResource(ActionEvent event) 
+
+
+	public void confirmDeleteResource(ActionEvent event)
 	{
       deleteUserObject = (RepositoryResourceUserObject) event.getComponent().getAttributes().get("userObject");
       MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
@@ -575,8 +594,8 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
       genericRepoConfirmationDialog.openPopup();
 	}
 
-	
-	public void confirmDetachResource(ActionEvent event) 
+
+	public void confirmDetachResource(ActionEvent event)
     {
       detachUserObject = (RepositoryResourceUserObject) event.getComponent().getAttributes().get("userObject");
       MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
@@ -585,7 +604,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
       genericRepoConfirmationDialog.setMessage(propsBean.getString("common.confirmDetach.message.label"));
       genericRepoConfirmationDialog.openPopup();
     }
-	
+
    public void confirmYes()
    {
       if (detachUserObject != null)
@@ -613,14 +632,14 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
       }
    }
 
-	public void confirmNo() 
+	public void confirmNo()
 	{
 		deleteUserObject = null;
 		repositoryUserObject = null;
 		repositoryId = null;
 		detachUserObject = null;
 	}
-	
+
    public void confirmUnbindRepository(ActionEvent event)
    {
       repositoryUserObject = (RepositoryNodeUserObject) event.getComponent().getAttributes().get("userObject");
@@ -632,7 +651,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
             repositoryUserObject.getRepositoryInstance().getRepositoryId()));
       genericRepoConfirmationDialog.openPopup();
    }
-   
+
    public void confirmSwitchDefaultRepo(ActionEvent event)
    {
       repositoryId = (String) event.getComponent().getAttributes().get("repositoryId");
@@ -647,7 +666,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
    }
 
 	/**
-	 * 
+	 *
 	 */
 	 public boolean accept()
      {
@@ -657,7 +676,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
      }
 
 	 /**
-	  * 
+	  *
 	  */
      public boolean cancel()
      {
@@ -670,7 +689,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
    {
       return quickSearchApplicable;
    }
-   
+
    public boolean isBackupAllowed()
    {
       return isBackupAllowed;
@@ -729,7 +748,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
             }
          }
       }
-      
+
       /* (non-Javadoc)
        * @see org.eclipse.stardust.ui.web.viewscommon.common.event.DocumentEventObserver#handleEvent(org.eclipse.stardust.ui.web.viewscommon.common.event.DocumentEvent)
        */
@@ -738,7 +757,7 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
          if (!skipDocumentEvents && event.getProcessInstanceOid() == processInstance.getOID())
          {
             DefaultMutableTreeNode treeNode;
-   
+
             int count = getRootNode().getChildCount();
             for (int i = 0; i < count; i++)
             {
@@ -753,5 +772,5 @@ public class GenericRepositoryTreeViewBean extends UIComponentBean implements Vi
          }
       }
    }
-     
+
 }
