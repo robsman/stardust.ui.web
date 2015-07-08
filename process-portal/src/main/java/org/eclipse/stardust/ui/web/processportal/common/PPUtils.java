@@ -93,7 +93,7 @@ public class PPUtils
 {
    private static final Logger trace = LogManager.getLogger(PPUtils.class);
    private static final String WORKLIST_VIEW_ID = "worklistPanel";//Note:this can be moved to any util class in process-portal
-
+   private static final String WORKLIST_VIEW_ID_IF = "worklistPanelIceFaces";
    private PPUtils()
    {}
 
@@ -107,7 +107,7 @@ public class PPUtils
     */
    public static void openWorklistView(String viewKey, Map<String, Object> params)
    {
-      PortalApplication.getInstance().openViewById(WORKLIST_VIEW_ID, viewKey, params, null, false);
+      PortalApplication.getInstance().openViewById(WORKLIST_VIEW_ID_IF, viewKey, params, null, false);
    }
    
    /**
@@ -116,7 +116,7 @@ public class PPUtils
     */
    public static void openWorklistViewHTML5(String viewKey, Map<String, Object> params)
    {
-      PortalApplication.getInstance().openViewById("worklistViewHtml5", viewKey, params, null, false);
+      PortalApplication.getInstance().openViewById(WORKLIST_VIEW_ID, viewKey, params, null, false);
    }
 
    /**
@@ -247,8 +247,8 @@ public class PPUtils
          }
          else
          {
-			// User-Worklist(Deputy Of) is contained in Sub-worklist of
-			// User worklist(Deputy)
+            // User-Worklist(Deputy Of) is contained in Sub-worklist of
+            // User worklist(Deputy)
             Iterator<Worklist> subWorklistIter = worklist.getSubWorklists();
             Worklist subWorklist1;
             while (subWorklistIter.hasNext())

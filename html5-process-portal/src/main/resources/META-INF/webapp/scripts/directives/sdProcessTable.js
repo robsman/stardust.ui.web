@@ -564,7 +564,7 @@
 							name : sgI18nService.translate('views-common-messages.views-switchProcessDialog-worklist-title', 'Abort and Join Process'),
 							pInstanceOids : result.join(",")
 					};
-					sdViewUtilService.openView('worklistViewHtml5', 'id='+viewKey, params, true);
+					sdViewUtilService.openView('worklistPanel', 'id='+viewKey, params, true);
 				}
 			};
 

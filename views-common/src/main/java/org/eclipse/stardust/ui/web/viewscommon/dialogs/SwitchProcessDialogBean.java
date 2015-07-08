@@ -345,7 +345,7 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
             }
             params.put("pInstanceOids", StringUtils.join(pInstanceOids, ','));
             params.put("name", COMMON_MESSAGE_BEAN.getString("views.switchProcessDialog.worklist.title"));
-            PortalApplication.getInstance().openViewById("worklistViewHtml5", "id=" + new Date().getTime(), params, null,
+            PortalApplication.getInstance().openViewById("worklistPanel", "id=" + new Date().getTime(), params, null,
                   false);
          }
       }

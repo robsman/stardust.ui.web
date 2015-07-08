@@ -462,7 +462,7 @@
 	    				pInstanceOids :  result.join(','),
 	    				name : name   
 	    		}  
-	    		sdViewUtilService.openView('worklistViewHtml5', 'id='+new Date().getTime(), params, true);
+	    		sdViewUtilService.openView('worklistPanel', 'id='+new Date().getTime(), params, true);
 	    	}
 	    };
 

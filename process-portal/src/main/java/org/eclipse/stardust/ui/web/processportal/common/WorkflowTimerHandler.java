@@ -33,7 +33,7 @@ public class WorkflowTimerHandler implements TimerEventHandler
    private static final Logger trace = LogManager.getLogger(WorkflowTimerHandler.class);
 
    public static final String WORKLIST_BEAN = "worklistsBean";
-   public static final String WORKLIST_PANEL = "worklistPanel";
+   public static final String WORKLIST_PANEL = "worklistPanelIceFaces";
 
    public static final String BEAN_NAME = "workflowTimer";
 
@@ -54,9 +54,7 @@ public class WorkflowTimerHandler implements TimerEventHandler
    {
       updateWorklistTable();
       updateWorkflowLaunchPanel();
-      
-      PortalApplication.getInstance().renderActiveView();
-      PortalApplication.getInstance().renderLaunchPanels();
+      PortalApplication.getInstance().renderPortalSession();
    }
 
    /**
@@ -104,9 +102,8 @@ public class WorkflowTimerHandler implements TimerEventHandler
                String controllerName = worklistView.getDefinition().getController();
                if (controllerName != null)
                {
-                  WorklistTableBean worklistTableBean = (WorklistTableBean) worklistView.getCurrentTabScope().get(
-                        controllerName);
-                  
+                  WorklistTableBean worklistTableBean = (WorklistTableBean) FacesUtils
+                        .getBeanFromContext(controllerName);
                   // for inactive tab, set the flag for refresh on activation
                   if (currentView.getViewState().equals(ViewState.INACTIVE))
                   {

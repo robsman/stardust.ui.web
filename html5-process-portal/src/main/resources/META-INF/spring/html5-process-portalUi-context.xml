@@ -11,15 +11,6 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		messageBundles="html5-process-portal">
 
 		<ippui:viewsExtension>
-			<ippui:view name="worklistViewHtml5"
-				include="/plugins/html5-process-portal/partials/views/worklistView.html">
-				<ippui:preferences>
-					<ippui:preferencePage name="icon"
-						include="/plugins/views-common/images/icons/clipboard-task.png" />
-				</ippui:preferences>
-			</ippui:view>
-		</ippui:viewsExtension>
-		<ippui:viewsExtension>
 		<ippui:view name="notesPanelHtml5"
 				include="/plugins/html5-process-portal/partials/views/notesPanel.html">
 			</ippui:view>

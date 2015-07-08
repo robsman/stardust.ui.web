@@ -213,7 +213,7 @@ public class SpawnProcessHelper
             params.put("name", workListTitle);
             params.put("pInstanceOids", StringUtils.join(pInstanceOids, ','));
             long id = new Date().getTime();//to make view unique
-            PortalApplication.getInstance().openViewById("worklistViewHtml5", "id=" + id, params, null, false);
+            PortalApplication.getInstance().openViewById("worklistPanel", "id=" + id, params, null, false);
          }
       }
       catch (Exception e)
