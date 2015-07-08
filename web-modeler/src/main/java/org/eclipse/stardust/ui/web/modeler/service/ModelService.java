@@ -337,7 +337,6 @@ public class ModelService
       if(modelUpgrader.upgradeNeeded())
       {
          ModelType upgradedModel = modelUpgrader.doUpgradeModel();
-         getModelManagementStrategy().saveModel(upgradedModel);         
       }
    }
 
