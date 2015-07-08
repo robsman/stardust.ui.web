@@ -14,6 +14,7 @@ package org.eclipse.stardust.ui.web.modeler.upgrade.jobs;
 import org.eclipse.stardust.common.config.Version;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.core.model.beans.XMLConstants;
 import org.eclipse.stardust.model.xpdl.builder.defaults.DefaultElementsInitializer;
 import org.eclipse.stardust.model.xpdl.builder.spi.ModelInitializer;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
@@ -48,6 +49,12 @@ public class R9_0_0from7_0_0UpgradeJob extends UpgradeJob
     */
    public ModelType upgradeModel(ModelType model)
    {
+      String vendor = model.getVendor();
+      if(vendor != null && !vendor.equals(XMLConstants.VENDOR_NAME))
+      {
+         model.setVendor(XMLConstants.VENDOR_NAME);
+      }
+            
       ModelInitializer initializer = new DefaultElementsInitializer();
       initializer.initializeModel(model);
       
