@@ -6,7 +6,8 @@
 				ng-disabled="!(ctrl.rowSelectionAssignedRolesTable.length > 0 && ctrl.userManagerDetails.manageAuthorization)"
 				ng-click="bpmCommon.stopEvent($event); ctrl.removeRoleFromUser(ctrl.rowSelectionAssignedRolesTable);"
 				title="{{i18n('business-control-center-messages.views-common-button-removeRoleFromUser')}}"
-				class="button-link tbl-toolbar-item tbl-tool-link">
+				class="button-link tbl-toolbar-item tbl-tool-link"
+				aid="BCC-UserMgrDet-RoleAssignedTbl-RemRoleFrmUser">
 				<i class="sc sc-fw sc-1x sc-users"></i>
 			</button>
 		</div>

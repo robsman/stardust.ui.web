@@ -29,6 +29,7 @@
 			},
 			template : '<button ng-click="refresh()"'+
 					' title="{{refreshController.i18n(\'processportal.launchPanels-worklists-button-refresh\')}}"'+
+					' aid="Refresh"' +
 					' class="button-link">'+
 					' <i class="glyphicon glyphicon-refresh"></i>'+
 				    '</button>',

@@ -4,7 +4,8 @@
 		<div class="tbl-toolbar-section">
 			<button	ng-click="ctrl.showHideNonDeputyParticipant(!ctrl.showHideNonDepParticipant);"
 				title="{{i18n('business-control-center-messages.views-deputyTeamMemberView-myTeamMembers-toggle')}}"
-				class="button-link tbl-toolbar-item tbl-tool-link">
+				class="button-link tbl-toolbar-item tbl-tool-link"
+				aid="BCC-DeputyMgmt-UserTbl-ShowHideNonDepParticipant">
 				<i ng-if="ctrl.showHideNonDepParticipant" class="sc sc-fw sc-1x sc-user"></i>
 				<i ng-if="!ctrl.showHideNonDepParticipant" class="sc sc-fw sc-1x sc-user" style="opacity: 0.4;"></i>
 			</button>

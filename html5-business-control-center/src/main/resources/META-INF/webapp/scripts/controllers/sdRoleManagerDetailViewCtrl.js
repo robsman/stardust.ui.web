@@ -273,7 +273,7 @@
      * @returns preferenceStore
      */
 	RoleManagerDetailViewCtrl.prototype.preferenceForAssignedUserTable = function(prefInfo) {
-		var preferenceStore = _sdPreferenceService.getStore('USER', 'ipp-business-control-center', 'preference'); // Override
+		var preferenceStore = _sdPreferenceService.getStore(prefInfo.scope, 'ipp-business-control-center', 'preference'); // Override
 		preferenceStore.marshalName = function(scope) {
 			return "ipp-business-control-center.userAssigned.selectedColumns";
 		}
@@ -286,7 +286,7 @@
      * @returns
      */
 	RoleManagerDetailViewCtrl.prototype.preferenceForAssignableUserTable = function(prefInfo) {
-		var preferenceStore = _sdPreferenceService.getStore('USER', 'ipp-business-control-center', 'preference'); // Override
+		var preferenceStore = _sdPreferenceService.getStore(prefInfo.scope, 'ipp-business-control-center', 'preference'); // Override
 		preferenceStore.marshalName = function(scope) {
 			return "ipp-business-control-center.userAssignable.selectedColumns";
 		}

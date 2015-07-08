@@ -3,7 +3,8 @@
 		<div class="tbl-toolbar-section">
 			<button	ng-disabled="ctrl.rowSelectionForUsers == null" ng-click="ctrl.openCreateOrModifyDeputyDialog('','ADD');"
 				title="{{i18n('business-control-center-messages.views-deputyTeamMemberView-addDeputy-title')}}"
-				class="button-link tbl-toolbar-item tbl-tool-link">
+				class="button-link tbl-toolbar-item tbl-tool-link"
+				aid="BCC-DeputyMgmt-MyDeputiesTbl-AddDeputy">
 				<i class="sc sc-fw sc-1x sc-users"></i>
 			</button>
 		</div>
@@ -34,13 +35,15 @@
 						<button
 							ng-click="bpmCommon.stopEvent($event);ctrl.openCreateOrModifyDeputyDialog(rowData,'EDIT')"
 							title="{{i18n('business-control-center-messages.views-deputyTeamMemberView-edit')}}"
-							class="button-link tbl-tool-link">
+							class="button-link tbl-tool-link"
+							aid="BCC-DeputyMgmt-MyDeputiesTbl-EditDeputy">
 							<i class="sc sc-pencil action-column-icon"></i>
 						</button>
 						<button
 							ng-click="bpmCommon.stopEvent($event);ctrl.removeUserDeputy(rowData.userOID)"
 							title="{{i18n('business-control-center-messages.views-deputyTeamMemberView-remove')}}"
-							class="button-link tbl-tool-link">
+							class="button-link tbl-tool-link"
+							aid="BCC-DeputyMgmt-MyDeputiesTbl-RemoveDeputy">
 							<i class="sc sc-minus-circle action-column-icon" style="color:red;"></i>
 						</button>
 						

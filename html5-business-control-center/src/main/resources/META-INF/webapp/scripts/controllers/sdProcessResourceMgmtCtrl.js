@@ -166,7 +166,7 @@
 	 */
 
 	ProcessResourceMgmtCtrl.prototype.preferenceDelegateForRolesTable = function(prefInfo) {
-		var preferenceStore = _sdPreferenceService.getStore('USER', 'ipp-business-control-center', 'preference'); // Override
+		var preferenceStore = _sdPreferenceService.getStore(prefInfo.scope, 'ipp-business-control-center', 'preference'); // Override
 		preferenceStore.marshalName = function(scope) {
 			return "ipp-business-control-center.ProcessResourceRoleMgmt.selectedColumns";
 		}
@@ -174,7 +174,7 @@
 	};
 
 	ProcessResourceMgmtCtrl.prototype.preferenceDelegateForUsersTable = function(prefInfo) {
-		var preferenceStore = _sdPreferenceService.getStore('USER', 'ipp-business-control-center', 'preference'); // Override
+		var preferenceStore = _sdPreferenceService.getStore(prefInfo.scope, 'ipp-business-control-center', 'preference'); // Override
 		preferenceStore.marshalName = function(scope) {
 			return "ipp-business-control-center.ProcessResourceUserMgmt.selectedColumns";
 		}

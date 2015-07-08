@@ -2,7 +2,7 @@
 	ng-controller="sdUserManagerDetailViewCtrl as ctrl">
 	<div class="view-panel-toolbar toolbar-buttons">
 		<div class="view-toolbar-section">
-			<span sd-refresh sda-on-refresh="ctrl.refresh();"></sapn>
+			<span sd-refresh sda-on-refresh="ctrl.refresh();" aid="BCC-UserMgrDet"></sapn>
 		</div>
 	</div>
 	<div id="alertMsg" ng-show="ctrl.userAuthorizationMsg"
@@ -14,7 +14,7 @@
 					<td><span>{{i18n('views-common-messages.views-participantTree-toolbar-highlightUsers-alertMsg')}}</span>
 						<button class="close" title="Close" type="button"
 							aria-label="Close" ng-click="ctrl.closeAlertMsg()"
-							style="padding-left: 200px">
+							style="padding-left: 200px" aid="BCC-UserMgrDet-CloseAuthMsg">
 							<span aria-hidden="true">&times;</span>
 						</button></td>
 				</tr>
@@ -59,11 +59,11 @@
 	<div style="margin-top: 10px;">
 		<ul id="myTab" class="nav nav-tabs" style="margin-bottom: 5px;">
 			<li class="active"><a href="#roleAssignment" data-toggle="tab"
-				ng-click="ctrl.showRoleAssignment()" class="heading">
+				ng-click="ctrl.showRoleAssignment()" class="heading" aid="BCC-UserMgrDet-RoleAssignmentTab">
 					{{i18n('business-control-center-messages.views-common-roleAssignment-label')}}
 			</a></li>
 			<li><a href="#activityList" ng-click="ctrl.showActivityList()"
-				data-toggle="tab" class="heading">{{i18n('business-control-center-messages.views-common-activityList-label')}}</a></li>
+				data-toggle="tab" class="heading" aid="BCC-UserMgrDet-ActivityListTab">{{i18n('business-control-center-messages.views-common-activityList-label')}}</a></li>
 		</ul>
 		<div id="myTabContent" class="tab-content">
 			<div id="roleAssignment" ng-show="ctrl.activeTab==1">

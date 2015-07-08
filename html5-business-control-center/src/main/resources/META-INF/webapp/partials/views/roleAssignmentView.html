@@ -1,7 +1,8 @@
 <div class="view-panel" ng-controller="sdRoleAssignmentCtrl as ctrl" sg-stretch-to-bottom>
 	<div class="view-panel-toolbar toolbar-buttons">
 		<div class="view-toolbar-section">
-			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+			<span sd-refresh sda-on-refresh="ctrl.refresh();"
+			aid="BCC-RoleAssignment"></span>
 		</div>
 	</div>
 	<div ng-if="ctrl.createTable">
@@ -27,7 +28,8 @@
 					<td sda-exporter="rowData.teamMember"><a href="#"
 						ng-click="bpmCommon.stopEvent($event); ctrl.openUserManagerView(rowData.userOid,rowData.userId);"
 						title="{{i18n('business-control-center-messages.views-userManagerDetailView-title')}}"
-						class="tbl-tool-link">{{rowData.teamMember}}</a></td>
+						class="tbl-tool-link"
+						aid="BCC-RoleAssignment-RoleTbl-TeamMember">{{rowData.teamMember}}</a></td>
 					<td ng-repeat="obj in ctrl.columns"
 						sda-exporter="ctrl.getExportValue(rowData.columnsValue[colData.title])">
 						<div sd-role-assignment-column-content

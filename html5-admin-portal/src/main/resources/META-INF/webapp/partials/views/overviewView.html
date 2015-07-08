@@ -1,7 +1,8 @@
 <div class="view-panel" ng-controller="sdOverviewCtrl as ctrl" sg-stretch-to-bottom>
 	<div class="view-panel-toolbar toolbar-buttons">
 		<div class="view-toolbar-section">
-			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+			<span sd-refresh sda-on-refresh="ctrl.refresh();"
+			aid="ADM-Overview"></span>
 		</div>
 	</div>
 		<div class="overview-wrapper">
@@ -11,15 +12,15 @@
 				<table>
 					<tr>
 						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-total-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
-						<td><span class="activity-overview-report-field-value">{{ctrl.processInstanceCounts.total}}</span></td>
+						<td><span class="activity-overview-report-field-value" aid="ADM-Overview-TotalProcCnt">{{ctrl.processInstanceCounts.total}}</span></td>
 						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-active-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
-						<td><span class="activity-overview-report-field-value">{{ctrl.processInstanceCounts.active}}</span></td>
+						<td><span class="activity-overview-report-field-value" aid="ADM-Overview-ActiveProcCnt">{{ctrl.processInstanceCounts.active}}</span></td>
 						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-interrupted-label') +  i18n('admin-portal-messages.common-colon')}}</span></td>
-						<td><span class="activity-overview-report-field-value">{{ctrl.processInstanceCounts.waiting}}</span></td>
+						<td><span class="activity-overview-report-field-value" aid="ADM-Overview-IntProcCnt">{{ctrl.processInstanceCounts.waiting}}</span></td>
 						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-aborted-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
-						<td><span class="activity-overview-report-field-value">{{ctrl.processInstanceCounts.aborted}}</span></td>
+						<td><span class="activity-overview-report-field-value" aid="abortedProcessInstancesCount">{{ctrl.processInstanceCounts.aborted}}</span></td>
 						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-completed-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
-						<td><span class="activity-overview-report-field-value">{{ctrl.processInstanceCounts.completed}}</span></td>
+						<td><span class="activity-overview-report-field-value" aid="ADM-Overview-CompProcCnt">{{ctrl.processInstanceCounts.completed}}</span></td>
 					</tr>
 				</table>
 			</div>
@@ -29,15 +30,15 @@
 				<table>
 					<tr>
 						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-total-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
-						<td><span class="activity-overview-report-field-value">{{ctrl.activityInstanceCounts.total}}</span></td>
+						<td><span class="activity-overview-report-field-value" aid="ADM-Overview-TotalActCnt">{{ctrl.activityInstanceCounts.total}}</span></td>
 						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-active-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
-						<td><span class="activity-overview-report-field-value">{{ctrl.activityInstanceCounts.active}}</span></td>
+						<td><span class="activity-overview-report-field-value" aid="ADM-Overview-ActiveActCnt">{{ctrl.activityInstanceCounts.active}}</span></td>
 						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-waiting-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
-						<td><span class="activity-overview-report-field-value">{{ctrl.activityInstanceCounts.waiting}}</span></td>
+						<td><span class="activity-overview-report-field-value"aid="ADM-Overview-WaitActCnt">{{ctrl.activityInstanceCounts.waiting}}</span></td>
 						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-aborted-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
-						<td><span class="activity-overview-report-field-value">{{ctrl.activityInstanceCounts.aborted}}</span></td>
+						<td><span class="activity-overview-report-field-value" aid="ADM-Overview-AbortActCnt">{{ctrl.activityInstanceCounts.aborted}}</span></td>
 						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-completed-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
-						<td><span class="activity-overview-report-field-value">{{ctrl.activityInstanceCounts.completed}}</span></td>
+						<td><span class="activity-overview-report-field-value" aid="ADM-Overview-CompActCnt">{{ctrl.activityInstanceCounts.completed}}</span></td>
 					</tr>
 				</table>
 			</div>
@@ -47,9 +48,9 @@
 				<table>
 					<tr>
 						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-total-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
-						<td><span class="activity-overview-report-field-value">{{ctrl.userCounts.totalCount}}</span></td>
+						<td><span class="activity-overview-report-field-value" aid="ADM-Overview-TotalUserCnt">{{ctrl.userCounts.totalCount}}</span></td>
 						<td><span class="label-item">{{i18n('admin-portal-messages.views-common-valid-label') + i18n('admin-portal-messages.common-colon')}}</span></td>
-						<td><span class="activity-overview-report-field-value">{{ctrl.userCounts.activeCount}}</span></td>
+						<td><span class="activity-overview-report-field-value" aid="ADM-Overview-ValidUserCnt">{{ctrl.userCounts.activeCount}}</span></td>
 					</tr>
 				</table>
 			</div>
@@ -85,7 +86,8 @@
 							</td>
 							<td sda-exporter="rowData.account"><sd-user-details
 									sda-user-oid="rowData.userOID" sda-account="rowData.account"
-									sda-link-disabled="rowData.linkDisabled"> </sd-user-details></td>
+									sda-link-disabled="rowData.linkDisabled"
+									sda-aid-prefix="ADM-Overview-LogTable"> </sd-user-details></td>
 						</tr>
 					</tbody>
 				</table>

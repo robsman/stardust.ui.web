@@ -3,7 +3,7 @@
 	sg-stretch-to-bottom>
 	<div class="toolbar-buttons">
 		<div class="view-toolbar-section">
-			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+			<span sd-refresh sda-on-refresh="ctrl.refresh();" aid="ADM-ActivityView"></span>
 		</div>
 	</div>
 
@@ -16,31 +16,31 @@
 					ng-bind="i18n('admin-portal-messages.views-common-total-label')+i18n('admin-portal-messages.common-colon')">
 				</span></td>
 				<td><span class="overview-report-field-value"
-					ng-bind="ctrl.count.total"> </span></td>
+					ng-bind="ctrl.count.total" aid="ADM-ActivityView-TotalActCnt"> </span></td>
 
 				<td><span class="label-item" style="font-weight:bold"
 					ng-bind="i18n('admin-portal-messages.views-common-active-label')+i18n('admin-portal-messages.common-colon')">
 				</span></td>
 				<td><span class="overview-report-field-value"
-					ng-bind="ctrl.count.active"> </span></td>
+					ng-bind="ctrl.count.active" aid="ADM-ActivityView-ActiveActCnt"> </span></td>
 
 				<td><span class="label-item" style="font-weight:bold"
 					ng-bind="i18n('admin-portal-messages.views-common-waiting-label')+i18n('admin-portal-messages.common-colon')">
 				</span></td>
 				<td><span class="overview-report-field-value"
-					ng-bind="ctrl.count.waiting"> </span></td>
+					ng-bind="ctrl.count.waiting" aid="ADM-ActivityView-WaitActCnt"> </span></td>
 
 				<td><span class="label-item" style="font-weight:bold"
 					ng-bind="i18n('admin-portal-messages.views-common-aborted-label')+i18n('admin-portal-messages.common-colon')">
 				</span></td>
 				<td><span class="overview-report-field-value"
-					ng-bind="ctrl.count.aborted"> </span></td>
+					ng-bind="ctrl.count.aborted" aid="ADM-ActivityView-AbortActCnt"> </span></td>
 
 				<td><span class="label-item" style="font-weight:bold"
 					ng-bind="i18n('admin-portal-messages.views-common-completed-label')+i18n('admin-portal-messages.common-colon')">
 				</span></td>
 				<td><span class="overview-report-field-value"
-					ng-bind="ctrl.count.completed"> </span></td>
+					ng-bind="ctrl.count.completed" aid="ADM-ActivityView-CompActCnt"> </span></td>
 
 			</tr>
 		</table>

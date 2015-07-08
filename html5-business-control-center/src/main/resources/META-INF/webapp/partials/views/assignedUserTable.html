@@ -3,6 +3,7 @@
 		<span class="form-lable">{{i18n('business-control-center-messages.views-common-showLoggedInUser-label')}}</span>
 		<input type="checkbox" ng-model="ctrl.showLoggedInAssignedUsers"
 			ng-change="ctrl.refreshLoggedInAssignedUsers()"
+			aid="BCC-RoleMgrDet-AssignedUserTbl-ShowLoggedInUser"
 			style="margin: 4px" />
 	</div>
 	<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-common-assignedUser-title')}}</div>
@@ -12,7 +13,8 @@
 				ng-disabled="!(ctrl.rowSelectionAssignedUsersTable.length > 0 && ctrl.roleManagerDetails.roleModifiable)"
 				ng-click="bpmCommon.stopEvent($event); ctrl.removeUserFromRole(ctrl.rowSelectionAssignedUsersTable);"
 				title="{{i18n('business-control-center-messages.views-common-button-removeUserFromRole')}}"
-				class="button-link tbl-toolbar-item tbl-tool-link">
+				class="button-link tbl-toolbar-item tbl-tool-link"
+				aid="BCC-RoleMgrDet-AssignedUserTbl-RemUserFromRole">
 				<i class="sc sc-fw sc-1x sc-users"></i>
 			</button>
 		</div>
