@@ -201,6 +201,7 @@ div#loginBox .buttonContainer input{
 	border-top:1px solid #666666;
 	border-bottom:1px solid #000000;
 	color:#DDDDDD;
+	overflow: hidden;
 }
 
 .topMenuTd{
@@ -240,7 +241,11 @@ div#loginBox .buttonContainer input{
 	border-top: none;
 	border-bottom: none;
 	color: #DDDDDD;
-	margin-top:-2px;
+	overflow: hidden;
+}
+
+.topMenuIframeBar table {
+	margin-top: 1px !important;
 }
 
 .topMenuIframeBar .menuItm a{
@@ -255,6 +260,44 @@ div#loginBox .buttonContainer input{
 
 .topMenuIframeBar .menuItm span, .menuItm a:hover {
 	text-decoration:none;
+}
+
+.topMenuIframeBar a {
+	margin-left: 4px;
+	margin-right: 4px;
+}
+
+.topMenuIframeBar a span {
+	margin-top: 0px;
+}
+
+.topMenuIframeBar a img {
+	margin-top: 2px;
+}
+
+.perspective-series {
+	height: 20px;
+}
+
+.perspective-active-font, .perspective-active-img {
+	height: 100%;
+	background-color : lightgray;
+}
+
+.perspective-inactive-font, .perspective-inactive-img {
+	height: 100%;
+}
+
+.perspective-active-font, .perspective-inactive-font {
+	padding-top: 4px;
+}
+
+.perspective-icon {
+	color: #A69A88;
+}
+
+.perspective-icon:hover {
+	color: #906C37 !important;
 }
 
 /* Perspective Menu Ends*/

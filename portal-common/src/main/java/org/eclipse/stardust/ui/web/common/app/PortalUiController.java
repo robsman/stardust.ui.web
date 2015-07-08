@@ -394,8 +394,38 @@ public class PortalUiController
    {
       MenuItem result = new MenuItem();
       result.setTitle(perspective.getLabel());
-      result.setValue(perspective.getLabel());
       result.setId(perspective.getName());
+
+      String icon = null;
+      if (null != perspective.getPreferences())
+      {
+         PreferencePage iconPreference = perspective.getPreferences().getPreference(PreferencesDefinition.PREF_ICON);
+         if (null != iconPreference)
+         {
+            icon = iconPreference.getInclude();
+         }
+      }
+
+      if (StringUtils.isEmpty(icon))
+      {
+         icon = "/plugins/views-common/images/icons/eye.png"; // Default Icon
+      }
+
+      // Check if icon is image URL or a css class. It's mapping with MenuItem -
+      // - Icon property = Image URL
+      // - Value Property = CSS Class
+      if (icon.contains("/") && icon.contains(".")) // It's an image URL
+      {
+         result.setIcon(icon);
+         result.setValue(PortalApplication.deriveIconClass(icon));
+      }
+      else
+      {
+         result.setLink(null);
+         result.setIcon("");
+         result.setValue(icon);
+      }
+
       return result;
    }
 
@@ -451,6 +481,19 @@ public class PortalUiController
    public void perspectiveChangeActionListener(ValueChangeEvent ae) throws AbortProcessingException
    {
       String perspectiveId = (String)ae.getNewValue();
+      processPerspectiveChange(perspectiveId);
+   }
+
+   /**
+    *
+    * @param ae
+    */
+   public void perspectiveChangeAction(ActionEvent ae) throws AbortProcessingException
+   {
+      FacesContext context = FacesContext.getCurrentInstance();
+      Map<String, String> params = context.getExternalContext().getRequestParameterMap();
+      
+      String perspectiveId = params.get("perspectiveId");
       processPerspectiveChange(perspectiveId);
    }
 
