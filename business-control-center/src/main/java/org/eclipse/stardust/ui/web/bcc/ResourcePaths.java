@@ -35,7 +35,7 @@ public interface ResourcePaths
    static final String V_userManagerDetailView = "userManagerDetailView";
    static final String V_roleManagerDetailView = "roleManagerDetailView";
    static final String V_trafficLight = "trafficLightView";
-   static final String V_strandedActivitiesView = "strandedActivitiesHtml5";
+   static final String V_strandedActivitiesView = "strandedActivities";
    static final String V_deputyTeamMemberView = "deputyTeamMemberViewHtml5";
    
 //   static final String V_processOverviewViewActivityTableColumns = "/plugins/business-control-center/views/processOverviewViewActivityTableColumns.xhtml";

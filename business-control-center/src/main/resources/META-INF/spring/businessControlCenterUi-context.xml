@@ -64,10 +64,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
        <ippui:toolbarSection name="postponedActivitiesToolbar"
             include="/plugins/business-control-center/extensions/toolbar/postponedActivitiesToolbar.xhtml"
             requiredView="postponedActivities" />
-       <ippui:toolbarSection name="strandedActivitiesToolbar"
-            include="/plugins/business-control-center/extensions/toolbar/strandedActivitiesToolbar.xhtml"
-            requiredView="strandedActivities" />
-            
+     
        <ippui:toolbarSection name="resourceAvailabilityViewToolbar"
             include="/plugins/business-control-center/extensions/toolbar/resourceAvailabilityViewToolbar.xhtml"
             requiredView="resourceAvailabilityView" />
@@ -136,7 +133,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 					include="/plugins/views-common/images/icons/activity_postponed.png" />
 			</ippui:preferences>
 	   	</ippui:view>
-		<ippui:view name="strandedActivities" include="/plugins/business-control-center/views/strandedActivitiesView.xhtml" controller="strandedActivitiesBean">
+		<ippui:view name="strandedActivities" include="/plugins/html5-business-control-center/partials/views/strandedActivitiesView.html">
 	   		<ippui:preferences>
 				<ippui:preferencePage name="icon"
 					include="/plugins/views-common/images/icons/activity_stranded.png" />

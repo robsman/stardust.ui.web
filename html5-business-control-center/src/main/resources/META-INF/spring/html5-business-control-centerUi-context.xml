@@ -54,15 +54,6 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		</ippui:viewsExtension>
 
 		<ippui:viewsExtension>
-			<ippui:view name="strandedActivitiesHtml5"
-				include="/plugins/html5-business-control-center/partials/views/strandedActivitiesView.html">
-				<ippui:preferences>
-					<ippui:preferencePage name="icon"
-						include="/plugins/views-common/images/icons/activity_stranded.png" />
-				</ippui:preferences>
-			</ippui:view>
-		</ippui:viewsExtension>
-		<ippui:viewsExtension>
 			<ippui:view name="processSearchViewHtml5"
 				include="/plugins/html5-process-portal/partials/views/processSearchView.html">
 				<ippui:preferences>
