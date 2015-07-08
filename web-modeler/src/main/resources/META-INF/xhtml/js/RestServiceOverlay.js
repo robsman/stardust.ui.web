@@ -989,6 +989,9 @@ define(
                      route += "</setHeader>";
                      }
                   }
+                  route += "<setHeader headerName='Content-Type'>";
+                  route += "<simple>" + requestTypeSelect + "</simple>";
+                  route += "</setHeader>";
                   for (var h = 0; h < httpHeaders.length; h++)
                   {
                      var hName = httpHeaders[h].headerName;
@@ -1032,7 +1035,6 @@ define(
                   {
                      httpUri = uri;
                   }
-                  
                   route += "<setHeader headerName='CamelHttpUri'>";
                   route += "<simple>" + httpUri + "</simple>";
                   route += "</setHeader>";
@@ -1048,6 +1050,7 @@ define(
                   {
                      route += "<to uri='bean:bpmTypeConverter?method=toXML' />";
                   }
+                  
                   route += "<to uri='http://isoverwritten";
                   
                   if (securityModeSelect === "httpBasicAuth")
@@ -1060,6 +1063,10 @@ define(
                      route += "&amp;authPassword="+httpBasicAuthPwdInput;
                   }
                   route += "'/>";
+                  route += "<setHeader headerName='Content-Type'>";
+                  route += "<simple>" + responseTypeSelect + "</simple>";
+                  route += "</setHeader>";
+
                   if (responseTypeSelect === "application/json")
                   {
                      route += "<to uri='bean:bpmTypeConverter?method=fromJSON' />";
@@ -1068,7 +1075,6 @@ define(
                   {
                      route += "<to uri='bean:bpmTypeConverter?method=fromXML' />";
                   }
-
                   return route;
                };
 
@@ -1098,6 +1104,22 @@ define(
                   }
                   return this.httpBasicAuthPwdInput.val();
                };
+               
+               
+               RestServiceOverlay.prototype.getContentType = function(input)
+               {
+                  if (input === "application/json")
+                  {
+                     return "application/json";
+                  }
+                  else if (input === "application/xml")
+                  {
+                     return "application/xml";
+                  }else if(input === "text/plain")
+                  {
+                     return "text/plain";
+                  }
+               }
                RestServiceOverlay.prototype.convertConfigVariableToPassword = function(
                         originePwd)
                {
