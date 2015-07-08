@@ -29,17 +29,17 @@
       return {
          restrict : 'A',
          template :
-        	'<button class="button-link" ng-disabled="editMode != true">'
-        	+ '<i ng-click="criticalityIconSelectorCtrl.openPopover($event)" class="glyphicon glyphicon-flag portal-glyph-icon" '
+        	'<button class="button-link" ng-disabled="editMode != true" aid="CritIconSelector">'
+        	+ '<i ng-click="criticalityIconSelectorCtrl.openPopover($event)" class="glyphicon glyphicon-flag portal-glyph-icon" aid="CritIconSelector-SelectedFlg"' 
 	 			+ 'ng-class="\'criticality-flag-\'+ (bindModel != undefined? bindModel : \'NO-COLOR\')"><\/i>  '
 	 		+'</button>'
 			+'<span sd-popover="criticalityIconSelectorCtrl.popoverDirective" ng-disabled="editMode != true">'
 				+ '<div class="popover-body" style="width: 105px;">'
-					+ '<button type="button" class="close" ng-click="criticalityIconSelectorCtrl.closePopover()" aria-label="Close" title="{{i18n == undefined ? \'Close\' : i18n(\'views-common-messages.common-close\')}}">'
+					+ '<button type="button" class="close" ng-click="criticalityIconSelectorCtrl.closePopover()" aid="CritIconSelector-Close" aria-label="Close" title="{{i18n == undefined ? \'Close\' : i18n(\'views-common-messages.common-close\')}}">'
 		        		+ '<span aria-hidden="true">&times;</span>'
 		            + '</button>'
 					+ '<div style="float: left;">'
-						+ '<button ng-click="criticalityIconSelectorCtrl.setIcon(icon)" class="button-link tbl-tool-link" ng-repeat="icon in criticalityIconSelectorCtrl.getFlagIcons()"> '
+						+ '<button ng-click="criticalityIconSelectorCtrl.setIcon(icon)" class="button-link tbl-tool-link" ng-repeat="icon in criticalityIconSelectorCtrl.getFlagIcons()" aid="CritIconSelector-IconOptions">'
 							+ '<i class="glyphicon glyphicon-flag portal-glyph-icon" '
 							+ 'ng-class="\'criticality-flag-\'+icon"><\/i>  '
 						+ '<\/button>'
