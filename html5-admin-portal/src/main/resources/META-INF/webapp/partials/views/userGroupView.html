@@ -4,7 +4,8 @@
 	<!-- View Toolbar -->
 	<div class="view-panel-toolbar toolbar-buttons">
 		<div class="view-toolbar-section" >
-			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+			<span sd-refresh sda-on-refresh="ctrl.refresh();"
+			aid="ADM-UserGrpMgmt"></span>
 		</div>
 	</div>
 	
@@ -14,16 +15,12 @@
 	<div>
 		<table width="125px">
 			<tr>
-				<td><label>{{i18n('admin-portal-messages.views-common-total-label')
-						+
-						i18n('admin-portal-messages.common-colon')}}{{ctrl.data.totalCount}}</label>
-				</td>
-				<td><label>{{i18n('admin-portal-messages.views-common-active-label')
-						+
-						i18n('admin-portal-messages.common-colon')}}{{ctrl.data.activeCount}}</label></td>
+				<td><span class="label-item">{{i18n('admin-portal-messages.views-common-total-label')+i18n('admin-portal-messages.common-colon')}}</span></td>
+				<td><span class="activity-overview-report-field-value" aid="ADM-UserGrpMgmt-TotalCnt">{{ctrl.data.totalCount}}</span></td>
+				<td><span class="label-item">{{i18n('admin-portal-messages.views-common-active-label')+i18n('admin-portal-messages.common-colon')}}</span></td>
+				<td><span class="activity-overview-report-field-value" aid="ADM-UserGrpMgmt-ActiveCnt">{{ctrl.data.activeCount}}</span></td>
 			</tr>
 		</table>
-
 	</div>
 	<br />
 
@@ -35,13 +32,15 @@
 			<div class="tbl-toolbar-section">
 				<button ng-click="ctrl.openCreateModifyUserGroupDialog('CREATE_USER')"
 					title="{{i18n('admin-portal-messages.common-create')}}"
-					class="button-link tbl-toolbar-item tbl-tool-link">
+					class="button-link tbl-toolbar-item tbl-tool-link"
+					aid="ADM-UserGrpMgmt-DataTable-CreateUserGrp">
 					<i class="glyphicon glyphicon-plus"></i>
 				</button>
 				<button ng-disabled="ctrl.selectionExpr == null"
 					ng-click="ctrl.invalidateUserGroup()"
 					title="{{i18n('admin-portal-messages.views-userGroupMgmt-invalidateUserGroup-tooltip-title')}}"
-					class="button-link tbl-toolbar-item tbl-tool-link">
+					class="button-link tbl-toolbar-item tbl-tool-link"
+					aid="ADM-UserGrpMgmt-DataTable-InvalidateUserGrp">
 					<i class="glyphicon glyphicon-minus"></i>
 				</button>
 			</div>
@@ -59,7 +58,7 @@
 					<th sda-name="name" sda-sortable="true"
 						sda-label-key="common-name-label"></th>
 					<th sda-name="oid" sda-sortable="true"
-						sda-label-key="participantMgmt-column-oid"></th>
+						sda-label-key="participantMgmt-column-oid" sda-visible="false"></th>
 					<th sda-name="id" sda-sortable="true"
 						sda-label-key="common-id-label"></th>
 					<th sda-name="validFrom" sda-label-key="common-validFrom-label"></th>
@@ -70,7 +69,8 @@
 				<tr>
 					<td style="white-space: nowrap;" sda-exporter="rowData.name"><a
 						href="#"
-						ng-click="bpmCommon.stopEvent($event); ctrl.openCreateModifyUserGroupDialog('MODIFY_USER', rowData);">
+						ng-click="bpmCommon.stopEvent($event); ctrl.openCreateModifyUserGroupDialog('MODIFY_USER', rowData);"
+						aid="ADM-UserGrpMgmt-DataTable-Name">
 							{{rowData.name}} </a></td>
 					<td sda-data-type="int" style="text-align: center;"></td>
 					<td></td>
@@ -87,13 +87,15 @@
 			sda-scope="this"
 			sda-template="plugins/html5-admin-portal/partials/views/userGroupNotification.html"
 			sda-cancel-action-label="{{i18n('views-common-messages.common-close')}}"
-			sda-on-close="ctrl.onCloseNotificationUserGroup(res)"></div>
+			sda-on-close="ctrl.onCloseNotificationUserGroup(res)"
+			sda-aid-prefix="ADM-UserGrpMgmt-UserGrpNotification"></div>
 		<div sd-dialog sd-show-overlay="true"
 			sda-show="ctrl.showCreateModifyUserGroup" sda-type="confirm"
 			sda-title="{{sdI18n(ctrl.title)}}" sda-scope="this"
 			sda-template="plugins/html5-admin-portal/partials/views/createModifyUserGroup.html"
 			sda-confirm-action-label="{{i18n('views-common-messages.common-apply')}}"
 			sda-on-confirm="ctrl.onConfirmCreateModifyUser(res)"
-			sda-on-close="ctrl.onCancelCreateModifyUser(res)"></div>
+			sda-on-close="ctrl.onCancelCreateModifyUser(res)"
+			sda-aid-prefix="ADM-UserGrpMgmt-CreateModifyUserGroup"></div>
 	</div>
 </div>
