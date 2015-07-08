@@ -12,6 +12,7 @@
 package org.eclipse.stardust.ui.web.modeler.upgrade;
 
 import org.eclipse.stardust.common.config.Version;
+import org.eclipse.stardust.engine.core.model.beans.XMLConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 
 /**
@@ -31,6 +32,12 @@ public abstract class UpgradeJob
    public ModelType upgradeVersion(ModelType model)
    {
       model.setCarnotVersion(getVersion().toCompleteString());
+      String vendor = model.getVendor();
+      if(vendor != null && !vendor.equals(XMLConstants.VENDOR_NAME))
+      {
+         model.setVendor(XMLConstants.VENDOR_NAME);
+      }
+            
       return model;
    }
       
