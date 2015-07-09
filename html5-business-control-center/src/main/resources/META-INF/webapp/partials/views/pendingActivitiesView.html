@@ -2,7 +2,7 @@
 	sg-stretch-to-bottom>
 	<div class="toolbar-buttons">
 		<div class="view-toolbar-section">
-			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+			<span sd-refresh sda-on-refresh="ctrl.refresh();" aid="BCC-PendAct-ToolbarRefresh"></span>
 		</div>
 	</div>
 
@@ -40,7 +40,8 @@
 								: </b> 
 							<a href="#" ng-if="rowData.statisticsByParticipant[colData.title].today > 0"
 								ng-click="ctrl.setDataForActivityTable(rowData.statisticsByParticipant[colData.title].openActivitiesTodayOids)" 
-								title="{{i18n('business-control-center-messages.views-pendingActivities-selectedActivitiesTable-title')}}"><span
+								title="{{i18n('business-control-center-messages.views-pendingActivities-selectedActivitiesTable-title')}}"
+								aid="BCC-PendAct-PendActTbl-Today"><span
 								ng-bind="rowData.statisticsByParticipant[colData.title].today"></span>
 							</a>
 							<span
@@ -52,6 +53,7 @@
 							<b>{{i18n("business-control-center-messages.views-pendingActivities-column-yesterday")}}
 								: </b><a href="#" ng-if="rowData.statisticsByParticipant[colData.title].yesterday > 0"
 								ng-click="ctrl.setDataForActivityTable(rowData.statisticsByParticipant[colData.title].openActivitiesYesterdayOids)"
+								aid="BCC-PendAct-PendActTbl-Yesterday"
 								title="{{i18n('business-control-center-messages.views-pendingActivities-selectedActivitiesTable-title')}}">
 								<span
 								ng-bind="rowData.statisticsByParticipant[colData.title].yesterday"></span>
@@ -71,7 +73,8 @@
 							<a href="#"
 								ng-if="rowData.statisticsByParticipant[colData.title].hibernated > 0"
 								ng-click="ctrl.setDataForActivityTable(rowData.statisticsByParticipant[colData.title].openActivitiesHibernateOids)"
-								title="{{i18n('business-control-center-messages.views-pendingActivities-selectedActivitiesTable-title')}}">
+								title="{{i18n('business-control-center-messages.views-pendingActivities-selectedActivitiesTable-title')}}"
+								aid="BCC-PendAct-PendActTbl-Hibernated">
 								<span ng-bind="rowData.statisticsByParticipant[colData.title].hibernated"></span>
 							</a> 
 							<span
