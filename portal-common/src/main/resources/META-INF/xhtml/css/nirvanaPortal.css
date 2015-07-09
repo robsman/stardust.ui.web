@@ -208,6 +208,18 @@ div#loginBox .buttonContainer input{
 	border-left:1px solid #666666;
 	white-space: nowrap;
 	vertical-align: top;
+	margin-top: 2px;
+}
+
+.topMenuTd.perspectives {
+	float: left;
+	width: 85%;
+}
+
+.topMenuTd.helpLink {
+	float: right;
+	margin-right: 4px;
+	margin-top: 0px;
 }
 
 .topMenuBar{ /* Overrides .iceMnuBar, .iceMnuBarVrt only for Top Menu */

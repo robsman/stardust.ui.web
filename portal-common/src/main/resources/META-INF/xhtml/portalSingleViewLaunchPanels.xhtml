@@ -9,44 +9,35 @@
 	<ice:panelGroup>
 		<div class="topMenu">
 			<ice:form partialSubmit="true">
-				<table>
-					<tr>
-						<td class="topMenuTd" style="width: 100%">
-							<ice:panelGroup	styleClass="topMenuIframeBar" style="line-height:0px;">
-								<ice:panelGrid columns="50" styleClass="perspective-series" cellspacing="0" cellpadding="0">
-									<c:forEach items="#{ippPortalUi.perspectiveItems}" var="perspective">
-										<ice:panelGroup styleClass="#{ippPortalUi.perspective.name == perspective.id ? (empty perspective.icon ? 'perspective-active-font' : 'perspective-active-img') : (empty perspective.icon ? 'perspective-inactive-font' : 'perspective-inactive-img')}">
-											<ice:commandLink title="#{perspective.title}"
-												actionListener="#{ippPortalUi.perspectiveChangeAction}">
-												<f:param name="perspectiveId" value="#{perspective.id}" />
-												<c:if test="#{empty perspective.icon}">
-													<span class="perspective-icon #{perspective.value}" />
-												</c:if>
-												<c:if test="#{not empty perspective.icon}">
-													<ice:graphicImage value="#{perspective.icon}" styleClass="perspective-icon #{perspective.value}" />
-												</c:if>
-											</ice:commandLink>
-										</ice:panelGroup>
-									</c:forEach>
-								</ice:panelGrid>
-							</ice:panelGroup>
-						</td>
-						<td class="topMenuTd">
-							<ice:menuBar styleClass="topMenuBar" orientation="horizontal" displayOnClick="true" style="line-height:18px;">
-								<!-- HELP Menu Item -->
-								<c:if test="#{not empty ippPortalApp.helpDocPreference}">
-									<pc:automationTag value="auto-FW-HelpMenu" />
-									<ice:menuItem value="#{common_msgPropsBean['portalFramework.menu.help']}">
-										<ice:menuItem value="#{common_msgPropsBean['portalFramework.menu.help.documentation']}"
-											onclick="var helpDocWin = window.open('#{facesContext.externalContext.requestContextPath}#{ippPortalApp.helpDocPreference.include}', 'helpDoc', 'scrollbars=1,status=1,toolbar=1,width=1024,height=768'); helpDocWin.focus(); return false;"/>
-									</ice:menuItem>
-								</c:if>
+				<div class="topMenuTd perspectives">
+					<ice:panelGroup	styleClass="topMenuIframeBar" style="line-height:0px;">
+						<ice:panelGrid columns="50" styleClass="perspective-series" cellspacing="0" cellpadding="0">
+							<c:forEach items="#{ippPortalUi.perspectiveItems}" var="perspective">
+								<ice:panelGroup styleClass="#{ippPortalUi.perspective.name == perspective.id ? (empty perspective.icon ? 'perspective-active-font' : 'perspective-active-img') : (empty perspective.icon ? 'perspective-inactive-font' : 'perspective-inactive-img')}">
+									<ice:commandLink title="#{perspective.title}"
+										actionListener="#{ippPortalUi.perspectiveChangeAction}">
+										<f:param name="perspectiveId" value="#{perspective.id}" />
+										<c:if test="#{empty perspective.icon}">
+											<span class="perspective-icon #{perspective.value}" />
+										</c:if>
+										<c:if test="#{not empty perspective.icon}">
+											<ice:graphicImage value="#{perspective.icon}" styleClass="perspective-icon #{perspective.value}" />
+										</c:if>
+									</ice:commandLink>
+								</ice:panelGroup>
+							</c:forEach>
+						</ice:panelGrid>
+					</ice:panelGroup>
+				</div>
 
-								<!-- TODO: Menu Sections from perspective definition -->
-							</ice:menuBar>
-						</td>
-					</tr>
-				</table>
+				<div class="topMenuTd helpLink">
+					<c:if test="#{not empty ippPortalApp.helpDocPreference}">
+						<ice:commandLink styleClass="action-link"
+							value="#{common_msgPropsBean['portalFramework.menu.help']}"
+							onclick="var helpDocWin = window.open('#{facesContext.externalContext.requestContextPath}#{ippPortalApp.helpDocPreference.include}', 'helpDoc', 'scrollbars=1,status=1,toolbar=1,width=1024,height=768'); helpDocWin.focus(); return false;">
+						</ice:commandLink>
+					</c:if>
+				</div>
 			</ice:form>
 		</div>
 
