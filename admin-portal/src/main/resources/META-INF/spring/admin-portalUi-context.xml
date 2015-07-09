@@ -18,7 +18,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 	<ippui:perspective id="ippAdminPerspective"
 		messageBundles="admin-portal-messages" requiredRoles="Administrator">
 		<ippui:preferences>
-			<ippui:preferencePage name="icon" include="glyphicon glyphicon-lg glyphicon-wrench" />			<ippui:preferencePage name="helpDocumentation"
+			<ippui:preferencePage name="icon" include="sc sc-lg sc-wrench" />			<ippui:preferencePage name="helpDocumentation"
 				include="/plugins/doc/portal/execution-clients/carnot-clients.html" />
 		</ippui:preferences>
 

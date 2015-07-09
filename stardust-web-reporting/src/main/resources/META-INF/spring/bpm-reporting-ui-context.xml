@@ -9,7 +9,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 	<ippui:perspective id="bpmReporting" messageBundles="bpm-reporting-messages"
 		controller="reportingPerspective">
 		<ippui:preferences>
-			<ippui:preferencePage name="icon" include="sc sc-lg sc-chart-pie" />
+			<ippui:preferencePage name="icon" include="sc sc-lg sc-chart-bar" />
 			<ippui:preferencePage name="helpDocumentation"
 				include="/plugins/doc/portal/execution-clients/reports/reports.html" />
 		</ippui:preferences>

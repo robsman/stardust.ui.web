@@ -169,6 +169,12 @@
 .sc-1x{
     font-size:16px;
 }
+
+.sc-lg {
+  font-size: 16px;
+  line-height: 0.75em;
+}
+
 .sc-1-5x{
     font-size:24px;
 }

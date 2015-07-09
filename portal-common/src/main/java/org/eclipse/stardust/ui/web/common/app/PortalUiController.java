@@ -405,7 +405,7 @@ public class PortalUiController
 
       if (StringUtils.isEmpty(icon))
       {
-         icon = "/plugins/views-common/images/icons/eye.png"; // Default Icon
+         icon = "sc sc-lg sc-circle"; // Default Icon
       }
 
       // Check if icon is image URL or a css class. It's mapping with MenuItem -
