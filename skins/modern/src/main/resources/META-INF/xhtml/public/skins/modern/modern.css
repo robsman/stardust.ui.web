@@ -6918,11 +6918,6 @@ a span.iceOutFrmt:hover{
 	color:#28303B;
 }
 
-/*Exceptions, such as top level links which dropdown menus*/
-.topMenuTd a.iceCmdLnk:hover{
-	color:#FFFFFF !important;
-}
-
 table.genericTableToolbar td div.icePnlGrp {
 	margin-right:4px;
 }
