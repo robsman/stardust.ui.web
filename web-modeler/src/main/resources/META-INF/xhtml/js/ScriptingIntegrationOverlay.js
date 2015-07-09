@@ -48,7 +48,7 @@ define(
                            m_i18nUtils
                                  .getProperty("modeler.model.applicationOverlay.scripting.test.title"),
                            "plugins/bpm-modeler/images/icons/application-run.png");
-
+               this.testTab = m_utils.jQuerySelect("#test");
                this.scriptCodeHeading = m_utils.jQuerySelect("#scriptingIntegrationOverlay #scriptCodeHeading");
                this.languageSelect = m_utils.jQuerySelect("#scriptingIntegrationOverlay #languageSelect");
                this.transactedRouteRow = m_utils.jQuerySelect("#scriptingIntegrationOverlay #transactedRouteRow");
@@ -101,12 +101,15 @@ define(
                               .getSession().getValue();
 
                         if (self.languageSelect.val() == "JavaScript") {
+                           self.testTab.parent().parent().show();
                            self.codeEditor = m_codeEditorAce
                                  .getJSCodeEditor(self.editorAnchor.id);
                         } else if (self.languageSelect.val() == "Python") {
+                           self.testTab.parent().parent().hide();
                            self.codeEditor = m_codeEditorAce
                                  .getPythonCodeEditor(self.editorAnchor.id);
                         } else if (self.languageSelect.val() == "Groovy") {
+                           self.testTab.parent().parent().hide();
                            self.codeEditor = m_codeEditorAce
                                  .getGroovyCodeEditor(self.editorAnchor.id);
                         }
