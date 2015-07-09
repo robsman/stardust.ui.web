@@ -215,7 +215,7 @@ define(
                      supportsDataMappings : false,
                      supportsDescriptors : false,
                      supportsDataTypeSelection : true,
-                     supportsDocumentTypes : false,
+                     supportsDocumentTypes : true,
                      supportsOtherData : false,
                      hideEnumerations : true
                   });
