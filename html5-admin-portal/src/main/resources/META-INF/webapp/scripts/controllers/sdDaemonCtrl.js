@@ -16,21 +16,22 @@
 	'use strict';
 
 	angular.module('admin-ui').controller('sdDaemonCtrl',
-			[ 'sdDaemonService', 'sdLoggedInUserService' ,controller ]);
+			[ 'sdDaemonService', 'sdLoggedInUserService', 'sgI18nService' ,controller ]);
 
 	var _sdDaemonService;
 	var _sdLoggedInUserService;
+	var _sgI18nService;
 
 	/*
 	 * 
 	 */
-	function controller(sdDaemonService,sdLoggedInUserService) {
+	function controller(sdDaemonService,sdLoggedInUserService, sgI18nService) {
 		_sdDaemonService = sdDaemonService;
 		_sdLoggedInUserService = sdLoggedInUserService;
+		_sgI18nService = sgI18nService;
 		this.initialize();
 
 		this.data = {};
-		this.title = "Daemons";
 
 		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ?  'admin' : true; 
 	}
@@ -39,14 +40,25 @@
 	 * 
 	 */
 	controller.prototype.getDaemonTypeLabel = function(key) {
-		return _sdDaemonService.getDaemonTypeLabel(key);
+		var keyPrefix  = "admin-portal-messages.views-daemons";
+		var keySuffix = "label";
+		var hyphen = "-";
+		//Replace charcter '.' and '_' with nothing
+		key = key.replace(/\.|_/g, "");
+		var words = ["calendar", "daemon", "trigger"];
+		for (var i in words) { // Capitalize first character of above words if found.
+			key = key.replace(words[i], words[i].charAt(0).toUpperCase() + words[i].slice(1));
+		}
+		key = keyPrefix + hyphen + key + hyphen + keySuffix;
+		return _sgI18nService.translate(key, key);
 	}
 
 	/*
 	 * 
 	 */
 	controller.prototype.getDaemonStatus = function(daemon) {
-		return _sdDaemonService.getDaemonStatus(daemon);
+		return (daemon.running) ? _sgI18nService.translate('admin-portal-messages.views-daemons-status-column-running', 'Running')
+								: _sgI18nService.translate('admin-portal-messages.views-daemons-status-column-stopped', 'Stopped');
 	}
 
 	/*
@@ -61,8 +73,7 @@
 	 * 
 	 */
 	controller.prototype.initialize = function() {
-		this.daemonDataTable = null; // This will be set to underline data
-		// table instance automatically
+		this.daemonDataTable = null; // This will be set to underline data table instance automatically
 	}
 
 	/*
@@ -87,5 +98,5 @@
 			});
 		}
 	};
-
+	
 })();

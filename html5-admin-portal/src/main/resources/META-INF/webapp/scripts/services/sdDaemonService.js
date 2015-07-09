@@ -29,80 +29,11 @@
 						} ];
 			});
 
-	var DEF_MESSAGES = {
-		'admin-portal-messages.views-daemons-eventDaemon-label' : 'Event Daemon',
-		'admin-portal-messages.views-daemons-mailDaemon-label' : 'Mail Trigger Daemon',
-		'admin-portal-messages.views-daemons-criticalityDaemon-label' : 'Prioritization Daemon',
-		'admin-portal-messages.views-daemons-reportingDaemon-label' : 'Reporting Daemon',
-		'admin-portal-messages.views-daemons-systemDaemon-label' : 'System Daemon',
-		'admin-portal-messages.views-daemons-timeDaemon-label' : 'Timer Trigger Daemon',
-		'admin-portal-messages.views-daemons-businessCalendarDaemon-label' : 'Business Calendar Daemon',
-		'admin-portal-messages.views-daemons-benchmarkDaemon-label' : 'Benchmark Daemon',
-		'admin-portal-messages.views-daemons-status-column-running' : 'Running',
-		'admin-portal-messages.views-daemons-status-column-stopped' : 'Stopped'
-	}
-
 	/*
 	 * 
 	 */
 	function DaemonService($resource, sgI18nService, sdUtilService) {
 		var REST_BASE_URL = sdUtilService.getBaseUrl() + 'services/rest/portal/daemons';
-
-		// TODO refactor
-		this.daemonType = new Object();
-		this.daemonType['event.daemon'] = sgI18nService
-				.translate(
-						'admin-portal-messages.views-daemons-eventDaemon-label',
-						DEF_MESSAGES['admin-portal-messages.views-daemons-eventDaemon-label']);
-		this.daemonType['mail.trigger'] = sgI18nService
-				.translate(
-						'admin-portal-messages.views-daemons-mailDaemon-label',
-						DEF_MESSAGES['admin-portal-messages.views-daemons-mailDaemon-label']);
-		this.daemonType['criticality.daemon'] = sgI18nService
-				.translate(
-						'admin-portal-messages.views-daemons-criticalityDaemon-label',
-						DEF_MESSAGES['admin-portal-messages.views-daemons-criticalityDaemon-label']);
-		this.daemonType['reporting.daemon'] = sgI18nService
-				.translate(
-						'admin-portal-messages.views-daemons-reportingDaemon-label',
-						DEF_MESSAGES['admin-portal-messages.views-daemons-reportingDaemon-label']);
-		this.daemonType['system.daemon'] = sgI18nService
-				.translate(
-						'admin-portal-messages.views-daemons-systemDaemon-label',
-						DEF_MESSAGES['admin-portal-messages.views-daemons-systemDaemon-label']);
-		this.daemonType['timer.trigger'] = sgI18nService
-				.translate(
-						'admin-portal-messages.views-daemons-timeDaemon-label',
-						DEF_MESSAGES['admin-portal-messages.views-daemons-timeDaemon-label']);
-		this.daemonType['business_calendar.daemon'] = sgI18nService
-				.translate(
-						'admin-portal-messages.views-daemons-businessCalendarDaemon-label',
-						DEF_MESSAGES['admin-portal-messages.views-daemons-businessCalendarDaemon-labe']);
-		this.daemonType['benchmark.daemon'] = sgI18nService
-				.translate(
-						'admin-portal-messages.views-daemons-benchmarkDaemon-label',
-						DEF_MESSAGES['admin-portal-messages.views-daemons-benchmarkDaemon-label']);
-
-		/*
-		 * 
-		 */
-		DaemonService.prototype.getDaemonTypeLabel = function(key) {
-			return this.daemonType[key];
-		}
-
-		/*
-		 * 
-		 */
-		DaemonService.prototype.getDaemonStatus = function(daemon) {
-			return (daemon.running) ? sgI18nService
-					.translate(
-							'admin-portal-messages.views-daemons-status-column-running',
-							 DEF_MESSAGES['admin-portal-messages.views-daemons-status-column-running'])
-					: sgI18nService
-							.translate(
-									'admin-portal-messages.views-daemons-status-column-stopped',
-									 DEF_MESSAGES['admin-portal-messages.views-daemons-status-column-stopped']);
-		}
 
 		/*
 		 * 

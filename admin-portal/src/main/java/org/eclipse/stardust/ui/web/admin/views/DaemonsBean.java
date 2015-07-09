@@ -228,9 +228,9 @@ public class DaemonsBean extends UIComponentBean implements  ViewEventHandler
             if (AdministrationService.EVENT_DAEMON.equals(dd.getType()))
                type = propsBean.getString("views.daemons.eventDaemon.label");
             else if (MAIL_TRIGGER.equals(dd.getType()))
-               type = propsBean.getString("views.daemons.mailDaemon.label");
+               type = propsBean.getString("views.daemons.mailTrigger.label");
             else if (TIMER_TRIGGER.equals(dd.getType()))
-               type = propsBean.getString("views.daemons.timeDaemon.label");
+               type = propsBean.getString("views.daemons.timerTrigger.label");
             else if (AdministrationService.SYSTEM_DAEMON.equals(dd.getType()))
                type = propsBean.getString("views.daemons.systemDaemon.label");
             else if (AdministrationService.CRITICALITY_DAEMON.equals(dd.getType()))
