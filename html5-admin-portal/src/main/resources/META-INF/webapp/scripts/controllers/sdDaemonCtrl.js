@@ -86,17 +86,24 @@
 	/*
 	 * 
 	 */
-	controller.prototype.toggleDaemonAction = function(daemonItem) {
+	controller.prototype.startDaemon = function(daemonItem) {
 		var self = this;
-		if (daemonItem.running) {
-			_sdDaemonService.stopDaemon(daemonItem.type).then(function(data) {
-				self.refresh();
-			});
-		} else {
+		if (!(daemonItem.running)) {
 			_sdDaemonService.startDaemon(daemonItem.type).then(function(data) {
 				self.refresh();
 			});
 		}
 	};
 	
+	/*
+	 * 
+	 */
+	controller.prototype.stopDaemon = function(daemonItem) {
+		var self = this;
+		if (daemonItem.running) {
+			_sdDaemonService.stopDaemon(daemonItem.type).then(function(data) {
+				self.refresh();
+			});
+		}
+	};
 })();

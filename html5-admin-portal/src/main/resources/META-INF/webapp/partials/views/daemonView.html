@@ -43,14 +43,14 @@
 					<td></td>
 					<td></td>
 					<td style="white-space: nowrap; text-align: center;">
-						<button ng-show="rowData.running" ng-click="bpmCommon.stopEvent($event); ctrl.toggleDaemonAction(rowData);"
+						<button ng-show="rowData.running" ng-click="bpmCommon.stopEvent($event); ctrl.stopDaemon(rowData);"
 							ng-attr-title="{{i18n('admin-portal-messages.views-daemons-stopDaemon')}}"
 							class="button-link tbl-tool-link"
 							aid="ADM-Daemon-DataTable-ActionStop">
 							<i
 								ng-class="'glyphicon glyphicon-ban-circle'" style="color:red;"></i>
 						</button>
-						<button ng-show="!rowData.running" ng-click="bpmCommon.stopEvent($event); ctrl.toggleDaemonAction(rowData);"
+						<button ng-show="!rowData.running" ng-click="bpmCommon.stopEvent($event); ctrl.startDaemon(rowData);"
 							ng-attr-title="{{i18n('admin-portal-messages.views-daemons-startDaemon')}}"
 							class="button-link tbl-tool-link"
 							aid="ADM-Daemon-DataTable-ActionStart">
