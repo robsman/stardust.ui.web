@@ -21,7 +21,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 	<ippui:perspective id="ippBccPerspective" messageBundles="business-control-center-messages"
 		controller="businessControlCenterPerspectiveEventHandler">
 		<ippui:preferences>
-			<ippui:preferencePage name="icon" include="sc sc-lg sc-chart-bar" />
+			<ippui:preferencePage name="icon" include="sc sc-lg sc-pencil-box" />
 			<ippui:preferencePage name="helpDocumentation"
 				include="/plugins/doc/portal/execution-clients/carnot-clients.html" />
 		</ippui:preferences>
