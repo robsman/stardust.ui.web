@@ -35,49 +35,29 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			include="/plugins/admin-portal/extensions/launchpad/administrativeViews.xhtml" />
 
 		<!--  TOOLBARS -->
-		<ippui:toolbarSection name="userGroupMgmtViewToolbar"
-			include="/plugins/admin-portal/extensions/toolbar/userGroupMgmtViewToolbar.xhtml"
-			requiredView="userGroupMgmt" />
 		<ippui:toolbarSection name="modelManagementViewToolbar"
 			include="/plugins/admin-portal/extensions/toolbar/modelManagementViewToolbar.xhtml"
 			requiredView="modelManagementView" />			
 		<ippui:toolbarSection name="configurationVariablesViewToolbar"
 			include="/plugins/admin-portal/extensions/toolbar/configurationVariablesViewToolbar.xhtml"
 			requiredView="configurationVariablesView" />			
-		<ippui:toolbarSection name="activityViewToolbar"
-			include="/plugins/admin-portal/extensions/toolbar/activityViewToolbar.xhtml"
-			requiredView="activityView" />
-		<ippui:toolbarSection name="processViewToolbar"
-			include="/plugins/admin-portal/extensions/toolbar/processViewToolbar.xhtml"
-			requiredView="processView" />
-		<ippui:toolbarSection name="overviewViewToolbar"
-			include="/plugins/admin-portal/extensions/toolbar/overviewViewToolbar.xhtml"
-			requiredView="overview" />
-		<ippui:toolbarSection name="realmMgmtToolbar"
-			include="/plugins/admin-portal/extensions/toolbar/realmMgmtToolbar.xhtml"
-			requiredView="realmMgmt" />
-		<ippui:toolbarSection name="daemonsToolbar"
-			include="/plugins/admin-portal/extensions/toolbar/daemonsToolbar.xhtml"
-			requiredView="daemons" />
 		<ippui:toolbarSection name="participantMgmtViewToolbar"
 			include="/plugins/admin-portal/extensions/toolbar/participantMgmtViewToolbar.xhtml"
 			requiredView="participantMgmt" />
 		
 		<!-- VIEWS -->
 		<ippui:view name="overview"
-			include="/plugins/admin-portal/views/overviewView.xhtml" controller="overviewBean" />
+			include="/plugins/html5-admin-portal/partials/views/overviewView.html"/>
 		<ippui:view name="realmMgmt"
-			include="/plugins/admin-portal/views/realmMgmtView.xhtml" controller="realmMgmtBean"/>
+			include="/plugins/html5-admin-portal/partials/views/realmManagement.html" />
 		<ippui:view name="daemons"
-			include="/plugins/admin-portal/views/daemonsView.xhtml" controller="daemonsBean"/>
-	
+			include="/plugins/html5-admin-portal/partials/views/daemonView.html"/>
 		<ippui:view name="userGroupMgmt"
-			include="/plugins/admin-portal/views/userGroupMgmtView.xhtml" controller="userGroupMgmtBean"/>
+			include="/plugins/html5-admin-portal/partials/views/userGroupView.html"/>
 		<ippui:view name="activityView"
-			include="/plugins/admin-portal/views/activityView.xhtml"  controller="ippAdmActivityView"/>
+			include="/plugins/html5-admin-portal/partials/views/activityView.html" />
 		<ippui:view name="processView"
-			include="/plugins/admin-portal/views/processView.xhtml" controller="processViewBean"/>
-
+			include="/plugins/html5-admin-portal/partials/views/processOverview.html"/>
 			
 		<ippui:view name="modelManagementView"
 			include="/plugins/admin-portal/views/model/modelManagementView.xhtml" controller="modelManagementBean"/>	
@@ -95,7 +75,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 				<ippui:preferencePage name="configuration"
 					include="/plugins/admin-portal/views/participantMgtConfiguration.xhtml" />
 			</ippui:preferences>
-		</ippui:view>
+		</ippui:view>		
 		<ippui:view name="passwordMgmt"
 			include="/plugins/html5-admin-portal/partials/views/passwordManagementView.html" />		<ippui:view name="criticalityConf"
 			include="/plugins/html5-admin-portal/partials/views/criticalityConfig.html"/>			
