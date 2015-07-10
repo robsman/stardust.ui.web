@@ -2,7 +2,7 @@
 	sg-stretch-to-bottom>
 	<div class="toolbar-buttons">
 		<div class="view-toolbar-section">
-			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+			<span sd-refresh sda-on-refresh="ctrl.refresh();" aid="BCC-ResLogin-ToolbarRefresh"></span>
 		</div>
 	</div>
 
@@ -30,7 +30,7 @@
 					<td sda-exporter="rowData.name"><a href="#"
 					ng-click="bpmCommon.stopEvent($event); ctrl.openUserManagerView(rowData.userOid,rowData.userId);"
 					title="{{i18n('business-control-center-messages.views-userManagerDetailView-title')}}"
-					class="tbl-tool-link">{{rowData.name}}</a></td>
+					class="tbl-tool-link" aid="BCC-ResLogin-TotLogInTimeTbl-TeamMember">{{rowData.name}}</a></td>
 					<td style="text-align: center;"></td>
 					<td style="text-align: center;"></td>
 					<td style="text-align: center;"></td>

@@ -8,7 +8,7 @@ table.layoutTable td {
 		ng-controller="sdProcessSearchViewCtrl as procSearchViewCtrl">
 		<div style="margin-top: 20px;" class="view-panel-toolbar">
 			<a href="#" ng-show="procSearchViewCtrl.showSearchCriteria"
-				ng-click="procSearchViewCtrl.showSearchCriteria = false">
+				ng-click="procSearchViewCtrl.showSearchCriteria = false" aid="BCC-ProcSrch-HideCriteria">
 				<table cellpadding="0" cellspacing="0" class="layoutTable">
 					<tr>
 						<td style="padding-right: 5px;"><i
@@ -17,7 +17,7 @@ table.layoutTable td {
 					</tr>
 				</table>
 			</a> <a href="#" ng-show="!procSearchViewCtrl.showSearchCriteria"
-				ng-click="procSearchViewCtrl.showSearchCriteria = true">
+				ng-click="procSearchViewCtrl.showSearchCriteria = true" aid="BCC-ProcSrch-ShowCriteria">
 				<table cellpadding="0" cellspacing="0" class="layoutTable">
 					<tr>
 						<td style="padding-right: 5px;"><i
@@ -41,7 +41,8 @@ table.layoutTable td {
 										ng-model="procSearchViewCtrl.query.processSearchCriteria.filterObject"
 										ng-options="option.value as option.label for option in procSearchViewCtrl.searchOptions"
 										ng-change="procSearchViewCtrl.processChange()"
-										style="width: 100px"></select></td>
+										style="width: 100px"
+										aid="BCC-ProcSrch-SearchOption"></select></td>
 									<td><i class="sc sc-fw sc-1x sc-exclamation-circle"></i></td>
 								</tr>
 							</table>
@@ -62,41 +63,41 @@ table.layoutTable td {
 							<tr>
 								<td><label>{{i18n('business-control-center-messages.views-processSearchView-startedFrom-label')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
-								<td><input type="text" sd-date-picker
-									sda-change-year="true" sda-milliseconds="true" ng-model-onblur
+								<td><div sd-date-time-picker ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.procStartFrom"
 									name="procStartFrom"
-									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1" /></td>
+									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1" 
+									sda-aid-prefix="BCC-ProcSrch-ProcStartFrom"/></td>
 								<td></td>
 							</tr>
 							<tr>
 								<td><label>{{i18n('business-control-center-messages.views-processSearchView-startedTo-label')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
-								<td><input type="text" sd-date-picker
-									sda-change-year="true" sda-milliseconds="true" ng-model-onblur
+								<td><div sd-date-time-picker ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.procStartTo"
 									name="procStartTo"
-									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1" /></td>
+									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"
+									sda-aid-prefix="BCC-ProcSrch-ProcStartTo"/></td>
 								<td></td>
 							</tr>
 							<tr>
 								<td><label>{{i18n('business-control-center-messages.views-processSearchView-endTimeFrom-label')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
-								<td><input type="text" sd-date-picker
-									sda-change-year="true" sda-milliseconds="true" ng-model-onblur
+								<td><div sd-date-time-picker ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.procEndFrom"
 									name="procEndFrom"
-									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1" /></td>
+									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1" 
+									sda-aid-prefix="BCC-ProcSrch-ProcEndFrom"/></td>
 								<td></td>
 							</tr>
 							<tr>
 								<td><label>{{i18n('business-control-center-messages.views-processSearchView-endTimeTo-label')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
-								<td><input type="text" sd-date-picker
-									sda-change-year="true" sda-milliseconds="true" ng-model-onblur
+								<td><div sd-date-time-picker ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.procEndTo"
 									name="procEndTo"
-									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1" /></td>
+									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"
+									sda-aid-prefix="BCC-ProcSrch-ProcEndTo"/></td>
 								<td></td>
 							</tr>
 							<tr>
@@ -106,7 +107,8 @@ table.layoutTable td {
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.procSearchHierarchySelected"
 									ng-options="option.value as option.label for option in procSearchViewCtrl.procSrchHierarchy"
 									ng-change="procSearchViewCtrl.processHierarchyChange()"
-									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"></select></td>
+									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"
+									aid="BCC-ProcSrch-Hierarchy"></select></td>
 								<td></td>
 							</tr>
 							<tr>
@@ -118,7 +120,8 @@ table.layoutTable td {
 										ng-attr-title="{{procSearchViewCtrl.query.processSearchCriteria.showAuxiliaryProcess ? 
 											i18n('views-common-messages.processHistory-processTable-hideAuxiliaryProcess') : 
 											i18n('views-common-messages.processHistory-processTable-showAuxiliaryProcess')}}"
-										class="button-link tbl-tool-link">
+										class="button-link tbl-tool-link"
+										aid="BCC-ProcSrch-ShowHideAuxiliaryProcess">
 										<i
 											ng-class="procSearchViewCtrl.query.processSearchCriteria.showAuxiliaryProcess ? 'sc sc-fw sc-2x sc-gear-minus' : 'sc sc-fw sc-2x sc-gear-plus'"></i>
 									</button>
@@ -130,7 +133,8 @@ table.layoutTable td {
 									multiple="multiple" style="height: 100px; width: 250px;"
 									ng-model="procSearchViewCtrl.procSrchProcessSelected"
 									ng-options="option.name for option in procSearchViewCtrl.procSrchProcess | orderBy: ['order', 'name']"
-									ng-change="procSearchViewCtrl.processChange()"></select></td>
+									ng-change="procSearchViewCtrl.processChange()"
+									aid="BCC-ProcSrch-Process"></select></td>
 								<td></td>
 							</tr>
 							<tr>
@@ -139,7 +143,8 @@ table.layoutTable td {
 								<td><select id="actStateSelect"
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.procSrchStateSelected"
 									ng-options="option.value as option.label for option in procSearchViewCtrl.procSrchState"
-									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"></select></td>
+									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"
+									aid="BCC-ProcSrch-State"></select></td>
 								<td></td>
 							</tr>
 							<tr>
@@ -147,7 +152,8 @@ table.layoutTable td {
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
 								<td><select id="priority" class="activity-table-priority-combo"
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.processSrchPrioritySelected"
-									ng-options="option.value as option.label for option in procSearchViewCtrl.priorities | orderBy: 'order'">
+									ng-options="option.value as option.label for option in procSearchViewCtrl.priorities | orderBy: 'order'"
+									aid="BCC-ProcessSrch-Priority">
 								</select></td>
 								<td></td>
 							</tr>
@@ -158,14 +164,15 @@ table.layoutTable td {
 									<div
 										ng-if="procSearchViewCtrl.query.processSearchCriteria.procSearchHierarchySelected != procSearchViewCtrl.HIERARCHY_CASE ||
 										procSearchViewCtrl.query.processSearchCriteria.filterObject == 1">
-										<input type="text" id="caseOwner" ng-disabled="true">
+										<input type="text" id="caseOwner" ng-disabled="true" aid="BCC-ProcessSrch-CaseOwner">
 									</div>
 									<div
 										ng-if="procSearchViewCtrl.query.processSearchCriteria.procSearchHierarchySelected== procSearchViewCtrl.HIERARCHY_CASE &&
 										procSearchViewCtrl.query.processSearchCriteria.filterObject != 1">
 										<div sd-user-selector
 											sda-selected-data="procSearchViewCtrl.processSrchCaseOwner"
-											sda-active-only="true" sda-multiple="false" sda-max="20">
+											sda-active-only="true" sda-multiple="false" sda-max="20"
+											sda-aid-prefix="BCC-ProcessSrch">
 										</div>
 									</div>
 								</td>
@@ -176,7 +183,8 @@ table.layoutTable td {
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
 								<td><input type="text" id="rootProcessOID"
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.processSrchRootProcessOID"
-									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"></td>
+									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"
+									aid="BCC-ProcSrch-RootPOID"></td>
 								<td></td>
 							</tr>
 							<tr>
@@ -184,7 +192,8 @@ table.layoutTable td {
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
 								<td><input type="text" id="processOID"
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.processSrchProcessOID"
-									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"></td>
+									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"
+									aid="BCC-ProcSrch-POID"></td>
 								<td></td>
 							</tr>
 						</table>
@@ -202,37 +211,37 @@ table.layoutTable td {
 							<tr>
 								<td><label>{{i18n('business-control-center-messages.views-processSearchView-startedFrom-label')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
-								<td><input type="text" sd-date-picker
-									sda-change-year="true" sda-milliseconds="true" ng-model-onblur
+								<td><div sd-date-time-picker ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.actStartFrom"
-									name="acttartFrom" /></td>
+									name="acttartFrom" 
+									aid="BCC-ActivitySrch-StartedFrom"/></td>
 								<td></td>
 							</tr>
 							<tr>
 								<td><label>{{i18n('business-control-center-messages.views-processSearchView-startedTo-label')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
-								<td><input type="text" sd-date-picker
-									sda-change-year="true" sda-milliseconds="true" ng-model-onblur
+								<td><div sd-date-time-picker ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.actStartTo"
-									name="actStartTo" /></td>
+									name="actStartTo" 
+									aid="BCC-ActivitySrch-StartedTo"/></td>
 								<td></td>
 							</tr>
 							<tr>
 								<td><label>{{i18n('business-control-center-messages.views-processSearchView-modifyTimeFrom-label')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
-								<td><input type="text" sd-date-picker
-									sda-change-year="true" sda-milliseconds="true" ng-model-onblur
+								<td><div sd-date-time-picker ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.actModifyFrom"
-									name="actModifyFrom" /></td>
+									name="actModifyFrom" 
+									aid="BCC-ActivitySrch-ModifyTimeFrom"/></td>
 								<td></td>
 							</tr>
 							<tr>
 								<td><label>{{i18n('business-control-center-messages.views-processSearchView-modifyTimeTo-label')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
-								<td><input type="text" sd-date-picker
-									sda-change-year="true" sda-milliseconds="true" ng-model-onblur
+								<td><div sd-date-time-picker ng-model-onblur
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.actModifyTo"
-									name="actModifyTo" /></td>
+									name="actModifyTo" 
+									aid="BCC-ActivitySrch-ModifyTimeTo"/></td>
 								<td></td>
 							</tr>
 							<tr>
@@ -247,7 +256,8 @@ table.layoutTable td {
 													ng-attr-title="{{procSearchViewCtrl.query.processSearchCriteria.showNonInteractiveActivities ? 
 															i18n('views-common-messages.processHistory-activityTable-hideApplicationActivity') : 
 															i18n('views-common-messages.processHistory-activityTable-showApplicationActivity')}}"
-													class="button-link tbl-tool-link">
+													class="button-link tbl-tool-link"
+													aid="BCC-ActivitySrch-SHNonIntActs">
 													<i
 														ng-class="procSearchViewCtrl.query.processSearchCriteria.showNonInteractiveActivities ? 
 															'sc sc-fw sc-2x sc-gear-minus' : 
@@ -260,7 +270,8 @@ table.layoutTable td {
 													ng-attr-title="{{procSearchViewCtrl.query.processSearchCriteria.showInteractiveActivities ? 
 														i18n('views-common-messages.processHistory-activityTable-hideManualActivity') : 
 														i18n('views-common-messages.processHistory-activityTable-showManualActivity')}}"
-													class="button-link tbl-tool-link">
+													class="button-link tbl-tool-link"
+													aid="BCC-ActivitySrch-SHIntActs">
 													<i
 														ng-class="procSearchViewCtrl.query.processSearchCriteria.showInteractiveActivities ? 
 														'sc sc-fw sc-2x sc-gear-minus' : 
@@ -274,7 +285,8 @@ table.layoutTable td {
 													ng-attr-title="{{procSearchViewCtrl.query.processSearchCriteria.showAuxiliaryActivities ? 
 														i18n('views-common-messages.processHistory-processTable-hideAuxiliaryActivities') : 
 														i18n('views-common-messages.processHistory-processTable-showAuxiliaryActivities')}}"
-													class="button-link tbl-tool-link">
+													 class="button-link tbl-tool-link"
+													 aid="BCC-ActivitySrch-SHAuxActs">
 													<i
 														ng-class="procSearchViewCtrl.query.processSearchCriteria.showAuxiliaryActivities ? 
 														'sc sc-fw sc-2x sc-gear-minus' : 
@@ -291,7 +303,8 @@ table.layoutTable td {
 								<td valign="top"><select id="activitySelect"
 									ng-model="procSearchViewCtrl.activitySrchSelected"
 									ng-options="option.name for option in procSearchViewCtrl.procSrchActivities | orderBy: ['order', 'name']"
-									multiple="multiple" style="height: 100px; width: 250px;"></select>
+									multiple="multiple" style="height: 100px; width: 250px;"
+									aid="BCC-ActivitySrch-Activity"></select>
 								</td>
 								<td></td>
 							</tr>
@@ -300,7 +313,8 @@ table.layoutTable td {
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
 								<td><select id="actStateSelect"
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.activitySrchStateSelected"
-									ng-options="option.value as option.label for option in procSearchViewCtrl.activitySrchState"></select></td>
+									ng-options="option.value as option.label for option in procSearchViewCtrl.activitySrchState"
+									aid="BCC-ActivitySrch-State"></select></td>
 								<td></td>
 							</tr>
 							<tr>
@@ -308,14 +322,16 @@ table.layoutTable td {
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
 								<td><select id="criticalitySelect"
 									ng-model="procSearchViewCtrl.query.processSearchCriteria.activitySrchCriticalitySelected"
-									ng-options="option.label as option.label for option in procSearchViewCtrl.activitySrchCriticality"></select></td>
+									ng-options="option.label as option.label for option in procSearchViewCtrl.activitySrchCriticality"
+									aid="BCC-ActivitySrch-Criticality"></select></td>
 								<td></td>
 							</tr>
 							<tr>
 								<td><label>{{i18n('business-control-center-messages.views-processOverviewView-activityTable-column-aOID')
 										+ i18n('business-control-center-messages.common-colon')}}</label></td>
 								<td><input type="text" id="activityOID"
-									ng-model="procSearchViewCtrl.query.processSearchCriteria.activitySrchActivityOID"></td>
+									ng-model="procSearchViewCtrl.query.processSearchCriteria.activitySrchActivityOID"
+									aid="BCC-ActivitySrch-AOID"></td>
 								<td></td>
 							</tr>
 							<tr>
@@ -325,7 +341,8 @@ table.layoutTable td {
 									<div>
 										<div sd-user-selector
 											sda-selected-data="procSearchViewCtrl.activitySrchPerformer"
-											sda-active-only="true" sda-multiple="false" sda-max="20">
+											sda-active-only="true" sda-multiple="false" sda-max="20"
+											sda-aid-prefix="BCC-ActivitySrch-ActivitySrchPerformer">
 										</div>
 									</div>
 								</td>
@@ -353,7 +370,8 @@ table.layoutTable td {
 										<tr>
 											<td><select
 												ng-model="procSearchViewCtrl.selected[descCol.id]"
-												ng-options="option.value as option.label for option in procSearchViewCtrl.descBoolOptions"></select></td>
+												ng-options="option.value as option.label for option in procSearchViewCtrl.descBoolOptions"
+												aid="BCC-ProcSrch-Descriptors-OnOffFilter"></select></td>
 										</tr>
 									</table>
 								</td>
@@ -361,18 +379,19 @@ table.layoutTable td {
 									ng-if="descCol.dataType =='NUMBER' || descCol.dataType==
 									'STRING'">
 									<input type="text" id="{{descCol.id}}"
-									ng-model="procSearchViewCtrl.selected[descCol.id]" />
+									ng-model="procSearchViewCtrl.selected[descCol.id]" 
+									aid="BCC-ProcSrch-Descriptors-NumberFilter" />
 								</td>
 								<td ng-if="descCol.dataType =='DATE'">
 									<table cellspacing="2" cellpadding="2"
 										style="white-space: nowrap;">
 										<tr>
 											<td><label class="label-form">{{i18n('portal-common-messages.common-filterPopup-betweenFilter-first')}}</label></td>
-											<td><input type="text" sd-date-picker
-												sda-change-year="true" sda-milliseconds="true" id="from"
+											<td><div sd-date-time-picker id="from"
 												name="from"
 												ng-model="procSearchViewCtrl.selected[descCol.id]"
-												ng-model-onblur />
+												ng-model-onblur
+												aid="BCC-ProcSrch-Descriptors-FromDate" />
 												<div class="msg-error"
 													ng-show="filterForm['from'].$error.datePicker">{{i18n('html5-common.converter-number-error')}}</div>
 												<div class="msg-error"
@@ -381,11 +400,11 @@ table.layoutTable td {
 										</tr>
 										<tr>
 											<td><label class="label-form">{{i18n('portal-common-messages.common-filterPopup-betweenFilter-last')}}</label></td>
-											<td><input type="text" sd-date-picker
-												sda-change-year="true" sda-milliseconds="true" id="to"
+											<td><div sd-date-time-picker id="to"
 												name="to"
 												ng-model="procSearchViewCtrl.selected[descCol.title]"
-												ng-model-onblur />
+												ng-model-onblur
+												aid="BCC-ProcSrch-Descriptors-ToDate" />
 												<div class="msg-error"
 													ng-show="filterForm['to'].$error.datePicker">{{i18n('html5-common.converter-number-error')}}</div>
 												<div class="msg-error"
@@ -408,9 +427,11 @@ table.layoutTable td {
 								<tr>
 									<td><input class="button" type="submit"
 										value="{{i18n('business-control-center-messages.views-processSearchView-button-searchProcess')}}"
-										ng-click="procSearchViewCtrl.search()"></td>
+										ng-click="procSearchViewCtrl.search()"
+										aid="BCC-ProcSrch-Search"></td>
 									<td><input type="submit"
-										ng-click="procSearchViewCtrl.reset()" value={{i18n('business-control-center-messages.common-button-reset')}}></td>
+										ng-click="procSearchViewCtrl.reset()" value="{{i18n('business-control-center-messages.common-button-reset')}}"
+										aid="BCC-ProcSrch-Reset"></td>
 								</tr>
 							</table>
 						</div>
