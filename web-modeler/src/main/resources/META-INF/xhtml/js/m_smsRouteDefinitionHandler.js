@@ -78,11 +78,32 @@ define(
 					  route += "        }\n";
 					  route += "        return hash;\n";
 					  route += "     }\n";
+                 for ( var n = 0; n < smsIntegrationOverlay.getApplication().contexts.application.accessPoints.length; ++n) {
+
+                    var accessPoint = smsIntegrationOverlay.getApplication().contexts.application.accessPoints[n];
+
+                    if (accessPoint.direction == m_constants.OUT_ACCESS_POINT ||accessPoint.dataType == "primitive") {
+                      continue;
+                    }
+                    if (accessPoint.dataType == "struct") {
+                         
+                         route += "var " + accessPoint.id + ";\n";
+                         route += "if(request.headers.get('"
+                              + accessPoint.id + "')!=null){\n";
+                         route += accessPoint.id
+                              + " =  eval('(' + request.headers.get('"
+                              + accessPoint.id + "')+ ')');\n";
+                         route +=  accessPoint.id+"=visitMembers("+accessPoint.id+", recursiveFunction);\n";
+                         route +=  "setOutHeader('"+accessPoint.id+"',"+ accessPoint.id+");\n";
+                         route += "}\n";
+                         
+                    }
+                 }
 					  for ( var n = 0; n < smsIntegrationOverlay.getApplication().contexts.application.accessPoints.length; ++n) {
 
 						 var accessPoint = smsIntegrationOverlay.getApplication().contexts.application.accessPoints[n];
 
-						 if (accessPoint.direction == m_constants.OUT_ACCESS_POINT) {
+						 if (accessPoint.direction == m_constants.OUT_ACCESS_POINT ||accessPoint.dataType == "struct") {
 							continue;
 						 }
 
@@ -110,20 +131,8 @@ define(
 								route += "}\n";
 							}
 
-						 } else if (accessPoint.dataType == "struct") {
-							
-							route += "var " + accessPoint.id + ";\n";
-							route += "if(request.headers.get('"
-								  + accessPoint.id + "')!=null){\n";
-							route += accessPoint.id
-								  + " =  eval('(' + request.headers.get('"
-								  + accessPoint.id + "')+ ')');\n";
-							route +=  accessPoint.id+"=visitMembers("+accessPoint.id+", recursiveFunction);\n";
-							route +=  "setOutHeader('"+accessPoint.id+"',"+ accessPoint.id+");\n";
-							route += "}\n";
-							
-						 }
-						 }
+						}
+					}
 					  route += "\n";
 					  
 					  var messageContent = smsIntegrationOverlay.codeEditor.getEditor().getSession().getValue();
