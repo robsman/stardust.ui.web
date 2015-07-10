@@ -63,7 +63,7 @@
 		 * 
 		 */
 		CommonViewUtilService.prototype.openUserWorklistView = function(userId, nested) {
-			sdViewUtilService.openView('worklistViewHtml5', "id=" + userId, {
+			sdViewUtilService.openView('worklistView', "id=" + userId, {
 				"userId" : "" + userId
 			}, nested);
 		};
@@ -72,7 +72,7 @@
 		 * 
 		 */
 		CommonViewUtilService.prototype.openParticipantWorklistView = function(participantQId, nested) {
-			sdViewUtilService.openView('worklistViewHtml5', "id=" + participantQId, {
+			sdViewUtilService.openView('worklistView', "id=" + participantQId, {
 				"participantQId" : "" + participantQId
 			}, nested);
 		};
@@ -81,7 +81,7 @@
 		 * 
 		 */
 		CommonViewUtilService.prototype.openProcessWorklistView = function(processQId, nested) {
-			sdViewUtilService.openView('worklistViewHtml5', "id=" + processQId, {
+			sdViewUtilService.openView('worklistView', "id=" + processQId, {
 				"processQId" : "" + processQId
 			}, nested);
 		};
@@ -114,7 +114,7 @@
 		 * 
 		 */
 		CommonViewUtilService.prototype.openUserManagerDetailView = function(userOid, userId, nested) {
-			sdViewUtilService.openView("userManagerDetailViewHtml5", "userOid=" + userOid, {
+			sdViewUtilService.openView("userManagerDetailView", "userOid=" + userOid, {
 				"userOid" : "" + userOid,
 				"userId" : "" + userId
 			}, nested);

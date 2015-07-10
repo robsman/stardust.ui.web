@@ -145,7 +145,7 @@
 	 * @param name
 	 */
 	ProcessResourceMgmtCtrl.prototype.openRoleManagerView = function(roleId, departmentOid, name) {
-		_sdViewUtilService.openView("roleManagerDetailViewHtml5", "roleId=" + roleId, {
+		_sdViewUtilService.openView("roleManagerDetailView", "roleId=" + roleId, {
 			"roleId" : "" + roleId,
 			"departmentOid" : "" + departmentOid,
 			"roleName" : "" + name

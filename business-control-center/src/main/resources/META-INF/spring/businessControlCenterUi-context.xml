@@ -43,14 +43,6 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			include="/plugins/business-control-center/extensions/toolbar/ganttChartViewToolbar.xhtml"
          	requiredView="ganttChartView" />
          	
-       <ippui:toolbarSection name="roleManagerDetailToolbar"
-			include="/plugins/business-control-center/extensions/toolbar/roleManagerDetailToolbar.xhtml"
-         	requiredView="roleManagerDetailView" />
-         	
-       <ippui:toolbarSection name="userManagerDetailToolbar"
-			include="/plugins/business-control-center/extensions/toolbar/userManagerDetailToolbar.xhtml"
-         	requiredView="userManagerDetailView" />
-	
        <ippui:toolbarSection name="priorityOverviewToolbar"
             include="/plugins/business-control-center/extensions/toolbar/priorityOverviewToolbar.xhtml"
             requiredView="processOverviewView" />
@@ -58,25 +50,23 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
        <ippui:toolbarSection name="completedActivitiesToolbar"
             include="/plugins/business-control-center/extensions/toolbar/completedActivitiesToolbar.xhtml"
             requiredView="completedActivities" />
+     
        <ippui:toolbarSection name="pendingActivitiesToolbar"
             include="/plugins/business-control-center/extensions/toolbar/pendingActivitiesToolbar.xhtml"
             requiredView="pendingActivities" />
+      
        <ippui:toolbarSection name="postponedActivitiesToolbar"
             include="/plugins/business-control-center/extensions/toolbar/postponedActivitiesToolbar.xhtml"
             requiredView="postponedActivities" />
-     
-       <ippui:toolbarSection name="resourceAvailabilityViewToolbar"
-            include="/plugins/business-control-center/extensions/toolbar/resourceAvailabilityViewToolbar.xhtml"
-            requiredView="resourceAvailabilityView" />
-       <ippui:toolbarSection name="roleAssignmentViewToolbar"
-            include="/plugins/business-control-center/extensions/toolbar/roleAssignmentViewToolbar.xhtml"
-            requiredView="roleAssignmentView" />
+       
        <ippui:toolbarSection name="resourceLoginViewToolbar"
             include="/plugins/business-control-center/extensions/toolbar/resourceLoginViewToolbar.xhtml"
             requiredView="resourceLoginView" />
+     
        <ippui:toolbarSection name="resourcePerformanceViewToolbar"
             include="/plugins/business-control-center/extensions/toolbar/resourcePerformanceViewToolbar.xhtml"
             requiredView="resourcePerformance" />
+            
        <ippui:toolbarSection name="performanceTeamleaderToolbar"
             include="/plugins/business-control-center/extensions/toolbar/performanceTeamleaderToolbar.xhtml"
             requiredView="performanceTeamleader" />
@@ -84,22 +74,17 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
        <ippui:toolbarSection name="costsandControllingToolbar"
             include="/plugins/business-control-center/extensions/toolbar/costsandControllingToolbar.xhtml"
             requiredView="costs" />
-            
+      
        <ippui:toolbarSection name="trafficLightViewToolbar"
             include="/plugins/business-control-center/extensions/toolbar/trafficLightViewToolbar.xhtml"
             requiredView="trafficLightView" />
-            
+      
        <ippui:toolbarSection name="activityCriticaliyMgrViewToolbar"
             include="/plugins/business-control-center/extensions/toolbar/activityCriticaliyMgrViewToolbar.xhtml"
             requiredView="activityCriticalityManagerView" />
   
 		<!--  VIEWS -->
 		<ippui:view name="categoryTree" include="/plugins/business-control-center/views/categoryTree.xhtml" controller="categoryTree"/>
-		
-		<ippui:view name="roleManagerDetailView" include="/plugins/business-control-center/views/roleManagerDetailView.xhtml" controller="roleManagerDetail"
-			identityParams="roleId" />
-	   	<ippui:view name="userManagerDetailView" include="/plugins/business-control-center/views/userManagerDetailView.xhtml" controller="userManagerDetail"
-	   		identityParams="userOid" />
 	   	
 		<ippui:view name="processOverviewView" include="/plugins/business-control-center/views/processOverviewView.xhtml" controller="businessProcessManager">
 	   		<ippui:preferences>
@@ -140,13 +125,13 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			</ippui:preferences>
 	   	</ippui:view>
 	   	
-		<ippui:view name="resourceAvailabilityView" include="/plugins/business-control-center/views/resourceAvailabilityView.xhtml"  controller="processResourceMgmtBean">
+		<ippui:view name="resourceAvailabilityView" include="/plugins/html5-business-control-center/partials/views/resourceAvailabilityView.html">
 	   		<ippui:preferences>
 				<ippui:preferencePage name="icon"
 					include="/plugins/views-common/images/icons/group.png" />
 			</ippui:preferences>
 	   	</ippui:view>
-		<ippui:view name="roleAssignmentView" include="/plugins/business-control-center/views/roleAssignmentView.xhtml" controller="roleAssignment" >
+		<ippui:view name="roleAssignmentView" include="/plugins/html5-business-control-center/partials/views/roleAssignmentView.html" >
 	   		<ippui:preferences>
 				<ippui:preferencePage name="icon"
 					include="/plugins/views-common/images/icons/role.png" />
@@ -210,12 +195,15 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			controller="ippBCCDiagramBean" identityParams="processInstanceOId" />
 
 		<ippui:view name="deputyTeamMemberView"
-			include="/plugins/business-control-center/views/deputyTeamMemberView.xhtml"
-			controller="deputyTeamMemberBean">
+			include="/plugins/html5-business-control-center/partials/views/deputyManagementView.html">
 			<ippui:preferences>
 				<ippui:preferencePage name="icon"
 					include="/plugins/views-common/images/icons/user-silhouette.png" />
 			</ippui:preferences>
 		</ippui:view>
+		<ippui:view name="roleManagerDetailView"
+				include="/plugins/html5-business-control-center/partials/views/roleManagerDetailView.html" />
+		<ippui:view name="userManagerDetailView"
+				include="/plugins/html5-business-control-center/partials/views/userManagerDetailView.html" />
    </ippui:perspective>
 </beans>

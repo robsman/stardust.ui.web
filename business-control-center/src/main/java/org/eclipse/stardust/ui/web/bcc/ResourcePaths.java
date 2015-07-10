@@ -29,14 +29,14 @@ public interface ResourcePaths
 //   static final String V_processInstanceDetailsView = "processInstanceDetailsView";
    static final String V_processSearch = "processSearchView";
    static final String V_resourcePerformanceView = "resourcePerformance";
-   static final String V_roleAssignment = "roleAssignmentViewHtml5";
-   static final String V_resourceAvailability = "resourceAvailabilityViewHtml5";
+   static final String V_roleAssignment = "roleAssignmentView";
+   static final String V_resourceAvailability = "resourceAvailabilityView";
    static final String V_processOverview = "processOverviewView";
    static final String V_userManagerDetailView = "userManagerDetailView";
    static final String V_roleManagerDetailView = "roleManagerDetailView";
    static final String V_trafficLight = "trafficLightView";
    static final String V_strandedActivitiesView = "strandedActivities";
-   static final String V_deputyTeamMemberView = "deputyTeamMemberViewHtml5";
+   static final String V_deputyTeamMemberView = "deputyTeamMemberView";
    
 //   static final String V_processOverviewViewActivityTableColumns = "/plugins/business-control-center/views/processOverviewViewActivityTableColumns.xhtml";
 //   static final String V_processOverviewViewProcessTableColumns = "/plugins/business-control-center/views/processOverviewViewProcessTableColumns.xhtml";

@@ -16,44 +16,6 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		targetPerspective="*" id="ippHtml5BusinessControlCenterPerspective"
 		messageBundles="html5-business-control-center">
 		<ippui:viewsExtension>
-			<ippui:view name="resourceAvailabilityViewHtml5"
-				include="/plugins/html5-business-control-center/partials/views/resourceAvailabilityView.html">
-				<ippui:preferences>
-					<ippui:preferencePage name="icon"
-						include="/plugins/views-common/images/icons/group.png" />
-				</ippui:preferences>
-			</ippui:view>
-		</ippui:viewsExtension>
-		<ippui:viewsExtension>
-			<ippui:view name="roleManagerDetailViewHtml5"
-				include="/plugins/html5-business-control-center/partials/views/roleManagerDetailView.html" />
-		</ippui:viewsExtension>
-		<ippui:viewsExtension>
-			<ippui:view name="userManagerDetailViewHtml5"
-				include="/plugins/html5-business-control-center/partials/views/userManagerDetailView.html" />
-		</ippui:viewsExtension>
-
-		<ippui:viewsExtension>
-			<ippui:view name="roleAssignmentViewHtml5"
-				include="/plugins/html5-business-control-center/partials/views/roleAssignmentView.html">
-				<ippui:preferences>
-					<ippui:preferencePage name="icon"
-						include="/plugins/views-common/images/icons/role.png" />
-				</ippui:preferences>
-			</ippui:view>
-		</ippui:viewsExtension>
-
-		<ippui:viewsExtension>
-			<ippui:view name="deputyTeamMemberViewHtml5"
-				include="/plugins/html5-business-control-center/partials/views/deputyManagementView.html">
-				<ippui:preferences>
-					<ippui:preferencePage name="icon"
-						include="/plugins/views-common/images/icons/user-silhouette.png" />
-				</ippui:preferences>
-			</ippui:view>
-		</ippui:viewsExtension>
-
-		<ippui:viewsExtension>
 			<ippui:view name="processSearchViewHtml5"
 				include="/plugins/html5-process-portal/partials/views/processSearchView.html">
 				<ippui:preferences>
