@@ -14,7 +14,11 @@
 						class="button-link tbl-toolbar-item tbl-tool-link"
 						style="margin-right: 0px;"
 						aid="COM-AuthMgr-CloneParticipant">
-						<i class="sc sc-fw sc-user" style="font-size: 1.5em;"></i>
+						<i class="sc sc-badge-portrait sc-user sc-1x sc-right"> 
+						 <i class="sc sc-badge-bg sc-badge-bg-circle sc-stroke go"></i> 
+						 <i class="sc sc-badge-icon sc-badge-icon-user"></i>
+						</i>
+
 					</button>
 					<button ng-click="ctrl.resetParticipants()"
 						title="Reset Participant(s)"
@@ -85,7 +89,7 @@
 
 		</section>
 
-		<section style="float: left; padding-left: 30px; width: 30%">
+		<section style="float: left; padding-left: 30px; width: 33%">
 			<header>
 				<div class="heading"
 					ng-bind="sdI18nHtml5Admin('views.authorizationManagerViewHtml5.permissions.label')"></div>
@@ -97,7 +101,7 @@
 						title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.highlightParticipants')}}"
 						class="button-link tbl-toolbar-item tbl-tool-link"
 						style="margin-right: 0px;">
-						<i class="sc sc-fw sc-spin sc-spinner" style="font-size: 1.5em;"></i>
+						<i class="sc sc-fw sc-1x sc-torch"></i>
 					</button>
 				</div>
 				<div class="view-panel-toolbar toolbar-buttons">
