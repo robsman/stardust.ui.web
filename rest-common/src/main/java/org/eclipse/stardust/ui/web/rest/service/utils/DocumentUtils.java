@@ -204,6 +204,15 @@ public class DocumentUtils
    }
    
    /**
+    * 
+    * @param oid
+    */
+   public void deleteRuntimeArtifacts(long oid)
+   {
+      serviceFactoryUtils.getAdministrationService().deleteRuntimeArtifact(oid);
+   }
+   
+   /**
     * @return
     */
    private DocumentManagementService getDocumentManagementService()

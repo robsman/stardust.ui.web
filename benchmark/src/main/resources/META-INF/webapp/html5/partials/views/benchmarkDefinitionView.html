@@ -64,11 +64,18 @@
 		<div ng-show="ctrl.benchmarkFilter==='Published'">
 		
 			<a href="" 
-			       ng-click="ctrl.downloadBenchmarkAsFile(ctrl.selectedBenchmark,ctrl.benchmarkFilter)" 
-			       title="{{ctrl.textMap.downloadBenchmark}}" 
-			       class="tbl-toolbar-item tbl-tool-link">
-			       <i class="glyphicon glyphicon-download"></i>
+		       ng-click="ctrl.downloadBenchmarkAsFile(ctrl.selectedBenchmark,ctrl.benchmarkFilter)" 
+		       title="{{ctrl.textMap.downloadBenchmark}}" 
+		       class="tbl-toolbar-item tbl-tool-link">
+		       <i class="glyphicon glyphicon-download"></i>
 		    </a>
+		    
+		    <a href="" 
+		       ng-click="ctrl.deleteBenchmark(ctrl.selectedBenchmark.id)" 
+		       title="{{ctrl.textMap.deleteBenchmark}}" 
+		       class="tbl-toolbar-item tbl-tool-link">
+		       <i class="glyphicon glyphicon-minus-sign"></i>
+		    </a>	
 		    
 		</div>
 		
@@ -94,7 +101,7 @@
 
 			    <a href="" 
 			       ng-click="ctrl.deleteBenchmark(ctrl.selectedBenchmark.id)" 
-			       title="{{ctrl.textMap.delelteBenchmark}}" 
+			       title="{{ctrl.textMap.deleteBenchmark}}" 
 			       class="tbl-toolbar-item tbl-tool-link">
 			       <i class="glyphicon glyphicon-minus-sign"></i>
 			    </a>	

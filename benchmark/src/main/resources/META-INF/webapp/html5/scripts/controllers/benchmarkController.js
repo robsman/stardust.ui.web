@@ -135,7 +135,7 @@
 		
 		this.textMap.benchmarkDefinitions = this.i18N("views.main.benchmarkDataTable.title");
 		this.textMap.addBenchmark = this.i18N("views.main.benchmarkDataTable.toolbar.add");
-		this.textMap.delelteBenchmark = this.i18N("views.main.benchmarkDataTable.toolbar.delete");
+		this.textMap.deleteBenchmark = this.i18N("views.main.benchmarkDataTable.toolbar.delete");
 		this.textMap.cloneBenchmark = this.i18N("views.main.benchmarkDataTable.toolbar.clone");
 		this.textMap.saveBenchmark = this.i18N("views.main.benchmarkDataTable.toolbar.save");
 		this.textMap.publishBenchmark = this.i18N("views.main.benchmarkDataTable.toolbar.publish");
@@ -416,25 +416,61 @@
 	 * @param res
 	 */
 	benchmarkController.prototype.onOpenDeleteDialog = function(res){
-		var that = this,
-			id;
+		var that = this;
 
 		if(!this.selectedBenchmark){return;}
-		
-		id = this.selectedBenchmark.id;
-		
+
 		res.promise.then(function(){
-			
-			that.benchmarkService.deleteBenchmark(id)
+			if(that.benchmarkFilter==='Design'){
+				that.deleteDesignTimeBenchmark(that.selectedBenchmark.id);
+			}
+			else{
+				that.deletePublishedBenchmark(that.selectedBenchmark.id);
+			}
+		});
+		
+	};
+	
+	/**
+	 * Service wrapper for design time benchmark deletions
+	 * @param id
+	 */
+	benchmarkController.prototype.deleteDesignTimeBenchmark = function(id){
+		var that = this;
+		
+		this.benchmarkService.deleteBenchmark(id)
+		.then(function(data){
+			that.deleteLocalBenchmark(id);
+			that.selectedBenchmark = undefined;
+		})
+		["catch"](function(err){
+			//TODO: handle error
+		});
+	};
+	
+	/**
+	 * Service wrapper for run-time benchmark deletion
+	 */
+	benchmarkController.prototype.deletePublishedBenchmark = function(id){
+		var that = this,
+			matches = [],
+			runtimeOid;
+		
+		matches = this.publishedBenchmarks.filter(function(bm){
+			return bm.content.id === id;
+		});
+		
+		if(matches.length > 0){
+			runtimeOid = matches[0].metadata.runtimeOid;
+			this.benchmarkService.deletePublishedBenchmark(runtimeOid)
 			.then(function(data){
-				that.deleteLocalBenchmark(id);
-				that.selectedBenchmark = undefined;
+				that.loadBenchmarks("Published");
 			})
 			["catch"](function(err){
 				//TODO: handle error
 			});
-			
-		});
+		}
+
 	};
 	
 	/**

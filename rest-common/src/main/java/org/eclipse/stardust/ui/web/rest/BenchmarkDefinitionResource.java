@@ -126,6 +126,25 @@ public class BenchmarkDefinitionResource
       
    }
    
+   @DELETE
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/run-time/{runtimeOid}")
+   public Response deletePublishedBenchmarkDefinition(@PathParam("runtimeOid") long runtimeOid)
+   {
+      try
+      {
+         benchmarkDefinitionService.deletePublishedBenchmarkDefinition(runtimeOid);
+         return Response.ok("Run-time Benchmark " + runtimeOid + " deleted.", MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("Exception while deleting run-time Benchmark Definitions", e);
+
+         return Response.serverError().build();
+      }
+
+   }
+   
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/run-time")
@@ -206,7 +225,7 @@ public class BenchmarkDefinitionResource
       }
 
    }
-
+   
    /**
     * 
     * @param benchmarkDefinition
@@ -227,5 +246,6 @@ public class BenchmarkDefinitionResource
          throw e;
       }
    }
+
 
 }

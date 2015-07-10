@@ -176,7 +176,34 @@
 		return deferred.promise;
 	}
 	
+	/**
+	 * Deletes a run-time benchmark from the document repository
+	 * @param id - runtime artifact oid
+	 * @returns - promise
+	 */
+	benchmarkService.prototype.deletePublishedBenchmark = function(runtimeOid){
+		var url,
+			deferred = this.$q.defer();
 	
+		url = this.absRoot + this.portalCommon + this.portalBDComponent + '/run-time';
+		url += "/" + runtimeOid;
+		
+		this.$http["delete"](url)
+		.success(function(data){
+			deferred.resolve(data);
+		})
+		.error(function(err){
+			deferred.reject(err);
+		});
+		
+		return deferred.promise;
+	};
+	
+	/**
+	 * Deletes a design time benchmark from the document repository
+	 * @param id - Benchmark definition id
+	 * @returns - promise
+	 */
 	benchmarkService.prototype.deleteBenchmark = function(id){
 		var url,
 			deferred = this.$q.defer();

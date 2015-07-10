@@ -144,7 +144,24 @@ public class BenchmarkDefinitionService
       }
       return benchmarkDto;
    }
-
+   
+   /**
+    * 
+    * @param runtimeOid
+    * @throws Exception
+    */
+   public void deletePublishedBenchmarkDefinition(long runtimeOid) throws Exception
+   {
+      try
+      {
+        documentUtils.deleteRuntimeArtifacts(runtimeOid);
+      }
+      catch (Exception e)
+      {
+         throw e;
+      }
+   }
+   
    /**
     * 
     * @param benchmarkId
@@ -184,6 +201,7 @@ public class BenchmarkDefinitionService
          throw e;
       }
    }
+   
 
    /**
     * 
