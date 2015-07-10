@@ -207,8 +207,6 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
             startedProcessInstances = CollectionUtils.newArrayList();
             showStartProcessView = false;
 
-            String targetProcessId = ModelUtils.extractParticipantId(selectedProcessId);
-
             if (sourceProcessInstances.size() > 1)
             {
                List<SwitchProcessTableEntry> tableEntryList = CollectionUtils.newArrayList();
@@ -219,7 +217,7 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
                   {
                      if (!nonAbortableProcesses.contains(pi))
                      {
-                        tableEntryList.add(spawnPeerProcess(pi, targetProcessId, linkComment));
+                        tableEntryList.add(spawnPeerProcess(pi, selectedProcessId, linkComment));
                      }
                   }
 
@@ -234,7 +232,7 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
                if (ProcessInstanceUtils.isAbortable(processInstance))
                {
                   ProcessInstance pi = ServiceFactoryUtils.getWorkflowService().spawnPeerProcessInstance(
-                        processInstance.getOID(), targetProcessId, true, null, true, linkComment);
+                        processInstance.getOID(), selectedProcessId, true, null, true, linkComment);
                   startedProcessInstances.add(pi);
                }
             }
