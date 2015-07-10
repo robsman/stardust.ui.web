@@ -24,6 +24,7 @@ import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.springframework.beans.factory.InitializingBean;
 
 /**
@@ -53,7 +54,12 @@ public class ProcessSearchConfigurationBean extends UIComponentBean
    public static String getArchiveAuditTrailURL()
    {
       UserPreferencesHelper userPrefsHelper = getUserPrefenceHelper();
-      return userPrefsHelper.getSingleString(V_PROCESS_SEARCH, F_ARCHIVE_AUDIT_TRAIL_URL);
+      String url = userPrefsHelper.getSingleString(V_PROCESS_SEARCH, F_ARCHIVE_AUDIT_TRAIL_URL);
+      if (StringUtils.isNotEmpty(url) && !url.endsWith("/"))
+      {
+         url += "/";
+      }
+      return url;
    }
 
    @Override

@@ -15,19 +15,18 @@ var archivePortalWindow;
  */
 function openArchiveSearch(url, criteria) {
 	var message = '{"type": "OpenView", "data": {"viewId": "processSearchView", "params": ' + criteria + '}}';
-	
+
+	// url will always end with "/"
+	url += "main.html?uicommand=" + message;
+	if (window.console) {
+		console.log('Archive Search URL: ', url);
+	}
+
 	if (archivePortalWindow && !archivePortalWindow.closed) {
-		if (window.console) {
-			console.log('Archive Search Message', message);
-		}
-		archivePortalWindow.postMessage(message, '*');
+		archivePortalWindow.location.href = url;
 	} else {
-		url += "?uicommand=" + message;
-		if (window.console) {
-			console.log('Archive Search URL', url);
-		}
 		archivePortalWindow = window.open(url, 'ArchivePortal');
 	}
-	
+
 	archivePortalWindow.focus();
 }
