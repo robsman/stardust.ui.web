@@ -81,9 +81,9 @@
         "freeformExpression" : "",
         "details" : {
 	        "condition": {
-	          "lhs": "CURRENT_TIME",
+	          "lhs": { "id": "CURRENT_TIME", "type" : "attribute", "deref" : ""},
 	          "operator": ">",
-	          "rhs": "",
+	          "rhs": { "id": "", "type" : "", "deref" : ""},
 	          "offset": {
 	        	  "applyOffset": false,
 		          "useBusinessDays": true,
@@ -163,6 +163,10 @@
 				procDef.categoryConditions.forEach(function(catCond,catIndex,catCondArray){
 					delete catCond.$$hashKey;
 					delete catCond.categoryRef;
+					delete catCond.details.condition.lhs.name;
+					delete catCond.details.condition.lhs.groupName;
+					delete catCond.details.condition.rhs.name;
+					delete catCond.details.condition.rhs.groupName;
 				});
 				
 				procDef.activities.forEach(function(activity){

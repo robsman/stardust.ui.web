@@ -30,8 +30,4 @@ public class DataDTO extends AbstractDTO
 	@DTOAttribute("typeId")
 	public String typeId;
 
-	public String engineType; // TODO: VERY temporary! Remove in favor of generic attributes List
-
-	/*@DTOAttribute("attributes")
-	public List<Object> attributes;*/
 }

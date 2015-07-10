@@ -64,6 +64,15 @@
 		//initializing text map using our i18n method
 		this.initTextMap();
 		
+		//initialize our attribute operands we will use in our condition dropdowns (lhs and rhs).
+		this.attributeOperands = [];
+		this.attributeOperands.push(
+				this.operandBuilder("attribute","","CURRENT_TIME",this.textMap.currentTime));
+		this.attributeOperands.push(
+				this.operandBuilder("attribute","","PROCESS_START_TIME",this.textMap.processStartTime));
+		this.attributeOperands.push(
+				this.operandBuilder("attribute","","ROOT_PROCESS_START_TIME",this.textMap.rootProcessStartTime));
+		
 		//initialize our menu structure that we will pass back to our category table.
 		//we do this in our constructor so that the object reference evaluates correctly
 		//during an angular digest. If our menu retrieval function always generated a new
@@ -90,8 +99,13 @@
 		//retrieve all deployed models, add additional data to help
 		//in building a tree structure.
 		benchmarkService.getModels()
-		.then(function(data){
-			that.models = that.treeifyModels(data.models);
+		.then(function(res){
+			res.models.forEach(function(model){
+				model.data = model.data.filter(function(v){
+					return v.typeId == 'struct' || v.typeId == 'primitive';
+				});
+			});
+			that.models = that.treeifyModels(res.models);
 		})
 		["catch"](function(err){
 			//TODO: handle error
@@ -144,7 +158,31 @@
 		this.textMap.saveSuccessStatement = this.i18N("views.main.dialog.saveSuccess.statement");
 		this.textMap.defaultName = this.i18N("views.main.benchmark.defaultName");
 		this.textMap.dataExpression = this.i18N("views.main.categoryDataTable.cell.type.dataExpression");
+		this.textMap.processStartTime = this.i18N("views.main.categoryDataTable.cell.lhs.processStartTime");
+		this.textMap.rootProcessStartTime = this.i18N("views.main.categoryDataTable.cell.lhs.rootProcessStartTime");
+		this.textMap.attribute = this.i18N("views.main.categoryDataTable.cell.attribute");
+		this.textMap.data = this.i18N("views.main.categoryDataTable.cell.data");
 	};
+	
+	/**
+	 * Helper function to return lhs or rhs compatible objects for use in our condition
+	 * dropdowns.
+	 * @param type - (data|attribute)
+	 * @param dataRef - forward slash delimited path to designate hierarchial data
+	 * @param id - for data, the fully qualified id, for attributes - the defined constant
+	 * @param name - transient, not saved to server, used for UI display only
+	 * @returns {___anonymous8171_8240}
+	 */
+	benchmarkController.prototype.operandBuilder = function(type,dataRef,id,name,groupName){
+		groupName = groupName || this.textMap.attribute;
+		return {
+			"id" : id,
+			"type" : type,
+			"deref" : dataRef,
+			"name" : name,
+			"groupName" : groupName
+		}
+	}
 	
 	/**
 	 * Initiate a file download of the benchmark to the users computer.
@@ -881,6 +919,7 @@
 			rhsDefault,
 			model,
 			parentModel,
+			conditions,
 			parentProcDef,
 			procDef,
 			activity,
@@ -903,21 +942,29 @@
 			parentModel = this.treeApi.getParentItem(item.valueItem.nodeId);
 			model = this.buildOutModel(benchmark,parentModel.id,parentModel);
 			procDef = this.buildOutProcDef(model,item.valueItem.id,item.valueItem);
-
+			
+			//add a linking reference from our category in the process definition (which is just an id)
+			//to the actual object held in our benchmark.categories at the top level.
 			this.linkCategoryConditions(benchmark.categories,procDef.categoryConditions);
 			
+			//build a collection of objects for the rhs of our condition. This will include
+			//attributes and data.
+			conditions = this.buildDataConditions(parentModel.data);
+			conditions=conditions.concat(this.attributeOperands);
+			
 			//Now we need to find our default model data's qualifiedId so as
-			//to initialize the condition.lhs value of new buidlout with this value.
+			//to initialize the condition.lhs value of new buildout with this value.
 			rhsDefault = parentModel.data.filter(function(v){return v.id==="CURRENT_DATE"})[0];
 			procDef.categoryConditions.forEach(function(c){
-				if(c.details.condition.rhs===""){
-					c.details.condition.rhs=rhsDefault.qualifiedId;
+				if(c.details.condition.rhs.id===""){
+					c.details.condition.rhs.id=rhsDefault.qualifiedId;
+					c.details.condition.rhs.type="data";
 				}
 			});
 			
 			bmarkDataRow = {
 					"benchmark" : benchmark, 
-					"modelData" : parentModel.data,
+					"modelData" : conditions,//parentModel.data,
 					"element" : "Process Definition",
 					"elementRef" : procDef,
 					"treeNodeRef" : item,
@@ -941,18 +988,24 @@
 			
 			this.linkCategoryConditions(benchmark.categories, activity.categoryConditions);
 			
+			//build a collection of objects for the rhs of our condition. This will include
+			//attributes and data.
+			conditions = this.buildDataConditions(parentModel.data);
+			conditions=conditions.concat(this.attributeOperands);
+			
 			//Now we need to find our default model data's qualifiedId so as
 			//to initialize the condition.lhs value of new buidlout with this value.
 			rhsDefault = parentModel.data.filter(function(v){return v.id==="CURRENT_DATE"})[0];
 			activity.categoryConditions.forEach(function(c){
-				if(c.details.condition.rhs===""){
-					c.details.condition.rhs=rhsDefault.qualifiedId;
+				if(c.details.condition.rhs.id===""){
+					c.details.condition.rhs.id=rhsDefault.qualifiedId;
+					c.details.condition.rhs.type="data";
 				}
 			});
 			
 			bmarkDataRow ={
 				"benchmark" : benchmark, 
-				"modelData" : parentModel.data,
+				"modelData" : conditions,
 				"element" : "Activity",
 				"elementRef" : activity,
 				"treeNodeRef" : item,
@@ -963,6 +1016,35 @@
 			this.handleTreeSelection(item,e,bmarkDataRow);
 			
 		}
+	}
+	
+	/**
+	 * Convert a collection of 
+	 * @param modelData
+	 * @returns
+	 */
+	benchmarkController.prototype.buildDataConditions = function(modelData){
+		var that = this;
+		var results = modelData.map(function(v){
+			return{
+				//permanent properites that are mapped to ngModel
+				"id" : v.qualifiedId,
+				"type" : "data",
+				"deref": "",
+				//temporary properties required by the UI and 
+				//stripped before we save to the server
+				"name" : v.name,
+				"dataType" : v.typeId,
+				"groupName" : that.textMap.data
+			}
+		});
+		
+		return results;
+	};
+	
+	benchmarkController.prototype.updateCondition = function(operand,item){
+		operand.id = item.id;
+		operand.type = item.type;
 	}
 	
 	/**
@@ -981,7 +1063,7 @@
 		
 		//TODO-ZZM: need appropriate icons
 		if(d.nodeType === "model"){
-			iconCss = "sc sc-wrench";
+			iconCss = "sc sc-spiral";
 			if(this.selectedBenchmark){
 				hasBenchmark = this.selectedBenchmark.models.some(function(model){
 					return model.id === d.id;

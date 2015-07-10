@@ -69,12 +69,7 @@ public class ModelServiceBean
                for (Data data : modelData)
                {
                   DataDTO dataDTO = DTOBuilder.build(data, DataDTO.class);
-                  Type type = (Type) data.getAttribute(PredefinedConstants.TYPE_ATT);
-                  if (type != null)
-                  {
-               	   dataDTO.engineType = type.getId();
-               	   dataDTOList.add(dataDTO);
-                  }
+                  dataDTOList.add(dataDTO);
                }
                
                // Create ProcessDefinitionDTO list

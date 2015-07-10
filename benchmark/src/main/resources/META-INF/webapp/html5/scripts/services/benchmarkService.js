@@ -137,7 +137,7 @@
 			
 			if(bmark.length > 0){
 				//that.__fileDownload(bmark[0]);
-				that.sdUtilService.downloadAsFile(JSON.stringify(bmark[0]),bmark[0].content.name + ".json");
+				that.sdUtilService.downloadAsFile(JSON.stringify(bmark[0]),bmark[0].content.name + ".json",false,document);
 			}
 		});
 	}
