@@ -100,11 +100,26 @@
 		//in building a tree structure.
 		benchmarkService.getModels()
 		.then(function(res){
+			
+			var predefinedModelIndex = -1,
+				i = 0;
+			
 			res.models.forEach(function(model){
+				
+				//track if/where we find the predefinedModel instance
+				if(model.id==='PredefinedModel'){predefinedModelIndex=i;}
+				
+				//filter model data
 				model.data = model.data.filter(function(v){
 					return v.typeId == 'struct' || v.typeId == 'primitive';
 				});
+				
+				i++;
 			});
+			
+			//Remove predefined model
+			if(predefinedModelIndex > -1){res.models.splice(predefinedModelIndex,1);}
+			
 			that.models = that.treeifyModels(res.models);
 		})
 		["catch"](function(err){
