@@ -1250,7 +1250,7 @@ public class ProcessInstanceUtils
       if (null != result)
       {
          Map<String, Serializable> properties = result.getProperties();
-         if (properties.containsKey(property))
+         if ((properties != null) && properties.containsKey(property))
          {
             return (String) properties.get(property);
          }
