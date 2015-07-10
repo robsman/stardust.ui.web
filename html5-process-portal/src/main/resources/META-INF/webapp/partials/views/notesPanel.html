@@ -6,7 +6,8 @@
 			<button ng-disabled="ctrl.isAddMode"
 				ng-click="bpmCommon.stopEvent($event); ctrl.addNote();"
 				title="{{i18n('processportal.views-notesPanel-button-addNote')}}"
-				class="button-link tbl-toolbar-item tbl-tool-link">
+				class="button-link tbl-toolbar-item tbl-tool-link"
+				aid="PP-NotesView-AddNote">
 				<i class="sc sc-fw sc-1x sc-document"></i>
 			</button>
 		</div>
@@ -18,7 +19,9 @@
 		sda-initial-selection="[{noteNumber: ctrl.notes.totalCount}]"
 		sda-on-select="ctrl.onSelect(info)"
 		sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
-		sda-sort-by="{name : 'teamMember', dir : 'desc'}" sda-exports="false">
+		sda-sort-by="{name : 'teamMember', dir : 'desc'}" sda-exports="false"
+		sda-preference-module="ipp-workflow-perspective" sda-preference-id="preference"
+		sda-preference-name="ipp-workflow-perspective.processportalNotesTable.selectedColumns">
 		<thead sda-i18n-scope="processportal.views-notesPanel-column">
 			<tr>
 				<th sda-name="noteNumber" sda-sortable="true"></th>
@@ -62,7 +65,8 @@
 						width="24px" height="24px" style="padding-right: 5px;"></td>
 					<td><sd-user-details
 							sda-user-oid="ctrl.rowSelectionNotesTable.userOID"
-							sda-account="ctrl.rowSelectionNotesTable.creatorName"></sd-user-details></td>
+							sda-account="ctrl.rowSelectionNotesTable.creatorName"
+							sda-aid-prefix="PP-NotesView-UserDetails"></sd-user-details></td>
 					<td>added note #{{ctrl.rowSelectionNotesTable.noteNumber}} -
 						{{ctrl.rowSelectionNotesTable.created | sdDateTimeFilter}}</td>
 				</tr>
@@ -70,12 +74,12 @@
 		</div>
 		<textarea ng-if="ctrl.notes.totalCount > 0 || ctrl.isAddMode"
 			ng-disabled="!ctrl.isAddMode" ng-model="ctrl.note" cols="20" rows="2"
-			style="height: 300px; width: 99%; background-color: rgb(247, 246, 178);"></textarea>
+			style="height: 300px; width: 99%; background-color: rgb(247, 246, 178);" aid="PP-NotesView-NoteText"></textarea>
 		<div ng-if="ctrl.isAddMode">
 			<table>
 				<tr>
 					<td><a href="#" style="font-weight: bold;"
-						ng-click="ctrl.saveNote()">
+						ng-click="ctrl.saveNote()" aid="PP-NotesView-SaveNote">
 							<table>
 								<tbody>
 									<tr>
@@ -86,7 +90,7 @@
 							</table>
 					</a></td>
 					<td><a href="#" style="font-weight: bold;"
-						ng-click="ctrl.cancelNote()">
+						ng-click="ctrl.cancelNote()" aid="PP-NotesView-CancelNote">
 							<table>
 								<tbody>
 									<tr>

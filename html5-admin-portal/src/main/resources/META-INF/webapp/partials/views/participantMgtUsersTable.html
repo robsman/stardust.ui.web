@@ -7,11 +7,11 @@
 				<td><span class="label-item"
 					ng-bind="i18n('admin-portal-messages.views-common-total-label') + i18n('admin-portal-messages.common-colon')"></span></td>
 				<td><span class="activity-overview-report-field-value"
-					ng-bind="ctrl.allCount"></span></td>
+					ng-bind="ctrl.allCount" aid="ADM-PartMgmt-TotalUserCnt"></span></td>
 				<td><span class="label-item"
 					ng-bind="i18n('admin-portal-messages.views-common-valid-label') + i18n('admin-portal-messages.common-colon')"></span></td>
 				<td><span class="activity-overview-report-field-value"
-					ng-bind="ctrl.activeCount"></span></td>
+					ng-bind="ctrl.activeCount" aid="ADM-PartMgmt-ValidUserCnt"></span></td>
 			</tr>
 		</table>
 	</div>
@@ -27,21 +27,24 @@
 					<button
 						ng-click="bpmCommon.stopEvent($event); ctrl.openCreateCopyModifyUser('CREATE_USER');"
 						title="{{i18n('views-common-messages.common-create')}}"
-						class="button-link tbl-toolbar-item tbl-tool-link">
+						class="button-link tbl-toolbar-item tbl-tool-link"
+						aid="ADM-PartMgmt-ToolbarCreateUser">
 						<i class="sc sc-fw sc-1x sc-users"></i>
 					</button>
 					<button
 						ng-disabled="!(ctrl.rowSelectionForAllUsersTable.length == 1)"
 						ng-click="bpmCommon.stopEvent($event); ctrl.openCreateCopyModifyUser('COPY_USER',ctrl.rowSelectionForAllUsersTable[0].oid);"
 						title="{{i18n('admin-portal-messages.common-copy')}}"
-						class="button-link tbl-toolbar-item tbl-tool-link">
+						class="button-link tbl-toolbar-item tbl-tool-link"
+						aid="ADM-PartMgmt-ToolbarCopyUser">
 						<i class="sc sc-fw sc-1x sc-users"></i>
 					</button>
 					<button
 						ng-disabled="!(ctrl.rowSelectionForAllUsersTable.length > 0)"
 						ng-click="bpmCommon.stopEvent($event); ctrl.invalidateUsers();"
 						title="{{i18n('admin-portal-messages.views-participantMgmt-invalidateUser-title')}}"
-						class="button-link tbl-toolbar-item tbl-tool-link">
+						class="button-link tbl-toolbar-item tbl-tool-link"
+						aid="ADM-PartMgmt-ToolbarInvalidateUser">
 						<i class="sc sc-fw sc-1x sc-minus-circle"></i>
 					</button>
 				</div>
@@ -49,14 +52,16 @@
 					<button ng-if="!ctrl.hideInvalidatedUsers"
 						ng-click="bpmCommon.stopEvent($event); ctrl.changeHideInvalidatedUsersFlag();"
 						title="{{i18n('admin-portal-messages.views-participantMgmt-filters-invalidatedUsers-hideUser')}}"
-						class="button-link tbl-toolbar-item tbl-tool-link">
+						class="button-link tbl-toolbar-item tbl-tool-link"
+						aid="ADM-PartMgmt-Filters-InvalidatedUsers-HideUser">
 						<i class="sc sc-fw sc-1x sc-ban" style="color: Red"></i>
 					</button>
 
 					<button ng-if="ctrl.hideInvalidatedUsers"
 						ng-click="bpmCommon.stopEvent($event); ctrl.changeHideInvalidatedUsersFlag();"
 						title="{{i18n('admin-portal-messages.views-participantMgmt-filters-invalidatedUsers-showUser')}}"
-						class="button-link tbl-toolbar-item tbl-tool-link">
+						class="button-link tbl-toolbar-item tbl-tool-link"
+						aid="ADM-PartMgmt-Filters-InvalidatedUsers-ShowUser">
 						<i class="sc sc-fw sc-1x sc-ban"></i>
 					</button>
 				</div>
@@ -105,7 +110,8 @@
 						<td sda-exporter="rowData.displayName"><a href="#"
 							ng-click="bpmCommon.stopEvent($event); ctrl.openCreateCopyModifyUser('MODIFY_USER',rowData.oid);"
 							title="{{i18n('admin-portal-messages.views-userTable-columnLink-title')}}"
-							class="tbl-tool-link">{{rowData.displayName}}</a></td>
+							class="tbl-tool-link"
+							aid="ADM-PartMgmt-DataTable-DisplayName">{{rowData.displayName}}</a></td>
 						<td style="text-align: center;"></td>
 						<td style="text-align: center;"></td>
 						<td style="text-align: center;" sda-exporter="rowData.realmId">{{rowData.realmId}}</td>

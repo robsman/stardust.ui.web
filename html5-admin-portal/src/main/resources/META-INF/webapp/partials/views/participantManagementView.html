@@ -2,7 +2,7 @@
 	ng-controller="sdParticipantManagementCtrl as ctrl" sg-stretch-to-bottom>
 	<div class="view-panel-toolbar toolbar-buttons">
 		<div class="view-toolbar-section">
-			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+			<span sd-refresh sda-on-refresh="ctrl.refresh();" aid="PP-PartMgmt"></span>
 		</div>
 	</div>
 	<div
@@ -17,7 +17,8 @@
 			sda-on-confirm="ctrl.onConfirmFromCreateUser(res)"
 			sda-on-close="ctrl.onCloseFromCreateUser(res)"
 			sda-confirm-action-label="{{i18n('admin-portal-messages.common-apply')}}"
-			sda-width="550px" sda-height="600px"></div>
+			sda-width="550px" sda-height="600px"
+			sda-aid-prefix="ADM-PartMgmt-UserPopup"></div>
 	</div>
 	<div sd-dialog sda-modal="true" sda-show="ctrl.showNotificationDialog"
 		sda-type="alert"
@@ -25,7 +26,8 @@
 		sda-scope="this"
 		sda-template="plugins/html5-admin-portal/partials/views/invalidateUsersNotificationDialog.html"
 		sda-cancel-action-label="{{i18n('admin-portal-messages.common-close')}}"
-		sda-width="520px" sda-height="400px">
+		sda-width="520px" sda-height="400px"
+		sda-aid-prefix="ADM-PartMgmt-InvalUsersNotificationDlg">
 	</div>
 	<div sd-dialog sda-modal="true"
 		sda-show="ctrl.showDefaultDelegateDialog" sda-type="confirm"
@@ -36,7 +38,8 @@
 		sda-confirm-action-label="{{i18n('admin-portal-messages.common-yes')}}"
 		sda-on-close="ctrl.onCloseFromDefaultDelegateDialog(res)"
 		sda-on-confirm="ctrl.onConfrimFromDefaultDelegateDialog(res)"
-		sda-width="520px" sda-height="50px">
+		sda-width="520px" sda-height="50px"
+		sda-aid-prefix="ADM-PartMgmt-DelegateActConfDlg">
 	</div>
 	<div sd-dialog sda-modal="true"
 		sda-show="ctrl.showStrandedActivitiesAlert" sda-type="alert"
@@ -45,6 +48,7 @@
 		sda-template="plugins/html5-admin-portal/partials/views/strandedActivitiesAlertDialog.html"
 		sda-cancel-action-label="{{i18n('admin-portal-messages.common-ok')}}"
 		sda-on-close="ctrl.onConfirmFromStrandedActivitiesAlert(res)"
-		sda-width="520px" sda-height="50px">
+		sda-width="520px" sda-height="50px"
+		sda-aid-prefix="ADM-PartMgmt-StrandedActAlertDialog">
 	</div>
 </div>
