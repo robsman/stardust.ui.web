@@ -148,4 +148,13 @@ public class PortalApplicationEventScript implements Serializable
    {
       this.resetWindowWidth = resetWindowWidth;
    }
+
+   /**
+    * Called by PortalApplication#cleanAllViews()
+    */
+   public void clearState()
+   {
+      trace.warn("Descructive action. Cleared the state");
+      eventScripts = new ArrayList<String>();
+   }
 }

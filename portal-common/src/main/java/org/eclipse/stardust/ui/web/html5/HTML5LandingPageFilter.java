@@ -21,6 +21,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.Constants;
+import org.eclipse.stardust.ui.web.common.app.messaging.MessageProcessor;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.spi.theme.ThemeProvider;
@@ -250,10 +251,10 @@ public class HTML5LandingPageFilter implements Filter
             String uiCmd = FacesUtils.getQueryParameterValue(request.getQueryString(), Constants.URL_PARAM_UI_COMMAND);
             if (StringUtils.isNotEmpty(uiCmd))
             {
-               // TODO: Before redirect, need to close already open views if any from session
-               // But this can only be done from ICEfaces context
-               // PortalApplication.getInstance().closeAllViews();
-
+               // After redirect, need to close all of the already open views (if any) to avoid any side effects
+               String cleanAllViewsCmd = "{'type': 'CleanAllViews', 'data': {}}";
+               uiCmd = MessageProcessor.prependMessage(uiCmd, cleanAllViewsCmd);
+               
                // Redirect
                String landingPage = FacesUtils.getServerBaseURL(request) + "/main.html";
                landingPage += "#uicommand=" + uiCmd;

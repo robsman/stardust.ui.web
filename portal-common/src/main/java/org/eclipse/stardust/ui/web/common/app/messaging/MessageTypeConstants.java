@@ -22,6 +22,8 @@ public interface MessageTypeConstants
    String D_VIEW_PARAMS = "params";
    String D_NESTED = "nested";
 
+   String T_CLEAN_ALL_VIEWS = "CleanAllViews";
+   
    String T_CHANGE_PERSPECTIVE = "ChangePerspective";
    String D_PERSPECTIVE_ID = "perspectiveId";
 }

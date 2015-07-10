@@ -816,6 +816,15 @@ public class PortalApplication
    }
 
    /**
+    * 
+    */
+   public void cleanAllViews()
+   {
+      closeAllViews();
+      portalApplicationEventScript.clearState();
+   }
+
+   /**
     *
     */
    public void closeAllViews()
