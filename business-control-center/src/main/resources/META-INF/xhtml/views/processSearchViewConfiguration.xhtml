@@ -22,10 +22,15 @@
 	<ice:panelGrid columns="2">
 		<ice:outputLabel styleClass="label-form"
 			value="#{processSearchConfigurationBean.messages['config.archiveSearch.auditTrailUrl']}"  />
-		<ice:inputText partialSubmit="true" immediate="true" style="width: 300px;" 
-			value="#{processSearchConfigurationBean.archiveAuditTrailUrl}">
-			<pc:automationTag value="auto-PP-ProcSrchConf-ArchiveAuditTrailUrl" standAlone="false" />
-		</ice:inputText>
+		<ice:panelGroup>
+			<ice:inputText partialSubmit="true" immediate="true" style="width: 300px;" 
+				value="#{processSearchConfigurationBean.archiveAuditTrailUrl}"
+				rendered="#{ippPortalApp.loggedInUser.administrator}">
+				<pc:automationTag value="auto-PP-ProcSrchConf-ArchiveAuditTrailUrl" standAlone="false" />
+			</ice:inputText>
+			<ice:outputText value="#{processSearchConfigurationBean.archiveAuditTrailUrl}"
+				rendered="#{not ippPortalApp.loggedInUser.administrator}" />
+		</ice:panelGroup>
 	</ice:panelGrid>
 	
 	<ice:panelGroup styleClass="clearing" />
@@ -33,7 +38,7 @@
 	<ice:panelGroup styleClass="clearing" />
 	<ice:panelGroup styleClass="clearing" />
 
-	<ice:panelGrid columns="3">
+	<ice:panelGrid columns="3" rendered="#{ippPortalApp.loggedInUser.administrator}">
 		<pc:automationTag value="auto-PP-ProcSrchConf-BtnsBar" standAlone="false" />
 		<ice:commandButton value="#{common_msgPropsBean['views.configurationPanel.button.save']}"
 			action="#{processSearchConfigurationBean.saveConfiguration}" styleClass="button" />
