@@ -21,6 +21,7 @@ import java.util.Set;
 import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.error.InvalidArgumentException;
 import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
@@ -35,6 +36,7 @@ import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.query.Users;
 import org.eclipse.stardust.engine.api.runtime.Department;
+import org.eclipse.stardust.engine.api.runtime.Deputy;
 import org.eclipse.stardust.engine.api.runtime.DeputyOptions;
 import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.User;
@@ -288,12 +290,14 @@ public class CreateOrModifyDeputyPopupBean extends PopupUIComponentBean
 
          if (modifyMode)
          {
-            userService.modifyDeputy(user, deputyTableEntry.getUser(), deputyOptions);
+            Deputy modifedDeputy = userService.modifyDeputy(user, deputyTableEntry.getUser(), deputyOptions);
+            deputyTableEntry.setValidFrom(modifedDeputy.getFromDate());
          }
          else
          {
             deputyTableEntry.setUser(deputySelector.getSelectedValue().getUser());
-            userService.addDeputy(user, deputySelector.getSelectedValue().getUser(), deputyOptions);
+            Deputy addedDeputy = userService.addDeputy(user, deputySelector.getSelectedValue().getUser(), deputyOptions);
+            deputyTableEntry.setValidFrom(addedDeputy.getFromDate());
          }
 
          if (null != callbackHandler)
@@ -306,6 +310,10 @@ public class CreateOrModifyDeputyPopupBean extends PopupUIComponentBean
          }
 
          closePopup();
+      }
+      catch(InvalidArgumentException iAE) {
+         validationMessageBean.addError(getMessages().getString("dialog.error.invalidEndDate"), (String[])null);
+         return;
       }
       catch (Exception e)
       {
