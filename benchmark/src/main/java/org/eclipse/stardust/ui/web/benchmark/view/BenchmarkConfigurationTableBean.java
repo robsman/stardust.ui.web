@@ -399,7 +399,7 @@ public class BenchmarkConfigurationTableBean extends UIComponentBean implements 
    {
       AdministrationService administrationService = ServiceFactoryUtils.getServiceFactory().getAdministrationService();
       Preferences benchmarkPreferences = administrationService.getPreferences(PreferenceScope.PARTITION,
-            PreferencesConstants.MODULE_ID_ENGINE_INTERNALS, PreferencesConstants.PREFERENCE_ID_BENCHMARKS);
+            PreferencesConstants.MODULE_ID_ENGINE_INTERNALS, PreferencesConstants.PREFERENCE_ID_DEFAULT_BENCHMARKS);
 
       return benchmarkPreferences;
    }
