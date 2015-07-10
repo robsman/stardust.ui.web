@@ -459,5 +459,7 @@
     </div>
 	
 </div><!-- Bottom Container End -->
-<pre>{{ctrl.selectedBenchmark | json}}</pre>
+
+<pre ng-if="ctrl.debug===true">{{ctrl.selectedBenchmark | json}}</pre>
+
 </div><!-- OuterMost Div end, controller scope ends -->
