@@ -24,9 +24,7 @@
 				include="/plugins/views-common/contentmgmt/extensions/toolbar/notesToolBar.xhtml"
 				requiredView="notesView" />
 
-			--><ippui:toolbarSection name="documentSearchViewToolbar"
-				include="/plugins/views-common/extension/toolbar/documentSearchViewToolbar.xhtml"
-				requiredView="documentSearchView" />
+			-->
 
 			<ippui:toolbarSection name="chatViewToolbar"
 				include="/plugins/views-common/extension/toolbar/chatViewToolbar.xhtml"
@@ -92,8 +90,7 @@
 				controller="resourceMgmtTreeViewBean" />
 
 			<ippui:view name="documentSearchView"
-				include="/plugins/views-common/views/documentsearch/documentSearchView.xhtml"
-				controller="documentSearchBean">
+				include="/plugins/html5-views-common/partials/views/documentSearchView.html">
 				<ippui:preferences>
 					<ippui:preferencePage name="icon"
 						include="/plugins/views-common/images/icons/page_white_find.png" />
