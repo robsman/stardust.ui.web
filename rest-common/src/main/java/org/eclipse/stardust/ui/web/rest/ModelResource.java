@@ -45,11 +45,12 @@ public class ModelResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/")
-   public Response getModels(@QueryParam("allActive") @DefaultValue("false") Boolean allActive)
+   public Response getModels(@QueryParam("allActive") @DefaultValue("false") Boolean allActive,
+         @QueryParam("includePredefinedModel") @DefaultValue("false") Boolean includePredefinedModel)
    {
       try
       {
-         List<ModelDTO> models = modelService.getModels(allActive);
+         List<ModelDTO> models = modelService.getModels(allActive, includePredefinedModel);
          return Response.ok(AbstractDTO.toJson(models), MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)

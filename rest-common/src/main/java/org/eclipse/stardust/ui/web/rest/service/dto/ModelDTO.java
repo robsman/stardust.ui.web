@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.rest.service.dto;
 import java.util.List;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 
 /**
  * 
@@ -36,7 +37,12 @@ public class ModelDTO extends AbstractDTO
 
    public List<ProcessDefinitionDTO> processDefinitions;
    
+   //TODO ModelParticipantDTO may be unnecessary, remove it later
    public List<ModelParticipantDTO> modelParticipants;
+   
+   public List<ParticipantDTO> allTopLevelOrganizations;
+   
+   public List<ParticipantDTO> allTopLevelRoles;
    
    public List<DataDTO> data;
 }

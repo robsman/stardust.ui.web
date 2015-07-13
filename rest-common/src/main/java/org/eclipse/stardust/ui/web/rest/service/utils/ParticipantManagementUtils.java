@@ -20,6 +20,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
@@ -37,6 +39,8 @@ import org.eclipse.stardust.engine.api.model.ModelParticipant;
 import org.eclipse.stardust.engine.api.model.OrganizationInfo;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
+import org.eclipse.stardust.engine.api.model.QualifiedOrganizationInfo;
+import org.eclipse.stardust.engine.api.model.RoleInfo;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
@@ -52,6 +56,7 @@ import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.Department;
+import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserExistsException;
@@ -96,6 +101,10 @@ public class ParticipantManagementUtils
 
    private static final String PREFERENCE_ID = "preference";
 
+   public static enum ParticipantType {
+      ORGANIZATON_SCOPED_EXPLICIT, ORGANIZATON_SCOPED_IMPLICIT, ROLE_SCOPED, ORGANIZATION_UNSCOPED, ROLE_UNSCOPED, USERGROUP, USER, DEPARTMENT, DEPARTMENT_DEFAULT;
+   }
+   
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
 
@@ -1076,5 +1085,125 @@ public class ParticipantManagementUtils
       }
       return notificationMap;
    }
+   
+   /**
+    * @param organization
+    * @param departmentId
+    * @return
+    */
+   public DepartmentInfo getDepartment(QualifiedOrganizationInfo organization, String departmentId)
+   {
+      DepartmentInfo departmentInfo = null;
+      List<Department> deptList = serviceFactoryUtils.getQueryService().findAllDepartments(
+            organization.getDepartment(), organization);
 
+      for (Department department2 : deptList)
+      {
+         String deps = getDepartmentsHierarchy(department2, "");
+         if (deps.equals(departmentId.trim()))
+         {
+            departmentInfo = department2;
+            break;
+         }
+      }
+      return departmentInfo;
+   }
+
+   /**
+    * @param department2
+    * @param departmentName
+    * @return
+    */
+   public static String getDepartmentsHierarchy(Department department2, String departmentName)
+   {
+      if (department2 == null)
+      {
+         return departmentName;
+      }
+
+      departmentName = department2.getId() + "/" + departmentName;
+
+      if (department2.getParentDepartment() != null)
+      {
+         return getDepartmentsHierarchy(department2.getParentDepartment(), departmentName);
+      }
+
+      return departmentName.substring(0, departmentName.length() - 1);
+   }
+
+   /**
+    * @param input
+    * @return
+    */
+   public static String parseParentDepartmentId(String input)
+   {
+      return getMatchingString(input, "^\\[([^]]*)\\]");
+   }
+
+   /**
+    * @param input
+    * @return
+    */
+   public static String parseDepartmentId(String input)
+   {
+      return getMatchingString(input, "\\[([^]]*)\\]$");
+   }
+
+   /**
+    * @param input
+    * @return
+    */
+   public static String parseParticipantQId(String input)
+   {
+      return getMatchingString(input, "(\\{([^\\[]*))");
+   }
+ 
+   /**
+    * @param input
+    * @param pattern
+    * @return
+    */
+   public static String getMatchingString(String input, String pattern)
+   {
+      Matcher m = Pattern.compile(pattern).matcher(input);
+
+      if (m.find())
+      {
+         return m.group(1);
+      }
+
+      return null;
+   }
+
+   /**
+    * @param modelParticipantInfo
+    * @return
+    */
+   public static ParticipantType getParticipantType(QualifiedModelParticipantInfo modelParticipantInfo)
+   {
+      ParticipantType participantType = null;
+      if ((modelParticipantInfo instanceof OrganizationInfo) && modelParticipantInfo.definesDepartmentScope())
+      {
+         participantType = ParticipantType.ORGANIZATON_SCOPED_EXPLICIT;
+      }
+      else if ((modelParticipantInfo instanceof OrganizationInfo) && modelParticipantInfo.isDepartmentScoped()
+            && !modelParticipantInfo.definesDepartmentScope())
+      {
+         participantType = ParticipantType.ORGANIZATON_SCOPED_IMPLICIT;
+      }
+      else if ((modelParticipantInfo instanceof RoleInfo) && modelParticipantInfo.isDepartmentScoped())
+      {
+         participantType = ParticipantType.ROLE_SCOPED;
+      }
+      else if (modelParticipantInfo instanceof OrganizationInfo)
+      {
+         participantType = ParticipantType.ORGANIZATION_UNSCOPED;
+      }
+      else if (modelParticipantInfo instanceof RoleInfo)
+      {
+         participantType = ParticipantType.ROLE_UNSCOPED;
+      }
+      return participantType;
+   }
 }
+

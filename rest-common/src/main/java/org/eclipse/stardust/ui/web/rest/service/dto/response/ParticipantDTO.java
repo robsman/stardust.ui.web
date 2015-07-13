@@ -15,7 +15,6 @@ import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.Role;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.User;
-import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
@@ -33,14 +32,13 @@ public class ParticipantDTO extends AbstractDTO
    public long OID;
    public String name;
    public String type;
-   public boolean onlineStatus = false;
-   public String icon;
+   public Boolean onlineStatus;
    public Long runtimeOrganizationOid;
    public String realmId;
-   
+   public String parentDepartment;
+
    public ParticipantDTO()
-   {
-   }
+   {}
 
    /**
     * @param participant
@@ -52,9 +50,8 @@ public class ParticipantDTO extends AbstractDTO
       this.OID = ParticipantUtils.getParticipantOID(participant);
       this.name = ParticipantUtils.getParticipantLabel(participant);
       this.type = ParticipantUtils.getParticipantType(participant).name();
-      this.icon = determineIconPath(participant);
    }
-   
+
    /**
     * @param user
     */
@@ -66,7 +63,6 @@ public class ParticipantDTO extends AbstractDTO
       this.name = ParticipantUtils.getParticipantLabel(user);
       this.type = ParticipantUtils.getParticipantType(user).name();
       this.realmId = user.getRealm().getId();
-      this.icon = determineIconPath(user);
    }
 
    /**
@@ -77,8 +73,7 @@ public class ParticipantDTO extends AbstractDTO
       this.id = department.getId();
       this.OID = department.getOID();
       this.name = ParticipantUtils.getDepartmentLabel(department);
-      this.type = ParticipantSearchComponent.PerformerTypeUI.Department.name().toUpperCase();
-      this.icon = determineIconPath(null);
+      this.type = ParticipantUtils.ParticipantType.DEPARTMENT.name();
       this.runtimeOrganizationOid = department.getRuntimeOrganizationOID();
    }
 
