@@ -16,8 +16,12 @@ package org.eclipse.stardust.ui.web.admin;
  */
 public interface ResourcePaths
 {
-   static final String LP_allManagementViews = "ippAdmAllManagementViews";
-   static final String LP_administrativeActions = "ippAdmAdministrativeActions";
+   static final String LP_administrativeActions = "ippAdmAdministrativeActions"; // used for Database Administration   
+   static final String LP_userAdministration = "ippAdmUserAdministrations";
+   static final String LP_preferenceAdministrations = "ippAdmPreferenceAdministrations";
+   static final String LP_workflowAdministrations = "ippAdmWorkflowAdministrations";
+   static final String LP_docRepoAdministrations = "ippAdmDocRepoAdministrations";
+   static final String LP_systemAdministrations = "ippAdmSystemAdministrations";
    
    static final String V_activityView = "activityView";
    static final String V_processView = "processView";
