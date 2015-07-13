@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
+import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.ui.web.modeler.edit.postprocessing.AbstractChangeTracker;
 
@@ -18,6 +19,29 @@ public class EventActionChangeTracker extends AbstractChangeTracker
       if ((candidate instanceof EventActionTypeType || candidate instanceof EventConditionTypeType))
       {
          change.markUnmodified(candidate);
+      }
+      if (candidate instanceof EventHandlerType) {
+         EventHandlerType eventHandler = (EventHandlerType) candidate;
+         if (eventHandler.getId().equals(ModelerConstants.RS_RESUBMISSION))
+         {
+
+            EObject container = null;
+            if (candidate.eContainer() instanceof ChangeDescriptionImpl)
+            {
+               ChangeDescriptionImpl changeDescription = (ChangeDescriptionImpl) candidate.eContainer();
+               container = changeDescription.getOldContainer(candidate);
+            }
+            else
+            {
+               container = candidate.eContainer();
+            }
+
+
+            if (container instanceof ActivityType)
+            {
+               change.markAlsoModified(container);
+            }
+         }
       }
 
       if ((candidate instanceof EventActionType))

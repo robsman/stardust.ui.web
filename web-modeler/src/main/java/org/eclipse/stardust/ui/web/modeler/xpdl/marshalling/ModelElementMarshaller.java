@@ -1172,6 +1172,13 @@ public class ModelElementMarshaller implements ModelMarshaller
          activityJson.add("onAssignmentHandler", onAssignmentJson);
       }
 
+      eventHandler = EventMarshallingUtils.findResubmissionEventHandler(activity);
+      if (eventHandler != null)
+      {
+         JsonObject resubmissionJson = this.toEventJson(eventHandler, new JsonObject());
+         activityJson.add("resubmissionHandler", resubmissionJson);
+      }
+
       return activityJson;
    }
 
@@ -1853,47 +1860,51 @@ public class ModelElementMarshaller implements ModelMarshaller
 
       // TODO This may changes
 
-      loadDescription(eventJson, eventHandler);
-      loadAttributes(eventHandler, eventJson);
 
-      eventJson.addProperty(ModelerConstants.LOG_HANDLER_PROPERTY,
-            eventHandler.isLogHandler());
-      eventJson.addProperty(ModelerConstants.CONSUME_ON_MATCH_PROPERTY,
-            eventHandler.isConsumeOnMatch());
-      eventJson.addProperty(ModelerConstants.EVENT_CLASS_PROPERTY,
-            EventMarshallingUtils.encodeEventHandlerType(eventHandler.getType()));
-      //eventJson.addProperty(ModelerConstants.THROWING_PROPERTY,
-      //      EventMarshallingUtils.encodeIsThrowingEvent(eventHandler.getType()));
-      eventJson.addProperty(ModelerConstants.INTERRUPTING_PROPERTY,
-            EventMarshallingUtils.encodeIsInterruptingEvent(eventHandler));
-
-      JsonArray parameterMappingsJson = new JsonArray();
-
-      eventJson.add(ModelerConstants.PARAMETER_MAPPINGS_PROPERTY, parameterMappingsJson);
-
-      for (AccessPointType accessPoint : eventHandler.getAccessPoint())
+      if (!eventHandler.getId().equals(ModelerConstants.RS_RESUBMISSION))
       {
-         JsonObject parameterMappingJson = new JsonObject();
+         loadDescription(eventJson, eventHandler);
+         loadAttributes(eventHandler, eventJson);
+         eventJson.addProperty(ModelerConstants.LOG_HANDLER_PROPERTY,
+               eventHandler.isLogHandler());
+         eventJson.addProperty(ModelerConstants.CONSUME_ON_MATCH_PROPERTY,
+               eventHandler.isConsumeOnMatch());
+         eventJson.addProperty(ModelerConstants.EVENT_CLASS_PROPERTY,
+               EventMarshallingUtils.encodeEventHandlerType(eventHandler.getType()));
+         //eventJson.addProperty(ModelerConstants.THROWING_PROPERTY,
+         //      EventMarshallingUtils.encodeIsThrowingEvent(eventHandler.getType()));
+         eventJson.addProperty(ModelerConstants.INTERRUPTING_PROPERTY,
+               EventMarshallingUtils.encodeIsInterruptingEvent(eventHandler));
 
-         parameterMappingsJson.add(parameterMappingJson);
-         parameterMappingJson.addProperty(ModelerConstants.ID_PROPERTY,
-               accessPoint.getId());
-         parameterMappingJson.addProperty(ModelerConstants.NAME_PROPERTY,
-               accessPoint.getName());
+         JsonArray parameterMappingsJson = new JsonArray();
 
-         if (accessPoint.getType() != null)
+         eventJson.add(ModelerConstants.PARAMETER_MAPPINGS_PROPERTY, parameterMappingsJson);
+
+         for (AccessPointType accessPoint : eventHandler.getAccessPoint())
          {
-            parameterMappingJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
-                  accessPoint.getType().getId());
+            JsonObject parameterMappingJson = new JsonObject();
+
+            parameterMappingsJson.add(parameterMappingJson);
+            parameterMappingJson.addProperty(ModelerConstants.ID_PROPERTY,
+                  accessPoint.getId());
+            parameterMappingJson.addProperty(ModelerConstants.NAME_PROPERTY,
+                  accessPoint.getName());
+
+            if (accessPoint.getType() != null)
+            {
+               parameterMappingJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                     accessPoint.getType().getId());
+            }
+
+            if (accessPoint.getDirection() != null)
+            {
+               parameterMappingJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
+                     accessPoint.getDirection().getLiteral());
+            }
+
+            loadAttributes(accessPoint, parameterMappingJson);
          }
 
-         if (accessPoint.getDirection() != null)
-         {
-            parameterMappingJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
-                  accessPoint.getDirection().getLiteral());
-         }
-
-         loadAttributes(accessPoint, parameterMappingJson);
       }
 
       EventActionType setDataAction = EventMarshallingUtils
@@ -1934,6 +1945,11 @@ public class ModelElementMarshaller implements ModelMarshaller
             excludeUserActionsJson.add(euJson);
          }
          eventJson.add("userExclusions", excludeUserActionsJson);
+      }
+
+      if (eventHandler.getId().equals(ModelerConstants.RS_RESUBMISSION)) {
+         EventMarshallingUtils.addResubmissionToJson(eventHandler, eventJson);
+
       }
 
       JsonArray dataMappingsJson = toDataMappingsJson(eventHandler);
@@ -3435,8 +3451,6 @@ public class ModelElementMarshaller implements ModelMarshaller
       dataMappingJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, dataMapping.getDirection().getLiteral());
       dataMappingJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY,
             dataMapping.getDataPath());
-
-
       return dataMappingJson;
    }
 
@@ -3450,7 +3464,7 @@ public class ModelElementMarshaller implements ModelMarshaller
    {
       ModelUpgrader modelUpgrader = new ModelUpgrader(model);
       boolean upgradeNeeded = modelUpgrader.upgradeNeeded();
-      
+
       JsonObject modelJson = new JsonObject();
       modelJson.addProperty(
             ModelerConstants.IS_UPGRADE_NEEDED, upgradeNeeded);

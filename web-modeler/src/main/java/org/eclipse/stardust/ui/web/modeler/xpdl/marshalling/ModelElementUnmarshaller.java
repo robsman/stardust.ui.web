@@ -355,6 +355,8 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       }
    }
 
+
+
    public void updateParticipant(ActivityType activity, JsonElement participantIdJson)
    {
       if (participantIdJson.isJsonNull())
@@ -830,9 +832,6 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          JsonObject dataFlowConnectionJson)
    {
       // dataFlowConnectionJson is the diagram element; dataFlowJson is the model element
-
-
-      System.out.println(this.getModelBuilderFacade().getModelManagementStrategy().uuidMapper().getUUID(dataFlowConnection));
 
       JsonObject dataFlowJson = dataFlowConnectionJson
             .getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
@@ -2023,19 +2022,29 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          JsonObject eventHandlerJson)
    {
       if (!eventHandler.getType().getId()
-            .equals(PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION))
+            .equals(PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION)
+            && !eventHandler.getId().equals(ModelerConstants.RS_RESUBMISSION))
       {
          return;
       }
 
-      JsonObject euEventHandlerJson = eventHandlerJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
-
-      if (euEventHandlerJson.has(ModelerConstants.LOG_HANDLER_PROPERTY))
+      if (eventHandler.getId().equals(ModelerConstants.RS_RESUBMISSION))
       {
-         boolean logHandler = euEventHandlerJson.get(ModelerConstants.LOG_HANDLER_PROPERTY)
-               .getAsBoolean();
-         eventHandler.setLogHandler(logHandler);
+         EventMarshallingUtils.updateResubmissionHandler(eventHandler, eventHandlerJson);
       }
+      else
+      {
+         JsonObject euEventHandlerJson = eventHandlerJson
+               .getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+
+         if (euEventHandlerJson.has(ModelerConstants.LOG_HANDLER_PROPERTY))
+         {
+            boolean logHandler = euEventHandlerJson.get(
+                  ModelerConstants.LOG_HANDLER_PROPERTY).getAsBoolean();
+            eventHandler.setLogHandler(logHandler);
+         }
+      }
+
    }
 
    private void updateIntermediateEventSymbol(IntermediateEventSymbol eventSymbol,

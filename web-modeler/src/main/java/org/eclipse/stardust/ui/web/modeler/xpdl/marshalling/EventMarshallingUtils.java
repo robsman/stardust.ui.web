@@ -5,7 +5,10 @@ import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingModel;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractBoolean;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -14,44 +17,29 @@ import com.google.gson.JsonObject;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.extensions.actions.abort.AbortActivityEventAction;
 import org.eclipse.stardust.engine.core.extensions.actions.complete.CompleteActivityEventAction;
+import org.eclipse.stardust.engine.core.extensions.actions.delegate.DelegateEventAction;
 import org.eclipse.stardust.engine.core.extensions.actions.excludeuser.ExcludeUserAction;
+import org.eclipse.stardust.engine.core.extensions.actions.schedule.ScheduleEventAction;
 import org.eclipse.stardust.engine.core.extensions.actions.setdata.SetDataAction;
 import org.eclipse.stardust.engine.core.extensions.conditions.assignment.AssignmentCondition;
 import org.eclipse.stardust.engine.core.extensions.conditions.exception.ExceptionCondition;
 import org.eclipse.stardust.engine.core.extensions.conditions.exception.ExceptionConditionAccessPointProvider;
 import org.eclipse.stardust.engine.core.extensions.conditions.exception.ExceptionConditionValidator;
-import org.eclipse.stardust.engine.core.extensions.conditions.timer.TimeStampBinder;
-import org.eclipse.stardust.engine.core.extensions.conditions.timer.TimeStampCondition;
-import org.eclipse.stardust.engine.core.extensions.conditions.timer.TimeStampEmitter;
-import org.eclipse.stardust.engine.core.extensions.conditions.timer.TimerAccessPointProvider;
-import org.eclipse.stardust.engine.core.extensions.conditions.timer.TimerValidator;
+import org.eclipse.stardust.engine.core.extensions.conditions.timer.*;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.engine.extensions.events.signal.SignalEventCondition;
 import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.model.BpmPackageBuilder;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.carnot.AbstractEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
-import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
-import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
-import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.EventActionType;
-import org.eclipse.stardust.model.xpdl.carnot.EventActionTypeType;
-import org.eclipse.stardust.model.xpdl.carnot.EventConditionTypeType;
-import org.eclipse.stardust.model.xpdl.carnot.EventHandlerType;
-import org.eclipse.stardust.model.xpdl.carnot.IAttributeCategory;
-import org.eclipse.stardust.model.xpdl.carnot.IExtensibleElement;
-import org.eclipse.stardust.model.xpdl.carnot.ImplementationType;
-import org.eclipse.stardust.model.xpdl.carnot.IntermediateEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
+import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.util.IdFactory;
 import org.eclipse.stardust.model.xpdl.util.NameIdUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
+import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ModelElementEditingUtils;
 
 public class EventMarshallingUtils
 {
@@ -395,6 +383,20 @@ public class EventMarshallingUtils
             {"carnot:engine:action", SetDataAction.class.getName()}
          });
       }
+      else if (PredefinedConstants.SCHEDULE_ACTIVITY_ACTION.equals(actionTypeId))
+      {
+         actionType = newActionType(actionTypeId, "Schedule Activity", false, true,
+               "timer, exception, statechange", "bind", new String[][] {
+            {"carnot:engine:action", ScheduleEventAction.class.getName()}
+         });
+      }
+      else if (PredefinedConstants.DELEGATE_ACTIVITY_ACTION.equals(actionTypeId))
+      {
+         actionType = newActionType(actionTypeId, "Delegate Activity", false, true,
+               "timer, exception, statechange", "bind", new String[][] {
+            {"carnot:engine:action", DelegateEventAction.class.getName()}
+         });
+      }
       model.getEventActionType().add(actionType);
       return actionType;
    }
@@ -450,6 +452,15 @@ public class EventMarshallingUtils
       action.setType(type);
       return action;
    }
+
+   public static BindActionType newBindAction(EventActionTypeType type)
+   {
+      BindActionType action = BpmPackageBuilder.F_CWM.createBindActionType();
+      action.setId(UUID.randomUUID().toString());
+      action.setType(type);
+      return action;
+   }
+
 
    private EventMarshallingUtils()
    {
@@ -595,6 +606,40 @@ public class EventMarshallingUtils
       return action;
    }
 
+   public static BindActionType setBindAction(EventHandlerType eventHandler, String typeId, String defaultName, boolean keepOtherActions)
+   {
+      BindActionType action = null;
+
+      for (Iterator<BindActionType> i = eventHandler.getBindAction().iterator(); i.hasNext();)
+      {
+         BindActionType a = i.next();
+         if (action != null || a.getType() == null || !typeId.equals(a.getType().getId()))
+         {
+            if (!keepOtherActions)
+            {
+               i.remove();
+            }
+         }
+         else
+         {
+            action = a;
+         }
+      }
+
+      if (action == null)
+      {
+         EventActionTypeType actionType = decodeEventActionType(typeId, findContainingModel(eventHandler));
+         if (actionType != null)
+         {
+            action = newBindAction(actionType);
+            action.setId(NameIdUtils.createIdFromName(defaultName));
+            action.setName(defaultName);
+            eventHandler.getBindAction().add(action);
+         }
+      }
+      return action;
+   }
+
    public static EventActionType addEventAction(EventHandlerType eventHandler,
          String typeId, String defaultName, boolean keepOtherActions)
    {
@@ -631,6 +676,200 @@ public class EventMarshallingUtils
             .build();
       processDefinition.getActivity().add(hostActivity);
       return hostActivity;
+   }
+
+   public static void updateResubmissionHandler(EventHandlerType eventHandler,
+         JsonObject request)
+   {
+      ModelType model = ModelUtils.findContainingModel(eventHandler);
+
+      boolean defaultPerformer = false;
+      String delayValue = null;
+      String delayUnit = null;
+
+      boolean useData = AttributeUtil.getBooleanValue(eventHandler, "carnot:engine:useData");
+
+      String dataFullID = null;
+      if (AttributeUtil.getAttributeValue(eventHandler, "carnot:engine:data") != null)
+      {
+         dataFullID =  model.getId() + ":" + AttributeUtil.getAttributeValue(eventHandler, "carnot:engine:data");
+      }
+
+      String dataPath = AttributeUtil.getAttributeValue(eventHandler, ModelerConstants.SD_SET_DATA_ACTION_DATA_PATH);
+
+      String period = AttributeUtil.getAttributeValue(eventHandler,"carnot:engine:period");
+      if (period != null)
+      {
+         delayValue = ModelElementEditingUtils.getDelayUnit(period).split(":")[0];
+         delayUnit = ModelElementEditingUtils.getDelayUnit(period).split(":")[1];
+      }
+
+      AttributeUtil.setAttribute(eventHandler, "carnot:engine:data", null);
+
+      EventActionType delegateAction = getFirstResubmissionDelegateAction(eventHandler);
+
+      if (GsonUtils.hasNotJsonNull(request, ModelerConstants.RS_DELAY_VALUE))
+      {
+         delayValue = request.get(ModelerConstants.RS_DELAY_VALUE).getAsString();
+         setUseConstant(eventHandler, delayValue, delayUnit);
+      }
+
+      if (GsonUtils.hasNotJsonNull(request, ModelerConstants.RS_DELAY_UNIT))
+      {
+         delayUnit = request.get(ModelerConstants.RS_DELAY_UNIT).getAsString();
+         setUseConstant(eventHandler, delayValue, delayUnit);
+      }
+
+      //Change useData / useConstant
+      if (GsonUtils.hasNotJsonNull(request, ModelerConstants.RS_USEDATA))
+      {
+         useData = request.get(ModelerConstants.RS_USEDATA).getAsBoolean();
+         if (!useData)
+         {
+            setUseConstant(eventHandler, delayValue, delayUnit);
+         }
+         else
+         {
+            setUseData(eventHandler, dataFullID, dataPath);
+         }
+      }
+
+      if (GsonUtils.hasNotJsonNull(request, ModelerConstants.DATA_FULL_ID_PROPERTY))
+      {
+         dataFullID = request.get(ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString();
+         setUseData(eventHandler, dataFullID, dataPath);
+      }
+
+      if (GsonUtils.hasNotJsonNull(request, ModelerConstants.DATA_PATH_PROPERTY))
+      {
+         dataPath = request.get(ModelerConstants.DATA_PATH_PROPERTY).getAsString();
+         setUseData(eventHandler, dataFullID, dataPath);
+      }
+
+      //Changed delegate to default performer
+      if (GsonUtils.hasNotJsonNull(request, ModelerConstants.RS_DELEGATE_TO_DEFAULT_PERFORMER))
+      {
+         defaultPerformer = request.get(ModelerConstants.RS_DELEGATE_TO_DEFAULT_PERFORMER).getAsBoolean();
+         if (defaultPerformer)
+         {
+            if (delegateAction == null)
+            {
+               createDelegateAction(eventHandler);
+            }
+         } else
+         {
+            eventHandler.getEventAction().remove(delegateAction);
+         }
+      }
+   }
+
+   public static void createResubmissionHandler(ActivityType activity, JsonObject request, EObjectUUIDMapper uuidMapper)
+   {
+      ModelType model = ModelUtils.findContainingModel(activity);
+      EventConditionTypeType conditionType = EventMarshallingUtils.decodeEventHandlerType(PredefinedConstants.TIMER_CONDITION, model);
+
+      boolean useData = false;
+      boolean defaultPerformer = false;
+      String dataFullID = null;
+      String dataPath = null;
+      String delayValue = null;
+      String delayUnit = null;
+
+      if (GsonUtils.hasNotJsonNull(request, ModelerConstants.RS_USEDATA))
+      {
+         useData = request.get(ModelerConstants.RS_USEDATA).getAsBoolean();
+      }
+
+      if (GsonUtils.hasNotJsonNull(request, ModelerConstants.DATA_FULL_ID_PROPERTY))
+      {
+         dataFullID = request.get(ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString();
+      }
+
+      if (GsonUtils.hasNotJsonNull(request, ModelerConstants.DATA_PATH_PROPERTY))
+      {
+         dataPath = request.get(ModelerConstants.DATA_PATH_PROPERTY).getAsString();
+      }
+
+      if (GsonUtils.hasNotJsonNull(request, ModelerConstants.RS_DELAY_VALUE))
+      {
+         delayValue = request.get(ModelerConstants.RS_DELAY_VALUE).getAsString();
+      }
+
+      if (GsonUtils.hasNotJsonNull(request, ModelerConstants.RS_DELAY_UNIT))
+      {
+         delayUnit = request.get(ModelerConstants.RS_DELAY_UNIT).getAsString();
+      }
+
+      if (GsonUtils.hasNotJsonNull(request, ModelerConstants.RS_DELEGATE_TO_DEFAULT_PERFORMER))
+      {
+         defaultPerformer = request.get(ModelerConstants.RS_DELEGATE_TO_DEFAULT_PERFORMER).getAsBoolean();
+      }
+
+      EventHandlerType eventHandler = EventMarshallingUtils.newEventHandler(conditionType);
+      eventHandler.setType(conditionType);
+      eventHandler.setId(ModelerConstants.RS_RESUBMISSION);
+      eventHandler.setName(ModelerConstants.RS_RESUBMISSION);
+
+      AttributeUtil.setBooleanAttribute(eventHandler, "carnot:engine:useData", useData);
+
+
+      if (!useData)
+      {
+         setUseConstant(eventHandler, delayValue, delayUnit);
+      } else
+      {
+         setUseData(eventHandler, dataFullID, dataPath);
+      }
+
+      activity.getEventHandler().add(eventHandler);
+      uuidMapper.map(eventHandler);
+
+      BindActionType bindAction = EventMarshallingUtils.setBindAction(eventHandler,PredefinedConstants.SCHEDULE_ACTIVITY_ACTION, "Bind Action", true);
+      AttributeUtil.setAttribute(bindAction, PredefinedConstants.TARGET_STATE_ATT, "org.eclipse.stardust.engine.api.runtime.ActivityInstanceState", "7");
+
+      EventActionType eventAction = EventMarshallingUtils.setEventAction(eventHandler,PredefinedConstants.SCHEDULE_ACTIVITY_ACTION, "Event Action", true);
+      AttributeUtil.setAttribute(eventAction, PredefinedConstants.TARGET_STATE_ATT, "org.eclipse.stardust.engine.api.runtime.ActivityInstanceState", "5");
+
+      if (defaultPerformer)
+      {
+         createDelegateAction(eventHandler);
+      }
+   }
+
+   private static void setUseConstant(EventHandlerType eventHandler, String delayValue, String delayUnit)
+   {
+      AttributeUtil.setBooleanAttribute(eventHandler, "carnot:engine:useData", false);
+      AttributeUtil.setAttribute(eventHandler, "carnot:engine:data", null);
+      AttributeUtil.setAttribute(eventHandler, PredefinedConstants.SET_DATA_ACTION_DATA_PATH_ATT, null);
+      ModelElementEditingUtils.setPeriodAttribute(eventHandler, delayValue, delayUnit);
+   }
+
+   private static void setUseData(EventHandlerType eventHandler, String dataFullID,
+         String dataPath)
+   {
+      AttributeUtil.setBooleanAttribute(eventHandler, "carnot:engine:useData", true);
+      AttributeUtil.setAttribute(eventHandler, "carnot:engine:period", null);
+      if (dataFullID != null)
+      {
+         String dataID = dataFullID;
+         if (dataFullID.split(":").length > 1)
+         {
+            dataID = dataFullID.split(":")[1];
+            AttributeUtil.setAttribute(eventHandler, "carnot:engine:data", dataID);
+         }
+      }
+      else
+      {
+         AttributeUtil.setAttribute(eventHandler, "carnot:engine:data", null);
+      }
+      AttributeUtil.setAttribute(eventHandler,
+            PredefinedConstants.SET_DATA_ACTION_DATA_PATH_ATT, dataPath);
+   }
+
+   private static void createDelegateAction(EventHandlerType eventHandler)
+   {
+      EventActionType delegateAction = EventMarshallingUtils.setEventAction(eventHandler,PredefinedConstants.DELEGATE_ACTIVITY_ACTION, "Delegate Action", true);
+      AttributeUtil.setAttribute(delegateAction, PredefinedConstants.TARGET_WORKLIST_ATT, "org.eclipse.stardust.engine.core.extensions.actions.delegate.TargetWorklist", ModelerConstants.RS_DEFAULT_PERFORMER);
    }
 
    public static EventActionType createExcludeUserAction(ActivityType activity, JsonObject euJson, EObjectUUIDMapper uuidMapper)
@@ -683,6 +922,151 @@ public class EventMarshallingUtils
       uuidMapper.map(action);
       return action;
    }
+
+   public static void addResubmissionToJson(EventHandlerType eventHandler, JsonObject rsJson)
+   {
+      ModelType model = ModelUtils.findContainingModel(eventHandler);
+
+      // Check if everything is in place for Resubmission (additional actions are
+      // ignored!)
+      BindActionType bindAction = getFirstResubmissionBindAction(eventHandler);
+      EventActionType eventAction = getFirstResubmissionEventAction(eventHandler);
+      EventActionType delegateAction = getFirstResubmissionDelegateAction(eventHandler);
+
+      if (null == bindAction || null == eventAction)
+      {
+         return;
+      }
+
+      // Wake Participant
+
+      if (delegateAction != null)
+      {
+         AttributeType attribute = AttributeUtil.getAttribute(delegateAction,
+               PredefinedConstants.TARGET_WORKLIST_ATT);
+         if (null != attribute)
+         {
+            String wakeParticipant = attribute.getValue();
+            rsJson.addProperty(ModelerConstants.RS_WAKE_PARTICIPANT, wakeParticipant);
+            if (wakeParticipant.equals(ModelerConstants.RS_DEFAULT_PERFORMER))
+            {
+               rsJson.addProperty(ModelerConstants.RS_DELEGATE_TO_DEFAULT_PERFORMER, true);
+            }
+            else
+            {
+               rsJson.addProperty(ModelerConstants.RS_DELEGATE_TO_DEFAULT_PERFORMER, false);
+            }
+         }
+      }
+
+      //Data / Datapath
+      String data = AttributeUtil.getAttributeValue(eventHandler, "carnot:engine:data");
+      if (data != null) {
+         rsJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, model.getId() + ":" + data);
+      }
+
+      String dataPath = AttributeUtil.getAttributeValue(eventHandler, ModelerConstants.SD_SET_DATA_ACTION_DATA_PATH);
+      if (data != null) {
+         rsJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY, model.getId() + ":" + dataPath);
+      }
+
+      //Period
+      String period = AttributeUtil.getAttributeValue(eventHandler, "carnot:engine:period");
+      if (period != null) {
+         rsJson.addProperty("delayValue", ModelElementEditingUtils.getDelayUnit(period).split(":")[0]);
+         rsJson.addProperty("delayUnit", ModelElementEditingUtils.getDelayUnit(period).split(":")[1]);
+      }
+
+      boolean useData = AttributeUtil.getBooleanValue(eventHandler, "carnot:engine:useData");
+      rsJson.addProperty(ModelerConstants.RS_USEDATA, useData);
+
+      rsJson.addProperty(ModelerConstants.RS_DEFAULT_PERFORMER, delegateAction != null);
+
+   }
+
+
+   private static BindActionType getFirstResubmissionBindAction(
+         EventHandlerType eventHandler)
+   {
+      for (Iterator<BindActionType> i = eventHandler.getBindAction().iterator(); i
+            .hasNext();)
+      {
+         BindActionType bindAction = i.next();
+         String targetState = AttributeUtil.getAttributeValue(bindAction,
+               "carnot:engine:targetState");
+         if (targetState != null && targetState.equalsIgnoreCase("7"))
+         {
+            EventActionTypeType actionType = bindAction.getType();
+            if (actionType != null
+                  && actionType.getId().equalsIgnoreCase(
+                        PredefinedConstants.SCHEDULE_ACTIVITY_ACTION))
+            {
+               return bindAction;
+            }
+         }
+      }
+      return null;
+   }
+
+   private static EventActionType getFirstResubmissionEventAction(EventHandlerType eventHandler) {
+      for (Iterator<EventActionType> i = eventHandler.getEventAction().iterator(); i
+            .hasNext();)
+      {
+         EventActionType eventAction = i.next();
+         String targetState = AttributeUtil.getAttributeValue(eventAction,
+               "carnot:engine:targetState");
+         if (targetState != null && targetState.equalsIgnoreCase("5"))
+         {
+            EventActionTypeType actionType = eventAction.getType();
+            if (actionType != null
+                  && actionType.getId().equalsIgnoreCase(
+                        PredefinedConstants.SCHEDULE_ACTIVITY_ACTION))
+            {
+               return eventAction;
+            }
+         }
+      }
+      return null;
+   }
+
+   /*private static EventActionType getResubmissionEventHandler(ActivityType activity) {
+      for (Iterator<EventHandlerType> i = activity.get.getEventAction().iterator(); i
+            .hasNext();)
+      {
+         EventActionType eventAction = i.next();
+         String targetState = AttributeUtil.getAttributeValue(eventAction,
+               "carnot:engine:targetState");
+         if (targetState != null && targetState.equalsIgnoreCase("5"))
+         {
+            EventActionTypeType actionType = eventAction.getType();
+            if (actionType != null
+                  && actionType.getId().equalsIgnoreCase(
+                        PredefinedConstants.SCHEDULE_ACTIVITY_ACTION))
+            {
+               return eventAction;
+            }
+         }
+      }
+      return null;
+   }*/
+
+   private static EventActionType getFirstResubmissionDelegateAction(EventHandlerType eventHandler) {
+      for (Iterator<EventActionType> i = eventHandler.getEventAction().iterator(); i
+            .hasNext();)
+      {
+         EventActionType delegateAction = i.next();
+         EventActionTypeType actionType = delegateAction.getType();
+         if (actionType != null
+               && actionType.getId().equalsIgnoreCase(
+                     PredefinedConstants.DELEGATE_ACTIVITY_ACTION))
+         {
+            return delegateAction;
+         }
+      }
+      return null;
+   }
+
+
 
    public static void addExcludeUserActions(EventHandlerType eventHandler,
          JsonObject eventJson, EObjectUUIDMapper uuidMapper)
@@ -776,6 +1160,20 @@ public class EventMarshallingUtils
          EventHandlerType eventHandler = i.next();
          if (eventHandler.getType().getId()
                .equals(PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION))
+         {
+            return eventHandler;
+         }
+      }
+      return null;
+   }
+
+   public static EventHandlerType findResubmissionEventHandler(ActivityType activity)
+   {
+      for (Iterator<EventHandlerType> i = activity.getEventHandler().iterator(); i
+            .hasNext();)
+      {
+         EventHandlerType eventHandler = i.next();
+         if (eventHandler.getId().equals(ModelerConstants.RS_RESUBMISSION))
          {
             return eventHandler;
          }
@@ -877,4 +1275,32 @@ public class EventMarshallingUtils
 
       return null;
    }
+
+
+
+   /*public static void updateResubmission(ActivityType activity,
+         JsonObject resubmissionJson)
+   {
+      if (resubmissionJson.has("enabled"))
+      {
+         boolean enabled = resubmissionJson.get("enabled").getAsBoolean();
+         if (enabled)
+         {
+            EventHandlerType handler = XPDLFinderUtils.findEventHandler(activity,
+                  ModelerConstants.RS_RESUBMISSION);
+            if (handler == null)
+            {
+               EventMarshallingUtils.createResubmissionEvent(activity, resubmissionJson);
+            }
+            else
+            {
+               EventMarshallingUtils.updateResubmission(handler, resubmissionJson);
+            }
+         }
+      }
+   }*/
+
+
+
+
 }
