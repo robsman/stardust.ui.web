@@ -5,7 +5,7 @@
 			<!-- Abort process dialog -->
 			<button ng-disabled="processTableCtrl.dataTable.getSelection() < 1" ng-click="processTableCtrl.openAbortDialog(processTableCtrl.dataTable.getSelection())" aid="PP-ProcessTable-AbortAll"
 			  title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}" class="button-link tbl-toolbar-item tbl-tool-link" style="margin-right: 0px;">
-			   <i class="sc sc-fw sc-gear-close" style="font-size: 14px;"></i>
+			   <i class="sc sc-fw sc-gear-close sc-1x"></i>
 			</button>
 			
 			<button class="button-link tbl-tool-link" ng-disabled="processTableCtrl.dataTable.getSelection() < 1" 
@@ -17,13 +17,21 @@
 			<button ng-click="processTableCtrl.recoverProcess(this, processTableCtrl.dataTable.getSelection())" aid="PP-ProcessTable-RecoverAll"
 			  title="{{i18n('views-common-messages.common-tooltip-recover')}}" 
 				ng-disabled="processTableCtrl.dataTable.getSelection() < 1" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
-				<!-- TODO Recover process icon-->
-				Recover
+				 <div class="sc-badge">
+				         <i class="sc sc-badge-portrait sc-cog sc-left sc-top sc-1x">
+				                    <i class="sc sc-badge-bg sc-badge-bg-circle" ></i>
+				                    <i class="sc sc-badge-icon sc-badge-icon-arrow-l" style="color: white;"></i>
+				       </i>
+				  </div>
 			</button>
 			
-			<span sd-popover ng-disabled="processTableCtrl.dataTable.getSelection() < 1" id="caseMenu" title="{{i18n('views-common-messages.views-case-tooltip-menu')}}">
-				<!-- TODO Case Menu icon -->
-				<i class="glyphicon glyphicon-chevron-right glyphicon-rotate-90"></i>
+			<span sd-popover ng-disabled="processTableCtrl.dataTable.getSelection() < 1" id="caseMenu" title="{{i18n('views-common-messages.views-case-tooltip-menu')}}" style="margin-left : -5px;">
+               <div class="sc-badge">
+	                <i class="sc sc-badge-portrait sc-envelope-alt sc-right sc-1x">
+	                    <i class="sc sc-badge-bg sc-badge-bg-circle sc-stroke"></i>
+	                    <i class="sc sc-badge-icon sc-badge-icon-arrow-d" style="color:white"></i>
+	                </i>
+	                </div>
 				<div id="caseMenu" class="popover-body">
 					<div>
 						<button ng-disabled="processTableCtrl.dataTable.getSelection() < 1"  aid="PP-ProcessTable-AttachCase"
@@ -44,7 +52,7 @@
 			
 			<button ng-disabled="!processTableCtrl.isPriorityChanged();" ng-click="processTableCtrl.savePriorityChanges();" aid="PP-ProcessTable-SavePriority"
 				    class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
-				<i class="glyphicon glyphicon-floppy-saved"></i>
+				<i class="glyphicon glyphicon-floppy-saved sc-1x"></i>
 			</button>
 		</div>
 	</div>
@@ -167,40 +175,44 @@
 					<div style="text-align: right; white-space: nowrap;">
 						<button ng-click="bpmCommon.stopEvent($event); processTableCtrl.openProcessHistory(rowData);" aid="PP-ProcessTable-OpenProcessHistoryAction"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-processContextExplorer')}}" class="button-link tbl-tool-link">
-							<i class="glyphicon glyphicon-cog"></i>
+							<i class="glyphicon glyphicon-cog sc-1x"></i>
 						</button>
 						<button ng-click="bpmCommon.stopEvent($event); processTableCtrl.openAbortDialog(rowData);"
 						    ng-disabled="!rowData.enableTerminate"  aid="PP-ProcessTable-AbortAction"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}" class="button-link tbl-tool-link">
-							<i class="sc sc-fw sc-gear-close" style="font-size: 14px;"></i>
+							<i class="sc sc-fw sc-gear-close sc-1x" ></i>
 						</button>
 						
 						<!-- abort menu -->
 						<button class="button-link tbl-tool-link" ng-disabled="!rowData.enableTerminate"  aid="PP-ProcessTable-AbortPopoverAction"
 						    title="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}"
 							ng-click="processTableCtrl.openAbortPopover($event, rowData); bpmCommon.stopEvent($event);">
-							<i class="glyphicon glyphicon-chevron-right glyphicon-rotate-90"></i>
+							<i class="glyphicon glyphicon-chevron-right glyphicon-rotate-90 sc-1x"></i>
 						</button>
 						
 						<button ng-click="processTableCtrl.recoverProcess(this, rowData)" aid="PP-ProcessTable-RecoverAction"
 						    title="{{i18n('views-common-messages.common-tooltip-recover')}}" 
 							ng-disabled="!rowData.enableRecover" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
-							<!-- TODO Recover process icon-->
-							Recover
+				            <div class="sc-badge">
+				                <i class="sc sc-badge-portrait sc-cog sc-left sc-top sc-1x">
+				                    <i class="sc sc-badge-bg sc-badge-bg-circle" ></i>
+				                    <i class="sc sc-badge-icon sc-badge-icon-arrow-l" style="color: white;"></i>
+				                </i>
+				            </div>
 						</button>
 						
 						<!-- View chart -->
 						<button class="button-link tbl-tool-link"   aid="PP-ProcessTable-OpenGrantChart"
 							title="{{i18n('business-control-center-messages.views-processSearchView-tooltip-viewGanttChart')}}"
 							ng-click="processTableCtrl.openChart(rowData); bpmCommon.stopEvent($event);">
-							<i class="glyphicons glyphicon-stats"  style="font-size: 1.5em;"></i>
+							<i class="sc sc-chart-bar sc-1x" ></i>
 						</button>
 						
 						<button ng-click="bpmCommon.stopEvent($event); processTableCtrl.openNotes(rowData);"
 						    aid="PP-ProcessTable-OpenNotes"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-notes')}}" class="button-link tbl-tool-link">
-							<i class="sc sc-document-o action-column-icon" ng-if ="rowData.notesCount === 0"></i>
-							<i class="sc sc-document-text-o action-column-icon" ng-if ="rowData.notesCount > 0 "></i>
+							<i class="sc sc-document-o sc-1x" ng-if ="rowData.notesCount === 0" ></i>
+							<i class="sc sc-document-text-o sc-1x" ng-if ="rowData.notesCount > 0" ></i>
 						</button>
 					</div>
 				</td>
