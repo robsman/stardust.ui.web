@@ -234,10 +234,17 @@
 	    </div>
 	    
 	    <div ng-show="ctrl.selectedTab ==='Categories'">
-	    
+	    	<div>
+	    		<a ng-class="{'glyphicon-eye-open' : ctrl.showAllTreeNodes,'glyphicon-eye-close' : !ctrl.showAllTreeNodes}" 
+	    		   ng-click="ctrl.showAllTreeNodes = !ctrl.showAllTreeNodes"
+	    		   ng-attr-title = "{{ctrl.showAllTreeNodes ? ctrl.textMap.filterTreeNodes : ctrl.textMap.showAllTreeNodes}}" 
+	    		   class="glyphicon tbl-toolbar-item tbl-tool-link">
+	    		</a>
+	    	</div>
+	    	
 		    <!-- Model Tree Container -->
 			<div style="width:225px;display:inline-table;">
-			
+				
 				<!-- sdTree Implementation of Model Tree -->
 			    <ul sd-tree="ctrl.onTreeInit(api)"
 			       	sda-event-callback="ctrl.treeCallback(data,e)"
@@ -250,12 +257,14 @@
 			          ng-repeat="model in ctrl.models">
 			        <ul>
 			          <li sd-tree-node
+			          	  ng-show="ctrl.showAllTreeNodes===true || process.auxillary===false"
 			              sda-is-leaf="process.activities.length==0"
-			              sda-label="process.name"
+			              sda-label="process.name + ':' + process.auxillary"
 			              sda-node-id="process.nodeId"
 			              ng-repeat="process in model.processDefinitions">
 			            <ul>
 			              <li sd-tree-node
+			                  ng-show="ctrl.showAllTreeNodes===true || process.interactive===true"
 			                  sda-is-leaf="true"
 			                  sda-draggable="true"
 			                  sda-label="activity.name"

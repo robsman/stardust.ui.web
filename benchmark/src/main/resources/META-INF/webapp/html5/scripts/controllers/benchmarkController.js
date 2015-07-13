@@ -56,8 +56,9 @@
 		this.benchmarkFilter ="Design"; //Filter value for our benchmark service call.
 		this.benchmarkIsDirty = false; 
 		this.lastSaveTime = Number.NEGATIVE_INFINITY;
-		this.calendars = []; //timeoff calendars
-
+		this.calendars = []; //time-off calendars
+		this.showAllTreeNodes = true; //toggles display of auxiliary and non-interactive nodes.
+		
 		//by default load our design time benchmarks
 		this.loadBenchmarks("DESIGN");
 		
@@ -177,6 +178,9 @@
 		this.textMap.rootProcessStartTime = this.i18N("views.main.categoryDataTable.cell.lhs.rootProcessStartTime");
 		this.textMap.attribute = this.i18N("views.main.categoryDataTable.cell.attribute");
 		this.textMap.data = this.i18N("views.main.categoryDataTable.cell.data");
+		this.textMap.filterTreeNodes  = this.i18N("views.main.tabs.tree.button.filter.hide");
+		this.textMap.showAllTreeNodes  = this.i18N("views.main.tabs.tree.button.filter.showall");
+
 	};
 	
 	/**
