@@ -711,3 +711,39 @@
 .sc-badge-icon-radio-true:before{
     content:'\F0A9';
 }
+
+/* Custom Icons - Starts */
+.sc-spiral-custom:after{
+    content:'\F09E';
+    color:red;
+}
+.sc-arrow-r-custom:before{
+    content:'\F08E';
+    font-size:1.5em;
+    position:relative;
+    color:green;
+    left:80%;
+}
+.sc-spiral-custom.sc-arrow-r-custom {
+	margin-left: -12px;
+	margin-right: 2px;
+	margin-top: -3px;
+}
+
+.sc-scroll-custom:after{
+    content:'\F0A6';
+    color:tan;
+}
+.sc-badge-cog-custom:before{
+    content:'\F08F';
+    font-size:2.0em;
+    position:relative;
+    color:#000;
+    left:80%;
+}
+.sc-scroll-custom.sc-badge-cog-custom {
+	margin-left: -12px;
+	margin-right: 6px;
+	margin-top: -5px;
+}
+/* Custom Icons - Ends */
