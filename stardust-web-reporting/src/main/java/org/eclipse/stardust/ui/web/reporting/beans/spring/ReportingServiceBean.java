@@ -73,10 +73,14 @@ import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.reporting.beans.spring.portal.SearchHandlerChain;
 import org.eclipse.stardust.ui.web.reporting.common.LanguageUtil;
 import org.eclipse.stardust.ui.web.reporting.common.portal.criticality.Criticality;
+import org.eclipse.stardust.ui.web.reporting.ui.DataTypes;
 import org.eclipse.stardust.ui.web.reporting.ui.UiHelper;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataMapping;
+import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.DataMappingWrapper;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils.DataPathMetadata;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileStorage;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.I18nFolderUtils;
@@ -252,7 +256,13 @@ public class ReportingServiceBean
 
                      descriptorJson.addProperty("id", descriptorId);
                      descriptorJson.addProperty("name", I18nUtils.getDataPathName(dataPath));
-                     descriptorJson.addProperty("type", UiHelper.mapDesciptorType(dataPath.getMappedType()).getId());
+                     String dataType = UiHelper.mapDesciptorType(dataPath.getMappedType()).getId();
+                     if (dataType.equals(DataTypes.TIMESTAMP.getId()))
+                     {
+                        dataType = determineDateType(dataPath).getId();
+                     }
+
+                     descriptorJson.addProperty("type", dataType);
 
                      // metadata for Engine
                      DataPathMetadata metadata = dataPathEntry.getValue();
@@ -1173,5 +1183,25 @@ public class ReportingServiceBean
 
       return saveReportDefinition(reportJson);
 
+   }
+   
+   private static DataTypes determineDateType(DataPath dataPath)
+   {
+      Class mappedType = dataPath.getMappedType();
+
+      if (Date.class.equals(mappedType))
+      {
+         GenericDataMapping mapping = new GenericDataMapping(dataPath);
+         DataMappingWrapper dmWrapper = new DataMappingWrapper(mapping, null, false);
+         if (ProcessPortalConstants.TIMESTAMP_TYPE.equals(dmWrapper.getType()))
+         {
+            return DataTypes.TIMESTAMP;
+         }
+         else
+         {
+            return DataTypes.DATE;
+         }
+      }
+      return DataTypes.TIMESTAMP;
    }
 }
