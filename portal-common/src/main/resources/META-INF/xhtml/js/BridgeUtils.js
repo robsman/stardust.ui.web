@@ -68,6 +68,10 @@ if (!window["BridgeUtils"]) {
 				win.onscroll = function(event){
 					BridgeUtils.FrameManager.handleViewScroll(event.currentTarget);
 				};
+			} else if (win.location.href.indexOf("/plugins/common/portalSingleViewLaunchPanelsOnly.") > -1) { // Launch Panels
+				// Set Client Time Zone
+				var clientTime = new Date();
+				BridgeUtils.View.doPartialSubmit("portalLaunchPanels", "viewFormLP", "clientTimeZone", clientTime.getTimezoneOffset());
 			}
 		}
 

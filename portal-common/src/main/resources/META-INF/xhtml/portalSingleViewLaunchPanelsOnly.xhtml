@@ -49,6 +49,9 @@
 	       	<ice:inputHidden id="timerInvoked" value="#{ippSingleViewLaunchPanels.emptyString}"
 	   			valueChangeListener="#{timerManager.processTimerEvent}"
 	   			partialSubmit="true" immediate="true" />
+			<ice:inputHidden id="clientTimeZone" value="#{ippSingleViewLaunchPanels.emptyString}"
+	   			valueChangeListener="#{ippSingleViewLaunchPanels.updateClientTimeZone}"
+	   			partialSubmit="true" immediate="true" />
 
 	   		<!-- To Track Connection Status -->
 	   		<div style="display: none">

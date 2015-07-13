@@ -263,7 +263,23 @@ public class SingleViewLaunchPanels implements InitializingBean
          trace.error("", e);
       }
    }
-   
+
+   /**
+    * @param event
+    */
+   public void updateClientTimeZone(ValueChangeEvent event)
+   {
+      try
+      {
+         PortalApplication portalApp = PortalApplication.getInstance();
+         portalApp.timeZoneChangeListener(event);
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+      }
+   }
+
    /**
     * 
     * @param viewId
