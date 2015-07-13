@@ -414,13 +414,13 @@ public class PortalUiController
       if (icon.contains("/") && icon.contains(".")) // It's an image URL
       {
          result.setIcon(icon);
-         result.setValue(PortalApplication.deriveIconClass(icon));
+         result.setValue(perspective.getName() + " " + PortalApplication.deriveIconClass(icon));
       }
       else
       {
          result.setLink(null);
          result.setIcon("");
-         result.setValue(icon);
+         result.setValue(perspective.getName() + " " + icon);
       }
 
       return result;
