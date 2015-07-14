@@ -163,17 +163,8 @@ public class ExtractPageTableEntry extends DefaultRowModel
    public DeployedModel getModel()
    {
       DeployedModel model = null;
-
-      if (null != sourceProcessInstance)
-      {
-         model = ModelUtils.getModel(sourceProcessInstance.getModelOID());
-      }
-      else
-      {
-         String modelId = ModelUtils.extractModelId(spawnProcessFQID);
-         model = ModelUtils.getActiveModel(modelId);
-      }
-
+      String modelId = ModelUtils.extractModelId(spawnProcessFQID);
+      model = ModelUtils.getActiveModel(modelId);
       return model;
    }
 
