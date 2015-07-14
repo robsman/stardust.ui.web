@@ -51,6 +51,7 @@
 	      });
 	      
 	      elem.bind("drop",function(e){
+	    	if (e.preventDefault) {e.preventDefault();}
 	        if (e.stopPropagation) {e.stopPropagation();}
 	        e = (e.dataTransfer)?e: e.originalEvent;
 	        var data = e.dataTransfer.getData(dataType);
