@@ -27,6 +27,7 @@ import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.FileUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
+import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil.ICON_COLOR;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.springframework.stereotype.Component;
@@ -41,9 +42,6 @@ public class CriticalityConfigUtils
    
    public static final String COLUMN_SEPARATOR = "#!#";
    
-   public static final int PORTAL_CRITICALITY_MAX = 1000;
-   public static final int PORTAL_CRITICALITY_MULTIPLICATION_FACTOR = 1000;
-   public static final double PORTAL_CRITICALITY_DIV_FACTOR = 1000;
    public static final String CRITICALITY_CAT_PREF_KEY_PREFIX = "Criticality.Ranges.Range";
    public static final String CRITICALITY_CAT_TOTAL_COUNT = "TotalCount";
    public static final String CRITICALITY_CAT_LOWER_BOUND = "LowerBound";
@@ -55,39 +53,7 @@ public class CriticalityConfigUtils
    private static final int UNDEFINED_CC_RANGE_FROM = -1000;
    private static final int UNDEFINED_CC_RANGE_TO = -1;
    
-   public List<CriticalityCategory> getDefaultCriticalityCategoriesList()
-   {
-      final int DEFAULT_LOW_MIN = 0;
-      final int DEFAULT_LOW_MAX = 333;
-      final int DEFAULT_MEDIUM_MIN = 334;
-      final int DEFAULT_MEDIUM_MAX = 666;
-      final int DEFAULT_HIGH_MIN = 667;
-      final int DEFAULT_HIGH_MAX = 1000;
-      List<CriticalityCategory> defaultCriticalityList = new ArrayList<CriticalityCategory>();
-      CriticalityCategory low = new CriticalityCategory();
-      low.setRangeFrom(DEFAULT_LOW_MIN);
-      low.setRangeTo(DEFAULT_LOW_MAX);
-      low.setIconColor(ICON_COLOR.BLUE);
-      low.setIconCount(1);
-      low.setLabel(MessagesViewsCommonBean.getInstance().getString("views.criticalityConf.criticality.categories.label.default.low"));
-      defaultCriticalityList.add(low);
-      CriticalityCategory medium = new CriticalityCategory();
-      medium.setRangeFrom(DEFAULT_MEDIUM_MIN);
-      medium.setRangeTo(DEFAULT_MEDIUM_MAX);
-      medium.setIconColor(ICON_COLOR.YELLOW);
-      medium.setIconCount(1);
-      medium.setLabel(MessagesViewsCommonBean.getInstance().getString("views.criticalityConf.criticality.categories.label.default.medium"));
-      defaultCriticalityList.add(medium);
-      CriticalityCategory high = new CriticalityCategory();
-      high.setRangeFrom(DEFAULT_HIGH_MIN);
-      high.setRangeTo(DEFAULT_HIGH_MAX);
-      high.setIconColor(ICON_COLOR.RED);
-      high.setIconCount(1);
-      high.setLabel(MessagesViewsCommonBean.getInstance().getString("views.criticalityConf.criticality.categories.label.default.high"));
-      defaultCriticalityList.add(high);
-      
-      return defaultCriticalityList;
-   }
+ 
 
    public List<CriticalityCategory> getCriticalityCategoriesList()
    {
@@ -111,7 +77,7 @@ public class CriticalityConfigUtils
       }
       else
       {
-         criticalityCategoriesList = getDefaultCriticalityCategoriesList();
+         criticalityCategoriesList = CriticalityConfigurationUtil.getDefaultCriticalityCategoriesList();
       }
       
       return criticalityCategoriesList;
