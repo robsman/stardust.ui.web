@@ -358,8 +358,6 @@ if (!window["BridgeUtils"]) {
 					try {
 						JSON.parse(uiCommand);
 						window.postMessage(uiCommand, "*");
-
-						window.location.hash = "";
 					} catch (e) {
 						log("uicommand is not in valid format. Needs to be JSON: " + uiCommand);
 					}
