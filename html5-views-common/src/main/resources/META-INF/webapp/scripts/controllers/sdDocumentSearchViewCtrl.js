@@ -17,9 +17,9 @@
 
 	angular.module("viewscommon-ui").controller(
 			'sdDocumentSearchViewCtrl',
-			[ '$q', 'sdDocumentSearchService', 'sdViewUtilService', 'sdUtilService', 'sdMimeTypeService',
+			['$q', 'sdDocumentSearchService', 'sdViewUtilService', 'sdUtilService', 'sdMimeTypeService',
 					'sdLoggerService', 'sdCommonViewUtilService', 'sdLoggedInUserService', 'sdPreferenceService',
-					DocumentSearchViewCtrl ]);
+					DocumentSearchViewCtrl]);
 	var _q;
 	var _sdDocumentSearchService;
 	var _sdViewUtilService;
@@ -70,9 +70,9 @@
 			self.allRegisteredMimeFileTypes = data.allRegisteredMimeFileTypes;
 			self.documentTypes = data.documentTypes;
 			self.repositories = data.repositories;
-			self.query.documentSearchCriteria.selectedFileTypes = [ self.fileTypes[0].value ];
-			self.query.documentSearchCriteria.selectedDocumentTypes = [ self.documentTypes[0].value ];
-			self.query.documentSearchCriteria.selectedRepository = [ self.repositories[0].value ];
+			self.query.documentSearchCriteria.selectedFileTypes = [self.fileTypes[0].value];
+			self.query.documentSearchCriteria.selectedDocumentTypes = [self.documentTypes[0].value];
+			self.query.documentSearchCriteria.selectedRepository = [self.repositories[0].value];
 		}, function(error) {
 			trace.log(error);
 		});
@@ -117,15 +117,22 @@
 	 */
 	DocumentSearchViewCtrl.prototype.resetSearchCriteria = function() {
 		var self = this;
+		self.searchCriteriaForm.$valid = true;
 		self.defineData();
+		self.query.documentSearchCriteria.createDateFrom = '';
+		self.query.documentSearchCriteria.modificationDateFrom = '';
 		self.fileTypes = self.typicalFileTypes;
-		self.query.documentSearchCriteria.selectedFileTypes = [ self.fileTypes[0].value ];
-		self.query.documentSearchCriteria.selectedDocumentTypes = [ self.documentTypes[0].value ];
-		self.query.documentSearchCriteria.selectedRepository = [ self.repositories[0].value ];
+		self.query.documentSearchCriteria.selectedFileTypes = [self.fileTypes[0].value];
+		self.query.documentSearchCriteria.selectedDocumentTypes = [self.documentTypes[0].value];
+		self.query.documentSearchCriteria.selectedRepository = [self.repositories[0].value];
 		if (self.selectedAuthors != undefined && self.selectedAuthors.length == 1) {
 			delete self.selectedAuthors;
 		}
 	}
+
+	DocumentSearchViewCtrl.prototype.getMsgParams = function() {
+		return new Date();
+	};
 
 	/**
 	 * To refresh the document search table
@@ -136,6 +143,7 @@
 
 	/**
 	 * This method is for getting the document search result by using search criteria
+	 * 
 	 * @param options
 	 * @returns
 	 */
@@ -200,35 +208,41 @@
 	DocumentSearchViewCtrl.prototype.validateSearchCriteria = function() {
 		var self = this;
 		var error = false;
-		// validating the createDateTo and createDateFrom
-		if (!_sdUtilService.validateDateRange(self.query.documentSearchCriteria.createDateFrom,
-				self.query.documentSearchCriteria.createDateTo)) {
-			error = true;
-			self.searchCriteriaForm.$error.createDateRange = true;
+
+		if (self.searchCriteriaForm.$valid) {
+			// validating the createDateTo and createDateFrom
+			if (!_sdUtilService.validateDateRange(self.query.documentSearchCriteria.createDateFrom,
+					self.query.documentSearchCriteria.createDateTo)) {
+				error = true;
+				self.searchCriteriaForm.$error.createDateRange = true;
+			} else {
+				self.searchCriteriaForm.$error.createDateRange = false;
+			}
+			// validating the modificationDateTo and modificationDateFrom
+			if (!_sdUtilService.validateDateRange(self.query.documentSearchCriteria.modificationDateFrom,
+					self.query.documentSearchCriteria.modificationDateTo)) {
+				error = true;
+				self.searchCriteriaForm.$error.modificationDateRange = true;
+			} else {
+				self.searchCriteriaForm.$error.modificationDateRange = false;
+			}
+
+			if (error) {
+				// validation error in search criteria, then don't perform search
+				self.showDocumentSearchResult = false;
+			} else {
+				// search criteria is valid then perform search
+				self.showDocumentSearchResult = true;
+				self.showDocumentSearchCriteria = false;
+				self.showTableData = true;
+				if (self.docSrchRsltTable != null) {
+					self.refresh();
+				}
+			}
 		} else {
-			self.searchCriteriaForm.$error.createDateRange = false;
-		}
-		// validating the modificationDateTo and modificationDateFrom
-		if (!_sdUtilService.validateDateRange(self.query.documentSearchCriteria.modificationDateFrom,
-				self.query.documentSearchCriteria.modificationDateTo)) {
-			error = true;
-			self.searchCriteriaForm.$error.modificationDateRange = true;
-		} else {
-			self.searchCriteriaForm.$error.modificationDateRange = false;
+			return false;
 		}
 
-		if (error) {
-			// validation error in search criteria, then don't perform search
-			self.showDocumentSearchResult = false;
-		} else {
-			// search criteria is valid then perform search 
-			self.showDocumentSearchResult = true;
-			self.showDocumentSearchCriteria = false;
-			self.showTableData = true;
-			if (self.docSrchRsltTable != null) {
-				self.refresh();
-			}
-		}
 	}
 
 	/**
@@ -335,7 +349,7 @@
 		if (angular.isArray(rowSelection)) {
 			self.documentIds = self.getSelectedRoleIds(rowSelection);
 		} else {
-			self.documentIds = [ rowSelection.documentId ];
+			self.documentIds = [rowSelection.documentId];
 		}
 		_sdDocumentSearchService.getAvailableProcessDefns().then(function(data) {
 			self.processDefns.list = data.list;
@@ -451,7 +465,7 @@
 	DocumentSearchViewCtrl.prototype.pickFromList = function() {
 		var self = this;
 		self.query.documentSearchCriteria.selectFileTypeAdvance = false;
-		self.query.documentSearchCriteria.selectedFileTypes = [ self.fileTypes[0].value ];
+		self.query.documentSearchCriteria.selectedFileTypes = [self.fileTypes[0].value];
 	};
 
 	/**
@@ -529,7 +543,7 @@
 		}
 		return preferenceStore;
 	};
-	
+
 	DocumentSearchViewCtrl.prototype.preferenceDelegateForVersionHistory = function(prefInfo) {
 		var preferenceStore = _sdPreferenceService.getStore(prefInfo.scope, 'contextPortal', 'preference'); // Override
 		preferenceStore.marshalName = function(scope) {
@@ -537,5 +551,5 @@
 		}
 		return preferenceStore;
 	};
-	
+
 })();
