@@ -340,7 +340,6 @@ public class GenericModelingAssertions
    }
 
 
-
    public static DataType assertDocumentData(ModelType model, String dataID, String dataName,
          String assignedDeclaration)
    {
@@ -374,6 +373,32 @@ public class GenericModelingAssertions
          assertThat(transition.getTo(), is(toActivity));
 
       }
+   }
+
+   public static EventHandlerType assertEventHandler(ActivityType activity, String id,
+         String name, String type, boolean logHandler)
+   {
+      assertThat(activity.getEventHandler(), is(not(nullValue())));
+      assertThat(activity.getEventHandler().size(), is(not(0)));
+      EventHandlerType foundHandler = null;
+      for (Iterator<EventHandlerType> i = activity.getEventHandler().iterator(); i
+            .hasNext();)
+      {
+         EventHandlerType eventHandler = i.next();
+         assertThat(eventHandler.getId(), is(not(nullValue())));
+         assertThat(eventHandler.getName(), is(not(nullValue())));
+         assertThat(eventHandler.getType(), is(not(nullValue())));
+         assertThat(eventHandler.getType().getId(), is(not(nullValue())));
+         if (eventHandler.getId().equals(id))
+         {
+            foundHandler = eventHandler;
+         }
+      }
+      assertThat(foundHandler, is(not(nullValue())));
+      assertThat(foundHandler.getName(), is(name));
+      assertThat(foundHandler.getType().getId(), is(type));
+      assertThat(foundHandler.isLogHandler(), is(logHandler));
+      return foundHandler;
    }
 
    public static void assertReferencedRole(ModelType consumerModel, ModelType providerModel, String roleID, String roleName)

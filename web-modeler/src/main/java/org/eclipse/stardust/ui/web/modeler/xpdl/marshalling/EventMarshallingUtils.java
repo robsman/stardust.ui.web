@@ -695,7 +695,7 @@ public class EventMarshallingUtils
          dataFullID =  model.getId() + ":" + AttributeUtil.getAttributeValue(eventHandler, "carnot:engine:data");
       }
 
-      String dataPath = AttributeUtil.getAttributeValue(eventHandler, ModelerConstants.SD_SET_DATA_ACTION_DATA_PATH);
+      String dataPath = AttributeUtil.getAttributeValue(eventHandler, PredefinedConstants.SET_DATA_ACTION_DATA_PATH_ATT);
 
       String period = AttributeUtil.getAttributeValue(eventHandler,"carnot:engine:period");
       if (period != null)
@@ -704,7 +704,7 @@ public class EventMarshallingUtils
          delayUnit = ModelElementEditingUtils.getDelayUnit(period).split(":")[1];
       }
 
-      AttributeUtil.setAttribute(eventHandler, "carnot:engine:data", null);
+      //AttributeUtil.setAttribute(eventHandler, "carnot:engine:data", null);
 
       EventActionType delegateAction = getFirstResubmissionDelegateAction(eventHandler);
 
@@ -923,7 +923,8 @@ public class EventMarshallingUtils
       return action;
    }
 
-   public static void addResubmissionToJson(EventHandlerType eventHandler, JsonObject rsJson)
+   public static void addResubmissionToJson(EventHandlerType eventHandler,
+         JsonObject rsJson)
    {
       ModelType model = ModelUtils.findContainingModel(eventHandler);
 
@@ -938,46 +939,35 @@ public class EventMarshallingUtils
          return;
       }
 
-      // Wake Participant
-
-      if (delegateAction != null)
-      {
-         AttributeType attribute = AttributeUtil.getAttribute(delegateAction,
-               PredefinedConstants.TARGET_WORKLIST_ATT);
-         if (null != attribute)
-         {
-            String wakeParticipant = attribute.getValue();
-            rsJson.addProperty(ModelerConstants.RS_WAKE_PARTICIPANT, wakeParticipant);
-            if (wakeParticipant.equals(ModelerConstants.RS_DEFAULT_PERFORMER))
-            {
-               rsJson.addProperty(ModelerConstants.RS_DELEGATE_TO_DEFAULT_PERFORMER, true);
-            }
-            else
-            {
-               rsJson.addProperty(ModelerConstants.RS_DELEGATE_TO_DEFAULT_PERFORMER, false);
-            }
-         }
-      }
-
-      //Data / Datapath
+      // Data / Datapath
       String data = AttributeUtil.getAttributeValue(eventHandler, "carnot:engine:data");
-      if (data != null) {
-         rsJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, model.getId() + ":" + data);
+      if (data != null)
+      {
+         rsJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, model.getId() + ":"
+               + data);
       }
 
-      String dataPath = AttributeUtil.getAttributeValue(eventHandler, ModelerConstants.SD_SET_DATA_ACTION_DATA_PATH);
-      if (data != null) {
-         rsJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY, model.getId() + ":" + dataPath);
+      String dataPath = AttributeUtil.getAttributeValue(eventHandler,
+            ModelerConstants.SD_SET_DATA_ACTION_DATA_PATH);
+      if (data != null)
+      {
+         rsJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY, model.getId() + ":"
+               + dataPath);
       }
 
-      //Period
-      String period = AttributeUtil.getAttributeValue(eventHandler, "carnot:engine:period");
-      if (period != null) {
-         rsJson.addProperty("delayValue", ModelElementEditingUtils.getDelayUnit(period).split(":")[0]);
-         rsJson.addProperty("delayUnit", ModelElementEditingUtils.getDelayUnit(period).split(":")[1]);
+      // Period
+      String period = AttributeUtil.getAttributeValue(eventHandler,
+            "carnot:engine:period");
+      if (period != null)
+      {
+         rsJson.addProperty(ModelerConstants.RS_DELAY_VALUE, ModelElementEditingUtils
+               .getDelayUnit(period).split(":")[0]);
+         rsJson.addProperty(ModelerConstants.RS_DELAY_UNIT, ModelElementEditingUtils
+               .getDelayUnit(period).split(":")[1]);
       }
 
-      boolean useData = AttributeUtil.getBooleanValue(eventHandler, "carnot:engine:useData");
+      boolean useData = AttributeUtil.getBooleanValue(eventHandler,
+            "carnot:engine:useData");
       rsJson.addProperty(ModelerConstants.RS_USEDATA, useData);
 
       rsJson.addProperty(ModelerConstants.RS_DEFAULT_PERFORMER, delegateAction != null);
