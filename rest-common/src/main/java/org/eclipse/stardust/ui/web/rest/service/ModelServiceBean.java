@@ -87,6 +87,7 @@ public class ModelServiceBean
                   ProcessDefinitionDTO processDefinitionDTO = DTOBuilder.build(processDefinition,
                         ProcessDefinitionDTO.class);
                   processDefitionDTOList.add(processDefinitionDTO);
+                  activityDTOList = CollectionUtils.newArrayList();
                   List<Activity> activities = processDefinition.getAllActivities();
                   // Create ActivityDTO list
                   for (Activity activity : activities)
