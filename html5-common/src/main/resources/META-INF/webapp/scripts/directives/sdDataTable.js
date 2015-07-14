@@ -140,7 +140,7 @@
 								'<span class="sc sc-lg sc-lock" ng-show="$dtApi.lock" title="{{i18n(\'portal-common-messages.common-filterPopup-unlock\')}}"></span>\n' + 
 								'<span class="sc sc-lg sc-unlock" ng-show="!$dtApi.lock" title="{{i18n(\'portal-common-messages.common-filterPopup-lock\')}}"></span>\n' +
 							'</button>\n' +
-							'<button class="button-link tbl-col-sel-link glyphicon glyphicon-repeat" ng-click="$dtApi.resetColumnSelector()" title ="{{i18n(\'portal-common-messages.common-filterPopup-resetFilter-tooltip\')}}" style="cursor: pointer;"></button>\n' +
+							'<button class="button-link tbl-col-sel-link glyphicon glyphicon-repeat" ng-click="$dtApi.resetColumnSelector()" title ="{{i18n(\'portal-common-messages.common-reset\')}}" style="cursor: pointer;"></button>\n' +
 						'</div>\n' +
 						'<div class="tbl-col-sel-list">\n' +
 							'<div ng-repeat="col in $dtApi.columns" class="tbl-col-sel-row" ng-model="$index" sd-data-drag sd-data-drop sda-drop="$dtApi.moveColumns($data, $index, $event)">\n' +
@@ -2215,10 +2215,24 @@
 			 * 
 			 */
 			this.resetColumnSelector = function() {
-				setColumnSelectionFromPreference(self.applyTo, null);
-				reorderColumns(self.applyTo);
-				self.toggleColumnSelector();
-			}
+				
+				var title = sgI18nService.translate('views-common-messages.common-confirm', 'Confirm');
+		    	var html = '<span>'
+		    		+ sgI18nService.translate('portal-common-messages.common-preferenceScope-resetConfimation',
+		    		'Are you sure you want to reset the Preferences?') + '</span>';
+		    	var options = {
+		    			title : title,
+		    			type : 'confirm',
+		    			onConfirm : function() {
+		    				setColumnSelectionFromPreference(self.applyTo, null);
+		    				reorderColumns(self.applyTo);
+		    				self.toggleColumnSelector();
+		    			},
+		    			confirmActionLabel : sgI18nService.translate('views-common-messages.common-yes', 'Yes'),
+		    			cancelActionLabel : sgI18nService.translate('views-common-messages.common-no', 'No')
+		    	};
+		    	sdDialogService.dialog(scope, options, html)
+			};
 
 			/*
 			 * 
