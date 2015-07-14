@@ -69,7 +69,7 @@ public class DaemonsResource
    {
       try
       {
-         Daemon startedDaemon = serviceFactoryUtils.getAdministrationService().startDaemon(daemonType, true);
+         Daemon startedDaemon = serviceFactoryUtils.getAdministrationService().startDaemon(daemonType, false);
          DaemonDTO daemonDTO = DTOBuilder.build(startedDaemon, DaemonDTO.class);
          return Response.status(202).entity(daemonDTO.toJson()).build();
       }
@@ -90,7 +90,7 @@ public class DaemonsResource
    {
       try
       {
-         Daemon stoppedDaemon = serviceFactoryUtils.getAdministrationService().stopDaemon(daemonType, true);
+         Daemon stoppedDaemon = serviceFactoryUtils.getAdministrationService().stopDaemon(daemonType, false);
          DaemonDTO daemonDTO = DTOBuilder.build(stoppedDaemon, DaemonDTO.class);
          return Response.status(202).entity(daemonDTO.toJson()).build();
       }

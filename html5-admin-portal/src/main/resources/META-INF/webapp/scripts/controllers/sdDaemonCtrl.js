@@ -16,22 +16,28 @@
 	'use strict';
 
 	angular.module('admin-ui').controller('sdDaemonCtrl',
-			[ 'sdDaemonService', 'sdLoggedInUserService', 'sgI18nService' ,controller ]);
+			[ 'sdDaemonService', 'sdLoggedInUserService', 'sgI18nService', '$filter', '$q' ,controller ]);
 
 	var _sdDaemonService;
 	var _sdLoggedInUserService;
 	var _sgI18nService;
+	var _filter;
+	var _q;
 
 	/*
 	 * 
 	 */
-	function controller(sdDaemonService,sdLoggedInUserService, sgI18nService) {
+	function controller(sdDaemonService,sdLoggedInUserService, sgI18nService, $filter, $q) {
 		_sdDaemonService = sdDaemonService;
 		_sdLoggedInUserService = sdLoggedInUserService;
 		_sgI18nService = sgI18nService;
+		_filter = $filter;
+		_q = $q;
+		
 		this.initialize();
 
 		this.data = {};
+		this.lookup = {};
 
 		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ?  'admin' : true; 
 	}
@@ -65,9 +71,20 @@
 	 * 
 	 */
 	controller.prototype.fetchDaemons = function() {
-		this.data = _sdDaemonService.fetchDaemons();
-		return this.data;
-	}
+		var deferred = _q.defer();
+		var self = this;
+		_sdDaemonService.fetchDaemons().then(function(data) {
+			self.data = data;
+			for (var i = 0, len = data.length; i < len; i++) {
+			    self.lookup[data[i].type] = i;
+			}
+			deferred.resolve(self.data);
+		}, function(error) {
+			trace.log(error);
+			deferred.reject(error);
+		});
+		return deferred.promise;
+	};
 
 	/*
 	 * 
@@ -89,8 +106,8 @@
 	controller.prototype.startDaemon = function(daemonItem) {
 		var self = this;
 		if (!(daemonItem.running)) {
-			_sdDaemonService.startDaemon(daemonItem.type).then(function(data) {
-				self.refresh();
+			_sdDaemonService.startDaemon(daemonItem.type).then(function(result) {
+				self.updateDaemonStatus(result);
 			});
 		}
 	};
@@ -101,9 +118,19 @@
 	controller.prototype.stopDaemon = function(daemonItem) {
 		var self = this;
 		if (daemonItem.running) {
-			_sdDaemonService.stopDaemon(daemonItem.type).then(function(data) {
-				self.refresh();
+			_sdDaemonService.stopDaemon(daemonItem.type).then(function(result) {
+				self.updateDaemonStatus(result);
 			});
 		}
 	};
+	
+	/*
+	 * 
+	 */
+	controller.prototype.updateDaemonStatus = function(resultDaemon) {
+		var itemRowIndex = this.lookup[resultDaemon.type];
+		var tableDaemonData = this.daemonDataTable.getData(itemRowIndex);
+		tableDaemonData.running = resultDaemon.running;
+	};
+	
 })();
