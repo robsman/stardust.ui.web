@@ -747,7 +747,11 @@
 		              data.deferred =deferred;
 		              data.treeEvent = op;
 		              data.nodePath = this.path;
-		              data.nodeId = this.nodeId;       
+		              data.nodeId = this.nodeId;      
+		              //this will not be the scope you might first assume for menu events,
+		              //srcScope in that instance will be from the treeMenu directive not
+		              //the sdTree node.
+		              data.srcScope = angular.element(e.srcElement).scope();
 		              //invoke user callback
 		              rootCtrl.api.eventCallback({data:data,e:e});
 	              }
