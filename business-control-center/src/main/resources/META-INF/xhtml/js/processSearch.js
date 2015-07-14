@@ -8,8 +8,6 @@
  * documentation
  ******************************************************************************/
 
-var archivePortalWindow;
-
 /*
  * 
  */
@@ -21,12 +19,6 @@ function openArchiveSearch(url, criteria) {
 	if (window.console) {
 		console.log('Archive Search URL: ', url);
 	}
-
-	if (archivePortalWindow && !archivePortalWindow.closed) {
-		archivePortalWindow.location.href = url;
-	} else {
-		archivePortalWindow = window.open(url, 'ArchivePortal');
-	}
-
-	archivePortalWindow.focus();
+	
+	parent.BridgeUtils.openWindow(url, 'ArchivePortal');
 }
