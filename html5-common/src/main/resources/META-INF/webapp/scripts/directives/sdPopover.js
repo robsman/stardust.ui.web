@@ -95,7 +95,7 @@
 							if (!angular.isDefined(clickElem)) {
 								clickElem = popoverBtn;
 							}
-							if (clkEvent.target === clickElem || clickElem.find(clkEvent.target).length > 0) {
+							if (clkEvent.target === clickElem || clickElem.find(clkEvent.target).length > 0 || clkEvent.target === clickElem[0]) {
 								scope.showPopover = !scope.showPopover;
 								if (scope.showPopover === false) {
 									// this is important since we want this to be called exactly once

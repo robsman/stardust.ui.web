@@ -56,6 +56,7 @@ var html5Deps = function() {
 				'sdPortalConfigurationService' : [ 'html5-common/scripts/services/sdPortalConfigurationService' ],
 			    'sdLocalizationService' : [ 'html5-common/scripts/services/sdLocalizationService' ],
 			    'sdDatePicker': ['html5-common/scripts/directives/sdDatePicker'],
+			    'sdPopover': ['html5-common/scripts/directives/sdPopover']
 			},
 			shim : {
 				'jquery.dataTables' : [ 'jquery' ],
@@ -70,7 +71,7 @@ var html5Deps = function() {
 				'httpInterceptorProvider' : [ 'html5CommonMain' ],
 				'sdLoggerService' : [ 'html5CommonMain' ],
 				'sdData' : [ 'html5CommonMain' ],
-				'sdDataTable' : [ 'html5CommonMain', 'sdLoggerService', 'sdDialogService'],
+				'sdDataTable' : [ 'html5CommonMain', 'sdLoggerService', 'sdDialogService' ,'sdPopover'],
 				'sdUtilService' : [ 'html5CommonMain' ],
 				'sdViewUtilService' : [ 'html5CommonMain' ],
 				'sdPreferenceService' : [ 'html5CommonMain','angularResource'],
@@ -79,11 +80,12 @@ var html5Deps = function() {
 				'sdPortalConfigurationService' : [ 'html5CommonMain' ],
 			    'sdLocalizationService' : [ 'html5CommonMain' ],
 			    'sdDatePicker' : [ 'html5CommonMain', 'sdLocalizationService' ],
+			     'sdPopover' : [ 'html5CommonMain', 'sdLoggerService', 'bootstrap' ]
 			},
 			deps : [ "jquery.dataTables", "angularjs", "angularResource","bootstrap", "portalApplication",
 					"html5CommonMain", "sdEventBusService", "httpInterceptorProvider",
 					"sdLoggerService", "sdData", "sdDataTable",
-					'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'sdDialog', 'sdDialogService', 'sdPortalConfigurationService' ]
+					'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'sdDialog', 'sdDialogService', 'sdPortalConfigurationService' , 'sdPopover']
 
 		};
 
