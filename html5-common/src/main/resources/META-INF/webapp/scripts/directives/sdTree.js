@@ -460,7 +460,7 @@
 	          'ng-class="{\'sd-tree-expand\':!isVisible && !isLeaf,',
 	          '\'sd-tree-collapse\':isVisible }" class="glyphicons glyphicon"></i>',
 	          '</div>',
-	          '<a ' + dragdropStr + ' title="{{' + attrs.sdaTitle + '}}" ng-model="nodeItem"  ng-click="invokeCallback(\'node-click\',$event)"  class="tree-node">',
+	          '<a href="" ' + dragdropStr + ' title="{{' + attrs.sdaTitle + '}}" ng-model="nodeItem"  ng-click="invokeCallback(\'node-click\',$event)"  class="tree-node">',
 	          '<i ng-class="getIconClass() + \' \' + iconClass" class="js-icon"></i>',
 	          '<span ' + menuStr + ' ng-show="!allowEdit">',
 	              "{{" + attrs.sdaLabel + "}}",

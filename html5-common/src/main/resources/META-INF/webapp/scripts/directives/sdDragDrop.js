@@ -95,6 +95,10 @@
 	        
 	        //DragStart callback
 	        data = fn(scope, {$data: ngModelCtrl.$viewValue, $event: e}) || data;
+	        
+	        //ensure we at least pass an empty string
+	        if(angular.isUndefined(data)){data="";}
+	        
 	        data = JSON.stringify(data);
 	        
 	        e = (e.dataTransfer)?e: e.originalEvent;
