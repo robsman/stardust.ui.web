@@ -47,14 +47,18 @@
 	        scope.invoke = function(item,e){
 	          var deferred = $q.defer(),
 	              menuItem = {},
-	              parentLi;
+	              parentLi,
+	              elem;
+	          
+	          //handle FireFox-IE-Chrome
+	          elem = e.target || e.srcElement;
 	          
 	          //Clicks can occur on the LI or the nested span
-	          if(e.srcElement.nodeName==='SPAN'){
-	            parentLi = angular.element(e.srcElement.parentElement);
+	          if(elem.nodeName==='SPAN'){
+	            parentLi = angular.element(elem.parentElement);
 	          }
 	          else{
-	            parentLi = angular.element(e.srcElement);
+	            parentLi = angular.element(elem.srcElement);
 	          }
 	          
 	          //user can implement this css class as desired (or not)

@@ -435,7 +435,7 @@
   // this is a callback wired to the sd-data-drop directive
   // and as such we need to invoke $timeout to initiate a digest.
   AMCtrl.prototype.allowRole = function(data, e) {
-    var scope = angular.element(e.srcElement).scope();
+    var scope = angular.element(e.target || e.srcElement).scope();
     var permission = scope.$parent.$parent.genItem;
     var allow = null;
     var deny = null;
@@ -453,7 +453,7 @@
   // this is a callback wired to the sd-data-drop directive
   // and as such we need to invoke $timeout to initiate a digest.
   AMCtrl.prototype.denyRole = function(data, e) {
-    var scope = angular.element(e.srcElement).scope();
+    var scope = angular.element(e.target || e.srcElement).scope();
     var permission = scope.$parent.$parent.genItem;
     var deny = null;
     var allow = null;
@@ -503,7 +503,7 @@
   AMCtrl.prototype.removeParticipant = function(v, e) {
     var self = this;
     this.resetMessages();
-    var scope = angular.element(e.srcElement).scope();
+    var scope = angular.element(e.target || e.srcElement).scope();
     var permission = scope.$parent.$parent.genItem;
     
     var allExist = false;
@@ -557,7 +557,7 @@
   // Remove All Participants
   AMCtrl.prototype.removeAllParticipants = function(v, e) {
     var self = this;
-    var scope = angular.element(e.srcElement).scope();
+    var scope = angular.element(e.target || e.srcElement).scope();
     var permission = scope.$parent.$parent.genItem;
 
     v.item.ref[v.item.target] = [];
@@ -595,7 +595,7 @@
   AMCtrl.prototype.restorePermission = function(v, e) {
     var self = this;
     this.resetMessages();
-    var scope = angular.element(e.srcElement).scope();
+    var scope = angular.element(e.target || e.srcElement).scope();
     var permission = scope.$parent.$parent.genItem;
 
     if (v.menuEvent === "menuItem.clicked") {
