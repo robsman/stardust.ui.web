@@ -50,12 +50,12 @@
 				<tbody>
 					<tr>
 						<td sda-field="name">
-							<div class="{{rowData.type | lowercase}}"
+							<a href="" class="{{rowData.type | lowercase}}"
 								ng-class="{'selected' : ctrl.selectedRoles.indexOf(role) >=0}"
 								sd-data-drag ng-model="rowData"
 								sda-dragstart="ctrl.roleDragStart($data, $event)">
 								<span style="margin-left: 18px;"> {{rowData.name}}</span>
-							</div>
+							</a>
 						</td>
 						<td sda-field="type"></td>
 						<td sda-field="description"></td>
