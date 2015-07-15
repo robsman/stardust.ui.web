@@ -53,8 +53,12 @@
 
 .permission-tree ul {
 	margin: 0 0 0 0;	
-} }
-
-.overview-report-field-value {
-	padding-right: 10px;
 }
+
+.overview-report-field-value{
+    font-family: Lato, Arial, Helvetica, sans-serif;
+    color: #708090;
+    margin-left: -5px;
+    margin-right: 10px;
+}
+
