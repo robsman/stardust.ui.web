@@ -19,7 +19,6 @@ import java.util.List;
 
 import javax.annotation.Resource;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -35,16 +34,9 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantManagementService;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
-import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.DepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InvalidateUserStatusDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.ModelDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.ModelParticipantDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ParticipantNodeDetailsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
@@ -178,43 +170,6 @@ public class ParticipantManagementResource
                ParticipantNodeDetailsDTO.class);
       }
       return participantNodeDetailsDTO;
-   }
-
-   @POST
-   @Produces(MediaType.APPLICATION_JSON)
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Path("/createOrModifyDepartment")
-   public Response createOrModifyDepartment(String postData)
-   {
-      DepartmentDTO department = populateDepartment(postData);
-
-      NotificationMap result = participantManagementService.createOrModifyDepartment(department);
-      return Response.ok(GsonUtils.toJsonHTMLSafeString(result), MediaType.APPLICATION_JSON).build();
-   }
-
-   private DepartmentDTO populateDepartment(String postData)
-   {
-      JsonMarshaller jsonIo = new JsonMarshaller();
-      JsonObject postJSON = jsonIo.readJsonObject(postData);
-
-      // For filter
-      JsonObject department = postJSON.getAsJsonObject("department");
-      DepartmentDTO departmentDTO = null;
-      if (null != department)
-      {
-         departmentDTO = new Gson().fromJson(postJSON.get("department"), DepartmentDTO.class);
-      }
-      return departmentDTO;
-   }
-   
-   
-   @DELETE
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("/deleteDepartment/{departmentOID}")
-   public Response deleteDepartment(@PathParam("departmentOID") long departmentOID)
-   {
-      NotificationMap result = participantManagementService.deleteDepartment(departmentOID);
-      return Response.ok(GsonUtils.toJsonHTMLSafeString(result), MediaType.APPLICATION_JSON).build();
    }
 
    /**
@@ -352,27 +307,6 @@ public class ParticipantManagementResource
       return Response
             .ok(participantSearchComponent.searchAllParticipants(searchText, 0, type), MediaType.APPLICATION_JSON).build();
    }
-   
-   @GET
-   @Produces(MediaType.APPLICATION_JSON)
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Path("/participantTree")
-   public Response getParticipantTree()
-   {
-      List<ModelDTO> models = participantSearchComponent.getParticipantTree();
-      return  Response.ok(AbstractDTO.toJson(models), MediaType.APPLICATION_JSON).build();
-   }
-   
-   @DELETE
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("/participantTree/department/{departmentOID}")
-   public Response removeDepartment(@PathParam("departmentOID") long departmentOID, String postedData)
-   {
-      JsonObject modelParticipantJSON = JsonDTO.getJsonObject(postedData);
-      ModelParticipantDTO modelParticipant = participantSearchComponent.removeDepartmentFromParticipant(departmentOID, modelParticipantJSON);
-      return  Response.ok(GsonUtils.toJson(modelParticipant), MediaType.APPLICATION_JSON).build();
-   }
-
    
    /**
     * Populate the options with the post data.

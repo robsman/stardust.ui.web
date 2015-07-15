@@ -28,7 +28,6 @@ import javax.annotation.Resource;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
-import org.eclipse.stardust.common.error.InvalidArgumentException;
 import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -67,11 +66,9 @@ import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.engine.core.preferences.Preferences;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
-import org.eclipse.stardust.ui.web.html5.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.exception.ExceptionHelper;
 import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
-import org.eclipse.stardust.ui.web.rest.service.dto.DepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InvalidateUserStatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
@@ -1014,78 +1011,6 @@ public class ParticipantManagementUtils
       return userToModify;
    }
 
-   public NotificationMap createOrModifyDepartment(DepartmentDTO department)
-   {
-      NotificationMap notificationMap = new NotificationMap();
-      try
-      {
-         AdministrationService adminService = serviceFactoryUtils.getAdministrationService();
-         Department newOrModifiedDepartment;
-         if (!department.modifyMode)
-         {
-            Department parentDepartment = null;
-            if (department.parentDepartmentOID != null)
-            {
-               parentDepartment = adminService.getDepartment(department.parentDepartmentOID);
-            }
-            ModelParticipant participant = (ModelParticipant) ModelCache.findModelCache().getParticipant(
-                  department.orgId, null);
-            QualifiedModelParticipantInfo modelParticipantInfo = (QualifiedModelParticipantInfo) ((parentDepartment == null)
-                  ? participant
-                  : parentDepartment.getScopedParticipant(participant));
-
-            newOrModifiedDepartment = adminService.createDepartment(department.departmentId, department.name,
-                  department.description, parentDepartment, (OrganizationInfo) modelParticipantInfo);
-            notificationMap.addSuccess(new NotificationDTO(newOrModifiedDepartment.getOID(), newOrModifiedDepartment
-                  .getName(), "success"));
-
-         }
-         else
-         {
-            newOrModifiedDepartment = adminService.modifyDepartment(department.departmentOID, department.name,
-                  department.description);
-            notificationMap.addSuccess(new NotificationDTO(newOrModifiedDepartment.getOID(), newOrModifiedDepartment
-                  .getName(), "success"));
-         }
-
-      }
-      catch (Exception e)
-      {
-         String msg = exceptionHelper.getMessageFromProvider(e, ManagedBeanUtils.getLocale(), null).getMessage();
-         notificationMap.addFailure(new NotificationDTO(null, department.name, msg));
-      }
-      return notificationMap;
-   }
-
-   public NotificationMap deleteDepartment(long deleteDepartmentOID)
-   {
-      NotificationMap notificationMap = new NotificationMap();
-      if (deleteDepartmentOID >= 0)
-      {
-         try
-         {
-            AdministrationService adminService = serviceFactoryUtils.getAdministrationService();
-            adminService.removeDepartment(deleteDepartmentOID);
-            notificationMap.addSuccess(new NotificationDTO(deleteDepartmentOID, null, "success"));
-         }
-         catch (InvalidArgumentException aex)
-         {
-
-            String msg = MessagesViewsCommonBean.getInstance().getString(
-                  "views.participantTree.deleteDepartment.error.inUse");
-
-            notificationMap.addFailure(new NotificationDTO(deleteDepartmentOID, null, msg));
-         }
-         catch (Exception ex)
-         {
-            String msg = MessagesViewsCommonBean.getInstance().getString(
-                  "views.participantTree.deleteDepartment.error.generic");
-            notificationMap.addFailure(new NotificationDTO(deleteDepartmentOID, null, msg));
-         }
-      }
-      return notificationMap;
-   }
-   
    /**
     * @param organization
     * @param departmentId

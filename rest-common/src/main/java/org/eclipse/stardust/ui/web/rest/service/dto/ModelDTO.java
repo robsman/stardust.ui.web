@@ -37,9 +37,6 @@ public class ModelDTO extends AbstractDTO
 
    public List<ProcessDefinitionDTO> processDefinitions;
    
-   //TODO ModelParticipantDTO may be unnecessary, remove it later
-   public List<ModelParticipantDTO> modelParticipants;
-   
    public List<ParticipantDTO> allTopLevelOrganizations;
    
    public List<ParticipantDTO> allTopLevelRoles;

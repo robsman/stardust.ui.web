@@ -18,9 +18,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.ui.web.rest.Options;
-import org.eclipse.stardust.ui.web.rest.service.dto.DepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InvalidateUserStatusDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ParticipantNodeDetailsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
@@ -99,15 +97,5 @@ public class ParticipantManagementService
          ParticipantNodeDetailsDTO participantNodeDetails)
    {
       return participantManagementUtils.removeUserFromParticipant(userOID, participantNodeDetails);
-   }
-
-   public NotificationMap createOrModifyDepartment(DepartmentDTO department)
-   {
-      return participantManagementUtils.createOrModifyDepartment(department);
-   }
-
-   public NotificationMap deleteDepartment(long deleteDepartmentOID)
-   {
-      return participantManagementUtils.deleteDepartment(deleteDepartmentOID);
    }
 }
