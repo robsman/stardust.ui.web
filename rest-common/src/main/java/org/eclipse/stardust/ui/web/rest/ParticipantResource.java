@@ -26,6 +26,8 @@ import javax.ws.rs.core.Response;
 
 import org.eclipse.stardust.ui.web.rest.service.ParticipantService;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.dto.request.DepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.springframework.stereotype.Component;
 
@@ -70,32 +72,31 @@ public class ParticipantResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("department")
-   public Response createDepartment(@PathParam("participantId") String participantId,
-         @PathParam("type") String participantType)
+   public Response createDepartment(String postData) throws Exception
    {
-      // TODO Implementation pending
-      return Response.ok("Department Modified", MediaType.APPLICATION_JSON).build();
+      DepartmentDTO departmentDTO = DTOBuilder.buildFromJSON(postData, DepartmentDTO.class);
+      ParticipantDTO department = participantService.createDepartment(departmentDTO);
+      return Response.ok(department.toJson(), MediaType.APPLICATION_JSON).build();
    }
 
    @DELETE
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
-   @Path("department")
-   public Response deleteDepartment(@PathParam("participantId") String participantId,
-         @PathParam("type") String participantType)
+   @Path("department/{departmentId}")
+   public Response deleteDepartment(@PathParam("departmentId") String departmentId)
    {
-      // TODO Implementation pending
-      return Response.ok("Department Deleted...", MediaType.APPLICATION_JSON).build();
+      participantService.deleteDepartment(departmentId);
+      return Response.ok("deleted", MediaType.APPLICATION_JSON).build();
    }
 
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("department")
-   public Response modifyDepartment(@PathParam("participantId") String participantId,
-         @PathParam("type") String participantType)
+   public Response modifyDepartment(String postData) throws Exception
    {
-      // TODO Implementation pending
-      return Response.ok("Department Created...", MediaType.APPLICATION_JSON).build();
+      DepartmentDTO departmentDTO = DTOBuilder.buildFromJSON(postData, DepartmentDTO.class);
+      ParticipantDTO department = participantService.modifyDepartment(departmentDTO);
+      return Response.ok(department.toJson(), MediaType.APPLICATION_JSON).build();
    }
 }

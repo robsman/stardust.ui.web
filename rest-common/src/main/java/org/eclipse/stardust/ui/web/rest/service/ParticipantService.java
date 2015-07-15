@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.rest.service;
 
 import java.util.List;
 
+import org.eclipse.stardust.ui.web.rest.service.dto.request.DepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 
 /**
@@ -26,4 +27,23 @@ public interface ParticipantService
     * @return
     */
    public List<ParticipantDTO> getParticipant(String participantQidIn);
+
+   /**
+    * @param departmentDTO
+    * @return
+    */
+   public ParticipantDTO createDepartment(DepartmentDTO departmentDTO);
+
+   /**
+    * @param departmentDTO
+    * @return
+    */
+   public ParticipantDTO modifyDepartment(DepartmentDTO departmentDTO);
+
+   /**
+    * @param departmentQualifiedId
+    * @return
+    */
+   public boolean deleteDepartment(String departmentQualifiedId);
+
 }
