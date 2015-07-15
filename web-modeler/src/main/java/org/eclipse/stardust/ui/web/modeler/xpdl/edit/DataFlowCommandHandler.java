@@ -77,6 +77,7 @@ public class DataFlowCommandHandler
 
          DataMappingType dataMapping = modelUnmarshaller.createDataMapping(hostActivity,
                data, changes, mappingDirection, changes);
+         mapper.map(dataMapping);
 
          // associate mapping with event handler
          String context = "event-" + eventHandler.getId();
