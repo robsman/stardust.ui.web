@@ -49,7 +49,7 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td sda-field="name">
+						<td sda-field="name" sda-exporter="rowData.name">
 							<a href="" class="{{rowData.type | lowercase}}"
 								ng-class="{'selected' : ctrl.selectedRoles.indexOf(role) >=0}"
 								sd-data-drag ng-model="rowData"
