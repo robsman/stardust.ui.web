@@ -143,6 +143,29 @@
 	 */
 	Controller.prototype.refreshTables = function() {
 		var self = this;
+		
+		_sdQualityAssuranceService.getQaActivities(self.showObsoleteActivities).then(function(result) {
+			angular.forEach(result, function(data) {
+				if( data.qaPercentage ){
+					data.qaPercentage = parseInt(data.qaPercentage);
+				}
+				data.originalQaPercentage = data.qaPercentage;
+			});
+			self.activities.totalCount = result.length;
+			self.activities.list = result;
+		});
+		
+		_sdQualityAssuranceService.getQaDepartments(self.selectedActivity.processQualifiedId, self.selectedActivity.activityQualifiedId).then(
+				function(result) {
+					angular.forEach(result, function(data) {
+						if( data.qaPercentage ){
+							data.qaPercentage = parseInt(data.qaPercentage);
+						}
+						data.originalQaPercentage = data.qaPercentage;
+					});
+					self.departments.totalCount = result.length;
+					self.departments.list = result;
+				});
 
 		var activityData = self.activityTable.getData();
 		angular.forEach(activityData, function(data) {
@@ -155,6 +178,7 @@
 				data.isEditMode = false;
 			});
 		}
+		
 
 	};
 	/**
@@ -198,12 +222,14 @@
 		trace.debug("Fetching QA activities with obsolete activies : ", self.showObsoleteActivities);
 		_sdQualityAssuranceService.getQaActivities(self.showObsoleteActivities).then(function(result) {
 			angular.forEach(result, function(data) {
+				if( data.qaPercentage ){
+					data.qaPercentage = parseInt(data.qaPercentage);
+				}
 				data.originalQaPercentage = data.qaPercentage;
 			});
 			self.activities.totalCount = result.length;
 			self.activities.list = result;
 			self.activityTableReady = true;
-
 		});
 	};
 	/**
@@ -298,9 +324,12 @@
 		} else {
 			self.selectedActivity = {activityQualifiedId : rowData.activityQualifiedId, processQualifiedId : rowData.processQualifiedId};
 
-			_sdQualityAssuranceService.getQaDepartments(rowData.processQualifiedId, rowData.activityQualifiedId).then(
+			_sdQualityAssuranceService.getQaDepartments(self.selectedActivity.processQualifiedId, self.selectedActivity.activityQualifiedId).then(
 					function(result) {
 						angular.forEach(result, function(data) {
+							if( data.qaPercentage ){
+								data.qaPercentage = parseInt(data.qaPercentage);
+							}
 							data.originalQaPercentage = data.qaPercentage;
 						});
 						self.departments.totalCount = result.length;
