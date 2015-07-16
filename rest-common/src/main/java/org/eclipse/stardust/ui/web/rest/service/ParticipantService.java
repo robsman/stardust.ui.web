@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DepartmentDTO;
@@ -46,4 +47,12 @@ public interface ParticipantService
     */
    public boolean deleteDepartment(String departmentQualifiedId);
 
+   /**
+    * @param participants
+    * @param usersToBeAdded
+    * @param usersToBeRemoved
+    * @return
+    */
+   public List<ParticipantDTO> modifyParticipant(HashSet<String> participants, HashSet<String> usersToBeAdded,
+         HashSet<String> usersToBeRemoved);
 }

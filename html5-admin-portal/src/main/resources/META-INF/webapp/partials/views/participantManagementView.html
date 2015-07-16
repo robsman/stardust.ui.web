@@ -1,54 +1,118 @@
 <div class="view-panel"
-	ng-controller="sdParticipantManagementCtrl as ctrl" sg-stretch-to-bottom>
-	<div class="view-panel-toolbar toolbar-buttons">
-		<div class="view-toolbar-section">
-			<span sd-refresh sda-on-refresh="ctrl.refresh();" aid="PP-PartMgmt"></span>
-		</div>
+	ng-controller="sdParticipantManagementCtrl as ctrl"
+	sg-stretch-to-bottom>
+
+	<div style="clear: both" class="participantManager">
+
+		<div sd-http-loader
+			style="top: 0; position: absolute; width: 100%; left: 0px;"
+			methods="GET,POST"></div>
+
+		<div sd-js-error>Error:</div>
+
+		<section style="clear: both; float: left; width: 60%; overflow:auto">
+			<header>
+				<div class="view-panel-toolbar heading">
+					{{i18n('admin-portal-messages.views-common-users-label')}}</div>
+			</header>
+			<div ng-show="ctrl.showMessage" sd-message></div>
+
+			<div
+				ng-include="'plugins/html5-admin-portal/partials/views/participantMgtUsersTable.html'">
+			</div>
+			<div ng-if="ctrl.loadUserProfileDialog">
+				<div sd-dialog sda-modal="true"
+					sda-show="ctrl.showUserProfileDialog" sda-type="confirm"
+					sda-title="{{sdI18n(ctrl.title,'',[ctrl.titleParams])}}"
+					sda-scope="this"
+					sda-template="plugins/html5-admin-portal/partials/views/createUser.html"
+					sda-on-confirm="ctrl.onConfirmFromCreateUser(res)"
+					sda-on-close="ctrl.onCloseFromCreateUser(res)"
+					sda-confirm-action-label="{{i18n('admin-portal-messages.common-apply')}}"
+					sda-width="550px" sda-height="600px"
+					sda-aid-prefix="ADM-PartMgmt-UserPopup"></div>
+			</div>
+			<div sd-dialog sda-modal="true"
+				sda-show="ctrl.showNotificationDialog" sda-type="alert"
+				sda-title="{{i18n('admin-portal-messages.common-notification-title')}}"
+				sda-scope="this"
+				sda-template="plugins/html5-admin-portal/partials/views/invalidateUsersNotificationDialog.html"
+				sda-cancel-action-label="{{i18n('admin-portal-messages.common-close')}}"
+				sda-width="520px" sda-height="400px"
+				sda-aid-prefix="ADM-PartMgmt-InvalUsersNotificationDlg"></div>
+			<div sd-dialog sda-modal="true"
+				sda-show="ctrl.showDefaultDelegateDialog" sda-type="confirm"
+				sda-title="{{i18n('admin-portal-messages.common-defaultDelegateDialog-title')}}"
+				sda-scope="this"
+				sda-template="plugins/html5-admin-portal/partials/views/delegateActivitiesConfirmationDialog.html"
+				sda-cancel-action-label="{{i18n('admin-portal-messages.common-no')}}"
+				sda-confirm-action-label="{{i18n('admin-portal-messages.common-yes')}}"
+				sda-on-close="ctrl.onCloseFromDefaultDelegateDialog(res)"
+				sda-on-confirm="ctrl.onConfrimFromDefaultDelegateDialog(res)"
+				sda-width="520px" sda-height="50px"
+				sda-aid-prefix="ADM-PartMgmt-DelegateActConfDlg"></div>
+			<div sd-dialog sda-modal="true"
+				sda-show="ctrl.showStrandedActivitiesAlert" sda-type="alert"
+				sda-title="{{i18n('admin-portal-messages.common-strandedActivitiesAlert-title')}}"
+				sda-scope="this"
+				sda-template="plugins/html5-admin-portal/partials/views/strandedActivitiesAlertDialog.html"
+				sda-cancel-action-label="{{i18n('admin-portal-messages.common-ok')}}"
+				sda-on-close="ctrl.onConfirmFromStrandedActivitiesAlert(res)"
+				sda-width="520px" sda-height="50px"
+				sda-aid-prefix="ADM-PartMgmt-StrandedActAlertDialog"></div>
+
+		</section>
+
+		<section style="float: left; padding-left: 30px; width: 33%">
+			<header>
+				<div class="heading"
+					ng-bind="sdI18nHtml5Admin('views.authorizationManagerViewHtml5.permissions.label')"></div>
+			</header>
+			<div ng-show="ctrl.showMessage2" sd-message></div>
+			<div sda-toolbar>
+				<div class="tbl-toolbar-section">
+					<button ng-click="ctrl.highlightParticipants()"
+						title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.highlightParticipants')}}"
+						class="button-link tbl-toolbar-item tbl-tool-link"
+						style="margin-right: 0px;">
+						<i class="sc sc-fw sc-1x sc-torch"></i>
+					</button>
+				</div>
+				<div class="view-panel-toolbar toolbar-buttons">
+					<span sd-refresh sda-on-refresh="ctrl.refreshPermissions();"
+						aid="COM-AuthMgr-RefreshPermissions"></span>
+				</div>
+
+				<div>
+					<input type="text" ng-model="myFilter" />
+					<button ng-click="ctrl.applyFilter(myFilter)"
+						aid="COM-AuthMgr-ApplyFilter">Filter</button>
+					<button ng-click="ctrl.applyFilter()" aid="COM-AuthMgr-ResetFilter">Reset</button>
+				</div>
+			</div>
+			<br>
+			<div class="permission-tree">
+				<ul sd-tree="ctrl.onTreeInit(api)"
+					sda-menu-callback="ctrl.menuCallback(item)"
+					sda-icon-callback="ctrl.iconCallback(item)"
+					sda-event-callback="ctrl.eventCallback(data,e)">
+					<li sd-tree-node sda-node-id="item.nodeId" sda-label="item.name"
+						sda-menu-items="(,)" sda-is-leaf="false" sda-draggable="true"
+						ng-repeat="item in ctrl.models">
+						<ul>
+							<li sd-tree-node ng-repeat="item in item.children"
+								sda-draggable="true" sda-droppable="true" sda-menu-items="(,)"
+								sda-node-id="item.nodeId" sda-is-leaf="item.type=='user'"
+								sda-label="item.name">
+								<ul>
+									<li sd-tree-curse></li>
+								</ul>
+							</li>
+						</ul>
+					</li>
+				</ul>
+			</div>
+		</section>
 	</div>
-	<div
-		ng-include="'plugins/html5-admin-portal/partials/views/participantMgtUsersTable.html'">
-	</div>
-	<div ng-if="ctrl.loadUserProfileDialog">
-		<div sd-dialog sda-modal="true" sda-show="ctrl.showUserProfileDialog"
-			sda-type="confirm"
-			sda-title="{{sdI18n(ctrl.title,'',[ctrl.titleParams])}}"
-			sda-scope="this"
-			sda-template="plugins/html5-admin-portal/partials/views/createUser.html"
-			sda-on-confirm="ctrl.onConfirmFromCreateUser(res)"
-			sda-on-close="ctrl.onCloseFromCreateUser(res)"
-			sda-confirm-action-label="{{i18n('admin-portal-messages.common-apply')}}"
-			sda-width="550px" sda-height="600px"
-			sda-aid-prefix="ADM-PartMgmt-UserPopup"></div>
-	</div>
-	<div sd-dialog sda-modal="true" sda-show="ctrl.showNotificationDialog"
-		sda-type="alert"
-		sda-title="{{i18n('admin-portal-messages.common-notification-title')}}"
-		sda-scope="this"
-		sda-template="plugins/html5-admin-portal/partials/views/invalidateUsersNotificationDialog.html"
-		sda-cancel-action-label="{{i18n('admin-portal-messages.common-close')}}"
-		sda-width="520px" sda-height="400px"
-		sda-aid-prefix="ADM-PartMgmt-InvalUsersNotificationDlg">
-	</div>
-	<div sd-dialog sda-modal="true"
-		sda-show="ctrl.showDefaultDelegateDialog" sda-type="confirm"
-		sda-title="{{i18n('admin-portal-messages.common-defaultDelegateDialog-title')}}"
-		sda-scope="this"
-		sda-template="plugins/html5-admin-portal/partials/views/delegateActivitiesConfirmationDialog.html"
-		sda-cancel-action-label="{{i18n('admin-portal-messages.common-no')}}"
-		sda-confirm-action-label="{{i18n('admin-portal-messages.common-yes')}}"
-		sda-on-close="ctrl.onCloseFromDefaultDelegateDialog(res)"
-		sda-on-confirm="ctrl.onConfrimFromDefaultDelegateDialog(res)"
-		sda-width="520px" sda-height="50px"
-		sda-aid-prefix="ADM-PartMgmt-DelegateActConfDlg">
-	</div>
-	<div sd-dialog sda-modal="true"
-		sda-show="ctrl.showStrandedActivitiesAlert" sda-type="alert"
-		sda-title="{{i18n('admin-portal-messages.common-strandedActivitiesAlert-title')}}"
-		sda-scope="this"
-		sda-template="plugins/html5-admin-portal/partials/views/strandedActivitiesAlertDialog.html"
-		sda-cancel-action-label="{{i18n('admin-portal-messages.common-ok')}}"
-		sda-on-close="ctrl.onConfirmFromStrandedActivitiesAlert(res)"
-		sda-width="520px" sda-height="50px"
-		sda-aid-prefix="ADM-PartMgmt-StrandedActAlertDialog">
-	</div>
+
 </div>

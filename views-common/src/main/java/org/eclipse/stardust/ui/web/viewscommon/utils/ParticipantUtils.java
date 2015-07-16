@@ -23,7 +23,6 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.config.Parameters;
-import org.eclipse.stardust.engine.api.dto.DepartmentDetails;
 import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.model.DynamicParticipantInfo;
 import org.eclipse.stardust.engine.api.model.Model;
@@ -49,8 +48,6 @@ import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.TaskAssignmentConstants;
-import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
-import org.eclipse.stardust.ui.web.viewscommon.participantManagement.ParticipantUserObject.NODE_TYPE;
 
 
 
@@ -269,6 +266,7 @@ public class ParticipantUtils
       String modelId = ModelUtils.extractModelId(partcipantQID);
       String participantId = ModelUtils.extractParticipantId(partcipantQID);
       ModelParticipant participant = null;
+
       if (null == participantId)
       {
          participantId = partcipantQID;

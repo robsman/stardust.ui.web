@@ -89,6 +89,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.QueryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
+import org.eclipse.stardust.ui.web.viewscommon.views.authorization.UiPermissionUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -99,9 +100,10 @@ public class ParticipantManagementUtils
    private static final String PREFERENCE_ID = "preference";
 
    public static enum ParticipantType {
-      ORGANIZATON_SCOPED_EXPLICIT, ORGANIZATON_SCOPED_IMPLICIT, ROLE_SCOPED, ORGANIZATION_UNSCOPED, ROLE_UNSCOPED, USERGROUP, USER, DEPARTMENT, DEPARTMENT_DEFAULT;
+      ORGANIZATON_SCOPED_EXPLICIT, ORGANIZATON_SCOPED_IMPLICIT, ROLE_SCOPED, ORGANIZATION_UNSCOPED, ROLE_UNSCOPED, 
+      USERGROUP, USER, DEPARTMENT, DEPARTMENT_DEFAULT;
    }
-   
+
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
 
@@ -1080,9 +1082,13 @@ public class ParticipantManagementUtils
     */
    public static String parseParticipantQId(String input)
    {
+      if (PredefinedConstants.ADMINISTRATOR_ROLE.equals(input) || UiPermissionUtils.AUDITOR.equals(input))
+      {
+         return input;
+      }
       return getMatchingString(input, "(\\{([^\\[]*))");
    }
- 
+
    /**
     * @param input
     * @param pattern
@@ -1131,4 +1137,3 @@ public class ParticipantManagementUtils
       return participantType;
    }
 }
-

@@ -1,7 +1,5 @@
 <div class="participant-management-wrapper">
 	<div>
-		<div class="view-panel-toolbar heading">
-			{{i18n('admin-portal-messages.views-common-users-label')}}</div>
 		<table>
 			<tr>
 				<td><span class="label-item" style="font-weight:bold"
@@ -65,6 +63,7 @@
 						<i class="sc sc-fw sc-1x sc-ban"></i>
 					</button>
 				</div>
+				<span sd-refresh sda-on-refresh="ctrl.refresh();" aid="PP-PartMgmt"></span>
 			</div>
 			<table sd-data-table="ctrl.allUsersTable"
 				sd-data="ctrl.getAllUsers(params)" sda-mode="remote"
@@ -108,9 +107,10 @@
 				<tbody>
 					<tr>
 						<td sda-exporter="rowData.displayName"><a href="#"
-							ng-click="bpmCommon.stopEvent($event); ctrl.openCreateCopyModifyUser('MODIFY_USER',rowData.oid);"
+							ng-click="ctrl.openCreateCopyModifyUser('MODIFY_USER',rowData.oid);"
 							title="{{i18n('admin-portal-messages.views-userTable-columnLink-title')}}"
 							class="tbl-tool-link"
+							sd-data-drag ng-model="rowData" sda-dragstart="ctrl.userDragStart($data, $event)"
 							aid="ADM-PartMgmt-DataTable-DisplayName">{{rowData.displayName}}</a></td>
 						<td style="text-align: center;"></td>
 						<td style="text-align: center;"></td>

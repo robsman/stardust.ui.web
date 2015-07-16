@@ -9,6 +9,7 @@
 package org.eclipse.stardust.ui.web.rest.service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.annotation.Resource;
@@ -35,6 +36,7 @@ import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ParticipantManagementUtils;
@@ -42,6 +44,7 @@ import org.eclipse.stardust.ui.web.rest.service.utils.ParticipantManagementUtils
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -69,11 +72,150 @@ public class ParticipantServiceImpl implements ParticipantService
     */
    public List<ParticipantDTO> getParticipant(String participantQidIn)
    {
+      ParticipantContainer participantContainer = getParticipantContainerFromQialifiedId(participantQidIn);
+      return getSubParticipants(participantContainer);
+   }
+
+   /**
+    *
+    */
+   public ParticipantDTO createDepartment(DepartmentDTO departmentDTO)
+   {
+      ParticipantContainer participantContainer = getParticipantContainerFromQialifiedId(departmentDTO.parentOrganizationId);
+
+      QualifiedModelParticipantInfo modelParticipant = participantContainer.modelparticipant;
+      DepartmentInfo parentDepartment = participantContainer.department;
+
+      AdministrationService adminService = serviceFactoryUtils.getAdministrationService();
+      Department department = adminService.createDepartment(departmentDTO.id, departmentDTO.name,
+            departmentDTO.description, parentDepartment, (OrganizationInfo) modelParticipant);
+
+      List<ParticipantDTO> participants = new ArrayList<ParticipantDTO>();
+
+      getParticipant(department, participants);
+
+      return (ParticipantDTO) participants;
+   }
+
+   /**
+    *
+    */
+   public ParticipantDTO modifyDepartment(DepartmentDTO departmentDTO)
+   {
+      String parentDepartmentId = ParticipantManagementUtils
+            .parseParentDepartmentId(departmentDTO.parentOrganizationId);
+      String participantQid = ParticipantManagementUtils.parseParticipantQId(departmentDTO.parentOrganizationId);
+
+      ParticipantContainer participantContainer = getParticipantContainer(participantQid, parentDepartmentId,
+            departmentDTO.id);
+
+      DepartmentInfo departmentInfo = participantContainer.department;
+
+      AdministrationService adminService = serviceFactoryUtils.getAdministrationService();
+      Department department = adminService.modifyDepartment(departmentInfo.getOID(), departmentDTO.name,
+            departmentDTO.description);
+
+      List<ParticipantDTO> participantDTOs = new ArrayList<ParticipantDTO>();
+
+      getSubParticipantsForDepartment(department, participantDTOs);
+
+      return participantDTOs.get(0);
+   }
+
+   /**
+    * @param departmentQualifiedId
+    * @return
+    */
+   public boolean deleteDepartment(String departmentQualifiedId)
+   {
+      ParticipantContainer participantContainer = getParticipantContainerFromQialifiedId(departmentQualifiedId);
+      serviceFactoryUtils.getAdministrationService().removeDepartment(participantContainer.department.getOID());
+      return true;
+   }
+
+   /**
+    * TODO: userId should also contain realm in future
+    */
+   @Override
+   public List<ParticipantDTO> modifyParticipant(HashSet<String> participant, HashSet<String> add,
+         HashSet<String> remove)
+   {
+      HashSet<String> allUsers = new HashSet<String>();
+      allUsers.addAll(add);
+      allUsers.addAll(remove);
+
+      List<User> users = UserUtils.getUsers(allUsers, null, UserDetailsLevel.Minimal);
+
+      List<ParticipantDTO> participantDTOs = new ArrayList<ParticipantDTO>();
+
+      for (String participantQId : participant)
+      {
+         ParticipantContainer participantContainer = getParticipantContainerFromQialifiedId(participantQId);
+
+         for (String userId : add)
+         {
+            // TODO: consider realmId
+            User user = getUser(users, userId);
+            addUserToModelParticipant(user, participantContainer.modelparticipant);
+         }
+      }
+      return participantDTOs;
+   }
+
+   /**
+    * @param users
+    * @param userId
+    * @return
+    */
+   private User getUser(List<User> users, String userId)
+   {
+      // TODO: consider realmId
+
+      for (User user : users)
+      {
+         if (user.getId().equals(userId))
+         {
+            return user;
+         }
+      }
+      return null;
+   }
+
+   /**
+    * @param user
+    * @param qualifiedParticipantInfo
+    */
+   private void addUserToModelParticipant(User user, QualifiedModelParticipantInfo qualifiedParticipantInfo)
+   {
+      UserService userService = serviceFactoryUtils.getUserService();
+
+      User userToModify = userService.getUser(user.getOID());
+      userToModify.addGrant(qualifiedParticipantInfo);
+      userService.modifyUser(userToModify);
+   }
+
+   /**
+    * 
+    * @param participantQidIn
+    * @return
+    */
+   private ParticipantContainer getParticipantContainerFromQialifiedId(String participantQidIn)
+   {
       String departmentId = ParticipantManagementUtils.parseDepartmentId(participantQidIn);
       String parentDepartmentId = ParticipantManagementUtils.parseParentDepartmentId(participantQidIn);
-
       String participantQid = ParticipantManagementUtils.parseParticipantQId(participantQidIn);
+      return getParticipantContainer(participantQid, parentDepartmentId, departmentId);
+   }
 
+   /**
+    * @param participantQid
+    * @param parentDepartmentId
+    * @param departmentId
+    * @return
+    */
+   private ParticipantContainer getParticipantContainer(String participantQid, String parentDepartmentId,
+         String departmentId)
+   {
       DepartmentInfo departmentInfo = null;
 
       QualifiedModelParticipantInfo modelParticipant = ParticipantUtils.getModelParticipant(participantQid);
@@ -129,9 +271,12 @@ public class ParticipantServiceImpl implements ParticipantService
             // default department
             pType = ParticipantType.DEPARTMENT_DEFAULT.name();
          }
-         else
+         else if(departmentInfo == null)
          {
-
+            // department
+            pType = ParticipantType.DEPARTMENT.name();
+            departmentInfo = participantManagementUtils.getDepartment((QualifiedOrganizationInfo) modelParticipant,
+                  departmentId);
          }
       }
 
@@ -141,89 +286,12 @@ public class ParticipantServiceImpl implements ParticipantService
          department = getDepartment(departmentInfo.getOID());
       }
 
-      return getSubParticipants(modelParticipant, department, pType);
-   }
+      ParticipantContainer participantContainer = new ParticipantContainer();
+      participantContainer.modelparticipant = modelParticipant;
+      participantContainer.department = department;
+      participantContainer.participantType = pType;
 
-   /**
-    *
-    */
-   public ParticipantDTO createDepartment(DepartmentDTO departmentDTO)
-   {
-      String parentDepartmentId = ParticipantManagementUtils
-            .parseParentDepartmentId(departmentDTO.parentOrganizationId);
-      String participantQid = ParticipantManagementUtils.parseParticipantQId(departmentDTO.parentOrganizationId);
-
-      QualifiedModelParticipantInfo modelParticipant = ParticipantUtils.getModelParticipant(participantQid);
-
-      DepartmentInfo parentDepartment = null;
-      if (StringUtils.isNotEmpty(parentDepartmentId))
-      {
-         parentDepartment = participantManagementUtils.getDepartment((QualifiedOrganizationInfo) modelParticipant,
-               parentDepartmentId);
-         modelParticipant = getDepartment(parentDepartment.getOID()).getScopedParticipant(
-               (ModelParticipant) modelParticipant);
-      }
-
-      AdministrationService adminService = serviceFactoryUtils.getAdministrationService();
-      Department department = adminService.createDepartment(departmentDTO.id, departmentDTO.name,
-            departmentDTO.description, parentDepartment, (OrganizationInfo) modelParticipant);
-
-      List<ParticipantDTO> participants = new ArrayList<ParticipantDTO>();
-
-      getParticipant(department, participants);
-
-      return (ParticipantDTO) participants;
-   }
-
-   /**
-    * @param modelParticipant
-    * @param departmentDTO
-    * @param parentDepartment
-    * @return
-    */
-   public ParticipantDTO modifyDepartment(DepartmentDTO departmentDTO)
-   {
-      String parentDepartmentId = ParticipantManagementUtils
-            .parseParentDepartmentId(departmentDTO.parentOrganizationId);
-      String participantQid = ParticipantManagementUtils.parseParticipantQId(departmentDTO.parentOrganizationId);
-
-      QualifiedModelParticipantInfo modelParticipant = ParticipantUtils.getModelParticipant(participantQid);
-      parentDepartmentId += "/" + departmentDTO.id;
-
-      DepartmentInfo departmentInfo = participantManagementUtils.getDepartment(
-            (QualifiedOrganizationInfo) modelParticipant, parentDepartmentId);
-
-      AdministrationService adminService = serviceFactoryUtils.getAdministrationService();
-      Department department = adminService.modifyDepartment(departmentInfo.getOID(), departmentDTO.name,
-            departmentDTO.description);
-
-      List<ParticipantDTO> participantDTOs = new ArrayList<ParticipantDTO>();
-
-      getSubParticipantsForDepartment(department, participantDTOs);
-
-      return participantDTOs.get(0);
-   }
-
-   /**
-    * @param departmentQualifiedId
-    * @return
-    */
-   public boolean deleteDepartment(String departmentQualifiedId)
-   {
-      String departmentId = ParticipantManagementUtils.parseDepartmentId(departmentQualifiedId);
-      String parentDepartmentId = ParticipantManagementUtils.parseParentDepartmentId(departmentQualifiedId);
-      String participantQid = ParticipantManagementUtils.parseParticipantQId(departmentQualifiedId);
-
-      QualifiedModelParticipantInfo modelParticipant = ParticipantUtils.getModelParticipant(participantQid);
-      parentDepartmentId += "/" + departmentId;
-
-      DepartmentInfo department = participantManagementUtils.getDepartment(
-            (QualifiedOrganizationInfo) modelParticipant, parentDepartmentId);
-
-      serviceFactoryUtils.getAdministrationService().removeDepartment(department.getOID());
-
-      return true;
-
+      return participantContainer;
    }
 
    /**
@@ -232,9 +300,12 @@ public class ParticipantServiceImpl implements ParticipantService
     * @param pTypeStr
     * @return
     */
-   private List<ParticipantDTO> getSubParticipants(QualifiedModelParticipantInfo modelparticipant,
-         Department department, String pTypeStr)
+   private List<ParticipantDTO> getSubParticipants(ParticipantContainer participantContainer)
    {
+      QualifiedModelParticipantInfo modelparticipant = participantContainer.modelparticipant;
+      Department department = participantContainer.department;
+      String pTypeStr = participantContainer.participantType;
+
       ParticipantType pType = ParticipantType.valueOf(pTypeStr);
 
       List<ParticipantDTO> participantDTOs = new ArrayList<ParticipantDTO>();
@@ -368,7 +439,7 @@ public class ParticipantServiceImpl implements ParticipantService
    {
       UserQuery userQuery = UserQuery.findAll();
       userQuery.getFilter().add(ParticipantAssociationFilter.forParticipant(participantInfo, false));
-      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Full);
+      UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Minimal);
       userPolicy.setPreferenceModules(UserPreferencesEntries.M_ADMIN_PORTAL);
       userQuery.setPolicy(userPolicy);
       Users allUsers = serviceFactoryUtils.getQueryService().getAllUsers(userQuery);
@@ -428,8 +499,16 @@ public class ParticipantServiceImpl implements ParticipantService
       ParticipantDTO participantDTO = new ParticipantDTO(department);
       participantDTO.type = ParticipantType.DEPARTMENT.name();
       participantDTOs.add(participantDTO);
-      participantDTO.parentDepartment = ParticipantManagementUtils.getDepartmentsHierarchy(
-            department.getParentDepartment(), "");
+
+      if (department.getParentDepartment() != null)
+      {
+         participantDTO.parentQualifiedId = getDepartmentId(department.getParentDepartment())
+               + department.getOrganization().getQualifiedId();
+      }
+      else
+      {
+         participantDTO.parentQualifiedId = department.getOrganization().getQualifiedId();
+      }
    }
 
    /**
@@ -445,12 +524,22 @@ public class ParticipantServiceImpl implements ParticipantService
       ParticipantDTO participantDTO = new ParticipantDTO(participant);
       participantDTO.type = ParticipantManagementUtils.getParticipantType(qualifiedParticipantInfo).name();
       participantDTOs.add(participantDTO);
+      participantDTO.parentQualifiedId = "";
       if (parentDepartment != null)
       {
-         participantDTO.parentDepartment = ParticipantManagementUtils.getDepartmentsHierarchy(parentDepartment, "");
+         participantDTO.parentQualifiedId = getDepartmentId(parentDepartment);
       }
 
       return participantDTO;
+   }
+
+   /**
+    * @param parentDepartment
+    * @return
+    */
+   private String getDepartmentId(Department parentDepartment)
+   {
+      return "[" + ParticipantManagementUtils.getDepartmentsHierarchy(parentDepartment, "") + "]";
    }
 
    /**
@@ -474,5 +563,12 @@ public class ParticipantServiceImpl implements ParticipantService
    {
       Department department = serviceFactoryUtils.getAdministrationService().getDepartment(departmentOid);
       return department;
+   }
+
+   static class ParticipantContainer
+   {
+      QualifiedModelParticipantInfo modelparticipant;
+      Department department;
+      String participantType;
    }
 }

@@ -35,7 +35,7 @@ public class ParticipantDTO extends AbstractDTO
    public Boolean onlineStatus;
    public Long runtimeOrganizationOid;
    public String realmId;
-   public String parentDepartment;
+   public String parentQualifiedId;
 
    public ParticipantDTO()
    {}

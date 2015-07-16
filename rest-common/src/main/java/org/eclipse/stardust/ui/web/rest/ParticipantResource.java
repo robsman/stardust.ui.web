@@ -10,9 +10,13 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -24,8 +28,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantService;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
@@ -47,11 +53,34 @@ public class ParticipantResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("participants")
-   public Response modifyParticipant(@PathParam("participantId") String participantId,
-         @PathParam("type") String participantType)
+   public Response modifyParticipant(String postedData)
    {
-      // TODO Implementation pending
-      List<ParticipantDTO> participants = participantService.getParticipant(participantId);
+      Map grantsMap = null;
+      if (StringUtils.isNotEmpty(postedData))
+      {
+         grantsMap = JsonDTO.getAsMap(postedData);
+      }
+      else
+      {
+         throw new ClientErrorException(Response.Status.BAD_REQUEST);
+      }
+
+      HashSet<String> participant = new HashSet<String>((Collection< ? extends String>) grantsMap.get("participants"));
+      HashSet<String> usersToBeAdded = null;
+      if (grantsMap.get("add") != null)
+      {
+         usersToBeAdded = new HashSet<String>((Collection< ? extends String>) grantsMap.get("add"));
+      }
+
+      HashSet<String> usersToBeRemoved = null;
+      if (grantsMap.get("remove") != null)
+      {
+         usersToBeRemoved = new HashSet<String>((Collection< ? extends String>) grantsMap.get("remove"));
+      }
+
+      List<ParticipantDTO> participants = participantService.modifyParticipant(participant, usersToBeAdded,
+            usersToBeRemoved);
+
       return Response.ok(AbstractDTO.toJson(participants), MediaType.APPLICATION_JSON).build();
    }
 
@@ -99,4 +128,5 @@ public class ParticipantResource
       ParticipantDTO department = participantService.modifyDepartment(departmentDTO);
       return Response.ok(department.toJson(), MediaType.APPLICATION_JSON).build();
    }
+
 }
