@@ -1,4 +1,4 @@
-<div class="view-panel-content">
+<div class="view-panel-content" ng-if="ctrl.table1">
 	<div>
 		<span class="form-lable">{{i18n('business-control-center-messages.views-common-showLoggedInUser-label')}}</span>
 		<input type="checkbox" ng-model="ctrl.showLoggedInAssignedUsers"
@@ -20,8 +20,8 @@
 		</div>
 	</div>
 	<table sd-data-table="ctrl.assignedUsersTable"
-		sd-data="ctrl.getAssignedUsers()" sda-mode="local"
-		sda-ready="ctrl.table1" sda-selectable="multiple"
+		sd-data="ctrl.getAssignedUsers(params)" sda-mode="remote"
+		sda-selectable="multiple"
 		sda-preference-delegate="ctrl.preferenceForAssignedUserTable(prefInfo)"
 		sda-selection="ctrl.rowSelectionAssignedUsersTable"
 		sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"

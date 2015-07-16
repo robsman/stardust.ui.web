@@ -17,8 +17,8 @@
 
 	angular.module("bcc-ui").controller(
 			'sdRoleAssignmentCtrl',
-			[ '$q', '$timeout', 'sdRoleAssignmentService', 'sdLoggerService', 'sdCommonViewUtilService',
-					'sdLoggedInUserService', 'sdPreferenceService','sdDataTableHelperService', RoleAssignmentCtrl ]);
+			['$q', '$filter', '$timeout', 'sdRoleAssignmentService', 'sdLoggerService', 'sdCommonViewUtilService',
+					'sdLoggedInUserService', 'sdPreferenceService', 'sdDataTableHelperService', RoleAssignmentCtrl]);
 
 	var _q;
 	var _sdRoleAssignmentService;
@@ -28,12 +28,13 @@
 	var _sdLoggedInUserService;
 	var _sdPreferenceService;
 	var _sdDataTableHelperService;
+	var _filter;
 
 	/**
 	 * 
 	 */
-	function RoleAssignmentCtrl($q, $timeout, sdRoleAssignmentService, sdLoggerService, sdCommonViewUtilService,
-			sdLoggedInUserService, sdPreferenceService ,sdDataTableHelperService) {
+	function RoleAssignmentCtrl($q, $filter, $timeout, sdRoleAssignmentService, sdLoggerService,
+			sdCommonViewUtilService, sdLoggedInUserService, sdPreferenceService, sdDataTableHelperService) {
 		trace = sdLoggerService.getLogger('bcc-ui.sdRoleAssignmentCtrl');
 		_q = $q;
 		_sdRoleAssignmentService = sdRoleAssignmentService;
@@ -42,6 +43,7 @@
 		_sdLoggedInUserService = sdLoggedInUserService;
 		_sdPreferenceService = sdPreferenceService;
 		_sdDataTableHelperService = sdDataTableHelperService;
+		_filter = $filter;
 
 		this.roleAssignmentTable = null;
 		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
@@ -76,16 +78,48 @@
 	 * @returns
 	 */
 	RoleAssignmentCtrl.prototype.getRoleAssignmentData = function(options) {
-		var self = this;		
+		var self = this;
 		var result = {
-				list : [],
-				totalCount : self.roleAssignments.totalCount
+			list : self.roleAssignments.list,
+			totalCount : self.roleAssignments.totalCount
 		}
-		result.list = _sdDataTableHelperService.columnSort(options,self.roleAssignments.list)
-		result.list = _sdDataTableHelperService.paginate(options,result.list);
+
+		if (options.filters != undefined) {
+			var rows = this.filterRoleAssignments(self.roleAssignments.list, options.filters.teamMember.textSearch);
+			result.list = rows;
+			result.totalCount = rows.length;
+		}
+
+		result.list = _sdDataTableHelperService.columnSort(options, result.list);
+		result.list = _sdDataTableHelperService.paginate(options, result.list);
 		return result;
 
 	};
+
+	/**
+	 * 
+	 * @param list
+	 * @param textSearch
+	 * @returns
+	 */
+	RoleAssignmentCtrl.prototype.filterRoleAssignments = function(list, textSearch) {
+		var rows = _filter('filter')(list, function(item, index) {
+			var newTextSearch = textSearch.replaceAll("*", ".*");
+			return item.teamMember.match(new RegExp('^' + newTextSearch, "i"));
+		}, true);
+
+		return rows;
+
+	};
+
+	/**
+	 * 
+	 */
+	String.prototype.replaceAll = function(str1, str2, ignore) {
+		return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g, "\\$&"), (ignore
+				? "gi"
+				: "g")), (typeof (str2) == "string") ? str2.replace(/\$/g, "$$$$") : str2);
+	}
 
 	/**
 	 * 
@@ -117,17 +151,17 @@
 			return 'No';
 		}
 	};
-	
+
 	/**
 	 * 
 	 */
-	
+
 	RoleAssignmentCtrl.prototype.preferenceDelegate = function(prefInfo) {
-		var preferenceStore = _sdPreferenceService.getStore(prefInfo.scope,
-				'ipp-business-control-center', 'preference'); // Override
-		preferenceStore.marshalName = function(scope) { 
-			return "ipp-business-control-center.roleAssignment.selectedColumns"; 
+		var preferenceStore = _sdPreferenceService
+				.getStore(prefInfo.scope, 'ipp-business-control-center', 'preference'); // Override
+		preferenceStore.marshalName = function(scope) {
+			return "ipp-business-control-center.roleAssignment.selectedColumns";
 		}
-		return preferenceStore; 
+		return preferenceStore;
 	};
 })();

@@ -18,7 +18,11 @@
 			<thead
 				sda-i18n-scope="business-control-center-messages.views-common-column">
 				<tr>
-					<th sda-name="teamMember" sda-fixed="true" sda-sortable="true"></th>
+					<th sda-name="teamMember" sda-fixed="true" sda-sortable="true">
+					   <div sda-filter-template>
+						<div sd-text-search-filter></div>
+					   </div>
+					</th>
 					<th ng-repeat="obj in ctrl.columns" sda-name="{{ctrl.columnsLabelMap[obj]}}"
 						sda-label="{{obj}}" sda-visible="true"></th>
 				</tr>

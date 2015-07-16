@@ -15,12 +15,11 @@
 (function() {
 	'use strict';
 
-	angular.module("bcc-ui")
-			.controller(
-					'sdProcessResourceMgmtCtrl',
-					[ '$q', '$filter', 'sdProcessResourceMgmtService', 'sdLoggerService', 'sdViewUtilService',
-							'sdCommonViewUtilService', 'sdLoggedInUserService', 'sdPreferenceService',
-							ProcessResourceMgmtCtrl ]);
+	angular.module("bcc-ui").controller(
+			'sdProcessResourceMgmtCtrl',
+			['$q', '$filter', 'sdProcessResourceMgmtService', 'sdLoggerService', 'sdViewUtilService',
+					'sdCommonViewUtilService', 'sdLoggedInUserService', 'sdPreferenceService',
+					'sdDataTableHelperService', ProcessResourceMgmtCtrl]);
 
 	var _q;
 	var _filter;
@@ -30,12 +29,13 @@
 	var _sdCommonViewUtilService
 	var _sdLoggedInUserService;
 	var _sdPreferenceService;
+	var _sdDataTableHelperService;
 
 	/**
 	 * 
 	 */
 	function ProcessResourceMgmtCtrl($q, $filter, sdProcessResourceMgmtService, sdLoggerService, sdViewUtilService,
-			sdCommonViewUtilService, sdLoggedInUserService, sdPreferenceService) {
+			sdCommonViewUtilService, sdLoggedInUserService, sdPreferenceService, sdDataTableHelperService) {
 		trace = sdLoggerService.getLogger('bcc-ui.sdProcessResourceMgmtCtrl');
 		_q = $q;
 		_filter = $filter;
@@ -44,6 +44,7 @@
 		_sdCommonViewUtilService = sdCommonViewUtilService;
 		_sdLoggedInUserService = sdLoggedInUserService;
 		_sdPreferenceService = sdPreferenceService;
+		_sdDataTableHelperService = sdDataTableHelperService;
 
 		this.rolesTable = null;
 		this.usersTable = null;
@@ -52,26 +53,52 @@
 		this.exportFileNameForUsers = "Users"
 		this.rowSelectionForRoles = null;
 		this.rowSelectionForUsers = null;
-		this.showRolesTable = true;
+
+		this.getProcessResourceRolesData();
+
 	}
+
+	ProcessResourceMgmtCtrl.prototype.getProcessResourceRolesData = function() {
+		var self = this;
+		_sdProcessResourceMgmtService.getProcessResourceRoles().then(function(data) {
+			self.processResourceRoleList = data.processResourceRoleList;
+
+			_sdProcessResourceMgmtService.getProcessResourceUsers().then(function(data) {
+				self.processResourceUserList = data.processResourceUserList;
+					self.showRolesTable = true;
+					self.showUsersTable = true;
+			}, function(error) {
+				trace.log(error);
+			});
+		}, function(error) {
+			trace.log(error);
+		});
+	};
 
 	/**
 	 * 
 	 * @returns
 	 */
-	ProcessResourceMgmtCtrl.prototype.getProcessResourceRoles = function() {
+	ProcessResourceMgmtCtrl.prototype.getProcessResourceRoles = function(options) {
 		var deferred = _q.defer();
 		var self = this;
-		_sdProcessResourceMgmtService.getProcessResourceRoles().then(function(data) {
-			deferred.resolve(data.processResourceRoleList);
-			self.showUsersTable = true;
-			if (self.usersTable != undefined) {
-				self.usersTable.refresh();
-			}
-		}, function(error) {
-			trace.log(error);
-			deferred.reject(error);
-		});
+
+		var result = {
+			list : [],
+			totalCount : self.processResourceRoleList.length
+		}
+		if (options.filters != undefined) {
+			var rows = this.filterRolesArray(self.processResourceRoleList, options.filters.name.textSearch);
+			result.list = rows;
+			result.totalCount = rows.length;
+		} else {
+			result.list = self.processResourceRoleList;
+		}
+
+		result.list = _sdDataTableHelperService.columnSort(options, result.list);
+		result.list = _sdDataTableHelperService.paginate(options, result.list);
+
+		deferred.resolve(result);
 		return deferred.promise;
 	};
 
@@ -111,22 +138,52 @@
 	 * 
 	 */
 	String.prototype.replaceAll = function(str1, str2, ignore) {
-		return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g, "\\$&"),
-				(ignore ? "gi" : "g")), (typeof (str2) == "string") ? str2.replace(/\$/g, "$$$$") : str2);
+		return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g, "\\$&"), (ignore
+				? "gi"
+				: "g")), (typeof (str2) == "string") ? str2.replace(/\$/g, "$$$$") : str2);
 	}
 
 	/**
 	 * 
 	 * @returns
 	 */
-	ProcessResourceMgmtCtrl.prototype.getProcessResourceUsers = function() {
-		var deferred = _q.defer();
+	ProcessResourceMgmtCtrl.prototype.getProcessResourceUsersData = function() {
 		_sdProcessResourceMgmtService.getProcessResourceUsers().then(function(data) {
-			deferred.resolve(data.processResourceUserList);
+			self.processResourceUserList = data.processResourceUserList;
+
+			if (self.usersTable != undefined) {
+				self.usersTable.refresh();
+			} else {
+				self.showUsersTable = true;
+			}
 		}, function(error) {
 			trace.log(error);
-			deferred.reject(error);
 		});
+	};
+
+	/**
+	 * 
+	 * @returns
+	 */
+	ProcessResourceMgmtCtrl.prototype.getProcessResourceUsers = function(options) {
+		var deferred = _q.defer();
+		var self = this;
+		var result = {
+			list : [],
+			totalCount : self.processResourceUserList.length
+		}
+		if (options.filters != undefined) {
+			var rows = this.filterUsersArray(self.processResourceUserList, options.filters.userName.textSearch);
+			result.list = rows;
+			result.totalCount = rows.length;
+		} else {
+			result.list = self.processResourceUserList;
+			//result.totalCount = self.processResourceUserList.length;
+		}
+
+		result.list = _sdDataTableHelperService.columnSort(options, result.list);
+		result.list = _sdDataTableHelperService.paginate(options, result.list);
+		deferred.resolve(result);
 		return deferred.promise;
 	};
 
@@ -135,7 +192,9 @@
 	 */
 	ProcessResourceMgmtCtrl.prototype.refresh = function() {
 		var self = this;
-		self.rolesTable.refresh();
+		self.showRolesTable = false;
+		self.showUsersTable = false;
+		self.getProcessResourceRolesData();
 	};
 
 	/**
@@ -166,7 +225,8 @@
 	 */
 
 	ProcessResourceMgmtCtrl.prototype.preferenceDelegateForRolesTable = function(prefInfo) {
-		var preferenceStore = _sdPreferenceService.getStore(prefInfo.scope, 'ipp-business-control-center', 'preference'); // Override
+		var preferenceStore = _sdPreferenceService
+				.getStore(prefInfo.scope, 'ipp-business-control-center', 'preference'); // Override
 		preferenceStore.marshalName = function(scope) {
 			return "ipp-business-control-center.ProcessResourceRoleMgmt.selectedColumns";
 		}
@@ -174,7 +234,8 @@
 	};
 
 	ProcessResourceMgmtCtrl.prototype.preferenceDelegateForUsersTable = function(prefInfo) {
-		var preferenceStore = _sdPreferenceService.getStore(prefInfo.scope, 'ipp-business-control-center', 'preference'); // Override
+		var preferenceStore = _sdPreferenceService
+				.getStore(prefInfo.scope, 'ipp-business-control-center', 'preference'); // Override
 		preferenceStore.marshalName = function(scope) {
 			return "ipp-business-control-center.ProcessResourceUserMgmt.selectedColumns";
 		}
