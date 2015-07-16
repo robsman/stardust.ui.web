@@ -38,21 +38,21 @@
 		
 	 <br/>
 	<div style="padding-top: 15px;">
-		<button class="button primary"  aid="ADM-PrefMngrView-SearchBtn" ng-click="ctrl.filterTable()">{{i18n('admin-portal-messages.views-prefManagerBean-searchPrefStore-label')}}
+		<button class="button primary"  aid="ADM-PrefMngrView-SearchBtn" ng-click="ctrl.search();">{{i18n('admin-portal-messages.views-prefManagerBean-searchPrefStore-label')}}
 		</button>
 	</div>
 	<br />
-	<div>
+	<div ng-if="ctrl.dataReady">
 		<!-- Preferences Table -->
 		<table sd-data-table="ctrl.dataTable"  aid="ADM-PrefMngrView-PreferenceMngrTable"
-			sd-data="ctrl.fetchPreferences(params)" sda-mode="local"
-			 sda-selectable="row" sda-no-pagination="true"
+			sd-data="ctrl.fetchPreferences(params)" sda-mode="remote"  sda-sortable="true" 
+			 sda-no-pagination="true" sda-page-size="{{ctrl.data.totalCount}}"  sda-sort-by="{name : 'moduleId' , dir : 'asc'}" 
 			 sda-exports="true" sda-exports-file-name="Preference store manager">
 			<thead sda-i18n-scope="admin-portal-messages.views-prefManagerBean">
 				<tr>
 					<th sda-name="scope"
 						sda-label-key="scope-label"
-						sda-sortable="true" sda-filterable="false">
+						sda-sortable="false" sda-filterable="false">
 					</th>
 					<th sda-name="moduleId"
 						sda-label-key="moduleId-label"
@@ -68,7 +68,7 @@
 					</th>
 					<th sda-name="preferenceValue"
 						sda-label-key="preferenceValue-label"
-						sda-sortable="true" sda-filterable="false">
+						sda-sortable="false" sda-filterable="false">
 					</th>
 				</tr>
 			</thead>

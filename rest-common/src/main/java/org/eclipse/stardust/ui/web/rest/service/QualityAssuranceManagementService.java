@@ -106,8 +106,6 @@ public class QualityAssuranceManagementService
          qualityAssuranceAdminService = ServiceFactoryUtils.getQualityCheckAdminServiceFacade();
       }
 
-      ServiceFactoryUtils.getQualityCheckAdminServiceFacade();
-
       List<QualityAssuranceActivityDTO> activityEntries = CollectionUtils.newList();
       trace.debug("Getting QA activities for obsolete Activities :" + showObsoleteActivities);
       if (showObsoleteActivities) // Show old model's activities
