@@ -751,7 +751,7 @@
 		              //this will not be the scope you might first assume for menu events,
 		              //srcScope in that instance will be from the treeMenu directive not
 		              //the sdTree node.
-		              data.srcScope = angular.element(e.srcElement).scope();
+		              data.srcScope = angular.element(e.srcElement || e.target).scope();
 		              //invoke user callback
 		              rootCtrl.api.eventCallback({data:data,e:e});
 	              }
