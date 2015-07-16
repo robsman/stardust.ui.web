@@ -626,7 +626,7 @@
 				var dataType = colDef.dataType.toLowerCase();
 				if (dataType === 'int') {
 					clazz = 'tbl-col-align-center tbl-col-no-wrap';
-				} else if (dataType === 'dateTime' || dataType === 'date' || dataType === 'time') {
+				} else if (dataType === 'datetime' || dataType === 'date' || dataType === 'time') {
 					clazz = 'tbl-col-align-center tbl-col-no-wrap';
 				} else if (dataType === 'boolean') {
 					clazz = 'tbl-col-align-center';
