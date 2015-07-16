@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.rest.service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
@@ -53,6 +54,6 @@ public interface ParticipantService
     * @param usersToBeRemoved
     * @return
     */
-   public List<ParticipantDTO> modifyParticipant(HashSet<String> participants, HashSet<String> usersToBeAdded,
-         HashSet<String> usersToBeRemoved);
+   public Map<String, List<ParticipantDTO>> modifyParticipant(HashSet<String> participants,
+         HashSet<String> usersToBeAdded, HashSet<String> usersToBeRemoved);
 }

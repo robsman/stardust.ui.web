@@ -29,6 +29,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantService;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
@@ -65,7 +66,7 @@ public class ParticipantResource
          throw new ClientErrorException(Response.Status.BAD_REQUEST);
       }
 
-      HashSet<String> participant = new HashSet<String>((Collection< ? extends String>) grantsMap.get("participants"));
+      HashSet<String> participants = new HashSet<String>((Collection< ? extends String>) grantsMap.get("participants"));
       HashSet<String> usersToBeAdded = null;
       if (grantsMap.get("add") != null)
       {
@@ -78,10 +79,10 @@ public class ParticipantResource
          usersToBeRemoved = new HashSet<String>((Collection< ? extends String>) grantsMap.get("remove"));
       }
 
-      List<ParticipantDTO> participants = participantService.modifyParticipant(participant, usersToBeAdded,
-            usersToBeRemoved);
+      Map<String, List<ParticipantDTO>> participantDTOs = participantService.modifyParticipant(participants,
+            usersToBeAdded, usersToBeRemoved);
 
-      return Response.ok(AbstractDTO.toJson(participants), MediaType.APPLICATION_JSON).build();
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(participantDTOs), MediaType.APPLICATION_JSON).build();
    }
 
    // get sub-participants for give participant Id

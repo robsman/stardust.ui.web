@@ -361,7 +361,6 @@
     this.treeApi = {};
     this.selectedItem = {};
     this.lastEvent = {};
-    this.selectedUsers = [];
   }
 
   ParticipantManagementCtrl.prototype.iconCallback = function(item) {
@@ -431,9 +430,19 @@
       }
     } else if (data.treeEvent === "node-dragend" || data.treeEvent === "node-drop") {
       // access srcScope for item in this case as
+      // ?? not sure how to use scrScope
       console.log("Drag-Drop");
-      console.log(data.srcScope.nodeItem);
-      console.log("----------------------");
+
+      var participants = [];
+      participants.push(data.valueItem);
+
+      _sdParticipantManagementService.saveParticipants(participants, this.rowSelectionForAllUsersTable).then(
+              function(data) {
+                // update the tree with server response
+
+              }, function() {
+
+              });
     } else if (data.treeEvent === "menu-test") {
       console.log("Menu Event");
       console.log(this.treeApi.childNodes[data.nodeId].nodeItem);

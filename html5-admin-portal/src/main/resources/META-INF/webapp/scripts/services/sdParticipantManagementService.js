@@ -179,30 +179,57 @@
     // Roles
     ParticipantManagementService.prototype.getModels = function() {
       var restUrl = sdUtilService.getBaseUrl() + "services/rest/portal/models?includePredefinedModel=true";
-      var participantSearchResult = $resource(restUrl);
+      var modelsResource = $resource(restUrl);
 
-      return participantSearchResult.query().$promise;
+      return modelsResource.query().$promise;
     };
 
     // get Sub-Participants for provided participants
     ParticipantManagementService.prototype.getSubParticipants = function(participant) {
-      var participantId = participant.qualifiedId;
-      if (participant.type == "DEPARTMENT") {
-        participantId = participant.parentQualifiedId + "[" + participant.id + "]";
-      } else if ("DEPARTMENT_DEFAULT" == participant.type) {
-        participantId = participant.qualifiedId + "[]";
-      } else if (participant.parentQualifiedId) {
-        participantId = participant.parentQualifiedId + participant.qualifiedId;
+      var participantId = encodeURIComponent(getParticipatUiId(participant));
+      var restUrl = sdUtilService.getBaseUrl() + "services/rest/portal/participants/" + participantId;
+      var participantResource = $resource(restUrl);
+      return participantResource.query().$promise;
+    };
+
+    // get Sub-Participants for provided participants
+    ParticipantManagementService.prototype.saveParticipants = function(participants, addUsers, removeUsers) {
+      var data = {};
+      data.participants = [];
+      data.add = null;
+      data.remove = null;
+
+      for (var i = 0; i < participants.length; i++) {
+        data.participants.push(getParticipatUiId(participants[i]));
       }
 
-      participantId = encodeURIComponent(participantId);
+      if (addUsers) {
+        data.add = [];
+        for (var i = 0; i < addUsers.length; i++) {
+          // add realm later
+          data.add.push(addUsers[i].account);
+        }
+      }
+      if (removeUsers) {
+        data.remove = [];
+        for (var i = 0; i < removeUsers.length; i++) {
+          // add realm later
+          data.remove.push(removeUsers[i].account);
+        }
+      }
 
-      var restUrl = sdUtilService.getBaseUrl() + "services/rest/portal/participants/" + participantId;
+      var restUrl = sdUtilService.getBaseUrl() + "services/rest/portal/participants/";
+      var participantResource = $resource(restUrl);
 
-      var participantSearchResult = $resource(restUrl);
-
-      return participantSearchResult.query().$promise;
+      return participantResource.save({}, data).$promise;
     };
+
   }
-  ;
+
+  // prepares participantId in a contracted format
+  function getParticipatUiId(participant) {
+    if (participant.uiQualifiedId) { return participant.uiQualifiedId }
+    return participant.qualifiedId;
+  }
+
 })();

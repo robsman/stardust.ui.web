@@ -9,11 +9,14 @@
 package org.eclipse.stardust.ui.web.rest.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -137,29 +140,40 @@ public class ParticipantServiceImpl implements ParticipantService
     * TODO: userId should also contain realm in future
     */
    @Override
-   public List<ParticipantDTO> modifyParticipant(HashSet<String> participant, HashSet<String> add,
+   public Map<String, List<ParticipantDTO>> modifyParticipant(HashSet<String> participant, HashSet<String> add,
          HashSet<String> remove)
    {
       HashSet<String> allUsers = new HashSet<String>();
-      allUsers.addAll(add);
-      allUsers.addAll(remove);
+      if (CollectionUtils.isNotEmpty(add))
+      {
+         allUsers.addAll(add);
+      }
+      if (CollectionUtils.isNotEmpty(remove))
+      {
+         allUsers.addAll(remove);
+      }
 
       List<User> users = UserUtils.getUsers(allUsers, null, UserDetailsLevel.Minimal);
 
-      List<ParticipantDTO> participantDTOs = new ArrayList<ParticipantDTO>();
+      Map<String, List<ParticipantDTO>> participantsMap = new HashMap<String, List<ParticipantDTO>>();
 
       for (String participantQId : participant)
       {
          ParticipantContainer participantContainer = getParticipantContainerFromQialifiedId(participantQId);
-
          for (String userId : add)
          {
             // TODO: consider realmId
             User user = getUser(users, userId);
             addUserToModelParticipant(user, participantContainer.modelparticipant);
+
+            // retrieve the modified participants now
+            getSubParticipants(participantContainer);
          }
+         List<ParticipantDTO> participantDTOs = new ArrayList<ParticipantDTO>();
+         participantDTOs.addAll(getSubParticipants(participantContainer));
+         participantsMap.put(participantQId, participantDTOs);
       }
-      return participantDTOs;
+      return participantsMap;
    }
 
    /**
@@ -271,7 +285,7 @@ public class ParticipantServiceImpl implements ParticipantService
             // default department
             pType = ParticipantType.DEPARTMENT_DEFAULT.name();
          }
-         else if(departmentInfo == null)
+         else if (departmentInfo == null)
          {
             // department
             pType = ParticipantType.DEPARTMENT.name();
@@ -374,7 +388,7 @@ public class ParticipantServiceImpl implements ParticipantService
             qualifiedOrganizationInfo.getDepartment(), qualifiedOrganizationInfo);
 
       // Add Default Department
-      ParticipantDTO participant = getParticipant(qualifiedOrganizationInfo, participantDTOs, parentDepartment);
+      ParticipantDTO participant = getParticipant(qualifiedOrganizationInfo, participantDTOs, parentDepartment, true);
       participant.type = ParticipantType.DEPARTMENT_DEFAULT.name();
 
       // Add all Departments
@@ -423,7 +437,7 @@ public class ParticipantServiceImpl implements ParticipantService
       {
          ParticipantDTO participant = getParticipant(
                (QualifiedOrganizationInfo) ParticipantUtils.getScopedParticipant(subOrganization, department),
-               participantDTOs, department);
+               participantDTOs, department, true);
          participant.type = ParticipantType.DEPARTMENT_DEFAULT.name();
       }
 
@@ -467,7 +481,8 @@ public class ParticipantServiceImpl implements ParticipantService
       List<Organization> subOrganizations = organization.getAllSubOrganizations();
       for (Organization subOrganization : subOrganizations)
       {
-         getParticipant(ParticipantUtils.getScopedParticipant(subOrganization, department), participantDTOs, department);
+         getParticipant(ParticipantUtils.getScopedParticipant(subOrganization, department), participantDTOs,
+               department, false);
       }
    }
 
@@ -486,7 +501,7 @@ public class ParticipantServiceImpl implements ParticipantService
       List<Role> subRoles = organization.getAllSubRoles();
       for (Role subRole : subRoles)
       {
-         getParticipant(ParticipantUtils.getScopedParticipant(subRole, department), participantDTOs, department);
+         getParticipant(ParticipantUtils.getScopedParticipant(subRole, department), participantDTOs, department, false);
       }
    }
 
@@ -502,13 +517,15 @@ public class ParticipantServiceImpl implements ParticipantService
 
       if (department.getParentDepartment() != null)
       {
-         participantDTO.parentQualifiedId = getDepartmentId(department.getParentDepartment())
+         participantDTO.uiQualifiedId = getDepartmentId(department.getParentDepartment())
                + department.getOrganization().getQualifiedId();
       }
       else
       {
-         participantDTO.parentQualifiedId = department.getOrganization().getQualifiedId();
+         participantDTO.uiQualifiedId = department.getOrganization().getQualifiedId();
       }
+
+      participantDTO.uiQualifiedId += "[" + department.getId() + "]";
    }
 
    /**
@@ -518,16 +535,25 @@ public class ParticipantServiceImpl implements ParticipantService
     * @return
     */
    private ParticipantDTO getParticipant(QualifiedModelParticipantInfo qualifiedParticipantInfo,
-         List<ParticipantDTO> participantDTOs, Department parentDepartment)
+         List<ParticipantDTO> participantDTOs, Department parentDepartment, boolean defaultDepartment)
    {
       Participant participant = ParticipantUtils.getParticipant(qualifiedParticipantInfo);
       ParticipantDTO participantDTO = new ParticipantDTO(participant);
       participantDTO.type = ParticipantManagementUtils.getParticipantType(qualifiedParticipantInfo).name();
       participantDTOs.add(participantDTO);
-      participantDTO.parentQualifiedId = "";
+      participantDTO.uiQualifiedId = "";
       if (parentDepartment != null)
       {
-         participantDTO.parentQualifiedId = getDepartmentId(parentDepartment);
+         participantDTO.uiQualifiedId = getDepartmentId(parentDepartment);
+      }
+
+      if (defaultDepartment)
+      {
+         participantDTO.uiQualifiedId += qualifiedParticipantInfo.getQualifiedId() + "[]";
+      }
+      else
+      {
+         participantDTO.uiQualifiedId += qualifiedParticipantInfo.getQualifiedId();
       }
 
       return participantDTO;
