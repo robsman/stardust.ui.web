@@ -245,6 +245,16 @@ padding : 5px;;
 	font-size: 12px;
 }
 
+.delegate-icon {
+	margin-left: 5px;
+}
+
+.delegate-icon-arrow {
+	left: -8px;
+	top: -3px;
+}
+
+
 #progressBar {
 	background: none repeat scroll 0 0 #FFFFFF;
 	border: 1px solid #D9D9D9;
