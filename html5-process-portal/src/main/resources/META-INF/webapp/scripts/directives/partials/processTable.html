@@ -139,8 +139,8 @@
 						class="button-link tbl-tool-link"> {{rowData.processName}}
 					</a>
 				</td>
-				<td sda-data-type="int" style="text-align: center;" sda-field="oid"></td>
-				<td style="text-align: center; width:110px;" sda-exporter="rowData.priority.label">
+				<td sda-data-type="int" sda-field="oid"></td>
+				<td sda-data-type="int" style="width:110px;" sda-exporter="rowData.priority.label">
 					<div sd-process-priority sda-priority="rowData.priority" sda-editable="true" 
 					 sda-available-priorities ="processTableCtrl.availablePriorities" 
 					 sda-on-change ="processTableCtrl.registerNewPriority( rowData.oid, rowData.priority.value)"
@@ -160,14 +160,14 @@
 					<div sd-editor-template></div>
 				</td>
 				<td sda-field="startingUser"></td>
-				<td sda-field="startTime" sda-data-type="dateTime" style="text-align: center; white-space: nowrap;"></td>
-				<td sda-field="duration"></td>
+				<td sda-field="startTime" sda-data-type="dateTime"></td>
+				<td sda-field="duration" style="text-align: center; white-space: nowrap;"></td>
 				<td sda-field="status"></td>
 				<td sda-field="processInstanceRootOID" sda-data-type="int"></td>
-				<td sda-field="endTime" sda-data-type="dateTime" style="text-align: center; white-space: nowrap;"></td>
+				<td sda-field="endTime" sda-data-type="dateTime"></td>
 				<td sda-field="caseOwner" ></td>
 				<td ng-repeat="descCol in processTableCtrl.descritorCols"
-					 style="text-align: center; white-space: normal;"  sda-data-type="{{descCol.dataType}}" sda-exporter="processTableCtrl.getDescriptorValueForExport( rowData.descriptorValues[colData.field])">
+					 sda-data-type="{{descCol.dataType}}" sda-exporter="processTableCtrl.getDescriptorValueForExport( rowData.descriptorValues[colData.field])">
 					<div sd-descriptor-content sda-value="rowData.descriptorValues[colData.field]" sda-data-type = "colData.dataType"> </div>
 				</td>
 				

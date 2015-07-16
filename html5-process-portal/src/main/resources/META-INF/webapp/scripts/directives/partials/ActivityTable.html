@@ -133,7 +133,7 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td sda-exporter="rowData.activity.name" style="text-align: left; white-space: nowrap;">
+				<td sda-exporter="rowData.activity.name" style="white-space: nowrap;">
 					<div ng-if="activityTableCtrl.isWorklistMode();"> 
 						<a ng-if="rowData.activatable || rowData.showResubmitLink" href="#" aid="PP-ActivityTable-activate"
 						  ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$activateItem(rowData);"
@@ -158,14 +158,14 @@
 					</div>
 				</td>
 				
-				<td sda-data-type="int" style="text-align: center;">
+				<td sda-data-type="int">
 				</td>
 				
-				<td style="text-align: center;" sda-exporter="rowData.criticality.label + ' (' + rowData.criticality.value + ')'">
+				<td sda-data-type="int" sda-exporter="rowData.criticality.label + ' (' + rowData.criticality.value + ')'">
 					<div sd-activity-criticality sda-criticality="rowData.criticality"></div>
 				</td>
 				
-				<td style="text-align: center;" sda-exporter="rowData.priority.label">
+				<td sda-data-type="int" sda-exporter="rowData.priority.label">
 					<div ng-if = "!activityTableCtrl.priorityEditable" sd-process-priority sda-priority="rowData.priority" sda-editable="activityTableCtrl.priorityEditable">
 					</div>
 					<div ng-if = "activityTableCtrl.priorityEditable" sd-process-priority sda-priority="rowData.priority" sda-editable="activityTableCtrl.priorityEditable"  
@@ -179,7 +179,7 @@
 				</td>
 				
 
-				<td sda-exporter="activityTableCtrl.getDescriptorExportText(rowData.descriptorValues)" style="text-align: left;">
+				<td sda-exporter="activityTableCtrl.getDescriptorExportText(rowData.descriptorValues)">
 					<table>
 						<tr ng-repeat="desc in rowData.descriptorValues">
 							<td ng-if ="!desc.isDocument" style="white-space: nowrap;">{{desc.key}}:</td>
@@ -189,37 +189,37 @@
 					<div sd-editor-template></div>
 				</td>
 				
-				<td sda-field="startTime" sda-data-type="dateTime" style="text-align: center; white-space: nowrap;">
+				<td sda-field="startTime" sda-data-type="dateTime">
 				</td>
 				
-				<td sda-field="lastModification" sda-data-type="dateTime" style="text-align: center; white-space: nowrap;">
+				<td sda-field="lastModification" sda-data-type="dateTime">
 				</td>
 				<td sda-field="duration" style="text-align: center; white-space: nowrap;"">
 				</td>
 				
-				<td sda-field="lastPerformer" ng-if ="activityTableCtrl.isWorklistMode();" style="text-align: left;">
+				<td sda-field="lastPerformer" ng-if ="activityTableCtrl.isWorklistMode();">
 				</td>
 				
-				<td sda-field="processInstance.processName" style="text-align: left;">
+				<td sda-field="processInstance.processName">
 				</td>
 				
-				<td ng-if ="activityTableCtrl.isActivityTableMode();" sda-data-type="int" sda-field="processInstance.oid" style="text-align: center; white-space: nowrap;">
+				<td ng-if ="activityTableCtrl.isActivityTableMode();" sda-data-type="int" sda-field="processInstance.oid">
 				</td>
 				
-				<td sda-field="status.label" style="text-align:left;">
+				<td sda-field="status.label">
 				</td>
 				
-				<td sda-field="assignedTo" style="text-align: left;">
+				<td sda-field="assignedTo">
 				</td>
 				
-				<td sda-field="completedBy" style="text-align: left;" ng-if ="activityTableCtrl.isActivityTableMode();">
+				<td sda-field="completedBy" ng-if ="activityTableCtrl.isActivityTableMode();">
 				</td>
 				
-				<td ng-if ="activityTableCtrl.isActivityTableMode();"  sda-field="participantPerformer" style="text-align: left;">
+				<td ng-if ="activityTableCtrl.isActivityTableMode();"  sda-field="participantPerformer">
 				</td>
 				
 				<td sda-column="DESCRIPTOR_COLUMNS" ng-repeat="descCol in activityTableCtrl.descriptorCols" sda-data-type="{{descCol.dataType}}" 
-					sda-exporter="activityTableCtrl.getDescriptorValueForExport( rowData.descriptorValues[colData.field])" style="text-align: center; white-space: normal;">
+					sda-exporter="activityTableCtrl.getDescriptorValueForExport( rowData.descriptorValues[colData.field])">
 					<div sd-descriptor-content sda-value="rowData.descriptorValues[colData.field]" sda-data-type ="colData.dataType"> </div>
 				</td>
 				
