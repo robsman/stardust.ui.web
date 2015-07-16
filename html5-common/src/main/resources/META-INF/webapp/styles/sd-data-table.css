@@ -144,6 +144,22 @@
    margin-bottom: 10px;
 }
 
+.tbl-col-align-left {
+	text-align: left;
+}
+
+.tbl-col-align-center {
+	text-align: center;
+}
+
+.tbl-col-align-right {
+	text-align: right;
+}
+
+.tbl-col-no-wrap {
+	white-space: nowrap;	
+}
+
 /* ********** Table Column Selector ********** */
 
 .tbl-col-sel-row {

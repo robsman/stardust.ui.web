@@ -619,6 +619,26 @@
 		/*
 		 * 
 		 */
+		function getCellAlignmentClass(colDef) {
+			var clazz = 'tbl-col-align-left';
+
+			if (colDef.dataType && colDef.dataType != '') {
+				var dataType = colDef.dataType.toLowerCase();
+				if (dataType === 'int') {
+					clazz = 'tbl-col-align-center tbl-col-no-wrap';
+				} else if (dataType === 'dateTime' || dataType === 'date' || dataType === 'time') {
+					clazz = 'tbl-col-align-center tbl-col-no-wrap';
+				} else if (dataType === 'boolean') {
+					clazz = 'tbl-col-align-center';
+				}
+			}
+			
+			return clazz;
+		}
+
+		/*
+		 * 
+		 */
 		function buildDataTableInformation() {
 			trace.log(theTableId + ': Building table information...');
 
@@ -1171,13 +1191,12 @@
 				}
 
 				cell = angular.element(cell);
-				if (visibleOrderedCols[i].cellClass && visibleOrderedCols[i].cellClass != '') {
-					var value = cell.attr('class');
-					value = value ? (value.trim() + ' ') : '';
-					value += visibleOrderedCols[i].cellClass;
-					cell.attr('class', value);
-				}
 
+				// Class Attribute
+				addClass(cell, getCellAlignmentClass(visibleOrderedCols[i]));
+				addClass(cell, visibleOrderedCols[i].cellClass);
+
+				// Style Attribute
 				if (visibleOrderedCols[i].cellStyle && visibleOrderedCols[i].cellStyle != '') {
 					var value = cell.attr('style');
 					value = value ? (value.trim()) : '';
@@ -1202,6 +1221,18 @@
 			rowScope.$odd = !(rowScope.$even = (dataIndex & 1) === 0);
 			
 			$compile(row)(rowScope);
+		}
+
+		/*
+		 * 
+		 */
+		function addClass(elem, clazz) {
+			if (clazz && clazz != '') {
+				var value = elem.attr('class');
+				value = value ? (value.trim() + ' ') : '';
+				value += clazz;
+				elem.attr('class', value);
+			}
 		}
 
 		/*
