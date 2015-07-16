@@ -434,7 +434,7 @@
       console.log("Drag-Drop");
 
       var participants = [];
-      participants.push(data.valueItem);
+      participants.push(data.srcScope.nodeItem);
 
       _sdParticipantManagementService.saveParticipants(participants, this.rowSelectionForAllUsersTable).then(
               function(data) {
@@ -478,6 +478,12 @@
       }
       that.rowSelectionForAllUsersTable.push(data);
     }
+  }
+
+  // check if it is a leaf node
+  ParticipantManagementCtrl.prototype.isLeaf = function(item) {
+    if (item.type === "USER") { return true; }
+    return false;
   }
 
 })();

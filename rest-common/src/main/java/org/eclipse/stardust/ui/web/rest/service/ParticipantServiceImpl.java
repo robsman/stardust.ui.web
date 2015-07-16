@@ -164,10 +164,16 @@ public class ParticipantServiceImpl implements ParticipantService
          {
             // TODO: consider realmId
             User user = getUser(users, userId);
-            addUserToModelParticipant(user, participantContainer.modelparticipant);
-
-            // retrieve the modified participants now
-            getSubParticipants(participantContainer);
+            if (participantContainer.participantType.equals(ParticipantType.DEPARTMENT.name()))
+            {
+               addUserToModelParticipant(user,
+                     participantContainer.department
+                           .getScopedParticipant((ModelParticipant) participantContainer.modelparticipant));
+            }
+            else
+            {
+               addUserToModelParticipant(user, participantContainer.modelparticipant);
+            }
          }
          List<ParticipantDTO> participantDTOs = new ArrayList<ParticipantDTO>();
          participantDTOs.addAll(getSubParticipants(participantContainer));
