@@ -39,7 +39,7 @@
 			restrict : 'AE',
 			require : '^?sdData',
 			scope : true, // Creates a new sub scope
-			templateUrl : sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/ActivityTable.html',
+			templateUrl : sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/activityTable.html',
 			compile : function(elem, attr, transclude) {
 				processRawMarkup(elem, attr);
 
