@@ -236,6 +236,11 @@ angular.module('bpm-common.directives')
     input.on("blur",function(){
       scope.startTimer();
     });
+    
+    // Added watch to reset the auto-complete 
+    scope.$watch('dataSelected', function() {
+			scope.matchStr = '';
+	});
 
   };
           

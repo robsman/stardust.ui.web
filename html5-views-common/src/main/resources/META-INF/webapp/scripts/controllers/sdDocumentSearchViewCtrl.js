@@ -125,10 +125,8 @@
 		self.query.documentSearchCriteria.selectedFileTypes = [self.fileTypes[0].value];
 		self.query.documentSearchCriteria.selectedDocumentTypes = [self.documentTypes[0].value];
 		self.query.documentSearchCriteria.selectedRepository = [self.repositories[0].value];
-		if (self.selectedAuthors != undefined && self.selectedAuthors.length == 1) {
-			delete self.selectedAuthors;
-		}
-	}
+		self.selectedAuthors = []; //making it empty to call watch for reset.
+	};
 
 	DocumentSearchViewCtrl.prototype.getMsgParams = function() {
 		return new Date();
@@ -142,7 +140,8 @@
 	};
 
 	/**
-	 * This method is for getting the document search result by using search criteria
+	 * This method is for getting the document search result by using search
+	 * criteria
 	 * 
 	 * @param options
 	 * @returns
@@ -228,7 +227,8 @@
 			}
 
 			if (error) {
-				// validation error in search criteria, then don't perform search
+				// validation error in search criteria, then don't perform
+				// search
 				self.showDocumentSearchResult = false;
 			} else {
 				// search criteria is valid then perform search
