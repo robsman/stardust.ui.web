@@ -73,7 +73,7 @@ define(
                   provider: m_propertiesPageProvider,
                   visibility: "always",
                   pageHtmlUrl: "plugins/bpm-modeler/views/modeler/activityResubmissionPage.html",
-                  imageUrl: "plugins/bpm-modeler/images/icons/quality-assurance-code.png",
+                  imageUrl: "plugins/views-common/images/icons/activity_postponed.png",
                   title: m_i18nUtils.getProperty("modeler.activity.propertyPages.resubmission.title"),
                   html5: true
                 },
