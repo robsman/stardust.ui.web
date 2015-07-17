@@ -1079,7 +1079,7 @@ public class ActivityDetailsBean extends UIComponentBean
     */
    public void handleEvent(NoteEvent event)
    {
-      if (scopeProcessInstance.getOID() == event.getScopeProcessInstanceOid())
+      if (scopeProcessInstance != null && scopeProcessInstance.getOID() == event.getScopeProcessInstanceOid())
       {
          refreshNotes(event.getAllNotes());
       }
