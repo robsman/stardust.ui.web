@@ -9,7 +9,6 @@
 				<tr>
 					<td><input type="checkbox" ng-model="ctrl.enableResubmission"
 						ng-change="ctrl.updateEnableResubmissionOption()"
-						ng-disabled="!ctrl.isInteractive"
 						aid="activity-prop-resubmission-enable" /></td>
 					<td><label>{{ctrl.i18n('modeler.activity.propertyPages.resubmission.enableResubmission')}}</label></td>
 				</tr>
@@ -62,6 +61,14 @@
 								<option value="Y">Years</option>
 								</options>
 						</select></td>
+					</tr>
+				</table>
+				<table>
+					<tr>
+					<td><input type="checkbox" ng-model="ctrl.delegateToDefaultPerformer"
+						ng-change="ctrl.updateDelegateOption()"
+						aid="activity-prop-resubmission-delegateToDefaultPerformer" /></td>
+					<td><label>{{ctrl.i18n('modeler.activity.propertyPages.resubmission.delegateToDefaultPerformer')}}</label></td>
 					</tr>
 				</table>
 			</div>

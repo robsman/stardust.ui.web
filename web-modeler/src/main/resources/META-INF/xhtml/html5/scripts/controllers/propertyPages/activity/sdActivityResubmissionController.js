@@ -32,6 +32,7 @@
 		this.dataPath = null;
 		this.enableResubmission = false;
 		this.isInteractive = false;
+		this.delegateToDefaultPerformer = false;
 
 		$scope.$on('REFRESH_PROPERTIES_PANEL',
 				function(event, propertiesPanel) {
@@ -71,6 +72,7 @@
 				this.selectedData = null;
 				this.dataPath = null;
 			}
+			this.delegateToDefaultPerformer = reSubHandler.defaultPerformer ? reSubHandler.defaultPerformer : false;
 		} else {
 			this.enableResubmission = false;
 		}
@@ -98,7 +100,6 @@
 	 * 
 	 */
 	ActivityResubmissionController.prototype.updateUseDataOrConstantOption = function() {
-		var reSubHandler = this.modelElement.resubmissionHandler;
 		var change = {
 			useData : (this.useDataOrConstant === this.constants.RESUBMISSION_TIMER_DATA)
 		};
@@ -138,5 +139,15 @@
 		} else {
 			this.propertiesPanel.submitDisableResubmissionCommand({});
 		}
+	};
+
+	/**
+	 * 
+	 */
+	ActivityResubmissionController.prototype.updateDelegateOption = function() {
+		var change = {
+			defaultPerformer: this.delegateToDefaultPerformer
+		};
+		this.propertiesPanel.updateResubmissionHandler(change);
 	};
 })();
