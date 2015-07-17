@@ -243,8 +243,10 @@ if (!window.bpm.portal.Interaction) {
 						if (isValidTransferObject(binding)) {
 							processTransferObject(binding, arrPaths[key]);
 						} else {
-							bindingInfo.binding[bindingInfo.lastPart] = ""; // This is not valid Object, then it must be empty primitive
+							bindingInfo.binding[bindingInfo.lastPart] = ""; // This is not valid Object, then it must be empty primitive. Make it undefined or null instead?
 						}
+					} else {
+						processPrimitiveTransferObject(bindingInfo.binding, bindingInfo.lastPart, arrPaths[key]);
 					}
 				}
 			}
@@ -286,13 +288,13 @@ if (!window.bpm.portal.Interaction) {
 							if (currentPath.children) { // List of Structures
 								processTransferObject(obj[key][j], currentPath);
 							} else { // List of Primitives
-								processPrimitiveTransferObject(obj[key], j);
+								processPrimitiveTransferObject(obj[key], j, currentPath);
 							}
 						}
 					} else if (!currentPath.isPrimitive) {
 						processTransferObject(obj[key], currentPath);
 					} else if (currentPath.isPrimitive) {
-						processPrimitiveTransferObject(obj, key);
+						processPrimitiveTransferObject(obj, key, currentPath);
 					}
 				} else {
 					delete obj[key];
@@ -303,14 +305,38 @@ if (!window.bpm.portal.Interaction) {
 		/*
 		 * 
 		 */
-		function processPrimitiveTransferObject(obj, key) {
+		function processPrimitiveTransferObject(obj, key, path) {
 			if (isPrimitiveTransferObject(obj[key])) {
-				obj[key] = obj[key].toString();
+				obj[key] = convertPrimitiveAsPerDataType(obj[key].toString(), path);
 			} else {
-				obj[key] = ""; // This is not valid Primitive, then it must be empty primitive
+				obj[key] = null; // This is not valid Primitive, then it must be empty primitive
 			}
 		}
 
+		/*
+		 * 
+		 */
+		function convertPrimitiveAsPerDataType(value, path) {
+			var val = value;
+
+			try {
+				if (path.typeName == "integer" || path.typeName == "int" || path.typeName == "java.lang.Integer" || 
+						path.typeName == "short" || path.typeName == "java.lang.Short" ||
+						path.typeName == "long" || path.typeName == "java.lang.Long") {
+					val = parseInt(value);
+				} else if (path.typeName == "float" || path.typeName == "java.lang.Float" ||
+						path.typeName == "double" || path.typeName == "decimal" || path.typeName == "java.lang.Double") {
+					val = parseFloat(value);
+				} else if (path.typeName == "boolean" || path.typeName == "java.lang.Boolean") {
+					val = value == "true" ? true : false;
+				}
+			} catch (e) {
+				log(e);
+			}
+
+			return val;
+		}
+		
 		/*
 		 * 
 		 */

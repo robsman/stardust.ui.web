@@ -100,7 +100,7 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
    @Override
    public void initialize()
    {    
-      switchableProcessItems = findStartableProcessess(modelOID);
+      switchableProcessItems = findStartableProcessess();
       if (CollectionUtils.isNotEmpty(switchableProcessItems))
       {
          Collections.sort(switchableProcessItems, new Comparator<SelectItem>()
@@ -145,15 +145,6 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
       {
          if (CollectionUtils.isEmpty(sourceProcessInstances))
          {
-            return;
-         }
-
-         modelOID = ProcessInstanceUtils.getProcessModelOID(sourceProcessInstances);
-
-         if (null == modelOID)
-         {
-            showNotificationForModel();
-
             return;
          }
 
@@ -217,8 +208,6 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
             startedProcessInstances = CollectionUtils.newArrayList();
             showStartProcessView = false;
 
-            String targetProcessId = ModelUtils.extractParticipantId(selectedProcessId);
-
             if (sourceProcessInstances.size() > 1)
             {
                List<SwitchProcessTableEntry> tableEntryList = CollectionUtils.newArrayList();
@@ -229,7 +218,7 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
                   {
                      if (!nonAbortableProcesses.contains(pi))
                      {
-                        tableEntryList.add(spawnPeerProcess(pi, targetProcessId, linkComment));
+                        tableEntryList.add(spawnPeerProcess(pi, selectedProcessId, linkComment));
                      }
                   }
 
@@ -244,7 +233,7 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
                if (ProcessInstanceUtils.isAbortable(processInstance))
                {
                   ProcessInstance pi = ServiceFactoryUtils.getWorkflowService().spawnPeerProcessInstance(
-                        processInstance.getOID(), targetProcessId, true, null, true, linkComment);
+                        processInstance.getOID(), selectedProcessId, true, null, true, linkComment);
                   startedProcessInstances.add(pi);
                }
             }
@@ -511,16 +500,6 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
    }
 
    /**
-    * prepare notification messages and open NotificationMessage Dialog if models are not
-    * same
-    */
-   private void showNotificationForModel()
-   {
-      MessageDialog.addMessage(MessageType.WARNING, COMMON_MESSAGE_BEAN.getString("common.notification.title"),
-            COMMON_MESSAGE_BEAN.getString("views.switchProcessDialog.pisInDiffModels"));
-   }
-
-   /**
     * return SwitchProcessTableEntry with Abort Message and Aborted SourceProcessName
     * unauthorized SourceProcessName
     * 
@@ -619,19 +598,16 @@ public class SwitchProcessDialogBean extends PopupUIComponentBean implements ICa
    }
 
    /**
-    * return list of SelectItem for modelOID Excluding current in scope Process Definition
-    * should not be available for selection.
+    * return list of Startable Processes
     * 
-    * @param modelOID
-    * @return list of SelectItem for modelOID
+    * @return list of Startable Processes
     */
-   private List<SelectItem> findStartableProcessess(long modelOID)
+   private List<SelectItem> findStartableProcessess()
    {     
 
       List<SelectItem> items = new ArrayList<SelectItem>();
 
-      ProcessDefinitions pds = ServiceFactoryUtils.getQueryService().getProcessDefinitions(
-            ProcessDefinitionQuery.findStartable(modelOID));
+      ProcessDefinitions pds = ServiceFactoryUtils.getQueryService().getProcessDefinitions(ProcessDefinitionQuery.findStartable());
 
       Map<String, ProcessDefinition> pdMap = CollectionUtils.newHashMap();
 

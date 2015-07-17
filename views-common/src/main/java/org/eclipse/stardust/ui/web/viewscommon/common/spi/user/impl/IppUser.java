@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.viewscommon.common.spi.user.impl;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,9 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.CompareHelper;
+import org.eclipse.stardust.engine.api.model.ModelParticipant;
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
+import org.eclipse.stardust.engine.api.model.Organization;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
@@ -34,6 +37,7 @@ import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.spi.user.User;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.authorization.UiPermissionUtils;
@@ -325,4 +329,62 @@ public class IppUser implements User
       }
       return false;
    }
+   
+
+   
+   
+   /**
+    * 
+    * @param participantQualifiedId
+    * @return
+    */
+   public boolean isInOrganization(String participantQualifiedId)
+   {
+      Set<ModelParticipant> modelParticipants = getHierarchicalGrants();
+      for (ModelParticipant modelParticipant : modelParticipants)
+      {
+         if (PredefinedConstants.ADMINISTRATOR_ROLE.equals(participantQualifiedId))
+         {
+            return ippUser.isAdministrator();
+}
+         if (modelParticipant.getQualifiedId().equals(participantQualifiedId))
+         {
+            return true;
+         }
+      }
+      return false;
+   }
+
+   /**
+    * 
+    * @return
+    */
+   public Set<ModelParticipant> getHierarchicalGrants()
+   {
+      Set<ModelParticipant> allSupers = new HashSet<ModelParticipant>();
+      for (Grant grant : ippUser.getAllGrants())
+      {
+         ModelParticipant participant = (ModelParticipant) ModelCache.findModelCache().getParticipant(grant.getId());
+         allSupers.add(participant);
+         getHierarchicalGrants_(participant, allSupers);
+      }
+      return allSupers;
+   }
+
+   /**
+    * 
+    * @param modelparticipant
+    * @param allSupers
+    */
+   private void getHierarchicalGrants_(ModelParticipant modelparticipant, Set<ModelParticipant> allSupers)
+   {
+      List<Organization> list = modelparticipant.getAllSuperOrganizations();
+      for (Iterator<Organization> iterator = list.iterator(); iterator.hasNext();)
+      {
+         Organization organization = iterator.next();
+         allSupers.add(organization);
+         getHierarchicalGrants_(organization, allSupers);
+      }
+   }
+
 }

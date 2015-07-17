@@ -21,6 +21,8 @@ if (!window["BridgeUtils"]) {
 
 		var handlingTroubledConnection;
 
+		var windowHandles = {};
+
 		/*
 		 * type: i = Info, w = Warning, e = Error, d or undefined = Debug
 		 */
@@ -372,8 +374,6 @@ if (!window["BridgeUtils"]) {
 					try {
 						JSON.parse(uiCommand);
 						window.postMessage(uiCommand, "*");
-
-						window.location.hash = "";
 					} catch (e) {
 						log("uicommand is not in valid format. Needs to be JSON: " + uiCommand);
 					}
@@ -381,6 +381,27 @@ if (!window["BridgeUtils"]) {
 			}
 		}
 
+		/*
+		 * 
+		 */
+		function openWindow(url, windowName, specs, closeWindow) {
+			if (windowHandles[windowName] && !windowHandles[windowName].closed) {
+				if (closeWindow) {
+					windowHandles[windowName].close();
+				} else {
+					windowHandles[windowName].location.href = url;
+					return;
+				}
+			}
+			
+			if (specs == undefined || specs == null) {
+				specs = "";
+			}
+			windowHandles[windowName] = window.open(url, windowName, specs);
+
+			return windowHandles[windowName];
+		}
+		
 		/*
 		 * 
 		 */
@@ -412,7 +433,8 @@ if (!window["BridgeUtils"]) {
 			showHideAlertNotifications : showHideAlertNotifications,
 			showAlertNotifications : showAlertNotifications,
 			hideAlertNotifications : hideAlertNotifications,
-			processUrlParams : processUrlParams
+			processUrlParams : processUrlParams,
+			openWindow : openWindow
 		}
 	};
 } // !BridgeUtils

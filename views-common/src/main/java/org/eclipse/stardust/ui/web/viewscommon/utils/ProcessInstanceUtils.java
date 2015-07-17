@@ -612,44 +612,6 @@ public class ProcessInstanceUtils
    }
 
    /**
-    * To check that all given ProcessInstance are in same model version for Non-Case
-    * processes,return null if different modelOID else return the common ModelOID
-    * If there is only 1 process i.e Case Process, return Case ModelOID.
-    * 
-    * @return
-    */
-   public static Integer getProcessModelOID(List<ProcessInstance> processInstances)
-   {
-      Integer modelOID = null;
-      for (ProcessInstance pi : processInstances)
-      {
-         if (null == modelOID)
-         {
-            if (!pi.isCaseProcessInstance())
-            {
-               modelOID = pi.getModelOID();
-            }
-            else if (processInstances.size() == 1)
-            {
-               modelOID = pi.getModelOID();
-            }
-
-         }
-         else
-         {
-            if (!pi.isCaseProcessInstance())
-            {
-               if (modelOID != pi.getModelOID())
-               {
-                  return null;
-               }
-            }
-         }
-      }
-      return modelOID;
-   }
-   
-   /**
     * method to find root process of given processes without descriptor
     * 
     * @param sourceProcessInstances

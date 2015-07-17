@@ -443,6 +443,15 @@ public class PortalUiController
    }
    
    /**
+    * @param viewId
+    * @return
+    */
+   public boolean isViewAvailable(String viewId)
+   {
+      return null != lookupViewID(viewId);
+   }
+
+   /**
     * @return
     */
    public List<ViewDefinition> getDeclaredViews()
