@@ -11,12 +11,15 @@
 
 package org.eclipse.stardust.ui.web.modeler.upgrade.jobs;
 
+import java.util.UUID;
+
 import org.eclipse.stardust.common.config.Version;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.model.xpdl.builder.defaults.DefaultElementsInitializer;
 import org.eclipse.stardust.model.xpdl.builder.spi.ModelInitializer;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.ui.web.modeler.upgrade.UpgradeJob;
 
 public class R9_0_0from7_0_0UpgradeJob extends UpgradeJob
@@ -47,10 +50,19 @@ public class R9_0_0from7_0_0UpgradeJob extends UpgradeJob
     * on upgrade, check for each single element if a change is needed, to prevent duplicates
     */
    public ModelType upgradeModel(ModelType model)
-   {            
+   {
       ModelInitializer initializer = new DefaultElementsInitializer();
       initializer.initializeModel(model);
-      
+      checkModelUUIDs(model);
       return model;
+   }
+
+   public void checkModelUUIDs(ModelType model)
+   {
+      if (AttributeUtil.getAttribute(model, "carnot:model:uuid") == null)
+      {
+         UUID modelUUID = UUID.randomUUID();
+         AttributeUtil.setAttribute(model, "carnot:model:uuid", modelUUID.toString());
+      }
    }
 }
