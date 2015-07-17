@@ -21,14 +21,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.springframework.stereotype.Component;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.Daemon;
-import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DaemonDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Subodh.Godbole
@@ -52,7 +52,10 @@ public class DaemonsResource
       {
          List<Daemon> daemons = serviceFactoryUtils.getAdministrationService().getAllDaemons(true);
          List<DaemonDTO> daemonsDto = DTOBuilder.buildList(daemons, DaemonDTO.class);
-         return Response.ok(AbstractDTO.toJson(daemonsDto), MediaType.APPLICATION_JSON).build();
+         QueryResultDTO result = new QueryResultDTO();
+         result.list = daemonsDto;
+         result.totalCount = daemonsDto.size();
+         return Response.ok(result.toJson(), MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {

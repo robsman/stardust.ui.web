@@ -39,7 +39,7 @@
 		 * 
 		 */
 		DaemonService.prototype.fetchDaemons = function() {
-			return $resource(REST_BASE_URL + "/all").query().$promise;
+			return $resource(REST_BASE_URL + "/all").get().$promise;
 		}
 
 		/*

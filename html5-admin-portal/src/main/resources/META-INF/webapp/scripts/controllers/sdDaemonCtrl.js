@@ -15,44 +15,53 @@
 (function() {
 	'use strict';
 
-	angular.module('admin-ui').controller('sdDaemonCtrl',
-			[ 'sdDaemonService', 'sdLoggedInUserService', 'sgI18nService', '$filter', '$q' ,controller ]);
+	angular.module('admin-ui').controller(
+			'sdDaemonCtrl',
+			['sdDaemonService', 'sdLoggedInUserService', 'sgI18nService', '$filter', '$q', 'sdDataTableHelperService',
+					'sdLoggerService', controller]);
 
 	var _sdDaemonService;
 	var _sdLoggedInUserService;
 	var _sgI18nService;
 	var _filter;
 	var _q;
+	var _sdDataTableHelperService;
+	var trace;
 
 	/*
 	 * 
 	 */
-	function controller(sdDaemonService,sdLoggedInUserService, sgI18nService, $filter, $q) {
+	function controller(sdDaemonService, sdLoggedInUserService, sgI18nService, $filter, $q, sdDataTableHelperService,
+			sdLoggerService) {
 		_sdDaemonService = sdDaemonService;
 		_sdLoggedInUserService = sdLoggedInUserService;
 		_sgI18nService = sgI18nService;
 		_filter = $filter;
 		_q = $q;
-		
+		_sdDataTableHelperService = sdDataTableHelperService;
+		trace = sdLoggerService.getLogger('admin-ui.sdDaemonCtrl');
+
 		this.initialize();
 
-		this.data = {};
+		// this.data = {};
 		this.lookup = {};
 
-		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ?  'admin' : true; 
+		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
+		this.fetchDaemonsData();
 	}
 
 	/*
 	 * 
 	 */
 	controller.prototype.getDaemonTypeLabel = function(key) {
-		var keyPrefix  = "admin-portal-messages.views-daemons";
+		var keyPrefix = "admin-portal-messages.views-daemons";
 		var keySuffix = "label";
 		var hyphen = "-";
-		//Replace charcter '.' and '_' with nothing
+		// Replace charcter '.' and '_' with nothing
 		key = key.replace(/\.|_/g, "");
 		var words = ["calendar", "daemon", "trigger"];
-		for (var i in words) { // Capitalize first character of above words if found.
+		for ( var i in words) { // Capitalize first character of above words if
+			// found.
 			key = key.replace(words[i], words[i].charAt(0).toUpperCase() + words[i].slice(1));
 		}
 		key = keyPrefix + hyphen + key + hyphen + keySuffix;
@@ -63,41 +72,61 @@
 	 * 
 	 */
 	controller.prototype.getDaemonStatus = function(daemon) {
-		return (daemon.running) ? _sgI18nService.translate('admin-portal-messages.views-daemons-status-column-running', 'Running')
-								: _sgI18nService.translate('admin-portal-messages.views-daemons-status-column-stopped', 'Stopped');
+		return (daemon.running) ? _sgI18nService.translate('admin-portal-messages.views-daemons-status-column-running',
+				'Running') : _sgI18nService.translate('admin-portal-messages.views-daemons-status-column-stopped',
+				'Stopped');
 	}
 
 	/*
 	 * 
 	 */
-	controller.prototype.fetchDaemons = function() {
-		var deferred = _q.defer();
+	controller.prototype.fetchDaemonsData = function() {
 		var self = this;
 		_sdDaemonService.fetchDaemons().then(function(data) {
 			self.data = data;
-			for (var i = 0, len = data.length; i < len; i++) {
-			    self.lookup[data[i].type] = i;
+			if (self.daemonDataTable != null) {
+				self.daemonDataTable.refresh();
+			} else {
+				self.showDaemonTable = true;
 			}
-			deferred.resolve(self.data);
+
 		}, function(error) {
 			trace.log(error);
-			deferred.reject(error);
 		});
-		return deferred.promise;
+	};
+
+	/*
+	 * 
+	 */
+	controller.prototype.fetchDaemons = function(options) {
+		var self = this;
+		var result = {
+			list : self.data.list,
+			totalCount : self.data.totalCount
+		}
+		result.list = _sdDataTableHelperService.columnSort(options, result.list);
+
+		for (var i = 0, len = result.list.length; i < len; i++) {
+			self.lookup[result.list[i].type] = i;
+		}
+
+		return result;
 	};
 
 	/*
 	 * 
 	 */
 	controller.prototype.initialize = function() {
-		this.daemonDataTable = null; // This will be set to underline data table instance automatically
+		this.daemonDataTable = null; // This will be set to underline data
+		// table instance automatically
 	}
 
 	/*
 	 * 
 	 */
 	controller.prototype.refresh = function() {
-		this.daemonDataTable.refresh(true);
+		//this.showDaemonTable = false;
+		this.fetchDaemonsData();
 	};
 
 	/*
@@ -111,7 +140,7 @@
 			});
 		}
 	};
-	
+
 	/*
 	 * 
 	 */
@@ -123,7 +152,7 @@
 			});
 		}
 	};
-	
+
 	/*
 	 * 
 	 */
@@ -131,6 +160,10 @@
 		var itemRowIndex = this.lookup[resultDaemon.type];
 		var tableDaemonData = this.daemonDataTable.getData(itemRowIndex);
 		tableDaemonData.running = resultDaemon.running;
+		tableDaemonData.startTime = resultDaemon.startTime;
+		tableDaemonData.lastExecutionTime = resultDaemon.lastExecutionTime;
+		//tableDaemonData.acknowledgementState = resultDaemon.acknowledgementState;
+		tableDaemonData.daemonExecutionState = resultDaemon.daemonExecutionState;
 	};
-	
+
 })();
