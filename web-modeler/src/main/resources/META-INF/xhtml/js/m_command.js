@@ -258,6 +258,18 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
       createCommand : function(commandType, modelId, uuid, changes) {
         return new ChangeDescriptor(commandType, modelId, [{uuid: uuid, changes: changes}]);
      },
+     createEnableResubmissionCommand : function(modelId, activityUUID, changes) {
+         return new ChangeDescriptor("resubmission.enable", modelId, [ {
+            uuid : activityUUID,
+            changes : changes
+         } ]);
+     },
+     createDisableResubmissionCommand : function(modelId, activityUUID, changes) {
+         return new ChangeDescriptor("resubmission.disable", modelId, [ {
+            uuid : activityUUID,
+            changes : changes
+         } ]);
+     },
    };
 
    /**

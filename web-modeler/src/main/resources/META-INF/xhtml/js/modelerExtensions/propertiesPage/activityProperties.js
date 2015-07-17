@@ -69,6 +69,16 @@ define(
                 },
                 {
                   panelId: "activityPropertiesPanel",
+                  id: "resubmissionPage",
+                  provider: m_propertiesPageProvider,
+                  visibility: "always",
+                  pageHtmlUrl: "plugins/bpm-modeler/views/modeler/activityResubmissionPage.html",
+                  imageUrl: "plugins/bpm-modeler/images/icons/quality-assurance-code.png",
+                  title: m_i18nUtils.getProperty("modeler.activity.propertyPages.resubmission.title"),
+                  html5: true
+                },
+                {
+                  panelId: "activityPropertiesPanel",
                   id: "commentsPropertiesPage",
                   pageHtmlUrl: "plugins/bpm-modeler/views/modeler/modelElementCommentsPropertiesPage.html",
                   provider: m_modelElementCommentsPropertiesPage,

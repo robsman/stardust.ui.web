@@ -655,6 +655,36 @@ define(
 				/**
 				 * 
 				 */
+				PropertiesPanel.prototype.submitEnableResubmissionCommand = function(changes) {
+					m_commandsController.submitCommand(m_command
+							.createEnableResubmissionCommand(
+									this.getModel().id, this.element.modelElement.uuid,
+									changes));
+				};
+
+				/**
+				 * 
+				 */
+				PropertiesPanel.prototype.submitDisableResubmissionCommand = function(changes) {
+					m_commandsController.submitCommand(m_command
+							.createDisableResubmissionCommand(
+									this.getModel().id, this.element.modelElement.uuid,
+									changes));
+				};
+
+				/**
+				 * 
+				 */
+				PropertiesPanel.prototype.updateResubmissionHandler = function(changes) {
+					m_commandsController.submitCommand(m_command
+							.createUpdateModelElementCommand(
+									this.getModel().id, this.element.modelElement.resubmissionHandler.oid,
+									changes));
+				};
+
+				/**
+				 * 
+				 */
 				PropertiesPanel.prototype.submitChangesWithUUID = function(changes) {
           m_utils.debug("Changes to be submitted for UUID "
               + this.getElementUuid() + ":");
