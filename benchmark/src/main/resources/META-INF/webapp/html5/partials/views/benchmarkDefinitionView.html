@@ -4,7 +4,10 @@
 	 sg-stretch-to-bottom>
 	 
 	<!-- Markup for our sdDialog Directives -->
-
+	
+	<div sd-data-drag ng-model="ctrl.selectedBenchmark">Div Drag me</div>
+	<a href="" sd-data-drag ng-model="ctrl.selectedBenchmark">AnchorDrag me</a>
+	
 	<!-- Delete Confirmation -->
 	<div sd-dialog="ctrl.deleteDialog"
 		 sda-title="Confirm"
@@ -259,7 +262,7 @@
 			          <li sd-tree-node
 			          	  ng-show="ctrl.showAllTreeNodes===true || process.auxillary===false"
 			              sda-is-leaf="process.activities.length==0"
-			              sda-label="process.name + ':' + process.auxillary"
+			              sda-label="process.name"
 			              sda-node-id="process.nodeId"
 			              ng-repeat="process in model.processDefinitions">
 			            <ul>
