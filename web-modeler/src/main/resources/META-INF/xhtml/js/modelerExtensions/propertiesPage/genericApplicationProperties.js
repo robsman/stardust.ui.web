@@ -8,11 +8,21 @@
  * documentation
  ******************************************************************************/
 
-define([ 'bpm-modeler/js/m_modelElementCommentsPropertiesPage',
+define([ 'bpm-modeler/js/m_modelElementCommentsPropertiesPage', 'bpm-modeler/js/m_propertiesPageProvider',
 			'bpm-modeler/js/m_i18nUtils' ],
-	function(m_modelElementCommentsPropertiesPage, m_i18nUtils) {
+	function(m_modelElementCommentsPropertiesPage, m_propertiesPageProvider, m_i18nUtils) {
 		return {
 			propertiesPage : [ {
+				panelId : "genericApplicationView",
+				id : "applicationRetriesPropertiesPage",
+				pageHtmlUrl : "plugins/bpm-modeler/views/modeler/applicationRetriesPropertiesPage.html",
+				provider : m_propertiesPageProvider,
+				visibility : "always",
+				pageName : m_i18nUtils
+						.getProperty("modeler.model.propertyView.webService.retries.header"),
+				pageIconUrl : "plugins/bpm-modeler/images/icons/arrow-circle.png",
+				html5: true
+			}, {
 				panelId : "genericApplicationView",
 				id : "genericApplicationCommentsPropertiesPage",
 				pageHtmlUrl : "plugins/bpm-modeler/views/modeler/modelElementCommentsPropertiesPage.html",

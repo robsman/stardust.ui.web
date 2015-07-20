@@ -63,19 +63,6 @@
 							ng-click="ctrl.openApplication()" class="viewApplicationLink"
 							src="plugins/bpm-modeler/images/icons/arrow.png" /></td>
 					</tr>
- 					<tr>
-						<td><label>{{sdI18nModeler('modeler.propertiesPage.activity.implementation.noOfRetries')}}</label></td>
-						<td><input type="number" ng-model="ctrl.noOfRetries" min="0"
-									ng-change="ctrl.onRetryChange()"
-									style="padding-right: 0px; width: 70px"></td>
-					</tr>
-					<tr>
-						<td><label>{{sdI18nModeler('modeler.propertiesPage.activity.implementation.retryInterval')}}</label></td>
-						<td><input type="number" ng-model="ctrl.retryInterval" min="0"
-									ng-change="ctrl.onRetryChange()"
-									ng-disabled="!ctrl.noOfRetries || ctrl.noOfRetries < 1"
-									style="padding-right: 0px; width: 70px"></td>
-					</tr>
 				</table>
 			</div>
 			<div ng-if="ctrl.ruleSet">
