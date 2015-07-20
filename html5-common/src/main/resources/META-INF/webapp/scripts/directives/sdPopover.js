@@ -42,7 +42,7 @@
 				restrict : 'AE',
 				scope: true,
 				transclude: true,
-				template: ' <button ng-disabled="popoverDisabled" class="popover-btn button-link"></button>'
+				template: ' <button ng-disabled="popoverDisabled" class="popover-btn button-link" ng-class="clazz"></button>'
 						+ ' <div ng-show="showPopover" class="popover-body-container popup-dlg" style="cursor:auto; position:fixed;"></div>',
 				compile: PopoverCompilerFn
 			};
@@ -63,6 +63,7 @@
 				});
 				
 				var onOpenFn = $parse(attrs.sdaOnOpen);
+				scope.clazz =attrs.sdaClass;
 				
 				transcludeFn(scope, function(clone) {
 					var popoverBody = clone.filter('.popover-body');
