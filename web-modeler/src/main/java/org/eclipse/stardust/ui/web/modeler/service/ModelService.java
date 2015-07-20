@@ -333,10 +333,17 @@ public class ModelService
    {
       ModelType model = findModel(modelId);
 
+      if (!currentSession().canSaveModel(modelId))
+      {
+         throw new MissingWritePermissionException(
+               "Failed to (re-)validate edit lock on model " + modelId);
+      }
+            
       ModelUpgrader modelUpgrader = new ModelUpgrader(model);
       if(modelUpgrader.upgradeNeeded())
       {
          ModelType upgradedModel = modelUpgrader.doUpgradeModel();
+         saveModel(upgradedModel.getId());
       }
    }
 
@@ -346,6 +353,16 @@ public class ModelService
    public void upgradeAllModels()
    {
       Map<String, ModelType> models = getModelManagementStrategy().getModels();
+      
+      for (ModelType xpdlModel : models.values())
+      {
+         if (!currentSession().canSaveModel(xpdlModel.getId()))
+         {
+            throw new MissingWritePermissionException(
+                  "Failed to (re-)validate edit lock on model " + xpdlModel.getId());
+         }         
+      }      
+            
       for (ModelType xpdlModel : models.values())
       {
          upgradeModel(xpdlModel.getId());
