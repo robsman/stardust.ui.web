@@ -367,16 +367,25 @@
   }
 
   ParticipantManagementCtrl.prototype.iconCallback = function(item) {
+	  
+	var isSelected = ""; // is our item on our collection of selectedTreeNodes ?
+	
+	//Test if we our node is selected
+	if(this.selectedTreeNodes.some(function(treeNode){
+		return item.nodeId === treeNode.nodeId;
+	})){
+		isSelected = " selected ";
+	}
+	
+    if (!item.type) { return "sc sc-fw sc-1x sc-spiral" + isSelected ; }
 
-    if (!item.type) { return "sc sc-fw sc-1x sc-spiral"; }
+    if (item.type === "USER") { return "js-icon glyphicon glyphicon-user" + isSelected ; }
 
-    if (item.type === "USER") { return "js-icon glyphicon glyphicon-user"; }
+    if (item.type === "ROLE_UNSCOPED") { return "sc sc-fw sc-1x sc-cog"+ isSelected ; }
 
-    if (item.type === "ROLE_UNSCOPED") { return "sc sc-fw sc-1x sc-cog"; }
+    if (item.type === "ROLE_SCOPED") { return "sc sc-fw sc-1x sc-cog"+ isSelected ; }
 
-    if (item.type === "ROLE_SCOPED") { return "sc sc-fw sc-1x sc-cog"; }
-
-    return "sc sc-badge-portrait sc-fw sc-1x sc-users sc-right";
+    return "sc sc-badge-portrait sc-fw sc-1x sc-users sc-right"+ isSelected ;
   };
 
   ParticipantManagementCtrl.prototype.menuCallback = function(menuData) {
