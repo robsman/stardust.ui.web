@@ -64,6 +64,7 @@
 
 .tbl-col-flt {
 	margin-right: 5px;
+	color: #A69A88;
 }
 
 .tbl-col-flt-set {
@@ -95,6 +96,7 @@
 	margin-right: 6px;
 	padding: 0px;
 	cursor: pointer;
+	color: #A69A88;
 }
 
 .tbl-row {
