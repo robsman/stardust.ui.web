@@ -64,7 +64,6 @@
 
 .tbl-col-flt {
 	margin-right: 5px;
-	color: #A69A88;
 }
 
 .tbl-col-flt-set {
@@ -96,15 +95,6 @@
 	margin-right: 6px;
 	padding: 0px;
 	cursor: pointer;
-	color: #A69A88;
-}
-
-.tbl-tool-link:hover {
-	color: #906C37;
-}
-
-.tbl-tool-link[disabled='disabled'] {
-	color: #A69A88 !important;
 }
 
 .tbl-row {
@@ -172,18 +162,6 @@
    cursor: n-resize;
 }
 
-.tbl-col-sel-link {
-	color: #A69A88;
-}
-
-.tbl-col-sel-link:hover {
-	color: #906C37;
-}
-
-.tbl-col-sel-link[disabled='disabled'] {
-	color: #A69A88 !important;
-}
-
 .tbl-col-sel-list {
    max-height: 400px;
    margin-top: 10px;
@@ -199,10 +177,6 @@
 .tbl-col-sel-label {
    margin-left: 10px;
    color: #333333;
-}
-
-.tbl-hdr-col .tbl-col-flt:hover {
-	color: #906C37;
 }
 
 .tbl-hdr-col .tbl-col-flt-title:hover {

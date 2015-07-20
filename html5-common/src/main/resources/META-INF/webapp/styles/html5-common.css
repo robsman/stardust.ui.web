@@ -24,6 +24,19 @@
 	padding-left: 2px;
 }
 
+/************** Font Icons *****************/
+.sc, .glyphicon {
+	color: #A69A88;
+}
+
+.sc:hover, .glyphicon:hover {
+	color: #906C37;
+}
+
+.button-link[disabled='disabled'] .sc, .button-link[disabled='disabled'] .glyphicon {
+	color: #A69A88;
+}
+
 /* ********** View ********** */
 .view-panel {
 	margin: 6px;
