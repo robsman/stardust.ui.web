@@ -93,6 +93,7 @@ public class ConfigurationVariablesBean extends UIComponentBean
    private boolean showActiveModel = false;
    private boolean valueChanged = false;
    private ConfirmationDialog configVariableConfirmationDialog;
+   private List<ModelReconfigurationInfo> infoList = null;
 
    /**
     * Constructor for ModelVariablesViewBean
@@ -291,7 +292,14 @@ public class ConfigurationVariablesBean extends UIComponentBean
    {
       if (event.equals(EventType.APPLY))
       {
-         forceSaveConfigurationValue();
+         ConfigurationValidationDialogBean validationDialogBean = ConfigurationValidationDialogBean.getCurrent();
+         Boolean hasErrorWarnings = validationDialogBean.isContainsErrors() || validationDialogBean.isContainsWarnings();
+         if (hasErrorWarnings)
+         {
+            // Below invocation forcefully saves the configuration which needs to be invoked only if previous save invocation failed 
+            // (their were any errors or warnings)
+            forceSaveConfigurationValue();
+         }
          update();
       }
       closeView();     
@@ -471,7 +479,7 @@ public class ConfigurationVariablesBean extends UIComponentBean
 
    public  List<ModelReconfigurationInfo> saveConfigurationValue()
    {
-      List<ModelReconfigurationInfo> infoList =null;
+      infoList =null;
       // using a set for modified ConfigurationVariables to minimize kernel call for
       // update.
       Set<ConfigurationVariables> modifiedCofvars = new HashSet<ConfigurationVariables>();
