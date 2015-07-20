@@ -34,13 +34,7 @@ public interface ParticipantService
     * @param departmentDTO
     * @return
     */
-   public ParticipantDTO createDepartment(DepartmentDTO departmentDTO);
-
-   /**
-    * @param departmentDTO
-    * @return
-    */
-   public ParticipantDTO modifyDepartment(DepartmentDTO departmentDTO);
+   public List<ParticipantDTO> createModifyDepartment(DepartmentDTO departmentDTO);
 
    /**
     * @param departmentQualifiedId

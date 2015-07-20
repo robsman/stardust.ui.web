@@ -17,22 +17,23 @@
   angular.module("admin-ui").controller(
           'sdParticipantManagementCtrl',
           ['$q', 'sdParticipantManagementService', 'sdLoggerService', 'sdUtilService', 'sdUserService',
-              'sdLoggedInUserService', 'sdPreferenceService', 'sdI18nService', '$scope', ParticipantManagementCtrl]);
+              'sdLoggedInUserService', 'sdPreferenceService', 'sdI18nService', '$scope', 'sdMessageService',
+              ParticipantManagementCtrl]);
 
   var _q;
   var _sdParticipantManagementService
   var trace;
   var _sdUtilService;
-  var i18n;
+  var i18n, _sdI18nService;
   var _sdUserService;
   var _sdLoggedInUserService;
-  var _sdPreferenceService;
+  var _sdPreferenceService, _sdMessageService;
 
   /**
    * 
    */
   function ParticipantManagementCtrl($q, sdParticipantManagementService, sdLoggerService, sdUtilService, sdUserService,
-          sdLoggedInUserService, sdPreferenceService, sdI18nService, $scope) {
+          sdLoggedInUserService, sdPreferenceService, sdI18nService, $scope, sdMessageService) {
     trace = sdLoggerService.getLogger('admin-ui.sdParticipantManagementCtrl');
     _q = $q;
     _sdParticipantManagementService = sdParticipantManagementService;
@@ -40,7 +41,8 @@
     _sdUserService = sdUserService;
     _sdLoggedInUserService = sdLoggedInUserService;
     _sdPreferenceService = sdPreferenceService;
-
+    _sdMessageService = sdMessageService;
+    _sdI18nService = sdI18nService;
     i18n = $scope.sdI18nHtml5Admin = sdI18nService.getInstance('html5-admin-portal').translate;
 
     this.allUsersTable = null;
@@ -360,7 +362,8 @@
     this.loadModels();// Loading top level tree structure.
     this.treeApi = {};
     this.selectedItem = {};
-    this.lastEvent = {};
+    this.selectedTreeNodes = [];
+    this.resetMessages();
   }
 
   ParticipantManagementCtrl.prototype.iconCallback = function(item) {
@@ -377,7 +380,34 @@
   };
 
   ParticipantManagementCtrl.prototype.menuCallback = function(menuData) {
-    menuData.deferred.resolve("(test,test)");
+    // We only support menu items for removing documents attached to nodes.
+    var item = menuData.item;
+
+    // model node
+    if (!item.type) menuData.deferred.reject();
+    var menu = [];
+
+    var adminMessages = _sdI18nService.getInstance('admin-portal-messages').translate;
+
+    if (item.type === 'ORGANIZATON_SCOPED_EXPLICIT') {
+      menu.push("(createDepartment, LABEL)".replace('LABEL',
+              adminMessages('views.participantMgmt.participantTree.contextMenu.createDepartment')));
+    } else if (item.type === "DEPARTMENT") {
+      menu.push("(delete, LABEL)".replace('LABEL',
+              adminMessages('views.participantMgmt.participantTree.contextMenu.deleteDepartment')));
+      menu.push("(modifyDepartment, LABEL)".replace('LABEL',
+              adminMessages('views.participantMgmt.participantTree.contextMenu.modifyDepartment')));
+      menu.push("(createUser, LABEL)".replace('LABEL',
+              adminMessages('views.participantMgmt.participantTree.contextMenu.createUser')));
+    } else if (item.type === "USER") {
+      menu.push("(removeUser, LABEL)".replace('LABEL',
+              adminMessages('views.participantMgmt.participantTree.contextMenu.removeUserGrant')));
+    } else {
+      menu.push("(createUser, LABEL)".replace('LABEL',
+              adminMessages('views.participantMgmt.participantTree.contextMenu.createUser')));
+    }
+
+    menuData.deferred.resolve(menu.toString());
   };
 
   ParticipantManagementCtrl.prototype.onTreeInit = function(api) {
@@ -386,18 +416,13 @@
 
   // Handle our tree callbacks inclduing lazy load on node expand
   ParticipantManagementCtrl.prototype.eventCallback = function(data, e) {
-    // data.srcScope is not currently in the html5-common sdTree implementation
-    // but will be added extremely soon as you are going to go nuts trying to
-    // respond to drag-n-drop events on recursive nodes without it.
-
+    this.resetMessages();
     var promises = [], that = this;
 
     this.selectedItem = data.valueItem;
-    this.lastEvent = data.treeEvent;
 
     // On expansion of a node we need to build out its children
     if (data.treeEvent === "node-expand") {
-
       // No data to retrieve at model level as child items are returned in the
       // loadModels call (see constructor)
       if (data.valueItem.isLoaded === true || data.valueItem.type === "model") {
@@ -429,29 +454,186 @@
         });
       }
     } else if (data.treeEvent === "node-dragend" || data.treeEvent === "node-drop") {
-      // access srcScope for item in this case as
-      // ?? not sure how to use scrScope
       console.log("Drag-Drop");
-
-      var participants = [];
-      participants.push(data.srcScope.nodeItem);
-
-      _sdParticipantManagementService.saveParticipants(participants, this.rowSelectionForAllUsersTable).then(
-              function(data) {
-                // update the tree with server response
-
-              }, function() {
-
-              });
-    } else if (data.treeEvent === "menu-test") {
-      console.log("Menu Event");
-      console.log(this.treeApi.childNodes[data.nodeId].nodeItem);
-      console.log("----------------------");
+      this.handleUsersDrop(data, e);
+    } else if (data.treeEvent.indexOf("menu-") == 0 || (data.treeEvent === "node-delete")) {
+      console.log("Menu-Option selected");
+      this.handleMenuClick(data, e);
+      data.deferred.resolve();
+    } else if (data.treeEvent === "node-click") {
+      console.log("Node selected..");
+      this.handleTreeNodeClick(data, e);
+      data.deferred.resolve();
     }
-    // Resovle everything else
+
+    // Resolve everything else
     else {
       data.deferred.resolve();
     }
+
+  };
+
+  // Handle a menu click
+  ParticipantManagementCtrl.prototype.handleMenuClick = function(data, event) {
+    this.resetMessages();
+    var option = data.treeEvent;
+    this.contextParticipantNode = data;
+    var self = this;
+
+    switch (option) {
+    case 'menu-createDepartment':
+    case 'menu-modifyDepartment':
+      this.openCreateModifyDepartment();
+      break;
+
+    case 'node-delete':
+      _sdParticipantManagementService.deleteDepartment(this.contextParticipantNode.valueItem).then(
+              function(data) {
+                self.showParticipantMessage(_sdI18nService.getInstance('views-common-messages').translate(
+                        'views.participantTree.departmentDeleted'), "ok");
+                self.contextParticipantNode.deferred.resolve();
+              }, function(response) {
+                if (response.data && response.data.message) {
+                  self.showParticipantMessage(response.data.message, "error");
+                }
+                self.contextParticipantNode.deferred.reject();
+              });
+      break;
+
+    case 'menu-removeUser':
+
+      break;
+
+    case 'menu-createUser':
+
+      break;
+
+    default:
+      break;
+    }
+
+  }
+
+  // return the style for label style - future user - support multi-select
+  ParticipantManagementCtrl.prototype.getNodeStyle = function(item) {
+    if (this.selectedTreeNodes.indexOf(item)) {
+      return "{'selected': ture}";
+    } else {
+      return "{'selected': false}";
+    }
+  }
+
+  // handle users drop event
+  ParticipantManagementCtrl.prototype.handleUsersDrop = function(data, event) {
+    var dropTarget = data.srcScope.nodeItem;
+    var participants = this.selectedTreeNodes;
+
+    if (this.selectedTreeNodes.indexOf(dropTarget) == -1) {
+      participants = [dropTarget];
+    }
+
+    _sdParticipantManagementService.saveParticipants(participants, this.rowSelectionForAllUsersTable).then(
+            function(result) {
+              // update the tree with server response
+              for (var i = 0; i < participants.length; i++) {
+                participants[i].children = result[getParticipatUiId(participants[i])];
+              }
+              data.deferred.resolve();
+            }, function(response) {
+              if (response.data && response.data.message) {
+                self.showParticipantMessage(response.data.message, "error");
+              }
+            });
+  }
+
+  // handle tree node click
+  ParticipantManagementCtrl.prototype.handleTreeNodeClick = function(data, event) {
+    var selectedNode = data.srcScope.nodeItem;
+
+    // model node is selected
+    if (!selectedNode.type) { return; }
+
+    this.resetMessages();
+
+    // if the droptarget was already selected then remove it
+    var participantIndex = this.selectedTreeNodes.indexOf(selectedNode);
+
+    if (event.ctrlKey) {
+      if (participantIndex >= 0) {
+        this.selectedTreeNodes.splice(participantIndex, 1);
+      } else {
+        this.selectedTreeNodes.push(selectedNode);
+      }
+    } else {
+      while (this.selectedTreeNodes.pop()) {
+      }
+      if (participantIndex === -1) {
+        this.selectedTreeNodes.push(selectedNode);
+      }
+    }
+
+    var selectedParticipants = [];
+    for (var i = 0; i < this.selectedTreeNodes.length; i++) {
+      selectedParticipants.push(getParticipatUiId(this.selectedTreeNodes[i]));
+    }
+
+    var participantsMsg = selectedParticipants.join(", ");
+    this.showParticipantMessage(participantsMsg, "ok");
+  }
+
+  // open create or modify cepartment dialog
+  ParticipantManagementCtrl.prototype.openCreateModifyDepartment = function() {
+    var self = this;
+    var participant = this.contextParticipantNode.valueItem;
+
+    self.departmentTitle = _sdI18nService.getInstance('admin-portal-messages').translate(
+            'views.participantMgmt.createDepartment.title');
+
+    self.departmentTitle = _sdI18nService.getInstance('admin-portal-messages').translate(
+            'views.participantMgmt.modifyDepartment.title');
+
+    if (participant.type == "DEPARTMENT") {
+      self.department = angular.copy(participant);
+    } else {
+      self.department = {};
+      self.department.organization = participant.name;
+      self.department.parentDepartmentName = participant.parentDepartmentName;
+      self.department.description = null;
+      self.department.uiQualifiedId = participant.qualifiedId;
+      if (participant.uiQualifiedId) {
+        self.department.uiQualifiedId = participant.uiQualifiedId;
+      }
+    }
+
+    self.showCreateOrModifyDeparatmentDialog = true;
+
+  };
+
+  // persist department
+  ParticipantManagementCtrl.prototype.createModifyDepartment = function() {
+    var self = this;
+    delete self.department.parentDepartmentName;
+    _sdParticipantManagementService.createModifyDepartment(this.department).then(function(data) {
+      var participants = data.participants;
+      var contextParticipant = self.contextParticipantNode.valueItem;
+      var department = undefined;
+      for (var i = 0; i < participants.length; i++) {
+        if (self.department.id === participants[i].id) {
+          department = participants[i];
+        }
+      }
+      if (contextParticipant.type == "DEPARTMENT") {
+        contextParticipant.name = department.name;
+        contextParticipant.description = department.description;
+      } else {
+        contextParticipant.children.push(department);
+      }
+      self.contextParticipantNode.deferred.resolve();
+    }, function(response) {
+      if (response.data && response.data.message) {
+        self.showParticipantMessage(response.data.message, "error");
+      }
+    });
 
   };
 
@@ -484,6 +666,35 @@
   ParticipantManagementCtrl.prototype.isLeaf = function(item) {
     if (item.type === "USER") { return true; }
     return false;
+  }
+
+  ParticipantManagementCtrl.prototype.resetMessages = function() {
+    this.showMessage2 = false;
+    _sdMessageService.showMessage({
+      type: "error"
+    });
+  }
+
+  ParticipantManagementCtrl.prototype.showParticipantMessage = function(msg, type) {
+    this.showMessage2 = true;
+    this.showMessage_(msg, type);
+  }
+
+  ParticipantManagementCtrl.prototype.showMessage_ = function(msg, type) {
+    if (!type) {
+      _sdMessageService.showMessage(msg);
+    } else {
+      _sdMessageService.showMessage({
+        message: msg,
+        type: type
+      });
+    }
+  }
+
+  // prepares participantId in a contracted format
+  function getParticipatUiId(participant) {
+    if (participant.uiQualifiedId) { return participant.uiQualifiedId }
+    return participant.qualifiedId;
   }
 
 })();

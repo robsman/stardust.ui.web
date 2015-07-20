@@ -1064,6 +1064,7 @@ public class ParticipantManagementUtils
     */
    public static String parseParentDepartmentId(String input)
    {
+      //javascript -> ^\[([^\]]*)\]
       return getMatchingString(input, "^\\[([^]]*)\\]");
    }
 
@@ -1073,6 +1074,7 @@ public class ParticipantManagementUtils
     */
    public static String parseDepartmentId(String input)
    {
+      //javascript -> \[([^\]]*)\]$
       return getMatchingString(input, "\\[([^]]*)\\]$");
    }
 
@@ -1086,6 +1088,8 @@ public class ParticipantManagementUtils
       {
          return input;
       }
+      
+      //javascript -> (\{[^\[]*)
       return getMatchingString(input, "(\\{([^\\[]*))");
    }
 

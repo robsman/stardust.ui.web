@@ -10,7 +10,10 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +24,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -91,43 +93,36 @@ public class ParticipantResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("participants/{participantId}")
    public Response getSubParticipants(@PathParam("participantId") String participantId,
-         @PathParam("type") String participantType)
+         @PathParam("type") String participantType) throws UnsupportedEncodingException
    {
+      participantId = URLDecoder.decode(participantId, "UTF-8");
       List<ParticipantDTO> participants = participantService.getParticipant(participantId);
       return Response.ok(AbstractDTO.toJson(participants), MediaType.APPLICATION_JSON).build();
-   }
-
-   //
-   @PUT
-   @Produces(MediaType.APPLICATION_JSON)
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Path("department")
-   public Response createDepartment(String postData) throws Exception
-   {
-      DepartmentDTO departmentDTO = DTOBuilder.buildFromJSON(postData, DepartmentDTO.class);
-      ParticipantDTO department = participantService.createDepartment(departmentDTO);
-      return Response.ok(department.toJson(), MediaType.APPLICATION_JSON).build();
-   }
-
-   @DELETE
-   @Produces(MediaType.APPLICATION_JSON)
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Path("department/{departmentId}")
-   public Response deleteDepartment(@PathParam("departmentId") String departmentId)
-   {
-      participantService.deleteDepartment(departmentId);
-      return Response.ok("deleted", MediaType.APPLICATION_JSON).build();
    }
 
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("department")
-   public Response modifyDepartment(String postData) throws Exception
+   public Response createModifyDepartment(String postData) throws Exception
    {
       DepartmentDTO departmentDTO = DTOBuilder.buildFromJSON(postData, DepartmentDTO.class);
-      ParticipantDTO department = participantService.modifyDepartment(departmentDTO);
-      return Response.ok(department.toJson(), MediaType.APPLICATION_JSON).build();
+      List<ParticipantDTO> participants = participantService.createModifyDepartment(departmentDTO);
+
+      Map<String, List<ParticipantDTO>> result = new HashMap<String, List<ParticipantDTO>>();
+      result.put("participants", participants);
+
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(result), MediaType.APPLICATION_JSON).build();
    }
 
+   @DELETE
+   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("department/{departmentId}")
+   public Response deleteDepartment(@PathParam("departmentId") String departmentId) throws UnsupportedEncodingException
+   {
+      departmentId = URLDecoder.decode(departmentId, "UTF-8");
+      participantService.deleteDepartment(departmentId);
+      return Response.ok("deleted", MediaType.APPLICATION_JSON).build();
+   }
 }

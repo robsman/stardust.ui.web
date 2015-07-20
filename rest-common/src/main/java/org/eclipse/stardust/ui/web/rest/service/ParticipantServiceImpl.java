@@ -15,9 +15,11 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.error.InvalidArgumentException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.OrganizationDetails;
@@ -40,12 +42,15 @@ import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserService;
+import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
+
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ParticipantManagementUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ParticipantManagementUtils.ParticipantType;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.context.annotation.Scope;
@@ -80,49 +85,48 @@ public class ParticipantServiceImpl implements ParticipantService
    }
 
    /**
-    *
+    * create or modify department
+    * 
     */
-   public ParticipantDTO createDepartment(DepartmentDTO departmentDTO)
+   public List<ParticipantDTO> createModifyDepartment(DepartmentDTO departmentDTO)
    {
-      ParticipantContainer participantContainer = getParticipantContainerFromQialifiedId(departmentDTO.parentOrganizationId);
+      ParticipantContainer participantContainer = getParticipantContainerFromQialifiedId(departmentDTO.uiQualifiedId);
+      List<ParticipantDTO> participants = new ArrayList<ParticipantDTO>();
 
       QualifiedModelParticipantInfo modelParticipant = participantContainer.modelparticipant;
       DepartmentInfo parentDepartment = participantContainer.department;
 
       AdministrationService adminService = serviceFactoryUtils.getAdministrationService();
-      Department department = adminService.createDepartment(departmentDTO.id, departmentDTO.name,
-            departmentDTO.description, parentDepartment, (OrganizationInfo) modelParticipant);
 
-      List<ParticipantDTO> participants = new ArrayList<ParticipantDTO>();
+      if (ParticipantType.ORGANIZATON_SCOPED_EXPLICIT.name().equals(participantContainer.participantType))
+      {
+         // create department
+         // check if department with same id already exist
+         DepartmentInfo department = participantManagementUtils.getDepartment(
+               (QualifiedOrganizationInfo) modelParticipant, departmentDTO.id);
+         // we should not re-create the department
+         if (department != null)
+         {
+            throw new PortalRestException(Status.BAD_REQUEST, MessagesViewsCommonBean.getInstance().getString(
+                  "views.participantTree.duplicateDepartment.error"));
+         }
+         adminService.createDepartment(departmentDTO.id, departmentDTO.name, departmentDTO.description,
+               parentDepartment, (OrganizationInfo) modelParticipant);
 
-      getParticipant(department, participants);
+         participants = getSubParticipants(participantContainer);
+      }
+      else if (ParticipantType.DEPARTMENT.name().equals(participantContainer.participantType))
+      {
+         // modify department
+         DepartmentInfo departmentInfo = participantContainer.department;
+         Department department = adminService.modifyDepartment(departmentInfo.getOID(), departmentDTO.name,
+               departmentDTO.description);
+         // return parent node
+         participantContainer.participantType = ParticipantType.ORGANIZATON_SCOPED_EXPLICIT.name();
+         participants = getSubParticipants(participantContainer);
+      }
 
-      return (ParticipantDTO) participants;
-   }
-
-   /**
-    *
-    */
-   public ParticipantDTO modifyDepartment(DepartmentDTO departmentDTO)
-   {
-      String parentDepartmentId = ParticipantManagementUtils
-            .parseParentDepartmentId(departmentDTO.parentOrganizationId);
-      String participantQid = ParticipantManagementUtils.parseParticipantQId(departmentDTO.parentOrganizationId);
-
-      ParticipantContainer participantContainer = getParticipantContainer(participantQid, parentDepartmentId,
-            departmentDTO.id);
-
-      DepartmentInfo departmentInfo = participantContainer.department;
-
-      AdministrationService adminService = serviceFactoryUtils.getAdministrationService();
-      Department department = adminService.modifyDepartment(departmentInfo.getOID(), departmentDTO.name,
-            departmentDTO.description);
-
-      List<ParticipantDTO> participantDTOs = new ArrayList<ParticipantDTO>();
-
-      getSubParticipantsForDepartment(department, participantDTOs);
-
-      return participantDTOs.get(0);
+      return participants;
    }
 
    /**
@@ -131,8 +135,22 @@ public class ParticipantServiceImpl implements ParticipantService
     */
    public boolean deleteDepartment(String departmentQualifiedId)
    {
-      ParticipantContainer participantContainer = getParticipantContainerFromQialifiedId(departmentQualifiedId);
-      serviceFactoryUtils.getAdministrationService().removeDepartment(participantContainer.department.getOID());
+      try
+      {
+         ParticipantContainer participantContainer = getParticipantContainerFromQialifiedId(departmentQualifiedId);
+         serviceFactoryUtils.getAdministrationService().removeDepartment(participantContainer.department.getOID());
+      }
+      catch (InvalidArgumentException aex)
+      {
+         throw new PortalRestException(Status.BAD_REQUEST, MessagesViewsCommonBean.getInstance().getString(
+               "views.participantTree.deleteDepartment.error.inUse"));
+      }
+      catch (Exception ex)
+      {
+         throw new PortalRestException(Status.BAD_REQUEST, MessagesViewsCommonBean.getInstance().getString(
+               "views.participantTree.deleteDepartment.error.generic"), ex);
+      }
+
       return true;
    }
 
@@ -525,6 +543,7 @@ public class ParticipantServiceImpl implements ParticipantService
       {
          participantDTO.uiQualifiedId = getDepartmentId(department.getParentDepartment())
                + department.getOrganization().getQualifiedId();
+         participantDTO.parentDepartmentName = department.getParentDepartment().getName();
       }
       else
       {
@@ -532,6 +551,8 @@ public class ParticipantServiceImpl implements ParticipantService
       }
 
       participantDTO.uiQualifiedId += "[" + department.getId() + "]";
+      participantDTO.organization = ParticipantUtils.getParticipantLabel(department.getOrganization());
+      participantDTO.description = department.getDescription();
    }
 
    /**
@@ -551,6 +572,7 @@ public class ParticipantServiceImpl implements ParticipantService
       if (parentDepartment != null)
       {
          participantDTO.uiQualifiedId = getDepartmentId(parentDepartment);
+         participantDTO.parentDepartmentName = parentDepartment.getName();
       }
 
       if (defaultDepartment)

@@ -36,6 +36,9 @@ public class ParticipantDTO extends AbstractDTO
    public Long runtimeOrganizationOid;
    public String realmId;
    public String uiQualifiedId;
+   public String parentDepartmentName;
+   public String organization; //used only for departments
+   public String description; //used only for departments
 
    public ParticipantDTO()
    {}

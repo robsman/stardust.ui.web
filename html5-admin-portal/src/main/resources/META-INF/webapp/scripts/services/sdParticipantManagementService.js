@@ -33,9 +33,12 @@
    * 
    */
   function ParticipantManagementService($resource, sdLoggerService, sdDataTableHelperService, sdUtilService) {
-    var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/participantManagement";
-    var trace = sdLoggerService.getLogger('admin-ui.services.sdParticipantManagementService');
 
+    var trace = sdLoggerService.getLogger('admin-ui.services.sdParticipantManagementService');
+    var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/participantManagement";
+
+    var DEPARTMENT_RESOURCE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/department";
+    var departmentResource = $resource(DEPARTMENT_RESOURCE_URL + "/:departmentId");
     /**
      * 
      */
@@ -206,7 +209,7 @@
       if (addUsers) {
         data.add = [];
         for (var i = 0; i < addUsers.length; i++) {
-          // add realm later
+          // TODO: add realm later
           data.add.push(addUsers[i].account);
         }
       }
@@ -224,6 +227,18 @@
       return participantResource.save({}, data).$promise;
     };
 
+    // create or modify department
+    ParticipantManagementService.prototype.createModifyDepartment = function(department) {
+      return departmentResource.save(department).$promise;
+    };
+
+    // delete department
+    ParticipantManagementService.prototype.deleteDepartment = function(department) {
+      var departmentId = encodeURIComponent(getParticipatUiId(department));
+      return departmentResource.remove({
+        departmentId: departmentId
+      }).$promise;
+    };
   }
 
   // prepares participantId in a contracted format
