@@ -10,7 +10,7 @@
 
 		<div sd-js-error>Error:</div>
 
-		<section style="clear: both; float: left; width: 60%; overflow:auto">
+		<section style="clear: both; float: left; width: 60%; overflow: auto">
 			<header>
 				<div class="view-panel-toolbar heading">
 					{{i18n('admin-portal-messages.views-common-users-label')}}</div>
@@ -79,7 +79,7 @@
 					</button>
 				</div>
 				<div class="view-panel-toolbar toolbar-buttons">
-					<span sd-refresh sda-on-refresh="ctrl.refreshPermissions();"
+					<span sd-refresh sda-on-refresh="ctrl.treeInit();"
 						aid="COM-AuthMgr-RefreshPermissions"></span>
 				</div>
 
@@ -97,8 +97,8 @@
 					sda-icon-callback="ctrl.iconCallback(item)"
 					sda-event-callback="ctrl.eventCallback(data,e)">
 					<li sd-tree-node sda-node-id="item.nodeId" sda-label="item.name"
-						sda-menu-items="(,)" sda-is-leaf="ctrl.isLeaf(item)" sda-draggable="true"
-						ng-repeat="item in ctrl.models">
+						sda-menu-items="(,)" sda-is-leaf="ctrl.isLeaf(item)"
+						sda-draggable="true" ng-repeat="item in ctrl.models">
 						<ul>
 							<li sd-tree-node ng-repeat="item in item.children"
 								sda-draggable="true" sda-droppable="true" sda-menu-items="(,)"
@@ -111,6 +111,19 @@
 						</ul>
 					</li>
 				</ul>
+			</div>
+			<div ng-show="ctrl.showCreateOrModifyDeparatmentDialog">
+				<div sd-dialog sda-modal="true"
+					sda-show="ctrl.showCreateOrModifyDeparatmentDialog"
+					sda-type="confirm"
+					sda-title="{{ctrl.departmentTitle}}"
+					sda-scope="this"
+					sda-template="plugins/html5-admin-portal/partials/views/department.html"
+					sda-on-confirm="ctrl.createModifyDepartment(res)"
+					sda-on-close="ctrl.showCreateOrModifyDeparatmentDialog = false"
+					sda-confirm-action-label="{{i18n('admin-portal-messages.common-apply')}}"
+					sda-width="400px" sda-height="300px"
+					sda-aid-prefix="ADM-PartMgmt-DepartmentPopup"></div>
 			</div>
 		</section>
 	</div>
