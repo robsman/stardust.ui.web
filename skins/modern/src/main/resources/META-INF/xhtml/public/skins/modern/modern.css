@@ -7147,10 +7147,10 @@ input.secondary{
 
 /*body of our portal panel within the panels iframe -- need somethign on the body element we can target*/
 body[id='document:body'] {
-	background: #DDDDDD;
+	/* background: #DDDDDD; */
 }
 .sg-sidebar-content{
-	background: #DDDDDD;
+	/* background: #DDDDDD; */
 }
 
 .sg-top-bar > div.navbar-inner > div.container-fluid,
