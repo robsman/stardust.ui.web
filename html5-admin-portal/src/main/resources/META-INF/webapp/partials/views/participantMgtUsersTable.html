@@ -27,7 +27,10 @@
 						title="{{i18n('views-common-messages.common-create')}}"
 						class="button-link tbl-toolbar-item tbl-tool-link"
 						aid="ADM-PartMgmt-ToolbarCreateUser">
-						<i class="sc sc-fw sc-1x sc-users"></i>
+						<i class="sc sc-badge-portrait sc-fw sc-1x sc-user sc-right">
+                    <i style="color: #007700" class="sc sc-badge-bg sc-badge-bg-circle sc-stroke  go"></i>
+                    <i style="  color: #fff;" class="sc sc-badge-icon sc-badge-icon-plus"></i>
+                </i>
 					</button>
 					<button
 						ng-disabled="!(ctrl.rowSelectionForAllUsersTable.length == 1)"
@@ -35,7 +38,10 @@
 						title="{{i18n('admin-portal-messages.common-copy')}}"
 						class="button-link tbl-toolbar-item tbl-tool-link"
 						aid="ADM-PartMgmt-ToolbarCopyUser">
-						<i class="sc sc-fw sc-1x sc-users"></i>
+						<i class="sc sc-badge-portrait sc-fw sc-1x sc-user sc-right">
+                            <i style="color: #007700" class="sc sc-badge-bg sc-badge-bg-circle sc-stroke go"></i>
+                            <i style="  color: #fff;" class="sc sc-badge-icon sc-badge-icon-arrow-r"></i>
+                        </i>
 					</button>
 					<button
 						ng-disabled="!(ctrl.rowSelectionForAllUsersTable.length > 0)"
@@ -43,24 +49,26 @@
 						title="{{i18n('admin-portal-messages.views-participantMgmt-invalidateUser-title')}}"
 						class="button-link tbl-toolbar-item tbl-tool-link"
 						aid="ADM-PartMgmt-ToolbarInvalidateUser">
-						<i class="sc sc-fw sc-1x sc-minus-circle"></i>
+						<i class="sc sc-badge-portrait sc-fw sc-1x sc-user sc-right">
+		                    <i style="color: #770000;" class="sc sc-badge-bg sc-badge-bg-circle go"></i>
+		                    <i style="  color: #fff;" class="sc sc-badge-icon sc-badge-icon-minus"></i>
+                       </i>
 					</button>
 				</div>
 				<div class="tbl-toolbar-section">
-					<button ng-if="!ctrl.hideInvalidatedUsers"
+					<button
 						ng-click="bpmCommon.stopEvent($event); ctrl.changeHideInvalidatedUsersFlag();"
-						title="{{i18n('admin-portal-messages.views-participantMgmt-filters-invalidatedUsers-hideUser')}}"
+						title="{{!ctrl.hideInvalidatedUsers ? i18n('admin-portal-messages.views-participantMgmt-filters-invalidatedUsers-hideUser') : i18n('admin-portal-messages.views-participantMgmt-filters-invalidatedUsers-showUser')}}"
 						class="button-link tbl-toolbar-item tbl-tool-link"
 						aid="ADM-PartMgmt-Filters-InvalidatedUsers-HideUser">
-						<i class="sc sc-fw sc-1x sc-ban" style="color: Red"></i>
-					</button>
-
-					<button ng-if="ctrl.hideInvalidatedUsers"
-						ng-click="bpmCommon.stopEvent($event); ctrl.changeHideInvalidatedUsersFlag();"
-						title="{{i18n('admin-portal-messages.views-participantMgmt-filters-invalidatedUsers-showUser')}}"
-						class="button-link tbl-toolbar-item tbl-tool-link"
-						aid="ADM-PartMgmt-Filters-InvalidatedUsers-ShowUser">
-						<i class="sc sc-fw sc-1x sc-ban"></i>
+						<i ng-if="!ctrl.hideInvalidatedUsers" class="sc sc-badge-portrait sc-fw sc-1x sc-user sc-right">
+                            <i style="color: #770000;" class="sc sc-badge-bg sc-badge-bg-circle  stop"></i>
+                            <i style="  color: #fff;" class="sc sc-badge-icon sc-badge-icon-ban"></i>
+                       </i>
+                       <i ng-if="ctrl.hideInvalidatedUsers" class="sc sc-badge-portrait sc-fw sc-1x sc-user sc-right" style="opacity:0.7">
+                            <i style="color: #770000;" class="sc sc-badge-bg sc-badge-bg-circle  stop"></i>
+                            <i style="  color: #fff;" class="sc sc-badge-icon sc-badge-icon-ban"></i>
+                       </i>
 					</button>
 				</div>
 				<span sd-refresh sda-on-refresh="ctrl.refresh();" aid="PP-PartMgmt"></span>

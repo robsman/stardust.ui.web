@@ -225,26 +225,22 @@ table.formTable td {
 							aid="COM-SrchDoc-RepoSel">
 						</select></td>
 					</tr>
-					<tr>
-						<td style="vertical-align: top;">
-							<div style="white-space: nowrap;">
-								<table>
-									<tbody>
-										<tr>
-											<td><input class="button" type="submit" value="Search"
-												ng-click="docSearchViewCtrl.validateSearchCriteria()"
-												aid="COM-SrchDoc-BtnSearch"></td>
-											<td><input type="submit" value="Reset"
-												ng-click="docSearchViewCtrl.resetSearchCriteria()"
-												aid="COM-SrchDoc-BtnReset"></td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
-						</td>
-					</tr>
 				</table>
 			</form>
+			<table class="formTable">
+				<tbody>
+					<tr>
+						<td><input class="button" type="submit"
+							value="{{i18n('views-common-messages.views-documentSearchView-button-searchDocuments')}}"
+							ng-click="docSearchViewCtrl.validateSearchCriteria()"
+							aid="COM-SrchDoc-BtnSearch"></td>
+						<td><input type="submit"
+							value="{{i18n('views-common-messages.common-reset')}}"
+							ng-click="docSearchViewCtrl.resetSearchCriteria()"
+							aid="COM-SrchDoc-BtnReset"></td>
+					</tr>
+				</tbody>
+			</table>
 		</div>
 		<div sd-dialog sd-show-overlay="true"
 			sda-show="docSearchViewCtrl.showAdvancedTextSearch"
