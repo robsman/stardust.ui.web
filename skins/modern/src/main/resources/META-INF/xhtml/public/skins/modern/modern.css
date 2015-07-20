@@ -180,7 +180,7 @@ div#loginBox .buttonContainer input{
 /* ************** Framework Layout Styles ************ */
 .banner{
 	height: 70px;
-	width 100%;
+	width: 100%;
 	background: #FFFFFF url(./skin-images/banner.jpg) left no-repeat;
 	border-bottom: 3px solid #FFFFFF;
 }
@@ -643,7 +643,7 @@ html, body {
     border-top-style: solid;
     border-top-width: 1px;
 	padding-left: 5px;
-	padding-right: 15px;  This is required other hover style background goes out
+	padding-right: 15px; /* This is required other hover style background goes out */
 	white-space: nowrap;
 }
 
@@ -2133,7 +2133,7 @@ table.autoCompTable > tbody > tr > td
 
 .form-panel-summary-bar-text
 {
-	color: rgb (77, 77, 77);
+	color: rgb(77, 77, 77);
 	padding: 8px 5px 3px 0;
 	white-space: nowrap;
 	font-weight: normal;
@@ -5673,12 +5673,12 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 .iceMnuPopVrtItem-dis {
     width: 160px;
     display: block;
-    margin: 2px 0px 2px 0px; !important;
+    margin: 2px 0px 2px 0px !important;
     font-size: 1em;
 }
 
 .iceMnuPopVrtItem-dis .iceCmdLnk-dis {
-    border-bottom: 0px; !important;
+    border-bottom: 0px !important;
     padding:3px 3px 3px 10px;
     font-size: 11px;
 }
@@ -7146,7 +7146,7 @@ input.secondary{
 }
 
 /*body of our portal panel within the panels iframe -- need somethign on the body element we can target*/
-body[id='document:body']
+body[id='document:body'] {
 	background: #DDDDDD;
 }
 .sg-sidebar-content{
