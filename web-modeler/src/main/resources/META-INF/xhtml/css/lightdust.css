@@ -8,12 +8,10 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-/* body {
-	color: #4d4d4d;
+body, table, input, button, select, textarea, a {
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 11px;
-	line-height: 1.5;
-} */
+}
 
 .nativeHtmlViewPanel {
 	width: 100%;
@@ -24,25 +22,21 @@
 label {
 	color: #708090;
 	margin-right: 10px;
-	font-size: 11px;
+	font-size: 1em;
 	white-space: nowrap;
 	font-weight: normal;
-	font-family: Helvetica, Arial, sans-serif;
 }
 
 th {
-	font-size: 11px;
-	font-family: Helvetica, Arial, sans-serif;
+	font-size: 1em;
 }
 
 td {
-	font-size: 11px;
-	font-family: Helvetica, Arial, sans-serif;
+	font-size: 1em;
 }
 
 select {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	min-width: 100px;
 	height: 21px;
 	width: auto;
@@ -59,14 +53,12 @@ select {
 }
 
 input {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	color: #4d4d4d;
 }
 
 input[type="text"] {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	height: 18px;
 	padding-left: 5px;
 	min-width: 100px;
@@ -85,16 +77,14 @@ input[type="text"][disabled] {
 }
 
 input[type="password"] {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	height: 18px;
 	padding-left: 5px;
 	min-width: 100px;
 }
 
 input[type=button] {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	height: 21px;
 	color: #4d4d4d;
 	background-color: #f2f2f2;
@@ -110,8 +100,7 @@ input[type=button] {
 }
 
 input[type=image] {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	/*height: 21px;*/
 	color: #4d4d4d;
 	background-color: #f2f2f2;
@@ -148,8 +137,7 @@ input[type="radio"] {
 }
 
 textarea {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 }
 
 a {
@@ -201,7 +189,7 @@ a:hover {
 }
 
 .heading {
-	font-size: 11px;
+	font-size: 1em;
 	font-color: #4D4D4D;
 	border-bottom: 1px solid #E7E7E7;
 	margin-top: 5px;
@@ -209,7 +197,7 @@ a:hover {
 }
 
 .clplPanelHeading {
-	font-size: 11px;
+	font-size: 1em;
 	font-color: #4D4D4D;
 	border-bottom: 1px solid #E7E7E7;
 	margin-top: 5px;
@@ -225,8 +213,7 @@ a:hover {
 
 .clplPanelHeading label{
 	color: #2F6871;
-	font-family: Arial,Helvetica,sans-serif;
-	font-size :11px;
+	font-size: 1em;
 	font-weight:bold;
 	float:none;
 	padding : 0px 4px 0px 0px;
@@ -236,7 +223,7 @@ a:hover {
 
 .output {
 	font-style: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 }
 
 /* Layout Table */
@@ -258,12 +245,10 @@ table.layoutTable td {
 
 /* Field Set Table */
 .fieldSetTable {
-	font-family: Helvetica, Arial, sans-serif;
 }
 
 table.fieldSetTable {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	margin: 0px;
 	padding: 0px;
 	border: 0px;
@@ -415,14 +400,13 @@ div.toolBar {
 a.configLink {
 	color: #00629A !important;
 	cursor: pointer;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 }
 
 /* */
 .code {
 	font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace !important;
-	font-size: 12px;
+	font-size: 1.1em;
 	color: #397d9f;
 }
 
@@ -450,8 +434,7 @@ input.toolbarButton:hover {
 }
 
 .ui-widget {
-	font-family: Arial, Helvetica, sans-serif !important;
-	font-size: 11px !important;
+	font-size: 1em !important;
 }
 
 #dialogWrapper {
@@ -476,13 +459,12 @@ div#toolbar {
 }
 
 .toolbar-section-content select {
-	font-size: 11px;
+	font-size: 1em;
 }
 
 .toolbar-section-footer {
 	height: 15px;
-	font-family: Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	text-align: center;
 	color: #aaaaaa;
 	white-space: nowrap;
@@ -503,8 +485,7 @@ div#scrollpane {
 
 div#messagePanel {
 	vertical-align: middle;
-	font-family: Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	height: 20px;
 }
 
@@ -557,10 +538,9 @@ div.propertiesPanel {
 .propertiesPanelTitle { /*width: 100%;*/
 	padding-left: 10px;
 	vertical-align: top;
-	font-size: 14px;
+	font-size: 1.27em;
 	font-weight: bold;
 	color: #eeeeee;
-	font-family: Arial, sans-serif;
 	margin-top: 0px;
 	margin-bottom: 5px;
 	background-color: #807c73;
@@ -710,8 +690,7 @@ td.mapping {
 
 /* Overwrites for jQuery UI */
 .ui-widget input,.ui-widget select,.ui-widget textarea,.ui-widget button {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 }
 
 /* Ace code editor style overrides and additional styles */
@@ -751,7 +730,7 @@ tr.locked {
 }
 
 .modelerTooltipHeader {
-	font-size: 12px
+	font-size: 1.1em;
 	min-height: 15px;
 	padding-left: 5px;
 	padding-top: 5px;
@@ -818,14 +797,13 @@ textarea:focus {
 }
 
 .sd-ac-container div[name='sd-ac-tag']{
-  font-size: 11px;
-  font-family: Helvetica, Arial, sans-serif;
+  font-size: 1em;
   border: none;
   background-color: #f0f0f0;
 }
 
 .sd-ac-container div[name='sd-ac-tag']:after{
-  font-size:11px;
+  font-size: 1em;
 }
 
 .sd-ac-container div[name='sd-ac-selectList']{
@@ -835,8 +813,7 @@ textarea:focus {
 
 .sd-ac-container [name='sd-ac-selectList'] div{
   cursor:pointer;
-  font-family: Helvetica, Arial, sans-serif;
-  font-size:11px;
+  font-size: 1em;
   background-color:white;
 }
 

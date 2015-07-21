@@ -49,15 +49,13 @@
 
 .iPopupDialogContentText {
 	color: #000000;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 }
 
 .iPopupDialogTitleText {
 	color: #333333;
 	float: left;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	font-weight: bold;
 	line-height: 20px;
 	padding: 5px 10px;
@@ -76,8 +74,7 @@
 	margin: 9px 4px 4px 9px;
 	cursor: pointer;
 	background: url("./css-images/button-background.png") repeat-x scroll center bottom #FFFFFF;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	padding: 3px 10px;
 	border-color: #CCCCCC #999999 #999999 #CCCCCC;
 	border-style: solid;
@@ -124,7 +121,6 @@
 
 .iPopupDialogError {
 	color: red;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	margin: 5px 0;	
 }

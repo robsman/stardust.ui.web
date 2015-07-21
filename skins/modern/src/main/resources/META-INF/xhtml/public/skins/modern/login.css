@@ -10,6 +10,11 @@
  *******************************************************************************/
  /* Login Page */
 
+body, table, input, button, select, textarea, a {
+	font-family: Lato, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+
 div#loginBox{
 	border:solid 1px #ccc !important;
 	box-shadow: 3px 3px 20px #ddd;
@@ -29,7 +34,6 @@ div#loginBox .logo:before {
 	line-height: 2.5em;
 	font-size: 1.5em;
 	margin: 1em;
-	font-family: Lato, Arial, Helvetica, sans-serif;
 	font-weight: 400 !important;
 	color: #A69A88 !important;
 }
@@ -57,8 +61,7 @@ div#loginBox .buttonContainer{
 }
 
 div#loginBox .portalTitle {
-	font-size: 14px !important;
-	font-family: Lato, Arial, Helvetica, sans-serif;
+	font-size: 1.27em !important;
 	font-weight: 500 !important;
 	color: #5C6E87 !important;
 }
@@ -72,5 +75,4 @@ div#loginBox .portalTitle {
 .label-form{
 	color: #5C6E87 !important;
 	font-weight: 600 !important;
-	font-family: Lato, Arial, Helvetica, sans-serif !important;
 }

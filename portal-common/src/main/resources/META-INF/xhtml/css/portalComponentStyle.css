@@ -12,16 +12,14 @@
 }
 
 .messagePanel {
-	font-family: Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	height:20px;
 	background-color: #FFD966;
 	border: 1px solid #CCCCCC;
 }
 
 .messagePanel .messagePanelText {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	height: 18px;
 	padding-left: 5px;
 	margin-left:5px;
@@ -86,7 +84,7 @@
 
 .genericTablePaginatorInfo
 {
-	font-size: 9px;
+	font-size: .82em;
 	color: #999999;
 }
 
@@ -165,13 +163,13 @@
 
 .breadCrumbTitle
 {
-	font-size: 8pt;
+	font-size: .73em;
 	color: #5c5b5b;
 }
 
 .breadCrumbTitleLink
 {
-	font-size: 8pt;
+	font-size: .73em;
 	color: #5c5b5b;
 	text-decoration:underline; 
 }
@@ -223,8 +221,7 @@
 
 .popupDialogHdr .headerText {
 	color: #333333;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	font-weight: bold;
 	padding: 0px;
 	line-height: 20px;
@@ -344,8 +341,7 @@
 	color: #333333;
 	padding: 0px 10px 0px 10px;
 	border-bottom: 1px solid #D9D9D9;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	font-weight: bold;
 	text-align: left;
 	vertical-align: middle;
@@ -368,8 +364,7 @@
 }
 
 .pnlConfirmationBtns input {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	color: #333333;
 	background: #FFFFFF url( "./css-images/button-background.png" ) bottom repeat-x;
 	border: 1px solid #CCCCCC;
@@ -460,8 +455,7 @@ div.columnItemBoxInput input{
 
 div.columnItemBoxLabel{
 	margin-left: 20px;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	color: #333333;
 	white-space: nowrap;
 }
@@ -510,7 +504,7 @@ div.columnsListBox {
 }
 
 .commonMenuItem .iceOutTxt{
-	font-size: 12px;
+	font-size: 1.1em;
 	color: #75C0CD;
 }
 
@@ -539,7 +533,7 @@ div.columnsListBox {
 
 .commonMenuHeadingItem .iceOutTxt {
 	line-height: 30px;
-	font-size: 12px;
+	font-size: 1.1em;
 	color: #B9B5AE;
 	padding-left: 10px;
 }

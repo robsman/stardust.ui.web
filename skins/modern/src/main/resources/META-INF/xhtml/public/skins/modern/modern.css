@@ -80,6 +80,11 @@
   src: local('Lato Black Italic'), local('Lato-BlackItalic'), url(./fonts/Lato/Lato-BlackItalic.ttf);
 }
 
+body, table, input, button, select, textarea, a {
+	font-family: Lato, Arial, Helvetica, sans-serif !important;
+	font-size: 11px;
+}
+
 /************************************************************************/
 /**************************FONT IMPORTS END****************************/
 /************************************************************************/
@@ -123,7 +128,7 @@ div#loginBox .loginContent{
 div#loginBox .portalTitle{
 	margin-bottom:10px;
 	color:#708090;
-	font-size:14px;
+	font-size:1.27em;
 	font-weight:bold;
 }
 
@@ -140,8 +145,7 @@ div#loginBox td.data{
 }
 
 div#loginBox .loginContent input{
-	font-family: Lato, Arial, Helvetica, sans-serif;
-	font-size:11px;
+	font-size:1em;
 	width:160px;
 }
 
@@ -160,8 +164,7 @@ div#loginBox .buttonContainer input{
 	margin:5px;
 	padding:3px;
 	color:#333333;
-	font-family: Lato, Arial, Helvetica, sans-serif;
-	font-size:11px;
+	font-size:1em;
 	font-weight:normal;
 	background:#FFFFFF url(./skin-images/toolbar-BG.jpg) bottom repeat-x;
 	cursor:pointer;
@@ -172,7 +175,7 @@ div#loginBox .buttonContainer input{
 }
 
 .loginMsgError{
-	font-size: 10px;
+	font-size: .91em;
 }
 
 /* ************************** Login Page - END ************************** */
@@ -505,7 +508,7 @@ html, body {
 	border-top:1px solid #CCCCCC;
 	background:url(./skin-images/footer-BG.jpg) top repeat-x;
 	color:#CCCCCC;
-	font-size:10px;
+	font-size:.91em;
 	text-align:center;
 	padding:5px 0;
 }
@@ -939,9 +942,6 @@ html, body {
 /* ************** Common Styles ************ */
 body, table {
 	margin:0;
-	font-family: Lato, Arial, Helvetica, sans-serif !important;
-	font-size:11px;
-
 }
 
 .panelHeader {
@@ -955,7 +955,7 @@ body, table {
 
 .panelHeaderTitle,
 .panelHeaderTitle:hover {
-	font-size: 14px !important;
+	font-size: 1.27em !important;
 	font-weight: 500 !important;
 	color: #A69A88 !important;
 	x-margin-left:-7px;
@@ -986,8 +986,7 @@ img
 
 .button, .button-dis /* Primary Button */
 {
-	font-family: Lato, Arial, Helvetica, sans-serif;
-	font-size:11px;
+	font-size:1em;
 	color:#333333;
 	padding:3px 10px;
 	background: #FFFFFF;
@@ -1054,7 +1053,7 @@ img
 
 .sub-heading .iceOutTxt
 {
-	font-size: 11px;
+	font-size: 1em;
 	font-weight: bold;
 	color: #aaaaaa;
 }
@@ -1106,7 +1105,7 @@ img
 {
     background-color: #d4d0c8;
     color: #0a246a;
-    font-size: 16px;
+    font-size: 1.45em;
     font-weight: bold;
     border: none;
     padding: 0px;
@@ -1199,7 +1198,7 @@ img
 
 .table-header
 {
-	font-size: 12px;
+	font-size: 1.1em;
 	text-align: left;
 	background: none;
 	background-color: #cccccc;
@@ -1209,7 +1208,7 @@ img
 
 .table-column
 {
-	font-size: 12px;
+	font-size: 1.1em;
 	vertical-align: top;
 	padding: 0px;
 	padding-left: 3px;
@@ -1354,8 +1353,7 @@ img
 	height:85px; /*adjust as needed */
 	border:1px solid #ffe570;
 	background:#FFFFE0;
-	font-family: Lato, Arial, Helvetica, sans-serif;
-	font-size:11px;
+	font-size:1em;
 
 	scrollbar-base-color: #FFFFE0;
 	scrollbar-arrow-color: #cc9900;
@@ -1406,7 +1404,7 @@ img
 	white-space: nowrap;
 	text-align: left;
     border-bottom: 1px solid #8898c2;
-    font-size: 11px;
+    font-size: 1em;
     font-weight: 500;
     color: #5C6E87;
     text-transform:upper-case;
@@ -1765,7 +1763,6 @@ select.icon-menu option {
 .autoCompTable
 {
 	width: 100%;
-	font-family: Lato,Arial,Helvetica,sans-serif;
 }
 
 table.autoCompTable, 
@@ -1779,8 +1776,8 @@ table.autoCompTable > tbody > tr > td
 {
 	background-color: #F2F2F2;
 	text-align: center;
-	font-family: Lato,Arial,Helvetica,sans-serif;
-	font: bold 11px Lato;
+	font-size: 1em;
+	font-weight: bold;
 }
 
 .autoCompTableRemoveCol
@@ -1836,8 +1833,7 @@ table.autoCompTable > tbody > tr > td
 /* ********** TOOLTIP2 - START ********** */
 
 .tooltip2 {
- 	font-family: Lato, Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	margin:0 15px 15px 0;
 	border-top: 1px solid #999;
 	border-right: 1px solid #999;
@@ -1854,7 +1850,7 @@ table.autoCompTable > tbody > tr > td
 }
 
 .tooltip2 .tooltip2TitleBar {
-	font-size: 12px;
+	font-size: 1.1em;
 	font-weight: bold;
 	margin: 0px;
 	margin-bottom: 5px;
@@ -2071,8 +2067,7 @@ table.autoCompTable > tbody > tr > td
 	border-width: 1px;
 	color: #333333;
 	cursor: pointer;
-	font-family: Lato, Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	font-weight: normal;
 	margin: 5px;
 	padding: 3px;
@@ -2138,7 +2133,7 @@ table.autoCompTable > tbody > tr > td
 	white-space: nowrap;
 	font-weight: normal;
 	line-height: 24px;
-	font-size:13px;
+	font-size:1.18em;
 }
 
 /***************Info Panel Style Ends *******************/
@@ -2239,7 +2234,7 @@ fieldset {
 .iceInpTxt, .iceInpSecrt, .iceInpTxtArea {
     margin: 2px;
     padding: 3px;
-    font: 11px Lato;
+    font-size: 1em;
     color:#333333;
     background: #FFF;
     border: 1px solid #d9d9d9;
@@ -2271,7 +2266,7 @@ fieldset {
 .iceSelOneMnu, .iceSelMnyLb, .iceSelMnyMnu, .iceSelOneLb {
     margin: 2px;
     padding: 3px;
-    font: 11px tahoma;
+    font-size: 1em;
     background: #FFF;
     border: 1px solid #d9d9d9;
 }
@@ -2279,7 +2274,7 @@ fieldset {
 .iceInpTxtArea {
     margin: 2px;
     padding: 3px;
-    font: 11px Lato;
+    font-size: 1em;
     color:#333333;
     background: #FFF;
     border: 1px solid #d9d9d9;
@@ -2292,7 +2287,6 @@ fieldset {
 }
 
 .iceOutTxt, .iceOutLbl {
-    font-family: Lato, Arial, Helvetica, sans-serif;
     color: #708090;
     padding-left: 0px;
     padding-right: 0px;
@@ -2306,7 +2300,6 @@ fieldset {
 }
 
 .iceCmdBtn {
-    font-family: Lato, Arial, Helvetica, sans-serif;
 }
 
 /*
@@ -2328,7 +2321,6 @@ div#ui-datepicker-div .ui-widget-content .ui-state-default,
 div#ui-datepicker-div .ui-widget-header .ui-state-default{
 	background:none;
 	border:none;
-    font-family:lato;
 }
 
 div#ui-datepicker-div .ui-widget-header {
@@ -2340,12 +2332,12 @@ div#ui-datepicker-div .ui-widget-header {
 
 .ui-datepicker .ui-datepicker-next:after {
   content: '>';
-  font-size: 18px;
+  font-size: 1.64em;
 }
 
 .ui-datepicker .ui-datepicker-prev:after {
   content: '<';
-  font-size: 18px;
+  font-size: 1.64em;
 }
 
 .ui-datepicker .ui-widget-header .ui-icon {
@@ -2443,7 +2435,7 @@ table.iceSelInpDate tbody tr td table{
 .iceSelInpDateMonthYear, .iceSelInpDateTime{
     background: #FFFFFF;
     font-weight: 600;
-    font-size:12px !important;
+    font-size:1.1em !important;
     text-align: center;
     color: #28303B;
     padding-left: 1px;
@@ -2639,7 +2631,7 @@ table.iceSelInpDate tbody tr td table{
 .iceDatTblColHdr, .iceDatTblColHdr1, .iceDatTblColHdr2, .iceDatTblColGrpHdrCol, .iceDatTblFtr {
 /* was iceTblHeader */
     text-align: center;
-    font: 11px tahoma;
+    font-size: 1em;
     color: #484848;
     padding: 5px;
     font-weight: 500;
@@ -3785,8 +3777,6 @@ table.iceSelInpDate tbody tr td table{
     background-color: #FFFFFF;
     margin: 2px;
     padding: 2px;
-    font-family: Lato, Arial, Helvetica, sans-serif;
-
     color: #000000;
 }
 
@@ -3795,8 +3785,6 @@ table.iceSelInpDate tbody tr td table{
     background-color: #FFFFFF;
     margin: 2px;
     padding: 2px;
-    font-family: Lato, Arial, Helvetica, sans-serif;
-
     color: #000000;
 }
 
@@ -4084,7 +4072,7 @@ table.iceSelInpDate tbody tr td table{
     background-color: #FCFCFC;
     border: 1px solid #999999;
     position: absolute;
-    font-size: 10px;
+    font-size: .91em;
     height: auto;
     display: block;
 }
@@ -4173,7 +4161,7 @@ table.iceSelInpDate tbody tr td table{
     padding: 4px;
     text-align: center;
     vertical-align: middle;
-    font: 11px tahoma;
+    font-size: 1em;
     color: #484848;
     font-weight: bold;
 }
@@ -4280,12 +4268,11 @@ table.iceSelInpDate tbody tr td table{
     cursor: default;
     margin: 2px;
     padding: 3px;
-    font: 11px Lato;
+    font-size: 1em;
     border: 1px dotted transparent;
 }
 
 .iceInpTxtArea-dis {
-    font-family: Lato, Arial, Helvetica, sans-serif;
     font-size: .95em;
     color: #ABABAB;
     border: 1px dotted transparent;
@@ -4304,7 +4291,6 @@ table.iceSelInpDate tbody tr td table{
 }
 
 .iceSelOneMnu-dis, .iceSelMnyLb-dis, .iceSelMnyMnu-dis, .iceSelOneLb-dis {
-    font-family: Lato, Arial, Helvetica, sans-serif;
     color: #CCCCCC;
     padding: 2px;
     font-size: .95em;
@@ -4324,7 +4310,6 @@ table.iceSelInpDate tbody tr td table{
     background-color: #FFFFFF;
     margin: 2px;
     padding: 2px;
-    font-family: Lato, Arial, Helvetica, sans-serif;
     color: #CCCCCC;
     cursor: default;
 }
@@ -4334,7 +4319,6 @@ table.iceSelInpDate tbody tr td table{
     background-color: #FFFFFF;
     margin: 2px;
     padding: 2px;
-    font-family: Lato, Arial, Helvetica, sans-serif;
     color: #CCCCCC;
     cursor: default;
 }
@@ -5107,7 +5091,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 }
 
 .icePnlClpsblHdr, .icePnlClpsblHdr-dis {
-    font: 11px Lato;
+    font-size: 1em;
     color: #333333;
     padding: 3px 0 1px 4px;
     font-weight: bold;
@@ -5129,7 +5113,8 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 }
 
 .icePnlClpsblCnt, .icePnlClpsblCnt-dis {
-    font: 11px / 17px tahoma;
+    font-size: 1em;
+    line-height: 17px;
     color: #494949;
     background: #f5f5f5;
     padding: 4px 4px 4px 9px;
@@ -5141,7 +5126,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 }
 
 .icePnlClpsblCnt .icePnlClpsblHdr {
-    font: 11px Lato;
+    font-size: 1em;
     color: #333333;
     padding: 0 0 0 0;
     font-weight: bold;
@@ -5155,7 +5140,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 }
 
 .icePnlClpsblCnt .icePnlClpsblColpsdHdr {
-    font: 11px Lato;
+    font-size: 1em;
     color: #333333;
     padding: 0 0 0 0;
     font-weight: bold;
@@ -5183,7 +5168,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 }
 
 .icePnlClpsblColpsdHdr, .icePnlClpsblColpsdHdr-dis {
-    font: 11px Lato;
+    font-size: 1em;
     color: #333333;
     padding: 3px 0 1px 4px;
     font-weight: bold;
@@ -5352,7 +5337,6 @@ iceRowSelSelectedMouseOver .iceOutTxt{
     padding: 0;
     z-index: 1000;
     color: #666666;
-    font-family: Lato, Arial, Helvetica, sans-serif;
 }
 
 .icePnlCnfHdr {
@@ -5362,7 +5346,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
     padding: 4px;
     text-align: left;
     vertical-align: middle;
-    font: 11px Lato;
+    font-size: 1em;
     color: #333333;
     font-weight: bold;
 }
@@ -5388,7 +5372,6 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 ----------- DataExporter ----------
 */
 .iceDatExp input{
-    font-family: Lato, Arial, Helvetica, sans-serif;
 }
 
 .icePnlTbLblLnk img {
@@ -5611,7 +5594,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 
 .icePnlClpsblColpsdHdr .iceOutTxt, .icePnlClpsblHdr .iceOutTxt, .icePnlClpsblColpsdHdr-dis .iceOutTxt, .icePnlClpsblHdr-dis .iceOutTxt {
 	color: #A69A88;
-	font-size:14px;
+	font-size:1.27em;
 	padding-left: 5px;
 	text-transform: uppercase;
 }
@@ -5619,7 +5602,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 .icePnlClpsblColpsdHdr .iceOutTxt:hover,
 .icePnlClpsblHdr .iceOutTxt{
 	color: #A69A88;
-	font: 14px Lato;
+	font-size: 1.27em;
 	font-weight:500;
 } 
 .icePnlClpsblHdr .iceOutTxt:hover {
@@ -5663,7 +5646,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
     padding-top: 3px;
     padding-bottom: 3px;
     margin-bottom: 0px;
-    font-size: 11px;
+    font-size: 1em;
 }
 
 .iceMnuPopVrtItem a:hover {
@@ -5680,7 +5663,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 .iceMnuPopVrtItem-dis .iceCmdLnk-dis {
     border-bottom: 0px !important;
     padding:3px 3px 3px 10px;
-    font-size: 11px;
+    font-size: 1em;
 }
 
 .iceMnuItmLabel-dis {
@@ -5771,7 +5754,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	/* Below is same as .iceInpTxt, .iceInpSecrt, .iceInpTxtArea */
     margin: 2px;
     padding: 3px;
-    font: 11px Lato;
+    font-size: 1em;
     background: #FFFFFF;
     border: 1px solid #AAAAAA;
 }
@@ -5780,7 +5763,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
     width: 147px;
     background-color: #F0F0F0;
     border: 1px solid #B6B6B6;
-    font: 11px Lato;
+    font-size: 1em;
     color: #333333;
     margin: 2px;
     padding: 3px;
@@ -5838,15 +5821,13 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 /* Styles for FileUpload Component ice:inputFile */
 
 .iceInpFileTxt {
-	font-family: Lato, Arial, Helvetica, sans-serif;
-	font-size:11px;
+	font-size:1em;
 	color:#333333;
 }
 
 /* This style is same as that of .button in nirvanaPortal.css */
 .iceInpFileBtn {
-	font-family: Lato, Arial, Helvetica, sans-serif;
-	font-size:11px;
+	font-size:1em;
 	color:#333333;
 	padding:3px 10px;
 	background: #FFFFFF;
@@ -5918,7 +5899,6 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 
 .participant-tree-highlight-style-common{
 	color: #000000;
-    font-family:  Lato, Arial,Helvetica,sans-serif;
     padding: 2px 0;
 }
 
@@ -5982,7 +5962,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
     padding-bottom: 0;
     padding-left: 7px;
     padding-top: 0;
-    font-size: 11px;
+    font-size: 1em;
 
 }
 
@@ -6042,16 +6022,14 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 }
 
 .messagePanel {
-	font-family: Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	height:20px;
 	background-color: #FFD966;
 	border: 1px solid #CCCCCC;
 }
 
 .messagePanel .messagePanelText {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	height: 18px;
 	padding-left: 5px;
 	margin-left:5px;
@@ -6118,7 +6096,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 
 .genericTablePaginatorInfo
 {
-	font-size: 9px;
+	font-size: .82em;
 	color: #999999;
 }
 
@@ -6132,7 +6110,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 
 .genericTableHdr{
     text-align: center;
-    font: 11px Lato;
+    font-size: 1em;
     color: #333333;
     padding: 0px;
     font-weight: bold;
@@ -6199,13 +6177,13 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 
 .breadCrumbTitle
 {
-	font-size: 8pt;
+	font-size: .73em;
 	color: #5c5b5b;
 }
 
 .breadCrumbTitleLink
 {
-	font-size: 8pt;
+	font-size: .73em;
 	color: #5c5b5b;
 	text-decoration:underline; 
 }
@@ -6257,8 +6235,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 
 .popupDialogHdr .headerText {
 	color: #333333;
-	font-family: Lato, Arial, Helvetica, sans-serif;
-	font-size: 15px;
+	font-size: 1.36em;
 	font-weight: 400 !important;
 	color: #A69A88 !important;
 	padding: 0px;
@@ -6381,8 +6358,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	color: #333333;
 	padding: 0px 10px 0px 10px;
 	border-bottom: 1px solid #D9D9D9;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	font-weight: bold;
 	text-align: left;
 	vertical-align: middle;
@@ -6405,8 +6381,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 }
 
 .pnlConfirmationBtns input {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	color: #333333;
 	background: #FFFFFF url( "./css-images/button-background.png" ) bottom repeat-x;
 	border: 1px solid #CCCCCC;
@@ -6499,8 +6474,7 @@ div.columnItemBoxInput input{
 
 div.columnItemBoxLabel{
 	margin-left: 20px;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	color: #333333;
 	white-space: nowrap;
 }
@@ -6513,7 +6487,8 @@ div.columnsListBox {
 
 /* Common Menu Start */
 .commonMenuLnk {
-	font: 16px bold Arial; 
+	font-size: 1.45em;
+	font-weight: bold; 
 	position: absolute; 
 	top:25px; 
 	left: 10px; 
@@ -6549,7 +6524,7 @@ div.columnsListBox {
 }
 
 .commonMenuItem .iceOutTxt{
-	font-size: 12px;
+	font-size: 1.1em;
 	color: #75C0CD;
 }
 
@@ -6578,7 +6553,7 @@ div.columnsListBox {
 
 .commonMenuHeadingItem .iceOutTxt {
 	line-height: 30px;
-	font-size: 11px;
+	font-size: 1em;
 	color: #28303B;
 	padding-left: 10px;
 }
@@ -6893,7 +6868,6 @@ textarea
 {
 	border-radius:3px;
 	border:solid 1px #ddd !important;
-	font-family: Lato !important;
 	font-weight:normal !important;
 }
 select{
@@ -7018,7 +6992,7 @@ div.icePnlGrp.toolbar-button:hover{
 
 /*targets just the data in a dataTable*/
 td.iceDatTblCol.genericTableCol .iceOutTxt{
-	font-size: 11px;
+	font-size: 1em;
 	color: #708090;
 }
 
@@ -7199,13 +7173,11 @@ i.viewIconBase.bell{
 {
 	color: #5C6E87 !important;
 	font-weight: 600 !important;
-	font-family: Lato, Arial, Helvetica, sans-serif !important;
 }
 
 .propertiesPage .heading,
 .clplPanelHeading label{
 	color: #A69A88 !important;
-	font-family: Lato, Arial, Helvetica, sans-serif !important;
 	font-weight: 600 !important;
 }
 
@@ -7218,8 +7190,7 @@ div.propertiesPanel{
 .propertiesPanelTitle{
 	background: none;
 	color: #a69a88;
-	font-family: Lato, Arial, Helvetica, sans-serif;
-	font-size: 14px;
+	font-size: 1.27em;
 	font-weight: 600;
 	text-transform: uppercase;
 }
@@ -7595,7 +7566,6 @@ x-img[src *='disk_multiple.png']:hover{
 .jstree a{
 	color:#5C6E87 !important;
 	text-decoration:none !important;
-	font: Lato;
 }
 .jstree-clicked{
 	border: 1px solid rgb(187, 187, 228) !important;
@@ -12621,8 +12591,7 @@ input[src *='zoom_out.png']:hover{
 .ui-camino-dialog span.ui-dialog-title {
 	color: rgb(166, 154, 136) !important;
 	float: left !important;
-	font-family: Lato, Arial, Helvetica, sans-serif !important;
-	font-size: 15px !important;
+	font-size: 1.36em !important;
 	font-weight: normal;
 	height: 20px !important;
 	line-height: 20px !important;
@@ -12656,13 +12625,11 @@ input[src *='zoom_out.png']:hover{
 .hot-splithdr-label{
 	color: gray !important;
 	font-weight: normal !important;
-	font-family: Lato, Arial, Helvetica, sans-serif;
 }
 
 .colHeader > span{
 	color: #708090;
 	font-weight: 600;
-	font-family: Lato, Arial, Helvetica, sans-serif;
 }
 
 /*Handsontable Menu dialog (DRL operator menu)*/
@@ -12763,14 +12730,12 @@ div[id*='perspectiveMenuPopup:']{
 }
 
 .iPopupDialogContentText{
-	font-family: Lato, Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	color: #708090;
 }
 
 .iPopupDialogTitleText{
-	font-family: Lato, Arial, Helvetica, sans-serif;
-	font-size: 15px;
+	font-size: 1.36em;
 	font-weight: 400 !important;
 	color: #A69A88 !important;
 	text-transform: uppercase;
@@ -12820,8 +12785,7 @@ a,input,tr,select{
 /**Process & Go editor**/
 a, .listItem {
 	color: #708090;
-	font-family: Lato, Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 }
 
 img[src *='delete.png'].nodeMenuIcon {

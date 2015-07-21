@@ -8,30 +8,20 @@
  * Contributors:
  *     SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-{
-	font-family: Helvetica, Arial, sans-serif;
-	font-family: sans-serif;
-}
-
 body {
-	font-family: Helvetica, Arial, sans-serif;
-	font-family: sans-serif;
 }
 
 h1 {
 	margin-top: 10px;
-	font-family : Helvetica, Arial, sans-serif;
 	font-weight: normal;
-	font-size: 18px;
+	font-size: 1.64em;
 	color: #365f91;
-	font-family: Helvetica, Arial, sans-serif;
 }
 
 h2 {
 	margin-top: 10px;
-	font-family: Helvetica, Arial, sans-serif;
 	font-weight: normal;
-	font-size: 14px;
+	font-size: 1.27em;
 	color: #888888;
 }
 
@@ -40,27 +30,24 @@ h2 {
 }
 
 label {
-	font-family: Helvetica, Arial, sans-serif;
 	font-weight: normal;
-	font-size: 11px;
+	font-size: 1em;
 	color: #333333;
 }
 
 li {
-	font-size: 11px;
+	font-size: 1em;
 }
 
 input {
 	padding: 2px;
-	font-family: Helvetica, Arial, sans-serif;
 	font-weight: normal;
-	font-size: 11px;
+	font-size: 1em;
 }
 
 select option {
-	font-family: Helvetica, Arial, sans-serif;
 	font-weight: normal;
-	font-size: 11px;
+	font-size: 1em;
 }
 
 .integerInputField {
@@ -142,7 +129,7 @@ dataTable .referenceRow select option {
 .dataTable thead th {
 	color: #365f91;
 	padding: 3px;
-	font-size: 12px;
+	font-size: 1.1em;
 	font-weight: bold;
 	text-align: left;
 	border-bottom: 2px solid #365f91;
