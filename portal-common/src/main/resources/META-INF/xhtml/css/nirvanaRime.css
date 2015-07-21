@@ -135,7 +135,6 @@ fieldset {
 }
 
 .iceOutTxt, .iceOutLbl {
-    font-family: Arial, Helvetica, sans-serif;
     color: #000000;
     padding-left: 0px;
     padding-right: 0px;
@@ -149,7 +148,6 @@ fieldset {
 }
 
 .iceCmdBtn {
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 /*
@@ -1553,8 +1551,6 @@ table.iceSelInpDate tbody tr td table{
     background-color: #FFFFFF;
     margin: 2px;
     padding: 2px;
-    font-family: Arial, Helvetica, sans-serif;
-
     color: #000000;
 }
 
@@ -1563,8 +1559,6 @@ table.iceSelInpDate tbody tr td table{
     background-color: #FFFFFF;
     margin: 2px;
     padding: 2px;
-    font-family: Arial, Helvetica, sans-serif;
-
     color: #000000;
 }
 
@@ -1853,7 +1847,7 @@ table.iceSelInpDate tbody tr td table{
     background-color: #FCFCFC;
     border: 1px solid #999999;
     position: absolute;
-    font-size: 10px;
+    font-size: .91em;
     height: auto;
     display: block;
 }
@@ -2051,7 +2045,6 @@ table.iceSelInpDate tbody tr td table{
 }
 
 .iceInpTxtArea-dis {
-    font-family: Arial, Helvetica, sans-serif;
     font-size: .95em;
     color: #ABABAB;
     border: 1px dotted #CCCCCC;
@@ -2070,7 +2063,6 @@ table.iceSelInpDate tbody tr td table{
 }
 
 .iceSelOneMnu-dis, .iceSelMnyLb-dis, .iceSelMnyMnu-dis, .iceSelOneLb-dis {
-    font-family: Arial, Helvetica, sans-serif;
     color: #CCCCCC;
     padding: 2px;
     font-size: .95em;
@@ -2090,7 +2082,6 @@ table.iceSelInpDate tbody tr td table{
     background-color: #FFFFFF;
     margin: 2px;
     padding: 2px;
-    font-family: Arial, Helvetica, sans-serif;
     color: #CCCCCC;
     cursor: default;
 }
@@ -2100,7 +2091,6 @@ table.iceSelInpDate tbody tr td table{
     background-color: #FFFFFF;
     margin: 2px;
     padding: 2px;
-    font-family: Arial, Helvetica, sans-serif;
     color: #CCCCCC;
     cursor: default;
 }
@@ -3119,7 +3109,6 @@ Disabled classes for the calendar controls
     padding: 0;
     z-index: 1000;
     color: #666666;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .icePnlCnfHdr {
@@ -3155,7 +3144,6 @@ Disabled classes for the calendar controls
 ----------- DataExporter ----------
 */
 .iceDatExp input{
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .icePnlTbLblLnk img {

@@ -1,3 +1,12 @@
+/* ************************** General - START ************************ */
+
+body, table, input, button, select, textarea, a {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+
+/* ************************** General - END ************************** */
+
 /* ************************** Login Page - START ************************ */
 div#loginBox{
 	width:300px;
@@ -33,7 +42,7 @@ div#loginBox .loginContent{
 div#loginBox .portalTitle{
 	margin-bottom:10px;
 	color:#708090;
-	font-size:14px;
+	font-size:1.27em;
 	font-weight:bold;
 }
 
@@ -50,8 +59,7 @@ div#loginBox td.data{
 }
 
 div#loginBox .loginContent input{
-	font-family:Arial, Helvetica, sans-serif;
-	font-size:11px;
+	font-size:1em;
 	width:160px;
 }
 
@@ -70,8 +78,7 @@ div#loginBox .buttonContainer input{
 	margin:5px;
 	padding:3px;
 	color:#333333;
-	font-family:Arial, Helvetica, sans-serif;
-	font-size:11px;
+	font-size:1em;
 	font-weight:normal;
 	background:#FFFFFF url(../images/toolbar-BG.jpg) bottom repeat-x;
 	cursor:pointer;
@@ -82,7 +89,7 @@ div#loginBox .buttonContainer input{
 }
 
 .loginMsgError{
-	font-size: 10px;
+	font-size: .91em;
 }
 
 /* ************************** Login Page - END ************************** */
@@ -468,7 +475,7 @@ html, body {
 	border-top:1px solid #CCCCCC;
 	background:url(../images/footer-BG.jpg) top repeat-x;
 	color:#CCCCCC;
-	font-size:10px;
+	font-size:.91em;
 	text-align:center;
 	padding:5px 0;
 }
@@ -902,8 +909,6 @@ html, body {
 /* ************** Common Styles ************ */
 body, table {
 	margin:0;
-	font-family:Arial, Helvetica, sans-serif;
-	font-size:11px;
 }
 
 .panelHeader {
@@ -944,8 +949,7 @@ img
 
 .button, .button-dis /* Primary Button */
 {
-	font-family:Arial, Helvetica, sans-serif;
-	font-size:11px;
+	font-size:1em;
 	color:#333333;
 	padding:3px 10px;
 	background: #FFFFFF url( "./css-images/button-background.png" ) bottom repeat-x;
@@ -1001,7 +1005,7 @@ img
 }
 
 .portal-glyph-icon{
-	font-size: 16px;
+	font-size: 1.45em;
 }
 
 .heading
@@ -1017,14 +1021,14 @@ img
 
 .heading .iceOutTxt
 {
-	font-size: 11px;
+	font-size: 1em;
 	font-weight: bold;
 	color: #708090;
 }
 
 .sub-heading .iceOutTxt
 {
-	font-size: 11px;
+	font-size: 1em;
 	font-weight: bold;
 	color: #aaaaaa;
 }
@@ -1076,7 +1080,7 @@ img
 {
     background-color: #d4d0c8;
     color: #0a246a;
-    font-size: 16px;
+    font-size: 1.45em;
     font-weight: bold;
     border: none;
     padding: 0px;
@@ -1169,7 +1173,7 @@ img
 
 .table-header
 {
-	font-size: 12px;
+	font-size: 1.1em;
 	text-align: left;
 	background: none;
 	background-color: #cccccc;
@@ -1179,7 +1183,7 @@ img
 
 .table-column
 {
-	font-size: 12px;
+	font-size: 1.1em;
 	vertical-align: top;
 	padding: 0px;
 	padding-left: 3px;
@@ -1323,8 +1327,7 @@ img
 	height:85px; /*adjust as needed */
 	border:1px solid #ffe570;
 	background:#FFFFE0;
-	font-family:Arial, Helvetica, sans-serif;
-	font-size:11px;
+	font-size:1em;
 
 	scrollbar-base-color: #FFFFE0;
 	scrollbar-arrow-color: #cc9900;
@@ -1375,7 +1378,7 @@ img
 	white-space: nowrap;
 	text-align: left;
     border-bottom: 1px solid #8898c2;
-    font-size: 11px;
+    font-size: 1em;
     font-weight: bold;
     color: #8898c2;
 }
@@ -1733,7 +1736,6 @@ select.icon-menu option {
 .autoCompTable
 {
 	width: 100%;
-	font-family: Arial,Helvetica,sans-serif;
 }
 
 table.autoCompTable, table.autoCompTable > tbody > tr, table.autoCompTable > tbody > tr > td
@@ -1745,8 +1747,8 @@ table.autoCompTable, table.autoCompTable > tbody > tr, table.autoCompTable > tbo
 {
 	background-color: #F2F2F2;
 	text-align: center;
-	font-family: Arial,Helvetica,sans-serif;
-	font: bold 11px tahoma;
+	font-size: 1em;
+	font-weight: bold;
 }
 
 .autoCompTableRemoveCol
@@ -1802,8 +1804,7 @@ table.autoCompTable, table.autoCompTable > tbody > tr, table.autoCompTable > tbo
 /* ********** TOOLTIP2 - START ********** */
 
 .tooltip2 {
- 	font-family:Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	margin:0 15px 15px 0;
 	border-top: 1px solid #999;
 	border-right: 1px solid #999;
@@ -1820,7 +1821,7 @@ table.autoCompTable, table.autoCompTable > tbody > tr, table.autoCompTable > tbo
 }
 
 .tooltip2 .tooltip2TitleBar {
-	font-size: 12px;
+	font-size: 1.1em;
 	font-weight: bold;
 	margin: 0px;
 	margin-bottom: 5px;
@@ -2037,8 +2038,7 @@ table.autoCompTable, table.autoCompTable > tbody > tr, table.autoCompTable > tbo
 	border-width: 1px;
 	color: #333333;
 	cursor: pointer;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	font-weight: normal;
 	margin: 5px;
 	padding: 3px;
@@ -2104,7 +2104,7 @@ table.autoCompTable, table.autoCompTable > tbody > tr, table.autoCompTable > tbo
 	white-space: nowrap;
 	font-weight: normal;
 	line-height: 24px;
-	font-size:13px;
+	font-size:1.18em;
 }
 
 /***************Info Panel Style Ends *******************/
