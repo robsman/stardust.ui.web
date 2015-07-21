@@ -31,10 +31,6 @@
 	 */
 	benchmarkValidationService.prototype.isModelValid = function(model){
 		return !this.invalidData.hasOwnProperty(model.id);
-		/*
-		return !this.invalidData.some(function(invalid){
-			return invalid.modelRef.id === model.id;
-		});*/
 	};
 	
 	/**
@@ -45,18 +41,7 @@
 	 * @returns
 	 */
 	benchmarkValidationService.prototype.isProcessDefinitionValid = function(model,procDef){
-		var result = true;
 		return !this.invalidData.hasOwnProperty(model.id+procDef.id);
-		/*
-		if(this.isModelValid(model)===false){
-			//TODO: validate activities as we need to mark a procDef as invalid in the
-			//case where it is valid itself but its child activities contain a valid element.
-			result = !model.processDefinitions.some(function(pd){
-				return pd.id === procDef.id;
-			});
-		}*/
-		
-		return result;
 	};
 	
 	/**
@@ -127,7 +112,7 @@
 						console.log("CATCOND");
 						console.log(catCond);
 						//if we don't find a matching rhs id in our model data then push
-						//an entires onto our invalidData collection
+						//an entries onto our invalidData collection
 						if(!that.modelData[catCond.details.condition.rhs.id]){
 							that.invalidData[model.id]=true; //entry for the model
 							that.invalidData[model.id + procDef.id]=true; //entry for the proc def
