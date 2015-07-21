@@ -3,13 +3,6 @@
   color: rgb(36, 65, 94) !important;
 }
 
-/*override for tree labels on our benchmarkDataRow array*/
-i.selected+span{
-	background: #EEE2CF !important;
-	color: #708090 !important;
-  	border-radius: 5px !important;
-}
-
 /*dirty class for rows in the benchmark definition table*/
 span.dirty:before{
 	content:'*'

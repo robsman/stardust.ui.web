@@ -394,7 +394,12 @@
 				    						       placeHolder="Data Path"
 				    						       type="text"/>
 				    					</label>
-
+				    					
+			  							<i ng-show="ctrl.isDataRefValid(catInst.details.condition.rhs.id)===false"
+			  							   title="{{ctrl.textMap.invalidDataReference.replace('{0}',catInst.details.condition.rhs.id)}}" 
+			  							   class="sc sc-fw sc-1x sc-exclamation-triangle sc-warning">
+			  							</i>
+				
 			    					</div>
 				    					
 				    				<label style="display:inline-table;">

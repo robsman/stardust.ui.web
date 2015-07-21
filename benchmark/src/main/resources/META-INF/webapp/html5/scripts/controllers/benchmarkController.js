@@ -24,12 +24,12 @@
 	 */
 	function benchmarkController(benchmarkService, benchmarkBuilderService, 
 								 sdLoggedInUserService, $scope, $timeout, 
-								 sdDialogService,$interval,sdI18nService,sdUtilService){
+								 sdDialogService,$interval,sdI18nService,
+								 sdUtilService, benchmarkValidationService){
 		
 		
-		var that = this,   //Self reference
-			sdI18nModeler; //
-		
+		var that = this;   //Self reference
+
 		//Injected dependencies we need in our functions
 		this.benchmarkService = benchmarkService;
 		this.benchmarkBuilderService = benchmarkBuilderService;
@@ -39,6 +39,7 @@
 		this.$interval = $interval;
 		this.i18N = sdI18nService.getInstance('benchmark-messages').translate;
 		this.sdUtilService = sdUtilService;
+		this.benchmarkValidationService = benchmarkValidationService;
 		
 		//Function level properties
 		this.textMap = {};
@@ -66,6 +67,7 @@
 		this.initTextMap();
 		
 		//initialize our attribute operands we will use in our condition dropdowns (lhs and rhs).
+		//requires textMap be initialized first.
 		this.attributeOperands = [];
 		this.attributeOperands.push(
 				this.operandBuilder("attribute","","CURRENT_TIME",this.textMap.currentTime));
@@ -105,16 +107,16 @@
 			var predefinedModelIndex = -1,
 				i = 0;
 			
+			//initialize validation service
+			that.benchmarkValidationService.initModelData(res.models);
+			
 			res.models.forEach(function(model){
-				
 				//track if/where we find the predefinedModel instance
 				if(model.id==='PredefinedModel'){predefinedModelIndex=i;}
-				
 				//filter model data
 				model.data = model.data.filter(function(v){
 					return v.typeId == 'struct' || v.typeId == 'primitive';
 				});
-				
 				i++;
 			});
 			
@@ -180,6 +182,7 @@
 		this.textMap.data = this.i18N("views.main.categoryDataTable.cell.data");
 		this.textMap.filterTreeNodes  = this.i18N("views.main.tabs.tree.button.filter.hide");
 		this.textMap.showAllTreeNodes  = this.i18N("views.main.tabs.tree.button.filter.showall");
+		this.textMap.invalidDataReference = this.i18N("views.main.categoryDataTable.error.invalidDataReference");
 
 	};
 	
@@ -200,7 +203,7 @@
 			"deref" : dataRef,
 			"name" : name,
 			"groupName" : groupName
-		}
+		};
 	}
 	
 	/**
@@ -350,6 +353,10 @@
 		.then(function(data){
 			//Now mark our original benchmark as clean
 			benchmark.isDirty = false;
+			
+			//reset our validation environment with the new benchmark state
+			that.benchmarkValidationService.setValidationBenchmark(benchmark);
+			
 			//and inform the user of their success!
 			that.saveSuccessDialog.open();
 		})
@@ -707,6 +714,17 @@
 	}
 	
 	/**
+	 * wraps our benchmarkValidation service isCategoryValid method.
+	 * Requires that the validation service has the correct benchmark environment current via
+	 * setValidationBenchmark invocation.
+	 * @param categoryId
+	 * @returns
+	 */
+	benchmarkController.prototype.isDataRefValid = function(hashId){
+		return this.benchmarkValidationService.isDataRefValid(hashId);
+	};
+	
+	/**
 	 * As our category priority is implicit based upon the ordinal position in the benchmarks
 	 * top level category array, we need a way to specify position for the category data which
 	 * is linked by id within our benchmarkData properties of our procDefs and  activities.
@@ -782,12 +800,12 @@
 		if(d.action==="select"){
 			bm = benchmarkArr.filter(function(v){return v.content.id===d.current.content.id})[0];
 			this.selectedBenchmark = bm.content ;
-			//this.selectedBenchmark = d.current.content;
-			console.log("Benchmark Selected");
-			console.log(JSON.stringify(this.selectedBenchmark));
+			this.benchmarkValidationService.setValidationBenchmark(bm.content);
 		}
 		else if(d.action==="deselect"){
 			this.selectedBenchmark = undefined;
+			//TODO: reset validation states in model tree
+			this.invalidData = [];
 		}
 		this.benchmarkDataRows=[];
 	}
@@ -1019,9 +1037,10 @@
 			
 			bmarkDataRow = {
 					"benchmark" : benchmark, 
-					"modelData" : conditions,//parentModel.data,
+					"modelData" : conditions,                      //parentModel.data,
 					"element" : "Process Definition",
-					"elementRef" : procDef,
+					"elementRef" : procDef,                        
+					"rhsValidationHash" : model.id + procDef.id,   //ids of parent elements
 					"treeNodeRef" : item,
 					"nodePath" : "{" + model.id + "}" + procDef.id, 
 					"breadCrumbs" : [parentModel.name,item.valueItem.name],
@@ -1063,6 +1082,7 @@
 				"modelData" : conditions,
 				"element" : "Activity",
 				"elementRef" : activity,
+				"rhsValidationHash" : model.id + procDef.id + activity.id,   //ids of parent elements
 				"treeNodeRef" : item,
 				"breadCrumbs" : [parentModel.name,parentProcDef.name,item.valueItem.name],
 				"nodePath" : "{" + model.id + "}" + procDef.id + ":" + activity.id, 
@@ -1111,14 +1131,20 @@
 	 */
 	benchmarkController.prototype.iconCallback = function(d,e){
 		var iconCss = "", //classes we will apply to the tree node
+			parentModel,  //Model
 			parentPd,     //Parent process definition
 			isSelected=false,   //if the benchmark element is on our benchmarkDataRows collection
+			nodeItem,
 			hasBenchmark = false;
 		
+		nodeItem = this.treeApi.childNodes[d.nodeId];
 		
 		//TODO-ZZM: need appropriate icons
 		if(d.nodeType === "model"){
 			iconCss = "sc sc-spiral";
+			if(!this.benchmarkValidationService.isModelValid(nodeItem.model)){
+				iconCss += " invalid";
+			}
 			if(this.selectedBenchmark){
 				hasBenchmark = this.selectedBenchmark.models.some(function(model){
 					return model.id === d.id;
@@ -1126,15 +1152,21 @@
 			}
 		}
 		else if(d.nodeType === "process"){
+			iconCss = "sc sc-cog";
+			if(!this.benchmarkValidationService.isProcessDefinitionValid(nodeItem.model,nodeItem.process)){
+				iconCss += " invalid";
+			}
 			hasBenchmark = this.isBenchmarked(this.selectedBenchmark,d.id);
 			isSelected = this.isNodeOnDataRows(d);
-			iconCss = "sc sc-cog";
 		}
 		else{
+			iconCss = "sc sc-cogs";
+			if(!this.benchmarkValidationService.isActivityValid(nodeItem.model,nodeItem.process,nodeItem.activity)){
+				iconCss += " invalid";
+			}
 			parentPd = this.treeApi.getParentItem(d.nodeId);
 			hasBenchmark = this.isBenchmarked(this.selectedBenchmark,parentPd.id,d.id);
 			isSelected = this.isNodeOnDataRows(d);
-			iconCss = "sc sc-cogs";
 		}
 		
 		if(hasBenchmark){
@@ -1284,7 +1316,8 @@
 	                               "sdDialogService",
 	                               "$interval",
 	                               "sdI18nService",
-	                               "sdUtilService"];
+	                               "sdUtilService",
+	                               "benchmarkValidationService"];
 	
 	//add controller to our app
 	angular.module("benchmark-app")

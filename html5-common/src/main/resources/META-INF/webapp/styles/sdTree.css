@@ -161,16 +161,14 @@ ul.sd-tree a.tree-node:hover{
   background:#ddd;
 }
 
-/*ul.sd-tree .tree-node.selected span{
-  background:grey;
-  color:#fff;
-  border-radius:5px;
-}*/
-/*Updated to match dataTable selection style*/
 ul.sd-tree i.selected+span {
   background: #EEE2CF !important;
   color: #708090 !important;
   border-radius: 5px !important;
+}
+
+ul.sd-tree i.invalid:before{
+	color: red !important;
 }
 
 .sd-tree .match {
