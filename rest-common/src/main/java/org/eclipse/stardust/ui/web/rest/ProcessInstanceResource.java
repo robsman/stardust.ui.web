@@ -49,12 +49,11 @@ import com.google.gson.JsonObject;
 @Path("/process-instances")
 public class ProcessInstanceResource
 {
-   private static final Logger trace = LogManager
-         .getLogger(ProcessInstanceResource.class);
+   private static final Logger trace = LogManager.getLogger(ProcessInstanceResource.class);
 
    @Autowired
    private ProcessInstanceService processInstanceService;
-   
+
    @Autowired
    ProcessDefinitionService processDefService;
 
@@ -63,17 +62,15 @@ public class ProcessInstanceResource
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{processInstanceOid: \\d+}/documents/{documentId}/split")
-   public Response splitDocument(@PathParam("processInstanceOid")
-   long processInstanceOid, @PathParam("documentId")
-   String documentId, String postedData)
+   public Response splitDocument(@PathParam("processInstanceOid") long processInstanceOid,
+         @PathParam("documentId") String documentId, String postedData)
    {
       try
       {
          JsonObject json = jsonIo.readJsonObject(postedData);
 
-         return Response.ok(
-               getProcessInstanceService().splitDocument(processInstanceOid, documentId,
-                     json).toString(), MediaType.APPLICATION_JSON).build();
+         return Response.ok(getProcessInstanceService().splitDocument(processInstanceOid, documentId, json).toString(),
+               MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {
@@ -87,18 +84,16 @@ public class ProcessInstanceResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{processInstanceOid: \\d+}/documents/{dataPathId}")
-   public Response addDocument(@PathParam("processInstanceOid")
-   String processInstanceOid, @PathParam("dataPathId")
-   String dataPathId, String postedData)
+   public Response addDocument(@PathParam("processInstanceOid") String processInstanceOid,
+         @PathParam("dataPathId") String dataPathId, String postedData)
    {
       try
       {
          JsonObject json = jsonIo.readJsonObject(postedData);
 
          return Response.ok(
-               getProcessInstanceService().addProcessInstanceDocument(
-                     Long.parseLong(processInstanceOid), dataPathId, json).toString(),
-               MediaType.APPLICATION_JSON).build();
+               getProcessInstanceService().addProcessInstanceDocument(Long.parseLong(processInstanceOid), dataPathId,
+                     json).toString(), MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {
@@ -111,17 +106,14 @@ public class ProcessInstanceResource
    @DELETE
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{processInstanceOid: \\d+}/documents/{dataPathId}{documentId: (/documentId)?}")
-   public Response removeDocument(@PathParam("processInstanceOid")
-   String processInstanceOid, @PathParam("dataPathId")
-   String dataPathId, @PathParam("documentId")
-   String documentId)
+   public Response removeDocument(@PathParam("processInstanceOid") String processInstanceOid,
+         @PathParam("dataPathId") String dataPathId, @PathParam("documentId") String documentId)
    {
       try
       {
          return Response.ok(
-               getProcessInstanceService().removeProcessInstanceDocument(
-                     Long.parseLong(processInstanceOid), dataPathId, documentId)
-                     .toString(), MediaType.APPLICATION_JSON).build();
+               getProcessInstanceService().removeProcessInstanceDocument(Long.parseLong(processInstanceOid),
+                     dataPathId, documentId).toString(), MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {
@@ -141,8 +133,7 @@ public class ProcessInstanceResource
       {
          JsonObject json = jsonIo.readJsonObject(postedData);
 
-         return Response.ok(
-               getProcessInstanceService().getPendingProcesses(json).toString(),
+         return Response.ok(getProcessInstanceService().getPendingProcesses(json).toString(),
                MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
@@ -163,8 +154,8 @@ public class ProcessInstanceResource
       {
          JsonObject json = jsonIo.readJsonObject(postedData);
 
-         return Response.ok(getProcessInstanceService().startProcess(json).toString(),
-               MediaType.APPLICATION_JSON).build();
+         return Response.ok(getProcessInstanceService().startProcess(json).toString(), MediaType.APPLICATION_JSON)
+               .build();
       }
       catch (Exception e)
       {
@@ -173,16 +164,17 @@ public class ProcessInstanceResource
          return Response.serverError().build();
       }
    }
-   
+
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/updatePriorities")
-   public Response updatePriorities( String postedData)
+   public Response updatePriorities(String postedData)
    {
       try
       {
-         Map<String, Integer> oidPriorityMap = (Map)GsonUtils.extractMap(JsonDTO.getJsonObject(postedData), "priorities");
-         String jsonOutput = getProcessInstanceService().updatePriorities( oidPriorityMap);
+         Map<String, Integer> oidPriorityMap = (Map) GsonUtils.extractMap(JsonDTO.getJsonObject(postedData),
+               "priorities");
+         String jsonOutput = getProcessInstanceService().updatePriorities(oidPriorityMap);
          return Response.ok(jsonOutput, MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
@@ -192,7 +184,7 @@ public class ProcessInstanceResource
          return Response.serverError().build();
       }
    }
-   
+
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/allCounts")
@@ -201,7 +193,8 @@ public class ProcessInstanceResource
       try
       {
          InstanceCountsDTO processInstanceCountDTO = getProcessInstanceService().getAllCounts();
-         return Response.ok(GsonUtils.toJsonHTMLSafeString(processInstanceCountDTO), MediaType.APPLICATION_JSON).build();
+         return Response.ok(GsonUtils.toJsonHTMLSafeString(processInstanceCountDTO), MediaType.APPLICATION_JSON)
+               .build();
       }
       catch (Exception e)
       {
@@ -210,7 +203,7 @@ public class ProcessInstanceResource
          return Response.serverError().build();
       }
    }
-   
+
    /**
     * @param postedData
     * @return
@@ -223,7 +216,7 @@ public class ProcessInstanceResource
    {
       return Response.ok(getProcessInstanceService().abortProcesses(postedData), MediaType.APPLICATION_JSON).build();
    }
-   
+
    /**
     * @param postedData
     * @return
@@ -236,33 +229,30 @@ public class ProcessInstanceResource
    {
       return Response.ok(getProcessInstanceService().recoverProcesses(postedData), MediaType.APPLICATION_JSON).build();
    }
-   
+
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/attachToCase")
    public Response attachToCase(String request)
    {
-      return Response
-            .ok(processInstanceService.attachToCase(request), MediaType.APPLICATION_JSON).build();
+      return Response.ok(processInstanceService.attachToCase(request), MediaType.APPLICATION_JSON).build();
    }
-   
+
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/createCase")
    public Response createCase(String request)
    {
-      return Response
-            .ok(processInstanceService.createCase(request), MediaType.APPLICATION_JSON).build();
+      return Response.ok(processInstanceService.createCase(request), MediaType.APPLICATION_JSON).build();
    }
-   
+
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/search")
-   public Response search(
-         @PathParam("participantQId") String participantQId,
+   public Response search(@PathParam("participantQId") String participantQId,
          @QueryParam("skip") @DefaultValue("0") Integer skip,
          @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
          @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
@@ -270,11 +260,11 @@ public class ProcessInstanceResource
    {
       try
       {
-         Options options = new Options(pageSize, skip, orderBy,
-               "asc".equalsIgnoreCase(orderByDir));
+         Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
-         
-         return Response.ok(GsonUtils.toJsonHTMLSafeString(processInstanceService.getProcessInstances(null, options)), MediaType.APPLICATION_JSON).build();
+
+         return Response.ok(GsonUtils.toJsonHTMLSafeString(processInstanceService.getProcessInstances(null, options)),
+               MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {
@@ -283,76 +273,75 @@ public class ProcessInstanceResource
          return Response.serverError().build();
       }
    }
-   
+
    /**
     * @author Nikhil.Gahlot
     * @param processInstanceOID
     * @return
     */
-   @POST
+   @GET
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/spawnableProcesses")
-  public Response spawnableProcesses(String postedData, @QueryParam("type") String type)
-  {
+   public Response getTargetProcessesForSpawnSwitch()
+   {
+      return Response.ok(processInstanceService.getTargetProcessesForSpawnSwitch(), MediaType.APPLICATION_JSON).build();
+   }
+
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/checkIfProcessesAbortable")
+   public Response checkIfProcessesAbortable(String postedData, @QueryParam("type") String type)
+   {
       return Response
-            .ok(processInstanceService.spawnableProcesses(postedData, type), MediaType.APPLICATION_JSON).build();
-  }
-   
-  @POST
-  @Consumes(MediaType.APPLICATION_JSON)
-  @Produces(MediaType.APPLICATION_JSON)
-  @Path("/checkIfProcessesAbortable")
-  public Response checkIfProcessesAbortable(String postedData, @QueryParam("type") String type)
-  {
-     return Response
-           .ok(processInstanceService.checkIfProcessesAbortable(postedData, type), MediaType.APPLICATION_JSON).build();
-  }
-   
+            .ok(processInstanceService.checkIfProcessesAbortable(postedData, type), MediaType.APPLICATION_JSON).build();
+   }
+
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/switchProcess")
-  public Response switchProcess(String postedData)
-  {
-      return Response
-            .ok(processInstanceService.switchProcess(postedData), MediaType.APPLICATION_JSON).build();
-  }
-   
+   public Response switchProcess(String postedData)
+   {
+      return Response.ok(processInstanceService.switchProcess(postedData), MediaType.APPLICATION_JSON).build();
+   }
+
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/abortAndJoinProcess")
    public Response abortAndJoinProcess(String postedData)
    {
-      return Response
-            .ok(processInstanceService.abortAndJoinProcess(postedData), MediaType.APPLICATION_JSON).build();
+      return Response.ok(processInstanceService.abortAndJoinProcess(postedData), MediaType.APPLICATION_JSON).build();
    }
-   
+
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/getRelatedProcesses")
-   public Response getRelatedProcesses(String postedData, @QueryParam("matchAny") String matchAnyStr, @QueryParam("searchCases") String searchCasesStr)
+   public Response getRelatedProcesses(String postedData, @QueryParam("matchAny") String matchAnyStr,
+         @QueryParam("searchCases") String searchCasesStr)
    {
       boolean matchAny = "true".equals(matchAnyStr);
       boolean searchCases = "true".equals(searchCasesStr);
-      
-      return Response
-            .ok(processInstanceService.getRelatedProcesses(postedData, matchAny, searchCases), MediaType.APPLICATION_JSON).build();
+
+      return Response.ok(processInstanceService.getRelatedProcesses(postedData, matchAny, searchCases),
+            MediaType.APPLICATION_JSON).build();
    }
-   
+
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/allProcessColumns")
-   public Response getProcessColumns( )
+   public Response getProcessColumns()
    {
-      return Response
-            .ok(AbstractDTO.toJson( processInstanceService.getProcessesColumns() ), MediaType.APPLICATION_JSON).build();
+      return Response.ok(AbstractDTO.toJson(processInstanceService.getProcessesColumns()), MediaType.APPLICATION_JSON)
+            .build();
    }
-   
+
    /**
     * Populate the options with the post data.
+    * 
     * @param options
     * @param postData
     * @return
@@ -362,7 +351,7 @@ public class ProcessInstanceResource
       List<DescriptorColumnDTO> availableDescriptors = processDefService.getDescriptorColumns(true);
       return ProcessInstanceUtils.populatePostData(options, postData, availableDescriptors);
    }
-   
+
    /**
     * @return
     */

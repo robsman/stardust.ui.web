@@ -150,23 +150,14 @@
 		};
 		
 		/*
-		 * Get Spawnable Processes
-		 * 
-		 * id activity id
+		 * Get Spawnable Processes for switchspwan
 		 */
-		ProcessInstanceService.prototype.getSpawnableProcesses = function(activityProInstanceOids) {
-			console.log("Getting spawnable process for:");
-			console.log(activityProInstanceOids);
-			
-			var restUrl = REST_BASE_URL + 'spawnableProcesses';
-			var res = $resource(restUrl, {}, {
-				getSpawnableProcesses : {
-					method : 'POST',
-					isArray: true
-				}
-			});
-			
-			return res.getSpawnableProcesses({}, activityProInstanceOids).$promise;
+		ProcessInstanceService.prototype.getSpawnableProcesses = function() {
+			console.log("Getting spawnable process");
+			var restUrl = REST_BASE_URL + ':type';
+			var urlTemplateParams = {};
+			urlTemplateParams.type = "spawnableProcesses";
+			return $resource(restUrl).query(urlTemplateParams).$promise;
 		};
 		
 		/*

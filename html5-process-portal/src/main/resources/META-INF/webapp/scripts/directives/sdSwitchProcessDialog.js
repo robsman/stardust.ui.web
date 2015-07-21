@@ -326,7 +326,7 @@
 				fetchSpawnableProcesses().then(function(process) {
 					self.switchProcess.spawnableProcesses = process;
 					self.switchProcessDialog.open();
-				}, function() {
+				}, function(error) {
 					openNotificationDialog(error);
 				});
 			}
@@ -361,7 +361,7 @@
 			function fetchSpawnableProcesses() {
 				var deferred = $q.defer();
 
-				sdProcessInstanceService.getSpawnableProcesses(self.processInstanceOIDs).then(function(data) {
+				sdProcessInstanceService.getSpawnableProcesses().then(function(data) {
 					deferred.resolve(data);
 
 					self.safeApply();

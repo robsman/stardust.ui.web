@@ -41,7 +41,6 @@ import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.Notification
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SwitchProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessDefinitionUtils;
@@ -243,29 +242,12 @@ public class ProcessInstanceService
       return processInstanceUtilsREST.buildProcessListResult(queryResult);
    }
 
-   public String spawnableProcesses(String postedData, String type)
+   public String getTargetProcessesForSpawnSwitch()
    {
       try
       {
-         List<Long> processInstOIDs = JsonDTO.getAsList(postedData, Long.class);
-
-         List<ProcessDefinition> pds = processInstanceUtilsREST.spawnableProcesses(processInstOIDs);
-         Object responseObj = pds;
-         if ("select".equals(type))
-         {
-            List<SelectItemDTO> items = new ArrayList<SelectItemDTO>();
-            for (ProcessDefinition pd : pds)
-            {
-               SelectItemDTO selectItem = new SelectItemDTO();
-               selectItem.label = I18nUtils.getProcessName(pd);
-               selectItem.value = pd.getQualifiedId();
-               items.add(selectItem);
-            }
-
-            responseObj = items;
-         }
-
-         return GsonUtils.toJsonHTMLSafeString(responseObj);
+         List<ProcessDefinition> pds = processInstanceUtilsREST.getTargetProcessesForSpawnSwitch();
+         return GsonUtils.toJsonHTMLSafeString(pds);
       }
       catch (Exception e)
       {
@@ -318,8 +300,7 @@ public class ProcessInstanceService
 
       for (ProcessDefinition processDefinition : processes)
       {
-         processColumns.add(new ColumnDTO(processDefinition.getId(), I18nUtils
-               .getProcessName(processDefinition)));
+         processColumns.add(new ColumnDTO(processDefinition.getId(), I18nUtils.getProcessName(processDefinition)));
       }
       return processColumns;
    }
