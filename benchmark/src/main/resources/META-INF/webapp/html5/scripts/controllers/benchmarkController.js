@@ -1152,7 +1152,7 @@
 			}
 		}
 		else if(d.nodeType === "process"){
-			iconCss = "sc sc-cog";
+			iconCss = "sc sc-cogs";
 			if(!this.benchmarkValidationService.isProcessDefinitionValid(nodeItem.model,nodeItem.process)){
 				iconCss += " invalid";
 			}
@@ -1160,7 +1160,7 @@
 			isSelected = this.isNodeOnDataRows(d);
 		}
 		else{
-			iconCss = "sc sc-cogs";
+			iconCss = "sc sc-cog";
 			if(!this.benchmarkValidationService.isActivityValid(nodeItem.model,nodeItem.process,nodeItem.activity)){
 				iconCss += " invalid";
 			}
