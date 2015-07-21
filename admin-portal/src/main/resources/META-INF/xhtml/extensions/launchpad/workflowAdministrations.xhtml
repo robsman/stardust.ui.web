@@ -16,31 +16,36 @@
 		</ui:include>
 	</ice:panelGroup>
 	<ice:panelGrid columns="1" rendered="#{ippAdmWorkflowAdministrations.expanded}">
-		<ice:commandLink action="#{ippPortalApp.openView}">
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		     rendered="#{pc:isViewAvailable(ippPortalApp, 'processView')}">
 			<pc:automationTag value="auto-ADM-processView" standAlone="false"/>
 			<f:param name="viewId" value="processView" />
 			<ice:outputText value="#{messages_admin['views.processView.label']} &amp;raquo;"
 				styleClass="action-link" escape="false"/>
 		</ice:commandLink>
-		<ice:commandLink action="#{ippPortalApp.openView}">
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		     rendered="#{pc:isViewAvailable(ippPortalApp, 'activityView')}">
 			<pc:automationTag value="auto-ADM-activityView" standAlone="false"/>
 			<f:param name="viewId" value="activityView" />
 			<ice:outputText value="#{messages_admin['views.activityView.label']} &amp;raquo;"
 				styleClass="action-link" escape="false"/>
 		</ice:commandLink>	
-		<ice:commandLink action="#{ippPortalApp.openView}">
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		     rendered="#{pc:isViewAvailable(ippPortalApp, 'criticalityConf')}">
 			<pc:automationTag value="auto-ADM-criticalityConf" standAlone="false" />
 			<f:param name="viewId" value="criticalityConf" />
 			<ice:outputText value="#{messages_admin['views.criticalityConf.label']} &amp;raquo;"
 				styleClass="action-link" escape="false" />
 		</ice:commandLink>
-		<ice:commandLink action="#{ippPortalApp.openView}">
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		     rendered="#{pc:isViewAvailable(ippPortalApp, 'modelManagementView')}">
 			<pc:automationTag value="auto-ADM-LP-ModelMgmtView" standAlone="false"/>
 			<f:param name="viewId" value="modelManagementView" />
 			<ice:outputText value="#{messages_admin['views.modelManagementView.label']} &amp;raquo;"
 				styleClass="action-link" escape="false"/>
 		</ice:commandLink>
-		<ice:commandLink action="#{ippPortalApp.openView}">
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		     rendered="#{pc:isViewAvailable(ippPortalApp, 'qaManagementView')}">
 			<pc:automationTag value="auto-ADM-qaManagement" standAlone="false"/>
 			<f:param name="viewId" value="qaManagementView" />
 			<ice:outputText value="#{messages_admin['views.qaManagementView.label']} &amp;raquo;"

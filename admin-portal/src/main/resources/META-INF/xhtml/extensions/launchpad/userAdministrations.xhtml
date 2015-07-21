@@ -16,20 +16,23 @@
 		</ui:include>
 	</ice:panelGroup>
 	<ice:panelGrid columns="1" rendered="#{ippAdmUserAdministrations.expanded}">
-		<ice:commandLink action="#{ippPortalApp.openView}">
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		     rendered="#{pc:isViewAvailable(ippPortalApp, 'participantMgmt')}">
 			<pc:automationTag value="auto-ADM-participantMgmt" standAlone="false"/>
 			<f:param name="viewId" value="participantMgmt" />
 			<ice:outputText value="#{messages_admin['views.participantMgmt.label']} &amp;raquo;"
 				styleClass="action-link" escape="false" />
 		</ice:commandLink>		
-		<ice:commandLink action="#{ippPortalApp.openView}">		
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		     rendered="#{pc:isViewAvailable(ippPortalApp, 'authorizationManagerView')}">		
 			<pc:automationTag value="auto-ADM-LP-AuthMgrView" standAlone="false"/>
 			<f:param name="viewId" value="authorizationManagerView" />
 			<ice:outputText value="#{views_common_msgPropsBean['views.authorizationManagerView.label']} &amp;raquo;"
 				styleClass="action-link" escape="false" />
 		</ice:commandLink>
 		
-		<ice:commandLink action="#{ippPortalApp.openView}">
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		     rendered="#{pc:isViewAvailable(ippPortalApp, 'userGroupMgmt')}">
 			<pc:automationTag value="auto-ADM-userGroupMgmt" standAlone="false"/>
 			<f:param name="viewId" value="userGroupMgmt" />
 			<ice:outputText value="#{messages_admin['views.userGroupMgmt.label']} &amp;raquo;"

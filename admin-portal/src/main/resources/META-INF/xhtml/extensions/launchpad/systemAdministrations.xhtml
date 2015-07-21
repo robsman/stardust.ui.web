@@ -16,31 +16,36 @@
 		</ui:include>
 	</ice:panelGroup>
 	<ice:panelGrid columns="1" rendered="#{ippAdmSystemAdministrations.expanded}">
-		<ice:commandLink action="#{ippPortalApp.openView}">
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		     rendered="#{pc:isViewAvailable(ippPortalApp, 'overview')}">
 			<pc:automationTag value="auto-ADM-overview" standAlone="false"/>
 			<f:param name="viewId" value="overview" />
 			<ice:outputText value="#{messages_admin['views.overview.label']} &amp;raquo;"
 				styleClass="action-link" escape="false"/>
 		</ice:commandLink>
-		<ice:commandLink action="#{ippPortalApp.openView}">
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		     rendered="#{pc:isViewAvailable(ippPortalApp, 'configurationVariablesView')}">
 			<pc:automationTag value="auto-ADM-LP-ConfigVarView" standAlone="false"/>
 			<f:param name="viewId" value="configurationVariablesView" />
 			<ice:outputText value="#{messages_admin['views.configurationVariablesView.label']} &amp;raquo;"
 				styleClass="action-link" escape="false"/>
 		</ice:commandLink>
-		<ice:commandLink action="#{ippPortalApp.openView}">
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		     rendered="#{pc:isViewAvailable(ippPortalApp, 'daemons')}">
 			<pc:automationTag value="auto-ADM-daemons" standAlone="false"/>
 			<f:param name="viewId" value="daemons" />
 			<ice:outputText value="#{messages_admin['views.daemons.label']} &amp;raquo;"
 				styleClass="action-link" escape="false"/>
 		</ice:commandLink>
-		<ice:commandLink action="#{ippPortalApp.openView}">
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		    rendered="#{pc:isViewAvailable(ippPortalApp, 'resourceMgmtTreeView')}">
 			<pc:automationTag value="auto-ADM-resourceMgmt" standAlone="false"/>
 			<f:param name="viewId" value="resourceMgmtTreeView" />
 			<ice:outputText value="#{views_common_msgPropsBean['views.resourceMgmtTreeView.label']} &amp;raquo;"
 				styleClass="action-link" escape="false"/>
 		</ice:commandLink>
-		<ice:commandLink action="#{ippPortalApp.openView}">
+		<ice:commandLink action="#{ippPortalApp.openView}"
+		     rendered="#{pc:isViewAvailable(ippPortalApp, 'realmMgmt')}">
 			<pc:automationTag value="auto-ADM-realmMgmt" standAlone="false"/>
 			<f:param name="viewId" value="realmMgmt" />
 			<ice:outputText value="#{messages_admin['views.realmMgmt.label']} &amp;raquo;"
