@@ -80,8 +80,6 @@ define(
 				m_utils.inheritFields(this, symbol);
 				var _super = m_utils.inheritMethods(DataSymbol.prototype, symbol, {selected: ['createTransferObject']});
 
-				this.width = m_constants.DATA_SYMBOL_DEFAULT_WIDTH;
-				this.height = m_constants.DATA_SYMBOL_DEFAULT_HEIGHT;
 				this.dataFullId = null;
 
 				/**
