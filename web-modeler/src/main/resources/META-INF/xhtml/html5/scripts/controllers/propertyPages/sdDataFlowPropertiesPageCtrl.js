@@ -16,14 +16,17 @@
   angular.module('modeler-ui').controller(
           'sdDataFlowPropertiesPageCtrl',
           ['$scope', 'sdModelerConstants', 'sdUtilService', 'sdLoggerService',
-              'sdI18nService', DataFlowPropertiesPageCtrl]);
+              'sdI18nService', 'sdMessageService', DataFlowPropertiesPageCtrl]);
 
   /*
    * 
    */
   function DataFlowPropertiesPageCtrl($scope, constants, sdUtilService,
-          sdLoggerService, sdI18nService) {
+          sdLoggerService, sdI18nService, sdMessageService) {
     var self = this;
+    
+    this.showMessage = false;
+    
     self.initialized = false;
     var trace = sdLoggerService
             .getLogger('modeler-ui.sdDataFlowPropertiesPageCtrl');
@@ -396,8 +399,17 @@
      * 
      */
     DataFlowPropertiesPageCtrl.prototype.nameModified = function() {
+      this.resetMessages();
       this.dataMappingIndex = undefined;
       
+      if (this.selectedDataMapping.name == "" || !this.selectedDataMapping.name) {
+        var index = this.determineIndex();
+        var dataMapping = this.unifiedDataMappings[index];
+        this.selectedDataMapping.name = dataMapping.name;
+        this.showMessage_(i18n('modeler.dataFlow.propertiesPanel.name.required'), 'error');
+        return;
+      }
+
       this.updateDataMapping(this.getUuid(), {
         name: this.selectedDataMapping.name
       });
@@ -431,7 +443,12 @@
         direction: "IN"
       };
 
-      this.dataMappingIndex = this.unifiedDataMappings.length;
+      // Done in order to make sure correct index is highlighted when adding the
+      // mappings randomly
+      this.dataMappingIndex = undefined;
+      this.selectedDataMapping = {
+        id: id
+      };
 
       this.createDataMapping(changes);
     }
@@ -725,6 +742,27 @@
               "datamapping.delete", this.element.uuid, {
                 'uuid': uuid
               });
+    }
+    
+    //reset message
+    DataFlowPropertiesPageCtrl.prototype.resetMessages = function() {
+      this.showMessage = false;
+      sdMessageService.showMessage({
+        type: "error"
+      });
+    }
+    
+    //show error/confirmation message
+    DataFlowPropertiesPageCtrl.prototype.showMessage_ = function(msg, type) {
+      this.showMessage = true;
+      if (!type) {
+        sdMessageService.showMessage(msg);
+      } else {
+        sdMessageService.showMessage({
+          message: msg,
+          type: type
+        });
+      }
     }
   }
 
