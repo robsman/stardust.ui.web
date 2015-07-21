@@ -10,8 +10,6 @@ import java.io.InputStreamReader;
 
 import org.junit.Test;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
@@ -68,7 +66,7 @@ public class TestResubmission extends RecordingTestcase
             "../../service/rest/requests/changeResubmission1.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
 
-      replay(requestStream, "testChangeresubmission1", false);
+      replay(requestStream, "testChangeResubmission1", true);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(
             providerModel, "Process1", "Process 1");
@@ -106,7 +104,7 @@ public class TestResubmission extends RecordingTestcase
             "../../service/rest/requests/changeResubmission2.txt");
       InputStreamReader requestStream = new InputStreamReader(requestInput);
 
-      replay(requestStream, "testChangeresubmission2", false);
+      replay(requestStream, "testChangeResubmission2", false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(
             providerModel, "Process1", "Process 1");
@@ -178,33 +176,23 @@ public class TestResubmission extends RecordingTestcase
       return true;
    }
 
-   public void testCreateUserExclusionsCallback(TestResponse response)
+   public void testChangeResubmission1Callback(TestResponse response)
          throws AssertionError
    {
-      if (response.getCommandID().equals("excludeUserAction.create"))
+      if (response.getResponseNumber() == 10)
       {
-         assertThat(response.getAdded().size(), is(1));
-         JsonObject actionJson = response.getAdded().get(0).getAsJsonObject();
-
-         if (response.getResponseNumber() == 8)
-         {
-            GenericModelingAssertions.assertJsonHas(actionJson, "uuid", "name", "data");
-         } else
-         {
-            GenericModelingAssertions.assertJsonHas(actionJson, "uuid", "name", "data", "dataPath");
-         }
-
          assertThat(response.getModified().size(), is(1));
          JsonObject activityJson = response.getModified().get(0).getAsJsonObject();
-         GenericModelingAssertions.assertJsonHas(activityJson, "onAssignmentHandler");
+         GenericModelingAssertions.assertJsonHas(activityJson, "resubmissionHandler");
+      }
 
-         JsonObject onAssignmentJson = activityJson.get("onAssignmentHandler").getAsJsonObject();
-         GenericModelingAssertions.assertJsonHas(onAssignmentJson, "userExclusions", "logHandler");
-
-         JsonArray userExclusions = onAssignmentJson.get("userExclusions").getAsJsonArray();
-
-         for(JsonElement element: userExclusions) GenericModelingAssertions.assertJsonHas(element.getAsJsonObject(), "uuid", "name", "data");
-
+      if (response.getResponseNumber() == 9)
+      {
+         assertThat(response.getModified().size(), is(2));
+         JsonObject resubmissionJson = response.getModified().get(0).getAsJsonObject();
+         GenericModelingAssertions.assertJsonHasKeyValue(resubmissionJson,
+               "dataFullId=ProviderModel:currentUser", "dataPath=myDataPath",
+               "useData=true", "defaultPerformer=false");
       }
    }
 

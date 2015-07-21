@@ -108,16 +108,19 @@ public class RecordingTestcase
 
       private String commandID;
 
+      private String command;
+
       private JsonArray added;
 
       private JsonArray modified;
 
       private JsonArray removed;
 
-      public TestResponse(int count, JsonObject response)
+      public TestResponse(int count, JsonObject response, String command)
       {
          JsonObject changes = response.get("changes").getAsJsonObject();
          commandID = response.get("commandId").getAsString();
+         this.command = command;
          added = changes.get("added").getAsJsonArray();
          modified = changes.get("modified").getAsJsonArray();
          removed = changes.get("removed").getAsJsonArray();
@@ -147,6 +150,11 @@ public class RecordingTestcase
       public int getResponseNumber()
       {
          return responseNumber;
+      }
+
+      public String getCommand()
+      {
+         return command;
       }
 
 
@@ -235,7 +243,7 @@ public class RecordingTestcase
 
             if (performResponseCallback && response != null)
             {
-               TestResponse testResponse = new TestResponse(++responseNumber, response);
+               TestResponse testResponse = new TestResponse(++responseNumber, response, command);
                Method method = ReflectionUtils.findMethod(this.getClass(),
                      testScenarioName + "Callback", new Class[] {TestResponse.class});
                if (method != null)

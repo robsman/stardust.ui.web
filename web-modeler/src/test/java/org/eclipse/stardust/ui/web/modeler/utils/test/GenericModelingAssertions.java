@@ -447,6 +447,20 @@ public class GenericModelingAssertions
       }
    }
 
+   public static void assertJsonHasKeyValue(JsonObject json, String... keyValues)
+   {
+      for (int i = 0; i < keyValues.length; i++)
+      {
+         String keyValue = keyValues[i];
+         String key = keyValue.split("=")[0];
+         assertThat(json.has(key), is(true));
+
+         String value = keyValue.split("=")[1];
+         String containedValue = json.get(key).getAsString();
+         assertThat(value, is(containedValue));
+      }
+   }
+
 
 
 }
