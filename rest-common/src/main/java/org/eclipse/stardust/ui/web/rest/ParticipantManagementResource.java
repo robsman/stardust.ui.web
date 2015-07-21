@@ -35,7 +35,6 @@ import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantManagementService;
-import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
 import org.eclipse.stardust.ui.web.rest.service.dto.InvalidateUserStatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ParticipantNodeDetailsDTO;
@@ -60,9 +59,6 @@ public class ParticipantManagementResource
 
    @Resource
    private ParticipantManagementService participantManagementService;
-
-   @Resource
-   private ParticipantSearchComponent participantSearchComponent;
    
    /**
     * 
@@ -289,23 +285,6 @@ public class ParticipantManagementResource
          trace.error("", e);
          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
-   }
-   
-   /**
-    * @author Yogesh.Manware
-    * @param postedData
-    * @return
-    */
-   @GET
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("/searchParticipants")
-   public Response searchParticipant(@QueryParam("searchText") @DefaultValue("") String searchText,
-         @QueryParam("type") @DefaultValue("15") int type)
-   {
-      // type binary integer, refer ParticipantSearchComponent.PerformerTypeUI
-      return Response
-            .ok(participantSearchComponent.searchAllParticipants(searchText, 0, type), MediaType.APPLICATION_JSON).build();
    }
    
    /**

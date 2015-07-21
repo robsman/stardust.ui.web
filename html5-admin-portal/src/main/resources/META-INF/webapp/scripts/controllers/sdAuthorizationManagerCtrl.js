@@ -16,9 +16,8 @@
 
   angular.module("admin-ui").controller(
           'sdAuthorizationManagerCtrl',
-          ['$interval', '$timeout', '$scope', '$q', 'sdLoggerService',
-              'sdUtilService', 'sdI18nService', 'sdMessageService',
-              'sdAuthorizationManagerService', AMCtrl]);
+          ['$interval', '$timeout', '$scope', '$q', 'sdLoggerService', 'sdUtilService', 'sdI18nService',
+              'sdMessageService', 'sdAuthorizationManagerService', AMCtrl]);
 
   var trace;
   var _sdAuthorizationManagerService;
@@ -35,8 +34,7 @@
   /**
    * 
    */
-  function AMCtrl($interval, $timeout, $scope, $q, sdLoggerService,
-          sdUtilService, sdI18nService, sdMessageService,
+  function AMCtrl($interval, $timeout, $scope, $q, sdLoggerService, sdUtilService, sdI18nService, sdMessageService,
           sdAuthorizationManagerService) {
 
     var self = this;
@@ -47,12 +45,10 @@
     _sdUtilService = sdUtilService;
     _sdMessageService = sdMessageService;
 
-    i18n = $scope.sdI18nHtml5Admin = sdI18nService
-            .getInstance('html5-admin-portal').translate;
+    i18n = $scope.sdI18nHtml5Admin = sdI18nService.getInstance('html5-admin-portal').translate;
 
     All = {
-      name: sdI18nService.getInstance('views-common-messages').translate(
-              "views.common.all"),
+      name: sdI18nService.getInstance('views-common-messages').translate("views.common.all"),
       id: 'all',
       participantQualifiedId: 'all',
       qualifiedId: 'all'
@@ -103,9 +99,8 @@
       this.selectedParticipants.push(selectInfo.all[i]);
     }
 
-    var participantsMsg = i18n(
-            "views.authorizationManagerViewHtml5.selectedParticipantInfo",
-            "Selected Participants", [orgs, roles]);
+    var participantsMsg = i18n("views.authorizationManagerViewHtml5.selectedParticipantInfo", "Selected Participants",
+            [orgs, roles]);
     this.showParticipantMessage(participantsMsg, "ok");
   }
 
@@ -117,43 +112,37 @@
 
     var self = this;
     this.selectedParticipants = [];
-    _sdAuthorizationManagerService.searchParticipants({
-              type: 3
-     }).then(function(result) {
-        self.participants.list = result;
-        self.participants.totalCount = result.length;
-        if (angular.isDefined(self.dataTable)) {
-          self.dataTable.refresh(true);
-          if(!init){
-            self.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");  
-          }
+    _sdAuthorizationManagerService.searchParticipants().then(function(result) {
+      result = removeCasePerformer(result);
+      self.participants.list = result;
+      self.participants.totalCount = result.length;
+
+      if (angular.isDefined(self.dataTable)) {
+        self.dataTable.refresh(true);
+        if (!init) {
+          self.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
         }
-      },
-      function(error) {
-        trace.error(error);
-        self
-                .showParticipantMessage(i18n("views.authorizationManagerViewHtml5.participants.fetch.error"));
-      })
+      }
+    }, function(error) {
+      trace.error(error);
+      self.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.participants.fetch.error"));
+    })
   };
 
-  //Reset Participants
+  // Reset Participants
   AMCtrl.prototype.resetParticipants = function() {
     this.resetMessages();
 
     var self = this;
-    _sdAuthorizationManagerService
-    .resetParticipants(this.selectedParticipants)
-    .then(
-      function(permissions) {
-        self.initializePermissionTree(permissions);
-        self.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
-      },
-      function(error) {
-        trace.error(error);
-        self.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.participants.fetch.error"));
-      })
+    _sdAuthorizationManagerService.resetParticipants(this.selectedParticipants).then(function(permissions) {
+      self.initializePermissionTree(permissions);
+      self.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
+    }, function(error) {
+      trace.error(error);
+      self.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.participants.fetch.error"));
+    })
   };
-  
+
   /**
    * @param matchStr
    * @returns
@@ -168,10 +157,8 @@
         filteredList = self.participants.list;
       }
       for (var i = 0; i < self.participants.list.length; i++) {
-        if (self.participants.list[i].name.search(new RegExp(matchStr + '+',
-                "gi")) > -1
-                || self.participants.list[i].id.search(new RegExp(matchStr
-                        + '+', "gi")) > -1) {
+        if (self.participants.list[i].name.search(new RegExp(matchStr + '+', "gi")) > -1
+                || self.participants.list[i].id.search(new RegExp(matchStr + '+', "gi")) > -1) {
           filteredList.push(self.participants.list[i]);
         }
       }
@@ -199,8 +186,7 @@
   AMCtrl.prototype.cloneParticipantConfirmed = function() {
     var self = this;
     this.resetMessages();
-    if (!this.selectedTargetParticipants
-            || this.selectedTargetParticipants.length == 0) {
+    if (!this.selectedTargetParticipants || this.selectedTargetParticipants.length == 0) {
       this.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.cloneParticipant.targetNotSelected"));
       return;
     }
@@ -212,13 +198,12 @@
 
     var targetParticipantsIds = [];
     for (var j = 0; j < this.selectedTargetParticipants.length; j++) {
-      targetParticipantsIds
-              .push(this.selectedTargetParticipants[j].qualifiedId);
+      targetParticipantsIds.push(this.selectedTargetParticipants[j].qualifiedId);
     }
     this.selectedTargetParticipants = [];
 
-    _sdAuthorizationManagerService.cloneParticipant(sourceParticipantsIds,
-            targetParticipantsIds).then(function(permissions) {
+    _sdAuthorizationManagerService.cloneParticipant(sourceParticipantsIds, targetParticipantsIds).then(
+            function(permissions) {
               self.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
               self.initializePermissionTree(permissions);
             }, function(error) {
@@ -307,47 +292,43 @@
     // Acquire our classic DOM references after angular has finished compiling
     // our page. This block is entirely concerned with building a structure we
     // can leverage for our filtering operations.
-    this
-            .$timeout(
-                    function() {
+    this.$timeout(function() {
 
-                      var scope, rootNode, ulNodeList, nonFilterableNodes, // array
-                      // which
-                      // will
-                      // hold
-                      // all
-                      // nodes
-                      // in
-                      // the
-                      // tree
-                      filterableNodes, // only those nodes with a class of
-                      // js-filterable,
-                      temp;
+      var scope, rootNode, ulNodeList, nonFilterableNodes, // array
+      // which
+      // will
+      // hold
+      // all
+      // nodes
+      // in
+      // the
+      // tree
+      filterableNodes, // only those nodes with a class of
+      // js-filterable,
+      temp;
 
-                      rootNode = document.querySelectorAll("ul.sd-tree")[0];
-                      nonFilterableNodes = rootNode
-                              .querySelectorAll("ul.sd-tree .tree-node span:not(.js-filterable)");
-                      filterableNodes = rootNode
-                              .querySelectorAll("ul.sd-tree .tree-node .js-filterable");
-                      ulNodeList = rootNode.querySelectorAll("ul");
+      rootNode = document.querySelectorAll("ul.sd-tree")[0];
+      nonFilterableNodes = rootNode.querySelectorAll("ul.sd-tree .tree-node span:not(.js-filterable)");
+      filterableNodes = rootNode.querySelectorAll("ul.sd-tree .tree-node .js-filterable");
+      ulNodeList = rootNode.querySelectorAll("ul");
 
-                      // Loop over
-                      for (var i = 0; i < nonFilterableNodes.length; i++) {
-                        temp = angular.element(nonFilterableNodes.item(i));
-                        that.allNodes.push(that.buildNodeEntry(temp, false));
-                      }
+      // Loop over
+      for (var i = 0; i < nonFilterableNodes.length; i++) {
+        temp = angular.element(nonFilterableNodes.item(i));
+        that.allNodes.push(that.buildNodeEntry(temp, false));
+      }
 
-                      for (i = 0; i < filterableNodes.length; i++) {
-                        temp = angular.element(filterableNodes.item(i));
-                        that.allNodes.push(that.buildNodeEntry(temp, true));
-                      }
+      for (i = 0; i < filterableNodes.length; i++) {
+        temp = angular.element(filterableNodes.item(i));
+        that.allNodes.push(that.buildNodeEntry(temp, true));
+      }
 
-                      for (i = 0; i < ulNodeList.length; i++) {
-                        temp = angular.element(ulNodeList.item(i));
-                        that.ulNodes.push(that.buildNodeEntry(temp, true));
-                      }
+      for (i = 0; i < ulNodeList.length; i++) {
+        temp = angular.element(ulNodeList.item(i));
+        that.ulNodes.push(that.buildNodeEntry(temp, true));
+      }
 
-                    }, 0);
+    }, 0);
 
   }
 
@@ -473,30 +454,28 @@
     this.resetMessages();
 
     scope.$parent.isVisible = true;
-    _sdAuthorizationManagerService.savePermissions(self.selectedParticipants, allow, deny)
-      .then(function(result) {
-            var permissions = result.permissions;
-            // update all selected nodes
-            for (var i = 0; i < permissions.length; i++) {
-              for (var j = 0; allow.length; j++) {
-                if (permissions[i].id == allow[j].id) {
-                  allow[j].allow = permissions[i].allow;
-                  break;
-                }
-              }
-              for (var j = 0; deny.length; j++) {
-                if (permissions[i].id == deny[j].id) {
-                  deny[j].deny = permissions[i].deny;
-                  break;
-                }
-              }
-            }
-            self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
-          },
-          function(error) {
-            trace.error(error);
-            self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.save.error"));
-          });
+    _sdAuthorizationManagerService.savePermissions(self.selectedParticipants, allow, deny).then(function(result) {
+      var permissions = result.permissions;
+      // update all selected nodes
+      for (var i = 0; i < permissions.length; i++) {
+        for (var j = 0; allow.length; j++) {
+          if (permissions[i].id == allow[j].id) {
+            allow[j].allow = permissions[i].allow;
+            break;
+          }
+        }
+        for (var j = 0; deny.length; j++) {
+          if (permissions[i].id == deny[j].id) {
+            deny[j].deny = permissions[i].deny;
+            break;
+          }
+        }
+      }
+      self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
+    }, function(error) {
+      trace.error(error);
+      self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.save.error"));
+    });
   }
 
   // handles removing items from our allow or deny arrays
@@ -505,27 +484,29 @@
     this.resetMessages();
     var scope = angular.element(e.target || e.srcElement).scope();
     var permission = scope.$parent.$parent.genItem;
-    
-    var allExist = false;
-    
-    if (v.menuEvent === "menuItem.clicked") {
-      v.item.ref[v.item.target]
-              .forEach(function(w, i, arr) {
-                if (w.participantQualifiedId === v.item.role.participantQualifiedId) {
-                  if (w.participantQualifiedId == All.id) {
-                    var warning = {};
-                    warning.message = i18n("views.authorizationManagerViewHtml5.permissionTree.warning.removeAll");
-                    warning.type = "warn";
-                    self.showPermissionMessage(warning);
-                    allExist = true;
-                  } else {
-                    arr.splice(i, 1);
-                  }
-                }
-              });
 
-      if (allExist) { v.deferred.resolve(); return; }
-      
+    var allExist = false;
+
+    if (v.menuEvent === "menuItem.clicked") {
+      v.item.ref[v.item.target].forEach(function(w, i, arr) {
+        if (w.participantQualifiedId === v.item.role.participantQualifiedId) {
+          if (w.participantQualifiedId == All.id) {
+            var warning = {};
+            warning.message = i18n("views.authorizationManagerViewHtml5.permissionTree.warning.removeAll");
+            warning.type = "warn";
+            self.showPermissionMessage(warning);
+            allExist = true;
+          } else {
+            arr.splice(i, 1);
+          }
+        }
+      });
+
+      if (allExist) {
+        v.deferred.resolve();
+        return;
+      }
+
       var participants = angular.copy(v.item.ref[v.item.target]);
 
       var allow = null;
@@ -537,19 +518,15 @@
         deny = [permission];
       }
 
-      _sdAuthorizationManagerService
-      .savePermissions(participants, allow, deny, true)
-      .then(
-          function(result) {
-            var permissions = result.permissions;
-            v.item.ref['allow'] = permissions[0].allow;
-            v.item.ref['deny'] = permissions[0].deny;
-            self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
-          },
-          function(error) {
-            trace.error(error);
-            self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.save.error"));
-          });
+      _sdAuthorizationManagerService.savePermissions(participants, allow, deny, true).then(function(result) {
+        var permissions = result.permissions;
+        v.item.ref['allow'] = permissions[0].allow;
+        v.item.ref['deny'] = permissions[0].deny;
+        self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
+      }, function(error) {
+        trace.error(error);
+        self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.save.error"));
+      });
     }
     v.deferred.resolve();
   };
@@ -572,20 +549,16 @@
         deny = [permission];
       }
 
-      _sdAuthorizationManagerService
-      .savePermissions([], allow, deny, true)
-      .then(
-        function(result) {
-          var permissions = result.permissions;
-          v.item.ref['allow'] = permissions[0].allow;
-          v.item.ref['deny'] = permissions[0].deny;
-          self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
-          v.deferred.resolve();
-        },
-        function(error) {
-          trace.error(error);
-          self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.save.error"));
-        });
+      _sdAuthorizationManagerService.savePermissions([], allow, deny, true).then(function(result) {
+        var permissions = result.permissions;
+        v.item.ref['allow'] = permissions[0].allow;
+        v.item.ref['deny'] = permissions[0].deny;
+        self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
+        v.deferred.resolve();
+      }, function(error) {
+        trace.error(error);
+        self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.save.error"));
+      });
 
     }
     v.deferred.resolve();
@@ -611,20 +584,16 @@
       // Same applies to Deny
       v.item.ref['allow'].push(All);
 
-      _sdAuthorizationManagerService
-      .savePermissions([], allow, deny, true)
-      .then(
-          function(result) {
-            var permissions = result.permissions;
-            v.item.ref['allow'] = permissions[0].allow;
-            v.item.ref['deny'] = permissions[0].deny;
-            self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
-            v.deferred.resolve();
-          },
-          function(error) {
-            trace.error(error);
-            self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.save.error"));
-          });
+      _sdAuthorizationManagerService.savePermissions([], allow, deny, true).then(function(result) {
+        var permissions = result.permissions;
+        v.item.ref['allow'] = permissions[0].allow;
+        v.item.ref['deny'] = permissions[0].deny;
+        self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
+        v.deferred.resolve();
+      }, function(error) {
+        trace.error(error);
+        self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.save.error"));
+      });
     }
   }
 
@@ -638,19 +607,15 @@
   AMCtrl.prototype.refreshPermissions = function(init) {
     var self = this;
     this.resetMessages();
-    _sdAuthorizationManagerService
-    .getPermissions()
-    .then(
-        function(permissions) {
-          self.initializePermissionTree(permissions);
-          if(!init) {
-            self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");  
-          }
-        },
-        function(err) {
-          trace.error(err);
-          self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.fetch.error"));
-        });
+    _sdAuthorizationManagerService.getPermissions().then(function(permissions) {
+      self.initializePermissionTree(permissions);
+      if (!init) {
+        self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
+      }
+    }, function(err) {
+      trace.error(err);
+      self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.fetch.error"));
+    });
   };
 
   /**
@@ -667,7 +632,9 @@
   AMCtrl.prototype.resetMessages = function() {
     this.showMessage = false;
     this.showMessage2 = false;
-    _sdMessageService.showMessage({type:"error"});
+    _sdMessageService.showMessage({
+      type: "error"
+    });
   }
 
   AMCtrl.prototype.showParticipantMessage = function(msg, type) {
@@ -681,7 +648,7 @@
     this.showMessage2 = true;
     this.showMessage_(msg, type);
   }
-  
+
   AMCtrl.prototype.showMessage_ = function(msg, type) {
     if (!type) {
       _sdMessageService.showMessage(msg);
@@ -693,4 +660,16 @@
     }
   }
 
-})();
+  function removeCasePerformer(result) {
+    var casePerformer = null;
+    for (var i = 0; i < result.length; i++) {
+      if ("{PredefinedModel}CasePerformer" === result[i].qualifieid) {
+        casePerformer = result[i].qualifieid;
+      }
+    }
+    result.pop(casePerformer);
+    return result;
+  }
+}
+
+)();

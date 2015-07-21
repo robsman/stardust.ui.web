@@ -140,7 +140,7 @@ public class ParticipantSearchComponent
     */
    public String searchAllParticipants(String searchText, int maxMatches)
    {
-      return searchAllParticipants(searchText, maxMatches, 15);
+      return searchAllParticipants(searchText, maxMatches, 15, true);
    }
    
    /**
@@ -149,7 +149,7 @@ public class ParticipantSearchComponent
     * @param type 
     * @return
     */
-   public String searchAllParticipants(String searchText, int maxMatches, int type)
+   public String searchAllParticipants(String searchText, int maxMatches, int type, boolean filterPredefinedModel)
    {
       List<ParticipantDTO> selectedParticipants = new ArrayList<ParticipantDTO>();
       QueryService service = serviceFactoryUtils.getQueryService();
@@ -181,7 +181,7 @@ public class ParticipantSearchComponent
       //TODO: is there a requirement for separate role and organizations?
       if (containsOrganization(type) && containsRole(type))
       {
-         List<Participant> rolesAndOrgs = ParticipantUtils.getAllUnScopedModelParticipant(true);
+         List<Participant> rolesAndOrgs = ParticipantUtils.getAllUnScopedModelParticipant(filterPredefinedModel);
          selectedParticipants.addAll(copyToParticipantDTOList(rolesAndOrgs, searchText));
          
          if (containsDepartment(type))
@@ -198,7 +198,7 @@ public class ParticipantSearchComponent
     * @param participantSReqDTO
     * @return
     */
-   public List<ParticipantDTO> getMatchingData(ParticipantSearchRequestDTO participantSReqDTO)
+   private List<ParticipantDTO> getMatchingData(ParticipantSearchRequestDTO participantSReqDTO)
    {
       IDepartmentProvider.Options departmentOptions = null;
 
@@ -225,7 +225,7 @@ public class ParticipantSearchComponent
     * @param depOptions
     * @return
     */
-   public List<ParticipantDTO> getMatchingData(Long[] activities,
+   private List<ParticipantDTO> getMatchingData(Long[] activities,
          IDelegatesProvider.Options defualtOptions, IDepartmentProvider.Options depOptions)
    {
       // prepare activities

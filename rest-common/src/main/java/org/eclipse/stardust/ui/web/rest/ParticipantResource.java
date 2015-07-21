@@ -22,16 +22,19 @@ import javax.annotation.Resource;
 import javax.ws.rs.ClientErrorException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantService;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
@@ -50,6 +53,9 @@ public class ParticipantResource
 {
    @Resource
    private ParticipantService participantService;
+
+   @Resource
+   private ParticipantSearchComponent participantSearchComponent;
 
    // Modify Participant
    @POST
@@ -96,8 +102,29 @@ public class ParticipantResource
          @PathParam("type") String participantType) throws UnsupportedEncodingException
    {
       participantId = URLDecoder.decode(participantId, "UTF-8");
+      if ("All".equals(participantId))
+      {
+         // search all unscoped participants including predefined ones
+         return Response.ok(participantSearchComponent.searchAllParticipants(null, 0, 3, false),
+               MediaType.APPLICATION_JSON).build();
+      }
+
       List<ParticipantDTO> participants = participantService.getParticipant(participantId);
       return Response.ok(AbstractDTO.toJson(participants), MediaType.APPLICATION_JSON).build();
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("participants")
+   public Response getSubParticipants(@QueryParam("searchText") @DefaultValue("") String searchText,
+         @QueryParam("maxMatches") @DefaultValue("8") Integer maxMatches,
+         @QueryParam("searchType") @DefaultValue("3") Integer searchType,
+         @QueryParam("filterPredefinedModel") @DefaultValue("") Boolean filterPredefinedModel)
+   {
+      // search all unscoped participants including predefined ones
+      return Response.ok(participantSearchComponent.searchAllParticipants(searchText, maxMatches, searchType, false),
+            MediaType.APPLICATION_JSON).build();
    }
 
    @POST

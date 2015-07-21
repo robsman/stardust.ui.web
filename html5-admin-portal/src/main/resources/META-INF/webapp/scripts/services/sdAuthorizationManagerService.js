@@ -13,50 +13,35 @@
 (function() {
   'use strict';
 
-  angular.module('admin-ui.services').provider(
-          'sdAuthorizationManagerService',
-          function() {
-            this.$get = [
-                '$resource',
-                'sdLoggerService',
-                'sdUtilService',
-                function($resource, sdLoggerService, sdUtilService) {
-                  var service = new AMService($resource, sdLoggerService,
-                          sdUtilService);
-                  return service;
-                }];
-          });
+  angular.module('admin-ui.services').provider('sdAuthorizationManagerService', function() {
+    this.$get = ['$resource', 'sdLoggerService', 'sdUtilService', function($resource, sdLoggerService, sdUtilService) {
+      var service = new AMService($resource, sdLoggerService, sdUtilService);
+      return service;
+    }];
+  });
 
   /*
    * 
    */
   function AMService($resource, sdLoggerService, sdUtilService) {
-    var PART_REST_BASE_URL = sdUtilService.getBaseUrl()
-            + "services/rest/portal/participantManagement";
-
-    var PREF_REST_BASE_URL = sdUtilService.getBaseUrl()
-            + "services/rest/portal/preference";
-
-    var GRANT_REST_BASE_URL = sdUtilService.getBaseUrl()
-            + "services/rest/portal/preference/permissions/grants";
+    var PART_REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/participants";
+    var PREF_REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/preference";
+    var GRANT_REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/preference/permissions/grants";
 
     var grantResource = $resource(GRANT_REST_BASE_URL);
 
-    var trace = sdLoggerService
-            .getLogger('admin-ui.services.sdAuthorizationManagerService');
+    var trace = sdLoggerService.getLogger('admin-ui.services.sdAuthorizationManagerService');
 
     // Search Participant
-    AMService.prototype.searchParticipants = function(queryParams) {
+    AMService.prototype.searchParticipants = function() {
       // Prepare URL
-      var restUrl = PART_REST_BASE_URL + "/searchParticipants";
-      var participantSearchResult = $resource(restUrl, queryParams);
+      var participantSearchResult = $resource(PART_REST_BASE_URL);
 
       return participantSearchResult.query().$promise;
     };
 
     // Clone Participant
-    AMService.prototype.cloneParticipant = function(sourceParticipants,
-            targetParticipants) {
+    AMService.prototype.cloneParticipant = function(sourceParticipants, targetParticipants) {
       if (sourceParticipants.constructor === Array) {
         sourceParticipants = sourceParticipants.join();
       }
@@ -78,8 +63,7 @@
     };
 
     // return permissions and relevant participants
-    AMService.prototype.getPermissions = function(sourceParticipants,
-            targetParticipants) {
+    AMService.prototype.getPermissions = function(sourceParticipants, targetParticipants) {
       return grantResource.get().$promise;
     }
 
@@ -99,7 +83,7 @@
         }
       }
       if (allow != null) {
-        data.allow = [];  
+        data.allow = [];
         for (var j = 0; allow != null && j < allow.length; j++) {
           if (allow[j].id) {
             data.allow.push(allow[j].id);
@@ -108,7 +92,7 @@
           }
         }
       }
-      
+
       if (deny != null) {
         data.deny = [];
         for (var k = 0; deny != null && k < deny.length; k++) {
@@ -121,8 +105,8 @@
       }
       return grantResource.save({}, data).$promise;
     }
-    
-    //Reset participant
+
+    // Reset participant
     AMService.prototype.resetParticipants = function(participants) {
       var restUrl = PREF_REST_BASE_URL + "/participants/restore";
       var participantIds = [];
@@ -135,7 +119,7 @@
       }
 
       var participantIdsStr = participantIds.join(",");
-      
+
       return $resource(restUrl, {
         participantIds: participantIdsStr
       }).get().$promise;
