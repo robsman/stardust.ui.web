@@ -1041,7 +1041,9 @@
 
 			if (enableColumnSelector) {
 				try {
-					theColReorder = new jQuery.fn.dataTable.ColReorder(theDataTable, {bNoDragDrop: true});
+					// Sometimes it's observed that jQuery.fn.dataTable is undefined, so added the check and fallback
+					var jQueryDataTableFunc = jQuery.fn.dataTable || theTable.DataTable;
+					theColReorder = new jQueryDataTableFunc.ColReorder(theDataTable, {bNoDragDrop: true});
 				} catch (e) {
 					trace.error(theTableId + ': Error occurred while enabling ColReorder, so disabling column selector', e);
 					enableColumnSelector = false;
