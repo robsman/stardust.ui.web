@@ -456,7 +456,7 @@ public class ParticipantSearchComponent
          {
             if (deptInfo.getName().matches(regex))
             {
-               selectParticipants.add(new ParticipantDTO((Department) deptInfo));
+               selectParticipants.add(new ParticipantDTO(deptInfo));
             }
          }
       }

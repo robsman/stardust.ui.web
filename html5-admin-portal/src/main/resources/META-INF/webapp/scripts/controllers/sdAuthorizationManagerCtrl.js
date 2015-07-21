@@ -661,13 +661,11 @@
   }
 
   function removeCasePerformer(result) {
-    var casePerformer = null;
     for (var i = 0; i < result.length; i++) {
-      if ("{PredefinedModel}CasePerformer" === result[i].qualifieid) {
-        casePerformer = result[i].qualifieid;
+      if ("{PredefinedModel}CasePerformer" === result[i].qualifiedId) {
+        result.splice(i, 1);
       }
     }
-    result.pop(casePerformer);
     return result;
   }
 }

@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.rest.service.dto.response;
 
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.Role;
+import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
@@ -53,6 +54,7 @@ public class ParticipantDTO extends AbstractDTO
       this.OID = ParticipantUtils.getParticipantOID(participant);
       this.name = ParticipantUtils.getParticipantLabel(participant);
       this.type = ParticipantUtils.getParticipantType(participant).name();
+      this.description = participant.getDescription();
    }
 
    /**
@@ -78,6 +80,13 @@ public class ParticipantDTO extends AbstractDTO
       this.name = ParticipantUtils.getDepartmentLabel(department);
       this.type = ParticipantUtils.ParticipantType.DEPARTMENT.name();
       this.runtimeOrganizationOid = department.getRuntimeOrganizationOID();
+      if(department instanceof Department){
+         Department dep = (Department) department;
+         this.description = dep.getDescription();
+         organization = ParticipantUtils.getParticipantLabel(dep.getOrganization());
+      }
+      
+      
    }
 
    /**
