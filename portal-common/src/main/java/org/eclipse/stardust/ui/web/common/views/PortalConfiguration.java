@@ -138,7 +138,7 @@ public class PortalConfiguration extends UIComponentBean
                perspectivesCategory.setExpanded(true);
             }
 
-            perspectivesCategory.addItem(menuItem.getId(), (String) menuItem.getValue(),
+            perspectivesCategory.addItem(menuItem.getId(), menuItem.getTitle(),
                   pd.getPreferences().getPreference(
                         PreferencesDefinition.PREF_CONFIG_PANEL));
          }
