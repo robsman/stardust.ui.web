@@ -97,6 +97,7 @@ define(
 					this.propertiesPanel = this.diagram.dataPropertiesPanel;
 					this.path = null;
 					this.text = null;
+					this.performClientSideAdj();
 				};
 
 				/**
@@ -110,18 +111,34 @@ define(
 				 *
 				 */
 				DataSymbol.prototype.initializeFromJson = function(lane) {
-					// TODO Should come from server
-					this.width = m_constants.DATA_SYMBOL_DEFAULT_WIDTH;
-					this.height = m_constants.DATA_SYMBOL_DEFAULT_HEIGHT;
-
 					this.parentSymbol = lane;
 					this.parentSymbolId = lane.id;
+
+					this.performClientSideAdj();
+
 					this.parentSymbol.containedSymbols.push(this);
 					this.prepareNoPosition();
 					this.completeNoTransfer();
 					this.register();
 				};
 
+				/**
+				 * Client side adjustment This code is required in case the
+				 * imported model is eclipse born. Force setting of these
+				 * attributes cannot be done in Refresh method as
+				 * m_propertiesPanel.processCommand again overwrites these
+				 * attributes and then symbol.refresh does not get invoked.
+				 */
+				DataSymbol.prototype.performClientSideAdj = function() {
+					if (this.width &&  this.width != m_constants.DATA_SYMBOL_DEFAULT_WIDTH) {
+						this.clientSideAdjX = (this.width / 2)
+								- (m_constants.DATA_SYMBOL_DEFAULT_WIDTH / 2);
+						this.x = this.x + this.clientSideAdjX;
+					}
+					this.width = m_constants.DATA_SYMBOL_DEFAULT_WIDTH;
+					this.height = m_constants.DATA_SYMBOL_DEFAULT_HEIGHT;
+				};
+				
 				/**
 				 * 
 				 */
@@ -293,6 +310,8 @@ define(
 				 *
 				 */
 				DataSymbol.prototype.adjustPrimitives = function() {
+					this.performClientSideAdj();
+
 					this.path.attr({
 						"path" : this.getPathSvgString()
 					});
@@ -432,6 +451,7 @@ define(
 				};
 
 				DataSymbol.prototype.showEditable = function() {
+					this.performClientSideAdj();
 					this.text.hide();
 					var editableText = this.diagram.editableText;
 					var scrollPos = m_modelerUtils.getModelerScrollPosition();
