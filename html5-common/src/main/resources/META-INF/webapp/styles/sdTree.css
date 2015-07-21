@@ -1,7 +1,7 @@
 
 ul.sd-tree span{
-  x-font-family:Roboto;
   font-size:11px;
+  color:#5c6e87;
 }
 
 ul.sd-tree{
@@ -104,10 +104,6 @@ ul.sd-tree .menu ul{
   padding:0;
 }
 
-ul.sd-tree .menu li:first-child a{
-	x-color:red !important;
-}
-
 ul.sd-tree .menu li:not(:first-child):not(:last-child) {
   list-style-type: none;
   border-bottom:solid 1px #ddd !important;
@@ -145,6 +141,7 @@ ul.sd-tree a{
 
 ul.sd-tree a > i{
    color:#A69A88;
+   font-size:13px;
 }
 
 ul.sd-tree ul{
@@ -161,7 +158,7 @@ ul.sd-tree a.tree-node:hover{
   background:#ddd;
 }
 
-ul.sd-tree i.selected+span {
+ul.sd-tree i.selected + span {
   background: #EEE2CF !important;
   color: #708090 !important;
   border-radius: 5px !important;

@@ -1,3 +1,9 @@
+<style>
+	a.tbl-toolbar-item > i {
+		font-size:13.333px;
+	}
+</style>
+
 <!-- BenchMark Definitions CRUD View -->
 <div class="view-panel" 
      ng-controller="benchmarkCtrl as ctrl"
@@ -50,12 +56,15 @@
 	   class="sc sc-fw sc-arrow-d">
 	</i>
 	
-	<span style="margin:2em;" class="header">{{ctrl.textMap.benchmarkDefinitions}}</span>
+	<span style="margin:2em;" class="header">
+		{{ctrl.textMap.benchmarkDefinitions}}
+	</span>
 	
 	<!-- Design Mode Data Table for Benchmarks -->
 	<div ng-show="ctrl.showBenchmarks">
 	
-		<select ng-model="ctrl.benchmarkFilter" 
+		<select style="margin-bottom:1em;"
+		        ng-model="ctrl.benchmarkFilter" 
 		        ng-change="ctrl.onStatusChange(ctrl.benchmarkFilter)">
 			<option selected value="Design">{{ctrl.textMap.design}}</option>
 			<option value="Published">{{ctrl.textMap.published}}</option>
@@ -82,16 +91,7 @@
 		<div ng-show="ctrl.benchmarkFilter==='Design'">
 		
 			<div  sda-toolbar>
-				
-				<a href="" 
-			       ng-click="ctrl.downloadBenchmarkAsFile(ctrl.selectedBenchmark,ctrl.benchmarkFilter)" 
-			       title="{{ctrl.textMap.downloadBenchmark}}" 
-			       class="tbl-toolbar-item tbl-tool-link">
-			       <i class="glyphicon glyphicon-download"></i>
-			    </a>
-			    
-				<span>|</span>
-				
+
 			    <a href="" 
 			       ng-click="ctrl.createBenchmark()" 
 			       title="{{ctrl.textMap.addBenchmark}}" 
@@ -105,6 +105,15 @@
 			       class="tbl-toolbar-item tbl-tool-link">
 			       <i class="glyphicon glyphicon-minus-sign"></i>
 			    </a>	
+			    
+			    <span>|</span>
+			    
+			    <a href="" 
+			       ng-click="ctrl.downloadBenchmarkAsFile(ctrl.selectedBenchmark,ctrl.benchmarkFilter)" 
+			       title="{{ctrl.textMap.downloadBenchmark}}" 
+			       class="tbl-toolbar-item tbl-tool-link">
+			       <i class="glyphicon glyphicon-download"></i>
+			    </a>
 			    
 			    <span>|</span>
 			    
@@ -158,9 +167,10 @@
 				   			</td>
 				   			<td sda-field="content.description"></td>
 				   			<td sda-field="metadata.author"></td>
-				   			<td sda-field="metadata.lastModifiedDate">
+				   			<td sda-field="metadata.lastModifiedDate"
+				   				sda-data-type="DateTime">
 				   				<span>
-				   				{{rowData.metadata.lastModifiedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}
+				   				{{rowData.metadata.lastModifiedDate | date:'short'}}
 				   				</span>
 				   			</td>
 				   		</tr>
@@ -193,7 +203,7 @@
 				   			<td sda-field="content.description"></td>
 				   			<td sda-field="metadata.lastModifiedDate">
 				   				<span>
-				   				{{rowData.metadata.lastModifiedDate | date:'yyyy-MM-dd HH:mm:ss Z'}}
+				   				{{rowData.metadata.lastModifiedDate | date:'short'}}
 				   				</span>
 				   			</td>
 				   		</tr>
@@ -206,8 +216,8 @@
 
 	<!-- Display for currently selected benchmark -->
 	<div ng-show="ctrl.selectedBenchmark">
-		<div>
-			<span style="font-size:12px;" class="header">{{ctrl.selectedBenchmark.name}}</span>
+		<div style="margin-top:1em;">
+			<span class="header">{{ctrl.selectedBenchmark.name}}</span>
 		</div>
 	</div>
 	
@@ -215,35 +225,38 @@
 	<div style="width:100%;position:relative;margin-top:1em;">
 		
 	    <!-- Tabs -->
-	    <div style="width:100%;border-bottom:solid 1px #ddd;position:relative;">
+	    <div class="tab-container">
 	    
 		    <div class="tab"
 		    	 ng-class="{selected: ctrl.selectedTab==='General'}"
 		    	 ng-click="ctrl.selectedTab = 'General'">
-		    	 <span class="header">{{ctrl.textMap.general}}</span>
+		    	 <span class="tab-label">{{ctrl.textMap.general}}</span>
 		    	 <div class="tab-arrow" ng-show="ctrl.selectedTab === 'General'"></div>
 		    </div>
 		    
 		    <div class="tab"
 		    	 ng-class="{selected: ctrl.selectedTab === 'Categories'}"
 		    	 ng-click="ctrl.selectedTab ='Categories'">
-		    	 <span class="header">{{ctrl.textMap.categories}}</span>
+		    	 <span class="tab-label">{{ctrl.textMap.categories}}</span>
 		    	 <div class="tab-arrow" ng-show="ctrl.selectedTab === 'Categories'"></div>
 		    </div>
 		    
 	    </div>
 	    
 	    <div ng-show="ctrl.selectedTab ==='Categories'">
-	    	<div>
-	    		<a ng-class="{'glyphicon-eye-open' : ctrl.showAllTreeNodes,'glyphicon-eye-close' : !ctrl.showAllTreeNodes}" 
-	    		   ng-click="ctrl.showAllTreeNodes = !ctrl.showAllTreeNodes"
+	    
+	    	<div ng-show="ctrl.selectedBenchmark">
+	    		<a ng-click="ctrl.showAllTreeNodes = !ctrl.showAllTreeNodes"
 	    		   ng-attr-title = "{{ctrl.showAllTreeNodes ? ctrl.textMap.filterTreeNodes : ctrl.textMap.showAllTreeNodes}}" 
-	    		   class="glyphicon tbl-toolbar-item tbl-tool-link">
+	    		   class="tbl-toolbar-item tbl-tool-link">
+	    		   <i class="glyphicon " 
+	    		      ng-class="{'glyphicon-eye-open' : ctrl.showAllTreeNodes,'glyphicon-eye-close' : !ctrl.showAllTreeNodes}"></i>
 	    		</a>
 	    	</div>
 	    	
 		    <!-- Model Tree Container -->
-			<div style="width:225px;display:inline-table;">
+			<div ng-show="ctrl.selectedBenchmark" 
+			     style="width:225px;display:inline-table;">
 				
 				<!-- sdTree Implementation of Model Tree -->
 			    <ul sd-tree="ctrl.onTreeInit(api)"
@@ -279,16 +292,18 @@
 			    
 		    </div>
 		    
-		    <div ng-show="!ctrl.selectedBenchmark"  style="width:calc(100% - 230px);display:inline-table;"> No Benchmark Selected</div>
+		    <div class="container" ng-show="!ctrl.selectedBenchmark"  style="width:calc(100% - 230px);display:inline-table;"> No Benchmark Selected</div>
 		    
 		    <!-- Categories Table-->
 		    <div ng-show="ctrl.selectedBenchmark" style="width:calc(100% - 230px);display:inline-table;">
 		    
 		    	<table class="tbl ng-scope dataTable" id="benchmarkTable" style="width:100%;">
+		    	
 			    	<colgroup>
 				       <col span="1" style="width: 10%;">
 				       <col span="1" style="width: 20%;">
 				    </colgroup>
+				    
 		    		<thead>
 		    			<th class="tbl-hdr-col">
 		    				<span class="tbl-hdr-col-label">{{ctrl.textMap.element}}</span>
@@ -460,23 +475,31 @@
 	<div ng-show="ctrl.selectedTab ==='General'">
 	
 		<div sd-drop-down-menu sda-menu-items="[{value:'insert'},{value:'delete'},{value:'create'}]"></div>
-    	<label>{{ctrl.textMap.name}}</label> 
-    	<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark,true)"
-    	       ng-disabled="!ctrl.selectedBenchmark || ctrl.benchmarkFilter==='Published'"
-    	       ng-model="ctrl.selectedBenchmark.name" 
-    	       type="text">
+		
+		<div class="container">
+	    	<label style="display:inline-block;width:100px;">{{ctrl.textMap.name}}</label> 
+	    	<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark,true)"
+	    	       ng-disabled="!ctrl.selectedBenchmark || ctrl.benchmarkFilter==='Published'"
+	    	       ng-model="ctrl.selectedBenchmark.name" 
+	    	       type="text">
+    	</div>
     	
-    	<label>{{ctrl.textMap.description}}</label>
-    	<textarea ng-disabled="!ctrl.selectedBenchmark || ctrl.benchmarkFilter==='Published'" 
-    			  ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark,true)"
-    			  ng-model="ctrl.selectedBenchmark.description"></textarea>
+    	<div class="container">
+	    	<label style="display:inline-block;width:100px;">{{ctrl.textMap.description}}</label>
+	    	<textarea ng-disabled="!ctrl.selectedBenchmark || ctrl.benchmarkFilter==='Published'" 
+	    			  ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark,true)"
+	    			  ng-model="ctrl.selectedBenchmark.description"></textarea>
+    	</div>
     	
-    	<label>{{ctrl.textMap.businessCalendar}}</label>
-    	<select ng-options="item.path as item.name for item in ctrl.calendars | orderBy:'name'" 
-    			ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
-    			ng-disabled="!ctrl.selectedBenchmark || ctrl.benchmarkFilter==='Published'"
-    	        ng-model="ctrl.selectedBenchmark.businessCalendar">
-    	</select>
+    	<div class="container">
+	    	<label style="display:inline-block;width:100px;">{{ctrl.textMap.businessCalendar}}</label>
+	    	<select ng-options="item.path as item.name for item in ctrl.calendars | orderBy:'name'" 
+	    			ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+	    			ng-disabled="!ctrl.selectedBenchmark || ctrl.benchmarkFilter==='Published'"
+	    	        ng-model="ctrl.selectedBenchmark.businessCalendar">
+	    	</select>
+    	</div>
+    	
     </div>
 	
 </div><!-- Bottom Container End -->
