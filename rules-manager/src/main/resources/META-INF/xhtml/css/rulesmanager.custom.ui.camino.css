@@ -19,8 +19,7 @@
 	background-image:none !important;
 }
 .ui-camino-dialog  span.ui-dialog-title{
-	font-size: 16px !important;
-	font-family: Arial !important;
+	font-size: 1.45em !important;
 	font-weight: bold !important;
 	line-height: 16px !important;
 	margin: 0 !important;
@@ -36,7 +35,6 @@
 	border: 0px !important;
 	font-weight: bold !important;
 	font-size: 1em !important;
-	font-family: verdana !important;
 }
 .ui-camino-dialog button.ui-dialog-titlebar-close:before{
 	content:"X";
@@ -94,7 +92,7 @@
 	display: inline-block !important;
 	padding: 4px 14px !important;
 	margin-bottom: 0 !important;
-	font-size: 12px !important;
+	font-size: 1.1em !important;
 	line-height: 20px !important;
 	text-align: center !important;
 	vertical-align: middle !important;

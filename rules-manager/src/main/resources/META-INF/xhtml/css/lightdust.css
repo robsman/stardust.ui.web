@@ -8,9 +8,8 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-body {
+body, table, input, textarea {
 	color: #4d4d4d;
-	font-family: Helvetica, Arial, sans-serif;
 	font-size: 11px;
 	line-height: 1.5;
 }
@@ -18,23 +17,19 @@ body {
 label {
 	color: #708090;
 	margin-right: 10px;
-	font-size: 11px;
-	font-family: Helvetica, Arial, sans-serif;
+	font-size: 1em;
 }
 
 th {
-	font-size: 11px;
-	font-family: Helvetica, Arial, sans-serif;
+	font-size: 1em;
 }
 
 td {
-	font-size: 11px;
-	font-family: Helvetica, Arial, sans-serif;
+	font-size: 1em;
 }
 
 select {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	min-width: 100px;
 	height: 21px;
 	color: #4d4d4d;
@@ -51,8 +46,7 @@ select {
 }
 
 input {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	color: #4d4d4d;
 	border: 1px solid #9b9b9b; /* Gradient #9B9B9B - #C8C8C8 */
 	-webkit-border-radius: 2px;
@@ -61,8 +55,7 @@ input {
 }
 
 input[type="text"] {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	height: 18px;
 	padding-left: 5px;
 	min-width: 100px;
@@ -77,16 +70,14 @@ input[type="text"][disabled] {
 }
 
 input[type="password"] {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	height: 18px;
 	padding-left: 5px;
 	min-width: 100px;
 }
 
 input[type=button] {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	height: 21px;
 	color: #4d4d4d;
 	background-color: #f2f2f2;
@@ -102,8 +93,7 @@ input[type=button] {
 }
 
 input[type=image] {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	/*height: 21px;*/
 	color: #4d4d4d;
 	background-color: #f2f2f2;
@@ -129,8 +119,7 @@ input[type=text].rightAligned {
 }
 
 textarea {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 }
 
 a {
@@ -172,7 +161,7 @@ a:hover {
 }
 
 .heading {
-	font-size: 11px;
+	font-size: 1em;
 	font-color: #4D4D4D;
 	border-bottom: 1px solid #E7E7E7;
 	margin-top: 5px;
@@ -180,7 +169,7 @@ a:hover {
 }
 
 .clplPanelHeading {
-	font-size: 11px;
+	font-size: 1em;
 	font-color: #4D4D4D;
 	border-bottom: 1px solid #E7E7E7;
 	margin-top: 5px;
@@ -196,8 +185,7 @@ a:hover {
 
 .clplPanelHeading label{
 	color: #2F6871;
-	font-family: Arial,Helvetica,sans-serif;
-	font-size :11px;
+	font-size: 1em;
 	font-weight:bold;
 	float:none;
 	padding : 0px 4px 0px 0px;
@@ -207,7 +195,7 @@ a:hover {
 
 .output {
 	font-style: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 }
 
 /* Layout Table */
@@ -230,12 +218,10 @@ table.layoutTable td {
 
 /* Field Set Table */
 .fieldSetTable {
-	font-family: Helvetica, Arial, sans-serif;
 }
 
 table.fieldSetTable {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	margin: 0px;
 	padding: 0px;
 	border: 0px;
@@ -385,7 +371,7 @@ div.toolBar {
 /* */
 .code {
 	font-family: "Courier New", Courier, monospace;
-	font-size: 11px;
+	font-size: 1em;
 	font-weight: bold;
 	color: #397d9f;
 }
@@ -415,7 +401,7 @@ input.toolbarButton:hover {
 
 .ui-widget {
 	font-family: Arial, Helvetica, sans-serif !important;
-	font-size: 11px !important;
+	font-size: 1em !important;
 }
 
 #dialogWrapper {
@@ -440,13 +426,12 @@ div#toolbar {
 }
 
 .toolbar-section-content select {
-	font-size: 11px;
+	font-size: 1em;
 }
 
 .toolbar-section-footer {
 	height: 15px;
-	font-family: Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	text-align: center;
 	color: #aaaaaa;
 	white-space: nowrap;
@@ -467,8 +452,7 @@ div#scrollpane {
 
 div#messagePanel {
 	vertical-align: middle;
-	font-family: Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	height: 20px;
 }
 
@@ -517,10 +501,9 @@ div.propertiesPanel {
 .propertiesPanelTitle { /*width: 100%;*/
 	padding-left: 10px;
 	vertical-align: top;
-	font-size: 14px;
+	font-size: 1.27em;
 	font-weight: bold;
 	color: #eeeeee;
-	font-family: Arial, sans-serif;
 	margin-top: 0px;
 	margin-bottom: 5px;
 	background-color: #807c73;
@@ -651,5 +634,5 @@ td.mapping {
 /* Overwrites for jQuery UI */
 .ui-widget input,.ui-widget select,.ui-widget textarea,.ui-widget button {
 	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 }
