@@ -5,7 +5,7 @@
 
 .qa-management-emptyCell-warning {
 	color: orange;
-	font-size: 25px;
+	font-size: 2.27em;
 }
 
 /* Password Management */
@@ -55,7 +55,6 @@
 }
 
 .overview-report-field-value{
-    font-family: Lato, Arial, Helvetica, sans-serif;
     color: #708090;
     margin-left: -5px;
     margin-right: 10px;

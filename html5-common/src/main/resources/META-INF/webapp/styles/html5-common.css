@@ -110,7 +110,7 @@
 
 .popup-dlg-hdr-txt {
 	color: #A69A88;
-	font-size: 15px;
+	font-size: 1.36em;
 	font-weight: bold;
 }
 
@@ -151,15 +151,15 @@
 
 .popup-error-icon {
 	color: red;
-	font-size: 25px;
+	font-size: 2.27em;
 }
 
 .popup-info-icon {
-	font-size: 25px;
+	font-size: 2.27em;
 }
 
 .popup-warning-icon {
-	font-size: 25px;
+	font-size: 2.27em;
 	color: #F7CA18;
 	padding-right: 10px;
 }
@@ -246,8 +246,7 @@
 
 /*Text headers, TODO: split out font-size and line height*/
 .header {
-	font-family: Lato, Arial, Helvetica, sans-serif;
-	font-size: 15px;
+	font-size: 1.36em;
 	font-weight: 400 !important;
 	color: #A69A88 !important;
 	padding: 0px;
@@ -262,7 +261,7 @@
 	display: inline-block;
 	min-width: 10px;
 	padding: 3px 7px;
-	font-size: 12px;
+	font-size: 1.1em;
 	font-weight: 700;
 	line-height: 1;
 	color: #fff;
@@ -416,7 +415,7 @@ to {
 
 .close {
 	float: right;
-	font-size: 21px;
+	font-size: 1.91em;
 	font-weight: bold;
 	line-height: 1;
 	color: #000;
@@ -457,7 +456,7 @@ button.close {
 }
 
 .portal-glyph-icon {
-	font-size: 16px;
+	font-size: 1.45em;
 }
 
 .toolTip-dlg {

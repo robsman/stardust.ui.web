@@ -118,7 +118,7 @@ padding : 5px;;
  }
 
  .auxillary-gear{
-  font-size: 18px;
+  font-size: 1.64em;
  }
 
 /* ********** Priority and criticality Filter ********** */
@@ -132,8 +132,7 @@ padding : 5px;;
 
 .priority-criticality-filter-ac-container div[name='sd-ac-tag']{
     display:inline-table;
-    font-size: 12px;
-    font-family: Lato;
+    font-size: 1.1em;
     padding: 0px 4px 0px 4px;
     border:solid 1px #ccd5e4;
     background-color:#eff2f7;
@@ -168,7 +167,6 @@ padding : 5px;;
 
 .priority-criticality-filter-ac-container [name='sd-ac-selectList'] div{
     cursor:pointer;
-    font-family:Lato;
     font-size:0.8em;
     padding:2px;
     background-color:#fff;
@@ -231,7 +229,7 @@ padding : 5px;;
 .complete-activity-legend {
     border-style: none;
     border-width: 0;
-    font-size: 14px;
+    font-size: 1.27em;
     line-height: 4px;
     margin-bottom: 0px;
     background :white;
@@ -242,7 +240,7 @@ padding : 5px;;
 	
 }
 .action-column-icon {
-	font-size: 12px;
+	font-size: 1.1em;
 }
 
 .delegate-icon {
