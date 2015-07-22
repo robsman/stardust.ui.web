@@ -1897,9 +1897,10 @@
 				}
 
 				if (message.key != undefined) {
-					sdDialogService.alert(scope, 
-							sgI18nService.translate('html5-common.' + message.key, message.val),
-							sgI18nService.translate('portal-common-messages.common-info'));
+					var options = {
+							title : sgI18nService.translate('portal-common-messages.common-info')
+							};
+					sdDialogService.alert(scope, sgI18nService.translate('html5-common.' + message.key, message.val), options);
 				}
 			}, function(error) {
 				alert(error);

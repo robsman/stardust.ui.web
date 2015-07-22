@@ -406,10 +406,10 @@
 	 * 
 	 */
 	function showInValidPercentageError($scope, sdDialogService, sgI18nService) {
-		var title = sgI18nService.translate('views-common-messages.common-error', 'Error');
+		var options = { title : sgI18nService.translate('views-common-messages.common-error', 'Error')};
 		var message = sgI18nService.translate('admin-portal-messages.views-qaManagementView-qaError',
 		'Invalid percentage');
-		sdDialogService.error($scope, message, title)
+		sdDialogService.error($scope, message, options)
 	}
 
 })();

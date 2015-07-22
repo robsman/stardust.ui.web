@@ -101,17 +101,23 @@
 			if (self.validate(payload.criticalities)) {
 				sdCriticalityConfigService.saveCriticalityConfig(payload).then(function(result) {
 					self.criticalityConfig = result;
+					var options = {
+						title : sgI18nService.translate('portal-common-messages.common-info')
+					};
 					sdDialogService.alert($scope, 
 							sgI18nService.translate('admin-portal-messages.views-criticalityConf-criticality-save-success-dialog'),
-							sgI18nService.translate('portal-common-messages.common-info'));
+							options);
 					self.resetValues();
 					self.fetchCriticalityConfig();
 				}, function(error) {
 					trace.error('Error occured while saving Criticality Configuration : ', error);
+					var options = {
+							title : sgI18nService.translate('portal-common-messages.common-error')
+						};
 					// show error to the user
 					sdDialogService.error($scope, 
 							sgI18nService.translate('admin-portal-messages.views-criticalityConf-criticality-save-failure-dialog'),
-							sgI18nService.translate('portal-common-messages.common-error'));
+							options);
 				});
 			}
 		};
@@ -273,10 +279,11 @@
 			}, function(error) {
 				self.uploadedFiles = undefined;
 				trace.error('Error occured while importing Criticality Configuration : ', error);
+				var options = {
+						title : sgI18nService.translate('portal-common-messages.common-error')
+				};
 				// show error to the user
-				sdDialogService.error($scope, 
-						error.data,
-						sgI18nService.translate('portal-common-messages.common-error'));
+				sdDialogService.error($scope, error.data, options);
 			});
 		};
 		

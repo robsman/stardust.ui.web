@@ -478,19 +478,20 @@
 
 				sdProcessInstanceService.recoverProcesses(processes).then(
 						function(result) {
-							var title = '';
+							var options = {};
 							var message = result.message;
 							if (result.success == 'true') {
-								title = sgI18nService.translate('portal-common-messages.common-info', 'Information');
+								options.title = sgI18nService.translate('portal-common-messages.common-info', 'Information');
 							} else {
-								title = sgI18nService.translate('portal-common-messages.common-error', 'ERROR');
+								options.title = sgI18nService.translate('portal-common-messages.common-error', 'ERROR');
 							}
-							sdDialogService.alert(scope, message, title);
+							
+							sdDialogService.alert(scope, message, options);
 						},
 						function() {
+							var options = { title : sgI18nService.translate('portal-common-messages.common-error', 'ERROR') };
 							sdDialogService.alert(scope, sgI18nService.translate(
-									'portal-common-messages.internalServerError', 'Error Occurred'), sgI18nService
-									.translate('portal-common-messages.common-error', 'ERROR'));
+									'portal-common-messages.internalServerError', 'Error Occurred'), options );
 						});
 			};
 

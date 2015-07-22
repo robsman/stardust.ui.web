@@ -395,9 +395,11 @@
 			function(result) {
 			    if (result.failure.length > 0) {
 				trace.error("Error in activating worklist item : "+rowItem.activityOID+".Error : " + result.failure[0].message);
-				var title = sgI18nService.translate('views-common-messages.common-error', 'Error');
+				var options = { 
+						title : sgI18nService.translate('views-common-messages.common-error', 'Error')
+						};
 				var message = result.failure[0].message;
-				sdDialogService.error(scope, message, title)
+				sdDialogService.error(scope, message, options)
 			    } else {
 				trace.debug("Activation successfull : ",rowItem.activityOID);
 				sdCommonViewUtilService.openActivityView(rowItem.activityOID);
@@ -523,11 +525,13 @@
 		    function(result) {
 			if (result.failure.length > 0) {
 			    trace.error("Error in reactivating worklist item : "+rowItem.activityOID+".Error : " + result.failure[0].message);
-			    var title = sgI18nService.translate('views-common-messages.common-error', 'Error');
+			    var options = { 
+			    		title : sgI18nService.translate('views-common-messages.common-error', 'Error')
+			    		};
 			    var message = interpolate(sgI18nService.translate(
 				    'processportal.views-worklistPanel-resubmit-error', 'Error'),
 				    [ rowItem.activityOID ]);
-			    sdDialogService.error(scope, message, title)
+			    sdDialogService.error(scope, message, options)
 			} else {
 			    trace.debug("Rebusmission successfull for activity : ",rowItem.activityOID);
 			    sdCommonViewUtilService.openActivityView(rowItem.activityOID);
@@ -1287,11 +1291,13 @@
 		});
 
 		if (containsCaseInstance) {
-			var title = sgI18nService.translate('views-common-messages.common-error', 'Error');
+			var options = { 
+					title : sgI18nService.translate('views-common-messages.common-error', 'Error')
+					};
 			var message = sgI18nService.translate(
 					'views-common-messages.views-switchProcessDialog-caseAbort-message',
 			'Operation not suppored for case instances');
-			sdDialogService.error(scope, message, title)
+			sdDialogService.error(scope, message, options)
 		}
 
 		rowItems.every(function(activity) {
@@ -1304,8 +1310,10 @@
 		});
 		sdActivityInstanceService.performDefaultDelegate(data).then(function(result) {
 			if (result.failure.length > 0) {
-				var title = sgI18nService.translate('views-common-messages.common-error', 'Error');
-				sdDialogService.error(scope, result.failure[0].message, title)
+				var options = { 
+						title : sgI18nService.translate('views-common-messages.common-error', 'Error')
+						};
+				sdDialogService.error(scope, result.failure[0].message, options)
 			}
 			self.refresh();
 		}, function(error) {

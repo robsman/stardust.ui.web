@@ -345,10 +345,10 @@
      */
     Controller.prototype.showSuccessNotificationDialog = function($scope) {
 
-	var title = _sgI18nService.translate('portal-common-messages.common-info', 'Information');
+	var options = { title : _sgI18nService.translate('portal-common-messages.common-info', 'Information')};
 	var message = _sgI18nService.translate('admin-portal-messages.views-passwordMgmt-saveSuccess',
 		'Save Sucessfull');
-	_sdDialogService.info($scope, message, title)
+	_sdDialogService.info($scope, message, options)
     };
 
     /**
