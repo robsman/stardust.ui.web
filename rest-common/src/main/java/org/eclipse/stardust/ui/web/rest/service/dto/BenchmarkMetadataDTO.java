@@ -10,7 +10,11 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
+import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
+import org.eclipse.stardust.ui.web.viewscommon.utils.FormatterUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 
 /**
  * 
@@ -26,5 +30,20 @@ public class BenchmarkMetadataDTO extends AbstractDTO
    public long lastModifiedDate;
    
    public long runtimeOid;
-
+   
+   public void setAuthor(String owner)
+   {
+      if (StringUtils.isNotEmpty(owner))
+      {
+         User user = UserUtils.getUser(owner);
+         if (null != user)
+         {
+            author = FormatterUtils.getUserLabel(user);
+         }
+         else
+         {
+            author = owner;
+         }
+      }
+   }
 }
