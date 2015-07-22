@@ -81,7 +81,7 @@
 }
 
 body, table, input, button, select, textarea, a {
-	font-family: Lato, Arial, Helvetica, sans-serif !important;
+	font-family: Lato, Arial, Helvetica, sans-serif;
 	font-size: 11px;
 }
 
