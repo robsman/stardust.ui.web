@@ -37,6 +37,12 @@
 			<i class="sc sc-fw sc-3x sc-exclamation-circle"></i>
 			<span style="margin-left:1em;">File, {{ctrl.files[0].name}}, was succesfully uploaded.</span>
         </div>
+		
+		<div ng-click="ctrl.closeDialog()" 
+             ng-show="ctrl.state==='error'">
+			<i class="sc sc-fw sc-3x sc-close-circle"></i>
+			<span style="margin-left:1em;">File, {{ctrl.files[0].name}}, Error occurred uploading file.</span>
+        </div>
 
 		<div class="modal-footer">
 			<div class="confirmation-buttonpane">

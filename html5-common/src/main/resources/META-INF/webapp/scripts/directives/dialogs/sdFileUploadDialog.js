@@ -103,10 +103,22 @@
 			that.$timeout(function(){that.state="progress"},0);
 		}, false);
 		xhr.addEventListener("load", function(e){
-			that.$timeout(function(res){that.state="success"},0);
-			that.fileDefer.resolve(e);
+			var status = (e.srcElement || e.target).status;
+			
+			//integer division -> any 2XX status = success
+			if((status/100 | 0)===2){ 
+				that.$timeout(function(res){that.state="success"},0);
+				that.fileDefer.resolve(e);
+			}
+			//reject everything else
+			else{
+				that.$timeout(function(res){that.state="error"},0);
+				that.fileDefer.reject(e);
+			}
+			
 		}, false);
 		xhr.addEventListener("error", function(e){
+			var status = (e.srcElement || e.target)
 			that.$timeout(function(){that.state="error"},0);
 			that.fileDefer.reject(e);
 		}, false);
