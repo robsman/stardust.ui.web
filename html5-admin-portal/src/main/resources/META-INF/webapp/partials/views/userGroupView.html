@@ -34,14 +34,20 @@
 					title="{{i18n('admin-portal-messages.common-create')}}"
 					class="button-link tbl-toolbar-item tbl-tool-link"
 					aid="ADM-UserGrpMgmt-DataTable-CreateUserGrp">
-					<i class="glyphicon glyphicon-plus"></i>
+					<i class="sc sc-badge-portrait sc-fw sc-1x sc-users sc-right"> 
+						<i style="color: #007700" class="sc sc-badge-bg sc-badge-bg-circle sc-stroke go"></i> 
+						<i style="color: #fff;" class="sc sc-badge-icon sc-badge-icon-plus"></i>
+					</i>
 				</button>
 				<button ng-disabled="ctrl.selectionExpr == null"
 					ng-click="ctrl.invalidateUserGroup()"
 					title="{{i18n('admin-portal-messages.views-userGroupMgmt-invalidateUserGroup-tooltip-title')}}"
 					class="button-link tbl-toolbar-item tbl-tool-link"
 					aid="ADM-UserGrpMgmt-DataTable-InvalidateUserGrp">
-					<i class="glyphicon glyphicon-minus"></i>
+					<i class="sc sc-badge-portrait sc-fw sc-1x sc-users sc-right">
+						<i style="color: #770000" class="sc sc-badge-bg sc-badge-bg-circle stop"></i> 
+						<i style="color: #fff;" class="sc sc-badge-icon sc-badge-icon-minus"></i>
+					</i>
 				</button>
 			</div>
 		</div>
