@@ -87,5 +87,14 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 				</ippui:preferences>
 			</ippui:view>
 		</ippui:viewsExtension>
+			<ippui:viewsExtension>
+			<ippui:view name="granttChartViewHTML5"
+				include="/plugins/html5-business-control-center/partials/views/granttChartView.html">
+				<ippui:preferences>
+					<ippui:preferencePage name="icon"
+						include="/plugins/views-common/images/icons/process-history/activity_completed.png" />
+				</ippui:preferences>
+			</ippui:view>
+		</ippui:viewsExtension>
 	</ippui:perspectiveExtension>
 </beans>
