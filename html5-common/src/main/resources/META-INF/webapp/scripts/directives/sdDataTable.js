@@ -109,15 +109,15 @@
 			'<div class="tbl-toolbar-section">\n' +
 				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSelectColumns" ng-click="$dtApi.toggleColumnSelector()"' + 
 					' title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}">\n' +
-					'<i class="glyphicon glyphicon-th"></i>\n' +
+					'<i class="glyphicon glyphicon-th icon-lg"></i>\n' +
 				'</button>\n' +
 				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableExportExcel" ng-click=""' +
 					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}">\n' +
-					'<i class="glyphicon glyphicon-export"></i>\n' +
+					'<i class="glyphicon glyphicon-export icon-lg"></i>\n' +
 				'</button>\n' +
-				'<button class="button-link tbl-toolbar-item  tbl-tool-joined-link  tbl-tool-link" ng-if="$dtApi.enableExportCSV" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})"' +
+				'<button class="button-link tbl-toolbar-item  tbl-tool-joined-link tbl-tool-link" ng-if="$dtApi.enableExportCSV" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})"' +
 					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}">\n' +
-					'<i class="glyphicon glyphicon-export"></i>\n' +
+					'<i class="glyphicon glyphicon-export icon-lg"></i>\n' +
 				'</button>\n' +
 				'<div ng-if="$dtApi.showSelectColumns" class="popup-dlg">\n' +
 				'<div class="popup-dlg-hdr">\n' +
@@ -134,8 +134,8 @@
 									'</select>\n' +
 								'</span>\n' +
 								'<button class="button-link tbl-col-sel-link" ng-if="$dtApi.columnSelectorAdmin" ng-click="$dtApi.toggleColumnSelectorLock()" ng-disabled="$dtApi.isColumnSelectorLockDisabled()">\n' +
-									'<span class="sc sc-lg sc-lock" ng-show="$dtApi.lock" title="{{i18n(\'portal-common-messages.common-filterPopup-unlock\')}}"></span>\n' + 
-									'<span class="sc sc-lg sc-unlock" ng-show="!$dtApi.lock" title="{{i18n(\'portal-common-messages.common-filterPopup-lock\')}}"></span>\n' +
+									'<span class="sc icon-lg sc-lock" ng-show="$dtApi.lock" title="{{i18n(\'portal-common-messages.common-filterPopup-unlock\')}}"></span>\n' + 
+									'<span class="sc icon-lg sc-unlock" ng-show="!$dtApi.lock" title="{{i18n(\'portal-common-messages.common-filterPopup-lock\')}}"></span>\n' +
 								'</button>\n' +
 								'<button class="button-link tbl-col-sel-link glyphicon glyphicon-repeat" ng-click="$dtApi.resetColumnSelector()" title ="{{i18n(\'portal-common-messages.common-reset\')}}" style="cursor: pointer;"></button>\n' +
 							'</div>\n' +
@@ -152,7 +152,7 @@
 						'</div>\n' +
 				'</div>\n' +
 				'<span ng-if="$dtApi.enableExportCSV" sd-popover id="exportOptions" sda-class="tbl-tool-link">' +
-				'<i class="glyphicon glyphicon-chevron-right glyphicon-rotate-90 button-link tbl-toolbar-item tbl-tool-link"></i>\n' +
+				'<i class="glyphicon glyphicon-chevron-right icon-rotate-90 button-link tbl-toolbar-item tbl-tool-link"></i>\n' +
 						'<div class="popover-body">\n' +
 							'<div><a href="" ng-hide="!$dtApi.enableSelectColumns" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})">' + 
 							'{{i18n(\'html5-common.export-options-current-page-current-fields\')}}\n' +

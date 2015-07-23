@@ -1,0 +1,62 @@
+/*******************************************************************************
+ * Copyright (c) 2015 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
+
+.icon-sm {
+	font-size: 0.7777em;
+	line-height: 0.75em;
+}
+
+.icon-lg {
+	font-size: 1.33333333em;
+}
+
+.icon-0-5x {
+	font-size: 0.5em;
+}
+
+.icon-1-5x {
+	font-size: 1.5em;
+}
+
+.icon-2x {
+	font-size: 2em;
+}
+
+.icon-2-5x {
+	font-size: 2.5em;
+}
+
+.icon-3x {
+	font-size: 3em;
+}
+
+.icon-3-5x {
+	font-size: 3.5em;
+}
+
+.icon-4x {
+	font-size: 4em;
+}
+
+.icon-4-5x {
+	font-size: 4.5em;
+}
+
+.icon-5x {
+	font-size: 5em;
+}
+
+.icon-rotate-90 {
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+	-webkit-transform: rotate(90deg);
+	-ms-transform: rotate(90deg);
+	transform: rotate(90deg);
+}

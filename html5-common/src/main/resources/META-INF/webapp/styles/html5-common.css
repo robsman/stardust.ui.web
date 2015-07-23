@@ -488,3 +488,8 @@ button.close {
     vertical-align: top;
     white-space: normal !important;
 }
+
+
+.spacing {
+	margin-right: 5px;
+}
