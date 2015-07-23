@@ -810,7 +810,8 @@
 						"sPrevious": "<i class='glyphicon  glyphicon-triangle-left' style='top: 0px;'  aria-hidden='true'></i>",
 						"sNext": "<i class='glyphicon glyphicon-triangle-right' style='top: 0px;'  aria-hidden='true'></i>",
 						"sLast": "<i class='glyphicon glyphicon-step-forward' style='top: 0px;' aria-hidden='true'></i>"
-					}
+					},
+					 "sEmptyTable": sgI18nService.translate('portal-common-messages.common-genericDataTable-noRecordsFoundLabel')
 			};
 			
 			dtOptions.aoColumns = dtColumns;
