@@ -101,25 +101,18 @@
 									src="plugins/bpm-modeler/images/icons/application_edit.png"></img><span
 									class="tabLabel" id="configuration">Configuration</span> </a>
 							</li>
-							<li><a href="#mappingTab"><img
-									src="plugins/bpm-modeler/images/icons/application_edit.png"></img><span
-									class="tabLabel" id="mapping">Mapping</span> </a>
-							</li>
 						</ul>
 						<div id="configurationTab">
-                            <table>
-                                <tr>
-                                <td><label for="availableApplicationsInput" >Application</label></td>
-                                <td><select id="availableApplicationsInput"></select></td>
-                                </tr>
-                                <tr>
-                                <td><label for="processInterfacesInput" >Process Interface</label></td>
-                                <td><select id="processInterfacesInput"></select></td>
-                                </tr>
-                            </table>
-						</div>
-                        <div id="mappingTab">
-                            <div>abc</div>
+						<table>
+							<tr>
+							<td><label for="availableApplicationsInput" >Application</label></td>
+							<td><select id="availableApplicationsInput"></select></td>
+							</tr>
+							<tr>
+							<td><label for="processInterfacesInput" >Process Interface</label></td>
+							<td><select id="processInterfacesInput"></select></td>
+							</tr>
+						</table>
 						</div>
  						<div ng-repeat="ext in templateApplicationView.extensions" id="{{ext.id}}">
 							<sd-include src="ext.pageHtmlUrl"
