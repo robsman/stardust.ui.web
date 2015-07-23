@@ -10602,6 +10602,28 @@ input[src *='model.gif']{
      opacity: 0.7;
 }
 
+img[src *='model-upgrade.png'],
+input[src *='model-upgrade.png']{
+     background-image:url('./images/flat-icons/model-upgrade.png') !important;
+     width:16px;
+     background-size: 16px 16px;
+     padding: 16px 0 0 0 !important;
+     height:0px;
+     background-repeat: no-repeat !important;
+     opacity: 0.7;
+}
+
+img[src *='warning.png'],
+input[src *='warning.png']{
+     background-image:url('./images/flat-icons/warning.png') !important;
+     width:16px;
+     background-size: 16px 16px;
+     padding: 16px 0 0 0 !important;
+     height:0px;
+     background-repeat: no-repeat !important;
+     opacity: 0.7;
+}
+
 img[src *='money-coin.png']{
      background-image:url('./images/flat-icons/money-coin.png') !important;
      width:16px;

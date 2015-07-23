@@ -843,6 +843,15 @@ textarea:focus {
 
 .sd-dialog .modal-dialog .modal-content .button-alignment button {
 	margin-right: 10px;
-}	
-	
+}
+
+div#outlineMsgDiv {
+	background-color: #FFE599;
+	margin-bottom: 3px;
+}
+
+div#outlineMsgDiv img {
+	vertical-align: middle;
+} 
+
 @import ('/plugins/modern/public/skins/modern/modern.css')

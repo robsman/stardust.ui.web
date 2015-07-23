@@ -86,7 +86,11 @@ define(
         	isEditLocked=this.model.isReadonly() &&
 				         this.model.editLock &&
 				         ("lockedByOther" === this.model.editLock.lockStatus);
-
+        	
+          if (this.model.isUpgradeNeeded) {
+            modelTreeType = 'model-upgrade';
+          }	
+        	
         if(isLocked){
         	modelTreeType="lockedModel";
         	if(isEditLocked){
@@ -287,8 +291,13 @@ define(
 
       function refreshModelStatus(model) {
         var modelNode = m_utils.jQuerySelect("li#" + model.uuid, displayScope + " #outline");
+        
         modelNode.attr("rel", model.isReadonly() ? "lockedModel" : "model");
 
+        if (model.isUpgradeNeeded && !model.isReadonly()) {
+          modelNode.attr("rel", "model-upgrade");
+        }
+        
         if (model.isReadonly() && model.editLock
             && ("lockedByOther" === model.editLock.lockStatus)) {
 
@@ -303,6 +312,8 @@ define(
       }
 
       var readAllModels = function(force, dontReloadStrategy) {
+        var outlineMsgDiv = jQuery("div#outlineMsgDiv");
+        outlineMsgDiv.hide();
         jQuery("div#outlineLoadingMsg").show();
         jQuery("div#outlineLoadingMsg").html(
             m_i18nUtils.getProperty("modeler.outline.loading.message"));
@@ -319,6 +330,7 @@ define(
         var outlineRoot = jQuery(displayScope + "#outline");
 
         var sessionRef = m_session.initialize();
+        var modelupgradeRequired = false;
         jQuery.each(m_utils.convertToSortedArray(m_model.getModels(), "name", true),
             function(index, model) {
         	  try{
@@ -326,6 +338,15 @@ define(
         				  || sessionRef.showSimpleModels) {
     	              newOutlineTreeDomBuilder(model).buildModelNode(outlineRoot);
     	              refreshModelStatus(model);
+                  if (!modelupgradeRequired && model.isUpgradeNeeded && !model.isReadonly()) {
+                    modelupgradeRequired = true;
+                    outlineMsgDiv.show();
+                    var outlineMsg = jQuery("span#outlineMsg");
+                    outlineMsg.html(m_i18nUtils.getProperty("modeler.outline.modelUpgrade.message"));
+                    setTimeout(function() {
+                      outlineMsgDiv.hide();
+                      }, 7000);
+                  }
         		  }
         	  }
         	  catch(err){
@@ -333,7 +354,13 @@ define(
         		  newOutlineTreeDomBuilder(model).buildErroredModelNode(outlineRoot);
         	  }
             });
-
+        
+            if (!modelupgradeRequired) {
+              m_utils.jQuerySelect("#upgradeAllModels").addClass("toolDisabled");
+            } else {
+              m_utils.jQuerySelect("#upgradeAllModels").removeClass("toolDisabled");
+            }
+        
         // Errored models
         jQuery.each(m_utils.convertToSortedArray(m_model.getErroredModels(), "name",
             true), function(index, model) {
@@ -411,6 +438,32 @@ define(
 							});
 				}
 			};
+			
+			var upgradeModel = function(modelUUID) {
+        if (parent.iPopupDialog) {
+          parent.iPopupDialog
+              .openPopup({
+                attributes : {
+                  width : "400px",
+                  height : "200px",
+                  src : m_urlUtils.getPlugsInRoot()
+                      + "bpm-modeler/popups/confirmationPopupDialogContent.html"
+                },
+                payload : {
+                  title : m_i18nUtils
+                      .getProperty("modeler.messages.confirm"),
+                  message : m_i18nUtils
+                      .getProperty("modeler.messages.confirm.modelUpgrade"),
+                  acceptButtonText : m_i18nUtils
+                      .getProperty("modeler.messages.confirm.yes"),
+                  cancelButtonText : m_i18nUtils
+                      .getProperty("modeler.messages.confirm.no"),
+                  acceptFunction : upgradeModels_,
+                  data: {modelUUID: modelUUID}
+                }
+              });
+        }
+      };
 			
 			var versionizeModel2 = function(popupPayload) {
 				var model = m_model.findModelByUuid(popupPayload.modelUUID);				
@@ -786,9 +839,12 @@ define(
 								});
 			}
 
-			function upgradeAllModels(modelId) {
-        if (!modelId) {
-          modelId = "All";
+			function upgradeModels_(data) {
+			  var modelId = "All";
+			  
+			  if(data && data.modelUUID) {
+          var model = m_model.findModelByUuid(data.modelUUID)
+          modelId = model.id; 
         }
 			  
         m_communicationController
@@ -801,17 +857,15 @@ define(
                 new function() {
                   return {
                     success : function(data) {
-                      parent.iPopupDialog
-                      .openPopup(prepareErrorDialogPoupupData(
-                          "Success in upgrading models.",
-                          "OK"));
-                      window.parent.EventHub.events.publish("CONTEXT_UPDATED");
+                      m_messageDisplay.markSaved();
+                      m_modelsSaveStatus.setModelsSaved();
+                      reloadOutlineTree();
                     },
                     failure : function(data) {
                       if (parent.iPopupDialog) {
                         parent.iPopupDialog
-                            .openPopup(prepareErrorDialogPoupupData(
-                                "Error upgrading models.",
+                            .openPopup(prepareErrorDialogPoupupData(m_i18nUtils
+                                    .getProperty("modeler.messages.confirm.modelUpgradeError"),
                                 "OK"));
                       } else {
                         alert("Error upgrading models.");
@@ -845,7 +899,8 @@ define(
 								"items" : function(node) {
 									if ('model' == node.attr('rel')
 											|| 'lockedModel' == node.attr('rel')
-											|| 'lockedModelForEdit' == node.attr('rel')) {
+											|| 'lockedModelForEdit' == node.attr('rel')
+											|| 'model-upgrade' == node.attr('rel') ) {
 										var ctxMenu =  {
 											"ccp" : false,
 											"create" : false,
@@ -906,8 +961,15 @@ define(
 													versionizeModel(obj
 															.attr("id"));
 												}
-											}
-
+											},
+											"upgradeModel" : {
+                        "label" : m_i18nUtils
+                            .getProperty("modeler.outline.model.contextMenu.upgrade"),
+                        "action" : function(obj) {
+                          upgradeModel(obj
+                              .attr("id"));
+                        }
+											} 
 										// openModelReport options is
 										// Commented out as,
 										// this will not be supported in
@@ -927,13 +989,19 @@ define(
 										addMenuOptions(ctxMenu, "model");
 
 										var mod = m_model.findModelByUuid(node.attr('id'))
+										
+                    if (!mod.isUpgradeNeeded) {
+                      ctxMenu.upgradeModel = false;
+                    } 
+										
 										if (mod.isReadonly()) {
 											ctxMenu.rename = false;
 											ctxMenu.deleteModel = false;
 											ctxMenu.deleteModel = false;
 											ctxMenu.createProcess = false;
+											ctxMenu.upgradeModel = false;
 										}
-
+										
 										return ctxMenu;
 									} else if ('erroredModel' == node.attr('rel')) {
 										var ctxMenu =  {
@@ -1448,6 +1516,19 @@ define(
 												"structuredTypes",
 												"data" ]
 									},
+									"model-upgrade" : {
+                    "icon" : {
+                      "image" : m_urlUtils
+                          .getPlugsInRoot()
+                          + "bpm-modeler/images/icons/model-upgrade.png"
+                    },
+                    "valid_children" : [
+                        "participants",
+                        "process",
+                        "applications",
+                        "structuredTypes",
+                        "data" ]
+                  },
 									"lockedModel" : {
 										"icon" : {
 											"image" : m_urlUtils
@@ -1768,7 +1849,8 @@ define(
 								function(event, data) {
 									if (data.rslt.obj.attr('rel') == 'model'
 											|| data.rslt.obj.attr('rel') == 'lockedModel'
-											|| data.rslt.obj.attr('rel') == 'lockedModelForEdit') {
+											|| data.rslt.obj.attr('rel') == 'lockedModelForEdit'
+											|| data.rslt.obj.attr('rel') == 'model-upgrade'  ) {
 										var model = m_model
 												.findModelByUuid(data.rslt.obj
 														.attr("id"));
@@ -2793,7 +2875,7 @@ define(
 					} else if ("saveAllModels" == data.id) {
 						saveAllModels();
 					} else if ("upgradeAllModels" == data.id) {
-            upgradeAllModels();
+					  upgradeModel();
           } else if ("refreshModels" == data.id) {
 						refresh();
 					}
@@ -2931,6 +3013,11 @@ define(
 								"title",
 								m_i18nUtils
 										.getProperty("modeler.outline.toolbar.tooltip.saveAllModel"));
+				m_utils.jQuerySelect("#upgradeAllModels")
+        .attr(
+            "title",
+            m_i18nUtils
+                .getProperty("modeler.outline.toolbar.tooltip.upgradeModels"));
 				m_utils.jQuerySelect("#refreshModels")
 						.attr(
 								"title",
@@ -3153,6 +3240,11 @@ define(
 									// Change model icon in case the read-only factor has changed.
 									if (m_constants.MODEL === modelElement.type) {
 										modelTreeType="model";
+                    
+                    if (modelElement.isUpgradeNeeded) {
+                      modelTreeType = "model-upgrade";
+                    }
+										
 										if(modelElement.isReadonly()){
 											modelTreeType="lockedModel";
 											if(modelElement.editLock && modelElement.editLock.lockStatus=="lockedByOther"){
