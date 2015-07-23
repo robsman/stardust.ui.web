@@ -52,6 +52,8 @@ define(
 
 					controller.initialize(renderingController, reportUID, name, path, isClone);
 					
+					controller.loadCustomTheme();
+					
 					return controller;
 				}
 			};
@@ -2372,7 +2374,38 @@ define(
         		}
         	}
         };
-        
+
+		/*
+		 * 
+		 */
+        ReportDefinitionController.prototype.loadCustomTheme = function() {
+        	var self = this;
+
+			jQuery.ajax({
+				type : 'GET',
+				url : this.getContextName() + "/services/rest/common/html5/api/themes/current/custom",
+				async : true
+			}).done(function(json){
+				var head = document.getElementsByTagName('head')[0];
+				
+				for(var i in json.stylesheets) {
+					var link = document.createElement('link');
+					link.href = self.getContextName() + "/" + json.stylesheets[i];
+					link.rel = 'stylesheet';
+					link.type = 'text/css';
+					head.appendChild(link);
+				}
+			}).fail(function(err){
+				console.debug("Failed in loading custom theme");
+			});
+		};
+
+		/**
+		 *
+		 */
+		ReportDefinitionController.prototype.getContextName = function() {
+			return location.pathname.substring(0, location.pathname.indexOf('/plugins', 1));
+		}
 		}
 
 		function replaceSpecialChars(id){
