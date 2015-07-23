@@ -242,3 +242,7 @@
     text-align: left !important;
     margin-top: 4px !important;
 }
+
+.dataTables_paginate_icon {
+	top: 0px;
+}

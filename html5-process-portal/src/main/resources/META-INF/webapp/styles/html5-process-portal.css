@@ -38,7 +38,7 @@
 
 .sd-delegate-act-srch-participant-div {
 	border: 1px solid;
-	border-color: #D9D9D9;
+	border-color: #D9D9D9 !important;
 	width: 340px;
 	overflow: auto;
 	padding: 7px;
@@ -58,63 +58,63 @@ padding : 5px;;
 
 /* ********** Activity Criticality flags ********** */
 .criticality-flag-RED{
-  color :#F75339;
+  color :#F75339 !important;
 }
 
 .criticality-flag-YELLOW{
-  color :#EDCB47;
+  color :#EDCB47 !important;
 }
 
 .criticality-flag-BLUE{
-  color :#43B1FF;
+  color :#43B1FF !important;
 }
 
 .criticality-flag-GREEN{
-  color:#6CC14F;
+  color:#6CC14F !important;
 }
 
 .criticality-flag-PURPLE{
-  color:#C748F2;
+  color:#C748F2 !important;
 }
 
 .criticality-flag-ORANGE{
-  color:#FFAE3E;
+  color:#FFAE3E !important;
 }
 
 .criticality-flag-PINK{
-  color:#FF59E5;
+  color:#FF59E5 !important;
 }
 
 .criticality-flag-WHITE-WARNING{
-  color:black;
+  color:black !important;
 }
 
 .criticality-flag-WHITE{
-  color:black;
+  color:black !important;
 }
 
 .criticality-flag-NO-COLOR{
-  color:#CFCFCF;
+  color:#CFCFCF !important;
 }
 
 /* ********** Process Priority flags ********** */
 
 .priority-flag-high{
-  color :#FC3838;
+  color :#FC3838 !important;
 }
 
 .priority-flag-normal{
-  color :#FFCC00;
+  color :#FFCC00 !important;
 }
 
 .priority-flag-low{
-  color :#3D66E0;
+  color :#3D66E0 !important;
 }
 
 /* ********** Process Activity Filter ********** */
 
  .auxillaryGearDisabled{
-   color : gray;
+   color : gray ;
  }
 
  .auxillary-gear{
@@ -236,22 +236,15 @@ padding : 5px;;
     width:90px;
 }
 
-.toolbar-icon {
-	
-}
-.action-column-icon {
-	font-size: 1.1em;
-}
 
 .delegate-icon {
 	margin-left: 5px;
 }
 
 .delegate-icon-arrow {
-	left: -8px;
-	top: -3px;
+	left: -11px;
+	top: -5px;
 }
-
 
 #progressBar {
 	background: none repeat scroll 0 0 #FFFFFF;

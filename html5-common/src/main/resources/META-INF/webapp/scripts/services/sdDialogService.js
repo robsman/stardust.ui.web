@@ -154,7 +154,7 @@
 
 			    var html = '<table style="width : 100%">'+
 			    '<tr>'+
-			    '<td style="width : 15% ; align:center"><i  class="sc sc-info-circle popup-info-icon" ></i> </td>'+
+			    '<td style="width : 15% ; align:center"><i  class="sc sc-info-circle popup-info-icon icon-lg" ></i> </td>'+
 			    '<td style="width : 85%">'+message +'</td>'+
 			    '</tr>'+
 			    '</table>' 

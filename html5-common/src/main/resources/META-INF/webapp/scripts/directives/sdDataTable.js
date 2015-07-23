@@ -806,10 +806,10 @@
 			dtOptions.iDisplayLength = pageSize;
 			dtOptions.oLanguage = {
 					"oPaginate": {
-						"sFirst": "<i class='glyphicon glyphicon-step-backward' style='top: 0px;' aria-hidden='true'></i>",
-						"sPrevious": "<i class='glyphicon  glyphicon-triangle-left' style='top: 0px;'  aria-hidden='true'></i>",
-						"sNext": "<i class='glyphicon glyphicon-triangle-right' style='top: 0px;'  aria-hidden='true'></i>",
-						"sLast": "<i class='glyphicon glyphicon-step-forward' style='top: 0px;' aria-hidden='true'></i>"
+						"sFirst": "<i class='glyphicon glyphicon-step-backward dataTables_paginate_icon' ></i>",
+						"sPrevious": "<i class='glyphicon  glyphicon-triangle-left dataTables_paginate_icon'></i>",
+						"sNext": "<i class='glyphicon glyphicon-triangle-right dataTables_paginate_icon'></i>",
+						"sLast": "<i class='glyphicon glyphicon-step-forward dataTables_paginate_icon'></i>"
 					},
 					 "sEmptyTable": sgI18nService.translate('portal-common-messages.common-genericDataTable-noRecordsFoundLabel')
 			};

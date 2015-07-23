@@ -12,7 +12,7 @@ table.layoutTable td {
 				<table cellpadding="0" cellspacing="0" class="layoutTable">
 					<tr>
 						<td style="padding-right: 5px;"><i
-							class="sc sc-fw sc-1x sc-arrow-d"></i></td>
+							class="sc sc-fw icon-lg sc-arrow-d"></i></td>
 						<td><span class="heading">{{(i18n('business-control-center-messages.views-processSearchView-searchCriteria-label')).toUpperCase()}}</span></td>
 					</tr>
 				</table>
@@ -21,7 +21,7 @@ table.layoutTable td {
 				<table cellpadding="0" cellspacing="0" class="layoutTable">
 					<tr>
 						<td style="padding-right: 5px;"><i
-							class="sc sc-fw sc-1x sc-arrow-r"></i></td>
+							class="sc sc-fw icon-lg sc-arrow-r"></i></td>
 						<td><span class="heading">{{(i18n('business-control-center-messages.views-processSearchView-searchCriteria-label')).toUpperCase()}}</span></td>
 					</tr>
 				</table>
@@ -43,7 +43,7 @@ table.layoutTable td {
 										ng-change="procSearchViewCtrl.processChange()"
 										style="width: 100px"
 										aid="BCC-ProcSrch-SearchOption"></select></td>
-									<td><i class="sc sc-fw sc-1x sc-exclamation-circle"></i></td>
+									<td><i class="sc sc-fw icon-lg sc-exclamation-circle"></i></td>
 								</tr>
 							</table>
 						</div>
@@ -122,8 +122,8 @@ table.layoutTable td {
 											i18n('views-common-messages.processHistory-processTable-showAuxiliaryProcess')}}"
 										class="button-link tbl-tool-link"
 										aid="BCC-ProcSrch-ShowHideAuxiliaryProcess">
-										<i
-											ng-class="procSearchViewCtrl.query.processSearchCriteria.showAuxiliaryProcess ? 'sc sc-fw sc-2x sc-gear-minus' : 'sc sc-fw sc-2x sc-gear-plus'"></i>
+										<i 
+											ng-class="procSearchViewCtrl.query.processSearchCriteria.showAuxiliaryProcess ? 'sc icon-lg sc-gear-minus' : 'sc   icon-lg sc-gear-plus'"></i>
 									</button>
 								</td>
 							</tr>

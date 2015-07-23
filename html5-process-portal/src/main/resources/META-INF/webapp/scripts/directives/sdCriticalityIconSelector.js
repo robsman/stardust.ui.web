@@ -30,7 +30,7 @@
          restrict : 'A',
          template :
         	'<button class="button-link" ng-disabled="editMode != true" aid="CritIconSelector">'
-        	+ '<i ng-click="criticalityIconSelectorCtrl.openPopover($event)" class="glyphicon glyphicon-flag portal-glyph-icon" aid="CritIconSelector-SelectedFlg"' 
+        	+ '<i ng-click="criticalityIconSelectorCtrl.openPopover($event)" class="glyphicon glyphicon-flag icon-lg" aid="CritIconSelector-SelectedFlg"' 
 	 			+ 'ng-class="\'criticality-flag-\'+ (bindModel != undefined? bindModel : \'NO-COLOR\')"><\/i>  '
 	 		+'</button>'
 			+'<span sd-popover="criticalityIconSelectorCtrl.popoverDirective" ng-disabled="editMode != true">'
@@ -40,7 +40,7 @@
 		            + '</button>'
 					+ '<div style="float: left;">'
 						+ '<button ng-click="criticalityIconSelectorCtrl.setIcon(icon)" class="button-link tbl-tool-link" ng-repeat="icon in criticalityIconSelectorCtrl.getFlagIcons()" aid="CritIconSelector-IconOptions">'
-							+ '<i class="glyphicon glyphicon-flag portal-glyph-icon" '
+							+ '<i class="glyphicon glyphicon-flag icon-lg" '
 							+ 'ng-class="\'criticality-flag-\'+icon"><\/i>  '
 						+ '<\/button>'
 					+ '</div>'

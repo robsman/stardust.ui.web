@@ -22,7 +22,7 @@ var html5Deps = function() {
 				"html5-common/styles/sd-data-table.css",
 				"html5-common/styles/sd-autoComplete.css",
 				"html5-common/styles/html5-common.css",
-				"html5-common/styles/glyphicons-ext.css",
+				"html5-common/styles/font-icon.css",
 				"html5-process-portal/styles/html5-process-portal.css" ];
 
 		for ( var i in styleSheets) {

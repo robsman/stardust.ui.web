@@ -29,7 +29,7 @@
 			   sdaOnChange : '&',
 			   sdaValueChanged : '='
 		   },
-		   template : '<i ng-if="!sdaEditable" class="glyphicon glyphicon-flag portal-glyph-icon" '+
+		   template : '<i ng-if="!sdaEditable" class="glyphicon glyphicon-flag icon-lg" '+
 		   						'ng-class="\'priority-flag-\'+sdaPriority.name" '+
 		   						'ng-mouseenter=\'processPriorityCtrl.toolTip.show = true\' '+
 		   						'ng-mouseleave=\'processPriorityCtrl.toolTip.show = false\'> '+

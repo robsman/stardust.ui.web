@@ -28,12 +28,12 @@
                         'ng-mouseenter="criticalityCtrl.toolTip.show = true" '+
                          'ng-mouseleave="criticalityCtrl.toolTip.show = false"> '+
                         '<i ng-show="criticalityCtrl.criticality.color != \'WHITE\' && criticalityCtrl.criticality.color!=\'WHITE_WARNING\'" '+
-                         'class="glyphicon glyphicon-flag portal-glyph-icon" '+
+                         'class="glyphicon glyphicon-flag icon-lg" '+
                          'ng-class="\'criticality-flag-\'+criticalityCtrl.criticality.color"><\/i>  '+
                         '<i ng-show="criticalityCtrl.criticality.color == \'WHITE\'" '+
-                        'class="glyphicon glyphicon-flag portal-glyph-icon criticality-flag-WHITE"><\/i>  '+
+                        'class="glyphicon glyphicon-flag icon-lg criticality-flag-WHITE"><\/i>  '+
                          '<i ng-show="criticalityCtrl.criticality.color == \'WHITE_WARNING\'" '+
-                         'class="glyphicon portal-glyph-icon criticality-flag-WHITE-WARNING  glyphicon-exclamation-triangle"><\/i>' +
+                         'class="glyphicon icon-lg criticality-flag-WHITE-WARNING  glyphicon-exclamation-triangle"><\/i>' +
                    '<\/span> '+
                    '<div class="popup-dlg worklist-tooltip" style="color: black" '+
                       'ng-show="criticalityCtrl.toolTip.show"> '+

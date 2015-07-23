@@ -21,12 +21,12 @@
 					title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-showHideAbsActivites-title')}}"
 					class="button-link tbl-toolbar-item tbl-tool-link">
 					<!-- 	Replace with pen book icon for show obsolete activities -->
-					<i class="toolbar-icon sc sc-book-open sc-1x" ng-class="{iconDisabled:qaManagementCtrl.showObsoleteActivities }"></i>
+					<i class=" sc sc-book-open icon-lg" ng-class="{iconDisabled:qaManagementCtrl.showObsoleteActivities }"></i>
 				</button>
 				<button ng-click="qaManagementCtrl.editActivityQa();" ng-disabled="qaManagementCtrl.activityTable.getSelection() < 1"
 					title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-editQA-title')}}"  aid="ADM-QAMgmt-EditActivityQA"
-					class="button-link tbl-toolbar-item tbl-tool-link">
-					<i class="toolbar-icon glyphicon glyphicon-pencil sc-1x"></i>
+					class="button-link tbl-toolbar-item tbl-tool-link ">
+					<i class=" glyphicon glyphicon-pencil icon-lg"></i>
 				</button>
 			</div>
 		</div>
@@ -68,38 +68,38 @@
 				<tbody>
 					<tr>
 						<td>
-							<i class=" qa-management-table-icon sc sc-1x sc-spiral"> </i>
+							<i class=" spacing-right sc icon-lg sc-spiral"> </i>
 							<span ng-bind="rowData.modelName"></span>
 						</td>
 						<td>
-							<i class="glyphicon glyphicon-cog qa-management-table-icon sc-1x"> </i>
+							<i class="glyphicon glyphicon-cog spacing-right icon-lg"> </i>
 							<span ng-bind="rowData.processName"></span>
 						</td>
 						<td>
-						<i class="sc sc-badge-portrait sc-1x sc-cog sc-left qa-management-table-icon"> 
+						<i class="sc sc-badge-portrait icon-lg sc-cog sc-left spacing-right"> 
 							<i class="sc sc-badge-bg sc-badge-bg-circle sc-stroke"></i>
 							<i class="sc sc-badge-icon sc-badge-icon-hand" style="color:white"></i>
 						</i> 
 						<span ng-bind="rowData.activityName"></span></td>
 						<td>
 							<!-- Icons for various Participant types -->
-							<span ng-if="rowData.performerType == 'ROLE'"  class="qa-management-table-icon"> <span class="sc-1x" style="color:#A2B5CD">(</span> <i
-								class="sc sc-1x sc-user" style="color:#A2B5CD"></i> <span class="sc-1x" style="color:#A2B5CD">)</span>
+							<span ng-if="rowData.performerType == 'ROLE'"  class="spacing-right"> <span class="icon-lg" style="color:#A2B5CD">(</span> <i
+								class="sc icon-lg sc-user" style="color:#A2B5CD; margin-left: -6px;"></i> <span class="icon-lg" style="color:#A2B5CD">)</span>
 						   </span> 
-						   <span ng-if="rowData.performerType == 'SCOPED_ROLE'"  class="qa-management-table-icon"> <span class="sc-1x"  style="color:'#000'">(</span> <i
-								class="sc sc-1x sc-user" style="color:#A2B5CD"></i> <span class="sc-1x">)</span>
+						   <span ng-if="rowData.performerType == 'SCOPED_ROLE'"  class="spacing-right"> <span class="icon-lg"  style="color:'#000'">(</span> <i
+								class="sc icon-lg sc-user" style="color:#A2B5CD ;margin-left: -6px;""></i> <span class="icon-lg">)</span>
 						   </span>
-						    <span ng-if="rowData.performerType == 'SCOPED_ORGANIZATION'"  class="qa-management-table-icon"> 
-						    	<i class="sc sc-organization sc-1x "></i>
+						    <span ng-if="rowData.performerType == 'SCOPED_ORGANIZATION'"  class="spacing-right"> 
+						    	<i class="sc sc-organization icon-lg "></i>
 						    </span>
-						      <span ng-if="rowData.performerType == 'ORGANIZATION'"  class="qa-management-table-icon"> 
-						    	<i class="sc sc-organization sc-1x "></i>
+						      <span ng-if="rowData.performerType == 'ORGANIZATION'"  class="spacing-right"> 
+						    	<i class="sc sc-organization icon-lg "></i>
 						    </span>
-						     <span ng-if="rowData.performerType == 'USER'"  class="qa-management-table-icon"> 
-						    	<i class="sc sc-user sc-1x "></i>
+						     <span ng-if="rowData.performerType == 'USER'"  class="spacing-right"> 
+						    	<i class="sc sc-user icon-lg "></i>
 						    </span>
-						     <span ng-if="rowData.performerType == 'USERGROUP'"  class="qa-management-table-icon"> 
-						    	<i class="sc sc-users sc-1x "></i>
+						     <span ng-if="rowData.performerType == 'USERGROUP'"  class="spacing-right"> 
+						    	<i class="sc sc-users icon-lg "></i>
 						    </span>
 						 <span ng-bind="rowData.defaultPerformer"></span>
 						</td>
@@ -132,7 +132,7 @@
 					<button ng-click="qaManagementCtrl.editDepartmentQa();" ng-disabled="qaManagementCtrl.departmentTable.getSelection() < 1"
 						title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-editQA-title')}}" aid="ADM-QAMgmt-EditDepartmentQA"
 						class="button-link tbl-toolbar-item tbl-tool-link">
-						<i class="glyphicon glyphicon-pencil toolbar-icon sc-1x"></i>
+						<i class="glyphicon glyphicon-pencil  icon-lg"></i>
 					</button>
 				</div>
 			</div>
@@ -155,7 +155,7 @@
 				<tbody>
 					<tr>
 						<td>
-							<i class="sc sc-badge-portrait  sc-1x sc-users sc-right  qa-management-table-icon">
+							<i class="sc sc-badge-portrait  icon-lg sc-users sc-right  spacing-right">
 								<i class="sc sc-badge-bg sc-badge-bg-circle "></i> <i
 								class="sc sc-badge-icon sc-badge-icon-chain" style="color : white"></i>
 							</i>
@@ -165,7 +165,7 @@
 							<span ng-hide="rowData.isEditMode" ng-bind="rowData.qaPercentage"></span> 
 							<span ng-show="rowData.isEditMode">
 								<input type="text" ng-model="rowData.qaPercentage" style="width: 30px;"  aid="ADM-QAMgmt-DepartmentQA"></input> 
-								<span ng-show=" !rowData.qaPercentage || rowData.qaPercentage === ''" style="color: orange; font-size: 25px;"> * </span>
+								<span ng-show=" !rowData.qaPercentage || rowData.qaPercentage === ''" style="color: orange" class="icon-2x"> * </span>
 							</span>
 						</td>
 					</tr>

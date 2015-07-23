@@ -31,7 +31,7 @@
 					' title="{{refreshController.i18n(\'processportal.launchPanels-worklists-button-refresh\')}}"'+
 					' aid="Refresh"' +
 					' class="button-link">'+
-					' <i class="glyphicon glyphicon-refresh"></i>'+
+					' <i class="glyphicon glyphicon-refresh icon-lg"></i>'+
 				    '</button>',
 			controller : [ '$scope', RefreshController ]
 		};
