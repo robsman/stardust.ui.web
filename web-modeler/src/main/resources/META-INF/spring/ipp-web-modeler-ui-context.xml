@@ -32,6 +32,9 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		<ippui:view name="webServiceApplicationView"
 			include="/plugins/bpm-modeler/views/modeler/webServiceApplicationView.html"
 			controller="webServiceApplicationView" />
+		<ippui:view name="templateApplicationView"
+			include="/plugins/bpm-modeler/views/modeler/templateApplicationView.html"
+			controller="templateApplicationView" />
 		<ippui:view name="xsdStructuredDataTypeView"
 			include="/plugins/bpm-modeler/views/modeler/xsdStructuredDataTypeView.html"
 			controller="xsdStructuredDataTypeView" />

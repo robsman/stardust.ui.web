@@ -90,7 +90,10 @@
 		class="org.eclipse.stardust.ui.web.modeler.portal.ProcessDefinitionView">
 		<property name="modelService" ref="modelService" />
 	</bean>
-
+	<bean id="templateApplicationView"
+		class="org.eclipse.stardust.ui.web.modeler.portal.TemplateApplicationView">
+		<property name="modelService" ref="modelService" />
+	</bean>
 	<bean id="webServiceApplicationView"
 		class="org.eclipse.stardust.ui.web.modeler.portal.WebServiceApplicationView">
 		<property name="modelService" ref="modelService" />

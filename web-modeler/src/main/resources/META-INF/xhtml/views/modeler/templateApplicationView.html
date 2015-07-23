@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+<head>
+<title>Template Application</title>
+<link rel="stylesheet" type="text/css"
+	href="plugins/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"></link>
+<link href="plugins/bpm-modeler/css/lightdust.css" rel="stylesheet" type="text/css" />
+<link href="plugins/bpm-modeler/css/bpm-modeler.custom.jquery.ui.css" rel="stylesheet" type="text/css" />
+
+<script type="text/javascript" src="plugins/bpm-modeler/js/commonRequire.js"></script>	
+</head>
+<body>
+	<div id="templateApplicationView" class="nativeHtmlViewPanel" style="visibility: hidden">
+		<table cellpadding="0" cellspacing="0" class="layoutTable"
+			style="width: 800px;">
+			<tr>
+				<td>
+					<div class="errorMessagesPanel">
+						<ul id="errorMessagesList">
+						</ul>
+					</div></td>
+			</tr>
+		</table>
+		<div id="hideGeneralProperties">
+				<div class="clplPanelHeading">
+				<img src="./plugins/common/images/panelHeader-triggerExpand.png"
+					title="Show General Properties" styleClass="headerImg"></img> 
+					<label>General Properties</label>
+			</div>
+		</div>
+		<div id="showAllProperties">
+			<div id="showGeneralProperties">
+				<div class="clplPanelHeading">
+					<img src="./plugins/common/images/panelHeader-triggerCollapse.png"
+						title="Hide General Properties" styleClass="headerImg"></img>
+						<label>General Properties</label>	
+				</div>
+			</div>
+		<table cellpadding="0" cellspacing="0" class="layoutTable"
+			style="width: 800px;">
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
+						style="margin-bottom: 10px;">
+						<tr id="guidOutputRow">
+							<td><label for="guidOutput">UUID</label>
+							</td>
+							<td><div id="guidOutput" class="output">168999</div>
+							</td>
+						</tr>
+						<tr id="idOutputRow">
+							<td><label for="idOutput">ID</label>
+							</td>
+							<td><div id="idOutput" class="output"></div>
+							</td>
+						</tr>
+						<tr>
+							<td><label for="nameInput" id="application">Application Name</label>
+							</td>
+							<td><input id="nameInput" type="text"></input>
+							</td>
+						</tr>
+					</table></td>
+			</tr>
+			<tr>
+				<td><label for="descriptionTextarea" id="description">Description</label>
+				</td>
+			</tr>
+			<tr>
+				<td><textarea id="descriptionTextarea" cols="40" rows="5"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<table cellpadding="0" cellspacing="0" class="fieldSetTable"
+						style="margin-bottom: 10px;">
+						<tr>
+							<td><input id="publicVisibilityCheckbox" type="checkbox"></input>
+							</td>
+							<td><label for="publicVisibilityCheckbox" id="publicVisibility">Public
+									Visibility</label></td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+		</div>
+		<table cellpadding="0" cellspacing="0" class="layoutTable"
+			style="width: 800px;">
+			<tr>
+				<td>
+					<div id="propertiesTabs" class="minimalTabs" style="margin-top: 10px;">
+						<ul id="propertiesTabsList">
+							<li><a href="#configurationTab"><img
+									src="plugins/bpm-modeler/images/icons/application_edit.png"></img><span
+									class="tabLabel" id="configuration">Configuration</span> </a>
+							</li>
+							<li><a href="#mappingTab"><img
+									src="plugins/bpm-modeler/images/icons/application_edit.png"></img><span
+									class="tabLabel" id="mapping">Mapping</span> </a>
+							</li>
+						</ul>
+						<div id="configurationTab">
+                            <table>
+                                <tr>
+                                <td><label for="availableApplicationsInput" >Application</label></td>
+                                <td><select id="availableApplicationsInput"></select></td>
+                                </tr>
+                                <tr>
+                                <td><label for="processInterfacesInput" >Process Interface</label></td>
+                                <td><select id="processInterfacesInput"></select></td>
+                                </tr>
+                            </table>
+						</div>
+                        <div id="mappingTab">
+                            <div>abc</div>
+						</div>
+ 						<div ng-repeat="ext in templateApplicationView.extensions" id="{{ext.id}}">
+							<sd-include src="ext.pageHtmlUrl"
+								onload="templateApplicationViewOnload(ext)" onfail="templateApplicationViewOnfail(ext)" />
+						</div>
+					</div></td>
+			</tr>
+		</table>
+	</div>
+
+	<script type="text/javascript" src="plugins/bpm-modeler/js/templateApplicationViewMain.js"></script>
+
+</body>
+</html>

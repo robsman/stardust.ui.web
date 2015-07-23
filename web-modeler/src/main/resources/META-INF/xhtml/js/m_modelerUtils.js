@@ -22,7 +22,8 @@ define(
 				"messageTransformationBean" : "messageTransformationApplicationView",
 				"webservice" : "webServiceApplicationView",
 				"camelSpringProducerApplication" : "camelApplicationView",
-				"interactive" : "uiMashupApplicationView"
+				"interactive" : "uiMashupApplicationView",
+				"templateApp" : "templateApplicationView"
 			};
 
 			return {

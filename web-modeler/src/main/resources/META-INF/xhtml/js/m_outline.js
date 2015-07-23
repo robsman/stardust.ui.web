@@ -611,6 +611,9 @@ define(
 				} else if (type == "interactive") {
 					renameView("uiMashupApplicationView", uuid,
 							"applicationName", name)
+            } else if (type == "templateApp") {
+	               renameView("templateApplicationView", uuid,
+	                     "applicationName", name)
 				} else if (m_elementConfiguration.isUnSupportedAppType(type)) {
 					renameView("genericApplicationView", uuid,
 							"applicationName", name)
@@ -1113,7 +1116,15 @@ define(
 													createUiMashupApplication(obj
 															.attr("modelUUID"));
 												}
-											}
+											},
+											"createTemplateApplication" : {
+                                    "label" : m_i18nUtils
+                                          .getProperty("modeler.outline.applications.contextMenu.createTemplate"),
+                                    "action" : function(obj) {
+                                       createTemplateApplication(obj
+                                             .attr("modelUUID"));
+                                    }
+                                 }
 										};
 
 										addCamelOverlayMenuOptions(options);
@@ -1675,6 +1686,13 @@ define(
 													+ "bpm-modeler/images/icons/application-web-service.png"
 										}
 									},
+									"templateApp" : {
+                              "icon" : {
+                                 "image" : m_urlUtils
+                                       .getPlugsInRoot()
+                                       + "bpm-modeler/images/icons/applications-blue.png"
+                              }
+                           },
 									"dmsOperation" : {
 										"icon" : {
 											"image" : m_urlUtils
@@ -2093,6 +2111,30 @@ define(
 														+ "&modelUUID="
 														+ model.uuid,
 												application.uuid);
+                           } else if (data.rslt.obj.attr('rel') == "templateApp") {
+                              var model = m_model
+                                    .findModelByUuid(data.rslt.obj
+                                          .attr("modelUUID"));
+                              var application = model
+                                    .findModelElementByUuid(data.rslt.obj
+                                          .attr("id"));
+
+                              viewManager.openView(
+                                    "templateApplicationView",
+                                    "modelId="
+                                          + encodeURIComponent(model.id)
+                                          + "&applicationId="
+                                          + encodeURIComponent(application.id)
+                                          + "&applicationName="
+                                          + encodeURIComponent(application.name)
+                                          + "&fullId="
+                                          + encodeURIComponent(application
+                                                .getFullId())
+                                          + "&uuid="
+                                          + application.uuid
+                                          + "&modelUUID="
+                                          + model.uuid,
+                                    application.uuid);
 									} else if (m_elementConfiguration
 											.isUnSupportedAppType(data.rslt.obj
 													.attr('rel'))) {
@@ -2663,6 +2705,23 @@ define(
 								}));
 				isElementCreatedViaOutline = true;
 			};
+			
+         /**
+         *
+         */
+        function createTemplateApplication(modelUUId) {
+           var model = m_model.findModelByUuid(modelUUId);
+           var titledata = m_i18nUtils
+                 .getProperty("modeler.outline.newTemplate.namePrefix");
+           var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
+
+           m_commandsController.submitCommand(m_command
+                 .createCreateTemplateAppCommand(model.id, model.id,
+                       {
+                          "name" : name
+                       }));
+           isElementCreatedViaOutline = true;
+        };
 
 			/**
 			 *

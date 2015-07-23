@@ -79,7 +79,7 @@ define(
 				 * 
 				 */
 				Application.prototype.getCompatibleActivityTaskType = function() {
-					if (this.applicationType === "webservice"
+					if (this.applicationType === "webservice"|| this.applicationType === "templateApp"
 						|| ((this.applicationType === "camelSpringProducerApplication" || this.applicationType === "camelConsumerApplication")
 								&& (this.attributes["carnot:engine:camel::applicationIntegrationOverlay"] === "restServiceOverlay"
 										|| this.attributes["carnot:engine:camel::applicationIntegrationOverlay"] === "mailIntegrationOverlay"))) {
