@@ -59,7 +59,14 @@
 	<span style="margin:2em;" class="header">
 		{{ctrl.textMap.benchmarkDefinitions}}
 	</span>
-	
+
+	<div sd-file-upload-dialog 
+	     sda-on-init="ctrl.onUploadDialogInit(api)"
+	     sda-file-key="file"
+	     sda-url="{{ctrl.fileUploadUrl}}">
+	     <button>click me!</button>
+	 </div>
+	 
 	<!-- Design Mode Data Table for Benchmarks -->
 	<div ng-show="ctrl.showBenchmarks">
 	
@@ -115,6 +122,13 @@
 			       <i class="glyphicon glyphicon-download"></i>
 			    </a>
 			    
+			    <a href="" 
+			       ng-click="ctrl.uploadBenchmarkFromFile()" 
+			       title="{{ctrl.textMap.upload}}" 
+			       class="tbl-toolbar-item tbl-tool-link">
+			       <i class="glyphicon glyphicon-cloud-upload"></i>
+			    </a>
+
 			    <span>|</span>
 			    
 			    <a href="" 

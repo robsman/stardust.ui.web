@@ -59,7 +59,8 @@
 		this.lastSaveTime = Number.NEGATIVE_INFINITY;
 		this.calendars = []; //time-off calendars
 		this.showAllTreeNodes = true; //toggles display of auxiliary and non-interactive nodes.
-		
+		this.fileDialogApi = {};
+		this.fileUploadUrl = this.benchmarkService.getFileUploadUrl();
 		//by default load our design time benchmarks
 		this.loadBenchmarks("DESIGN");
 		
@@ -183,7 +184,34 @@
 		this.textMap.filterTreeNodes  = this.i18N("views.main.tabs.tree.button.filter.hide");
 		this.textMap.showAllTreeNodes  = this.i18N("views.main.tabs.tree.button.filter.showall");
 		this.textMap.invalidDataReference = this.i18N("views.main.categoryDataTable.error.invalidDataReference");
+		this.textMap.upload = this.i18N("views.main.benchmarkDataTable.toolbar.upload");
 
+	};
+	
+	/**
+	 * Handles the callback from our sdFileUploadDialog, we will use the 
+	 * Api returned here to handle all our file upload functionality.
+	 */
+	benchmarkController.prototype.onUploadDialogInit = function(api){
+		this.fileDialogApi = api;
+	}
+	
+	/**
+	 * open our file dialog via API and wait for our returned promise.
+	 */
+	benchmarkController.prototype.uploadBenchmarkFromFile = function(){
+		var that = this;
+		this.fileDialogApi.open()
+		.then(function(res){
+			//TODO: refresh design time table
+			that.loadBenchmarks("DESIGN");
+		})
+		["catch"](function(err){
+			//TODO: Error handling
+		})
+		["finally"](function(){
+			//that.loadBenchmarks("DESIGN");
+		});
 	};
 	
 	/**

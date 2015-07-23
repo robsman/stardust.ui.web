@@ -1,0 +1,54 @@
+<div ng-controller="sdFileUploadController as ctrl">
+
+	<div sd-dialog="ctrl.uploadDialog"
+		 sda-title="FILE UPLOAD"
+		 sda-cancel-action-label="OK"
+	     sda-type="custom"
+	     sda-template="tmpl"
+	     sda-scope="this"> 
+	</div>
+	
+	<script type="text/ng-template" id="tmpl">
+    <div style="margin:1em;">   
+		<div ng-show="ctrl.state==='initial'">
+            <label style="display:inline-block;" for="{{ctrl.id}}">
+				<i class="glyphicon sc-3x glyphicon-folder-open"></i>	
+				<!--ng-change does not work with input[type='file']-->		
+				<input id="{{ctrl.id}}" 
+                       style="display:none;"
+                       onchange="angular.element(this).scope().fileNameChanged(this)" 
+                       type="file"/>
+            </label>
+			<span style="margin-left:1em;">Select file to upload.</span>
+		</div>
+
+		<div ng-show="ctrl.state==='fileSelected'">
+			<i ng-click="ctrl.uploadFile(ctrl.files)" 
+               class="glyphicon sc-3x glyphicon-cloud-upload"></i>
+			<span style="margin-left:1em;"> Upload {{ctrl.files[0].name}}</span>
+        </div>
+		
+		<div ng-show="ctrl.state==='progress'">
+			<i class="sc sc-fw sc-3x sc-spin sc-spinner"></i>
+        </div>
+		
+		<div ng-click="ctrl.closeDialog()" 
+             ng-show="ctrl.state==='success'">
+			<i class="sc sc-fw sc-3x sc-exclamation-circle"></i>
+			<span style="margin-left:1em;">File, {{ctrl.files[0].name}}, was succesfully uploaded.</span>
+        </div>
+
+		<div class="modal-footer">
+			<div class="confirmation-buttonpane">
+				<div class="button-pane cf">
+					<div class="button-alignment">
+				  		<button ng-click="ctrl.closeDialog()" class="button">Close</button>
+					</div>
+		    	</div>
+			</div>
+		</div>
+
+	</div>
+	</script>
+
+</div>

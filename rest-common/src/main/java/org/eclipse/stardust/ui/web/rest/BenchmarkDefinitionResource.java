@@ -10,8 +10,15 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest;
 
-import java.util.List;
+import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.util.List;
+import java.util.Map;
+
+import javax.activation.DataHandler;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -20,8 +27,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
@@ -185,7 +195,40 @@ public class BenchmarkDefinitionResource
          return Response.serverError().build();
       }
    }
+   
+   @POST
+   @Consumes(MediaType.MULTIPART_FORM_DATA)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/design-time/files")
+	public Response upload(MultipartBody body) {
+	   try {
+		   
+		    Attachment attachment = body.getAttachment("file");
+			
+			DataHandler dataHandler = attachment.getDataHandler();
+			InputStream inputStream = dataHandler.getInputStream();
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			
+			byte[] tmp = new byte[4096];
+			int ret = 0;
+	
+			while ((ret = inputStream.read(tmp)) > 0) {
+				bos.write(tmp, 0, ret);
+			}
+			
+			String content = bos.toString();
+			JsonObject benchmarkData = jsonIo.readJsonObject(content);
+	        BenchmarkDefinitionDTO benchmarkDefinition = benchmarkDefinitionService.createBenchmarkDefinition(benchmarkData);
+	        
+	        return Response.ok(createBenchmarkJSON(benchmarkDefinition).toString(), MediaType.APPLICATION_JSON).build();
+	        
 
+		} catch (Exception e) {
+			trace.error(e, e);
+			return Response.serverError().build();
+		}
+	}
+   
    @PUT
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/design-time/{id}")

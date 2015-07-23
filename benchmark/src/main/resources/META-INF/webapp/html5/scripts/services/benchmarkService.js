@@ -52,7 +52,7 @@
 			data = {id: ''},
 			deferred = this.$q.defer();	
 		
-		url = url = this.absRoot + this.portalCommon + this.portalBDComponent + '/run-time';
+		url = this.absRoot + this.portalCommon + this.portalBDComponent + '/run-time';
 		data.id = id;
 		
 		this.$http.post(url,JSON.stringify(data))
@@ -64,6 +64,16 @@
 		});
 		
 		return deferred.promise;
+	};
+	
+	/**
+	 * Returns the URL of our file upload endpoint. The service does not handle file upload
+	 * as this will be implemented as part of a file upload directive implemented using sdDialog.
+	 * See html5-common -> Dialogs -> sdFileUploadDialog
+	 * @returns {String}
+	 */
+	benchmarkService.prototype.getFileUploadUrl = function(){
+		return this.absRoot + this.portalCommon + this.portalBDComponent + '/design-time/files';
 	};
 	
 	/**
@@ -124,6 +134,12 @@
 		}
 	}
 	
+	/**
+	 * Retrieve the specified benchmark from the server (we don't publish unsaved design-time benchmarks)
+	 * and save as a file.
+	 * @param benchmark
+	 * @param mode
+	 */
 	benchmarkService.prototype.downloadBenchmarkAsFile = function(benchmark,mode){
 		var that = this;
 		
@@ -136,8 +152,7 @@
 			});
 			
 			if(bmark.length > 0){
-				//that.__fileDownload(bmark[0]);
-				that.sdUtilService.downloadAsFile(JSON.stringify(bmark[0]),bmark[0].content.name + ".json",false,document);
+				that.sdUtilService.downloadAsFile(JSON.stringify(bmark[0].content),bmark[0].content.name + ".json",false,document);
 			}
 		});
 	}
