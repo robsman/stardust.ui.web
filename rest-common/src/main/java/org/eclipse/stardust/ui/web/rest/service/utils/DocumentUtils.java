@@ -172,7 +172,7 @@ public class DocumentUtils
       DeployedRuntimeArtifact runtimeArtifacts = null;
       if(oid > 0)
       {
-         
+         runtimeArtifacts = serviceFactoryUtils.getAdministrationService().overwriteRuntimeArtifact(oid, artifact);
       }
       else
       {
