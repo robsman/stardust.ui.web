@@ -46,16 +46,38 @@ public class RulesManagementResource
    private HttpServletRequest httpRequest;
 
    /**
-    * @return
+    * @return desing time rule sets
     */
    @GET
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("rule-sets")
-   public Response getAllRuleSets()
+   @Path("rule-sets/design-time")
+   public Response getAllDesignTimeRuleSets()
    {
       try
       {
+
          String result = getRulesManagementService().getAllRuleSets().toString();
+         
+         return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+   
+   /**
+    * @return published rule sets
+    */
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("rule-sets/run-time")
+   public Response getAllRunTimeRuleSets()
+   {
+      try
+      {
+
+         String result = getRulesManagementService().getAllRuntimeRuleSets().toString();
          
          return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
       }
@@ -70,7 +92,7 @@ public class RulesManagementResource
     * @return
     */
    @POST
-   @Path("save")
+   @Path("save/design-time")
    public Response saveRuleSets(String ruleSets)
    {
       if (StringUtils.isEmpty(ruleSets))
@@ -88,6 +110,50 @@ public class RulesManagementResource
       }
    }   
 
+   /**
+    * @param ruleSets
+    * @return
+    */
+   @POST
+   @Path("save/run-time")
+   public Response saveRuntimeRuleSets(String ruleSets)
+   {
+      if (StringUtils.isEmpty(ruleSets))
+      {
+         return Response.status(Status.BAD_REQUEST).build();
+      }
+      try
+      {
+         String result = getRulesManagementService().saveRuntimeRuleSets(ruleSets);         
+         return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+   }   
+
+   /**
+    * @return published rule sets
+    */
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("rule-sets/run-time")
+   public Response publishRuleSet()
+   {
+      try
+      {
+    	 String ruleSetId = "";
+         String result = getRulesManagementService().publishRuleSet(ruleSetId).toString();
+         
+         return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
+      }
+      catch (Exception e)
+      {
+         throw new RuntimeException(e);
+      }
+   }
+   
    @GET
    @Produces(MediaType.APPLICATION_OCTET_STREAM)
    @Path("ruleSet/{ruleSetId}/download")

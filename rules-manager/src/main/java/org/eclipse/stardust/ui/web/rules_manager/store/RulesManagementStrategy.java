@@ -17,6 +17,10 @@ public interface RulesManagementStrategy
     */
    void initialize(Map<String, Object> params);
 
+   /*
+    * Design-time related methods
+    */
+   
    /**
     * @return
     */
@@ -48,5 +52,23 @@ public interface RulesManagementStrategy
     * 
     */
    void deleteRuleSet(String documentId);
-
+   
+   /*
+    * Run-time related methods
+    */
+   
+   /**
+    * 
+    */
+   void publishRuleSet(String ruleSetId);
+   
+   /**
+    * @return
+    */
+   List<Document> getAllRuntimeRuleSets();
+   
+   /**
+    * 
+    */
+   void deleteRuntimeRuleSet(String ruleSetId);
 }

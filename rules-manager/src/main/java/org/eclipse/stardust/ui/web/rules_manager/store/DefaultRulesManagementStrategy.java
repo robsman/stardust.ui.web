@@ -12,7 +12,6 @@ import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.ui.web.rules_manager.common.ServiceFactoryLocator;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
-
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -139,5 +138,34 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
       }
 
       return serviceFactory;
+   }
+
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy#publishRuleSet(java.lang.String)
+   */
+   @Override
+   public void publishRuleSet(String ruleSetId)
+   {
+   	
+   }
+
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy#getAllRuntimeRuleSets()
+    */
+   @Override
+   public List<Document> getAllRuntimeRuleSets()
+   {
+	   
+	   
+	   return null;
+   }
+
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy#deleteRuntimeRuleSet(java.lang.String)
+    */
+   @Override
+   public void deleteRuntimeRuleSet(String ruleSetId)
+   {
+	
    }
 }

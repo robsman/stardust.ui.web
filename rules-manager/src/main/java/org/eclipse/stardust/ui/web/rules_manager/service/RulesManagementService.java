@@ -184,6 +184,91 @@ public class RulesManagementService
     * 
     * @return
     */
+   public JsonObject getAllRuntimeRuleSets()
+   {
+      ruleSetUUIDVsDocumentIdMap.clear();
+
+      List<Document> drls = getRulesManagementStrategy().getAllRuleSets();
+      JsonObject ruleSets = new JsonObject();
+
+      for (Document doc : drls)
+      {
+         JsonObject ruleSet = new JsonParser().parse(
+               new String(getDocumentManagementService().retrieveDocumentContent(
+                     doc.getId()))).getAsJsonObject();
+         String uuid = ruleSet.get("uuid").getAsString();
+         String id = ruleSet.get("id").getAsString();
+         ruleSets.add(uuid, ruleSet);
+         ruleSetUUIDVsDocumentIdMap.put(id, doc.getId());
+      }
+
+      return ruleSets;
+   }
+
+   
+   /**
+    * @param ruleSetId
+    * @return
+    */
+   public JsonObject publishRuleSet(String ruleSetId)
+   {
+      JsonObject result = new JsonObject();
+
+      return result;
+   }
+
+   /**
+    * @param ruleSetsJson
+    */
+   public String saveRuntimeRuleSets(String ruleSetsJson)
+   {
+      JsonArray ruleSets = new JsonParser().parse(ruleSetsJson).getAsJsonArray();
+
+      // track errors
+      List<RulesManagementService.Response> consolidatedResponse = new ArrayList<RulesManagementService.Response>();
+
+      for (JsonElement je : ruleSets)
+      {
+         String id = je.getAsJsonObject().get("id").getAsString();
+         String uuid = je.getAsJsonObject().get("uuid").getAsString();
+         String documentId = ruleSetUUIDVsDocumentIdMap.get(id);
+         OPERATION op = OPERATION.SAVE;
+         try
+         {
+            if (je.getAsJsonObject().get("deleted") != null)
+            {
+               op = OPERATION.DELETE;
+               deleteRules(id, documentId);
+               consolidatedResponse.add(new Response(uuid, op, true, "deleted"));
+            }
+            else
+            {
+               op = OPERATION.SAVE;
+               persistRules(je, id, documentId);
+               consolidatedResponse.add(new Response(uuid, op, true, "saved"));
+            }
+           
+         }
+         catch (Exception e)
+         {
+            consolidatedResponse.add(new Response(uuid, op, false, e.getMessage()));
+         }
+      }
+
+      // Error case
+      if ( !consolidatedResponse.isEmpty())
+      {
+         return new Gson().toJson(consolidatedResponse);
+      }
+
+      return new Gson().toJson("saved");
+   }
+
+   
+   /**
+    * 
+    * @return
+    */
    public RulesManagementStrategy getRulesManagementStrategy()
    {
       return (RulesManagementStrategy) context.getBean("rulesManagementStrategy");
