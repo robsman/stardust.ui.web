@@ -37,9 +37,7 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantManagementService;
 import org.eclipse.stardust.ui.web.rest.service.dto.InvalidateUserStatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.ParticipantNodeDetailsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.UserAuthorizationStatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserProfileStatusDTO;
@@ -100,72 +98,6 @@ public class ParticipantManagementResource
          trace.error("", e);
          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
-   }
-
-   @POST
-   @Produces(MediaType.APPLICATION_JSON)
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Path("/addUserToParticipant/{userOID}")
-   public Response addUserToParticipant(@PathParam("userOID") long userOID, String postData)
-   {
-      try
-      {
-         ParticipantNodeDetailsDTO participantNodeDetails = populateParticipantNodeDetails(postData);
-
-         UserAuthorizationStatusDTO result = participantManagementService.addUserToParticipant(userOID,
-               participantNodeDetails);
-         return Response.ok(result.toJson(), MediaType.APPLICATION_JSON).build();
-      }
-      catch (ObjectNotFoundException onfe)
-      {
-         return Response.status(Status.NOT_FOUND).build();
-      }
-      catch (Exception e)
-      {
-         trace.error("", e);
-         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-      }
-   }
-
-   @POST
-   @Produces(MediaType.APPLICATION_JSON)
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Path("/removeUserFromParticipant/{userOID}")
-   public Response removeUserFromParticipant(@PathParam("userOID") long userOID, String postData)
-   {
-      try
-      {
-         ParticipantNodeDetailsDTO participantNodeDetails = populateParticipantNodeDetails(postData);
-
-         UserAuthorizationStatusDTO result = participantManagementService.removeUserFromParticipant(userOID,
-               participantNodeDetails);
-         return Response.ok(result.toJson(), MediaType.APPLICATION_JSON).build();
-      }
-      catch (ObjectNotFoundException onfe)
-      {
-         return Response.status(Status.NOT_FOUND).build();
-      }
-      catch (Exception e)
-      {
-         trace.error("", e);
-         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-      }
-   }
-
-   private ParticipantNodeDetailsDTO populateParticipantNodeDetails(String postData)
-   {
-      JsonMarshaller jsonIo = new JsonMarshaller();
-      JsonObject postJSON = jsonIo.readJsonObject(postData);
-
-      // For filter
-      JsonObject participantNodeDetails = postJSON.getAsJsonObject("participantNodeDetails");
-      ParticipantNodeDetailsDTO participantNodeDetailsDTO = null;
-      if (null != participantNodeDetails)
-      {
-         participantNodeDetailsDTO = new Gson().fromJson(postJSON.get("participantNodeDetails"),
-               ParticipantNodeDetailsDTO.class);
-      }
-      return participantNodeDetailsDTO;
    }
 
    /**
