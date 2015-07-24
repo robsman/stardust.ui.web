@@ -19,6 +19,7 @@ import java.util.StringTokenizer;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -136,12 +137,12 @@ public class RulesManagementResource
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("rule-sets/run-time")
-   public Response publishRuleSet(String postedData)
+   public Response publishRuleSet(String ruleSetId)
    {
       try
       {
          // TODO: @Sidharth
-         String result = getRulesManagementService().publishRuleSet(postedData).toString();
+         String result = getRulesManagementService().publishRuleSet(ruleSetId).toString();
          
          return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
       }

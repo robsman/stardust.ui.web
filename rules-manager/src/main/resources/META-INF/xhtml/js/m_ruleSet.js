@@ -29,38 +29,46 @@ define([ "bpm-modeler/js/m_utils",
 		m_utils,TechnicalRule,DecisionTable,m_model,typeParser,m_ruleSetParser,m_stateFactory) {
 
 	return {
+		
 		create : function(id, name) {
 			var ruleSet = new RuleSet();
 			var state=m_stateFactory.create(false,false,false);
 			ruleSet.initialize(id, name);
 			ruleSet.state=state;
-			getRuleSets()[ruleSet.uuid] = ruleSet;
+			getRuleSets(false)[ruleSet.uuid] = ruleSet;
 			return ruleSet;
 		},
+		
 		createFromJSON : function(data,serializer){
 			return m_ruleSetParser.fromPreDRLformat(data,serializer,new RuleSet());
 		},
+		
 		markRuleSetForDeletion: function(uuid){
-			var rSet= getRuleSets()[uuid];
+			var rSet= getRuleSets(false)[uuid];
 			rSet.state.isDeleted=true;
 		},
+		
 		deleteRuleSet : function(uuid) {
-			var rSet= getRuleSets()[uuid];
+			var rSet= getRuleSets(false)[uuid];
 			rSet.state.isDeleted=true;
 			if(window.top.ruleSets.hasOwnProperty(uuid)){
 				delete window.top.ruleSets[uuid];
 				console.log("Hard deletion of ruleSet: "+ uuid);
 			}
 		},
+		
 		getRuleSets : getRuleSets,
+		
 		emptyRuleSets : emptyRuleSets,
+		
 		getRuleSetsCount : function() {
 			var count = 0;
-			for ( var i in getRuleSets()) {
+			for ( var i in getRuleSets(false)) {
 				count++;
 			}
 			return count;
 		},
+		
 		getNextRuleSetNamePostfix : function() {
 			var index = 0;
 			var matchFound = true;
@@ -70,8 +78,8 @@ define([ "bpm-modeler/js/m_utils",
 				var name = rsName + " " + index;
 				var id = name.replace(/\s/g,"");
 				matchFound = false;
-				for ( var i in getRuleSets()) {
-					var rs = getRuleSets()[i];
+				for ( var i in getRuleSets(false)) {
+					var rs = getRuleSets(false)[i];
 					if (rs.id == id || rs.name == name) {
 						matchFound = true;
 						break;
@@ -80,12 +88,14 @@ define([ "bpm-modeler/js/m_utils",
 			}
 			return index;
 		},
+		
 		findRuleSetByUuid : function(uuid) {
-			return getRuleSets()[uuid];
+			return getRuleSets(false)[uuid];
 		},
+		
 		findRuleByUuid : function(uuid) {
-			for ( var ruleSetUuid in getRuleSets()) {
-				var rule = getRuleSets()[ruleSetUuid].findRuleByUuid(uuid);
+			for ( var ruleSetUuid in getRuleSets(false)) {
+				var rule = getRuleSets(false)[ruleSetUuid].findRuleByUuid(uuid);
 
 				if (rule) {
 					return rule;
@@ -93,6 +103,44 @@ define([ "bpm-modeler/js/m_utils",
 			}
 			return null;
 		},
+		
+		//Publish a rule set from design time
+		publishRuleSet : function(id, successCallback, errorCallback){
+			
+			var url,
+				ruleSet,
+				callbacks,
+				options,
+				data;
+
+			//Publish URL
+			url = m_urlUtils.getContextName();
+			url += "/services/rest/rules-manager/rules/";
+			url += new Date().getTime(); 
+			url += "/rule-sets/run-time";
+			
+			//Set up options object
+			options = {
+				url : url
+			};
+			
+			//Guard our callbacks
+			successCallback = successCallback || NOOPfx;
+			errorCallback = errorCallback || NOOPfx;
+			
+			//setup data object
+			data= JSON.stringify({"ruleSetId" : id});
+			
+			//Set up callback object
+			callbacks = {
+					success : function(){alert("TODO: Success Info Dialog");},
+					error : function(){alert("TODO: Error Info Dialog");}
+			};
+			
+			debugger;
+			m_communicationController.postData(options,data,callbacks);
+		},
+		
 		typeObject : function(json) {
 			m_utils.inheritMethods(json, new RuleSet());
 
@@ -121,13 +169,15 @@ define([ "bpm-modeler/js/m_utils",
 	};
 
 	/**
-	 * 
+	 * @param force - if true then retrieve rules from the server end-point.
+	 * @param mode - DESIGN | PUBLISHED - Defaults to DESIGN
 	 */
-	function getRuleSets(force) {
+	function getRuleSets(force,mode) {
+		mode = (mode !== 'DESIGN' && mode !=='PUBLISHED')?'DESIGN':mode;
 		if (!force && window.top.ruleSets) {
 			return window.top.ruleSets;
 		}
-		refreshRuleSets();
+		refreshRuleSets(mode);
 		return window.top.ruleSets;
 	}
 
@@ -138,12 +188,24 @@ define([ "bpm-modeler/js/m_utils",
 		window.top.ruleSets = {};
 	}
 	
+	//NOOP Guard function for success and error handlers
+	function NOOPfx(){};
+
 	/**
-	 * 
+	 * @param mode - DESIGN | PUBLISHED - determines type of rules we will receive from the server.
 	 */
-	function refreshRuleSets() {
+	function refreshRuleSets(mode) {
+		var url = m_urlUtils.getContextName(),
+			terminalPoint;
+		
+		terminalPoint = (mode==="DESIGN")? "design-time" : "run-time";
+		
+		url += "/services/rest/rules-manager/rules/";
+		url += new Date().getTime(); 
+		url += "/rule-sets/" + terminalPoint;
+		
 		m_communicationController.syncGetData({
-			url : m_urlUtils.getContextName() + "/services/rest/rules-manager/rules/" + new Date().getTime() + "/rule-sets"
+			url : url
 		}, {
 			"success" : function(json) {
 
