@@ -64,13 +64,8 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		<ippui:view name="configurationVariablesView"
 			include="/plugins/admin-portal/views/model/configurationVariablesView.xhtml" controller="configurationVariablesBean"/>			
 			
-		<ippui:view name="participantMgmt" 
-			include="/plugins/admin-portal/views/participantMgmtView.xhtml" 
-			controller="participantMgmtBean">
-			<ippui:preferences>
-				<ippui:preferencePage name="configuration"
-					include="/plugins/admin-portal/views/participantMgtConfiguration.xhtml" />
-			</ippui:preferences>
+		<ippui:view name="participantMgmt"
+				include="/plugins/html5-admin-portal/partials/views/participantManagementView.html">
 		</ippui:view>		
 		<ippui:view name="passwordMgmt"
 			include="/plugins/html5-admin-portal/partials/views/passwordManagementView.html" />		<ippui:view name="criticalityConf"

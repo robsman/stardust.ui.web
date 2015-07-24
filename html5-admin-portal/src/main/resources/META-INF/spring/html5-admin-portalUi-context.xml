@@ -7,10 +7,8 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
 
 	<ippui:perspectiveExtension
-		targetPerspective="*" id="ippHtml5AdminPortalPerspective" messageBundles="html5-admin-portal">
+		targetPerspective="*" id="ippHtml5AdminPortalPerspective"
+		messageBundles="html5-admin-portal">
 
-		<ippui:viewsExtension>
-			<ippui:view name="participantManagementViewHtml5" include="/plugins/html5-admin-portal/partials/views/participantManagementView.html" />
-		</ippui:viewsExtension>
 	</ippui:perspectiveExtension>
 </beans>
