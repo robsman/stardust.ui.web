@@ -8,7 +8,7 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-body, table, input, button, select, textarea, a {
+body, table, input, button, select, textarea {
 	font-family: Helvetica, Arial, sans-serif;
 	font-size: 11px;
 }

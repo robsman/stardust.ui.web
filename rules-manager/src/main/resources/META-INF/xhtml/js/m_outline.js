@@ -48,8 +48,9 @@ define(
 			
 			var readAllRuleSets = function(force) {
 
+				loadCustomTheme();
+				
 				// Needed for types
-
 				m_model.loadModels(false);
 
 				jQuery("#lastsave").text(m_i18nUtils
@@ -1156,14 +1157,14 @@ define(
 					url : m_urlUtils.getContextName() + "/services/rest/common/html5/api/themes/current/custom",
 					async : true
 				}).done(function(json){
-					var head = document.getElementsByTagName('head')[0];
+					var body = document.getElementsByTagName('body')[0];
 					
 					for(var i in json.stylesheets) {
 						var link = document.createElement('link');
 						link.href = m_urlUtils.getContextName() + "/" + json.stylesheets[i];
 						link.rel = 'stylesheet';
 						link.type = 'text/css';
-						head.appendChild(link);
+						body.appendChild(link);
 					}
 				}).fail(function(err){
 					m_utils.debug("Failed in loading custom theme");
@@ -1277,8 +1278,6 @@ define(
 					},30000);
 
 					m_outlineToolbarController.init("rulesOutlineToolbar");
-					
-					loadCustomTheme();
 					
 					return outline;
 				},
