@@ -80,7 +80,12 @@
   src: local('Lato Black Italic'), local('Lato-BlackItalic'), url(./fonts/Lato/Lato-BlackItalic.ttf);
 }
 
-body, table, input, button, select, textarea, a {
+body, table, input, button {
+	font-family: Lato, Arial, Helvetica, sans-serif;
+	font-size: 11px;
+}
+
+select, textarea, input[type=text], input[type=password], input[type=datetime], input[type=datetime-local], input[type=date], input[type=month], input[type=time], input[type=week], input[type=number], input[type=email], input[type=url], input[type=search], input[type=tel], input[type=color] {
 	font-family: Lato, Arial, Helvetica, sans-serif;
 	font-size: 11px;
 }
