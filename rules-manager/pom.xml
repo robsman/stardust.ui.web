@@ -39,6 +39,12 @@
          <scope>compile</scope>
       </dependency>
       <dependency>
+         <groupId>com.infinity.bpm</groupId>
+         <artifactId>ipp-engine-rules</artifactId>
+         <version>${project.version}</version>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
          <groupId>javax.servlet</groupId>
          <artifactId>servlet-api</artifactId>
          <scope>provided</scope>

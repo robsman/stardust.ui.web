@@ -31,7 +31,10 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
+import org.eclipse.stardust.engine.api.runtime.RuntimeArtifact;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
+import org.eclipse.stardust.engine.extensions.drools.artifact.RulesetArtifactType;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rules_manager.common.ServiceFactoryLocator;
 import org.eclipse.stardust.ui.web.rules_manager.service.RulesManagementService.Response.OPERATION;
 import org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy;
@@ -194,15 +197,22 @@ public class RulesManagementService
    }
    
    /**
-    * @param ruleSetId
+    * 
+    * @param postedData
     * @return
     */
-   public JsonObject publishRuleSet(String ruleSetId)
+   public JsonObject publishRuleSet(String postedData)
    {
       JsonObject result = new JsonObject();
-
-      // TODO: @Sidharth
-      getRulesManagementStrategy().publishRuleSet(ruleSetId);
+      JsonObject ruleSetJson = new JsonParser().parse(postedData).getAsJsonObject();
+      String ruleSetId = GsonUtils.extractString(ruleSetJson, "ruleSetId");
+      RuntimeArtifact artifact = null;
+      String documentId = ruleSetUUIDVsDocumentIdMap.get(ruleSetId);
+      Document document = getDocumentManagementService().getDocument(documentId);
+      byte[] contents = getRuleSet(ruleSetId);
+      artifact = new RuntimeArtifact(RulesetArtifactType.ID, ruleSetId, document.getName(), contents,
+            new java.util.Date());
+      getRulesManagementStrategy().publishRuleSet(0, artifact);
       
       return result;
    }

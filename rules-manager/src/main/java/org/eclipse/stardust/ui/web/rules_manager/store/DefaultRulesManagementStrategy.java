@@ -9,9 +9,9 @@ import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
+import org.eclipse.stardust.engine.api.runtime.RuntimeArtifact;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.ui.web.rules_manager.common.ServiceFactoryLocator;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.JsonArray;
@@ -173,9 +173,10 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
     * @see org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy#publishRuleSet(java.lang.String)
     */
    @Override
-   public void publishRuleSet(String ruleSetId)
+   public void publishRuleSet(long oid, RuntimeArtifact artifacts)
    {
-      // TODO: @Sidharth
+      // TODO - republish scenario
+      getServiceFactory().getAdministrationService().deployRuntimeArtifact(artifacts);
    }
    
    /* (non-Javadoc)

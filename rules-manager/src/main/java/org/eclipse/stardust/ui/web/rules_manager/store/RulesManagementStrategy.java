@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.RuntimeArtifact;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -72,7 +73,7 @@ public interface RulesManagementStrategy
    /**
 	 * @param ruleSetId
 	 */
-   void publishRuleSet(String ruleSetId);
+   void publishRuleSet(long runtimeArtifactOid, RuntimeArtifact artifact);
 
    /**
 	 * @param ruleSetId
