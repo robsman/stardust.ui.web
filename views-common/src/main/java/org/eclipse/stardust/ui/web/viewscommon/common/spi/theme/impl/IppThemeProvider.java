@@ -89,6 +89,7 @@ public class IppThemeProvider implements ThemeProvider
       
       loginStyleSheet = Parameters.instance().getString(LoginDialogBean.LOGIN_SKIN_CSS_PARAM,
             LoginDialogBean.DEFAULT_LOGIN_SKIN_CSS_NAME);
+      loginStyleSheet = loginStyleSheet.toLowerCase();
       
       loadThemeStyleSheets();
       loadPluginThemeStyleSheets();
@@ -170,8 +171,8 @@ public class IppThemeProvider implements ThemeProvider
                      List<Document> documents = skinFolder.getDocuments();
                      for (Document skinFile : documents)
                      {
-                        if (skinFile.getName().toLowerCase().endsWith(".css")
-                              && !loginStyleSheet.equals(skinFile.getName()))
+                        String fileNameToCompare = skinFile.getName().toLowerCase();
+                        if (fileNameToCompare.endsWith(".css") && !fileNameToCompare.equals(loginStyleSheet))
                         {
                            String path = skinFile.getPath();
                            path = path.replace(skinRoot.getPath() + "/", "");
@@ -210,7 +211,8 @@ public class IppThemeProvider implements ThemeProvider
                   for (String skinFile : documentsName)
                   {
                      String fileName = skinFile.substring(skinFile.lastIndexOf("/") + 1);
-                     if (fileName.toLowerCase().endsWith(".css") && !loginStyleSheet.equals(skinFile))
+                     String fileNameToCompare = fileName.toLowerCase();
+                     if (fileNameToCompare.endsWith(".css") && !fileNameToCompare.equals(loginStyleSheet))
                      {
                         // path : a string concat of plugin-root (/plugin) + folderId +
                         // skinFile(say skin1.css) ex:
