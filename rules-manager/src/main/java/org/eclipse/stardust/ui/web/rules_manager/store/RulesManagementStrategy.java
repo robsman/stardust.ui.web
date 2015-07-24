@@ -5,6 +5,9 @@ import java.util.Map;
 
 import org.eclipse.stardust.engine.api.runtime.Document;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 /**
  * @author Shrikant.Gangal
  * @author Yogesh.Manware
@@ -25,14 +28,12 @@ public interface RulesManagementStrategy
     * @return
     */
    List<Document> getAllRuleSets();
-   
   
    /**
     * @param ruleSetFileName
     * @return
     */
    Document getRuleSetByName(String ruleSetFileName);
-   
   
    /**
     * @param rulesetdocId
@@ -58,17 +59,23 @@ public interface RulesManagementStrategy
     */
    
    /**
-    * 
-    */
-   void publishRuleSet(String ruleSetId);
-   
-   /**
     * @return
     */
-   List<Document> getAllRuntimeRuleSets();
+   JsonArray getAllRuntimeRuleSets();
    
    /**
-    * 
+    * @param ruleSetFileName
+    * @return
     */
-   void deleteRuntimeRuleSet(String ruleSetId);
+   JsonObject getRuntimeRuleSet(String ruleSetId);
+  
+   /**
+	 * @param ruleSetId
+	 */
+   void publishRuleSet(String ruleSetId);
+
+   /**
+	 * @param ruleSetId
+	 */
+	void deleteRuntimeRuleSet(String ruleSetId);
 }

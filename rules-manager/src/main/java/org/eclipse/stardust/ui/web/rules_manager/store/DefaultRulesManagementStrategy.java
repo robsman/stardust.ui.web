@@ -14,6 +14,9 @@ import org.eclipse.stardust.ui.web.rules_manager.common.ServiceFactoryLocator;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
 /**
  * @author Shrikant.Gangal
  * @author Yogesh.Manware
@@ -47,6 +50,8 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
    {
       this.serviceFactoryLocator = serviceFactoryLocator;
    }
+   
+   /* Design-time related methods */
 
    @Override
    public List<Document> getAllRuleSets()
@@ -100,6 +105,8 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
       getDocumentManagementService().removeDocument(docId);
    }
    
+   /* Utility methods */
+
    /**
     * 
     */
@@ -140,32 +147,43 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
       return serviceFactory;
    }
 
-   /* (non-Javadoc)
-    * @see org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy#publishRuleSet(java.lang.String)
-   */
-   @Override
-   public void publishRuleSet(String ruleSetId)
-   {
-   	
-   }
+   /* Run-time related methods */
 
    /* (non-Javadoc)
     * @see org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy#getAllRuntimeRuleSets()
     */
    @Override
-   public List<Document> getAllRuntimeRuleSets()
+   public JsonArray getAllRuntimeRuleSets()
    {
-	   
-	   
-	   return null;
+	  // TODO: @Sidharth
+	  return null;
    }
 
+   /* (non-Javadoc)
+	* @see org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy#getRuntimeRuleSet(java.lang.String)
+	*/
+   @Override
+   public JsonObject getRuntimeRuleSet(String ruleSetId)
+   {
+	  // TODO: @Sidharth
+	  return null;
+   }
+	
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy#publishRuleSet(java.lang.String)
+    */
+   @Override
+   public void publishRuleSet(String ruleSetId)
+   {
+      // TODO: @Sidharth
+   }
+   
    /* (non-Javadoc)
     * @see org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy#deleteRuntimeRuleSet(java.lang.String)
     */
    @Override
    public void deleteRuntimeRuleSet(String ruleSetId)
    {
-	
+	  // TODO: @Sidharth
    }
 }

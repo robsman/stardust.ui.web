@@ -181,30 +181,17 @@ public class RulesManagementService
    }
 
    /**
-    * 
     * @return
     */
-   public JsonObject getAllRuntimeRuleSets()
+   public JsonArray getAllRuntimeRuleSets()
    {
-      ruleSetUUIDVsDocumentIdMap.clear();
+      JsonArray ruleSets = new JsonArray();
 
-      List<Document> drls = getRulesManagementStrategy().getAllRuleSets();
-      JsonObject ruleSets = new JsonObject();
-
-      for (Document doc : drls)
-      {
-         JsonObject ruleSet = new JsonParser().parse(
-               new String(getDocumentManagementService().retrieveDocumentContent(
-                     doc.getId()))).getAsJsonObject();
-         String uuid = ruleSet.get("uuid").getAsString();
-         String id = ruleSet.get("id").getAsString();
-         ruleSets.add(uuid, ruleSet);
-         ruleSetUUIDVsDocumentIdMap.put(id, doc.getId());
-      }
+      // TODO: @Sidharth
+      ruleSets = getRulesManagementStrategy().getAllRuntimeRuleSets();
 
       return ruleSets;
    }
-
    
    /**
     * @param ruleSetId
@@ -214,57 +201,40 @@ public class RulesManagementService
    {
       JsonObject result = new JsonObject();
 
+      // TODO: @Sidharth
+      getRulesManagementStrategy().publishRuleSet(ruleSetId);
+      
       return result;
    }
 
    /**
-    * @param ruleSetsJson
+    * @param ruleSetId
+    * @return
     */
-   public String saveRuntimeRuleSets(String ruleSetsJson)
+   public JsonObject getRuntimeRuleSet(String ruleSetId)
    {
-      JsonArray ruleSets = new JsonParser().parse(ruleSetsJson).getAsJsonArray();
+      JsonObject result = new JsonObject();
 
-      // track errors
-      List<RulesManagementService.Response> consolidatedResponse = new ArrayList<RulesManagementService.Response>();
-
-      for (JsonElement je : ruleSets)
-      {
-         String id = je.getAsJsonObject().get("id").getAsString();
-         String uuid = je.getAsJsonObject().get("uuid").getAsString();
-         String documentId = ruleSetUUIDVsDocumentIdMap.get(id);
-         OPERATION op = OPERATION.SAVE;
-         try
-         {
-            if (je.getAsJsonObject().get("deleted") != null)
-            {
-               op = OPERATION.DELETE;
-               deleteRules(id, documentId);
-               consolidatedResponse.add(new Response(uuid, op, true, "deleted"));
-            }
-            else
-            {
-               op = OPERATION.SAVE;
-               persistRules(je, id, documentId);
-               consolidatedResponse.add(new Response(uuid, op, true, "saved"));
-            }
-           
-         }
-         catch (Exception e)
-         {
-            consolidatedResponse.add(new Response(uuid, op, false, e.getMessage()));
-         }
-      }
-
-      // Error case
-      if ( !consolidatedResponse.isEmpty())
-      {
-         return new Gson().toJson(consolidatedResponse);
-      }
-
-      return new Gson().toJson("saved");
+      // TODO: @Sidharth
+      result = getRulesManagementStrategy().getRuntimeRuleSet(ruleSetId);
+      
+      return result;
    }
 
-   
+   /**
+    * @param ruleSetId
+    * @return
+    */
+   public JsonObject deleteRuntimeRuleSet(String ruleSetId)
+   {
+      JsonObject result = new JsonObject();
+      
+      // TODO: @Sidharth
+      getRulesManagementStrategy().deleteRuntimeRuleSet(ruleSetId);
+
+      return result;
+   }
+
    /**
     * 
     * @return
