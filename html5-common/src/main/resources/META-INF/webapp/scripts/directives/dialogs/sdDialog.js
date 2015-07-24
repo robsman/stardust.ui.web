@@ -74,6 +74,10 @@
 				dialogElem.removeClass('modal');
 			}
 			
+			if(angular.isUndefined(attr.sdaDraggable)){
+				attr.sdaDraggable = 'true';
+			}
+			
 			if (attr.sdaDraggable == 'true') {
 				var dialogBlock = dialogElem.find('.modal-dialog');
 				var dialogHeader = dialogElem.find('.modal-header');
