@@ -445,7 +445,7 @@ define(
               .openPopup({
                 attributes : {
                   width : "400px",
-                  height : "200px",
+                  height : "250px",
                   src : m_urlUtils.getPlugsInRoot()
                       + "bpm-modeler/popups/confirmationPopupDialogContent.html"
                 },
