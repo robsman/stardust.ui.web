@@ -46,7 +46,6 @@
     i18n = $scope.sdI18nHtml5Admin = sdI18nService.getInstance('html5-admin-portal').translate;
 
     this.allUsersTable = null;
-    this.showAllUsersTable = true;
     this.hideInvalidatedUsers = false;
     this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
     this.rowSelectionForAllUsersTable = null;
@@ -191,6 +190,9 @@
             deferred.resolve();
             self.allUsersTable.refresh();
             self.getAllCounts();
+            // add id
+            user.id = user.account;
+            self.createUserCallback(user);
           } else if (data.success == false) {
             if (data.passwordValidationMsg != undefined) {
               self.passwordValidationMsg = data.passwordValidationMsg;
@@ -330,21 +332,9 @@
     return oids;
   };
 
-  /**
+  /*
    * 
    */
-  /**
-   * 
-   */
-  ParticipantManagementCtrl.prototype.setShowAllUsersTable = function() {
-    var self = this;
-    self.showAllUsersTable = !self.showAllUsersTable;
-  };
-
-  /**
-   * 
-   */
-
   ParticipantManagementCtrl.prototype.preferenceDelegate = function(prefInfo) {
     var preferenceStore = _sdPreferenceService.getStore(prefInfo.scope, 'ipp-administration-perspective', 'preference'); // Override
     preferenceStore.marshalName = function(scope) {
@@ -360,36 +350,33 @@
   ParticipantManagementCtrl.prototype.treeInit = function() {
     this.models = [];
     this.loadModels();// Loading top level tree structure.
-    this.treeApi = {};
     this.selectedItem = {};
     this.selectedTreeNodes = [];
     this.resetMessages();
   }
 
   ParticipantManagementCtrl.prototype.iconCallback = function(item) {
-	  
-	var isSelected = ""; // is our item on our collection of selectedTreeNodes ?
-	
-	//Test if we our node is selected
-	if(this.selectedTreeNodes.some(function(treeNode){
-		return item.nodeId === treeNode.nodeId;
-	})){
-		isSelected = " selected ";
-	}
-	
-    if (!item.type) { return "sc sc-fw sc-1x sc-spiral" + isSelected ; }
 
-    if (item.type === "USER") { return "js-icon glyphicon glyphicon-user" + isSelected ; }
+    var isSelected = "";
 
-    if (item.type === "ROLE_UNSCOPED") { return "sc sc-fw sc-1x sc-cog"+ isSelected ; }
+    if (this.selectedTreeNodes.some(function(treeNode) {
+      return item.nodeId === treeNode.nodeId;
+    })) {
+      isSelected = " selected ";
+    }
 
-    if (item.type === "ROLE_SCOPED") { return "sc sc-fw sc-1x sc-cog"+ isSelected ; }
+    if (!item.type) { return "sc sc-fw icon-lg sc-spiral" + isSelected; }
 
-    return "sc sc-badge-portrait sc-fw sc-1x sc-users sc-right"+ isSelected ;
+    if (item.type === "USER") { return "js-icon icon-lg glyphicon glyphicon-user" + isSelected; }
+
+    if (item.type === "ROLE_UNSCOPED") { return "sc sc-fw icon-lg sc-cog" + isSelected; }
+
+    if (item.type === "ROLE_SCOPED") { return "sc sc-fw icon-lg sc-cog" + isSelected; }
+
+    return "sc sc-badge-portrait sc-fw icon-lg sc-users sc-right" + isSelected;
   };
 
   ParticipantManagementCtrl.prototype.menuCallback = function(menuData) {
-    // We only support menu items for removing documents attached to nodes.
     var item = menuData.item;
 
     // model node
@@ -409,7 +396,7 @@
       menu.push("(createUser, LABEL)".replace('LABEL',
               adminMessages('views.participantMgmt.participantTree.contextMenu.createUser')));
     } else if (item.type === "USER") {
-      menu.push("(removeUser, LABEL)".replace('LABEL',
+      menu.push("(delete, LABEL)".replace('LABEL',
               adminMessages('views.participantMgmt.participantTree.contextMenu.removeUserGrant')));
     } else {
       menu.push("(createUser, LABEL)".replace('LABEL',
@@ -464,7 +451,7 @@
       }
     } else if (data.treeEvent === "node-dragend" || data.treeEvent === "node-drop") {
       console.log("Drag-Drop");
-      this.handleUsersDrop(data, e);
+      this.handleUserDropAction(data, this.rowSelectionForAllUsersTable);
     } else if (data.treeEvent.indexOf("menu-") == 0 || (data.treeEvent === "node-delete")) {
       console.log("Menu-Option selected");
       this.handleMenuClick(data, e);
@@ -489,13 +476,22 @@
     this.contextParticipantNode = data;
     var self = this;
 
+    if ('node-delete' === option) {
+      if (this.contextParticipantNode.valueItem.type === 'DEPARTMENT') {
+        option = 'menu-deleteDepartment';
+      } else if (this.contextParticipantNode.valueItem.type === 'USER') {
+        option = 'menu-removeUser';
+      }
+    }
+
     switch (option) {
     case 'menu-createDepartment':
     case 'menu-modifyDepartment':
       this.openCreateModifyDepartment();
       break;
 
-    case 'node-delete':
+    case 'menu-deleteDepartment':
+      // delete department
       _sdParticipantManagementService.deleteDepartment(this.contextParticipantNode.valueItem).then(
               function(data) {
                 self.showParticipantMessage(_sdI18nService.getInstance('views-common-messages').translate(
@@ -508,13 +504,14 @@
                 self.contextParticipantNode.deferred.reject();
               });
       break;
-
     case 'menu-removeUser':
-
+      var participant = this.treeApi.getParentItem(data.valueItem.nodeId);
+      this.saveParticipants(data, [participant], null, [data.valueItem]);
       break;
 
     case 'menu-createUser':
-
+      this.modifyParticipantPostUsrCr = true;
+      this.openCreateCopyModifyUser('CREATE_USER');
       break;
 
     default:
@@ -523,17 +520,16 @@
 
   }
 
-  // return the style for label style - future user - support multi-select
-  ParticipantManagementCtrl.prototype.getNodeStyle = function(item) {
-    if (this.selectedTreeNodes.indexOf(item)) {
-      return "{'selected': ture}";
-    } else {
-      return "{'selected': false}";
+  // modify participant with just created user
+  ParticipantManagementCtrl.prototype.createUserCallback = function(user) {
+    if (this.modifyParticipantPostUsrCr) {
+      this.modifyParticipantPostUsrCr = false;
+      this.saveParticipants(this.contextParticipantNode, [this.contextParticipantNode.valueItem], [user]);
     }
   }
 
   // handle users drop event
-  ParticipantManagementCtrl.prototype.handleUsersDrop = function(data, event) {
+  ParticipantManagementCtrl.prototype.handleUserDropAction = function(data, users) {
     var dropTarget = data.srcScope.nodeItem;
     var participants = this.selectedTreeNodes;
 
@@ -541,18 +537,26 @@
       participants = [dropTarget];
     }
 
-    _sdParticipantManagementService.saveParticipants(participants, this.rowSelectionForAllUsersTable).then(
-            function(result) {
-              // update the tree with server response
-              for (var i = 0; i < participants.length; i++) {
-                participants[i].children = result[getParticipatUiId(participants[i])];
-              }
-              data.deferred.resolve();
-            }, function(response) {
-              if (response.data && response.data.message) {
-                self.showParticipantMessage(response.data.message, "error");
-              }
-            });
+    this.saveParticipants(data, participants, this.rowSelectionForAllUsersTable);
+  }
+
+  // save the participant
+  ParticipantManagementCtrl.prototype.saveParticipants = function(data, participants, addUsers, removeUsers) {
+    var self = this;
+    _sdParticipantManagementService.saveParticipants(participants, addUsers, removeUsers).then(function(result) {
+      // update the tree with server response
+      for (var i = 0; i < participants.length; i++) {
+        participants[i].children = result[getParticipatUiId(participants[i])];
+        participants[i].children.forEach(function(v) {
+          v.nodeId = _sdParticipantManagementService.createGuid();
+        });
+      }
+      data.deferred.resolve();
+    }, function(response) {
+      if (response.data && response.data.message) {
+        self.showParticipantMessage(response.data.message, "error");
+      }
+    });
   }
 
   // handle tree node click
@@ -563,6 +567,8 @@
     if (!selectedNode.type) { return; }
 
     this.resetMessages();
+
+    if (('ORGANIZATON_SCOPED_EXPLICIT' === selectedNode.type) || 'USER' === selectedNode.type) { return; }
 
     // if the droptarget was already selected then remove it
     var participantIndex = this.selectedTreeNodes.indexOf(selectedNode);
@@ -580,14 +586,6 @@
         this.selectedTreeNodes.push(selectedNode);
       }
     }
-
-    var selectedParticipants = [];
-    for (var i = 0; i < this.selectedTreeNodes.length; i++) {
-      selectedParticipants.push(getParticipatUiId(this.selectedTreeNodes[i]));
-    }
-
-    var participantsMsg = selectedParticipants.join(", ");
-    this.showParticipantMessage(participantsMsg, "ok");
   }
 
   // open create or modify cepartment dialog
@@ -636,6 +634,11 @@
         contextParticipant.description = department.description;
       } else {
         contextParticipant.children.push(department);
+        contextParticipant.children.forEach(function(v) {
+          if (!v.nodeId) {
+            v.nodeId = _sdParticipantManagementService.createGuid();
+          }
+        });
       }
       self.contextParticipantNode.deferred.resolve();
     }, function(response) {
@@ -651,6 +654,7 @@
     var that = this;
     _sdParticipantManagementService.getModels().then(function(data) {
       data.forEach(function(v) {
+        v.allTopLevelOrganizations = removeCasePerformer(v.allTopLevelOrganizations);
         v.children = v.allTopLevelRoles.concat(v.allTopLevelOrganizations);
         v.children.forEach(function(v) {
           v.nodeId = _sdParticipantManagementService.createGuid();
@@ -704,6 +708,17 @@
   function getParticipatUiId(participant) {
     if (participant.uiQualifiedId) { return participant.uiQualifiedId }
     return participant.qualifiedId;
+  }
+
+  function removeCasePerformer(result) {
+    if (result) {
+      for (var i = 0; i < result.length; i++) {
+        if ("{PredefinedModel}CasePerformer" === result[i].qualifiedId) {
+          result.splice(i, 1);
+        }
+      }
+    }
+    return result;
   }
 
 })();

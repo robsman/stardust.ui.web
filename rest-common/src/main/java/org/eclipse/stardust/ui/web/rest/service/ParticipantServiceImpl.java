@@ -178,21 +178,44 @@ public class ParticipantServiceImpl implements ParticipantService
       for (String participantQId : participant)
       {
          ParticipantContainer participantContainer = getParticipantContainerFromQialifiedId(participantQId);
-         for (String userId : add)
+         if (CollectionUtils.isNotEmpty(add))
          {
-            // TODO: consider realmId
-            User user = getUser(users, userId);
-            if (participantContainer.participantType.equals(ParticipantType.DEPARTMENT.name()))
+            for (String userId : add)
             {
-               addUserToModelParticipant(user,
-                     participantContainer.department
-                           .getScopedParticipant((ModelParticipant) participantContainer.modelparticipant));
-            }
-            else
-            {
-               addUserToModelParticipant(user, participantContainer.modelparticipant);
+               // TODO: consider realmId
+               User user = getUser(users, userId);
+               if (participantContainer.participantType.equals(ParticipantType.DEPARTMENT.name()))
+               {
+                  addUserToModelParticipant(user,
+                        participantContainer.department
+                              .getScopedParticipant((ModelParticipant) participantContainer.modelparticipant));
+               }
+               else
+               {
+                  addUserToModelParticipant(user, participantContainer.modelparticipant);
+               }
             }
          }
+         
+         if (CollectionUtils.isNotEmpty(remove))
+         {
+            for (String userId : remove)
+            {
+               // TODO: consider realmId
+               User user = getUser(users, userId);
+               if (participantContainer.participantType.equals(ParticipantType.DEPARTMENT.name()))
+               {
+                  removeUserToModelParticipant(user,
+                        participantContainer.department
+                              .getScopedParticipant((ModelParticipant) participantContainer.modelparticipant));
+               }
+               else
+               {
+                  removeUserToModelParticipant(user, participantContainer.modelparticipant);
+               }
+            }
+         }
+
          List<ParticipantDTO> participantDTOs = new ArrayList<ParticipantDTO>();
          participantDTOs.addAll(getSubParticipants(participantContainer));
          participantsMap.put(participantQId, participantDTOs);
@@ -226,12 +249,22 @@ public class ParticipantServiceImpl implements ParticipantService
    private void addUserToModelParticipant(User user, QualifiedModelParticipantInfo qualifiedParticipantInfo)
    {
       UserService userService = serviceFactoryUtils.getUserService();
-
       User userToModify = userService.getUser(user.getOID());
       userToModify.addGrant(qualifiedParticipantInfo);
       userService.modifyUser(userToModify);
    }
 
+   /**
+    * @param user
+    * @param qualifiedParticipantInfo
+    */
+   private void removeUserToModelParticipant(User user, QualifiedModelParticipantInfo qualifiedParticipantInfo)
+   {
+      UserService userService = serviceFactoryUtils.getUserService();
+      User userToModify = userService.getUser(user.getOID());
+      userToModify.removeGrant(qualifiedParticipantInfo);
+      userService.modifyUser(userToModify);
+   }
    /**
     * 
     * @param participantQidIn
@@ -551,8 +584,6 @@ public class ParticipantServiceImpl implements ParticipantService
       }
 
       participantDTO.uiQualifiedId += "[" + department.getId() + "]";
-      participantDTO.organization = ParticipantUtils.getParticipantLabel(department.getOrganization());
-      participantDTO.description = department.getDescription();
    }
 
    /**

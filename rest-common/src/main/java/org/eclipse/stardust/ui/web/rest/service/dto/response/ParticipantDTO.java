@@ -12,12 +12,10 @@
 package org.eclipse.stardust.ui.web.rest.service.dto.response;
 
 import org.eclipse.stardust.engine.api.model.Participant;
-import org.eclipse.stardust.engine.api.model.Role;
 import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
-import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 
 /**
@@ -26,7 +24,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
  */
 public class ParticipantDTO extends AbstractDTO
 {
-   private static final String BASE_IMAGE_PATH = "/plugins/views-common/images/icons/";
    // exposed properties
    public String id;
    public String qualifiedId;
@@ -38,8 +35,8 @@ public class ParticipantDTO extends AbstractDTO
    public String realmId;
    public String uiQualifiedId;
    public String parentDepartmentName;
-   public String organization; //used only for departments
-   public String description; //used only for departments
+   public String organization; // used only for departments
+   public String description; // used only for departments
 
    public ParticipantDTO()
    {}
@@ -80,13 +77,13 @@ public class ParticipantDTO extends AbstractDTO
       this.name = ParticipantUtils.getDepartmentLabel(department);
       this.type = ParticipantUtils.ParticipantType.DEPARTMENT.name();
       this.runtimeOrganizationOid = department.getRuntimeOrganizationOID();
-      if(department instanceof Department){
+      if (department instanceof Department)
+      {
          Department dep = (Department) department;
          this.description = dep.getDescription();
-         organization = ParticipantUtils.getParticipantLabel(dep.getOrganization());
+         this.organization = ParticipantUtils.getParticipantLabel(dep.getOrganization());
       }
-      
-      
+
    }
 
    /**
@@ -96,33 +93,5 @@ public class ParticipantDTO extends AbstractDTO
    {
       this(participant);
       this.onlineStatus = online;
-   }
-
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.eclipse.stardust.ui.web.viewscommon.user.IParticipantWrapper#getIcon()
-    */
-   private String determineIconPath(Participant participant)
-   {
-      if (null != participant)
-      {
-         if (participant instanceof User)
-         {
-            return MyPicturePreferenceUtils.getUsersImageURI((User) participant);
-         }
-         else if (participant instanceof Role)
-         {
-            return BASE_IMAGE_PATH + "role.png";
-         }
-         else
-         {
-            return BASE_IMAGE_PATH + "chart_organisation.png";
-         }
-      }
-      else
-      {
-         return BASE_IMAGE_PATH + "group_link.png";
-      }
    }
 }

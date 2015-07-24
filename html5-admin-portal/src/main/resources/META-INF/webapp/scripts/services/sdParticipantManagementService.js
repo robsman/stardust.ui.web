@@ -210,14 +210,14 @@
         data.add = [];
         for (var i = 0; i < addUsers.length; i++) {
           // TODO: add realm later
-          data.add.push(addUsers[i].account);
+          data.add.push(addUsers[i].id); // id==account
         }
       }
       if (removeUsers) {
         data.remove = [];
         for (var i = 0; i < removeUsers.length; i++) {
           // add realm later
-          data.remove.push(removeUsers[i].account);
+          data.remove.push(removeUsers[i].id); // id==account
         }
       }
 
