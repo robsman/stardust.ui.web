@@ -52,6 +52,10 @@
 				options.width = '300';
 			}
 			
+			if(options.draggable == undefined){
+				options.draggable = true;
+			}
+			
 			var dialogController = 'dialogControllerUnique_' + (Math.floor(Math.random() * 9000) + 1000);
 			scope[dialogController] = angular.extend({dialog: {}}, options);
 			
