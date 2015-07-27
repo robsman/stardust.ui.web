@@ -120,7 +120,6 @@ public class RulesManagementResource
    {
       try
       {
-         // TODO: @Sidharth
          String result = getRulesManagementService().getAllRuntimeRuleSets().toString();
          
          return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();
@@ -141,7 +140,6 @@ public class RulesManagementResource
    {
       try
       {
-         // TODO: @Sidharth
          String result = getRulesManagementService().publishRuleSet(ruleSetId).toString();
          
          return Response.ok(result, MediaType.APPLICATION_JSON_TYPE).build();

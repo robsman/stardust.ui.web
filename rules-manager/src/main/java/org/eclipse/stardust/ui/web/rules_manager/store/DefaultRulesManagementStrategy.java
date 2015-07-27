@@ -1,9 +1,13 @@
 package org.eclipse.stardust.ui.web.rules_manager.store;
 
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.stardust.engine.api.query.DeployedRuntimeArtifactQuery;
+import org.eclipse.stardust.engine.api.query.DeployedRuntimeArtifacts;
+import org.eclipse.stardust.engine.api.runtime.DeployedRuntimeArtifact;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
@@ -11,6 +15,7 @@ import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.RuntimeArtifact;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
+import org.eclipse.stardust.engine.extensions.drools.artifact.RulesetArtifactType;
 import org.eclipse.stardust.ui.web.rules_manager.common.ServiceFactoryLocator;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -153,30 +158,38 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
     * @see org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy#getAllRuntimeRuleSets()
     */
    @Override
-   public JsonArray getAllRuntimeRuleSets()
+   public DeployedRuntimeArtifacts getAllRuntimeRuleSets(DeployedRuntimeArtifactQuery query)
    {
-	  // TODO: @Sidharth
-	  return null;
+      DeployedRuntimeArtifacts runtimeArtifacts = getServiceFactory().getQueryService().getRuntimeArtifacts(query);
+      return runtimeArtifacts;
    }
 
    /* (non-Javadoc)
 	* @see org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy#getRuntimeRuleSet(java.lang.String)
 	*/
    @Override
-   public JsonObject getRuntimeRuleSet(String ruleSetId)
+   public DeployedRuntimeArtifacts getRuntimeRuleSet(String ruleSetId)
    {
-	  // TODO: @Sidharth
-	  return null;
+      DeployedRuntimeArtifactQuery query = DeployedRuntimeArtifactQuery.findActive(ruleSetId,
+            RulesetArtifactType.ID, new Date());
+      return getServiceFactory().getQueryService().getRuntimeArtifacts(query);
    }
 	
    /* (non-Javadoc)
     * @see org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy#publishRuleSet(java.lang.String)
     */
    @Override
-   public void publishRuleSet(long oid, RuntimeArtifact artifacts)
+   public void publishRuleSet(long oid, RuntimeArtifact runtimeArtifact)
    {
-      // TODO - republish scenario
-      getServiceFactory().getAdministrationService().deployRuntimeArtifact(artifacts);
+      if(oid > 0)
+      {
+         getServiceFactory().getAdministrationService().overwriteRuntimeArtifact(oid, runtimeArtifact);
+      }
+      else
+      {
+         getServiceFactory().getAdministrationService().deployRuntimeArtifact(runtimeArtifact);   
+      }
+      
    }
    
    /* (non-Javadoc)
@@ -185,6 +198,21 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
    @Override
    public void deleteRuntimeRuleSet(String ruleSetId)
    {
-	  // TODO: @Sidharth
+	  DeployedRuntimeArtifacts runtimeArtifacts = getRuntimeRuleSet(ruleSetId);
+	  if(null != runtimeArtifacts && runtimeArtifacts.size() > 0)
+	  {
+	     DeployedRuntimeArtifact runtimeArtifact = runtimeArtifacts.get(0);
+	     getServiceFactory().getAdministrationService().deleteRuntimeArtifact(runtimeArtifact.getOid());
+	  }
+   }
+   
+   /**
+    * 
+    * @param oid
+    * @return
+    */
+   public RuntimeArtifact getRuntimeArtifact(long oid)
+   {
+      return getServiceFactory().getAdministrationService().getRuntimeArtifact(oid);
    }
 }

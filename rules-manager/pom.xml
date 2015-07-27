@@ -33,6 +33,11 @@
          <scope>compile</scope>
       </dependency>
       <dependency>
+         <groupId>com.infinity.bpm</groupId>
+         <artifactId>ipp-engine-rules</artifactId>
+         <version>${project.version}</version>
+      </dependency>
+      <dependency>
          <groupId>org.eclipse.stardust.ui.web</groupId>
          <artifactId>ipp-views-common</artifactId>
          <version>${project.version}</version>

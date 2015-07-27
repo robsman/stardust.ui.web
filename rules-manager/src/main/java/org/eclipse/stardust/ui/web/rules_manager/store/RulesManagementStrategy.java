@@ -3,6 +3,8 @@ package org.eclipse.stardust.ui.web.rules_manager.store;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.stardust.engine.api.query.DeployedRuntimeArtifactQuery;
+import org.eclipse.stardust.engine.api.query.DeployedRuntimeArtifacts;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.RuntimeArtifact;
 
@@ -62,13 +64,13 @@ public interface RulesManagementStrategy
    /**
     * @return
     */
-   JsonArray getAllRuntimeRuleSets();
+   DeployedRuntimeArtifacts getAllRuntimeRuleSets(DeployedRuntimeArtifactQuery query);
    
    /**
     * @param ruleSetFileName
     * @return
     */
-   JsonObject getRuntimeRuleSet(String ruleSetId);
+   DeployedRuntimeArtifacts getRuntimeRuleSet(String ruleSetId);
   
    /**
 	 * @param ruleSetId
@@ -79,4 +81,12 @@ public interface RulesManagementStrategy
 	 * @param ruleSetId
 	 */
 	void deleteRuntimeRuleSet(String ruleSetId);
+	
+	/**
+	    * 
+	    * @param oid
+	    * @return
+	    */
+	RuntimeArtifact getRuntimeArtifact(long oid);
+	   
 }
