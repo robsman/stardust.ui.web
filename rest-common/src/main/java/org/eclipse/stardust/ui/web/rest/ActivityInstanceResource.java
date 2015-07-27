@@ -689,6 +689,28 @@ public class ActivityInstanceResource
        }
     }
     
+    
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/process/oid/{piOid}")
+    public Response getWorklistByProcess(@PathParam("piOid") long piOid)
+    {
+       try
+       {
+          return Response.ok(AbstractDTO.toJson( activityInstanceService.getByProcessOid(piOid)), MediaType.APPLICATION_JSON).build();
+
+       }
+       catch (ObjectNotFoundException onfe)
+       {
+          return Response.status(Status.NOT_FOUND).build();
+       }
+       catch (Exception e)
+       {
+          trace.error("", e);
+          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+       }
+    }
+    
     /**
      * 
      * @param processInstanceOID

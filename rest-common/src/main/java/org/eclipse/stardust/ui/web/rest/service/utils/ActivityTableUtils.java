@@ -679,7 +679,6 @@ public class ActivityTableUtils
             if (object instanceof ActivityInstance)
             {
                ActivityInstance ai = (ActivityInstance) object;
-
                ActivityInstanceDTO dto;
                
                if (ActivityInstanceUtils.isTrivialManualActivity(ai))
@@ -846,7 +845,7 @@ public class ActivityTableUtils
     * @param ai
     * @return
     */
-   private static boolean findIfActivatable(ActivityInstance ai)
+   protected static boolean findIfActivatable(ActivityInstance ai)
    {
       boolean isActivable = isActivatable(ai);
       if (QualityAssuranceState.IS_QUALITY_ASSURANCE.equals(ai.getQualityAssuranceState()))

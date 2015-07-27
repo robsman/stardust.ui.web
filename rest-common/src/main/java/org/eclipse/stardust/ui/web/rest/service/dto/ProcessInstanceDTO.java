@@ -51,7 +51,7 @@ public class ProcessInstanceDTO extends AbstractDTO
    public Object enableTerminate;
 
    public Object status;
-
+   
    public boolean enableRecover;
 
    public boolean checkSelection;

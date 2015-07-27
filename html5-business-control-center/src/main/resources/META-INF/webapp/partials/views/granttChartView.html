@@ -46,8 +46,8 @@
 
 .timeLineInflight {
 	opacity : 0.4;
-	margin-left: -3px;
-	padding-right: 3px
+	margin-left: -10px;
+	padding-right: 10px
 }
 
 
@@ -58,20 +58,23 @@
 <div class="view-panel" ng-controller="sdGranttChartCtrl as ctrl"
 	sg-stretch-to-bottom>
 	
-	<div > {{ctrl.process.name}} (#{{ctrl.process.oid}})</div>
+	
+	<input type="text" ng-model="ctrl.selected.process"/> <button ng-click="ctrl.getProcessAndDrawChart()"> Get Process </button>
+	
+	<div > {{ctrl.process.processName}} (#{{ctrl.process.oid}})</div>
 	<div> <span>Start Date</span> <span> {{ctrl.process.startTime | date:'yy/MMM/dd HH:mm'}} </span> </div>
 	
 	</br>
 	
 	<div> 
 	<span>
-		<select ng-model="ctrl.selectedCategory" ng-change="ctrl.onLegendChange();"
+		<select ng-model="ctrl.selected.legend" ng-change="ctrl.onLegendChange();"
 				ng-options="opt.id as opt.label for opt in ctrl.legendCategories">
 		</select>
 	</span>
 	<span ng-repeat=" opt in ctrl.legends" class="grantt-chart-legend-option">
 		<span ng-bind="opt.label"> </span>
-		<i class="sc sc-square sc-1x grantt-chart-legend-symbol" style="color:{{opt.color}}; background-color :{{opt.color}}"></i>
+		<i class="sc sc-square icon-lg grantt-chart-legend-symbol" style="color:{{opt.color}}; background-color :{{opt.color}}"></i>
 	</span>
 	
 	</div>
@@ -81,45 +84,45 @@
 	<div id="granttChart">
 		<table class="table-bordered">
 			<tr>
-				<td class="headcol"><select ng-model="ctrl.selectedTimeFrame"
+				<td class="headcol"><select ng-model="ctrl.selected.timeFrame"
 					ng-change="ctrl.onTimeFrameChange();"
 					ng-options="opt.id as opt.label for opt in ctrl.timeFrames">
 				</select></td>
 				<td style="white-space:nowrap;">
 					<div style="clear:both;"> 
 							<span ng-repeat = "major in ctrl.majorTimeFrames" class="majorTimeLine" style="width :{{major.width}}px;" ng-mouseenter="major.toolTip = true;ctrl.mouseEnter($event, 75)" ng-mouseleave="major.toolTip = false" >
-									<span ng-if="ctrl.selectedTimeFrame == 'days'"> {{major.value |  date:'MMMM yyyy'}} </span>
-									<span ng-if="ctrl.selectedTimeFrame != 'days'"> {{major.value |  date:'dd MMMM'}} </span>
-									<div class="popup-dlg worklist-tooltip" ng-show="major.toolTip" style="color: black;margin-left:{{ctrl.position}}px;" >
-							  			<span ng-if="ctrl.selectedTimeFrame == 'days'"> {{major.value |  date:'MMMM yyyy'}} </span>
-										<span ng-if="ctrl.selectedTimeFrame != 'days'"> {{major.value |  date:'dd MMMM'}} </span>
-									 </div>
+									<span ng-if="ctrl.selected.timeFrame == 'days'"> {{major.value |  date:'MMMM yyyy'}} </span>
+									<span ng-if="ctrl.selected.timeFrame != 'days'"> {{major.value |  date:'dd MMMM'}} </span>
+										<div class="popup-dlg worklist-tooltip" ng-show="major.toolTip" style="color: black;margin-left:{{ctrl.position}}px;" >
+								  			<span ng-if="ctrl.selected.timeFrame == 'days'"> {{major.value |  date:'MMMM yyyy'}} </span>
+											<span ng-if="ctrl.selected.timeFrame != 'days'"> {{major.value |  date:'dd MMMM'}} </span>
+										 </div>
 							</span>
 							 
 					</div>
-					<div style="clear:both">
+					<div style="clear:both;">
 							<span ng-repeat = "minor in ctrl.minorTimeFrames" class="minorTimeLine" style="width : {{ctrl.minorTimeFrameWidth}}px;">
-										<span ng-if="ctrl.selectedTimeFrame == 'days'"> {{minor.value |  date:'dd'}} </span>
-										<span ng-if="ctrl.selectedTimeFrame == 'hours'"> {{minor.value}}</span>
-										<span ng-if="ctrl.selectedTimeFrame == 'minutes'"> {{minor.value}}</span>
+										<span ng-if="ctrl.selected.timeFrame == 'days'"> {{minor.value |  date:'dd'}} </span>
+										<span ng-if="ctrl.selected.timeFrame == 'hours'"> {{minor.value}}</span>
+										<span ng-if="ctrl.selected.timeFrame == 'minutes'"> {{minor.value}}</span>
 							</span>
 					</div> 
 				</td>
 			</tr>
 
 			<tr ng-repeat="col in ctrl.columnData">
-				<td  class="headcol">{{col.name}}</td>
+				<td  class="headcol"> <span ng-bind="col.name" class="spacing-right"> </span> <span ng-show="col.activatable"><button ng-click="ctrl.activate(col);" class="button-link tbl-tool-link "> <span class="sc icon-lg sc-cog"></span></button></span> </td>
 				<td>
 					<span  ng-mouseleave="col.toolTip = false" >	
-						<span ng-mouseenter="col.toolTip = true;ctrl.mouseEnter($event)" class="timeLineCompleted" style="width :{{col.completed}}px ; margin-left :{{col.delay}}px ; background-color: {{col.color}};color:{{col.color}}">
-							|
+						<span ng-mouseenter="col.toolTip = true;ctrl.mouseEnter($event)" class="timeLineCompleted img-rounded" 
+						      style="width :{{col.completed}}px ; margin-left :{{col.delay}}px ; background-color: {{col.color}};color:{{col.color}}">.
 						</span> 
-						<span ng-mouseenter="col.toolTip = true;ctrl.mouseEnter($event,col.completed)" ng-if="col.inflight > 0" class="timeLineCompleted timeLineInflight" style="width :{{col.inflight}}px ; background-color: {{col.color}};color:{{col.color}}">
-						 !
-						</span>
+						<span ng-mouseenter="col.toolTip = true;ctrl.mouseEnter($event,col.completed)" ng-if="col.inflight > 0" class="timeLineCompleted timeLineInflight img-rounded" 
+						      style="width :{{col.inflight}}px ; background-color: {{col.color}};color:{{col.color}}">.
+						 </span>
 					</span>
 					<div class="popup-dlg worklist-tooltip"  ng-show="col.toolTip" style="margin-left:{{col.delay+ctrl.position}}px;" >
-						<div style="width:175px;color:white;font-weight:bold;text-align:center;background-color: {{col.color}}">{{col.status}}</div>
+						<div style="width:175px;color:white;font-weight:bold;text-align:center;background-color: {{col.color}}">{{col.status.label}}</div>
 						<div>Start : 	{{col.startTime |  date:'MM/dd/yyyy HH:mm '}} </div>
 						<div ng-if="!col.predictedEndTime">End : 	{{col.endTime  |  date:'MM/dd/yyyy HH:mm '}}</div>
 						<div ng-if="col.predictedEndTime">End : 	{{col.predictedEndTime  |  date:'MM/dd/yyyy HH:mm '}} </div>

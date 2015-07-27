@@ -27,7 +27,17 @@
 	 */
 	function ProcessInstanceService($rootScope, $resource, $filter, sdUtilService, sdDataTableHelperService) {
 		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/process-instances/";
-
+		
+		
+		/**
+		 * 
+		 */
+		ProcessInstanceService.prototype.getProcessByOid = function(oid) {
+			var restUrl = REST_BASE_URL+ oid;
+			var processCounts = $resource(restUrl);
+			return processCounts.get().$promise;
+		}
+		
 		/*
 		 * 
 		 */

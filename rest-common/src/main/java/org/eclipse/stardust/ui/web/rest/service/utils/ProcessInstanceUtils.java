@@ -71,6 +71,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
+import org.eclipse.stardust.ui.web.rest.service.dto.StatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PriorityDTO;
@@ -1697,61 +1698,8 @@ public class ProcessInstanceUtils
       {
          if (object instanceof ProcessInstance)
          {
-            ProcessInstance processInstance = (ProcessInstance) object;
 
-            ProcessInstanceDTO dto = new ProcessInstanceDTO();
-
-            ProcessDefinition processDefinition = processDefinitionUtils.getProcessDefinition(
-                  processInstance.getModelOID(), processInstance.getProcessID());
-
-            dto.processInstanceRootOID = processInstance.getRootProcessInstanceOID();
-            dto.oid = processInstance.getOID();
-
-            PriorityDTO priority = new PriorityDTO();
-            priority.value = processInstance.getPriority();
-            priority.setLabel(processInstance.getPriority());
-            priority.setName(processInstance.getPriority());
-
-            dto.priority = priority;
-            dto.startTime = processInstance.getStartTime().getTime();
-            dto.duration = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
-                  .getDuration(processInstance);
-            dto.processName = I18nUtils.getProcessName(processDefinition);
-            String startingUserLabel = UserUtils.getUserDisplayLabel(processInstance.getStartingUser());
-            dto.createUser = startingUserLabel;
-            dto.descriptorValues = getDescriptorValues(processInstance, processDefinition);
-            dto.processDescriptorsList = getProcessDescriptor(processInstance, processDefinition);
-            // Update Document Descriptors for process
-            CommonDescriptorUtils.updateProcessDocumentDescriptors(
-                  ((ProcessInstanceDetails) processInstance).getDescriptors(), processInstance, processDefinition);
-            if (null != processInstance.getTerminationTime())
-            {
-               dto.endTime = processInstance.getTerminationTime().getTime();
-            }
-            dto.startingUser = startingUserLabel;
-            dto.status = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
-                  .getProcessStateLabel(processInstance);
-            dto.enableTerminate = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
-                  .isAbortable(processInstance);
-            dto.enableRecover = true;
-            dto.checkSelection = false;
-            dto.modifyProcessInstance = AuthorizationUtils.hasPIModifyPermission(processInstance);
-
-            List<Note> notes = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
-                  .getNotes(processInstance);
-            if (null != notes)
-            {
-               dto.notesCount = notes.size();
-            }
-            dto.caseInstance = processInstance.isCaseProcessInstance();
-            if (dto.caseInstance)
-            {
-               dto.caseOwner = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
-                     .getCaseOwnerName(processInstance);
-            }
-
-            dto.oldPriority = dto.priority;
-            dto.benchmark = getProcessBenchmark(processInstance);
+            ProcessInstanceDTO dto = buildProcessInstanceDTO((ProcessInstance) object, false);
 
             list.add(dto);
          }
@@ -1762,6 +1710,77 @@ public class ProcessInstanceUtils
       resultDTO.totalCount = queryResult.getTotalCount();
 
       return resultDTO;
+   }
+
+   
+   /**
+    * 
+    * @param processInstance
+    * @return 
+    */
+   public ProcessInstanceDTO buildProcessInstanceDTO(ProcessInstance pi , boolean skipDescriptors){
+
+      ProcessInstanceDTO dto = new ProcessInstanceDTO();
+
+      ProcessDefinition processDefinition = processDefinitionUtils.getProcessDefinition(
+            pi.getModelOID(), pi.getProcessID());
+
+      dto.processInstanceRootOID = pi.getRootProcessInstanceOID();
+      dto.oid = pi.getOID();
+
+      PriorityDTO priority = new PriorityDTO();
+      priority.value = pi.getPriority();
+      priority.setLabel(pi.getPriority());
+      priority.setName(pi.getPriority());
+      dto.priority = priority;
+      
+      dto.startTime = pi.getStartTime().getTime();
+      dto.duration = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+            .getDuration(pi);
+      dto.processName = I18nUtils.getProcessName(processDefinition);
+      String startingUserLabel = UserUtils.getUserDisplayLabel(pi.getStartingUser());
+      dto.createUser = startingUserLabel;
+      
+      // Update Document Descriptors for process
+      if(!skipDescriptors){
+         dto.descriptorValues = getDescriptorValues(pi, processDefinition);
+         dto.processDescriptorsList = getProcessDescriptor(pi, processDefinition);
+         
+         CommonDescriptorUtils.updateProcessDocumentDescriptors(
+               ((ProcessInstanceDetails) pi).getDescriptors(), pi, processDefinition);
+      }
+     
+      if (null != pi.getTerminationTime())
+      {
+         dto.endTime = pi.getTerminationTime().getTime();
+      }
+      dto.startingUser = startingUserLabel;
+      dto.status = new StatusDTO(pi.getState().getValue(),  org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+            .getProcessStateLabel(pi));
+      
+      dto.enableTerminate = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+            .isAbortable(pi);
+      dto.enableRecover = true;
+      dto.checkSelection = false;
+      dto.modifyProcessInstance = AuthorizationUtils.hasPIModifyPermission(pi);
+
+      List<Note> notes = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+            .getNotes(pi);
+      if (null != notes)
+      {
+         dto.notesCount = notes.size();
+      }
+      dto.caseInstance = pi.isCaseProcessInstance();
+      if (dto.caseInstance)
+      {
+         dto.caseOwner = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
+               .getCaseOwnerName(pi);
+      }
+
+      dto.oldPriority = dto.priority;
+      dto.benchmark = getProcessBenchmark(pi);
+
+      return dto;
    }
 
    /**

@@ -18,109 +18,11 @@
 	angular.module("bcc-ui").controller(
 			'sdGranttChartCtrl',
 			['sdProcessInstanceService', 'sdLoggerService', '$filter',
-			 'sgI18nService', Controller]);
+			 'sgI18nService','sdActivityInstanceService','sdCommonViewUtilService',Controller]);
 
 	var _filter = null;
-
+	var _sdActivityInstanceService = null;
 	var totalWidth = 900;
-
-	var days = {
-			process : {
-				startTime : new Date(2015, 6, 6, 10, 10, 0).getTime(),
-				endTime : new Date(2015, 7, 22, 16, 0, 0).getTime(),
-				oid : '723',
-				name : 'Fund Processing',
-				status : 'Completed'
-			},
-			list : [{
-				name : "Process",
-				startTime : new Date(2015, 6, 6, 10, 10, 0).getTime(),
-				endTime : new Date(2015, 7, 22, 16, 0, 0).getTime(),
-				type : 'process',
-				color : '#808080 ',
-				status : 'Completed'
-			}, {
-				name : "Activity1",
-				startTime : new Date(2015, 6, 16, 14, 10, 0).getTime(),
-				predictedEndTime : new Date(2015, 6,27, 15, 0, 0).getTime(),
-				type : 'activity',
-				color : '#FF0000',
-				status : 'Completed'
-			}, {
-				name : "Activity2",
-				startTime : new Date(2015, 6, 17, 14, 0, 0).getTime(),
-				predictedEndTime : new Date(2015, 6, 25, 15, 0, 0).getTime(),
-				type : 'activity',
-				color : '#ffff00',
-				status : 'Pending'
-			}, {
-				name : "Activity3",
-				startTime : new Date(2015, 6, 20, 15, 1, 0).getTime(),
-				endTime : new Date(2015, 7, 8, 16, 0, 0).getTime(),
-				type : 'activity',
-				color : '#0000ff',
-				status : 'Late'
-			}
-
-			]
-	};
-
-
-	var hours = {
-			process : {
-				startTime : new Date(2015, 6, 6, 10, 10, 0).getTime(),
-				endTime : new Date(2015, 6,7, 18, 10, 0).getTime(),
-				oid : '723',
-				name : 'Fund Processing',
-				status : 'Completed'
-			},
-			list : [{
-				name : "Process",
-				startTime :  new Date(2015, 6, 6, 10, 10, 0).getTime(),
-				endTime :  new Date(2015, 6,7, 18, 10, 0).getTime(),
-				type : 'process',
-				color : '#808080 ',
-				status : 'Completed'
-			}, {
-				name : "Activity1",
-				startTime :  new Date(2015, 6, 6, 15, 12, 0).getTime(),
-				endTime :  new Date(2015, 6, 6, 18, 20, 0).getTime(),
-				type : 'activity',
-				color : '#FF0000',
-				status : 'Late'
-			}
-			]
-	};
-
-
-	var mins = {
-			process : {
-				startTime : new Date(2015, 6, 6, 10, 15, 0).getTime(),
-				endTime : new Date(2015, 6, 6, 14,30, 0).getTime(),
-				oid : '723',
-				name : 'Fund Processing',
-				status : 'Completed'
-			},
-			list : [{
-				name : "Process",
-				startTime :  new Date(2015, 6, 6, 10, 15, 0).getTime(),
-				endTime :  new Date(2015, 6,6,14,30, 0).getTime(),
-				type : 'process',
-				color : '#808080 ',
-				status : 'Completed'
-			}, {
-				name : "Activity1",
-				startTime :  new Date(2015, 6, 6, 11, 30, 0).getTime(),
-				endTime : new Date(2015, 6, 6, 14, 15, 0).getTime(),
-				type : 'activity',
-				color : '#FF0000',
-				status : 'Late'
-			}
-			]
-	};
-
-
-	var data = days;
 
 	var legendCategories = [{
 		id : "benchmark",
@@ -129,8 +31,9 @@
 		id : "status",
 		label : "Status"
 	}];
-
-	var legends = [{
+	
+	
+	var benchmark = [{
 		label : "Complete",
 		color : 'gray'
 	}, {
@@ -154,60 +57,177 @@
 		id : "days",
 		label : "Days"
 	}];
+	
+	
+	var statuses = [{
+		label : "Complete",
+		color : '#AAAAAA',
+		aiValue : 2,
+		piValue : 2
+	},
+	{
+		label : "Alive",
+		color : '#00CD66',
+		aiValue : 0,
+		piValue : 0
+	},
+	{
+		label : "Aborted",
+		color : 'red',
+		aiValue : 6,
+		piValue : 1
+	},
+	{
+		label : "Interupted",
+		color : '#CD661D',
+		aiValue : 4,
+		piValue : 3
+	},
+	{
+		label : "Suspended",
+		color : '#1E90FF',
+		aiValue : 5,
+		piValue : ''
+	},
+	{
+		label : "Hibernated",
+		color : '#EEEE00',
+		aiValue : 7,
+		piValue : ''
+	},
+	{
+		label : "Application",
+		color : '#8A2BE2',
+		aiValue : 1,
+		piValue : ''
+	}]
+	
+	
+	var _sdProcessInstanceService = null;
+	var _sdCommonViewUtilService = null;
+	
 	/**
 	 * 
 	 */
 	function Controller(sdProcessInstanceService, sdLoggerService, $filter,
-			sdPreferenceService) {
+			sdPreferenceService, sdActivityInstanceService, sdCommonViewUtilService ) {
 		_filter = $filter;
+		_sdProcessInstanceService = sdProcessInstanceService;
+		_sdActivityInstanceService = sdActivityInstanceService;
+		_sdCommonViewUtilService  = sdCommonViewUtilService ;
 		this.intialize();
 
 	};
 
-	Controller.prototype.getProcess = function() {
-		return data.process;
-	}
 
 	Controller.prototype.getLegendCategories = function() {
 		return legendCategories;
 	}
 
-	Controller.prototype.getLegends = function() {
-		return legends;
-	}
-
 	Controller.prototype.getTimeFrames = function() {
 		return timeFrames;
 	}
+	
+	
+	Controller.prototype.getProcessAndDrawChart = function() {
+		var self = this;
+		self.data.list = [];
+		_sdProcessInstanceService.getProcessByOid(self.selected.process).then(function(data){
+			self.process = data;
+			self.addProcessToChartData(self.process);
+			_sdActivityInstanceService.getByProcessOid(self.process.oid).then(function(activityList){ 
+				console.log(activityList);
+				self.addActivitiesToChartData(activityList);
+				console.log(self.data.list)
+				self.onTimeFrameChange();
+			});
 
+			
+		});
+	}
+	
+	
+	
+	Controller.prototype.addActivitiesToChartData = function(activityList) { 
+		var self = this;
+		angular.forEach(activityList, function(activity){
+			var color = self.getBarColor(activity.status.value,"Activity");
+			var data = {
+					name : activity.activity.name,
+					startTime :  activity.startTime,
+					endTime :  activity.lastModification,
+					color : color,
+					activatable : activity.activatable,
+					status : activity.status,
+					oid : activity.activityOID,
+			}
+			
+			alert(JSON.stringify(data))
+			self.data.list.push(data)
+		});
+	};
+	
+	Controller.prototype.addProcessToChartData = function(piData) { 
+		var self = this;
+		var color = self.getBarColor(piData.status.value,"Process");
+		var data = {
+				name : piData.processName,
+				startTime :  piData.startTime,
+				endTime :  piData.endTime,
+				predictedEndTime :   piData.predictedEndTime,
+				color : color,
+				activatable : piData.activatable,
+				status : piData.status
+		}
+		self.data.list.push(data)
+	};
+	
+	
+	Controller.prototype.getBarColor = function(value,type) {
+		var self = this;
+		var color = "";
+		var found = ""
+		if (self.selected.legend =="status") {
+			if(type == "Process") {
+			  found = _filter("filter")(self.legends,{piValue : value} , true)
+			}else {
+			  found = _filter("filter")(self.legends,{aiValue : value} , true)
+			}
+			
+			if(found){
+				color = found[0].color;
+			}
+			
+		}else {
+			//Do something for benchmark
+		}
+		return color;
+	};
+	
 	/**
 	 * 
 	 */
 	Controller.prototype.intialize = function() {
 		var self = this;
-
+		
+		self.selected = {
+				process : "",
+				legend : "status",
+				timeFrame : "days"
+		}
 		self.data = {
 				list : []
 		};
 
-		self.data.list = self.getProcessData();
-		self.process = self.getProcess();
+		self.process = {};
 
 		self.legendCategories = self.getLegendCategories();
-
-		self.legends = self.getLegends();
-
+		self.legends = [];
+		self.onLegendChange();
 		self.timeFrames = self.getTimeFrames();
-
 		self.selectedTimeFrame = "days";
 		self.selectedCategory = "benchmark";
-		
-		self.onTimeFrameChange();
 
-	};
-
-	Controller.prototype.getProcessData = function() {
-		return data.list;
 	};
 
 	var FACTORS = {
@@ -231,14 +251,11 @@
 			}
 	}
 
-	Controller.prototype.drawTimeFrameDays = function() {
-
+	Controller.prototype.drawTimeFrameDays = function(startTime, endTime) {
 		var factor = FACTORS.days;
 		var self = this;
-		var startTime = new Date(self.process.startTime);
-		startTime.setHours(0, 0, 0, 0);
 		var first = startTime;
-		var second = new Date(self.process.endTime);
+		var second = endTime;
 		var oneMonth = new Date(first);
 		oneMonth.setMonth(first.getMonth() + 1);
 		if (second < oneMonth) {
@@ -250,12 +267,11 @@
 		var days = [];
 		var daysInMonth = 0;
 		var dayWidth = factor.majorFactorWidth;
-		var currentMonth = first.getMonth();
+		var current = new Date(first);
 		self.minorTimeFrameWidth = dayWidth;
 		while (second > first) {
 
-
-			if (currentMonth < first.getMonth()) {
+			if (isNextMonth(current,first)) {
 				var record = new Date(first);
 				record.setMonth(first.getMonth() - 1);
 				self.majorTimeFrames.push({
@@ -263,7 +279,7 @@
 					value : record
 				});
 				daysInMonth = 0;
-				currentMonth = first.getMonth();
+				current =new Date( first);
 			}
 
 			self.minorTimeFrames.push({
@@ -276,19 +292,15 @@
 			width : (daysInMonth * dayWidth) + (daysInMonth - 1),
 			value : new Date(first)
 		});
-		//self.majorTimeFrames = months;
-		//self.minorTimeFrames = days;
 	};
 
 
-	Controller.prototype.drawTimeFrameHours = function() {
+	Controller.prototype.drawTimeFrameHours = function(startTime, endTime) {
 
 		var factor = FACTORS.hours;
 		var self = this;
-		var startTime = new Date(self.process.startTime);
-		startTime.setMinutes(0, 0, 0);
 		var first = startTime;
-		var second = new Date(self.process.endTime);
+		var second = endTime;
 		var nextDay = new Date(first);
 		nextDay.setDate(first.getDate() + 1);
 		if (second < nextDay) {
@@ -302,10 +314,10 @@
 		var days = [];
 		var hoursInDay = 0;
 		var hourWidth = factor.majorFactorWidth;
-		var currentDay = first.getDate();
+		var currentDay = new Date(first);
 		self.minorTimeFrameWidth = hourWidth;
 		while (second > first) {
-			if (currentDay < first.getDate()) {
+			if (isNextDay(currentDay,first)) {
 				var record = new Date(first);
 				record.setDate(first.getDate() - 1);
 				self.majorTimeFrames.push({
@@ -313,7 +325,7 @@
 					value : record
 				});
 				hoursInDay = 0;
-				currentDay = first.getDate();
+				currentDay = new Date(first);
 			}
 
 			self.minorTimeFrames.push({
@@ -335,11 +347,10 @@
 
 	var minsArray = ["00","15","30","45"];
 
-	Controller.prototype.drawTimeFrameMinutes = function(startTime) {
+	Controller.prototype.drawTimeFrameMinutes = function(startTime, endTime) {
 		var self = this;
 		var first = startTime;
-		var second = new Date(self.process.endTime);
-		
+		var second = endTime;
 		var factor = FACTORS.minutes;
 		
 		var minDuration = first.getTime() + 4 * one_hour;
@@ -352,11 +363,10 @@
 		var days = [];
 		var quaterHoursInADay = 0;
 		var quaterHourWidth = factor.majorFactorWidth;
-		var currentDay = first.getDate();
+		var currentDay = new Date(first);
 		self.minorTimeFrameWidth = quaterHourWidth;
 		while (second > first) {
-			
-			if (currentDay < first.getDate()) {
+			if (isNextDay(currentDay,first)) {
 				var record = new Date(first);
 				record.setDate(first.getDate() - 1);
 				self.majorTimeFrames.push({
@@ -364,7 +374,7 @@
 					value : record
 				});
 				quaterHoursInADay = 0;
-				currentDay = first.getDate();
+				currentDay = new Date(first);
 			}
 
 			for (var index = 0; index < minsArray.length; index++) {
@@ -388,7 +398,7 @@
 
 		self.columnData = [];
 		var minorFactorWidth = factor.minorFactorWidth;
-		angular.forEach(self.getProcessData(), function(item) {
+		angular.forEach(self.data.list , function(item) {
 
 			var delay = self.computeDifferenceForDays(startTime.getTime(),
 					item.startTime, factor);
@@ -399,24 +409,40 @@
 			}
 			var completedLength = self.computeDifferenceForDays(item.startTime,
 					item.endTime, factor)
-					if(item.predictedEndTime) {
+
+			if(item.predictedEndTime) {
 						inflightLength  = self.computeDifferenceForDays(item.endTime,
 								item.predictedEndTime, factor);
-					}		
+			}	
 
+			
+			var delay = (delay.difference * minorFactorWidth)  + delay.padding;
+			var completed =  completedLength.difference * minorFactorWidth + completedLength.padding;
+			if( completedLength.difference < 1){
+				completed = 2;
+			}
+			
+			var inflight = 0;
+			if(inflightLength) {
+					 inflight = (inflightLength.difference * minorFactorWidth) + inflightLength.padding;
+					if(inflightLength.difference < 1){
+						inflight = 2;
+					}
+			}
+	
 			self.columnData.push({
 				name : item.name,
 				type : item.type,
 				startTime : item.startTime,
 				endTime : item.endTime,
 				predictedEndTime : item.predictedEndTime,
-				delay : (delay.difference * minorFactorWidth)  + delay.padding,
-				completed : completedLength.difference * minorFactorWidth + completedLength.padding,
-				inflight : (inflightLength)
-				? (inflightLength.difference * minorFactorWidth) + inflightLength.padding
-						: 0,
-						color : item.color,
-						status : item.status
+				delay : delay,
+				completed : completed,
+				inflight : inflight,
+				color : item.color,
+				status : item.status,
+				activatable : item.activatable,
+				oid : item.oid
 			});
 
 		});
@@ -437,34 +463,91 @@
 		}
 		self.position = event.offsetX +xOffset - 100 - $("#granttChart").scrollLeft();
 	};
-
+	
+	
+	
+	Controller.prototype.onLegendChange = function() {
+		var self = this;
+			switch (self.selected.legend ) {
+				case "status":
+					self.legends = statuses;
+					break;
+				case "benchmark":
+					self.legends = benchmark;
+					break;
+			}
+		
+	};
+	
+	Controller.prototype.activate = function(col) {
+		_sdActivityInstanceService.activate(col.oid).then(
+				function(result) {
+					_sdCommonViewUtilService.openActivityView(col.oid);
+				});
+	};
+	
 	Controller.prototype.onTimeFrameChange = function() {
 		var self = this;
 		self.columnData = [];
 		self.majorTimeFrames = [];
 		self.minorTimeFrames = [];
 		var start = new Date(self.process.startTime);
-		var time = new Date()
-		if (self.selectedTimeFrame == "minutes") {
-			start.setMinutes(0, 0, 0);
-			self.computeChart(FACTORS.minutes, start);
-			console.log((new Date().getTime() - time.getTime()))
-			self.drawTimeFrameMinutes(start);
+		
+		var end = new Date();
+		if(self.process.endTime) {
+			end = new Date(self.process.endTime);
 		}
-		if (self.selectedTimeFrame == "hours") {
-			start.setMinutes(0, 0, 0);
-			self.computeChart(FACTORS.hours, start);
-			console.log((new Date().getTime() - time.getTime()))
-			self.drawTimeFrameHours();
-
-		} else if (self.selectedTimeFrame == "days") {
-			start.setHours(0, 0, 0, 0);
-			self.computeChart(FACTORS.days, start);
-			console.log((new Date().getTime() - time.getTime()))
-			self.drawTimeFrameDays();
+		else if(self.process.predictedEndTime) {
+			end = new Date(self.process.predictedEndTime);
 		}
 
-		console.log((new Date().getTime() - time.getTime()))
+		switch (self.selected.timeFrame) {
+			case "minutes":
+				start.setMinutes(0, 0, 0);
+				self.computeChart(FACTORS.minutes, start);
+				self.drawTimeFrameMinutes(start, end);
+				break;
+			case "hours":
+				start.setMinutes(0, 0, 0);
+				self.computeChart(FACTORS.hours, start);
+				self.drawTimeFrameHours(start, end);
+				break;
+			case "days":
+				start.setHours(0, 0, 0, 0);
+				self.computeChart(FACTORS.days, start);
+				self.drawTimeFrameDays(start, end);
+				break;
+		}
+	};
+	
+	
+	function isNextDay(timeOne, timeTwo){
+		
+		if(timeOne.getYear() < timeTwo.getYear()) {
+			return true;
+		}
+		if(timeOne.getYear() == timeTwo.getYear()) {
+			if(timeOne.getMonth() < timeTwo.getMonth()) {
+				return true;
+			}
+			else if(timeOne.getMonth() == timeTwo.getMonth()) {
+				return timeOne.getDate() < timeTwo.getDate()
+			}
+		}
+		
+		return false;
 	}
+	
+	function isNextMonth(timeOne, timeTwo){
+		if(timeOne.getYear() < timeTwo.getYear()) {
+			return true;
+		}
+		if(timeOne.getYear() == timeTwo.getYear()) {
+			if(timeOne.getMonth() < timeTwo.getMonth()) 
+				return true;
+		}
+		return false;
+	}
+	
 
 })();

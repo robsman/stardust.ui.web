@@ -305,4 +305,15 @@ public class ProcessInstanceService
       return processColumns;
    }
 
+   /**
+    * @return 
+    * 
+    */
+   public ProcessInstanceDTO getProcessByOid(Long oid,boolean skipDescriptors)
+   {
+      ProcessInstance process =  processInstanceUtilsREST.getProcessInstance(oid);
+      ProcessInstanceDTO dto =  processInstanceUtilsREST.buildProcessInstanceDTO(process, skipDescriptors);
+      return dto;
+   }
+
 }

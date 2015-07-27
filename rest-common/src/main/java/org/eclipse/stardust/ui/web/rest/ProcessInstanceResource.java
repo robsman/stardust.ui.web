@@ -338,6 +338,16 @@ public class ProcessInstanceResource
       return Response.ok(AbstractDTO.toJson(processInstanceService.getProcessesColumns()), MediaType.APPLICATION_JSON)
             .build();
    }
+   
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/{oid}")
+   public Response getProcessByOid(@PathParam("oid") Long oid,  @QueryParam("skipDescriptors") @DefaultValue("true") boolean skipDescriptors)
+   {
+      return Response.ok(processInstanceService.getProcessByOid(oid, skipDescriptors).toJson(), MediaType.APPLICATION_JSON)
+            .build();
+   }
 
    /**
     * Populate the options with the post data.

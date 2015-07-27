@@ -454,4 +454,14 @@ public class ActivityInstanceService
       return activityStatisticsUtils.getPerformanceStatsByTeamLead();
    }
 
+   /**
+    * 
+    * @param piOid
+    * @return
+    */
+   public List<ActivityInstanceDTO> getByProcessOid(long piOid)
+   {
+      return activityInstanceUtils.getByProcessOid(piOid);
+   }
+
 }

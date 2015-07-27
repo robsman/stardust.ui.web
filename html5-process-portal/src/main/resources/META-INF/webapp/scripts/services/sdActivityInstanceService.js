@@ -31,10 +31,18 @@
 		/*
 		 * 
 		 */
+		ActivityInstanceService.prototype.getByProcessOid = function(piOid) {
+
+		    return sdUtilService.ajax(REST_BASE_URL,'' , "process/oid/"+piOid);
+		};
+		
+		/*
+		 * 
+		 */
 		ActivityInstanceService.prototype.reactivate = function(activityOID) {
 
 		    var data = {activityOID : activityOID}
-		    return sdUtilService.ajax(REST_BASE_URL,'reactivate' , data);
+		    return sdUtilService.ajax(REST_BASE_URL,'' , data);
 		};
 		
 
