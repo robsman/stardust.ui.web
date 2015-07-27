@@ -98,17 +98,10 @@ public class ParticipantResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("participants/{participantId}")
-   public Response getSubParticipants(@PathParam("participantId") String participantId,
-         @PathParam("type") String participantType) throws UnsupportedEncodingException
+   public Response getSubParticipants(@PathParam("participantId") String participantId)
+         throws UnsupportedEncodingException
    {
       participantId = URLDecoder.decode(participantId, "UTF-8");
-      if ("All".equals(participantId))
-      {
-         // search all unscoped participants including predefined ones
-         return Response.ok(participantSearchComponent.searchAllParticipants(null, 0, 3, false),
-               MediaType.APPLICATION_JSON).build();
-      }
-
       List<ParticipantDTO> participants = participantService.getParticipant(participantId);
       return Response.ok(AbstractDTO.toJson(participants), MediaType.APPLICATION_JSON).build();
    }
@@ -117,14 +110,15 @@ public class ParticipantResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("participants")
-   public Response getSubParticipants(@QueryParam("searchText") @DefaultValue("") String searchText,
+   public Response searchParticipants(@QueryParam("searchText") @DefaultValue("") String searchText,
          @QueryParam("maxMatches") @DefaultValue("8") Integer maxMatches,
          @QueryParam("searchType") @DefaultValue("3") Integer searchType,
-         @QueryParam("filterPredefinedModel") @DefaultValue("") Boolean filterPredefinedModel)
+         @QueryParam("filterPredefinedModel") @DefaultValue("false") Boolean filterPredefinedModel)
    {
       // search all unscoped participants including predefined ones
-      return Response.ok(participantSearchComponent.searchAllParticipants(searchText, maxMatches, searchType, false),
-            MediaType.APPLICATION_JSON).build();
+      return Response
+            .ok(participantSearchComponent.searchAllParticipants(searchText, maxMatches, searchType,
+                  filterPredefinedModel), MediaType.APPLICATION_JSON).build();
    }
 
    @POST

@@ -619,7 +619,9 @@
   // persist department
   ParticipantManagementCtrl.prototype.createModifyDepartment = function() {
     var self = this;
+    // delete unwanted parameters
     delete self.department.parentDepartmentName;
+    delete self.department.organization;
     _sdParticipantManagementService.createModifyDepartment(this.department).then(function(data) {
       var participants = data.participants;
       var contextParticipant = self.contextParticipantNode.valueItem;
