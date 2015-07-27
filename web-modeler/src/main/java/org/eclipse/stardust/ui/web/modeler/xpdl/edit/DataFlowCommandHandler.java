@@ -34,6 +34,17 @@ public class DataFlowCommandHandler
    @Resource
    private ApplicationContext springContext;
 
+   @OnCommand(commandId = "dataFlow.delete")
+   public void deleteDataFlow(ModelType model, DataMappingType dataMapping,
+         JsonObject changes)
+   {
+      ActivityType activity = findContainingActivity(dataMapping);
+      if(activity != null)
+      {
+         activity.getDataMapping().remove(dataMapping);         
+      }      
+   }
+      
    @OnCommand(commandId = "dataFlow.create")
    public void createDataFlow(ModelType model, EventHandlerType eventHandler,
          JsonObject changes)
