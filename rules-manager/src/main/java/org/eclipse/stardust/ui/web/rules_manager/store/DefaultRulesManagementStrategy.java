@@ -15,7 +15,6 @@ import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.RuntimeArtifact;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
-import org.eclipse.stardust.engine.extensions.drools.artifact.RulesetArtifactType;
 import org.eclipse.stardust.ui.web.rules_manager.common.ServiceFactoryLocator;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,6 +29,7 @@ import com.google.gson.JsonObject;
 public class DefaultRulesManagementStrategy implements RulesManagementStrategy
 {
    private final ServiceFactoryLocator serviceFactoryLocator;
+   private static final String RULESARTIFACT_TYPE_ID = "drools-ruleset";
 
    private ServiceFactory serviceFactory;
 
@@ -171,7 +171,7 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
    public DeployedRuntimeArtifacts getRuntimeRuleSet(String ruleSetId)
    {
       DeployedRuntimeArtifactQuery query = DeployedRuntimeArtifactQuery.findActive(ruleSetId,
-            RulesetArtifactType.ID, new Date());
+            RULESARTIFACT_TYPE_ID, new Date());
       return getServiceFactory().getQueryService().getRuntimeArtifacts(query);
    }
 	
