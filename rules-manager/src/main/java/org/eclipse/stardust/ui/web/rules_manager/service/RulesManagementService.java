@@ -200,9 +200,7 @@ public class RulesManagementService
       DeployedRuntimeArtifacts artifacts = getRulesManagementStrategy().getAllRuntimeRuleSets(query);
       for(DeployedRuntimeArtifact artifact : artifacts)
       {
-         RuntimeArtifact runtimeArtifact = getRulesManagementStrategy().getRuntimeArtifact(artifact.getOid());
-         JsonObject ruleSet = createRuleSetJson(runtimeArtifact);
-         ruleSet.addProperty("oid", artifact.getOid());
+         JsonObject ruleSet = createRuleSetJson(artifact);
          ruleSets.add(ruleSet);
       }
       return ruleSets;
@@ -213,15 +211,15 @@ public class RulesManagementService
     * @param artifact
     * @return
     */
-   private JsonObject createRuleSetJson(RuntimeArtifact artifact)
+   private JsonObject createRuleSetJson(DeployedRuntimeArtifact artifact)
    {
-      JsonObject ruleSet = new JsonObject();
-      ruleSet.addProperty("id", artifact.getArtifactId());
-      ruleSet.addProperty("name", artifact.getArtifactName());
+      // TODO - use RuntimeArtifactory to fetch the contents, temporary fix only
+      Document document = getRulesManagementStrategy().getRuleSetByName(artifact.getArtifactName());
+      byte[] contents = getDocumentManagementService().retrieveDocumentContent(document.getId());
+      JsonObject ruleSet = new JsonParser().parse(new String(contents)).getAsJsonObject();
+      ruleSet.addProperty("oid", artifact.getOid());
       ruleSet.addProperty("validFrom", artifact.getValidFrom().getTime());
-      
-      String contents = new String(artifact.getContent());
-      ruleSet.addProperty("contents", contents);
+      ruleSet.addProperty("artifactTypeId", artifact.getArtifactTypeId());
       return ruleSet;
    }
    
@@ -236,6 +234,7 @@ public class RulesManagementService
       JsonObject ruleSetJson = new JsonParser().parse(postedData).getAsJsonObject();
       String ruleSetId = GsonUtils.extractString(ruleSetJson, "ruleSetId");
       RuntimeArtifact artifact = null;
+      DeployedRuntimeArtifact deployedRuntimeArtifact = null;
       Document document;
 
       String documentId = ruleSetUUIDVsDocumentIdMap.get(ruleSetId);
@@ -261,15 +260,19 @@ public class RulesManagementService
          DeployedRuntimeArtifact deployedArtifact = runtimeArtifact.get(0);
          artifact = getRulesManagementStrategy().getRuntimeArtifact(deployedArtifact.getOid());
          artifact.setContent(contents);
-         getRulesManagementStrategy().publishRuleSet(deployedArtifact.getOid(), artifact);
+         deployedRuntimeArtifact = getRulesManagementStrategy().publishRuleSet(deployedArtifact.getOid(), artifact);
       }
       else
       {
          artifact = new RuntimeArtifact(RULESARTIFACT_TYPE_ID, ruleSetId, document.getName(), contents,
                new java.util.Date());   
-         getRulesManagementStrategy().publishRuleSet(0, artifact);
+         deployedRuntimeArtifact = getRulesManagementStrategy().publishRuleSet(0, artifact);
       }
       
+      if(null != deployedRuntimeArtifact && deployedRuntimeArtifact.getOid() > 0)
+      {
+         result = createRuleSetJson(deployedRuntimeArtifact);
+      }
       return result;
    }
 
@@ -285,9 +288,7 @@ public class RulesManagementService
       DeployedRuntimeArtifacts deployedArtifacts = getRulesManagementStrategy().getRuntimeRuleSet(ruleSetId);
       for(DeployedRuntimeArtifact artifact : deployedArtifacts)
       {
-         RuntimeArtifact runtimeArtifact = getRulesManagementStrategy().getRuntimeArtifact(artifact.getOid());
-         ruleSetJson = createRuleSetJson(runtimeArtifact);
-         ruleSetJson.addProperty("oid", artifact.getOid());
+         ruleSetJson = createRuleSetJson(artifact);
          break;
       }
       

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.eclipse.stardust.engine.api.query.DeployedRuntimeArtifactQuery;
 import org.eclipse.stardust.engine.api.query.DeployedRuntimeArtifacts;
+import org.eclipse.stardust.engine.api.runtime.DeployedRuntimeArtifact;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.RuntimeArtifact;
 
@@ -75,7 +76,7 @@ public interface RulesManagementStrategy
    /**
 	 * @param ruleSetId
 	 */
-   void publishRuleSet(long runtimeArtifactOid, RuntimeArtifact artifact);
+   DeployedRuntimeArtifact publishRuleSet(long runtimeArtifactOid, RuntimeArtifact artifact);
 
    /**
 	 * @param ruleSetId

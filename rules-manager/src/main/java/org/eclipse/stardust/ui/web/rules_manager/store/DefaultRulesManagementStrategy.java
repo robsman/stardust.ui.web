@@ -179,17 +179,18 @@ public class DefaultRulesManagementStrategy implements RulesManagementStrategy
     * @see org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy#publishRuleSet(java.lang.String)
     */
    @Override
-   public void publishRuleSet(long oid, RuntimeArtifact runtimeArtifact)
+   public DeployedRuntimeArtifact publishRuleSet(long oid, RuntimeArtifact runtimeArtifact)
    {
+      DeployedRuntimeArtifact runtimeArtifacts = null;
       if(oid > 0)
       {
-         getServiceFactory().getAdministrationService().overwriteRuntimeArtifact(oid, runtimeArtifact);
+         runtimeArtifacts = getServiceFactory().getAdministrationService().overwriteRuntimeArtifact(oid, runtimeArtifact);
       }
       else
       {
-         getServiceFactory().getAdministrationService().deployRuntimeArtifact(runtimeArtifact);   
+         runtimeArtifacts = getServiceFactory().getAdministrationService().deployRuntimeArtifact(runtimeArtifact);   
       }
-      
+      return runtimeArtifacts;
    }
    
    /* (non-Javadoc)
