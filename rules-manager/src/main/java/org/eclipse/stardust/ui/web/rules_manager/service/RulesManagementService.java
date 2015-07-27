@@ -33,7 +33,6 @@ import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.RuntimeArtifact;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
-import org.eclipse.stardust.engine.extensions.drools.artifact.RulesetArtifactType;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rules_manager.common.ServiceFactoryLocator;
 import org.eclipse.stardust.ui.web.rules_manager.service.RulesManagementService.Response.OPERATION;
@@ -48,6 +47,7 @@ import org.eclipse.stardust.ui.web.rules_manager.store.RulesManagementStrategy;
 public class RulesManagementService
 {
    private static final Logger trace = LogManager.getLogger(RulesManagementService.class);
+   private static final String RULESARTIFACT_TYPE_ID = "drools-ruleset";
 
    @Resource
    private ApplicationContext context;
@@ -210,7 +210,8 @@ public class RulesManagementService
       String documentId = ruleSetUUIDVsDocumentIdMap.get(ruleSetId);
       Document document = getDocumentManagementService().getDocument(documentId);
       byte[] contents = getRuleSet(ruleSetId);
-      artifact = new RuntimeArtifact(RulesetArtifactType.ID, ruleSetId, document.getName(), contents,
+      
+      artifact = new RuntimeArtifact(RULESARTIFACT_TYPE_ID, ruleSetId, document.getName(), contents,
             new java.util.Date());
       getRulesManagementStrategy().publishRuleSet(0, artifact);
       
