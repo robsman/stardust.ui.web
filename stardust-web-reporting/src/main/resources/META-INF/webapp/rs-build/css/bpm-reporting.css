@@ -22,7 +22,6 @@ body, table, input, textarea {
 }
 
 p,li,label,table {
-	font-size: 1em;
 	line-height: 18px;
 	color: #333333;
 	font-weight: normal;

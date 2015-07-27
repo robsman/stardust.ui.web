@@ -670,6 +670,22 @@ define(
 						for ( var n in this[q[0]][q[1]][q[2]][q[3]]) {
 							enumerators.push(this[q[0]][q[1]][q[2]][q[3]][n]);
 						}	
+					}else if(q.length >= 5) {//Descriptors having Enum values and which might be of structure type. 
+						for ( var n in this[q[0]][q[1]]) {
+							var temp = "";
+							for (var int = 2; int < q.length - 1 ; int++) {
+								temp = temp + q[int] + ":";
+							}
+							temp = temp.slice(0, temp.length-1);
+								
+							var desc = this[q[0]][q[1]][n];
+							if (temp == desc.id) {
+								var posValues = desc[q[q.length-1]];
+								for ( var val in posValues) {
+									enumerators.push(posValues[val]);
+								}
+							}
+						}
 					}else {
 						console.error("qualifier not supported yet: " + path);
 					}
