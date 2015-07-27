@@ -86,8 +86,14 @@
 		_sdRoleManagerDetailService.getRoleManagerDetails(self.viewParams.roleId, self.viewParams.departmentOid).then(
 				function(data) {
 					self.roleManagerDetails = data;
-					self.table1 = true;
-					self.table2 = true;
+					if(self.assignedUsersTable != undefined && self.assignableUsersTable != undefined){
+						self.assignedUsersTable.refresh();
+						self.assignableUsersTable.refresh();
+					}else{
+						self.table1 = true;
+						self.table2 = true;
+					}
+					
 				}, function(error) {
 					trace.log(error);
 				});
@@ -166,8 +172,6 @@
 	 */
 	RoleManagerDetailViewCtrl.prototype.refresh = function() {
 		var self = this;
-		self.table1 = false;
-		self.table2 = false;
 		self.getRoleManagerDetails();
 	};
 

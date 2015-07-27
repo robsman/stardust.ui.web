@@ -65,8 +65,14 @@
 
 			_sdProcessResourceMgmtService.getProcessResourceUsers().then(function(data) {
 				self.processResourceUserList = data.processResourceUserList;
-					self.showRolesTable = true;
-					self.showUsersTable = true;
+				  if(self.rolesTable != undefined && self.usersTable != undefined){
+					  self.rolesTable.refresh();
+					  self.usersTable.refresh();
+				  }else{
+					  self.showRolesTable = true;
+					  self.showUsersTable = true;
+				  }
+					
 			}, function(error) {
 				trace.log(error);
 			});
@@ -143,23 +149,7 @@
 				: "g")), (typeof (str2) == "string") ? str2.replace(/\$/g, "$$$$") : str2);
 	}
 
-	/**
-	 * 
-	 * @returns
-	 */
-	ProcessResourceMgmtCtrl.prototype.getProcessResourceUsersData = function() {
-		_sdProcessResourceMgmtService.getProcessResourceUsers().then(function(data) {
-			self.processResourceUserList = data.processResourceUserList;
 
-			if (self.usersTable != undefined) {
-				self.usersTable.refresh();
-			} else {
-				self.showUsersTable = true;
-			}
-		}, function(error) {
-			trace.log(error);
-		});
-	};
 
 	/**
 	 * 
@@ -178,7 +168,6 @@
 			result.totalCount = rows.length;
 		} else {
 			result.list = self.processResourceUserList;
-			//result.totalCount = self.processResourceUserList.length;
 		}
 
 		result.list = _sdDataTableHelperService.columnSort(options, result.list);
@@ -192,8 +181,6 @@
 	 */
 	ProcessResourceMgmtCtrl.prototype.refresh = function() {
 		var self = this;
-		self.showRolesTable = false;
-		self.showUsersTable = false;
 		self.getProcessResourceRolesData();
 	};
 

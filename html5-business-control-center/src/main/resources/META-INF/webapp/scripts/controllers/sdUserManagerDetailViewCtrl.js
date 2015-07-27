@@ -81,8 +81,14 @@
 		var self = this;
 		_sdUserManagerDetailService.getUserManagerDetails(self.viewParams.userOid).then(function(data) {
 			self.userManagerDetails = data;
-			self.showAssignedRolesTable = true;
-			self.showAssignableRolesTable = true;
+			if(self.assignedRolesTable != undefined && self.assignableRolesTable != undefined){
+				self.assignedRolesTable.refresh();
+				self.assignableRolesTable.refresh();
+			}else{
+				self.showAssignedRolesTable = true;
+				self.showAssignableRolesTable = true;
+			}
+			
 		}, function(error) {
 			trace.log(error);
 		});
@@ -139,8 +145,6 @@
 	 */
 	UserManagerDetailViewCtrl.prototype.refresh = function() {
 		var self = this;
-		self.showAssignedRolesTable = false;
-		self.showAssignableRolesTable = false;
 		self.getUserManagerDetails();
 	};
 

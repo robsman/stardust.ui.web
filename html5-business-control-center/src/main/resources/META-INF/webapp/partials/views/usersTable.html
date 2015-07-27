@@ -1,10 +1,9 @@
 <div style="margin-top: 10px;">
 	<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-resourceAvailabilityView-accountTable-title')}}</div>
-	<div ng-if="ctrl.showUsersTable">
 	<table sd-data-table="ctrl.usersTable"
 		sd-data="ctrl.getProcessResourceUsers(params)" sda-mode="remote"
 		sda-preference-delegate="ctrl.preferenceDelegateForUsersTable(prefInfo)"
-		sda-selectable="row"
+		sda-ready="ctrl.showUsersTable" sda-selectable="row"
 		sda-selection="ctrl.rowSelectionForUsers"
 		sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
 		sda-sort-by="{name : 'userName', dir : 'desc'}" sda-exports="true"
@@ -43,5 +42,4 @@
 			</tr>
 		</tbody>
 	</table>
-	</div>
 </div>
