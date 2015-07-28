@@ -16,7 +16,7 @@
 	'use strict';
 
 	angular.module("bcc-ui").controller(
-			'sdGranttChartCtrl',
+			'sdGanttChartCtrl',
 			['sdProcessInstanceService', 'sdLoggerService', '$filter',
 			 'sgI18nService','sdActivityInstanceService','sdCommonViewUtilService',Controller]);
 
@@ -161,8 +161,6 @@
 					status : activity.status,
 					oid : activity.activityOID,
 			}
-			
-			alert(JSON.stringify(data))
 			self.data.list.push(data)
 		});
 	};
@@ -534,7 +532,6 @@
 				return timeOne.getDate() < timeTwo.getDate()
 			}
 		}
-		
 		return false;
 	}
 	
