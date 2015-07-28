@@ -447,6 +447,12 @@ define(
                 }
                this.autoStartupInput.prop("checked",
                        this.getApplication().attributes["carnot:engine:camel::autoStartup"]);
+               
+               if (this.languageSelect.val() != "JavaScript") {
+                  this.testTab.parent().parent().hide();
+               } else{
+                  this.testTab.parent().parent().show();
+               }
             };
             
              /**
