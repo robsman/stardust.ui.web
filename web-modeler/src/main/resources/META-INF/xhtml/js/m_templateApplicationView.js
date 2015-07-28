@@ -95,19 +95,15 @@ define(
             m_utils.jQuerySelect("label[for='processInterfacesInput']").text(m_i18nUtils.getProperty("modeler.element.properties.applicationTemplate.processInterfaces"));
             m_utils.jQuerySelect("#noSelectionErrorMessage").text(m_i18nUtils.getProperty("modeler.element.properties.applicationTemplate.noSelectionErrorMessage"));
             
+           // m_utils.jQuerySelect("label[for='availableModelsInput']").text(m_i18nUtils.getProperty("modeler.element.properties.applicationTemplate.availableApplications"));
+           // m_utils.jQuerySelect("label[for='availableModelsInput']").text(m_i18nUtils.getProperty("modeler.element.properties.applicationTemplate.availableAppsOrProcInter"));
         };
 
         /**
          *
          */
         function TemplateApplicationView() {
-       /*     var view = m_modelElementView.create(true);
-
-            m_utils.inheritFields(this, view);
-            m_utils.inheritMethods(TemplateApplicationView.prototype, view);
-*/
-                var modelElementView = m_modelElementView.create(true);
-
+            var modelElementView = m_modelElementView.create(true);
             m_utils.inheritFields(this, modelElementView);
             m_utils.inheritMethods(TemplateApplicationView.prototype,
                   modelElementView);
@@ -123,8 +119,8 @@ define(
                 this.overlayAnchor = m_utils.jQuerySelect("#overlayAnchor");
 
                 this.publicVisibilityCheckbox = m_utils.jQuerySelect("#publicVisibilityCheckbox");
-                this.availableApplicationsInput = m_utils.jQuerySelect("#configurationTab #availableApplicationsInput");
-                this.processInterfacesInput = m_utils.jQuerySelect("#configurationTab #processInterfacesInput");
+              /*  this.availableApplicationsInput = m_utils.jQuerySelect("#configurationTab #availableApplicationsInput");
+                this.processInterfacesInput = m_utils.jQuerySelect("#configurationTab #processInterfacesInput");*/
                 this.view.css("visibility", "visible");
                 this.publicVisibilityCheckbox.change({
                     "view": this
@@ -207,13 +203,76 @@ define(
             *
             */
             TemplateApplicationView.prototype.update = function () {
-                this.applicationId=this.getExtendedAttributeValue("stardust:application::template::applicationId");
-                this.processId=this.getExtendedAttributeValue("stardust:application::template::processId");
+                this.modelId=this.getExtendedAttributeValue("stardust:application::template::modelId");
+                this.eltId=this.getExtendedAttributeValue("stardust:application::template::elementId");
+                this.elementType=this.getExtendedAttributeValue("stardust:application::template::elementType");
+            };
+            
+            this.modelId;
+            this.eltId;
+            this.elementType;
+            /**
+            *
+            */
+            TemplateApplicationView.prototype.getAvailableModels = function () {
+                var models = m_model.getModels();
+                var availableModels = [];
+                for (var i in models) {
+                    var model = models[i];
+                    availableModels.push(model);
+                }
+                return availableModels;
             };
             /**
             *
             */
-            TemplateApplicationView.prototype.getAvailableApplications = function () {
+            TemplateApplicationView.prototype.modelIdChanged = function () {
+                if(!this.validate())
+                    return;
+                m_utils.debug("===> Application ID Change" + this.modelId);
+                this.submit();
+            };
+            
+           
+           /**
+            *
+            */
+            TemplateApplicationView.prototype.getAvailableElements = function () { 
+                var elts={};
+                elts.applications=[];
+                elts.processes=[];
+                
+                if(this.modelId){
+                    var model = m_model.findModel(this.modelId);
+                    for (var appId in model.applications) {
+                        var app=model.applications[appId];
+                        elts.applications.push(app);
+                    }
+                    
+                    for (var j in model.processes) {
+                        var process = model.processes[j]
+                        if (this.hasProcessInterface(process)) {
+                            elts.processes.push(process);
+                        }
+                    }
+                }
+                return elts;
+            };
+            
+             /**
+            *
+            */
+            TemplateApplicationView.prototype.elementChanged = function () {
+                if(!this.validate())
+                    return;
+                m_utils.debug("===> Element ID Change" + this.eltId);
+                this.submit();
+            };
+            
+            /**
+            *
+            */
+            /*TemplateApplicationView.prototype.getAvailableApplications = function () {
                 var models = m_model.getModels();
                 var availableApplications = [];
                 for (var i in models) {
@@ -226,44 +285,44 @@ define(
                 }
                 return availableApplications;
             }
-            this.applicationId;
+            this.applicationId;*/
             /**
             *
             */
-            TemplateApplicationView.prototype.applicationIdChanged = function () {
+            /*TemplateApplicationView.prototype.applicationIdChanged = function () {
                 if(!this.validate())
                     return;
                 m_utils.debug("===> Application ID Change" + this.applicationId);
                 this.submit();
-            };
+            };*/
             
             /**
             *
             */
-            TemplateApplicationView.prototype.getSelectedApplication = function () {
+           /* TemplateApplicationView.prototype.getSelectedApplication = function () {
                 var application;
                 if(!m_utils.isEmptyString(this.applicationId)){
                     application = m_model.findApplication(this.applicationId);
                 }
                 return application;
-            }
+            }*/
             
 
-            this.processId; //references the process Id selected in the available Processes dropdown
+            //this.processId; //references the process Id selected in the available Processes dropdown
             /**
             * Invoked when change event occurs in availaleProcessesSelect
             */
-            TemplateApplicationView.prototype.processIdChanged = function () {
+         /*   TemplateApplicationView.prototype.processIdChanged = function () {
                 if(!this.validate())
                     return;
                 m_utils.debug("===> Process ID change" + this.processId);
                 this.submit();
-            }
+            }*/
 
             /**
              *Returns a list of processes having Formal Parameters
              */
-            TemplateApplicationView.prototype.getProcessesHavingFormalParameters = function () {
+           /* TemplateApplicationView.prototype.getProcessesHavingFormalParameters = function () {
                 var models = m_model.getModels();
                 var processes = [];
                 for (var i in models) {
@@ -276,7 +335,7 @@ define(
                     }
                 }
                 return processes;
-            };
+            };*/
 
             /**
              *Returns a list of available structured types in all Models
@@ -294,12 +353,25 @@ define(
                 return typeDeclarations;
             };
             
+            /**
+            *
+            */
             
+            TemplateApplicationView.prototype.findSelectedApplicationById = function (applicationId) {
+                var application;
+                if(!m_utils.isEmptyString(applicationId)){
+                    application = m_model.findApplication(applicationId);
+                }
+                return application;
+            }
+            TemplateApplicationView.prototype.getSelectedApplication = function () {
+                return this.findSelectedApplicationById(this.eltId);
+            }
             
             /**
             * Returns true is the Process definition has process interfaces
             */
-            TemplateApplicationView.prototype.hasProcessInterface = function (process) {
+           TemplateApplicationView.prototype.hasProcessInterface = function (process) {
                 var hasProcessInterface = false;
                 if (process.processInterfaceType != "noInterface") {
                     hasProcessInterface = true;
@@ -341,19 +413,19 @@ define(
             TemplateApplicationView.prototype.toString = function () {
                 return "Lightdust.TemplateApplicationView";
             };
-               /**
-                * Returns the Extended attribute value
-                */
-               TemplateApplicationView.prototype.getExtendedAttributeValue = function(key)
-               {
-                  return this.getApplication().attributes[key];
-               };
+           /**
+            * Returns the Extended attribute value
+            */
+           TemplateApplicationView.prototype.getExtendedAttributeValue = function(key)
+           {
+              return this.getApplication().attributes[key];
+           };
             /*
              *
              */
             TemplateApplicationView.prototype.validate = function () {
                 this.clearErrorMessages();
-                this.availableApplicationsInput.removeClass("error");
+                /*this.availableApplicationsInput.removeClass("error");
                 this.processInterfacesInput.removeClass("error");
 
                 if(!m_utils.isEmptyString(this.applicationId) && !m_utils.isEmptyString(this.processId)){
@@ -361,7 +433,7 @@ define(
                     this.availableApplicationsInput.addClass("error");
                     this.processInterfacesInput.addClass("error");
                 }
-                
+                */
                 if (this.errorMessages.length > 0) {
                     this.showErrorMessages();
 
@@ -370,13 +442,28 @@ define(
 
                 return true;
             };
+            TemplateApplicationView.prototype.getElementType= function (elementId) {
+                if(elementId){
+                    var app=this.findSelectedApplicationById(elementId);
+                    if(app!=null && app.type=="application")
+                        return "application";
+                    if(!app){
+                        var process=m_model.findProcess(elementId);
+                        if(process!=null && process.type=="processDefinition")
+                           return "process";
+                    }
+                }
+                return ;
+            }
             /**
              *
              */
             TemplateApplicationView.prototype.submit= function () {
+            
                 var attributes=this.getApplication().attributes;
-                attributes["stardust:application::template::applicationId"]=this.applicationId;
-                attributes["stardust:application::template::processId"]=this.processId;
+                attributes["stardust:application::template::modelId"]=this.modelId;
+                attributes["stardust:application::template::elementId"]=this.eltId;
+                attributes["stardust:application::template::elementType"]=this.getElementType(this.eltId);
                 this
                   .submitChanges(
                            {

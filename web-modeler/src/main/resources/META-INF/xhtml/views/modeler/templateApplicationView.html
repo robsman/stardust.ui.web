@@ -107,31 +107,38 @@
 							</li>
 						</ul>
 						<div id="configurationTab">
-                            <table>
+                             <table>
                                 <tr>
-                                <td><label for="availableApplicationsInput" >Application</label></td>
-                                <td><select id="availableApplicationsInput" ng-model="overlayPanel.applicationId" 
-                                            ng-change="overlayPanel.applicationIdChanged()"
-                                            ng-options="app.getFullId() as app.name group by app.model.name for app in overlayPanel.getAvailableApplications()"
+                                <td><label for="availableModelsInput" >Model</label></td>
+                                <td><select id="availableModelsInput" ng-model="overlayPanel.modelId" 
+                                            ng-change="overlayPanel.modelIdChanged()"
+                                            ng-options="model.id as model.name for model in overlayPanel.getAvailableModels()"
                                             >
                                         <option value="">{{overlayPanel.i18nLabels('none.title')}}</option>
                                     </select>
                                 </td>
                                 </tr>
-                                <tr>
-                                <td><label for="processInterfacesInput" >Processes</label></td>
-                                <td><select id="processInterfacesInput" ng-model="overlayPanel.processId"
-                                              ng-change="overlayPanel.processIdChanged()"
-                                              ng-options="pd.getFullId() as pd.name group by pd.name for pd in overlayPanel.getProcessesHavingFormalParameters()"
-                                              >
+                                <tr ng-show="overlayPanel.modelId != null ? true : false">
+                                <td><label for="availableElements" >Applications / Process Interface</label></td>
+                                <td><select id="availableElements" ng-model="overlayPanel.eltId"
+                                            ng-change="overlayPanel.elementChanged()"
+                                            
+                                          >
                                         <option value="">{{overlayPanel.i18nLabels('none.title')}}</option>
+                                        <optgroup label="Applications" ng-show="overlayPanel.getAvailableElements().applications.length > 0?true:false">
+                                            <option ng-selected="overlayPanel.eltId == app.getFullId()" ng-repeat="app in overlayPanel.getAvailableElements().applications" value="{{app.getFullId()}}">{{app.name}}</option>
+                                        </optgroup>
+                                        <optgroup label="Process Definitions" ng-show="overlayPanel.getAvailableElements().processes.length > 0?true:false">
+                                            <option  ng-selected="overlayPanel.eltId == pd.getFullId()" ng-repeat="pd in overlayPanel.getAvailableElements().processes" value="{{pd.getFullId()}}">{{pd.name}}
+                                            </option>
+                                        </optgroup>
                                     </select>
-                                    </td>
+                                </td>
                                 </tr>
                             </table>
 						</div>
                         <div id="mappingTab">
-                            <div id="applicationView" ng-show="overlayPanel.applicationId != null ? true : false">
+                            <div id="applicationView" ng-show="(overlayPanel.elementType != null && overlayPanel.elementType=='application')? true : false">
                                 <table cellpadding="0" cellspacing="0" class="fieldSetTable" style="width: 100%;">
                                      <tr>
                                         <td><label id="selectedApplicationName" >{{overlayPanel.i18nLabels('model.name.title')}}</label></td>
@@ -149,6 +156,7 @@
                                         <th>{{overlayPanel.i18nLabels('header.direction.title')}}</th>
                                         <th>{{overlayPanel.i18nLabels('header.dataType.title')}}</th>
                                         <th>{{overlayPanel.i18nLabels('header.type.title')}}</th>
+                                         <th>Predefined Values</th>
                                      </tr>
                                      <tr ng-repeat="ap in overlayPanel.getSelectedApplication().contexts.application.accessPoints | filter : {direction:'IN'}">
                                         <td>{{ ap.name }}</td>
@@ -183,6 +191,15 @@
                                                   >
                                              </select>
                                          </td>
+                                         
+                                         
+                                         <td ng-show="ap.dataType == 'primitive'? true : false">
+                                            <div ng-show="ap.primitiveDataType =='boolean'? true : false">boolean</div>
+                                            <div ng-show="ap.primitiveDataType =='Calendar'? true : false">Calendar</div>
+                                             <div ng-show="ap.primitiveDataType !='Calendar' && ap.primitiveDataType !='boolean'? true : false">other</div>
+                                         </td>
+                                         <td ng-show="ap.dataType =='dmsDocument'? true : false"></td>
+                                         <td ng-show="ap.dataType =='struct'? true : false"></td>
                                       </tr>
                                 </table>
                                 <div class="heading" style="margin-top: 10px;">
@@ -231,8 +248,8 @@
                                       </tr>
                                 </table>
                             </div>
-                            <div id="processView" ng-show="overlayPanel.processId != null ? true : false">process</div>
-                            <div id="errorView" ng-show="(overlayPanel.processId == null && overlayPanel.applicationId==null) ? true : false">
+                            <div id="processView" ng-show="(overlayPanel.elementType != null && overlayPanel.elementType=='process')">process</div>
+                            <div id="errorView" ng-show="overlayPanel.elementType == null ? true : false">
                                 <label id="noSelectionErrorMessage" ></label>
                             </div>
 						</div>
