@@ -29,21 +29,30 @@ define(
 				"rules-manager/js/m_i18nMapper",
 				"rules-manager/js/m_ruleSetCommandDispatcher",
 				"rules-manager/js/m_ruleSetCommand",
-				"rules-manager/js/hotDecisionTable/m_utilities"],
+				"rules-manager/js/hotDecisionTable/m_utilities",
+				"rules-manager/js/m_rulesManagerService",],
 		function(m_utils, m_urlUtils, m_constants, m_extensionManager,
 				m_session, m_user, m_model, m_process, m_application,
 				m_participant, m_typeDeclaration, m_data, m_elementConfiguration, m_jsfViewManager,
 				m_messageDisplay, m_i18nUtils, m_communicationController, m_jsfViewManagerHelper,
 				m_outlineToolbarController, CommandsDispatcher, RuleSet,
 				m_i18nMapper,m_ruleSetCommandDispatcher,m_ruleSetCommand,
-				m_utilities) {
+				m_utilities,m_rulesManagerService) {
 			
+			//Retireve artifact types
+			m_rulesManagerService.getSupportedArtifactTypes()
+			.done(function(data){
+				//TODO: data.some(v=>v.name==='drools-ruleset')
+				//TODO: set UI elements on as neccessary (select->modes,contextMenu->pub)
+			})
+			.fail(function(){
+				//fail
+			});
 			
 			var isElementCreatedViaOutline = false;
 			var hasUnsavedModifications = false;
 			var displayScope = "";
 			var viewManager;
-			
 			
 			
 			var readAllRuleSets = function(force,mode) {
@@ -52,7 +61,7 @@ define(
 				mode = (mode === "DESIGN" || mode ==="PUBLISHED")?mode:"DESIGN";
 				// Needed for types
 				m_model.loadModels(false);
-
+				
 				jQuery("#lastsave").text(m_i18nUtils
 										.getProperty("rules.outline.labels.lastSave"));
 	
@@ -138,18 +147,20 @@ define(
 			/*Publishes a design-time rule set*/
 			var publishRuleSet = function(uuid){
 				//Find our ruleSet as we will need the id from it for our url.
-				var ruleSet = RuleSet.findRuleSetByUuid(uuid);
+				var ruleSet = RuleSet.findRuleSetByUuid(uuid,"DESIGN");
 				RuleSet.publishRuleSet(ruleSet.id);
 			};
 			
 			var exportRuleSet = function(uuid,mode) {
 				
-				var ruleSet = RuleSet.findRuleSetByUuid(uuid),
+				var ruleSet,
 					terminalPoint,
 					url;
 				
 				//guard mode value to ensure it is valid
-				mode = (mode != "DESIGN" || mode != "PUBLISHED")?"DESIGN": mode;
+				mode = (mode === "DESIGN" || mode ==="PUBLISHED")?mode:"DESIGN";
+				ruleSet = RuleSet.findRuleSetByUuid(uuid,mode);
+				
 				terminalPoint = (mode==="DESIGN")?"design-time":"run-time";
 				
 				if (!areRuleSetsSaved()) {
@@ -258,7 +269,7 @@ define(
 				var nodeType=data.rslt.obj.attr('rel');
 				var newID;
 				if (nodeType == 'ruleSet') {
-					var ruleSet = RuleSet.findRuleSetByUuid(data.rslt.obj.attr("id"));
+					var ruleSet = RuleSet.findRuleSetByUuid(data.rslt.obj.attr("id"),"DESIGN");
 					var oldName = ruleSet.name;
 					var newName = data.rslt.name;
 					ruleSet.name = newName;
@@ -270,7 +281,7 @@ define(
 					m_ruleSetCommandDispatcher.trigger(cmd);
 				} 
 				else if(nodeType=="DecisionTable"){
-					var ruleSet = RuleSet.findRuleSetByUuid(data.rslt.obj.attr("ruleSetUuid"));
+					var ruleSet = RuleSet.findRuleSetByUuid(data.rslt.obj.attr("ruleSetUuid"),"DESIGN");
 					var decTable = ruleSet.findDecisionTableByUuid(data.rslt.obj.attr("id"));
 					var oldName=decTable.name;
 					var newName=data.rslt.name;
@@ -283,7 +294,7 @@ define(
 					m_ruleSetCommandDispatcher.trigger(cmd);
 				}
 				else if(nodeType=="TechnicalRule"){
-					var ruleSet = RuleSet.findRuleSetByUuid(data.rslt.obj.attr("ruleSetUuid"));
+					var ruleSet = RuleSet.findRuleSetByUuid(data.rslt.obj.attr("ruleSetUuid"),"DESIGN");
 					var techRule = ruleSet.findTechnicalRuleByUuid(data.rslt.obj.attr("id"));
 					var oldName=techRule.name;
 					var newName=data.rslt.name;
@@ -368,7 +379,12 @@ define(
 					mode;
 				
 				selectRuleMode = document.getElementById('selectRuleMode');
-				mode = selectRuleMode.options[selectRuleMode.selectedIndex].value;
+				if(selectRuleMode && selectRuleMode.options  && selectRuleMode.options.length > 0){
+					mode = selectRuleMode.options[selectRuleMode.selectedIndex].value;
+				}
+				else{
+					mode="DESIGN";
+				}
 				
 				return mode;
 				
@@ -684,7 +700,7 @@ define(
 				
 				jsOutlineTree.on(cnstCmd.ruleDeleteCmd,function(event,data){
 					var elementUUID=data.elementID;
-					var ruleSet = RuleSet.findRuleSetByUuid(data.ruleSetUUID);
+					var ruleSet = RuleSet.findRuleSetByUuid(data.ruleSetUUID,"DESIGN");
 					viewManager.closeViewsForElement(data.elementID);
 					if(ruleSet.technicalRules.hasOwnProperty(data.elementID)){
 						ruleSet.deleteTechnicalRule(data.elementID);
@@ -695,7 +711,7 @@ define(
 				jsOutlineTree.on(cnstCmd.ruleCreateCmd,function(event,data){
 					var elementUUID=data.elementID;
 					var techRule=data.changes[0].value.after;
-					var ruleSet = RuleSet.findRuleSetByUuid(data.ruleSetUUID);
+					var ruleSet = RuleSet.findRuleSetByUuid(data.ruleSetUUID,"DESIGN");
 					
 					/*filter duplicates, guranteed to occur as we receive the echo of
 					 *our own techrule create events.*/
@@ -707,7 +723,7 @@ define(
 				
 				jsOutlineTree.on(cnstCmd.decTableDeleteCmd,function(event,data){
 					var elementUUID=data.elementID;
-					var ruleSet = RuleSet.findRuleSetByUuid(data.ruleSetUUID);
+					var ruleSet = RuleSet.findRuleSetByUuid(data.ruleSetUUID,"DESIGN");
 					/*Only delete if we actually have something to delete*/
 					if(ruleSet.decisionTables.hasOwnProperty(data.elementID)===true){						
 						viewManager.closeViewsForElement(data.elementID);
@@ -719,7 +735,7 @@ define(
 				jsOutlineTree.on(cnstCmd.decTableCreateCmd,function(event,data){
 					var elementUUID=data.elementID;
 					var decTable=data.changes[0].value.after;
-					var ruleSet = RuleSet.findRuleSetByUuid(data.ruleSetUUID);
+					var ruleSet = RuleSet.findRuleSetByUuid(data.ruleSetUUID,"DESIGN");
 					
 					/*If the decision table is already present (which it will be in cases
 					 * where we subscribe to our own create events, then ignore.)*/
@@ -741,29 +757,34 @@ define(
 					.bind(
 							"select_node.jstree",
 							function(event, data) {
+								
+								var mode = getCurrentMode();
+								
 								if (data.rslt.obj.attr('rel') == 'ruleSet') {
-									var ruleSet = RuleSet.findRuleSetByUuid(data.rslt.obj.attr("id"));
+									var ruleSet = RuleSet.findRuleSetByUuid(data.rslt.obj.attr("id"),mode);
 									viewManager.openView("ruleSetView",
-											"id=" + ruleSet.id + "&name="
-													+ ruleSet.name
-													+ "&uuid="
-													+ ruleSet.uuid,
+											"id=" + ruleSet.id + 
+											"&name=" + ruleSet.name +
+											"&uuid=" + ruleSet.uuid +
+											"&mode=" + mode,
 											ruleSet.uuid);
 								}
 								else if (data.rslt.obj.attr('rel') == "TechnicalRule") {
 									var ruleSet = RuleSet
-											.findRuleSetByUuid(data.rslt.obj
-													.attr("ruleSetUuid"));
+											.findRuleSetByUuid(data.rslt.obj.attr("ruleSetUuid"),mode);
 
 									var techRule = ruleSet
 											.findTechnicalRuleByUuid(data.rslt.obj.attr("id"));
 
-									viewManager.openView("technicalRuleView", "id="
-											+ techRule.id + "&ruleSetId="
-											+ ruleSet.id + "&name="
-											+ techRule.name + "&uuid="
-											+ techRule.uuid + "&ruleSetUuid="
-											+ ruleSet.uuid + "&parentUUID=" + ruleSet.uuid, techRule.uuid);
+									viewManager.openView("technicalRuleView", 
+											"id=" + techRule.id + 
+											"&ruleSetId=" + ruleSet.id + 
+											"&name=" + techRule.name + 
+											"&uuid=" + techRule.uuid + 
+											"&ruleSetUuid=" + ruleSet.uuid + 
+											"&parentUUID=" + ruleSet.uuid + 
+											"&mode=" + mode,
+											techRule.uuid);
 								} 
 								else if (data.rslt.obj.attr('rel') == "DecisionTable") {
 									var ruleSet = RuleSet
@@ -773,12 +794,15 @@ define(
 									var decTable = ruleSet
 											.findDecisionTableByUuid(data.rslt.obj.attr("id"));
 
-									viewManager.openView("decisionTableView", "id="
-											+ decTable.id + "&ruleSetId="
-											+ ruleSet.id + "&name="
-											+ decTable.name + "&uuid="
-											+ decTable.uuid + "&ruleSetUuid="
-											+ ruleSet.uuid + "&parentUUID=" + ruleSet.uuid, decTable.uuid);
+									viewManager.openView("decisionTableView", 
+											"id=" + decTable.id + 
+											"&ruleSetId=" + ruleSet.id + 
+											"&name=" + decTable.name + 
+											"&uuid=" + decTable.uuid + 
+											"&ruleSetUuid=" + ruleSet.uuid + 
+											"&parentUUID=" + ruleSet.uuid + 
+											"&mode=" + mode,
+											decTable.uuid);
 								} 
 								else {
 									m_utils.debug("No View defined for "
@@ -1107,14 +1131,14 @@ define(
 						}
 					}
 				}
-
+				
 				/* Marks a rulesets state object as isDeleted=true.
 				 * calls saveAllRules with the deleteOnly flag set. THis will cause the method to only
 				 * send ruleSets we have marked for deletion. The hard delete is performed by the 
 				 * success callback intenal to the method.*/
 				function deleteRuleSet(ruleSetUUID) {
 					//DESIGN TIME DELETE ONLY as this is actally a save (don't ask)
-					RuleSet.markRuleSetForDeletion(ruleSetUUID);
+					RuleSet.markRuleSetForDeletion(ruleSetUUID,"DESIGN");
 					jQuery(displayScope + "#outline").jstree("delete_node", "#"+ ruleSetUUID);
 					saveRuleSets(true); /*deleteOnly=true*/
 					window.parent.EventHub.events.publish("CONTEXT_UPDATED");
@@ -1195,12 +1219,15 @@ define(
 					
 					createDecisionTableNode(ruleSet, decTable);
 					
-					viewManager.openView("decisionTableView", "id="
-							+ decTable.id + "&ruleSetId="
-							+ ruleSet.id + "&name="
-							+ decTable.name + "&uuid="
-							+ decTable.uuid + "&ruleSetUuid="
-							+ ruleSet.uuid + "&parentUUID=" + ruleSet.uuid, decTable.uuid);
+					viewManager.openView("decisionTableView", 
+							"id=" + decTable.id + 
+							"&ruleSetId=" + ruleSet.id + 
+							"&name=" + decTable.name + 
+							"&uuid=" + decTable.uuid + 
+							"&ruleSetUuid=" + ruleSet.uuid + 
+							"&parentUUID=" + ruleSet.uuid + 
+							"&mode=DESIGN",
+							decTable.uuid);
 					return decTable;
 				}
 				
@@ -1217,12 +1244,15 @@ define(
 					m_ruleSetCommandDispatcher.trigger(cmd);
 					createTechinicalRuleNode(ruleSet, techRule);
 					console.log("creating technical rule");
-					viewManager.openView("technicalRuleView", "id="
-							+ techRule.id + "&ruleSetId="
-							+ ruleSet.id + "&name="
-							+ techRule.name + "&uuid="
-							+ techRule.uuid + "&ruleSetUuid="
-							+ ruleSet.uuid + "&parentUUID=" + ruleSet.uuid, techRule.uuid);
+					viewManager.openView("technicalRuleView", 
+							"id=" + techRule.id + 
+							"&ruleSetId=" + ruleSet.id + 
+							"&name=" + techRule.name + 
+							"&uuid=" + techRule.uuid + 
+							"&ruleSetUuid=" + ruleSet.uuid + 
+							"&parentUUID=" + ruleSet.uuid,
+							"&mode=DESIGN",
+							techRule.uuid);
 					
 					return techRule;
 				}
@@ -1413,6 +1443,8 @@ define(
 					/*Add our change event listener*/
 					selectRuleMode.addEventListener("change",function(e){
 						var selectedOption = this.options[this.selectedIndex];
+						$("#rulesOutlineToolbar").toggle();
+						$("#lastSaveStatusPanel").toggle();
 			            reloadOutlineTree(true,selectedOption.value);
 					});
 					
@@ -1438,15 +1470,19 @@ define(
 				 * 
 				 */
 				Outline.prototype.createRuleSet = function() {
-						var rsName = m_i18nUtils.getProperty("rules.object.ruleset.name","Rule Set");
-						var name = rsName + " " + RuleSet.getNextRuleSetNamePostfix();
+					
+					var rsName = m_i18nUtils.getProperty("rules.object.ruleset.name","Rule Set");
+					var name = rsName + " " + RuleSet.getNextRuleSetNamePostfix("DESIGN");
 					var id = name.replace(/\s/g,"");
 					var ruleSet = RuleSet.create(id, name);
 
 					createRuleSetNode(ruleSet);
 					viewManager.openView("ruleSetView",
-							"id=" + ruleSet.id + "&name=" + ruleSet.name
-									+ "&uuid=" + ruleSet.uuid, ruleSet.uuid);
+							"id=" + ruleSet.id + 
+							"&name=" + ruleSet.name +
+							"&uuid=" + ruleSet.uuid +
+							"&mode=DESIGN",
+							ruleSet.uuid);
 					jQuery(displayScope + "#outline").jstree("rename","#" + ruleSet.uuid);
 					/*save our virgin Rule Set to the server.*/
 					saveRuleSets(false,true);

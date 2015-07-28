@@ -30,15 +30,15 @@ define(
 				m_ruleSetCommandDispatcher,m_ruleSetCommand,
 				m_utilities,m_customCellTypes) {
 			return {
-				initialize : function(ruleSetUuid,decTableUuid,options) {
-					var ruleSet = RuleSet.findRuleSetByUuid(ruleSetUuid);
-					var decTable=ruleSet.findDecisionTableByUuid(decTableUuid);
+				initialize : function(ruleSetUuid,decTableUuid,options,mode) {
+					var ruleSet = RuleSet.findRuleSetByUuid(ruleSetUuid,mode);
+					var decTable=ruleSet.findDecisionTableByUuid(decTableUuid,mode);
 					
 					m_utils.jQuerySelect("#hideGeneralProperties").hide();
 					initViewCollapseClickHandlers();
 					
 					var view = new DecisionTableView();
-					view.initialize(ruleSet,decTable,options);
+					view.initialize(ruleSet,decTable,options,mode);
 				}
 			};
 
@@ -58,7 +58,7 @@ define(
 			
 			function DecisionTableView() {
 				
-				this.initialize = function(ruleSet,decTable,options) {
+				this.initialize = function(ruleSet,decTable,options,mode) {
 					var paramDefCount,    /*Number of Parameter Definitions in our ruleset*/
 						paramDef,         /*instance of a parameter definition*/
 						typeDecl,         /*instance of a typeDeclaration*/
@@ -71,7 +71,6 @@ define(
 						showTooltip,      /*static toggle text for our hide attribute image-btn*/
 						hideTooltip,	  /*static toggle text for our hide attribute image-btn*/
 						decTblInstance;   /*instance of handsontable/dectbl with methods etc..*/
-					
 					
 					var uiElements={
 							mainView: m_utils.jQuerySelect(options.selectors.id),
@@ -143,6 +142,19 @@ define(
 					 * the tableConfig.)
 					 * */
 					var extData=$.extend(decTableData,tableConfig);
+					
+					if(mode==="PUBLISHED"){
+						
+						$("#categoryDropdown").hide();
+						$("#addRow").hide();
+						$("#nameInput").attr("disabled","disabled");
+						$("#descriptionTextarea").attr("disabled","disabled");
+						
+						delete extData.contextMenu; 
+						extData.columns.forEach(function(v){
+							v.readOnly = true;
+						});
+					}
 				    hotDecisionTable.initialize(uiElements.decisionTable,extData);
 				    uiElements.decisionTableInstance= uiElements.decisionTable.handsontable('getInstance');
 
@@ -272,6 +284,7 @@ define(
 				     * operator badges in the column headers of the table (see chMenuFactoryLegacy) */
 				    var myOpenDialogs=[];
 				    uiElements.decisionTableInstance.rootElement.on("operatorMenu_request",function(event){
+				    	if(mode==="PUBLISHED"){return false;}
 				    	var openMenuCount=myOpenDialogs.length;
 				    	while(openMenuCount--){
 				    		myOpenDialogs[openMenuCount].dialog("destroy");
@@ -390,6 +403,7 @@ define(
 				     * values on the order of 10^3 are incremented by 10^2 etc... (with exceptions for single digits)
 				     * */
 				    uiElements.decisionTableInstance.rootElement.bind("DOMMouseScroll onmousewheel mousewheel",function(event){
+				    	if(mode==="PUBLISHED"){return false;}
 				    	var direction=(event.originalEvent.wheelDeltaY > 0)?1:-1;
 				    	var selectedCellRange=uiElements.decisionTableInstance.getSelected(),
 					    	cellStart,

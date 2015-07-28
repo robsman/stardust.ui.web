@@ -131,6 +131,12 @@ require([ "require", "jquery", "jquery-ui", "jquery.download", "jquery.form",
 	};
 	
 	BridgeUtils.getTimeoutService()(function(){
-		ruleSetView.initialize(BridgeUtils.View.getActiveViewParams().param("uuid"),options);
+		var uuid,
+			mode;
+		
+		uuid = BridgeUtils.View.getActiveViewParams().param("uuid");
+		mode = BridgeUtils.View.getActiveViewParams().param("mode");
+		ruleSetView.initialize(uuid,options,mode);
+		
 	});
 });

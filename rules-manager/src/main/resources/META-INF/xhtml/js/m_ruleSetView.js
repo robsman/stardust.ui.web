@@ -38,14 +38,14 @@ define(
 				typeParser,m_i18nMapper,
 				m_ruleSetCommandDispatcher,m_ruleSetCommand,m_utilities) {
 			return {
-				initialize : function(uuid,options) {
-					var ruleSet = RuleSet.findRuleSetByUuid(uuid);
+				initialize : function(uuid,options,mode) {
+					var ruleSet = RuleSet.findRuleSetByUuid(uuid,mode);
 					var view = new RuleSetView();
 					
 					m_utils.jQuerySelect("#hideGeneralProperties").hide();
 					initViewCollapseClickHandlers();
 					
-					view.initialize(ruleSet,options);
+					view.initialize(ruleSet,options,mode);
 				}
 			};
 
@@ -70,7 +70,7 @@ define(
 				/**
 				 * 
 				 */
-				RuleSetView.prototype.initialize = function(ruleSet,options) {
+				RuleSetView.prototype.initialize = function(ruleSet,options,mode) {
 					var paramDefCount,    /*Number of Parameter Definitions in our ruleset*/
 						paramDef,         /*instance of a parameter definition*/
 						typeDecl,         /*instance of a typeDeclaration*/
@@ -82,6 +82,17 @@ define(
 					
 					/*for ref in functions*/
 					that=this;
+					
+					//If mode is published set to read only.
+					if(mode==="PUBLISHED"){
+						//handles everything but the parameter definition +/- buttons (see paramPanel.load)
+						m_utils.jQuerySelect("#parameterDefinitionDirectionSelect").attr("disabled", 'disabled');
+						m_utils.jQuerySelect("#dataTypeSelect").attr("disabled", 'disabled');
+						m_utils.jQuerySelect("#primitiveDataTypeSelect").attr("disabled", 'disabled');
+						m_utils.jQuerySelect("#nameInput").attr("disabled", 'disabled');
+						m_utils.jQuerySelect("#descriptionTextarea").attr("disabled", 'disabled');
+						m_utils.jQuerySelect("#maxRulesExecutions").attr("disabled", 'disabled');
+					}
 					
 					var uiElements={
 							uuidLabel: m_utils.jQuerySelect(options.selectors.uuidLabel),
@@ -225,6 +236,11 @@ define(
 											// only panel initialized
 											// asynchronously
 											view.activate(ruleSet, true);
+											//Do this here as now the buttons actually exist.
+											if(mode==="PUBLISHED"){
+												m_utils.jQuerySelect("#deleteParameterDefinitionButton").remove();
+												m_utils.jQuerySelect("#addParameterDefinitionButton").remove();
+											}
 										}
 									});
 
