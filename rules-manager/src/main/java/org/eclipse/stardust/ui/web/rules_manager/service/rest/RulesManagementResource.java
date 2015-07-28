@@ -30,6 +30,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.rules_manager.common.LanguageUtil;
 import org.eclipse.stardust.ui.web.rules_manager.service.RulesManagementService;
@@ -41,6 +43,9 @@ import com.google.gson.JsonObject;
 @Path("/rules/{randomPostFix}")
 public class RulesManagementResource
 {
+   private static final Logger trace = LogManager.getLogger(RulesManagementResource.class);
+   private static final String UTF_ENCODING = "utf-8";
+   
    @Context
    private ServletContext servletContext;
    
@@ -117,6 +122,7 @@ public class RulesManagementResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("rule-sets/run-time")
    public Response getAllRunTimeRuleSets()
+   
    {
       try
       {
@@ -126,7 +132,9 @@ public class RulesManagementResource
       }
       catch (Exception e)
       {
-         throw new RuntimeException(e);
+         trace.error("Exception while fetching all rule sets", e);
+
+         return Response.serverError().build();
       }
    }
    
@@ -146,7 +154,9 @@ public class RulesManagementResource
       }
       catch (Exception e)
       {
-         throw new RuntimeException(e);
+         trace.error("Exception while publishing rule set", e);
+
+         return Response.serverError().build();
       }
    }
    
@@ -159,7 +169,8 @@ public class RulesManagementResource
    @Path("rule-sets/run-time/{ruleSetId}/download")
    public Response downloadRuntimeRuleSet(@PathParam("ruleSetId") String ruleSetId)
    {
-	  // TODO: @Sidharth
+      try
+      {
       JsonObject ruleSetNameAndContent = getRulesManagementService().getRuntimeRuleSet(ruleSetId);
 
       String fileName = ruleSetId;
@@ -168,10 +179,21 @@ public class RulesManagementResource
          fileName = fileName + ".json";
       }
       
-      return Response.ok(ruleSetNameAndContent, MediaType.APPLICATION_OCTET_STREAM)
+      
+         byte[] contents = ruleSetNameAndContent.toString().getBytes(UTF_ENCODING);
+      
+      
+      return Response.ok(contents, MediaType.APPLICATION_OCTET_STREAM)
             .header("content-disposition",
                   "attachment; filename = \"" + fileName  + "\"")
             .build();
+      }
+      catch (Exception e)
+      {
+            trace.error("Exception while downloading rule set", e);
+
+            return Response.serverError().build();
+      }
    }
    
    /**
@@ -190,7 +212,9 @@ public class RulesManagementResource
       }
       catch (Exception e)
       {
-         throw new RuntimeException(e);
+         trace.error("Exception while deleting rule set", e);
+
+         return Response.serverError().build();
       }
    }   
 

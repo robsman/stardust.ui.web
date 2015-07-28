@@ -213,10 +213,9 @@ public class RulesManagementService
     */
    private JsonObject createRuleSetJson(DeployedRuntimeArtifact artifact)
    {
-      // TODO - use RuntimeArtifactory to fetch the contents, temporary fix only
-      Document document = getRulesManagementStrategy().getRuleSetByName(artifact.getArtifactName());
-      byte[] contents = getDocumentManagementService().retrieveDocumentContent(document.getId());
-      JsonObject ruleSet = new JsonParser().parse(new String(contents)).getAsJsonObject();
+      RuntimeArtifact runtimeArtifact = getRulesManagementStrategy().getRuntimeArtifact(artifact.getOid());
+      String contents = new String(runtimeArtifact.getContent());
+      JsonObject ruleSet = new JsonParser().parse(contents).getAsJsonObject();
       ruleSet.addProperty("oid", artifact.getOid());
       ruleSet.addProperty("validFrom", artifact.getValidFrom().getTime());
       ruleSet.addProperty("artifactTypeId", artifact.getArtifactTypeId());
@@ -264,8 +263,8 @@ public class RulesManagementService
       }
       else
       {
-         artifact = new RuntimeArtifact(RULESARTIFACT_TYPE_ID, ruleSetId, document.getName(), contents,
-               new java.util.Date());   
+         artifact = new RuntimeArtifact(RULESARTIFACT_TYPE_ID, ruleSetId + ".json", document.getName(), contents,
+               new Date());   
          deployedRuntimeArtifact = getRulesManagementStrategy().publishRuleSet(0, artifact);
       }
       
