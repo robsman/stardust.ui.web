@@ -9,6 +9,7 @@ import static org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil.getBoole
 import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findData;
 import static org.eclipse.stardust.ui.web.modeler.xpdl.edit.batch.SignalEventSnippets.createInDataMapping;
 import static org.eclipse.stardust.ui.web.modeler.xpdl.edit.batch.SignalEventSnippets.createOutDataMapping;
+import static org.eclipse.stardust.ui.web.modeler.xpdl.edit.batch.SignalEventSnippets.deleteDataMapping;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -187,8 +188,12 @@ public class TestSignalEventEditing
                   "getTime().getTime()", "signalProperty1")
             + "," //
             + createOutDataMapping("${signalEvent.uuid}", "signalProperty2",
-                  "${model.id}:CURRENT_DATE") //
-            + "  " //
+                  "${model.id}:CURRENT_DATE", false) //
+            + "," //
+            + createOutDataMapping("${signalEvent.uuid}", "signalProperty3",
+                  "${model.id}:CURRENT_DATE", true) //                  
+            + "," //
+            + deleteDataMapping("${dataFlow.uuid}")
             + "  " //
             + "  " //
             + "  " //
