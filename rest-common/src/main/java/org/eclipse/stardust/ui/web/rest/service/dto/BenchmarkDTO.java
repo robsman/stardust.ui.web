@@ -20,5 +20,7 @@ public class BenchmarkDTO extends AbstractDTO
    public String color;
 
    public String label;
+   
+   public long oid;
 
 }

@@ -1798,6 +1798,7 @@ public class ProcessInstanceUtils
          dto.label = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils
                .getBenchmarkLabel(processInstance);
          dto.value = processInstance.getBenchmarkResult().getCategory();
+         dto.oid =  processInstance.getBenchmark();
       }
       return dto;
    }
