@@ -1018,7 +1018,7 @@ define(
                      }else{
                         if(hName){
                            route += "<setHeader headerName='" + hName + "'>";
-                           route += "<simple>$simple{header."+hName+"}</simple>";
+                           route += "<simple>$simple{header."+hValue+"}</simple>";
                            route += "</setHeader>";
                         }
                      }
