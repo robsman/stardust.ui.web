@@ -1,0 +1,170 @@
+/*
+Wrapper CSS class to provide implementations of our font based portal icons.
+As we utilize three separate font libraries in our icon set this wrapper abstracts
+this complexity away from the developer and provides one common base class to 
+reference for all our icons.
+*/
+
+/*
+Supported fonts we wrap for our portal icon (pi-) classes
+-------------------------------------------------------------
+*/
+@font-face{
+	font-family: starclipse;
+	src: url(./starclipse/fonts/starclipse.woff)  format('woff');
+}
+
+@font-face{
+	font-family: 'Glyphicons Halflings';
+	src: url(./3rd-party/glyphicons/3.3.2/fonts/glyphicons-halflings-regular.woff')  format('woff');
+}
+
+@font-face{
+	font-family: FontAwesome;
+	src: url(./3rd-party/font-awesome/4.2.0/fonts/fontawesome-webfont.woff')  format('woff');
+}
+
+
+/*base class for all portal icons*/
+.pi{
+	display: inline-block;
+	font-style: normal;
+	font-weight: normal;
+	line-height: 1;
+	color: #A69A88;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale; 
+}
+
+/*
+Utility classes for portal icons
+-----------------------------------------------------------
+*/
+
+/*fixed-width*/
+.pi-fw:before{
+    width:1.3em;
+    text-align:center;
+    display:inline-block;
+}
+
+/*Standardized font size classes*/
+.pi-1x{
+    font-size:16px;
+}
+.pi-1-5x{
+    font-size:24px;
+}
+.pi-2x{
+    font-size:32px;
+}
+.pi-2-5x{
+    font-size:40px;
+}
+.pi-3x{
+    font-size:48px;
+}
+.pi-3-5x{
+    font-size:56px;
+}
+.pi-4x{
+    font-size:64px;
+}
+.pi-4-5x{
+    font-size:72px;
+}
+.pi-5x{
+    font-size:80px;
+}
+
+
+/*
+ primary meta colors (should probably be moved out of pi to a more ubiquitous selector)
+-----------------------------------------------------------
+*/
+
+.pi.pi-success:before{
+	color:green;
+}
+
+.pi.pi-warning:before{
+	color:orange;
+}
+
+.pi.pi-danger:before{
+	color:red;
+}
+
+/*
+Icon implementations
+-----------------------------------------------------------
+*/
+.pi-arrow-d:before{
+	font-family: starclipse;
+    content:'\F004';
+}
+
+.pi-arrow-r:before{
+	font-family: starclipse;
+    content:'\F006';
+}
+
+.pi-flag:before{
+	font-family: starclipse;
+    content:'\F060';
+}
+
+.pi-exclamation-triangle:before{
+	font-family: starclipse;
+    content:'\F029';
+}
+
+.pi-download{
+	font-family: 'Glyphicons Halflings';
+	content: "\e026";
+}
+
+.pi-plus-sign:before {
+	font-family: 'Glyphicons Halflings';
+  	content: "\e081";
+}
+
+.pi-minus-sign:before {
+	font-family: 'Glyphicons Halflings';
+  	content: "\e082";
+}
+
+.pi-download:before {
+	font-family: 'Glyphicons Halflings';
+	content: "\e026";
+}
+
+.pi-copy:before {
+	font-family: 'Glyphicons Halflings';
+  	content: "\e205";
+}
+
+.pi-cloud-upload:before {
+	font-family: 'Glyphicons Halflings';
+  	content: "\e198";
+}
+
+.pi-floppy-disk:before {
+	font-family: 'Glyphicons Halflings';
+  	content: "\e172";
+}
+
+.pi-globe:before {
+	font-family: 'Glyphicons Halflings';
+  	content: "\e135";
+}
+
+.pi-eye-open:before {
+	font-family: 'Glyphicons Halflings';
+  	content: "\e105";
+}
+
+.pi-eye-close:before {
+	font-family: 'Glyphicons Halflings';
+	content: "\e106";
+}

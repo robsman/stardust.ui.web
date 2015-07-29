@@ -50,10 +50,11 @@
 	</div>
 	
 	<!-- sdDialog Directives End -->
+	
 	<i style="position:absolute;font-size:1.5em;cursor:pointer;" 
 	   ng-click="ctrl.showBenchmarks = !ctrl.showBenchmarks" 
-	   ng-class="{'sc-arrow-d': ctrl.showBenchmarks,'sc-arrow-r': !ctrl.showBenchmarks}"
-	   class="sc sc-fw sc-arrow-d">
+	   ng-class="{'pi-arrow-d': ctrl.showBenchmarks,'pi-arrow-r': !ctrl.showBenchmarks}"
+	   class="pi pi-fw pi-arrow-d">
 	</i>
 	
 	<span style="margin:2em;" class="header">
@@ -83,14 +84,14 @@
 		       ng-click="ctrl.downloadBenchmarkAsFile(ctrl.selectedBenchmark,ctrl.benchmarkFilter)" 
 		       title="{{ctrl.textMap.downloadBenchmark}}" 
 		       class="tbl-toolbar-item tbl-tool-link">
-		       <i class="glyphicon glyphicon-download"></i>
+		       <i class="pi pi-download"></i>
 		    </a>
 		    
 		    <a href="" 
 		       ng-click="ctrl.deleteBenchmark(ctrl.selectedBenchmark.id)" 
 		       title="{{ctrl.textMap.deleteBenchmark}}" 
 		       class="tbl-toolbar-item tbl-tool-link">
-		       <i class="glyphicon glyphicon-minus-sign"></i>
+		       <i class="pi pi-minus-sign"></i>
 		    </a>	
 		    
 		</div>
@@ -103,14 +104,14 @@
 			       ng-click="ctrl.createBenchmark()" 
 			       title="{{ctrl.textMap.addBenchmark}}" 
 			       class="tbl-toolbar-item tbl-tool-link">
-			       <i class="glyphicon glyphicon-plus-sign"></i>
+			       <i class="pi pi-plus-sign"></i>
 			    </a>
 
 			    <a href="" 
 			       ng-click="ctrl.deleteBenchmark(ctrl.selectedBenchmark.id)" 
 			       title="{{ctrl.textMap.deleteBenchmark}}" 
 			       class="tbl-toolbar-item tbl-tool-link">
-			       <i class="glyphicon glyphicon-minus-sign"></i>
+			       <i class="pi pi-minus-sign"></i>
 			    </a>	
 			    
 			    <span>|</span>
@@ -119,14 +120,14 @@
 			       ng-click="ctrl.downloadBenchmarkAsFile(ctrl.selectedBenchmark,ctrl.benchmarkFilter)" 
 			       title="{{ctrl.textMap.downloadBenchmark}}" 
 			       class="tbl-toolbar-item tbl-tool-link">
-			       <i class="glyphicon glyphicon-download"></i>
+			       <i class="pi pi-download"></i>
 			    </a>
 			    
 			    <a href="" 
 			       ng-click="ctrl.uploadBenchmarkFromFile()" 
 			       title="{{ctrl.textMap.upload}}" 
 			       class="tbl-toolbar-item tbl-tool-link">
-			       <i class="glyphicon glyphicon-cloud-upload"></i>
+			       <i class="pi pi-cloud-upload"></i>
 			    </a>
 
 			    <span>|</span>
@@ -135,14 +136,14 @@
 			       ng-click="ctrl.cloneBenchmark(ctrl.selectedBenchmark.id)" 
 			       title="{{ctrl.textMap.cloneBenchmark}}" 
 			       class="tbl-toolbar-item tbl-tool-link">
-			       <i class="glyphicon glyphicon-copy"></i>
+			       <i class="pi pi-copy"></i>
 			    </a>
 
 			    <a href="" 
 			       ng-click="ctrl.saveBenchmark(ctrl.selectedBenchmark)" 
 			       title="{{ctrl.textMap.saveBenchmark}}" 
 			       class="tbl-toolbar-item tbl-tool-link">
-			       <i class="glyphicon glyphicon-floppy-disk"></i>
+			       <i class="pi pi-floppy-disk"></i>
 			    </a>
 			    
 			    <span>|</span>
@@ -151,7 +152,7 @@
 			       ng-click="ctrl.publishBenchmark(ctrl.selectedBenchmark.id)" 
 			       title="{{ctrl.textMap.publishBenchmark}}" 
 			       class="tbl-toolbar-item tbl-tool-link">
-			       <i class="glyphicon glyphicon-globe"></i>
+			       <i class="pi pi-globe"></i>
 			    </a>	    
 			    
 			    
@@ -263,8 +264,8 @@
 	    		<a ng-click="ctrl.showAllTreeNodes = !ctrl.showAllTreeNodes"
 	    		   ng-attr-title = "{{ctrl.showAllTreeNodes ? ctrl.textMap.filterTreeNodes : ctrl.textMap.showAllTreeNodes}}" 
 	    		   class="tbl-toolbar-item tbl-tool-link">
-	    		   <i class="glyphicon " 
-	    		      ng-class="{'glyphicon-eye-open' : ctrl.showAllTreeNodes,'glyphicon-eye-close' : !ctrl.showAllTreeNodes}"></i>
+	    		   <i class="pi " 
+	    		      ng-class="{'pi-eye-open' : ctrl.showAllTreeNodes,'pi-eye-close' : !ctrl.showAllTreeNodes}"></i>
 	    		</a>
 	    	</div>
 	    	
@@ -332,8 +333,8 @@
 		    				     sda-menu-callback="ctrl.categoryMenuCallback(menuItem,e)"
 		    					 sda-menu-items="ctrl.categoryMenu"
 		    					 style="display:inline-table;">
-		    				     <i class="sc sc-flag"></i>
-		    				     <i class="sc sc-arrow-d"></i>
+		    				     <i class="pi pi-flag"></i>
+		    				     <i class="pi pi-arrow-d"></i>
 		    				</div>
 		    				<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
 		    					   ng-disabled="ctrl.benchmarkFilter==='Published'"
@@ -426,7 +427,7 @@
 				    					
 			  							<i ng-show="ctrl.isDataRefValid(catInst.details.condition.rhs.id)===false"
 			  							   title="{{ctrl.textMap.invalidDataReference.replace('{0}',catInst.details.condition.rhs.id)}}" 
-			  							   class="sc sc-fw sc-1x sc-exclamation-triangle sc-warning">
+			  							   class="pi pi-fw pi-1x pi-exclamation-triangle pi-warning">
 			  							</i>
 				
 			    					</div>
