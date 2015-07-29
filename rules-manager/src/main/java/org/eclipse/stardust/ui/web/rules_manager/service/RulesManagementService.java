@@ -235,12 +235,16 @@ public class RulesManagementService
       RuntimeArtifact artifact = null;
       DeployedRuntimeArtifact deployedRuntimeArtifact = null;
       Document document;
-
+      // ruleSetId is used with .json at RuntimeArtifactory 
+      if (!ruleSetId.endsWith(".json"))
+      {
+         ruleSetId = ruleSetId + ".json";
+      }
       String documentId = ruleSetUUIDVsDocumentIdMap.get(ruleSetId);
+      
       if(StringUtils.isEmpty(documentId))
       {
-         String ruleSetFileName = ruleSetId +  ".json";
-         document = getRulesManagementStrategy().getRuleSetByName(ruleSetFileName);
+         document = getRulesManagementStrategy().getRuleSetByName(ruleSetId);
          if(null == document)
          {
             return null;
@@ -263,8 +267,8 @@ public class RulesManagementService
       }
       else
       {
-         artifact = new RuntimeArtifact(RULESARTIFACT_TYPE_ID, ruleSetId + ".json", document.getName(), contents,
-               new Date());   
+         artifact = new RuntimeArtifact(RULESARTIFACT_TYPE_ID, ruleSetId, document.getName(), contents,
+               new Date(0));   
          deployedRuntimeArtifact = getRulesManagementStrategy().publishRuleSet(0, artifact);
       }
       
@@ -283,7 +287,10 @@ public class RulesManagementService
    public JsonObject getRuntimeRuleSet(String ruleSetId)
    {
       JsonObject ruleSetJson = new JsonObject();
-      
+      if (!ruleSetId.endsWith(".json"))
+      {
+         ruleSetId = ruleSetId + ".json";
+      }
       DeployedRuntimeArtifacts deployedArtifacts = getRulesManagementStrategy().getRuntimeRuleSet(ruleSetId);
       for(DeployedRuntimeArtifact artifact : deployedArtifacts)
       {
@@ -301,7 +308,10 @@ public class RulesManagementService
    public JsonObject deleteRuntimeRuleSet(String ruleSetId)
    {
       JsonObject result = new JsonObject();
-      
+      if (!ruleSetId.endsWith(".json"))
+      {
+         ruleSetId = ruleSetId + ".json";
+      }
       getRulesManagementStrategy().deleteRuntimeRuleSet(ruleSetId);
 
       return result;
