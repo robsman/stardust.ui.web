@@ -39,15 +39,22 @@ define(
 				m_i18nMapper,m_ruleSetCommandDispatcher,m_ruleSetCommand,
 				m_utilities,m_rulesManagerService) {
 			
-			//Retireve artifact types
+			var that = this;
+			var isElementCreatedViaOutline = false;
+			var hasUnsavedModifications = false;
+			var displayScope = "";
+			var viewManager;
+			
+			this.supportsRuleSetPublish = false;
+			//Retrieve artifact types
 			m_rulesManagerService.getSupportedArtifactTypes()
 			.done(function(data){
 				
-				var supportsRuleSetPublish = data.some(function(v){
+				that.supportsRuleSetPublish = data.some(function(v){
 					return v.id ==="drools-ruleset";
 				});
 				
-				if(supportsRuleSetPublish===false){
+				if(that.supportsRuleSetPublish===false){
 					jQuery("#selectRuleMode").hide();
 				}
 			})
@@ -55,12 +62,7 @@ define(
 				//fail
 			});
 			
-			var isElementCreatedViaOutline = false;
-			var hasUnsavedModifications = false;
-			var displayScope = "";
-			var viewManager;
-			
-			
+
 			var readAllRuleSets = function(force,mode) {
 
 				loadCustomTheme();
@@ -1000,12 +1002,19 @@ define(
 															},
 															"_class" : "ipp-text-red"
 														},
-														"publish RuleSet" : {
-															"label": m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.publish","Publish Rule Set"),
-															"action": function(obj){
-																publishRuleSet(obj.attr("id"));
+														"publish RuleSet" :(function(){
+															if(that.supportsRuleSetPublish){
+																return {
+																		"label": m_i18nUtils.getProperty("rules.outline.ruleSet.contextMenu.publish","Publish Rule Set"),
+																		"action": function(obj){
+																			publishRuleSet(obj.attr("id"));
+																	}
+																}
 															}
-														}
+															else{
+																return false;
+															}
+														})()
 													};
 												}
 											}
