@@ -42,11 +42,13 @@
          <bean class="org.eclipse.stardust.ui.web.rest.OverviewResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.NotesResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.BenchmarkDefinitionResource" />
+         <bean class="org.eclipse.stardust.ui.web.rest.ArtifactTypeResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.ModelResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.LoginTimeInfoResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.ResourcePerformanceResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.TrafficLightResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.ParticipantResource" />
+        
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>
             <bean class="org.eclipse.stardust.ui.web.rest.exception.PortalRestExceptionMapper"/>
