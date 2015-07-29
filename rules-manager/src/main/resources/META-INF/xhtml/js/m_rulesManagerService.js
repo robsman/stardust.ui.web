@@ -19,7 +19,7 @@ define(["bpm-modeler/js/m_urlUtils"],function(m_urlUtils){
 		//rest-common.../artifact types URL
 		url = m_urlUtils.getContextName();
 		url += "/services/rest/portal";
-		url += "/rules-manager/rule-sets/artifact-types/run-time";
+		url += "/artifact-types/run-time";
 		
 		jQuery.ajax({
 			url: url,

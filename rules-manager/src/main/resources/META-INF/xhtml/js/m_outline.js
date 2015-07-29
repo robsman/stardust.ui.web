@@ -42,8 +42,14 @@ define(
 			//Retireve artifact types
 			m_rulesManagerService.getSupportedArtifactTypes()
 			.done(function(data){
-				//TODO: data.some(v=>v.name==='drools-ruleset')
-				//TODO: set UI elements on as neccessary (select->modes,contextMenu->pub)
+				
+				var supportsRuleSetPublish = data.some(function(v){
+					return v.id ==="drools-ruleset";
+				});
+				
+				if(supportsRuleSetPublish===false){
+					jQuery("#selectRuleMode").hide();
+				}
 			})
 			.fail(function(){
 				//fail
