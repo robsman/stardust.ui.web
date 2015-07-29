@@ -16,8 +16,8 @@
 	'use strict';
 
 	angular.module('workflow-ui.services').provider('sdProcessInstanceService', function () {
-		this.$get = ['$rootScope', '$resource', '$filter', 'sdUtilService','sdDataTableHelperService', function ($rootScope, $resource, $filter, sdUtilService, sdDataTableHelperService) {
-			var service = new ProcessInstanceService($rootScope, $resource, $filter, sdUtilService, sdDataTableHelperService);
+		this.$get = ['$rootScope', '$resource', '$filter', 'sdUtilService','sdDataTableHelperService','$q', function ($rootScope, $resource, $filter, sdUtilService, sdDataTableHelperService, $q) {
+			var service = new ProcessInstanceService($rootScope, $resource, $filter, sdUtilService, sdDataTableHelperService, $q);
 			return service;
 		}];
 	});
@@ -25,17 +25,34 @@
 	/*
 	 *
 	 */
-	function ProcessInstanceService($rootScope, $resource, $filter, sdUtilService, sdDataTableHelperService) {
+	function ProcessInstanceService($rootScope, $resource, $filter, sdUtilService, sdDataTableHelperService, $q) {
 		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/process-instances/";
 		
 		
 		/**
 		 * 
 		 */
+		ProcessInstanceService.prototype.getBenchmarkCategories = function(bOid) {
+			var deferred = $q.defer();
+			
+			var restUrl = sdUtilService.getBaseUrl() + "services/rest/portal/benchmark-definitions/run-time/"+bOid;
+			
+			$resource(restUrl).get().$promise.then(function(data){ 
+				var result = {
+						name  :  data.content.name,
+						categories : data.content.categories
+				}
+				deferred.resolve(result);
+			});;
+			return deferred.promise;
+		}
+		
+		/**
+		 * 
+		 */
 		ProcessInstanceService.prototype.getProcessByOid = function(oid) {
 			var restUrl = REST_BASE_URL+ oid;
-			var processCounts = $resource(restUrl);
-			return processCounts.get().$promise;
+			return $resource(restUrl).get().$promise;
 		}
 		
 		/*

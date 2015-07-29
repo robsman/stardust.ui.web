@@ -68,57 +68,7 @@
 	
 	<div> 
 	<span>
-<<<<<<< Upstream, based on eclipse/development
-		<select ng-model="ctrl.selected.legend" ng-change="ctrl.onLegendChange();"
-				ng-options="opt.id as opt.label for opt in ctrl.legendCategories">
-		</select>
-	</span>
-	<span ng-repeat=" opt in ctrl.legends" class="grantt-chart-legend-option">
-		<span ng-bind="opt.label"> </span>
-		<i class="sc sc-square icon-lg grantt-chart-legend-symbol" style="color:{{opt.color}}; background-color :{{opt.color}}"></i>
-	</span>
-	
-	</div>
-	
-		</br>
-
-	<div id="granttChart">
-		<table class="table-bordered">
-			<tr>
-				<td class="headcol"><select ng-model="ctrl.selected.timeFrame"
-					ng-change="ctrl.onTimeFrameChange();"
-					ng-options="opt.id as opt.label for opt in ctrl.timeFrames">
-				</select></td>
-				<td style="white-space:nowrap;">
-					<div style="clear:both;"> 
-							<span ng-repeat = "major in ctrl.majorTimeFrames" class="majorTimeLine" style="width :{{major.width}}px;" ng-mouseenter="major.toolTip = true;ctrl.mouseEnter($event, 75)" ng-mouseleave="major.toolTip = false" >
-									<span ng-if="ctrl.selected.timeFrame == 'days'"> {{major.value |  date:'MMMM yyyy'}} </span>
-									<span ng-if="ctrl.selected.timeFrame != 'days'"> {{major.value |  date:'dd MMMM'}} </span>
-										<div class="popup-dlg worklist-tooltip" ng-show="major.toolTip" style="color: black;margin-left:{{ctrl.position}}px;" >
-								  			<span ng-if="ctrl.selected.timeFrame == 'days'"> {{major.value |  date:'MMMM yyyy'}} </span>
-											<span ng-if="ctrl.selected.timeFrame != 'days'"> {{major.value |  date:'dd MMMM'}} </span>
-										 </div>
-							</span>
-							 
-					</div>
-					<div style="clear:both;">
-							<span ng-repeat = "minor in ctrl.minorTimeFrames" class="minorTimeLine" style="width : {{ctrl.minorTimeFrameWidth}}px;">
-										<span ng-if="ctrl.selected.timeFrame == 'days'"> {{minor.value |  date:'dd'}} </span>
-										<span ng-if="ctrl.selected.timeFrame == 'hours'"> {{minor.value}}</span>
-										<span ng-if="ctrl.selected.timeFrame == 'minutes'"> {{minor.value}}</span>
-							</span>
-					</div> 
-				</td>
-			</tr>
-
-			<tr ng-repeat="col in ctrl.columnData">
-				<td  class="headcol"> <span ng-bind="col.name" class="spacing-right"> </span> <span ng-show="col.activatable"><button ng-click="ctrl.activate(col);" class="button-link tbl-tool-link "> <span class="sc icon-lg sc-cog"></span></button></span> </td>
-				<td>
-					<span  ng-mouseleave="col.toolTip = false" >	
-						<span ng-mouseenter="col.toolTip = true;ctrl.mouseEnter($event)" class="timeLineCompleted img-rounded" 
-						      style="width :{{col.completed}}px ; margin-left :{{col.delay}}px ; background-color: {{col.color}};color:{{col.color}}">.
-						</span> 
-=======
+				</span> 
 		<select ng-model="ctrl.selected.legend" ng-change="ctrl.onLegendChange();" ng-disabled="ctrl.legendCategories.length < 2"
 				ng-options="opt.id as opt.label for opt in ctrl.legendCategories">
 		</select>
@@ -167,8 +117,7 @@
 					<span  ng-mouseleave="col.toolTip = false" >	
 						<span ng-mouseenter="col.toolTip = true;ctrl.mouseEnter($event)" class="timeLineCompleted img-rounded" 
 						      style="width :{{col.completed}}px ; margin-left :{{col.delay}}px ; background-color: {{col.color}};color:{{col.color}}">.
-						</span>
->>>>>>> 4bf8884 [CRNT-37046] : Added benchmark categories to the gantt charts. Bug :CRNT-37046
+						</span> 
 						<span ng-mouseenter="col.toolTip = true;ctrl.mouseEnter($event,col.completed)" ng-if="col.inflight > 0" class="timeLineCompleted timeLineInflight img-rounded" 
 						      style="width :{{col.inflight}}px ; background-color: {{col.color}};color:{{col.color}}">.
 						 </span>
