@@ -210,7 +210,7 @@
 				var deferred = $q.defer();
 				
 				var abortData = {
-					linkComment : self.linkComment
+					linkComment : self.joinProcess.linkComment
 				};
 				
 				if (self.processInstanceOIDs.length > 0) {
