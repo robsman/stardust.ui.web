@@ -26,6 +26,8 @@
 						aid="ADM-CriticalityConfig-CategoriesTableToolbar-Export">
 				   <i class="sc sc-archive-down icon-lg" ></i>
 				</button>
+			</div>
+			<div class="tbl-toolbar-section">
 				<!-- Add -->
 				<button ng-click="ctrl.addRow()" title="{{i18n('admin-portal-messages.views-criticalityConf-criticality-categories-toolbar-add')}}" 
 						class="button-link tbl-toolbar-item tbl-tool-link" 
@@ -40,7 +42,7 @@
 				   <i class="sc  sc-minus icon-lg" ></i>
 				</button>
 				<!-- Edit -->
-				<button ng-disabled="ctrl.dataTable.getSelection() < 1" ng-click="ctrl.editRows()" 
+				<button ng-disabled="!ctrl.isEditable()" ng-click="ctrl.editRows()" 
 					title="{{i18n('admin-portal-messages.views-criticalityConf-criticality-categories-toolbar-edit')}}" 
 					class="button-link tbl-toolbar-item tbl-tool-link" 
 					aid="ADM-CriticalityConfig-CategoriesTableToolbar-Edit">
@@ -48,7 +50,6 @@
 				</button>
 			</div>
 		</div>
-	
 		<!-- Data table -->
 		<table sd-data-table="ctrl.dataTable" sd-data="ctrl.criticalityConfig.criticalities"
 			sda-mode="local" sda-selectable="multiple" sda-selection="ctrl.selection" sda-no-pagination="true"

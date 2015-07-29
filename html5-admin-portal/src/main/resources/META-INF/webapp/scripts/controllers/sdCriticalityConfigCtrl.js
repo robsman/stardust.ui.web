@@ -341,6 +341,26 @@
 		/*
 		 * 
 		 */
+		Controller.prototype.isEditable = function() {
+			var self = this;
+			var eidtable = false;
+			
+			if(self.dataTable.getSelection() < 1) {
+				eidtable =  false;
+			}else{
+				angular.forEach(self.dataTable.getSelection() ,function(selected){
+					
+					if(!eidtable && !selected.editMode){
+						eidtable =  true;
+					}
+				});
+			}
+			return eidtable;
+		};
+		
+		/*
+		 * 
+		 */
 		Controller.prototype.addRow = function() {
 			var existingList = this.dataTable.getData();
 			if (angular.isDefined(existingList)) {
