@@ -33,4 +33,8 @@ public class ProcessingTimeDTO extends AbstractDTO
       this.state = state;
    }
 
+public ProcessingTimeDTO() {
+	// TODO Auto-generated constructor stub
+}
+
 }
