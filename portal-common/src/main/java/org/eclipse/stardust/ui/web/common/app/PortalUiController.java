@@ -303,7 +303,7 @@ public class PortalUiController
 
       Map<String, PerspectiveExtension> extensions = appContext.getBeansOfType(PerspectiveExtension.class);
 
-      for (IPerspectiveDefinition perspective : allPerspectives)
+      for (IPerspectiveDefinition perspective : perspectives.values())
       {
          if (null == currentPerspective && perspective.isDefaultPerspective())
          {

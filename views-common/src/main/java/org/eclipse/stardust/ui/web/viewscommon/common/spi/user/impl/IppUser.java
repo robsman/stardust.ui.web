@@ -96,7 +96,7 @@ public class IppUser implements User
          if (PredefinedConstants.ADMINISTRATOR_ROLE.equals(role))
          {
             return ippUser.isAdministrator();
-         }
+         } 
          else
          {
             QName qname = QName.valueOf(role);
@@ -105,7 +105,11 @@ public class IppUser implements User
             for (Iterator< ? > grantIter = ippUser.getAllGrants().iterator(); grantIter.hasNext();)
             {
                Grant grant = (Grant) grantIter.next();
-               if ((namespace == null || CompareHelper.areEqual(namespace, grant.getNamespace()))
+               if (UiPermissionUtils.AUDITOR.equals(role) && UiPermissionUtils.AUDITOR.equals(grant.getId()))
+               {
+                  return true;
+               }
+               else if ((namespace == null || CompareHelper.areEqual(namespace, grant.getNamespace()))
                      && CompareHelper.areEqual(grant.getId(), role))
                {
                   return true;
