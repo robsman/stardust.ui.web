@@ -118,6 +118,7 @@
       } else if (mode == 'COPY_USER') {
         self.title = 'views-common-messages.views-copyUser-title';
         self.titleParams = self.rowSelectionForAllUsersTable[0].displayName;
+        self.user.oid = oid;
       } else if (mode == 'MODIFY_USER') {
         self.title = 'views-common-messages.views-modifyUser-title';
         self.titleParams = '';
