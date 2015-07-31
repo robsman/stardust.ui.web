@@ -12,12 +12,22 @@
 			ng-model="ctrl.selectedRole" ng-change="ctrl.roleChanged()"
 			ng-options="opt.value as opt.label for opt in ctrl.roles"></select>
 	</div>
-	<div class="view-panel-content">
+	<div sda-toolbar>
+		<div class="tbl-toolbar-section">
+			<button
+				ng-click="bpmCommon.stopEvent($event); ctrl.openAddCustomColumnDlg();"
+				title="{{i18n('business-control-center-messages.views-toolbar-addColumn')}}"
+				class="button-link tbl-toolbar-item tbl-tool-link">
+				<i class="sc sc-fw sc-1x sc-plus-circle"></i>
+			</button>
+		</div>
+	</div>
+	<div class="view-panel-content" ng-if="ctrl.ready">
 		<table sd-data-table="ctrl.dataTable"
 			sd-data="ctrl.getResourcePerformanceData(params)"
-			sda-ready="ctrl.ready"
 			sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
 			sda-sortable="true"
+			sda-ready="ctrl.ready"
 			sda-sort-by="{name : 'processDefinitionId', dir : 'desc'}"
 			sda-mode="remote" sda-sortable="false" sda-exports="true"
 			sda-exports-file-name="{{ctrl.exportFileName}}"
@@ -70,5 +80,13 @@
 				</tr>
 			</tbody>
 		</table>
+	</div>
+	<div sd-dialog="ctrl.addCustomColumnDlg" sda-modal="true"
+		sda-show="ctrl.showOpenAddCustomColumnDlg" sda-type="confirm"
+		sda-title="{{i18n('business-control-center-messages.views-toolbar-addColumn')}}"
+		sda-scope="this"
+		sda-template="plugins/html5-business-control-center/partials/views/addCustomColumnDlg.html"
+		sda-on-confirm="ctrl.onConfirmFromAddColumn(res)"
+		sda-width="450px">
 	</div>
 </div>

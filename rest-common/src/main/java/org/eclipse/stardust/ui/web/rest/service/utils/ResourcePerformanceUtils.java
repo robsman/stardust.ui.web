@@ -13,6 +13,7 @@
  */
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -20,9 +21,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Resource;
+
 import org.eclipse.stardust.engine.api.model.ModelParticipant;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.runtime.AdministrationService;
+import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
+import org.eclipse.stardust.engine.core.preferences.Preferences;
 import org.eclipse.stardust.engine.core.query.statistics.api.CriticalProcessingTimePolicy;
 import org.eclipse.stardust.engine.core.query.statistics.api.DateRange;
 import org.eclipse.stardust.engine.core.query.statistics.api.StatisticsDateRangePolicy;
@@ -36,7 +42,6 @@ import org.eclipse.stardust.ui.web.bcc.jsf.BusinessControlCenterConstants;
 import org.eclipse.stardust.ui.web.bcc.jsf.ProcessingTimePerProcess;
 import org.eclipse.stardust.ui.web.bcc.views.CustomColumnUtils;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
-import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
@@ -48,11 +53,15 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 @Component
 public class ResourcePerformanceUtils
 {
+   @Resource
+   private ServiceFactoryUtils serviceFactoryUtils;
 
    public GenericQueryResultDTO createUserStatistics(String roleId)
    {
@@ -76,7 +85,7 @@ public class ResourcePerformanceUtils
       while (pIter.hasNext())
       {
          ProcessDefinition pd = pIter.next();
-         // Filter the PDs based on ROLE, Case Process wil be always visible
+         // Filter the PDs based on ROLE, Case Process will be always visible
          if (ProcessDefinitionUtils.hasProcessPerformingActivity(pd, participants)
                || (pd.getQualifiedId().equals(caseProcess.getQualifiedId())))
          {
@@ -126,15 +135,15 @@ public class ResourcePerformanceUtils
 
          for (String colKey : colsSet)
          {
-            
-            double dTimeValue = (Double) customColumns.get(colKey+ CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX);          
+
+            double dTimeValue = (Double) customColumns.get(colKey + CustomColumnUtils.CUSTOM_COL_TIME_SUFFIX);
 
             String timeValue = DateUtils.formatDurationInHumanReadableFormat((long) dTimeValue);
-            
-            double dWaitTime = (Double) customColumns.get(colKey+ CustomColumnUtils.CUSTOM_COL_WAIT_TIME_SUFFIX);  
-            
+
+            double dWaitTime = (Double) customColumns.get(colKey + CustomColumnUtils.CUSTOM_COL_WAIT_TIME_SUFFIX);
+
             String waitTime = DateUtils.formatDurationInHumanReadableFormat((long) dWaitTime);
-           
+
             int thresholdValue = (Integer) customColumns.get(colKey + CustomColumnUtils.CUSTOM_COL_STATUS_SUFFIX);
 
             statisticsByColumns.put(columnDefMap.get(colKey).toString(), new ProcessingTimeDTO(timeValue, waitTime,
@@ -150,6 +159,30 @@ public class ResourcePerformanceUtils
       columnDefMap.put("Today", "Today");
       columnDefMap.put("Week", "Last Week");
       columnDefMap.put("Month", "Last Month");
+
+      if (CollectionUtils.isEmpty(userStatistics))
+      {
+
+         Map<String, ProcessingTimeDTO> statisticsByColumns = CollectionUtils.newHashMap();
+         /*
+          * statisticsByColumns.put("Today", new ProcessingTimeDTO());
+          * 
+          * statisticsByColumns.put( "Last Week", new ProcessingTimeDTO());
+          * 
+          * statisticsByColumns.put( "Last Month", new ProcessingTimeDTO());
+          */
+         Set<String> colsSet = columnDefMap.keySet();
+
+         for (String colKey : colsSet)
+         {
+            statisticsByColumns.put(columnDefMap.get(colKey).toString(), new ProcessingTimeDTO());
+         }
+
+         ResourcePerformanceStatisticsDTO resourcePerformanceStatisticsDTO = new ResourcePerformanceStatisticsDTO(
+               I18nUtils.getProcessName(null), statisticsByColumns);
+         userStatistics.add(resourcePerformanceStatisticsDTO);
+
+      }
 
       GenericQueryResultDTO queryResult = new GenericQueryResultDTO();
       queryResult.columns = columnDefMap.keySet();
@@ -202,23 +235,44 @@ public class ResourcePerformanceUtils
    private void addCustomColsFromPreference(PreferenceScope prefScope, Map<String, DateRange> customColumnDateRange,
          Map<String, Object> columnDefMap)
    {
-      UserPreferencesHelper prefHelper = UserPreferencesHelper.getInstance(UserPreferencesEntries.M_BCC, prefScope);
-      List<String> allCols = getCustomColumnsPreference(prefHelper);
 
-      if (!CollectionUtils.isEmpty(allCols))
+      AdministrationService adminService = serviceFactoryUtils.getAdministrationService();
+      Preferences preferences = adminService.getPreferences(prefScope, "ipp-business-control-center", "preference");
+      Serializable obj = preferences.getPreferences().get("ipp-business-control-center.ResourcePerformance.allColumns");
+      JsonParser jsonParser = new JsonParser();
+      try
       {
-         for (String col : allCols)
+         JsonArray jsonArray = (JsonArray) jsonParser.parse(obj.toString());
+         for (int i = 0; i < jsonArray.size(); i++)
          {
-            if (col.contains("#{"))
+            JsonObject columnDefinition = jsonArray.get(i).getAsJsonObject();
+            updateColDefAndcustomColumnDateRange(columnDefinition, customColumnDateRange, columnDefMap);
+         }
+      }
+      catch (Exception e)
+      {
+         org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope prefScopeForCustColumn = org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope.PARTITION;
+         if (prefScope.equals(PreferenceScope.USER))
+         {
+            prefScopeForCustColumn = org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope.USER;
+         }
+         UserPreferencesHelper prefHelper = UserPreferencesHelper.getInstance(UserPreferencesEntries.M_BCC,
+               prefScopeForCustColumn);
+         List<String> allCols = getCustomColumnsPreference(prefHelper);
+         if (!CollectionUtils.isEmpty(allCols))
+         {
+            for (String col : allCols)
             {
-               String[] columnDef = col.split("#");
-               JsonObject columnDefinition = GsonUtils.readJsonObject(columnDef[1]);
-               updateColDefAndcustomColumnDateRange(columnDefinition, customColumnDateRange, columnDefMap);
+               if (col.contains("#{"))
+               {
+                  String[] columnDef = col.split("#");
+                  JsonObject columnDefinition = GsonUtils.readJsonObject(columnDef[1]);
+                  updateColDefAndcustomColumnDateRange(columnDefinition, customColumnDateRange, columnDefMap);
 
+               }
             }
          }
       }
-
    }
 
    private void updateColDefAndcustomColumnDateRange(JsonObject columnDefinition,
@@ -229,5 +283,4 @@ public class ResourcePerformanceUtils
       columnDefMap.put(columnId, columnTitle);
       CustomColumnUtils.updateCustomColumnDateRange(columnDefinition, customColumnDateRange);
    }
-
 }
