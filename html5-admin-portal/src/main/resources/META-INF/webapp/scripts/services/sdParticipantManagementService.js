@@ -181,7 +181,7 @@
     // get Models which also contains top level Organizations and top level
     // Roles
     ParticipantManagementService.prototype.getModels = function() {
-      var restUrl = sdUtilService.getBaseUrl() + "services/rest/portal/models?includePredefinedModel=true";
+      var restUrl = sdUtilService.getBaseUrl() + "services/rest/portal/models?includePredefinedModel=true&allActive=true";
       var modelsResource = $resource(restUrl);
 
       return modelsResource.query().$promise;
