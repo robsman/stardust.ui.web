@@ -44,8 +44,7 @@
 		this.showCreateUserGroup = false;
 		this.showModifyUserGroup = false;
 		this.columnSelector = sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
-
-		this.ready = false;
+		this.isReady = true;
 
 		this.query = {
 			options : {}
@@ -93,7 +92,7 @@
 	 */
 	controller.prototype.invalidateUserGroup = function() {
 		var self = this;
-		if (self.selectionExpr.validTo == null) {
+		if (self.selectionExpr.validTo == null || self.selectionExpr.validTo >= new Date()) {
 			_sdUserGroupService.invalidateUserGroup(self.selectionExpr.id).then(
 					function(data) {
 						self.showNotificationUserGroup = true;
@@ -159,6 +158,7 @@
 			this.title = 'admin-portal-messages.views-userGroupMgmt-modifyUserGroup-title';
 			this.showCreateModifyUserGroup = true;
 		}
+		this.loadUserGroupProfileDialog = true;
 	};
 	
 	/*

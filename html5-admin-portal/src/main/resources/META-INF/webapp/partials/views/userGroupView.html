@@ -51,24 +51,22 @@
 				</button>
 			</div>
 		</div>
-
 		<table sd-data-table="ctrl.userGroupDataTable"
 			sd-data="ctrl.fetchUserGroups(params)" sda-mode="remote"
+			sda-ready="{{ctrl.isReady}}"
 			sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
 			sda-selectable="row" sda-selection="ctrl.selectionExpr"
 			sda-preference-module="ipp-administration-perspective" sda-preference-id="preference"
 			sda-preference-name="ipp-administration-perspective.userGroupMgmt.selectedColumns"
 			sda-exports="true" sda-exports-file-name="userGroupList">
-			<thead sda-i18n-scope="admin-portal-messages.views">
+			<thead sda-i18n-scope="admin-portal-messages.views-common">
 				<tr>
-					<th sda-name="name" sda-sortable="true"
-						sda-label-key="common-name-label"></th>
+					<th sda-name="name" sda-sortable="true" sda-label-key="name-label"></th> 
 					<th sda-name="oid" sda-sortable="true"
-						sda-label-key="participantMgmt-column-oid" sda-visible="false"></th>
-					<th sda-name="id" sda-sortable="true"
-						sda-label-key="common-id-label"></th>
-					<th sda-name="validFrom" sda-label-key="common-validFrom-label"></th>
-					<th sda-name="validTo" sda-label-key="common-validTo-label"></th>
+						sda-label="{{i18n('admin-portal-messages.views-participantMgmt-column-oid')}}"></th>
+					<th sda-name="id" sda-sortable="true" sda-label-key="id-label"></th>
+					<th sda-name="validFrom" sda-fixed="true" sda-label-key="validFrom-label"></th>
+					<th sda-name="validTo" sda-fixed="true" sda-label-key="validTo-label"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -93,13 +91,15 @@
 			sda-cancel-action-label="{{i18n('views-common-messages.common-close')}}"
 			sda-on-close="ctrl.onCloseNotificationUserGroup(res)"
 			sda-aid-prefix="ADM-UserGrpMgmt-UserGrpNotification"></div>
-		<div sd-dialog sd-show-overlay="true"
-			sda-show="ctrl.showCreateModifyUserGroup" sda-type="confirm"
-			sda-title="{{sdI18n(ctrl.title)}}" sda-scope="this"
-			sda-template="plugins/html5-admin-portal/partials/views/createModifyUserGroup.html"
-			sda-confirm-action-label="{{i18n('views-common-messages.common-apply')}}"
-			sda-on-confirm="ctrl.onConfirmCreateModifyUser(res)"
-			sda-on-close="ctrl.onCancelCreateModifyUser(res)"
-			sda-aid-prefix="ADM-UserGrpMgmt-CreateModifyUserGroup"></div>
+		<div ng-if="ctrl.loadUserGroupProfileDialog">
+			<div sd-dialog sd-show-overlay="true"
+				sda-show="ctrl.showCreateModifyUserGroup" sda-type="confirm"
+				sda-title="{{sdI18n(ctrl.title)}}" sda-scope="this"
+				sda-template="plugins/html5-admin-portal/partials/views/createModifyUserGroup.html"
+				sda-confirm-action-label="{{i18n('views-common-messages.common-apply')}}"
+				sda-on-confirm="ctrl.onConfirmCreateModifyUser(res)"
+				sda-on-close="ctrl.onCancelCreateModifyUser(res)"
+				sda-aid-prefix="ADM-UserGrpMgmt-CreateModifyUserGroup"></div>
+		</div>
 	</div>
 </div>
