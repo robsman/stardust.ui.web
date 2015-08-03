@@ -99,6 +99,8 @@ define(
 							self.loadOrCreateReportDefinition(name, path))
 							.done(
 									function() {
+										// For ReportViewer always retrieve all records
+										self.renderingController.previewRetrieveAll = true;
 										// fetch and render report-data
 										self.renderingController.refreshPreview(self, self.report, self.parameters).done(function(){
 											self.updateView();

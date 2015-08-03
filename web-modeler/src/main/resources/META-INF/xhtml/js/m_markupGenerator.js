@@ -275,7 +275,7 @@ define(
 				/**
 				 * 
 				 */
-				MarkupGenerator.prototype.generateCode = function(parameterDefinitions) {
+				MarkupGenerator.prototype.generateJsonDefinitions = function(parameterDefinitions) {
 					var parameters = {};
 					for ( var n = 0; n < parameterDefinitions.length; ++n) {
 						var def = parameterDefinitions[n];
@@ -317,6 +317,15 @@ define(
 					}
 					console.log("UI Mashup Json Tree ->");
 					console.log(jsonDMs);
+
+					return jsonDMs;
+				}
+
+				/**
+				 * 
+				 */
+				MarkupGenerator.prototype.generateCode = function(parameterDefinitions) {
+					jsonDMs = this.generateJsonDefinitions(parameterDefinitions);
 					
 					var prefs = {
 						layoutColumns: this.options.numberOfPrimitivesPerColumns,
