@@ -55,7 +55,6 @@ import org.springframework.beans.factory.InitializingBean;
 
 import com.icesoft.faces.component.paneltabset.TabChangeEvent;
 import com.icesoft.faces.component.paneltabset.TabChangeListener;
-import com.icesoft.faces.context.effects.JavascriptContext;
 import com.icesoft.faces.webapp.http.servlet.ServletExternalContext;
 
 
@@ -146,6 +145,20 @@ public class PortalApplication
    public static PortalApplication getInstance()
    {
       return (PortalApplication) FacesUtils.getBeanFromContext("ippPortalApp");
+   }
+
+   /**
+    * @param portalApp
+    * @param viewId
+    */
+   public static boolean isViewAvailable(PortalApplication portalApp, String viewId)
+   {
+      if (null != portalApp)
+      {
+         return portalApp.isViewAvailable(viewId);
+      }
+      
+      return false;
    }
 
    /**
@@ -542,6 +555,15 @@ public class PortalApplication
    }
 
    /**
+    * @param viewId
+    * @return
+    */
+   public boolean isViewAvailable(String viewId)
+   {
+      return getPortalUiController().isViewAvailable(viewId);
+   }
+
+   /**
     *
     */
    public void selectView()
@@ -794,6 +816,15 @@ public class PortalApplication
    }
 
    /**
+    * 
+    */
+   public void cleanAllViews()
+   {
+      closeAllViews();
+      portalApplicationEventScript.clearState();
+   }
+
+   /**
     *
     */
    public void closeAllViews()
@@ -909,6 +940,15 @@ public class PortalApplication
       addEventScript(script);
    }
    
+   /**
+    * 
+    */
+   public void renderLaunchPanels()
+   {
+      String script = "parent.BridgeUtils.View.syncLaunchPanels();";
+      addEventScript(script);
+   }
+
    /**
     * If UI is already Pinned, Restore Pin View and Focus View too
     * And then Pin UI again on Focus View with new mode

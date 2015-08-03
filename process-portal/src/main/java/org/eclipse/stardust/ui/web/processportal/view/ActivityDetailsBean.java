@@ -3235,7 +3235,8 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       if (!isJSFActivity() && thisView.getViewState() != ViewState.CLOSED)
       {
-         PortalApplication.getInstance().renderPortalSession();
+         PortalApplication.getInstance().renderActiveView();
+         PortalApplication.getInstance().renderLaunchPanels();
       }
    }
 

@@ -99,6 +99,7 @@ public class CategoryTree extends UIViewComponentBean
          canUploadReport = Parameters.instance().getBoolean(
                IPreferenceStorageManager.PRP_USE_DOCUMENT_REPOSITORY, false);
 
+         PortalApplication portalApp = PortalApplication.getInstance();
          MessagesBCCBean messageBean = MessagesBCCBean.getInstance();
 
          tree = new GenericCategoryTree("categoriesRoot", "", this);
@@ -107,58 +108,102 @@ public class CategoryTree extends UIViewComponentBean
          GenericCategory processNode = tree.getRootCategory().addSubCategory("processes",
                messageBean.getString(PRE_NODE + "processes"), "portalConfig");
 
-         processNode.addItem("processOverviewView",
-               messageBean.getString("views." + "processOverviewView" + POST_LEAF),
-               getItem("processOverviewView", null), getIconPath("processOverviewView"));
-         processNode.addItem("processSearchView", messageBean.getString(PRE_LEAF + "processSearchView" + POST_LEAF),
-               getItem("processSearchView", null), getIconPath("processSearchView"));
-         processNode.addItem("trafficLightView", messageBean.getString(PRE_LEAF + "trafficLightView" + POST_LEAF),
-               getItem("trafficLightView", null), getIconPath("trafficLightView"));
+         if (portalApp.isViewAvailable("processOverviewView"))
+         {
+            processNode.addItem("processOverviewView",
+                  messageBean.getString("views." + "processOverviewView" + POST_LEAF),
+                  getItem("processOverviewView", null), getIconPath("processOverviewView"));
+         }
+         if (portalApp.isViewAvailable("processSearchView"))
+         {
+            processNode.addItem("processSearchView", messageBean.getString(PRE_LEAF + "processSearchView" + POST_LEAF),
+                  getItem("processSearchView", null), getIconPath("processSearchView"));
+         }
+         if (portalApp.isViewAvailable("trafficLightView"))
+         {
+            processNode.addItem("trafficLightView", messageBean.getString(PRE_LEAF + "trafficLightView" + POST_LEAF),
+                  getItem("trafficLightView", null), getIconPath("trafficLightView"));
+         }
          processNode.setExpanded(true);
 
          // ***** Activities Node *****
          GenericCategory activitiesNode = tree.getRootCategory().addSubCategory("activities",
                messageBean.getString(PRE_NODE + "activities"), "portalConfig");
 
-         activitiesNode.addItem("activityCriticalityManagerView",
-               messageBean.getString(PRE_LEAF + "activityCriticalityManagerView" + POST_LEAF),
-               getItem("activityCriticalityManagerView", null), getIconPath("activityCriticalityManagerView"));
-         activitiesNode.addItem("pendingActivities", messageBean.getString(PRE_LEAF + "pendingActivities" + POST_LEAF),
-               getItem("pendingActivities", null), getIconPath("pendingActivities"));
-         activitiesNode.addItem("completedActivities", messageBean.getString(PRE_LEAF + "completedActivities"
-               + POST_LEAF), getItem("completedActivities", null), getIconPath("completedActivities"));
-         activitiesNode.addItem("postponedActivities", messageBean.getString(PRE_LEAF + "postponedActivities"
-               + POST_LEAF), getItem("postponedActivities", null), getIconPath("postponedActivities"));
-         activitiesNode.addItem(ResourcePaths.V_strandedActivitiesView, messageBean.getString(PRE_LEAF
-               + ResourcePaths.V_strandedActivitiesView + POST_LEAF), getItem(ResourcePaths.V_strandedActivitiesView,
-               null), getIconPath(ResourcePaths.V_strandedActivitiesView));
+         if (portalApp.isViewAvailable("activityCriticalityManagerView"))
+         {
+            activitiesNode.addItem("activityCriticalityManagerView",
+                  messageBean.getString(PRE_LEAF + "activityCriticalityManagerView" + POST_LEAF),
+                  getItem("activityCriticalityManagerView", null), getIconPath("activityCriticalityManagerView"));
+         }
+         if (portalApp.isViewAvailable("pendingActivities"))
+         {
+            activitiesNode.addItem("pendingActivities", messageBean.getString(PRE_LEAF + "pendingActivities" + POST_LEAF),
+                  getItem("pendingActivities", null), getIconPath("pendingActivities"));
+         }
+         if (portalApp.isViewAvailable("completedActivities"))
+         {
+            activitiesNode.addItem("completedActivities", messageBean.getString(PRE_LEAF + "completedActivities"
+                  + POST_LEAF), getItem("completedActivities", null), getIconPath("completedActivities"));
+         }
+         if (portalApp.isViewAvailable("postponedActivities"))
+         {
+            activitiesNode.addItem("postponedActivities", messageBean.getString(PRE_LEAF + "postponedActivities"
+                  + POST_LEAF), getItem("postponedActivities", null), getIconPath("postponedActivities"));
+         }
+         if (portalApp.isViewAvailable(ResourcePaths.V_strandedActivitiesView))
+         {
+            activitiesNode.addItem(ResourcePaths.V_strandedActivitiesView, messageBean.getString(PRE_LEAF
+                  + ResourcePaths.V_strandedActivitiesView + POST_LEAF), getItem(ResourcePaths.V_strandedActivitiesView,
+                  null), getIconPath(ResourcePaths.V_strandedActivitiesView));
+         }
          activitiesNode.setExpanded(true);
 
          // ***** Resources Node *****
          GenericCategory resourcesNode = tree.getRootCategory().addSubCategory("resources",
                messageBean.getString(PRE_NODE + "resources"), "portalConfig");
 
-         resourcesNode.addItem("resourceAvailabilityView", messageBean.getString(PRE_LEAF + "resourceAvailabilityView"
-               + POST_LEAF), getItem("resourceAvailabilityView", null), getIconPath("resourceAvailabilityView"));
-         resourcesNode.addItem("roleAssignmentView",
-               messageBean.getString(PRE_LEAF + "roleAssignmentView" + POST_LEAF), getItem("roleAssignmentView", null),
-               getIconPath("roleAssignmentView"));
-         resourcesNode.addItem("deputyTeamMemberView", messageBean.getString(PRE_LEAF + "deputyTeamMemberView" + POST_LEAF),
-               getItem("deputyTeamMemberView", null), getIconPath("deputyTeamMemberView"));
-         resourcesNode.addItem("resourceLoginView", messageBean.getString(PRE_LEAF + "resourceLoginView" + POST_LEAF),
-               getItem("resourceLoginView", null), getIconPath("resourceLoginView"));
-         resourcesNode.addItem("resourcePerformance", messageBean.getString(PRE_LEAF + "resourcePerformance"
-               + POST_LEAF), getItem("resourcePerformance", null), getIconPath("resourcePerformance"));
-         resourcesNode.addItem("performanceTeamleader", messageBean.getString(PRE_LEAF + "performanceTeamleader"
-               + POST_LEAF), getItem("performanceTeamleader", null), getIconPath("performanceTeamleader"));
+         if (portalApp.isViewAvailable("resourceAvailabilityView"))
+         {
+            resourcesNode.addItem("resourceAvailabilityView", messageBean.getString(PRE_LEAF + "resourceAvailabilityView"
+                  + POST_LEAF), getItem("resourceAvailabilityView", null), getIconPath("resourceAvailabilityView"));
+         }
+         if (portalApp.isViewAvailable("roleAssignmentView"))
+         {
+            resourcesNode.addItem("roleAssignmentView",
+                  messageBean.getString(PRE_LEAF + "roleAssignmentView" + POST_LEAF), getItem("roleAssignmentView", null),
+                  getIconPath("roleAssignmentView"));
+         }
+         if (portalApp.isViewAvailable("deputyTeamMemberView"))
+         {
+            resourcesNode.addItem("deputyTeamMemberView", messageBean.getString(PRE_LEAF + "deputyTeamMemberView" + POST_LEAF),
+                  getItem("deputyTeamMemberView", null), getIconPath("deputyTeamMemberView"));
+         }
+         if (portalApp.isViewAvailable("resourceLoginView"))
+         {
+            resourcesNode.addItem("resourceLoginView", messageBean.getString(PRE_LEAF + "resourceLoginView" + POST_LEAF),
+                  getItem("resourceLoginView", null), getIconPath("resourceLoginView"));
+         }
+         if (portalApp.isViewAvailable("resourcePerformance"))
+         {
+            resourcesNode.addItem("resourcePerformance", messageBean.getString(PRE_LEAF + "resourcePerformance"
+                  + POST_LEAF), getItem("resourcePerformance", null), getIconPath("resourcePerformance"));
+         }
+         if (portalApp.isViewAvailable("performanceTeamleader"))
+         {
+            resourcesNode.addItem("performanceTeamleader", messageBean.getString(PRE_LEAF + "performanceTeamleader"
+                  + POST_LEAF), getItem("performanceTeamleader", null), getIconPath("performanceTeamleader"));
+         }
          resourcesNode.setExpanded(true);
 
          // ***** Costs Node *****
          GenericCategory costNode = tree.getRootCategory().addSubCategory("costsAndControlling",
                messageBean.getString(PRE_NODE + "costsAndControlling"), "portalConfig");
 
-         costNode.addItem("costs", messageBean.getString(PRE_LEAF + "costs" + POST_LEAF), getItem("costs", null), getIconPath("costs"));
-
+         if (portalApp.isViewAvailable("costs"))
+         {
+            costNode.addItem("costs", messageBean.getString(PRE_LEAF + "costs" + POST_LEAF), getItem("costs", null), getIconPath("costs"));
+         }
          costNode.setExpanded(true);
 
          // ***** Reports Node *****
@@ -166,9 +211,12 @@ public class CategoryTree extends UIViewComponentBean
                messageBean.getString(PRE_NODE + "reportDesigns"), "reportDesigns");
          reportsNode.setExpanded(true);
 
-         reportsNode.addItem("myReportsView", messageBean.getString("views.myReportsView.reportManagement"), getItem(
-               "myReportsView", null), getIconPath("myReportsView"));
-         
+         if (portalApp.isViewAvailable("myReportsView"))
+         {
+            reportsNode.addItem("myReportsView", messageBean.getString("views.myReportsView.reportManagement"), getItem(
+                  "myReportsView", null), getIconPath("myReportsView"));
+         }
+
          tree.refreshTreeModel();
 
          initialize();

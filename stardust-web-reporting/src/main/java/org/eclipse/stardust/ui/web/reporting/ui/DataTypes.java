@@ -8,7 +8,7 @@ package org.eclipse.stardust.ui.web.reporting.ui;
  */
 public enum DataTypes {
    STRING("stringType", "String"), INTEGER("integerType", "Integer"), DECIMAL("decimalType", "Decimal"), COUNT("countType", "Count"), TIMESTAMP(
-         "timestampType", "Timestamp"), DURATION("durationType", "Duration"), ENUMERATION("enumerationType",
+         "timestampType", "Timestamp"), DATE("dateWithoutTime", "DateWithoutTime"), DURATION("durationType", "Duration"), ENUMERATION("enumerationType",
          "Enumeration"), BOOLEAN("booleanType", "Boolean");
 
    private String id;

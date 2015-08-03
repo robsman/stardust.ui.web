@@ -189,6 +189,10 @@ define(
 					id : "autocompleteType",
 					name : this.getI18N("reporting.definitionView.metadata.autocompleteType.label")
 				};
+				this.metadata.dateWithoutTime = {
+					id : "dateWithoutTime",
+					name : this.getI18N("reporting.definitionView.metadata.dateWithoutTime.label")
+				};
 				
 				//common or mostly used types - to avoid duplication
 				this.metadata.commonTypes = {};

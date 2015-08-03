@@ -71,8 +71,7 @@ public class SpawnProcessDialogBean extends PopupUIComponentBean implements Conf
       spawnableProcessItems = new ArrayList<SelectItem>();
       selectedProcess.clear();
 
-      ProcessDefinitions pds = ServiceFactoryUtils.getQueryService().getProcessDefinitions(
-            ProcessDefinitionQuery.findStartable(spawnProcessHelper.getRootProcessInstance().getModelOID()));
+      ProcessDefinitions pds = ServiceFactoryUtils.getQueryService().getProcessDefinitions(ProcessDefinitionQuery.findStartable());
       for (ProcessDefinition pd : pds)
       {
          spawnableProcessItems.add(new SelectItem(pd.getQualifiedId(), I18nUtils.getProcessName(pd)));

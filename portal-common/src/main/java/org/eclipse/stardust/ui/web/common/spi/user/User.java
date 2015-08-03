@@ -49,6 +49,14 @@ public interface User extends Serializable
     * Returns true if the user is in the role specified.
     */
    public boolean isInRole(String role);
+   
+   /**
+    *  Returns true if the user belongs to organization, includes hierarchical search
+    *  (It also checks it own grants including Roles)
+    * @param participantQualifiedId
+    * @return
+    */
+   public boolean isInOrganization(String participantQualifiedId);
 
    /**
     * Returns true if the user is an administrator

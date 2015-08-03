@@ -985,6 +985,11 @@ define(
                      route += "</setHeader>";
                      }
                   }
+                  
+                  route += "<setHeader headerName='Content-Type'>";
+                  route += "<simple>" + requestTypeSelect + "</simple>";
+                  route += "</setHeader>";
+                  
                   for (var h = 0; h < httpHeaders.length; h++)
                   {
                      var hName = httpHeaders[h].headerName;
@@ -1056,6 +1061,9 @@ define(
                      route += "&amp;authPassword="+httpBasicAuthPwdInput;
                   }
                   route += "'/>";
+                  route += "<setHeader headerName='Content-Type'>";
+                  route += "<simple>" + responseTypeSelect + "</simple>";
+                  route += "</setHeader>";
                   if (responseTypeSelect === "application/json")
                   {
                      route += "<to uri='bean:bpmTypeConverter?method=fromJSON' />";

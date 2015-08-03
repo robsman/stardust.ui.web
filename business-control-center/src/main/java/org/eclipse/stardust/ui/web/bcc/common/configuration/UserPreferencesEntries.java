@@ -42,4 +42,5 @@ public interface UserPreferencesEntries
    public static final String V_PROCESS_SEARCH = "processSearch";
    public static final String F_PROCESS_SEARCH_PROCESS_TABLE = "processTable";
    public static final String F_PROCESS_SEARCH_ACTIVITY_TABLE = "activityTable";
+   public static final String F_ARCHIVE_AUDIT_TRAIL_URL = "archiveAuditTrailUrl";
 }

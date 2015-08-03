@@ -1313,17 +1313,7 @@ public class ExtractPageDialog extends PopupUIComponentBean implements Confirmat
     */
    private List<ProcessDefinition> getStartableProcess()
    {
-      // if ProcessInstance is available then find model id from instance or load from
-      // all active models
-      if (imageInfo.isProcessAvailable())
-      {
-         return ProcessDefinitionUtils.getStartableProcessSupportAttachment(imageInfo.getProcessInstance()
-               .getModelOID());
-      }
-      else
-      {
-         return ProcessDefinitionUtils.getStartableProcessSupportAttachmentInActiveModels();
-      }
+      return ProcessDefinitionUtils.getStartableProcessSupportAttachmentInActiveModels();
    }
 
    /**

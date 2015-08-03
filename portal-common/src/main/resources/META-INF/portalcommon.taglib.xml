@@ -112,5 +112,5 @@
 		<function-name>getObjectPropertyMapping</function-name>
 		<function-class>org.eclipse.stardust.ui.web.common.util.FacesUtils</function-class>
 		<function-signature>java.util.Map getObjectPropertyMapping(java.lang.Object, java.lang.String)</function-signature>
-	</function>
+	</function>	    <function>        <function-name>isViewAvailable</function-name>        <function-class>org.eclipse.stardust.ui.web.common.app.PortalApplication</function-class>        <function-signature>java.lang.Boolean isViewAvailable(org.eclipse.stardust.ui.web.common.app.PortalApplication, java.lang.String)</function-signature>    </function>	
 </facelet-taglib>
