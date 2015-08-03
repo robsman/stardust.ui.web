@@ -29,6 +29,7 @@ import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
+import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.AttachToCaseDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.CreateCaseDTO;
@@ -309,10 +310,20 @@ public class ProcessInstanceService
     * @return 
     * 
     */
-   public ProcessInstanceDTO getProcessByOid(Long oid,boolean skipDescriptors)
+   public ProcessInstanceDTO getProcessByOid(Long oid, boolean fetchDescriptors)
    {
-      ProcessInstance process =  processInstanceUtilsREST.getProcessInstance(oid);
-      ProcessInstanceDTO dto =  processInstanceUtilsREST.buildProcessInstanceDTO(process, skipDescriptors);
+      ProcessInstance process =  processInstanceUtilsREST.getProcessInstance(oid, fetchDescriptors);
+      ProcessInstanceDTO dto =  processInstanceUtilsREST.buildProcessInstanceDTO(process);
+      return dto;
+   }
+
+   /**
+    * 
+    */
+   public AbstractDTO findByStartingActivityOid(Long aOid)
+   {
+      ProcessInstance process =  processInstanceUtilsREST.findByStartingActivityOid(aOid);
+      ProcessInstanceDTO dto =  processInstanceUtilsREST.buildProcessInstanceDTO(process);
       return dto;
    }
 

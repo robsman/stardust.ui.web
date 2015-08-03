@@ -851,7 +851,11 @@ public class ActivityInstanceUtils
          dto.status.label = ActivityInstanceUtils.getActivityStateLabel(ai);
          dto.benchmark = ActivityTableUtils.getBenchmarkForActivity(ai);
          dto.activatable = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isActivatable(ai);
-         dto.processInstance = null;
+       
+         if(dto.activity.implementationTypeId != "Subprocess"){
+            dto.processInstance = null;
+         }
+         
          dtos.add(dto);
       }
       

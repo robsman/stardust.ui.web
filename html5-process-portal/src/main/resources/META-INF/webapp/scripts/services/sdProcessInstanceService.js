@@ -50,10 +50,23 @@
 		/**
 		 * 
 		 */
-		ProcessInstanceService.prototype.getProcessByOid = function(oid) {
+		ProcessInstanceService.prototype.getProcessByOid = function(oid, fetchDescriptors) {
 			var restUrl = REST_BASE_URL+ oid;
+			if(fetchDescriptors) {
+				restUrl = sdDataTableHelperService.appendQueryParamsToURL("fetchDescriptors="+fetchDescriptors)
+			}
+			
 			return $resource(restUrl).get().$promise;
 		}
+		
+		/**
+		 * 
+		 */
+		ProcessInstanceService.prototype.getProcessByStartingActivityOid = function(aiOid) {
+			var restUrl = REST_BASE_URL+"startingActivityOID/"+ aiOid;
+			return $resource(restUrl).get().$promise;
+		}
+		
 		
 		/*
 		 * 

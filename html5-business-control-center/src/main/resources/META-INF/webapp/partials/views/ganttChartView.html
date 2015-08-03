@@ -1,22 +1,22 @@
 <style>
-#granttChart {
-	width:80%;
+#ganttChart {
+	width: 80%;
 	overflow-x: auto;
 	margin-left: 20%;
 	min-height: 150px;
 }
 
-#granttChart    .headcol {
+#ganttChart    .headcol {
 	position: absolute;
 	width: 20%;
 	left: 0;
 }
 
-.grantt-chart-legend-option {
+.gantt-chart-legend-option {
 	margin-left: 25px;
 }
 
-.grantt-chart-legend-symbol {
+.gantt-chart-legend-symbol {
 	margin-left: 5px;
 }
 
@@ -25,9 +25,9 @@
 	text-align: center;
 	border-right: 1px solid;
 	border-bottom: 2px solid white;
-	color: white; 
+	color: white;
 	display: inline-block;
-	font-weight:bold
+	font-weight: bold
 }
 
 .minorTimeLine {
@@ -45,12 +45,23 @@
 }
 
 .timeLineInflight {
-	opacity : 0.4;
+	opacity: 0.4;
 	margin-left: -10px;
 	padding-right: 10px
 }
 
+.ganttChart-currentTimeLine {
+	border-left: 1px dotted black;
+	position: absolute;
+	z-index: 200
+}
 
+.ganttChart-popup-legend-category {
+	width: 175px;
+	color: white;
+	font-weight: bold;
+	text-align: center;
+}
 </style>
 
 
@@ -62,33 +73,30 @@
 	<input type="text" ng-model="ctrl.selected.process"/> <button ng-click="ctrl.getProcessAndDrawChart()"> Get Process </button>
 	
 	<div > {{ctrl.process.processName}} (#{{ctrl.process.oid}})</div>
-	<div> <span>Start Date</span> <span> {{ctrl.process.startTime | date:'yy/MMM/dd HH:mm'}} </span> </div>
+	<div> <span>{{i18n('business-control-center-messages.views-customColumn-startDate')}}</span> <span> {{ctrl.process.startTime | date:'yy/MMM/dd HH:mm'}} </span> </div>
 	
 	</br>
 	
 	<div> 
-	<span>
-				</span> 
-		<select ng-model="ctrl.selected.legend" ng-change="ctrl.onLegendChange();" ng-disabled="ctrl.legendCategories.length < 2"
+		<select ng-model="ctrl.selected.legend" ng-change="ctrl.onLegendChange();" ng-disabled="ctrl.legendCategories.length < 2" 
 				ng-options="opt.id as opt.label for opt in ctrl.legendCategories">
 		</select>
-	</span>
-	<span ng-repeat=" opt in ctrl.legends" class="grantt-chart-legend-option">
+	<span ng-repeat=" opt in ctrl.legends" class="gantt-chart-legend-option">
 		<span ng-bind="opt.label"> </span>
-		<i class="sc sc-square icon-lg grantt-chart-legend-symbol" style="color:{{opt.color}}; background-color :{{opt.color}}"></i>
+		<i class="sc sc-square icon-lg gantt-chart-legend-symbol" style="color:{{opt.color}}; background-color :{{opt.color}}"></i>
 	</span>
 	
 	</div>
 	
 		</br>
 
-	<div id="granttChart">
+	<div id="ganttChart">
+	
 		<table class="table-bordered">
 			<tr>
-				<td class="headcol"><select ng-model="ctrl.selected.timeFrame"
-					ng-change="ctrl.onTimeFrameChange();"
-					ng-options="opt.id as opt.label for opt in ctrl.timeFrames">
-				</select></td>
+				<td class="headcol">
+					<select ng-model="ctrl.selected.timeFrame" ng-change="ctrl.onTimeFrameChange();" ng-options="opt.id as opt.label for opt in ctrl.timeFrames"> </select>
+				</td>
 				<td style="white-space:nowrap;">
 					<div style="clear:both;"> 
 							<span ng-repeat = "major in ctrl.majorTimeFrames" class="majorTimeLine" style="width :{{major.width}}px;" ng-mouseenter="major.toolTip = true;ctrl.mouseEnter($event, 75)" ng-mouseleave="major.toolTip = false" >
@@ -112,22 +120,45 @@
 			</tr>
 
 			<tr ng-repeat="col in ctrl.columnData">
-				<td  class="headcol"> <span ng-bind="col.name" class="spacing-right"> </span> <span ng-show="col.activatable"><button ng-click="ctrl.activate(col);" class="button-link tbl-tool-link "> <span class="sc icon-lg sc-cog"></span></button></span> </td>
+				<td  class="headcol"> 
+					<span ng-show="col.type == 'Subprocess' && !col.expanded">
+						<button ng-click="ctrl.expandSubProcess(col);" class="button-link tbl-tool-link">
+								 <span class="sc icon-lg sc-plus"> </span>
+						</button>
+					</span> 
+					
+					<span ng-show="col.type == 'Subprocess' && col.expanded">
+						<button ng-click="ctrl.minimizeSubprocess(col);" class="button-link tbl-tool-link">
+								 <span class="sc icon-lg sc-minus"> </span>
+						</button>
+					</span> 
+					
+					<span ng-bind="col.name" class="spacing-right"> </span> 
+					<span ng-show="col.activatable">
+						<button ng-click="ctrl.activate(col);" class="button-link tbl-tool-link ">
+							 <span class="sc icon-lg sc-cog"> </span>
+						</button>
+					</span> 
+				
+				 </td>
 				<td>
 					<span  ng-mouseleave="col.toolTip = false" >	
 						<span ng-mouseenter="col.toolTip = true;ctrl.mouseEnter($event)" class="timeLineCompleted img-rounded" 
 						      style="width :{{col.completed}}px ; margin-left :{{col.delay}}px ; background-color: {{col.color}};color:{{col.color}}">.
 						</span> 
+						<span ng-if="col.type == 'process' && col.inflight > 0" class="ganttChart-currentTimeLine" style="height:{{ctrl.currentTimeLine.height}}px;"> </span>
 						<span ng-mouseenter="col.toolTip = true;ctrl.mouseEnter($event,col.completed)" ng-if="col.inflight > 0" class="timeLineCompleted timeLineInflight img-rounded" 
 						      style="width :{{col.inflight}}px ; background-color: {{col.color}};color:{{col.color}}">.
 						 </span>
 					</span>
+					
 					<div class="popup-dlg worklist-tooltip"  ng-show="col.toolTip" style="margin-left:{{col.delay+ctrl.position}}px;" >
-						<div style="width:175px;color:white;font-weight:bold;text-align:center;background-color: {{col.color}}">{{col.status.label}}</div>
-						<div>Start : 	{{col.startTime |  date:'MM/dd/yyyy HH:mm '}} </div>
-						<div ng-if="!col.predictedEndTime">End : 	{{col.endTime  |  date:'MM/dd/yyyy HH:mm '}}</div>
-						<div ng-if="col.predictedEndTime">End : 	{{col.predictedEndTime  |  date:'MM/dd/yyyy HH:mm '}} </div>
+						<div class="ganttChart-popup-legend-category" style="background-color: {{col.color}}">{{col.status.label}}</div>
+						<div>{{i18n('business-control-center-messages.views-customColumn-startDate')}} : 	{{col.startTime |  date:'MM/dd/yyyy HH:mm '}} </div>
+						<div ng-if="!col.predictedEndTime">{{i18n('business-control-center-messages.views-customColumn-endDate')}} : 	{{col.endTime  |  date:'MM/dd/yyyy HH:mm '}}</div>
+						<div ng-if="col.predictedEndTime">{{i18n('business-control-center-messages.views-customColumn-endtDate')}} : 	{{col.predictedEndTime  |  date:'MM/dd/yyyy HH:mm '}} </div>
 					</div>
+					
 				</td>
 				</tr>
 		</table>

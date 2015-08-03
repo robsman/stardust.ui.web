@@ -151,13 +151,21 @@ public class ProcessInstanceUtils
     * @param oid
     * @return
     */
-   public ProcessInstance getProcessInstance(long oid)
+   public ProcessInstance getProcessInstance(long oid, boolean fetchDescriptors)
    {
       ProcessInstance pi = null;
       ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
       query.where(ProcessInstanceQuery.OID.isEqual(oid));
+      
+      if(fetchDescriptors){
+         query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
+      }else{
+         query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
+      }
+    
+    
       ProcessInstances pis = serviceFactoryUtils.getQueryService().getAllProcessInstances(query);
-
+      
       if (!pis.isEmpty())
       {
          pi = pis.get(0);
@@ -165,6 +173,17 @@ public class ProcessInstanceUtils
 
       return pi;
    }
+   
+   /**
+    * 
+    * @param oid
+    * @return
+    */
+   public ProcessInstance getProcessInstance(long oid)
+   {
+      return getProcessInstance( oid, false);
+   }
+
 
    /**
     * @param instance
@@ -1699,7 +1718,7 @@ public class ProcessInstanceUtils
          if (object instanceof ProcessInstance)
          {
 
-            ProcessInstanceDTO dto = buildProcessInstanceDTO((ProcessInstance) object, false);
+            ProcessInstanceDTO dto = buildProcessInstanceDTO((ProcessInstance) object);
 
             list.add(dto);
          }
@@ -1718,7 +1737,7 @@ public class ProcessInstanceUtils
     * @param processInstance
     * @return 
     */
-   public ProcessInstanceDTO buildProcessInstanceDTO(ProcessInstance pi , boolean skipDescriptors){
+   public ProcessInstanceDTO buildProcessInstanceDTO(ProcessInstance pi ){
 
       ProcessInstanceDTO dto = new ProcessInstanceDTO();
 
@@ -1740,16 +1759,14 @@ public class ProcessInstanceUtils
       dto.processName = I18nUtils.getProcessName(processDefinition);
       String startingUserLabel = UserUtils.getUserDisplayLabel(pi.getStartingUser());
       dto.createUser = startingUserLabel;
-      
+
       // Update Document Descriptors for process
-      if(!skipDescriptors){
-         dto.descriptorValues = getDescriptorValues(pi, processDefinition);
-         dto.processDescriptorsList = getProcessDescriptor(pi, processDefinition);
-         
-         CommonDescriptorUtils.updateProcessDocumentDescriptors(
-               ((ProcessInstanceDetails) pi).getDescriptors(), pi, processDefinition);
-      }
-     
+      dto.descriptorValues = getDescriptorValues(pi, processDefinition);
+      dto.processDescriptorsList = getProcessDescriptor(pi, processDefinition);
+
+      CommonDescriptorUtils.updateProcessDocumentDescriptors(
+            ((ProcessInstanceDetails) pi).getDescriptors(), pi, processDefinition);
+
       if (null != pi.getTerminationTime())
       {
          dto.endTime = pi.getTerminationTime().getTime();
@@ -2009,6 +2026,26 @@ public class ProcessInstanceUtils
       }
 
       processListFilterDTO.descriptorFilterMap = descriptorColumnMap;
+   }
+
+   /**
+    * 
+    * @param aOid
+    * @return
+    */
+   public ProcessInstance findByStartingActivityOid(Long aOid)
+   {
+      ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
+      query.getFilter().add(ProcessInstanceQuery.STARTING_ACTIVITY_INSTANCE_OID.isEqual(aOid));
+      query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
+    
+      ProcessInstances pis = serviceFactoryUtils.getQueryService().getAllProcessInstances(query);
+      ProcessInstance pi = null;
+      if (!pis.isEmpty())
+      {
+         pi = pis.get(0);
+      }
+      return pi;
    }
 
 }

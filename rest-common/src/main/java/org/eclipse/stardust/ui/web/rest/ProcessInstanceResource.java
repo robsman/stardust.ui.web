@@ -343,11 +343,21 @@ public class ProcessInstanceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{oid}")
-   public Response getProcessByOid(@PathParam("oid") Long oid,  @QueryParam("skipDescriptors") @DefaultValue("true") boolean skipDescriptors)
+   public Response getProcessByOid(@PathParam("oid") Long oid,  @QueryParam("fetchDescriptors") @DefaultValue("false") boolean fetchDescriptors)
    {
-      return Response.ok(processInstanceService.getProcessByOid(oid, skipDescriptors).toJson(), MediaType.APPLICATION_JSON)
+      return Response.ok(processInstanceService.getProcessByOid(oid, fetchDescriptors).toJson(), MediaType.APPLICATION_JSON)
             .build();
    }
+   
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("startingActivityOID/{aiOid}")
+   public Response findByStartingActivityOid(@PathParam("aiOid") Long aOid)
+   {
+      return Response.ok(processInstanceService.findByStartingActivityOid(aOid).toJson(), MediaType.APPLICATION_JSON)
+            .build();
+   }
+
 
    /**
     * Populate the options with the post data.
