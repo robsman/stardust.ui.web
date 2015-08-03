@@ -594,20 +594,20 @@
     var self = this;
     var participant = this.contextParticipantNode.valueItem;
 
-    self.departmentTitle = _sdI18nService.getInstance('admin-portal-messages').translate(
-            'views.participantMgmt.createDepartment.title');
-
-    self.departmentTitle = _sdI18nService.getInstance('admin-portal-messages').translate(
-            'views.participantMgmt.modifyDepartment.title');
-
-    if (participant.type == "DEPARTMENT") {
+    if (participant.type == "DEPARTMENT") { //modify department
       self.department = angular.copy(participant);
+      self.departmentTitle = _sdI18nService.getInstance('admin-portal-messages').translate(
+      'views.participantMgmt.modifyDepartment.title');
+      self.department.mode = 'Modify';
     } else {
+      self.departmentTitle = _sdI18nService.getInstance('admin-portal-messages').translate(
+      'views.participantMgmt.createDepartment.title');
       self.department = {};
       self.department.organization = participant.name;
       self.department.parentDepartmentName = participant.parentDepartmentName;
       self.department.description = null;
       self.department.uiQualifiedId = participant.qualifiedId;
+      self.department.mode = 'Create';
       if (participant.uiQualifiedId) {
         self.department.uiQualifiedId = participant.uiQualifiedId;
       }
