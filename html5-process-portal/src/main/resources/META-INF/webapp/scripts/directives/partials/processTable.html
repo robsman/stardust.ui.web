@@ -124,18 +124,27 @@
 		<tbody>
 			<tr>
 				<td sda-exporter="rowData.processName">
-					<img src="plugins/views-common/images/icons/process-history/processrootblue.png"
-						style="border: none;"
-						title="{{i18n('business-control-center-messages.common-tooltip-process')}}"
-						ng-if="!rowData.caseInstance && rowData.oid == rowData.processInstanceRootOID" />
-					<img src="plugins/views-common/images/icons/process.png"
-						style="border: none;"
-						title="{{i18n('business-control-center-messages.common-tooltip-subProcess')}}"
-						ng-if="!rowData.caseInstance && rowData.oid != rowData.processInstanceRootOID" />
-					<img src="plugins/views-common/images/icons/envelope.png"
-						style="border: none;"
-						title="{{i18n('business-control-center-messages.common-tooltip-case')}}"
-						ng-if="rowData.caseInstance" />
+					<span class="spacing-right">
+							<span title="{{i18n('business-control-center-messages.common-tooltip-process')}}"
+								ng-if="!rowData.caseInstance && rowData.oid == rowData.processInstanceRootOID" >
+								<i class="sc sc-badge-portrait icon-lg sc-cog sc-right">
+		                   			 <i style="color:blue" class="sc sc-badge-bg sc-badge-bg-circle "></i>
+		               			 </i>
+							</span>
+							<span src="plugins/views-common/images/icons/process.png"
+								style="border: none;"
+								title="{{i18n('business-control-center-messages.common-tooltip-subProcess')}}"
+								ng-if="!rowData.caseInstance && rowData.oid != rowData.processInstanceRootOID" >
+									<i class="sc sc-badge-portrait icon-lg sc-cog">
+		               				 </i>
+							</span>
+							<span src="plugins/views-common/images/icons/envelope.png"
+								style="border: none;"
+								title="{{i18n('business-control-center-messages.common-tooltip-case')}}"
+								ng-if="rowData.caseInstance" >
+									<i class="sc icon-lg sc-envelope-alt"></i>
+							</span>
+					</span>
 					<a  href="#" aid="PP-ProcessTable-OpenProcessHistory"
 						ng-click="bpmCommon.stopEvent($event); processTableCtrl.openProcessHistory(rowData);"
 						class="button-link tbl-tool-link"> {{rowData.processName}}
