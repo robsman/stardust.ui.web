@@ -36,6 +36,30 @@ Supported fonts we wrap for our portal icon (pi-) classes
 	-moz-osx-font-smoothing: grayscale; 
 }
 
+/*portal icon badging stem, duped from starclipse*/
+
+.pi-badge{
+    position:relative;
+    display:inline-table;
+}
+
+.pi-badge-portrait{
+    position:relative;
+    display:inline-table;
+    z-index:1;
+}
+
+.pi-badge-bg{
+    position:absolute;
+    z-index:2;
+}
+
+.pi-badge-icon{
+    position:absolute;
+    z-index:3;
+    top:0;
+}
+
 /*
 Utility classes for portal icons
 -----------------------------------------------------------

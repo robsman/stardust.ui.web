@@ -461,7 +461,10 @@
 	          '\'sd-tree-collapse\':isVisible }" class="glyphicons glyphicon"></i>',
 	          '</div>',
 	          '<a href="" ' + dragdropStr + ' title="{{' + attrs.sdaTitle + '}}" ng-model="nodeItem"  ng-click="invokeCallback(\'node-click\',$event)"  class="tree-node">',
-	          '<i ng-class="getIconClass() + \' \' + iconClass" class="js-icon"></i>',
+	          '<i ng-class="getIconClass() + \' \' + iconClass" class="js-icon pi pi-badge">' +
+	          	'<i class="pi pi-badge-bg"></i>' +
+	          	'<i class="pi pi-badge-icon"></i>' +
+	          '</i>',
 	          '<span ' + menuStr + ' ng-show="!allowEdit">',
 	              "{{" + attrs.sdaLabel + "}}",
 	          "</span>",
