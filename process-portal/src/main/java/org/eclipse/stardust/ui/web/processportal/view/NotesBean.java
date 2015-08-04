@@ -469,7 +469,7 @@ public class NotesBean extends UIComponentBean implements IUserObjectBuilder<Not
       else
       {
          return new NotesTableEntry(note.getText(), note.getText().substring(0,
-               Math.min(note.getText().length(), TEXT_PREVIEW_LENGTH)), "Error: no user found", note.getTimestamp(),
+               Math.min(note.getText().length(), TEXT_PREVIEW_LENGTH)), I18nUtils.getUserLabelDefault(null), note.getTimestamp(),
                notes.indexOf(note) + 1, noteInfo);
       }
    }
