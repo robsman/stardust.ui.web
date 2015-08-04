@@ -80,6 +80,8 @@ public class ActivityInstanceDTO extends AbstractDTO
    
    public BenchmarkDTO benchmark;
 
+   public boolean auxillary;
+
    public void setQualityAssuranceState(QualityAssuranceState state)
    {
       if (QualityAssuranceState.IS_QUALITY_ASSURANCE.equals(state) || QualityAssuranceState.IS_REVISED.equals(state))

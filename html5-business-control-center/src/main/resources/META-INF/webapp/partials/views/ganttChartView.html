@@ -6,7 +6,7 @@
 	min-height: 150px;
 }
 
-#ganttChart    .headcol {
+#ganttChart .headcol {
 	position: absolute;
 	width: 20%;
 	left: 0;
@@ -69,100 +69,107 @@
 <div class="view-panel" ng-controller="sdGanttChartCtrl as ctrl"
 	sg-stretch-to-bottom>
 	
-	
-	<input type="text" ng-model="ctrl.selected.process"/> <button ng-click="ctrl.getProcessAndDrawChart()"> Get Process </button>
-	
-	<div > {{ctrl.process.processName}} (#{{ctrl.process.oid}})</div>
-	<div> <span>{{i18n('business-control-center-messages.views-customColumn-startDate')}}</span> <span> {{ctrl.process.startTime | date:'yy/MMM/dd HH:mm'}} </span> </div>
-	
-	</br>
-	
-	<div> 
-		<select ng-model="ctrl.selected.legend" ng-change="ctrl.onLegendChange();" ng-disabled="ctrl.legendCategories.length < 2" 
-				ng-options="opt.id as opt.label for opt in ctrl.legendCategories">
-		</select>
-	<span ng-repeat=" opt in ctrl.legends" class="gantt-chart-legend-option">
-		<span ng-bind="opt.label"> </span>
-		<i class="sc sc-square icon-lg gantt-chart-legend-symbol" style="color:{{opt.color}}; background-color :{{opt.color}}"></i>
-	</span>
-	
-	</div>
-	
+	<div ng-show="ctrl.columnData.length > 0">	
+		<div class="iceOutLbl" style="font-size:1.5em"> {{ctrl.process.processName}} (#{{ctrl.process.oid}})</div>
+		<div> <span class="iceOutLbl spacing-right">{{i18n('business-control-center-messages.views-customColumn-startDate')}}</span> <span> {{ctrl.process.startTime | date: ctrl.timeFormat}} </span> </div>
+		
 		</br>
-
-	<div id="ganttChart">
+		
+		<div> 
+			<select ng-model="ctrl.selected.legend" ng-change="ctrl.onLegendChange();" ng-disabled="ctrl.legendCategories.length < 2" 
+					ng-options="opt.id as opt.label for opt in ctrl.legendCategories">
+			</select>
+		<span ng-repeat=" opt in ctrl.legends" class="gantt-chart-legend-option">
+			<span ng-bind="opt.label"> </span>
+			<i class="sc sc-square icon-lg gantt-chart-legend-symbol" style="color:{{opt.color}}; background-color :{{opt.color}}"></i>
+		</span>
+		
+		</div>
+		
+			</br>
 	
-		<table class="table-bordered">
-			<tr>
-				<td class="headcol">
-					<select ng-model="ctrl.selected.timeFrame" ng-change="ctrl.onTimeFrameChange();" ng-options="opt.id as opt.label for opt in ctrl.timeFrames"> </select>
-				</td>
-				<td style="white-space:nowrap;">
-					<div style="clear:both;"> 
-							<span ng-repeat = "major in ctrl.majorTimeFrames" class="majorTimeLine" style="width :{{major.width}}px;" ng-mouseenter="major.toolTip = true;ctrl.mouseEnter($event, 75)" ng-mouseleave="major.toolTip = false" >
-									<span ng-if="ctrl.selected.timeFrame == 'days'"> {{major.value |  date:'MMMM yyyy'}} </span>
-									<span ng-if="ctrl.selected.timeFrame != 'days'"> {{major.value |  date:'dd MMMM'}} </span>
-										<div class="popup-dlg worklist-tooltip" ng-show="major.toolTip" style="color: black;margin-left:{{ctrl.position}}px;" >
-								  			<span ng-if="ctrl.selected.timeFrame == 'days'"> {{major.value |  date:'MMMM yyyy'}} </span>
-											<span ng-if="ctrl.selected.timeFrame != 'days'"> {{major.value |  date:'dd MMMM'}} </span>
-										 </div>
-							</span>
-							 
-					</div>
-					<div style="clear:both;">
-							<span ng-repeat = "minor in ctrl.minorTimeFrames" class="minorTimeLine" style="width : {{ctrl.minorTimeFrameWidth}}px;">
-										<span ng-if="ctrl.selected.timeFrame == 'days'"> {{minor.value |  date:'dd'}} </span>
-										<span ng-if="ctrl.selected.timeFrame == 'hours'"> {{minor.value}}</span>
-										<span ng-if="ctrl.selected.timeFrame == 'minutes'"> {{minor.value}}</span>
-							</span>
-					</div> 
-				</td>
-			</tr>
-
-			<tr ng-repeat="col in ctrl.columnData">
-				<td  class="headcol"> 
-					<span ng-show="col.type == 'Subprocess' && !col.expanded">
-						<button ng-click="ctrl.expandSubProcess(col);" class="button-link tbl-tool-link">
-								 <span class="sc icon-lg sc-plus"> </span>
-						</button>
-					</span> 
-					
-					<span ng-show="col.type == 'Subprocess' && col.expanded">
-						<button ng-click="ctrl.minimizeSubprocess(col);" class="button-link tbl-tool-link">
-								 <span class="sc icon-lg sc-minus"> </span>
-						</button>
-					</span> 
-					
-					<span ng-bind="col.name" class="spacing-right"> </span> 
-					<span ng-show="col.activatable">
-						<button ng-click="ctrl.activate(col);" class="button-link tbl-tool-link ">
-							 <span class="sc icon-lg sc-cog"> </span>
-						</button>
-					</span> 
-				
-				 </td>
-				<td>
-					<span  ng-mouseleave="col.toolTip = false" >	
-						<span ng-mouseenter="col.toolTip = true;ctrl.mouseEnter($event)" class="timeLineCompleted img-rounded" 
-						      style="width :{{col.completed}}px ; margin-left :{{col.delay}}px ; background-color: {{col.color}};color:{{col.color}}">.
-						</span> 
-						<span ng-if="col.type == 'process' && col.inflight > 0" class="ganttChart-currentTimeLine" style="height:{{ctrl.currentTimeLine.height}}px;"> </span>
-						<span ng-mouseenter="col.toolTip = true;ctrl.mouseEnter($event,col.completed)" ng-if="col.inflight > 0" class="timeLineCompleted timeLineInflight img-rounded" 
-						      style="width :{{col.inflight}}px ; background-color: {{col.color}};color:{{col.color}}">.
-						 </span>
-					</span>
-					
-					<div class="popup-dlg worklist-tooltip"  ng-show="col.toolTip" style="margin-left:{{col.delay+ctrl.position}}px;" >
-						<div class="ganttChart-popup-legend-category" style="background-color: {{col.color}}">{{col.status.label}}</div>
-						<div>{{i18n('business-control-center-messages.views-customColumn-startDate')}} : 	{{col.startTime |  date:'MM/dd/yyyy HH:mm '}} </div>
-						<div ng-if="!col.predictedEndTime">{{i18n('business-control-center-messages.views-customColumn-endDate')}} : 	{{col.endTime  |  date:'MM/dd/yyyy HH:mm '}}</div>
-						<div ng-if="col.predictedEndTime">{{i18n('business-control-center-messages.views-customColumn-endtDate')}} : 	{{col.predictedEndTime  |  date:'MM/dd/yyyy HH:mm '}} </div>
-					</div>
-					
-				</td>
+		<div id="ganttChart">
+		
+			<table class="table-bordered">
+				<tr>
+					<td class="headcol">
+						<div>
+							<select ng-model="ctrl.selected.timeFrame" ng-change="ctrl.onTimeFrameChange();" ng-options="opt.id as opt.label for opt in ctrl.timeFrames"> </select> 
+						</div>
+						<div>	
+							<button class="button-link tbl-toolbar-item tbl-tool-link" title="{{i18n('business-control-center-messages.views-ganttChartView-expandAll')}}" ng-click="ctrl.expandAll();"><i class="sc icon-lg sc-plus"> </i></button>
+							<button class="button-link tbl-toolbar-item tbl-tool-link" title="{{i18n('business-control-center-messages.views-ganttChartView-collapseAll')}}" ng-click="ctrl.minimizeAll();"><i class="sc icon-lg sc-minus"> </i></button>
+							<button class="button-link tbl-toolbar-item tbl-tool-link" title="{{ctrl.getAuxTitle();}}" ng-click="ctrl.toggleAuxillary();"><i class="glyphicon icon-lg glyphicon-eye-open"> </i></button>
+						</div>
+					</td>
+					<td style="white-space:nowrap;">
+						<div style="clear:both;"> 
+								<span ng-repeat = "major in ctrl.majorTimeFrames" class="majorTimeLine" style="width :{{major.width}}px;" ng-mouseenter="major.toolTip = true;ctrl.mouseEnter($event, 75)" ng-mouseleave="major.toolTip = false" >
+										<span ng-if="ctrl.selected.timeFrame == 'days'"> {{major.value |  date:'MMMM yyyy'}} </span>
+										<span ng-if="ctrl.selected.timeFrame != 'days'"> {{major.value |  date:'dd MMMM'}} </span>
+											<div class="popup-dlg worklist-tooltip" ng-show="major.toolTip" style="color: black;margin-left:{{ctrl.position}}px;" >
+									  			<span ng-if="ctrl.selected.timeFrame == 'days'"> {{major.value |  date:'MMMM yyyy'}} </span>
+												<span ng-if="ctrl.selected.timeFrame != 'days'"> {{major.value |  date:'dd MMMM'}} </span>
+											 </div>
+								</span>
+								 
+						</div>
+						<div style="clear:both;">
+								<span ng-repeat = "minor in ctrl.minorTimeFrames" class="minorTimeLine" style="width : {{ctrl.minorTimeFrameWidth}}px;">
+											<span ng-if="ctrl.selected.timeFrame == 'days'"> {{minor.value |  date:'dd'}} </span>
+											<span ng-if="ctrl.selected.timeFrame == 'hours'"> {{minor.value}}</span>
+											<span ng-if="ctrl.selected.timeFrame == 'minutes'"> {{minor.value}}</span>
+								</span>
+						</div> 
+					</td>
 				</tr>
-		</table>
+				<tr ng-repeat="col in ctrl.columnData | filter:{ auxillary : ctrl.showAuxillary} : ctrl.auxComparator ">
+					<td  class="headcol"> 
+						<span ng-show="col.type == 'Subprocess' && !col.expanded">
+							<button ng-click="ctrl.expandSubProcess(col);" class="button-link tbl-tool-link">
+									 <span class="sc icon-lg sc-plus"> </span>
+							</button>
+						</span> 
+						
+						<span ng-show="col.type == 'Subprocess' && col.expanded">
+							<button ng-click="ctrl.minimizeSubprocess(col);" class="button-link tbl-tool-link">
+									 <span class="sc icon-lg sc-minus"> </span>
+							</button>
+						</span> 
+						
+						<span ng-bind="col.name" class="spacing-right"> </span> 
+						<span ng-show="col.activatable">
+							<button ng-click="ctrl.activate(col);" class="button-link tbl-tool-link ">
+								 <span class="sc icon-lg sc-cog"> </span>
+							</button>
+						</span> 
+					
+					 </td>
+					<td>
+						<span  ng-mouseleave="col.toolTip = false" >	
+							<span ng-mouseenter="col.toolTip = true;ctrl.mouseEnter($event)" class="timeLineCompleted img-rounded" 
+							      style="width :{{col.completed}}px ; margin-left :{{col.delay}}px ; background-color: {{col.color}};color:{{col.color}}">.
+							</span> 
+							<span ng-if="col.type == 'process' && col.inflight > 0" class="ganttChart-currentTimeLine" style="height:{{ctrl.currentTimeLine.height}}px;"> </span>
+							<span ng-mouseenter="col.toolTip = true;ctrl.mouseEnter($event,col.completed)" ng-if="col.inflight > 0" class="timeLineCompleted timeLineInflight img-rounded" 
+							      style="width :{{col.inflight}}px ; background-color: {{col.color}};color:{{col.color}}">.
+							 </span>
+						</span>
+						
+						<div class="popup-dlg worklist-tooltip"  ng-show="col.toolTip" style="margin-left:{{col.delay+ctrl.position}}px;" >
+							<div class="ganttChart-popup-legend-category" style="background-color: {{col.color}}">{{col.status.label}}</div>
+							<div>{{i18n('business-control-center-messages.views-customColumn-startDate')}} : 	{{col.startTime |  date:ctrl.timeFormat}} </div>
+							<div ng-if="!col.predictedEndTime">{{i18n('business-control-center-messages.views-customColumn-endDate')}} : 	{{col.endTime  |  date:ctrl.timeFormat}}</div>
+							<div ng-if="col.predictedEndTime">{{i18n('business-control-center-messages.views-customColumn-endtDate')}} : 	{{col.predictedEndTime  |  date:ctrl.timeFormats}} </div>
+						</div>
+						
+					</td>
+					</tr>
+			</table>
+		</div>
 	</div>
-
+	<div>
+		<input type="text" ng-model="ctrl.selected.process"/> <button ng-click="ctrl.getProcessAndDrawChart()"> Get Process </button>
+	</div>
 
 </div>

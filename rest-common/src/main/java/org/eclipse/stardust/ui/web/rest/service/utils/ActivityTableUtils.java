@@ -15,6 +15,7 @@ import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtil
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getLastPerformer;
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isAbortable;
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isActivatable;
+import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isAuxiliaryActivity;
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isDelegable;
 
 import java.io.Serializable;
@@ -64,7 +65,6 @@ import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.QualityAssuranceUtils.QualityAssuranceState;
 import org.eclipse.stardust.engine.api.runtime.User;
-import org.eclipse.stardust.engine.core.benchmark.BenchmarkDefinition;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.rest.FilterDTO.BooleanDTO;
@@ -702,6 +702,7 @@ public class ActivityTableUtils
                   dto = DTOBuilder.build(ai, ActivityInstanceDTO.class);
                }
 
+               dto.auxillary = isAuxiliaryActivity(ai.getActivity());
                dto.duration = ActivityInstanceUtils.getDuration(ai);
                dto.assignedTo = getAssignedToLabel(ai);
                dto.criticality = populateCriticalityDTO(criticalityConfigurations, ai);
@@ -941,7 +942,9 @@ public class ActivityTableUtils
       List<ProcessDescriptor> processDescriptorsList = CollectionUtils.newList();
 
       Model model = modelCache.getModel(ai.getModelOID());
-      ProcessDefinition processDefinition = model != null ? model.getProcessDefinition(ai.getProcessDefinitionId()) : null;
+      ProcessDefinition processDefinition = (model != null)
+            ? model.getProcessDefinition(ai.getProcessDefinitionId())
+            : null;
       if (processDefinition != null)
       {
          ProcessInstanceDetails processInstanceDetails = (ProcessInstanceDetails) ai.getProcessInstance();

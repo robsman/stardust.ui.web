@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
+import static org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils.isAuxiliaryProcess;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -71,7 +73,6 @@ import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
-import org.eclipse.stardust.ui.web.rest.service.dto.StatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PriorityDTO;
@@ -80,6 +81,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ProcessTableFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessTableFilterDTO.DescriptorFilterDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.RelatedProcessesDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.StatusDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
@@ -1744,6 +1746,7 @@ public class ProcessInstanceUtils
       ProcessDefinition processDefinition = processDefinitionUtils.getProcessDefinition(
             pi.getModelOID(), pi.getProcessID());
 
+      dto.auxillary = isAuxiliaryProcess(processDefinition);
       dto.processInstanceRootOID = pi.getRootProcessInstanceOID();
       dto.oid = pi.getOID();
 

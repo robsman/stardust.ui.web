@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.rest.service.utils;
 
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isActivatable;
+import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isAuxiliaryActivity;
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isSupportsWeb;
 
 import java.io.Serializable;
@@ -851,7 +852,7 @@ public class ActivityInstanceUtils
          dto.status.label = ActivityInstanceUtils.getActivityStateLabel(ai);
          dto.benchmark = ActivityTableUtils.getBenchmarkForActivity(ai);
          dto.activatable = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isActivatable(ai);
-       
+         dto.auxillary = isAuxiliaryActivity(ai.getActivity());
          if(dto.activity.implementationTypeId != "Subprocess"){
             dto.processInstance = null;
          }

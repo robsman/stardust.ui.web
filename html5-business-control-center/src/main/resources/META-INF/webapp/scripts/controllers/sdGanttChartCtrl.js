@@ -18,39 +18,38 @@
 	angular.module("bcc-ui").controller(
 			'sdGanttChartCtrl',
 			['sdProcessInstanceService', 'sdLoggerService', '$filter',
-			 'sgI18nService','sdActivityInstanceService','sdCommonViewUtilService','sgI18nService','$q',Controller]);
+			 'sgI18nService','sdActivityInstanceService','sdCommonViewUtilService','sgI18nService','$q','sdLocalizationService',Controller]);
 
 	var _filter = null;
 	var _sdActivityInstanceService = null;
-	var totalWidth = 900;
+	var TOTAL_WIDTH = 900;
 	var _sgI18nService = null;
 	var _q = null;
-
-
 	var _sdProcessInstanceService = null;
 	var _sdCommonViewUtilService = null;
+	var _sdLocalizationService = null;
 
-	var completedStatuses = [2,6];
-	var one_day = 86400000
-	var one_hour = 3600000
-	var minsArray = ["00","15","30","45"];
+	var FINISHED_STATUSES = [2,6];
+	var ONE_DAY_IN_MIILS = 86400000
+	var ONE_HOUR_IN_MIILS = 3600000
+	var MINUTES_LABEL_IN_HOUR = ["00","15","30","45"];
 
 	var FACTORS = {
 			days : {
-				majorFactorWidth : totalWidth / 30,  // 30 days in  a month
-				minorFactorWidth : totalWidth / (30 * 24), // 24 hours in a day
+				majorFactorWidth : TOTAL_WIDTH / 30,  // 30 days in  a month
+				minorFactorWidth : TOTAL_WIDTH / (30 * 24), // 24 hours in a day
 				minorFactor : (1000 * 60 * 60 ),  // 1 hour
 				majorFactor : (1000 * 60 * 60 * 24) // 1 Day
 			},
 			hours : {
-				majorFactorWidth : totalWidth / 24, // 24 hours in a day
-				minorFactorWidth : totalWidth / (24 * 60), // 60 mins in a hour
+				majorFactorWidth : TOTAL_WIDTH / 24, // 24 hours in a day
+				minorFactorWidth : TOTAL_WIDTH / (24 * 60), // 60 mins in a hour
 				minorFactor : (1000 * 60 ), // 1 Min
 				majorFactor : (1000 * 60 * 60) // 1 Hour
 			},
 			minutes : {
-				majorFactorWidth : totalWidth / 15,  
-				minorFactorWidth : totalWidth / (15 * 15), // 15 mins
+				majorFactorWidth : TOTAL_WIDTH / 15,  
+				minorFactorWidth : TOTAL_WIDTH / (15 * 15), // 15 mins
 				minorFactor : (1000 * 60 ), // 1 Min
 				majorFactor : (1000 * 60  * 15)// 15 mins
 			}
@@ -60,7 +59,7 @@
 	 * 
 	 */
 	function Controller(sdProcessInstanceService, sdLoggerService, $filter,
-			sdPreferenceService, sdActivityInstanceService, sdCommonViewUtilService, sgI18nService, $q) {
+			sdPreferenceService, sdActivityInstanceService, sdCommonViewUtilService, sgI18nService, $q, sdLocalizationService) {
 
 		_filter = $filter;
 		_sdProcessInstanceService = sdProcessInstanceService;
@@ -68,6 +67,7 @@
 		_sdCommonViewUtilService  = sdCommonViewUtilService ;
 		_sgI18nService = sgI18nService
 		_q = $q;
+		_sdLocalizationService = sdLocalizationService;
 
 		this.intialize();
 	};
@@ -81,7 +81,8 @@
 		self.selected = {
 				process : "",
 				legend : "status",
-				timeFrame : "days"
+				timeFrame : "days",
+				hideAuxilary : true
 		}
 		self.data = {
 				list : []
@@ -90,10 +91,10 @@
 		self.legends = [];
 		self.benchmarkCategories = [];
 		self.timeFrames = self.getTimeFrames();
-		self.selectedTimeFrame = "days";
-		self.selectedCategory = "benchmark";
 		self.majorTimeFrames = null;
 		self.minorTimeFrames = null;
+		self.timeFormat =_sdLocalizationService.getInfo().dateTimeFormat;
+		self.showAuxillary = false;
 	};
 
 	/**
@@ -135,10 +136,9 @@
 		_sdProcessInstanceService.getProcessByOid(self.selected.process).then(function(data){
 			self.process = data;
 			self.benchmarkCategories = [];
-
+			
 			self.getBenchmarkCategories(data).then(function(){
 				_sdActivityInstanceService.getByProcessOid(self.process.oid).then(function(activityList){
-				
 					self.addProcessToChartData(self.process);
 					self.addActivitiesToChartData(activityList);
 					self.onLegendChange();
@@ -195,6 +195,15 @@
 		angular.forEach(activityList, function(activity){
 			var statusColor = self.getBarColor(activity.status.value,"Activity", false);
 			var bColor = self.getBarColor(activity,"Activity", true);
+			
+			var piOid = null;
+			var auxillary = activity.auxillary;
+			if(activity.activity.implementationTypeId == 'Subprocess'){
+				var process =  _sdProcessInstanceService.getProcessByStartingActivityOid( activity.activityOID, true);
+				piOid = process.oid
+				auxillary = process.auxillary;
+			}
+			
 			var data = {
 					name : activity.activity.name,
 					startTime :  activity.startTime,
@@ -206,9 +215,10 @@
 					oid : activity.activityOID,
 					benchmarkCategory : activity.benchmark,
 					type : activity.activity.implementationTypeId,
-					subProcessId : (activity.processInstance) ? activity.processInstance.oid : null
+					subProcessId : (activity.processInstance) ? activity.processInstance.oid : null,
+					auxillary : auxillary,
+					piOid : piOid
 			}
-
 			self.data.list.push(data)
 		});
 	};
@@ -220,7 +230,6 @@
 		var self = this;
 		var statusColor = self.getBarColor(piData.status.value,"Process",false);
 		var bColor = self.getBarColor(piData,"Process", true);
-
 		var data = {
 				name : piData.processName,
 				startTime :  piData.startTime,
@@ -231,7 +240,8 @@
 				activatable : piData.activatable,
 				status : piData.status,
 				benchmarkCategory : piData.benchmark,
-				type : "process"
+				type : "process",
+				auxillary : piData.auxillary
 		}
 		self.data.list.push(data)
 	};
@@ -269,7 +279,9 @@
 	
 	};
 	
-	
+	/**
+	 * 
+	 */
 	Controller.prototype.minimizeSubprocess = function(row){
 		var self = this;
 		var found = _filter("filter")(self.data.list, { oid : row.oid}, true);
@@ -280,24 +292,17 @@
 		self.onTimeFrameChange();
 	}
 	
-	
-		/**
+	/**
 	 * 
 	 */
 	Controller.prototype.getSubprocessData = function(row){
 		var deferred = _q.defer();
-		
-		_sdProcessInstanceService.getProcessByStartingActivityOid(row.oid).then(function(process){
-			var piOid = process.oid;
-			_sdActivityInstanceService.getByProcessOid(piOid).then(function(activityList) { 
-				deferred.resolve(activityList);
-			});
+		_sdActivityInstanceService.getByProcessOid(row.rootProcessOid).then(function(activityList) { 
+			deferred.resolve(activityList);
 		});
-		
+
 		return deferred.promise;
 	};
-	
-	
 
 	/**
 	 * 
@@ -509,11 +514,11 @@
 		var second = endTime;
 		var factor = FACTORS.minutes;
 
-		var minDuration = first.getTime() + 4 * one_hour;
+		var minDuration = first.getTime() + 4 * ONE_HOUR_IN_MIILS;
 		if (second.getTime() < minDuration) {
 			second.setTime(minDuration);
 		}else{
-			second.setTime(second.getTime() + (one_hour/2));
+			second.setTime(second.getTime() + (ONE_HOUR_IN_MIILS/2));
 		}
 		var quaterHours = [];
 		var days = [];
@@ -535,14 +540,14 @@
 				currentDay = new Date(first);
 			}
 
-			for (var index = 0; index < minsArray.length; index++) {
+			for (var index = 0; index < MINUTES_LABEL_IN_HOUR.length; index++) {
 				self.minorTimeFrames.push({
-					value : first.getHours() + ":"+minsArray[index]
+					value : first.getHours() + ":"+MINUTES_LABEL_IN_HOUR[index]
 				});
 				quaterHoursInADay = quaterHoursInADay + 1;
 			}
 
-			first.setTime(first.getTime() + one_hour);
+			first.setTime(first.getTime() + ONE_HOUR_IN_MIILS);
 		}
 		self.majorTimeFrames.push({
 			width : (quaterHoursInADay * quaterHourWidth) + (quaterHoursInADay - 1),
@@ -585,7 +590,7 @@
 
 			//If the item doesnt have a end time or a activity for a process which has stil not completed.
 
-			if(!item.endTime || (!self.process.endTime && completedStatuses.indexOf(status.value) < 0)) {
+			if(!item.endTime || (!self.process.endTime && FINISHED_STATUSES.indexOf(status.value) < 0)) {
 				item.endTime = new Date().getTime();
 			}
 
@@ -612,7 +617,6 @@
 				}
 			}
 
-
 			self.columnData.push({
 				name : item.name,
 				type : item.type,
@@ -622,20 +626,19 @@
 				delay : delay,
 				completed : completed,
 				inflight : inflight,
-				color : (self.selected.legend == "status") ? item.sColor : item.bColor,
-						status :  status,
-						activatable : item.activatable,
-						oid : item.oid,
-						subProcessId : item.subProcessId,
-						dataFetched : item.dataFetched,
-						expanded : item.expanded
+				color : ((self.selected.legend == "status") ? item.sColor : item.bColor),
+				status :  status,
+				activatable : item.activatable,
+				oid : item.oid,
+				rootProcessOid : item.piOid,
+				dataFetched : item.dataFetched,
+				expanded : item.expanded,
+				auxillary : item.auxillary
 			});
 		});
 
 		console.log(self.columnData)
-
 		self.drawCurrentTimeLine();
-
 	};
 	/**
 	 * 
@@ -657,6 +660,19 @@
 		}
 		self.position = event.offsetX +xOffset - 100 - $("#ganttChart").scrollLeft();
 	};
+	
+	/**
+	 * 
+	 */
+	Controller.prototype.auxComparator = function(auxValue, showAux) {
+	   if (showAux) {
+		   return true;
+	   }
+	   else {
+		   return !auxValue;
+	   }
+   };
+	
 	/**
 	 * 
 	 */
@@ -749,4 +765,36 @@
 		}
 		return false;
 	}
+	
+	/**
+	 * 
+	 */
+	Controller.prototype.expandAll = function() {
+		
+	};
+	
+	/**
+	 * 
+	 */
+	Controller.prototype.minimizedAll = function() {
+		
+	};
+
+	/**
+	 * 
+	 */
+	Controller.prototype.toggleAuxillary = function() {
+		this.showAuxillary = !this.showAuxillary;
+	};
+	
+	/**
+	 * 
+	 */
+	Controller.prototype.getAuxTitle = function() {
+		if(this.showAuxillary){
+			return "Hide Auxillary"
+		}
+		return "Show Auxillary";
+	};
+	
 })();
