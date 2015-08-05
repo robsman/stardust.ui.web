@@ -267,10 +267,10 @@ public class ParticipantManagementUtils
          }
       }
       // user name filter
-      if (null != filterDTO.displayName)
+      if (null != filterDTO.name)
       {
-         String fn = filterDTO.displayName.firstName;
-         String ln = filterDTO.displayName.lastName;
+         String fn = filterDTO.name.firstName;
+         String ln = filterDTO.name.lastName;
          if (StringUtils.isNotEmpty(fn) && StringUtils.isNotEmpty(ln))
          {
             FilterAndTerm nameAnd = filter.addAndTerm();

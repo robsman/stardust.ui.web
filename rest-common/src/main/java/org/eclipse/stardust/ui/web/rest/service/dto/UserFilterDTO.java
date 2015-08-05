@@ -14,7 +14,9 @@
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
 import org.eclipse.stardust.ui.web.rest.FilterDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 
+@DTOClass
 public class UserFilterDTO implements FilterDTO
 {
 
@@ -26,6 +28,6 @@ public class UserFilterDTO implements FilterDTO
 
    public TextSearchDTO realm;
 
-   public NameDTO displayName;
+   public NameDTO name;
 
 }
