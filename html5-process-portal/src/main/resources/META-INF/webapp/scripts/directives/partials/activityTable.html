@@ -246,13 +246,13 @@
 						</button>
 						<button ng-if="activityTableCtrl.isActivityTableMode();" 	ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$activateItem(rowData);" aid="PP-ActivityTable-ActivateAction"
 							    ng-disabled="!rowData.activatable"	title="{{i18n('processportal.views-worklistPanel-tooltip-openActivity')}}" class="button-link tbl-tool-link">
-							<i class="sc sc-gear-lightning icon-lg"></i>
+							<i class="pi pi-activate icon-lg"></i>
 						</button>
 						<button ng-if="activityTableCtrl.defaultDelegateEnabled"  aid="PP-ActivityTable-DefaultDelegateAction"
 							href="#" ng-click="activityTableCtrl.$openDefaultDelegationDialog([rowData]);" 
 							title="{{i18n('views-common-messages.common-toolTip-delegateToDefaultPerformer')}}"
 							class="button-link tbl-toolbar-item tbl-tool-link">
-							<i class="glyphicon glyphicon-user icon-lg"></i>
+							<i class="pi pi-user icon-lg"></i>
 						</button>
 						<button sda-column="TRIVIAL_DATA" ng-if="activityTableCtrl.isWorklistMode();"  aid="PP-ActivityTable-CompleteAction"
 							ng-disabled="(rowData.dataMappings == undefined) || !rowData.activatable"
@@ -263,11 +263,8 @@
 						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openDelegateDialog(rowData);"  aid="PP-ActivityTable-DelegateAction"
 							ng-disabled="!rowData.delegable || rowData.defaultCaseActivity"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-delegate')}}" class="button-link tbl-tool-link">
-							 <!--i class="sc sc-badge-portrait icon-lg sc-user sc-left sc-top delegate-icon">
-                  	   			 <i class="sc sc-badge-icon sc-badge-icon-arrow-r icon-1-5x delegate-icon-arrow" ></i>
-               				 </i-->
-               				 <i class="pi pi-badge-portrait sc-fw pi-activity-delegate icon-lg sc-left sc-top">
-			                    <i class="sc sc-badge-icon sc-badge-icon-plus"></i>
+               				 <i class="pi pi-badge-portrait sc-fw pi-activity-delegate icon-lg pi-left pi-top">
+			                    <i class="pi pi-badge-icon pi-badge-icon-plus"></i>
 			                 </i>
 						</button>
 						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openAbortDialog(rowData);"  aid="PP-ActivityTable-AbortAction"

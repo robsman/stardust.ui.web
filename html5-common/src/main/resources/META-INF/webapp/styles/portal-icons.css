@@ -36,8 +36,12 @@ Supported fonts we wrap for our portal icon (pi-) classes
 	-moz-osx-font-smoothing: grayscale; 
 }
 
-/*portal icon badging stem, duped from starclipse*/
+/*
+portal icon badging stem, duped from starclipse
+------------------------------------------------
+*/
 
+/*base badging classes*/
 .pi-badge{
     position:relative;
     display:inline-table;
@@ -58,6 +62,26 @@ Supported fonts we wrap for our portal icon (pi-) classes
     position:absolute;
     z-index:3;
     top:0;
+}
+
+.sc-left *{
+    left:0;
+}
+
+.sc-right *{
+    right:0;
+}
+
+.sc-top *{
+    line-height:0;
+}
+
+/*badge backgrounds*/
+
+/*badge icons*/
+.pi-badge-icon-plus:before{
+	font-family:FontAwesome;
+    content:'\F086';
 }
 
 /*
@@ -123,6 +147,15 @@ Utility classes for portal icons
 Icon implementations
 -----------------------------------------------------------
 */
+.pi-activate:before{
+	font-family:FontAwesome;
+    content:'\F0E7';
+}
+
+.pi-user:before{
+	font-family: starclipes;
+    content:'\F041';
+}
 
 .pi-arrow-d:before{
 	font-family: starclipse;
@@ -205,12 +238,12 @@ Icon implementations
 	content:"\f0e6";
 }
 
-.pi-activity-delegate{
+.pi-activity-delegate:before{
 	font-family:FontAwesome;
 	content:"\f0e6";
 }
 
-.pi-activity-complete{
+.pi-activity-complete:before{
 	font-family:FontAwesome;
 	content:"\f046";
 }
