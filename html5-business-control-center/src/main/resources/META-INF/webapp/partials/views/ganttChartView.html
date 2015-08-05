@@ -98,7 +98,7 @@
 						</div>
 						<div>	
 							<button class="button-link tbl-toolbar-item tbl-tool-link" title="{{i18n('business-control-center-messages.views-ganttChartView-expandAll')}}" ng-click="ctrl.expandAll();"><i class="sc icon-lg sc-plus"> </i></button>
-							<button class="button-link tbl-toolbar-item tbl-tool-link" title="{{i18n('business-control-center-messages.views-ganttChartView-collapseAll')}}" ng-click="ctrl.minimizeAll();"><i class="sc icon-lg sc-minus"> </i></button>
+							<button class="button-link tbl-toolbar-item tbl-tool-link" title="{{i18n('business-control-center-messages.views-ganttChartView-collapseAll')}}" ng-click="ctrl.collapseAll();"><i class="sc icon-lg sc-minus"> </i></button>
 							<button class="button-link tbl-toolbar-item tbl-tool-link" title="{{ctrl.getAuxTitle();}}" ng-click="ctrl.toggleAuxillary();"><i class="glyphicon icon-lg glyphicon-eye-open"> </i></button>
 						</div>
 					</td>
@@ -132,7 +132,7 @@
 						</span> 
 						
 						<span ng-show="col.type == 'Subprocess' && col.expanded">
-							<button ng-click="ctrl.minimizeSubprocess(col);" class="button-link tbl-tool-link">
+							<button ng-click="ctrl.collapseSubprocess(col);" class="button-link tbl-tool-link">
 									 <span class="sc icon-lg sc-minus"> </span>
 							</button>
 						</span> 
@@ -169,7 +169,7 @@
 		</div>
 	</div>
 	<div>
-		<input type="text" ng-model="ctrl.selected.process"/> <button ng-click="ctrl.getProcessAndDrawChart()"> Get Process </button>
+		<input type="text" ng-model="ctrl.selected.process"/> <button ng-click="ctrl.getProcessInfo()"> Get Process </button>
 	</div>
 
 </div>

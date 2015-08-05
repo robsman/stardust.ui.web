@@ -18,7 +18,7 @@
 	angular.module("bcc-ui").controller(
 			'sdGanttChartCtrl',
 			['sdProcessInstanceService', 'sdLoggerService', '$filter',
-			 'sgI18nService','sdActivityInstanceService','sdCommonViewUtilService','sgI18nService','$q','sdLocalizationService',Controller]);
+			 'sgI18nService','sdActivityInstanceService','sdCommonViewUtilService','sgI18nService','$q','sdLocalizationService','sdLoggerService',Controller]);
 
 	var _filter = null;
 	var _sdActivityInstanceService = null;
@@ -28,6 +28,7 @@
 	var _sdProcessInstanceService = null;
 	var _sdCommonViewUtilService = null;
 	var _sdLocalizationService = null;
+	var _sdLoggerService = null;
 
 	var FINISHED_STATUSES = [2,6];
 	var ONE_DAY_IN_MIILS = 86400000
@@ -59,7 +60,7 @@
 	 * 
 	 */
 	function Controller(sdProcessInstanceService, sdLoggerService, $filter,
-			sdPreferenceService, sdActivityInstanceService, sdCommonViewUtilService, sgI18nService, $q, sdLocalizationService) {
+			sdPreferenceService, sdActivityInstanceService, sdCommonViewUtilService, sgI18nService, $q, sdLocalizationService, sdLoggerService) {
 
 		_filter = $filter;
 		_sdProcessInstanceService = sdProcessInstanceService;
@@ -68,7 +69,7 @@
 		_sgI18nService = sgI18nService
 		_q = $q;
 		_sdLocalizationService = sdLocalizationService;
-
+		_sdLoggerService = sdLoggerService;
 		this.intialize();
 	};
 
@@ -124,25 +125,50 @@
 			self.legends = self.getAvailableStatuses();
 		}
 	};
-
+	
+	/**
+	 * 
+	 */
+	Controller.prototype.getProcessInfo = function() {
+		var self = this;
+		_sdProcessInstanceService.getProcessByOid(self.selected.process).then(function(data){
+			self.fetchDataAndDrawChart(data);
+		});
+	};
+	
 
 	/**
 	 * 
 	 */
-	Controller.prototype.getProcessAndDrawChart = function() {
+	Controller.prototype.fetchDataAndDrawChart = function(data) {
 		var self = this;
 		self.data.list = [];
-
-		_sdProcessInstanceService.getProcessByOid(self.selected.process).then(function(data){
-			self.process = data;
-			self.benchmarkCategories = [];
+		self.benchmarkCategories = [];
+		//Root Oid present then the process is a subprocess. Draw chart with root process.
+		if(data.processInstanceRootOID){
+			_sdProcessInstanceService.getProcessByOid(data.processInstanceRootOID).then(function(data){
+				self.process = data;
+				self.drawTimeFrames();
+				self.getChildren(data);
+			});
+		}else {
 			
-			self.getBenchmarkCategories(data).then(function(){
-				_sdActivityInstanceService.getByProcessOid(self.process.oid).then(function(activityList){
-					self.addProcessToChartData(self.process);
-					self.addActivitiesToChartData(activityList);
-					self.onLegendChange();
-				});
+			self.process = data;
+			self.getChildren(data);
+		}
+	};
+	
+	/**
+	 * 
+	 */
+	Controller.prototype.getChildren = function(data){
+		var self = this;
+		
+		self.getBenchmarkCategories(data).then(function() {
+			_sdActivityInstanceService.getByProcessOid(self.process.oid).then(function(activityList){
+				self.addProcessToChartData(self.process);
+				self.addActivitiesToChartData(activityList);
+				self.drawChart();
 			});
 		});
 	};
@@ -184,8 +210,6 @@
 		
 		return deferred.promise;
 	}
-
-
 
 	/**
 	 * 
@@ -246,8 +270,6 @@
 		self.data.list.push(data)
 	};
 
-
-	
 	//TODO visit this after the tree table has been implemented.
 	/**
 	 * 
@@ -282,7 +304,7 @@
 	/**
 	 * 
 	 */
-	Controller.prototype.minimizeSubprocess = function(row){
+	Controller.prototype.collapseSubprocess = function(row){
 		var self = this;
 		var found = _filter("filter")(self.data.list, { oid : row.oid}, true);
 		if( found && found.length < 1){
@@ -290,7 +312,7 @@
 		}
 		found[0].expanded = false;
 		self.onTimeFrameChange();
-	}
+	};
 	
 	/**
 	 * 
@@ -407,6 +429,8 @@
 		}];
 	}
 
+	/**
+	 */
 	Controller.prototype.drawTimeFrameDays = function(startTime, endTime) {
 		var factor = FACTORS.days;
 		var self = this;
@@ -503,7 +527,6 @@
 		});
 
 	};
-
 
 	/**
 	 * 
@@ -686,7 +709,7 @@
 				self.legends = self.benchmarkCategories;
 				break;
 		}
-		self.onTimeFrameChange();
+		self.drawChart();
 	};
 	/**
 	 * 
@@ -697,14 +720,23 @@
 					_sdCommonViewUtilService.openActivityView(col.oid);
 				});
 	};
+	
 	/**
 	 * 
 	 */
 	Controller.prototype.onTimeFrameChange = function() {
 		var self = this;
+		
+		self.drawTimeFrames();
+		self.drawChart();
+	};
+	
+	/**
+	 * 
+	 */
+	Controller.prototype.drawChart = function() {
+		var self = this;
 		self.columnData = [];
-		self.majorTimeFrames = [];
-		self.minorTimeFrames = [];
 		var start = new Date(self.process.startTime);
 
 		var end = new Date();
@@ -719,16 +751,45 @@
 			case "minutes":
 				start.setMinutes(0, 0, 0);
 				self.computeChart(FACTORS.minutes, start);
-				self.drawTimeFrameMinutes(start, end);
 				break;
 			case "hours":
 				start.setMinutes(0, 0, 0);
 				self.computeChart(FACTORS.hours, start);
-				self.drawTimeFrameHours(start, end);
 				break;
 			case "days":
 				start.setHours(0, 0, 0, 0);
 				self.computeChart(FACTORS.days, start);
+				break;
+		}
+	};
+	
+	/**
+	 * 
+	 */
+	Controller.prototype.drawTimeFrames = function() {
+		var self = this;
+		self.majorTimeFrames = [];
+		self.minorTimeFrames = [];
+		var start = new Date(self.process.startTime);
+		var end = new Date();
+		if(self.process.endTime) {
+			end = new Date(self.process.endTime);
+		}
+		else if(self.process.predictedEndTime) {
+			end = new Date(self.process.predictedEndTime);
+		}
+
+		switch (self.selected.timeFrame) {
+			case "minutes":
+				start.setMinutes(0, 0, 0);
+				self.drawTimeFrameMinutes(start, end);
+				break;
+			case "hours":
+				start.setMinutes(0, 0, 0);
+				self.drawTimeFrameHours(start, end);
+				break;
+			case "days":
+				start.setHours(0, 0, 0, 0);
 				self.drawTimeFrameDays(start, end);
 				break;
 		}
@@ -776,7 +837,7 @@
 	/**
 	 * 
 	 */
-	Controller.prototype.minimizedAll = function() {
+	Controller.prototype.collapseAll = function() {
 		
 	};
 
