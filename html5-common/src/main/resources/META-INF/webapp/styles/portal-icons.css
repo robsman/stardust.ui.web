@@ -123,6 +123,7 @@ Utility classes for portal icons
 Icon implementations
 -----------------------------------------------------------
 */
+
 .pi-arrow-d:before{
 	font-family: starclipse;
     content:'\F004';
@@ -131,6 +132,11 @@ Icon implementations
 .pi-arrow-r:before{
 	font-family: starclipse;
     content:'\F006';
+}
+
+.pi-arrow-menu-dropdown:before{
+	font-family: starclipse;
+	content: "\F017";
 }
 
 .pi-flag:before{
@@ -143,7 +149,7 @@ Icon implementations
     content:'\F029';
 }
 
-.pi-download{
+.pi-download:before{
 	font-family: 'Glyphicons Halflings';
 	content: "\e026";
 }
@@ -156,11 +162,6 @@ Icon implementations
 .pi-minus-sign:before {
 	font-family: 'Glyphicons Halflings';
   	content: "\e082";
-}
-
-.pi-download:before {
-	font-family: 'Glyphicons Halflings';
-	content: "\e026";
 }
 
 .pi-copy:before {
@@ -191,4 +192,72 @@ Icon implementations
 .pi-eye-close:before {
 	font-family: 'Glyphicons Halflings';
 	content: "\e106";
+}
+
+/*Activity Overview Table*/
+.pi-activity:before{
+	font-family:FontAwesome;
+	content:"\f013";
+}
+
+.pi-activity-notes-empty:before{
+	font-family:FontAwesome;
+	content:"\f0e6";
+}
+
+.pi-activity-delegate{
+	font-family:FontAwesome;
+	content:"\f0e6";
+}
+
+.pi-activity-complete{
+	font-family:FontAwesome;
+	content:"\f046";
+}
+
+.pi-activity-notes:before{
+	font-family:FontAwesome;
+	content:"\f086";
+}
+
+.pi-activity-abort:before{
+	font-family: 'FontAwesome';
+	content: "\f00d";
+}
+
+.pi-activity-delegate:before{
+	font-family: "FontAwesome";
+	content: "\f007";
+}
+
+
+/*Process Overview Table*/
+.pi-process-notes-empty:before{
+	font-family:FontAwesome;
+	content:"\f0e6";
+}
+
+.pi-process-notes:before{
+	font-family:FontAwesome;
+	content:"\f086";
+}
+ 
+.pi-process-abort:before{
+	font-family: 'FontAwesome';
+	content: "\f00d";
+}
+
+.pi-save:before{
+	font-family: 'FontAwesome';
+	content: "\f0c7";
+}
+
+.pi-process:before{
+	font-family: 'FontAwesome';
+	content: "\f085";
+}
+
+.pi-process-recover:before{
+	font-family: 'FontAwesome';
+	content: "\f112";
 }
