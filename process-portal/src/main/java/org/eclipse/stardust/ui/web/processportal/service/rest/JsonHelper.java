@@ -51,6 +51,8 @@ public class JsonHelper
    private static final Logger trace = LogManager.getLogger(InteractionDataUtils.class);
 
    private String dateFormat = "yyyy-MM-dd'T'HH:mm:ss";
+   
+   private static final Character DEFAULT_CHAR = new Character(Character.MIN_VALUE);
   
    /**
     * 
@@ -263,7 +265,14 @@ public class JsonHelper
          }
          else if (value instanceof Character)
          {
-            ret = new JsonPrimitive((Character)value);               
+            if (DEFAULT_CHAR.compareTo((Character) value) == 0)
+            {
+               ret = new JsonPrimitive("");
+            }
+            else
+            {
+               ret = new JsonPrimitive((Character) value);
+            }
          }
          else if (value instanceof Date)
          {
