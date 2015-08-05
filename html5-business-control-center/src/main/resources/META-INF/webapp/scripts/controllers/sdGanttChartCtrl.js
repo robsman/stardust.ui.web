@@ -18,7 +18,7 @@
 	angular.module("bcc-ui").controller(
 			'sdGanttChartCtrl',
 			['sdProcessInstanceService', 'sdLoggerService', '$filter',
-			 'sgI18nService','sdActivityInstanceService','sdCommonViewUtilService','sgI18nService','$q','sdLocalizationService','sdLoggerService',Controller]);
+			 'sgI18nService','sdActivityInstanceService','sdCommonViewUtilService','sgI18nService','$q','sdLocalizationService',Controller]);
 
 	var _filter = null;
 	var _sdActivityInstanceService = null;
@@ -60,7 +60,7 @@
 	 * 
 	 */
 	function Controller(sdProcessInstanceService, sdLoggerService, $filter,
-			sdPreferenceService, sdActivityInstanceService, sdCommonViewUtilService, sgI18nService, $q, sdLocalizationService, sdLoggerService) {
+			sdPreferenceService, sdActivityInstanceService, sdCommonViewUtilService, sgI18nService, $q, sdLocalizationService) {
 
 		_filter = $filter;
 		_sdProcessInstanceService = sdProcessInstanceService;
@@ -449,7 +449,7 @@
 		var dayWidth = factor.majorFactorWidth;
 		var current = new Date(first);
 		self.minorTimeFrameWidth = dayWidth;
-
+		var temptableHolder =''
 		//self.drawCurrentTimeLine(first, second, factor);
 
 		while (second > first) {
@@ -464,13 +464,14 @@
 				daysInMonth = 0;
 				current =new Date( first);
 			}
-
+			temptableHolder = temptableHolder + '<span class="minorTimeLine" style="width :'+ self.minorTimeFrameWidth+'px;">'+new Date(first).getDate()+'</span>'
 			self.minorTimeFrames.push({
 				value : new Date(first)
 			});
 			daysInMonth = daysInMonth + 1;
 			first.setDate(first.getDate() + 1);
 		}
+		document.getElementById("minorTimeLine").innerHTML = temptableHolder;
 		self.majorTimeFrames.push({
 			width : (daysInMonth * dayWidth) + (daysInMonth - 1),
 			value : new Date(first)
@@ -501,6 +502,7 @@
 		var hourWidth = factor.majorFactorWidth;
 		var currentDay = new Date(first);
 		self.minorTimeFrameWidth = hourWidth;
+		var temptableHolder = '';
 		//self.drawCurrentTimeLine(first, second, factor);
 
 		while (second > first) {
@@ -518,9 +520,12 @@
 			self.minorTimeFrames.push({
 				value : first.getHours()
 			});
+			temptableHolder = temptableHolder + '<span class="minorTimeLine" style="width :'+ self.minorTimeFrameWidth+'px;">'+first.getHours()+'</span>'
 			hoursInDay = hoursInDay + 1;
 			first.setHours(first.getHours() + 1);
 		}
+		
+		document.getElementById("minorTimeLine").innerHTML = temptableHolder;
 		self.majorTimeFrames.push({
 			width : (hoursInDay * hourWidth) + (hoursInDay - 1),
 			value : first
@@ -536,6 +541,8 @@
 		var first = startTime;
 		var second = endTime;
 		var factor = FACTORS.minutes;
+		var temptableHolder = '';
+		 
 
 		var minDuration = first.getTime() + 4 * ONE_HOUR_IN_MIILS;
 		if (second.getTime() < minDuration) {
@@ -568,10 +575,13 @@
 					value : first.getHours() + ":"+MINUTES_LABEL_IN_HOUR[index]
 				});
 				quaterHoursInADay = quaterHoursInADay + 1;
+				temptableHolder = temptableHolder + '<span class="minorTimeLine" style="width :'+ self.minorTimeFrameWidth+'px;">'+first.getHours() + ":"+MINUTES_LABEL_IN_HOUR[index]+'</span>'
 			}
 
 			first.setTime(first.getTime() + ONE_HOUR_IN_MIILS);
 		}
+		
+		document.getElementById("minorTimeLine").innerHTML = temptableHolder;
 		self.majorTimeFrames.push({
 			width : (quaterHoursInADay * quaterHourWidth) + (quaterHoursInADay - 1),
 			value : first
@@ -659,6 +669,7 @@
 				auxillary : item.auxillary
 			});
 		});
+		
 
 		console.log(self.columnData)
 		self.drawCurrentTimeLine();
