@@ -442,6 +442,7 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
       String MIGRATE_FROM = MessagesViewsCommonBean.getInstance().getString("view.linkedProcess.label.migrate_from");
       String SPAWN_TO = MessagesViewsCommonBean.getInstance().getString("view.linkedProcess.label.spawn_to");
       String SPAWN_FROM = MessagesViewsCommonBean.getInstance().getString("view.linkedProcess.label.spawn_from");
+      String RELATED = MessagesViewsCommonBean.getInstance().getString("view.linkedProcess.label.related");
 
       long sourceLinkOID = link.getSourceOID();
       long targetLinkOID = link.getTargetOID();
@@ -453,11 +454,15 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
          {
             linkType = MIGRATE_FROM;
          }
-       else if(PredefinedProcessInstanceLinkTypes.SPAWN.getId().equals(link.getLinkType().getId()))
+         else if (PredefinedProcessInstanceLinkTypes.SPAWN.getId().equals(link.getLinkType().getId()))
          {
-          linkType = SPAWN_FROM;
+            linkType = SPAWN_FROM;
          }
-         else
+         else if (PredefinedProcessInstanceLinkTypes.RELATED.equals(link.getLinkType().getId()))
+         {
+            linkType = RELATED;
+         }
+         else 
             // If the link type is Join , set the To Process Link Type
             linkType = PredefinedProcessInstanceLinkTypes.JOIN.getId().equals(link.getLinkType().getId()) ? JOIN_FROM : SWITCH_FROM;
       }
@@ -467,9 +472,13 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
          {
             linkType = MIGRATE_TO;
          }
-        else if(PredefinedProcessInstanceLinkTypes.SPAWN.getId().equals(link.getLinkType().getId()))
+         else if (PredefinedProcessInstanceLinkTypes.SPAWN.getId().equals(link.getLinkType().getId()))
          {
-           linkType = SPAWN_TO;
+            linkType = SPAWN_TO;
+         }
+         else if (PredefinedProcessInstanceLinkTypes.RELATED.equals(link.getLinkType().getId()))
+         {
+            linkType = RELATED;
          }
          else
             linkType = PredefinedProcessInstanceLinkTypes.JOIN.getId().equals(link.getLinkType().getId()) ? JOIN_TO : SWITCH_TO;
