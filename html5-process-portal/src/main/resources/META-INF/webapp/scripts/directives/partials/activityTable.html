@@ -242,7 +242,7 @@
 					<div style="text-align: right; white-space: nowrap;">
 						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openProcessDetails(rowData);" aid="PP-ActivityTable-OpenProcessDetailsAction"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-processContextExplorer')}}" class="button-link tbl-tool-link">
-							<i class="pi pi-activity icon-lg"></i>
+							<i class="pi pi-process icon-lg"></i>
 						</button>
 						<button ng-if="activityTableCtrl.isActivityTableMode();" 	ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$activateItem(rowData);" aid="PP-ActivityTable-ActivateAction"
 							    ng-disabled="!rowData.activatable"	title="{{i18n('processportal.views-worklistPanel-tooltip-openActivity')}}" class="button-link tbl-tool-link">
@@ -263,8 +263,8 @@
 						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openDelegateDialog(rowData);"  aid="PP-ActivityTable-DelegateAction"
 							ng-disabled="!rowData.delegable || rowData.defaultCaseActivity"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-delegate')}}" class="button-link tbl-tool-link">
-               				 <i class="pi pi-badge-portrait sc-fw pi-activity-delegate icon-lg pi-left pi-top">
-			                    <i class="pi pi-badge-icon pi-badge-icon-plus"></i>
+               				 <i class="pi pi-badge-portrait pi-fw pi-activity-delegate icon-lg pi-left pi-top">
+			                    <i class="pi pi-badge-icon pi-badge-icon-arrow-r"></i>
 			                 </i>
 						</button>
 						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openAbortDialog(rowData);"  aid="PP-ActivityTable-AbortAction"
@@ -275,7 +275,7 @@
 						<button ng-if="activityTableCtrl.isActivityTableMode();" class="button-link tbl-tool-link" aid="PP-ActivityTable-AbortPopoverAction"
 						    ng-disabled="!rowData.abortProcess || rowData.isCaseInstance"
 							title ="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}" ng-click="activityTableCtrl.openAbortPopover($event, rowData); bpmCommon.stopEvent($event);" >
-							<i class="pi pi-arrow-menu-dropdown icon-rotate-90"></i>
+							<i class="pi pi-arrow-menu-dropdown"></i>
 						</button>
 						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openNotes(rowData);" aid="PP-ActivityTable-OpenNotesAction"
 						    ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"

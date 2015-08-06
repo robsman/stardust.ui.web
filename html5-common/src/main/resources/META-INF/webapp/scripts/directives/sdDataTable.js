@@ -109,20 +109,20 @@
 			'<div class="tbl-toolbar-section">\n' +
 				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSelectColumns" ng-click="$dtApi.toggleColumnSelector()"' + 
 					' title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}">\n' +
-					'<i class="glyphicon glyphicon-th icon-lg"></i>\n' +
+					'<i class="pi pi-th icon-lg"></i>\n' +
 				'</button>\n' +
 				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableExportExcel" ng-click=""' +
 					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}">\n' +
-					'<i class="glyphicon glyphicon-export icon-lg"></i>\n' +
+					'<i class="pi pi-export icon-lg"></i>\n' +
 				'</button>\n' +
 				'<button class="button-link tbl-toolbar-item  tbl-tool-joined-link tbl-tool-link" ng-if="$dtApi.enableExportCSV" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})"' +
 					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}">\n' +
-					'<i class="glyphicon glyphicon-export icon-lg"></i>\n' +
+					'<i class="pi pi-export icon-lg"></i>\n' +
 				'</button>\n' +
 				'<div ng-if="$dtApi.showSelectColumns" class="popup-dlg">\n' +
 				'<div class="popup-dlg-hdr">\n' +
 					'<span class="popup-dlg-hdr-txt">{{i18n("portal-common-messages.common-filterPopup-selectColumnsLabel")}}</span>\n' + 
-					'<span class="popup-dlg-cls glyphicon glyphicon-remove" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()"></span>\n' +
+					'<span class="popup-dlg-cls pi pi-close" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()"></span>\n' +
 				'</div>\n' +
 				'<div class="popup-dlg-cnt tbl-col-selector">\n' +
 							'<div>\n' +
@@ -134,10 +134,10 @@
 									'</select>\n' +
 								'</span>\n' +
 								'<button class="button-link tbl-col-sel-link" ng-if="$dtApi.columnSelectorAdmin" ng-click="$dtApi.toggleColumnSelectorLock()" ng-disabled="$dtApi.isColumnSelectorLockDisabled()">\n' +
-									'<span class="sc icon-lg sc-lock" ng-show="$dtApi.lock" title="{{i18n(\'portal-common-messages.common-filterPopup-unlock\')}}"></span>\n' + 
-									'<span class="sc icon-lg sc-unlock" ng-show="!$dtApi.lock" title="{{i18n(\'portal-common-messages.common-filterPopup-lock\')}}"></span>\n' +
+									'<span class="pi icon-lg pi-lock" ng-show="$dtApi.lock" title="{{i18n(\'portal-common-messages.common-filterPopup-unlock\')}}"></span>\n' + 
+									'<span class="pi icon-lg pi-unlock" ng-show="!$dtApi.lock" title="{{i18n(\'portal-common-messages.common-filterPopup-lock\')}}"></span>\n' +
 								'</button>\n' +
-								'<button class="button-link tbl-col-sel-link glyphicon glyphicon-repeat" ng-click="$dtApi.resetColumnSelector()" title ="{{i18n(\'portal-common-messages.common-reset\')}}" style="cursor: pointer;"></button>\n' +
+								'<button class="button-link tbl-col-sel-link pi pi-reset" ng-click="$dtApi.resetColumnSelector()" title ="{{i18n(\'portal-common-messages.common-reset\')}}" style="cursor: pointer;"></button>\n' +
 							'</div>\n' +
 							'<div class="tbl-col-sel-list">\n' +
 								'<div ng-repeat="col in $dtApi.columns" class="tbl-col-sel-row" ng-model="$index" sd-data-drag sd-data-drop sda-drop="$dtApi.moveColumns($data, $index, $event)">\n' +
@@ -152,7 +152,7 @@
 						'</div>\n' +
 				'</div>\n' +
 				'<span ng-if="$dtApi.enableExportCSV" sd-popover id="exportOptions" sda-class="tbl-tool-link">' +
-				'<i class="glyphicon glyphicon-chevron-right icon-rotate-90 button-link tbl-toolbar-item tbl-tool-link"></i>\n' +
+				'<i class="pi pi-arrow-menu-dropdown button-link tbl-toolbar-item tbl-tool-link"></i>\n' +
 						'<div class="popover-body">\n' +
 							'<div><a href="" ng-hide="!$dtApi.enableSelectColumns" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})">' + 
 							'{{i18n(\'html5-common.export-options-current-page-current-fields\')}}\n' +
@@ -714,10 +714,10 @@
 					filterMarkup =
 						'<span flt-anchor="' + col.name + '"></span>' +
 						'<button class="button-link tbl-col-flt" ng-show="!' + filterSet + '" ng-click="' + stopEvent + toggleFilter + '" title="{{i18n(\'portal-common-messages.common-filterPopup-showFilter-tooltip\')}}">\n' +
-							'<i class="glyphicon glyphicon-filter"></i>\n' +
+							'<i class="pi pi-filter"></i>\n' +
 						'</button>\n' +
 						'<button class="button-link tbl-col-flt-set" ng-show="' + filterSet + '" ng-click="' + stopEvent + resetFilter + '" title="{{i18n(\'portal-common-messages.common-filterPopup-resetFilter-tooltip\')}}">\n' +
-							'<i class="glyphicon glyphicon-filter"></i>\n' +
+							'<i class="pi pi-filter"></i>\n' +
 						'</button>\n' +
 						'<button class="button-link" ng-click="' + stopEvent + toggleFilter + '" title="{{i18n(\'portal-common-messages.common-filterPopup-showFilter-tooltip\')}}">\n' +
 							'<span class="tbl-col-flt-title" ng-if="!' + filterSet + '">{{i18n("portal-common-messages.common-filterPopup-filterNotSet")}}</span>' + 
@@ -729,7 +729,7 @@
 							'<div class="popup-dlg-hdr">\n' +
 								'<span class="popup-dlg-hdr-txt">' +
 									'{{i18n("portal-common-messages.common-filterPopup-dataFilterByLabel")}} ' + col.title + '</span>\n' + 
-								'<span class="popup-dlg-cls glyphicon glyphicon-remove" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="' + toggleFilter + '"></span>\n' +
+								'<span class="popup-dlg-cls pi pi-close" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="' + toggleFilter + '"></span>\n' +
 							'</div>\n' +
 							'<div class="popup-dlg-cnt tbl-col-flt-dlg-cnt">\n' +
 								'<div ng-if="' + filterVisible + '">\n' + 
@@ -806,10 +806,10 @@
 			dtOptions.iDisplayLength = pageSize;
 			dtOptions.oLanguage = {
 					"oPaginate": {
-						"sFirst": "<i class='glyphicon glyphicon-step-backward dataTables_paginate_icon' ></i>",
-						"sPrevious": "<i class='glyphicon  glyphicon-triangle-left dataTables_paginate_icon'></i>",
-						"sNext": "<i class='glyphicon glyphicon-triangle-right dataTables_paginate_icon'></i>",
-						"sLast": "<i class='glyphicon glyphicon-step-forward dataTables_paginate_icon'></i>"
+						"sFirst": "<i class='pi pi-step-back dataTables_paginate_icon' ></i>",
+						"sPrevious": "<i class='pi pi-step-back-one pi-rotate-180 dataTables_paginate_icon'></i>",
+						"sNext": "<i class='pi pi-step-forward-one dataTables_paginate_icon'></i>",
+						"sLast": "<i class='pi pi-step-forward dataTables_paginate_icon'></i>"
 					},
 					 "sEmptyTable": sgI18nService.translate('portal-common-messages.common-genericDataTable-noRecordsFoundLabel')
 			};

@@ -64,15 +64,15 @@ portal icon badging stem, duped from starclipse
     top:0;
 }
 
-.sc-left *{
+.pi-left *{
     left:0;
 }
 
-.sc-right *{
+.pi-right *{
     right:0;
 }
 
-.sc-top *{
+.pi-top *{
     line-height:0;
 }
 
@@ -80,8 +80,13 @@ portal icon badging stem, duped from starclipse
 
 /*badge icons*/
 .pi-badge-icon-plus:before{
-	font-family:FontAwesome;
+	font-family:starclipse;
     content:'\F086';
+}
+
+.pi-badge-icon-arrow-r:before{
+	font-family:starclipse;
+    content:'\F08E';
 }
 
 /*
@@ -125,6 +130,14 @@ Utility classes for portal icons
     font-size:80px;
 }
 
+.pi-rotate-180{
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    transform: rotate(180deg);
+}
 
 /*
  primary meta colors (should probably be moved out of pi to a more ubiquitous selector)
@@ -152,6 +165,12 @@ Icon implementations
     content:'\F0E7';
 }
 
+.pi-reset:before,
+.pi-refresh:before{
+	font-family:FontAwesome;
+	content: "\f01e";
+}
+
 .pi-user:before{
 	font-family: starclipes;
     content:'\F041';
@@ -168,8 +187,8 @@ Icon implementations
 }
 
 .pi-arrow-menu-dropdown:before{
-	font-family: starclipse;
-	content: "\F017";
+	font-family: FontAwesome;
+	content: "\f078";
 }
 
 .pi-flag:before{
@@ -227,6 +246,59 @@ Icon implementations
 	content: "\e106";
 }
 
+/*Data Table Directive*/
+.pi-step-back-one:after{
+	font-family: FontAwesome;
+	content: "\f04b";
+}
+
+.pi-step-back:before{
+	font-family: FontAwesome;
+	content: "\f048";
+}
+
+.pi-step-forward-one:before{
+	font-family: FontAwesome;
+	content: "\f04b";
+}
+
+.pi-step-forward:before{
+	font-family: FontAwesome;
+	content: "\f051";
+}
+
+.pi-th:before{
+	font-family: FontAwesome;
+	content: "\f00a";
+}
+
+.pi-export:before{
+	font-family: FontAwesome;
+	content: "\f019";
+}
+
+.pi-saved:before{
+	font-family: 'Glyphicons Halflings';
+	content: "\e173";
+}
+
+.pi-filter:before{
+	font-family: FontAwesome;
+	content: "\f0b0";
+}
+
+.pi-lock:before{
+	font-family: starclipse;
+	content: "\f034";
+}
+
+.pi-unlock:before{
+	font-family: starclipse;
+	content: "\f063"
+}
+
+
+
 /*Activity Overview Table*/
 .pi-activity:before{
 	font-family:FontAwesome;
@@ -234,11 +306,6 @@ Icon implementations
 }
 
 .pi-activity-notes-empty:before{
-	font-family:FontAwesome;
-	content:"\f0e6";
-}
-
-.pi-activity-delegate:before{
 	font-family:FontAwesome;
 	content:"\f0e6";
 }
@@ -275,7 +342,9 @@ Icon implementations
 	content:"\f086";
 }
  
-.pi-process-abort:before{
+.pi-process-abort:before,
+.pi-abort:before,
+.pi-close:before{
 	font-family: 'FontAwesome';
 	content: "\f00d";
 }
