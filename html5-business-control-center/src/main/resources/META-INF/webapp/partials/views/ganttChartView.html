@@ -145,11 +145,17 @@
 									 <span class="sc icon-lg sc-minus"> </span>
 							</button>
 						</span> 
+						<span class="identifierIcon spacing-right"  ng-switch on="col.type"> 
+							<span ng-switch-default>  <i class="sc sc-cog icon-lg"> </i></span>
+							<span ng-switch-when="process"> <i class="sc sc-cogs icon-1-5x "></i></span>
+							<span ng-switch-when="Subprocess"><i class="sc sc-cogs icon-1-5x"></i></span>
+						</span>
+						
 						
 						<span ng-bind="col.name" class="spacing-right"> </span> 
 						<span ng-show="col.activatable">
 							<button ng-click="ctrl.activate(col);" class="button-link tbl-tool-link ">
-								 <span class="sc icon-lg sc-cog"> </span>
+								 <span ><i class="fa fa-rocket icon-lg"></i> </span>
 							</button>
 						</span> 
 					
@@ -177,6 +183,10 @@
 			</table>
 		</div>
 	</div>
+	
+	
+
+<br>	
 	<div>
 		<input type="text" ng-model="ctrl.selected.process"/> <button ng-click="ctrl.getProcessInfo()"> Get Process </button>
 	</div>
