@@ -428,7 +428,7 @@ public class ActivityPanelController extends UIComponentBean
          }
          activityDetailsBean.closeProcessAttachmentsIframePopup();
       }
-      catch (ResourceNotFoundException e)
+      catch (Exception e)
       {
          trace.error("Unable to Detach Document from Activity");
          ExceptionHandler.handleException(e);
