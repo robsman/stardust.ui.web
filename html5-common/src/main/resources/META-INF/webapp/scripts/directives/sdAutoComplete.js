@@ -186,7 +186,7 @@ angular.module('bpm-common.directives')
   var tpl = '<div name="sd-ac-Container"\
                ng-class="containerClass"\
                ng-keyDown="keyMonitor($event)" aid="{{autoIdPrefix}}-sd-ac-Container">\
-              <div name="sd-ac-tag"\
+              <div ng-attr-title="{{item[tooltipProperty]|| item[textProperty]}}" name="sd-ac-tag"\
                    ng-click="popData(item)"\
                    ng-repeat="item in dataSelected track by $index"\
                    ng-class="classWrapper(\'tagClass\',item)" aid="{{autoIdPrefix}}-sd-ac-tag">\
@@ -267,8 +267,9 @@ angular.module('bpm-common.directives')
         orderPredicate     : "@sdaOrderPredicate",
         closeDelay         : "@sdaCloseDelay",
         keyDelay           : "@sdaKeyDelay",
-        onSelectionChange : "&sdaOnSelectionChange",
-        autoIdPrefix : '@sdaAidPrefix'
+        onSelectionChange  : "&sdaOnSelectionChange",
+        autoIdPrefix       : "@sdaAidPrefix",
+        tooltipProperty    : "@sdaTooltipProperty"
       }
   }
   
