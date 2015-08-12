@@ -15,3 +15,71 @@
 	font-weight: normal;
 	font-size: 1em;
 }   
+.correspondence_container {
+	width: 100%;
+	align:center;
+}
+
+.correspondence_left_section {
+	width: 100px;
+	vertical-align: top
+}
+
+.correspondence_right_section {
+	vertical-align: top;
+	padding-right: 100px;
+}
+
+.correspondence_section {
+	height: 40px;
+}
+
+.selected_address {
+    padding: 0px 4px 0px 4px;
+    border: solid 1px #ccd5e4;
+    background-color: #eff2f7;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-left: 4px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+.correspondence_attachments {
+	padding: 0px 4px 0px 4px;
+	border: solid 1px #ccd5e4;
+	background-color: #eff2f7;
+	border-radius: 4px;
+	cursor: pointer;
+	margin-left: 3px;
+	margin-top: 3px;
+	margin-bottom: 3px;
+}
+
+.address_box {
+	display: inline-table;
+	border: solid 1px #ccd5e4;
+	padding-left: 3px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	min-width: 400px
+}
+
+.correspondence_type_selector {
+	width: 100px;
+}
+
+.correspondence_addressBook_conatiner {
+	max-height: 250px;
+	overflow: auto;
+}
+
+.correspondence_addressBook_fax_control {
+	margin-left: 5px;= !imporatnt;
+	margin-bottom: 4px; !imporatnt
+}
+
+.addressBoxConatiner {
+	max-height: 250px;
+	overflow: auto;
+}

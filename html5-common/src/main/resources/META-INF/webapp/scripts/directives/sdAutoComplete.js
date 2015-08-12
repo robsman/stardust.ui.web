@@ -167,6 +167,10 @@ angular.module('bpm-common.directives')
     };
               
     $scope.popData=function(item){
+    	if($scope.readOnly) {
+    		return;
+    	}
+    	
       var idx = $scope.dataSelected.indexOf(item);
       $scope.dataSelected.splice(idx,1);
       if (angular.isDefined($attrs.sdaOnSelectionChange)) {
@@ -193,7 +197,7 @@ angular.module('bpm-common.directives')
                    <i ng-class="classGeneratorTPC(item,$index)"></i>\
                      {{item[textProperty] || item}}\
               </div>\
-              <input ng-model="matchStr"\
+              <input ng-hide="readOnly" ng-model="matchStr"\
                      ng-keyUp="changeWrapper(matchStr)"\
                      style="outline-width:0px;border:none; margin-left:4px"\
                      type="text" aid="{{autoIdPrefix}}-MatchStr" />\
@@ -269,7 +273,8 @@ angular.module('bpm-common.directives')
         keyDelay           : "@sdaKeyDelay",
         onSelectionChange  : "&sdaOnSelectionChange",
         autoIdPrefix       : "@sdaAidPrefix",
-        tooltipProperty    : "@sdaTooltipProperty"
+        tooltipProperty    : "@sdaTooltipProperty",
+        readOnly           : "=sdaReadOnly"
       }
   }
   

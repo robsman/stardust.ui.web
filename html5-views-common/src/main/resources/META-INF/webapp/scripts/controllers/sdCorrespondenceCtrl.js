@@ -10,29 +10,29 @@
 /**
  * @author Johnson.Quadras
  */
+define([],function(){
 
-(function() {
-	'use strict';
-
-	angular.module("viewscommon-ui").controller('sdCorrespondenceCtrl',
-			['$scope','$q','$filter','sgI18nService','sdDialogService','sdProcessInstanceService',
-					CorrespondenceCtrl]);
 	var _q;
 	var trace;
 	var _filter;
-	var _sgI18nService;
 	var _sdDialogService;
-	var _sdProcessInstanceService;
+	var _sdCorrespondenceService;
+	
+	var buttons = {
+			confirm : '',
+			cancel :''	
+	}
+	
 	/*
 	 * 
 	 */
-	function CorrespondenceCtrl($scope, $q , $filter, sgI18nService,sdDialogService, sdProcessInstanceService) {
-
+	function CorrespondenceCtrl($scope, $q , $filter,sdDialogService, sdCorrespondenceService) {
+		
+		this.readOnly = false;
 		_q = $q;
 		_filter =$filter; 
-		_sgI18nService = sgI18nService;
 		_sdDialogService = sdDialogService;
-		_sdProcessInstanceService = sdProcessInstanceService;
+		_sdCorrespondenceService = sdCorrespondenceService;
 
 		this.intialize($scope);
 		
@@ -42,13 +42,13 @@
 			return $scope;
 		}
 	}
-
+	
 	/**
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.intialize = function($scope){
+		console.log(_sdCorrespondenceService.get())
 		
-
 		this.correspondenceTypes = [{
 										label : 'Email',
 										id : 'email'
@@ -58,12 +58,16 @@
 									}];
 		
 		this.selected = {
-				type  : 'print', // print / email
+				type  : 'email', // print / email
 				showBcc : false,
 				showCc : false,
 				to: [],
 				bcc:[],
-				cc:[]
+				cc:[],
+				message : 'Enter Text',
+				subject : ' Subject',
+				templateId : '',
+				attachments : []
 		};
 		
 		
@@ -85,18 +89,21 @@
 				bcc : "",
 				cc : ""
 			}
-		}
+		};
 		
 		this.filter = {
 				address : '',
 				showFax : false
-		}
+		};
 		
 		this.addressEnteries = getAddressBook();
 		this.addressTable = null;
 		this.selectedAddresses = [];
 		
+		this.i18n = $scope.$root.i18n; 
 		
+		buttons.confirm =  this.i18n('views-common-messages.common-Confirm', 'Confirm');
+		buttons.cancel = this.i18n('views-common-messages.common-Cancel', 'Cancel');
 	};
 	
 	/**
@@ -106,161 +113,158 @@
 		
 		CorrespondenceCtrl.prototype.showBcc = showBcc;
 		CorrespondenceCtrl.prototype.showCc = showCc;
+		CorrespondenceCtrl.prototype.complete = complete;
+		CorrespondenceCtrl.prototype.cancel = cancel;
+
+		
+		CorrespondenceCtrl.prototype.getAddressesAutoCompleteBCC = getAddressesAutoCompleteBCC;
+		CorrespondenceCtrl.prototype.getAddressesAutoCompleteCC = getAddressesAutoCompleteCC;
+		CorrespondenceCtrl.prototype.getAddressesAutoCompleteTO = getAddressesAutoCompleteTO;
+		
+		CorrespondenceCtrl.prototype.newItemFactory = newItemFactory;
+		CorrespondenceCtrl.prototype.getAvailableAddresses = getFilteredAddresses;
+		CorrespondenceCtrl.prototype.addressIconMapper = tagPreMapper;
+		CorrespondenceCtrl.prototype.onAddressSelection = onAddressSelection;
+		CorrespondenceCtrl.prototype.removeAddress = removeAddress;
+		CorrespondenceCtrl.prototype.addAddress = addAddress;
+		
+		CorrespondenceCtrl.prototype.openAddressSelector = openAddressSelector;
+		CorrespondenceCtrl.prototype.openMessageTemplateSelector = openMessageTemplateSelector
+		CorrespondenceCtrl.prototype.openAttachmentSelector = openAttachmentSelector;
+		
+		CorrespondenceCtrl.prototype.loadMessageFromTemplate = loadMessageFromTemplate
+		CorrespondenceCtrl.prototype.loadAttachments = loadAttachments
+		CorrespondenceCtrl.prototype.removeAttachment= removeAttachment;
 		
 	}
 	
-	
-	CorrespondenceCtrl.prototype.getAddressesAutoCompleteBCC = function(filterCriteria, resultHolder){
+
+	function getAddressesAutoCompleteBCC(filterCriteria, resultHolder){
 		var self = this;
 		self.filter.address = filterCriteria;
 		self.filter.showFax = true;
 		self.data.like.bcc = self.getAvailableAddresses();
 	};
-	
-	CorrespondenceCtrl.prototype.getAddressesAutoCompleteCC = function(filterCriteria, resultHolder){
+
+	function getAddressesAutoCompleteCC (filterCriteria, resultHolder){
 		var self = this;
 		self.filter.address = filterCriteria;
 		self.filter.showFax = true;
 		self.data.like.cc = self.getAvailableAddresses();
 	};
 
-	
-	CorrespondenceCtrl.prototype.getAddressesAutoCompleteTO = function(filterCriteria, resultHolder){
+
+	function getAddressesAutoCompleteTO(filterCriteria, resultHolder){
 		var self = this;
 		self.filter.address = filterCriteria;
 		self.filter.showFax = true;
 		self.data.like.to= self.getAvailableAddresses();
 	};
 
-
-	
-	
-	CorrespondenceCtrl.prototype.newItemFactory = function(val){
-		 var newEntry = {
+	function newItemFactory(val){
+		var newEntry = {
 				path : val,
 				value : val
 		};
-		 
-		 return newEntry;
+
+		return newEntry;
 	}
-	
-	CorrespondenceCtrl.prototype.getAvailableAddresses = function(){
+
+	function getFilteredAddresses(){
 		var self = this;
 		var faxFilter = self.addressEnteries;
 		if(!self.filter.showFax) {
-		 faxFilter = _filter('filter')(faxFilter, {fax : false},true);
+			faxFilter = _filter('filter')(faxFilter, {fax : false},true);
 		}
-		
+
 		console.log("Filter:")
 		console.log( _filter('filter')(faxFilter, {path : self.filter.address},false))
 		return  _filter('filter')(faxFilter, {path : self.filter.address},false);
 	};
-	
-	 /*
-	    * 
-	    */
-	CorrespondenceCtrl.prototype.tagPreMapper = function(item, index) {
-		   var tagClass = "fa fa-envelope-o"
-		   return tagClass;
-	   };
-	  
-	   
-	   CorrespondenceCtrl.prototype.onSelect = function(info) {
-			var self = this;
-			if (info.action == "select") {
-				self.selectedAddresses.push(info.current)
-			} else {
-				var index = self.selectedAddresses.indexOf(info.current);
-				self.selectedAddresses.splice(index,1)
-			}
-		};
-		
-		/**
-		 * 
-		 */
-		 CorrespondenceCtrl.prototype.addAddress = function(source,destination) {
-				
-			 	angular.forEach(source,function(data){
-			 		var found = _filter('filter')(destination,{path : data.path},true);
-			 		if(found && found.length < 1){
-			 			destination.push(data);
-			 		}
-			 	});
-		};	
-		
-		/**
-		 * 
-		 */
-		CorrespondenceCtrl.prototype.addInlineAddress = function(addressType) {
-			var self = this;
 
-			var data = null;
-			var destination = null;
+	/*
+	 * 
+	 */
+	function tagPreMapper(item, index) {
+		var tagClass = "glyphicon glyphicon-envelope"
+			return tagClass;
+	};
 
-			if (addressType == 'TO') {
-				data = self.enteredAdd.to;
-				destination = self.selected.to;
-				self.enteredAdd.to = '';
-			} else if (addressType == 'CC') {
-				data = self.enteredAdd.cc;
-				destination = self.selected.cc;
-				self.enteredAdd.cc = '';
-			} else if (addressType == 'BCC') {
-				data = self.enteredAdd.bcc;
-				destination = self.selected.bcc;
-				self.enteredAdd.bcc = '';
-			}
-			console.log("Add Single Address");
-			console.log(data);
-			if(!data || data == ''){
-					return;
-				}
-			self.addAddress([{
-				path : data,
-				value : data
-			}], destination);
-			
-			
-		};	
-		
-		
-		/**
-		 * 
-		 */
-		CorrespondenceCtrl.prototype.removeAddress = function(addressType, data) {
-			var desination = null;
-			var self = this;
-			if (addressType == 'TO') { 
-				desination = self.selected.to
-			}else if (addressType == 'CC') { 
-				desination = self.selected.cc
-			}
-			else if (addressType == 'BCC') { 
-				desination = self.selected.bcc
-			}
-			var index = desination.indexOf(data);
-			desination.splice(index,1 );
-		};	
+	/**
+	 * 
+	 */
+	function onAddressSelection(info) {
+		var self = this;
+		if (info.action == "select") {
+			self.selectedAddresses.push(info.current)
+		} else {
+			var index = self.selectedAddresses.indexOf(info.current);
+			self.selectedAddresses.splice(index,1)
+		}
+	};
 
-		/*
-		 * 
-		 */
-		CorrespondenceCtrl.prototype.openAddressSelector = function(addressType) {
+	/**
+	 * 
+	 */
+	function addAddress(source,destination) {
+
+		angular.forEach(source,function(data){
+			var found = _filter('filter')(destination,{path : data.path},true);
+			if(found && found.length < 1){
+				destination.push(data);
+			}
+		});
+	};	
+
+	/**
+	 * 
+	 */
+	function removeAddress (addressType, data) {
+		var desination = null;
+		var self = this;
+		if (addressType == 'TO') { 
+			desination = self.selected.to
+		}else if (addressType == 'CC') { 
+			desination = self.selected.cc
+		}
+		else if (addressType == 'BCC') { 
+			desination = self.selected.bcc
+		}
+		var index = desination.indexOf(data);
+		desination.splice(index,1 );
+	};	
+
+
+	/**
+	 * 
+	 */
+	function loadMessageFromTemplate( documentId) {
+		//Call rest service and load the message 
+		var self = this;
+		self.selected.message = "Message from template"+new Date().getTime();
+
+	};	
+
+	/*
+	 * 
+	 */
+	function openAddressSelector (addressType){
 			
-			var self = this;
-			self.addressReady = true;
-			self.selectedAddresses = [];
-			var title = "Select Recipients";
-			var html = '<div style="padding-bottom:10px;">'+ 
+		var self = this;
+		self.addressReady = true;
+		self.selectedAddresses = [];
+		self.filter.address = "";
+		var title = "Select Recipients";
+		var html = '<div style="padding-bottom:10px;">'+ 
 							'<span ng-repeat = "opt in ctrl.selectedAddresses" class="spacing-right "> '+
-							'<span class="correspondence_mail_id"><i class="fa fa-envelope-o spacing-right"></i> {{opt.path}} </span> </span >'+
+							'<span class="selected_address"><i class="glyphicon glyphicon-envelope spacing-right"></i> {{opt.path}} </span> </span >'+
 						'</div>'+
-						'<i class="glyphicon glyphicon-search"> </i>	<input type="text"  class="spacing-right"  ng-model = "ctrl.filter.address" ng-change="ctrl.addressTable.refresh();"/>'+
+						'<i class="glyphicon glyphicon-search"> </i>	<input type="text"  class="spacing-right"  ng-model="ctrl.filter.address" ng-change="ctrl.addressTable.refresh();"/>'+
 							'<input class="correspondence_addressBook_fax_control" type="checkbox" ng-model="ctrl.filter.showFax" ng-change="ctrl.addressTable.refresh();"/> <span class="iceOutLbl">Fax </span>'+
 					   '<div class="correspondence_addressBook_conatiner">'+
 							'<table sd-data-table="ctrl.addressTable" '+
 								' sd-data="ctrl.getAvailableAddresses();" sda-mode="local" '+
-								' sda-selectable="multiple" sda-no-pagination="true"  sda-page-size="{{ctrl.addressEnteries.length}}"  sda-ready="ctrl.addressReady" sda-on-select="ctrl.onSelect(info);" sda-selection="ctrl.selectedAddresses"> '+
+								' sda-selectable="multiple" sda-no-pagination="true"  sda-page-size="{{ctrl.addressEnteries.length}}"  sda-ready="ctrl.addressReady" sda-on-select="ctrl.onAddressSelection(info);" sda-selection="ctrl.selectedAddresses"> '+
 								' <thead >'+
 									'<tr>'+
 										'<th sda-label="Name"></th>'+
@@ -276,25 +280,37 @@
 							' </table>'+
 					  '</div> ';
 				
-				
-			var options = {
-					title : title,
-					type : 'confirm',
-					onConfirm : function() {
-						if(addressType == 'TO'){
-							self.addAddress(self.selectedAddresses, self.selected.to)
-						}else if(addressType == 'CC'){
-							self.addAddress(self.selectedAddresses, self.selected.cc)
-						}else if(addressType == 'BCC'){
-							self.addAddress(self.selectedAddresses, self.selected.bcc)
-						}
-					},
-					dialogActionType : 'OK_CLOSE'
-			};
-			_sdDialogService.dialog(self.getScope(), options, html)
+		var options = {
+				title : title,
+				type : 'confirm',
+				confirmActionLabel : buttons.confirm,
+			    cancelActionLabel :  buttons.cancel,
+				onConfirm : function() {
+					if(addressType == 'TO'){
+						self.addAddress(self.selectedAddresses, self.selected.to)
+					}else if(addressType == 'CC'){
+						self.addAddress(self.selectedAddresses, self.selected.cc)
+					}else if(addressType == 'BCC'){
+						self.addAddress(self.selectedAddresses, self.selected.bcc)
+					}
+				}
 		};
+		_sdDialogService.dialog(self.getScope(), options, html)
+	};
 		
-		
+
+	/**
+	 * 
+	 */
+	function cancel() {
+
+	};	
+	/**
+	 * 
+	 */
+	function complete() {
+
+	};
 
 	/**
 	 * 
@@ -302,11 +318,11 @@
 	function showCc () {
 		this.selected.showCc = true;
 	};
-	
+
 	/**
 	 * 
 	 */
-	 function showBcc() {
+	function showBcc() {
 		this.selected.showBcc = true;
 	};
 	
@@ -314,10 +330,112 @@
 	/**
 	 * 
 	 */
-	 function getAddressBook() {
-		 
-		 return _sdProcessInstanceService.getCorrespondenceAddressBook();
-	 };
+	 function openMessageTemplateSelector() {
+			var self = this;
+			var title = "Select Template";
+			
+			var html = '<i class="glyphicon glyphicon-search"> </i>	<input type="text"  class="spacing-right"  ng-model="ctrl.filter.template" />'+
+						'<br><input type="text" ng-model="ctrl.selected.templateId" ng-change="ctrl.addressTable.refresh();"/> ';
+			var options = {
+					confirmActionLabel : buttons.confirm,
+				    cancelActionLabel :  buttons.cancel,
+					title : title,
+					type : 'confirm',
+					onConfirm : function() {
+						self.loadMessageFromTemplate(self.selected.templateId);
+					},
+					dialogActionType : 'OK_CLOSE'
+			};
+			_sdDialogService.dialog(self.getScope(), options, html)
+	};
 	
+	/**
+	 * 
+	 */
+	 function openAttachmentSelector() {
+			var self = this;
+			var title = "Select Attachments";
+			
+			var html = '<i class="glyphicon glyphicon-search"> </i>	<input type="text"  class="spacing-right"  ng-model="ctrl.filter.attachment" />'+
+						'<br><input type="text" ng-model="ctrl.selected.attachmentId" ng-change="ctrl.addressTable.refresh();"/> ';
+			var options = {
+					confirmActionLabel : buttons.confirm,
+				    cancelActionLabel :  buttons.cancel,
+					title : title,
+					type : 'confirm',
+					onConfirm : function() {
+						var attachment = {
+								name : self.selected.attachmentId
+						};
+						self.loadAttachments(attachment);
+						
+					},
+					dialogActionType : 'OK_CLOSE'
+			};
+			_sdDialogService.dialog(self.getScope(), options, html)
+	};
 	
-})();
+	/**
+	 * 
+	 */
+	function loadAttachments(attachment) {
+		var self = this;
+		self.selected.attachments.push(attachment);
+	}
+	
+	/**
+	 * 
+	 */
+	function removeAttachment(attachment) {
+		var self = this;
+		var index = self.selected.attachments.indexOf(attachment);
+		self.selected.attachments.splice(index,1);
+	}
+	
+
+	/**
+	 * 
+	 */
+	function getAddressBook() {
+		 return  [
+				         {
+				        	 path : ' path1',
+				        	 value : 'email1@email.com',
+				        	 fax :  false
+				         },
+				         {
+				        	 path : ' path2',
+				        	 value : '122331@email',
+				        	 fax :  true
+				         },
+				         {
+				        	 path : ' path3',
+				        	 value : '122331@email',
+				        	 fax :  false
+				         },
+				         {
+				        	 path : ' path1',
+				        	 value : 'email1@email.com',
+				        	 fax :  false
+				         },
+				         {
+				        	 path : ' path2',
+				        	 value : '122331@email',
+				        	 fax :  true
+				         }
+				         ]
+	};
+	
+	//Dependency injection array for our controller.
+	CorrespondenceCtrl.$inject = ['$scope','$q','$filter','sdDialogService','sdCorrespondenceService'];
+	
+	//Require capable return object to allow our angular code to be initialized
+	//from a require-js injection system.
+	return {
+		init: function(angular,appName){
+			angular.module(appName)
+			.controller("sdCorrespondenceCtrl", CorrespondenceCtrl);
+		}
+	};
+	
+});

@@ -41,6 +41,7 @@ var html5Deps = function() {
 				'angularjs' : ['../portal-shell/js/libs/angular/1.2.11/angular'],
 				'angularResource' : ['../portal-shell/js/libs/angular/1.2.11/angular-resource'],
 				'bootstrap' : [ 'html5-common/libs/bootstrap/bootstrap' ],
+				'ckeditor':['html5-common/libs/ckeditor/ckeditor'],
 				'portalApplication' : [ 'common/html5/portalApplication' ],
 				'html5CommonMain' : [ 'html5-common/scripts/main' ],
 				'sdEventBusService' : [ 'html5-common/scripts/services/sdEventBusService' ],
@@ -56,7 +57,9 @@ var html5Deps = function() {
 				'sdPortalConfigurationService' : [ 'html5-common/scripts/services/sdPortalConfigurationService' ],
 			    'sdLocalizationService' : [ 'html5-common/scripts/services/sdLocalizationService' ],
 			    'sdDatePicker': ['html5-common/scripts/directives/sdDatePicker'],
-			    'sdPopover': ['html5-common/scripts/directives/sdPopover']
+			    'sdPopover': ['html5-common/scripts/directives/sdPopover'],
+			    'sdAutoComplete': ['html5-common/scripts/directives/sdAutoComplete'],
+			    'sdRichTextEditor':['html5-common/scripts/directives/sdRichTextEditor']
 			},
 			shim : {
 				'jquery.dataTables' : [ 'jquery' ],
@@ -80,12 +83,15 @@ var html5Deps = function() {
 				'sdPortalConfigurationService' : [ 'html5CommonMain' ],
 			    'sdLocalizationService' : [ 'html5CommonMain' ],
 			    'sdDatePicker' : [ 'html5CommonMain', 'sdLocalizationService' ],
-			     'sdPopover' : [ 'html5CommonMain', 'sdLoggerService', 'bootstrap' ]
+			    'sdPopover' : [ 'html5CommonMain', 'sdLoggerService', 'bootstrap' ],
+			    'sdAutoComplete' :['html5CommonMain'],
+			    'sdRichTextEditor':['html5CommonMain','ckeditor']
 			},
-			deps : [ "jquery.dataTables", "angularjs", "angularResource","bootstrap", "portalApplication",
+			deps : [ "jquery.dataTables", "angularjs", "angularResource","bootstrap","ckeditor","portalApplication",
 					"html5CommonMain", "sdEventBusService", "httpInterceptorProvider",
 					"sdLoggerService", "sdData", "sdDataTable",
-					'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'sdDialog', 'sdDialogService', 'sdPortalConfigurationService' , 'sdPopover']
+					'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'sdDialog', 'sdDialogService', 'sdPortalConfigurationService' , 'sdPopover', 
+					'sdAutoComplete','sdRichTextEditor']
 
 		};
 

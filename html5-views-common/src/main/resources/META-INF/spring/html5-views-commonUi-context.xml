@@ -18,14 +18,6 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 
 		<ippui:viewsExtension>
 		
-			<ippui:view name="correspondenceView"
-					include="/plugins/html5-views-common/partials/views/correspondenceView.html">
-					<ippui:preferences>
-						<ippui:preferencePage name="icon"
-							include="/plugins/views-common/images/icons/page_white_find.png" />
-					</ippui:preferences>
-			</ippui:view>
 		</ippui:viewsExtension>
-
 	</ippui:perspectiveExtension>
 </beans>

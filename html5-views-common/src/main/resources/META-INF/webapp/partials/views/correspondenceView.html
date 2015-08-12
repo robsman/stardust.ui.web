@@ -1,63 +1,20 @@
+<html>
+  <head>
+	<script src="../../../html5-process-portal/standalone/html5Deps.js"></script>
+	<script data-main="correspondenceViewMain"
+		src="../../../views-common/js/libs/require/2.1.15/require.min.js"></script>
+	<link href="../../styles/html5-views-common.css" rel="stylesheet">
+</head>
+<body>
+<div ng-cloak class="view-panel" ng-controller="sdCorrespondenceCtrl as ctrl" >
 
-<style>
-.correspondence_left_section {
-	width: 100px;
-}
-
-.correspondence_section {
-	height: 40px;
-}
-
-.correspondence_mail_id {
-	display: inline-table;
-	padding: 0px 4px 0px 4px;
-	border: solid 1px #ccd5e4;
-	background-color: #eff2f7;
-	border-radius: 4px;
-	cursor: pointer;
-	margin-left: 3px;
-	margin-top: 3px;
-	margin-bottom: 3px;
-}
-
-.address_box {
-	display: inline-table;
-	border: solid 1px #ccd5e4;
-	padding-left: 3px;
-	padding-top: 3px;
-	padding-bottom: 3px;
-	min-width: 400px
-}
-
-.correspondence_type_selector {
-	width: 100px;
-}
-
-.correspondence_addressBook_conatiner {
-	max-height: 250px;
-	overflow: auto;
-}
-
-.correspondence_addressBook_fax_control {
-	margin-left: 5px;
-	margin-bottom: 4px;
-}
-
-.addressBoxConatiner {
-	max-height: 250px;
-	overflow: auto;
-}
-</style>
-
-<div class="view-panel" ng-controller="sdCorrespondenceCtrl as ctrl">
-
-	<table>
+	<table class="correspondence_container">
 		<tr class="correspondence_section">
 			<td class="correspondence_left_section">
 				<span class="iceOutLbl">Type : </span>
 			</td>
-			<td>	
-				<select ng-model="ctrl.selected.type" class="correspondence_type_selector"
+			<td class="correspondence_right_section">	
+				<select ng-model="ctrl.selected.type" class="correspondence_type_selector" ng-disabled="ctrl.readOnly"
 			  	ng-change="ctrl.onTypeChange();"
 				ng-options="opt.id as opt.label for opt in ctrl.correspondenceTypes">
 			</select>
@@ -65,24 +22,14 @@
 		</tr>
 		<tr class="correspondence_section" ng-if="ctrl.selected.type == 'email' ">
 			<td class="correspondence_left_section"> 
-				<a class="iceOutLbl" href="#" ng-click="ctrl.openAddressSelector('TO');"> To : </a>
+				<a class="iceOutLbl" href="#" ng-click="ctrl.openAddressSelector('TO');" ng-if="!ctrl.readOnly"> To : </a>
+				<span class="iceOutLbl" ng-if="ctrl.readOnly"> To : </span>
 			</td>
-			<td>
-				<!-- <div class="address_box "> 
-					<span class="correspondence_mail_id" ng-repeat = "add in ctrl.selected.to" title="{{add.value}}"> 
-					<i class="fa fa-envelope-o spacing-right"></i>
-						{{add.path}}
-						<button class="button-link tbl-toolbar-item tbl-tool-link "
-							ng-click="ctrl.removeAddress('TO',add)">
-							<i class="glyphicon glyphicon-remove"> </i>
-						</button>
-					</span> 
-					<input type="email" ng-model="ctrl.enteredAdd.to" ng-blur="ctrl.addInlineAddress('TO');"/>
-				</div> -->
+			<td class="correspondence_right_section">	
 				
 				 <div sd-auto-complete 
-	                            sda-item-pre-class="ctrl.tagPreMapper(item,index)" 
-	                            sda-tag-pre-class="ctrl.tagPreMapper(item,index)" 
+	                            sda-item-pre-class="ctrl.addressIconMapper(item,index)" 
+	                            sda-tag-pre-class="ctrl.addressIconMapper(item,index)" 
 	                            sda-matches="ctrl.data.like.to" 
 	                            sda-user-entry-delimiter=","
            						sda-user-entry="ctrl.newItemFactory(val)"
@@ -92,7 +39,9 @@
 	                            sda-tooltip-property="value"
 	                            sda-container-class="sd-ac-container" 
 	                            sda-item-hot-class="sd-ac-item-isActive" 
-	                            sda-selected-matches="ctrl.selected.to">
+	                            sda-selected-matches="ctrl.selected.to"
+	                            sda-read-only ="ctrl.readOnly"
+	                            >
                      </div>
 			</td>
 		</tr>
@@ -101,22 +50,13 @@
 		
 		<tr class="correspondence_section" ng-if="ctrl.selected.type == 'email' && ctrl.selected.showBcc">
 			<td class="correspondence_left_section"> 
-				<a class="iceOutLbl" href="#" ng-click="ctrl.openAddressSelector('BCC');"> Bcc : </a>
+				<a class="iceOutLbl" href="#" ng-click="ctrl.openAddressSelector('BCC');" ng-if="!ctrl.readOnly"> Bcc : </a>
+				<span class="iceOutLbl" ng-if="ctrl.readOnly"> Bcc : </span>
 			</td>
-			<td>
-			<!-- 	<div class="address_box "> 
-					<span class="correspondence_mail_id" ng-repeat="add in ctrl.selected.bcc" title="{{add.value}}">
-						<i class="fa fa-envelope-o spacing-right"></i> {{add.path}}
-						<button class="button-link tbl-toolbar-item tbl-tool-link "
-							ng-click="ctrl.removeAddress('BCC',add)">
-							<i class="glyphicon glyphicon-remove"> </i>
-						</button>
-					</span> <input type="email" ng-model="ctrl.enteredAdd.bcc"
-						ng-blur="ctrl.addInlineAddress('BCC');" />
-				</div> -->
+			<td class="correspondence_right_section">	
 				 <div sd-auto-complete 
-	                            sda-item-pre-class="ctrl.tagPreMapper(item,index)" 
-	                            sda-tag-pre-class="ctrl.tagPreMapper(item,index)" 
+	                            sda-item-pre-class="ctrl.addressIconMapper(item,index)" 
+	                            sda-tag-pre-class="ctrl.addressIconMapper(item,index)" 
 	                            sda-matches="ctrl.data.like.bcc" 
 	                            sda-user-entry-delimiter=","
            						sda-user-entry="ctrl.newItemFactory(val)"
@@ -126,31 +66,22 @@
 	                            sda-tooltip-property="value"
 	                            sda-container-class="sd-ac-container" 
 	                            sda-item-hot-class="sd-ac-item-isActive" 
-	                            sda-selected-matches="ctrl.selected.bcc">
+	                            sda-selected-matches="ctrl.selected.bcc"
+	                            sda-read-only ="ctrl.readOnly"
+	                            >
                      </div>
 			</td>
 		</tr>
 		
 		<tr class="correspondence_section" ng-if="ctrl.selected.type == 'email'&& ctrl.selected.showCc">
 			<td class="correspondence_left_section"> 
-				<a class="iceOutLbl" href="#" ng-click="ctrl.openAddressSelector('CC');"> Cc : </a>
+				<a class="iceOutLbl" href="#" ng-click="ctrl.openAddressSelector('CC');"  ng-if="!ctrl.readOnly"> Cc : </a>
+				<span class="iceOutLbl" ng-if="ctrl.readOnly"> Cc : </span>
 			</td>
-			<td>
-				<!-- <div class="address_box "> 
-					<span class="correspondence_mail_id"  ng-repeat = "add in ctrl.selected.cc" title="{{add.value}}"> 
-					<i class="fa fa-envelope-o spacing-right"></i>
-						{{add.path}}
-						<button class="button-link tbl-toolbar-item tbl-tool-link "
-							ng-click="ctrl.removeAddress('CC',add)">
-							<i class="glyphicon glyphicon-remove"> </i>
-						</button>
-					</span> 
-					<input type="email" ng-model="ctrl.enteredAdd.cc" ng-blur="ctrl.addInlineAddress('CC');"/>
-				</div> -->
-				
+			<td class="correspondence_right_section">	
 				 <div sd-auto-complete 
-	                            sda-item-pre-class="ctrl.tagPreMapper(item,index)" 
-	                            sda-tag-pre-class="ctrl.tagPreMapper(item,index)" 
+	                            sda-item-pre-class="ctrl.addressIconMapper(item,index)" 
+	                            sda-tag-pre-class="ctrl.addressIconMapper(item,index)" 
 	                            sda-matches="ctrl.data.like.cc" 
 	                            sda-user-entry-delimiter=","
            						sda-user-entry="ctrl.newItemFactory(val)"
@@ -160,7 +91,9 @@
 	                            sda-tooltip-property="value" 
 	                            sda-container-class="sd-ac-container" 
 	                            sda-item-hot-class="sd-ac-item-isActive" 
-	                            sda-selected-matches="ctrl.selected.cc">
+	                            sda-selected-matches="ctrl.selected.cc"
+	                            sda-read-only ="ctrl.readOnly"
+	                            >
                      </div>
 			</td>
 		</tr>
@@ -168,7 +101,7 @@
 		<tr ng-if="ctrl.selected.type == 'email'">
 			<td class="correspondence_left_section"> 
 			</td>
-			<td>
+			<td class="correspondence_right_section">	
 				<a ng-show="!ctrl.selected.showBcc" ng-click ="ctrl.showBcc();">Bcc</a> 	<a ng-show="!ctrl.selected.showCc" ng-click ="ctrl.showCc();">Cc</a>
 			</td>
 		</tr>
@@ -177,43 +110,57 @@
 			<td class="correspondence_left_section"> 
 				<span class="iceOutLbl">Subject : </span>
 			</td>
-			<td>
-				<input type="text"/>
+			<td class="correspondence_right_section">	
+				<input ng-model="ctrl.selected.subject" type="text" ng-disabled="ctrl.readOnly"/>
 			</td>
 		</tr>
 		<tr class="correspondence_section">
 			<td class="correspondence_left_section"> 
-				<span class="iceOutLbl">Message : </span>
+				<a class="iceOutLbl" href="#" ng-click="ctrl.openMessageTemplateSelector();"  ng-if="!ctrl.readOnly"> Message : </a>
+				<span class="iceOutLbl" ng-if="ctrl.readOnly"> Message : </span>
 			</td>
-			<td>
-				<textArea > </textArea>
+			<td class="correspondence_right_section">	
+				<textarea data-ng-model="ctrl.selected.message" sd-rich-text-editor ng-disabled="ctrl.readOnly" sda-readOnly="{{ctrl.readOnly}}"> </textarea>
+			</td>
+		</tr>
+		
+		<tr class="correspondence_section">
+			<td class="correspondence_left_section"> 
+			</td>
+			<td class="correspondence_right_section">	
+				 <div style="float:left;padding-top: 10px;" ng-hide="ctrl.readOnly">
+					 <button class="button" ng-click="ctrl.complete()" >Complete</button>
+				     <button class="button" ng-click="ctrl.cancel()" >Cancel</button>
+				</div> 
+				<div style="float:right;padding-top: 10px;">
+				  	<div ng-hide="ctrl.readOnly">
+					  	<button  class="button-link tbl-toolbar-item tbl-tool-link spacing-right" ng-click="ctrl.openAttachmentSelector()">
+				 		  	 <i class="glyphicon glyphicon-paperclip icon-lg"></i> 
+					   </button>
+						<input class="correspondence_addressBook_fax_control" type="checkbox"/>
+						<span class="iceOutLbl">Convert to PDF </span>
+					</div>
+					<div ng-repeat="att in ctrl.selected.attachments" style="width:200px" class="correspondence_attachments">
+						 <span class="iceOutLbl" ng-bind="att .name"> </span>
+						 <button  class="button-link tbl-toolbar-item tbl-tool-link spacing-right" style="float:right" ng-hide="ctrl.readOnly" ng-click="ctrl.removeAttachment(att)">
+			 		  		 <i class="glyphicon glyphicon-remove"></i> 
+				 		 </button>
+					</div>
+					<div ng-hide="ctrl.readOnly">
+						<div>
+							<button ng-hide="ctrl.readOnly" class="button-link tbl-toolbar-item tbl-tool-link">
+								<i class="glyphicon glyphicon-upload icon-lg"></i>
+							</button>
+						</div>
+						<div class="iceOutLbl">
+							Upload Process Attachment
+						</div>
+					</div>
+					
+				</div>
 			</td>
 		</tr>
 	</table>
-	
-	
-<!-- 	<div>
-		<div> <span ng-repeat = "opt in ctrl.selectedAddresses" class="spacing-right"> <span ><i class="fa fa-envelope-o "></i> {{opt.path}} </span>    </span > </div>
-		 <i class="glyphicon glyphicon-search"> </i>	<input type="text"  class="spacing-right"  ng-model = "ctrl.filter.address" ng-change="ctrl.addressTable.refresh();"/>
-		<input type="checkbox"ng-model="ctrl.filter.showFax" ng-change="ctrl.addressTable.refresh();" /> <span class="iceOutLbl">Fax </span>
-		<table sd-data-table="ctrl.addressTable"
-			sd-data="ctrl.getAvailableAddresses();" sda-mode="local"
-			sda-selectable="multiple" sda-no-pagination="true"  sda-page-size="{{ctrl.emails.length}}" sda-on-select="ctrl.onSelect(info);" sda-selection="ctrl.selectedAddresses">
-			<thead ng-show="false" 	>
-				<tr>
-					<th sda-label="Name"></th>
-					<th sda-label="Data Path"></th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td>{{rowData.value}}</td>
-					<td>{{rowData.path}}</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
-	 -->
-	
-
 </div>
+</body>
+</html>
