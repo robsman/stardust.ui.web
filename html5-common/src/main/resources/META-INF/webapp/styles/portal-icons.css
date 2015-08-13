@@ -11,17 +11,17 @@ Supported fonts we wrap for our portal icon (pi-) classes
 */
 @font-face{
 	font-family: starclipse;
-	src: url(./starclipse/fonts/starclipse.woff)  format('woff');
+	src: url(./starclipse/fonts/starclipse.woff')  format('woff);
 }
 
 @font-face{
 	font-family: 'Glyphicons Halflings';
-	src: url(./3rd-party/glyphicons/3.3.2/fonts/glyphicons-halflings-regular.woff')  format('woff');
+	src: url(./3rd-party/glyphicons/3.3.2/fonts/glyphicons-halflings-regular.woff)  format('woff');
 }
 
 @font-face{
 	font-family: FontAwesome;
-	src: url(./3rd-party/font-awesome/4.2.0/fonts/fontawesome-webfont.woff')  format('woff');
+	src: url(./3rd-party/font-awesome/4.2.0/fonts/fontawesome-webfont.woff)  format('woff');
 }
 
 
