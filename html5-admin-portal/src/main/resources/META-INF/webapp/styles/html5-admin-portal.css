@@ -43,6 +43,11 @@
 	width:400px;
 }
 
+.permission-tree {
+	overflow: overlay;
+    height: 600px;
+}
+
 .permission-tree .sd-tree .expand-section {
 	float: left;
 }  
@@ -57,3 +62,7 @@
     margin-right: 10px;
 }
 
+.participantTable {
+	overflow: overlay;
+    height: 650px;
+}

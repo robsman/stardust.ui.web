@@ -32,37 +32,37 @@
 			</div>
 
 			<!-- Data table -->
-			<table sd-data-table="ctrl.dataTable" sd-data="ctrl.participants"
-				sda-mode="local" sda-selectable="multiple"
-				sda-selection="ctrl.selection" sda-no-pagination="true"
-				sda-on-select="ctrl.onParticipantSelect(selectionInfo)"
-				sda-sortable="true" sda-exports="true"
-				sda-column-selector="{{ctrl.columnSelector}}"
-				sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)">
-				<thead
-					sda-i18n-scope="html5-admin-portal.views-authorizationManagerViewHtml5-participants-columns">
-					<tr>
-						<th sda-name="name" sda-sortable="true"></th>
-						<th sda-name="type" sda-sortable="true"></th>
-						<th sda-name="description" sda-sortable="false"></th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td sda-field="name" sda-exporter="rowData.name">
-							<a href="" class="{{rowData.type | lowercase}}"
+			<div class="participantTable">
+				<table sd-data-table="ctrl.dataTable" sd-data="ctrl.participants"
+					sda-mode="local" sda-selectable="multiple"
+					sda-selection="ctrl.selection" sda-no-pagination="true"
+					sda-on-select="ctrl.onParticipantSelect(selectionInfo)"
+					sda-sortable="true" sda-exports="true"
+					sda-column-selector="{{ctrl.columnSelector}}"
+					sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)">
+					<thead
+						sda-i18n-scope="html5-admin-portal.views-authorizationManagerViewHtml5-participants-columns">
+						<tr>
+							<th sda-name="name" sda-sortable="true"></th>
+							<th sda-name="type" sda-sortable="true"></th>
+							<th sda-name="description" sda-sortable="false"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td sda-field="name" sda-exporter="rowData.name"><a href=""
+								class="{{rowData.type | lowercase}}"
 								ng-class="{'selected' : ctrl.selectedRoles.indexOf(role) >=0}"
 								sd-data-drag ng-model="rowData"
-								sda-dragstart="ctrl.roleDragStart($data, $event)">
-								<span style="margin-left: 18px;"> {{rowData.name}}</span>
-							</a>
-						</td>
-						<td sda-field="type"></td>
-						<td sda-field="description"></td>
-					</tr>
-				</tbody>
-			</table>
-
+								sda-dragstart="ctrl.roleDragStart($data, $event)"> <span
+									style="margin-left: 18px;"> {{rowData.name}}</span>
+							</a></td>
+							<td sda-field="type"></td>
+							<td sda-field="description"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 			<span sd-dialog sda-show="ctrl.showCloneParticipantDialog"
 				sda-title="Clone Participant" sda-type="confirm" sda-scope="this"
 				sda-confirm-action-label="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.clone')}}"
@@ -88,7 +88,11 @@
 			</span>
 
 		</section>
-
+<!-- 
+		<section style="float: left;">
+			<div style="padding-top:100px">>></div>
+		</section>
+ -->
 		<section style="float: left; padding-left: 30px; width: 33%">
 			<header>
 				<div class="heading"
