@@ -359,6 +359,15 @@ public class ProcessInstanceResource
    }
 
 
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{oid}/address-book")
+   public Response getAddressBook(@PathParam("oid") Long processOid)
+   {
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(processInstanceService.getAddressBook(processOid)),
+            MediaType.APPLICATION_JSON).build();
+   }
+   
    /**
     * Populate the options with the post data.
     * 
