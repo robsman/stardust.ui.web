@@ -49,6 +49,7 @@
          <bean class="org.eclipse.stardust.ui.web.rest.TrafficLightResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.ParticipantResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.FolderResource" />
+         <bean class="org.eclipse.stardust.ui.web.rest.TrafficLightViewResource" />        
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>
             <bean class="org.eclipse.stardust.ui.web.rest.exception.PortalRestExceptionMapper"/>

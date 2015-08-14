@@ -1,0 +1,49 @@
+<div class="view-panel-content">
+		<table sd-data-table="ctrl.dataTable" sda-mode="remote"
+			sd-data="ctrl.tlvStatsData" sda-ready="ctrl.showTLVStatastics"
+			sda-page-size="{{ctrl.tlvStatsData.totalCount}}">
+			<thead>
+				<tr>
+					<th sda-name="processName"
+						sda-label="{{i18n('business-control-center-messages.views-resourcePerformance-column-processDefinition')}}">
+					</th>
+					<th ng-repeat="cat in ctrl.categories" sda-name="{{cat.index}}"
+						sda-label="{{cat.name}}"></th>
+					<th sda-name="completedProcessCount" sda-label="{{i18n('admin-portal-messages.views-common-completed-label')}}">
+					<th sda-name="abortedProcessCount" sda-label="{{i18n('admin-portal-messages.views-common-aborted-label')}}">
+					<th sda-name="totalCount" sda-label="{{i18n('admin-portal-messages.views-common-total-label')}}">
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td></td>
+					<td ng-repeat="cat in ctrl.categories"  style="text-align: center;">
+					<i class="sc sc-fw sc-1x sc-circle" ng-style="{'color':rowData.benchmarkCategoryCountMap[colData.title].color}"></i>
+					<a href="#" ng-if="rowData.benchmarkCategoryCountMap[colData.title].count > 0"
+						ng-click="ctrl.setDataForProcessTable(rowData.processId,'ACTIVE',rowData.benchmarkCategoryCountMap[colData.title].index)" 
+						title="{{i18n('business-control-center-messages.views-pendingActivities-selectedActivitiesTable-title')}}">
+						 <span ng-bind="rowData.benchmarkCategoryCountMap[colData.title].count"></span>
+					</a>
+					<span ng-if="rowData.benchmarkCategoryCountMap[colData.title].count == 0" ng-bind="rowData.benchmarkCategoryCountMap[colData.title].count"></span>
+					</td>
+					<td style="text-align: center;">
+					    <a href="#" ng-if="rowData.completedProcessCount > 0"
+						    ng-click="ctrl.setDataForProcessTable(rowData.processId,'COMPLETED')" 
+						    title="{{i18n('business-control-center-messages.views-pendingActivities-selectedActivitiesTable-title')}}">
+						   <span ng-bind="rowData.completedProcessCount"></span>
+					   </a>
+					   <span ng-if="rowData.completedProcessCount == 0" ng-bind="rowData.completedProcessCount"></span>
+					</td>
+					<td style="text-align: center;">
+					      <a href="#" ng-if="rowData.abortedProcessCount > 0"
+						       ng-click="ctrl.setDataForProcessTable(rowData.processId,'ABORTED')" 
+						       title="{{i18n('business-control-center-messages.views-pendingActivities-selectedActivitiesTable-title')}}">
+						   <span ng-bind="rowData.abortedProcessCount"></span>
+					   </a>
+					   <span ng-if="rowData.abortedProcessCount == 0" ng-bind="rowData.abortedProcessCount"></span>
+					</td>
+					<td style="text-align: center;"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>

@@ -102,6 +102,43 @@
 
 		    return processList.fetch({}, postData).$promise;
 		};
+		
+		
+		/*
+		 * 
+		 */
+		ProcessInstanceService.prototype.getProcesslistForTLV = function(query) {
+		    var restUrl = REST_BASE_URL + "forTLVByCategory";
+
+		    var queryParams = sdDataTableHelperService.convertToQueryParams(query.options);
+
+		    if (queryParams.length > 0) {
+			var separator = "?";
+			if (/[?]/.test(restUrl)) {
+			    separator = "&";
+			}
+			restUrl = restUrl + separator + queryParams.substr(1);
+		    }
+		    var postData = sdDataTableHelperService.convertToPostParams(query.options);
+
+		    postData.bOids = query.bOids;
+		    postData.dateType = query.dateType;
+		    postData.dayOffset = query.dayOffset;
+		    postData.benchmarkCategory = query.benchmarkCategory;
+		    postData.processId = query.processId;
+		    postData.state = query.state;
+		    
+		    var processList = $resource(restUrl, {
+
+		    }, {
+			fetch : {
+			    method : 'POST'
+			}
+		    });
+
+		    return processList.fetch({}, postData).$promise;
+		};
+
 
 		/*
 		 * 

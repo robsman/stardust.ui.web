@@ -10,8 +10,14 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest;
 
+import java.io.Serializable;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -28,6 +34,11 @@ import javax.ws.rs.core.Response;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.query.DataFilter;
+import org.eclipse.stardust.engine.api.query.FilterOrTerm;
+import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
+import org.eclipse.stardust.engine.api.query.ProcessStateFilter;
+import org.eclipse.stardust.engine.core.query.statistics.api.BenchmarkProcessStatisticsQuery;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.service.ProcessInstanceService;
@@ -35,11 +46,16 @@ import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessInstanceUtils;
+import org.eclipse.stardust.ui.web.rest.service.utils.TrafficLightViewUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * @author Anoop.Nair
@@ -264,6 +280,100 @@ public class ProcessInstanceResource
          populatePostData(options, postData);
 
          return Response.ok(GsonUtils.toJsonHTMLSafeString(processInstanceService.getProcessInstances(null, options)),
+               MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+   
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/forTLVByCategory")
+   public Response getProcesslistForTLV(@QueryParam("skip") @DefaultValue("0") Integer skip,
+         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
+         @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
+   {
+      try
+      {
+         Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
+         populatePostData(options, postData);
+         
+         JsonMarshaller jsonIo = new JsonMarshaller();
+         JsonObject postJSON = jsonIo.readJsonObject(postData);
+         JsonArray bOidsArray = postJSON.getAsJsonArray("bOids");
+         Type type = new TypeToken<List<Long>>()
+         {
+         }.getType();
+         List<Long> bOids = new ArrayList<Long>();
+         if (null != bOidsArray)
+         {
+            bOids = new Gson().fromJson(bOidsArray.toString(), type);
+
+         }
+
+         String dateType = postJSON.getAsJsonPrimitive("dateType").getAsString();
+
+         Integer dayOffset = postJSON.getAsJsonPrimitive("dayOffset").getAsInt();
+                
+         String processId = postJSON.getAsJsonPrimitive("processId").getAsString();
+         
+         String state = postJSON.getAsJsonPrimitive("state").getAsString();
+         
+         ProcessInstanceQuery query = ProcessInstanceQuery.findForProcess(processId);
+         
+         FilterOrTerm benchmarkFilter = query.getFilter().addOrTerm();
+
+         for (Long bOid : bOids)
+         {
+            benchmarkFilter.add(BenchmarkProcessStatisticsQuery.BENCHMARK_OID.isEqual(bOid));
+         }
+
+         Calendar startDate = TrafficLightViewUtils.getCurrentDayStart();
+         Calendar endDate = TrafficLightViewUtils.getCurrentDayEnd();
+
+         if (dayOffset > 0)
+         {
+            endDate = TrafficLightViewUtils.getfutureEndDate(dayOffset);
+         }
+         else if (dayOffset < 0)
+         {
+            startDate = TrafficLightViewUtils.getPastStartDate(dayOffset);
+         }
+
+         if (dateType.equals("BUSINESS_DATE"))
+         {          
+            benchmarkFilter.add((DataFilter.between(TrafficLightViewUtils.getModelName(processId) + TrafficLightViewUtils.BUSINESS_DATE, (Serializable)startDate, (Serializable)endDate)));            
+         }
+         else
+         {
+            benchmarkFilter.add(ProcessInstanceQuery.START_TIME.between(startDate.getTimeInMillis(),
+                  endDate.getTimeInMillis()));
+         }
+         
+         
+         if(postJSON.getAsJsonPrimitive("benchmarkCategory") != null){
+            Long benchmarkCategory = postJSON.getAsJsonPrimitive("benchmarkCategory").getAsLong();
+            benchmarkFilter.add(ProcessInstanceQuery.BENCHMARK_VALUE.isEqual(benchmarkCategory));
+         }
+         
+        
+
+         if(state.equals("ACTIVE")){
+            query.getFilter().add(ProcessStateFilter.ACTIVE);
+         }else if (state.equals("COMPLETED")){
+            query.getFilter().add(ProcessStateFilter.COMPLETED);
+         }else if(state.equals("ABORTED")){
+            query.getFilter().add(ProcessStateFilter.ABORTED);
+         }
+         
+
+         return Response.ok(GsonUtils.toJsonHTMLSafeString(processInstanceService.getProcessInstances(query, options)),
                MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
