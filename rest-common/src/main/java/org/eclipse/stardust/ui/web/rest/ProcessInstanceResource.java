@@ -358,7 +358,11 @@ public class ProcessInstanceResource
             .build();
    }
 
-
+   /**
+    * @author Yogesh.Manware
+    * @param processOid
+    * @return
+    */
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{oid}/address-book")

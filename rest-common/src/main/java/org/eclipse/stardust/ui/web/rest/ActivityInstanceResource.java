@@ -38,13 +38,14 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
 import org.eclipse.stardust.ui.web.rest.service.ActivityInstanceService;
 import org.eclipse.stardust.ui.web.rest.service.DelegationComponent;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
 import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
+import org.eclipse.stardust.ui.web.rest.service.ProcessInstanceService;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
@@ -62,7 +63,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -82,6 +83,9 @@ public class ActivityInstanceResource
 
    @Autowired
    private ActivityInstanceService activityInstanceService;
+   
+   @Autowired
+   private ProcessInstanceService processInstanceService;
    
    @Resource
    private ParticipantSearchComponent participantSearchComponent;
@@ -710,16 +714,26 @@ public class ActivityInstanceResource
           return Response.status(Status.INTERNAL_SERVER_ERROR).build();
        }
     }
-    
-    /**
-     * 
-     * @param processInstanceOID
-     * @return
-     */
-    private ProcessInstance getProcessInstance(long processInstanceOID)
-    {
-        return ProcessInstanceUtils.getProcessInstance(Long.valueOf(processInstanceOID));
-    }
+
+   /**
+    * @author Yogesh.Manware
+    * @param activityOid
+    * @return
+    */
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{oid}/address-book")
+   public Response getAddressBook(@PathParam("oid") Long activityOid)
+   {
+      ActivityInstance ai = activityInstanceService.getActivityInstance(activityOid);
+      if (ai == null)
+      {
+         throw new I18NException("No Activity with oid: " + activityOid + "Found.");
+      }
+      return Response.ok(
+            GsonUtils.toJsonHTMLSafeString(processInstanceService.getAddressBook(ai.getProcessInstance())),
+            MediaType.APPLICATION_JSON).build();
+   }
     
     /** 
     * @author Yogesh.Manware

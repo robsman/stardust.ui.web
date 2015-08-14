@@ -464,4 +464,7 @@ public class ActivityInstanceService
       return activityInstanceUtils.getByProcessOid(piOid);
    }
 
+   public ActivityInstance getActivityInstance(Long activityOId){
+      return activityInstanceUtils.getActivityInstance(activityOId);
+   }
 }

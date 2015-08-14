@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
 
@@ -29,7 +30,7 @@ public class DocumentDTOBuilder
 
       if (document != null)
       {
-         documentDTO.uuid  = document.getId();
+         documentDTO.uuid = document.getId();
          documentDTO.name = document.getName();
          documentDTO.path = document.getPath();
          documentDTO.contentType = document.getContentType();
@@ -39,9 +40,8 @@ public class DocumentDTOBuilder
           * documentDTO.setNumPages(numPages);
           */
 
-         DocumentTypeDTO documentTypeDTO = DocumentTypeDTOBuilder.build(document
-               .getDocumentType());
-         documentDTO.documentType  = documentTypeDTO;
+         DocumentTypeDTO documentTypeDTO = DocumentTypeDTOBuilder.build(document.getDocumentType());
+         documentDTO.documentType = documentTypeDTO;
       }
 
       return documentDTO;
@@ -58,6 +58,41 @@ public class DocumentDTOBuilder
       for (Document document : documents)
       {
          documentsDTO.add(build(document));
+      }
+
+      return documentsDTO;
+   }
+
+   /**
+    * @param folder
+    * @return
+    */
+   public static DocumentDTO build(Folder folder)
+   {
+      DocumentDTO documentDTO = new DocumentDTO();
+
+      if (folder != null)
+      {
+         documentDTO.uuid = folder.getId();
+         documentDTO.name = folder.getName();
+         documentDTO.path = folder.getPath();
+         documentDTO.contentType = "folder";
+      }
+
+      return documentDTO;
+   }
+
+   /**
+    * @param folders
+    * @return
+    */
+   public static List<DocumentDTO> buildFolders(List<Folder> folders)
+   {
+      List<DocumentDTO> documentsDTO = CollectionUtils.newArrayList();
+
+      for (Folder folder : folders)
+      {
+         documentsDTO.add(build(folder));
       }
 
       return documentsDTO;

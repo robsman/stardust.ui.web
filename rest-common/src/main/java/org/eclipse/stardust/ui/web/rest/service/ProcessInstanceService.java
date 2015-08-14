@@ -343,13 +343,30 @@ public class ProcessInstanceService
       return dto;
    }
    
+   
    /**
     * @param processInstanceOid
     * @return
     */
    public List<AbstractDTO> getAddressBook(Long processInstanceOid)
    {
-      return getDathPathValues(processInstanceOid, new IDataPathValueFilter()
+      ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processInstanceOid);
+
+      if (processInstance == null)
+      {
+         throw new I18NException(restCommonClientMessages.getParamString("processInstance.notFound",
+               processInstanceOid.toString()));
+      }
+      return getAddressBook(processInstance);
+   }
+   
+   /**
+    * @param processInstance
+    * @return
+    */
+   public List<AbstractDTO> getAddressBook(ProcessInstance processInstance)
+   {
+      return getDathPathValues(processInstance, new IDataPathValueFilter()
       {
          @Override
          public List<AbstractDTO> filter(DataPath dataPath, Object dataValue)
@@ -407,20 +424,12 @@ public class ProcessInstanceService
    }
 
    /**
-    * @param processInstanceOid
+    * @param processInstance
     * @param dataPathValueFilter
     * @return
     */
-   public List<AbstractDTO> getDathPathValues(Long processInstanceOid, IDataPathValueFilter dataPathValueFilter)
+   public List<AbstractDTO> getDathPathValues(ProcessInstance processInstance, IDataPathValueFilter dataPathValueFilter)
    {
-      ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processInstanceOid);
-      
-      if (processInstance == null)
-      {
-         throw new I18NException(restCommonClientMessages.getParamString("processInstance.notFound",
-               processInstanceOid.toString()));
-      }
-
       List<AbstractDTO> dataPathDtoList = new ArrayList<AbstractDTO>();
       ProcessDefinition processDefinition = processDefinitionUtils.getProcessDefinition(processInstance.getModelOID(),
             processInstance.getProcessID());
