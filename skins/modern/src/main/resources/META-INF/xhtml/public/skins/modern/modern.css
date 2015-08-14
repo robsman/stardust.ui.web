@@ -6496,7 +6496,7 @@ div.columnItemBoxLabel{
 }
 
 div.columnsListBox {
-	max-height: 500px;
+	max-height: 250px;
 	overflow: auto;
 }
 /* *********** Column Selector - END ************* */
