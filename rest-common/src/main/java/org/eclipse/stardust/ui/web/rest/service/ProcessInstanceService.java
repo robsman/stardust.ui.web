@@ -48,7 +48,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SwitchProcessDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.DataPathValueDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.AddressBookContactDTO;
 import org.eclipse.stardust.ui.web.rest.service.helpers.IDataPathValueFilter;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessDefinitionUtils;
@@ -355,7 +355,6 @@ public class ProcessInstanceService
             if (dataValue != null)
             {
                searchAddresses(dataPath.getId(), dataValue, addressBook);
-               return addressBook;
             }
             return addressBook;
          }
@@ -371,17 +370,17 @@ public class ProcessInstanceService
             {
                if (isFaxNumber(dataValue.toString()))
                {
-                  DataPathValueDTO addressBookDTO = new DataPathValueDTO();
+                  AddressBookContactDTO addressBookDTO = new AddressBookContactDTO();
                   addressBookDTO.value = dataValue.toString();
-                  addressBookDTO.path = key;
-                  addressBookDTO.type = DataPathValueDTO.DataValueType.Fax.name();
+                  addressBookDTO.name = key;
+                  addressBookDTO.type = AddressBookContactDTO.DataValueType.fax.name();
                   addressBook.add(addressBookDTO);
                }
                else if (EMailAddressValidator.validateEmailAddress(dataValue.toString()))
                {
-                  DataPathValueDTO addressBookDTO = new DataPathValueDTO();
+                  AddressBookContactDTO addressBookDTO = new AddressBookContactDTO();
                   addressBookDTO.value = dataValue.toString();
-                  addressBookDTO.path = key;
+                  addressBookDTO.name = key;
                   addressBook.add(addressBookDTO);
                }
                else
@@ -439,9 +438,9 @@ public class ProcessInstanceService
                }
                else
                {
-                  DataPathValueDTO dataPathValueDTO = new DataPathValueDTO();
+                  AddressBookContactDTO dataPathValueDTO = new AddressBookContactDTO();
                   dataPathValueDTO.value = dataValue.toString();
-                  dataPathValueDTO.path = dataPath.getId();
+                  dataPathValueDTO.name = dataPath.getId();
                   dataPathDtoList.add(dataPathValueDTO);
                }
             }

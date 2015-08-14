@@ -16,14 +16,13 @@ import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
  * @author Yogesh.Manware
  * @version $Revision: $
  */
-public class DataPathValueDTO extends AbstractDTO
+public class AddressBookContactDTO extends AbstractDTO
 {
    public enum DataValueType {
-      Email, Fax
-      //add other type here
+      email, fax
    }
 
-   public String type = DataValueType.Email.name();
-   public String path;
+   public String type = DataValueType.email.name();
+   public String name;
    public String value;
 }
