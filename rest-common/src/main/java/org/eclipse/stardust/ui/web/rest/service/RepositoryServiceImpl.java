@@ -19,8 +19,10 @@ import javax.annotation.Resource;
 
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
-import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
+import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
+import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.FolderDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.springframework.context.annotation.Scope;
@@ -39,20 +41,25 @@ public class RepositoryServiceImpl implements RepositoryService
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
 
+   @Resource
+   private RestCommonClientMessages restCommonClientMessages;
+
    /**
     *
     */
-   public Map<String, List<DocumentDTO>> getFolder(String folderId)
+   public Map<String, List<AbstractDTO>> getFolder(String folderId)
    {
-      Folder folder = getDMS().getFolder(folderId);
+      // fetching of children information may be time consuming, may need to be
+      // parameterized later
+      Folder folder = getDMS().getFolder(folderId, 2);
 
-      Map<String, List<DocumentDTO>> childs = new HashMap<String, List<DocumentDTO>>();
-      childs.put("folders", new ArrayList<DocumentDTO>());
-      childs.put("documents", new ArrayList<DocumentDTO>());
+      Map<String, List<AbstractDTO>> childs = new HashMap<String, List<AbstractDTO>>();
+      childs.put("folders", new ArrayList<AbstractDTO>());
+      childs.put("documents", new ArrayList<AbstractDTO>());
 
       if (folder == null)
       {
-         throw new I18NException("No Folder exist with Id: " + folderId);
+         throw new I18NException(restCommonClientMessages.getParamString("folder.notFound", folderId));
       }
 
       // update child nodes
@@ -62,7 +69,7 @@ public class RepositoryServiceImpl implements RepositoryService
       if (folderCount > 0 || documentCount > 0)
       {
          // create new folder nodes
-         childs.get("folders").addAll(DocumentDTOBuilder.buildFolders(folder.getFolders()));
+         childs.get("folders").addAll(FolderDTOBuilder.build(folder.getFolders()));
 
          // create new document nodes
          childs.get("documents").addAll(DocumentDTOBuilder.build(folder.getDocuments()));

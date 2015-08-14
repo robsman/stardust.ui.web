@@ -13,7 +13,7 @@ package org.eclipse.stardust.ui.web.rest.service;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 
 /**
  * @author Yogesh.Manware
@@ -29,7 +29,7 @@ public interface RepositoryService
     * @param folderId
     * @return
     */
-   public Map<String, List<DocumentDTO>> getFolder(String folderId);
+   public Map<String, List<AbstractDTO>> getFolder(String folderId);
 
   /* public DocumentDTO renameFolder(String participantQidIn);
 

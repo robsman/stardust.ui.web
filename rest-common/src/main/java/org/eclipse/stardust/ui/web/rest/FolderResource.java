@@ -23,7 +23,7 @@ import javax.ws.rs.core.Response;
 
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.service.RepositoryService;
-import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -41,10 +41,10 @@ public class FolderResource
    @GET
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("/{folderId}")
+   @Path("/{folderId : .+}")    
    public Response getFolder(@PathParam("folderId") String folderId)
    {
-      Map<String, List<DocumentDTO>> folderContents = repositoryService.getFolder(folderId);
+      Map<String, List<AbstractDTO>> folderContents = repositoryService.getFolder("/" + folderId);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(folderContents), MediaType.APPLICATION_JSON).build();
    }
 
