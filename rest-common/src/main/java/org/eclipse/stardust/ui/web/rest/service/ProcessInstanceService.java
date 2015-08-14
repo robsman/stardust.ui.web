@@ -34,6 +34,7 @@ import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
+import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.AttachToCaseDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ColumnDTO;
@@ -80,6 +81,9 @@ public class ProcessInstanceService
 
    @Resource
    private ProcessDefinitionUtils processDefinitionUtils;
+   
+   @Resource
+   private RestCommonClientMessages restCommonClientMessages;
    
    public ProcessInstanceDTO startProcess(JsonObject json)
    {
@@ -409,12 +413,13 @@ public class ProcessInstanceService
     */
    public List<AbstractDTO> getDathPathValues(Long processInstanceOid, IDataPathValueFilter dataPathValueFilter)
    {
-      if (processInstanceOid == null)
-      {
-         throw new I18NException("No Process Instance found associated with the provided Oid");
-      }
-
       ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processInstanceOid);
+      
+      if (processInstance == null)
+      {
+         throw new I18NException(restCommonClientMessages.getParamString("processInstance.notFound",
+               processInstanceOid.toString()));
+      }
 
       List<AbstractDTO> dataPathDtoList = new ArrayList<AbstractDTO>();
       ProcessDefinition processDefinition = processDefinitionUtils.getProcessDefinition(processInstance.getModelOID(),
