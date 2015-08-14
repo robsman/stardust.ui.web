@@ -64,6 +64,7 @@ public class HTML5FrameworkServices
    private final String COMMON_MENU_KEY_SEPERATOR = "=";
    private final String NEWLINE_TAB = "\n\t";
    private final String htmlViewJSON = ",\n{\n\t\"label\": \"{label}\",\n\t\"id\": \"Int/VIEW_NAME/:id\",\n\t\"iconBase\":\"viewIconBase :icon\",\n\t\"icon\":\"viewIconBase tabIcon-generic\",\n\t\"module\": \"bpm-ui\",\n\t\"controller\": \"bpm-ui.InternalPageCtrl\",\n\t\"partial\": \"/CONTEXT_ROOTVIEW_PATH\"\n\t}";
+   private final String CONFIGURATION_VIEW_DEF = "{\"label\": \"CONFIGURATION_LABEL\", \"title\": \"CONFIGURATION_LABEL\", \"id\": \"configurationTreeView\", \"icon\": \"viewIconBase tabIcon-generic\", \"module\": \"bpm-ui\", \"partial\": \"plugins/common/html5/partials/externalPage.html\", \"controller\": \"bpm-ui.ExternalPageCtrl\", \"target\": \"tab\", \"externalURL\": \"FULL_PATH/plugins/common/portalSingleViewMain.iface?singleViewId=*::configurationTreeView\"}";
 
    @Context
    private ServletContext servletContext;
@@ -147,19 +148,29 @@ public class HTML5FrameworkServices
       themesCurrent(null, null);
       
       String contents = getCodeResource("META-INF/xhtml/html5/templates/navigation.json");
+
+      PortalApplication portalApp = (PortalApplication) getAppContext().getBean("ippPortalApp");
+      MessagePropertiesBean messageBean = (MessagePropertiesBean) RestControllerUtils.resolveSpringBean(
+            MessagePropertiesBean.class, servletContext);
+
+      boolean authrized = portalApp.getPortalUiController().isViewAvailable("configurationTreeView");
+      if (authrized)
+      {
+         contents = StringUtils.replace(contents, "CONFIGURATION_VIEW_DEF", CONFIGURATION_VIEW_DEF);
+         contents = StringUtils.replace(contents, "CONFIGURATION_LABEL",
+               messageBean.getString("portalFramework.navigation.CONFIGURATION_LABEL"));
+      }
+      else
+      {
+         contents = StringUtils.replace(contents, "CONFIGURATION_VIEW_DEF", "");
+      }
+
       contents = StringUtils.replace(contents, "FULL_PATH", getDeploymentBaseURL(uriInfo, false));
       contents = StringUtils.replace(contents, "LOGGED_IN_USER_LABEL",
             RestControllerUtils.resolveSpringBean(UserProvider.class, servletContext).getUser().getDisplayName());
       
-      String version = "";
-    
-      MessagePropertiesBean messageBean = (MessagePropertiesBean) RestControllerUtils.resolveSpringBean(
-            MessagePropertiesBean.class, servletContext);
-      
       contents = StringUtils.replace(contents, "PORTAL_LABEL",
             messageBean.getString("portalFramework.navigation.PORTAL_LABEL"));
-      contents = StringUtils.replace(contents, "CONFIGURATION_LABEL",
-            messageBean.getString("portalFramework.navigation.CONFIGURATION_LABEL"));
       contents = StringUtils.replace(contents, "ALERTS_LABEL",
             messageBean.getString("portalFramework.navigation.ALERTS_LABEL"));
       contents = StringUtils.replace(contents, "SIGN_OUT_LABEL",
@@ -170,6 +181,7 @@ public class HTML5FrameworkServices
       // Replacing CONTEXT_ROOT should be called after the above call to add html views 
       contents = StringUtils.replace(contents, "CONTEXT_ROOT", getDeploymentBaseURL(uriInfo, true));
       
+      String version = "";
       try
       {
          RuntimeEnvironmentInfoProvider envInfoProvider = RestControllerUtils.resolveSpringBean(RuntimeEnvironmentInfoProvider.class, servletContext);
