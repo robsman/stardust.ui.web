@@ -305,10 +305,6 @@ public class PortalUiController
 
       for (IPerspectiveDefinition perspective : allPerspectives)
       {
-         if (!perspectives.containsKey(perspective.getName()))
-         {
-            continue;
-         }
          if (null == currentPerspective && perspective.isDefaultPerspective())
          {
             // Set default perspective
@@ -716,7 +712,7 @@ public class PortalUiController
    public View openView(ViewDefinition viewDef, String viewKey,
          Map<String, Object> params, AbstractMessageBean msgBean, boolean nestedView)
    {
-	  // For backward compatibility
+      // For backward compatibility
       // If View Key is empty then only calculate it 
       if (StringUtils.isEmpty(viewKey))
       {
