@@ -21,25 +21,61 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
 public class DescriptorItemTableEntry extends DefaultRowModel
 {
    private static final long serialVersionUID = 1L;
-   ProcessDescriptor processDescriptor;
+   String name;
+   Object value;
+   boolean editable = false;
+   boolean hasError;
 
    /**
     * @param name
     * @param value
     */
-   public DescriptorItemTableEntry(ProcessDescriptor processDescriptor)
+   public DescriptorItemTableEntry(String name, Object value)
    {
       super();
-      this.processDescriptor = processDescriptor;
+      this.name = name;
+      this.value = value;
    }
 
+   public DescriptorItemTableEntry(String name, Object value, boolean editable)
+   {
+      this(name, value);
+      this.editable = editable;
+   }
+   
    public String getName()
    {
-      return processDescriptor.getKey();
+      return this.name;
    }
 
-   public String getValue()
+   public Object getValue()
    {
-      return processDescriptor.getValue();
+      return this.value;
    }
+
+   public void setValue(Object value)
+   {
+      this.value = value;
+   }
+
+   public boolean isEditable()
+   {
+      return editable;
+   }
+
+   public void setEditable(boolean editable)
+   {
+      this.editable = editable;
+   }
+
+   public boolean isHasError()
+   {
+      return hasError;
+   }
+
+   public void setHasError(boolean hasError)
+   {
+      this.hasError = hasError;
+   }
+
 }

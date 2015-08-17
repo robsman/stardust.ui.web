@@ -138,6 +138,14 @@
 				</ice:panelGroup>
 			</f:facet>
 			<ice:panelGroup>
+				<ice:panelGroup>
+					<ice:inputHidden id="descriptorViewMsg"/>
+					<ui:include
+						src="/plugins/views-common/common/validationMessage.xhtml">
+						<ui:param name="validationMessageBean"
+							value="#{processInstanceDetailsBean.validationMessageBean}" />
+					</ui:include>
+				</ice:panelGroup>
 				<pc:automationTag value="auto-COM-PCEDescriptorTable"/>
 				<pc:genericDataTable bean="#{processInstanceDetailsBean}"
 					id="descriptorList"

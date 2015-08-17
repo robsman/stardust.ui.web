@@ -500,7 +500,7 @@ public class CaseDetailsBean extends PopupUIComponentBean
       List<DescriptorItemTableEntry> descriptorsEntries = CollectionUtils.newList();
       for (ProcessDescriptor processDescriptor : processDescriptors)
       {
-         descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor));
+         descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor.getValue()));
       }
       return descriptorsEntries;
    }

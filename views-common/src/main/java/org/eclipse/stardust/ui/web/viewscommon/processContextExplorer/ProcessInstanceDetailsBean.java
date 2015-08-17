@@ -10,24 +10,33 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.processContextExplorer;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
+import javax.faces.event.ValueChangeEvent;
+import javax.faces.validator.ValidatorException;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.dto.DataPathDetails;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceAttributes;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetailsLevel;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetailsOptions;
+import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
@@ -39,6 +48,7 @@ import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.PredefinedProcessInstanceLinkTypes;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
@@ -59,10 +69,17 @@ import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.table.SortableTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
+import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataMapping;
 import org.eclipse.stardust.ui.web.viewscommon.common.Localizer;
 import org.eclipse.stardust.ui.web.viewscommon.common.LocalizerKey;
+import org.eclipse.stardust.ui.web.viewscommon.common.PortalErrorClass;
+import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
+import org.eclipse.stardust.ui.web.viewscommon.common.ValidationMessageBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSearchHandler;
+import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.DataMappingWrapper;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.JoinProcessDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.SwitchProcessDialogBean;
@@ -76,6 +93,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
@@ -125,6 +143,11 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    private boolean hasJoinProcessPermission;
    private boolean disableSpawnProcess = false;
    private View thisView;
+   
+   private ValidationMessageBean validationMessageBean = null;
+   // Store all OUT DataPaths keyed by DATAID
+   Map<String, List<DataPathDetails>> outDataPathsMap = null;
+   Map<String, DataPathDetails> inDataPathsMap = null; 
    
    private String startingUserLabel = null;
 
@@ -546,9 +569,14 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
          // If descriptor panel is already initialized then do not build the table again
          if (!descriptorsPanelInitialized)
          {
+            validationMessageBean = new ValidationMessageBean();
+            inDataPathsMap = CollectionUtils.newHashMap();
+            outDataPathsMap = CollectionUtils.newHashMap();
+            validationMessageBean.setStyleClass("messagePanel");
             initializeDescriptorColumns();
          }
 
+         validationMessageBean.reset();
          List<DescriptorItemTableEntry> descriptorList = convertToTableEntries(CommonDescriptorUtils.createProcessDescriptors(processInstance));
          
          descriptorTable.setList(descriptorList);
@@ -568,13 +596,270 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    private List<DescriptorItemTableEntry> convertToTableEntries(List<ProcessDescriptor> processDescriptors)
    {
       List<DescriptorItemTableEntry> descriptorsEntries = CollectionUtils.newList();
+      GenericDataMapping mapping;
+      DataMappingWrapper dmWrapper;
+      // Store DataPath Map with all IN and OUT mappings
+      updateDataPathMap();
+      DeployedModel model = ModelCache.findModelCache().getModel(processInstance.getModelOID());
       for (ProcessDescriptor processDescriptor : processDescriptors)
       {
-         descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor));
+         DataPathDetails inDataPath = inDataPathsMap.get(processDescriptor.getId());
+         // For non-filterable OUT DataPath(complex), prevent edit
+         if(CollectionUtils.isNotEmpty(outDataPathsMap) && DescriptorFilterUtils.isDataFilterable(inDataPath))
+         {
+            String data = inDataPath.getData();
+            // Get OUT dataPath for IN DataPath
+            DataPathDetails outDataPath = fetchOutDataPath(inDataPath);
+            if(null != outDataPath)
+            {
+               mapping = new GenericDataMapping(outDataPath);
+               dmWrapper = new DataMappingWrapper(mapping, null, false);
+               Class dataClass = mapping.getMappedType();
+               String type = dmWrapper.getType();
+               Object value = processDescriptor.getValue();
+               if ("Long".equals(type) || "Double".equals(type))
+               {
+
+                  descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), convertToNumber(
+                        processDescriptor.getValue(), dataClass), true));
+               }
+               else if ("Boolean".equals(type))
+               {
+                  descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), Boolean
+                        .parseBoolean(processDescriptor.getValue()), true));
+               }
+               else if ("Date".equals(type))
+               {
+                  descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), getDateValue(
+                        DateUtils.parseDateTime((String) value), dataClass), true));
+
+               }
+               else
+               {
+                  descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor
+                        .getValue(), true));
+               }
+            }
+            else
+            {
+               descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor
+                     .getValue()));   
+            }
+         }
+         else
+         {
+            descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor
+                  .getValue()));   
+         }
+         
       }
       return descriptorsEntries;
    }
    
+   /**
+    * 
+    * @param event
+    */
+   public void valueChange(ValueChangeEvent event)
+   {
+      validationMessageBean.reset();
+      DescriptorItemTableEntry userObject = null;
+      DataPathDetails inDataPath = null, outDataPath = null;
+      try
+      {
+         Object newDescriptorValue = event.getNewValue();
+         Object oldDescriptorValue = event.getOldValue();
+         GenericDataMapping mapping;
+         DataMappingWrapper dmWrapper;
+         Object newValue = null;
+         if (null != oldDescriptorValue && null != newDescriptorValue
+               && !oldDescriptorValue.toString().equals(newDescriptorValue))
+         {
+            userObject = (DescriptorItemTableEntry) event.getComponent().getAttributes().get("row");
+            inDataPath = inDataPathsMap.get(userObject.getName());
+            outDataPath = fetchOutDataPath(inDataPath);
+            if (null != outDataPath)
+            {
+               mapping = new GenericDataMapping(outDataPath);
+               dmWrapper = new DataMappingWrapper(mapping, null, false);
+               Class dataClass = mapping.getMappedType();
+               String type = dmWrapper.getType();
+               if ("Long".equals(type) || "Double".equals(type))
+               {
+                  newValue = convertToNumber(newDescriptorValue, dataClass);
+
+               }
+               else if ("Boolean".equals(type))
+               {
+                  newValue = Boolean.valueOf(newDescriptorValue.toString());
+               }
+               else if ("Date".equals(type))
+               {
+                  newValue = getDateValue(DateUtils.parseDateTime((String) newDescriptorValue), dataClass);
+
+               }
+               else
+               {
+                  newValue = newDescriptorValue.toString();
+               }
+               ServiceFactoryUtils.getWorkflowService().setOutDataPath(processInstance.getOID(), outDataPath.getId(),
+                     newDescriptorValue);
+
+               userObject.setHasError(false);
+               validationMessageBean.addInfoMessage(this.getMessages().getString("descriptor.save", inDataPath.getName()), "descriptorViewMsg");
+            }
+         }
+      }
+      catch (Exception e)
+      {
+         userObject.setHasError(true);
+         FacesMessage facesMsg = ExceptionHandler.getFacesMessage(new PortalException(
+               PortalErrorClass.UNABLE_TO_CONVERT_DATAMAPPING_VALUE, e));
+         validationMessageBean.addError(facesMsg.getSummary(), "descriptorViewMsg");
+      }
+   }
+   /**
+    * 
+    * @param inDataPath
+    * @return
+    */
+   private DataPathDetails fetchOutDataPath(DataPathDetails inDataPath)
+   {
+      if(CollectionUtils.isNotEmpty(outDataPathsMap))
+      {
+         // read all OUT dataPath for given Data
+         List<DataPathDetails> outDataPaths = outDataPathsMap.get(inDataPath.getData());
+         DeployedModel model = ModelCache.findModelCache().getModel(processInstance.getModelOID());
+         if(CollectionUtils.isNotEmpty(outDataPaths))
+         {
+            for(DataPathDetails dataPath : outDataPaths)
+            {
+               // Filter dataPath with same AccessPoint and on same Qualified Model 
+               if(dataPath.getAccessPath().equals(inDataPath.getAccessPath()))
+               {
+                  String data = inDataPath.getData();
+                  Data dataInMapping = model.getData(data);
+                  Data dataOutMapping = model.getData(dataPath.getData());
+                  if(dataInMapping.getQualifiedId().equals(dataOutMapping.getQualifiedId()))
+                  {
+                     return dataPath;
+                  }
+               }
+            }
+         }
+      }
+      
+      return null;
+   }
+   
+   /**
+    * 
+    * @param value
+    * @param mappedClass
+    * @return
+    */
+   private Object getDateValue(Date value, Class mappedClass)
+   {
+      Object valueToSet = value;
+      if(mappedClass == Calendar.class)
+      {
+         Calendar cal = Calendar.getInstance();
+         cal.clear();
+         cal.setTime(value);
+         valueToSet = cal;
+      }
+      return valueToSet;
+   }
+   
+   /**
+    * 
+    * @param value
+    * @param type
+    * @return
+    */
+   private Number convertToNumber(Object value, Class type)
+   {
+      Number localValue = null;
+      if(value != null)
+      {
+         try
+         {
+            String strVal = value.toString();
+            if(type == Long.class)
+            {
+               localValue = new Long(strVal);
+            }
+            if(type == Integer.class)
+            {
+               localValue = new Integer(strVal);
+            }
+            else if(type == Short.class)
+            {
+               localValue = new Short(strVal);
+            }
+            else if(type == Byte.class)
+            {
+               localValue = new Byte(strVal);
+            }
+            else if(type == Double.class)
+            {
+               localValue = new Double(strVal);
+            }
+            else if(type == Float.class)
+            {
+               localValue = new Float(strVal);
+            }
+            else if( type == BigDecimal.class)
+            {
+                localValue = new BigDecimal(strVal);
+            }
+         }
+         catch (Exception e)
+         {
+            FacesMessage facesMsg = ExceptionHandler.getFacesMessage(
+                  new PortalException(PortalErrorClass.UNABLE_TO_CONVERT_DATAMAPPING_VALUE, e));
+
+            throw new ValidatorException(facesMsg);
+         }
+      }
+      return localValue;
+   }
+   
+   /**
+    * 
+    */
+   private void updateDataPathMap()
+   {
+      ProcessDefinition processDef = ProcessDefinitionUtils.getProcessDefinition(processInstance.getModelOID(),
+            processInstance.getProcessID());
+      List<DataPathDetails> dataPaths = processDef.getAllDataPaths();
+      DataPathDetails dataPathDetails;
+      int size = dataPaths.size();
+      List<DataPathDetails> outDataPaths = null;      
+      for (int i = 0; i < size; i++)
+      {
+         dataPathDetails = (DataPathDetails) dataPaths.get(i);
+
+         if(dataPathDetails.getDirection().equals(Direction.OUT))
+         {
+            // Store all OUT dataPath on same DataId
+            if(!outDataPathsMap.containsKey(dataPathDetails.getData()))
+            {
+               outDataPaths = CollectionUtils.newArrayList();
+               outDataPathsMap.put(dataPathDetails.getData(), outDataPaths);  
+            }
+            else
+            {
+               outDataPaths = outDataPathsMap.get(dataPathDetails.getData());
+            }
+            outDataPaths.add(dataPathDetails);
+         }
+         else
+         {
+            inDataPathsMap.put(dataPathDetails.getId(), dataPathDetails);
+         }
+      }
+   }
    /**
     * Initializes Descriptor columns
     */
@@ -583,9 +868,8 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
       ColumnPreference nameCol = new ColumnPreference("Name", "name",
             ColumnDataType.STRING, this.getMessages().getString("column.name"), true,
             true);
-      ColumnPreference valueCol = new ColumnPreference("Value", "value",
-            ColumnDataType.STRING, this.getMessages().getString("column.value"), true,
-            true);
+      ColumnPreference valueCol = new ColumnPreference("Value", "value", this.getMessages().getString("column.value"),
+            ResourcePaths.V_DESC_TABLE_COLUMNS, true, true);
       valueCol.setEscape(false);
 
       List<ColumnPreference> descriptoCols = new ArrayList<ColumnPreference>();
@@ -998,6 +1282,16 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    public String getAbortedUser()
    {
       return abortedUser;
+   }
+
+   public ValidationMessageBean getValidationMessageBean()
+   {
+      return validationMessageBean;
+   }
+
+   public void setValidationMessageBean(ValidationMessageBean validationMessageBean)
+   {
+      this.validationMessageBean = validationMessageBean;
    }  
    
    
