@@ -30,6 +30,8 @@ public interface RepositoryService
     * @return
     */
    public Map<String, List<AbstractDTO>> getFolder(String folderId);
+   
+   public Map<String, List<AbstractDTO>> getFolder(String folderId, int levelOfDetail);
 
   /* public DocumentDTO renameFolder(String participantQidIn);
 

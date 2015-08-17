@@ -49,18 +49,26 @@ public class RepositoryServiceImpl implements RepositoryService
     */
    public Map<String, List<AbstractDTO>> getFolder(String folderId)
    {
+      return getFolder(folderId, 1);
+   }
+
+   /**
+    *
+    */
+   public Map<String, List<AbstractDTO>> getFolder(String folderId, int levelOfDetail)
+   {
       // fetching of children information may be time consuming, may need to be
       // parameterized later
-      Folder folder = getDMS().getFolder(folderId, 2);
-
-      Map<String, List<AbstractDTO>> childs = new HashMap<String, List<AbstractDTO>>();
-      childs.put("folders", new ArrayList<AbstractDTO>());
-      childs.put("documents", new ArrayList<AbstractDTO>());
+      Folder folder = getDMS().getFolder(folderId, levelOfDetail);
 
       if (folder == null)
       {
          throw new I18NException(restCommonClientMessages.getParamString("folder.notFound", folderId));
       }
+
+      Map<String, List<AbstractDTO>> childs = new HashMap<String, List<AbstractDTO>>();
+      childs.put("folders", new ArrayList<AbstractDTO>());
+      childs.put("documents", new ArrayList<AbstractDTO>());
 
       // update child nodes
       int folderCount = folder.getFolderCount();
