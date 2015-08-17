@@ -170,7 +170,7 @@ public class DTOBuilder
 
       for (Field field : toClass.getDeclaredFields())
       {
-         if (null != json.get(field.getName()))
+         if (!json.get(field.getName()).isJsonNull())   
          {
             if (String.class.equals(field.getType()))
             {
