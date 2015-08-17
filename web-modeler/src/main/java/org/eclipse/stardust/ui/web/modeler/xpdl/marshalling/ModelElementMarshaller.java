@@ -48,6 +48,7 @@ import org.eclipse.stardust.model.xpdl.xpdl2.LoopType;
 import org.eclipse.stardust.model.xpdl.xpdl2.extensions.LoopDataRefType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.XpdlUtil;
 import org.eclipse.stardust.modeling.repository.common.descriptors.EObjectDescriptor;
+import org.eclipse.stardust.ui.web.modeler.authorization.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.LockInfo;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.jto.ChangeDescriptionJto;
@@ -342,6 +343,9 @@ public class ModelElementMarshaller implements ModelMarshaller
 
       JsonObject dataFlowsJson = new JsonObject();
       processJson.add(ModelerConstants.DATA_FLOWS_PROPERTY, dataFlowsJson);
+      
+      JsonArray permissionsJson = AuthorizationUtils.getPermissionsJson(processDefinition);
+      processJson.add("permissions", permissionsJson);
 
       return processJson;
    }
@@ -1181,6 +1185,9 @@ public class ModelElementMarshaller implements ModelMarshaller
          JsonObject resubmissionJson = this.toEventJson(eventHandler, new JsonObject());
          activityJson.add("resubmissionHandler", resubmissionJson);
       }
+      
+      JsonArray permissionsJson = AuthorizationUtils.getPermissionsJson(activity);
+      activityJson.add("permissions", permissionsJson);
 
       return activityJson;
    }
@@ -2356,6 +2363,9 @@ public class ModelElementMarshaller implements ModelMarshaller
             }
          }
       }
+      
+      JsonArray permissionsJson = AuthorizationUtils.getPermissionsJson(data);
+      dataJson.add("permissions", permissionsJson);
 
       return dataJson;
    }
