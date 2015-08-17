@@ -17,8 +17,11 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 	var _filter;
 	var _sdDialogService;
 	var _sdCorrespondenceService;
-	
+	var _timeout ;
 	var interaction = null;
+	var _http = null;
+	
+	var filesToUpload = [];
 	
 	var buttons = {
 			confirm : '',
@@ -28,7 +31,7 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 	/*
 	 * 
 	 */
-	function CorrespondenceCtrl($scope, $q , $filter,sdDialogService, sdCorrespondenceService) {
+	function CorrespondenceCtrl($scope, $q ,$http , $filter,$timeout,sdDialogService, sdCorrespondenceService) {
 		
 		
 		
@@ -37,21 +40,39 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 		_filter =$filter; 
 		_sdDialogService = sdDialogService;
 		_sdCorrespondenceService = sdCorrespondenceService;
-
+		_timeout = $timeout;
+		_http = $http;
+		
 		this.intialize($scope);
-		
-		this.exposeApis();
-		
-		this.getScope= function(){
-			return $scope;
-		}
+		this.exposeApis($scope);
 	}
 	
+	
+	// initialize
+	 CorrespondenceCtrl.prototype.initializeFileUploader = function() {
+		 var self = this;
+		var fileselect = jQuery("#fileselect")[0],
+			filedrag = jQuery("#filedrag")[0];
+		// file select
+		fileselect.addEventListener("change", FileSelectHandler, false);
+		self.dragDropAvailable = false;
+		// is XHR2 available?
+		var xhr = new XMLHttpRequest();
+		if (xhr.upload) {
+			filedrag.addEventListener("dragleave", FileDragHover, false);
+			filedrag.addEventListener("dragenter", FileDragHover, false);
+			filedrag.addEventListener("drop", FileSelectHandler, false);
+			filedrag.addEventListener("dragover", FileSelectHandler, false);
+			
+			filedrag.style.display = "block";
+			self.dragDropAvailable = true;
+		}
+	}
 	/**
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.intialize = function($scope){
-		
+		var self = this;
 		this.correspondenceTypes = [{
 										label : 'Email',
 										id : 'email'
@@ -59,7 +80,6 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 										label : 'Print',
 										id : 'print'
 									}];
-		
 		this.selected = {
 				type  : 'email', // print / email
 				showBcc : false,
@@ -67,13 +87,17 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 				to: [],
 				bcc:[],
 				cc:[],
-				message : 'Enter Text',
-				subject : ' Subject',
+				message : '',
+				subject : ' ',
 				templateId : '',
 				attachments : [],
-				piOid : 1014
+				aiOid : '',
 		};
 		
+		
+		this.dialog ={
+				selectedAddresses : []
+		}
 		
 		this.enteredAdd = {
 				to  : '', 
@@ -100,31 +124,70 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 				showFax : false
 		};
 		
-		this.loadAddressBook();
+
 		this.addressTable = null;
 		this.selectedAddresses = [];
-		
 		this.addressEntries= [];
 		
 		this.i18n = $scope.$root.i18n; 
 		$scope = this.i18n;
+	
 		this.interactionProvider = new bpm.portal.Interaction();
+		this.selected.aiOid = this.getActivityOid();
+		this.loadAddressBook();
 		
-		this.aOid = this.getActivityOid();
 		
 		buttons.confirm =  this.i18n('views-common-messages.common-Confirm', 'Confirm');
 		buttons.cancel = this.i18n('views-common-messages.common-Cancel', 'Cancel');
-		
-		//if (!window.btoa) window.btoa = $.base64.btoa
-		//if (!window.atob) window.atob = $.base64.atob
-		//console.log( window.atob)
+		// call initialization file
+		if (window.File && window.FileList && window.FileReader) {
+			this.initializeFileUploader();
+		}
 		
 	};
+	
+	
+	function  uploadAttachments () {
+		var deferred = _q.defer();
+		var self = this;
+		var formData = new FormData();
+		for (var i in filesToUpload) {
+			formData.append("file", filesToUpload[i]);
+		}	
+		
+		jQuery.ajax({
+			url: '/Ipp2/services/rest/portal/file-upload/upload',  //Server script to process data
+			type: 'POST',
+			xhr: function() {  // Custom XMLHttpRequest
+				var myXhr = jQuery.ajaxSettings.xhr();
+				if(myXhr.upload){ // Check if upload property exists
+					myXhr.upload.addEventListener('progress',self.progressHandlingFunction, false); // For handling the progress of the upload
+				}
+				return myXhr;
+			},
+			//Ajax events
+			success: function(data, textStatus, xhr){
+				deferred.resolve(JSON.parse(data));
+			},
+			error: function(xhr, textStatus){
+				console.log("Failure in uploading files");
+			},
+			// Form data
+			data: formData,
+			//Options to tell jQuery not to process data or worry about content-type.
+			cache: false,
+			contentType: false,
+			processData: false
+		});
+		return deferred.promise;
+	}
 	
 	/**
 	 * 
 	 */
-	CorrespondenceCtrl.prototype.exposeApis = function(){ 
+	CorrespondenceCtrl.prototype.exposeApis = function( $scope ){ 
+		
+		var self = this;
 		
 		CorrespondenceCtrl.prototype.showBcc = showBcc;
 		CorrespondenceCtrl.prototype.showCc = showCc;
@@ -151,20 +214,49 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 		CorrespondenceCtrl.prototype.loadAttachments = loadAttachments
 		CorrespondenceCtrl.prototype.removeAttachment= removeAttachment;
 		
-	}
+		
+		self.getScope= function(){
+			return $scope;
+		}
 	
+		CorrespondenceCtrl.prototype.addToUploadQ = addFilesToUploadQ;
+
+		this.uploadLocalFilesToServer = function(){
+			
+			uploadAttachments().then(function(data){
+				angular.forEach(data,function(item){
+					self.loadAttachments({name : item.fileName});
+				});
+				clearUploadQ();
+			});
+		}
+	}
+
 	
 	CorrespondenceCtrl.prototype.getActivityOid = function(){ 
-		/*var uri = this.interactionProvider.getInteractionUri();
+	/*	var uri = this.interactionProvider.getInteractionUri();
 		var endcoded = uri.split('/').pop();
 		var b64 = base64.get();
 		var decodedId = b64.decode(endcoded);
 		var partsMatcher = new RegExp('^(\\d+)\\|(\\d+)$');
 		var decodedParts = partsMatcher.exec(decodedId);
 		var activityInstanceOid = decodedParts[1];
-		alert(activityInstanceOid)
-		return activityInstanceOid*/
-		return '1082';
+		console.log('Activity Oid : '+activityInstanceOid)*/
+		//return activityInstanceOid
+		return 1100;
+	}
+	
+	function addFilesToUploadQ(files) {
+		var self = this;
+		console.log('addFilesToUploadQ');
+		for (var i = 0, f; f = files[i]; i++) {
+			//Avoiding duplicates
+			var found = _filter('filter')(filesToUpload,{name:f.name},true);
+			if(found && found.length < 1){
+				filesToUpload.push(f);
+				showFileToBeUploaded(f);
+			}
+		}
 	}
 	
 	
@@ -205,8 +297,25 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 		if(!self.filter.showFax) {
 			faxFilter = _filter('filter')(self.addressEntries, {type : 'email'},true);
 		}
+		_timeout(function() {
+			self.loadPreSelections();
+		});
 		return  _filter('filter')(faxFilter, {name : self.filter.address},false);
 	};
+	
+	
+
+	CorrespondenceCtrl.prototype.loadPreSelections = function(){
+		var self =this;
+		
+		var selections = [];
+		angular.forEach(self.dialog.selectedAddresses,function(data){
+			selections.push( {name: data.name})
+		});
+		if(self.addressTable){
+			self.addressTable.setSelection(selections)
+		}
+	} 
 
 	/*
 	 * 
@@ -220,12 +329,18 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 	 * 
 	 */
 	function onAddressSelection(info) {
+		
 		var self = this;
 		if (info.action == "select") {
-			self.selectedAddresses.push(info.current)
+				//self.selectedAddresses.push(info.current)
+				var found = _filter('filter')(self.dialog.selectedAddresses,{name :info.current.name },true);
+				if(found && found == 0){
+					self.dialog.selectedAddresses.push(info.current)	
+				}
 		} else {
-			var index = self.selectedAddresses.indexOf(info.current);
-			self.selectedAddresses.splice(index,1)
+			var index = self.dialog.selectedAddresses.indexOf(info.current);
+			//self.selectedAddresses.splice(index,1)
+			self.dialog.selectedAddresses.splice(index,1)
 		}
 	};
 
@@ -279,18 +394,23 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 		var self = this;
 		self.addressReady = true;
 		self.selectedAddresses = [];
+		self.dialog.selectedAddresses = [];
 		self.filter.address = "";
 		var title = "Select Recipients";
 		var html = '<div style="padding-bottom:10px;">'+ 
-							'<span ng-repeat = "opt in ctrl.selectedAddresses" class="spacing-right "> '+
-							'<span class="selected_address"><i class="glyphicon glyphicon-envelope spacing-right"></i> {{opt.name}} </span> </span >'+
+							'<span ng-repeat = "opt in ctrl.dialog.selectedAddresses" class="spacing-right "> '+
+								'<span class="selected_address" ng-click="ctrl.removeDialogAddress(opt)">'+
+									'<i class="glyphicon glyphicon-envelope spacing-right"></i> {{opt.name}}'+
+									 '<i class="glyphicon glyphicon-remove"></i>'+
+								'</span>'+
+							'</span >'+
 						'</div>'+
 						'<i class="glyphicon glyphicon-search"> </i>	<input type="text"  class="spacing-right"  ng-model="ctrl.filter.address" ng-change="ctrl.addressTable.refresh();"/>'+
 							'<input class="correspondence_addressBook_fax_control" type="checkbox" ng-model="ctrl.filter.showFax" ng-change="ctrl.addressTable.refresh();"/> <span class="iceOutLbl">Fax </span>'+
 					   '<div class="correspondence_addressBook_conatiner">'+
-							'<table sd-data-table="ctrl.addressTable" '+
+							'<table sd-data-table="ctrl.addressTable" sda-selection="ctrl.selectedAddresses" '+
 								' sd-data="ctrl.getAvailableAddresses();" sda-mode="local" '+
-								' sda-selectable="multiple" sda-no-pagination="true"  sda-page-size="{{ctrl.addressEnteries.length}}"  sda-ready="ctrl.addressReady" sda-on-select="ctrl.onAddressSelection(info);" sda-selection="ctrl.selectedAddresses"> '+
+								' sda-selectable="multiple" sda-no-pagination="true"  sda-page-size="{{ctrl.addressEnteries.length}}"  sda-ready="ctrl.addressReady" sda-on-select="ctrl.onAddressSelection(info);"> '+
 								' <thead ng-show="{{false}}">'+
 									'<tr>'+
 										'<th sda-label="Name"></th>'+
@@ -314,11 +434,11 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 				width : '500px',
 				onConfirm : function() {
 					if(addressType == 'TO'){
-						self.addAddress(self.selectedAddresses, self.selected.to)
+						self.addAddress(self.dialog.selectedAddresses, self.selected.to)
 					}else if(addressType == 'CC'){
-						self.addAddress(self.selectedAddresses, self.selected.cc)
+						self.addAddress(self.dialog.selectedAddresses, self.selected.cc)
 					}else if(addressType == 'BCC'){
-						self.addAddress(self.selectedAddresses, self.selected.bcc)
+						self.addAddress(self.dialog.selectedAddresses, self.selected.bcc)
 					}
 				}
 		};
@@ -352,6 +472,52 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 	function showBcc() {
 		this.selected.showBcc = true;
 	};
+	
+	
+	/**
+	 * 
+	 */
+	function clearUploadQ() {
+		var m = jQuery("#messages")[0];
+		m.innerHTML ='';
+		jQuery("#uploadAttachmentForm")[0].reset();
+		
+		if(filesToUpload.length){
+			filesToUpload.length = 0;
+		}
+		
+	}
+
+	/**
+	 * 
+	 */
+	function FileDragHover(e) {
+		e.stopPropagation();
+		e.preventDefault();
+		e.target.className = (e.type == "dragover" ? "hover" : "");
+	}
+
+
+	/**
+	 * 
+	 */
+	function FileSelectHandler(e) {
+		// cancel event and hover styling
+		FileDragHover(e);
+		var files = e.target.files || e.dataTransfer.files;
+		CorrespondenceCtrl.prototype.addToUploadQ(files);
+	}
+
+
+	 /**
+	  * 
+	  */
+	function showFileToBeUploaded(file) {
+		var m = jQuery("#messages");
+		var msg = 
+			"<p style='width:250px'>File Name: <strong>" + file.name +"</strong></p>";
+		m.html( msg + m.html());
+	}
 	
 	
 	/**
@@ -407,6 +573,7 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 	 */
 	function loadAttachments(attachment) {
 		var self = this;
+		//TODO Run this through the Templating API
 		self.selected.attachments.push(attachment);
 	}
 	
@@ -419,19 +586,41 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 		self.selected.attachments.splice(index,1);
 	}
 	
-
+	/**
+	 * 
+	 */
+	CorrespondenceCtrl.prototype.removeDialogAddress = function(address) {
+		var self = this;
+		var info = {
+			action : 'deselect',
+			current : address
+		}
+	
+		var selections = [];
+		
+		angular.forEach( self.addressTable.getSelection(),function(data){
+			if(data.name != address.name ) {
+			 selections.push({name:data.name});
+			}
+		});
+		
+		self.addressTable.setSelection(selections);
+		self.onAddressSelection(info);
+	}
+	
 	/**
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.loadAddressBook =function() {
 		var self  = this;
-		_sdCorrespondenceService.getAddressBook(self.selected.piOid).then(function(data){
+		_sdCorrespondenceService.getAddressBook(self.selected.aiOid).then(function(data){
 			self.addressEntries = data
 		});
 	};
 	
+	
 	//Dependency injection array for our controller.
-	CorrespondenceCtrl.$inject = ['$scope','$q','$filter','sdDialogService','sdCorrespondenceService'];
+	CorrespondenceCtrl.$inject = ['$scope','$q', '$http','$filter','$timeout','sdDialogService','sdCorrespondenceService'];
 	
 	//Require capable return object to allow our angular code to be initialized
 	//from a require-js injection system.
@@ -443,4 +632,5 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 		}
 	};
 	
+
 });

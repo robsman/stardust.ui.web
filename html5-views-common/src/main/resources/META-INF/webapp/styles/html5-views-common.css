@@ -26,12 +26,12 @@
 }
 
 .correspondence_right_section {
-	vertical-align: top;
+	vertical-align: b;
 	padding-right: 100px;
 }
 
 .correspondence_section {
-	height: 40px;
+	height: 30px;
 }
 
 .selected_address {
@@ -46,12 +46,12 @@
 }
 
 .correspondence_attachments {
-	padding: 0px 4px 0px 4px;
+	padding: 4px 4px 4px 4px;
 	border: solid 1px #ccd5e4;
 	background-color: #eff2f7;
-	border-radius: 4px;
 	cursor: pointer;
 	margin-left: 3px;
+	margin-right: 3px;
 	margin-top: 3px;
 	margin-bottom: 3px;
 }
@@ -132,3 +132,30 @@
     padding:2px;
     background-color:#fff;
 }
+
+.correspondence-file-uploader {
+	margin-top: 10px;
+	width : 300px;
+}
+
+
+#filedrag {
+	display: none;
+	font-weight: bold;
+	text-align: center;
+	padding: 1em 0;
+	margin: 1em 0;
+	color: #555;
+	border: 2px dashed #555;
+	border-radius: 7px;
+	cursor: default;
+}
+
+#filedrag.hover
+	{
+		color: #f00;
+		border-color: #f00;
+		border-style: solid;
+		box-shadow: inset 0 3px 4px #888;
+	}
+

@@ -17,8 +17,8 @@ define([],function(){
 	 */
 	function CorrespondenceService($resource, $q, sdUtilService) {
 		
-		this.getAddressBook = function (piOid){
-			var url = sdUtilService.getBaseUrl() + "services/rest/portal/process-instances/"+piOid+"/address-book";
+		this.getAddressBook = function (aiOid){
+			var url = sdUtilService.getBaseUrl() + "services/rest/portal/activity-instances/"+aiOid+"/address-book";
 			return $resource(url).query().$promise;
 		}
 		
