@@ -364,39 +364,5 @@
 			return processes.query().$promise;
 		};
 		
-		/*
-		 * 
-		 */
-		ProcessInstanceService.prototype.getCorrespondenceAddressBook = function(piOid) {
-			
-			//TODO  Replace with REST  end point.
-			return  [
-			         {
-			        	 path : ' path1',
-			        	 value : 'email1@email.com',
-			        	 fax :  false
-			         },
-			         {
-			        	 path : ' path2',
-			        	 value : '122331@email',
-			        	 fax :  true
-			         },
-			         {
-			        	 path : ' path3',
-			        	 value : '122331@email',
-			        	 fax :  false
-			         },
-			         {
-			        	 path : ' path1',
-			        	 value : 'email1@email.com',
-			        	 fax :  false
-			         },
-			         {
-			        	 path : ' path2',
-			        	 value : '122331@email',
-			        	 fax :  true
-			         }
-			         ]
-		};
 	};
 })();

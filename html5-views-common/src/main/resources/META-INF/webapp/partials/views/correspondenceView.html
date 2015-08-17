@@ -1,13 +1,16 @@
 <html>
   <head>
+  	<link href="/../../plugins/views-common/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css" rel="stylesheet"
+		type="text/css" />
 	<script src="../../../html5-process-portal/standalone/html5Deps.js"></script>
-	<script data-main="correspondenceViewMain"
+	<script data-main="../../scripts/utils/correspondenceViewMain"
 		src="../../../views-common/js/libs/require/2.1.15/require.min.js"></script>
+	<script  src="../../../processportal/js/Interaction.js"></script>
 	<link href="../../styles/html5-views-common.css" rel="stylesheet">
+	<link href="../../styles/stardust-modern.css" rel="stylesheet">
 </head>
 <body>
 <div ng-cloak class="view-panel" ng-controller="sdCorrespondenceCtrl as ctrl" >
-
 	<table class="correspondence_container">
 		<tr class="correspondence_section">
 			<td class="correspondence_left_section">
@@ -26,23 +29,24 @@
 				<span class="iceOutLbl" ng-if="ctrl.readOnly"> To : </span>
 			</td>
 			<td class="correspondence_right_section">	
-				
-				 <div sd-auto-complete 
-	                            sda-item-pre-class="ctrl.addressIconMapper(item,index)" 
-	                            sda-tag-pre-class="ctrl.addressIconMapper(item,index)" 
-	                            sda-matches="ctrl.data.like.to" 
-	                            sda-user-entry-delimiter=","
-           						sda-user-entry="ctrl.newItemFactory(val)"
-	                            sda-match-str="ctrl.data.matchVal.to" 
-	                            sda-change="ctrl.getAddressesAutoCompleteTO(ctrl.data.matchVal.to)" 
-	                            sda-text-property="path" 
-	                            sda-tooltip-property="value"
-	                            sda-container-class="sd-ac-container" 
-	                            sda-item-hot-class="sd-ac-item-isActive" 
-	                            sda-selected-matches="ctrl.selected.to"
-	                            sda-read-only ="ctrl.readOnly"
-	                            >
-                     </div>
+				<div class="address-book-field-container">
+					 <div sd-auto-complete 
+		                            sda-item-pre-class="ctrl.addressIconMapper(item,index)" 
+		                            sda-tag-pre-class="ctrl.addressIconMapper(item,index)" 
+		                            sda-matches="ctrl.data.like.to" 
+		                            sda-user-entry-delimiter=","
+	           						sda-user-entry="ctrl.newItemFactory(val)"
+		                            sda-match-str="ctrl.data.matchVal.to" 
+		                            sda-change="ctrl.getAddressesAutoCompleteTO(ctrl.data.matchVal.to)" 
+		                            sda-text-property="name" 
+		                            sda-tooltip-property="value"
+		                            sda-container-class="address-book-ac-container" 
+		                            sda-item-hot-class="sd-ac-item-isActive" 
+		                            sda-selected-matches="ctrl.selected.to"
+		                            sda-read-only ="ctrl.readOnly"
+		                            >
+	                     </div>
+                    </div> 
 			</td>
 		</tr>
 		
@@ -54,6 +58,7 @@
 				<span class="iceOutLbl" ng-if="ctrl.readOnly"> Bcc : </span>
 			</td>
 			<td class="correspondence_right_section">	
+				<div class="address-book-field-container">
 				 <div sd-auto-complete 
 	                            sda-item-pre-class="ctrl.addressIconMapper(item,index)" 
 	                            sda-tag-pre-class="ctrl.addressIconMapper(item,index)" 
@@ -62,7 +67,7 @@
            						sda-user-entry="ctrl.newItemFactory(val)"
 	                            sda-match-str="ctrl.data.matchVal.bcc" 
 	                            sda-change="ctrl.getAddressesAutoCompleteBCC(ctrl.data.matchVal.bcc)" 
-	                            sda-text-property="path" 
+	                            sda-text-property="name" 
 	                            sda-tooltip-property="value"
 	                            sda-container-class="sd-ac-container" 
 	                            sda-item-hot-class="sd-ac-item-isActive" 
@@ -70,6 +75,7 @@
 	                            sda-read-only ="ctrl.readOnly"
 	                            >
                      </div>
+                    </div> 
 			</td>
 		</tr>
 		
@@ -79,22 +85,24 @@
 				<span class="iceOutLbl" ng-if="ctrl.readOnly"> Cc : </span>
 			</td>
 			<td class="correspondence_right_section">	
-				 <div sd-auto-complete 
-	                            sda-item-pre-class="ctrl.addressIconMapper(item,index)" 
-	                            sda-tag-pre-class="ctrl.addressIconMapper(item,index)" 
-	                            sda-matches="ctrl.data.like.cc" 
-	                            sda-user-entry-delimiter=","
-           						sda-user-entry="ctrl.newItemFactory(val)"
-	                            sda-match-str="ctrl.data.matchVal.cc" 
-	                            sda-change="ctrl.getAddressesAutoCompleteCC(ctrl.data.matchVal.cc)" 
-	                            sda-text-property="path"
-	                            sda-tooltip-property="value" 
-	                            sda-container-class="sd-ac-container" 
-	                            sda-item-hot-class="sd-ac-item-isActive" 
-	                            sda-selected-matches="ctrl.selected.cc"
-	                            sda-read-only ="ctrl.readOnly"
-	                            >
-                     </div>
+				<div class="address-book-field-container">	
+					 <div sd-auto-complete 
+		                            sda-item-pre-class="ctrl.addressIconMapper(item,index)" 
+		                            sda-tag-pre-class="ctrl.addressIconMapper(item,index)" 
+		                            sda-matches="ctrl.data.like.cc" 
+		                            sda-user-entry-delimiter=","
+	           						sda-user-entry="ctrl.newItemFactory(val)"
+		                            sda-match-str="ctrl.data.matchVal.cc" 
+		                            sda-change="ctrl.getAddressesAutoCompleteCC(ctrl.data.matchVal.cc)" 
+		                            sda-text-property="name"
+		                            sda-tooltip-property="value" 
+		                            sda-container-class="sd-ac-container" 
+		                            sda-item-hot-class="sd-ac-item-isActive" 
+		                            sda-selected-matches="ctrl.selected.cc"
+		                            sda-read-only ="ctrl.readOnly"
+		                            >
+	                     </div>
+	              </div>
 			</td>
 		</tr>
 		

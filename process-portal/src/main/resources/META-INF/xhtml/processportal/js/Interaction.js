@@ -39,6 +39,13 @@ if (!window.bpm.portal.Interaction) {
 		/*
 		 * 
 		 */
+		Interaction.prototype.getInteractionUri = function () {
+			return interactionUri;
+		};
+		
+		/*
+		 * 
+		 */
 		Interaction.prototype.fetchData = function(dataMapping, callbacks, controller) {
 			var endpoint = "/inData";
 			var result;

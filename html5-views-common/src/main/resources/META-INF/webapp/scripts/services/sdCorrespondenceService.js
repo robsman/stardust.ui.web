@@ -15,16 +15,17 @@ define([],function(){
 	/*
 	 * 
 	 */
-	function CorrespondenceService($http, $q) {
+	function CorrespondenceService($resource, $q, sdUtilService) {
 		
-		this.getAddressBook = function (){
-			
+		this.getAddressBook = function (piOid){
+			var url = sdUtilService.getBaseUrl() + "services/rest/portal/process-instances/"+piOid+"/address-book";
+			return $resource(url).query().$promise;
 		}
 		
 	}
 	
 	//Dependency injection array for our controller.
-	CorrespondenceService.$inject = ['$http','$q'];
+	CorrespondenceService.$inject = ['$resource','$q','sdUtilService'];
 	
 	//Require capable return object to allow our angular code to be initialized
 	//from a require-js injection system.

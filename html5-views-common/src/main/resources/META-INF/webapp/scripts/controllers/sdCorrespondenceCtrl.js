@@ -10,13 +10,15 @@
 /**
  * @author Johnson.Quadras
  */
-define([],function(){
+define(["html5-views-common/scripts/utils/base64" ],function(base64){
 
 	var _q;
 	var trace;
 	var _filter;
 	var _sdDialogService;
 	var _sdCorrespondenceService;
+	
+	var interaction = null;
 	
 	var buttons = {
 			confirm : '',
@@ -27,6 +29,8 @@ define([],function(){
 	 * 
 	 */
 	function CorrespondenceCtrl($scope, $q , $filter,sdDialogService, sdCorrespondenceService) {
+		
+		
 		
 		this.readOnly = false;
 		_q = $q;
@@ -47,7 +51,6 @@ define([],function(){
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.intialize = function($scope){
-		console.log(_sdCorrespondenceService.get())
 		
 		this.correspondenceTypes = [{
 										label : 'Email',
@@ -67,7 +70,8 @@ define([],function(){
 				message : 'Enter Text',
 				subject : ' Subject',
 				templateId : '',
-				attachments : []
+				attachments : [],
+				piOid : 1014
 		};
 		
 		
@@ -96,14 +100,25 @@ define([],function(){
 				showFax : false
 		};
 		
-		this.addressEnteries = getAddressBook();
+		this.loadAddressBook();
 		this.addressTable = null;
 		this.selectedAddresses = [];
 		
+		this.addressEntries= [];
+		
 		this.i18n = $scope.$root.i18n; 
+		$scope = this.i18n;
+		this.interactionProvider = new bpm.portal.Interaction();
+		
+		this.aOid = this.getActivityOid();
 		
 		buttons.confirm =  this.i18n('views-common-messages.common-Confirm', 'Confirm');
 		buttons.cancel = this.i18n('views-common-messages.common-Cancel', 'Cancel');
+		
+		//if (!window.btoa) window.btoa = $.base64.btoa
+		//if (!window.atob) window.atob = $.base64.atob
+		//console.log( window.atob)
+		
 	};
 	
 	/**
@@ -138,7 +153,21 @@ define([],function(){
 		
 	}
 	
-
+	
+	CorrespondenceCtrl.prototype.getActivityOid = function(){ 
+		/*var uri = this.interactionProvider.getInteractionUri();
+		var endcoded = uri.split('/').pop();
+		var b64 = base64.get();
+		var decodedId = b64.decode(endcoded);
+		var partsMatcher = new RegExp('^(\\d+)\\|(\\d+)$');
+		var decodedParts = partsMatcher.exec(decodedId);
+		var activityInstanceOid = decodedParts[1];
+		alert(activityInstanceOid)
+		return activityInstanceOid*/
+		return '1082';
+	}
+	
+	
 	function getAddressesAutoCompleteBCC(filterCriteria, resultHolder){
 		var self = this;
 		self.filter.address = filterCriteria;
@@ -163,7 +192,7 @@ define([],function(){
 
 	function newItemFactory(val){
 		var newEntry = {
-				path : val,
+				name : val,
 				value : val
 		};
 
@@ -172,14 +201,11 @@ define([],function(){
 
 	function getFilteredAddresses(){
 		var self = this;
-		var faxFilter = self.addressEnteries;
+		var faxFilter = self.addressEntries;
 		if(!self.filter.showFax) {
-			faxFilter = _filter('filter')(faxFilter, {fax : false},true);
+			faxFilter = _filter('filter')(self.addressEntries, {type : 'email'},true);
 		}
-
-		console.log("Filter:")
-		console.log( _filter('filter')(faxFilter, {path : self.filter.address},false))
-		return  _filter('filter')(faxFilter, {path : self.filter.address},false);
+		return  _filter('filter')(faxFilter, {name : self.filter.address},false);
 	};
 
 	/*
@@ -209,7 +235,7 @@ define([],function(){
 	function addAddress(source,destination) {
 
 		angular.forEach(source,function(data){
-			var found = _filter('filter')(destination,{path : data.path},true);
+			var found = _filter('filter')(destination,{name : data.name},true);
 			if(found && found.length < 1){
 				destination.push(data);
 			}
@@ -257,7 +283,7 @@ define([],function(){
 		var title = "Select Recipients";
 		var html = '<div style="padding-bottom:10px;">'+ 
 							'<span ng-repeat = "opt in ctrl.selectedAddresses" class="spacing-right "> '+
-							'<span class="selected_address"><i class="glyphicon glyphicon-envelope spacing-right"></i> {{opt.path}} </span> </span >'+
+							'<span class="selected_address"><i class="glyphicon glyphicon-envelope spacing-right"></i> {{opt.name}} </span> </span >'+
 						'</div>'+
 						'<i class="glyphicon glyphicon-search"> </i>	<input type="text"  class="spacing-right"  ng-model="ctrl.filter.address" ng-change="ctrl.addressTable.refresh();"/>'+
 							'<input class="correspondence_addressBook_fax_control" type="checkbox" ng-model="ctrl.filter.showFax" ng-change="ctrl.addressTable.refresh();"/> <span class="iceOutLbl">Fax </span>'+
@@ -265,16 +291,16 @@ define([],function(){
 							'<table sd-data-table="ctrl.addressTable" '+
 								' sd-data="ctrl.getAvailableAddresses();" sda-mode="local" '+
 								' sda-selectable="multiple" sda-no-pagination="true"  sda-page-size="{{ctrl.addressEnteries.length}}"  sda-ready="ctrl.addressReady" sda-on-select="ctrl.onAddressSelection(info);" sda-selection="ctrl.selectedAddresses"> '+
-								' <thead >'+
+								' <thead ng-show="{{false}}">'+
 									'<tr>'+
 										'<th sda-label="Name"></th>'+
-										'<th sda-label="Data Path"></th>'+
+										'<th sda-label="Data name"></th>'+
 									'</tr>'+
 								' </thead>'+
 								' <tbody>'+
 									'<tr>'+
 										'<td>{{rowData.value}}</td>'+
-										'<td>{{rowData.path}}</td>'+
+										'<td>{{rowData.name}}</td>'+
 									'</tr>'+
 								' </tbody>'+
 							' </table>'+
@@ -285,6 +311,7 @@ define([],function(){
 				type : 'confirm',
 				confirmActionLabel : buttons.confirm,
 			    cancelActionLabel :  buttons.cancel,
+				width : '500px',
 				onConfirm : function() {
 					if(addressType == 'TO'){
 						self.addAddress(self.selectedAddresses, self.selected.to)
@@ -344,7 +371,7 @@ define([],function(){
 					onConfirm : function() {
 						self.loadMessageFromTemplate(self.selected.templateId);
 					},
-					dialogActionType : 'OK_CLOSE'
+					width : '500px'
 			};
 			_sdDialogService.dialog(self.getScope(), options, html)
 	};
@@ -363,14 +390,14 @@ define([],function(){
 				    cancelActionLabel :  buttons.cancel,
 					title : title,
 					type : 'confirm',
+					width : '500px',
 					onConfirm : function() {
 						var attachment = {
 								name : self.selected.attachmentId
 						};
 						self.loadAttachments(attachment);
 						
-					},
-					dialogActionType : 'OK_CLOSE'
+					}
 			};
 			_sdDialogService.dialog(self.getScope(), options, html)
 	};
@@ -396,34 +423,11 @@ define([],function(){
 	/**
 	 * 
 	 */
-	function getAddressBook() {
-		 return  [
-				         {
-				        	 path : ' path1',
-				        	 value : 'email1@email.com',
-				        	 fax :  false
-				         },
-				         {
-				        	 path : ' path2',
-				        	 value : '122331@email',
-				        	 fax :  true
-				         },
-				         {
-				        	 path : ' path3',
-				        	 value : '122331@email',
-				        	 fax :  false
-				         },
-				         {
-				        	 path : ' path1',
-				        	 value : 'email1@email.com',
-				        	 fax :  false
-				         },
-				         {
-				        	 path : ' path2',
-				        	 value : '122331@email',
-				        	 fax :  true
-				         }
-				         ]
+	CorrespondenceCtrl.prototype.loadAddressBook =function() {
+		var self  = this;
+		_sdCorrespondenceService.getAddressBook(self.selected.piOid).then(function(data){
+			self.addressEntries = data
+		});
 	};
 	
 	//Dependency injection array for our controller.
@@ -433,6 +437,7 @@ define([],function(){
 	//from a require-js injection system.
 	return {
 		init: function(angular,appName){
+			this.interaction = interaction;
 			angular.module(appName)
 			.controller("sdCorrespondenceCtrl", CorrespondenceCtrl);
 		}
