@@ -684,16 +684,16 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
                dmWrapper = new DataMappingWrapper(mapping, null, false);
                Class dataClass = mapping.getMappedType();
                String type = dmWrapper.getType();
-               if ("Long".equals(type) || "Double".equals(type))
+               if ("Long".equalsIgnoreCase(type) || "Double".equalsIgnoreCase(type))
                {
                   newValue = convertToNumber(newDescriptorValue, dataClass);
 
                }
-               else if ("Boolean".equals(type))
+               else if ("Boolean".equalsIgnoreCase(type))
                {
                   newValue = Boolean.valueOf(newDescriptorValue.toString());
                }
-               else if ("Date".equals(type))
+               else if ("Date".equalsIgnoreCase(type))
                {
                   newValue = getDateValue(DateUtils.parseDateTime((String) newDescriptorValue), dataClass);
 
