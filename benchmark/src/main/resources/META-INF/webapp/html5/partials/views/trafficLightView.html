@@ -9,21 +9,21 @@
 	<div ng-show="ctrl.showTLVCriteria" id="benchmarkTable">
 		<div>
 			<span>{{i18n('benchmark-messages.views-trafficLightView-processes-label')}}</span>
-			<select size="5" style="white-space: nowrap; margin: 3px;"
+			<select size="5" style="white-space: nowrap; margin: 5px;padding: 0;"
 				multiple="multiple" ng-model="ctrl.selectedProcesses"
 				ng-options="opt as opt.name for opt in ctrl.processes">
 			</select>
 			<!-- 	</div>
 	<div> -->
 			<span>{{i18n('benchmark-messages.views-trafficLightView-benchmarks-label')}}</span>
-			<select size="5" style="white-space: nowrap; margin: 3px;"
+			<select size="5" style="white-space: nowrap; margin: 5px;padding: 0;"
 				multiple="multiple" ng-model="ctrl.selectedBenchmarks"
 				ng-options="opt.oid as opt.name for opt in ctrl.benchmarkDefinitions">
 			</select>
 		</div>
 		<div>
 			<span>{{i18n('benchmark-messages.views-trafficLightView-drilldown-label')}}</span>
-			<select size="1" style="white-space: nowrap; margin: 3px;"
+			<select size="1" style="white-space: nowrap; margin: 5px;padding: 0;"
 				ng-model="ctrl.selectedDrillDown">
 				<option value="PROCESS_WORKITEM">Process/Work Item</option>
 				<option value="BUSINESS_OBJECT">Business Object</option>
@@ -31,7 +31,7 @@
 		</div>
 		<div>
 			<span>{{i18n('benchmark-messages.views-trafficLightView-date-label')}}</span>
-			<select size="1" style="white-space: nowrap; margin: 3px;"
+			<select size="1" style="white-space: nowrap; margin: 5px;padding: 0;"
 				ng-model="ctrl.selectedDateType">
 				<option value="BUSINESS_DATE">Business Date</option>
 				<option value="STARTTIME_DATE">Start Time Date</option>
@@ -40,15 +40,22 @@
 			<input ng-model="ctrl.dayOffset" type="number">
 		</div>
 		<div>
-		    <input class="button" type="submit" value="{{i18n('benchmark-messages.views-trafficLightView-update-label')}}" ng-click="ctrl.showTrafficLightView()">
+			<input class="button" type="submit"
+				value="{{i18n('benchmark-messages.views-trafficLightView-update-label')}}"
+				ng-click="ctrl.showTrafficLightView()">
 		</div>
 	</div>
-	<div ng-if="ctrl.showTLVStatastics" ng-include="'plugins/benchmark/html5/partials/views/tlvStatastics.html'">
+	<div ng-if="ctrl.showTLVStatastics"
+		ng-include="'plugins/benchmark/html5/partials/views/tlvStatastics.html'">
 	</div>
-	
+
 	<div class="view-panel-content" ng-if="ctrl.showProcessTable">
-		<div class="view-panel-toolbar heading" ng-bind="i18n('admin-portal-messages.views-common-processTable-title')"></div>
-		<div sd-process-table="ctrl.processDataTable" sd-data="ctrl.getProcesslistForTLV(params);"
-			sda-preference-module="ipp-views-common" sda-preference-id="preference" sda-preference-name="ipp-views-common.processTable.selectedColumns"/>
+		<div class="view-panel-toolbar heading"
+			ng-bind="i18n('admin-portal-messages.views-common-processTable-title')"></div>
+		<div sd-process-table="ctrl.processDataTable"
+			sd-data="ctrl.getProcesslistForTLV(params);"
+			sda-preference-module="ipp-views-common"
+			sda-preference-id="preference"
+			sda-preference-name="ipp-views-common.processTable.selectedColumns" />
 	</div>
 </div>

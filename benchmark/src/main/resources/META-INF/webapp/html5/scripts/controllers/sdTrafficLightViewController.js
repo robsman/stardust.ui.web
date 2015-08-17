@@ -101,6 +101,8 @@
 	TrafficLightViewController.prototype.showTrafficLightView = function() {
 		var self = this;
 		self.showTLVStatastics = false;
+		self.showProcessTable = false;
+		self.processDataTable = null;
 		var queryData = {
 			'isAllProcessess' : false,
 			'isAllBenchmarks' : false
@@ -176,26 +178,21 @@
 
 	TrafficLightViewController.prototype.setDataForProcessTable = function(processId, state, benchmarkIndex) {
 		var self = this;
-		self.showProcessTable = false;
 		self.selectedBenchmarkCategory = benchmarkIndex;
 		self.selectedProcessId = processId;
-		self.state = state
-		self.showProcessTable = true;
+		self.state = state;
+		if(self.processDataTable != undefined){
+			self.processDataTable.refresh();
+		}else{
+			self.showProcessTable = true;
+		}		
 	};
 	
-	TrafficLightViewController.prototype.fetchProcessInstanceCounts = function(
-			sdProcessInstanceService) {
-		var self = this;
 
-		sdProcessInstanceService.getProcessInstanceCounts().then(function(result) {
-			self.count = result;
-		});
-	};
-
-	TrafficLightViewController.prototype.getProcesslistForTLV = function(options) {
+	TrafficLightViewController.prototype.getProcesslistForTLV = function(params) {
         var self = this;
 		var query = {
-			'options' : options,
+			'options' : params.options,
 			'bOids' : self.queryData.bOids,
 			'dateType' : self.queryData.dateType,
 			'dayOffset' : self.queryData.dayOffset,
@@ -206,7 +203,6 @@
 
 		var deferred = _q.defer();
 		self.processList = {};
-		self.fetchProcessInstanceCounts(_sdProcessInstanceService);
 		_sdProcessInstanceService.getProcesslistForTLV(query).then(function(data) {
 			self.processList.list = data.list;
 			self.processList.totalCount = data.totalCount;
