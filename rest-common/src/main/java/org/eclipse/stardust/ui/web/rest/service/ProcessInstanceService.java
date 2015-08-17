@@ -28,8 +28,10 @@ import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.QueryResult;
+import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
+import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
@@ -45,6 +47,8 @@ import org.eclipse.stardust.ui.web.rest.service.dto.JoinProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
@@ -60,6 +64,7 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.services.ContextPortalServices;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
+
 import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
@@ -113,6 +118,92 @@ public class ProcessInstanceService
    {
       // TODO Auto-generated method stub
       return null;
+   }
+
+   /**
+    * 
+    * @param processInstanceOid
+    * @return
+    */
+   public Map<String, List<DocumentDTO>> getProcessInstanceDocuments(
+         long processInstanceOid)
+   {
+      Map<String, List<DocumentDTO>> docs = new HashMap<String, List<DocumentDTO>>();
+
+      // Get Process attachments
+      List<Document> processAttachments = processInstanceUtilsREST.getProcessAttachments(processInstanceOid);
+      if (null != processAttachments)
+      {
+         List<DocumentDTO> processAttachmentsDTO = DTOBuilder.buildList(
+               processAttachments, DocumentDTO.class);
+         docs.put(DmsConstants.PATH_ID_ATTACHMENTS, processAttachmentsDTO);
+      }
+
+      // Get dataPath documents
+      ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processInstanceOid);
+      ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(
+            processInstance.getModelOID(), processInstance.getProcessID());
+      List<DataPath> dataPaths = processDefinition.getAllDataPaths();
+      for (DataPath dataPath : dataPaths)
+      {
+         if (Direction.IN.equals(dataPath.getDirection()))
+         {
+            List<Document> dataPathDocs = processInstanceUtilsREST.getProcessInstanceDocumentsForDataPath(
+                  processInstance, dataPath.getId());
+            if (dataPathDocs.size() > 0)
+            {
+               docs.put(dataPath.getId(),
+                     DTOBuilder.buildList(dataPathDocs, DocumentDTO.class));
+            }
+         }
+      }
+
+      return docs;
+   }
+
+   /**
+    * 
+    * @param processInstanceOid
+    * @return
+    */
+   public List<DocumentDTO> getProcessInstanceDocumentsForDataPath(
+         long processInstanceOid, String dataPathId)
+   {
+      // Return empty array if no documents are found
+      List<DocumentDTO> docs = new ArrayList<DocumentDTO>();
+      if (DmsConstants.PATH_ID_ATTACHMENTS.equals(dataPathId))
+      {
+         // Get Process attachments
+         List<Document> processAttachments = processInstanceUtilsREST.getProcessAttachments(processInstanceOid);
+         if (null != processAttachments)
+         {
+            docs = DTOBuilder.buildList(processAttachments, DocumentDTO.class);
+         }
+      }
+      else
+      {
+         // Get dataPath documents
+         ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processInstanceOid);
+         ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(
+               processInstance.getModelOID(), processInstance.getProcessID());
+         List<DataPath> dataPaths = processDefinition.getAllDataPaths();
+         for (DataPath dataPath : dataPaths)
+         {
+            if (Direction.IN.equals(dataPath.getDirection())
+                  && dataPath.getId().equals(dataPathId))
+            {
+               List<Document> dataPathDocs = processInstanceUtilsREST.getProcessInstanceDocumentsForDataPath(
+                     processInstance, dataPath.getId());
+               if (dataPathDocs.size() > 0)
+               {
+                  docs = DTOBuilder.buildList(dataPathDocs, DocumentDTO.class);
+                  break;
+               }
+            }
+         }
+      }
+
+      return docs;
    }
 
    /**

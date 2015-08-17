@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.rest.service.dto;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 
 import com.google.gson.Gson;
 
@@ -37,6 +38,15 @@ public abstract class AbstractDTO
    {
       Gson gson = new Gson();
       return gson.toJson(list);
+   }
+
+   /**
+    * @return
+    */
+   public static String toJson(Map map)
+   {
+      Gson gson = new Gson();
+      return gson.toJson(map);
    }
 
    /**

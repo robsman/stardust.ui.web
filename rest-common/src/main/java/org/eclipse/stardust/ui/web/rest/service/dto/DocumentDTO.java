@@ -10,16 +10,22 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
+import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
+import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
+
 /**
  * @author Anoop.Nair
  * @version $Revision: $
  */
+@DTOClass
 public class DocumentDTO extends AbstractDTO
 {
+   @DTOAttribute("id")
    public String uuid;
 
+   @DTOAttribute("name")
    public String name;
-
+   
    public String contentType;
 
    public String path;

@@ -24,6 +24,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -105,6 +106,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessContextCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDocumentDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
+
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -548,6 +550,21 @@ public class ProcessInstanceUtils
       }
 
       return processAttachments;
+   }
+
+   /**
+    * @param oid
+    * @return
+    */
+   public List<Document> getProcessInstanceDocumentsForDataPath(ProcessInstance processInstance, String dataPathId)
+   {
+      List<Document> docList = new ArrayList<Document>();
+      Object objectDocument = serviceFactoryUtils.getWorkflowService().getInDataPath(processInstance.getOID(), dataPathId);
+      if (objectDocument != null && objectDocument instanceof Document) {
+         docList.add((Document) objectDocument);
+      }
+
+      return docList;
    }
 
    /**

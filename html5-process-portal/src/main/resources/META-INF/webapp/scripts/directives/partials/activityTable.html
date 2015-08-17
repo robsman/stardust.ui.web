@@ -283,6 +283,42 @@
 							<i class="pi pi-activity-notes-empty icon-lg" ng-if ="rowData.notesCount === 0"></i>
 							<i class="pi pi-activity-notes icon-lg" ng-if ="rowData.notesCount > 0 "></i>
 						</button>
+						<button ng-click="bpmCommon.stopEvent($event);" aid="PP-ActivityTable-OpenProcessDocuments"
+						    ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"
+							title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}" class="button-link tbl-tool-link">
+							<span sd-popover id="processDocuments" sda-on-open="activityTableCtrl.openProcessDocumentsPopover(rowData);">
+								<i class="pi pi-activity-pi-documents"></i>
+								<div class="popover-body" style="text-align: left; min-width: 100px;">
+									<div ng-show="rowData.contentLoaded">
+										<div class="popoverHeading"><b>{{i18n('processportal.toolbars-workflowActions-processDocuments-processAttachments')}}</b></div>
+										<div ng-show="rowData.processAttachments && rowData.processAttachments.length > 0">
+											<div ng-repeat="processAttachment in rowData.processAttachments">
+												<a href="#" ng-click="activityTableCtrl.openDocumentsView(processAttachment.uuid)">{{processAttachment.name}}</a>
+											</div>
+										</div>
+										<div ng-hide="rowData.processAttachments.length > 0">
+											{{i18n('processportal.toolbars-workflowActions-processDocuments-noProcessAttachments')}}
+										</div>
+										<div class="popoverHeading"><b>{{i18n('processportal.toolbars-workflowActions-processDocuments-specificDocuments')}}</b></div>
+										
+										<div ng-show="rowData.specificDocuments.length > 0">
+											<div ng-repeat="processDocument in rowData.specificDocuments">
+												<a href="#" ng-click="activityTableCtrl.openDocumentsView(processDocument.uuid)">{{processDocument.name}}</a>
+											</div>
+										</div>
+										<div ng-show="rowData.processAttachments.length > 0 || rowData.specificDocuments.length > 0">
+											<a href="#" ng-click="activityTableCtrl.openAllProcessDocumentViews(rowData)"><B>{{i18n('processportal.toolbars-workflowActions-processDocuments-openAllDocuments')}}</B></a>
+										</div>
+										<div ng-hide="rowData.specificDocuments && rowData.specificDocuments.length > 0">
+											{{i18n('processportal.toolbars-workflowActions-processDocuments-noSpecificDocuments')}}
+										</div>
+									</div>
+									<div ng-hide="rowData.contentLoaded">
+										{{i18n('views-common-messages.common-loading')}}
+									</div>
+								</div>
+							</span>
+						</button>
 					</div>
 				</td>
 			</tr>

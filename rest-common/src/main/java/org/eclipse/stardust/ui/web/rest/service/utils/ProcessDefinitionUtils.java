@@ -122,7 +122,7 @@ public class ProcessDefinitionUtils
     * @param processId
     * @return
     */
-   public ProcessDefinition getProcessDefinition(long modelOid, String processId)
+   public static ProcessDefinition getProcessDefinition(long modelOid, String processId)
    {
       ModelCache modelCache = ModelCache.findModelCache();
       Model model = modelCache.getModel(modelOid);

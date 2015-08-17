@@ -184,6 +184,15 @@
 		};
 		
 		/*
+		 * 
+		 */
+		ProcessInstanceService.prototype.getProcessInstanceDocuments = function(oid) {
+			var restUrl = REST_BASE_URL + oid + "/documents";
+			var documents = $resource(restUrl);
+			return documents.get().$promise;
+		};
+
+		/*
 		 *
 		 *	{
 		 *	  sourceProcessOIDs: [oid],

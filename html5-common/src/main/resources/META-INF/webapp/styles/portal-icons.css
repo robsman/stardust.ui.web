@@ -330,6 +330,11 @@ Icon implementations
 	content: "\f007";
 }
 
+.pi-activity-pi-documents:before{
+	font-family: "FontAwesome";
+	content: "\f07b";
+}
+
 
 /*Process Overview Table*/
 .pi-process-notes-empty:before{
@@ -362,4 +367,9 @@ Icon implementations
 .pi-process-recover:before{
 	font-family: 'FontAwesome';
 	content: "\f112";
+}
+
+.pi-process-documents:before{
+	font-family: "FontAwesome";
+	content: "\f07b";
 }

@@ -20,7 +20,7 @@
     angular.module('bpm-common').directive(
 	    'sdActivityTable',
 	    [ '$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sdPreferenceService',
-		    'sdWorklistService', 'sdActivityInstanceService', 'sdProcessDefinitionService',
+		    'sdWorklistService', 'sdActivityInstanceService', 'sdProcessInstanceService', 'sdProcessDefinitionService',
 		    'sdCriticalityService', 'sdStatusService', 'sdPriorityService', '$filter', 'sgI18nService',
 		    '$timeout', 'sdLoggedInUserService', 'sdDialogService', 'sdCommonViewUtilService',
 		    ActivityTableDirective ]);
@@ -29,7 +29,7 @@
      * 
      */
     function ActivityTableDirective($parse, $q, sdUtilService, sdViewUtilService, sdLoggerService, sdPreferenceService,
-	    sdWorklistService, sdActivityInstanceService, sdProcessDefinitionService, sdCriticalityService,
+	    sdWorklistService, sdActivityInstanceService, sdProcessInstanceService, sdProcessDefinitionService, sdCriticalityService,
 	    sdStatusService, sdPriorityService, $filter, sgI18nService, $timeout, sdLoggedInUserService,
 	    sdDialogService, sdCommonViewUtilService) {
 
@@ -831,6 +831,50 @@
 	ActivityTableCompiler.prototype.openNotes = function(rowItem) {
 	   sdCommonViewUtilService.openNotesView(rowItem.processInstance.oid, true);
 	   //sdCommonViewUtilService.openNotesViewHTML5(rowItem.processInstance.oid, rowItem.processInstance.processName, true); // do not remove this line
+	};
+	
+	/*
+	 * 
+	 */
+	ActivityTableCompiler.prototype.openProcessDocumentsPopover = function(rowItem) {
+		var self = this;
+		rowItem.contentLoaded = false;
+		sdProcessInstanceService.getProcessInstanceDocuments(rowItem.processInstance.oid).then(function (resource) {
+			var procDocs = resource['DATA_PATH_DOCUMENTS'];
+			rowItem.processAttachments = procDocs['PROCESS_ATTACHMENTS'];
+			rowItem.specificDocuments = [];
+			jQuery.each(procDocs, function(pathId, docs) {
+				if (pathId !== 'PROCESS_ATTACHMENTS') {
+					rowItem.specificDocuments = rowItem.specificDocuments.concat(docs);
+				}
+			});
+			rowItem.contentLoaded = true;
+			self.safeApply();
+		});
+	};
+	
+	/*
+	 * 
+	 */
+	ActivityTableCompiler.prototype.openDocumentsView = function(docId) {
+	   sdCommonViewUtilService.openDocumentView(docId);
+	};
+
+	/*
+	 * 
+	 */
+	ActivityTableCompiler.prototype.openAllProcessDocumentViews = function(rowItem) {
+		var self = this;
+		if (rowItem.processAttachments) {
+			jQuery.each(rowItem.processAttachments, function(_, doc) {
+				self.openDocumentsView(doc.uuid);
+			});
+		}
+		if (rowItem.specificDocuments) {
+			jQuery.each(rowItem.specificDocuments, function(_, doc) {
+				self.openDocumentsView(doc.uuid);
+			});
+		}
 	};
 
 	/*

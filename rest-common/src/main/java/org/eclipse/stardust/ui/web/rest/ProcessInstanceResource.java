@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,6 +50,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.TrafficLightViewUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -115,6 +117,48 @@ public class ProcessInstanceResource
       {
          trace.error(e, e);
 
+         return Response.serverError().build();
+      }
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{processInstanceOid: \\d+}/documents")
+   public Response getDocuments(@PathParam("processInstanceOid") String processInstanceOid)
+   {
+      try
+      {
+         final String DATA_PATH_DOCUMENTS = "DATA_PATH_DOCUMENTS";
+         Map<String, Map> dataPathDocuments = new HashMap<String, Map>();
+         dataPathDocuments.put(DATA_PATH_DOCUMENTS, getProcessInstanceService().getProcessInstanceDocuments(
+               Long.parseLong(processInstanceOid)));
+         return Response.ok(
+               AbstractDTO.toJson(dataPathDocuments), MediaType.APPLICATION_JSON)
+               .build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+         return Response.serverError().build();
+      }
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{processInstanceOid: \\d+}/documents/{dataPathId}")
+   public Response getDocumentsForDatapath(@PathParam("processInstanceOid") String processInstanceOid,
+         @PathParam("dataPathId") String dataPathId)
+   {
+      try
+      {
+         return Response.ok(
+               AbstractDTO.toJson(getProcessInstanceService().getProcessInstanceDocumentsForDataPath(
+                     Long.parseLong(processInstanceOid), dataPathId)), MediaType.APPLICATION_JSON)
+               .build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
          return Response.serverError().build();
       }
    }
