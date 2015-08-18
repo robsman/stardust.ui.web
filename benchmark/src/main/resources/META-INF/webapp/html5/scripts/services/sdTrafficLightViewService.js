@@ -26,9 +26,10 @@
 						'$http',
 						'sdDataTableHelperService',
 						'sdUtilService',
-						function($rootScope, $resource, sdLoggerService, $q, $http, sdDataTableHelperService, sdUtilService) {
-							var service = new TrafficLightViewService($rootScope, $resource, sdLoggerService, $q, $http,
-									sdDataTableHelperService, sdUtilService);
+						function($rootScope, $resource, sdLoggerService, $q, $http, sdDataTableHelperService,
+								sdUtilService) {
+							var service = new TrafficLightViewService($rootScope, $resource, sdLoggerService, $q,
+									$http, sdDataTableHelperService, sdUtilService);
 							return service;
 						} ];
 			});
@@ -36,7 +37,8 @@
 	/*
 	 * 
 	 */
-	function TrafficLightViewService($rootScope, $resource, sdLoggerService, $q, $http, sdDataTableHelperService, sdUtilService) {
+	function TrafficLightViewService($rootScope, $resource, sdLoggerService, $q, $http, sdDataTableHelperService,
+			sdUtilService) {
 		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/trafficLightView";
 		var trace = sdLoggerService.getLogger('benchmark-app.services.sdTrafficLightViewService');
 
@@ -59,6 +61,31 @@
 
 			var urlTemplateParams = {};
 			urlTemplateParams.type = "stats";
+
+			return tlvStats.fetch(urlTemplateParams, postData).$promise;
+
+		};
+		
+		
+		/**
+		 * 
+		 */
+		TrafficLightViewService.prototype.getTLVActivityStatastic = function(query) {
+			// Prepare URL
+			var restUrl = REST_BASE_URL + "/:type";
+
+			var postData = query;
+
+			var tlvStats = $resource(restUrl, {
+				type : '@type'
+			}, {
+				fetch : {
+					method : 'POST'
+				}
+			});
+
+			var urlTemplateParams = {};
+			urlTemplateParams.type = "activityStats";
 
 			return tlvStats.fetch(urlTemplateParams, postData).$promise;
 

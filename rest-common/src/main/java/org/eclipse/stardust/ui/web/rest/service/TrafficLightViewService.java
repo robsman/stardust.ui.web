@@ -41,4 +41,9 @@ public class TrafficLightViewService
       return trafficLightViewUtils.getTrafficLightViewStatastic(isAllBenchmarks,isAllProcessess,bOids,processes,dateType,dayOffset,benchmarkCategories);
    }
 
+   public QueryResultDTO getActivityBenchmarkStatistics(String processId, List<Long> bOids, String dateType,
+         Integer dayOffset, List<BenchmarkCategoryDTO> benchmarkCategories)
+   {
+      return trafficLightViewUtils.getActivityBenchmarkStatistics(processId, bOids, dateType, dayOffset, benchmarkCategories);
+   }
 }

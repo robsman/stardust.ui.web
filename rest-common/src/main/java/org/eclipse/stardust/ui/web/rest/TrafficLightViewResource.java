@@ -16,8 +16,6 @@ package org.eclipse.stardust.ui.web.rest;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.annotation.Resource;
 import javax.ws.rs.POST;
@@ -97,7 +95,48 @@ public class TrafficLightViewResource
       }
 
       QueryResultDTO result = trafficLightViewService.getTrafficLightViewStatastic(isAllBenchmarks, isAllProcessess,
-            bOids, processes, dateType, dayOffset,benchmarkCategories);
+            bOids, processes, dateType, dayOffset, benchmarkCategories);
+      return Response.ok(result.toJson(), MediaType.APPLICATION_JSON).build();
+   }
+
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/activityStats")
+   public Response getTrafficLightViewActivityStatastic(String postData)
+   {
+      JsonMarshaller jsonIo = new JsonMarshaller();
+      JsonObject postJSON = jsonIo.readJsonObject(postData);
+
+      JsonArray bOidsArray = postJSON.getAsJsonArray("bOids");
+      Type type = new TypeToken<List<Long>>()
+      {
+      }.getType();
+      List<Long> bOids = new ArrayList<Long>();
+      if (null != bOidsArray)
+      {
+         bOids = new Gson().fromJson(bOidsArray.toString(), type);
+
+      }
+
+      String processId = postJSON.getAsJsonPrimitive("processId").getAsString();
+      String dateType = postJSON.getAsJsonPrimitive("dateType").getAsString();
+
+      Integer dayOffset = postJSON.getAsJsonPrimitive("dayOffset").getAsInt();
+
+      JsonArray categories = postJSON.getAsJsonArray("categories");
+
+      Type typeBenchmarkCategories = new TypeToken<List<BenchmarkCategoryDTO>>()
+      {
+      }.getType();
+      List<BenchmarkCategoryDTO> benchmarkCategories = new ArrayList<BenchmarkCategoryDTO>();
+      if (null != categories)
+      {
+         benchmarkCategories = new Gson().fromJson(categories.toString(), typeBenchmarkCategories);
+
+      }
+
+      QueryResultDTO result = trafficLightViewService.getActivityBenchmarkStatistics(processId, bOids, dateType,
+            dayOffset, benchmarkCategories);
       return Response.ok(result.toJson(), MediaType.APPLICATION_JSON).build();
    }
 }

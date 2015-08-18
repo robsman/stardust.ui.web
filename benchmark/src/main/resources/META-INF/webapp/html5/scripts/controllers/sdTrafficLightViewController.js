@@ -167,6 +167,21 @@
 			trace.log(error);
 		});
 	};
+	
+	TrafficLightViewController.prototype.getActivitySatastic = function(processId){
+		var self = this;
+		var queryData = {};
+		queryData = self.queryData;
+		delete queryData.isAllProcessess;
+		delete queryData.isAllBenchmarks;
+		delete queryData.processes;
+		queryData.processId = processId;
+		_sdTrafficLightViewService.getTLVActivityStatastic(queryData).then(function(data) {
+			console.log(data);
+		}, function(error) {
+			trace.log(error);
+		});
+	};
 
 	/**
 	 * 
@@ -214,6 +229,34 @@
 
 		return deferred.promise;
 	};
+	
+	TrafficLightViewController.prototype.getActivitylistForTLV = function(params) {
+        var self = this;
+		var query = {
+			'options' : params.options,
+			'bOids' : self.queryData.bOids,
+			'dateType' : self.queryData.dateType,
+			'dayOffset' : self.queryData.dayOffset,
+			'benchmarkCategory' : self.selectedBenchmarkCategory,
+			'processId' : self.selectedProcessId,
+			'activtyId' : self.selectedActivityId,
+			'state' : self.state
+		};
+
+		var deferred = _q.defer();
+		self.processList = {};
+		_sdProcessInstanceService.getProcesslistForTLV(query).then(function(data) {
+			self.processList.list = data.list;
+			self.processList.totalCount = data.totalCount;
+
+			deferred.resolve(self.processList);
+		}, function(error) {
+			deferred.reject(error);
+		});
+
+		return deferred.promise;
+	};
+	
 	
 
 })();

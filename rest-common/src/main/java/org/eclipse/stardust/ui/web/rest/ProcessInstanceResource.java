@@ -17,8 +17,6 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -47,7 +45,6 @@ import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.TrafficLightViewUtils;
 
@@ -74,6 +71,12 @@ public class ProcessInstanceResource
 
    @Autowired
    ProcessDefinitionService processDefService;
+
+   public static final String ACTIVE = "Active";
+
+   public static final String COMPLETED = "Completed";
+
+   public static final String ABORTED = "Aborted";
 
    private final JsonMarshaller jsonIo = new JsonMarshaller();
 
@@ -330,7 +333,7 @@ public class ProcessInstanceResource
          return Response.serverError().build();
       }
    }
-   
+
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
@@ -344,7 +347,7 @@ public class ProcessInstanceResource
       {
          Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
-         
+
          JsonMarshaller jsonIo = new JsonMarshaller();
          JsonObject postJSON = jsonIo.readJsonObject(postData);
          JsonArray bOidsArray = postJSON.getAsJsonArray("bOids");
@@ -361,13 +364,13 @@ public class ProcessInstanceResource
          String dateType = postJSON.getAsJsonPrimitive("dateType").getAsString();
 
          Integer dayOffset = postJSON.getAsJsonPrimitive("dayOffset").getAsInt();
-                
+
          String processId = postJSON.getAsJsonPrimitive("processId").getAsString();
-         
+
          String state = postJSON.getAsJsonPrimitive("state").getAsString();
-         
+
          ProcessInstanceQuery query = ProcessInstanceQuery.findForProcess(processId);
-         
+
          FilterOrTerm benchmarkFilter = query.getFilter().addOrTerm();
 
          for (Long bOid : bOids)
@@ -387,32 +390,35 @@ public class ProcessInstanceResource
             startDate = TrafficLightViewUtils.getPastStartDate(dayOffset);
          }
 
-         if (dateType.equals("BUSINESS_DATE"))
-         {          
-            benchmarkFilter.add((DataFilter.between(TrafficLightViewUtils.getModelName(processId) + TrafficLightViewUtils.BUSINESS_DATE, (Serializable)startDate, (Serializable)endDate)));            
+         if (dateType.equals(TrafficLightViewUtils.BUSINESS_DATE))
+         {
+            benchmarkFilter.add((DataFilter.between(TrafficLightViewUtils.getModelName(processId)
+                  + TrafficLightViewUtils.BUSINESS_DATE, (Serializable) startDate, (Serializable) endDate)));
          }
          else
          {
             benchmarkFilter.add(ProcessInstanceQuery.START_TIME.between(startDate.getTimeInMillis(),
                   endDate.getTimeInMillis()));
          }
-         
-         
-         if(postJSON.getAsJsonPrimitive("benchmarkCategory") != null){
+
+         if (postJSON.getAsJsonPrimitive("benchmarkCategory") != null)
+         {
             Long benchmarkCategory = postJSON.getAsJsonPrimitive("benchmarkCategory").getAsLong();
             benchmarkFilter.add(ProcessInstanceQuery.BENCHMARK_VALUE.isEqual(benchmarkCategory));
          }
-         
-        
 
-         if(state.equals("ACTIVE")){
+         if (state.equals(ACTIVE))
+         {
             query.getFilter().add(ProcessStateFilter.ACTIVE);
-         }else if (state.equals("COMPLETED")){
+         }
+         else if (state.equals(COMPLETED))
+         {
             query.getFilter().add(ProcessStateFilter.COMPLETED);
-         }else if(state.equals("ABORTED")){
+         }
+         else if (state.equals(ABORTED))
+         {
             query.getFilter().add(ProcessStateFilter.ABORTED);
          }
-         
 
          return Response.ok(GsonUtils.toJsonHTMLSafeString(processInstanceService.getProcessInstances(query, options)),
                MediaType.APPLICATION_JSON).build();
@@ -489,17 +495,17 @@ public class ProcessInstanceResource
       return Response.ok(AbstractDTO.toJson(processInstanceService.getProcessesColumns()), MediaType.APPLICATION_JSON)
             .build();
    }
-   
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{oid}")
-   public Response getProcessByOid(@PathParam("oid") Long oid,  @QueryParam("fetchDescriptors") @DefaultValue("false") boolean fetchDescriptors)
+   public Response getProcessByOid(@PathParam("oid") Long oid,
+         @QueryParam("fetchDescriptors") @DefaultValue("false") boolean fetchDescriptors)
    {
-      return Response.ok(processInstanceService.getProcessByOid(oid, fetchDescriptors).toJson(), MediaType.APPLICATION_JSON)
-            .build();
+      return Response.ok(processInstanceService.getProcessByOid(oid, fetchDescriptors).toJson(),
+            MediaType.APPLICATION_JSON).build();
    }
-   
+
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("startingActivityOID/{aiOid}")
@@ -522,7 +528,7 @@ public class ProcessInstanceResource
       return Response.ok(GsonUtils.toJsonHTMLSafeString(processInstanceService.getAddressBook(processOid)),
             MediaType.APPLICATION_JSON).build();
    }
-   
+
    /**
     * Populate the options with the post data.
     * 

@@ -19,13 +19,20 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td></td>
+				<td>
+				   <a href="#"
+						ng-click="ctrl.getActivitySatastic(rowData.processId)"
+						title="{{i18n('business-control-center-messages.views-pendingActivities-selectedActivitiesTable-title')}}">
+					 <span
+						ng-bind="rowData.processName"></span>
+				   </a> 
+				</td>
 				<td ng-repeat="cat in ctrl.categories" style="text-align: center;">
 					<i class="sc sc-fw sc-1x sc-circle"
 					ng-style="{'color':rowData.benchmarkCategoryCountMap[colData.title].color}"></i>
 					<a href="#"
 					ng-if="rowData.benchmarkCategoryCountMap[colData.title].count > 0"
-					ng-click="ctrl.setDataForProcessTable(rowData.processId,'ACTIVE',rowData.benchmarkCategoryCountMap[colData.title].index)"
+					ng-click="ctrl.setDataForProcessTable(rowData.processId,i18n('views-common-messages.views-processTable-statusFilter-active'),rowData.benchmarkCategoryCountMap[colData.title].index)"
 					title="{{i18n('business-control-center-messages.views-pendingActivities-selectedActivitiesTable-title')}}">
 						<span
 						ng-bind="rowData.benchmarkCategoryCountMap[colData.title].count"></span>
@@ -35,14 +42,14 @@
 				</td>
 				<td style="text-align: center;"><a href="#"
 					ng-if="rowData.completedProcessCount > 0"
-					ng-click="ctrl.setDataForProcessTable(rowData.processId,'COMPLETED')"
+					ng-click="ctrl.setDataForProcessTable(rowData.processId,i18n('views-common-messages.views-processTable-statusFilter-completed'))"
 					title="{{i18n('business-control-center-messages.views-pendingActivities-selectedActivitiesTable-title')}}">
 						<span ng-bind="rowData.completedProcessCount"></span>
 				</a> <span ng-if="rowData.completedProcessCount == 0"
 					ng-bind="rowData.completedProcessCount"></span></td>
 				<td style="text-align: center;"><a href="#"
 					ng-if="rowData.abortedProcessCount > 0"
-					ng-click="ctrl.setDataForProcessTable(rowData.processId,'ABORTED')"
+					ng-click="ctrl.setDataForProcessTable(rowData.processId,i18n('views-common-messages.views-processTable-statusFilter-aborted'))"
 					title="{{i18n('business-control-center-messages.views-pendingActivities-selectedActivitiesTable-title')}}">
 						<span ng-bind="rowData.abortedProcessCount"></span>
 				</a> <span ng-if="rowData.abortedProcessCount == 0"

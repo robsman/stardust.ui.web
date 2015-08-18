@@ -143,25 +143,29 @@ public class ActivityInstanceUtils
       {
          return new ArrayList<ActivityInstance>();
       }
-      return (List<ActivityInstance>) getActivitiesByOids(null, oids);
+      return (List<ActivityInstance>) getActivitiesByOids(null, oids, null);
+   }
+
+   /**
+    * @param query 
+    * @param userId
+    * @return
+    */
+   public QueryResult< ? > getActivityInstances(Options options, ActivityInstanceQuery query)
+   {
+      return getActivitiesByOids(options, null, query);
    }
 
    /**
     * @param userId
     * @return
     */
-   public QueryResult< ? > getActivityInstances(Options options)
+   public QueryResult< ? > getActivitiesByOids(Options options, List<Long> oids, ActivityInstanceQuery query)
    {
-      return getActivitiesByOids(options, null);
-   }
-
-   /**
-    * @param userId
-    * @return
-    */
-   public QueryResult< ? > getActivitiesByOids(Options options, List<Long> oids)
-   {
-      ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
+      if(query == null){
+         query = ActivityInstanceQuery.findAll(); 
+      }
+      
       FilterTerm filter = query.getFilter();
       if (!CollectionUtils.isEmpty(oids))
       {

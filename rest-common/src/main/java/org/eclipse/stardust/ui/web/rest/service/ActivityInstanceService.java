@@ -320,18 +320,18 @@ public class ActivityInstanceService
     * @param userId
     * @return
     */
-   public QueryResultDTO getAllInstances(Options options)
+   public QueryResultDTO getAllInstances(Options options, ActivityInstanceQuery query)
    {
-      QueryResult< ? > queryResult = activityInstanceUtils.getActivityInstances(options);
+      QueryResult< ? > queryResult = activityInstanceUtils.getActivityInstances(options, query);
       return ActivityTableUtils.buildTableResult(queryResult, MODE.ACTIVITY_TABLE);
    }
 
    /**
     * @return
     */
-   public QueryResultDTO getInstancesByOids( Options options, List<Long> oids)
+   public QueryResultDTO getInstancesByOids( Options options, List<Long> oids, ActivityInstanceQuery query)
    {
-      QueryResult< ? > queryResult = activityInstanceUtils.getActivitiesByOids(options, oids);
+      QueryResult< ? > queryResult = activityInstanceUtils.getActivitiesByOids(options, oids, query);
       return ActivityTableUtils.buildTableResult(queryResult, MODE.ACTIVITY_TABLE);
    }
 
