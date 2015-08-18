@@ -175,7 +175,7 @@ public class ProcessInstanceService
          List<Document> processAttachments = processInstanceUtilsREST.getProcessAttachments(processInstanceOid);
          if (null != processAttachments)
          {
-            docs = DTOBuilder.buildList(processAttachments, DocumentDTO.class);
+            docs = DocumentDTOBuilder.build(processAttachments);
          }
       }
       else
@@ -194,7 +194,7 @@ public class ProcessInstanceService
                      processInstance, dataPath.getId());
                if (dataPathDocs.size() > 0)
                {
-                  docs = DTOBuilder.buildList(dataPathDocs, DocumentDTO.class);
+                  docs = DocumentDTOBuilder.build(dataPathDocs);
                   break;
                }
             }
