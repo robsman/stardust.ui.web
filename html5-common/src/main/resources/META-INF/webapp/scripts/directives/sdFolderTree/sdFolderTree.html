@@ -4,6 +4,7 @@
   <li sd-tree-node
       sda-label="item.name"
       sda-node-id="item.uuid"
+      sda-is-leaf="item.hasChildren===false"
       ng-repeat="item in treeCtrl.folderData">
     <ul>
       <li sd-tree-node

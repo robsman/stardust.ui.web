@@ -250,6 +250,7 @@
     .then(function(data){
     	root.name= data.name;
     	root.uuid = data.uuid;
+    	root.hasChildren = data.hasChildren;
     	root.path = data.path;
     	root.itemType = "folder";
     	root.isLoaded = true;
