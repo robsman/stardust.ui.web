@@ -28,6 +28,7 @@ import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.html5.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler.MessageDisplayMode;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -50,7 +51,7 @@ public class ParticipantWorklistCacheManager implements InitializingBean, Serial
     */
    public static ParticipantWorklistCacheManager getInstance()
    {
-      return (ParticipantWorklistCacheManager) FacesUtils.getBeanFromContext(BEAN_ID);
+      return (ParticipantWorklistCacheManager) ManagedBeanUtils.getManagedBean(BEAN_ID);
    }
    
    /* (non-Javadoc)

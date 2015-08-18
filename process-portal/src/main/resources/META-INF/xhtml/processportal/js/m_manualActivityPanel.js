@@ -252,7 +252,7 @@ define(function(require){
 		 * 
 		 */
 		function runInAngularContext(func) {
-			var scope = angular.element(document).scope();
+			var scope = angular.element('html').scope();
 			scope.$apply(func);
 		};
 
@@ -271,7 +271,7 @@ define(function(require){
 		 * 
 		 */
 		function log(msg) {
-			if (console) {
+			if (window.console) {
 				console.log(msg);
 			}
 		}

@@ -442,11 +442,21 @@ define(
 
 				Model.prototype.isReadonly = function() {
 					if (this.attributes
-							&& this.attributes["stardust:security:hash"]) {
+							&& (this.attributes["stardust:security:hash"]
+								|| this.isSimple())) {
 						return true;
 					}
 					if (this.editLock && ("lockedByOther" === this.editLock.lockStatus)) {
 					  return true;
+					}
+
+					return false;
+				};
+
+				Model.prototype.isSimple = function() {
+					if (this.attributes
+							&& this.attributes['simpleModel']) {
+						return true;
 					}
 
 					return false;

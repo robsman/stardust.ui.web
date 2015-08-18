@@ -1,0 +1,43 @@
+<div class="res-availability-wrapper">
+    <div class="view-panel-toolbar tbl-title" style="color: #708090;font-size:11px">{{i18n('business-control-center-messages.views-resourceAvailabilityView-accountTable-title')}}</div>
+	<table sd-data-table="ctrl.usersTable"
+		sd-data="ctrl.getProcessResourceUsers()" sda-mode="local" sda-ready="ctrl.showUsersTable"
+		sda-selectable="row"
+		sda-selection="ctrl.rowSelectionForUsers"
+		sda-column-selector="{{ctrl.columnSelector}}"
+		sda-sortable="true"
+		sda-sort-by="{name : 'userName', dir : 'desc'}" sda-exports="true"
+		sda-exports-file-name="{{ctrl.exportFileNameForUsers}}">
+		<thead
+			sda-i18n-scope="business-control-center-messages.views-resourceAvailabilityView-accountTable-column">
+			<tr>
+				<th sda-name="userName"  sda-label="{{i18n('business-control-center-messages.views-common-column-name')}}" sda-sortable="true">
+					<div sda-filter-template>
+						<div sd-text-search-filter></div>
+					</div>
+				</th>
+				<th sda-name="roleCount" sda-label-key="rolesCount" sda-sortable="true">					
+				</th>
+				<th sda-name="directItemCount" sda-label-key="directItems" sda-sortable="true">					
+				</th>
+				<th sda-name="indirectItemCount" sda-label-key="indirectItems" sda-sortable="true">
+				</th>
+				<th sda-name="itemCount" sda-label-key="totalItemsCount" sda-sortable="true">
+				</th>
+				<th sda-name="loggedIn" sda-sortable="true">
+				</th>
+		</thead>
+		<tbody>
+			<tr>
+				<td sda-exporter="rowData.userName"><a href="#" ng-click="bpmCommon.stopEvent($event); ctrl.openUserManagerView(rowData.userOid,rowData.userId);" title="{{i18n('business-control-center-messages.views-userManagerDetailView-title')}}"
+							class="tbl-tool-link">{{rowData.userName}}</a></td>
+				<td style="text-align: center;"></td>
+				<td style="text-align: center;"></td>
+				<td style="text-align: center;"></td>
+				<td style="text-align: center;"></td>
+				<td style="text-align: center;"></td>
+			</tr>
+		</tbody>
+	</table>
+	</div>
+	

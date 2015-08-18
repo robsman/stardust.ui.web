@@ -38,7 +38,7 @@ if (!window.bpm.portal.reportingRequire) {
 			'json' : [ 'bpm-reporting/js/libs/json/json2',
 					'//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2' ],
 			'angularjs' : [
-					'bpm-reporting/js/libs/angular/angular-1.2.11',
+					'../portal-shell/js/libs/angular/1.2.11/angular',
 					'//ajax.googleapis.com/ajax/libs/angularjs/1.2.11/angular.min' ],
 			'jquery.base64' : [
 					'bpm-reporting/js/libs/jquery/plugins/jquery.base64',
@@ -71,7 +71,7 @@ if (!window.bpm.portal.reportingRequire) {
 		},
 		SHIM : {
 			'angularjs' : {
-				require : "jquery",
+				deps : ["jquery"],
 				exports : "angular"
 			},
 			'json' : {

@@ -12,10 +12,10 @@ define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_extensionManager", "bpm-modeler/js/m_communicationController",
 				"bpm-modeler/js/m_command", "bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_dialog", "bpm-modeler/js/m_view",
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_modelElementView","bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_constants",
-				"bpm-modeler/js/m_jsfViewManager", "bpm-modeler/js/m_elementConfiguration"],
+				"bpm-modeler/js/m_jsfViewManager", "bpm-modeler/js/m_elementConfiguration", "bpm-modeler/js/m_user"],
 		function(m_utils, m_extensionManager, m_communicationController,
 				m_command, m_commandsController, m_dialog, m_view, m_model, m_modelElementView,m_i18nUtils, m_constants,
-				m_jsfViewManager, m_elementConfiguration) {
+				m_jsfViewManager, m_elementConfiguration, m_user) {
 			return {
 				initialize : function(modelId) {
 					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
@@ -23,7 +23,7 @@ define(
 
 					m_utils.jQuerySelect("#hideGeneralProperties").hide();
 					initViewCollapseClickHandlers();
-					
+
 					var model = m_model.findModel(modelId);
 					var view = new ModelView();
 					i18modelview();
@@ -37,7 +37,7 @@ define(
 			};
 
 			/**
-			 * 
+			 *
 			 */
 			function initViewCollapseClickHandlers() {
 				m_utils.jQuerySelect("#showGeneralProperties").click(function() {
@@ -49,16 +49,16 @@ define(
 					m_utils.jQuerySelect("#hideGeneralProperties").hide();
 				});
 			}
-			
+
 			function i18modelview() {
-				
+
 				m_utils.jQuerySelect("#hideGeneralProperties label")
 					.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
-		
+
 				m_utils.jQuerySelect("#showGeneralProperties label")
 					.text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.generalProperties"));
-			
-				
+
+
 				m_utils.jQuerySelect("#accesscontrol")
 						.text(
 								m_i18nUtils
@@ -119,7 +119,12 @@ define(
 				m_utils.jQuerySelect("label[for='validFromDate']")
 						.text(
 								m_i18nUtils
-										.getProperty("modeler.propertyView.modelView.validFrom"));		
+										.getProperty("modeler.propertyView.modelView.validFrom"));
+
+				m_utils.jQuerySelect("label[for='versionOutput']")
+					.text(
+						m_i18nUtils
+								.getProperty("modeler.propertyView.modelView.version"));	
 				
 				m_utils.jQuerySelect("#refreshValidationLbl")
 						.text(
@@ -154,8 +159,11 @@ define(
 					this.validFromDate = m_utils.jQuerySelect("#validFromDate");
 					this.validFromDate.get(0).id = "validFromDate" + Math.floor((Math.random()*10000) + 1);
 					this.validFromDate.datepicker();
+					this.version = m_utils.jQuerySelect("#versionOutput");
 
 					m_utils.jQuerySelect("#modelTabs").tabs();
+
+					this.idEdit = m_utils.jQuerySelect("#idEdit");
 
 					this.versionTable.tableScroll({
 						height : 200
@@ -207,7 +215,7 @@ define(
 					this.initializeModelElementView(model);
 					this.view.css("visibility", "visible");
 				};
-
+				
 				/**
 				 *
 				 */
@@ -215,6 +223,7 @@ define(
 					this.model = model;
 
 					this.initializeModelElement(model);
+
 					if (this.model[m_constants.DATE_OF_CREATION]) {
 						this.creationDateOutput.empty();
 						this.creationDateOutput.append(this.model[m_constants.DATE_OF_CREATION]);
@@ -237,6 +246,12 @@ define(
 							&& this.model.attributes["carnot:engine:validFrom"]) {
 						this.setValidFromDate(this.model.attributes["carnot:engine:validFrom"]);
 					}
+					
+					if (this.model.attributes
+							&& this.model.attributes["carnot:engine:version"]) {
+						this.version.empty();
+						this.version.append(this.model.attributes["carnot:engine:version"]);
+					}
 
 					// TODO: Needed?
 
@@ -246,8 +261,16 @@ define(
 
 					this.updateViewIcon();
 
-					// TODO Commented out because it is slow
+					var self = this;
 
+					// refresh Angular Context
+					 if (!this.refreshElement) {
+             this.refreshElement = true;
+           } else {
+             this.refreshElement = false;
+           }
+					
+					// TODO Commented out because it is slow
 					//this.refreshValidation();
 				};
 
@@ -348,7 +371,7 @@ define(
 									},
 									{
 										"success" : function(json) {
-											
+
 											if(json.length==0){
 												m_utils.jQuerySelect("#refreshValidationLbl")
 												.text(
@@ -359,7 +382,7 @@ define(
 												m_utils.jQuerySelect("#refreshValidationLbl")
 												.text("");
 											}
-											
+
 											for ( var n = 0; n < json.length; ++n) {
 												var content = "<tr>";
 

@@ -1692,7 +1692,7 @@ public class RepositoryUtility
           Folder folder = DocumentMgmtUtility.getFolder(roleOrgReportDefinitionsPath);
           DefaultMutableTreeNode roleOrgReportDefinitionsNode = null;
           RepositoryResourceUserObject resourceObject = null;
-          String folderLabel = grant.getQualifiedId() + " " + I18nFolderUtils.getLabel(I18nFolderUtils.MY_REPORT_DESIGNS_V);
+          String folderLabel = I18nUtils.getGrantName(grant) + " " + I18nFolderUtils.getLabel(I18nFolderUtils.MY_REPORT_DESIGNS_V);
           if (null == folder)
           {
              roleOrgReportDefinitionsNode = createFolderProxyNode(folderLabel,
@@ -1769,7 +1769,7 @@ public class RepositoryUtility
 
          String folderLabel = (isAdHoc) ? I18nFolderUtils.getLabel(I18nFolderUtils.MY_SAVED_REPORTS_V
                      + I18nFolderUtils.AD_HOC) 
-               : grant.getQualifiedId() + " "
+               : I18nUtils.getGrantName(grant) + " "
                   + I18nFolderUtils.getLabel(I18nFolderUtils.MY_SAVED_REPORTS_V);
 
          DefaultMutableTreeNode savedReportsNode = createSavedReportsNode(

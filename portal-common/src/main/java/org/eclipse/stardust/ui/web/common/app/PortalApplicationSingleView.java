@@ -1,6 +1,7 @@
 package org.eclipse.stardust.ui.web.common.app;
 
 import java.io.Serializable;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -60,7 +61,11 @@ public class PortalApplicationSingleView implements Serializable, InitializingBe
          {
             singleViewId = singleViewId.substring(singleViewId.indexOf("::") + 2);
          }
-
+         // While pageRefresh singleViewKey is encoded, decode the value
+         if (StringUtils.isNotEmpty(singleViewKey))
+         {
+            singleViewKey = URLDecoder.decode(singleViewKey, "UTF-8");
+         }
          // Same view information into view root for later use
          Application facesApp = facesContext.getApplication();
          viewRoot.setValueBinding("singleViewId", facesApp.createValueBinding("#{'" + singleViewId + "'}"));

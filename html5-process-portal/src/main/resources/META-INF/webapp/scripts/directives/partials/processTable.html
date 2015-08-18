@@ -1,0 +1,231 @@
+<div class="process-list-wrapper">
+	<div class="process-list-title tbl-title">{{processTableCtrl.title}}</div>
+	<div sda-toolbar>
+		<div class="tbl-toolbar-section">
+			<!-- Abort process dialog -->
+			<button ng-disabled="processTableCtrl.dataTable.getSelection() < 1" ng-click="processTableCtrl.openAbortDialog(processTableCtrl.dataTable.getSelection())" title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}" class="button-link tbl-toolbar-item tbl-tool-link" style="margin-right: 0px;">
+			   <i class="sc sc-fw sc-gear-close" style="font-size: 14px;"></i>
+			</button>
+			
+			<button class="button-link tbl-tool-link" ng-disabled="processTableCtrl.dataTable.getSelection() < 1" title="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}"
+				ng-click="processTableCtrl.openAbortPopover($event);">
+				<i class="glyphicon glyphicon-chevron-right glyphicon-rotate-90"></i>
+			</button>
+			
+			<button ng-click="processTableCtrl.recoverProcess(this, processTableCtrl.dataTable.getSelection())" title="{{i18n('views-common-messages.common-tooltip-recover')}}" 
+				ng-disabled="processTableCtrl.dataTable.getSelection() < 1" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
+				<!-- TODO Recover process icon-->
+				Recover
+			</button>
+			
+			<span sd-popover ng-disabled="processTableCtrl.dataTable.getSelection() < 1" id="caseMenu" title="{{i18n('views-common-messages.views-case-tooltip-menu')}}">
+				<!-- TODO Case Menu icon -->
+				<i class="glyphicon glyphicon-chevron-right glyphicon-rotate-90"></i>
+				<div id="caseMenu" class="popover-body">
+					<div>
+						<button ng-disabled="processTableCtrl.dataTable.getSelection() < 1" ng-click="processTableCtrl.openAttachToCaseDialog(processTableCtrl.dataTable.getSelection())" 
+							title="{{i18n('views-common-messages.views-attachToCase-title')}}" class="button-link tbl-toolbar-item tbl-tool-link" style="margin-right: 0px;">
+						   {{i18n('views-common-messages.views-createCase-menubar-attachToCase')}}
+						</button>
+					</div>
+					<div>
+						<button ng-disabled="processTableCtrl.dataTable.getSelection() < 1" ng-click="processTableCtrl.openCreateCaseDialog(processTableCtrl.dataTable.getSelection())" 
+							title="{{i18n('views-common-messages.views-createCase-title')}}" class="button-link tbl-toolbar-item tbl-tool-link" style="margin-right: 0px;">
+						   {{i18n('views-common-messages.views-createCase-menubar-createCase')}}
+						</button>
+					</div>
+				</div>
+			</span>
+			
+			<button ng-disabled="!processTableCtrl.isPriorityChanged();" ng-click="processTableCtrl.savePriorityChanges();" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
+				<i class="glyphicon glyphicon-floppy-saved"></i>
+			</button>
+		</div>
+	</div>
+
+	<!-- Data table -->
+	<table sd-data-table="{{processTableCtrl.tableHandleExpr}}" sd-data="processTableCtrl.fetchPage(params)" sda-ready="processTableCtrl.ready"
+		sda-page-size="{{processTableCtrl.sdaPageSize}}" sda-mode="remote"
+		sda-selectable="multiple" sda-initial-selection="{{processTableCtrl.initialSelection}}" sda-selection="{{processTableCtrl.selectionExpr}}"
+		sda-on-select="processTableCtrl.onSelect(info)" sda-on-pagination="processTableCtrl.onPagination(info)"
+		sda-column-selector="{{processTableCtrl.columnSelector}}" sda-preference-delegate="processTableCtrl.preferenceDelegate(prefInfo)"
+		sda-on-column-reorder="processTableCtrl.onColumnReorder(info)"
+		sda-sortable="true" sda-sort-by="{processName : 'desc'}" sda-on-sorting="processTableCtrl.onSorting(info)"
+		sda-exports="true" sda-exports-file-name="processTable-{{processTableCtrl.exportFileName}}">
+		<thead sda-i18n-scope="views-common-messages.views-processTable-column">
+			<tr>
+				<th sda-name="oid" sda-label-key="pOID" sda-sortable="true" sda-filterable="true" sda-visible="{{processTableCtrl.isColumnVisible('oid')}}"></th>
+				<th sda-name="processName" sda-sortable="true" sda-visible="{{processTableCtrl.isColumnVisible('processName')}}">
+					<div sda-filter-template>
+						<div sd-process-activity-filter sda-filter-type='process' sda-processes="processTableCtrl.allAccessibleProcesses"></div>
+					</div>
+				</th>
+				<th sda-name="priority" sda-sortable="true" sda-visible="{{processTableCtrl.isColumnVisible('priority')}}">
+					<div sda-filter-template>
+						<div sd-priority-filter></div>
+					</div>
+				</th>
+				<th sda-name="descriptors" sda-visible="{{processTableCtrl.isColumnVisible('descriptors')}}"></th>
+				<th sda-name="startingUser" sda-sortable="true" sda-visible="{{processTableCtrl.isColumnVisible('startingUser')}}">
+					<div sda-filter-template>
+						<div sd-user-filter></div>
+					</div>
+				</th>
+				<th sda-name="startTime" sda-sortable="true" sda-filterable="true" sda-visible="{{processTableCtrl.isColumnVisible('startTime')}}"></th>
+				<th sda-name="duration" sda-sortable="false" sda-visible="{{processTableCtrl.isColumnVisible('duration')}}"></th>
+				
+				<th sda-name="status" sda-sortable="false" sda-visible="{{processTableCtrl.isColumnVisible('status')}}">
+					<div sda-filter-template>
+						<div sd-multi-select-filter sda-options="processTableCtrl.availableStates"></div>
+					</div>
+				</th>
+				
+				<th sda-name="processInstanceRootOID" sda-label-key="rootPOID" sda-sortable="true" sda-filterable="true"
+					sda-visible="{{processTableCtrl.isColumnVisible('processInstanceRootOID')}}">
+				</th>
+				<th sda-name="endTime" sda-label-key="endTime"	sda-sortable="true" sda-filterable="true" 
+					sda-visible="{{processTableCtrl.isColumnVisible('endTime')}}"></th>
+					
+				<th sda-name="caseOwner" sda-label="{{i18n('views-common-messages.overview-CaseOwner')}}" sda-sortable="false"
+					sda-visible="{{processTableCtrl.isColumnVisible('caseOwner')}}">
+				</th>
+				<th ng-repeat="descCol in processTableCtrl.descritorCols"
+					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}"
+					sda-sortable="{{descCol.sortable}}" sda-visible="{{processTableCtrl.isColumnVisible(descCol.id)}}">
+					<div sda-filter-template ng-if="descCol.filterable">
+						<div ng-if="colData.dataType =='NUMBER'"><div sd-number-filter></div></div>
+						<div ng-if="colData.dataType =='DATE'"><div sd-date-filter></div></div>
+						<div ng-if="colData.dataType =='BOOLEAN'"><div sd-boolean-filter></div></div>
+						<div ng-if="colData.dataType =='STRING'"><div sd-text-search-filter></div></div>
+					</div>
+				</th>
+				
+				<th sda-name="actions" sda-label="{{i18n('views-common-messages.views-common-column-actions')}}" sda-fixed="true" sda-exportable="false"></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td sda-data-type="int" style="text-align: center;"></td>
+				<td>
+					<img src="plugins/views-common/images/icons/process-history/processrootblue.png"
+						style="border: none;"
+						title="{{i18n('business-control-center.common-tooltip-process')}}"
+						ng-if="!rowData.caseInstance && rowData.oid == rowData.processInstanceRootOID" />
+					<img src="plugins/views-common/images/icons/process.png"
+						style="border: none;"
+						title="{{i18n('business-control-center.common-tooltip-subProcess')}}"
+						ng-if="!rowData.caseInstance && rowData.oid != rowData.processInstanceRootOID" />
+					<img src="plugins/views-common/images/icons/envelope.png"
+						style="border: none;"
+						title="{{i18n('business-control-center.common-tooltip-case')}}"
+						ng-if="rowData.caseInstance" />
+					<a  href="#"
+						ng-click="bpmCommon.stopEvent($event); processTableCtrl.openProcessHistory(rowData);"
+						class="button-link tbl-tool-link"> {{rowData.processName}}
+					</a>
+				</td>
+				<td style="text-align: center; width:110px;" sda-exporter="rowData.priority.label">
+					<div sd-process-priority sda-priority="rowData.priority" sda-editable="true" 
+					 sda-available-priorities ="processTableCtrl.availablePriorities" 
+					 sda-on-change ="processTableCtrl.registerNewPriority( rowData.oid, rowData.priority.value)">
+					</div>
+				</td>
+				<td sda-exporter="processTableCtrl.getDescriptorExportText(rowData.descriptorValues)">
+					<table>
+						<tr ng-repeat="desc in rowData.descriptorValues">
+							<td ng-if ="!desc.isDocument" style="white-space: nowrap;">{{desc.key}}:</td>
+							<td ng-if ="!desc.isDocument" style="white-space: nowrap;">{{desc.value}}</td>
+						</tr>
+					</table>
+					<div sd-editor-template></div>
+				</td>
+				<td sda-field="startingUser"></td>
+				<td sda-field="startTime" sda-data-type="dateTime" style="text-align: center; white-space: nowrap;"></td>
+				<td sda-field="duration"></td>
+				<td sda-field="status.label" ></td>
+				<td sda-field="processInstanceRootOID"></td>
+				<td sda-field="endTime" sda-data-type="dateTime" style="text-align: center; white-space: nowrap;"></td>
+				<td sda-field="caseOwner" ></td>
+				<td ng-repeat="descCol in processTableCtrl.descritorCols"
+					 style="text-align: center; white-space: nowrap;"  sda-data-type="{{descCol.dataType}}" sda-exporter="processTableCtrl.getDescriptorValueForExport( rowData.descriptorValues[colData.title])">
+					<div sd-descriptor-content sda-value="rowData.descriptorValues[colData.title]" sda-data-type = "colData.dataType"> </div>
+				</td>
+				
+				<td>
+					<div style="text-align: right; white-space: nowrap;">
+						<button ng-click="bpmCommon.stopEvent($event); processTableCtrl.openProcessHistory(rowData);"
+							title="{{i18n('processportal.toolbars-workflowActions-tooltip-processContextExplorer')}}" class="button-link tbl-tool-link">
+							<i class="glyphicon glyphicon-cog"></i>
+						</button>
+						<button ng-click="bpmCommon.stopEvent($event); processTableCtrl.openAbortDialog(rowData);" ng-disabled="!rowData.enableTerminate"
+							title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}" class="button-link tbl-tool-link">
+							<i class="sc sc-fw sc-gear-close" style="font-size: 14px;"></i>
+						</button>
+						
+						<!-- abort menu -->
+						<button class="button-link tbl-tool-link" ng-disabled="!rowData.enableTerminate" title="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}"
+							ng-click="processTableCtrl.openAbortPopover($event, rowData); bpmCommon.stopEvent($event);">
+							<i class="glyphicon glyphicon-chevron-right glyphicon-rotate-90"></i>
+						</button>
+						
+						<button ng-click="processTableCtrl.recoverProcess(this, rowData)" title="{{i18n('views-common-messages.common-tooltip-recover')}}" 
+							ng-disabled="!rowData.enableRecover" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
+							<!-- TODO Recover process icon-->
+							Recover
+						</button>
+						
+						<!-- View chart -->
+						<button class="button-link tbl-tool-link" title="{{i18n('business-control-center.views-processSearchView-tooltip-viewGanttChart')}}"
+							ng-click="processTableCtrl.openChart(rowData); bpmCommon.stopEvent($event);">
+							<i class="glyphicons glyphicon-stats"  style="font-size: 1.5em;"></i>
+						</button>
+						
+						
+						<button ng-click="bpmCommon.stopEvent($event); processTableCtrl.openNotes(rowData);"
+							title="{{i18n('processportal.toolbars-workflowActions-tooltip-notes')}}" class="button-link tbl-tool-link">
+							<i class="glyphicon glyphicon-comment"></i>
+						</button>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	
+	<!--Dialog for abort process  -->
+	<div sd-abort-process-dialog sda-show-dialog="processTableCtrl.showAbortProcessDialog" sda-on-abort-complete="processTableCtrl.abortCompleted()"
+	     sda-processes-to-abort="processTableCtrl.processesToAbort" >
+	</div>
+	
+	<span sd-popover="processTableCtrl.popoverDirective" id="abortMenu">
+		<div class="popover-body">
+			<div>
+				<button ng-disabled="processTableCtrl.processesToAbort.length < 1" ng-click="processTableCtrl.openSwitchDialog()" 
+					class="button-link tbl-toolbar-item tbl-tool-link" style="margin-right: 0px;">
+				   {{i18n('views-common-messages.views-switchProcessDialog-Menu-abortandstart')}}
+				</button>
+			</div>
+			<div>
+				<button ng-disabled="processTableCtrl.processesToAbort.length != 1" ng-click="processTableCtrl.openJoinDialog()" 
+					class="button-link tbl-toolbar-item tbl-tool-link" style="margin-right: 0px;">
+				   {{i18n('views-common-messages.views-switchProcessDialog-Menu-abortandjoin')}}
+				</button>
+			</div>
+		</div>
+	</span>
+			
+	<div sd-join-process-dialog sda-show-dialog="processTableCtrl.showJoinProcessDialog" sda-on-confirm="processTableCtrl.joinCompleted"
+	     sda-process-instances="processTableCtrl.processesToAbort" >
+	</div>
+	
+	<div sd-switch-process-dialog sda-show-dialog="processTableCtrl.showSwitchProcessDialog" sda-on-confirm="processTableCtrl.switchCompleted"
+	     sda-process-instances="processTableCtrl.processesToAbort" >
+	</div>
+	
+	<div sd-attach-to-case-dialog sda-show-dialog="processTableCtrl.showAttachToCaseDialog" sda-on-confirm="processTableCtrl.attachToCaseCompleted"
+	     sda-process-instances="processTableCtrl.processesToAttachCase" >
+	</div>
+	
+	<div sd-create-case-dialog sda-show-dialog="processTableCtrl.showCreateCaseDialog" sda-on-confirm="processTableCtrl.createCaseCompleted"
+	     sda-process-instances="processTableCtrl.processesToCreateCase" >
+	</div>
+</div>

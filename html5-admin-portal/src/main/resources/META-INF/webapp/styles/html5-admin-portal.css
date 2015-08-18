@@ -1,0 +1,44 @@
+/* QA MANAGEMENT VIEW*/
+.qa-management-table-icon {
+	font-size: 15px;
+	padding-right: 5px;
+}
+
+.qa-management-emptyCell-warning {
+	color: orange;
+	font-size: 25px;
+}
+
+/* Password Management */
+.password-mgmt-text {
+	width: 35px;
+}
+
+.clearing
+{
+	clear: both;
+	height: 10px;
+}
+
+.msgFatal
+{
+	color: red;
+}
+
+.msgError
+{
+	color: red !important;
+	font-weight: normal;
+}
+
+.msgWarning
+{
+	color: orange !important;
+	font-weight: normal;
+}	
+
+.msgInfo
+{
+	color: blue !important;
+	font-weight: normal;
+}

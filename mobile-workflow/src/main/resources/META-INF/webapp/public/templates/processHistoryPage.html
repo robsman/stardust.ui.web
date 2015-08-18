@@ -47,13 +47,9 @@
 			 	     class="ipp-{{activity.status}}">&nbsp;</div>
 			 	     
 			 	<div style="position:absolute;left:1.0em;top:1.0em;">
-					<span class="fa-stack">
-				      <i class="fa fa-cog fa-stack-2x ipp-color-secondary-darkest"></i>
-				      <i ng-if="activity.activityImplementationType==ApplicationActivity"
-				         style="color:#999999" class="fa ipp-offeset-right-2x ipp-offeset-up-2x fa-square fa-stack-1x">
-				      </i>
+					<span>
 				      <i ng-class="getActivityTypeClass(activity.activityImplementationType,activity.childProcessInstance)"
-				      	 class="fa ipp-offeset-right-2x ipp-offeset-up-2x fa-stack-1x ">
+				      	 class="sc">
 				      </i>
 				    </span>
 	

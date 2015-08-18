@@ -14,18 +14,46 @@
 (function(){
 	'use strict';
 
+	angular.module('workflow-ui.services').provider('sdActivityInstanceService', function () {
+		this.$get = ['$rootScope', '$http', '$q', 'sdDataTableHelperService', function ($rootScope, $http, $q, sdDataTableHelperService) {
+			var service = new ActivityInstanceService($rootScope, $http, $q, sdDataTableHelperService);
+			return service;
+		}];
+	});
+
 	/*
 	 * 
 	 */
-	function ActivityInstanceService($rootScope) {
+	function ActivityInstanceService($rootScope, $http, $q, sdDataTableHelperService) {
 		var REST_BASE_URL = "services/rest/portal/activity-instances/";
+		
+		/*
+		 * 
+		 */
+		ActivityInstanceService.prototype.getAllCounts = function() {
+			return ajax(REST_BASE_URL,'' , "allCounts");
+		};
+		
+		/*
+		 * 
+		 */
+		ActivityInstanceService.prototype.getAllActivities = function(query) {
+			var restUrl = REST_BASE_URL+ 'allActivities';
+			var queryParams = sdDataTableHelperService.convertToQueryParams(query.options);
+
+			if (queryParams.length > 0) {
+				restUrl = restUrl + "?" + queryParams.substr(1);
+			}
+			
+			var postData = sdDataTableHelperService.convertToPostParams(query.options);
+
+			return ajax(restUrl, '', postData);
+		};
 
 		/*
 		 * 
 		 */
 		ActivityInstanceService.prototype.getDataMappings = function(oids) {
-			console.log("Getting Data Mappings for: ");
-			console.log(oids);
 			return ajax(REST_BASE_URL, "dataMappings", oids);
 		};
 
@@ -33,8 +61,6 @@
 		 * 
 		 */
 		ActivityInstanceService.prototype.getInData = function(oids) {
-			console.log("Getting In Data for: ");
-			console.log(oids);
 			return ajax(REST_BASE_URL, "inData", oids);
 		};
 
@@ -42,8 +68,6 @@
 		 * 
 		 */
 		ActivityInstanceService.prototype.getTrivialManualActivitiesDetails = function(oids) {
-			console.log("Getting Trivial Manual Activities Details for: ");
-			console.log(oids);
 			return ajax(REST_BASE_URL, "trivialManualActivitiesDetails", oids);
 		};
 
@@ -51,16 +75,103 @@
 		 * 
 		 */
 		ActivityInstanceService.prototype.completeAll = function(activities) {
-			console.log("Completing Activities: ");
-			console.log(activities);
 			return ajax(REST_BASE_URL, "completeAll", activities);
+		};
+		
+		/*
+		 * Get/Search participant
+		 * 
+		 * options = { options: an object with url params, data: query payload }
+		 */
+		ActivityInstanceService.prototype.getParticipants = function(query) {
+			console.log("Getting participants for:");
+			console.log(query);
+			
+			var restUrl = REST_BASE_URL;
+			
+			return ajax(restUrl, "searchParticipants", query.data);
+		};
+		
+		
+		/*
+		 */
+		ActivityInstanceService.prototype.getMatchingParticpants = function( searchText , maxItems) {
+			
+			var restUrl = REST_BASE_URL;
+			
+			var params = "searchAllParticipants/"+searchText+"/"+maxItems;
+			
+			return ajax(restUrl, '', params);
+		};
+		
+		
+		/*
+		 * Expected data in following format:
+		 * {
+		 *		activities : [OId1, OId2....],
+		 *		participantType:'User'
+		 *		participant: {
+		 *			qualifiedId: string value,
+		 *			OID: long value
+		 *		},
+		 *		activityOutData : {
+		 *			param1 : { value },
+		 *			param2 : value, ...
+		 *		} //This is optional and only required when delegated from activity panel
+		 *	}
+		 */
+		ActivityInstanceService.prototype.delegateActivities = function(data) {
+			console.log("Delegating activities...");
+			
+			var participantType = data.participant.type;
+			var participantData = data.participant.OID;
+			switch(participantType) {
+				case 'USER':
+				case 'DEPARTMENT':
+					participantData = data.participant.OID;
+					break;
+				case 'ROLE':
+				case 'ORGANIZATION':
+					participantData = data.participant.id;
+					break;
+			}
+
+			var delegateData = {
+					activities: data.activities,
+					participant: participantData,
+					participantType: participantType
+			};
+			
+			return ajax(REST_BASE_URL, "delegate", delegateData);
+		};
+		
+		
+		/**
+		 * Expected data 
+		 * [{oid : status} , {..},...]
+		 * 
+		 */
+		ActivityInstanceService.prototype.performDefaultDelegate = function(delegateData) {
+			return ajax(REST_BASE_URL, "performDefaultDelegate", delegateData);
+		};
+		
+		/**
+		 * 
+		 */
+		ActivityInstanceService.prototype.abortActivities = function( scope, activities) {
+			var requestObj = {
+					scope : scope,
+					activities : activities
+			};
+			return ajax(REST_BASE_URL, "abort", requestObj);
+			
 		};
 
 		/*
 		 * 
 		 */
 		function ajax(restUrl, extension, value) {
-			var deferred = jQuery.Deferred();
+			var deferred = $q.defer();
 
 			var type;
 			var data;
@@ -73,26 +184,20 @@
 				type = "GET";
 			}
 			
-			// TODO: Use Angular $resource
-			jQuery.ajax({
-			  	url: restUrl,
-				type: type,
-		        contentType: "application/json",
-		        data : data
-			}).done(function(result) {
-				deferred.resolve(result);
-			}).fail(function(data) {
-				deferred.reject(data);
-		    });
+			var httpResponse;
+			if(type == "GET") {
+				httpResponse = $http.get(restUrl);
+			} else {
+				httpResponse = $http.post(restUrl, data);
+			}
 
-			return deferred.promise();
+			httpResponse.success(function(data){
+				deferred.resolve(data);
+			}).error(function(data) {
+				deferred.reject(data);
+			});
+			
+			return deferred.promise;
 		};
 	};
-	
-	angular.module('workflow-ui.services').provider('sdActivityInstanceService', function () {
-		this.$get = ['$rootScope', function ($rootScope) {
-			var service = new ActivityInstanceService($rootScope);
-			return service;
-		}];
-	});
 })();

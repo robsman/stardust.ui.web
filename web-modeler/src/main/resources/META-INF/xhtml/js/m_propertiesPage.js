@@ -16,20 +16,25 @@ define(
 				"bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_model",
-				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_angularContextUtils" ],
+				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_angularContextUtils", 
+				"bpm-modeler/js/m_modelerUtils" ],
 		function(m_utils, m_constants, m_command, m_commandsController,
-				m_dialog, m_model, m_i18nUtils, m_angularContextUtils) {
+				m_dialog, m_model, m_i18nUtils, m_angularContextUtils, m_modelerUtils) {
 
 			return {
 				createPropertiesPage : function(propertiesPanel, id, titel,
 						imageUrl) {
 					return new PropertiesPage(propertiesPanel, id, titel,
 							imageUrl);
-				}
+				},
+				createPage : function(propertiesPanel, extCfg) {
+		          return new PropertiesPage(propertiesPanel, extCfg.id, extCfg.title,
+		                  extCfg.imageUrl);
+		        }
 			};
 
 			function PropertiesPage(propertiesPanel, id, title, imageUrl) {
-				this.propertiesPanel = propertiesPanel;
+			  this.propertiesPanel = propertiesPanel;
 				this.id = id;
 				this.title = title;
 				this.page = m_utils.jQuerySelect("#" + this.propertiesPanel.id + " #"
@@ -161,7 +166,7 @@ define(
 						}
 					});
 				};
-
+				
 				/**
 				 * 
 				 */
@@ -285,7 +290,7 @@ define(
 
 					return true;
 				};
-
+				
 				/*
 				 * 
 				 */
@@ -297,5 +302,43 @@ define(
 						}
 					}, m_utils.jQuerySelect("#" + self.id).get(0));
 				};
+				
+				/**
+				 * 
+				 */
+				PropertiesPage.prototype.broadcastElementChangedEvent = function() {
+          var self = this;
+          m_angularContextUtils.runInAngularContext(function($scope){
+            $scope.$broadcast('REFRESH_PROPERTIES_PANEL', self.propertiesPanel);
+          }, m_utils.jQuerySelect("#" + self.id).get(0));
+        };
+        
+        /**
+         * 
+         */
+        PropertiesPage.prototype.findApplication = function(appFullId) {
+          return m_model.findApplication(appFullId);
+        };
+        
+        /**
+         * 
+         */
+        PropertiesPage.prototype.getModels = function(appFullId) {
+          return m_model.getModels();
+        };
+        
+        /**
+         * 
+         */
+        PropertiesPage.prototype.openApplicationView = function(application) {
+          m_modelerUtils.openApplicationView(application)
+        };
+        
+        /**
+         * 
+         */
+        PropertiesPage.prototype.getMModel = function(application) {
+          return m_model;
+        };
 			}
 		});

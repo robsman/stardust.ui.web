@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -24,16 +23,17 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.UserDetails;
+import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserLoginStatistics;
-import org.eclipse.stardust.engine.core.query.statistics.api.UserLoginStatisticsQuery;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserLoginStatistics.LoginStatistics;
+import org.eclipse.stardust.engine.core.query.statistics.api.UserLoginStatisticsQuery;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
-import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
-import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
+import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
+import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.columnSelector.TableColumnSelectorPopup;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterSearch;
@@ -46,7 +46,6 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.process.history.ActivityInstanceHistoryItem;
 import org.eclipse.stardust.ui.web.viewscommon.process.history.EventHistoryItem;
 import org.eclipse.stardust.ui.web.viewscommon.process.history.IProcessHistoryTableEntry;
-import org.eclipse.stardust.ui.web.viewscommon.process.history.ProcessInstanceHistoryItem;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DefaultColumnModelEventHandler;
 
 
@@ -57,6 +56,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.DefaultColumnModelEventHand
  */
 public class ParticipantsPanelBean extends UIViewComponentBean
 {
+   private static final long serialVersionUID = -900472626792562698L;
    private static final Logger trace = LogManager.getLogger(ParticipantsPanelBean.class);
    private static final String BEAN_NAME = "common_participantsPanelBean";
 
@@ -68,6 +68,8 @@ public class ParticipantsPanelBean extends UIViewComponentBean
    private IProcessHistoryTableEntry activityTreeRoot;
    // For case ProcessInstance , show participants for All PI's
    private List<IProcessHistoryTableEntry> caseTreeRootElements;
+   
+   private boolean expanded = false;
 
    /**
     * 
@@ -149,6 +151,20 @@ public class ParticipantsPanelBean extends UIViewComponentBean
             		BEAN_NAME);
    }
 
+   public void initializePanel(ProcessInstance processInstance, IProcessHistoryTableEntry processHistoryTableEntry)
+   {
+      if (!isExpanded())
+      {
+         return;
+      }
+      // if expanded then only refresh else no refresh
+      setCurrentProcessInstance(processInstance);
+      setActivityTreeRoot(processHistoryTableEntry);
+      setEmbedded(true);
+      setShowTitle(false);
+      initialize();
+   }
+   
    @Override
    public void initialize()
    {
@@ -198,7 +214,7 @@ public class ParticipantsPanelBean extends UIViewComponentBean
             userTable.getColumnModel().setSelectableColumns(selCols);
          }*/
          
-         userTable.setList(userList);         
+         userTable.setList(userList);
       }
       else
       {
@@ -339,6 +355,16 @@ public class ParticipantsPanelBean extends UIViewComponentBean
    public void setCaseTreeRootElements(List<IProcessHistoryTableEntry> caseTreeRootElements)
    {
       this.caseTreeRootElements = caseTreeRootElements;
+   }
+
+   public boolean isExpanded()
+   {
+      return expanded;
+   }
+
+   public void setExpanded(boolean expanded)
+   {
+      this.expanded = expanded;
    }
    
 }

@@ -19,9 +19,13 @@ define(
 				"bpm-modeler/js/m_commandsController",
 				"bpm-modeler/js/m_dialog",
 				"bpm-modeler/js/m_communicationController",
-				"bpm-modeler/js/m_angularContextUtils" ],
+				"bpm-modeler/js/m_angularContextUtils",
+				"bpm-modeler/js/m_ruleSetsHelper",
+				"bpm-modeler/js/m_model",
+				"bpm-modeler/js/m_modelerUtils"],
 		function(m_utils, m_constants, m_extensionManager, m_session, m_user, m_command,
-				 m_commandsController, m_dialog, m_communicationController, m_angularContextUtils) {
+				 m_commandsController, m_dialog, m_communicationController, m_angularContextUtils, m_ruleSetsHelper, 
+				 m_model, m_modelerUtils) {
 
 			var currentPropertiesPanel = null;
 
@@ -54,6 +58,7 @@ define(
 
 						currentPropertiesPanel.setElement(element);
 						currentPropertiesPanel.show(page);
+						currentPropertiesPanel.refreshElementInAngularContext();
 					}
 				},
 
@@ -148,7 +153,9 @@ define(
 				 *
 				 */
 				PropertiesPanel.prototype.getModelElement = function() {
-					return this.element.modelElement;
+					if (this.element) {
+						return this.element.modelElement;
+					}
 				};
 
 				/**
@@ -172,7 +179,9 @@ define(
 				 *
 				 */
 				PropertiesPanel.prototype.getElementUuid = function() {
-					return this.element.oid;
+					if (this.element) {
+						return this.element.oid;
+					}
 				};
 
 				/**
@@ -251,11 +260,7 @@ define(
 																						"id"));
 														pageDiv.append(data);
 														var extension = extensions[pageDiv.attr("id")];
-														var page = extension.provider
-																.create(
-																		panel,
-																		extension.id,
-																		extension.title);
+														var page = panel.createPage(extension);
 
 														page.hide();
 														page.profiles = extension.profiles;
@@ -267,8 +272,7 @@ define(
 						} else {
 							// Embedded Markup
 
-							var page = extension.provider
-							.create(this);
+							var page = this.createPage(extension);
 
 							this.propertiesPages.push(page);
 
@@ -282,11 +286,11 @@ define(
 						m_angularContextUtils.runInActiveViewContext(function($scope){
 							m_extensionManager.handleAngularizedExtensions($scope, dynamicExtensions, self.id, {
 								onload: function(extension) {
-									var page = extension.provider.create(self, extension.id, extension.title);
-									page.hide();
-									page.profiles = extension.profiles;
-									dynamicPropertiesPages.push({extension: extension, page: page});
-									page.safeApply(true);
+									var page = self.createPage(extension);
+									  page.hide();
+	                  page.profiles = extension.profiles;
+	                  dynamicPropertiesPages.push({extension: extension, page: page});
+	                  page.safeApply(true);  
 								},
 								done: function() {
 									// Once all propertiesPages are loaded build the properties page list
@@ -319,7 +323,19 @@ define(
 						});
 					}
 				};
+            
+				PropertiesPanel.prototype.createPage = function(extension) {
+              var page;
+              if (extension.html5) {
+                return extension.provider.create(this, extension);
+              } else {
+                return extension.provider.create(this, extension.id,
+                        extension.title)
+              }
 
+              return page;
+            };
+				
 				/**
 				 * 
 				 */
@@ -511,7 +527,7 @@ define(
 				PropertiesPanel.prototype.processCommand = function(command) {
 					if (command.type == m_constants.CHANGE_USER_PROFILE_COMMAND) {
 						this.setElement(this.element);
-
+						this.refreshElementInAngularContext();
 						// Update the selectable property pages list
 						// for the given profile
 						currentPropertiesPanel.show();
@@ -558,8 +574,34 @@ define(
 								this.setElement(this.element);
 							}
 						}
+
+						//refresh data
+         		if (null != object && null != object.changes
+                    && null != object.changes.added
+                    && 0 != object.changes.added.length) {
+         		  
+         		    this.refreshData(object.changes.added);
+            }
+         		
+         		if (null != object && null != object.changes
+                    && null != object.changes.removed
+                    && 0 != object.changes.removed.length) {
+            
+         		  this.refreshData(object.changes.removed);
+            }
+         		
+         		this.refreshElementInAngularContext();
 					}
 				};
+				
+				PropertiesPanel.prototype.refreshData = function(changes){
+				  for (var i = 0; i < changes.length; i++) {
+            if (changes[i].type == m_constants.DATA) {
+              this.setElement(this.element);
+              this.refreshElementInAngularContext();
+            }
+          }
+				}
 
 				/**
 				 *
@@ -603,5 +645,58 @@ define(
 									this.getModel().id, this.getElementUuid(),
 									changes));
 				};
+				
+				/**
+				 * 
+				 */
+				PropertiesPanel.prototype.getCurrentRole = function() {
+				  return m_session.getInstance().currentProfile;
+				}
+				
+				/**
+				 * 
+				 */
+				PropertiesPanel.prototype.getRuleSets = function() {
+          return m_ruleSetsHelper.getRuleSets();
+        }
+				
+				/**
+				 * 
+				 */
+				PropertiesPanel.prototype.refreshElementInAngularContext = function() {
+				  //TODO: watch on following attribute does not work, mostly due to the fact that properties panels are lazily loaded 
+				  //and not updated on scope later on 
+				  this.refreshElement = Math.random();
+        }
+				
+				 /**
+         * 
+         */
+				PropertiesPanel.prototype.findApplication = function(appFullId) {
+          return m_model.findApplication(appFullId);
+        };
+        
+        /**
+         * 
+         */
+        PropertiesPanel.prototype.getModels = function(appFullId) {
+          return m_model.getModels();
+        };
+        
+        /**
+         * 
+         */
+        PropertiesPanel.prototype.openApplicationView = function(application) {
+          m_modelerUtils.openApplicationView(application)
+        };
+        
+        /**
+         * 
+         */
+        PropertiesPanel.prototype.getMModel = function(application) {
+          return m_model;
+        };
+        
+        
 			}
 		});

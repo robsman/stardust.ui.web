@@ -11,6 +11,6 @@ public class CurrentVersionTest
    @Test
    public void testCopyRight()
    {
-      assertEquals("2014 SunGard CSA LLC and others, {0}", CurrentVersion.COPYRIGHT_MESSAGE);
+      assertEquals("2015 SunGard CSA LLC and others, {0}", CurrentVersion.COPYRIGHT_MESSAGE);
    }
 }

@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto.builder;
 
@@ -29,10 +29,10 @@ public class DocumentDTOBuilder
 
       if (document != null)
       {
-         documentDTO.setUuid(document.getId());
-         documentDTO.setName(document.getName());
-         documentDTO.setPath(document.getPath());
-         documentDTO.setContentType(document.getContentType());
+         documentDTO.uuid  = document.getId();
+         documentDTO.name = document.getName();
+         documentDTO.path = document.getPath();
+         documentDTO.contentType = document.getContentType();
 
          /*
           * int numPages = documentUtils.getNumPages(document);
@@ -41,7 +41,7 @@ public class DocumentDTOBuilder
 
          DocumentTypeDTO documentTypeDTO = DocumentTypeDTOBuilder.build(document
                .getDocumentType());
-         documentDTO.setDocumentType(documentTypeDTO);
+         documentDTO.documentType  = documentTypeDTO;
       }
 
       return documentDTO;

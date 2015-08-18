@@ -1,0 +1,1 @@
+{"commandId":"modelElement.update","modelId":"ConsumerModel","account":"motu","changeDescriptions":[{"oid":"42","changes":{"modelElement":{"activityType":"Subprocess","subprocessFullId":"ProviderModel:ProvidedProcess","subprocessMode":"synchSeparate","attributes":{"carnot:engine:subprocess:copyAllData":false}}}}]}

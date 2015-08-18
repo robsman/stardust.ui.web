@@ -1,0 +1,275 @@
+.sd-participant-selector .sd-ac-container {
+  width:220px;
+}
+
+.sd-particpant-img-tag-user {
+	 background-image:url('../../views-common/images/icons/user.png');
+     width:16px;
+     background-size: 16px 16px;
+     padding: 16px 0 0 0 !important;
+     height:0px;
+     background-repeat: no-repeat !important;
+     opacity: 0.7;
+     display: block;
+     float: left;
+}
+
+.sd-particpant-img-tag-role {
+	 background-image:url('../../views-common/images/icons/role.png');
+     width:16px;
+     background-size: 16px 16px;
+     padding: 16px 0 0 0 !important;
+     height:0px;
+     background-repeat: no-repeat !important;
+     opacity: 0.7;
+     display: block;
+     float: left;
+}
+
+.sd-delegate-act-srch-participant-div {
+	border: 1px solid;
+	border-color: #D9D9D9;
+	width: 340px;
+	overflow: auto;
+	padding: 7px;
+}
+/* ********** Abort Activity Dialog ********** */
+.abort-activity-form-content{
+padding-bottom : 10px;
+}
+
+.abort-activity-notication-message{
+padding-bottom : 10px;
+}
+
+.abort-activity-cell-message{
+padding : 5px;;
+}
+
+/* ********** Activity Criticality flags ********** */
+.criticality-flag-RED{
+  color :#F75339;
+}
+
+.criticality-flag-YELLOW{
+  color :#EDCB47;
+}
+
+.criticality-flag-BLUE{
+  color :#43B1FF;
+}
+
+.criticality-flag-GREEN{
+  color:#6CC14F;
+}
+
+.criticality-flag-PURPLE{
+  color:#C748F2;
+}
+
+.criticality-flag-ORANGE{
+  color:#FFAE3E;
+}
+
+.criticality-flag-PINK{
+  color:#FF59E5;
+}
+
+.criticality-flag-WHITE-WARNING{
+  color:black;
+}
+
+.criticality-flag-WHITE{
+  color:black;
+}
+
+.criticality-flag-NO-COLOR{
+  color:#CFCFCF;
+}
+
+.criticality-flag{
+  font-size: 18px;
+}
+
+/* ********** Process Priority flags ********** */
+
+.priority-flag-high{
+  color :#FC3838;
+}
+
+.priority-flag-normal{
+  color :#FFCC00;
+}
+
+.priority-flag-low{
+  color :#3D66E0;
+}
+
+.priority-flag{
+  font-size: 18px;
+}
+/* ********** Process Activity Filter ********** */
+
+ .auxillaryGearDisabled{
+   color : gray;
+ }
+
+ .auxillary-gear{
+  font-size: 18px;
+ }
+
+/* ********** Priority and criticality Filter ********** */
+
+.priority-criticality-filter-ac-container{
+    width:200;
+    border:solid 1px #ddd;
+    padding:2px;
+}
+
+
+.priority-criticality-filter-ac-container div[name='sd-ac-tag']{
+    display:inline-table;
+    font-size: 12px;
+    font-family: Lato;
+    padding: 0px 4px 0px 4px;
+    border:solid 1px #ccd5e4;
+    background-color:#eff2f7;
+    border-radius: 4px;
+    cursor:pointer;
+    margin-left:2px;
+    margin-top:2px;
+    margin-bottom:2px;
+}
+
+
+.priority-criticality-filter-ac-container div[name='sd-ac-tag']:after{
+    content:'x';
+    font-size:0.9em;
+    position:relative;
+    top:-1px;
+}
+
+
+.priority-criticality-filter-ac-container div[name='sd-ac-selectList']{
+    position:absolute;
+    border:solid 1px #AAA;
+    background-color:#fff;
+    border-radius:5px;
+    padding:0px;
+    -moz-box-shadow: 2px 3px 4px 0px #E2E2E2;
+    -webkit-box-shadow: 2px 3px 4px 0px #E2E2E2;
+    box-shadow: 2px 3px 4px 0px #E2E2E2;
+    width:inherit;
+}
+
+
+.priority-criticality-filter-ac-container [name='sd-ac-selectList'] div{
+    cursor:pointer;
+    font-family:Lato;
+    font-size:0.8em;
+    padding:2px;
+    background-color:#fff;
+}
+.priority-criticality-filter-container{
+  width: 200px
+}
+/* ********** Activitiy tooltip ********** */
+.worklist-tooltip-label{
+	font-weight: bold;
+}
+.worklist-tooltip{
+	background-color: #FFEDF0;
+}
+
+.activity-table-priority-combo{
+	width :80px;
+}
+
+.change-highlight{
+	background-color: gray;
+}
+
+.change-higlight-container{
+	width : 100px;
+}
+
+
+.sd-abort-noti-dlg .notification-body {
+	padding: 0 25px 25px 25px;
+} 
+
+.sd-abort-dlg .abort-start-section select {
+	width: 95px;
+}
+
+.sd-abort-dlg .abort-start-section textarea {
+	width: 315px;
+	height: 60px;
+}
+
+.sd-abort-dlg .abort-start-section .switch-form-info {
+	margin: 10px 0 10px 0;
+	font-size: .9em;
+}
+
+.sd-abort-dlg .abort-join-section select {
+	width: 95px;
+}
+
+.sd-abort-dlg .abort-join-section textarea {
+	width: 315px;
+	height: 60px;
+}
+
+.sd-abort-dlg .abort-join-section .switch-form-info {
+	margin: 10px 0 10px 0;
+	font-size: .9em;
+}
+.complete-activity-legend {
+    border-style: none;
+    border-width: 0;
+    font-size: 14px;
+    line-height: 4px;
+    margin-bottom: 0px;
+    background :white;
+    width:90px;
+}
+
+.activity-overview-report-field-label {
+	padding-right: 5px;
+}
+
+.activity-overview-report-field-value {
+	padding-right: 10px;
+}
+.toolbar-icon {
+	
+}
+.action-column-icon {
+	font-size: 12px;
+}
+
+#progressBar {
+	background: none repeat scroll 0 0 #FFFFFF;
+	border: 1px solid #D9D9D9;
+	height: 20px;
+	width: 80%;
+	margin-left: 10px;
+	margin-right: 10px;
+	position: absolute;
+}
+
+#fileUploadPercent {
+	text-align: center;
+	position: absolute;
+	background-color: transparent;
+	width: 100%;
+	z-index: 1;
+}
+
+#fileUploadPercentFill {
+	width: 0%;
+	position: absolute;
+	background-color: #91C6D0;
+	height: 20px;
+}

@@ -126,6 +126,33 @@ public class ProcessInstanceUtils
       return null;
    }
    
+   
+   /**
+    * Returns the notes for provided process instance. 
+    * This method hits server if notes are not available in the provided process instance 
+    * 
+    * @param pi
+    * @return
+    */
+   public static List<Note> getNotes2(ProcessInstance pi)
+   {
+      if (pi == null)
+      {
+         return new ArrayList<Note>();
+      }
+
+      List<Note> notes = getNotes(pi);
+
+      if (null == notes)
+      {
+         // fall back
+         pi = getProcessInstance(pi.getOID(), true);
+         notes = getNotes(pi);
+      }
+      return notes;
+   }
+   
+
    /**
     * Returns the notes for provided process instance
     * 
@@ -318,37 +345,6 @@ public class ProcessInstanceUtils
    public static List<ProcessInstance> getProcessInstances(List<Long> oids, boolean forceReload)
    {
       return getProcessInstances(oids, forceReload, true);
-   }
-   
-   /**
-    * @param result
-    * @param forceReload
-    * @return
-    */
-   public static Map<Long, ProcessInstance> getProcessInstancesAsMap(QueryResult<?> result, boolean forceReload)
-   {
-      List<Long> processInstanceIds = CollectionUtils.newList();
-      for (Object resultObject : result)
-      {
-         if(resultObject instanceof ActivityInstance)
-         {
-            processInstanceIds.add(((ActivityInstance)resultObject).getProcessInstanceOID());
-         }
-         else if (resultObject instanceof ProcessInstance)
-         {
-            processInstanceIds.add(((ProcessInstance)resultObject).getOID());
-         }
-      }
-
-      List<ProcessInstance> processInstances = getProcessInstances(processInstanceIds, forceReload, false);
-      
-      Map<Long, ProcessInstance> piMap  = CollectionUtils.newMap();
-      for (ProcessInstance processInstance : processInstances)
-      {
-         piMap.put(processInstance.getOID(), processInstance);
-      }
-
-      return piMap;
    }
    
    /**

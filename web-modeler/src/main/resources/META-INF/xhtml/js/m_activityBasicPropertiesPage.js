@@ -115,6 +115,11 @@ define(
 								"title",
 								m_i18nUtils
 									.getProperty("modeler.activity.propertyPages.general.taskImplementationLabel"));
+				m_utils.jQuerySelect("#subProcessImplLink")
+            .attr(
+                "title",
+                m_i18nUtils
+                  .getProperty("modeler.activity.propertyPages.general.subProcessImplementationLabel"));
 				m_utils.jQuerySelect("#processingTypeLink")
 						.attr(
 								"title",
@@ -139,6 +144,7 @@ define(
 					this.taskInput = this.mapInputId("taskInput");
 					this.taskTypeList = this.mapInputId("taskTypeList");
 					this.taskImplLink = this.mapInputId("taskImplLink");
+					this.subProcessImplLink = this.mapInputId("subProcessImplLink");
 					this.subprocessInput = this.mapInputId("subprocessInput");
 					this.subprocessList = this.mapInputId("subprocessList");
 					this.subprocessExecutionRow = this
@@ -253,6 +259,7 @@ define(
 					}, function(event) {
 						if (event.data.page.taskInput.is(":checked")) {
 							event.data.page.setTaskType();
+							event.data.page.subProcessImplLink.css("visibility", 'hidden');
 							event.data.page.setTaskImplementationLinkVisibility();
 							event.data.page.submitTaskTypeChanges(true);
 						}
@@ -265,9 +272,9 @@ define(
 									function(event) {
 										var page = event.data.page;
 
-										if (!page.validate()) {
+										/*if (!page.validate()) {
 											return;
-										}
+										}*/
 
 										page.submitTaskTypeChanges();
 									});
@@ -285,6 +292,18 @@ define(
 
 					});
 
+					this.subProcessImplLink.click({
+            panel : this
+          }, function(event) {
+            event.data.panel.hide();
+            var propertiesPages = event.data.panel.propertiesPanel.propertiesPages;
+            for(var n in propertiesPages){
+              if(propertiesPages[n].id =='implementationPropertiesPage'){
+                propertiesPages[n].show();
+              }
+            }
+          });
+					
 					this.processingTypeLink.click({
 						panel : this
 					}, function(event) {
@@ -310,14 +329,18 @@ define(
 
 						page.submitSubprocessChanges(true);
 					});
+					
 					this.subprocessInput.click({
 						"page" : this
 					}, function(event) {
 						if (event.data.page.subprocessInput.is(":checked")) {
+						  event.data.page.subProcessImplLink.css("visibility", 'visible');
+						  event.data.page.taskImplLink.css("visibility", 'hidden');
 							event.data.page.setSubprocessType();
 							event.data.page.submitSubprocessChanges(true);
 						}
 					});
+					
 					this.subprocessModeSelect
 							.change(
 									{
@@ -440,7 +463,17 @@ define(
 					}
 				};
 
-
+				/**
+				 * 
+				 */
+        ActivityBasicPropertiesPage.prototype.setSubProcessImplementationLinkVisibility = function() {
+          if (m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE
+                  && this.getModelElement().activityType == m_constants.SUBPROCESS_ACTIVITY_TYPE) {
+            this.subProcessImplLink.css("visibility", 'visible');
+          } else {
+            this.subProcessImplLink.css("visibility", 'hidden');
+          }
+        };
 				/**
 				 *
 				 */
@@ -474,7 +507,8 @@ define(
 												taskType : this.taskTypeList.val(),
 												participantFullId : (this.taskTypeList.val() == m_constants.MANUAL_TASK_TYPE
 														|| this.taskTypeList.val() == m_constants.USER_TASK_TYPE) ? this
-																.getElement().parentSymbol.participantFullId : null
+																.getElement().parentSymbol.participantFullId : null,
+												applicationFullId : null				
 											}
 										};
 
@@ -621,6 +655,7 @@ define(
 						this.supportsRelocationInput.attr("disabled", true);
 					}
 					this.setTaskImplementationLinkVisibility();
+					this.setSubProcessImplementationLinkVisibility();
 					m_activityProcessingPropertiesCommon.initProcessingType(this);
 				};
 

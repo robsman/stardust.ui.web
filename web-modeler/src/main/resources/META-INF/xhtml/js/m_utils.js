@@ -568,16 +568,22 @@ define(
 				var ascendingFactor = ascending ? 1 : -1;
 
 				sortedObjects.sort(function(left, right) {
-					var leftValue = (left[field] || '').toLowerCase();
-					var rightValue = (right[field] || '').toLowerCase();
-
-					if (leftValue < rightValue) {
-						return -1 * ascendingFactor;
+					
+					var leftValue,
+						rightValue;
+					
+					if(left[field] && right[field]){
+					
+						leftValue=left[field].toLowerCase();
+						rightValue=right[field].toLowerCase();
+	
+						if (leftValue < rightValue) {
+							return -1 * ascendingFactor;
+						}
+						if (leftValue > rightValue) {
+							return 1 * ascendingFactor;
+						}
 					}
-					if (leftValue > rightValue) {
-						return 1 * ascendingFactor;
-					}
-
 					return 0;
 				});
 
@@ -648,6 +654,9 @@ define(
 						continue;
 					}
 
+					//TODO: this logic needs to be improved, 
+					//if server has deleted any element, consequently parentObject does not contain it
+					//child object still contain this element.
 					if (typeof parentObject[member] == "object"
 							&& childObject[member] != null
 							&& !isArray(parentObject[member])

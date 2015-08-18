@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.viewscommon.process.history;
 import java.util.Date;
 import java.util.List;
 
+import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.RuntimeObject;
 
 
@@ -33,6 +34,8 @@ public interface IProcessHistoryTableEntry
    Date getLastModificationTime();
 
    String getState();
+
+   ParticipantInfo getPerformedBy();
 
    String getPerformer();
 

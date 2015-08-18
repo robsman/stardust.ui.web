@@ -1,0 +1,7 @@
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"uuid":"00000000-0000-0000-0000-000000000081","changes":{"name":"RenamedProvidedStructData"}}]}
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"uuid":"00000000-0000-0000-0000-000000000135","changes":{"name":"RenamedProvidedTypeDeclaration"}}]}
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"uuid":"00000000-0000-0000-0000-000000000091","changes":{"name":"RenamedProvidedUIMashup"}}]}
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"uuid":"00000000-0000-0000-0000-000000000102","changes":{"name":"RenamedProvidedRole"}}]}
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"uuid":"00000000-0000-0000-0000-000000000104","changes":{"name":"RenameProvidedProcess"}}]}
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"uuid":"00000000-0000-0000-0000-000000000086","changes":{"name":"RenamedProvidedDocument"}}]}
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"uuid":"00000000-0000-0000-0000-000000000078","changes":{"name":"RenamedProvidedPrimitive"}}]}

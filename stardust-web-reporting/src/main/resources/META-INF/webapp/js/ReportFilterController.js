@@ -58,13 +58,37 @@ define(
 						ALL_PROCESSES : {
 							id : "allProcesses",
 							name : this
-									.getI18N("reporting.definitionView.additionalFiltering.allprocesses")
+									.getI18N("reporting.definitionView.additionalFiltering.allprocesses"),
+									order : 0
 						},
 						ALL_ACTIVITIES : {
 							id : "allActivities",
 							name : this
-									.getI18N("reporting.definitionView.additionalFiltering.allactivities")
-						}
+									.getI18N("reporting.definitionView.additionalFiltering.allactivities"),
+							order : 0
+						},
+						DURATION_UNITS : [{
+							id : "s",
+							name : this.getI18N('reporting.definitionView.seconds.label')
+						}, {
+							id : "m",
+							name : this.getI18N('reporting.definitionView.minutes.label')
+						}, {
+							id : "h",
+							name : this.getI18N('reporting.definitionView.hours.label')
+						}, {
+							id : "d",
+							name : this.getI18N('reporting.definitionView.days.label')
+						}, {
+							id : "w",
+							name : this.getI18N('reporting.definitionView.weeks.label')
+						}, {
+							id : "M",
+							name : this.getI18N('reporting.definitionView.months.label')
+						}, {
+							id : "Y",
+							name : this.getI18N('reporting.definitionView.years.label')
+						}]
 					};
 
 					this.reportingService = reportingService;
@@ -379,7 +403,7 @@ define(
 
 					if (filter
 							&& (filter.dimension == "processName" || filter.dimension == "activityName")) {
-						self = this;
+						var self = this;
 						// processes
 						if ((dimension.id == "processName" || dimension.id == "activityName")) {
 							filteredEnumItems = [];
@@ -397,7 +421,7 @@ define(
 						// activities
 						if (dimension.id == "activityName") {
 							var selectedProcesses = [];
-							self = this;
+							var self = this;
 
 							if (!filter.metadata.selectedProcesses
 									|| filter.metadata.selectedProcesses.length < 1) {
@@ -473,6 +497,7 @@ define(
 					if (dimension.id == "criticality") {
 						filter.metadata = this
 								.getCriticalityForName(filter.value);
+						filter.metadata.parameterizable = true;
 						filter.uiValue = [filter.metadata.rangeFrom/1000, filter.metadata.rangeTo/1000];
 					}
 				};

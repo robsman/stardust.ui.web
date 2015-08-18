@@ -6,37 +6,59 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
+import static org.eclipse.stardust.common.StringUtils.isEmpty;
+
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.annotation.Resource;
-
-import org.springframework.stereotype.Component;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.reflect.Reflect;
 import org.eclipse.stardust.engine.api.model.ApplicationContext;
 import org.eclipse.stardust.engine.api.model.DataMapping;
-import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
+import org.eclipse.stardust.engine.api.query.QueryResult;
+import org.eclipse.stardust.engine.api.query.SubsetPolicy;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
+import org.eclipse.stardust.engine.api.runtime.UserInfo;
+import org.eclipse.stardust.engine.api.runtime.WorkflowService;
+import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
+import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
+import org.eclipse.stardust.ui.web.rest.Options;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.PathDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
-import org.eclipse.stardust.ui.web.rest.service.helpers.ModelHelper;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ClientContextBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
+import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
+import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Anoop.Nair
@@ -48,6 +70,8 @@ public class ActivityInstanceUtils
 {
    private static final Logger trace = LogManager.getLogger(ActivityInstanceUtils.class);
    
+   private static final String STATUS_PREFIX = "views.activityTable.statusFilter.";
+   
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
 
@@ -56,7 +80,7 @@ public class ActivityInstanceUtils
 
    @Resource
    private DocumentUtils documentUtils;
-
+   
    /**
     * @param oid
     * @return
@@ -78,11 +102,16 @@ public class ActivityInstanceUtils
    }
 
    /**
-    * @param oid
+    * @param activityOID
     * @return
     */
    public List<ActivityInstance> getActivityInstances(List<Long> oids)
    {
+      if (oids.size() == 0)
+      {
+         return new ArrayList<ActivityInstance>();
+      }
+      
       ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
       FilterOrTerm filterOrTerm = query.getFilter().addOrTerm();
       for (Long oid : oids)
@@ -93,6 +122,30 @@ public class ActivityInstanceUtils
       ActivityInstances ais = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
 
       return ais;
+   }
+   
+   /**
+    * @param userId
+    * @return
+    */
+   public QueryResult< ? > getActivityInstances( Options options)
+   {
+      ActivityInstanceQuery query = ActivityInstanceQuery.findAll();
+
+      ActivityTableUtils.addDescriptorPolicy(options, query);
+
+      ActivityTableUtils.addSortCriteria(query, options);
+
+      ActivityTableUtils.addFilterCriteria(query, options);
+
+      SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip,
+            true);
+      query.setPolicy(subsetPolicy);
+
+      ActivityInstances activityInstances = serviceFactoryUtils.getQueryService()
+            .getAllActivityInstances(query);
+
+      return activityInstances;
    }
 
    /**
@@ -136,20 +189,45 @@ public class ActivityInstanceUtils
       List<ActivityInstance> ais = getActivityInstances(oids);
       for (ActivityInstance ai : ais)
       {
-         if (isTrivialManualActivity(ai, context))
+         if (isTrivialManualActivity(ai))
          {
-            if (!cache.containsKey(ai.getActivity().getId()))
+            String cacheKey = ai.getModelOID() + "_" + ai.getActivity().getId();
+            if (!cache.containsKey(cacheKey))
             {
                // Get Data Mappings
                List<PathDTO> dataMappings = PathDTO.toList(getAllDataMappingsAsJson(ai, context));
-               cache.put(ai.getActivity().getId(), dataMappings);
+
+               // Remove readonly mappings
+               Iterator<PathDTO> it = dataMappings.iterator();
+               while (it.hasNext())
+               {
+                  PathDTO pathDto = it.next();
+                  if (pathDto.readonly || !pathDto.isPrimitive)
+                  {
+                     it.remove();
+                  }
+               }
+               
+               cache.put(cacheKey, dataMappings);
             }
 
             TrivialManualActivityDTO dto = new TrivialManualActivityDTO();
-            dto.dataMappings = cache.get(ai.getActivity().getId());
+            dto.dataMappings = cache.get(cacheKey);
 
             // Get (IN_)OUT Data
-            dto.inOutData = getAllInDataValues(ai, context);
+            dto.inOutData = new LinkedHashMap<String, Serializable>();
+            Map<String, Serializable> dataValues = getAllInDataValues(ai, context);
+            for (Entry<String, Serializable> entry : dataValues.entrySet())
+            {
+               for (PathDTO pathDto : dto.dataMappings)
+               {
+                  if (entry.getKey().equals(pathDto.id))
+                  {
+                     dto.inOutData.put(entry.getKey(), entry.getValue());
+                     break;
+                  }
+               }
+            }
 
             ret.put(String.valueOf(ai.getOID()), dto);
          }
@@ -167,31 +245,10 @@ public class ActivityInstanceUtils
     * @param context
     * @return
     */
-   public boolean isTrivialManualActivity(ActivityInstance ai, String context)
+   public static boolean isTrivialManualActivity(ActivityInstance ai)
    {
-      Model model = modelUtils.getModel(ai.getModelOID());
-      ApplicationContext appContext = ai.getActivity().getApplicationContext(context);
-      List<?> mappings = appContext.getAllOutDataMappings();
-      if (mappings.size() > 0 && mappings.size() <= 2)
-      {
-         for (Object object : mappings)
-         {
-            DataMapping dataMapping = (DataMapping) object;
-            if (ModelHelper.isEnumerationType(model, dataMapping)
-                  || ModelHelper.isPrimitiveType(model, dataMapping))
-            {
-               // Okay!
-            }
-            else
-            {
-               return false;
-            }
-         }
-         
-         return true;
-      }
-      
-      return false;
+      Boolean trivialManualActivity = (Boolean)ai.getActivity().getAttribute("trivialManualActivity");
+      return (null != trivialManualActivity && trivialManualActivity == true);
    }
 
    /**
@@ -274,4 +331,215 @@ public class ActivityInstanceUtils
       return completedAi;
    }
 
+   /**
+    * @author Yogesh.Manware
+    * note: copied from AbortActivityBean#private boolean abortActivities(AbortScope abortScope)
+    * 
+    * @param abortScope
+    * @param activitiesToBeAborted
+    * 
+    * @return
+    */
+   public NotificationMap abortActivities(AbortScope abortScope, List<Long> activitiesToBeAborted)
+   {
+      NotificationMap notificationMap = new NotificationMap();
+
+      if (CollectionUtils.isNotEmpty(activitiesToBeAborted))
+      {
+         WorkflowService workflowService = serviceFactoryUtils.getWorkflowService();
+         ActivityInstance activityInstance;
+         for (Long activityInstanceOid : activitiesToBeAborted)
+         {
+            if (null != activityInstanceOid)
+            {
+               activityInstance = this.getActivityInstance(activityInstanceOid.longValue());
+               if (!isDefaultCaseActivity(activityInstance))
+               {
+                  try
+                  {
+                     workflowService.abortActivityInstance(activityInstanceOid, abortScope);
+                     
+                     //publish event
+                     ClientContextBean.getCurrentInstance().getClientContext()
+                           .sendActivityEvent(ActivityEvent.aborted(activityInstance));
+                     
+                     notificationMap.addSuccess(new NotificationDTO(activityInstanceOid,
+                           getActivityLabel(activityInstance), getActivityStateLabel(activityInstance)));
+                  }
+                  catch (Exception e)
+                  {
+                     // It is very to rare that any exception would occur
+                     // here
+                     trace.error(e);
+                     notificationMap.addFailure(new NotificationDTO(activityInstanceOid,
+                           getActivityLabel(activityInstance), MessagesViewsCommonBean.getInstance().getParamString(
+                                 "views.common.activity.abortActivity.failureMsg2",
+                                 ExceptionHandler.getExceptionMessage(e))));
+                  }
+               }
+               else
+               {
+                  if (isDefaultCaseActivity(activityInstance))
+                  {
+                     notificationMap.addFailure(new NotificationDTO(activityInstanceOid,
+                           getActivityLabel(activityInstance), MessagesViewsCommonBean.getInstance().getString(
+                                 "views.switchProcessDialog.caseAbort.message")));
+                  }
+                  else if (ActivityInstanceState.Aborted.equals(activityInstance.getState())
+                        || ActivityInstanceState.Completed.equals(activityInstance.getState()))
+                  {
+                     notificationMap.addFailure(new NotificationDTO(activityInstanceOid,
+                           getActivityLabel(activityInstance), MessagesViewsCommonBean.getInstance().getParamString(
+                                 "views.common.activity.abortActivity.failureMsg3",
+                                 ActivityInstanceUtils.getActivityStateLabel(activityInstance))));
+                  }
+                  else
+                  {
+                     notificationMap.addFailure(new NotificationDTO(activityInstanceOid,
+                           getActivityLabel(activityInstance), MessagesViewsCommonBean.getInstance().getString(
+                                 "views.common.activity.abortActivity.failureMsg1")));
+                  }
+               }
+            }
+         }
+      }
+
+      return notificationMap;
+   }
+
+	/**
+	 * to check Activity of type is Default Case Activity
+	 * 
+	 * @param ai
+	 * @return
+	 */
+	public static boolean isDefaultCaseActivity(ActivityInstance ai) {
+		if (null != ai
+				&& PredefinedConstants.DEFAULT_CASE_ACTIVITY_ID.equals(ai
+						.getActivity().getId())) {
+			return true;
+		}
+		return false;
+	}
+
+   /**
+    * @param ai
+    * @param context
+    * @param data
+    * @return
+    */
+   public ActivityInstance suspendToUserWorklist(ActivityInstance ai, String context, Map<String, ? > data)
+   {
+      ActivityInstance suspendedAi = null;
+
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("Suspending Activity '" + ai.getActivity().getName() + "' to User Worklist, with out data = "
+               + data);
+      }
+
+      if (isEmpty(context))
+      {
+         suspendedAi = serviceFactoryUtils.getWorkflowService().suspendToUser(ai.getOID());
+      }
+      else
+      {
+         suspendedAi = serviceFactoryUtils.getWorkflowService().suspendToUser(ai.getOID(), context, data);
+      }
+
+      sendActivityEvent(ai, ActivityEvent.suspended(suspendedAi));
+      return suspendedAi;
+   }
+	
+   /**
+    * @param oldAi
+    * @param activityEvent
+    */
+   public void sendActivityEvent(ActivityInstance oldAi, ActivityEvent activityEvent)
+   {
+      ParticipantWorklistCacheManager.getInstance().handleActivityEvent(oldAi, activityEvent);
+      if (ProcessWorklistCacheManager.isInitialized())
+      {
+         ProcessWorklistCacheManager.getInstance().handleActivityEvent(oldAi, activityEvent);
+      }
+      SpecialWorklistCacheManager.getInstance().handleActivityEvent(oldAi, activityEvent);
+      ClientContextBean.getCurrentInstance().getClientContext().sendActivityEvent(activityEvent);
+   }
+	/**
+	 * @param instance
+	 * @return localized activity name with OID appended
+	 */
+	public String getActivityLabel(ActivityInstance instance) {
+		if (null != instance) {
+			return I18nUtils.getActivityName(instance.getActivity());
+		}
+		return "";
+	}
+
+	/**
+	 * @param ai
+	 * @return Localized activity state name
+	 */
+	public static String getActivityStateLabel(ActivityInstance ai) {
+		return MessagesViewsCommonBean.getInstance().getString(
+				STATUS_PREFIX + ai.getState().getName().toLowerCase());
+	}
+	
+   /**
+    * @param activities
+    * @return
+    */
+   public List<ActivityInstance> getActivityInstancesFor(Long[] activities)
+   {
+      List<ActivityInstance> activityInstances = new ArrayList<ActivityInstance>();
+
+      if (activities == null)
+      {
+         return activityInstances;
+      }
+      for (Long activityInstanceOid : activities)
+      {
+         ActivityInstance ai = getActivityInstance(activityInstanceOid.longValue());
+         if (ai != null)
+         {
+            activityInstances.add(ai);
+         }
+      }
+      return activityInstances;
+   }
+   
+	/**
+	 * gets the duration
+	 * @param ai
+	 * @return
+	 */
+	public static String getDuration(ActivityInstance ai)
+	{
+		long timeInMillis = Calendar.getInstance().getTimeInMillis();
+		if (ai.getState() == ActivityInstanceState.Completed
+				|| ai.getState() == ActivityInstanceState.Aborted)
+		{
+			timeInMillis = ai.getLastModificationTime().getTime();
+		}
+		return DateUtils.formatDurationInHumanReadableFormat(timeInMillis
+				- ai.getStartTime().getTime());
+	}
+	
+	/**
+	 * 
+	 */
+
+	public  static String getPerformedByName(ActivityInstance activityInstance)
+	{
+	   UserInfo userInfo = activityInstance.getPerformedBy();
+	   if (null != userInfo)
+	   {
+	      return ParticipantUtils.getParticipantName(userInfo);
+	   }
+	   else
+	   {
+	      return activityInstance.getPerformedByName();
+	   }
+	}
+   
 }

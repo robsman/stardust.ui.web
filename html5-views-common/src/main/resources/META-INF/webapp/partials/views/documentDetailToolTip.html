@@ -1,0 +1,42 @@
+<div style="color: black;font-size: small;text-align: center; font-weight: bold;" ng-bind="rowData.documentToolTip.name"></div>
+<table style="color: brown;font-size: x-small">
+<tr>
+	<td>
+	  <span
+			ng-bind="i18n('views-common-messages.common-tooltip-document-documentType')">
+	  </span>
+	 </td>
+	<td><span style="color: black;font-size: x-small" ng-bind="rowData.documentToolTip.documentType"></span></td>	
+</tr>
+<tr>
+    <td>
+	   <span ng-bind="i18n('views-common-messages.common-tooltip-document-fileType')"></span>
+	</td>
+	<td><span style="color: black;font-size: x-small" ng-bind="rowData.documentToolTip.fileType"></span></td>	
+</tr>
+<tr>
+    <td>
+	  <span
+		ng-bind="i18n('views-common-messages.common-tooltip-document-fileSize')"></span>
+	</td>
+	<td><span style="color: black;font-size: x-small">{{rowData.documentToolTip.size | sdFileSize}}</span></td>	
+</tr>
+<tr>
+    <td>
+		<span
+			ng-bind="i18n('views-common-messages.common-tooltip-document-modificationDate')"></span>
+	</td>
+	<td>
+		<span style="color: black;font-size: x-small" ng-bind="rowData.documentToolTip.modificationDate"></span></td>
+</tr>
+<tr>
+	<td>
+		<span
+			ng-bind="i18n('views-common-messages.common-tooltip-document-description')"></span>
+	</td>
+	<td>
+	<span style="color: black;font-size: x-small" ng-bind="rowData.documentToolTip.description"></span>	
+	</td>
+</tr>
+</table>
+

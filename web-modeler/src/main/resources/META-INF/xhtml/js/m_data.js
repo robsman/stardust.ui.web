@@ -130,7 +130,7 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
 
 			this.model.dataItems[this.id] = this;
 		};
-
+		
 		/**
 		 *
 		 */

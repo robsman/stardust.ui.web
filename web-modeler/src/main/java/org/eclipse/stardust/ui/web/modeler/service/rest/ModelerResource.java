@@ -945,9 +945,10 @@ public class ModelerResource
    public Response getRetrieve(@PathParam("bundleName") String bundleName,
          @PathParam("locale") String locale)
    {
-      final String POST_FIX = "client-messages";
+      //TODO: not sure why we require to check postfix??
+      //final String POST_FIX = "client-messages";
 
-      if (StringUtils.isNotEmpty(bundleName) && bundleName.endsWith(POST_FIX))
+      if (StringUtils.isNotEmpty(bundleName))
       {
          try
          {

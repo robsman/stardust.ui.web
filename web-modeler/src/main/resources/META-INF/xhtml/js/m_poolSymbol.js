@@ -660,9 +660,11 @@ define(
 
 							var symbolDx = this.evaluateSymbolDx(symbolX, this.laneSymbols[n].containedSymbols);
 
-							for ( var c in this.laneSymbols[n].containedSymbols) {
-								this.laneSymbols[n].containedSymbols[c].moveBy(
-										dX + symbolDx, dY);
+							if(dX!=0 || dY!=0 || symbolDx!=0){
+								for ( var c in this.laneSymbols[n].containedSymbols) {
+									this.laneSymbols[n].containedSymbols[c].moveBy(
+											dX + symbolDx, dY);
+								}	
 							}
 
 							if (!swimLaneHeight ||
@@ -678,8 +680,10 @@ define(
 						}
 						//Adjust height of lanes if required
 						for ( var n in this.laneSymbols) {
-							this.laneSymbols[n].height = swimLaneHeight;
-							this.laneSymbols[n].adjustGeometry();
+							if(this.laneSymbols[n].height != swimLaneHeight){
+								this.laneSymbols[n].height = swimLaneHeight;
+								this.laneSymbols[n].adjustGeometry();	
+							}
 						}
 					} else {
 						var dX = 0;
@@ -706,9 +710,11 @@ define(
 								this.laneSymbols[n].moveBy(0, dY);
 							}
 
-						 	for ( var c in this.laneSymbols[n].containedSymbols) {
-								this.laneSymbols[n].containedSymbols[c].moveBy(
-										dX, dY);
+							if(dX !=0 || dY != 0){
+								for ( var c in this.laneSymbols[n].containedSymbols) {
+									this.laneSymbols[n].containedSymbols[c].moveBy(
+											dX, dY);
+								}	
 							}
 
 							if (!swimLaneWidth ||
@@ -725,8 +731,10 @@ define(
 
 						//Adjust width
 						for ( var n in this.laneSymbols) {
-							this.laneSymbols[n].width = swimLaneWidth;
-							this.laneSymbols[n].adjustGeometry();
+							if(this.laneSymbols[n].width != swimLaneWidth){
+								this.laneSymbols[n].width = swimLaneWidth;
+								this.laneSymbols[n].adjustGeometry();								
+							}
 						}
 					}
 

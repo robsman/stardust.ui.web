@@ -66,7 +66,7 @@ define(
 											.getProperty("modeler.element.properties.timerEvent.delayTimer"));
 
 					this.configurationSpan = this.mapInputId("configuration");
-
+					this.autoStartupInput = this.mapInputId("autoStartupInput");
 					this.configurationSpan
 							.text(m_i18nUtils
 									.getProperty("modeler.element.properties.event.configuration"));
@@ -96,6 +96,23 @@ define(
 					this.registerForRouteChanges(this.fixedRateInput);
 					this.registerForRouteChanges(this.delayTimerInput);
 					this.registerForRouteChanges(this.delayTimerUnitSelect);
+					this.registerForRouteChanges(this.autoStartupInput);
+					
+					
+					this.autoStartupInput.change({
+						  overlay : this
+					   }, function(event) {
+						  var overlay = event.data.overlay;
+						  overlay.submitChanges({
+							 modelElement : {
+								attributes : {
+								   "carnot:engine:camel::autoStartup" : overlay.autoStartupInput
+												  .prop("checked")
+								}
+							 }
+						  });
+					   });
+					
 				};
 
 				/**
@@ -197,7 +214,16 @@ define(
 				 */
 				TimerEventIntegrationOverlay.prototype.update = function() {
 					var route = this.page.propertiesPanel.element.modelElement.attributes["carnot:engine:camel::camelRouteExt"];
-
+					if(this.page.getEvent().attributes["carnot:engine:camel::autoStartup"]==null || this.page.getEvent().attributes["carnot:engine:camel::autoStartup"]===undefined){
+                  		this.submitChanges({
+                    		 modelElement : {
+                    		    attributes : {
+                     		      "carnot:engine:camel::autoStartup" : true
+                    		    }
+                  		   }
+               		   });
+           		    }
+					this.autoStartupInput.prop("checked",this.page.getEvent().attributes["carnot:engine:camel::autoStartup"]);
 					if (route == null) {
 						return;
 					}

@@ -40,6 +40,11 @@ public class ColumnPreference implements Serializable
       STRING,
       NUMBER,
       DATE,
+      DATE_WITHOUT_TIME, /*
+                          * Instead of down-grading existing DATE to show only date and
+                          * introducing new field as DATETIME to show date and time,
+                          * introduced DATE_WITHOUT_TIME to minimize impact on existing usage
+                          */
       BOOLEAN,
       NONE
    }
@@ -234,6 +239,8 @@ public class ColumnPreference implements Serializable
       {
          if(columnDataType == ColumnDataType.DATE)
             columnConverterType = ColumnConverterType.BOTH;
+         else if(columnDataType == ColumnDataType.DATE_WITHOUT_TIME)
+            columnConverterType = ColumnConverterType.DATE;
          else if(columnDataType == ColumnDataType.NUMBER)
             columnConverterType = ColumnConverterType.NUMBER;
       }
@@ -246,7 +253,7 @@ public class ColumnPreference implements Serializable
     */
    public String getColumnFormatter()
    {
-      if(ColumnDataType.DATE == columnDataType)
+      if(ColumnDataType.DATE == columnDataType || ColumnDataType.DATE_WITHOUT_TIME == columnDataType)
       {
          switch (getColumnConverterType())
          {
@@ -398,10 +405,10 @@ public class ColumnPreference implements Serializable
          }
          */
 
-         if(!Pattern.matches(PROPERTY_REG_EX, columnProperty))
+         /*if(!Pattern.matches(PROPERTY_REG_EX, columnProperty))
          {
             throw new IllegalArgumentException("Incorrect Syntax for Property, " + columnProperty);
-         }
+         }*/
       }
    }
 

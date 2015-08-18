@@ -56,7 +56,7 @@ define([ "bpm-modeler/js/m_urlUtils", "i18n" ], function(m_urlUtils,
 			pluginName : "modeler",
 			singleEndPoint : m_urlUtils.getContextName()
 					+ "/services/rest/bpm-modeler/modeler/"
-					+ new Date().getTime() + "/bpm-modeler-client-messages/"
+					+ new Date().getTime() + "/bpm-modeler-messages/"
 					+ lang
 		});
 

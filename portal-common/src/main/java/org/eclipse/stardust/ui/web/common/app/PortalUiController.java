@@ -301,6 +301,8 @@ public class PortalUiController
    private void initPerspectiveItems()
    {
       this.perspectiveItems = new ArrayList<MenuItem>();
+
+      Map<String, PerspectiveExtension> extensions = appContext.getBeansOfType(PerspectiveExtension.class);
       
       for (IPerspectiveDefinition perspective : allPerspectives)
       {
@@ -311,8 +313,6 @@ public class PortalUiController
          }
 
          perspectiveItems.add(createMenuItem(perspective));
-
-         Map<String, PerspectiveExtension> extensions = appContext.getBeansOfType(PerspectiveExtension.class);
 
          for (PerspectiveExtension extension : extensions.values())
          {

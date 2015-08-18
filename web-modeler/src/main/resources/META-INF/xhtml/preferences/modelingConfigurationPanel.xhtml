@@ -27,7 +27,13 @@
 			<ice:selectBooleanCheckbox partialSubmit="true"
 				value="#{modelingConfigurationPanel.showTechnologyPreview}">
 				<pc:automationTag value="auto-BPM-ProcessModelConf-ShowTechPreview" standAlone="false"/>
-				</ice:selectBooleanCheckbox>
+			</ice:selectBooleanCheckbox>
+			<ice:outputLabel styleClass="label-form"
+				value="#{bpmModelerMessages['configuremodeling.panel.showSimpleModels']}" />
+			<ice:selectBooleanCheckbox partialSubmit="true"
+				value="#{modelingConfigurationPanel.showSimpleModels}">
+				<pc:automationTag value="auto-BPM-ProcessModelConf-ShowSimpleModels" standAlone="false"/>
+			</ice:selectBooleanCheckbox>
 
 			<ice:outputLabel styleClass="label-form"
 				value="#{bpmModelerMessages['configuremodeling.panel.defaultProfile']}" />

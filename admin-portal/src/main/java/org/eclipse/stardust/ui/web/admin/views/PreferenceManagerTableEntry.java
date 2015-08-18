@@ -19,10 +19,8 @@ import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
  */
 public class PreferenceManagerTableEntry extends DefaultRowModel
 {
+   private static final long serialVersionUID = -1283405146398568258L;
 
-   /**
-    * 
-    */
    private String scope;
    private String moduleId;
    private String preferenceId;
@@ -31,9 +29,10 @@ public class PreferenceManagerTableEntry extends DefaultRowModel
    private String userId;
    private String realmId;
    private boolean selected;
+   private boolean passwordType;
 
    public PreferenceManagerTableEntry(String scope, String moduleId, String preferenceId, String preferenceName,
-         String preferenceValue, String userId, String realmId, String partitionId, String userName)
+         String preferenceValue, String userId, String realmId, String partitionId, String userName, boolean passwordType)
    {
       super();
       this.scope = scope + getPreferenceScope(partitionId, userName);
@@ -43,6 +42,7 @@ public class PreferenceManagerTableEntry extends DefaultRowModel
       this.preferenceValue = preferenceValue;
       this.userId = userId;
       this.realmId = realmId;
+      this.passwordType = passwordType;
    }
 
    public String getScope()
@@ -110,4 +110,8 @@ public class PreferenceManagerTableEntry extends DefaultRowModel
 
    }
 
+   public boolean isPasswordType()
+   {
+      return passwordType;
+   }
 }

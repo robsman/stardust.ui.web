@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.common.filter;
 
 import java.util.Date;
 
+import org.eclipse.stardust.ui.web.common.util.CustomDateConverter;
 import org.eclipse.stardust.ui.web.common.util.CustomDateTimeConverter;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
@@ -104,7 +105,15 @@ public class TableDataFilterDate extends TableDataFilterBetween
     */
    public Object getConverter()
    {
-      return new CustomDateTimeConverter();
+      if (getDataType() == DataType.DATE)
+      {
+         return new CustomDateTimeConverter();
+      }
+      else
+      {
+         return new CustomDateConverter();
+      }
+      
    }
 
    /*
@@ -158,7 +167,14 @@ public class TableDataFilterDate extends TableDataFilterBetween
       Object returnValue = getReturnValue(value, false);
       if (returnValue != null)
       {
-         return DateUtils.formatDateTime((Date) returnValue);
+         if (getDataType() == DataType.DATE)
+         {
+            return DateUtils.formatDateTime((Date) returnValue);
+         }
+         else
+         {
+            return DateUtils.formatDate((Date) returnValue);
+         }
       }
       else
       {

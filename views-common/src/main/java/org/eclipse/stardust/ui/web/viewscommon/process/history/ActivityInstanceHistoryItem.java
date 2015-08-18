@@ -16,6 +16,7 @@ import java.util.List;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.Participant;
+import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
@@ -24,17 +25,12 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.RuntimeObject;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
-import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
-
-
 
 /**
  * @author Yogesh.Manware
@@ -47,6 +43,7 @@ public class ActivityInstanceHistoryItem extends AbstractProcessHistoryTableEntr
    private Date startTime;
    private ProcessInstance scopeProcessInstance;
    private String activityInstanceName;
+   private ParticipantInfo performedBy;
    private String performer;
    private String state;
    private String type;
@@ -176,12 +173,13 @@ public class ActivityInstanceHistoryItem extends AbstractProcessHistoryTableEntr
          startTime = activityInstance.getStartTime();
          lastModificationTime = activityInstance.getLastModificationTime();
 
+         performedBy = activityInstance.getCurrentPerformer();
+         
          // Either the activity is alive
          if (activityInstance.isAssignedToUser())
          {
             UserInfo userInfo = (UserInfo) activityInstance.getCurrentPerformer();
-            User user = UserUtils.getUser(userInfo.getId());
-            performer = I18nUtils.getUserLabel(user);
+            performer = ParticipantUtils.getParticipantName(userInfo);
          }
          else if (activityInstance.isAssignedToModelParticipant() && activityInstance.getCurrentPerformer()!=null)
          {            
@@ -199,16 +197,16 @@ public class ActivityInstanceHistoryItem extends AbstractProcessHistoryTableEntr
          if (performer == null)
          {          
             UserInfo userInfo = activityInstance.getPerformedBy();
+            performedBy = userInfo;
+
             if (null != userInfo)
             {
-               User user = UserUtils.getUser(userInfo.getId());
-               performer= I18nUtils.getUserLabel(user);
+               performer= ParticipantUtils.getParticipantName(userInfo);
             }
             else
             {
                performer= activityInstance.getPerformedByName();
             }
-            
          } 
 
          //state = activityInstance.getState().toString();
@@ -226,6 +224,11 @@ public class ActivityInstanceHistoryItem extends AbstractProcessHistoryTableEntr
    public String getName()
    {
       return activityInstanceName;
+   }
+
+   public ParticipantInfo getPerformedBy()
+   {
+      return performedBy;
    }
 
    public String getPerformer()

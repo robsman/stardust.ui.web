@@ -32,6 +32,13 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.util.FeatureMap;
 import org.eclipse.emf.ecore.util.FeatureMapUtil;
+import org.eclipse.xsd.XSDElementDeclaration;
+import org.eclipse.xsd.XSDSchema;
+import org.eclipse.xsd.XSDTypeDefinition;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+
+import com.google.gson.*;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
@@ -41,12 +48,10 @@ import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
-import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
-import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
-import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
-import org.eclipse.stardust.model.xpdl.builder.utils.NameIdUtilsExtension;
+import org.eclipse.stardust.model.xpdl.builder.utils.*;
 import org.eclipse.stardust.model.xpdl.carnot.*;
-import org.eclipse.stardust.model.xpdl.carnot.util.AccessPointUtil;
+import org.eclipse.stardust.model.xpdl.carnot.extensions.ExtensionsFactory;
+import org.eclipse.stardust.model.xpdl.carnot.extensions.FormalParameterMappingsType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.carnot.util.StructuredTypeUtils;
@@ -59,6 +64,8 @@ import org.eclipse.stardust.model.xpdl.xpdl2.extensions.ExtensionFactory;
 import org.eclipse.stardust.model.xpdl.xpdl2.extensions.LoopDataRefType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.XpdlUtil;
+import org.eclipse.stardust.ui.web.modeler.common.exception.ModelerErrorClass;
+import org.eclipse.stardust.ui.web.modeler.common.exception.ModelerException;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
@@ -69,17 +76,6 @@ import org.eclipse.stardust.ui.web.modeler.spi.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.WebServiceApplicationUtils;
-
-import org.eclipse.xsd.XSDElementDeclaration;
-import org.eclipse.xsd.XSDSchema;
-import org.eclipse.xsd.XSDTypeDefinition;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Service;
-
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 
 /**
  *
@@ -241,6 +237,14 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          updateDataFlowConnection((DataMappingConnectionType) element, json);
       }
+      else if (element instanceof EventHandlerType)
+      {
+         updateEventHandler((EventHandlerType) element, json);
+      }
+      else if (element instanceof EventActionType)
+      {
+         updateEventAction((EventActionType) element, json);
+      }
       else
       {
          logger.warn("===> Unsupported Symbol " + element);
@@ -287,59 +291,19 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       storeAttributes(activity, activityJson);
       storeDescription(activity, activityJson);
 
-      if (activityJson.has(ModelerConstants.QUALITYCONTROL))
+      AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, null);
+      AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, null);
+      activity.setQualityControlPerformer(null);
+      activity.getValidQualityCodes().clear();
+      if (activityJson.has(ModelerConstants.QUALITYCONTROL)
+            && !(activityJson.get(ModelerConstants.QUALITYCONTROL) instanceof JsonNull))
       {
-         JsonObject qcJson = activityJson
-               .getAsJsonObject(ModelerConstants.QUALITYCONTROL);
-         String fullParticipantID = qcJson.get(ModelerConstants.PARTICIPANT_FULL_ID)
-               .getAsString();
-         IModelParticipant performer = getModelBuilderFacade().findParticipant(
-               fullParticipantID);
-         activity.setQualityControlPerformer(performer);
-
-         activity.getValidQualityCodes().clear();
-
-         JsonArray qcCodes = qcJson.getAsJsonArray(ModelerConstants.QC_VALID_CODES);
-         for (Iterator<JsonElement> i = qcCodes.iterator(); i.hasNext();)
-         {
-            JsonObject qcCode = (JsonObject) i.next();
-            Code code = resolveCode(activity, qcCode.get(ModelerConstants.QC_CODE)
-                  .getAsString());
-
-            if (code != null)
-            {
-               activity.getValidQualityCodes().add(code);
-            }
-
-         }
+         updateQualityControl(activity, activityJson);
       }
 
       if (isGateway)
       {
-         if (hasNotJsonNull(activityJson, ModelerConstants.GATEWAY_TYPE_PROPERTY))
-         {
-            if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY)
-                  .getAsString()
-                  .equals(ModelerConstants.XOR_GATEWAY_TYPE))
-            {
-               activity.setJoin(JoinSplitType.XOR_LITERAL);
-               activity.setSplit(JoinSplitType.XOR_LITERAL);
-            }
-            else if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY)
-                  .getAsString()
-                  .equals(ModelerConstants.AND_GATEWAY_TYPE))
-            {
-               activity.setJoin(JoinSplitType.AND_LITERAL);
-               activity.setSplit(JoinSplitType.AND_LITERAL);
-            }
-            else if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY)
-                  .getAsString()
-                  .equals(ModelerConstants.OR_GATEWAY_TYPE))
-            {
-               activity.setJoin(JoinSplitType.OR_LITERAL);
-               activity.setSplit(JoinSplitType.OR_LITERAL);
-            }
-         }
+         updateGateway(activity, activityJson);
       }
       else
       {
@@ -363,54 +327,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
          if (hasNotJsonNull(activityJson, ModelerConstants.TASK_TYPE))
          {
-            String taskType = activityJson.get(ModelerConstants.TASK_TYPE).getAsString();
-            ModelBuilderFacade.setAttribute(activity, ModelerConstants.TASK_TYPE,
-                  taskType);
-            ApplicationType rulesApp = null;
-            if (activity.getApplication() != null
-                  && activity.getApplication().getType() != null)
-            {
-               if (activity.getApplication()
-                     .getType()
-                     .getId()
-                     .equals(ModelerConstants.DROOLS_APPLICATION_TYPE_ID))
-               {
-                  rulesApp = activity.getApplication();
-               }
-            }
-
-            if (taskType.equals(ModelerConstants.NONE_TASK_KEY))
-            {
-               activity.setImplementation(ActivityImplementationType.ROUTE_LITERAL);
-               activity.setApplication(null);
-            }
-            else if (taskType.equals(ModelerConstants.MANUAL_TASK_KEY))
-            {
-               activity.setImplementation(ActivityImplementationType.MANUAL_LITERAL);
-               activity.setApplication(null);
-            }
-            else if (taskType.equals(ModelerConstants.RULE_TASK_KEY))
-            {
-               if (activity.getApplication() == null) {
-                  ModelType model = ModelUtils.findContainingModel(activity);
-                  activity.setImplementation(ActivityImplementationType.APPLICATION_LITERAL);
-                  ApplicationType application = getModelBuilderFacade().createApplication(model, "droolsApplication",
-                        "droolsApplication", ModelerConstants.DROOLS_APPLICATION_TYPE_ID);
-                  activity.setApplication(application);
-               }
-            }
-            else
-            {
-               activity.setImplementation(ActivityImplementationType.APPLICATION_LITERAL);
-            }
-            //Remove the "hidden" drools application if not needed anymore
-            if (rulesApp != null
-                  && (activity.getApplication() == null || activity.getApplication()
-                        .equals(rulesApp)))
-            {
-               ModelType model = ModelUtils.findContainingModel(activity);
-               model.getApplication().remove(rulesApp);
-            }
+            updateTaskType(activity, activityJson);
          }
 
          if (hasNotJsonNull(activityJson, ModelerConstants.APPLICATION_FULL_ID_PROPERTY))
@@ -424,56 +341,179 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          if (ModelerConstants.SUBPROCESS_ACTIVITY.equals(extractString(activityJson,
                ModelerConstants.ACTIVITY_TYPE)))
          {
-            activity.setImplementation(ActivityImplementationType.SUBPROCESS_LITERAL);
-
-            if (hasNotJsonNull(activityJson, ModelerConstants.SUBPROCESS_ID))
-            {
-               String subprocessFullId = extractString(activityJson,
-                     ModelerConstants.SUBPROCESS_ID);
-
-               getModelBuilderFacade().setSubProcess(activity, subprocessFullId);
-
-               if (hasNotJsonNull(activityJson, ModelerConstants.SUBPROCESS_MODE_PROPERTY))
-               {
-                  if (activityJson.get(ModelerConstants.SUBPROCESS_MODE_PROPERTY)
-                        .getAsString()
-                        .equals(ModelerConstants.ASYNC_SEPARATE_KEY))
-                  {
-                     activity.setSubProcessMode(SubProcessModeType.ASYNC_SEPARATE_LITERAL);
-                  }
-                  else if (activityJson.get(ModelerConstants.SUBPROCESS_MODE_PROPERTY)
-                        .getAsString()
-                        .equals(ModelerConstants.SYNC_SEPARATE_KEY))
-                  {
-                     activity.setSubProcessMode(SubProcessModeType.SYNC_SEPARATE_LITERAL);
-                  }
-                  else if (activityJson.get(ModelerConstants.SUBPROCESS_MODE_PROPERTY)
-                        .getAsString()
-                        .equals(ModelerConstants.SYNC_SHARED_KEY))
-                  {
-                     activity.setSubProcessMode(SubProcessModeType.SYNC_SHARED_LITERAL);
-                  }
-               }
-            }
+            updateSubProcess(activity, activityJson);
          }
 
          JsonElement participantIdJson = activityJson.get(ModelerConstants.PARTICIPANT_FULL_ID);
          if (participantIdJson != null)
          {
-            if (participantIdJson.isJsonNull())
+            updateParticipant(activity, participantIdJson);
+         }
+      }
+   }
+
+   public void updateParticipant(ActivityType activity, JsonElement participantIdJson)
+   {
+      if (participantIdJson.isJsonNull())
+      {
+         activity.setPerformer(null);
+      }
+      else if (participantIdJson.isJsonPrimitive() && participantIdJson.getAsJsonPrimitive().isString())
+      {
+         String participantFullId = participantIdJson.getAsString();
+         IModelParticipant performer = getModelBuilderFacade().findParticipant(participantFullId);
+         activity.setPerformer(performer);
+      }
+   }
+
+   public void updateSubProcess(ActivityType activity, JsonObject activityJson)
+   {
+      activity.setImplementation(ActivityImplementationType.SUBPROCESS_LITERAL);
+
+      if (hasNotJsonNull(activityJson, ModelerConstants.SUBPROCESS_ID))
+      {
+         String subprocessFullId = extractString(activityJson,
+               ModelerConstants.SUBPROCESS_ID);
+
+         getModelBuilderFacade().setSubProcess(activity, subprocessFullId);
+
+         if (hasNotJsonNull(activityJson, ModelerConstants.SUBPROCESS_MODE_PROPERTY))
+         {
+            if (activityJson.get(ModelerConstants.SUBPROCESS_MODE_PROPERTY)
+                  .getAsString()
+                  .equals(ModelerConstants.ASYNC_SEPARATE_KEY))
             {
-               activity.setPerformer(null);
+               activity.setSubProcessMode(SubProcessModeType.ASYNC_SEPARATE_LITERAL);
             }
-            else if (participantIdJson.isJsonPrimitive() && participantIdJson.getAsJsonPrimitive().isString())
+            else if (activityJson.get(ModelerConstants.SUBPROCESS_MODE_PROPERTY)
+                  .getAsString()
+                  .equals(ModelerConstants.SYNC_SEPARATE_KEY))
             {
-               String participantFullId = participantIdJson.getAsString();
-               IModelParticipant performer = getModelBuilderFacade().findParticipant(participantFullId);
-               activity.setPerformer(performer);
+               activity.setSubProcessMode(SubProcessModeType.SYNC_SEPARATE_LITERAL);
+            }
+            else if (activityJson.get(ModelerConstants.SUBPROCESS_MODE_PROPERTY)
+                  .getAsString()
+                  .equals(ModelerConstants.SYNC_SHARED_KEY))
+            {
+               activity.setSubProcessMode(SubProcessModeType.SYNC_SHARED_LITERAL);
             }
          }
       }
    }
 
+   public void updateTaskType(ActivityType activity, JsonObject activityJson)
+   {
+      String taskType = activityJson.get(ModelerConstants.TASK_TYPE).getAsString();
+      ModelBuilderFacade.setAttribute(activity, ModelerConstants.TASK_TYPE,
+            taskType);
+      ApplicationType rulesApp = null;
+      if (activity.getApplication() != null
+            && activity.getApplication().getType() != null)
+      {
+         if (activity.getApplication()
+               .getType()
+               .getId()
+               .equals(ModelerConstants.DROOLS_APPLICATION_TYPE_ID))
+         {
+            rulesApp = activity.getApplication();
+         }
+      }
+
+      if (taskType.equals(ModelerConstants.NONE_TASK_KEY))
+      {
+         activity.setImplementation(ActivityImplementationType.ROUTE_LITERAL);
+         activity.setApplication(null);
+      }
+      else if (taskType.equals(ModelerConstants.MANUAL_TASK_KEY))
+      {
+         activity.setImplementation(ActivityImplementationType.MANUAL_LITERAL);
+         activity.setApplication(null);
+      }
+      else if (taskType.equals(ModelerConstants.RULE_TASK_KEY))
+      {
+         if (activity.getApplication() == null) {
+            ModelType model = ModelUtils.findContainingModel(activity);
+            activity.setImplementation(ActivityImplementationType.APPLICATION_LITERAL);
+            ApplicationType application = getModelBuilderFacade().createApplication(model, "droolsApplication",
+                  "droolsApplication", ModelerConstants.DROOLS_APPLICATION_TYPE_ID);
+            activity.setApplication(application);
+         }
+      }
+      else
+      {
+         activity.setImplementation(ActivityImplementationType.APPLICATION_LITERAL);
+      }
+      //Remove the "hidden" drools application if not needed anymore
+      if (rulesApp != null
+            && (activity.getApplication() == null || activity.getApplication()
+                  .equals(rulesApp)))
+      {
+         ModelType model = ModelUtils.findContainingModel(activity);
+         model.getApplication().remove(rulesApp);
+      }
+   }
+
+   public void updateGateway(ActivityType activity, JsonObject activityJson)
+   {
+      if (hasNotJsonNull(activityJson, ModelerConstants.GATEWAY_TYPE_PROPERTY))
+      {
+         if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY)
+               .getAsString()
+               .equals(ModelerConstants.XOR_GATEWAY_TYPE))
+         {
+            activity.setJoin(JoinSplitType.XOR_LITERAL);
+            activity.setSplit(JoinSplitType.XOR_LITERAL);
+         }
+         else if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY)
+               .getAsString()
+               .equals(ModelerConstants.AND_GATEWAY_TYPE))
+         {
+            activity.setJoin(JoinSplitType.AND_LITERAL);
+            activity.setSplit(JoinSplitType.AND_LITERAL);
+         }
+         else if (activityJson.get(ModelerConstants.GATEWAY_TYPE_PROPERTY)
+               .getAsString()
+               .equals(ModelerConstants.OR_GATEWAY_TYPE))
+         {
+            activity.setJoin(JoinSplitType.OR_LITERAL);
+            activity.setSplit(JoinSplitType.OR_LITERAL);
+         }
+      }
+   }
+
+   public void updateQualityControl(ActivityType activity, JsonObject activityJson)
+   {
+      JsonObject qcJson = activityJson
+            .getAsJsonObject(ModelerConstants.QUALITYCONTROL);
+      String fullParticipantID = qcJson.get(ModelerConstants.PARTICIPANT_FULL_ID)
+            .getAsString();
+
+      IModelParticipant importParticipant = getModelBuilderFacade().importParticipant(ModelUtils.findContainingModel(activity), fullParticipantID);
+      activity.setQualityControlPerformer(importParticipant);
+
+      if(EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT) != null)
+      {
+         AttributeUtil.setCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, (String) EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT));
+      }
+      if(EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT) != null)
+      {
+         AttributeUtil.setCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, (String) EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT));
+      }
+
+      JsonArray qcCodes = qcJson.getAsJsonArray(ModelerConstants.QC_VALID_CODES);
+      for (Iterator<JsonElement> i = qcCodes.iterator(); i.hasNext();)
+      {
+         JsonObject qcCode = (JsonObject) i.next();
+         Code code = resolveCode(activity, qcCode.get(ModelerConstants.QC_CODE)
+               .getAsString());
+
+         if (code != null)
+         {
+            activity.getValidQualityCodes().add(code);
+         }
+
+      }
+   }
 
    private void updateLoop(ActivityType activity, JsonElement loopJson)
    {
@@ -505,7 +545,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                }
             }
          }
-         if ("multi".equals(type))
+         if (ModelerConstants.LOOP_MULTI.equals(type))
          {
             LoopMultiInstanceType multiLoop = XpdlUtil.getOrCreateLoopMulti(loop);
             if (json.has("sequential"))
@@ -555,6 +595,27 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             if (loop == null)
             {
                activity.setLoop((LoopType) multiLoop.eContainer());
+            }
+         }
+         else if (ModelerConstants.LOOP_STANDARD.equals(type))
+         {
+            LoopStandardType standardLoop = XpdlUtil.getOrCreateLoopStandard(loop);
+            XpdlUtil.setLoopStandardCondition(standardLoop, GsonUtils.safeGetAsString(json, ModelerConstants.LOOP_CONDITION));
+            String testTime = GsonUtils.safeGetAsString(json, ModelerConstants.LOOP_TESTTIME); // before / after
+            if(!StringUtils.isEmpty(testTime))
+            {
+               if(ModelerConstants.LOOP_TESTTIME_BEFORE.equals(testTime))
+               {
+                  standardLoop.setTestTime(TestTimeType.BEFORE);
+               }
+               else
+               {
+                  standardLoop.setTestTime(TestTimeType.AFTER);
+               }
+            }
+            if (loop == null)
+            {
+               activity.setLoop((LoopType) standardLoop.eContainer());
             }
          }
       }
@@ -662,9 +723,8 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                ModelerConstants.TO_ANCHOR_POINT_ORIENTATION_PROPERTY)));
       }
 
-      // Mapping should be updated,if JSON contains mapping element
-      if (dataFlowJson.has(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY)
-            || dataFlowJson.has(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
+
+      if (dataFlowJson.has(ModelerConstants.DATAMAPPINGS_PROPERTY))
       {
          // Collect all data mappings between the activity and the data
 
@@ -690,155 +750,52 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                   .remove(dataMapping);
          }
 
-         // dataFlowJson holds an input and/or an output dataMappingJson; data mappings
-         // have to be created for both
-
-         // Create input mapping
-         JsonObject inJson = null;
-         JsonObject outJson = null;
-
-         if (hasNotJsonNull(dataFlowJson, ModelerConstants.INPUT_DATA_MAPPING_PROPERTY))
+         JsonArray dataMappingsJson = dataFlowJson.getAsJsonArray(ModelerConstants.DATAMAPPINGS_PROPERTY);
+         List<DataMappingType> newDataMappings = new ArrayList<DataMappingType>();
+         for (Iterator<JsonElement> i = dataMappingsJson.iterator(); i.hasNext();)
          {
-            inJson = dataFlowJson
-                  .getAsJsonObject(ModelerConstants.INPUT_DATA_MAPPING_PROPERTY);
-
+            JsonObject dataMappingJson = i.next().getAsJsonObject();
+            String direction = dataMappingJson.get(ModelerConstants.DIRECTION_PROPERTY).getAsString();
+            DirectionType directionType = direction.equals(ModelerConstants.DATAMAPPING_IN) ? DirectionType.IN_LITERAL : DirectionType.OUT_LITERAL;
+            DataMappingType dataMapping = createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
+                  dataFlowConnection.getDataSymbol().getData(), dataMappingJson,
+                  directionType, dataMappingJson.getAsJsonObject());
+            newDataMappings.add(dataMapping);
+            mergeInOutDataMappings(newDataMappings);
          }
-         if (hasNotJsonNull(dataFlowJson, ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY))
-         {
-            outJson = dataFlowJson
-                  .getAsJsonObject(ModelerConstants.OUTPUT_DATA_MAPPING_PROPERTY);
-         }
-
-         boolean hasInAccessPoints = hasAccessPoints(dataFlowConnection
-               .getActivitySymbol().getActivity(), DirectionType.IN_LITERAL);
-         boolean hasOutAccessPoints = hasAccessPoints(dataFlowConnection
-               .getActivitySymbol().getActivity(), DirectionType.OUT_LITERAL);
-
-         if ((hasInAccessPoints && hasOutAccessPoints)
-               || (!hasInAccessPoints && !hasOutAccessPoints))
-         {
-            if (inJson != null)
-            {
-               createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
-                     dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
-                     DirectionType.IN_LITERAL, inJson);
-            }
-
-            // Create output mapping
-            if (outJson != null)
-            {
-               createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
-                     dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
-                     DirectionType.OUT_LITERAL, outJson);
-            }
-         }
-
-         if (hasInAccessPoints && !hasOutAccessPoints)
-         {
-            if (inJson != null)
-            {
-               createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
-                     dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
-                     DirectionType.IN_LITERAL, inJson);
-            }
-
-            // Create output mapping
-            if (outJson != null)
-            {
-               createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
-                     dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
-                     DirectionType.OUT_LITERAL, inJson);
-            }
-         }
-
-         if (!hasInAccessPoints && hasOutAccessPoints)
-         {
-            if (inJson != null)
-            {
-               createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
-                     dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
-                     DirectionType.IN_LITERAL, outJson);
-            }
-
-            // Create output mapping
-            if (outJson != null)
-            {
-               createDataMapping(dataFlowConnection.getActivitySymbol().getActivity(),
-                     dataFlowConnection.getDataSymbol().getData(), dataFlowJson,
-                     DirectionType.OUT_LITERAL, outJson);
-            }
-         }
-
-      }
-
-      // Following condition is added to handle the scenario where only name property is
-      // modified
-      if (dataFlowJson.has(ModelerConstants.NAME_PROPERTY))
-      {
-         for (DataMappingType dataMapping : dataFlowConnection.getActivitySymbol()
-               .getActivity().getDataMapping())
-         {
-            if (dataMapping.getData().getId()
-                  .equals(dataFlowConnection.getDataSymbol().getData().getId()))
-            {
-               dataMapping.setName(extractAsString(dataFlowJson,
-                     ModelerConstants.NAME_PROPERTY));
-               dataMapping.setId(extractAsString(dataFlowJson,
-                     ModelerConstants.NAME_PROPERTY));
-            }
-         }
-      }
+       }
    }
 
-   private boolean hasAccessPoints(ActivityType activity, DirectionType direction)
+   private void mergeInOutDataMappings(List<DataMappingType> dataMappings)
    {
-      if (activity.getImplementation().getLiteral().equals("Subprocess"))
+      // Post Process Datamappings
+      List<DataMappingType> duplicates = new ArrayList<DataMappingType>();
+      for (Iterator<DataMappingType> i = dataMappings.iterator(); i.hasNext();)
       {
-         return true;
-      }
-      return !getAccessPoints(activity, direction).isEmpty();
-   }
-
-   private List<AccessPointType> getAccessPoints(ActivityType activity,
-         DirectionType direction)
-   {
-      List<AccessPointType> emptyList = new ArrayList<AccessPointType>();
-      if (activity.getImplementation().getLiteral().equals("Application"))
-      {
-         if (direction.equals(DirectionType.IN_LITERAL))
+         boolean matched = false;
+         DataMappingType apt1 = (DataMappingType) i.next();
+         if (!duplicates.contains(apt1))
          {
-            List<AccessPointType> accessPoints = AccessPointUtil
-                  .getInAccessPonts(activity.getApplication());
-            if (!accessPoints.isEmpty())
+            for (Iterator<DataMappingType> j = dataMappings.iterator(); j.hasNext();)
             {
-               return accessPoints;
-            }
-            if (activity.getApplication().getContext() != null
-                  && !activity.getApplication().getContext().isEmpty())
-            {
-               return AccessPointUtil.getInAccessPonts(activity.getApplication()
-                     .getContext().get(0));
-            }
-         }
-         if (direction.equals(DirectionType.OUT_LITERAL))
-         {
-            List<AccessPointType> accessPoints = AccessPointUtil
-                  .getOutAccessPonts(activity.getApplication());
-            if (!accessPoints.isEmpty())
-            {
-               return accessPoints;
-            }
-            if (activity.getApplication().getContext() != null
-                  && !activity.getApplication().getContext().isEmpty())
-            {
-               return AccessPointUtil.getOutAccessPonts(activity.getApplication()
-                     .getContext().get(0));
+               DataMappingType apt2 = (DataMappingType) j.next();
+               if (!apt1.equals(apt2) && !apt1.getDirection().equals(apt2.getDirection())
+                     && apt1.getName().equals(apt2.getName()))
+               {
+                  if (matched)
+                  {
+                     duplicates.add(apt2);
+                  }
+                  else
+                  {
+                     matched = true;
+                     apt2.setId(apt1.getId());
+                  }
+               }
             }
          }
       }
-      return emptyList;
    }
-
 
    /**
     *
@@ -854,23 +811,41 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
    {
       DataMappingType dataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
 
-      if (hasNotJsonNull(dataFlowJson, ModelerConstants.ID_PROPERTY))
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.ID_PROPERTY))
       {
-         dataMapping.setId(dataFlowJson.get(ModelerConstants.ID_PROPERTY).getAsString());
-      }
-      else
-      {
-         dataMapping.setId(data.getId());
-      }
-
-      if (hasNotJsonNull(dataFlowJson, ModelerConstants.NAME_PROPERTY))
-      {
-         dataMapping.setName(dataFlowJson.get(ModelerConstants.NAME_PROPERTY)
+         dataMapping.setId(dataMappingJson.get(ModelerConstants.ID_PROPERTY)
                .getAsString());
       }
       else
       {
-         dataMapping.setName(data.getName());
+         if (hasNotJsonNull(dataFlowJson, ModelerConstants.ID_PROPERTY))
+         {
+            dataMapping.setId(dataFlowJson.get(ModelerConstants.ID_PROPERTY)
+                  .getAsString());
+         }
+         else
+         {
+            String id = data.getId();
+            dataMapping.setId(id);
+            dataMapping.setName(id);
+         }
+      }
+
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.NAME_PROPERTY))
+      {
+         dataMapping.setName(dataMappingJson.get(ModelerConstants.NAME_PROPERTY)
+               .getAsString());
+      }
+      else
+      {
+         if (hasNotJsonNull(dataFlowJson, ModelerConstants.NAME_PROPERTY))
+         {
+            dataMapping.setName(dataFlowJson.get(ModelerConstants.NAME_PROPERTY)
+                  .getAsString());
+         }
+         String id = data.getId();
+         dataMapping.setId(id);
+         dataMapping.setName(id);
       }
 
       dataMapping.setDirection(direction);
@@ -917,7 +892,6 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
       return dataMapping;
    }
-
 
    /**
     *
@@ -1102,247 +1076,35 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       storeAttributes(processDefinition, processDefinitionJson);
       storeDescription(processDefinition, processDefinitionJson);
 
-      if (hasNotJsonNull(processDefinitionJson, ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
+      if (hasNotJsonNull(processDefinitionJson,
+            ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
       {
-         // Make sure that formal parameters are never empty
-         // TODO Code should be at a central place for Process Definitions
-         if (processDefinition.getFormalParameters() == null)
+         if (processDefinition.getExternalRef() == null)
          {
-            processDefinition.setFormalParameters(XpdlFactory.eINSTANCE.createFormalParametersType());
+            updateFormalParameters(processDefinition, processDefinitionJson);
          }
-
-         if (processDefinition.getFormalParameters().getFormalParameter() != null)
+         else
          {
-            //processDefinition.getFormalParameters().getFormalParameter().clear();
+            //In case we're an interface implementation, we have to synchronize with interface first,
+            //and mapping is updated separately
+            updateProcessInterfaceImplementation(processDefinition, processDefinitionJson);
+            updateFormalParametersMapping(processDefinition, processDefinitionJson);
          }
-
-         List<FormalParameterType> newParameters = new ArrayList<FormalParameterType>();
-
-         processDefinition.setFormalParameterMappings(null);
-
-         JsonArray formalParametersJson = processDefinitionJson.get(
-               ModelerConstants.FORMAL_PARAMETERS_PROPERTY).getAsJsonArray();
-
-         for (int n = 0; n < formalParametersJson.size(); ++n)
-         {
-            JsonObject formalParameterJson = formalParametersJson.get(n)
-                  .getAsJsonObject();
-
-            ModeType mode = null;
-
-            if (formalParameterJson.get(ModelerConstants.DIRECTION_PROPERTY)
-                  .getAsString()
-                  .equals(DirectionType.IN_LITERAL.getLiteral()))
-            {
-               mode = ModeType.IN;
-            }
-            else if (formalParameterJson.get(ModelerConstants.DIRECTION_PROPERTY)
-                  .getAsString()
-                  .equals(DirectionType.OUT_LITERAL.getLiteral()))
-            {
-               mode = ModeType.OUT;
-            }
-            else
-            {
-               mode = ModeType.INOUT;
-            }
-
-            DataType data = null;
-            String dataFullID = null;
-
-            if (hasNotJsonNull(formalParameterJson, ModelerConstants.DATA_FULL_ID_PROPERTY))
-            {
-               dataFullID = formalParameterJson.get(
-                     ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString();
-               ModelType model = ModelUtils.findContainingModel(processDefinition);
-               data = getModelBuilderFacade().importData(model, dataFullID);
-            }
-
-            String formalParameterName = GsonUtils.safeGetAsString(formalParameterJson, ModelerConstants.NAME_PROPERTY);
-            String formalParameterId = GsonUtils.safeGetAsString(formalParameterJson, ModelerConstants.ID_PROPERTY);
-            String dataTypeId = GsonUtils.safeGetAsString(formalParameterJson, ModelerConstants.DATA_TYPE_PROPERTY);
-
-            if (ModelerConstants.PRIMITIVE_DATA_TYPE_KEY.equals(dataTypeId))
-            {
-               String primitiveDataType = GsonUtils.safeGetAsString(formalParameterJson,
-                     ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY);
-               FormalParameterType parameterType = null;
-               if (formalParameterJson.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
-               {
-                  String structuredDataTypeFullId = GsonUtils.safeGetAsString(formalParameterJson,
-                        ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY);
-                  TypeDeclarationType typeDeclaration = getModelBuilderFacade().findTypeDeclaration(
-                        structuredDataTypeFullId);
-                  // For Java bound ENUM's create primitive else structured Params
-                  if (!getModelBuilderFacade().isEnumerationJavaBound(typeDeclaration))
-                  {
-                     parameterType = getModelBuilderFacade().createStructuredParameter(processDefinition, data,
-                           formalParameterId, formalParameterName, structuredDataTypeFullId, mode);
-                  }
-                  else
-                  {
-                     parameterType = getModelBuilderFacade().createPrimitiveParameter(processDefinition, data,
-                           formalParameterId, formalParameterName,
-                           primitiveDataType == null ? "String" : primitiveDataType, mode, structuredDataTypeFullId); //$NON-NLS-1$
-                  }
-                  newParameters.add(parameterType);
-               }
-               else
-               {
-                  parameterType = getModelBuilderFacade().createPrimitiveParameter(processDefinition, data,
-                        formalParameterId, formalParameterName,
-                        primitiveDataType == null ? "String" : primitiveDataType, mode); //$NON-NLS-1$
-                  newParameters.add(parameterType);
-               }
-            }
-            else if (ModelerConstants.STRUCTURED_DATA_TYPE_KEY.equals(dataTypeId))
-            {
-               String structuredDataTypeFullId = GsonUtils.safeGetAsString(
-                     formalParameterJson,
-                     ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY);
-               FormalParameterType parameterType = getModelBuilderFacade().createStructuredParameter(
-                     processDefinition, data, formalParameterId, formalParameterName,
-                     structuredDataTypeFullId, mode);
-               newParameters.add(parameterType);
-            }
-            else if (dataTypeId.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
-            {
-               String structuredDataTypeFullId = null;
-
-               if (hasNotJsonNull(formalParameterJson,
-                     ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
-               {
-                  structuredDataTypeFullId = formalParameterJson.get(
-                        ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
-                        .getAsString();
-               }
-
-               FormalParameterType parameterType = getModelBuilderFacade().createDocumentParameter(
-                     processDefinition, data, formalParameterId, formalParameterName,
-                     structuredDataTypeFullId, mode);
-               newParameters.add(parameterType);
-            }
-         }
-         processDefinition.getFormalParameters().getFormalParameter().clear();
-         processDefinition.getFormalParameters().getFormalParameter().addAll(newParameters);
       }
 
       if (hasNotJsonNull(processDefinitionJson, ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY))
       {
-         if (processDefinitionJson.get(ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY)
-               .getAsString()
-               .equals(ModelerConstants.NO_PROCESS_INTERFACE_KEY))
-         {
-            processDefinition.setFormalParameters(null);
-            processDefinition.setFormalParameterMappings(null);
-            processDefinition.setExternalRef(null);
-         }
-         else if (processDefinitionJson.get(
-               ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY)
-               .getAsString()
-               .equals(ModelerConstants.PROVIDES_PROCESS_INTERFACE_KEY))
-         {
-            //TODO: hasNotJsonNull required here?
-            if ( !hasNotJsonNull(processDefinitionJson, ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
-            {
-               if (processDefinition.getFormalParameters() == null)
-               {
-                  processDefinition.setFormalParameters(XpdlFactory.eINSTANCE.createFormalParametersType());
-               }
+         updateProcessInterface(processDefinition, processDefinitionJson);
+      }
 
-               if (processDefinition.getFormalParameters().getFormalParameter() != null)
-               {
-                  processDefinition.getFormalParameters().getFormalParameter().clear();
-               }
-               processDefinition.setFormalParameterMappings(null);
-            }
-         }
-         else if (processDefinitionJson.get(
-               ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY)
-               .getAsString()
-               .equals(ModelerConstants.IMPLEMENTS_PROCESS_INTERFACE_KEY))
-         {
-         }
+      if (hasNotJsonNull(processDefinitionJson, "implementsProcessId"))
+      {
+         updateProcessInterfaceImplementation(processDefinition, processDefinitionJson);
       }
 
       if (hasNotJsonNull(processDefinitionJson, ModelerConstants.DATA_PATHES_PROPERTY))
       {
-         List<DataPathType> newDataPaths = new ArrayList<DataPathType>();
-
-         JsonArray dataPathes = processDefinitionJson.get(
-               ModelerConstants.DATA_PATHES_PROPERTY).getAsJsonArray();
-
-         for (int n = 0; n < dataPathes.size(); ++n)
-         {
-            ModelType model = ModelUtils.findContainingModel(processDefinition);
-            JsonObject dataPathJson = dataPathes.get(n).getAsJsonObject();
-            String dataPathID = dataPathJson.get(ModelerConstants.ID_PROPERTY)
-                  .getAsString();
-            String dataPathName = dataPathJson.get(ModelerConstants.NAME_PROPERTY)
-                  .getAsString();
-
-            DataPathType dataPathType = getModelBuilderFacade().createDataPath();
-
-            if (dataPathID.equals("New_1"))
-            {
-               IdFactory idFactory = new IdFactory("dataPath", "DataPath_");
-               idFactory.computeNames(processDefinition.getDataPath(), true);
-               dataPathID = idFactory.getId();
-               dataPathName = idFactory.getName();
-            }
-
-            if (dataPathID.equals("PROCESS_ATTACHMENTS"))
-            {
-               dataPathType.setId("PROCESS_ATTACHMENTS");
-               dataPathType.setName("PROCESS_ATTACHMENTS");
-            }
-
-            if (StringUtils.isNotEmpty(dataPathName)
-                  && !dataPathName.equals(dataPathType.getName())
-                  && !dataPathID.equals("PROCESS_ATTACHMENTS"))
-            {
-               dataPathID = (NameIdUtilsExtension.createIdFromName(null,
-                     (IIdentifiableElement) dataPathType, dataPathName));
-            }
-
-            dataPathType.setId(dataPathID);
-            dataPathType.setName(dataPathName);
-
-            if (hasNotJsonNull(dataPathJson, ModelerConstants.DATA_FULL_ID_PROPERTY))
-            {
-               String dataFullId = dataPathJson.get(
-                     ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString();
-
-               DataType data = getModelBuilderFacade().importData(model, dataFullId);
-               dataPathType.setData(data);
-            }
-
-            if (hasNotJsonNull(dataPathJson, ModelerConstants.DATA_PATH_PROPERTY))
-            {
-               dataPathType.setDataPath(dataPathJson.get(ModelerConstants.DATA_PATH_PROPERTY)
-                     .getAsString());
-            }
-
-            dataPathType.setDescriptor(dataPathJson.get(ModelerConstants.DESCRIPTOR_PROPERTY)
-                  .getAsBoolean());
-            dataPathType.setKey(dataPathJson.get(ModelerConstants.KEY_DESCRIPTOR_PROPERTY)
-                  .getAsBoolean());
-
-            if (dataPathJson.get(ModelerConstants.DIRECTION_PROPERTY)
-                  .getAsString()
-                  .equals(DirectionType.IN_LITERAL.getLiteral()))
-            {
-               dataPathType.setDirection(DirectionType.IN_LITERAL);
-            }
-            else
-            {
-               dataPathType.setDirection(DirectionType.OUT_LITERAL);
-            }
-
-            newDataPaths.add(dataPathType);
-         }
-         processDefinition.getDataPath().clear();
-         processDefinition.getDataPath().addAll(newDataPaths);
+         updateDataPathes(processDefinition, processDefinitionJson);
       }
 
       if (hasNotJsonNull(processDefinitionJson, ModelerConstants.DEFAULT_PRIORITY_PROPERTY))
@@ -1350,6 +1112,319 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          processDefinition.setDefaultPriority(processDefinitionJson.get(
                ModelerConstants.DEFAULT_PRIORITY_PROPERTY).getAsInt());
       }
+   }
+
+   public void updateDataPathes(ProcessDefinitionType processDefinition,
+         JsonObject processDefinitionJson)
+   {
+      List<DataPathType> newDataPaths = new ArrayList<DataPathType>();
+
+      JsonArray dataPathes = processDefinitionJson.get(
+            ModelerConstants.DATA_PATHES_PROPERTY).getAsJsonArray();
+
+      for (int n = 0; n < dataPathes.size(); ++n)
+      {
+         ModelType model = ModelUtils.findContainingModel(processDefinition);
+         JsonObject dataPathJson = dataPathes.get(n).getAsJsonObject();
+         String dataPathID = dataPathJson.get(ModelerConstants.ID_PROPERTY)
+               .getAsString();
+         String dataPathName = dataPathJson.get(ModelerConstants.NAME_PROPERTY)
+               .getAsString();
+
+         DataPathType dataPathType = getModelBuilderFacade().createDataPath();
+
+         if (dataPathID.equals("New_1"))
+         {
+            IdFactory idFactory = new IdFactory("dataPath", "DataPath_");
+            idFactory.computeNames(processDefinition.getDataPath(), true);
+            dataPathID = idFactory.getId();
+            dataPathName = idFactory.getName();
+         }
+
+         if (dataPathID.equals("PROCESS_ATTACHMENTS"))
+         {
+            dataPathType.setId("PROCESS_ATTACHMENTS");
+            dataPathType.setName("PROCESS_ATTACHMENTS");
+         }
+
+         if (StringUtils.isNotEmpty(dataPathName)
+               && !dataPathName.equals(dataPathType.getName())
+               && !dataPathID.equals("PROCESS_ATTACHMENTS"))
+         {
+            dataPathID = (NameIdUtilsExtension.createIdFromName(null,
+                  (IIdentifiableElement) dataPathType, dataPathName));
+         }
+
+         dataPathType.setId(dataPathID);
+         dataPathType.setName(dataPathName);
+
+         if (hasNotJsonNull(dataPathJson, ModelerConstants.DATA_FULL_ID_PROPERTY))
+         {
+            String dataFullId = dataPathJson.get(
+                  ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString();
+
+            DataType data = getModelBuilderFacade().importData(model, dataFullId);
+            dataPathType.setData(data);
+         }
+
+         if (hasNotJsonNull(dataPathJson, ModelerConstants.DATA_PATH_PROPERTY))
+         {
+            dataPathType.setDataPath(dataPathJson.get(ModelerConstants.DATA_PATH_PROPERTY)
+                  .getAsString());
+         }
+
+         dataPathType.setDescriptor(dataPathJson.get(ModelerConstants.DESCRIPTOR_PROPERTY)
+               .getAsBoolean());
+         dataPathType.setKey(dataPathJson.get(ModelerConstants.KEY_DESCRIPTOR_PROPERTY)
+               .getAsBoolean());
+
+         if (dataPathJson.get(ModelerConstants.DIRECTION_PROPERTY)
+               .getAsString()
+               .equals(DirectionType.IN_LITERAL.getLiteral()))
+         {
+            dataPathType.setDirection(DirectionType.IN_LITERAL);
+         }
+         else
+         {
+            dataPathType.setDirection(DirectionType.OUT_LITERAL);
+         }
+
+         newDataPaths.add(dataPathType);
+      }
+      processDefinition.getDataPath().clear();
+      processDefinition.getDataPath().addAll(newDataPaths);
+   }
+
+   public void updateProcessInterfaceImplementation(ProcessDefinitionType processDefinition,
+         JsonObject processDefinitionJson)
+   {
+      String processFullID = null;
+      if (processDefinition.getExternalRef() != null)
+      {
+         processFullID = processDefinition.getExternalRef().getPackageRef().getId() + ":" + processDefinition.getExternalRef().getRef();
+      }
+
+      if (hasNotJsonNull(processDefinitionJson, "implementsProcessId"))
+      {
+         processFullID = processDefinitionJson.get("implementsProcessId").getAsString();
+      }
+
+      String modelID = getModelBuilderFacade().getModelId(processFullID);
+      String processID = getModelBuilderFacade().stripFullId(processFullID);
+      ProcessDefinitionType processInterface = getModelBuilderFacade().getProcessDefinition(modelID, processID);
+      ModelType model = ModelUtils.findContainingModel(processDefinition);
+      ModelType interfaceModel = ModelUtils.findContainingModel(processInterface);
+      ExternalReferenceUtils.updateReferences(model, interfaceModel);
+
+      ExternalPackage packageRef = model.getExternalPackages().getExternalPackage(interfaceModel.getId());
+      IdRef idRef = CarnotWorkflowModelFactory.eINSTANCE.createIdRef();
+      idRef.setRef(processInterface.getId());
+      idRef.setPackageRef(packageRef);
+      processDefinition.setExternalRef(idRef);
+
+      FormalParameterMappingsType parameterMappings = ExtensionsFactory.eINSTANCE.createFormalParameterMappingsType();
+      FormalParametersType referencedParametersType = processInterface.getFormalParameters();
+      FormalParametersType formalParameters = XpdlFactory.eINSTANCE.createFormalParametersType();
+      for (Iterator<FormalParameterType> i = referencedParametersType.getFormalParameter().iterator(); i.hasNext();)
+      {
+         FormalParameterType referencedParameterType = i.next();
+         FormalParameterType parameterType = ModelUtils.cloneFormalParameterType(referencedParameterType, null);
+         formalParameters.addFormalParameter(parameterType);
+         parameterMappings.setMappedData(parameterType, null);
+      }
+      processDefinition.setFormalParameters(formalParameters);
+      processDefinition.setFormalParameterMappings(parameterMappings);
+
+   }
+
+   public void updateProcessInterface(ProcessDefinitionType processDefinition,
+         JsonObject processDefinitionJson)
+   {
+      if (processDefinitionJson.get(ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY)
+            .getAsString()
+            .equals(ModelerConstants.NO_PROCESS_INTERFACE_KEY))
+      {
+         processDefinition.setFormalParameters(null);
+         processDefinition.setFormalParameterMappings(null);
+         processDefinition.setExternalRef(null);
+      }
+      else if (processDefinitionJson.get(
+            ModelerConstants.PROCESS_INTERFACE_TYPE_PROPERTY)
+            .getAsString()
+            .equals(ModelerConstants.PROVIDES_PROCESS_INTERFACE_KEY))
+      {
+         //TODO: hasNotJsonNull required here?
+         if ( !hasNotJsonNull(processDefinitionJson, ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
+         {
+            if (processDefinition.getFormalParameters() == null)
+            {
+               processDefinition.setFormalParameters(XpdlFactory.eINSTANCE.createFormalParametersType());
+            }
+
+            if (processDefinition.getFormalParameters().getFormalParameter() != null)
+            {
+               processDefinition.getFormalParameters().getFormalParameter().clear();
+            }
+            processDefinition.setFormalParameterMappings(null);
+            processDefinition.setExternalRef(null);
+         }
+      }
+   }
+
+   public void updateFormalParametersMapping(ProcessDefinitionType processDefinition,
+         JsonObject processDefinitionJson)
+   {
+      JsonArray formalParametersJson = processDefinitionJson.get(
+            ModelerConstants.FORMAL_PARAMETERS_PROPERTY).getAsJsonArray();
+      for (int n = 0; n < formalParametersJson.size(); ++n)
+      {
+         JsonObject formalParameterJson = formalParametersJson.get(n).getAsJsonObject();
+         String formalParameterId = GsonUtils.safeGetAsString(formalParameterJson,
+               ModelerConstants.ID_PROPERTY);
+         FormalParameterType parameterType = processDefinition.getFormalParameters()
+               .getFormalParameter(formalParameterId);
+
+         DataType data = null;
+         String dataFullID = null;
+
+         if (hasNotJsonNull(formalParameterJson, ModelerConstants.DATA_FULL_ID_PROPERTY))
+         {
+            dataFullID = formalParameterJson.get(ModelerConstants.DATA_FULL_ID_PROPERTY)
+                  .getAsString();
+            ModelType model = ModelUtils.findContainingModel(processDefinition);
+            data = getModelBuilderFacade().importData(model, dataFullID);
+         }
+         processDefinition.getFormalParameterMappings()
+               .setMappedData(parameterType, data);
+      }
+
+   }
+
+
+   public void updateFormalParameters(ProcessDefinitionType processDefinition,
+         JsonObject processDefinitionJson)
+   {
+      // Make sure that formal parameters are never empty
+      // TODO Code should be at a central place for Process Definitions
+      if (processDefinition.getFormalParameters() == null)
+      {
+         processDefinition.setFormalParameters(XpdlFactory.eINSTANCE.createFormalParametersType());
+      }
+
+      if (processDefinition.getFormalParameters().getFormalParameter() != null)
+      {
+         //processDefinition.getFormalParameters().getFormalParameter().clear();
+      }
+
+      List<FormalParameterType> newParameters = new ArrayList<FormalParameterType>();
+
+      processDefinition.setFormalParameterMappings(null);
+
+      JsonArray formalParametersJson = processDefinitionJson.get(
+            ModelerConstants.FORMAL_PARAMETERS_PROPERTY).getAsJsonArray();
+
+      for (int n = 0; n < formalParametersJson.size(); ++n)
+      {
+         JsonObject formalParameterJson = formalParametersJson.get(n)
+               .getAsJsonObject();
+
+         ModeType mode = null;
+
+         if (formalParameterJson.get(ModelerConstants.DIRECTION_PROPERTY)
+               .getAsString()
+               .equals(DirectionType.IN_LITERAL.getLiteral()))
+         {
+            mode = ModeType.IN;
+         }
+         else if (formalParameterJson.get(ModelerConstants.DIRECTION_PROPERTY)
+               .getAsString()
+               .equals(DirectionType.OUT_LITERAL.getLiteral()))
+         {
+            mode = ModeType.OUT;
+         }
+         else
+         {
+            mode = ModeType.INOUT;
+         }
+
+         DataType data = null;
+         String dataFullID = null;
+
+         if (hasNotJsonNull(formalParameterJson, ModelerConstants.DATA_FULL_ID_PROPERTY))
+         {
+            dataFullID = formalParameterJson.get(
+                  ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString();
+            ModelType model = ModelUtils.findContainingModel(processDefinition);
+            data = getModelBuilderFacade().importData(model, dataFullID);
+         }
+
+         String formalParameterName = GsonUtils.safeGetAsString(formalParameterJson, ModelerConstants.NAME_PROPERTY);
+         String formalParameterId = GsonUtils.safeGetAsString(formalParameterJson, ModelerConstants.ID_PROPERTY);
+         String dataTypeId = GsonUtils.safeGetAsString(formalParameterJson, ModelerConstants.DATA_TYPE_PROPERTY);
+
+         if (ModelerConstants.PRIMITIVE_DATA_TYPE_KEY.equals(dataTypeId))
+         {
+            String primitiveDataType = GsonUtils.safeGetAsString(formalParameterJson,
+                  ModelerConstants.PRIMITIVE_DATA_TYPE_PROPERTY);
+            FormalParameterType parameterType = null;
+            if (formalParameterJson.has(ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
+            {
+               String structuredDataTypeFullId = GsonUtils.safeGetAsString(formalParameterJson,
+                     ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY);
+               TypeDeclarationType typeDeclaration = getModelBuilderFacade().findTypeDeclaration(
+                     structuredDataTypeFullId);
+               // For Java bound ENUM's create primitive else structured Params
+               if (!getModelBuilderFacade().isEnumerationJavaBound(typeDeclaration))
+               {
+                  parameterType = getModelBuilderFacade().createStructuredParameter(processDefinition, data,
+                        formalParameterId, formalParameterName, structuredDataTypeFullId, mode);
+               }
+               else
+               {
+                  parameterType = getModelBuilderFacade().createPrimitiveParameter(processDefinition, data,
+                        formalParameterId, formalParameterName,
+                        primitiveDataType == null ? "String" : primitiveDataType, mode, structuredDataTypeFullId); //$NON-NLS-1$
+               }
+               newParameters.add(parameterType);
+            }
+            else
+            {
+               parameterType = getModelBuilderFacade().createPrimitiveParameter(processDefinition, data,
+                     formalParameterId, formalParameterName,
+                     primitiveDataType == null ? "String" : primitiveDataType, mode); //$NON-NLS-1$
+               newParameters.add(parameterType);
+            }
+         }
+         else if (ModelerConstants.STRUCTURED_DATA_TYPE_KEY.equals(dataTypeId))
+         {
+            String structuredDataTypeFullId = GsonUtils.safeGetAsString(
+                  formalParameterJson,
+                  ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY);
+            FormalParameterType parameterType = getModelBuilderFacade().createStructuredParameter(
+                  processDefinition, data, formalParameterId, formalParameterName,
+                  structuredDataTypeFullId, mode);
+            newParameters.add(parameterType);
+         }
+         else if (dataTypeId.equals(ModelerConstants.DOCUMENT_DATA_TYPE_KEY))
+         {
+            String structuredDataTypeFullId = null;
+
+            if (hasNotJsonNull(formalParameterJson,
+                  ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY))
+            {
+               structuredDataTypeFullId = formalParameterJson.get(
+                     ModelerConstants.STRUCTURED_DATA_TYPE_FULL_ID_PROPERTY)
+                     .getAsString();
+            }
+
+            FormalParameterType parameterType = getModelBuilderFacade().createDocumentParameter(
+                  processDefinition, data, formalParameterId, formalParameterName,
+                  structuredDataTypeFullId, mode);
+            newParameters.add(parameterType);
+         }
+      }
+      processDefinition.getFormalParameters().getFormalParameter().clear();
+      processDefinition.getFormalParameters().getFormalParameter().addAll(newParameters);
    }
 
    /**
@@ -1404,7 +1479,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       ProcessDefinitionType processDefinition = ModelUtils.findContainingProcess(nodeSymbol);
       if ( !(nodeSymbol instanceof LaneSymbol) && parentID != null)
       {
-         newParentSymbol = getModelBuilderFacade().findLaneSymbolById(
+         newParentSymbol = XPDLFinderUtils.findLaneSymbolById(
                processDefinition, parentID);
       }
 
@@ -1420,7 +1495,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
          if (!(nodeSymbol instanceof LaneSymbol))
          {
-            newParentSymbol = getModelBuilderFacade().findLaneSymbolById(
+            newParentSymbol = XPDLFinderUtils.findLaneSymbolById(
                   processDefinition, parentID);
 
             if (null != newParentSymbol)
@@ -1653,13 +1728,13 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       }
       else if (symbolType.equals(ModelerConstants.EVENT_SYMBOL))
       {
-         StartEventSymbol startSymbol = ModelBuilderFacade.findStartEventSymbol(
+         StartEventSymbol startSymbol = XPDLFinderUtils.findStartEventSymbol(
                parentLane, nodeSymbol.getElementOid());
 
-         EndEventSymbol endEventSymbol = ModelBuilderFacade.findEndEventSymbol(
+         EndEventSymbol endEventSymbol = XPDLFinderUtils.findEndEventSymbol(
                parentLane, nodeSymbol.getElementOid());
 
-         IntermediateEventSymbol intermediateEventSymbol = ModelBuilderFacade.findIntermediateEventSymbol(
+         IntermediateEventSymbol intermediateEventSymbol = XPDLFinderUtils.findIntermediateEventSymbol(
                parentLane, nodeSymbol.getElementOid());
 
          if (null != startSymbol)
@@ -1779,6 +1854,59 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          }
 
          updateTrigger(trigger, startEventJson);
+      }
+   }
+
+   private void updateEventAction(EventActionType eventAction, JsonObject eventActionJson)
+   {
+      if (!eventAction.getType().getId().equals(PredefinedConstants.EXCLUDE_USER_ACTION))
+      {
+         return;
+      }
+      JsonObject euJson = eventActionJson
+            .getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+      if (euJson.has(ModelerConstants.NAME_PROPERTY))
+      {
+         EventHandlerType eventHandler = (EventHandlerType) eventAction.eContainer();
+         String name = extractAsString(euJson, ModelerConstants.NAME_PROPERTY);
+         IdFactory idFactory = new IdFactory(name, name);
+         idFactory.computeNames(eventHandler.getEventAction(), false);
+         eventAction.setId(idFactory.getId());
+         eventAction.setName(name);
+      }
+      if (euJson.has(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA))
+      {
+         String data = extractAsString(euJson, ModelerConstants.EU_EXCLUDE_PERFORMER_DATA);
+         if (data.split(":").length > 1)
+         {
+            data = data.split(":")[1];
+         }
+         AttributeUtil.setAttribute(eventAction,
+               PredefinedConstants.EXCLUDED_PERFORMER_DATA, data);
+      }
+      if (euJson.has(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA_PATH))
+      {
+         String dataPath = extractAsString(euJson, ModelerConstants.EU_EXCLUDE_PERFORMER_DATA_PATH);
+         AttributeUtil.setAttribute(eventAction, PredefinedConstants.EXCLUDED_PERFORMER_DATAPATH, dataPath);
+      }
+   }
+
+   private void updateEventHandler(EventHandlerType eventHandler,
+         JsonObject eventHandlerJson)
+   {
+      if (!eventHandler.getType().getId()
+            .equals(PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION))
+      {
+         return;
+      }
+
+      JsonObject euEventHandlerJson = eventHandlerJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+
+      if (euEventHandlerJson.has(ModelerConstants.LOG_HANDLER_PROPERTY))
+      {
+         boolean logHandler = euEventHandlerJson.get(ModelerConstants.LOG_HANDLER_PROPERTY)
+               .getAsBoolean();
+         eventHandler.setLogHandler(logHandler);
       }
    }
 
@@ -1963,6 +2091,22 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             hostingConfig.remove(ModelerConstants.EVENT_CLASS_PROPERTY);
             hostingConfig.remove(ModelerConstants.THROWING_PROPERTY);
             hostingConfig.remove(ModelerConstants.INTERRUPTING_PROPERTY);
+
+
+            if (eventHandler != null) {
+               if (eventJson.has(ModelerConstants.SD_SET_DATA_ACTION))
+               {
+                  if (eventJson.get(ModelerConstants.SD_SET_DATA_ACTION).isJsonNull())
+                  {
+                     EventMarshallingUtils.removeSetDataAction(eventHandler);
+                  }
+                  else
+                  {
+                     EventMarshallingUtils.createSetDataAction(eventHandler, eventJson);
+                  }
+               }
+            }
+
          }
          else
          {
@@ -2043,7 +2187,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          logger.debug("===> Implementation: "
                + triggerJson.get(ModelerConstants.IMPLEMENTATION_PROPERTY).getAsString());
-         trigger.setType(ModelBuilderFacade.findTriggerType(
+         trigger.setType(XPDLFinderUtils.findTriggerType(
                ModelUtils.findContainingModel(trigger),
                triggerJson.get(ModelerConstants.IMPLEMENTATION_PROPERTY).getAsString()));
          logger.debug("===> Implementation: " + trigger.getType());
@@ -2073,7 +2217,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                .getAsString()
                .equals(ModelerConstants.NONE_EVENT_CLASS_KEY))
          {
-            trigger.setType(ModelBuilderFacade.findTriggerType(
+            trigger.setType(XPDLFinderUtils.findTriggerType(
                   ModelUtils.findContainingModel(trigger), "manual"));
          }
       }
@@ -2104,7 +2248,11 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                List<? extends IModelParticipant> localParticipants = performer instanceof OrganizationType ? model.getOrganization() : model.getRole();
                performer = ModelUtils.findIdentifiableElement(localParticipants, performer.getId());
             }
-            AttributeUtil.setReference(trigger, PredefinedConstants.PARTICIPANT_ATT, performer);
+            if((performer != null && !(performer instanceof ConditionalPerformerType))
+                  || performer == null)
+            {
+               AttributeUtil.setReference(trigger, PredefinedConstants.PARTICIPANT_ATT, performer);
+            }
          }
       }
 
@@ -2264,7 +2412,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          if (!application.getType().getId().equals(typeJson.getAsString()))
          {
             ModelType modelType = ModelUtils.findContainingModel(application);
-            ApplicationTypeType type = getModelBuilderFacade()
+            ApplicationTypeType type = XPDLFinderUtils
                .findApplicationTypeType(modelType, typeJson.getAsString());
 
             if (type != null)
@@ -2454,23 +2602,19 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
    private void fixReferencesToAccessPoint(String oldID, String newID,
          ApplicationType application)
    {
+      // TODO review if application.getExecutedActivities() would be equivalent to the full model scan below
       ModelType model = ModelUtils.findContainingModel(application);
-      for (Iterator<ProcessDefinitionType> i = model.getProcessDefinition().iterator(); i
-            .hasNext();)
+      for (ProcessDefinitionType processDefinition : model.getProcessDefinition())
       {
-         ProcessDefinitionType processDefinitonType = i.next();
-         for (Iterator<ActivityType> j = processDefinitonType.getActivity().iterator(); j
-               .hasNext();)
+         for (ActivityType activity : processDefinition.getActivity())
          {
-            ActivityType activity = j.next();
-            for (Iterator<DataMappingType> k = activity.getDataMapping().iterator(); k
-                  .hasNext();)
+            // check if activity is associated with target application
+            if ((null != activity.getApplication()) && activity.getApplication().getId().equals(application.getId()))
             {
-               DataMappingType dm = k.next();
+               for (DataMappingType dm : activity.getDataMapping())
+               {
                if (dm.getApplicationAccessPoint() != null && dm.getApplicationAccessPoint().equals(oldID))
                {
-                  if (activity.getApplication().getId().equals(application.getId()))
-                  {
                      dm.setApplicationAccessPoint(newID);
                   }
                }
@@ -2659,12 +2803,9 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       }
 
       JsonObject declarationJson = json.getAsJsonObject("typeDeclaration");
-      JsonObject typeJson = (null != declarationJson)
-            ? declarationJson.getAsJsonObject("type")
-            : null;
-      if ((null != typeJson)
-            && "SchemaType".equals(typeJson.getAsJsonPrimitive("classifier")
-                  .getAsString()))
+      JsonObject typeJson = declarationJson == null ? null : declarationJson.getAsJsonObject("type");
+      String classifier = typeJson == null ? null : typeJson.getAsJsonPrimitive("classifier").getAsString();
+      if ("SchemaType".equals(classifier))
       {
          if (hasNotJsonNull(json, ModelerConstants.ATTRIBUTES_PROPERTY))
          {
@@ -2697,8 +2838,11 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          XsdSchemaUtils.updateXSDSchemaType(getModelBuilderFacade(),
                typeDeclaration.getSchemaType(), declarationJson.getAsJsonObject("schema"));
       }
-
-      // ExternalReference ?
+      else if ("ExternalReference".equals(classifier))
+      {
+         XsdSchemaUtils.updateExternalReferenceAnnotations(getModelBuilderFacade(),
+               typeDeclaration.getExternalReference(), declarationJson.getAsJsonObject("schema"));
+      }
    }
 
    /**
@@ -2827,6 +2971,11 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
     */
    private void updateData(DataType data, JsonObject dataJson)
    {
+      if (data.eIsProxy())
+      {
+         // we do not change proxies
+         return;
+      }
       updateIdentifiableElement(data, dataJson);
 
       mapDeclaredProperties(data, dataJson, propertiesMap.get(DataType.class));
@@ -2946,6 +3095,21 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
     */
    private void updateModel(ModelType model, JsonObject modelJson)
    {
+      if (modelJson.has(ModelerConstants.ID_PROPERTY))
+      {
+         String id = modelJson.get(ModelerConstants.ID_PROPERTY).getAsString();
+         if (getModelBuilderFacade().getModelManagementStrategy().getModels()
+               .containsKey(id))
+         {
+            throw new ModelerException(ModelerErrorClass.MODEL_ID_ALREADY_EXISTS);
+         }
+
+         if (!StringUtils.isValidIdentifier(id))
+         {
+            throw new ModelerException(ModelerErrorClass.MODEL_ID_INVALID);
+         }
+      }
+
       updateIdentifiableElement(model, modelJson);
 
       mapDeclaredProperties(model, modelJson, propertiesMap.get(ModelType.class));
@@ -2987,7 +3151,6 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          }
       }
    }
-
 
    /**
     *
@@ -3125,6 +3288,26 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
             }
 
             JsonElement jsonValue = attributes.get(key);
+
+            if (key.equals(PredefinedConstants.BINDING_DATA_ID_ATT))
+            {
+               if (element instanceof ActivityType)
+               {
+                  ActivityType activity = (ActivityType) element;
+                  String data = null;
+                  if (!(jsonValue instanceof JsonNull))
+                  {
+                     data = jsonValue.getAsString();
+                     if (data.split(":").length > 1)
+                     {
+                        data = data.split(":")[1];
+                     }
+                  }
+                  AttributeUtil.setAttribute(activity,
+                        PredefinedConstants.BINDING_DATA_ID_ATT, data);
+                  continue;
+               }
+            }
 
             //Infer the ruleSetId into the "hidden" drools application
             if (key.equals(ModelerConstants.RULE_SET_ID))

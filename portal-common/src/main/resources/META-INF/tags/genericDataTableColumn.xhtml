@@ -34,7 +34,7 @@
 		</c:if>
 
 		<!-- ********** DATE COLUMN ********** -->
-		<c:if test="#{item.columnDataType eq 'DATE'}">
+		<c:if test="#{item.columnDataType eq 'DATE' || item.columnDataType eq 'DATE_WITHOUT_TIME'}">
 			<ice:outputText value="#{row[property]}" rendered="#{item.columnRenderType eq 'READ_ONLY'}">
 				<f:convertDateTime
 					pattern="#{columnPref.columnFormatter}"

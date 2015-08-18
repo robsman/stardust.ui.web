@@ -15,7 +15,8 @@
 	<script type="text/javascript" src="plugins/bpm-modeler/js/commonRequire.js"></script>	
 </head>
 <body>
-	<div id="modelView" class="nativeHtmlViewPanel" style="margin-left: 10px; visibility: hidden;">
+	<div id="modelView" class="nativeHtmlViewPanel" style="margin-left: 10px; visibility: hidden;"
+		ng-controller="sdModelViewCtrl as ctrl">
 		<table cellpadding="0" cellspacing="0" class="layoutTable"
 			style="width: 800px;">
 			<tr>
@@ -53,15 +54,20 @@
 									style="margin-bottom: 10px; margin-right: 10px;">
 									<tr id="guidOutputRow">
 										<td><label for="guidOutput">UUID</label></td>
-										<td><div id="guidOutput" class="output"></div></td>
+										<td colspan="2"><div id="guidOutput" class="output"></div></td>
 									</tr>
 									<tr id="idOutputRow">
 										<td><label for="idOutput">ID</label></td>
 										<td><div id="idOutput" class="output"></div></td>
-									</tr>
+										<td><div id="idEdit" ng-click="ctrl.showModelIdChangeDialog=true">
+												<img src="./plugins/views-common/images/icons/pencil.png"
+													styleClass="headerImg"></img>
+											</div>
+										</td>
+										</tr>
 									<tr>
 										<td><label for="nameInput" id ="name">Name</label></td>
-										<td><input id="nameInput" type="text"
+										<td colspan="2"><input id="nameInput" type="text"
 											style="width: 200px;"></input></td>
 									</tr>
 								</table>
@@ -84,6 +90,10 @@
 												Valid From Date</label></td>
 										<td><input type="text" id="validFromDate" /></td>
 									</tr>
+									<tr>
+										<td><label for="versionOutput">Version</label></td>
+										<td><div id="versionOutput" class="output"></div></td>
+									</tr>
 								</table>
 							</td>
 						</tr>
@@ -99,6 +109,17 @@
 			</tr>
 		</table>
 		</div>
+		<div ng-if="ctrl.initialized">
+			<div sd-dialog sd-show-overlay="true"
+				sda-show="ctrl.showModelIdChangeDialog" sda-type="confirm"
+				sda-title="{{sdI18nModeler('modeler.propertyView.modelView.editDialog.title')}}"
+				sda-scope="this"
+				sda-template="plugins/bpm-modeler/views/modeler/modelIdChangeDialog.html"
+				sda-on-open="ctrl.onModelIdChangeDialogOpen()"
+				sda-on-confirm="ctrl.onModelIdChangeConfirm()"
+				sda-on-close="ctrl.showModelIdChangeDialog=false"></div>
+		</div>
+
 		<table cellpadding="0" cellspacing="0" class="layoutTable"
 			style="width: 800px;">	
 			<tr>

@@ -6,7 +6,7 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
 
-	<ui:include src="/plugins/views-common/common/validationMessage.xhtml">
+  	<ui:include src="/plugins/views-common/common/validationMessage.xhtml">
 		<ui:param name="validationMessageBean"
 			value="#{processSearchBean.validationMessageBean}" />
 	</ui:include>
@@ -484,4 +484,7 @@
 			<ui:param name="bean" value="#{processSearchBean.activityTableHelper}"/>
 		</ui:include>
 	</ice:panelGroup>
+	
+	<script type="text/javascript" src="#{facesContext.externalContext.requestContextPath}//plugins/business-control-center/js/processSearchEnterKeyHandler.js" />
+	
 </f:view>

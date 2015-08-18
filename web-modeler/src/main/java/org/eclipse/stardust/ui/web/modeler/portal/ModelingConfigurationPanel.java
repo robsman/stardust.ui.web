@@ -36,6 +36,7 @@ public class ModelingConfigurationPanel implements UserPreferencesEntries, Porta
 {
    private String defaultProfile;
    private boolean showTechnologyPreview;
+   private boolean showSimpleModels;
 
    private ConfirmationDialog confirmationDialog;
 
@@ -75,6 +76,7 @@ public class ModelingConfigurationPanel implements UserPreferencesEntries, Porta
       
       defaultProfile = userPrefsHelper.getSingleString(V_MODELER, F_DEFAULT_PROFILE, PROFILE_BA);
       showTechnologyPreview = userPrefsHelper.getBoolean(V_MODELER, F_TECH_PREVIEW, false);
+      showSimpleModels = userPrefsHelper.getBoolean(V_MODELER, F_SHOW_SIMPLE_MODELS, false);
    }
 
    /**
@@ -86,6 +88,7 @@ public class ModelingConfigurationPanel implements UserPreferencesEntries, Porta
 
       userPrefsHelper.setString(V_MODELER, F_DEFAULT_PROFILE, defaultProfile);
       userPrefsHelper.setString(V_MODELER, F_TECH_PREVIEW, String.valueOf(showTechnologyPreview));
+      userPrefsHelper.setString(V_MODELER, F_SHOW_SIMPLE_MODELS, String.valueOf(showSimpleModels));
 
       updateJSWorld();
       
@@ -192,5 +195,15 @@ public class ModelingConfigurationPanel implements UserPreferencesEntries, Porta
    public ConfirmationDialog getConfirmationDialog()
    {
       return confirmationDialog;
+   }
+
+   public boolean isShowSimpleModels()
+   {
+      return showSimpleModels;
+   }
+
+   public void setShowSimpleModels(boolean showSimpleModels)
+   {
+      this.showSimpleModels = showSimpleModels;
    }
 }

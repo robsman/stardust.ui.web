@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.viewscommon.login;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
@@ -64,7 +65,7 @@ public class InfinityStartup
       this.timeout = Parameters.instance().getInteger(TIMEOUT, 0);
    }
    
-   private static void copyParam(StringBuffer params, Map<String, String[]> reqParamMap, String key)
+   private static void copyParam(StringBuffer params, Map<String, String[]> reqParamMap, String key, boolean encode)
    {
       if(reqParamMap.containsKey(key))
       {
@@ -75,11 +76,29 @@ public class InfinityStartup
             {
                params.append("&");
             }
+            
+            if (encode)
+            {
+               try
+               {
+                  paramValue = URLEncoder.encode(paramValue, "UTF-8");
+               }
+               catch (Throwable t)
+               {
+                  // Ignore.
+               }
+            }
+
             params.append(key).append("=").append(paramValue);
          }
       }
    }
-   
+
+   private static void copyParam(StringBuffer params, Map<String, String[]> reqParamMap, String key)
+   {
+      copyParam(params, reqParamMap, key, false);
+   }
+
    protected static String getParams(HttpServletRequest request)
    {
       StringBuffer params = new StringBuffer();
@@ -109,6 +128,9 @@ public class InfinityStartup
             }
          }
       }
+
+      copyParam(params, reqParamMap, org.eclipse.stardust.ui.web.common.Constants.URL_PARAM_UI_COMMAND, true);
+
       if(params.length() > 0)
       {
          params.insert(0, "?");

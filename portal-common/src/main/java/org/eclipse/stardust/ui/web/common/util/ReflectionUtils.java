@@ -10,9 +10,15 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.common.util;
 
+import static java.util.Collections.synchronizedMap;
+import static org.eclipse.stardust.common.CollectionUtils.newConcurrentHashMap;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import org.eclipse.stardust.ui.web.common.reflect.Reflect;
 import org.eclipse.stardust.ui.web.common.reflect.ReflectionException;
@@ -25,6 +31,10 @@ import org.eclipse.stardust.ui.web.common.util.StringUtils;
  */
 public class ReflectionUtils
 {
+   private static final Object[] NO_ARGS = new Object[0];
+
+   private static Map<Class< ? >, ConcurrentMap<String, Method>> propertyAccessorCache = synchronizedMap(new WeakHashMap<Class< ? >, ConcurrentMap<String, Method>>());
+
    /**
     * @param obj
     * @param methodName
@@ -124,8 +134,7 @@ public class ReflectionUtils
     */
    public static Object invokeMethod(Object obj, String methodName) throws Exception
    {
-      Object[] params = new Object[0];
-      return invokeMethod(obj, methodName, params);
+      return invokeMethod(obj, methodName, NO_ARGS);
    }
 
    /**
@@ -136,25 +145,58 @@ public class ReflectionUtils
     */
    public static Object invokeGetterMethod(Object obj, String fieldName) throws Exception
    {
-      Object[] params = new Object[0];
-
-      String getMethodName = "get" + toSentenseCase(fieldName);
-      String isMethodName = "is" + toSentenseCase(fieldName);
-      
-      try
+      Class<?> objClass = obj.getClass();
+      ConcurrentMap<String, Method> cachedAccessors = propertyAccessorCache.get(objClass);
+      if (null == cachedAccessors)
       {
-         return invokeMethod(obj, getMethodName, params);
+         cachedAccessors = newConcurrentHashMap();
       }
-      catch(NoSuchMethodException nsme)
+
+      if (!cachedAccessors.containsKey(fieldName))
       {
+         // perform cost of method lookup only once, caching the result for reuse
+         Class<?>[] getterArgs = new Class[0];
+         Method getterMethod;
          try
          {
-            return invokeMethod(obj, isMethodName, params);
+            getterMethod = objClass.getMethod("get" + toSentenseCase(fieldName), getterArgs);
          }
-         catch(NoSuchMethodException nsme2)
+         catch (NoSuchMethodException nsme1)
          {
-            throw new NoSuchMethodException("No Getter Method for Object: " + 
-                  obj.getClass().getName() + ", On Field: " + fieldName);
+            try
+            {
+               getterMethod = objClass.getMethod("is" + toSentenseCase(fieldName), getterArgs);
+            }
+            catch(NoSuchMethodException nsme2)
+            {
+               throw new NoSuchMethodException("No Getter Method for Object: " +
+                     objClass.getName() + ", On Field: " + fieldName);
+            }
+         }
+
+         cachedAccessors.putIfAbsent(fieldName, getterMethod);
+      }
+
+      if (!propertyAccessorCache.containsKey(objClass))
+      {
+         propertyAccessorCache.put(objClass, cachedAccessors);
+      }
+
+      Method getterMethod = cachedAccessors.get(fieldName);
+
+      try
+      {
+         return getterMethod.invoke(obj, NO_ARGS);
+      }
+      catch (InvocationTargetException ite)
+      {
+         if (ite.getCause() instanceof Exception)
+         {
+            throw (Exception) ite.getCause();
+         }
+         else
+         {
+            throw ite;
          }
       }
    }

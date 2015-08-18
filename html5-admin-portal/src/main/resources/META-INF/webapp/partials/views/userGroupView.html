@@ -1,0 +1,97 @@
+<div class="view-panel" ng-controller="sdUserGroupCtrl as ctrl"
+	ng-stretch-to-bottom>
+
+	<!-- View Toolbar -->
+	<div class="view-panel-toolbar toolbar-buttons">
+		<div class="view-toolbar-section" >
+			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+		</div>
+	</div>
+	
+	<div class="view-panel-toolbar">
+		<label>{{i18n('admin-portal-messages.views-userGroupMgmt-userGroups-label')}}</label>
+	</div>
+	<div>
+		<table width="125px">
+			<tr>
+				<td><label>{{i18n('admin-portal-messages.views-common-total-label')
+						+
+						i18n('admin-portal-messages.common-colon')}}{{ctrl.data.totalCount}}</label>
+				</td>
+				<td><label>{{i18n('admin-portal-messages.views-common-active-label')
+						+
+						i18n('admin-portal-messages.common-colon')}}{{ctrl.data.activeCount}}</label></td>
+			</tr>
+		</table>
+
+	</div>
+	<br />
+
+	<!-- View COntent -->
+	<div class="view-panel-content">
+		<div class="tbl-title">{{i18n('admin-portal-messages.views-userGroupMgmt-userGroupTable-title')}}</div>
+
+		<div sda-toolbar>
+			<div class="tbl-toolbar-section">
+				<button ng-click="ctrl.openCreateUserGroupDialog()"
+					title="{{i18n('admin-portal-messages.common-create')}}"
+					class="button-link tbl-toolbar-item tbl-tool-link">
+					<i class="glyphicon glyphicon-plus"></i>
+				</button>
+				<button ng-disabled="ctrl.selectionExpr == null"
+					ng-click="ctrl.invalidateUserGroup()"
+					title="{{i18n('admin-portal-messages.views-userGroupMgmt-invalidateUserGroup-tooltip-title')}}"
+					class="button-link tbl-toolbar-item tbl-tool-link">
+					<i class="glyphicon glyphicon-minus"></i>
+				</button>
+			</div>
+		</div>
+
+		<table sd-data-table="ctrl.userGroupDataTable"
+			sd-data="ctrl.fetchUserGroups(params)" sda-mode="remote"
+			sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
+			sda-selectable="row" sda-selection="ctrl.selectionExpr"
+			sda-exports="Excel,csv" sda-exports-file-name="userGroupList">
+			<thead sda-i18n-scope="admin-portal-messages.views-common">
+				<tr>
+					<th sda-name="name" sda-sortable="true" sda-label-key="name-label"></th>
+					<th sda-name="oid" sda-sortable="true"
+						sda-label="{{i18n('admin-portal-messages.views-participantMgmt-column-oid')}}"></th>
+					<th sda-name="id" sda-sortable="true" sda-label-key="id-label"></th>
+					<th sda-name="validFrom" sda-fixed="true"
+						sda-label-key="validFrom-label"></th>
+					<th sda-name="validTo" sda-fixed="true"
+						sda-label-key="validTo-label"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td style="white-space: nowrap;" sda-exporter="rowData.name"><a
+						href="#"
+						ng-click="bpmCommon.stopEvent($event); ctrl.openModifyUserGroup(rowData);">
+							{{rowData.name}} </a></td>
+					<td sda-data-type="int" style="text-align: center;"></td>
+					<td></td>
+					<td sda-data-type="dateTime"
+						style="text-align: center; white-space: nowrap;"></td>
+					<td sda-data-type="dateTime"
+						style="text-align: center; white-space: nowrap;"></td>
+				</tr>
+			</tbody>
+		</table>
+		<div sd-dialog sd-show-overlay="true"
+			sda-show="ctrl.showCreateUserGroup" sda-type="confirm"
+			sda-title="{{i18n('admin-portal-messages.views-userGroupMgmt-createUserGroup-title')}}"
+			sda-scope="this"
+			sda-template="plugins/html5-admin-portal/partials/views/createUserGroup.html"
+			sda-on-confirm="ctrl.onConfirmCreateUser(res)"
+			sda-on-close="ctrl.onCancelCreateUser(res)"></div>
+		<div sd-dialog sd-show-overlay="true"
+			sda-show="ctrl.showModifyUserGroup" sda-type="confirm"
+			sda-title="{{i18n('admin-portal-messages.views-userGroupMgmt-modifyUserGroup-title')}}"
+			sda-scope="this"
+			sda-template="plugins/html5-admin-portal/partials/views/modifyUserGroup.html"
+			sda-on-confirm="ctrl.onConfirmModifyUser(res)"
+			sda-on-close="ctrl.onCancelModifyUser(res)"></div>
+	</div>
+</div>

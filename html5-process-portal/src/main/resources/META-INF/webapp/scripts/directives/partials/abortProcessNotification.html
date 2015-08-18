@@ -1,0 +1,40 @@
+<div class="confirmation-contents modal-body" style="padding-bottom: 20px">
+	<div ng-hide="abortProcessCtrl.notification.error">
+		<div
+			ng-show="abortProcessCtrl.notification.result.success.length > 0">
+			<div class="abort-process-notication-message"
+				ng-bind="abortProcessCtrl.i18n('views-common-messages.views-common-process-abortProcess-success')"></div>
+			<table class="table-bordered">
+				<tr
+					ng-repeat="process in abortProcessCtrl.notification.result.success">
+					<td  class="abort-process-cell-message">{{process.name}} (#{{process.OID}})</td>
+					<td ng-bind="process.message" class="abort-process-cell-message"></td>
+				</tr>
+			</table>
+		</div>
+		<div
+			ng-show="abortProcessCtrl.notification.result.failure.length > 0">
+			<div class="abort-process-notication-message"
+				ng-bind="abortProcessCtrl.i18n('views-common-messages.views-common-process-abortProcess-failure')"></div>
+			<table class="table-bordered">
+				<tr 
+					ng-repeat="process in abortProcessCtrl.notification.result.failure">
+						<td  class="abort-process-cell-message">{{process.name}} (#{{process.OID}})</td>
+					<td ng-bind="process.message" class="abort-process-cell-message"></td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div ng-show="abortProcessCtrl.notification.error">
+		<span>An error occurred while aborting processes</span>
+	</div>
+</div>
+<div class="modal-footer">
+	<div class="button-pane cf" >
+		<div class="button-alignment">
+			<div class="right">
+				<button class="button" ng-click="closeThisDialog()">{{abortProcessCtrl.i18n('views-common-messages.common-close')}}</button>
+			</div>
+		</div>
+	</div>
+</div>

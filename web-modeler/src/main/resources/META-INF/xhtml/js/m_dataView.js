@@ -202,6 +202,12 @@ define(
 					this.enumInputSelect = m_utils.jQuerySelect("#enumInputSelect");
 					this.enumInputSelect.change({"view" : this}, enumSelectChangeHandler);
 
+					this.volatileDataInput = m_utils.jQuerySelect("#volatileDataInput");
+          this.volatileDataInput.change({"view" : this}, volatileDataChangeHandler);
+					
+          m_utils.jQuerySelect("label[for='volatileDataInput']")
+          .text(m_i18nUtils.getProperty("modeler.element.properties.commonProperties.volatileData"));
+          
 					this.initializeModelElementView(data);
 					this.view.css("visibility", "visible");
 				};
@@ -240,6 +246,21 @@ define(
 					} else {
 						this.publicVisibilityCheckbox.attr("checked", false);
 					}
+					
+					if (this.getModelElement().dataType == m_constants.DOCUMENT_DATA_TYPE) {
+            this.volatileDataInput.attr("checked", false);
+            this.volatileDataInput.attr("disabled", true);
+          } else {
+            this.volatileDataInput.attr("disabled", false);
+            var volatileVal = this.getModelElement().attributes["carnot:engine:volatile"];
+            if (volatileVal == true || volatileVal == "true") {
+              this.volatileDataInput.attr("checked", true);
+            } else {
+              this.volatileDataInput.attr("checked", false);
+            }  
+          }
+          
+					
 					this.updateViewIcon();
 				};
 
@@ -415,6 +436,20 @@ define(
 					}, m_utils.jQuerySelect("#dataTypeTab").get(0));
 				}
 
+				 /**
+         * 
+         */
+        function volatileDataChangeHandler(event) {
+          var view = event.data.view;
+          m_angularContextUtils.runInAngularContext(function($scope) {
+            var value = false; 
+              if(view.volatileDataInput.is(":checked")) {
+                value = true;  
+              }
+              view.submitModelElementAttributeChange("carnot:engine:volatile", value);
+          }, m_utils.jQuerySelect("#dataTypeTab").get(0));
+        };
+				
 				/**
 				 *
 				 */

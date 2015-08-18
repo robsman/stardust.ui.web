@@ -26,8 +26,9 @@ Note: this file contains all js which are required to render the report
 r.js build
 Open Command Prompt
 Goto stardust-web-reporting\src\main\resources\META-INF\webapp\public\rs-build directory 
-#node r.js -o build.js optimize=none
-Note: committing the working set - report_adjusted_for_reference dir
+#node r.js -o build.js 
+optimize=none
+Note: committing the working set - report_adjusted_for_reference dir. You may compare this directory for any changes in case of trouble shooting.
 ------------
 inlined css 
 check reportDefinitionView.html file for all css imports
@@ -37,15 +38,11 @@ the required images needs to be encoded in 64 bit format - you may use following
 http://www.askapache.com/online-tools/base64-image-converter/
 Because we are replacing the images in Portal using stardust-modern.css, we cannot modify .css files.
 Separate copies having 64 bit encoding for required images are created in this folder.
-css/database.css
+css/datatables.css
 css/bpm-reporting.css 
 Merge these css files before you generate updated css
 
 #node r.js -o build-css.js
 
 -------------
-properties file is prepared manually
-var message_bundle = {*****};
-Use UiHelper.java-> main method to create this string.
-
 That's it!

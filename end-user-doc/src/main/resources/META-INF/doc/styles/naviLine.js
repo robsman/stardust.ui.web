@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 SunGard CSA LLC and others.
+ * Copyright (c) 2011, 2015 SunGard CSA LLC and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -75,7 +75,12 @@ function footerCopyright() {
 
 function copyright()
 {
-	document.write('<table class="header"><tr><td class="header" align="right">Copyright &#169; 2013 SunGard CSA LLC</td></tr></table>');
+	document.write('<table class="header"><tr><td class="header" align="right">Copyright &#169; 2015 SunGard CSA LLC</td></tr></table>');
+}
+
+function writeContact() {
+	document.write('<br><h3>Contact Us</h3><p>Your opinions and recommendations are always welcome. Our technical documentation team relies heavily on your feedback. Feel free to contact us:');
+	document.write('&nbsp;&nbsp;<a href="mailto:IPP.Documentation@sungard.com">IPP.Documentation@sungard.com</a></p>');	
 }
 
 function line() {
@@ -88,10 +93,6 @@ function line() {
 	document.write('<a href=',suburi,' class="header">End User Documentation</a> &gt; ');
 //check if in Portal documentation to omit End User link
    var checkindex = uri.indexOf("/portal/");
-   if (checkindex > 0) 
-      startarray=2;
-//check if in miscellaneous documentation to omit End User link
-   var checkindex = uri.indexOf("/misc/");
    if (checkindex > 0) 
       startarray=2;
 

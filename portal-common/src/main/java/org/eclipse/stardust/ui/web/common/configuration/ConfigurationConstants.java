@@ -27,7 +27,7 @@ public interface ConfigurationConstants
    int LOWER_LIMIT_FAST_STEP = 0;
    
    int UPPER_LIMIT_MAX_TAB_DISPLAY = 9;
-   int UPPER_LIMIT_PAGE_SIZE = 50;
+   int UPPER_LIMIT_PAGE_SIZE = 250;
    int UPPER_LIMIT_MAX_PAGES = 25;
    int UPPER_LIMIT_FAST_STEP = 25;
 }

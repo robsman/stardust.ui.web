@@ -13,9 +13,9 @@
  */
 define(
 		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js/m_messageDisplay", "bpm-modeler/js/m_command", "bpm-modeler/js/m_canvasManager", "bpm-modeler/js/m_model",
-				"bpm-modeler/js/m_symbol", "bpm-modeler/js/m_connection", "bpm-modeler/js/m_data", "bpm-modeler/js/m_modelerUtils", "bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_symbol", "bpm-modeler/js/m_connection", "bpm-modeler/js/m_data", "bpm-modeler/js/m_modelerUtils", "bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_commandsController"],
 		function(m_utils, m_constants, m_messageDisplay, m_command, m_canvasManager, m_model,
-				m_symbol, m_connection, m_data, m_modelerUtils, m_i18nUtils) {
+				m_symbol, m_connection, m_data, m_modelerUtils, m_i18nUtils, m_commandsController) {
 
 			return {
 				/**
@@ -122,6 +122,42 @@ define(
 					this.register();
 				};
 
+				/**
+				 * 
+				 */
+				DataSymbol.prototype.getModelElement = function() {
+          if (this.modelElement
+              && this.modelElement.externalReference) {
+            if (this.modelElement.dataFullId){
+              var data = m_model.findData(this.modelElement.dataFullId);
+              if(data){
+                return data;
+              }
+            }
+            return;
+         }
+          return this.modelElement;
+        };
+
+        /**
+         * 
+         */
+        DataSymbol.prototype.getEditedChanges = function(content) {
+          return {
+            name: content
+          }
+        };
+        
+        /**
+         * 
+         */
+        DataSymbol.prototype.submitEditable = function(changes) {
+          m_commandsController.submitCommand(m_command
+                  .createUpdateModelElementWithUUIDCommand(this
+                          .getModelElement().modelId, this
+                          .getModelElement().uuid, changes));
+        };
+        
 				/**
 				 *
 				 */
@@ -350,9 +386,13 @@ define(
 					var inOutMapping = new Array();
 					for ( var n in this.connections) {
 						var connection = this.connections[n];
-						if (null != connection.modelElement
-								&& connection.modelElement.inputDataMapping
-								&& connection.modelElement.outputDataMapping) {
+						
+ 						var mappingExist;
+ 						if (null != connection.modelElement) {
+ 						  mappingExist = connection.modelElement.inputOutputMappingExists();
+            }
+						
+						if (null != connection.modelElement && mappingExist.input && mappingExist.output) {
 							if (connection.fromAnchorPoint.symbol.type == m_constants.ACTIVITY_SYMBOL) {
 								outMapping
 										.push(connection.fromAnchorPoint.symbol.oid);

@@ -30,6 +30,7 @@ import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
+import org.eclipse.stardust.ui.web.html5.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalErrorClass;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalErrorMessageProvider;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
@@ -359,7 +360,7 @@ public class ExceptionHandler implements Serializable
     */
    private static Locale getLocale()
    {
-      return org.eclipse.stardust.ui.web.common.util.FacesUtils.getLocaleFromRequest();
+      return ManagedBeanUtils.getLocale();
    }
 
    /**

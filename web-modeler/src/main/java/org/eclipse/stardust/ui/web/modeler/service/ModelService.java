@@ -37,6 +37,7 @@ import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.strategy.ModelManagementStrategy;
+import org.eclipse.stardust.model.xpdl.builder.utils.ExternalReferenceUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
@@ -49,7 +50,6 @@ import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelBinding;
 import org.eclipse.stardust.ui.web.modeler.spi.ThreadInitializer;
-import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ExternalReferenceUtils;
 
 /**
  *
@@ -441,9 +441,7 @@ public class ModelService
     */
    public JsonArray validateModel(String modelId)
    {
-      ModelRepository modelRepository = currentSession().modelRepository();
-      EObject model = modelRepository.findModel(modelId);
-
+      EObject model = getModelManagementStrategy().getModels().get(modelId);
       return findModelBinding(model).validateModel(model);
    }
 

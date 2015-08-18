@@ -1,0 +1,117 @@
+<div class="attach-to-case-dialog">
+	<div class="section" style="border:none;">
+		<div sd-js-error class="msgError">
+		</div>
+		
+		<!-- Select From List -->	
+		<div ng-show="!attachToCaseController.attachToCase.advancedSelect">
+			<div style="float:right;"><a class="action-link " ng-click="attachToCaseController.showAdvancedSelect(true)">{{i18n('views-common-messages.views-joinProcessAdvanced-advanced-link-label')}} >></a></div>
+			<br/>
+			<div style="clear:both; margin-top: 10px;">
+				<span ng-hide="attachToCaseController.attachToCase.matchAll">
+					<span ng-if="!attachToCaseController.attachToCase.isCase" style="margin-right: 10px;">
+						{{i18n('views-common-messages.views-joinProcessDialog-descriptorAnyMatchingCases-message')}}
+					</span>
+					<span ng-if="attachToCaseController.attachToCase.isCase" style="margin-right: 10px;">
+						{{i18n('views-common-messages.views-joinProcessDialog-descriptorAnyMatchingProcesses-message')}}
+					</span>
+					<button class="button" ng-click="attachToCaseController.showMatchAll(true)">
+						{{i18n('views-common-messages.views-joinProcessDialog-descriptorMatchAll-button-label')}}
+					</button>
+				</span>
+				<span ng-show="attachToCaseController.attachToCase.matchAll">
+					<span ng-if="!attachToCaseController.attachToCase.isCase" style="margin-right: 10px;">
+						{{i18n('views-common-messages.views-joinProcessDialog-descriptorAllMatchingCases-message')}}
+					</span>
+					<span ng-if="attachToCaseController.attachToCase.isCase" style="margin-right: 10px;">
+						{{i18n('views-common-messages.views-joinProcessDialog-descriptorAllMatchingProcesses-message')}}
+					</span>
+					<button class="button" ng-click="attachToCaseController.showMatchAll(false)">
+						{{i18n('views-common-messages.views-joinProcessDialog-descriptorMatchAny-button-label')}}
+					</button>
+				</span>
+			</div>
+			<br/>
+			<div>
+				<table sd-data-table="attachToCaseController.attachToCase.relatedProcessDataTable" sd-data="attachToCaseController.attachToCase.relatedProcesses"
+					sda-page-size="4"
+					sda-selectable="row"
+					sda-mode="local">
+					<thead>
+						<tr>
+							<th sda-name="processName" sda-label="{{i18n('views-common-messages.views-relatedProcessSearch-table-column-processName')}}" sda-sortable="false"></th>
+							<th sda-name="oid" sda-label="{{i18n('views-common-messages.views-relatedProcessSearch-table-column-oid')}}" sda-sortable="false"></th>
+							<th ng-if="attachToCaseController.attachToCase.relatedProcesses.hasAnyCaseInstance == true" sda-name="caseOwner" 
+								sda-label="{{i18n('views-common-messages.views-relatedProcessSearch-table-column-caseOwner')}}" sda-sortable="false"></th>
+							<th sda-name="priority" sda-label="{{i18n('views-common-messages.views-relatedProcessSearch-table-column-priority')}}" sda-sortable="false"></th>
+							<th sda-name="startTime" sda-label="{{i18n('views-common-messages.views-relatedProcessSearch-table-column-startTime')}}" sda-sortable="false"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td sda-field="processName"></td>
+							<td sda-field="oid"></td>
+							<td ng-if="attachToCaseController.attachToCase.relatedProcesses.hasAnyCaseInstance == true" sda-field="caseOwner"></td>
+							<td sda-field="priority"></td>
+							<td sda-field="startTime"></td>
+						</tr>
+					</tbody>
+				</table>
+				<br/>
+				
+				<table class="switch-form-info">
+					<tr>
+						<td style="padding-right: 11px;">
+							<i class="glyphicon glyphicon-info-sign"></i>
+						</td>
+						<td>
+							<span ng-if="attachToCaseController.attachToCase.isCase">
+								{{i18n('views-common-messages.views-attachToCase-selectProcesses-message')}}
+							</span>
+							<span ng-if="!attachToCaseController.attachToCase.isCase">
+								{{i18n('views-common-messages.views-attachToCase-selectCase-message')}}
+							</span>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		
+		<!-- Advanced -->	
+		<div ng-show="attachToCaseController.attachToCase.advancedSelect">
+			<div style="float:right;"><a class="action-link " ng-click="attachToCaseController.showAdvancedSelect(false)">{{i18n('views-common-messages.views-joinProcessDialog-selectFromList-link-label')}} >></a></div>
+			<br/>
+			<div style="clear:both; margin-top: 10px;">
+				<table class="join-form">
+					<tr>
+						<td>
+							<label ng-if="!attachToCaseController.attachToCase.isCase" class="label-form">
+								* {{i18n('views-common-messages.views-attachToCase-caseOID-label')}}
+							</label>
+							<label ng-if="attachToCaseController.attachToCase.isCase" class="label-form">
+								{{i18n('views-common-messages.views-attachToCase-processOID-label')}}
+							</label>
+						</td>
+						<td>
+							<div>
+								<input ng-model="attachToCaseController.attachToCase.processOID" type="text" />
+							</div>
+						</td>
+					</tr>
+				</table>
+				<br>
+				<div>
+					<i class="glyphicon glyphicon-info-sign"></i>
+						
+					<span ng-if="attachToCaseController.attachToCase.isCase">
+						{{i18n('views-common-messages.views-attachToCase-specifyProcess-message')}}
+					</span>
+					<span ng-if="!attachToCaseController.attachToCase.isCase">
+						{{i18n('views-common-messages.views-attachToCase-selectCase-message')}}
+					</span>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+</div>

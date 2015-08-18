@@ -17,9 +17,9 @@ define(
 				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_propertiesPage",
 				"bpm-modeler/js/m_dataTypeSelector",
 				"bpm-modeler/js/m_parameterDefinitionsPanel",
-				"bpm-modeler/js/m_i18nUtils" ],
+				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_model" ],
 		function(m_utils, m_constants, m_dialog, m_propertiesPage,
-				m_dataTypeSelector, m_parameterDefinitionsPanel, m_i18nUtils) {
+				m_dataTypeSelector, m_parameterDefinitionsPanel, m_i18nUtils, m_model) {
 			return {
 				create : function(propertiesPanel) {
 					var page = new ProcessProcessInterfacePropertiesPage(
@@ -58,21 +58,20 @@ define(
 					this.providesProcessInterfacePanel = this
 							.mapInputId("providesProcessInterfacePanel");
 					this.implementsProcessInterfacePanel = this
-							.mapInputId("implementsProcessInterfacePanel");
+          .mapInputId("implementsProcessInterfacePanel");
 					this.webServiceInterfaceCheckboxInput = this
 							.mapInputId("webServiceInterfaceCheckboxInput");
 					this.restInterfaceCheckboxInput = this
 							.mapInputId("restInterfaceCheckboxInput");
-					this.parameterDefinitionsPanel = this
-							.mapInputId("parameterDefinitionsTable");
-					this.parameterDefinitionsPanelBody = this
-							.mapInputId("parameterDefinitionsTable tbody");
 					this.processInterfaceFromDataCreationWizardLink = this
 							.mapInputId("processInterfaceFromDataCreationWizardLink");
 					this.processDataTableBody = m_utils.jQuerySelect("#processDataTable tbody"); // TODO
-					this.parameterDefinitionsPanel = m_parameterDefinitionsPanel
+					
+					this.implementsProcess = this.mapInputId("implementsProcess");
+					
+					this.parameterDefinitionsPanelForProvider = m_parameterDefinitionsPanel
 							.create({
-								scope : "processInterfacePropertiesPage",
+								scope : "providesProcessInterfacePanel",
 								submitHandler : this,
 								// listType : "object",
 								supportsOrdering : false,
@@ -80,9 +79,28 @@ define(
 								supportsDescriptors : false,
 								supportsDataTypeSelection : true,
 								restrictToCurrentModel : false,
-								supportsInOutDirection : true
+								supportsInOutDirection : true,
+								showExternalDataReferences : true
 							});
+					
 
+					this.parameterDefinitionsPanelForImplementer = m_parameterDefinitionsPanel
+              .create({
+                scope: "implementsProcessInterfacePanel",
+                submitHandler: this,
+                // listType : "object",
+                readOnlyParameterList: true,
+                supportsOrdering: false,
+                supportsDataMappings: true,
+                supportsDescriptors: false,
+                supportsDataTypeSelection: true,
+                restrictToCurrentModel: false,
+                supportsInOutDirection: true,
+                disableParameterDefinitionNameInput: true,
+                disableParameterDefinitionDirectionSelect: true,
+                showExternalDataReferences : true
+              });
+					
 					this.internationalizeLabels();
 					this.processInterfaceTypeSelectInput
 							.change(
@@ -106,6 +124,23 @@ define(
 
 										event.data.callbackScope.submitProcessInterfaceType();
 									});
+					
+
+					this.implementsProcess.change({
+            "callbackScope": this
+          }, function(event) {
+            
+            event.data.callbackScope.submitImplementsProcessChange();
+
+            //TODO: remove post server side implementation
+            /*var process = m_model.findProcess(event.data.callbackScope.implementsProcess.val());
+            event.data.callbackScope.getModelElement().formalParameters = process.formalParameters;
+            event.data.callbackScope.parameterDefinitionsPanelForImplementer
+                    .setScopeModel(event.data.callbackScope.getModelElement().model);
+            event.data.callbackScope.parameterDefinitionsPanelForImplementer
+                    .setParameterDefinitions(event.data.callbackScope.getModelElement().formalParameters); */
+          });
+					
 					this.processInterfaceFromDataCreationWizardLink.click({
 						"callbackScope" : this
 					}, function(event) {
@@ -264,14 +299,50 @@ define(
 				};
 
 				/**
+				 * 
+				 */
+        ProcessProcessInterfacePropertiesPage.prototype.populateImplementsProcess = function() {
+          this.implementsProcess.empty();
+          
+          this.implementsProcess.append("<option value='"
+                  + m_constants.TO_BE_DEFINED
+                  + "'>"
+                  + m_i18nUtils
+                      .getProperty("modeler.general.toBeDefined")
+                  + "</option>");
+          
+          var modelsSorted = m_utils.convertToSortedArray(
+                  m_model.getModels(), "name", true);
+
+          for ( var n in modelsSorted) {
+            if (modelsSorted[n] == this.getModelElement().model) {
+              continue;
+            }
+
+            processesSorted = m_utils.convertToSortedArray(
+                    modelsSorted[n].processes, "name", true);
+            for ( var m in processesSorted) {
+              if ((processesSorted[m].processInterfaceType === m_constants.PROVIDES_PROCESS_INTERFACE_KEY)) {
+                this.implementsProcess
+                .append("<option value='"
+                    + processesSorted[m].getFullId()
+                    + "'>"
+                    + modelsSorted[n].name
+                    + "/"
+                    + processesSorted[m].name
+                    + "</option>");
+              }
+            }
+          }
+        }
+				/**
 				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.setNoInterface = function() {
 					this.processInterfaceTypeSelectInput.val(m_constants.NO_PROCESS_INTERFACE_KEY);
 					m_dialog.makeVisible(this.noInterfacePanel);
 					m_dialog.makeInvisible(this.providesProcessInterfacePanel);
-					m_dialog
-							.makeInvisible(this.implementsProcessInterfacePanel);
+					m_dialog.makeInvisible(this.implementsProcessInterfacePanel);
 				};
 
 				/**
@@ -281,17 +352,16 @@ define(
 					this.processInterfaceTypeSelectInput
 							.val(m_constants.PROVIDES_PROCESS_INTERFACE_KEY);
 					m_dialog.makeInvisible(this.noInterfacePanel);
+					m_dialog.makeInvisible(this.implementsProcessInterfacePanel);
 					m_dialog.makeVisible(this.providesProcessInterfacePanel);
-					m_dialog
-							.makeInvisible(this.implementsProcessInterfacePanel);
 
 					if (this.getModelElement().formalParameters == null) {
 						this.getModelElement().formalParameters = [];
 					}
 
-					this.parameterDefinitionsPanel.setScopeModel(this
+					this.parameterDefinitionsPanelForProvider.setScopeModel(this
 							.getModelElement().model);
-					this.parameterDefinitionsPanel.setParameterDefinitions(this
+					this.parameterDefinitionsPanelForProvider.setParameterDefinitions(this
 							.getModelElement().formalParameters);
 				};
 
@@ -299,11 +369,29 @@ define(
 				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.setImplementsProcessInterface = function() {
-					this.processInterfaceTypeSelectInput
-							.val(m_constants.IMPLEMENTS_PROCESS_INTERFACE_KEY);
+					this.processInterfaceTypeSelectInput.val(m_constants.IMPLEMENTS_PROCESS_INTERFACE_KEY);
+					
 					m_dialog.makeInvisible(this.noInterfacePanel);
-					m_dialog.makeInvisible(this.providesProcessInterfacePanel);
-					m_dialog.makeVisible(this.implementsProcessInterfacePanel);
+          m_dialog.makeInvisible(this.providesProcessInterfacePanel);
+
+          m_dialog.makeVisible(this.implementsProcessInterfacePanel);          
+					
+          this.populateImplementsProcess();
+
+          if(this.getModelElement().implementsProcessId){
+            this.implementsProcess.val(this.getModelElement().implementsProcessId);
+          }else{
+            this.implementsProcess.val(m_constants.TO_BE_DEFINED);  
+          }
+          
+          if (this.getModelElement().formalParameters == null) {
+            this.getModelElement().formalParameters = [];            
+          }
+
+          this.parameterDefinitionsPanelForImplementer.setScopeModel(this
+              .getModelElement().model);
+          this.parameterDefinitionsPanelForImplementer.setParameterDefinitions(this
+              .getModelElement().formalParameters);
 				};
 
 				/**
@@ -333,7 +421,7 @@ define(
 				 *
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.setElement = function() {
-					this.parameterDefinitionsPanel.setScopeModel(this
+					this.parameterDefinitionsPanelForProvider.setScopeModel(this
 							.getModelElement().model);
 
 					if (this.getModelElement().processInterfaceType == m_constants.NO_PROCESS_INTERFACE_KEY) {
@@ -397,7 +485,7 @@ define(
 				};
 
 				/**
-				 * Callback for parameterDefinitionsPanel.
+				 * Callback for parameterDefinitionsPanelForProvider and parameterDefinitionsPanelForImplementer.
 				 */
 				ProcessProcessInterfacePropertiesPage.prototype.submitParameterDefinitionsChanges = function(
 						formalParameters) {
@@ -415,5 +503,15 @@ define(
 						"processInterfaceType" : this.processInterfaceTypeSelectInput.val()
 					});
 				};
+				
+				/**
+				 * 
+				 */
+        ProcessProcessInterfacePropertiesPage.prototype.submitImplementsProcessChange = function() {
+          this.propertiesPanel.submitChanges({
+            "implementsProcessId": this.implementsProcess.val()
+          });
+        };
+        
 			}
 		});

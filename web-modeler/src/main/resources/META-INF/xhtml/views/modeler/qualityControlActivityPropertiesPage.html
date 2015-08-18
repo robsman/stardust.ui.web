@@ -1,0 +1,89 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+<head>
+</head>
+<body>
+	<div>
+		<div class="heading" id="propertiesText">Quality Assurance</div>
+		<table ng-show="page.noParticipantSetMessage">
+			<tr class="errorMessagesPanel">
+				<td></td>
+				<td><label>{{page.noParticipantSetMessage}}</label></td>
+			</tr>
+		</table>
+		<table ng-show="!page.isModelElementInteractive()">
+			<tr class="errorMessagesPanel">
+				<td></td>
+				<td><label>{{page.taskNotInteractiveMessage}}</label></td>
+			</tr>
+		</table>
+		<table>
+			<tr>
+				<td><input type="checkbox"
+					ng-model="page.isQualityControlActivity"
+					ng-change="page.updateQAParams()"
+					ng-disabled="!page.isModelElementInteractive()"></input></td>
+				<td><label>{{page.getI18NProperty('modeler.activity.propertyPages.qualityControl.isQualityAssuranceActivity')}}</label></td>
+			</tr>
+		</table>
+		<div id="qualityControlDivision"
+			ng-show="page.isQualityControlActivity">
+			<table style="margin-top: 10px;">
+				<tr>
+					<td><label>{{page.getI18NProperty('modeler.activity.propertyPages.qualityControl.participant')}}</label></td>
+					<td><select ng-model="page.qualityControlParticipant"
+						ng-options="participant.fullId as participant.label for participant in page.participants"
+						ng-change="page.updateQAParams()"></select></td>
+				</tr>
+				<tr>
+					<td><label>{{page.getI18NProperty('modeler.activity.propertyPages.qualityControl.probability')}}</label></td>
+					<td><input ng-model="page.qualityControlProbability"
+						type="number" min="0" max="100" min="0"
+						ng-blur="page.updateQAParams()"></input></td>
+				</tr>
+			</table>
+			<table>
+				<tr>
+					<td><label>{{page.getI18NProperty('modeler.activity.propertyPages.qualityControl.formula')}}:</label></td>
+				</tr>
+				<tr>
+					<td><textarea cols="50" rows="10"
+							ng-model="page.qualityControlFormula"
+							ng-blur="page.updateQAParams()">
+			</textarea></td>
+				</tr>
+			</table>
+			<!-- 			<div ng-show="page.propertiesPanel.element.modelElement.qualityControl">
+				<div class="heading" id="propertiesText">Quality Control Codes</div>
+				<div class="panelBorder">
+					<div class="dataTable">
+						<table id="qualityControlCodesTable" class="treeTable"
+							style="width: 100%;">
+							<thead>
+								<tr>
+									<th id="severity">Code</th>
+									<th id="element">Description</th>
+									<th id="description">Use</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="code in page.propertiesPanel.propertiesPage.codes">
+									<td>{{code.code}}</td>
+									<td>{{code.name}}</td>
+									<td><input type="checkbox" ng-model="code.use" ng-change="page.propertiesPanel.propertiesPage.submitCodeUseChanges()"/></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div> -->
+		</div>
+	</div>
+</body>
+</html>

@@ -376,6 +376,8 @@ define(
 				 *
 				 */
 				DataTypeSelector.prototype.populateDocumentTypesSelectInput = function() {
+					var typeDeclarationsSorted;
+					
 					this.documentTypeSelect.empty();
 					this.documentTypeSelect.append("<option value='"
 							+ m_constants.TO_BE_DEFINED
@@ -384,8 +386,9 @@ define(
 					this.documentTypeSelect
 							.append("<optgroup label='" + m_i18nUtils.getProperty("modeler.general.thisModel") + "'>");
 
-					var typeDeclarationsSorted = m_utils.convertToSortedArray(this.scopeModel.typeDeclarations, "name", true);
+					 
 					if (this.scopeModel) {
+						typeDeclarationsSorted = m_utils.convertToSortedArray(this.scopeModel.typeDeclarations, "name", true);
 						for ( var i in typeDeclarationsSorted) {
 							// Only composite structured types and not
 							// enumerations

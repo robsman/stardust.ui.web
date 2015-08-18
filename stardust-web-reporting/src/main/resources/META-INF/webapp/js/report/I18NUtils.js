@@ -35,6 +35,8 @@ define([ "i18n" ], function(InfinityBPMI18N) {
 		
 			if (value) {
 				return value;
+			} else if(defaultValue) {
+				return defaultValue;
 			} else {
 				return key;
 			}

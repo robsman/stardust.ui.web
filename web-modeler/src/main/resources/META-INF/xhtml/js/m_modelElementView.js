@@ -191,6 +191,7 @@ define(
 						window.setTimeout(function(){
 							m_angularContextUtils.runInActiveViewContext(function($scope){
 								$scope.elementView  = self;
+								$scope.require = require;
 							});
 						});
 					}
@@ -545,6 +546,21 @@ define(
 					this.postProcessCommand(command);
 				};
 
+				/**
+				 * 
+				 */
+				ModelElementView.prototype.processCommandError = function(command, response) {
+            m_angularContextUtils.runInActiveViewContext(function($scope) {
+              if (!$scope.commandError) {
+                $scope.commandError = {};
+              }
+
+              $scope.commandError.command = command;
+              $scope.commandError.response = response;
+
+            });
+				}
+				
 				/**
 				 * In case individual views want to do additional stuff they can
 				 * over ride this function.

@@ -50,7 +50,7 @@
 			
 			function closeIframe()
 			{
-				window.setTimeout(function(){parent.BridgeUtils.View.syncActiveView();parent.BridgeUtils.View.syncLaunchPanels();},200);
+				window.setTimeout(function(){parent.BridgeUtils.View.syncActiveView();parent.BridgeUtils.View.syncLaunchPanels();},600);
 			}
 		</script>
 	</head>
@@ -84,7 +84,7 @@
 				<ice:panelSeries style="#{ippActivityPanelController.separatorStyle}" 
 					rendered="#{ippActivityPanelController.supportsProcessDocuments}"
 					value="#{ippActivityPanelController.processDocuments}" var="processDocument">
-					<ice:panelGrid columns="1"> <!-- Added to give same spacing -->
+					<ice:panelGrid columns="2"> <!-- Added to give same spacing -->
 						<ice:commandLink styleClass="action-link"
 							actionListener="#{ippActivityPanelController.openDocument}" immediate="true" onclick="closeIframe();">
 							<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarOpenNewDocument" />
@@ -94,12 +94,22 @@
 								<ice:outputText value="#{processDocument.name}" style="white-space: nowrap;" />
 							</ice:panelGrid>
 						</ice:commandLink>
+						
+						<ice:commandLink
+							actionListener="#{ippActivityPanelController.detachDocument}" rendered="#{processDocument.id!=''}" onclick="closeIframe();">
+							<pc:automationTag
+								value="auto-PP-ProcAttachDlg-ToolbarDeleteDocument" standAlone="false" />
+							<h:graphicImage
+								value="/plugins/views-common/images/icons/delete.png"
+								style="border: none;padding-left:5px;" title="#{processportal_msgPropsBean['toolbars.workflowActions.document.detach']}"/>
+							<f:attribute name="documentInfo" value="#{processDocument}" />
+						</ice:commandLink>
 					</ice:panelGrid>
 				</ice:panelSeries>
 				
 				<ice:panelSeries rendered="#{ippActivityPanelController.supportsProcessAttachments}"
 					value="#{ippActivityPanelController.processAttachments}" var="processAttachment">
-					<ice:panelGrid columns="1"> <!-- Added to give same spacing -->
+					<ice:panelGrid columns="2"> <!-- Added to give same spacing -->
 						<ice:commandLink styleClass="action-link"
 							actionListener="#{ippActivityPanelController.openDocument}" immediate="true" onclick="closeIframe();">
 							<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarOpenAttachment" />
@@ -108,6 +118,15 @@
 								<ice:graphicImage value="#{processAttachment.documentIcon}" />
 								<ice:outputText value="#{processAttachment.name}" style="white-space: nowrap;" />
 							</ice:panelGrid>
+						</ice:commandLink>
+						<ice:commandLink
+							actionListener="#{ippActivityPanelController.detachDocument}" rendered="#{processAttachment!=null}" onclick="closeIframe();">
+							<pc:automationTag
+								value="auto-PP-ProcAttachDlg-ToolbarDeleteDocument" standAlone="false" />
+							<h:graphicImage
+								value="/plugins/views-common/images/icons/delete.png"
+								style="border: none;padding-left:5px;" title="#{processportal_msgPropsBean['toolbars.workflowActions.document.detach']}"/>
+							<f:attribute name="documentInfo" value="#{processAttachment}"/>
 						</ice:commandLink>
 					</ice:panelGrid>
 				</ice:panelSeries>

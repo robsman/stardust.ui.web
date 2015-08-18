@@ -20,13 +20,13 @@ import java.util.Iterator;
 import javax.annotation.Resource;
 
 import org.eclipse.emf.ecore.xmi.XMLResource;
-
 import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
+import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.*;
@@ -39,7 +39,6 @@ import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.CommandHandlerUtils;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ModelElementEditingUtils;
-
 import org.eclipse.xsd.*;
 import org.springframework.context.ApplicationContext;
 
@@ -275,11 +274,27 @@ public class DataChangeCommandHandler
     * @param model
     * @param request
     */
+   @OnCommand(commandId = "documentListData.create")
+   public void createDocumentListData(ModelType model, JsonObject request)
+   {
+      String name = extractString(request, ModelerConstants.NAME_PROPERTY);
+
+      DataType data = getModelBuilderFacade().createDocumentListData(model, null, name, null);
+
+      // Map newly created data element to a UUID
+      EObjectUUIDMapper mapper = modelService().uuidMapper();
+      mapper.map(data);
+   }
+
+   /**
+    * @param model
+    * @param request
+    */
    @OnCommand(commandId = "data.delete")
    public void deletetData(ModelType model, JsonObject request)
    {
       String id = extractString(request, ModelerConstants.ID_PROPERTY);
-      DataType data = getModelBuilderFacade().findData(model, id);
+      DataType data = XPDLFinderUtils.findData(model, id);
 
       synchronized (model)
       {

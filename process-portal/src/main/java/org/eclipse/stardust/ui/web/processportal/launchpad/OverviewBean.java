@@ -213,7 +213,7 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
       params.put(Query.class.getName(), ParticipantWorklistCacheManager.getInstance().getWorklistQuery(participantInfo,participantInfo.getQualifiedId()));
       params.put("participantInfo", participantInfo);
       params.put("id", participantInfo.getId());
-      String name = I18nUtils.getParticipantName(ParticipantUtils.getParticipant(participantInfo));
+      String name = ParticipantUtils.getParticipantName(participantInfo);
       params.put("name", name);
 
       PPUtils.openWorklistView("id=" + participantInfo.getId(), params);
@@ -269,7 +269,7 @@ public class OverviewBean extends AbstractLaunchPanel implements InitializingBea
       params.put(Query.class.getName(), activityInstanceQuery);
       params.put("participantInfo", participantInfo);
       params.put("id", id);
-      String name = I18nUtils.getParticipantName(ParticipantUtils.getParticipant(participantInfo));
+      String name = ParticipantUtils.getParticipantName(participantInfo);
       params.put("name", name);
 
       PPUtils.openWorklistView("id=" + id, params);

@@ -25,8 +25,7 @@
    </parent>
 
    <modules>
-      <!-- Module is already installed by ui.common/pom.xml 
-      <module>icefaces-module</module> -->
+      <module>icefaces-module</module>
       <module>jsf-api-module</module>
       <module>jsf-myfaces-module</module>
    </modules>

@@ -5,17 +5,17 @@ import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingModel;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractBoolean;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.core.extensions.actions.abort.AbortActivityEventAction;
 import org.eclipse.stardust.engine.core.extensions.actions.complete.CompleteActivityEventAction;
 import org.eclipse.stardust.engine.core.extensions.actions.excludeuser.ExcludeUserAction;
+import org.eclipse.stardust.engine.core.extensions.actions.setdata.SetDataAction;
 import org.eclipse.stardust.engine.core.extensions.conditions.assignment.AssignmentCondition;
 import org.eclipse.stardust.engine.core.extensions.conditions.exception.ExceptionCondition;
 import org.eclipse.stardust.engine.core.extensions.conditions.exception.ExceptionConditionAccessPointProvider;
@@ -27,6 +27,7 @@ import org.eclipse.stardust.engine.core.extensions.conditions.timer.TimerAccessP
 import org.eclipse.stardust.engine.core.extensions.conditions.timer.TimerValidator;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.model.xpdl.builder.BpmModelBuilder;
+import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.model.BpmPackageBuilder;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.AbstractEventSymbol;
@@ -46,6 +47,7 @@ import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.model.xpdl.util.IdFactory;
 import org.eclipse.stardust.model.xpdl.util.NameIdUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
 import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
@@ -376,6 +378,13 @@ public class EventMarshallingUtils
             {"carnot:engine:action", ExcludeUserAction.class.getName()}
          });
       }
+      else if (PredefinedConstants.SET_DATA_ACTION.equals(actionTypeId))
+      {
+         actionType = newActionType(actionTypeId, "Set Data", false, true,
+               "exception", "bind", new String[][] {
+            {"carnot:engine:action", SetDataAction.class.getName()}
+         });
+      }
       model.getEventActionType().add(actionType);
       return actionType;
    }
@@ -467,6 +476,10 @@ public class EventMarshallingUtils
       {
          eventHandler.setLogHandler(extractBoolean(eventJson, ModelerConstants.LOG_HANDLER_PROPERTY));
       }
+      if (eventJson.has(ModelerConstants.CONSUME_ON_MATCH_PROPERTY))
+      {
+         eventHandler.setConsumeOnMatch(extractBoolean(eventJson, ModelerConstants.CONSUME_ON_MATCH_PROPERTY));
+      }
 
       if (eventJson.has(ModelerConstants.INTERRUPTING_PROPERTY))
       {
@@ -484,7 +497,7 @@ public class EventMarshallingUtils
             // there should be exactly one abort action with scope sub hierarchy
             EventActionType action = setEventAction(eventHandler,
                   PredefinedConstants.ABORT_ACTIVITY_ACTION,
-                  ModelElementUnmarshaller.ABORT_ACTIVITY_NAME);
+                  ModelElementUnmarshaller.ABORT_ACTIVITY_NAME, false);
 
             String scope = AttributeUtil.getAttributeValue(action, "carnot:engine:abort:scope");
             if (!AbortScope.SUB_HIERARCHY.equals(scope))
@@ -499,7 +512,7 @@ public class EventMarshallingUtils
                // non-interrupting non-boundary events have just one complete action.
                setEventAction(eventHandler,
                      PredefinedConstants.COMPLETE_ACTIVITY_ACTION,
-                     ModelElementUnmarshaller.COMPLETE_ACTIVITY_NAME);
+                     ModelElementUnmarshaller.COMPLETE_ACTIVITY_NAME, false);
             }
             else
             {
@@ -538,7 +551,7 @@ public class EventMarshallingUtils
       hostingConfig.addProperty(PRP_EVENT_HANDLER_ID, eventHandler.getId());
    }
 
-   public static EventActionType setEventAction(EventHandlerType eventHandler, String typeId, String defaultName)
+   public static EventActionType setEventAction(EventHandlerType eventHandler, String typeId, String defaultName, boolean keepOtherActions)
    {
       EventActionType action = null;
 
@@ -547,7 +560,10 @@ public class EventMarshallingUtils
          EventActionType a = i.next();
          if (action != null || a.getType() == null || !typeId.equals(a.getType().getId()))
          {
-            i.remove();
+            if (!keepOtherActions)
+            {
+               i.remove();
+            }
          }
          else
          {
@@ -569,6 +585,35 @@ public class EventMarshallingUtils
       return action;
    }
 
+   public static EventActionType addEventAction(EventHandlerType eventHandler,
+         String typeId, String defaultName, boolean keepOtherActions)
+   {
+      EventActionType action = null;
+      EventActionTypeType actionType = decodeEventActionType(typeId,
+            findContainingModel(eventHandler));
+      if (actionType != null)
+      {
+         action = newEventAction(actionType);
+         IdFactory idFactory = null;
+         if (defaultName == null)
+         {
+            idFactory = new IdFactory("Exclude User", "Exclude User");
+            idFactory.computeNames(eventHandler.getEventAction(), false);
+            action.setId(idFactory.getId());
+            action.setName(idFactory.getName());
+         }
+         else
+         {
+            idFactory = new IdFactory(defaultName, defaultName);
+            idFactory.computeNames(eventHandler.getEventAction(), false);
+            action.setId(idFactory.getId());
+            action.setName(defaultName);
+         }
+         eventHandler.getEventAction().add(action);
+      }
+      return action;
+   }
+
    public static ActivityType createHostActivity(ProcessDefinitionType processDefinition, String name)
    {
       ActivityType hostActivity = BpmModelBuilder.newRouteActivity(processDefinition)
@@ -578,17 +623,26 @@ public class EventMarshallingUtils
       return hostActivity;
    }
 
-   public static void createExcludeUserAction(ActivityType activity, JsonObject activityJson)
+   public static EventActionType createExcludeUserAction(ActivityType activity, JsonObject euJson, EObjectUUIDMapper uuidMapper)
    {
-      JsonObject euJson = activityJson.getAsJsonObject(ModelerConstants.EU_EXCLUDE_USER);
+      String dataFullID = "";
+      if (GsonUtils.hasNotJsonNull(euJson, ModelerConstants.EU_EXCLUDE_PERFORMER_DATA))
+      {
+         dataFullID = euJson.get(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA).getAsString();
+      }
 
-      String dataFullID =  euJson.get(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA).getAsString();
+      String actionName = null;
+
+      if (GsonUtils.hasNotJsonNull(euJson, ModelerConstants.NAME_PROPERTY))
+      {
+         actionName = euJson.get(ModelerConstants.NAME_PROPERTY).getAsString();
+      }
 
       String dataID = dataFullID;
 
       if (dataFullID.split(":").length > 1)
       {
-         dataFullID = dataFullID.split(":")[1];
+         dataID = dataFullID.split(":")[1];
       }
 
       String dataPath = GsonUtils.extractAsString(euJson, ModelerConstants.EU_EXCLUDE_PERFORMER_DATA_PATH);
@@ -606,32 +660,101 @@ public class EventMarshallingUtils
       if (eventHandler == null)
       {
          eventHandler = EventMarshallingUtils.newEventHandler(conditionType);
+         eventHandler.setType(conditionType);
+         eventHandler.setId(ModelerConstants.EU_EXCLUDE_USER_INTERNAL);
+         eventHandler.setName(ModelerConstants.EU_EXCLUDE_USER_INTERNAL);
+         activity.getEventHandler().add(eventHandler);
+         uuidMapper.map(eventHandler);
       }
 
-      activity.getEventHandler().add(eventHandler);
-      EventActionType action = EventMarshallingUtils.setEventAction(eventHandler,PredefinedConstants.EXCLUDE_USER_ACTION, PredefinedConstants.EXCLUDE_USER_ACTION);
+      EventActionType action = EventMarshallingUtils.addEventAction(eventHandler,PredefinedConstants.EXCLUDE_USER_ACTION, actionName, true);
       AttributeUtil.setAttribute(action, PredefinedConstants.EXCLUDED_PERFORMER_DATA, dataID);
       AttributeUtil.setAttribute(action, PredefinedConstants.EXCLUDED_PERFORMER_DATAPATH, dataPath);
-      eventHandler.setType(conditionType);
-      eventHandler.setId(ModelerConstants.EU_EXCLUDE_USER_INTERNAL);
-      eventHandler.setName("Exclude User");
+      uuidMapper.map(action);
+      return action;
    }
 
-   public static void removeExcludeUserAction(ActivityType activity)
+   public static void addExcludeUserActions(EventHandlerType eventHandler,
+         JsonObject eventJson, EObjectUUIDMapper uuidMapper)
    {
-      EventHandlerType tobeRemoved = null;
-      for (Iterator<EventHandlerType> i = activity.getEventHandler().iterator(); i
+      JsonArray excludeUserActionsJson = new JsonArray();
+      for (Iterator<EventActionType> i = eventHandler.getEventAction().iterator(); i
             .hasNext();)
       {
-         EventHandlerType eventHandler = i.next();
-         if (eventHandler.getType().getId().equals(PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION) && eventHandler.getId().equals(ModelerConstants.EU_EXCLUDE_USER_INTERNAL))
-         {
-            tobeRemoved = eventHandler;
-         }
+         EventActionType action = i.next();
+         JsonObject euJson = new JsonObject();
+         euJson.addProperty(ModelerConstants.NAME_PROPERTY, action.getName());
+         euJson.addProperty(ModelerConstants.UUID_PROPERTY, uuidMapper.getUUID(action));
+         euJson.addProperty(ModelerConstants.EU_EXCLUDE_PERFORMER_DATA, AttributeUtil
+               .getAttribute(action, PredefinedConstants.EXCLUDED_PERFORMER_DATA)
+               .getValue());
+         euJson.addProperty(
+               ModelerConstants.EU_EXCLUDE_PERFORMER_DATA_PATH,
+               AttributeUtil.getAttribute(action,
+                     PredefinedConstants.EXCLUDED_PERFORMER_DATAPATH).getValue());
+         excludeUserActionsJson.add(euJson);
       }
-      if (tobeRemoved != null)
+      eventJson.add("userExclusions", excludeUserActionsJson);
+   }
+
+   public static void createSetDataAction(EventHandlerType eventHandler, JsonObject eventJson)
+   {
+      JsonObject sdJson = eventJson.getAsJsonObject(ModelerConstants.SD_SET_DATA_ACTION);
+
+      String dataFullID =  sdJson.get(ModelerConstants.SD_SET_DATA_ACTION_DATA_ID).getAsString();
+
+      String dataID = dataFullID;
+
+      if (dataFullID.split(":").length > 1)
       {
-         activity.getEventHandler().remove(tobeRemoved);
+         dataID = dataFullID.split(":")[1];
+      }
+
+      String dataPath = GsonUtils.extractAsString(sdJson, ModelerConstants.SD_SET_DATA_ACTION_DATA_PATH);
+
+      if (dataPath != null)
+      {
+         dataPath = sdJson.get(ModelerConstants.SD_SET_DATA_ACTION_DATA_PATH).getAsString();
+      }
+
+      EventActionType action = EventMarshallingUtils.setEventAction(eventHandler,PredefinedConstants.SET_DATA_ACTION, PredefinedConstants.SET_DATA_ACTION, true);
+      AttributeUtil.setAttribute(action, PredefinedConstants.SET_DATA_ACTION_DATA_ID_ATT, dataID);
+      AttributeUtil.setAttribute(action, PredefinedConstants.SET_DATA_ACTION_DATA_PATH_ATT, dataPath);
+      AttributeUtil.setAttribute(action, PredefinedConstants.SET_DATA_ACTION_ATTRIBUTE_NAME_ATT, "carnot:engine:exception");
+      AttributeUtil.setAttribute(action, PredefinedConstants.SET_DATA_ACTION_ATTRIBUTE_PATH_ATT, "getMessage()");
+      action.setId(ModelerConstants.SD_SET_DATA_ACTION_INTERNAL);
+      action.setName(ModelerConstants.SD_SET_DATA_ACTION_INTERNAL);
+   }
+
+   public static void removeSetDataAction(EventHandlerType eventHandler)
+   {
+      EventActionType toBeRemoved = null;
+      for (Iterator<EventActionType> i = eventHandler.getEventAction().iterator(); i
+            .hasNext();)
+      {
+         EventActionType action = i.next();
+         if (action.getId().equals(ModelerConstants.SD_SET_DATA_ACTION_INTERNAL))
+         {
+            toBeRemoved = action;
+         }
+
+      }
+      if (toBeRemoved != null)
+      {
+         eventHandler.getEventAction().remove(toBeRemoved);
+      }
+
+   }
+
+   public static void removeExcludeUserAction(EventActionType action)
+   {
+      if (action != null)
+      {
+         if (action.eContainer() instanceof EventHandlerType)
+         {
+            EventHandlerType handler = (EventHandlerType) action.eContainer();
+            handler.getEventAction().remove(action);
+         }
       }
    }
 
@@ -642,10 +765,23 @@ public class EventMarshallingUtils
       {
          EventHandlerType eventHandler = i.next();
          if (eventHandler.getType().getId()
-               .equals(PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION)
-               && eventHandler.getId().equals(ModelerConstants.EU_EXCLUDE_USER_INTERNAL))
+               .equals(PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION))
          {
             return eventHandler;
+         }
+      }
+      return null;
+   }
+
+   public static EventActionType findSetDataEventAction(EventHandlerType eventHandler)
+   {
+      for (Iterator<EventActionType> i = eventHandler.getEventAction().iterator(); i
+            .hasNext();)
+      {
+         EventActionType eventAction = i.next();
+         if (eventAction.getId().equals(ModelerConstants.SD_SET_DATA_ACTION_INTERNAL))
+         {
+            return eventAction;
          }
       }
       return null;
@@ -697,5 +833,38 @@ public class EventMarshallingUtils
       return oaJson;
    }
 
+   public static Object getJsonAttribute(JsonObject object, String name)
+   {
+      if (!object.has(ModelerConstants.ATTRIBUTES_PROPERTY))
+      {
+         return null;
+      }
 
+      JsonObject attributes = object.getAsJsonObject(ModelerConstants.ATTRIBUTES_PROPERTY);
+      if (attributes != null)
+      {
+         for (Map.Entry<String, ? > entry : attributes.entrySet())
+         {
+            String key = entry.getKey();
+            if(key.equals(name))
+            {
+               JsonElement jsonValue = attributes.get(key);
+               if (jsonValue.isJsonNull())
+               {
+                  return null;
+               }
+               else if (jsonValue.getAsJsonPrimitive().isBoolean())
+               {
+                  return jsonValue.getAsBoolean();
+               }
+               else
+               {
+                  return jsonValue.getAsString();
+               }
+            }
+         }
+      }
+
+      return null;
+   }
 }

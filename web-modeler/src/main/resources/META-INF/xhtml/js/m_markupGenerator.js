@@ -172,7 +172,7 @@ define(
 					writeTag("            'views-common/js/libs/jquery/plugins/jquery.url',");
 					writeTag("         'https://raw.github.com/allmarkedup/jQuery-URL-Parser/4f5254f2519111ad7037d398b2efa61d3cda58d4/jquery.url' ],");
 					writeTag("      'angularjs' : [");
-					writeTag("            'views-common/js/libs/angular/angular-1.0.2',");
+					writeTag("                     '../portal-shell/js/libs/angular/1.2.11/angular',");
 					writeTag("         '//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min' ],");
 					writeTag(" 'xml2json' : [ 'processportal/xml2js' ],");
 					writeTag("    'bpm.portal.Interaction' : [ 'processportal/js/Interaction' ],");
@@ -187,7 +187,7 @@ define(
 					writeTag("      'jquery-ui' : [ 'jquery' ],");
 					writeTag("      'jquery.url' : [ 'jquery' ],");
 					writeTag("      'angularjs' : {");
-					writeTag("         require : 'jquery',");
+					writeTag("         deps : ['jquery'],");
 					writeTag("         exports : 'angular'");
 					writeTag("      },");
 					writeTag("      'bpm.portal.Interaction' : [ 'jquery' ],");

@@ -32,6 +32,11 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.FaceletPanelInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
@@ -45,6 +50,7 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler.DocumentUploadEventType;
@@ -52,11 +58,13 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.DocumentUploadHelp
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.TypedDocumentUploadHelper;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadDialogAttributes;
+import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
 
 /**
  * @author Robert.Sauer
@@ -71,6 +79,7 @@ public class ActivityPanelController extends UIComponentBean
    private MessagesViewsCommonBean propsBean;
    private LinkedProcessBean linkedProcess;
    private DocumentInfo typedDocumentInfo;
+   private ConfirmationDialog documentConfirmationDialog;
    
    public ActivityPanelController(ActivityDetailsBean activityDetailsBean)
    {
@@ -355,6 +364,76 @@ public class ActivityPanelController extends UIComponentBean
          uploadTypedDocument();
       }
    }
+   
+   /**
+    * 
+    * @param event
+    */
+   public void detachDocument(ActionEvent event)
+   {
+      final DocumentInfo docInfo = (DocumentInfo) event.getComponent().getAttributes().get("documentInfo");
+      if (StringUtils.isNotEmpty(docInfo.getId()))
+      {
+         activityDetailsBean.closeProcessAttachmentsIframePopup();
+         ConfirmationDialogHandler dialogHandler = new ConfirmationDialogHandler()
+         {
+            public boolean cancel()
+            {
+               documentConfirmationDialog = null;
+               return true;
+            }
+
+            public boolean accept()
+            {
+               try
+               {
+                  documentConfirmationDialog = null;
+                  detachDocument(docInfo);
+                  return true;
+               }
+               catch (Exception e)
+               {
+                  throw new RuntimeException(e);
+               }
+            }
+         };
+
+         MessagesViewsCommonBean propsBean = MessagesViewsCommonBean.getInstance();
+         documentConfirmationDialog = new ConfirmationDialog(DialogContentType.NONE, DialogActionType.YES_NO, null, DialogStyle.COMPACT, dialogHandler);
+         documentConfirmationDialog.setTitle(propsBean.getString("common.confirmDetach.title"));
+         documentConfirmationDialog.setMessage(propsBean.getString("common.confirmDetach.message.label"));
+         documentConfirmationDialog.openPopup();
+      }
+   }
+   
+   /**
+    * 
+    * @param docInfo
+    */
+   
+   private void detachDocument(DocumentInfo docInfo)
+   {
+      try
+      {
+         Document detachDocument = DocumentMgmtUtility.getDocument(docInfo.getId());
+         if (null == docInfo.getTypedDocument())
+         {
+            DMSHelper.detachProcessAttachment(activityDetailsBean.getProcessInstance(), detachDocument);
+         }
+         else
+         {
+            TypedDocument typeDocument = docInfo.getTypedDocument();
+            typeDocument.setDocument(null);
+            TypedDocumentsUtil.updateTypedDocument(typeDocument);
+         }
+         activityDetailsBean.closeProcessAttachmentsIframePopup();
+      }
+      catch (ResourceNotFoundException e)
+      {
+         trace.error("Unable to Detach Document from Activity");
+         ExceptionHandler.handleException(e);
+      }
+   }
 
    /**
     * upload a process attachment
@@ -587,6 +666,16 @@ public class ActivityPanelController extends UIComponentBean
    public void toggleSwitchProcessIframePopup()
    {
       activityDetailsBean.toggleSwitchProcessIframePopup();
+   }
+   
+   public ConfirmationDialog getDocumentConfirmationDialog()
+   {
+      return documentConfirmationDialog;
+   }
+
+   public void setDocumentConfirmationDialog(ConfirmationDialog documentConfirmationDialog)
+   {
+      this.documentConfirmationDialog = documentConfirmationDialog;
    }
 
    /**

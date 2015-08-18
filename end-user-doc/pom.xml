@@ -24,13 +24,12 @@
       <relativePath>../../product/product-parent/pom.xml</relativePath>
    </parent>
 
-   <name>End User Documenation</name>
+   <name>End User Documentation</name>
 
    <properties>
       <!-- Source paths used in copy-documentation -->
       <documentation.dir>../../documentation</documentation.dir>
       <bpm.doc.path>${documentation.dir}/org.eclipse.stardust.docs.analyst</bpm.doc.path>
-      <misc.doc.path>${documentation.dir}/org.eclipse.stardust.docs.misc/html/portal</misc.doc.path>
       <enduser.doc.path>${documentation.dir}/org.eclipse.stardust.docs.enduser</enduser.doc.path>
       
       <project.build.sourceEncoding>iso-8859-1</project.build.sourceEncoding>
@@ -99,7 +98,6 @@
                      <!-- target locations -->
                      <property name="build.src.doc" value="${project.build.directory}/generated-resources/META-INF/doc"/>
                      <property name="build.src.bpmdoc" value="${project.build.directory}/generated-resources/META-INF/doc/bpm"/>
-                     <property name="build.src.miscdoc" value="${project.build.directory}/generated-resources/META-INF/doc/misc"/>
                      <property name="build.src.portaldoc" value="${project.build.directory}/generated-resources/META-INF/doc/portal"/>
 
                      <!-- copy business process modeler doc -->
@@ -124,7 +122,6 @@
                         <filterchain>
                             <tokenfilter>
                                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.enduser/html/handbooks/" replace="../../portal/"/>
-                               <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../misc/"/>
                             </tokenfilter>
                         </filterchain>
                      </copy>
@@ -138,7 +135,6 @@
                         <filterchain>
                             <tokenfilter>
                                 <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.enduser/html/handbooks/" replace="../../../portal/"/>
-                               <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../../misc/"/>
                             </tokenfilter>
                         </filterchain>
                      </copy>
@@ -162,7 +158,6 @@
                         </fileset>
                         <filterchain>
                             <tokenfilter>
-                               <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../misc/"/>
                                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/handbooks/" replace="../../bpm/"/>
                                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/toc.html" replace="../../toc.html"/>
                             </tokenfilter>
@@ -177,7 +172,6 @@
                         </fileset>
                         <filterchain>
                             <tokenfilter>
-                               <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../../misc/"/>
                                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/handbooks/" replace="../../../bpm/"/>
                                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/toc.html" replace="../../../toc.html"/>
                             </tokenfilter>
@@ -192,7 +186,6 @@
                         </fileset>
                         <filterchain>
                             <tokenfilter>
-                               <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../../../misc/"/>
                                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/handbooks/" replace="../../../../bpm/"/>
                                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/toc.html" replace="../../../../toc.html"/>
                             </tokenfilter>
@@ -207,35 +200,12 @@
                         </fileset>
                         <filterchain>
                             <tokenfilter>
-                               <replaceregex pattern="PLUGINS_ROOT/@doc-plugin@.misc/html/portal/" replace="../../../../../misc/"/>
                                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/handbooks/" replace="../../../../../bpm/"/>
                                <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/toc.html" replace="../../../../../toc.html"/>
                             </tokenfilter>
                         </filterchain>
                      </copy>
 
-                     <!-- copy portal issues residing in misc plugins -->
-                     <copy todir="${build.src.miscdoc}" overwrite="true">
-                        <fileset dir="${misc.doc.path}">
-                           <include name="**/*.html"/>
-                           <include name="**/*.htm"/>
-                           <exclude name="toc.html" />
-                        </fileset>
-                        <filterchain>
-                            <tokenfilter>
-                               <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.enduser/html/handbooks/execution-clients/" replace="../portal/execution-clients/"/>
-                               <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/handbooks/" replace="../bpm/"/>
-                               <replaceregex pattern="PLUGINS_ROOT/org.eclipse.stardust.docs.analyst/html/toc.html" replace="../toc.html"/>
-                            </tokenfilter>
-                        </filterchain>
-                     </copy>
-                     <copy todir="${build.src.miscdoc}" >
-                        <fileset dir="${misc.doc.path}">
-                           <include name="**/*.png"/>
-                           <include name="**/*.gif"/>
-                           <include name="**/*.jpg"/>
-                        </fileset>
-                     </copy>
                      </target>
                   </configuration>
                   <goals>

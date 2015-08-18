@@ -80,14 +80,14 @@ define(
 					var models = m_globalVariables.get("models");
 					var model = models[command.modelId]; //m_model.findModel(command.modelId);
 					if (model != undefined) {
-						if (model.isReadonly()) {
+						if (model.isReadonly() && !model.isSimple()) {
 							m_utils.debug("Model '" + model.name + "' is marked as Readonly. Skipping server post.");
 							return false;
 						} else {
 							var chgDesc = [];
 							for( var i in command.changeDescriptions) {
 								var elem = model.findModelElementByUuid(command.changeDescriptions[i].uuid);
-								if (elem && elem.isReadonly()) {
+								if (elem && elem.isReadonly() && !model.isSimple()) {
 									m_utils.debug("Model Element '" + model.name + "/" + elem.name + "' is marked as Readonly. Skipping server post.");
 								} else {
 									chgDesc.push(command.changeDescriptions[i]);

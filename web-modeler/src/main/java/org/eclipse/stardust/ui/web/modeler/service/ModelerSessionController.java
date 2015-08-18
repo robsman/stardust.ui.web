@@ -31,6 +31,7 @@ import org.eclipse.stardust.ui.web.modeler.common.ConflictingRequestException;
 import org.eclipse.stardust.ui.web.modeler.common.ItemNotFoundException;
 import org.eclipse.stardust.ui.web.modeler.common.ModelRepository;
 import org.eclipse.stardust.ui.web.modeler.common.ModelingSessionLocator;
+import org.eclipse.stardust.ui.web.modeler.common.exception.ModelerException;
 import org.eclipse.stardust.ui.web.modeler.edit.LockInfo;
 import org.eclipse.stardust.ui.web.modeler.edit.MissingWritePermissionException;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
@@ -327,7 +328,7 @@ public class ModelerSessionController
          if (editingSession.canRedo())
          {
             Modification pendingRedo = editingSession.getPendingRedo();
-            postprocessChange(pendingRedo);
+            //postprocessChange(pendingRedo);
             jto.pendingRedoableChange = toJto(pendingRedo);
          }
 
@@ -408,9 +409,10 @@ public class ModelerSessionController
             }
          }
 
+         ChangeJto changeJto = null;
          if (commandId.startsWith("model."))
          {
-            return applyGlobalChange(editingSession, commandId, model, commandJto);
+            changeJto = applyGlobalChange(editingSession, commandId, model, commandJto);
          }
          else
          {
@@ -419,15 +421,28 @@ public class ModelerSessionController
             {
                throw new BadRequestException("Unknown model: " + modelId);
             }
-
-            return applyModelElementChange(editingSession, commandId, model, commandJto);
+            changeJto = applyModelElementChange(editingSession, commandId, model, commandJto);
          }
+
+         //TODO: Enhance MMS / Service
+         if (currentSession().modelManagementStrategy() instanceof RecordingModelManagementStrategy)
+         {
+            RecordingModelManagementStrategy recording = (RecordingModelManagementStrategy) this
+                  .currentSession().modelManagementStrategy();
+            recording.handleRecording(commandJto, changeJto);
+         }
+
+         return changeJto;
       }
       catch (MissingWritePermissionException mwpe)
       {
          throw new ConflictingRequestException("Missing write permission: " + mwpe.getMessage());
       }
+
+
    }
+
+
 
    /**
     * @param editingSession TODO
@@ -514,10 +529,19 @@ public class ModelerSessionController
             commandId, changeDescriptors);
       if (null != change)
       {
-         postprocessChange(change);
+         if (change.getFailure() instanceof ModelerException)
+         {
+            throw (ModelerException) change.getFailure();
+         }
 
          change.getMetadata().put("commandId", commandId);
          change.getMetadata().put("modelId", modelBinding.getModelId(model));
+
+         editingSession.beginEdit();
+         postprocessChange(change);
+         editingSession.endEdit(false);
+
+
          if (null != commandJto.account)
          {
             change.getMetadata().put("account", commandJto.account);

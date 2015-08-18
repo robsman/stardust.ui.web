@@ -15,7 +15,7 @@ if (!window.bpm.portal.modelerRequire) {
 					'//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2' ],
 			'raphael' : [ 'bpm-modeler/js/libs/raphael/2.0.1/raphael',
 					'//cdnjs.cloudflare.com/ajax/libs/raphael/2.0.1/raphael-min' ],
-			'angularjs' : [ 'bpm-modeler/js/libs/angular/angular-1.0.2',
+			'angularjs' : [ '../portal-shell/js/libs/angular/1.2.11/angular',
 					'//ajax.googleapis.com/ajax/libs/angularjs/1.0.2/angular.min' ],
 
 			'jquery-ui' : [
@@ -64,7 +64,7 @@ if (!window.bpm.portal.modelerRequire) {
 		},
 		SHIM : {
 			'angularjs' : {
-				require : "jquery",
+				deps : ["jquery"],
 				exports : "angular"
 			},
 			'json' : {

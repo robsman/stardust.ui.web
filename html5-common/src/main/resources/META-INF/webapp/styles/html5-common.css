@@ -1,12 +1,24 @@
+/************** General *****************/
+.msg-error {
+	color: red;
+	padding-left: 2px;
+}
+
 /* ********** View ********** */
 .view-panel {
-	margin: 8px;
+	margin: 6px;
+	position: relative;
+	overflow: auto;
 }
 
 .view-panel-toolbar {
 	border-bottom: 1px solid #CCCCCC;
 	margin-bottom: 10px;
 	padding-bottom: 2px;
+}
+
+.toolbar-buttons {
+	height: 30px
 }
 
 .view-panel-content {
@@ -21,31 +33,386 @@
 	margin-right: 5px;
 }
 
-/* ********** Data Table ********** */
-
-.selectedRow td {
-	background-color: #E8E6FC;
+.view-toolbar-section {
+	margin-left: 8px;
+	padding-left: 3px;
+	border-left: 1px dotted gray;
+	float: right;
 }
 
-.tbl-col {
-	padding: 2px 5px 2px 5px;
-	border: 1px solid #CCCCCC;
+.label-item {
+	color: #708090;
+	padding: 3px 5px 3px 0;
+	white-space: nowrap;
+	font-weight: normal;
 }
 
-.tbl-hdr-col {
-	padding: 2px 5px 2px 5px;
-	border: 1px solid #CCCCCC;
-	background-color: #EEEEEE;
+.heading {
+	font-weight: bold;
+	color: #708090;
 }
 
-.tbl-toolbar {
-	margin-bottom: 5px;
+/************** popup dialog *****************/
+
+.popup-dlg {
+   position: absolute;
+   z-index: 10;
+   padding: 10px;
+   border-top: 1px solid #CCCCCC;
+   border-left: 1px solid #CCCCCC;
+   border-bottom: 1px solid #999999;
+   border-right: 1px solid #999999;
+   background: #FFFFFF;
+   overflow: auto;
+   box-shadow: 5px 5px 25px #888888; 
 }
 
-.tbl-toolbar-item {
-	padding-right: 5px;
+.popup-dlg-bgImg {
+	background: url('./css-images/notes-background.png') top repeat-x #FFFFE0;
 }
 
-.tbl-tool-link {
-	margin-right: 5px;
+.popup-dlg-hdr {
+   border-bottom: 1px solid #CCCCCC;
+   padding: 5px;
+}
+
+.popup-dlg-hdr-txt {
+   color: #A69A88;
+   font-size: 15px;
+   font-weight: bold;
+}
+
+.popup-dlg-cls {
+   float: right;
+   margin: 5px 0px 0px 10px;
+   cursor: pointer;
+}
+
+.popup-dlg-cnt {
+   padding-top: 10px;
+   padding-bottom: 10px;
+}
+
+.popup-dlg-footer {
+   border-top: 1px solid #CCCCCC;
+   padding-top: 10px;
+   text-align: right;
+   white-space: nowrap;
+}
+
+.popup-dlg-footer .button {
+   margin-left: 5px;
+}
+
+.popup-dlg-footer .button .primary {
+   margin-right: 5px;
+   border-radius: 3px;
+   color: white;
+   background: #24415E;
+   border-color: #21659d;
+}
+
+.popup-dlg-footer .button .secondary {
+   background: #FFF !important;
+   color: #333 !important;
+}
+
+.popup-error-icon {
+	color: red;
+	font-size:25px;
+}
+
+.popup-info-icon {
+	font-size:25px;
+}
+
+/************** Input Components *****************/
+
+.inp-sel-one {
+   border-color: #AAAAAA;
+   margin: 2px;
+   width: auto;
+}
+
+.inp-check-box {
+    margin: 0 5px 2px 2px;
+    padding: 2px;
+    vertical-align: middle;
+}
+
+.inp-text-box {
+    margin: 2px;
+    padding: 3px;
+    font: 11px tahoma;
+    background: #FFF;
+    border: 1px solid #d9d9d9;
+}
+
+.ui-section {
+   border-right: 1px dotted gray;
+   padding-right: 10px;
+   margin-right: 10px;
+}
+
+.button-link {
+	background: none;
+	border: none;
+}
+
+.button-link[disabled='disabled'] {
+	cursor: default;	
+}
+
+/************** Behaviors *****************/
+
+.right {
+	float:right;
+}
+
+.left {
+	float:left;
+}
+
+/*Clear Fix*/
+.cf:before,
+.cf:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+.cf:after {
+    clear: both;
+}
+
+/************** COMMON CLASSES *****************/
+.section {
+	border-bottom: solid 1px #ddd;
+	display:block;
+	margin-bottom:1em;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+/*Base for all button type elements*/
+.button{
+	border-radius: 3px;
+	background: #24415E !important;
+	color: white !important;
+	border-color: #21659d;
+}
+
+/*Any .button preceeded by a .button will have this styling*/
+.button ~ .button{
+	background: #FFF !important;
+	color: #333 !important;
+}
+
+/*Text headers, TODO: split out font-size and line height*/
+.header{
+	font-family: Lato, Arial, Helvetica, sans-serif;
+	font-size: 15px;
+	font-weight: 400 !important;
+	color: #A69A88 !important;
+	padding: 0px;
+	line-height: 20px;
+	text-align: left;
+	white-space: nowrap;
+	text-transform: uppercase;
+}
+
+/*Bubble container for simple counts, icons*/
+.bubble{
+	display: inline-block;
+	min-width: 10px;
+	padding: 3px 7px;
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 1;
+	color: #fff;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: baseline;
+	background-color: #777;
+	border-radius: 10px;
+}
+
+/***********Backgrounds*/
+.dark{
+	background-color:#777;
+	color:#fff;
+}
+
+.transparent{
+	background-color:transparent;
+}
+
+.message{
+	width:calc(100% -10px);
+	padding:5px;
+	border-radius:5px;
+	border:solid 1px #999;
+	cursor: pointer;
+}
+
+.warning{
+	background:orange;
+	color:#fff;
+}
+
+
+
+
+
+/********* Classes for HTTP loading and animation ***************/
+.loading{
+  background:#00F;
+  width:100%;
+  height:2px;
+  overflow:hidden;
+  position:relative;
+}
+
+.loading-inner{
+  background:#EEF;
+  -webkit-animation-duration: 1s;
+  -webkit-animation-name: slideLeft;
+  -webkit-animation-iteration-count: infinite;
+  -moz-animation-duration: 1s;
+  -moz-animation-name: slideLeft;
+  -moz-animation-iteration-count: infinite;
+  animation-duration: 1s;
+  animation-name: slideLeft;
+  animation-iteration-count: infinite;
+  
+  width:20px;
+  height:2px;
+  border-radius:50%;
+}
+/********Animations and transitions**************/
+@-webkit-keyframes slideLeft {
+  from {
+    margin-left:0;
+  }
+
+  to {
+   margin-left:100%;
+  }
+}
+
+@-moz-keyframes slideLeft {
+  from {
+    margin-left:0;
+  }
+
+  to {
+   margin-left:100%;
+  }
+}
+
+@keyframes slideLeft {
+  from {
+    margin-left:0;
+  }
+
+  to {
+   margin-left:100%;
+  }
+}
+
+/********sd-dialog*******************************/
+
+.sd-dialog {
+	width: auto; 
+	background: none; 
+	top: 0;
+	overflow: visible; 
+	border: 0; 
+	box-shadow: none; 
+	margin:0; 
+	position:absolute;
+}
+
+.no-modal {
+	display: table;
+}
+
+.sd-dialog .modal-dialog {
+	z-index: 99999;
+	margin: 0px auto;
+}
+
+.sd-dialog .modal-dialog .modal-content {
+	height: inherit;
+}
+
+.sd-dialog .modal-dialog .modal-content .modal-header {
+	height: 1px;
+	padding: 15px;
+}
+
+.sd-dialog .modal-dialog .modal-content .confirmation-header {
+	width: 98%;
+}
+
+.sd-dialog .modal-dialog .modal-content .modal-body {
+	height: inherit;
+	max-height: none;
+	padding-bottom: 0;
+}
+
+.sd-dialog .modal-dialog .modal-content .button-alignment {
+	float: left;
+	margin-left: 5px;
+}
+
+.sd-dialog .modal-dialog .modal-content .button-alignment button {
+	margin-right: 10px;
+}
+
+.modal-header .close {
+	float: right;
+}
+
+.header {
+	line-height: 0px;
+}
+
+.sd-dialog .modal-dialog .modal-content .modal-footer {
+	padding: 10px;
+	margin-top: 15px;
+}
+
+.close {
+	float: right;
+	font-size: 21px;
+	font-weight: bold;
+	line-height: 1;
+	color: #000;
+	text-shadow: 0 1px 0 #fff;
+	filter: alpha(opacity = 20);
+	opacity: .2;
+}
+
+.close:hover, .close:focus {
+	color: #000;
+	text-decoration: none;
+	cursor: pointer;
+	filter: alpha(opacity = 50);
+	opacity: .5;
+}
+
+button.close {
+	-webkit-appearance: none;
+	padding: 0;
+	cursor: pointer;
+	background: transparent;
+	border: 0;
+}
+
+.modal-header .close {
+	margin-top: -2px;
+}
+	
+.iconDisabled {
+	color: gray;
 }

@@ -16,6 +16,7 @@ import java.util.Map;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.change.impl.ChangeDescriptionImpl;
+
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
 import org.eclipse.stardust.model.xpdl.carnot.*;
@@ -28,6 +29,7 @@ import org.eclipse.stardust.model.xpdl.xpdl2.Extensible;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
 import org.eclipse.stardust.modeling.repository.common.Connection;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
+
 import org.springframework.stereotype.Component;
 
 /**
@@ -40,7 +42,7 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
    @Override
    public int getInspectionPhase()
    {
-      return 10;
+      return 700;
    }
 
    @Override
@@ -85,7 +87,8 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
             if (symbols.size() == 0)
             {
                model.getData().remove(dataType);
-               change.markAlsoModified(dataType);
+               change.markAlsoModified(model);
+               change.markAlsoRemoved(dataType, true);
             }
          }
       }
@@ -123,7 +126,8 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
                      if (((IIdentifiableModelElement) element).getSymbols().isEmpty())
                      {
                         if (element instanceof RoleType
-                              && !LaneParticipantUtil.isUsedInLane((IModelParticipant) element))
+                              && !LaneParticipantUtil.isUsedInLane((IModelParticipant) element)
+                              && !isUsedInActivity((IModelParticipant) element))
                         {
                            model.getRole().remove(element);
                            modified = true;
@@ -144,6 +148,7 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
                               && element instanceof DataType)
                         {
                            model.getData().remove(element);
+                           change.markAlsoRemoved(element);
                            modified = true;
                         }
                         else if (candidate instanceof DataType
@@ -168,6 +173,14 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
    {
       if (modelElement != null)
       {
+         if (modelElement instanceof IModelParticipant)
+         {
+            IModelParticipant participtant = (IModelParticipant) modelElement;
+            if (participtant.eIsProxy())
+            {
+               return true;
+            }
+         }
          if (modelElement instanceof DataType)
          {
             DataType dataType = (DataType) modelElement;
@@ -228,6 +241,34 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
             }
          }
       }
+      return false;
+   }
+
+   public static boolean isUsedInActivity(IModelParticipant participant)
+   {
+      ModelType model = ModelUtils.findContainingModel(participant);
+      for(ProcessDefinitionType process : model.getProcessDefinition())
+      {
+         List<ActivityType> activities = process.getActivity();
+         for (ActivityType activity : activities)
+         {
+            if(activity.getPerformer() != null)
+            {
+               if(activity.getPerformer().equals(participant))
+               {
+                  //return true;
+               }
+            }
+            if(activity.getQualityControlPerformer() != null)
+            {
+               if(activity.getQualityControlPerformer().equals(participant))
+               {
+                  return true;
+               }
+            }
+         }
+      }
+
       return false;
    }
 }

@@ -1,0 +1,30 @@
+<div class="deputy-management-wrapper">
+<!-- 	<div class="view-panel-toolbar tbl-title"
+		style="color: #708090; font-size: 11px">{{i18n('business-control-center-messages.views-deputyTeamMemberView-myTeamMembers-title')}}</div> -->
+	<table sd-data-table="ctrl.userDeputiesTable"
+		sd-data="ctrl.deputies" sda-mode="local"
+		sda-ready="ctrl.showUserDeputiesTable" sda-selectable="row"
+		sda-sortable="true"
+		sda-sort-by="{name : 'userDisplayName', dir : 'desc'}"
+		sda-no-pagination="true">
+		<thead
+			sda-i18n-scope="business-control-center-messages.views-deputyManagementView">
+			<tr>
+				<th sda-name="userDisplayName"
+					sda-label-key="deputy"
+					sda-sortable="true">
+				</th>
+				<th sda-name="validFrom" sda-label-key="validFrom"></th>
+				<th sda-name="validTo" sda-label-key="validTo"></th>
+				<th sda-name="actions" sda-label="{{i18n('business-control-center-messages.views-common-column-actions')}}" ></th>
+		</thead>
+		<tbody>
+			<tr>
+				<td><img alt="" ng-src="{{ctrl.getUserImageURL(rowData.avatarImageURI)}}" width="24px" height="24px" style="padding-right: 5px;">{{rowData.userDisplayName}}</td>
+				<td sda-data-type="dateTime" style="text-align: center;"></td>
+				<td sda-data-type="dateTime" style="text-align: center;"></td>
+				<td style="text-align: center;"></td>
+			</tr>
+		</tbody>
+	</table>
+</div>

@@ -189,6 +189,14 @@ define(
 					name : this.getI18N("reporting.definitionView.activityInstanceProcessingTime"),
 					type : this.metadata.durationType
 				};
+				
+				this.metadata.commonTypes.activeTimestamp = {
+						id : "activeTimestamp",
+						name : this.getI18N("reporting.definitionView.activeInstancesOverTime"),
+						type : this.metadata.timestampType,
+						notSupportedAsColumn : true,
+						disableCumulationInterval : true
+				};
 
 				this.metadata.commonTypes.processInstanceProcessingTime = {
 					id : "processInstanceProcessingTime",
@@ -248,6 +256,7 @@ define(
                         name : this.getI18N("reporting.definitionView.processInstanceDuration"),
                         type : this.metadata.durationType
                      },
+                     activeTimestamp: this.metadata.commonTypes.activeTimestamp,
                      rootProcessInstanceDuration : {
                         id : "rootProcessInstanceDuration",
                         name : this.getI18N("reporting.definitionView.rootProcessInstanceDuration"),
@@ -351,6 +360,7 @@ define(
                         type : this.metadata.durationType,
                         cumulated : true
                      },
+                     activeTimestamp: this.metadata.commonTypes.activeTimestamp,
                      activityInstanceProcessingTime: this.metadata.commonTypes.activityInstanceProcessingTime,
                      processInstanceDuration : {
                         id : "processInstanceDuration",
@@ -581,14 +591,27 @@ define(
 				
 				this.clientDateFormat = 'yyyy-MM-dd hh:mm a';
 				
-				this.formats = {
-						date : "MM/dd/yy",
-						minutes : "MM/dd/yy hh:mm a",
-						seconds : "MM/dd/yy hh:mm:ss a",
-						hours : "MM/dd/yy hh a",
-						months : "MM/yy"
+				this.dateFormats = {
+						date : this.getI18N("dateFormats.defaultDateFormat"),
+						minutes : this.getI18N("dateFormats.defaultDateTimeFormat"),
+						seconds : this.getI18N("dateFormats.date.seconds"),
+						hours : this.getI18N("dateFormats.date.hours"),
+						months : this.getI18N("dateFormats.date.months")
 				};
+				
+				this.jqPlot = {};
+				this.jqPlot.dateFormats = {
+						date : this.getI18N("jqPlot.dateFormats.defaultDateFormat"),
+						minutes : this.getI18N("jqPlot.dateFormats.defaultDateTimeFormat"),
+						seconds : this.getI18N("jqPlot.dateFormats.date.seconds"),
+						hours : this.getI18N("jqPlot.dateFormats.date.hours"),
+						months : this.getI18N("jqPlot.dateFormats.date.months")
+				};
+				
 				this.serverDateFormat = "yy/mm/dd";
+				
+				this.previewMaxFetchSize = 500;
+				this.previewRetrieveAll = false;
 
 				/**
 				 * 
@@ -766,8 +789,34 @@ define(
 							}).fail(function() {
 								deferred.reject();
 							});
-						this.getDateFormats();
 					}
+
+					return deferred.promise();
+				};
+				
+				ReportingService.prototype.getUserLanguage = function() {
+					var deferred = jQuery.Deferred();
+
+					var self = this;
+					jQuery
+							.ajax(
+									{
+										type : "GET",
+										async : false,
+										beforeSend : function(request) {
+											request
+													.setRequestHeader(
+															"Authentication",
+															self
+																	.getBasicAuthenticationHeader());
+										},
+										url : self.getRootUrl() + "/services/rest/bpm-reporting/language",
+										contentType : "application/json"
+									}).done(function(data) {
+								deferred.resolve(data);
+							}).fail(function() {
+								deferred.reject();
+							});
 
 					return deferred.promise();
 				};
@@ -800,8 +849,8 @@ define(
 															self
 																	.getBasicAuthenticationHeader());
 										},
-										url : self.getRootUrl()
-												+ "/services/rest/bpm-reporting/search/"+ serviceName + "/" + searchValue,
+										url : encodeURI(self.getRootUrl()
+												+ "/services/rest/bpm-reporting/search/"+ serviceName + "/" + searchValue),
 										contentType : "application/json"
 									}).done(function(data) {
 								deferred.resolve(data);
@@ -912,6 +961,15 @@ define(
 								console.debug("Report Definition");
 								console.debug(report);
 								
+								var clonedReport = jQuery.extend(true, {}, report);
+
+								if (this.previewRetrieveAll) {
+									// Do not insert maxFetchSize into report object.
+									this.previewRetrieveAll = false;
+								} else {
+									clonedReport.dataSet.maxFetchSize = this.previewMaxFetchSize;
+								}
+								
 								//convert parameters
 								var parametersString = convertToParametersString(parameters);
 								
@@ -927,10 +985,10 @@ define(
 																		self
 																				.getBasicAuthenticationHeader());
 													},
-													url : self.getRootUrl()
-															+ "/services/rest/bpm-reporting/report-data?" + parametersString,
+													url : encodeURI(self.getRootUrl()
+															+ "/services/rest/bpm-reporting/report-data?" + parametersString),
 													contentType : "application/json",
-													data : JSON.stringify(report)
+													data : JSON.stringify(clonedReport)
 												}).done(function(data) {
 											deferred.resolve(data);
 										}).fail(function() {
@@ -976,8 +1034,8 @@ define(
 															self
 																	.getBasicAuthenticationHeader());
 										},
-										url : self.getRootUrl()
-												+ "/services/rest/bpm-reporting/report-data?" + parametersString,
+										url : encodeURI(self.getRootUrl()
+												+ "/services/rest/bpm-reporting/report-data?" + parametersString),
 										contentType : "application/json",
 									}).done(function(data) {
 								deferred.resolve(data);
@@ -1328,7 +1386,7 @@ define(
 															self
 																	.getBasicAuthenticationHeader());
 										},
-										url : self.getRootUrl() + "/services/rest/bpm-reporting/report-definition" + path
+										url : encodeURI(self.getRootUrl() + "/services/rest/bpm-reporting/report-definition" + path)
 									}).done(function(response) {
 								if(response.definition){
 									applyUIAdjustment(response.definition);
@@ -1365,7 +1423,7 @@ define(
 							// self
 							// .getBasicAuthenticationHeader());
 						},
-						url : uri,
+						url : encodeURI(uri),
 						contentType : "application/json"
 					}).done(function(response) {
 						console.debug("Retrieved external data");
@@ -1396,7 +1454,7 @@ define(
 						path, name) {
 					var deferred = jQuery.Deferred();
 					var self = this;
-
+					
 					jQuery
 							.ajax(
 									{
@@ -1446,7 +1504,7 @@ define(
 															self
 																	.getBasicAuthenticationHeader());
 										},
-										url : self.getRootUrl() + "/services/rest/bpm-reporting/report-definition" + path
+										url : encodeURI(self.getRootUrl() + "/services/rest/bpm-reporting/report-definition" + path)
 									}).done(function() {
 								deferred.resolve();
 							}).fail(function() {
@@ -1556,16 +1614,29 @@ define(
 					// Joined external data
 					if (report.dataSet.joinExternalData && report.dataSet.externalJoins) {
 					    for (var l in report.dataSet.externalJoins) {
+
+					        // this should be read from rest service instead - but only once!
 					        var join = report.dataSet.externalJoins[l];
 
 					        for (var k in join.fields) {
 					            var field = join.fields[k];
 
-					            dimensions.push({
-					                id: field.name,
-					                name: field.name,
-					                type: this.metadata[field.type]
-					            });
+								// add static data
+								if(field.customStaticDataId) {
+									this.staticData[field.customStaticDataId] = field.customStaticData;
+								}
+
+								// copy all properties from external data
+								var externalDimension = {};
+								for(var prop in field) {
+									if(prop === 'type') {
+										externalDimension.type = this.metadata[field.type];
+									} else {
+										externalDimension[prop] = field[prop];
+									}
+								}
+
+								dimensions.push(externalDimension);
 					        }
 					    }
 					}
@@ -1597,6 +1668,52 @@ define(
 
 					return dimensions;
 				};
+				
+				
+				/**
+				 * Returns a consolidated list of possible Facts including computed columns
+				 * 
+				 */
+				ReportingService.prototype.getCumulatedFacts = function(report, asArray) {
+					var cumulatedFacts = {};
+					var cumulatedFactsArr = [];
+					var baseFacts = this.getPrimaryObject(report.dataSet.primaryObject).facts;
+					
+					for ( var i in baseFacts) {
+						cumulatedFacts[i] = baseFacts[i];
+						cumulatedFactsArr.push(baseFacts[i]);
+					}
+
+					// Computed columns
+					for ( var n in report.dataSet.computedColumns) {
+						var column = report.dataSet.computedColumns[n];
+						var type = this.metadata[column.type];
+
+						var columnWrapper = {
+							id : column.id,
+							name : column.name,
+							type : type,
+							metadata : {
+								isComputedType : true,
+								name : column.name,
+								type : type.id
+							}
+						};
+						cumulatedFacts[column.id] = columnWrapper;
+						cumulatedFactsArr.push(columnWrapper);
+					}
+
+					if (asArray) {
+						// sort data
+						cumulatedFactsArr.sort(function(object1, object2) {
+							return object1.name.localeCompare(object2.name);
+						});
+						return cumulatedFactsArr;
+					} else {
+						return cumulatedFacts;
+					}
+				};
+				
 
 				/**
 				 * 
@@ -1641,20 +1758,25 @@ define(
 				/**
 				 * Get dimension objects for report columns.
 				 */
-				ReportingService.prototype.getColumnDimensions = function(
-						report) {
+				ReportingService.prototype.getColumnDimensions = function(report) {
+				  var primaryObject = this.getPrimaryObject(report.dataSet.primaryObject);
 					var dimensions = [];
+					var columnId;
+					var dimension;
 
 					for ( var m in report.dataSet.columns) {
-						if (this.getPrimaryObject(report.dataSet.primaryObject).dimensions[report.dataSet.columns[m].id] != null) {
-							dimensions.push(this.getDimension(
-									report.dataSet.primaryObject,
-									report.dataSet.columns[m].id));
+					  columnId = report.dataSet.columns[m].id;
+						if (primaryObject.dimensions[columnId] != null) {
+						  dimension = this.getDimension(report.dataSet.primaryObject, columnId);
 						} else {
 							// Must be a joined field or computed column
-
-							dimensions.push(this.getUserDefinedField(report,
-									report.dataSet.columns[m].id));
+						  dimension = this.getUserDefinedField(report, columnId);
+						}
+						
+						if (dimension) {
+						  dimensions.push(dimension);
+						} else {
+						  // unresolvable column reference, just drop it for now
 						}
 					}
 
@@ -2037,37 +2159,6 @@ define(
             /**
              * 
              */
-            ReportingService.prototype.getDateFormats = function() {
-               var deferred = jQuery.Deferred();
-               var self = this;
-
-               jQuery
-                     .ajax(
-                           {
-                              type : "GET",
-                              async: false,
-                              beforeSend : function(request) {
-                                 request
-                                       .setRequestHeader(
-                                             "Authentication",
-                                             self
-                                                   .getBasicAuthenticationHeader());
-                              },
-                              url : self.getRootUrl()
-                                    + "/services/rest/bpm-reporting/dateFormats",
-                              contentType : "application/json"
-                           }).done(function(data) {
-                        	  self.formats = data;
-                              deferred.resolve();
-                     }).fail(function() {
-                        deferred.reject();
-                     });
-               return deferred.promise();
-            };
-            
-            /**
-             * 
-             */
             ReportingService.prototype.uploadReport = function(uuid) {
                var deferred = jQuery.Deferred();
                var self = this;
@@ -2112,6 +2203,46 @@ define(
                return reportName;
             }
             
+            /**
+             * 
+             */
+            ReportingService.prototype.renameAndSaveReportDefinition = function(
+                  report) {
+               var deferred = jQuery.Deferred();
+               var self = this;
+
+               revertUIAdjustment(report);
+               
+               jQuery
+                     .ajax(
+                           {
+                              type : "PUT",
+                              async: false,
+                              beforeSend : function(request) {
+                                 request
+                                       .setRequestHeader(
+                                             "Authentication",
+                                             self
+                                                   .getBasicAuthenticationHeader());
+                              },
+                              url : self.getRootUrl()
+                                    + "/services/rest/bpm-reporting/report-definition",
+                              contentType : "application/json",
+                              data : JSON.stringify({
+                                 operation : "renameAndSave",
+                                 report : report
+                              })
+                           }).done(function(report) {
+                        applyUIAdjustment(report);    
+                        deferred.resolve(report);
+                     }).fail(function(response) {
+                        deferred.reject(response);
+                     });
+
+               applyUIAdjustment(report);
+               return deferred.promise();
+            };
+            
 			}
 			
 			/**
@@ -2133,7 +2264,7 @@ define(
 						}else{
 							//TODO: remove this when filter and parameter format is same for DATE
 							//special parameter, in case of date, there are multiple fields so change the format here
-							if(parameters[itemInd].value.from){
+							if(parameters[itemInd].value && parameters[itemInd].value.from){
 								var pValue = ["from", "to", "duration", "durationUnit"];
 								var actualValue = parameters[itemInd].value; //complex object startDate = {from : "", to : ""};
 								var formattedValue = ""; 

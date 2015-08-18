@@ -71,10 +71,10 @@ define(
 									m_i18nUtils
 											.getProperty("modeler.element.properties.timerEvent_intermediate.logHandler"));
 
-					/*jQuery("label[for='consumeOnMatchInput']")
+					jQuery("label[for='consumeOnMatchInput']")
 							.text(
 									m_i18nUtils
-											.getProperty("modeler.element.properties.timerEvent_intermediate.consumeOnMatch"));*/
+											.getProperty("modeler.element.properties.timerEvent_intermediate.consumeOnMatch"));
 
 					jQuery("label[for='interruptingInput']")
 							.text(
@@ -124,7 +124,7 @@ define(
 
 					//this.autoBindingInput = this.mapInputId("autoBindingInput");
 					this.logHandlerInput = this.mapInputId("logHandlerInput");
-					//this.consumeOnMatchInput = this.mapInputId("consumeOnMatchInput");
+					this.consumeOnMatchInput = this.mapInputId("consumeOnMatchInput");
 					this.interruptingInput = this.mapInputId("interruptingInput");
 					this.eventTriggerSelect = this.mapInputId("eventTriggerSelect");
 
@@ -353,6 +353,15 @@ define(
 					this.autoBindingInput.prop("disabled", true);
 					this.consumeOnMatchInput.prop("disabled", true);*/
 
+				  jQuery("label[for='consumeOnMatchInput']").addClass("invisible");
+          m_dialog.makeInvisible(this.consumeOnMatchInput);
+          
+
+					jQuery("label[for='logHandlerInput']")
+							.text(
+									m_i18nUtils
+											.getProperty("modeler.element.properties.timerEvent_intermediate.logHandler"));
+				  
 					var modelElement = this.page.propertiesPanel.element.modelElement;
 					if (modelElement.isBoundaryEvent()) {
 						this.interruptingInput.prop("checked",

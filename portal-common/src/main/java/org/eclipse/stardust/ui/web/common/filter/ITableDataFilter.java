@@ -43,6 +43,11 @@ public interface ITableDataFilter extends Serializable
       SHORT,
       STRING,
       DATE,
+      DATE_WITHOUT_TIME,  /*
+                           * Instead of down-grading existing DATE to show only date and
+                           * introducing new field as DATETIME to show date and time,
+                           * introduced DATE_WITHOUT_TIME to minimize impact on existing usage
+                           */
       BOOLEAN,
       NONE
    }

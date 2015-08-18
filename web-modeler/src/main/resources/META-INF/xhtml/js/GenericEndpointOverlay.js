@@ -88,6 +88,7 @@ define(
                this.requestDataInput = m_utils.jQuerySelect("#genericEndpointOverlay #requestDataInput");
                this.responseDataInput = m_utils.jQuerySelect("#genericEndpointOverlay #responseDataInput");
                this.transactedRouteInput = m_utils.jQuerySelect("#genericEndpointOverlay #transactedRouteInput");
+               this.autoStartupInput = m_utils.jQuerySelect("#genericEndpointOverlay #autoStartupInput");
                this.inputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #inputBodyAccessPointInput");
                this.outputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #outputBodyAccessPointInput");
 
@@ -134,7 +135,8 @@ define(
                });
                
                var self = this;
-                           
+               this.parameterDefinitionNameInput = jQuery("#parametersTab #parameterDefinitionNameInput");
+          
                this.camelContextInput.change(function() {
                
                   if (!self.view.validate()) {
@@ -188,6 +190,15 @@ define(
                         self.transactedRouteInput.prop("checked"));
                });
                
+               this.autoStartupInput.change(function() {
+                  if (!self.view.validate()) {
+                     return;
+                  }
+                  self.view.submitModelElementAttributeChange(
+                        "carnot:engine:camel::autoStartup",
+                        self.autoStartupInput.prop("checked"));
+               });
+                              
                this.processContextHeadersInput.change(function() {
                   if (!self.view.validate()) {
                      return;
@@ -494,6 +505,13 @@ define(
                                              .val());
                         }
                      });
+					 
+					this.parameterDefinitionNameInput
+                     .change(function() {
+					    if (!self.view.validate()) {
+                           return;
+                        }
+                     });
                
                
                if(!this.getApplication().attributes["carnot:engine:camel::camelContextId"])
@@ -651,10 +669,17 @@ define(
                 if(this.getApplication().attributes["carnot:engine:camel::transactedRoute"]==null||this.getApplication().attributes["carnot:engine:camel::transactedRoute"]===undefined){
                      this.view.submitModelElementAttributeChange("carnot:engine:camel::transactedRoute", true);
                   }
-               
+                
+                if(this.getApplication().attributes["carnot:engine:camel::autoStartup"]==null||this.getApplication().attributes["carnot:engine:camel::autoStartup"]===undefined){
+                   this.view.submitModelElementAttributeChange("carnot:engine:camel::autoStartup", true);
+                  }
+                
                this.transactedRouteInput.prop("checked",
                         this.getApplication().attributes["carnot:engine:camel::transactedRoute"]);
                
+               this.autoStartupInput.prop("checked",
+                        this.getApplication().attributes["carnot:engine:camel::autoStartup"]);
+                              
                this.producerBpmTypeConverter.prop("checked",
                      this.getApplication().attributes["carnot:engine:camel::producerBpmTypeConverter"]);
                
@@ -845,19 +870,38 @@ define(
              * 
              */
             GenericEndpointOverlay.prototype.validate = function() {
-               this.camelContextInput.removeClass("error");
-
-               if (m_utils.isEmptyString(this.camelContextInput.val())) {
-                  this.view.errorMessages
-                        .push("Camel Context must not be empty."); // TODO
-                  // I18N
-                  this.camelContextInput.addClass("error");
-
-                  return false;
-               }
-
-               return true;
-            };
+				var valid = true;
+				this.camelContextInput.removeClass("error");
+				this.parameterDefinitionNameInput.removeClass("error");
+				var parameterDefinitionNameInputWhithoutSpaces =  this.parameterDefinitionNameInput.val().replace(/ /g, "");
+				if ((parameterDefinitionNameInputWhithoutSpaces ==  "exchange")|| (parameterDefinitionNameInputWhithoutSpaces ==  "headers")){
+					this.view.errorMessages
+									  .push(this.parameterDefinitionNameInput.val()+" cannot be used as an access point");
+					this.parameterDefinitionNameInput.addClass("error");
+					valid = false;
+					}
+				
+				for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; n++)
+				{
+					var ap = this.getApplication().contexts.application.accessPoints[n];
+					if ((ap.name.replace(/ /g, "") == "headers")||(ap.name.replace(/ /g, "") == "exchange"))
+					{
+						if(this.view.errorMessages.indexOf(ap.name.replace(/ /g, "")+" cannot be used as an access point")<0){
+							this.view.errorMessages.push(ap.name.replace(/ /g, "")+" cannot be used as an access point");
+							}
+						this.parameterDefinitionNameInput.addClass("error");
+						valid = false;
+						}
+					}
+				if (m_utils.isEmptyString(this.camelContextInput.val())) {
+					this.view.errorMessages.push("Camel Context must not be empty.");
+					this.camelContextInput.addClass("error");
+					}
+				if (this.view.errorMessages.length != 0){
+					valid = false;
+					}
+				return valid;
+				};
             
             /**
              * 

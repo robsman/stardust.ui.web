@@ -21,10 +21,12 @@ import java.util.Set;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.config.Parameters;
+import org.eclipse.stardust.common.config.ParametersFacade;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
+import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.core.repository.IRepositoryManager;
 import org.eclipse.stardust.engine.core.repository.RepositorySpaceKey;
@@ -256,16 +258,26 @@ public class IppThemeProvider implements ThemeProvider
 
       IRepositoryManager repoManager = sessionCtx.getRepositoryManager();
 
-      if (sessionCtx.isSessionInitialized())
+      final boolean isArchiveAuditTrail = ParametersFacade.instance().getBoolean(
+              org.eclipse.stardust.engine.core.runtime.beans.Constants.CARNOT_ARCHIVE_AUDITTRAIL, false);
+
+      try
       {
-         if (sessionCtx.getUser().isAdministrator() || !DMSHelper.isSecurityEnabled())
-         {
-            return repoManager.getContentFolder(RepositorySpaceKey.SKINS, true);
-         }
-         else
-         {
-            return repoManager.getContentFolder(RepositorySpaceKey.SKINS, false);
-         }
+    	  if (sessionCtx.isSessionInitialized())
+    	  {
+    		  if ((sessionCtx.getUser().isAdministrator() || !DMSHelper.isSecurityEnabled()) && !isArchiveAuditTrail)
+    		  {
+    			  return repoManager.getContentFolder(RepositorySpaceKey.SKINS, true);
+              }
+              else
+              {
+            	  return repoManager.getContentFolder(RepositorySpaceKey.SKINS, false);
+              }
+    	  }
+      }
+      catch (DocumentManagementServiceException dmse)
+      {
+    	  trace.error("Error occured in reading skins" + dmse.getLocalizedMessage());
       }
       return null;
    }

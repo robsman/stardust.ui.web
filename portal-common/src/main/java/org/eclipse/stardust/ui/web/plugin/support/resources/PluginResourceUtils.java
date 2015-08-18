@@ -15,6 +15,8 @@ import static java.util.Collections.emptyList;
 import static org.eclipse.stardust.common.CollectionUtils.isEmpty;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.CollectionUtils.newConcurrentHashMap;
+import static org.eclipse.stardust.common.CollectionUtils.union;
+import static org.eclipse.stardust.common.config.ExtensionProviderUtils.getExtensionProviders;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -31,6 +33,7 @@ import java.util.concurrent.ConcurrentMap;
 import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.ui.web.plugin.support.resources.spi.PluginResourcesResolver;
 import org.eclipse.stardust.ui.web.plugin.utils.PluginUtils;
 import org.eclipse.stardust.ui.web.plugin.utils.PluginUtils.PluginDescriptor;
 import org.springframework.core.io.Resource;
@@ -223,10 +226,50 @@ public class PluginResourceUtils
     *           the Spring resource pattern resolver to be used
     * @param locationPattern
     *           the resource pattern
-    * @return a list of resources matching teh given pattern
+    * @return a list of resources matching the given pattern
     * @throws IOException
     */
    public static List<Resource> resolveResources(ResourcePatternResolver resolver,
+         String locationPattern) throws IOException
+   {
+      List<Resource> resources = emptyList();
+      try
+      {
+         List<Resource> globalResources = resolveGlobalResources(resolver, locationPattern);
+         if ( !isEmpty(globalResources))
+         {
+            resources = newArrayList(globalResources);
+         }
+      }
+      catch (Exception e)
+      {
+         if (log.isDebugEnabled())
+         {
+            log.debug("Failed resolving plugin resources.", e);
+         }
+         resources = emptyList();
+      }
+
+      for (PluginResourcesResolver resResolver : getExtensionProviders(PluginResourcesResolver.class))
+      {
+         try
+         {
+            List<Resource> additionalResources = resResolver.resolveResources(resolver, locationPattern);
+            if ( !isEmpty(additionalResources))
+            {
+               resources = union(resources, additionalResources);
+            }
+         }
+         catch (Exception e)
+         {
+            log.warn("Failed resolving plugin resources.", e);
+         }
+      }
+
+      return resources;
+   }
+
+   public static List<Resource> resolveGlobalResources(ResourcePatternResolver resolver,
          String locationPattern) throws IOException
    {
       ConcurrentMap<String, Object> resolutionCache = null;
@@ -291,11 +334,12 @@ public class PluginResourceUtils
 
       if (null != resolutionCache)
       {
-         // by default, prefer to put resource URIs into the resolution cache, but for
-         // JBoss, URI to resource resolution did not seem to work properly, so VFS
-         // resources will preferably be cached directly
-         boolean cacheResourcesInsteadOfUris = Parameters.instance().getBoolean(
-               "Carnot.Client.Caching.PluginResourceResolution.CacheResources", foundJbossVfsResources);
+         // by default, prefer to put resources into the resolution cache
+         // for JBoss, URI to resource resolution did not seem to work properly, so VFS
+         // resources will always be cached directly
+         boolean cacheResourcesInsteadOfUris = foundJbossVfsResources
+               || Parameters.instance().getBoolean("Carnot.Client.Caching.PluginResourceResolution.CacheResources",
+                     true);
 
          if (cacheResourcesInsteadOfUris)
          {

@@ -150,7 +150,16 @@ public class NotesBean extends UIComponentBean implements IUserObjectBuilder<Not
          thisView.resolveLabelAndDescription();
       }
       
-      scopeProcessInstance = ProcessInstanceUtils.getProcessInstance(processInstance.getScopeProcessInstanceOID());
+      if (processInstance.getOID() != processInstance.getScopeProcessInstanceOID())
+      {
+         scopeProcessInstance = ProcessInstanceUtils.getProcessInstance(processInstance.getScopeProcessInstanceOID(),
+               true);
+      }
+      else
+      {
+         scopeProcessInstance = ProcessInstanceUtils.getProcessInstance(processInstance.getScopeProcessInstanceOID());
+      }
+ 
       String noteNumber = (String) getParamValue("noteNr");
       attributes = fetchAttributes(scopeProcessInstance);
       List<Note> noteList = attributes.getNotes();

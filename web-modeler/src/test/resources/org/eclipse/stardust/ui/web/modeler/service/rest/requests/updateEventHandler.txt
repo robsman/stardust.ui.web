@@ -1,0 +1,2 @@
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"32","changes":{"modelElement":{"logHandler":false}}}]}
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"32","changes":{"modelElement":{"consumeOnMatch":false}}}]}

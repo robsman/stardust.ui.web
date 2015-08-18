@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.MissingResourceException;
@@ -40,6 +41,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
+import org.eclipse.stardust.ui.web.html5.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
@@ -149,10 +151,7 @@ public class FileUploadRestlet
       {
          StringBuffer bundleData = new StringBuffer();
 
-         MessagePropertiesBean messageBean = (MessagePropertiesBean) RestControllerUtils.resolveSpringBean(
-               MessagePropertiesBean.class, servletContext);
-
-         ResourceBundle bundle = ResourceBundle.getBundle(BUNDLE_NAME, messageBean.getLocaleObject());
+         ResourceBundle bundle = ResourceBundle.getBundle(BUNDLE_NAME, ManagedBeanUtils.getLocale());
 
          String key;
          Enumeration<String> keys = bundle.getKeys();
@@ -177,8 +176,9 @@ public class FileUploadRestlet
    /**
     * @param header
     * @return
+    * @throws UnsupportedEncodingException 
     */
-   private FileInfo getFileName(MultivaluedMap<String, String> header)
+   private FileInfo getFileName(MultivaluedMap<String, String> header) throws UnsupportedEncodingException
    {
       String[] contentDisposition = header.getFirst("Content-Disposition").split(";");
 
@@ -189,6 +189,9 @@ public class FileUploadRestlet
          {
             String[] name = filename.split("=");
             fileInfo.name = name[1].trim().replaceAll("\"", "");
+            
+            //CXF headers are still in ISO-8859-1. So to handle file containing multi-byte characters in its filename, convert it to UTF-8
+            fileInfo.name = new String(fileInfo.name.getBytes("ISO-8859-1"), "UTF-8");
          }
       }
 

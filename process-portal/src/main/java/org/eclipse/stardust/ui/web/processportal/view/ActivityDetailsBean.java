@@ -1280,6 +1280,8 @@ public class ActivityDetailsBean extends UIComponentBean
                   skipViewEvents = true;
                   PortalApplication.getInstance().closeView(thisView, true);
                   releaseInteraction();
+                  // When view close is auto-operation, sync view is required to update focus view
+                  PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView();");
                   skipViewEvents = false;
                }
             }
@@ -1337,7 +1339,9 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       closeSaveActivityIframePopup();
       showMappedDocumentWarningAndProcessActivity(WorkflowAction.SAVE_TO_USER_WORKLIST);
-      renderSession();
+
+      // This causes JS calls to execute multiple times, TODO
+      //renderSession();
    }
 
    /**
@@ -1347,7 +1351,9 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       closeSaveActivityIframePopup();
       showMappedDocumentWarningAndProcessActivity(WorkflowAction.SAVE_TO_DEFAULT_PERFORMER);
-      renderSession();
+
+      // This causes JS calls to execute multiple times, TODO
+      //renderSession();
    }
 
    public void suspendAndSaveCurrentActivity()

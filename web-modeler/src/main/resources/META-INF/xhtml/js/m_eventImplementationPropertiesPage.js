@@ -216,7 +216,8 @@ define(
 
 					// TODO Review - may not be needed anymore
 					if (overlay == null) {
-						if (this.getModelElement().eventType == m_constants.START_EVENT_TYPE) {
+						if (this.getModelElement().eventType == m_constants.START_EVENT_TYPE
+								&& this.getModelElement().implementation != "none") {
 							this.overlayControllers["manualTrigger"].activate();
 							this.setOverlay("manualTrigger");
 						} else {

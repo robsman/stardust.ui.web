@@ -6,25 +6,20 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *    Anoop.Nair (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.Resource;
 
-import org.springframework.stereotype.Component;
-
 import org.eclipse.stardust.engine.api.query.QueryResult;
-import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
-import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.TrivialActivityInstanceDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
+import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils;
+import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils.MODE;
 import org.eclipse.stardust.ui.web.rest.service.utils.WorklistUtils;
+import org.springframework.stereotype.Component;
 
 /**
  * @author Subodh.Godbole
@@ -43,54 +38,101 @@ public class WorklistService
     * @param participantQId
     * @return
     */
-   public QueryResultDTO getWorklistForParticipant(String participantQId, String context)
+   public QueryResultDTO getWorklistForParticipant(String participantQId, String context, Options options)
    {
-      QueryResult<?> queryResult = worklistUtils.getWorklistForParticipant(participantQId);
-      return buildWorklistResult(queryResult, context);
+      QueryResult< ? > queryResult = worklistUtils.getWorklistForParticipant(participantQId, options);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
    }
 
    /**
     * @param userId
     * @return
     */
-   public QueryResultDTO getWorklistForUser(String userId, String context)
+   public QueryResultDTO getWorklistForUser(String userId, String context, Options options)
    {
-      QueryResult<?> queryResult = worklistUtils.getWorklistForUser(userId);
-      return buildWorklistResult(queryResult, context);
+      QueryResult< ? > queryResult = worklistUtils.getWorklistForUser(userId, options);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
    }
 
    /**
-    * @param queryResult
+    * 
+    * @param criticalityValue
+    * @param context
+    * @param options
     * @return
     */
-   private QueryResultDTO buildWorklistResult(QueryResult<?> queryResult, String context)
+   public QueryResultDTO getWorklistForHighCriticality(Options options)
    {
-      List<ActivityInstanceDTO> list = new ArrayList<ActivityInstanceDTO>();
-      for (Object object : queryResult)
-      {
-         if (object instanceof ActivityInstance)
-         {
-            ActivityInstance ai = (ActivityInstance) object;
+      QueryResult< ? > queryResult = worklistUtils.getWorklistForHighCriticality(options);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
+   }
 
-            ActivityInstanceDTO dto;
-            if (null == context)
-            {
-               dto = DTOBuilder.build(ai, ActivityInstanceDTO.class);
-            }
-            else
-            {
-               TrivialActivityInstanceDTO trivialDto = DTOBuilder.build(ai, TrivialActivityInstanceDTO.class);
-               trivialDto.trivial = activityInstanceUtils.isTrivialManualActivity(ai, context);
-               dto = trivialDto;
-            }
-            list.add(dto);
-         }
-      }
+   /**
+    * 
+    * @param userId
+    * @param options
+    * @return
+    */
+   public QueryResultDTO getAllAssignedWorkItems(Options options)
+   {
+      QueryResult< ? > queryResult = worklistUtils.getAllAssignedWorkItems(options);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
+   }
 
-      QueryResultDTO resultDTO = new QueryResultDTO();
-      resultDTO.list = list;
-      resultDTO.totalCount = queryResult.getTotalCount();
+   /**
+    * 
+    * @param userId
+    * @param options
+    * @return
+    */
+   public QueryResultDTO getItemtWorkingFromDate(String dateId, Options options)
+   {
+      QueryResult< ? > queryResult = worklistUtils.getItemtWorkingFromDate(dateId, options);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
+   }
 
-      return resultDTO;
+   /**
+    * 
+    * @param processQId
+    * @param options
+    * @return
+    */
+   public QueryResultDTO getWorklistByProcess(String processQId, Options options)
+   {
+      QueryResult< ? > queryResult = worklistUtils.getWorklistByProcess(processQId, options);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
+   }
+
+   /***
+    * 
+    * @param options
+    * @return
+    */
+   public QueryResultDTO getWorklistForResubmissionActivities(Options options)
+   {
+      QueryResult< ? > queryResult = worklistUtils.getWorklistForResubmissionActivities(options);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
+   }
+
+   /***
+    * 
+    * @param options
+    * @return
+    */
+   public QueryResultDTO getWorklistForLoggedInUser(Options options)
+   {
+      QueryResult< ? > queryResult = worklistUtils.getWorklistForLoggedInUser(options);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
+   }
+
+   /***
+    * 
+    * @param options
+    * @return
+    */
+   public QueryResultDTO getAllActivable(Options options)
+   {
+      QueryResult< ? > queryResult = worklistUtils.getAllActivable(options);
+      return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
    }
 }

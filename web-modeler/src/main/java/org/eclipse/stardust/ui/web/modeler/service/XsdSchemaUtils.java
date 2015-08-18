@@ -28,17 +28,20 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
+import org.eclipse.stardust.model.xpdl.builder.utils.ExternalReferenceUtils;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
-import org.eclipse.stardust.model.xpdl.xpdl2.SchemaTypeType;
-import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
-import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationsType;
+import org.eclipse.stardust.model.xpdl.xpdl2.*;
+import org.eclipse.stardust.model.xpdl.xpdl2.extensions.ExtendedAnnotationType;
+import org.eclipse.stardust.model.xpdl.xpdl2.extensions.ExtensionFactory;
+import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.XSDElementCheckForType;
 import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
 import org.eclipse.xsd.*;
+import org.eclipse.xsd.util.XSDConstants;
 import org.eclipse.xsd.util.XSDSwitch;
 import org.w3c.dom.*;
 
@@ -429,51 +432,9 @@ public final class XsdSchemaUtils
       {
          if (annotation != null)
          {
-            JsonObject jsObject = new JsonObject();
-            for (Element appInfo : annotation.getApplicationInformation())
-            {
-               NodeList children = appInfo.getChildNodes();
-               for (int i = 0, l = children.getLength(); i < l; i++)
-               {
-                  Node node = children.item(i);
-                  if (node instanceof Element && NS_URI.equals(node.getNamespaceURI()))
-                  {
-                     jsObject.add(node.getLocalName(), toJson((Element) node));
-                  }
-               }
-            }
-            json.add("appinfo", jsObject);
+            List<Element> applicationInformation = annotation.getApplicationInformation();
+            addApplicationInformation(json, applicationInformation.toArray(new Element[applicationInformation.size()]));
          }
-      }
-
-      private JsonElement toJson(Element element)
-      {
-         JsonObject jsObject = new JsonObject();
-         NodeList children = element.getChildNodes();
-         for (int i = 0, l = children.getLength(); i < l; i++)
-         {
-            Node node = children.item(i);
-            if (node instanceof Element && NS_URI.equals(node.getNamespaceURI()))
-            {
-               jsObject.add(node.getLocalName(), toJson((Element) node));
-            }
-         }
-         return jsObject.entrySet().isEmpty() ? getValue(element) : jsObject;
-      }
-
-      private JsonPrimitive getValue(Element element)
-      {
-         StringBuilder sb = new StringBuilder();
-         NodeList children = element.getChildNodes();
-         for (int i = 0, l = children.getLength(); i < l; i++)
-         {
-            Node node = children.item(i);
-            if (node instanceof Text)
-            {
-               sb.append(((Text) node).getData());
-            }
-         }
-         return new JsonPrimitive(sb.toString());
       }
 
       @Override
@@ -867,6 +828,199 @@ public final class XsdSchemaUtils
       }
    }
 
+   public static void patchAnnotations(TypeDeclarationType decl,
+         JsonObject schemaJson)
+   {
+      ExtendedAttributeType externalAnnotationAttribute = ExtendedAttributeUtil.getAttribute(decl,
+            ExtendedAttributeType.EXTERNAL_ANNOTATIONS_NAME);
+      if (externalAnnotationAttribute != null)
+      {
+         ExtendedAnnotationType annotation = externalAnnotationAttribute.getExtendedAnnotation();
+         if (annotation != null)
+         {
+            List<Element> appinfos = annotation.getApplicationInformation();
+            for (Element element : appinfos)
+            {
+               String sourceURI = element.getAttributeNS(null, XSDConstants.SOURCE_ATTRIBUTE);
+               if (!StringUtils.isEmpty(sourceURI))
+               {
+                  JsonObject json = findJson(Arrays.asList(sourceURI.split("/")), schemaJson);
+                  if (json != null)
+                  {
+                     addApplicationInformation(json, element);
+                  }
+               }
+            }
+         }
+      }
+   }
+
+   private static JsonObject findJson(List<String> path, JsonObject schemaJson)
+   {
+      JsonObject result = null;
+      if (!path.isEmpty())
+      {
+         String name = path.get(0);
+         if (!StringUtils.isEmpty(name))
+         {
+            result = findJson(name, GsonUtils.safeGetAsJsonArray(schemaJson, "elements"));
+            if (result == null)
+            {
+               result = findJson(name, GsonUtils.safeGetAsJsonArray(schemaJson, "types"));
+            }
+            if (result != null)
+            {
+               path = path.subList(1, path.size());
+               if (!path.isEmpty())
+               {
+                  result = findChildJson(path, result);
+               }
+            }
+         }
+      }
+      return result;
+   }
+
+   private static JsonObject findChildJson(List<String> path, JsonObject json)
+   {
+      JsonObject result = null;
+      String name = path.get(0);
+      if (!StringUtils.isEmpty(name))
+      {
+         result = findJson(name, GsonUtils.safeGetAsJsonArray(json, "body"));
+         if (result != null)
+         {
+            path = path.subList(1, path.size());
+            if (!path.isEmpty())
+            {
+               result = findChildJson(path, result);
+            }
+         }
+      }
+      return result;
+   }
+
+   private static JsonObject findJson(String name, JsonArray candidates)
+   {
+      if (candidates != null)
+      {
+         for (JsonElement jsonElement : candidates)
+         {
+            if (jsonElement instanceof JsonObject)
+            {
+               JsonObject candidate = jsonElement.getAsJsonObject();
+               String classifier = GsonUtils.safeGetAsString(candidate, "classifier");
+               if ("element".equals(classifier) || "complexType".equals(classifier)
+                     || "simpleType".equals(classifier) || "attribute".equals(classifier))
+               {
+                  if (name.equals(GsonUtils.safeGetAsString(candidate, "name")))
+                  {
+                     return candidate;
+                  }
+               }
+               else
+               {
+                  candidate = findJson(name, GsonUtils.safeGetAsJsonArray(candidate, "body"));
+                  if (candidate != null)
+                  {
+                     return candidate;
+                  }
+               }
+            }
+         }
+      }
+      return null;
+   }
+
+   public static void updateExternalReferenceAnnotations(
+         ModelBuilderFacade modelBuilderFacade, ExternalReferenceType externalReference,
+         JsonObject schemaJson)
+   {
+      if (trace.isDebugEnabled())
+      {
+         trace.debug(toPrettyString(schemaJson));
+      }
+
+      ExtendedAnnotationType annotation = ExtensionFactory.eINSTANCE.createExtendedAnnotationType();
+      updateAnnotations(annotation, GsonUtils.safeGetAsJsonArray(schemaJson, "types"), "");
+      updateAnnotations(annotation, GsonUtils.safeGetAsJsonArray(schemaJson, "elements"), "");
+
+      if (annotation.getApplicationInformation().isEmpty())
+      {
+         annotation = null;
+      }
+      else
+      {
+         annotation.updateElement();
+      }
+
+      TypeDeclarationType decl = (TypeDeclarationType) externalReference.eContainer();
+      ExtendedAttributeType externalAnnotationAttribute = ExtendedAttributeUtil.getAttribute(decl,
+            ExtendedAttributeType.EXTERNAL_ANNOTATIONS_NAME);
+      if (externalAnnotationAttribute == null)
+      {
+         if (annotation != null)
+         {
+            externalAnnotationAttribute = ExtendedAttributeUtil.createAttribute(decl,
+                  ExtendedAttributeType.EXTERNAL_ANNOTATIONS_NAME);
+            externalAnnotationAttribute.setExtendedAnnotation(annotation);
+         }
+      }
+      else
+      {
+         if (annotation == null)
+         {
+            ExtendedAttributeUtil.setAttribute(decl, ExtendedAttributeType.EXTERNAL_ANNOTATIONS_NAME, null);
+         }
+         else
+         {
+            externalAnnotationAttribute.setExtendedAnnotation(annotation);
+         }
+      }
+   }
+
+   private static void updateAnnotations(XSDAnnotation annotation, JsonArray jsonArray, String path)
+   {
+      if (jsonArray != null)
+      {
+         for (JsonElement jsonElement : jsonArray)
+         {
+            if (jsonElement.isJsonObject())
+            {
+               updateAnnotations(annotation, path, jsonElement.getAsJsonObject());
+            }
+         }
+      }
+   }
+
+   private static void updateAnnotations(XSDAnnotation annotation, String path,
+         JsonObject jsonObject)
+   {
+      String classifier = GsonUtils.safeGetAsString(jsonObject, "classifier");
+      if ("element".equals(classifier) || "complexType".equals(classifier)
+            || "simpleType".equals(classifier) || "attribute".equals(classifier))
+      {
+         String name = GsonUtils.safeGetAsString(jsonObject, "name");
+         JsonObject appinfoJson = GsonUtils.safeGetAsJsonObject(jsonObject, "appinfo");
+         if (appinfoJson != null)
+         {
+            createAppInfo(annotation, path + name, appinfoJson);
+         }
+         path = path + name + "/";
+      }
+      JsonArray body = GsonUtils.safeGetAsJsonArray(jsonObject, "body");
+      updateAnnotations(annotation, body, path);
+   }
+
+   private static void createAppInfo(XSDAnnotation annotation, String sourceURI,
+         JsonObject appinfoJson)
+   {
+      Element appInfo = annotation.createApplicationInformation(sourceURI);
+      addChildren(appInfo.getOwnerDocument(), appInfo, appinfoJson, true);
+      annotation.getApplicationInformation().add(appInfo);
+      annotation.getElement().appendChild(appInfo);
+   }
+
    public static void updateXSDSchemaType(ModelBuilderFacade facade, SchemaTypeType schemaType, JsonObject schemaJson)
    {
       if (trace.isDebugEnabled())
@@ -922,7 +1076,7 @@ public final class XsdSchemaUtils
       ModelType ref = facade.findModel(namespace);
       if (ref != null)
       {
-         facade.updateReferences(model, ref);
+         ExternalReferenceUtils.updateReferences(model, ref);
       }
    }
 
@@ -1312,9 +1466,7 @@ public final class XsdSchemaUtils
       {
          XSDAnnotation annotation = XSDFactory.eINSTANCE.createXSDAnnotation();
          decl.setAnnotation(annotation);
-         Element appInfo = annotation.createApplicationInformation(null);
-         addChildren(appInfo.getOwnerDocument(), appInfo, appinfoJson, true);
-         annotation.getElement().appendChild(appInfo);
+         createAppInfo(annotation, null, appinfoJson);
       }
    }
 
@@ -1577,5 +1729,54 @@ public final class XsdSchemaUtils
          }
       }
       return decl;
+   }
+
+   private static void addApplicationInformation(JsonObject json,
+         Element... applicationInformation)
+   {
+      JsonObject jsObject = new JsonObject();
+      for (Element appInfo : applicationInformation)
+      {
+         NodeList children = appInfo.getChildNodes();
+         for (int i = 0, l = children.getLength(); i < l; i++)
+         {
+            Node node = children.item(i);
+            if (node instanceof Element && NS_URI.equals(node.getNamespaceURI()))
+            {
+               jsObject.add(node.getLocalName(), toJson((Element) node));
+            }
+         }
+      }
+      json.add("appinfo", jsObject);
+   }
+
+   private static JsonElement toJson(Element element)
+   {
+      JsonObject jsObject = new JsonObject();
+      NodeList children = element.getChildNodes();
+      for (int i = 0, l = children.getLength(); i < l; i++)
+      {
+         Node node = children.item(i);
+         if (node instanceof Element && NS_URI.equals(node.getNamespaceURI()))
+         {
+            jsObject.add(node.getLocalName(), toJson((Element) node));
+         }
+      }
+      return jsObject.entrySet().isEmpty() ? getValue(element) : jsObject;
+   }
+
+   private static JsonPrimitive getValue(Element element)
+   {
+      StringBuilder sb = new StringBuilder();
+      NodeList children = element.getChildNodes();
+      for (int i = 0, l = children.getLength(); i < l; i++)
+      {
+         Node node = children.item(i);
+         if (node instanceof Text)
+         {
+            sb.append(((Text) node).getData());
+         }
+      }
+      return new JsonPrimitive(sb.toString());
    }
 }

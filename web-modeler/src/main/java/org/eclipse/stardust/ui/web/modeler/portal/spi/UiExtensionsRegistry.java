@@ -1,83 +1,69 @@
 package org.eclipse.stardust.ui.web.modeler.portal.spi;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptyMap;
 import static java.util.Collections.unmodifiableList;
-import static java.util.Collections.unmodifiableMap;
 
 import java.util.List;
-import java.util.Map;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
-
 @Component
 @Scope("singleton")
 public class UiExtensionsRegistry
 {
-   private static final Logger trace = LogManager.getLogger(UiExtensionsRegistry.class);
-
    @Resource
    private ApplicationContext context;
 
-   private Map<String, List<String>> extensionDescriptors = emptyMap();
-
-   @PostConstruct
-   public void discoverExtensionDescriptors()
+   public List<String> findExtensions(String category)
    {
-      this.extensionDescriptors = unmodifiableMap(ExtensionDiscoveryUtils.findExtensions(
-            context, asList("viewManager", "outline", "diagramToolbar", "propertiesPage", "metaModel", "integrationOverlay", "modelDecoration", "view", "ruleSetProvider")));
+      return unmodifiableList(ExtensionDiscoveryUtils.findExtensions(context, category));
    }
 
    public List<String> getViewManagerExtensions()
    {
-      return unmodifiableList(extensionDescriptors.get("viewManager"));
+      return findExtensions("viewManager");
    }
 
    public List<String> getOutlineExtensions()
    {
-      return unmodifiableList(extensionDescriptors.get("outline"));
+      return findExtensions("outline");
    }
 
    public List<String> getDiagramToolbarExtensions()
    {
-      return unmodifiableList(extensionDescriptors.get("diagramToolbar"));
+      return findExtensions("diagramToolbar");
    }
 
    public List<String> getPropertiesPageExtensions()
    {
-      return unmodifiableList(extensionDescriptors.get("propertiesPage"));
+      return findExtensions("propertiesPage");
    }
 
    public List<String> getIntegrationOverlayExtensions()
    {
-      return unmodifiableList(extensionDescriptors.get("integrationOverlay"));
+      return findExtensions("integrationOverlay");
    }
 
    public List<String> getMetaModelExtensions()
    {
-      return unmodifiableList(extensionDescriptors.get("metaModel"));
+      return findExtensions("metaModel");
    }
 
    public List<String> getModelDecorations()
    {
-      return unmodifiableList(extensionDescriptors.get("modelDecoration"));
+      return findExtensions("modelDecoration");
    }
 
    public List<String> getViewExtensions()
    {
-      return unmodifiableList(extensionDescriptors.get("view"));
+      return findExtensions("view");
    }
 
    public List<String> getRuleSetProviderExtensions()
    {
-      return unmodifiableList(extensionDescriptors.get("ruleSetProvider"));
+      return findExtensions("ruleSetProvider");
    }
 }

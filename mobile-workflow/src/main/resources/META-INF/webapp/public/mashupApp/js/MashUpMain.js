@@ -34,7 +34,7 @@ require
 				'jquery-mobile' : [ 'jquery' ],
 				'jquery-ui' : [ 'jquery' ],
 				'angularjs' : {
-					require : "jquery",
+					deps : ["jquery"],
 					exports : "angular"
 				},
 				// SG

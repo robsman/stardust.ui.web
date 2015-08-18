@@ -14,12 +14,21 @@
 (function(){
 	'use strict';
 
+	angular.module('bpm-common.services').provider('sdViewUtilService', function () {
+		this.$get = ['$rootScope', 'sgViewPanelService', 'sgPubSubService', 'sdLoggerService',
+		    function ($rootScope, sgViewPanelService, sgPubSubService, sdLoggerService) {
+		    	var service = new ViewUtilService($rootScope, sgViewPanelService, sgPubSubService, sdLoggerService);
+		    	return service;
+		}];
+	});
+
 	/*
 	 * 
 	 */
-	function ViewUtilService($rootScope, sgViewPanelService, sgPubSubService) {
-
-		this.viewHandlers = {};
+	function ViewUtilService($rootScope, sgViewPanelService, sgPubSubService, sdLoggerService) {
+		var trace = sdLoggerService.getLogger('bpm-common.sdViewUtilService');
+		
+		var viewHandlers = {};
 
 		var self = this;
 		sgPubSubService.subscribe('sgActiveViewPanelChanged', function(){
@@ -35,12 +44,14 @@
 			var beforeViewPath = data.before ? data.before.path : null;
 
 			if (currentViewPath !== beforeViewPath) {
-				if (beforeViewPath && this.viewHandlers[beforeViewPath]) {
-					callHandlerFunction(this.viewHandlers[beforeViewPath], "DEACTIVATED");
+				if (beforeViewPath && viewHandlers[beforeViewPath]) {
+					trace.log('Calling DEACTIVATE event on view ' + beforeViewPath);
+					callHandlerFunction(viewHandlers[beforeViewPath], "DEACTIVATED");
 				}
 
-				if (this.viewHandlers[currentViewPath]) {
-					callHandlerFunction(this.viewHandlers[currentViewPath], "ACTIVATED");
+				if (viewHandlers[currentViewPath]) {
+					trace.log('Calling ACTIVATE event on view ' + currentViewPath);
+					callHandlerFunction(viewHandlers[currentViewPath], "ACTIVATED");
 				}
 			}
 		}
@@ -105,14 +116,14 @@
 			if (angular.isFunction(handlerFunc)) {
 				var path = scope.panel.path;
 
-				this.viewHandlers[path] = {};
-				this.viewHandlers[path].func = handlerFunc;
-				this.viewHandlers[path].owner = ownerObject;
+				viewHandlers[path] = {};
+				viewHandlers[path].func = handlerFunc;
+				viewHandlers[path].owner = ownerObject;
 
 				var self = this;
 				scope.$on("$destroy", function() {
-					if (self.viewHandlers[path]) {
-						delete self.viewHandlers[path];
+					if (viewHandlers[path]) {
+						delete viewHandlers[path];
 					}
 				});
 			} else {
@@ -120,6 +131,9 @@
 			}
 		};
 
+		ViewUtilService.prototype.syncLaunchPanels = function() {
+			BridgeUtils.View.syncLaunchPanels();
+		};
 
 		/*
 		 * 
@@ -135,16 +149,9 @@
 				}
 			} catch (e) {
 				if(console) {
-					console.log(e);
+					trace.error(e);
 				}
 			}
 		}
 	};
-
-	angular.module('bpm-common.services').provider('sdViewUtilService', function () {
-		this.$get = ['$rootScope', 'sgViewPanelService', 'sgPubSubService', function ($rootScope, sgViewPanelService, sgPubSubService) {
-			var service = new ViewUtilService($rootScope, sgViewPanelService, sgPubSubService);
-			return service;
-		}];
-	});
 })();

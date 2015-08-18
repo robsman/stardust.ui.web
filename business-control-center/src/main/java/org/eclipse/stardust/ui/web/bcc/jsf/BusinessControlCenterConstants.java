@@ -132,7 +132,10 @@ public class BusinessControlCenterConstants
       }
       catch (MissingResourceException e)
       {
-         trace.warn("Key '" + key + "' not found in resource bundle");
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("Key '" + key + "' not found in resource bundle");
+         }
       }
       return null;
    }

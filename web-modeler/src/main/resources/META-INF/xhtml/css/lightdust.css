@@ -508,6 +508,10 @@ div#messagePanel {
 	height: 20px;
 }
 
+div#messagePanel table {
+	padding-top:5px;
+}
+
 div.messagePanelHighlight {
 	background-color: #FFD966;
 }
@@ -792,4 +796,76 @@ textarea:focus {
     position: fixed;
     box-shadow: 2px 3px 5px rgba(0,0,0,.2);
 }
+.app {
+	overflow-y: hidden !important;
+}
+
+.excludeUser {
+	background: url("../images/icons/user-invalidated.png") no-repeat;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	width: 20px;
+}
+
+.dataPathInput {
+	position: relative;
+}
+
+
+/* <-- autocomplete style */
+.sd-ac-container{
+  width:200px;
+}
+
+.sd-ac-container div[name='sd-ac-tag']{
+  font-size: 11px;
+  font-family: Helvetica, Arial, sans-serif;
+  border: none;
+  background-color: #f0f0f0;
+}
+
+.sd-ac-container div[name='sd-ac-tag']:after{
+  font-size:11px;
+}
+
+.sd-ac-container div[name='sd-ac-selectList']{
+  border:none;
+  background-color:#fff;
+}
+
+.sd-ac-container [name='sd-ac-selectList'] div{
+  cursor:pointer;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size:11px;
+  background-color:white;
+}
+
+/* .sd-ac-item-isActive{
+  background-color: white;
+  color:black;
+}
+ */
+/* autocomplete style --> */
+
+.viewApplicationLink {
+	opacity : 1;
+	cursor : pointer;
+	padding-left: 5px;
+}
+
+.modelIdDialogContent {
+	padding-bottom: 10px;
+	padding-left: 10px
+}
+
+.sd-dialog .modal-dialog .modal-content .button-alignment {
+	float: left;
+	margin-left: 15px;
+	
+}
+
+.sd-dialog .modal-dialog .modal-content .button-alignment button {
+	margin-right: 10px;
+}	
+	
 @import ('/plugins/modern/public/skins/modern/modern.css')

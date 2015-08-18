@@ -37,7 +37,7 @@ public class PluginUtils
 {
    private static final Logger trace = LogManager.getLogger(PluginUtils.class);
    
-   private static WeakHashMap<ResourcePatternResolver, List<PluginDescriptor>> pluginResolutionCache = new WeakHashMap<ResourcePatternResolver, List<PluginDescriptor>>();
+   private static WeakHashMap<Resource, PluginDescriptor> pluginResolutionCache = new WeakHashMap<Resource, PluginDescriptor>();
 
    /**
     * @param resolver
@@ -78,11 +78,11 @@ public class PluginUtils
                   {
                      if (fetchContents)
                      {
-                        rInfo = new ResourceInfo(plugin.id, pluginBaseUri, resource, readResource(resource));
+                        rInfo = new ResourceInfo(plugin.id, plugin.location, pluginBaseUri, resource, readResource(resource));
                      }
                      else
                      {
-                        rInfo = new ResourceInfo(plugin.id, pluginBaseUri, resource);
+                        rInfo = new ResourceInfo(plugin.id, plugin.location, pluginBaseUri, resource);
                      }
                      allResources.add(rInfo);
                   }
@@ -163,14 +163,17 @@ public class PluginUtils
    {
       public final String id;
 
+      public final String location;
+
       public final String resourcesRoot;
 
       public final String baseUri;
 
-      public PluginDescriptor(String id, String resourcesRoot, String baseUri)
+      public PluginDescriptor(String id, String location, String resourcesRoot, String baseUri)
       {
          super();
          this.id = id;
+         this.location = location;
          this.resourcesRoot = resourcesRoot;
          this.baseUri = baseUri;
       }
@@ -182,21 +185,13 @@ public class PluginUtils
     */
    public static synchronized List<PluginDescriptor> getAllPlugins(ResourcePatternResolver resolver)
    {
-      List<PluginDescriptor> resolvedPlugins = pluginResolutionCache.get(resolver);
-
-      if (null != resolvedPlugins)
-      {
-         // cache hit, yay!
-         return resolvedPlugins;
-      }
-
-      // not yet cached, need to scan for *.portal-plugin files
-      resolvedPlugins = newArrayList();
+      List<PluginDescriptor> resolvedPlugins = newArrayList();
       try
       {
          List<Resource> resources;
          try
          {
+            // scan for plugin descriptor files
             resources = resolveResources(resolver, "classpath*:/META-INF/*.portal-plugin");
          }
          catch (IOException ioe)
@@ -208,34 +203,52 @@ public class PluginUtils
 
          for (Resource resource : resources)
          {
-            String pluginId = resource.getFilename().substring(0, resource.getFilename().lastIndexOf("."));
-            if (trace.isDebugEnabled())
-            {
-               trace.debug("Inspecting portal plugin '" + pluginId + "' (" + resource.getURI() + ")");
-            }
+            PluginDescriptor pluginDescriptor = pluginResolutionCache.get(resource);
 
-            InputStream isPluginDescriptor = resource.getInputStream();
-            try
+            if (null == pluginDescriptor)
             {
-               String resourcesRoot = new BufferedReader(new InputStreamReader(isPluginDescriptor)).readLine();
-               Resource pluginBaseUriReader = resource.createRelative("../").createRelative(resourcesRoot);
-               String pluginBaseUri = pluginBaseUriReader.getURI().toString();
-               if ( !pluginBaseUri.endsWith("/"))
+               String pluginId = resource.getFilename().substring(0, resource.getFilename().lastIndexOf("."));
+               
+               if (trace.isDebugEnabled())
                {
-                  pluginBaseUri += "/";
+                  trace.debug("Inspecting portal plugin '" + pluginId + "' (" + resource.getURI() + ")");
                }
 
-               resolvedPlugins.add(new PluginDescriptor(pluginId, resourcesRoot, pluginBaseUri));
-            }
-            finally
-            {
-               CloseableUtil.closeQuietly(isPluginDescriptor);
-            }
-         }
+               String resourceUri = resource.getURI().toString();
+               String pluginLocation = resourceUri.substring(0, resourceUri.lastIndexOf("/META-INF/"));
+               if (pluginLocation.endsWith("!"))
+               {
+                  pluginLocation = pluginLocation.substring(0, pluginLocation.length() - 1);
+               }
 
-         if (Parameters.instance().getBoolean("Carnot.Client.Caching.PluginResolution.Enabled", true))
-         {
-            pluginResolutionCache.put(resolver, resolvedPlugins);
+               InputStream isPluginDescriptor = resource.getInputStream();
+               try
+               {
+                  String resourcesRoot = new BufferedReader(new InputStreamReader(isPluginDescriptor)).readLine();
+                  Resource pluginBaseUriReader = resource.createRelative("../").createRelative(resourcesRoot);
+                  String pluginBaseUri = pluginBaseUriReader.getURI().toString();
+                  if ( !pluginBaseUri.endsWith("/"))
+                  {
+                     pluginBaseUri += "/";
+                  }
+
+                  pluginDescriptor = new PluginDescriptor(pluginId, pluginLocation, resourcesRoot, pluginBaseUri);
+
+                  if (Parameters.instance().getBoolean("Carnot.Client.Caching.PluginResolution.Enabled", true))
+                  {
+                     pluginResolutionCache.put(resource, pluginDescriptor);
+                  }
+               }
+               finally
+               {
+                  CloseableUtil.closeQuietly(isPluginDescriptor);
+               }
+            }
+
+            if (null != pluginDescriptor)
+            {
+               resolvedPlugins.add(pluginDescriptor);
+            }
          }
       }
       catch (IOException e)

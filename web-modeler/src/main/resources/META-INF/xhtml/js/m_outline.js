@@ -46,7 +46,10 @@ define(
 
       DomTreeBuilder.prototype.buildNode = function(nodeConfig, parentNode) {
         var node = jQuery("<li>");
-        node.attr(nodeConfig.attr);
+        
+        if(nodeConfig){
+        	node.attr(nodeConfig.attr);
+        }
 
         jQuery("<a href='#'>" + nodeConfig.data + "</a>").appendTo(node);
 
@@ -76,6 +79,7 @@ define(
 
       OutlineUiModelBuilder.prototype.buildModelNode = function(parent) {
         // alias to be used from jQuery.each callbacks
+
         var self = this;
         	modelTreeType="model",
         	isLocked=this.model.isReadonly(),
@@ -314,10 +318,20 @@ define(
         var outline = this;
         var outlineRoot = jQuery(displayScope + "#outline");
 
+        var sessionRef = m_session.initialize();
         jQuery.each(m_utils.convertToSortedArray(m_model.getModels(), "name", true),
             function(index, model) {
-              newOutlineTreeDomBuilder(model).buildModelNode(outlineRoot);
-              refreshModelStatus(model);
+        	  try{
+        		  if (!(model.attributes && model.attributes['simpleModel'])
+        				  || sessionRef.showSimpleModels) {
+    	              newOutlineTreeDomBuilder(model).buildModelNode(outlineRoot);
+    	              refreshModelStatus(model);
+        		  }
+        	  }
+        	  catch(err){
+        		  //Place errored node in tree
+        		  newOutlineTreeDomBuilder(model).buildErroredModelNode(outlineRoot);
+        	  }
             });
 
         // Errored models
@@ -332,7 +346,6 @@ define(
         jQuery("div#outlineLoadingMsg").hide();
         runHasModelsCheck();
 
-        m_messageDisplay.markSaved();
         m_modelsSaveStatus.setModelsSaved();
         m_utils.jQuerySelect("#undoChange").addClass("toolDisabled");
         m_utils.jQuerySelect("#redoChange").addClass("toolDisabled");
@@ -374,6 +387,40 @@ define(
 					alert("Cannot deploy: Model file name / path not available");
 				}
 
+			};
+			
+			var versionizeModel = function(modelUUID) {
+				
+				var model = m_model.findModelByUuid(modelUUID);
+				
+				if (parent.iPopupDialog) {
+					parent.iPopupDialog
+							.openPopup({
+								attributes : {
+									width : "400px",
+									height : "250px",
+									src : m_urlUtils.getPlugsInRoot()
+											+ "bpm-modeler/popups/modelVersionPopupDialog.html"
+								},
+								payload : {
+									acceptFunction : versionizeModel2,
+									i18n: m_i18nUtils,
+									model: model,
+									m_utils: m_utils  
+								}
+							});
+				}
+			};
+			
+			var versionizeModel2 = function(popupPayload) {
+				var model = m_model.findModelByUuid(popupPayload.modelUUID);				
+				var changes  = { attributes : { 'carnot:engine:version' : popupPayload.newVersion}};
+				m_commandsController
+					.submitCommand(m_command
+						.createUpdateModelElementCommand(
+								model.id,
+								model.id,
+								changes));
 			};
 
 			var downloadModel = function(modelUUID) {
@@ -789,7 +836,7 @@ define(
 															function() {
 																deleteModel(obj
 																		.attr("elementId"));
-															});
+															},false);
 												}
 											},
 											"createProcess" : {
@@ -813,6 +860,14 @@ define(
 														.getProperty("modeler.outline.model.contextMenu.download"),
 												"action" : function(obj) {
 													downloadModel(obj
+															.attr("id"));
+												}
+											},
+											"versionize" : {
+												"label" : m_i18nUtils
+														.getProperty("modeler.outline.model.contextMenu.versionize"),
+												"action" : function(obj) {
+													versionizeModel(obj
 															.attr("id"));
 												}
 											}
@@ -858,7 +913,7 @@ define(
 															function() {
 																deleteModel(obj
 																		.attr("elementId"));
-															});
+															},false);
 												}
 											},
 											"download" : {
@@ -2100,38 +2155,33 @@ define(
 			 *
 			 */
 			function createModel() {
-				if (parent.iPopupDialog) {
-					parent.iPopupDialog
-							.openPopup({
-								attributes : {
-									width : "400px",
-									height : "250px",
-									src : m_urlUtils.getPlugsInRoot()
-											+ "bpm-modeler/popups/modelPopupDialog.html"
-								},
-								payload : {
-									acceptFunction : createModel2,
-									i18n: m_i18nUtils,
-									models: m_model.getModels(),
-									m_utils: m_utils  
-								}
-							});
+				var modelName = m_i18nUtils
+						.getProperty("modeler.outline.newModel.namePrefix");
+				var count = 0;
+				var name = modelName + " " + (++count);
+
+				// Check if model name exists already.
+				while (modelNameExists(name)) {
+					name = modelName + " " + (++count);
 				}
-			}
-			
-			/**
-			 * 
-			 */
-			function createModel2(modelInfo) {
+
 				m_commandsController.submitCommand(m_command
 						.createCreateModelCommand({
-							"name" : modelInfo.modelName,
-							"id" : modelInfo.modelId,
+							"name" : name,
 							"modelFormat" : "xpdl"
 						}));
 				isElementCreatedViaOutline = true;
 			};
 
+			function modelNameExists(name) {
+				for (m in m_model.getModels()) {
+					if (m_model.getModels()[m].name == name) {
+						return true;
+					}
+				}
+
+				return false;
+			};
 			/**
 			 *
 			 */
@@ -2262,8 +2312,15 @@ define(
 				return popupData;
 			};
 
-			function deleteElementAction(name, callback) {
-				if (parent.iPopupDialog) {
+			function deleteElementAction(name, callback, isUndoable) {
+				
+				//default to true as only models are not undoable
+				if (typeof isUndoable === "undefined") {
+					isUndoable = true;
+				}
+				
+				//only show confirmations for operations which cant be undone
+				if (parent.iPopupDialog && !isUndoable) {
 					parent.iPopupDialog.openPopup(prepareDeleteElementData(
 							name, callback));
 				} else {
@@ -2749,6 +2806,11 @@ define(
 					window.parent.EventHub.events.subscribe("RELOAD_MODELS",
 							reloadOutlineTree);
 
+ 					window.parent.EventHub.events.subscribe("SAVE_AND_RELOAD_MODELS",
+            function() {
+              reloadOutlineTree(true);
+            });
+
 					window.parent.EventHub.events.subscribe("CONTEXT_UPDATED", function(releaseId) {
 						if (releaseId != undefined) {
 							reloadOutlineTree();
@@ -2865,10 +2927,12 @@ define(
 				}
 			};
 
+			
 			/**
 			 *
 			 */
 			function Outline() {
+				
 				/**
 				 *
 				 */
@@ -2899,7 +2963,7 @@ define(
 						// getting out or rename mode if the view takes
 						// a little longer to open - observed specifically on
 						// first node creation after login,
-						if (!openView && element.type != 'model') {
+						if (!openView) {
 							window.setTimeout(function() {
 								m_utils.jQuerySelect(displayScope + "#outline").jstree(
 										"rename", "#" + element.uuid)
@@ -3136,7 +3200,26 @@ define(
               }
             });
           }
-        };
+          
+          //handle server side exceptions (validation etc)
+		  if (response.responseText && (response.responseText.indexOf("ModelerError.") > -1) && command.commandId == "model.delete") {
+			if (parent.iPopupDialog) {
+				parent.iPopupDialog
+					.openPopup({
+						attributes : {
+							width : "400px",
+							height : "200px",
+							src : m_urlUtils.getPlugsInRoot() + "bpm-modeler/popups/errorDialog.html"
+						},
+						payload : {
+							title : m_i18nUtils.getProperty("modeler.messages.error"),
+							message : m_i18nUtils.getProperty(response.responseText, response.responseText),
+							okButtonText : m_i18nUtils.getProperty("modeler.element.properties.commonProperties.ok")
+						}
+				});
+			}
+		  }
+       };
 
 				/**
 				 * TODO - temporary

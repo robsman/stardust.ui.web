@@ -52,6 +52,7 @@ define(
                this.scriptCodeHeading = m_utils.jQuerySelect("#scriptingIntegrationOverlay #scriptCodeHeading");
                this.languageSelect = m_utils.jQuerySelect("#scriptingIntegrationOverlay #languageSelect");
                this.transactedRouteInput = m_utils.jQuerySelect("#scriptingIntegrationOverlay #transactedRouteInput");
+               this.autoStartupInput = m_utils.jQuerySelect("#scriptingIntegrationOverlay #autoStartupInput");
                this.editorAnchor = m_utils.jQuerySelect("#codeEditorDiv").get(0);
                this.editorAnchor.id = "codeEditorDiv" + Math.floor((Math.random()*100000) + 1);
                
@@ -86,6 +87,7 @@ define(
                            .getProperty("modeler.model.applicationOverlay.scripting.code.heading"));
 
                var self = this;
+               this.parameterDefinitionNameInput = m_utils.jQuerySelect("#parametersTab #parameterDefinitionNameInput");
 
                m_utils.jQuerySelect("a[href='#configurationTab']").click(function() {
                   self.setGlobalVariables();
@@ -157,7 +159,7 @@ define(
                         functionBody += "var output = "
                               + self.createParameterObjectString(
                                     m_constants.OUT_ACCESS_POINT,
-                                    false) + ";\n";
+                                    true) + ";\n";
 
                         var code = self.codeEditor.getEditor()
                               .getSession().getValue();
@@ -202,10 +204,9 @@ define(
                               .stringify(result));
                      });
                this.resetButton.click(function() {
-                  self.inputDataTextarea.empty();
-                  self.outputDataTextarea.empty();
-
-                  self.inputDataTextarea.append(self
+                  self.inputDataTextarea.val("");
+                  self.outputDataTextarea.val("");
+                  self.inputDataTextarea.val(self
                         .createParameterObjectString(
                               m_constants.IN_ACCESS_POINT, true));
                });
@@ -218,6 +219,16 @@ define(
                          self.transactedRouteInput.prop('checked'));
                    self.submitChanges();
                 });
+               this.autoStartupInput.change(function() {
+                   if (!self.view.validate()) {
+                      return;
+                   }
+                   self.view.submitModelElementAttributeChange(
+                         "carnot:engine:camel::autoStartup",
+                         self.autoStartupInput.prop('checked'));
+                   self.submitChanges();
+                });
+                
             this.update();
             };
 
@@ -420,6 +431,11 @@ define(
                 }
                this.transactedRouteInput.prop("checked",
                        this.getApplication().attributes["carnot:engine:camel::transactedRoute"]);
+               if(this.getApplication().attributes["carnot:engine:camel::autoStartup"]==null||this.getApplication().attributes["carnot:engine:camel::autoStartup"]===undefined){
+                   this.view.submitModelElementAttributeChange("carnot:engine:camel::autoStartup", true);
+                }
+               this.autoStartupInput.prop("checked",
+                       this.getApplication().attributes["carnot:engine:camel::autoStartup"]);
             };
 
             /**
@@ -645,8 +661,30 @@ define(
              * 
              */
             ScriptingIntegrationOverlay.prototype.validate = function() {
+            	
+               var valid = true;
                this.view.clearErrorMessages();
                m_utils.jQuerySelect("#codeEditorElmt").removeClass("error");
+			   this.parameterDefinitionNameInput.removeClass("error");
+			   var parameterDefinitionNameInputWhithoutSpaces =  this.parameterDefinitionNameInput.val().replace(/ /g, "");
+			   if ((parameterDefinitionNameInputWhithoutSpaces ==  "exchange")|| (parameterDefinitionNameInputWhithoutSpaces ==  "headers")){
+				  this.view.errorMessages.push(this.parameterDefinitionNameInput.val()+" cannot be used as an access point");
+				  this.parameterDefinitionNameInput.addClass("error");
+				  valid = false;
+			   }
+			   for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; n++)
+			   {
+				  var ap = this.getApplication().contexts.application.accessPoints[n];
+				  if ((ap.name.replace(/ /g, "") == "headers")||(ap.name.replace(/ /g, "") == "exchange"))
+				  {
+					  if(this.view.errorMessages.indexOf(ap.name.replace(/ /g, "")+" cannot be used as an access point")<0){
+						  this.view.errorMessages.push(ap.name.replace(/ /g, "")+" cannot be used as an access point");
+					  }
+					this.parameterDefinitionNameInput.addClass("error");
+			 		valid = false;
+                   }
+               }
+             
                this.view.warningMessages = [];
                this.view.clearWarningMessages();
                if(m_utils.isEmptyString(this.codeEditor.getEditor().getSession().getValue())){

@@ -107,11 +107,11 @@
 						</td>
 						<td><label for="subprocessInput" id="subprocess">Subprocess</label>
 						</td>
-						<td colspan="2"><select id="subprocessList"
+						<td><select id="subprocessList"
 							size="1">
-						</select></td>
+						</select><img id="subProcessImplLink" style="padding-left: 5px; visibility:hidden" class="imgLink" src="plugins/bpm-modeler/images/icons/pencil_go.png"/></td>
 					</tr>
-					<tr id="subprocessExecutionRow">
+					<!-- <tr id="subprocessExecutionRow">
 						<td></td>
 						<td></td>
 						<td><table cellspacing="0" cellpadding="0"
@@ -141,7 +141,7 @@
 										</table></td>
 								</tr>
 							</table>
-					</tr>
+					</tr> -->
 				</table>
 				<table>
 					<tr>
@@ -159,9 +159,9 @@
 					</tr>
 				</table>
 			</div>
-			<div id="implementationPropertiesPage"
-				class="propertiesPage">
-				<div id="implementationHeading" class="heading">Implementation</div>
+			 <div id="implementationPropertiesPage"
+				class="propertiesPage"> </div>
+			<!--	<div id="implementationHeading" class="heading">Implementation</div>
 				<table>
 					<tr id="noImplementationRow">
 						<td colspan="2"><label id="noImplementationLabel" />
@@ -186,7 +186,7 @@
 						</select></td>
 					</tr>
 				</table>
-			</div>
+			</div> -->
 			<div id="displayPropertiesPage" class="propertiesPage">
 				<div class="heading">Display</div>
 				<table>
@@ -200,7 +200,7 @@
 				</table>
 			</div>
 			
-			<div id="onAssignmentPropertiesPage" class="propertiesPage">
+			<!-- <div id="onAssignmentPropertiesPage" class="propertiesPage">
 				<div class="heading">On Assignment</div>
 				<label for="excludeUser"> Exclude User </label>
 					<table id="excludeUser">
@@ -213,7 +213,7 @@
 							<td><input id="exclUserDataPath" type="text" /></td>
 						</tr>
 					</table>
-			</div>
+			</div> -->
 			
 			<div id="processingPropertiesPage" class="propertiesPage">
 				<div class="heading">Processing</div>
@@ -271,20 +271,6 @@
 									ng-show="batchForm.maximumBatchSize.$error.pattern" style="color:red">Not a valid number</div>
 						</form>
 						</td>
-					</tr>
-				</table>
-			</div>
-			<div id="qualityControlPropertiesPage"
-				class="propertiesPage">
-				<div class="heading">Quality Assurance</div>
-				<table>
-					<tr>
-						<td><label for="qualityControlProbabilityInput">Quality
-								Assurance Probability</label>
-						</td>
-						<td><input id="qualityControlProbabilityInput"
-							type="text" /></td>
-						<td>%</td>
 					</tr>
 				</table>
 			</div>

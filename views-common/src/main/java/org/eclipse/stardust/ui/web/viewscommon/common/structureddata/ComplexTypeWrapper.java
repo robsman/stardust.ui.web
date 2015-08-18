@@ -30,14 +30,14 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 /**
  * Wraps structured data value (Collection API) for displaying in JSF
  */
-public class ComplexTypeWrapper 
+public class ComplexTypeWrapper
 {
    private ModelCreator modelCreator;
    private Object complexType;
    private String dataMappingId;
    private String startXPath;
    private IXPathMap xPathMap;
-   
+
    /**
     * @param dataMappingId
     * @param complexType
@@ -58,13 +58,19 @@ public class ComplexTypeWrapper
       {
          Model model = ModelCache.findModelCache().getModel(dataMapping.getModelOID());
          Data data = model.getData(dataMapping.getDataId());
-         // TODO (ab) optimize: do not parse schema every time, extend ModelCache 
+         // (fh) The ClientXPathMap requires data and model to be properly resolved,
+         // so find the correct model if data is referenced from another model.
+         if (data.getModelOID() != model.getModelOID())
+         {
+            model = ModelCache.findModelCache().getModel(data.getModelOID());
+         }
+         // TODO (ab) optimize: do not parse schema every time, extend ModelCache
          // to keep arbitrary runtime client attributes
          // xpathmap must also be cached
          this.init(dataMapping.getId(), dataMapping.getDataPath(), complexType, ClientXPathMap.getXpathMap(model, data));
       }
-   }  
-   
+   }
+
    /**
     * @param dataMappingId
     * @param dataPath
@@ -75,7 +81,7 @@ public class ComplexTypeWrapper
    {
       this.init(dataMappingId, dataPath, complexType, xPathMap);
    }
-   
+
    /**
     * @param dataMappingId
     * @param dataPath
@@ -88,7 +94,7 @@ public class ComplexTypeWrapper
       this.startXPath = dataPath;
       this.xPathMap = xPathMap;
 
-      // TODO (ab) not only in case of null, but every time, should fill out missing parts  
+      // TODO (ab) not only in case of null, but every time, should fill out missing parts
       if (complexType == null)
       {
          // in case of a/b[1] the value is expected to be there, otherwise createInitialValue won't work
@@ -107,7 +113,7 @@ public class ComplexTypeWrapper
     */
    private static DataMapping findDataMapping(String dataMappingId)
    {
-      try 
+      try
       {
          ActivityInstance ai = null;
          View view = PortalApplication.getInstance().getFocusView();
@@ -120,10 +126,10 @@ public class ComplexTypeWrapper
          if (null != ai)
          {
             Activity activity = ai.getActivity();
-   
+
             for (ApplicationContext context : (List<ApplicationContext>) activity.getAllApplicationContexts())
             {
-               for (DataMapping mapping : (List<DataMapping>) context.getAllDataMappings()) 
+               for (DataMapping mapping : (List<DataMapping>) context.getAllDataMappings())
                {
                   if (mapping.getId().equals(dataMappingId))
                   {
@@ -140,8 +146,8 @@ public class ComplexTypeWrapper
             // Not the right context. Ignore.
             return null;
          }
-      } 
-      catch (Exception e) 
+      }
+      catch (Exception e)
       {
          throw new PublicException(e);
       }
@@ -161,12 +167,12 @@ public class ComplexTypeWrapper
    {
       return dataMappingId;
    }
-   
+
    public IXPathMap getXPathMap()
    {
       return this.xPathMap;
    }
-   
+
    public ModelCreator getTableModels()
    {
       return this.modelCreator;

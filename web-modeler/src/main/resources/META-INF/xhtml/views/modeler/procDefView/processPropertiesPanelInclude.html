@@ -235,12 +235,10 @@
 													</td>
 												</tr>
 												<tr>
-													<td><label
-														for="restInterfaceCheckboxInput">REST
+													<td><label for="restInterfaceCheckboxInput">REST
 															Service</label></td>
 													<td><input id="restInterfaceCheckboxInput"
-														type="checkbox"></input>
-													</td>
+														type="checkbox"></input></td>
 												</tr>
 											</table>
 										</td>
@@ -375,7 +373,119 @@
 									</tr>
 								</table>
 							</div>
-							<div id="implementsProcessInterface"></div></td>
+							<div id="implementsProcessInterfacePanel">
+							<table>
+									<tr>
+										<td>
+											<table>
+												<tr>
+													<td><label for="implementsProcess">Implements</label>
+													</td>
+													<td><select id="implementsProcess">
+													</select></td>
+												</tr>
+											</table>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<div class="heading">Parameter Definitions</div>
+										</td>
+									</tr>
+									<tr>
+										<td>
+											<div class="panelBorder">
+												<table cellpadding="0" cellspacing="0"
+													class="layoutTable">
+													<tr>
+														<td>
+															<div class="dataTable">
+																<table id="parameterDefinitionsTable"
+																	cellpadding="0" cellspacing="0">
+																	<tbody />
+																</table>
+															</div>
+														</td>
+													</tr>
+												</table>
+											</div></td>
+									</tr>
+									<tr>
+										<td>
+											<table id="parameterDefinitionTypeSelector"
+												style="margin-top: 10px;">
+												<tr>
+													<td><label
+														for="parameterDefinitionNameInput">Name</label>
+													</td>
+													<td><input
+														id="parameterDefinitionNameInput" type="text" />
+													</td>
+												</tr>
+												<tr>
+													<td><label
+														for="parameterDefinitionDirectionSelect">Direction</label>
+													</td>
+													<td><select
+														id="parameterDefinitionDirectionSelect">
+													</select>
+													</td>
+												</tr>
+												<tr>
+													<td><label for="dataTypeSelect">Data
+															Type</label></td>
+													<td><select id="dataTypeSelect" size="1">
+													</select>
+													</td>
+												</tr>
+												<tr id="primitiveDataTypeRow">
+													<td><label for="primitiveDataTypeSelect">Primitive
+														Type</label></td>
+													<td><select id="primitiveDataTypeSelect"
+														size="1">
+															<option value="String">Text</option>
+															<option value="boolean">Boolean
+																(True, False)</option>
+															<option value="int">Number (e.g.
+																18756)</option>
+															<option value="long">Long Number
+																(e.g. 18756)</option>
+															<option value="double">Scientific
+																(e.g. 3.1415)</option>
+															<option value="Calendar">Date (e.g.
+																14/05/2011)</option>
+													</select></td>
+												</tr>
+												<tr id="structuredDataTypeRow">
+													<td><label for="structuredDataTypeSelect">Structured
+															Type</label></td>
+													<td><select id="structuredDataTypeSelect"
+														size="1">
+													</select>
+													</td>
+												</tr>
+												<tr id="documentTypeRow">
+													<td><label for="documentTypeSelect">Document
+															Type</label>
+													</td>
+													<td><select id="documentTypeSelect"
+														size="1">
+													</select>
+													</td>
+												</tr>
+												<tr>
+													<td><label
+														for="parameterDefinitionDataSelect">Data</label>
+													</td>
+													<td><select
+														id="parameterDefinitionDataSelect">
+													</select>
+													</td>
+												</tr>
+											</table></td>
+									</tr>
+								</table>
+							</div></td>
 					</tr>
 				</table>
 			</div>

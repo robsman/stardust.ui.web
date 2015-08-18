@@ -1,0 +1,33 @@
+<div>
+<table sd-data-table="docSearchViewCtrl.docVersionsdataTable"
+		sd-data="docSearchViewCtrl.getDocumentVersions()"  sda-mode="local" sda-ready="docSearchViewCtrl.showDocumentVersion"	
+		sda-sortable="true"
+		sda-sort-by="{name : 'versionNo', dir : 'desc'}" 
+		sda-column-selector="{{docSearchViewCtrl.columnSelector}}"
+		sda-exports="false">
+		<thead
+			sda-i18n-scope="views-common-messages.views-documentView-documentVersion">
+			<tr>
+				<th sda-name="versionNo" sda-sortable="true">				
+				</th>
+				<th sda-name="documentName" sda-label="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-column-documentName')}}" sda-sortable="true">
+				</th>
+				<th sda-name="author" sda-label="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-column-author')}}" sda-sortable="true">					
+				</th>
+				<th sda-name="modifiedDate"  sda-sortable="true">					
+				</th>
+				<th sda-name="comments" sda-label="{{i18n('views-common-messages.views-myDocumentsTreeView-saveDocumentVersionDialog-comments')}}" sda-sortable="true">
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td><a href="#" ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openDocumentView(rowData.revisionId);docSearchViewCtrl.documentHistory.close();">{{rowData.versionNo}}</a></td>
+				<td></td>
+				<td><a href="#" ng-click="docSearchViewCtrl.openUserDetails(rowData.documentOwner)">{{rowData.author}}</a></td>
+				<td></td>
+				<td></td>
+			</tr>
+		</tbody>
+	</table>
+</div>

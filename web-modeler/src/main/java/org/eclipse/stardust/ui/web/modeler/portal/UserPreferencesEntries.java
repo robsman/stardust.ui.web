@@ -22,6 +22,7 @@ public interface UserPreferencesEntries
    public static final String V_MODELER = "modeler";
    public static final String F_DEFAULT_PROFILE = "pref.defaultProfile";
    public static final String F_TECH_PREVIEW = "pref.techPreview";
+   public static final String F_SHOW_SIMPLE_MODELS = "pref.showSimpleModels";
 
    public static final String PROFILE_BA = "BusinessAnalyst";
    public static final String PROFILE_INTEGRATOR = "Integrator";

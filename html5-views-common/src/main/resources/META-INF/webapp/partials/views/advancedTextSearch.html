@@ -1,0 +1,91 @@
+<table
+	style="width: 100%; margin-bottom: 5px; border: 1px solid #C5C5C5;">
+	<tbody>
+		<tr>
+			<td>
+				<div ng-show="docSearchViewCtrl.showFinalText"
+					style="text-indent: 10px; width: 750px; background-color: #F0F0F0; border: 5px solid #C5C5C5">
+					<span>{{i18n('views-common-messages.views-documentSearchView-advancedTextSearch-placeHolder')}}</span>
+				</div>
+				<div ng-show="!docSearchViewCtrl.showFinalText"
+					style="text-indent: 10px; width: 750px; background-color: #F0F0F0; border: 5px solid #C5C5C5">
+					<span>{{docSearchViewCtrl.advancedTextSearch.finalText}}</span>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td><label class="form-lable"
+				style="margin-left: 5px; form-lable; line-height: 200%; font-weight: bold; color: #484848;">{{i18n('views-common-messages.views-documentSearchView-advancedTextSearch-title')}}</label></td>
+		</tr>
+		<tr>
+			<td>
+				<table>
+					<tbody>
+						<tr>
+							<td><span class="form-lable" style="margin-left: 5px;">{{i18n('views-common-messages.views-documentSearchView-advancedTextSearch-allWords')}}</span>
+							</td>
+							<td><input style="width: 160px; margin-bottom: 5px;"
+								maxlength="30" size="30" type="text"
+								ng-model="docSearchViewCtrl.advancedTextSearch.allWords"
+								value="{{docSearchViewCtrl.advancedTextSearch.allWords}}"
+								ng-blur="docSearchViewCtrl.constructFinalText()" /></td>
+						</tr>
+						<tr>
+							<td><span class="form-lable" style="margin-left: 5px;">{{i18n('views-common-messages.views-documentSearchView-advancedTextSearch-exactPhrase')}}</span></td>
+							<td><input style="width: 160px; margin-bottom: 5px;"
+								maxlength="30" size="30" type="text"
+								ng-model="docSearchViewCtrl.advancedTextSearch.exactPhrase"
+								value="{{docSearchViewCtrl.advancedTextSearch.exactPhrase}}"
+								ng-blur="docSearchViewCtrl.constructFinalText()" /></td>
+						</tr>
+						<tr>
+							<td><span class="form-lable" style="margin-left: 5px;">{{i18n('views-common-messages.views-documentSearchView-advancedTextSearch-oneOrMore')}}</span>
+							</td>
+							<td><input maxlength="30" size="30"
+								style="margin-right: 5px; width: 160px;" type="text"
+								ng-model="docSearchViewCtrl.advancedTextSearch.oneOrMore1"
+								value="{{docSearchViewCtrl.advancedTextSearch.oneOrMore1}}"
+								ng-blur="docSearchViewCtrl.constructFinalText()"><span
+								class="form-lable">{{i18n('views-common-messages.views-documentSearchView-advancedTextSearch-or')}}</span><input
+								maxlength="30" size="30"
+								style="margin-left: 5px; margin-right: 5px; width: 160px;"
+								ng-model="docSearchViewCtrl.advancedTextSearch.oneOrMore2"
+								type="text"
+								value="{{docSearchViewCtrl.advancedTextSearch.oneOrMore2}}"
+								ng-blur="docSearchViewCtrl.constructFinalText()"><span
+								class="form-lable">{{i18n('views-common-messages.views-documentSearchView-advancedTextSearch-or')}}</span><input
+								maxlength="30" size="30" style="margin-left: 5px; width: 160px;"
+								type="text"
+								ng-model="docSearchViewCtrl.advancedTextSearch.oneOrMore3"
+								value="{{docSearchViewCtrl.advancedTextSearch.oneOrMore3}}"
+								ng-blur="docSearchViewCtrl.constructFinalText()"></td>
+						</tr>
+					</tbody>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td><label class="form-lable"
+				style="font-weight: bold; color: #484848; margin-left: 5px;">{{i18n('views-common-messages.views-documentSearchView-advancedTextSearch-exception')}}</label>
+
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<table>
+					<tbody>
+						<tr>
+							<td><span class="form-lable" style="margin-left: 5px;">{{i18n('views-common-messages.views-documentSearchView-advancedTextSearch-unwantedWords')}}</span>
+							</td>
+							<td><input style="width: 160px; margin-bottom: 10px;"
+								maxlength="30" size="30" type="text"
+								ng-model="docSearchViewCtrl.advancedTextSearch.unwantedWords"
+								value="{{docSearchViewCtrl.advancedTextSearch.unwantedWords}}"
+								ng-blur="docSearchViewCtrl.constructFinalText()"></td>
+						</tr>
+					</tbody>
+				</table>
+			</td>
+		</tr>
+	</tbody>
+</table>

@@ -19,7 +19,7 @@ define([ "bpm-reporting/js/report/I18NUtils",
 		"bpm-reporting/js/report/ReportRenderingController" ],
 		function(I18NUtils, AngularAdapter, ReportingService,
 				ReportRenderingController) {
-			var angularCompile;
+			var angularServices = null;
 			return {
 				create : function(angular) {
 					var controller = new ReportDefinitionController();
@@ -35,10 +35,9 @@ define([ "bpm-reporting/js/report/I18NUtils",
 					controller = angularAdapter
 							.mergeControllerWithScope(controller);
 
-					angularCompile = angularAdapter.getCompiler();
+					angularServices = angularAdapter.getAngularServices();
 
-					var renderingController = ReportRenderingController
-							.create(angularCompile);
+					var renderingController = ReportRenderingController.create(angularServices);
 
 					controller.initialize(renderingController);
 

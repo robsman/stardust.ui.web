@@ -13,7 +13,9 @@ package org.eclipse.stardust.ui.web.common.util;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,6 +40,7 @@ import javax.faces.lifecycle.LifecycleFactory;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.swing.plaf.basic.BasicMenuUI;
 
 import org.eclipse.stardust.ui.web.common.ToolbarSection;
 import org.eclipse.stardust.ui.web.common.app.PortalApplicationSingleView;
@@ -136,7 +139,10 @@ public class FacesUtils implements Constants
          }
          catch(Exception e)
          {
-            trace.debug("[instanceOf]: Object:" + object.getClass().getName() + " is not instanceof: " + className);
+            if (trace.isDebugEnabled())
+            {
+               trace.debug("[instanceOf]: Object:" + object.getClass().getName() + " is not instanceof: " + className);
+            }
          }
       }
 
@@ -152,7 +158,10 @@ public class FacesUtils implements Constants
     */
    public static Map<String, Object> getObjectPropertyMapping(Object object, String property)
    {
-      trace.debug("getObjectPropertyMapping() -> " + object + " : " + property);
+      if (trace.isDebugEnabled())
+      {
+         trace.debug("getObjectPropertyMapping() -> " + object + " : " + property);
+      }
       
       Map<String, Object> returnMap = new HashMap<String, Object>();
       if(object == null || StringUtils.isEmpty(property))
@@ -171,8 +180,10 @@ public class FacesUtils implements Constants
             while(propTokens.hasMoreTokens())
             {
                nestedProperty = propTokens.nextToken();
-               trace.debug("getObjectPropertyMapping(): Loop -> " + nestedObject + " : " + nestedProperty);
-
+               if (trace.isDebugEnabled())
+               {
+                  trace.debug("getObjectPropertyMapping(): Loop -> " + nestedObject + " : " + nestedProperty);
+               }
                if(tokens == 1) // Process only till second last Token
                   break;
 
@@ -203,7 +214,10 @@ public class FacesUtils implements Constants
                tokens--;
             }
             
-            trace.debug("getObjectPropertyMapping(): Loop END -> " + nestedObject + " : " + nestedProperty);
+            if (trace.isDebugEnabled())
+            {
+               trace.debug("getObjectPropertyMapping(): Loop END -> " + nestedObject + " : " + nestedProperty);
+            }
             
             returnMap.put("object", nestedObject);
             returnMap.put("property", nestedProperty);
@@ -332,6 +346,21 @@ public class FacesUtils implements Constants
     * @param paramName
     * @return
     */
+   public static String getQueryParameterValue(String queryString, final String paramName)
+   {
+      Map<String, List<String>> queryParameters = parseQueryString(queryString);
+      if (queryParameters.containsKey(paramName))
+      {
+         return queryParameters.get(paramName).get(0);
+      }
+      return null;
+   }
+
+   /**
+    * @param facesContext
+    * @param paramName
+    * @return
+    */
    public static String getQueryParameterValue(FacesContext facesContext, final String paramName)
    {
       ExternalContext ectx = facesContext.getExternalContext();
@@ -440,13 +469,27 @@ public class FacesUtils implements Constants
    {
       FacesContext facesContext = FacesContext.getCurrentInstance();
       ExternalContext externalContext = facesContext.getExternalContext();
+      String encodeURL = null;
       try
       {
          String requestURI = ((HttpServletRequest) externalContext.getRequest()).getRequestURI();
          if (requestURI.endsWith("portalSingleViewMain.iface"))
          {
-            String url = "portalSingleViewMain.iface" + PortalApplicationSingleView.getSingleViewParams();
+            String url = "portalSingleViewMain.iface";
+            String viewParam = PortalApplicationSingleView.getSingleViewParams();
+            if (StringUtils.isNotEmpty(viewParam) && viewParam.contains("&singleViewKey="))
+            {
+               String[] viewParams = viewParam.split("&singleViewKey=");
+               // singleViewKey is encoded to handle special chars ex. '&'
+               encodeURL = encodeUrl(viewParams[1]);
+               url = "portalSingleViewMain.iface" + viewParams[0] + "&singleViewKey=" + encodeURL;
+            }
+            else if (StringUtils.isNotEmpty(viewParam))
+            {
+               url = "portalSingleViewMain.iface" + viewParam;
+            }
             externalContext.redirect(url);
+
          }
          else if (requestURI.endsWith("portalMain.iface"))
          {
@@ -461,6 +504,26 @@ public class FacesUtils implements Constants
       {
          trace.error("Failed navigation for request URI", e);
       }
+   }
+
+   /**
+    * @param str
+    * @return
+    */
+   public static String encodeUrl(String str)
+   {
+      if (str != null)
+      {
+         try
+         {
+            return URLEncoder.encode(str, "UTF-8");
+         }
+         catch (UnsupportedEncodingException e)
+         {
+         }
+      }
+
+      return str;
    }
 
    /**
@@ -589,9 +652,20 @@ public class FacesUtils implements Constants
       HttpServletRequest request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext()
             .getRequest();
 
+      return getServerBaseURL(request);
+   }
+
+   /**
+    * returns servers base URL
+    * 
+    * @return
+    */
+   public static String getServerBaseURL(HttpServletRequest request)
+   {
       return new StringBuffer(request.getScheme()).append("://").append(request.getServerName()).append(":").append(
             request.getServerPort()).append(request.getContextPath()).toString();
    }
+
 //moved this method from BeanUtil
  @Deprecated
  public static ValueBinding createValueBinding(String expr)
@@ -627,7 +701,7 @@ public class FacesUtils implements Constants
    
    public static Locale getLocaleFromRequest()
    {
-      return FacesContext.getCurrentInstance().getExternalContext().getRequestLocale();
+      return ManagedBeanUtils.getLocale();
    }
    
    /**

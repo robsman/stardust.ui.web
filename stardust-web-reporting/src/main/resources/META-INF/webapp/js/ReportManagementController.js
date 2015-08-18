@@ -82,12 +82,27 @@ define(
 						self.loadReportDefinitionsFolderStructure();
 					});
 					
-					window.parent.EventHub.events.subscribe("BPM-REPORTING-REPORT-CREATED", function(event) {
-							self.loadReportDefinitionsFolderStructure();
-					}, false);
-					window.parent.EventHub.events.subscribe("BPM-REPORTING-REPORT-UPDATED", function(reportUID, newName) {
-                  self.updateViewInfo(reportUID, "name=" + newName + "&reportUID=" + reportUID);
+					window.parent.EventHub.events.subscribe("BPM-REPORTING-REPORT-CREATED", function(reportUID, newName, updatedReportPath) {
+					   self.updateViewInfo(reportUID, "name=" + newName + "&reportUID=" + reportUID);
 					   self.loadReportDefinitionsFolderStructure();
+					}, false);
+					window.parent.EventHub.events.subscribe("BPM-REPORTING-REPORT-UPDATED", function(reportUID, newName, updatedReportPath) {
+					   self.updateViewInfo(reportUID, "name=" + newName + "&reportUID=" + reportUID);
+					   self.reportUID = reportUID
+					   self.newName = newName;
+					   self.updatedReportPath = updatedReportPath;
+                  
+					   var nodes = jQuery.jstree._reference("#reportTree")._get_children(-1);
+					   var len = nodes.length;
+					   for (var i = 0; i < len; i++) {
+					      jQuery(nodes[i]).children("ul:eq(0)").children("li").each(function (i) { 
+					         if (self.reportUID == this.attributes.reportUID.value) {
+					            this.attributes.name.value = self.newName;
+					            this.attributes.path.value = self.updatedReportPath;
+					            jQuery("#reportTree").jstree('set_text', this, self.newName); 
+					         }
+					      });
+					   }
 					}, false);
 					jQuery("#reportTree")
 							.jstree(
@@ -271,58 +286,44 @@ define(
 					jQuery("#reportTree").bind(
 							"rename_node.jstree",
 							function(event, data) {
-							   if (data.rslt.obj.attr('rel') == 'report')
+							   if (data.rslt.obj.attr('rel') == 'report') 
 							   {
-							      self.data = data;
-
-							      //Fetch the Report, update name and save it.
-							      var deferred = jQuery.Deferred();
-							      
-							      if(! self.reportingService.isValidReportName(self.data.rslt.name)) {
-							         self.loadReportDefinitionsFolderStructure();
-							         return;
-							      }
-							      
-							      self.reportingService.retrieveReportDefinition(self.data.rslt.obj.attr("path")).done(
-							               function(report)
-							               {
-							                  self.report = report;
-							                  self.reportingService.renameReportDefinition(data.rslt.obj.attr("path"),
-							                           data.rslt.name).done(
-							                           function(updatedReportPath)
-							                           {
-							                              self.updatedReportPath = updatedReportPath;
-							                              console.log(self.report);
-							                              self.report.name = self.data.rslt.name;
-							                              self.reportingService.saveReportDefinition(self.report).done(
-							                                       function(report)
-							                                       {
-							                                          //Update View 
-							                                          var newName = self.data.rslt.name;
-							                                          var reportUID = self.data.rslt.obj.attr("reportUID");
-							                                          
-							                                          self.updateViewInfo(reportUID, "name="
-							                                                   + newName + "&reportUID="
-							                                                   + reportUID);
-							                                          
-							                                          window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-NAME-UPDATED",
-							                                                   newName, self.updatedReportPath);
-
-							                                          self.loadReportDefinitionsFolderStructure();
-							                                          self.updateView();
-							                                       });
-
-							                              deferred.resolve();
-							                           }).fail(function()
-							                  {
-							                     deferred.reject();
-							                  });
-
-							                  document.body.style.cursor = "default";
-							               }).fail(function()
+							      if (data.rslt.obj.attr("name") != data.rslt.name)
 							      {
-							         document.body.style.cursor = "default";
-							      });
+   							      self.data = data;
+   
+   							      var deferred = jQuery.Deferred();
+   
+   							      if (!self.reportingService.isValidReportName(self.data.rslt.name)) {
+   							         self.loadReportDefinitionsFolderStructure();
+   							         return;
+   							      }
+   
+   							      self.reportingService.renameReportDefinition(
+   							               data.rslt.obj.attr("path"), data.rslt.name).done(
+   							         function(updatedReportPath)
+   							         {
+   							               self.data.rslt.obj.attr("name", data.rslt.name);
+   							               self.data.rslt.obj.attr("path", updatedReportPath);
+   							                  
+   
+   							               //Update View 
+   							               var newName = self.data.rslt.name;
+   							               var reportUID = self.data.rslt.obj.attr("reportUID");
+   							               self.updateViewInfo(reportUID, "name=" + newName + "&reportUID="
+   							                           + reportUID);
+   
+   							               //Notify View about Rename
+   							               window.parent.EventHub.events.publish("BPM-REPORTING-REPORT-NAME-UPDATED",
+   							                        reportUID, newName, updatedReportPath);
+   
+   							               self.updateView();
+   							               deferred.resolve();
+   							          }).fail(function()
+   							          {
+   							             deferred.reject();
+   							          });
+							      }
 							   }
 
 							});
@@ -566,17 +567,14 @@ define(
 	                        + "/plugins/bpm-reporting/popups/confirmationPopupDialogContent.html"
 	               },
 	               payload : {
-	                  title : "Confirm"/*m_i18nUtils
-	                        .getProperty("modeler.messages.confirm")*/,
-                     message : I18NUtils.getProperty(
-                                 'reporting.messages.confirm.deleteElement').replace(
-                                 "{0}", name),
-	                     
-	                  acceptButtonText : "Yes"/*m_i18nUtils
-	                        .getProperty("modeler.messages.confirm.yes")*/,
-	                  cancelButtonText : "Cancel"/*m_i18nUtils
-	                        .getProperty("modeler.messages.confirm.cancel")*/,
-	                  acceptFunction : callback
+		               acceptFunction : callback,
+	            	   language: {
+	            		   	message: I18NUtils.getProperty('reporting.messages.confirm.deleteElement').replace("{0}", name),
+	            		   	title: I18NUtils.getProperty("common.confirm"),
+                            ok: I18NUtils.getProperty("common.yes"),
+                            cancel: I18NUtils.getProperty("common.cancel"),
+                            close: I18NUtils.getProperty("common.close"),
+	            	   }
 	               }
 	            };
 

@@ -1,0 +1,49 @@
+<div>
+	<div style="clear: both; margin-top: 10px;">
+		<table>
+			<tr>
+				<td>
+					<label class="label-form">
+							* {{i18n('views-common-messages.views-createCase-caseName-label')}}
+					</label>
+				</td>
+				<td>
+					<div>
+						<input ng-model="createCaseController.createCase.caseName"
+							type="text" />
+					</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td><label class="label-form">
+						{{i18n('views-common-messages.views-createCase-owner-label')}} </label></td>
+				<td>
+					<div>
+						<input ng-model="createCaseController.createCase.caseOwner"	ng-disabled="true" type="text" />
+					</div>
+				</td>
+			</tr>
+
+			<tr>
+				<td><label class="label-form">
+						{{i18n('views-common-messages.views-createCase-description-label')}}</label></td>
+				<td><textarea
+						ng-model="createCaseController.createCase.description"></textarea>
+				</td>
+			</tr>
+			<tr>
+				<td><label class="label-form">{{i18n('views-common-messages.views-createCase-note-label')}}</label></td>
+				<td><textarea ng-model="createCaseController.createCase.note"></textarea>
+				</td>
+			</tr>
+		</table>
+		<div>
+			<input type="checkbox"
+				ng-model="createCaseController.createCase.openCaseDetail"> <label
+				class="label-form">
+				{{i18n('views-common-messages.views-createCase-openCaseDetail-label')}}
+			</label>
+		</div>
+	</div>
+</div>

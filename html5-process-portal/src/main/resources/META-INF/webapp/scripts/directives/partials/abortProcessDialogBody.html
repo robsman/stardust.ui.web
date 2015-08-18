@@ -1,0 +1,13 @@
+<div ng-bind="abortProcessCtrl.i18n('views-common-messages.views-common-process-abortProcess-headerMsg-prompt')"></div>
+<div class="abort-process-form-content">
+    <div class="radio">
+       <input type="radio" name="abortProcess" value="sub" ng-model="abortProcessCtrl.abortProcess.scope"> </input>
+       <label ng-bind="abortProcessCtrl.i18n('views-common-messages.views-common-process-abortProcess-scope-sub')">
+       </label>
+   </div>
+   <div class="radio">
+       <input type="radio" name="abortProcess" value="root" ng-model="abortProcessCtrl.abortProcess.scope"> </input>
+       <label ng-bind="abortProcessCtrl.i18n('views-common-messages.views-common-process-abortProcess-scope-root')">
+       </label>
+   </div>
+</div>

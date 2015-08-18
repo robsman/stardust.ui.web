@@ -23,11 +23,15 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.springframework.context.ApplicationContext;
+
+import com.google.gson.JsonObject;
+
 import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.LaneParticipantUtil;
-import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
+import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
 import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
@@ -36,10 +40,6 @@ import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ModelElementEditingUtils;
 import org.eclipse.stardust.ui.web.modeler.xpdl.marshalling.EventMarshallingUtils;
-
-import org.springframework.context.ApplicationContext;
-
-import com.google.gson.JsonObject;
 
 /**
  * @author Sidharth.Singh
@@ -52,6 +52,29 @@ public class EventCommandHandler
 
    private JsonMarshaller jsonIo = new JsonMarshaller();
 
+
+   @OnCommand(commandId = "excludeUserAction.create")
+   public void createExcludeUserAction(ModelType model, ActivityType activity, JsonObject request)
+   {
+      EventMarshallingUtils.createExcludeUserAction(activity, request, modelService().uuidMapper());
+   }
+
+   @OnCommand(commandId = "excludeUserAction.delete")
+   public void deleteExcludeUserAction(ModelType model, ActivityType activity,
+         JsonObject request)
+   {
+      if (request.has(ModelerConstants.UUID_PROPERTY))
+      {
+         String uuid = request.get(ModelerConstants.UUID_PROPERTY).getAsString();
+         if (uuid != null)
+         {
+            EventActionType action = (EventActionType) modelService().uuidMapper()
+                  .getEObject(uuid);
+            EventMarshallingUtils.removeExcludeUserAction(action);
+         }
+      }
+   }
+
    @OnCommand(commandId = "eventSymbol.create")
    public void createEvent(ModelType model, LaneSymbol parentLaneSymbol, JsonObject request)
    {
@@ -59,21 +82,25 @@ public class EventCommandHandler
 
       synchronized (model)
       {
+
          String eventType = extractString(request,
                ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.EVENT_TYPE_PROPERTY);
+         String implementation = extractString(request,
+               ModelerConstants.MODEL_ELEMENT_PROPERTY, ModelerConstants.IMPLEMENTATION_PROPERTY);
+
          if (ModelerConstants.START_EVENT.equals(eventType))
          {
             StartEventSymbol startEventSymbol = updateAndAddSymbol(parentLaneSymbol, request,
                   AbstractElementBuilder.F_CWM.createStartEventSymbol());
 
-            // TODO evaluate other properties
-
-            //Add a manual trigger by default
-            TriggerType manualTrigger = newManualTrigger(processDefinition) //
-                  .accessibleTo(LaneParticipantUtil.getParticipant(parentLaneSymbol))
-                  .build();
-            manualTrigger.setName("");
-            startEventSymbol.setTrigger(manualTrigger);
+            if (implementation == null || !implementation.equalsIgnoreCase("none"))
+            {
+               TriggerType manualTrigger = newManualTrigger(processDefinition) //
+                     .accessibleTo(LaneParticipantUtil.getParticipant(parentLaneSymbol))
+                     .build();
+               manualTrigger.setName("");
+               startEventSymbol.setTrigger(manualTrigger);
+            }
          }
          else if (ModelerConstants.INTERMEDIATE_EVENT.equals(eventType))
          {
@@ -147,11 +174,11 @@ public class EventCommandHandler
             - parentLaneSymbol.getYPos());
       symbol.setWidth(extractInt(request, ModelerConstants.WIDTH_PROPERTY));
       symbol.setHeight(extractInt(request, ModelerConstants.HEIGHT_PROPERTY));
-      
+
       mapper.map(symbol);
       addSymbol(ModelUtils.findContainingProcess(parentLaneSymbol).getDiagram().get(0), symbol);
       addSymbol(parentLaneSymbol, symbol);
-      
+
       return symbol;
    }
 
@@ -170,7 +197,7 @@ public class EventCommandHandler
          container.getEndEventSymbols().add((EndEventSymbol) symbol);
       }
    }
-   
+
    @OnCommand(commandId = "eventSymbol.delete")
    public void deleteEvent(ModelType model, LaneSymbol parentLaneSymbol, JsonObject request)
    {
@@ -183,7 +210,7 @@ public class EventCommandHandler
       {
          if (ModelerConstants.START_EVENT.equals(eventType))
          {
-            StartEventSymbol startEventSymbol = ModelBuilderFacade.findStartEventSymbol(
+            StartEventSymbol startEventSymbol = XPDLFinderUtils.findStartEventSymbol(
                   parentLaneSymbol, eventOId);
 
             // Delete the associated trigger too, if it exists
@@ -203,13 +230,13 @@ public class EventCommandHandler
          }
          else if (ModelerConstants.INTERMEDIATE_EVENT.equals(eventType))
          {
-            IntermediateEventSymbol eventSymbol = ModelBuilderFacade.findIntermediateEventSymbol(
+            IntermediateEventSymbol eventSymbol = XPDLFinderUtils.findIntermediateEventSymbol(
                   parentLaneSymbol, eventOId);
             if (eventSymbol != null)
             {
                // TODO: (fh) refactor code, smells.
                ActivityType hostActivity = EventMarshallingUtils.resolveHostActivity(eventSymbol);
-               
+
                if (hostActivity != null && !EventMarshallingUtils.isIntermediateEventHost(hostActivity))
                {
                   JsonObject hostingConfig = EventMarshallingUtils.getEventHostingConfig(
@@ -245,7 +272,7 @@ public class EventCommandHandler
                         .get(0)
                         .getIntermediateEventSymbols()
                         .remove(eventSymbol);
-   
+
                      //delete associated activity
                   if (null != hostActivity)
                   {
@@ -259,10 +286,10 @@ public class EventCommandHandler
                         delete.add(transition);
                      }
                      for (TransitionType transition : delete)
-                     {                     
+                     {
                         ModelElementEditingUtils.deleteIdentifiable(transition);
                      }
-                     
+
                      if (ActivityImplementationType.ROUTE_LITERAL.equals(hostActivity.getImplementation()))
                      {
                         processDefinition.getActivity().remove(hostActivity);
@@ -281,7 +308,7 @@ public class EventCommandHandler
          }
          else
          {
-            EndEventSymbol endEventSymbol = ModelBuilderFacade.findEndEventSymbol(parentLaneSymbol,
+            EndEventSymbol endEventSymbol = XPDLFinderUtils.findEndEventSymbol(parentLaneSymbol,
                   eventOId);
             if (endEventSymbol != null)
             {
@@ -299,14 +326,14 @@ public class EventCommandHandler
          }
       }
    }
-      
+
    private String getExpression(TransitionType transition)
    {
       XmlTextNode type = transition.getExpression();
       String expression = type == null ? null : ModelUtils.getCDataString(transition.getExpression().getMixed());
       return expression;
    }
-   
+
    private ModelService modelService()
    {
       return springContext.getBean(ModelService.class);

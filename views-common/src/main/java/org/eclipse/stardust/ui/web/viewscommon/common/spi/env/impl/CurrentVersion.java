@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2013 SunGard CSA LLC and others.
+ * Copyright (c) 2011, 2015 SunGard CSA LLC and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -14,6 +14,7 @@ import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.config.Version;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
@@ -33,7 +34,7 @@ public class CurrentVersion
    
    private static final String BUILD_VERSION_NAME = "-buildVersionName";
    private static final String VERSION_NAME = "-versionName";
-   public static final String COPYRIGHT_YEARS = "2000-2014";
+   public static final String COPYRIGHT_YEARS = "2000-2015";
    public static final String VERSION;
    public static final String BUILD;
    public static final String COPYRIGHT_MESSAGE;
@@ -45,8 +46,24 @@ public class CurrentVersion
       ResourceBundle versionBundle = ResourceBundle.getBundle(
             CurrentVersion.class.getPackage().getName() + ".version",
             Locale.getDefault(), CurrentVersion.class.getClassLoader());
-      VERSION = versionBundle.getString("version");
-      BUILD = versionBundle.getString("build");
+      String version = versionBundle.getString("version");
+      VERSION = version.replaceFirst("-.*SNAPSHOT", "");
+      StringBuilder build = new StringBuilder(versionBundle.getString("build"));
+      // if the version contains a snapshot identifier like -RC1-SNAPSHOT...
+      if(!VERSION.equals(version))
+      { 
+         // ..put it to the build identifier so that the info isn't lost
+         String snapshotAlias = version.replace(VERSION, "").replace("-SNAPSHOT", "");
+         if(StringUtils.isNotEmpty(snapshotAlias))
+         {
+            if(snapshotAlias.charAt(0) != '-')
+            {
+               build.append("-");
+            }
+            build.append(snapshotAlias);
+         }
+      }
+      BUILD = build.toString();
       COPYRIGHT_MESSAGE = versionBundle.getString("copyright.message");
    }
    

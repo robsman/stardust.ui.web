@@ -1,0 +1,73 @@
+<div class="modal-body">
+	<div id="errorMsgContainer">
+		<div sd-js-error class="msgError">
+			
+		</div>
+	</div>
+	
+	<div ng-if="delegateActivityController.searchParticipantSectionVisible">
+		<div style="float:right;"><a class="action-link " ng-click="delegateActivityController.showSelectParticipantSection()">{{i18n('views-common-messages.delegation-search-toggleLinkText')}} >></a></div>
+		<div style="clear:both;"><input ng-model="delegateActivityController.searchAllParticipant" type="checkbox" /> &nbsp; <span>{{i18n('views-common-messages.delegation-searchAllUserRoles')}}</span></div>
+		<br/>
+		<div class="sd-delegate-act-srch-participant-div">
+			<table style="width: 100%;">
+				<tr>
+					<td><div style="text-align: center;">{{i18n('views-common-messages.delegation-userOrRole')}}</div></td>
+					<td><div style="text-align: center;">{{i18n('views-common-messages.delegation-type')}}</div></td>
+				</tr>
+				<tr>
+					<td>
+				      <div sd-participant-selector
+				      		sda-selected-data="delegateActivityController.participantDataSelected"
+				      		sda-multiple="true"
+				      		sd-data="delegateActivityController.fetchParticipants(params)">
+				      </div>
+					</td>
+					<td>
+						<div style="text-align: center;">
+							<select ng-model="delegateActivityController.participantType" ng-options="type.name for type in delegateActivityController.participantTypes" style="width: 95px;">
+			  				</select>
+		  				</div>
+	  				</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	
+	<div ng-if="!delegateActivityController.searchParticipantSectionVisible">
+		<div style="float:right;"><a class="action-link" ng-click="delegateActivityController.showSearchParticipantSection()">{{i18n('views-common-messages.delegation-select-toggleLinkText')}} >></a></div>
+		<div style="clear:both;"><input ng-model="delegateActivityController.searchAllParticipant" type="checkbox" /> &nbsp; <span>{{i18n('views-common-messages.delegation-showAllUserRoles')}}</span></div>
+		<br/>
+		<div>
+			<table sd-data-table="delegateActivityController.participantDataTable" sd-data="delegateActivityController.fetchParticipants(params)"
+			sda-page-size="{{delegateActivityController.sdaPageSize}}"
+			sda-mode="remote" sda-toolbar="false"
+			sda-selectable="row">
+			<thead sda-i18n-scope="processportal.views-worklistPanel-column">
+				<tr>
+					<th sda-name="name" sda-label="{{i18n('views-common-messages.delegation-userOrRole')}}" sda-sortable="false"></th>
+					<th sda-name="type" sda-label="{{i18n('views-common-messages.delegation-type')}}" sda-sortable="false"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td sda-field="name"></td>
+					<td sda-field="type" style="text-align: center;"></td>
+				</tr>
+			</tbody>
+		</table>
+		</div>
+	</div>
+	<br/>
+</div>
+
+<div class="modal-footer">
+	<div class="button-pane cf" >
+		<div class="button-alignment" >
+			<div class="right">
+			  	<button class="button" ng-click="delegateActivityController.confirm(this)">{{i18n('views-common-messages.delegation-applyButton-text')}}</button>
+			    <button class="button" ng-click="delegateActivityController.closeThisDialog(this)">{{i18n('views-common-messages.common-cancel')}}</button>
+			</div>
+	    </div>
+    </div>
+</div>

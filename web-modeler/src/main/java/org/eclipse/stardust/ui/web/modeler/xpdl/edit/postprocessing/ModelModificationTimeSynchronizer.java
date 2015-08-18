@@ -14,6 +14,7 @@ import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.ChangePostprocessor;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
+import org.eclipse.stardust.ui.web.modeler.service.RecordingModelManagementStrategy;
 
 @Component
 public class ModelModificationTimeSynchronizer implements ChangePostprocessor
@@ -57,12 +58,20 @@ public class ModelModificationTimeSynchronizer implements ChangePostprocessor
          }
       }
 
+      //TODO:Use a TimestampProvider here
       Date now = new Date();
       for (ModelType xpdlModel : modifiedXpdlModels)
       {
-         if ( !modelService.getModelBuilderFacade().isReadOnly(xpdlModel))
-         {
-            modelService.getModelBuilderFacade().setModified(xpdlModel, now);
+         if (!modelService.getModelBuilderFacade().isReadOnly(xpdlModel))
+         { 
+            if (modelService.getModelBuilderFacade().getModelManagementStrategy() instanceof RecordingModelManagementStrategy)
+            {
+               modelService.getModelBuilderFacade().setModified(xpdlModel, "0");
+            }
+            else
+            {
+               modelService.getModelBuilderFacade().setModified(xpdlModel, now);
+            }
          }
       }
    }

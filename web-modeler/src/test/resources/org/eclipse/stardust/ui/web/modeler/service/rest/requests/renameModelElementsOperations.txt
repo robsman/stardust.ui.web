@@ -1,0 +1,3 @@
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"uuid":"00000000-0000-0000-0000-000000000106","changes":{"name":"RenamedProvidedTypeDeclaration"}}]}
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"uuid":"00000000-0000-0000-0000-000000000078","changes":{"name":"RenamedProvidedStructData"}}]}
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"uuid":"00000000-0000-0000-0000-000000000076","changes":{"name":"RenamedProvidedPrimitive"}}]}

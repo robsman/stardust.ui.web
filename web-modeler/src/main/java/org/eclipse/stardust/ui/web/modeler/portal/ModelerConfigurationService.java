@@ -35,6 +35,7 @@ public class ModelerConfigurationService
    {
       String defaultProfile = null;
       String showTechnologyPreview = null;
+      String showSimpleModels = null;
 
       try
       {
@@ -55,6 +56,12 @@ public class ModelerConfigurationService
                + UserPreferencesEntries.V_MODELER + "."
                + UserPreferencesEntries.F_TECH_PREVIEW;
          showTechnologyPreview = (String) props.get(showTechnologyPreviewKey);
+
+         // Show SimpleModels
+         String showSimpleModelsKey = UserPreferencesEntries.M_MODULE + "."
+               + UserPreferencesEntries.V_MODELER + "."
+               + UserPreferencesEntries.F_SHOW_SIMPLE_MODELS;
+         showSimpleModels = (String) props.get(showSimpleModelsKey);
       }
       catch (Exception e)
       {
@@ -70,11 +77,18 @@ public class ModelerConfigurationService
       {
          showTechnologyPreview = "false";
       }
+      
+      if (isEmpty(showSimpleModels))
+      {
+         showSimpleModels = "false";
+      }
 
       JsonObject preferencesJson = new JsonObject();
       preferencesJson.addProperty("defaultProfile", defaultProfile);
       preferencesJson.addProperty("showTechnologyPreview",
             Boolean.parseBoolean(showTechnologyPreview));
+      preferencesJson.addProperty("showSimpleModels",
+            Boolean.parseBoolean(showSimpleModels));
 
       return preferencesJson;
    }
