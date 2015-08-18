@@ -11,18 +11,16 @@
 package org.eclipse.stardust.ui.web.rest.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
-import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.FolderDTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.springframework.context.annotation.Scope;
@@ -47,7 +45,7 @@ public class RepositoryServiceImpl implements RepositoryService
    /**
     *
     */
-   public Map<String, List<AbstractDTO>> getFolder(String folderId)
+   public FolderDTO getFolder(String folderId)
    {
       return getFolder(folderId, 1);
    }
@@ -55,7 +53,7 @@ public class RepositoryServiceImpl implements RepositoryService
    /**
     *
     */
-   public Map<String, List<AbstractDTO>> getFolder(String folderId, int levelOfDetail)
+   public FolderDTO getFolder(String folderId, int levelOfDetail)
    {
       // fetching of children information may be time consuming, may need to be
       // parameterized later
@@ -66,23 +64,17 @@ public class RepositoryServiceImpl implements RepositoryService
          throw new I18NException(restCommonClientMessages.getParamString("folder.notFound", folderId));
       }
 
-      Map<String, List<AbstractDTO>> childs = new HashMap<String, List<AbstractDTO>>();
-      childs.put("folders", new ArrayList<AbstractDTO>());
-      childs.put("documents", new ArrayList<AbstractDTO>());
+      FolderDTO folderDTO = FolderDTOBuilder.build(folder);
+      folderDTO.folders = new ArrayList<FolderDTO>();
+      folderDTO.documents = new ArrayList<DocumentDTO>();
 
-      // update child nodes
-      int folderCount = folder.getFolderCount();
-      int documentCount = folder.getDocumentCount();
+      // add sub-folders
+      folderDTO.folders.addAll(FolderDTOBuilder.build(folder.getFolders()));
 
-      if (folderCount > 0 || documentCount > 0)
-      {
-         // create new folder nodes
-         childs.get("folders").addAll(FolderDTOBuilder.build(folder.getFolders()));
+      // add documents
+      folderDTO.documents.addAll(DocumentDTOBuilder.build(folder.getDocuments()));
 
-         // create new document nodes
-         childs.get("documents").addAll(DocumentDTOBuilder.build(folder.getDocuments()));
-      }
-      return childs;
+      return folderDTO;
    }
 
    private DocumentManagementService getDMS()

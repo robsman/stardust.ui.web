@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 
 /**
  * @author Yogesh.Manware
@@ -29,9 +30,9 @@ public interface RepositoryService
     * @param folderId
     * @return
     */
-   public Map<String, List<AbstractDTO>> getFolder(String folderId);
+   public FolderDTO getFolder(String folderId);
    
-   public Map<String, List<AbstractDTO>> getFolder(String folderId, int levelOfDetail);
+   public FolderDTO getFolder(String folderId, int levelOfDetail);
 
   /* public DocumentDTO renameFolder(String participantQidIn);
 

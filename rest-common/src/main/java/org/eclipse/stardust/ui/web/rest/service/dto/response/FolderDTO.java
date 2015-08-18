@@ -10,7 +10,10 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto.response;
 
+import java.util.List;
+
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 
 /**
  * @author Yogesh.Manware
@@ -23,6 +26,9 @@ public class FolderDTO extends AbstractDTO
    public String name;
    public String path;
    public boolean hasChildren = false;
+
+   public List<FolderDTO> folders;
+   public List<DocumentDTO> documents;
 
    public FolderDTO()
    {

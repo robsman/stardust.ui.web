@@ -49,16 +49,16 @@ public class FolderDTOBuilder extends AbstractDTO
     * @param folders
     * @return
     */
-   public static List< ? extends AbstractDTO> build(List<Folder> folders)
+   public static List<FolderDTO> build(List<Folder> folders)
    {
-      List<FolderDTO> documentsDTO = CollectionUtils.newArrayList();
+      List<FolderDTO> folderDTOs = CollectionUtils.newArrayList();
 
       for (Folder folder : folders)
       {
-         documentsDTO.add(build(folder));
+         folderDTOs.add(build(folder));
       }
 
-      return documentsDTO;
+      return folderDTOs;
    }
 
    /**
