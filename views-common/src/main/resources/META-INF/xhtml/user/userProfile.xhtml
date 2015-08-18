@@ -340,6 +340,74 @@
 							</ice:panelTab>
 							<!-- My picture tab ends here. -->
 
+
+							<!-- My signature tab. -->
+							<ice:panelTab
+								rendered="#{userProfileBean.modifyProfileConfiguration}"
+								label="#{messages_admin['views.createUser.mySignaturePanel.title']}"
+								title="#{messages_admin['views.createUser.mySignaturePanel.title']}">
+								<ice:panelGroup styleClass="clearing" />
+								<ice:panelGrid columns="1">
+									<ice:selectOneRadio
+										value="#{userProfileBean.mySignaturePreference.currentSignaturePreference}"
+										partialSubmit="true"
+										valueChangeListener="#{userProfileBean.mySignaturePreference.selectionChangeListener}">
+										<f:selectItem itemValue="NoSignature"
+											itemLabel="#{messages_admin['views.createUser.mySignaturePanel.option.noSignature.label']}" />
+										<f:selectItem itemValue="MyComputer"
+											itemLabel="#{messages_admin['views.createUser.mySignaturePanel.option.myComputer.label']}" />
+									</ice:selectOneRadio>
+									<ice:panelGroup styleClass="clearing" />
+									<ice:panelGroup
+										rendered="#{userProfileBean.mySignaturePreference.noPictureSelected}">
+										<ice:outputText
+											value="#{messages_admin['views.createUser.mySignaturePanel.signaturePreview']}"
+											styleClass="label-form" />
+										<ice:panelGroup styleClass="clearing" />
+										<ice:graphicImage
+											url="/plugins/views-common/images/icons/user-default.png"
+											height="128px" width="128px" />
+									</ice:panelGroup>
+									<ice:panelGroup
+										rendered="#{userProfileBean.mySignaturePreference.myComputerSelected}">
+										<ice:inputFile id="imageSignatureUploadComponent"
+											label="#{views_common_msgPropsBean['views.myDocumentsTreeView.fileUploadDialog.upload']}"
+											actionListener="#{userProfileBean.mySignaturePreference.uploadActionListener}" />
+										<ice:panelGroup styleClass="msgError">
+											<ice:message for="imageSignatureUploadComponent" />
+										</ice:panelGroup>
+										<ice:panelGroup styleClass="clearing" />
+
+										<ice:panelGrid columns="2"
+											style="vertical-align: top; white-space: nowrap; text-align:left"
+											headerClass="heading">
+											<ice:graphicImage
+												value="/plugins/views-common/images/icons/information.png"
+												title="" />
+											<ice:outputText
+												value="#{messages_admin['views.createUser.mySignaturePanel.option.myComputerGuidancetext']}" />
+										</ice:panelGrid>
+
+										<ice:panelGroup styleClass="clearing" />
+										<ice:panelGroup styleClass="clearing" />
+										<ice:panelGroup>
+											<ice:outputText
+												value="#{messages_admin['views.createUser.mySignaturePanel.signaturePreview']}"
+												styleClass="label-form" />
+										</ice:panelGroup>
+										<ice:panelGroup styleClass="clearing" />
+										<ice:panelGroup>
+											<ice:graphicImage
+												value="#{userProfileBean.mySignaturePreference.currentImage}"
+												alt="#{messages_admin['views.createUser.myPicturePanel.picturePreview.noImage']}"
+												height="128px" width="128px" />
+										</ice:panelGroup>
+									</ice:panelGroup>
+									<ice:panelGroup styleClass="clearing" />
+								</ice:panelGrid>
+							</ice:panelTab>
+							<!-- My signature tab ends here. -->
+
 						</ice:panelTabSet>
 					</ice:panelGroup>
 					<ice:panelGroup styleClass="clearing" />
@@ -358,6 +426,11 @@
 						<ice:panelGroup styleClass="msgError">
 							<ice:outputText
 								value="#{userProfileBean.myPicturePreference.validationMsg}"
+								styleClass="msgError" />
+						</ice:panelGroup>
+						<ice:panelGroup styleClass="msgError">
+							<ice:outputText
+								value="#{userProfileBean.mySignaturePreference.validationMsg}"
 								styleClass="msgError" />
 						</ice:panelGroup>
 					</ice:panelGrid>

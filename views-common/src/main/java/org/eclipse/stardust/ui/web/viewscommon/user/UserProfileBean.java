@@ -53,6 +53,7 @@ import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.MyPicturePreferenceBean;
+import org.eclipse.stardust.ui.web.viewscommon.common.MySignaturePreferenceBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.validator.DateValidator;
 import org.eclipse.stardust.ui.web.viewscommon.core.EMailAddressValidator;
@@ -102,6 +103,7 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
    private String selectedDisplayFormat;
 
    private MyPicturePreferenceBean myPicturePreference;
+   private MySignaturePreferenceBean mySignaturePreference;
    private User user;
 
    private ICallbackHandler callbackHandler;
@@ -239,8 +241,13 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
             {
                return;
             }
+            if (!mySignaturePreference.isSelectedImageValid())
+            {
+               return;
+            }
             newUser = modifyLoginUser();
             myPicturePreference.save();
+            mySignaturePreference.save();
             MessageDialog.addInfoMessage(propsBean.getString("common.configuration.saveConfirmation"));
          }
       }
@@ -351,6 +358,7 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
          if (isModifyProfileConfiguration())
          {
             myPicturePreference = new MyPicturePreferenceBean(user);
+            mySignaturePreference = new MySignaturePreferenceBean(user);
          }
       }
       
@@ -572,6 +580,7 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
       FacesUtils.clearFacesTreeValues();
       initializeView();
       myPicturePreference.reset();
+      mySignaturePreference.reset();
       MessageDialog.addInfoMessage(MessagesViewsCommonBean.getInstance().getString("views.common.config.reset"));
    }
    
@@ -908,6 +917,10 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
       return userProfileConfirmationDlg;
    }
    
+   public MySignaturePreferenceBean getMySignaturePreference()
+   {
+      return mySignaturePreference;
+   }
    
 
 }

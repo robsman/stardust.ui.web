@@ -99,4 +99,6 @@ public interface UserPreferencesEntries
    public static final String P_ACTIVITY_CRITICALITY_CONFIG = "workflow-criticality-categories";
    public static final String V_DEPUTY_MANAGEMENT_VIEW = "deputyManagementView";
    
+   public static final String F_MY_SIGNATURE_TYPE = "prefs.mySignature.type";
+   
 }
