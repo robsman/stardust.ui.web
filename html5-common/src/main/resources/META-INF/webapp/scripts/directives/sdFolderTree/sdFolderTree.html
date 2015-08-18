@@ -9,7 +9,7 @@
       <li sd-tree-node
           ng-repeat = "item in item.items"
           sda-label="item.name"
-          sda-is-leaf="item.itemType==='document'"
+          sda-is-leaf="item.itemType==='document' || item.hasChildren===false"
           sda-node-id="item.uuid">
           <ul>
             <li sd-tree-curse></li>

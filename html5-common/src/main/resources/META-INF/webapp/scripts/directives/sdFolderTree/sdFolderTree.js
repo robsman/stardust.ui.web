@@ -61,6 +61,8 @@
     path = path || "";
     
     url = this.rootUrl + "/services/rest/portal/folders/" + path;
+    url += "/?levelOfDetail=2";
+    
     this.$http.get(url)
     .then(function(res){
     	deferred.resolve(res.data);
