@@ -15,20 +15,43 @@
  * Initial path can be set using the @sdaRootPath attribute on the directive.
  * If no path is given the rootpath with be the base folder of the document repository.
  * 
+ * ATTRIBUTES:
+ * -----------------------------------------------------------------------------------
+ * @sdaRootPath - Root path to base the folder tree on
+ * @sdaMultiselect - string 'True' || 'False', whether the tree supports multiple node selection.
+ * &sdaOnInit - function to passback the tree api to the user (api only supports .getSelectedNodes())
+ * &sdaEventCallback - user callback to listen for events on.
+ * 
+ * Tree-API:
+ * -----------------------------------------------------------------------------------
+ * Tree Api is passed back to the function the user has provided to the sdaOnInit attribute.
+ * API Methods:
+ * 		getSelectedNodes : returns the array of nodes currently selected in the tree.
+ * 
+ * Events:
+ * -----------------------------------------------------------------------------------
+ * Document related events
+ * document-selected-single 
+ * document-selected-multi
+ * document-deselected
  */
 (function(){
   
   var mod = angular.module("bpm-common.directives");
   
+  /************************************************************************
+   * REST Folder service for directive
+   ************************************************************************/
   function sdFolderService($http,$q,sdUtilService){
     this.$http = $http;
     this.$q = $q;
-    this.documentCount=0;
-    this.folderCount=0;
     this.rootUrl = sdUtilService.getRootUrl();
   };
   
-  //returns {documents:[],folders:[]}
+  //Retrieve folders and their immediate substructure based
+  //on the relative path passed to the function. All paths
+  //are relative to the top level 'folders' directory
+  //representing the root level of the document repository.
   sdFolderService.prototype.getFolders = function(path){
     
     var that = this,
@@ -37,7 +60,7 @@
 
     path = path || "";
     
-    url = this.rootUrl + "/services/rest/portal/folder/" + path;
+    url = this.rootUrl + "/services/rest/portal/folders/" + path;
     this.$http.get(url)
     .then(function(res){
     	deferred.resolve(res.data);
@@ -50,13 +73,15 @@
     
   };
   
+  //injectable dependencies for our service.
   sdFolderService.$inject=["$http", "$q", "sdUtilService"];
   
+  //register service on our module
   mod.service("sdFolderService",sdFolderService);
   
-  /**
+  /************************************************************************
    * Controller function for Directive
-   */
+   ************************************************************************/
   function sdFolderTreeController(folderService,$q,$scope){
 	var that = this;
 	
@@ -78,45 +103,43 @@
         return that.selectedNodes;
       }
     };
+    //invoke our callback function with our api
     that.$scope.onInit({api:that.api});
     
   };
   
+  /**
+   * Icon callback to handle folders,documents, and selected folders.
+   * @param item
+   * @returns {String}
+   */
   sdFolderTreeController.prototype.iconCallback = function(item){
-   
+    var classes = "fa";
+    
     if(item.itemType==="document"){
+    	classes += " fa-file";
 		if(this.selectedNodes.some(function(v){return v.valueItem.uuid === item.uuid;})){
-		    return "fa fa-file selected";
+		    classes +=" selected";
 		}
-		else{
-			return "fa fa-file";
-		}
-		
     }
     
     if(item.itemType==="folder"){
-      return "fa fa-folder";
+      classes +=" fa-folder"
     }
   
-    return "fa fa-folder";
+    return classes;
   };
-  
-  sdFolderTreeController.prototype.iconChildCallback = function(item){
-
-    if(item.itemType==="document"){
-      return "fa fa-cog";
-    }
-    
-    if(item.itemType==="folder"){
-      return "fa fa-folder";
-    }
-    
-
-  };
-  
   
   /**
-   * Handle our tree events here. 
+   * Handle our tree events here. We only expose a dumbed-down selection of events
+   * to the user (as opposed to the normal firehose of sd-tree events).
+   * These include...
+   * -------------
+   * document-selected-single
+   * document-selected-multi
+   * document-deselected
+   * --------------
+   *...all events are published via the function the user assigned to the sdaEventCallback attribute.
    * @param data
    * @param e
    */
@@ -208,21 +231,28 @@
 
   };
   
+  /**
+   * Inital call to load the first level of the tree based on the @sdaRootPath
+   * attribute. All levels below this are lazy loaded on node expansion by the
+   * user.
+   * @param rootPath
+   */
   sdFolderTreeController.prototype.loadRootFolder = function(rootPath){
+	  
     var that = this,
-        rootName,
         root = {};
         
-    rootName = rootPath.split("/");
-    root.uuid = "0001";
-    root.name = rootName[rootName.length-1];
-    root.nodeType="rootFolder";
-    root.isLoaded=true;
     root.items=[];
+    
     this.folderService.getFolders(that.$scope.rootPath)
     .then(function(data){
-      root.items =  (that.normalizeFolderData(data).items);
-      that.folderData.push(root);//.normalizeFolderData(data));
+    	root.name= data.name;
+    	root.uuid = data.uuid;
+    	root.path = data.path;
+    	root.itemType = "folder";
+    	root.isLoaded = true;
+    	root.items =  (that.normalizeFolderData(data).items);
+    	that.folderData.push(root);
     });
   };
   
