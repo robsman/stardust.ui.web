@@ -16,8 +16,8 @@
 	'use strict';
 
 	angular.module('workflow-ui.services').provider('sdProcessInstanceService', function () {
-		this.$get = ['$rootScope', '$resource', '$filter', 'sdUtilService','sdDataTableHelperService','$q', function ($rootScope, $resource, $filter, sdUtilService, sdDataTableHelperService, $q) {
-			var service = new ProcessInstanceService($rootScope, $resource, $filter, sdUtilService, sdDataTableHelperService, $q);
+		this.$get = ['$rootScope', '$resource', '$http', '$filter', 'sdUtilService','sdDataTableHelperService','$q', function ($rootScope, $resource, $http, $filter, sdUtilService, sdDataTableHelperService, $q) {
+			var service = new ProcessInstanceService($rootScope, $resource, $http, $filter, sdUtilService, sdDataTableHelperService, $q);
 			return service;
 		}];
 	});
@@ -25,7 +25,7 @@
 	/*
 	 *
 	 */
-	function ProcessInstanceService($rootScope, $resource, $filter, sdUtilService, sdDataTableHelperService, $q) {
+	function ProcessInstanceService($rootScope, $resource, $http, $filter, sdUtilService, sdDataTableHelperService, $q) {
 		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/process-instances/";
 		
 		
@@ -187,9 +187,19 @@
 		 * 
 		 */
 		ProcessInstanceService.prototype.getProcessInstanceDocuments = function(oid) {
+			var deferred = $q.defer();
+			
 			var restUrl = REST_BASE_URL + oid + "/documents";
-			var documents = $resource(restUrl);
-			return documents.get().$promise;
+			
+			$http({method: 'GET', url: restUrl}).
+			  success(function(data, status, headers, config) {
+				  deferred.resolve(data);
+			  }).
+			  error(function(data, status, headers, config) {
+				  // TODO
+			  });
+			
+			return deferred.promise;
 		};
 
 		/*

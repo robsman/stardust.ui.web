@@ -128,12 +128,9 @@ public class ProcessInstanceResource
    {
       try
       {
-         final String DATA_PATH_DOCUMENTS = "DATA_PATH_DOCUMENTS";
-         Map<String, Map> dataPathDocuments = new HashMap<String, Map>();
-         dataPathDocuments.put(DATA_PATH_DOCUMENTS, getProcessInstanceService().getProcessInstanceDocuments(
-               Long.parseLong(processInstanceOid)));
          return Response.ok(
-               AbstractDTO.toJson(dataPathDocuments), MediaType.APPLICATION_JSON)
+               AbstractDTO.toJson(getProcessInstanceService().getProcessInstanceDocuments(
+                     Long.parseLong(processInstanceOid))), MediaType.APPLICATION_JSON)
                .build();
       }
       catch (Exception e)

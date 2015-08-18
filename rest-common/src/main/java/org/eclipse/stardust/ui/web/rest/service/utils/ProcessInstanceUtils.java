@@ -1783,6 +1783,7 @@ public class ProcessInstanceUtils
       // Update Document Descriptors for process
       dto.descriptorValues = getDescriptorValues(pi, processDefinition);
       dto.processDescriptorsList = getProcessDescriptor(pi, processDefinition);
+      dto.supportsProcessAttachments = processDefinitionUtils.supportsProcessAttachments(processDefinition);
 
       CommonDescriptorUtils.updateProcessDocumentDescriptors(
             ((ProcessInstanceDetails) pi).getDescriptors(), pi, processDefinition);

@@ -75,7 +75,7 @@ public class ProcessDefinitionUtils
     * @param processInstance
     * @return
     */
-   public boolean supportsProcessAttachments(ProcessDefinition pd)
+   public static boolean supportsProcessAttachments(ProcessDefinition pd)
    {
       boolean supportsProcessAttachments = false;
 

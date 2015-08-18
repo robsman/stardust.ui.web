@@ -70,4 +70,5 @@ public class ProcessInstanceDTO extends AbstractDTO
 
    public boolean auxillary;
    
+   public boolean supportsProcessAttachments;
 }

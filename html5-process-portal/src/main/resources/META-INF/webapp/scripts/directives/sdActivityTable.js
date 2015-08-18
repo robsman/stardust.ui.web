@@ -839,13 +839,17 @@
 	ActivityTableCompiler.prototype.openProcessDocumentsPopover = function(rowItem) {
 		var self = this;
 		rowItem.contentLoaded = false;
-		sdProcessInstanceService.getProcessInstanceDocuments(rowItem.processInstance.oid).then(function (resource) {
-			var procDocs = resource['DATA_PATH_DOCUMENTS'];
+		sdProcessInstanceService.getProcessInstanceDocuments(rowItem.processInstance.oid).then(function (procDocs) {
+			rowItem.supportsProcessAttachments = rowItem.processInstance.supportsProcessAttachments;
 			rowItem.processAttachments = procDocs['PROCESS_ATTACHMENTS'];
 			rowItem.specificDocuments = [];
 			jQuery.each(procDocs, function(pathId, docs) {
 				if (pathId !== 'PROCESS_ATTACHMENTS') {
-					rowItem.specificDocuments = rowItem.specificDocuments.concat(docs);
+					rowItem.specificDocuments = rowItem.specificDocuments
+							.concat({
+								dataPathId : pathId,
+								document : docs.length > 0 ? docs[0] : null
+							});
 				}
 			});
 			rowItem.contentLoaded = true;
@@ -871,8 +875,10 @@
 			});
 		}
 		if (rowItem.specificDocuments) {
-			jQuery.each(rowItem.specificDocuments, function(_, doc) {
-				self.openDocumentsView(doc.uuid);
+			jQuery.each(rowItem.specificDocuments, function(_, map) {
+				if (map.document) {
+					self.openDocumentsView(map.document.uuid);
+				}
 			});
 		}
 	};

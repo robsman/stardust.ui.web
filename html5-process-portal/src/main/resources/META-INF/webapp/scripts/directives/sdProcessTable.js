@@ -706,6 +706,56 @@
 			// Expose controller as a whole on to scope
 			scope.processTableCtrl = self;
 		}
+		
+		/**
+		 * TODO - check if duplication in ActivityTableCompiler can be avoided
+		 */
+		ProcessTableCompiler.prototype.openProcessDocumentsPopover = function(rowItem) {
+			var self = this;
+			rowItem.contentLoaded = false;
+			sdProcessInstanceService.getProcessInstanceDocuments(rowItem.oid).then(function (procDocs) {
+				rowItem.supportsProcessAttachments = rowItem.supportsProcessAttachments;
+				rowItem.processAttachments = procDocs['PROCESS_ATTACHMENTS'];
+				rowItem.specificDocuments = [];
+				jQuery.each(procDocs, function(pathId, docs) {
+					if (pathId !== 'PROCESS_ATTACHMENTS') {
+						rowItem.specificDocuments = rowItem.specificDocuments
+								.concat({
+									dataPathId : pathId,
+									document : docs.length > 0 ? docs[0] : null
+								});
+					}
+				});
+				rowItem.contentLoaded = true;
+				self.safeApply();
+			});
+		};
+		
+		/**
+		 * TODO - check if duplication in ActivityTableCompiler can be avoided
+		 */
+		ProcessTableCompiler.prototype.openDocumentsView = function(docId) {
+		   sdCommonViewUtilService.openDocumentView(docId);
+		};
+
+		/**
+		 * TODO - check if duplication in ActivityTableCompiler can be avoided
+		 */
+		ProcessTableCompiler.prototype.openAllProcessDocumentViews = function(rowItem) {
+			var self = this;
+			if (rowItem.processAttachments) {
+				jQuery.each(rowItem.processAttachments, function(_, doc) {
+					self.openDocumentsView(doc.uuid);
+				});
+			}
+			if (rowItem.specificDocuments) {
+				jQuery.each(rowItem.specificDocuments, function(_, map) {
+					if (map.document) {
+						self.openDocumentsView(map.document.uuid);
+					}
+				});
+			}
+		};
 
 		return directiveDefObject;
 	}

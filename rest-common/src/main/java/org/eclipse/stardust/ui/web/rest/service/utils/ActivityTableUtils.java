@@ -719,6 +719,10 @@ public class ActivityTableUtils
                {
                   dto.notesCount = notes.size();
                }
+               
+               ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(
+                     ai.getModelOID(), ai.getProcessDefinitionId());
+               dto.processInstance.supportsProcessAttachments = ProcessDefinitionUtils.supportsProcessAttachments(processDefinition);
 
                if (mode.equals(MODE.ACTIVITY_TABLE))
                {
