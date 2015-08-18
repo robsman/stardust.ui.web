@@ -533,11 +533,10 @@ public class ProcessInstanceUtils
    {
       List<Document> processAttachments = CollectionUtils.newArrayList();
 
-      boolean supportsProcessAttachments = supportsProcessAttachments(oid);
+      ProcessInstance processInstance = getProcessInstance(oid);
+      boolean supportsProcessAttachments = supportsProcessAttachments(processInstance);
       if (supportsProcessAttachments)
       {
-         ProcessInstance processInstance = getProcessInstance(oid);
-
          WorkflowService ws = serviceFactoryUtils.getWorkflowService();
          Object o = ws.getInDataPath(processInstance.getOID(), DmsConstants.PATH_ID_ATTACHMENTS);
 
@@ -575,9 +574,18 @@ public class ProcessInstanceUtils
     */
    public boolean supportsProcessAttachments(long oid)
    {
-      boolean supportsProcessAttachments = false;
+      return supportsProcessAttachments(getProcessInstance(oid));
+   }
 
-      ProcessInstance processInstance = getProcessInstance(oid);
+   /**
+    * return true if the provided Process Instance supports Process Attachments
+    *
+    * @param oid
+    * @return
+    */
+   public boolean supportsProcessAttachments(ProcessInstance processInstance)
+   {
+      boolean supportsProcessAttachments = false;
 
       if (processInstance != null)
       {
