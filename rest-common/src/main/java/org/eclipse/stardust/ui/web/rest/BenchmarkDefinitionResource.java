@@ -14,8 +14,10 @@ import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.activation.DataHandler;
 import javax.ws.rs.Consumes;
@@ -26,6 +28,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
@@ -36,6 +39,8 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.service.BenchmarkDefinitionService;
+import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkCategoryDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -134,6 +139,16 @@ public class BenchmarkDefinitionResource
          return Response.serverError().build();
       }
       
+   }
+   
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/run-time/categories")
+   public Response getRuntimeBenchmarkCategories(@QueryParam("oids") String benchmarkOids)
+   {
+         Set<BenchmarkCategoryDTO> benchmarkDefs = benchmarkDefinitionService
+               .getRuntimeBenchmarkCategories(benchmarkOids);
+            return Response.ok(AbstractDTO.toJson(new ArrayList<BenchmarkCategoryDTO>(benchmarkDefs)), MediaType.APPLICATION_JSON).build();            
    }
    
    @DELETE
