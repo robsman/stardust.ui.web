@@ -1,0 +1,94 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon"
+	xmlns:ap="http://www.sungard.de/carnot/web/portal-plugin/adminportal">
+
+	<ui:composition>
+		<ice:panelGroup>
+			<ui:include
+				src="/plugins/common/views/dialog/confirmationDialog.xhtml">
+				<ui:param name="dialogBean"
+					value="#{correspondencePanelBean.correspondenceConfirmationDlg}" />
+			</ui:include>
+		</ice:panelGroup>
+		<ice:panelBorder styleClass="pnlPopUpBrdrDialog" cellpadding="0"
+			cellspacing="0" renderNorth="false" renderEast="false"
+			renderWest="false" renderCenter="true">
+			<f:facet name="center">
+				<ice:panelGroup>
+
+					<!-- General -->
+					<ice:panelGroup styleClass="heading">
+						<ice:outputText
+							value="#{views_common_msgPropsBean['views.correspondence.panel.general.title']}">
+						</ice:outputText>
+					</ice:panelGroup>
+
+					<ice:panelGrid columns="2"
+						style="vertical-align: top; white-space: nowrap; text-align:left"
+						headerClass="heading">
+						<ice:outputLabel style="width: 75px; display: block;"
+							value="#{views_common_msgPropsBean['views.correspondence.panel.general.defaultType']}"
+							styleClass="label-form" />
+						<ice:panelGroup>
+							<ice:selectOneMenu partialSubmit="true" id="selectedDefaultType"
+								value="#{correspondencePanelBean.selectedDefaultType}">
+								<f:selectItem itemValue="Print"
+									itemLabel="#{views_common_msgPropsBean['views.correspondence.panel.general.defaultType.print']}" />
+								<f:selectItem itemValue="Email/Fax"
+									itemLabel="#{views_common_msgPropsBean['views.correspondence.panel.general.defaultType.EmailFax']}" />
+							</ice:selectOneMenu>
+						</ice:panelGroup>
+					</ice:panelGrid>
+
+					<ice:panelGroup styleClass="clearing" />
+
+					<!-- Fax -->
+					<ice:panelGroup styleClass="heading">
+						<ice:outputText
+							value="#{views_common_msgPropsBean['views.correspondence.panel.fax.title']}">
+						</ice:outputText>
+					</ice:panelGroup>
+
+					<ice:panelGrid columns="2"
+						style="vertical-align: top; white-space: nowrap; text-align:left"
+						headerClass="heading">
+						<ice:outputLabel
+							value="#{views_common_msgPropsBean['views.correspondence.panel.fax.numberFormat']}"
+							styleClass="label-form" />
+						<ice:panelGroup>
+							<ice:inputText id="numberFormat" partialSubmit="true"
+								value="#{correspondencePanelBean.numberFormat}">
+							</ice:inputText>
+						</ice:panelGroup>
+						<ice:outputLabel
+							value="#{views_common_msgPropsBean['views.correspondence.panel.fax.providerSuffix']}"
+							styleClass="label-form" />
+						<ice:panelGroup>
+							<ice:inputText id="providerSuffix" partialSubmit="true"
+								value="#{correspondencePanelBean.providerSuffix}">
+							</ice:inputText>
+						</ice:panelGroup>
+						
+					</ice:panelGrid>
+
+					<ice:panelGroup styleClass="clearing" />
+					<ice:panelGroup styleClass="clearing" />
+					<ice:panelGrid columns="2" style="text-align: left">
+						<ice:commandButton value="#{messages_admin['common.button.save']}"
+							action="#{correspondencePanelBean.onApply}" id="applyUser"
+							partialSubmit="true" immediate="true" styleClass="button" />
+						<ice:commandButton value="#{messages_admin['common.reset']}"
+							action="#{correspondencePanelBean.openConfirmationDialog}"
+							partialSubmit="true" immediate="true" id="cancel"
+							styleClass="button secondary" />
+					</ice:panelGrid>
+				</ice:panelGroup>
+			</f:facet>
+		</ice:panelBorder>
+	</ui:composition>
+</f:view>

@@ -507,5 +507,10 @@
 	<bean name="createOrModifyDeputyPopupBean" class="org.eclipse.stardust.ui.web.viewscommon.common.deputy.CreateOrModifyDeputyPopupBean"
 		scope="portalTab">
 	</bean>
+	
+	<bean name="correspondencePanelBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.views.correspondence.CorrespondencePanelBean"
+		scope="portalTab">
+	</bean>
 
 </beans>

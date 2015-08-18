@@ -101,4 +101,9 @@ public interface UserPreferencesEntries
    
    public static final String F_MY_SIGNATURE_TYPE = "prefs.mySignature.type";
    
+   public static final String F_CORRESPONDENCE = "correspondence";
+   public static final String F_CORRESPONDENCE_DEFAULT_TYPE = "prefs.correspondence.defaultType";
+   public static final String F_CORRESPONDENCE_NUMBER_FORMAT = "prefs.correspondence.numberFormat";
+   public static final String F_CORRESPONDENCE_PROVIDER_SUFFIX = "prefs.correspondence.providerSuffix";
+   
 }
