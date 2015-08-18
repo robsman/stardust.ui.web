@@ -99,7 +99,7 @@ public class AuthorizationUtils
    }
 
    public static JsonArray getPermissionsJson(IExtensibleElement element)
-   {/*
+   {
       List<Permission> permissions = getPermissions(element);
       JsonArray permissionsJson = new JsonArray();
       for (Iterator<Permission> i = permissions.iterator(); i.hasNext();)
@@ -120,8 +120,7 @@ public class AuthorizationUtils
          permissionsJson.add(permissionJson);
       }
       return permissionsJson;
-      
-   */return null;}
+   }
 
    private static JsonArray createParticipantsArray(List<IModelParticipant> participants,
          Permission permission)
