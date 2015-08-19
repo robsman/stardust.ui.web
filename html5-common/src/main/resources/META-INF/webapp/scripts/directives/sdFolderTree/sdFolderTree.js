@@ -45,7 +45,7 @@
   function sdFolderService($http,$q,sdUtilService){
     this.$http = $http;
     this.$q = $q;
-    this.rootUrl = sdUtilService.getRootUrl();
+    this.rootUrl = sdUtilService.getBaseUrl();
   };
   
   //Retrieve folders and their immediate substructure based
@@ -60,7 +60,7 @@
 
     path = path || "";
     
-    url = this.rootUrl + "/services/rest/portal/folders/" + path;
+    url = this.rootUrl + "services/rest/portal/folders/" + path;
     url += "/?levelOfDetail=2";
     
     this.$http.get(url)
@@ -295,7 +295,7 @@
   
   mod.controller("sdFolderTreeController",sdFolderTreeController);
   
-  mod.directive("sdFolderTree",function(){
+  mod.directive("sdFolderTree",["sdUtilService",function(sdUtilService){
     return {
       scope: {
         rootPath : "@sdaRootPath",
@@ -305,8 +305,8 @@
       },
       controller: "sdFolderTreeController",
       controllerAs: "treeCtrl",
-      templateUrl : "./plugins/html5-common/scripts/directives/sdFolderTree/sdFolderTree.html"
+      templateUrl : sdUtilService.getBaseUrl() +"plugins/html5-common/scripts/directives/sdFolderTree/sdFolderTree.html"
     };
-  });
+  }]);
   
 })();

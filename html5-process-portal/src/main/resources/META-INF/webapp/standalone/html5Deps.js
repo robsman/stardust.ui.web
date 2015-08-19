@@ -15,6 +15,7 @@ var html5Deps = function() {
 		        "html5-common/styles/starclipse/starclipse.css",          
 				"html5-common/styles/3rd-party/jquery-plugins/jquery-ui/1.10.2/jquery-ui-custom.css",
 				"html5-common/styles/3rd-party/glyphicons/3.3.2/glyphicons.css",
+				"html5-common/styles/portal-icons.css",
 				"html5-common/styles/3rd-party/datatables/1.9.4/jquery.dataTables.css",
 				"html5-common/styles/3rd-party/bootstrap/3.3.2/css/bootstrap-theme.min.css",
 				"html5-common/styles/3rd-party/bootstrap/3.3.2/css/bootstrap-theme.css",
@@ -22,8 +23,12 @@ var html5Deps = function() {
 				"html5-common/styles/sd-data-table.css",
 				"html5-common/styles/sd-autoComplete.css",
 				"html5-common/styles/html5-common.css",
+				"html5-common/styles/sdTree.css",
 				"html5-common/styles/font-icon.css",
-				"html5-process-portal/styles/html5-process-portal.css" ];
+				"html5-process-portal/styles/html5-process-portal.css",
+				"html5-common/styles/3rd-party/font-awesome/4.2.0/css/font-awesome.min.css"
+				];
+		
 
 		for ( var i in styleSheets) {
 			injectCSS(head, pluginBaseUrl + styleSheets[i]);
@@ -59,7 +64,11 @@ var html5Deps = function() {
 			    'sdDatePicker': ['html5-common/scripts/directives/sdDatePicker'],
 			    'sdPopover': ['html5-common/scripts/directives/sdPopover'],
 			    'sdAutoComplete': ['html5-common/scripts/directives/sdAutoComplete'],
-			    'sdRichTextEditor':['html5-common/scripts/directives/sdRichTextEditor']
+			    'sdRichTextEditor':['html5-common/scripts/directives/sdRichTextEditor'],
+			    'sdTree' : ['html5-common/scripts/directives/sdTree'],
+			    'sdFolderTree' : ['html5-common/scripts/directives/sdFolderTree/sdFolderTree'],
+			    'sdProcessDocumentTree': ['html5-common/scripts/directives/sdProcessDocumentsTree/sdProcessDocumentsTree']
+			    
 			},
 			shim : {
 				'jquery.dataTables' : [ 'jquery' ],
@@ -85,13 +94,16 @@ var html5Deps = function() {
 			    'sdDatePicker' : [ 'html5CommonMain', 'sdLocalizationService' ],
 			    'sdPopover' : [ 'html5CommonMain', 'sdLoggerService', 'bootstrap' ],
 			    'sdAutoComplete' :['html5CommonMain'],
-			    'sdRichTextEditor':['html5CommonMain','ckeditor']
+			    'sdRichTextEditor':['html5CommonMain','ckeditor'],
+			    'sdTree' :['html5CommonMain','ckeditor'] ,
+			    'sdFolderTree' : ['html5CommonMain','sdUtilService','sdTree'],
+			    'sdProcessDocumentTree':['html5CommonMain','sdUtilService','sdTree']
 			},
 			deps : [ "jquery.dataTables", "angularjs", "angularResource","bootstrap","ckeditor","portalApplication",
 					"html5CommonMain", "sdEventBusService", "httpInterceptorProvider",
 					"sdLoggerService", "sdData", "sdDataTable",
 					'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'sdDialog', 'sdDialogService', 'sdPortalConfigurationService' , 'sdPopover', 
-					'sdAutoComplete','sdRichTextEditor']
+					'sdAutoComplete','sdRichTextEditor','sdTree','sdFolderTree','sdProcessDocumentTree']
 
 		};
 

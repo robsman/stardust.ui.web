@@ -47,7 +47,7 @@
   function processDocumentService($http,$q,sdUtilService){
     this.$http = $http;
     this.$q = $q;
-    this.rootUrl = sdUtilService.getRootUrl();
+    this.rootUrl = sdUtilService.getBaseUrl();
   }
  
   /**
@@ -59,7 +59,7 @@
     var deferred = this.$q.defer(),
     	url;
     
-    url = this.rootUrl + "/services/rest/portal/process-instances/" + oid + "/documents";
+    url = this.rootUrl + "services/rest/portal/process-instances/" + oid + "/documents";
     
     this.$http.get(url)
     .then(function(data){
@@ -292,7 +292,7 @@
   
   mod.controller("processDocumentController",processDocumentController);
   
-  mod.directive("sdProcessDocumentTree",function(){
+  mod.directive("sdProcessDocumentTree",["sdUtilService",function(sdUtilService){
     return {
       scope: {
         oid : "@sdaProcessOid",
@@ -302,8 +302,8 @@
       },
       controller: "processDocumentController",
       controllerAs: "treeCtrl",
-      templateUrl : "./plugins/html5-common/scripts/directives/sdProcessDocumentsTree/sdProcessDocumentsTree.html"
+      templateUrl : sdUtilService.getBaseUrl()+"plugins/html5-common/scripts/directives/sdProcessDocumentsTree/sdProcessDocumentsTree.html"
     };
-  });
+  }]);
     
 })();

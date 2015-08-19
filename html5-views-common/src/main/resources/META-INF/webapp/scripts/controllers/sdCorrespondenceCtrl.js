@@ -96,7 +96,9 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 		
 		
 		this.dialog ={
-				selectedAddresses : []
+				selectedAddresses : [],
+				selectedAttachments : [],
+				selectedTemplates : []
 		}
 		
 		this.enteredAdd = {
@@ -137,7 +139,7 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 		this.loadAddressBook();
 		
 		
-		buttons.confirm =  this.i18n('views-common-messages.common-Confirm', 'Confirm');
+		buttons.confirm =  this.i18n('views-common-messages.common-OK', 'OK');
 		buttons.cancel = this.i18n('views-common-messages.common-Cancel', 'Cancel');
 		// call initialization file
 		if (window.File && window.FileList && window.FileReader) {
@@ -156,7 +158,7 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 		}	
 		
 		jQuery.ajax({
-			url: '/Ipp2/services/rest/portal/file-upload/upload',  //Server script to process data
+			url: '/Ipp2/services/rest/portal/process-instances/1047/documents/PROCESS_ATTACHMENTS',  //Server script to process data
 			type: 'POST',
 			xhr: function() {  // Custom XMLHttpRequest
 				var myXhr = jQuery.ajaxSettings.xhr();
@@ -167,7 +169,7 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 			},
 			//Ajax events
 			success: function(data, textStatus, xhr){
-				deferred.resolve(JSON.parse(data));
+				deferred.resolve(data);
 			},
 			error: function(xhr, textStatus){
 				console.log("Failure in uploading files");
@@ -225,12 +227,21 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 			
 			uploadAttachments().then(function(data){
 				angular.forEach(data,function(item){
-					self.loadAttachments({name : item.fileName});
+					self.loadAttachments({name : item.name});
 				});
 				clearUploadQ();
 			});
 		}
 	}
+	
+	CorrespondenceCtrl.prototype.templateFolderInit = function(api){
+		this.templateFolderAPI = api;
+	}
+	
+	CorrespondenceCtrl.prototype.onTemplateSelection = function(item){
+		this.selected.templateId = item;
+	}
+	
 
 	
 	CorrespondenceCtrl.prototype.getActivityOid = function(){ 
@@ -528,7 +539,12 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 			var title = "Select Template";
 			
 			var html = '<i class="glyphicon glyphicon-search"> </i>	<input type="text"  class="spacing-right"  ng-model="ctrl.filter.template" />'+
-						'<br><input type="text" ng-model="ctrl.selected.templateId" ng-change="ctrl.addressTable.refresh();"/> ';
+						'<div sd-folder-tree'+
+					        ' sda-on-init="ctrl.templateFolderInit(api)"'+
+					         'sda-multiselect="false"'+
+					         'sda-event-callback="ctrl.onTemplateSelection(item)"'+
+					         'sda-root-path="documents/correspondence-templates"></div>'+
+					      '</div>';
 			var options = {
 					confirmActionLabel : buttons.confirm,
 				    cancelActionLabel :  buttons.cancel,
@@ -542,6 +558,17 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 			_sdDialogService.dialog(self.getScope(), options, html)
 	};
 	
+	
+
+	CorrespondenceCtrl.prototype.onAttachmentFolder = function(api) {
+		this.attachmentFolderAPI = api;
+	} 
+	
+	CorrespondenceCtrl.prototype.onAttachmentSelection = function(item) {
+		var self = this;
+		
+	} 
+	
 	/**
 	 * 
 	 */
@@ -549,8 +576,13 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 			var self = this;
 			var title = "Select Attachments";
 			
-			var html = '<i class="glyphicon glyphicon-search"> </i>	<input type="text"  class="spacing-right"  ng-model="ctrl.filter.attachment" />'+
-						'<br><input type="text" ng-model="ctrl.selected.attachmentId" ng-change="ctrl.addressTable.refresh();"/> ';
+			var html = '<i class="glyphicon glyphicon-search"> </i>	<input type="text"  class="spacing-right"  ng-model="ctrl.filter.attachment" /> '+
+						'<div sd-process-document-tree '+
+								'sda-process-oid="1047" '+
+						         'sda-on-init="ctrl.onAttachmentFolder(api)" '+
+						         'sda-multiselect="true" '+
+						         'sda-event-callback="ctrl.onAttachmentSelection(item)"> '+
+						'</div>';
 			var options = {
 					confirmActionLabel : buttons.confirm,
 				    cancelActionLabel :  buttons.cancel,
@@ -558,9 +590,6 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 					type : 'confirm',
 					width : '500px',
 					onConfirm : function() {
-						var attachment = {
-								name : self.selected.attachmentId
-						};
 						self.loadAttachments(attachment);
 						
 					}
