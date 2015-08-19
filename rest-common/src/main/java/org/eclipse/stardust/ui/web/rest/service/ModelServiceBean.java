@@ -62,7 +62,6 @@ public class ModelServiceBean
             models = ModelCache.findModelCache().getAllModels();
          }
 
-         boolean adminRoleAdded = false;
          for (DeployedModel model : models)
          {
             if (includePredefinedModel || !(PredefinedConstants.PREDEFINED_MODEL_ID.equals(model.getId())))
@@ -102,12 +101,10 @@ public class ModelServiceBean
                modelList.add(modelDTO);
 
                // Add all top-level Organizations
-               getTopLevelOrganizations(model, modelDTO);
+               updateTopLevelOrganizations(model, modelDTO);
 
                // Add all top-level Roles
-               getTopLevelRoles(model, modelDTO, adminRoleAdded);
-
-               adminRoleAdded = true;
+               updateTopLevelRoles(model, modelDTO);
             }
          }
       }
@@ -123,7 +120,7 @@ public class ModelServiceBean
     * @param model
     * @param modelDto
     */
-   private void getTopLevelOrganizations(Model model, ModelDTO modelDto)
+   private void updateTopLevelOrganizations(Model model, ModelDTO modelDto)
    {
       List<Organization> topLevelOrganizations = null;
 
@@ -147,7 +144,7 @@ public class ModelServiceBean
     * @param modelDto
     * @param adminRoleAdded
     */
-   private void getTopLevelRoles(Model model, ModelDTO modelDto, boolean adminRoleAdded)
+   private void updateTopLevelRoles(Model model, ModelDTO modelDto)
    {
       List<Role> topLevelRoles = null;
       topLevelRoles = model.getAllTopLevelRoles();
@@ -155,22 +152,19 @@ public class ModelServiceBean
 
       for (Role role : topLevelRoles)
       {
-         // We need to only add the first occurrence of the "Administrator" role
+         // We the "Administrator" role that belong to Predefined model
          if (PredefinedConstants.ADMINISTRATOR_ROLE.equals(role.getId()))
          {
-            if (!adminRoleAdded)
+            if (PredefinedConstants.PREDEFINED_MODEL_ID.equals(model.getId()))
             {
-               adminRoleAdded = true;
+               ParticipantDTO participantDTO = new ParticipantDTO(role);
+               participantDTO.type = ParticipantManagementUtils.getParticipantType(role).name();
+               modelDto.allTopLevelRoles.add(participantDTO);
             }
-            else
-            {
-               // If "Administrator" role has already been added, skip this element
-               continue;
-            }
+            continue;
          }
 
-         String modelId = !PredefinedConstants.ADMINISTRATOR_ROLE.equals(role.getId()) ? ModelUtils.extractModelId(role
-               .getQualifiedId()) : null;
+         String modelId = ModelUtils.extractModelId(role.getQualifiedId());
 
          if ((modelId == null) || (modelId.equals(model.getId())))
          {
