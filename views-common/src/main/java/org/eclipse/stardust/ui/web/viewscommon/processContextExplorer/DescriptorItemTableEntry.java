@@ -11,7 +11,6 @@
 package org.eclipse.stardust.ui.web.viewscommon.processContextExplorer;
 
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
 
 
 /**
@@ -23,8 +22,11 @@ public class DescriptorItemTableEntry extends DefaultRowModel
    private static final long serialVersionUID = 1L;
    String name;
    Object value;
+   String type;
+   Class mappedType;
    boolean editable = false;
    boolean hasError;
+   
 
    /**
     * @param name
@@ -37,9 +39,11 @@ public class DescriptorItemTableEntry extends DefaultRowModel
       this.value = value;
    }
 
-   public DescriptorItemTableEntry(String name, Object value, boolean editable)
+   public DescriptorItemTableEntry(String name, Object value, String type, Class mappedType, boolean editable)
    {
       this(name, value);
+      this.type = type;
+      this.mappedType = mappedType;
       this.editable = editable;
    }
    
@@ -58,14 +62,19 @@ public class DescriptorItemTableEntry extends DefaultRowModel
       this.value = value;
    }
 
+   public String getType()
+   {
+      return type;
+   }
+
+   public Class getMappedType()
+   {
+      return mappedType;
+   }
+
    public boolean isEditable()
    {
       return editable;
-   }
-
-   public void setEditable(boolean editable)
-   {
-      this.editable = editable;
    }
 
    public boolean isHasError()
@@ -77,5 +86,6 @@ public class DescriptorItemTableEntry extends DefaultRowModel
    {
       this.hasError = hasError;
    }
+   
 
 }

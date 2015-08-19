@@ -10,9 +10,21 @@
 		<ice:panelGroup rendered="#{col.columnName == 'Value'}">
 			<ice:outputText value="#{row.value}" rendered="#{!row.editable}" />
 			<ice:inputText value="#{row.value}" partialSubmit="true"
-				valueChangeListener="#{bean.valueChange}" rendered="#{row.editable}">
+				valueChangeListener="#{bean.valueChange}"
+				rendered="#{row.editable and !(row.type eq 'TimeStamp' or row.type eq 'date')}">
 				<f:attribute name="row" value="#{row}" />
 			</ice:inputText>
+			
+			<ice:selectInputDate renderAsPopup="true" style="white-space:nowrap"
+				valueChangeListener="#{bean.valueChange}" value="#{row.value}"
+				rendered="#{row.editable and (row.type eq 'TimeStamp' or row.type eq 'date')}">
+				<f:attribute name="row" value="#{row}" />
+				<f:converter converterId="customDateConverter"
+					rendered="#{row.type eq 'date'}" />
+				<f:converter converterId="customDateTimeConverter"
+					rendered="#{row.type eq 'TimeStamp'}" />
+			</ice:selectInputDate>
+			
 			<ice:outputText value="*"
 				style="color: red;padding-left: 0.5px;font-size: 15px; display:inline;"
 				rendered="#{row.hasError}" />

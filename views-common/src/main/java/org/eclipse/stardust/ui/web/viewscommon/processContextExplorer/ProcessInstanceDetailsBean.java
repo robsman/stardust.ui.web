@@ -16,6 +16,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -76,6 +77,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.PortalErrorClass;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.common.ValidationMessageBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSearchHandler;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DataMappingWrapper;
@@ -113,6 +115,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    private static final Logger trace = LogManager.getLogger(ProcessInstanceDetailsBean.class);
    private static final String STATE_PREFIX = "views.processTable.statusFilter.";
    private static final String VIEW_ID = "processInstanceDetailsView";
+   private static final String DATE_FORMAT = "MM/dd/yy";
 
    private ProcessInstance processInstance;
    private Long processInstanceOID;
@@ -577,14 +580,14 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
          }
 
          validationMessageBean.reset();
-         List<DescriptorItemTableEntry> descriptorList = convertToTableEntries(CommonDescriptorUtils.createProcessDescriptors(processInstance));
+         List<DescriptorItemTableEntry> descriptorList = convertToTableEntries(CommonDescriptorUtils.createProcessDescriptors(processInstance, false));
          
          descriptorTable.setList(descriptorList);
          descriptorTable.initialize();
          descriptorsPanelInitialized = true;
       }
       catch (Exception e)
-      {
+      {	
          ExceptionHandler.handleException(e);
       }
    }
@@ -605,39 +608,47 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
       {
          DataPathDetails inDataPath = inDataPathsMap.get(processDescriptor.getId());
          // For non-filterable OUT DataPath(complex), prevent edit
-         if(CollectionUtils.isNotEmpty(outDataPathsMap) && DescriptorFilterUtils.isDataFilterable(inDataPath))
+         if (CollectionUtils.isNotEmpty(outDataPathsMap) && DescriptorFilterUtils.isDataFilterable(inDataPath))
          {
             String data = inDataPath.getData();
             // Get OUT dataPath for IN DataPath
             DataPathDetails outDataPath = fetchOutDataPath(inDataPath);
-            if(null != outDataPath)
+            if (null != outDataPath)
             {
                mapping = new GenericDataMapping(outDataPath);
                dmWrapper = new DataMappingWrapper(mapping, null, false);
                Class dataClass = mapping.getMappedType();
                String type = dmWrapper.getType();
                Object value = processDescriptor.getValue();
-               if ("Long".equals(type) || "Double".equals(type))
+               if (ProcessPortalConstants.LONG_TYPE.equalsIgnoreCase(type)
+                     || ProcessPortalConstants.DOUBLE_TYPE.equalsIgnoreCase(type)
+                     || ProcessPortalConstants.BIG_DECIMAL_TYPE.equalsIgnoreCase(type))
                {
-
                   descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), convertToNumber(
-                        processDescriptor.getValue(), dataClass), true));
+                        processDescriptor.getValue(), dataClass), type, dataClass, true));
                }
-               else if ("Boolean".equals(type))
+               else if (ProcessPortalConstants.BOOLEAN_TYPE.equalsIgnoreCase(type))
                {
                   descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), Boolean
-                        .parseBoolean(processDescriptor.getValue()), true));
+                        .parseBoolean(processDescriptor.getValue()), type, dataClass, true));
                }
-               else if ("Date".equals(type))
+               else if (ProcessPortalConstants.DATE_TYPE.equalsIgnoreCase(type)
+                     || ProcessPortalConstants.TIMESTAMP_TYPE.equalsIgnoreCase(type)
+                     || ProcessPortalConstants.TIME_TYPE.equalsIgnoreCase(type))
                {
+                  Date dateValue = DateUtils.parseDateTime(processDescriptor.getValue());
+                  if (null == dateValue)
+                  {
+                     dateValue = DateUtils.parseDateTime(processDescriptor.getValue(), DATE_FORMAT,
+                           Locale.getDefault(), TimeZone.getDefault());
+                  }
                   descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), getDateValue(
-                        DateUtils.parseDateTime((String) value), dataClass), true));
-
+                        dateValue, dataClass), type, dataClass, true));
                }
                else
                {
                   descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor
-                        .getValue(), true));
+                        .getValue(), type, dataClass, true));
                }
             }
             else
@@ -662,62 +673,82 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
     */
    public void valueChange(ValueChangeEvent event)
    {
-      validationMessageBean.reset();
-      DescriptorItemTableEntry userObject = null;
-      DataPathDetails inDataPath = null, outDataPath = null;
-      try
+      if (!event.getPhaseId().equals(javax.faces.event.PhaseId.INVOKE_APPLICATION))
       {
-         Object newDescriptorValue = event.getNewValue();
-         Object oldDescriptorValue = event.getOldValue();
-         GenericDataMapping mapping;
-         DataMappingWrapper dmWrapper;
-         Object newValue = null;
-         if (null != oldDescriptorValue && null != newDescriptorValue
-               && !oldDescriptorValue.toString().equals(newDescriptorValue))
+         event.setPhaseId(javax.faces.event.PhaseId.INVOKE_APPLICATION);
+         event.queue();
+
+         return;
+      }
+      else
+      {
+         validationMessageBean.reset();
+         DescriptorItemTableEntry userObject = null;
+         DataPathDetails inDataPath = null, outDataPath = null;
+         try
          {
-            userObject = (DescriptorItemTableEntry) event.getComponent().getAttributes().get("row");
-            inDataPath = inDataPathsMap.get(userObject.getName());
-            outDataPath = fetchOutDataPath(inDataPath);
-            if (null != outDataPath)
+            Object newDescriptorValue = event.getNewValue();
+            Object oldDescriptorValue = event.getOldValue();
+            Object newValue = null;
+            if (null != oldDescriptorValue && null != newDescriptorValue
+                  && !oldDescriptorValue.toString().equals(newDescriptorValue))
             {
-               mapping = new GenericDataMapping(outDataPath);
-               dmWrapper = new DataMappingWrapper(mapping, null, false);
-               Class dataClass = mapping.getMappedType();
-               String type = dmWrapper.getType();
-               if ("Long".equalsIgnoreCase(type) || "Double".equalsIgnoreCase(type))
+               userObject = (DescriptorItemTableEntry) event.getComponent().getAttributes().get("row");
+               String type = userObject.getType();
+               Class dataClass = userObject.getMappedType();
+               if (ProcessPortalConstants.LONG_TYPE.equalsIgnoreCase(type)
+                     || ProcessPortalConstants.DOUBLE_TYPE.equalsIgnoreCase(type)
+                     || ProcessPortalConstants.BIG_DECIMAL_TYPE.equalsIgnoreCase(type))
                {
                   newValue = convertToNumber(newDescriptorValue, dataClass);
 
                }
-               else if ("Boolean".equalsIgnoreCase(type))
+               else if (ProcessPortalConstants.BOOLEAN_TYPE.equalsIgnoreCase(type))
                {
                   newValue = Boolean.valueOf(newDescriptorValue.toString());
                }
-               else if ("Date".equalsIgnoreCase(type))
+               else if (ProcessPortalConstants.DATE_TYPE.equalsIgnoreCase(type)
+                     || ProcessPortalConstants.TIMESTAMP_TYPE.equalsIgnoreCase(type)
+                     || ProcessPortalConstants.TIME_TYPE.equalsIgnoreCase(type))
                {
-                  newValue = getDateValue(DateUtils.parseDateTime((String) newDescriptorValue), dataClass);
+                  if (newDescriptorValue instanceof Date)
+                  {
+                     newValue = getDateValue((Date) newDescriptorValue, dataClass);
+                  }
+                  else if (newDescriptorValue instanceof String)
+                  {
+                     newValue = getDateValue(DateUtils.parseDateTime((String) newDescriptorValue), dataClass);
+                  }
 
                }
                else
                {
                   newValue = newDescriptorValue.toString();
                }
-               ServiceFactoryUtils.getWorkflowService().setOutDataPath(processInstance.getOID(), outDataPath.getId(),
-                     newDescriptorValue);
+               inDataPath = inDataPathsMap.get(userObject.getName());
+               outDataPath = fetchOutDataPath(inDataPath);
+               if (null != outDataPath)
+               {
 
-               userObject.setHasError(false);
-               validationMessageBean.addInfoMessage(this.getMessages().getString("descriptor.save", inDataPath.getName()), "descriptorViewMsg");
+                  ServiceFactoryUtils.getWorkflowService().setOutDataPath(processInstance.getOID(),
+                        outDataPath.getId(), newDescriptorValue);
+
+                  userObject.setHasError(false);
+                  validationMessageBean.addInfoMessage(
+                        this.getMessages().getString("descriptor.save", inDataPath.getName()), "descriptorViewMsg");
+               }
             }
          }
-      }
-      catch (Exception e)
-      {
-         userObject.setHasError(true);
-         FacesMessage facesMsg = ExceptionHandler.getFacesMessage(new PortalException(
-               PortalErrorClass.UNABLE_TO_CONVERT_DATAMAPPING_VALUE, e));
-         validationMessageBean.addError(facesMsg.getSummary(), "descriptorViewMsg");
+         catch (Exception e)
+         {
+            userObject.setHasError(true);
+            FacesMessage facesMsg = ExceptionHandler.getFacesMessage(new PortalException(
+                  PortalErrorClass.UNABLE_TO_CONVERT_DATAMAPPING_VALUE, e));
+            validationMessageBean.addError(facesMsg.getSummary(), "descriptorViewMsg");
+         }
       }
    }
+   
    /**
     * 
     * @param inDataPath
