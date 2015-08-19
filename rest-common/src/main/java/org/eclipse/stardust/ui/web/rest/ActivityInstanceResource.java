@@ -37,6 +37,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -862,6 +863,28 @@ public class ActivityInstanceResource
             MediaType.APPLICATION_JSON).build();
    }
 
+   /**
+    * @author Yogesh.Manware
+    * @param activityOid
+    * @return
+    */
+   @POST
+   @Consumes(MediaType.MULTIPART_FORM_DATA)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{oid}/documents/PROCESS_ATTACHMENTS")
+   public Response addAttachment(List<Attachment> attachments, @Context HttpServletRequest request,
+         @PathParam("oid") Long activityOid) throws Exception
+   {
+      ActivityInstance ai = activityInstanceService.getActivityInstance(activityOid);
+      if (ai == null)
+      {
+         throw new I18NException("No Activity with oid: " + activityOid + "Found.");
+      }
+      List<DocumentDTO> processAttachments = processInstanceService.addProcessAttachments(ai.getProcessInstance(),
+            attachments);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(processAttachments)).build();
+   }
+   
    /**
     * @author Yogesh.Manware
     * @param httpRequest

@@ -141,8 +141,20 @@ public class ProcessInstanceService
     */
    public List<DocumentDTO> addProcessAttachments(long processOid, List<Attachment> attachments) throws Exception
    {
-      List<DocumentDTO> documents = new ArrayList<DocumentDTO>();
+      ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processOid);
+      return addProcessAttachments(processInstance, attachments);
+   }
 
+   /**
+    * @param processInstance
+    * @param attachments
+    * @return
+    * @throws Exception
+    */
+   public List<DocumentDTO> addProcessAttachments(ProcessInstance processInstance, List<Attachment> attachments)
+         throws Exception
+   {
+      List<DocumentDTO> documents = new ArrayList<DocumentDTO>();
       for (Attachment attachment : attachments)
       {
          DataHandler dataHandler = attachment.getDataHandler();
@@ -157,7 +169,6 @@ public class ProcessInstanceService
             fileName = fileName.substring(fileName.lastIndexOf("\\") + 1, fileName.length());
          }
 
-         ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processOid);
          Folder processAttachmentsFolder = RepositoryUtility.getProcessAttachmentsFolder(processInstance);
 
          String docName = RepositoryUtility.createDocumentName(processAttachmentsFolder, fileName, 0);
