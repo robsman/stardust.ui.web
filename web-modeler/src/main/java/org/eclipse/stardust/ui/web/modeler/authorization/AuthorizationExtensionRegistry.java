@@ -48,7 +48,8 @@ public class AuthorizationExtensionRegistry
    private static AuthorizationExtensionRegistry authorizationExtensionRegistry;   
    private static final String[] EXCLUDE_PERMISSION_IDS =
    {
-      
+    //Todo: Adapt Testcase when uncommenting this!
+     //"activity.modifyAttributes", "processDefinition.modifyAttributes", "data.modifyUserData"
    };
 
    AuthorizationExtensionRegistry()
@@ -56,11 +57,11 @@ public class AuthorizationExtensionRegistry
    }
 
    
-   private boolean excludePermissions(String validationId)
+   private boolean excludePermission(String permissionID)
    {
       for(String excludeId :EXCLUDE_PERMISSION_IDS)
       {
-         if(excludeId.equals(validationId))
+         if(excludeId.equals(permissionID))
          {
             return true;
          }
@@ -132,15 +133,6 @@ public class AuthorizationExtensionRegistry
       String fixed;
    }
 
-   static class Filter
-   {
-      @XmlAttribute(name = "name")
-      String name;
-
-      @XmlAttribute(name = "value")
-      String value;
-   }
-
    public List<IConfigurationElement> getExtensionList(String pluginId,
          String extensionPointId_)
    {
@@ -200,16 +192,20 @@ public class AuthorizationExtensionRegistry
                         {
                            for (Permission permission : permissions)
                            {
-                              ServerConfigurationElement configurationElement = new ServerConfigurationElement();
-                              configurationElement.addAttribute("id", permission.id);
-                              configurationElement.addAttribute("name", permission.name);
-                              configurationElement.addAttribute("scope",
-                                    permission.scope);
-                              configurationElement.addAttribute("defaultParticipant",
-                                    permission.defaultParticipant);
-                              configurationElement.addAttribute("fixed",
-                                    permission.fixed);
-                              extensionList.add(configurationElement);
+                              if (!excludePermission(permission.scope + "." + permission.id))
+                              {
+                                 ServerConfigurationElement configurationElement = new ServerConfigurationElement();
+                                 configurationElement.addAttribute("id", permission.id);
+                                 configurationElement.addAttribute("name",
+                                       permission.name);
+                                 configurationElement.addAttribute("scope",
+                                       permission.scope);
+                                 configurationElement.addAttribute("defaultParticipant",
+                                       permission.defaultParticipant);
+                                 configurationElement.addAttribute("fixed",
+                                       permission.fixed);
+                                 extensionList.add(configurationElement);
+                              }                               
                            }
                         }
                      }

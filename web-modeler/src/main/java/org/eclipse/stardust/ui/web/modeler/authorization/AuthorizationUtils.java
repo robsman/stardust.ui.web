@@ -39,7 +39,6 @@ public class AuthorizationUtils
    
    public static List<Permission> getPermissions(IExtensibleElement element)
    {
-      //Todo: Cache Extensions
       ArrayList<Permission> permissions = new ArrayList<Permission>();
       String scope = getScope(element);
       if (element != null)

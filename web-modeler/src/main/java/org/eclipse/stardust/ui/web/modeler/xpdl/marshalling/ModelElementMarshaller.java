@@ -4164,6 +4164,10 @@ public class ModelElementMarshaller implements ModelMarshaller
                   attributes.addProperty(attributeName, attributeValue);
                }
             }
+            else if (attributeName.startsWith("authorization:")) 
+            {
+               //Ignore authorization related attributes, as they are stored separately in a shorter manner.
+            }
             else
             {
                attributes.addProperty(attributeName, attributeValue);

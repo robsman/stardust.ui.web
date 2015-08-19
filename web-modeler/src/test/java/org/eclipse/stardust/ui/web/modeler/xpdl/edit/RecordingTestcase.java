@@ -59,10 +59,10 @@ import org.eclipse.stardust.ui.web.modeler.utils.test.MockServiceFactoryLocator;
 @FixMethodOrder(MethodSorters.JVM)
 public class RecordingTestcase
 {
-   protected static final String PROVIDER_MODEL_ID = "ProviderModel";
-   protected static final String PROVIDER_MODEL_ID2 = "ProviderModel2";
+   protected String PROVIDER_MODEL_ID = "ProviderModel";
+   protected String PROVIDER_MODEL_ID2 = "ProviderModel2";
 
-   protected static final String CONSUMER_MODEL_ID = "ConsumerModel";
+   protected String CONSUMER_MODEL_ID = "ConsumerModel";
 
    protected byte[] consumerModelModelBytes;
 
@@ -362,8 +362,8 @@ public class RecordingTestcase
       Mockito.when(userService.getUser()).thenReturn(mockUser);
 
       final Document providerModel = Mockito.mock(Document.class);
-      Mockito.when(providerModel.getId()).thenReturn(PROVIDER_MODEL_ID);
-      Mockito.when(providerModel.getName()).thenReturn(PROVIDER_MODEL_ID + ".xpdl");
+      Mockito.when(providerModel.getId()).thenReturn(this.getProviderModelID());
+      Mockito.when(providerModel.getName()).thenReturn(this.getProviderModelID() + ".xpdl");
 
       final Document providerModel2 = Mockito.mock(Document.class);
       Mockito.when(providerModel2.getId()).thenReturn(PROVIDER_MODEL_ID2);
@@ -487,6 +487,11 @@ public class RecordingTestcase
    protected boolean includeProviderModel2()
    {
       return false;
+   }
+   
+   protected String getProviderModelID()
+   {
+      return this.PROVIDER_MODEL_ID;
    }
 
 
