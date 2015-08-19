@@ -540,7 +540,7 @@ public class ProcessInstanceResource
    @POST   
    @Consumes(MediaType.MULTIPART_FORM_DATA)
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("{oid}/attachments")
+   @Path("{oid}/documents/PROCESS_ATTACHMENTS")
    public Response addAttachment(List<Attachment> attachments,
          @Context HttpServletRequest request, @PathParam("oid") Long processOid) throws Exception
    {
