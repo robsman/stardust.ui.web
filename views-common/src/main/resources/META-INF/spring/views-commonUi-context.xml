@@ -136,7 +136,7 @@
 						include="/plugins/views-common/views/document/imageViewerConfiguration.xhtml" />
 				</ippui:preferences>
 			</ippui:view>						<ippui:view name="deputyManagementView"			include="/plugins/views-common/deputy/deputyManagementView.xhtml"			controller="deputyManagementBean">	   		<ippui:preferences>				<ippui:preferencePage name="configuration"					include="/plugins/views-common/deputy/deputyManagementView.xhtml" />				<ippui:preferencePage name="icon"					include="/plugins/views-common/images/icons/user-silhouette.png" />			</ippui:preferences>		</ippui:view>
-	 	<ippui:view name="authorizationManagerView"			include="/plugins/html5-admin-portal/partials/views/authorizationManagerView.html"			requiredRoles="Administrator" />					
+	 	<ippui:view name="authorizationManagerView"			include="/plugins/html5-admin-portal/partials/views/authorizationManagerView.html"			requiredRoles="Administrator" />				<ippui:view name="correspondencePanelView"			include="/plugins/views-common/user/correspondencePanel.xhtml">			<ippui:preferences>				<ippui:preferencePage name="configuration"					include="/plugins/views-common/user/correspondencePanel.xhtml" />			</ippui:preferences>		</ippui:view>					
 		</ippui:viewsExtension>
 
 
