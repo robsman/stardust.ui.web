@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
 
+import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,8 +21,11 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.activation.DataHandler;
 import javax.annotation.Resource;
+import javax.ws.rs.core.MultivaluedMap;
 
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.engine.api.model.DataPath;
@@ -29,6 +33,7 @@ import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
@@ -42,29 +47,32 @@ import org.eclipse.stardust.ui.web.rest.service.dto.AttachToCaseDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.CreateCaseDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.FileInfoDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JoinProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
-import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SwitchProcessDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.AddressBookContactDTO;
 import org.eclipse.stardust.ui.web.rest.service.helpers.IDataPathValueFilter;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
+import org.eclipse.stardust.ui.web.rest.service.utils.FileUploadUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.converter.PriorityConverter;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.eclipse.stardust.ui.web.viewscommon.core.EMailAddressValidator;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.services.ContextPortalServices;
+import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
-
 import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
@@ -120,6 +128,50 @@ public class ProcessInstanceService
       return null;
    }
 
+   /**
+    * @param processOid
+    * @param attachments
+    * @return
+    * @throws Exception
+    */
+   public List<DocumentDTO> addProcessAttachments(long processOid, List<Attachment> attachments) throws Exception
+   {
+      List<DocumentDTO> documents = new ArrayList<DocumentDTO>();
+
+      for (Attachment attachment : attachments)
+      {
+         DataHandler dataHandler = attachment.getDataHandler();
+         InputStream inputStream = dataHandler.getInputStream();
+         MultivaluedMap<String, String> headers = attachment.getHeaders();
+
+         FileInfoDTO fileInfo = FileUploadUtils.getFileInfo(headers);
+
+         String fileName = fileInfo.name;
+         if (fileName.lastIndexOf("\\") > 0)
+         {
+            fileName = fileName.substring(fileName.lastIndexOf("\\") + 1, fileName.length());
+         }
+
+         ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processOid);
+         Folder processAttachmentsFolder = RepositoryUtility.getProcessAttachmentsFolder(processInstance);
+
+         String docName = RepositoryUtility.createDocumentName(processAttachmentsFolder, fileName, 0);
+
+         // create document
+         Document document = DocumentMgmtUtility.createDocument(processAttachmentsFolder.getId(), docName,
+               FileUploadUtils.readEntryData(inputStream), null, fileInfo.contentType, null, null, null, null);
+
+         // update process attachment
+         boolean added = DMSHelper.addAndSaveProcessAttachment(processInstance, document);
+         if (added)
+         {
+            documents.add(DocumentDTOBuilder.build(document));
+         }
+      }
+
+      return documents;
+   }
+   
    /**
     * 
     * @param processInstanceOid
