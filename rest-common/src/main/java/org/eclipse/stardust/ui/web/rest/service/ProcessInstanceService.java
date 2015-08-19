@@ -26,9 +26,12 @@ import javax.annotation.Resource;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+
 import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
+import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.QueryResult;
@@ -72,7 +75,9 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.services.ContextPortalServices;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
+
 import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
@@ -171,8 +176,9 @@ public class ProcessInstanceService
 
       return documents;
    }
-   
+
    /**
+    * Returns process attachemtents and specific documents, if supported.
     * 
     * @param processInstanceOid
     * @return
@@ -181,30 +187,33 @@ public class ProcessInstanceService
          long processInstanceOid)
    {
       Map<String, List<DocumentDTO>> docs = new HashMap<String, List<DocumentDTO>>();
-
-      // Get Process attachments
-      List<Document> processAttachments = processInstanceUtilsREST.getProcessAttachments(processInstanceOid);
-      if (null != processAttachments)
-      {
-         List<DocumentDTO> processAttachmentsDTO = DocumentDTOBuilder.build(processAttachments);
-         docs.put(DmsConstants.PATH_ID_ATTACHMENTS, processAttachmentsDTO);
+      
+      ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processInstanceOid);
+      if (processInstanceUtilsREST.supportsProcessAttachments(processInstance)) {
+         docs.put(DmsConstants.PATH_ID_ATTACHMENTS, getProcessInstanceDocumentsForDataPath(processInstanceOid, DmsConstants.PATH_ID_ATTACHMENTS));
       }
 
       // Get dataPath documents
-      ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processInstanceOid);
       ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(
-            processInstance.getModelOID(), processInstance.getProcessID());
+            processInstance.getModelOID(), processInstance.getProcessID());      
       List<DataPath> dataPaths = processDefinition.getAllDataPaths();
+      Model model = ModelCache.findModelCache().getModel(processInstance.getModelOID());
       for (DataPath dataPath : dataPaths)
       {
-         if (Direction.IN.equals(dataPath.getDirection()))
+         if (Direction.IN.equals(dataPath.getDirection())
+               && !DmsConstants.PATH_ID_ATTACHMENTS.equals(dataPath.getId()))
          {
-            List<Document> dataPathDocs = processInstanceUtilsREST.getProcessInstanceDocumentsForDataPath(
-                  processInstance, dataPath.getId());
-            if (!DmsConstants.PATH_ID_ATTACHMENTS.equals(dataPath.getId()))
-            {
-               docs.put(dataPath.getId(), DocumentDTOBuilder.build(dataPathDocs));
+            DataDetails dataDetails = (DataDetails) model.getData(dataPath.getData());
+            if (DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId())
+                  || DmsConstants.DATA_TYPE_DMS_DOCUMENT_LIST.equals(dataDetails.getTypeId())) {
+               List<Document> dataPathDocs = processInstanceUtilsREST.getProcessInstanceDocumentsForDataPath(
+                     processInstance, dataPath.getId());
+               if (dataPathDocs.size() > 0)
+               {
+                  docs.put(dataPath.getId(), DocumentDTOBuilder.build(dataPathDocs));
+               }
             }
+            break;
          }
       }
 
@@ -212,6 +221,8 @@ public class ProcessInstanceService
    }
 
    /**
+    * Returns documents for the fivne data path.
+    * dataPathId can either be PROCESS_ATTACHMENTS or a document or documentList dataPath id.
     * 
     * @param processInstanceOid
     * @return
@@ -234,22 +245,11 @@ public class ProcessInstanceService
       {
          // Get dataPath documents
          ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processInstanceOid);
-         ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(
-               processInstance.getModelOID(), processInstance.getProcessID());
-         List<DataPath> dataPaths = processDefinition.getAllDataPaths();
-         for (DataPath dataPath : dataPaths)
+         List<Document> dataPathDocs = processInstanceUtilsREST.getProcessInstanceDocumentsForDataPath(
+               processInstance, dataPathId);
+         if (null != dataPathDocs && dataPathDocs.size() > 0)
          {
-            if (Direction.IN.equals(dataPath.getDirection())
-                  && dataPath.getId().equals(dataPathId))
-            {
-               List<Document> dataPathDocs = processInstanceUtilsREST.getProcessInstanceDocumentsForDataPath(
-                     processInstance, dataPath.getId());
-               if (dataPathDocs.size() > 0)
-               {
-                  docs = DocumentDTOBuilder.build(dataPathDocs);
-                  break;
-               }
-            }
+            docs = DocumentDTOBuilder.build(dataPathDocs);
          }
       }
 
