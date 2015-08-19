@@ -7,38 +7,53 @@
 			style="color: #2F6871; font-weight: bold; font-size: 11px;">{{i18n('benchmark-messages.views-trafficLightView-label')}}</span>
 	</div>
 	<div ng-show="ctrl.showTLVCriteria" id="benchmarkTable">
-		<div>
-			<span>{{i18n('benchmark-messages.views-trafficLightView-processes-label')}}</span>
-			<select size="5" style="white-space: nowrap; margin: 5px;padding: 0;"
-				multiple="multiple" ng-model="ctrl.selectedProcesses"
-				ng-options="opt as opt.name for opt in ctrl.processes">
-			</select>
-			<!-- 	</div>
+		<form name="ctrl.tlvCriteriaForm">
+		    <div class="msg-error"
+				  ng-show="ctrl.tlvCriteriaForm.$error.benchmarksNotIdentical">
+					{{ctrl.errorMsg}}
+			</div>
+			<div>
+				<span>{{i18n('benchmark-messages.views-trafficLightView-processes-label')}}</span>
+				<select size="5"
+					style="white-space: nowrap; margin: 5px; padding: 0;"
+					multiple="multiple" ng-model="ctrl.selectedProcesses"
+					ng-options="opt as opt.name for opt in ctrl.processes">
+				</select>
+				<!-- 	</div>
 	<div> -->
-			<span>{{i18n('benchmark-messages.views-trafficLightView-benchmarks-label')}}</span>
-			<select size="5" style="white-space: nowrap; margin: 5px;padding: 0;"
-				multiple="multiple" ng-model="ctrl.selectedBenchmarks"
-				ng-options="opt.oid as opt.name for opt in ctrl.benchmarkDefinitions">
-			</select>
-		</div>
-		<div>
-			<span>{{i18n('benchmark-messages.views-trafficLightView-drilldown-label')}}</span>
-			<select size="1" style="white-space: nowrap; margin: 5px;padding: 0;"
-				ng-model="ctrl.selectedDrillDown">
-				<option value="PROCESS_WORKITEM">Process/Work Item</option>
-				<option value="BUSINESS_OBJECT">Business Object</option>
-			</select>
-		</div>
-		<div>
-			<span>{{i18n('benchmark-messages.views-trafficLightView-date-label')}}</span>
-			<select size="1" style="white-space: nowrap; margin: 5px;padding: 0;"
-				ng-model="ctrl.selectedDateType">
-				<option value="BUSINESS_DATE">Business Date</option>
-				<option value="STARTTIME_DATE">Start Time Date</option>
-			</select>
-			<span>{{i18n('benchmark-messages.views-trafficLightView-offset-label')}}</span>
-			<input ng-model="ctrl.dayOffset" type="number">
-		</div>
+				<span>{{i18n('benchmark-messages.views-trafficLightView-benchmarks-label')}}</span>
+				<select size="5"
+					style="white-space: nowrap; margin: 5px; padding: 0;"
+					multiple="multiple" ng-model="ctrl.selectedBenchmarks"
+					ng-options="opt.oid as opt.name for opt in ctrl.benchmarkDefinitions">
+				</select>
+			</div>
+			<div>
+				<span>{{i18n('benchmark-messages.views-trafficLightView-drilldown-label')}}</span>
+				<select size="1"
+					style="white-space: nowrap; margin: 5px; padding: 0;"
+					ng-model="ctrl.selectedDrillDown" ng-change="ctrl.drillDownChange()">
+					<option value="PROCESS_WORKITEM">Process/Work Item</option>
+					<option value="BUSINESS_OBJECT">Business Object</option>
+				</select>
+			</div>
+			<div ng-if="ctrl.showBusinessObjects">
+			   <span>{{i18n('benchmark-messages.views-trafficLightView-businessObject-label')}}</span>
+			   <select ng-model="ctrl.selectedBusinessObject"
+			        ng-options="businessObject as businessObject.label for businessObject in ctrl.businessObjects"
+			        ng-change="ctrl.getBusinessObjectInstances()"></select>
+			</div>			
+			<div>
+				<span>{{i18n('benchmark-messages.views-trafficLightView-date-label')}}</span>
+				<select size="1"
+					style="white-space: nowrap; margin: 5px; padding: 0;"
+					ng-model="ctrl.selectedDateType">
+					<option value="BUSINESS_DATE">Business Date</option>
+					<option value="STARTTIME_DATE">Start Time Date</option>
+				</select> <span>{{i18n('benchmark-messages.views-trafficLightView-offset-label')}}</span>
+				<input ng-model="ctrl.dayOffset" type="number">
+			</div>
+		</form>
 		<div>
 			<input class="button" type="submit"
 				value="{{i18n('benchmark-messages.views-trafficLightView-update-label')}}"

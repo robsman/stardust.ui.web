@@ -90,7 +90,28 @@
 			return tlvStats.fetch(urlTemplateParams, postData).$promise;
 
 		};
+		
+		TrafficLightViewService.prototype.getRuntimeBenchmarkCategories = function(bOids) {
+			// Prepare URL
+			var restUrl = sdUtilService.getBaseUrl() + 'services/rest/portal/benchmark-definitions/run-time' + '/:type';
 
+			var urlTemplateParams = {};
+
+			urlTemplateParams.type = "categories";
+			var strbOids ='';
+			angular.forEach(bOids, function(bOid) {
+				strbOids = strbOids + bOid + ','
+			});
+			
+			 var lastIndex = strbOids.lastIndexOf(",");
+	         var oids = strbOids.substring(0, lastIndex);
+
+			restUrl = restUrl + "?" + 'oids=' + oids;
+
+
+			return $resource(restUrl).query(urlTemplateParams).$promise;
+		};
+		
 	}
 	;
 })();
