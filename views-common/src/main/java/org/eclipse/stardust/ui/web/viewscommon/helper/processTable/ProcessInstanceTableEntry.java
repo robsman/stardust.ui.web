@@ -458,7 +458,7 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
          {
             linkType = SPAWN_FROM;
          }
-         else if (PredefinedProcessInstanceLinkTypes.RELATED.equals(link.getLinkType().getId()))
+         else if (PredefinedProcessInstanceLinkTypes.RELATED.getId().equals(link.getLinkType().getId()))
          {
             linkType = RELATED;
          }
@@ -476,7 +476,7 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
          {
             linkType = SPAWN_TO;
          }
-         else if (PredefinedProcessInstanceLinkTypes.RELATED.equals(link.getLinkType().getId()))
+         else if (PredefinedProcessInstanceLinkTypes.RELATED.getId().equals(link.getLinkType().getId()))
          {
             linkType = RELATED;
          }
