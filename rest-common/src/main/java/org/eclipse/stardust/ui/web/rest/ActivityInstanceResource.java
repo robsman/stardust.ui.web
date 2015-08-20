@@ -291,6 +291,23 @@ public class ActivityInstanceResource
       }
    }
 
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/{oid: \\d+}/relocationTargets")
+   public Response getRelocationTargets(@PathParam("oid") long oid)
+   {
+      try
+      {
+         return Response.ok(AbstractDTO.toJson(getActivityInstanceService().getAllRelocationTargets(oid)), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/completeAll")

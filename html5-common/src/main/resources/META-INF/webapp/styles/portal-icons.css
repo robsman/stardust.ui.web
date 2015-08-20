@@ -335,6 +335,11 @@ Icon implementations
 	content: "\f07b";
 }
 
+.pi-activity-relocate:before {
+	font-family: "FontAwesome";
+	content: "\f0e2"
+}
+
 
 /*Process Overview Table*/
 .pi-process-notes-empty:before{

@@ -833,6 +833,43 @@
 	   //sdCommonViewUtilService.openNotesViewHTML5(rowItem.processInstance.oid, rowItem.processInstance.processName, true); // do not remove this line
 	};
 	
+	/**
+	 * 
+	 * @param rowItem
+	 */
+	ActivityTableCompiler.prototype.openRelocationDialog = function(rowItem) {
+		rowItem.showRelocationDialog = true;
+	};
+	
+	/**
+	 * 
+	 * @param rowItem
+	 */
+	ActivityTableCompiler.prototype.relocateActivity = function(rowItem) {
+		rowItem.showRelocationDialog = false;
+		// sdActivityInstanceService
+	};
+	
+	/**
+	 * 
+	 * @param rowItem
+	 */
+	ActivityTableCompiler.prototype.getRelocationTargets = function(rowItem) {
+		var self = this;
+		sdActivityInstanceService.getRelocationTargets(rowItem.activityOID).then(function(targets) {
+			rowItem.relocationTargets = [];
+			if (targets) {
+				jQuery.each(targets, function(_, target) {
+					rowItem.relocationTargets.push({
+						oid: target.oid,
+						name: target.activity.name,
+						id: target.activity.id
+					})
+				});
+			}
+		});
+	};
+
 	/*
 	 * 
 	 */

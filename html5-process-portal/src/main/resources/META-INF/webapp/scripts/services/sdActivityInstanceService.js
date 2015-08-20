@@ -318,6 +318,14 @@
 
 			return sdUtilService.ajax(restUrl, '', postData);
 		};
+		
+		/**
+		 * 
+		 */
+		ActivityInstanceService.prototype.getRelocationTargets = function(activityInstanceOid) {
+
+			return sdUtilService.ajax(REST_BASE_URL, "relocationTargets", activityInstanceOid);
+		};
 
 	};
 })();

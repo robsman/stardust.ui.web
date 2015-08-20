@@ -325,6 +325,21 @@
 								</div>
 							</span>
 						</button>
+						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.openRelocationDialog(rowData);" aid="PP-ActivityTable-OpenRelocationDialogAction"
+						    ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"
+							title="Relocate" class="button-link tbl-tool-link">
+							<i class="pi pi-activity-relocate icon-lg"></i>
+							<div sd-dialog sda-modal="true"
+								sda-show="rowData.showRelocationDialog" sda-type="confirm"
+								sda-title="Relocate To"
+								sda-scope="this"
+								sda-template="plugins/html5-process-portal/partials/views/activityRelocationDialog.html"
+								sda-on-open="activityTableCtrl.getRelocationTargets(rowData)"
+								sda-on-confirm="activityTableCtrl.relocateActivity(rowData)"
+								sda-confirm-action-label="Relocate"
+								sda-width="400px" sda-height="100px"
+								sda-aid-prefix="RelocationDialog-confirm"></div>
+						</button>
 					</div>
 				</td>
 			</tr>

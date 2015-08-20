@@ -31,10 +31,15 @@ import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
+import org.eclipse.stardust.engine.api.runtime.ScanDirection;
+import org.eclipse.stardust.engine.api.runtime.TransitionOptions;
+import org.eclipse.stardust.engine.api.runtime.TransitionTarget;
+import org.eclipse.stardust.engine.core.runtime.audittrail.management.RelocationUtils;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
+import org.eclipse.stardust.ui.web.rest.service.dto.ActivityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ColumnDTO;
@@ -59,6 +64,7 @@ import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils.MODE;
 import org.eclipse.stardust.ui.web.rest.service.utils.CriticalityUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
+
 import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
@@ -114,6 +120,29 @@ public class ActivityInstanceService
       ActivityInstance ai = activityInstanceUtils.getActivityInstance(oid);
       String json = activityInstanceUtils.getAllDataMappingsAsJson(ai, context);
       return json;
+   }
+
+   /**
+    * @param oid
+    * @return
+    */
+   public List<ActivityInstanceDTO> getAllRelocationTargets(long oid)
+   {
+      //ActivityInstance ai = activityInstanceUtils.getActivityInstance(oid);
+      List<TransitionTarget> targets = RelocationUtils.getRelocateTargets(oid, new TransitionOptions(false, false, false),ScanDirection.BACKWARD);
+      List<ActivityInstanceDTO> list = new ArrayList<ActivityInstanceDTO>();
+      if (null != targets) {
+         for (TransitionTarget target : targets) {
+            ActivityInstanceDTO dto = new ActivityInstanceDTO();
+            dto.activityOID = target.getActivityInstanceOid();
+            dto.activity = new ActivityDTO();
+            dto.activity.name  = target.getActivityName();
+            dto.activity.id = target.getActivityId();
+            list.add(dto);
+         }
+      }
+      
+      return list;
    }
 
    /**
