@@ -8,10 +8,9 @@
 	</div>
 	<div ng-show="ctrl.showTLVCriteria" id="benchmarkTable">
 		<form name="ctrl.tlvCriteriaForm">
-		    <div class="msg-error"
-				  ng-show="ctrl.tlvCriteriaForm.$error.benchmarksNotIdentical">
-					{{ctrl.errorMsg}}
-			</div>
+			<div class="msg-error"
+				ng-show="ctrl.tlvCriteriaForm.$error.benchmarksNotIdentical">
+				{{ctrl.errorMsg}}</div>
 			<div>
 				<span>{{i18n('benchmark-messages.views-trafficLightView-processes-label')}}</span>
 				<select size="5"
@@ -32,17 +31,39 @@
 				<span>{{i18n('benchmark-messages.views-trafficLightView-drilldown-label')}}</span>
 				<select size="1"
 					style="white-space: nowrap; margin: 5px; padding: 0;"
-					ng-model="ctrl.selectedDrillDown" ng-change="ctrl.drillDownChange()">
+					ng-model="ctrl.selectedDrillDown"
+					ng-change="ctrl.drillDownChange()">
 					<option value="PROCESS_WORKITEM">Process/Work Item</option>
 					<option value="BUSINESS_OBJECT">Business Object</option>
 				</select>
 			</div>
 			<div ng-if="ctrl.showBusinessObjects">
-			   <span>{{i18n('benchmark-messages.views-trafficLightView-businessObject-label')}}</span>
-			   <select ng-model="ctrl.selectedBusinessObject"
-			        ng-options="businessObject as businessObject.label for businessObject in ctrl.businessObjects"
-			        ng-change="ctrl.getBusinessObjectInstances()"></select>
-			</div>			
+				<span>{{i18n('benchmark-messages.views-trafficLightView-businessObject-label')}}</span>
+				<select ng-model="ctrl.selectedBusinessObject"
+					ng-options="businessObject as businessObject.label for businessObject in ctrl.businessObjects"
+					ng-change="ctrl.getBusinessObjectInstances()"></select>
+				<div sd-auto-complete sda-matches="ctrl.businessObjectInstancesData" sda-match-str="ctrl.matchVal"
+					sda-change="ctrl.getBOInstanceMatches(ctrl.matchVal)" sda-text-property="{{ctrl.primaryKeyForBO}}"
+					sda-container-class="sd-ac-container"
+					sda-item-hot-class="sd-ac-item-isActive"
+					sda-selected-matches="ctrl.selectedBusinessObjectInstances"
+					sda-allow-duplicates="false"
+                    sda-allow-multiple="true"></div>
+			</div>
+			<div ng-if="ctrl.showGroupByObjects">
+				<span>{{i18n('benchmark-messages.views-trafficLightView-groupBy-label')}}</span>
+				<select ng-model="ctrl.selectedRelatedBusinessObject"
+					ng-options="businessObject as businessObject.label for businessObject in ctrl.relatedBusinessObjects"
+					ng-change="ctrl.getRelatedBOInstances()"></select>
+					<div sd-auto-complete sda-matches="ctrl.relatedBusinessObjectInstancesData" sda-match-str="ctrl.relatedMatchVal"
+					sda-change="ctrl.getRelatedBOInstanceMatches(ctrl.relatedMatchVal)" sda-text-property="{{ctrl.selectedRelatedBusinessObject.otherForeignKeyField}}"
+					sda-container-class="sd-ac-container"
+					sda-item-hot-class="sd-ac-item-isActive"
+					sda-selected-matches="ctrl.selectedRelatedBusinessObjectInstances"
+					sda-allow-duplicates="false"
+                    sda-allow-multiple="true"></div>
+			</div>
+
 			<div>
 				<span>{{i18n('benchmark-messages.views-trafficLightView-date-label')}}</span>
 				<select size="1"
