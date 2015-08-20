@@ -550,8 +550,8 @@
 						'<span class="tbl-tree-controls">' +
 							'<span ng-repeat="treeLevel in rowData.$treeInfo.levels" class="tbl-tree-indent"></span>' +
 							'<button class="button-link" ng-click="$dtApi.toggleTreeNode($index)" style="margin-right: 5px;">' +
-								'<span ng-show="!rowData.leaf && rowData.$treeInfo.expanded" class="glyphicon glyphicon-minus"></span>' +
-								'<span ng-show="!rowData.leaf && !rowData.$treeInfo.expanded" class="glyphicon glyphicon-plus"></span>' +
+								'<span ng-show="!rowData.$leaf && rowData.$treeInfo.expanded" class="glyphicon glyphicon-minus"></span>' +
+								'<span ng-show="!rowData.$leaf && !rowData.$treeInfo.expanded" class="glyphicon glyphicon-plus"></span>' +
 							'</button>' +
 						'</span>';
 					colDef.contents = treeContents + colDef.contents;
@@ -2447,7 +2447,7 @@
 					refreshUi();
 				} else {
 					rowData.$treeInfo.expanded = true;
-					if (!rowData.$treeInfo.nodeLoaded) {
+					if (!rowData.$treeInfo.loaded) {
 						// Load Children
 						var treeParams = {parent: rowData};
 						fetchData(treeParams).then(function(result) {
@@ -2459,11 +2459,11 @@
 									children = sdUtilService.marshalDataForTree(children, rowData);
 									sdUtilService.insertChildrenIntoTreeTable(treeTableData, rowData, children);
 								} else {
-									rowData.leaf = true;
+									rowData.$leaf = true;
 									delete rowData.$treeInfo.expanded;
 								}
 
-								rowData.$treeInfo.nodeLoaded = true;
+								rowData.$treeInfo.loaded = true;
 							} catch (e) {
 								// TODO: Show Error
 								trace.error(theTableId + ':', e);

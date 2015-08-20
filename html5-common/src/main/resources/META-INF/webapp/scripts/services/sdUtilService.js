@@ -409,17 +409,21 @@
 				data[i].$treeInfo.parents = {};
 				if (parentRow) {
 					data[i].$treeInfo.parents = angular.copy(parentRow.$treeInfo.parents);
-					data[i].$treeInfo.parents[parentRow.$treeInfo.nodeId] = true;
+					data[i].$treeInfo.parents[parentRow.$treeInfo.id] = true;
 				}
 				
-				if (!data[i].leaf) {
-					data[i].$treeInfo.expanded = false;
-					data[i].$treeInfo.nodeId = 'n' + (Math.floor(Math.random()*10000) + 1);
-					data[i].$treeInfo.nodeLoaded = false;
+				if (!data[i].$leaf) {
+					data[i].$treeInfo.expanded = data[i].$expanded == true ? true : false;
+					if (data[i].$expanded == true) {
+						delete data[i].$expanded;
+					}
+
+					data[i].$treeInfo.id = 'r' + (Math.floor(Math.random()*10000) + 1);
+					data[i].$treeInfo.loaded = false;
 					
 					// Process children
 					if (data[i].children != undefined && angular.isArray(data[i].children)) {
-						data[i].$treeInfo.nodeLoaded = true;
+						data[i].$treeInfo.loaded = true;
 						var childrenArray = this.marshalDataForTree(data[i].children, data[i]);
 						for (var j = 0; j < childrenArray.length; j++) {
 							retData.push(childrenArray[j]);
@@ -439,7 +443,7 @@
 			var rebuiltData = [], collapsedParents = {};
 			for (var i = 0; i < treeTableData.length; i++) {
 				if (!treeTableData[i].$treeInfo.expanded) {
-					collapsedParents[treeTableData[i].$treeInfo.nodeId] = true;
+					collapsedParents[treeTableData[i].$treeInfo.id] = true;
 				}
 						
 				if (this.isTreeTableNodeVisible(treeTableData[i], collapsedParents)) {
@@ -469,7 +473,7 @@
 		UtilService.prototype.insertChildrenIntoTreeTable = function(treeTableData, rowData, children) {
 			var treeRowIndex;
 			for (var i = 0; i < treeTableData.length; i++) {
-				if (treeTableData[i].$treeInfo.nodeId == rowData.$treeInfo.nodeId) {
+				if (treeTableData[i].$treeInfo.id == rowData.$treeInfo.id) {
 					treeRowIndex = i;
 					break;
 				}
