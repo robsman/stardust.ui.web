@@ -540,7 +540,7 @@ public class ProcessInstanceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{oid}/data-path-values")
-   public Response getDataPathValues(@PathParam("oid") Long processOid, @PathParam("dataPathId") String dataPathId)
+   public Response getDataPathValues(@PathParam("oid") Long processOid)
    {
       List<IDataPathValueDTO> dataPathValuesDTO = processInstanceService.getAllDataPathValuesDTO(processOid);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(dataPathValuesDTO), MediaType.APPLICATION_JSON).build();
