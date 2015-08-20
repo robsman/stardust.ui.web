@@ -27,6 +27,7 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.eclipse.stardust.common.Direction;
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.model.DataPath;
@@ -498,7 +499,7 @@ public class ProcessInstanceService
     */
    public List<IDataPathValueDTO> getAddressBookDTO(long processInstanceOid)
    {
-      return getDataPathValueDTO(getProcessInstance(processInstanceOid), new AddressBookDataPathValueFilter());
+      return getDataPathValueDTO(getProcessInstance(processInstanceOid), new AddressBookDataPathValueFilter(), null);
    }
 
    /**
@@ -507,16 +508,26 @@ public class ProcessInstanceService
     */
    public List<IDataPathValueDTO> getAllDataPathValuesDTO(long processInstanceOid)
    {
-      return getDataPathValueDTO(getProcessInstance(processInstanceOid), new DefaultDataPathValueFilter());
+      return getDataPathValueDTO(getProcessInstance(processInstanceOid), new DefaultDataPathValueFilter(), null);
    }
 
+   /**
+    * @param processInstanceOid
+    * @param dataPathId
+    * @return
+    */
+   public List<IDataPathValueDTO> getDataPathValueFor(long processInstanceOid, String dataPathId)
+   {
+      return getDataPathValueDTO(getProcessInstance(processInstanceOid), new DefaultDataPathValueFilter(), dataPathId);
+   }
+   
    /**
     * @param processInstance
     * @param dataPathValueFilter
     * @return
     */
    public List<IDataPathValueDTO> getDataPathValueDTO(ProcessInstance processInstance,
-         IDataPathValueFilter dataPathValueFilter)
+         IDataPathValueFilter dataPathValueFilter, String dataPathId)
    {
       List<IDataPathValueDTO> dataPathDtoList = new ArrayList<IDataPathValueDTO>();
       ProcessDefinition processDefinition = processDefinitionUtils.getProcessDefinition(processInstance.getModelOID(),
@@ -529,7 +540,16 @@ public class ProcessInstanceService
 
       if (processDefinition != null)
       {
-         List<DataPath> dataPaths = processDefinition.getAllDataPaths();
+         List<DataPath> dataPaths = new ArrayList<DataPath>();
+         if (StringUtils.isEmpty(dataPathId))
+         {
+            dataPaths = processDefinition.getAllDataPaths();
+         }
+         else
+         {
+            dataPaths.add(processDefinition.getDataPath(dataPathId));
+         }
+
          Set<String> dataPathIds = new HashSet<String>();
          List<DataPath> inDataPaths = new ArrayList<DataPath>();
          
