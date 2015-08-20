@@ -60,10 +60,10 @@ public class ProcessDefinitionService
     */
    public List<ProcessDefinitionDTO> getStartableProcesses(String triggerType)
    {
-      List<ProcessDefinition> processes = processDefinitionUtils.getStartableProcesses();
       List<ProcessDefinition> startableProcesses = CollectionUtils.newArrayList();
       if (StringUtils.isNotEmpty(triggerType))
       {
+         List<ProcessDefinition> processes = processDefinitionUtils.findStatable(triggerType);
          for (ProcessDefinition procDef : processes)
          {
             List<Trigger> triggers = procDef.getAllTriggers();
@@ -80,14 +80,14 @@ public class ProcessDefinitionService
       }
       else
       {
-         startableProcesses = processes;
+         startableProcesses = processDefinitionUtils.getStartableProcesses();
       }
 
       List<ProcessDefinitionDTO> startableProcessesDTO = buildProcessesDTO(startableProcesses, true);
 
       return startableProcessesDTO;
    }
-
+   
 	/**
 	 * @param onlyFilterable
 	 * @return

@@ -29,6 +29,7 @@ import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.query.ProcessDefinitionQuery;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
@@ -63,6 +64,28 @@ public class ProcessDefinitionUtils
          if (trace.isDebugEnabled())
          {
             trace.debug("No startable processes: " + onfe.getMessage());
+         }
+
+         return emptyList();
+      }
+   }
+   
+   /**
+    * 
+    * @param triggerType
+    * @return
+    */
+   public List<ProcessDefinition> findStatable(String triggerType)
+   {
+      try
+      {
+         return serviceFactoryUtils.getQueryService().getProcessDefinitions(ProcessDefinitionQuery.findStartable(triggerType));
+      }
+      catch (ObjectNotFoundException onfe)
+      {
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("No startable processes : " + onfe.getMessage());
          }
 
          return emptyList();
