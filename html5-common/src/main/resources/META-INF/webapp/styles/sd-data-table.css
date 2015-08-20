@@ -194,6 +194,15 @@
 	color: #2B2865;
 }
 
+.tbl-tree-controls {
+	float: left;
+}
+
+.tbl-tree-indent {
+	display: inline-block;
+	width: 10px;
+}
+
 /* ********** dataTables Overridden classes ********** */
 
 .dataTables_wrapper .dataTables_info {

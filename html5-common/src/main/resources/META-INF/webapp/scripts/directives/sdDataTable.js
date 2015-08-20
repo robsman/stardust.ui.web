@@ -174,6 +174,7 @@
 		var myScope = scope;
 		var sdData = ctrl[0];
 
+		var treeTable = false, treeTableData;
 		var tableInLocalMode, initialized;
 		var columns = [], dtColumns = [];
 		var theTable, theTableId, theDataTable, theToolbar, theColReorder;
@@ -276,6 +277,18 @@
 		function processAttributes() {
 			trace.log(theTableId + ': Processing table attributes...');
 
+			// Tree Table
+			if (attr.sdaTreeTable != undefined) {
+				trace.log(theTableId + ': Rendering as Tree Table, Forcing local mode, no pagination, no sorting, no exports...');
+
+				treeTable = true;
+
+				attr.sdaMode = 'local';
+				attr.sdaNoPagination = 'true';
+				attr.sdaSortable = 'false';
+				attr.sdaExports = undefined;
+			}
+			
 			tableInLocalMode = attr.sdaMode == 'local';
 				
 			if (attr.sdaPageSize != undefined && attr.sdaPageSize != '') {
@@ -483,7 +496,8 @@
 					filterable: hCol.attr('sda-filterable') == 'true' ? true : false,
 					exportable: hCol.attr('sda-exportable') == undefined || hCol.attr('sda-exportable') == 'true' ? true : false,
 					exportParser: bCol.attr('sda-exporter') ? $parse(bCol.attr('sda-exporter')) : null,
-					fixed: hCol.attr('sda-fixed') != undefined && hCol.attr('sda-fixed') == 'true' ? true : false
+					fixed: hCol.attr('sda-fixed') != undefined && hCol.attr('sda-fixed') == 'true' ? true : false,
+					treeColumn: treeTable && bCol.attr('sda-tree-column') != undefined ? true : undefined
 				};
 
 				if (!colDef.name) {
@@ -530,6 +544,19 @@
 						'</div>';
 				}
 
+				if (treeTable && colDef.treeColumn) {
+					colDef.fixed = true;
+					var treeContents = 
+						'<span class="tbl-tree-controls">' +
+							'<span ng-repeat="treeLevel in rowData.$treeInfo.levels" class="tbl-tree-indent"></span>' +
+							'<button class="button-link" ng-click="$dtApi.toggleTreeNode($index)" style="margin-right: 5px;">' +
+								'<span ng-show="!rowData.leaf && rowData.$treeInfo.expanded" class="glyphicon glyphicon-minus"></span>' +
+								'<span ng-show="!rowData.leaf && !rowData.$treeInfo.expanded" class="glyphicon glyphicon-plus"></span>' +
+							'</button>' +
+						'</span>';
+					colDef.contents = treeContents + colDef.contents;
+				}
+				
 				if (bCol.attr('style')) {
 					colDef.cellStyle = bCol.attr('style');
 				}
@@ -903,10 +930,15 @@
 						localModeData = result.list ? result.list : result;
 
 						validateData(localModeData);
-		
+
+						if (treeTable) {
+							treeTableData = sdUtilService.marshalDataForTree(localModeData);
+							localModeData = sdUtilService.rebuildTreeTable(treeTableData);
+						}
+
 						ret.iTotalRecords = localModeData.length;
 						ret.iTotalDisplayRecords = localModeData.length;
-						
+
 						if (disablePagination) {
 							ret.aaData = localModeData;
 						} else {
@@ -921,6 +953,10 @@
 					alert('Error while fetching data'); // TODO
 				});
 			} else {
+				if (treeTable) {
+					localModeData = sdUtilService.rebuildTreeTable(treeTableData);;
+				}
+
 				ret.iTotalRecords = localModeData.length;
 				ret.iTotalDisplayRecords = localModeData.length;
 
@@ -932,7 +968,7 @@
 
 				callback(ret);
 			}
-
+			
 			/*
 			 * 
 			 */
@@ -1296,6 +1332,14 @@
 			}
 			theDataTable.fnDraw(!retainPageIndex);
 		}
+
+		/*
+		 * 
+		 */
+		function refreshUi() {
+			trace.log(theTableId + ': Refreshing table Ui');
+			theDataTable.fnDraw(true);
+		}		
 
 		/*
 		 * 
@@ -2389,6 +2433,53 @@
 					};
 
 					return colData;
+				}
+			}
+
+			/*
+			 * 
+			 */
+			this.toggleTreeNode = function(index) {
+				var rowData = localModeData[index];
+
+				if (rowData.$treeInfo.expanded) {
+					rowData.$treeInfo.expanded = false;
+					refreshUi();
+				} else {
+					rowData.$treeInfo.expanded = true;
+					if (!rowData.$treeInfo.nodeLoaded) {
+						// Load Children
+						var treeParams = {parent: rowData};
+						fetchData(treeParams).then(function(result) {
+							try {
+								var children = result.list ? result.list : result;
+								validateData(children);
+
+								if (children.length > 0) {
+									children = sdUtilService.marshalDataForTree(children, rowData);
+									sdUtilService.insertChildrenIntoTreeTable(treeTableData, rowData, children);
+								} else {
+									rowData.leaf = true;
+									delete rowData.$treeInfo.expanded;
+								}
+
+								rowData.$treeInfo.nodeLoaded = true;
+							} catch (e) {
+								// TODO: Show Error
+								trace.error(theTableId + ':', e);
+								rowData.$treeInfo.expanded = false;
+							}
+
+							refreshUi();
+						}, function(error) {
+							// TODO: Show Error
+							trace.error(theTableId + ':', error);
+							rowData.$treeInfo.expanded = false;
+							refreshUi();
+						});
+					} else {
+						refreshUi();
+					}
 				}
 			}
 

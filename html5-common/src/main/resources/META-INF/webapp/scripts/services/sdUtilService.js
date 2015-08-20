@@ -388,8 +388,97 @@
 			
 			return baseURL;
 		};
-		
-		
+
+		/*
+		 * Flattens out the Tree Structure into flat array
+		 */
+		UtilService.prototype.marshalDataForTree = function(data, parentRow) {
+			var treeLevel = parentRow ? parentRow.$treeInfo.level + 1 : 0;
+			var retData = [];
+
+			for (var i = 0; i < data.length; i++) {
+				retData.push(data[i]);
+
+				data[i].$treeInfo = {};
+				data[i].$treeInfo.level = treeLevel;
+				data[i].$treeInfo.levels = [];
+				for (var j = 0; j < treeLevel; j++) {
+					data[i].$treeInfo.levels.push(j);
+				}
+
+				data[i].$treeInfo.parents = {};
+				if (parentRow) {
+					data[i].$treeInfo.parents = angular.copy(parentRow.$treeInfo.parents);
+					data[i].$treeInfo.parents[parentRow.$treeInfo.nodeId] = true;
+				}
+				
+				if (!data[i].leaf) {
+					data[i].$treeInfo.expanded = false;
+					data[i].$treeInfo.nodeId = 'n' + (Math.floor(Math.random()*10000) + 1);
+					data[i].$treeInfo.nodeLoaded = false;
+					
+					// Process children
+					if (data[i].children != undefined && angular.isArray(data[i].children)) {
+						data[i].$treeInfo.nodeLoaded = true;
+						var childrenArray = this.marshalDataForTree(data[i].children, data[i]);
+						for (var j = 0; j < childrenArray.length; j++) {
+							retData.push(childrenArray[j]);
+						}
+						delete data[i].children;
+					}
+				}
+			}
+
+			return retData;
+		};
+
+		/*
+		 * Returns visible (expanded) tree rows
+		 */
+		UtilService.prototype.rebuildTreeTable = function(treeTableData) {
+			var rebuiltData = [], collapsedParents = {};
+			for (var i = 0; i < treeTableData.length; i++) {
+				if (!treeTableData[i].$treeInfo.expanded) {
+					collapsedParents[treeTableData[i].$treeInfo.nodeId] = true;
+				}
+						
+				if (this.isTreeTableNodeVisible(treeTableData[i], collapsedParents)) {
+					rebuiltData.push(treeTableData[i]);
+				}
+			}
+
+			return rebuiltData;
+		};
+
+		/*
+		 * Checks if tree row is visible or not
+		 */
+		UtilService.prototype.isTreeTableNodeVisible = function(row, collapsedParents) {
+			for (var parent in collapsedParents) {
+				if (row.$treeInfo.parents[parent]) {
+					return false;
+				}
+			}
+			
+			return true;
+		};
+
+		/*
+		 * 
+		 */
+		UtilService.prototype.insertChildrenIntoTreeTable = function(treeTableData, rowData, children) {
+			var treeRowIndex;
+			for (var i = 0; i < treeTableData.length; i++) {
+				if (treeTableData[i].$treeInfo.nodeId == rowData.$treeInfo.nodeId) {
+					treeRowIndex = i;
+					break;
+				}
+			}
+
+			var args = [treeRowIndex + 1, 0].concat(children);									
+			treeTableData.splice.apply(treeTableData, args);
+		};
+
 		/**
 		 * Given an array of names generate a unique name with collisions being resolved
 		 * by appending a numeric increment to the name and then recursing until no collisions occur.
