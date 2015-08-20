@@ -51,12 +51,12 @@ public class ProcessDefinitionResource
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Path("startable.json")
-	public Response getStartableProcesses()
+	public Response getStartableProcesses(@QueryParam("triggerType") String triggerType)
 	{
 		try
 		{
 			List<ProcessDefinitionDTO> startableProcesses = getProcessDefinitionService()
-					.getStartableProcesses();
+					.getStartableProcesses(triggerType);
 
 			return Response.ok(AbstractDTO.toJson(startableProcesses), MediaType.APPLICATION_JSON).build();
 		}

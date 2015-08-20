@@ -25,7 +25,10 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.model.Trigger;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DataPathDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
@@ -52,18 +55,38 @@ public class ProcessDefinitionService
 	private ModelUtils modelUtils;
 
 
-	/**
-	 * @return
-	 */
-	public List<ProcessDefinitionDTO> getStartableProcesses()
-	{
-		List<ProcessDefinition> startableProcesses = processDefinitionUtils
-				.getStartableProcesses();
+   /**
+    * @return
+    */
+   public List<ProcessDefinitionDTO> getStartableProcesses(String triggerType)
+   {
+      List<ProcessDefinition> processes = processDefinitionUtils.getStartableProcesses();
+      List<ProcessDefinition> startableProcesses = CollectionUtils.newArrayList();
+      if (StringUtils.isNotEmpty(triggerType))
+      {
+         for (ProcessDefinition procDef : processes)
+         {
+            List<Trigger> triggers = procDef.getAllTriggers();
+            for (Trigger triggerDetails : triggers)
+            {
+               if (triggerType.equals(triggerDetails.getType()))
+               {
+                  startableProcesses.add(procDef);
+                  break;
+               }
+            }
+         }
 
-		List<ProcessDefinitionDTO> startableProcessesDTO = buildProcessesDTO( startableProcesses, true);
+      }
+      else
+      {
+         startableProcesses = processes;
+      }
 
-		return startableProcessesDTO;
-	}
+      List<ProcessDefinitionDTO> startableProcessesDTO = buildProcessesDTO(startableProcesses, true);
+
+      return startableProcessesDTO;
+   }
 
 	/**
 	 * @param onlyFilterable
@@ -139,6 +162,7 @@ public class ProcessDefinitionService
 				List<ActivityDTO> activitiesDTO = buildActivitiesDTO(processDefinition);
 				processDTO.activities = activitiesDTO;
 			}
+			processDTO.dataPaths = buildDataPathDTO(processDefinition);
 			processDTOList.add(processDTO);
 		}
 		return processDTOList;
@@ -176,9 +200,21 @@ public class ProcessDefinitionService
       processDTO.auxillary = isAuxiliaryProcess(processDefinition);
       processDTO.modelName = modelName;
       processDTO.name = I18nUtils.getProcessName(processDefinition);
+      
       return processDTO;
    }
 
+	private List<DataPathDTO> buildDataPathDTO(ProcessDefinition processDefinition)
+	{
+	   List<DataPath> dataPaths = processDefinition.getAllDataPaths();
+	   List<DataPathDTO> dataPathsDTO = CollectionUtils.newArrayList();
+	      for(DataPath dataPath : dataPaths)
+	      {
+	         DataPathDTO dataPathDTO = DTOBuilder.build(dataPath, DataPathDTO.class);
+	         dataPathsDTO.add(dataPathDTO);
+	      }
+	      return dataPathsDTO;
+	}
    /**
     * @param procDefIDs
     * @param onlyFilterable
