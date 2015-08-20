@@ -11,22 +11,21 @@
 package org.eclipse.stardust.ui.web.rest.service;
 
 import java.io.InputStream;
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Set;
 
 import javax.activation.DataHandler;
 import javax.annotation.Resource;
 import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
-
 import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
@@ -61,14 +60,15 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SwitchProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.AddressBookContactDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.IDataPathValueDTO;
+import org.eclipse.stardust.ui.web.rest.service.helpers.AddressBookDataPathValueFilter;
+import org.eclipse.stardust.ui.web.rest.service.helpers.DefaultDataPathValueFilter;
 import org.eclipse.stardust.ui.web.rest.service.helpers.IDataPathValueFilter;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.FileUploadUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.converter.PriorityConverter;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
-import org.eclipse.stardust.ui.web.viewscommon.core.EMailAddressValidator;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
@@ -77,7 +77,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
-
 import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
@@ -92,8 +91,6 @@ public class ProcessInstanceService
 {
    private static final Logger trace = LogManager.getLogger(ActivityInstanceUtils.class);
 
-   private static final String FAX_PATTERN = "[\\+*\\d*\\s*\\-*\\d]*";
-   
    @Resource
    private org.eclipse.stardust.ui.web.rest.service.utils.ProcessInstanceUtils processInstanceUtilsREST;
 
@@ -495,84 +492,22 @@ public class ProcessInstanceService
       return dto;
    }
    
-   
    /**
     * @param processInstanceOid
     * @return
     */
-   public List<AbstractDTO> getAddressBook(Long processInstanceOid)
+   public List<IDataPathValueDTO> getAddressBookDTO(long processInstanceOid)
    {
-      ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processInstanceOid);
-
-      if (processInstance == null)
-      {
-         throw new I18NException(restCommonClientMessages.getParamString("processInstance.notFound",
-               processInstanceOid.toString()));
-      }
-      return getAddressBook(processInstance);
+      return getDataPathValueDTO(getProcessInstance(processInstanceOid), new AddressBookDataPathValueFilter());
    }
-   
+
    /**
-    * @param processInstance
+    * @param processInstanceOid
     * @return
     */
-   public List<AbstractDTO> getAddressBook(ProcessInstance processInstance)
+   public List<IDataPathValueDTO> getAllDataPathValuesDTO(long processInstanceOid)
    {
-      return getDathPathValues(processInstance, new IDataPathValueFilter()
-      {
-         @Override
-         public List<AbstractDTO> filter(DataPath dataPath, Object dataValue)
-         {
-            List<AbstractDTO> addressBook = new ArrayList<AbstractDTO>();
-
-            if (dataValue != null)
-            {
-               searchAddresses(dataPath.getId(), dataValue, addressBook);
-            }
-            return addressBook;
-         }
-
-         /**
-          * @param key
-          * @param dataValue
-          * @param addressBook
-          */
-         public void searchAddresses(String key, Object dataValue, List<AbstractDTO> addressBook)
-         {
-            if (dataValue != null)
-            {
-               if (isFaxNumber(dataValue.toString()))
-               {
-                  AddressBookContactDTO addressBookDTO = new AddressBookContactDTO();
-                  addressBookDTO.value = dataValue.toString();
-                  addressBookDTO.name = key;
-                  addressBookDTO.type = AddressBookContactDTO.DataValueType.fax.name();
-                  addressBook.add(addressBookDTO);
-               }
-               else if (EMailAddressValidator.validateEmailAddress(dataValue.toString()))
-               {
-                  AddressBookContactDTO addressBookDTO = new AddressBookContactDTO();
-                  addressBookDTO.value = dataValue.toString();
-                  addressBookDTO.name = key;
-                  addressBook.add(addressBookDTO);
-               }
-               else
-               {
-                  // check if the value is map
-                  if (dataValue != null && dataValue instanceof Map)
-                  {
-                     Map dataValMap = (Map) dataValue;
-                     Iterator itr = dataValMap.entrySet().iterator();
-                     while (itr.hasNext())
-                     {
-                        Map.Entry pair = (Map.Entry) itr.next();
-                        searchAddresses(key + "." + pair.getKey(), pair.getValue(), addressBook);
-                     }
-                  }
-               }
-            }
-         }
-      });
+      return getDataPathValueDTO(getProcessInstance(processInstanceOid), new DefaultDataPathValueFilter());
    }
 
    /**
@@ -580,57 +515,57 @@ public class ProcessInstanceService
     * @param dataPathValueFilter
     * @return
     */
-   public List<AbstractDTO> getDathPathValues(ProcessInstance processInstance, IDataPathValueFilter dataPathValueFilter)
+   public List<IDataPathValueDTO> getDataPathValueDTO(ProcessInstance processInstance,
+         IDataPathValueFilter dataPathValueFilter)
    {
-      List<AbstractDTO> dataPathDtoList = new ArrayList<AbstractDTO>();
+      List<IDataPathValueDTO> dataPathDtoList = new ArrayList<IDataPathValueDTO>();
       ProcessDefinition processDefinition = processDefinitionUtils.getProcessDefinition(processInstance.getModelOID(),
             processInstance.getProcessID());
 
+      if (dataPathValueFilter == null)
+      {
+         dataPathValueFilter = new DefaultDataPathValueFilter();
+      }
+
       if (processDefinition != null)
       {
-         List<DataPath> list = processDefinition.getAllDataPaths();
-
-         for (int n = 0; n < list.size(); ++n)
+         List<DataPath> dataPaths = processDefinition.getAllDataPaths();
+         Set<String> dataPathIds = new HashSet<String>();
+         List<DataPath> inDataPaths = new ArrayList<DataPath>();
+         
+         for (DataPath dataPath : dataPaths)
          {
-            DataPath dataPath = list.get(n);
             if (dataPath.getDirection().equals(Direction.IN) || dataPath.getDirection().equals(Direction.IN_OUT))
             {
-               Object dataValue = null;
-               dataValue = ContextPortalServices.getWorkflowService().getInDataPath(processInstance.getOID(),
-                     dataPath.getId());
-               if (dataPathValueFilter != null)
-               {
-                  dataPathDtoList.addAll(dataPathValueFilter.filter(dataPath, dataValue));
-               }
-               else
-               {
-                  AddressBookContactDTO dataPathValueDTO = new AddressBookContactDTO();
-                  dataPathValueDTO.value = dataValue.toString();
-                  dataPathValueDTO.name = dataPath.getId();
-                  dataPathDtoList.add(dataPathValueDTO);
-               }
+               dataPathIds.add(dataPath.getId());
+               inDataPaths.add(dataPath);
             }
+         }
+
+         Map<String, Serializable> dataValues = ContextPortalServices.getWorkflowService().getInDataPaths(
+               processInstance.getOID(), dataPathIds);
+
+         for (DataPath dataPath : inDataPaths)
+         {
+            Object dataValue = dataValues.get(dataPath.getId());
+            dataPathDtoList.addAll(dataPathValueFilter.filter(dataPath, dataValue));
          }
       }
       return dataPathDtoList;
    }
-
+   
    /**
-    * @param dataValue
+    * @param processInstanceOid
     * @return
     */
-   private static boolean isFaxNumber(String dataValue)
+   public ProcessInstance getProcessInstance(long processInstanceOid)
    {
-      Pattern faxNumber = Pattern.compile(FAX_PATTERN);
-      Matcher faxNumberMatcher = faxNumber.matcher(dataValue);
-
-      Pattern onlyDigits = Pattern.compile("\\d*");
-      Matcher onlyDigitsMatcher2 = onlyDigits.matcher(dataValue);
-
-      if (faxNumberMatcher.matches() && !onlyDigitsMatcher2.matches())
+      ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processInstanceOid);
+      if (processInstance == null)
       {
-         return true;
+         throw new I18NException(restCommonClientMessages.getParamString("processInstance.notFound",
+               String.valueOf(processInstanceOid)));
       }
-      return false;
+      return processInstance;
    }
 }

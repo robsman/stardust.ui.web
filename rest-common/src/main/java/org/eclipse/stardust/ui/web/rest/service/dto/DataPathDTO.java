@@ -43,4 +43,6 @@ public class DataPathDTO extends AbstractDTO
 
    @DTOAttribute("data")
    public String data;
+   
+   public String name;
 }

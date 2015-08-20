@@ -48,6 +48,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.IDataPathValueDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.TrafficLightViewUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -527,8 +528,22 @@ public class ProcessInstanceResource
    @Path("{oid}/address-book")
    public Response getAddressBook(@PathParam("oid") Long processOid)
    {
-      return Response.ok(GsonUtils.toJsonHTMLSafeString(processInstanceService.getAddressBook(processOid)),
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(processInstanceService.getAddressBookDTO(processOid)),
             MediaType.APPLICATION_JSON).build();
+   }
+
+   /**
+    * @author Yogesh.Manware
+    * @param processOid
+    * @return
+    */
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{oid}/data-path-values")
+   public Response getDataPathValues(@PathParam("oid") Long processOid, @PathParam("dataPathId") String dataPathId)
+   {
+      List<IDataPathValueDTO> dataPathValuesDTO = processInstanceService.getAllDataPathValuesDTO(processOid);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(dataPathValuesDTO), MediaType.APPLICATION_JSON).build();
    }
    
    /**

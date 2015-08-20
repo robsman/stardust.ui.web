@@ -861,67 +861,6 @@ public class ActivityInstanceResource
    }
 
    /**
-    * @author Yogesh.Manware
-    * @param activityOid
-    * @return
-    */
-   @GET
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("{oid}/address-book")
-   public Response getAddressBook(@PathParam("oid") Long activityOid)
-   {
-      ActivityInstance ai = activityInstanceService.getActivityInstance(activityOid);
-      if (ai == null)
-      {
-         throw new I18NException("No Activity with oid: " + activityOid + "Found.");
-      }
-      return Response.ok(
-            GsonUtils.toJsonHTMLSafeString(processInstanceService.getAddressBook(ai.getProcessInstance())),
-            MediaType.APPLICATION_JSON).build();
-   }
-
-   /**
-    * @author Yogesh.Manware
-    * @param activityOid
-    * @return
-    */
-   @POST
-   @Consumes(MediaType.MULTIPART_FORM_DATA)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("{oid}/documents/PROCESS_ATTACHMENTS")
-   public Response addAttachment(List<Attachment> attachments, @Context HttpServletRequest request,
-         @PathParam("oid") Long activityOid) throws Exception
-   {
-      ActivityInstance ai = activityInstanceService.getActivityInstance(activityOid);
-      if (ai == null)
-      {
-         throw new I18NException("No Activity with oid: " + activityOid + "Found.");
-      }
-      List<DocumentDTO> processAttachments = processInstanceService.addProcessAttachments(ai.getProcessInstance(),
-            attachments);
-      return Response.ok(GsonUtils.toJsonHTMLSafeString(processAttachments)).build();
-   }
-   
-   /**
-    * @author Yogesh.Manware
-    * @param httpRequest
-    * @param paramName
-    * @param defaultValue
-    * @return
-    */
-   private String getParam(HttpServletRequest httpRequest, String paramName, String defaultValue)
-   {
-      Map<String, String[]> paramMap = httpRequest.getParameterMap();
-      if (paramMap != null && paramMap.get(paramName) != null && paramMap.get(paramName)[0] != null)
-      {
-         System.out.println(paramName + " : " + paramMap.get(paramName)[0]);
-         return paramMap.get(paramName)[0];
-      }
-
-      return defaultValue;
-   }
-
-   /**
     * 
     * @param options
     * @param postData

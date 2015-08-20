@@ -10,13 +10,12 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto.response;
 
-import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 
 /**
  * @author Yogesh.Manware
  * @version $Revision: $
  */
-public class AddressBookContactDTO extends AbstractDTO
+public class AddressBookDataPathValueDTO extends IDataPathValueDTO
 {
    public enum DataValueType {
       email, fax

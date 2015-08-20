@@ -8,25 +8,11 @@
  * Contributors:
  *	SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.stardust.ui.web.rest.service.helpers;
+package org.eclipse.stardust.ui.web.rest.service.dto.response;
 
-import java.util.List;
+import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 
-import org.eclipse.stardust.engine.api.model.DataPath;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.IDataPathValueDTO;
-
-/**
- * @author Yogesh.Manware
- * @version $Revision: $
- */
-public interface IDataPathValueFilter
+public class IDataPathValueDTO extends AbstractDTO
 {
-   /**
-    * return true if it needs to be considered
-    * 
-    * @param dataPath
-    * @param dataValue
-    * @return
-    */
-   List<IDataPathValueDTO> filter(DataPath dataPath, Object dataValue);
+
 }
