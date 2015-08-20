@@ -99,24 +99,30 @@ public class AuthorizationUtils
 
    public static JsonArray getPermissionsJson(IExtensibleElement element)
    {
-      List<Permission> permissions = getPermissions(element);
       JsonArray permissionsJson = new JsonArray();
-      for (Iterator<Permission> i = permissions.iterator(); i.hasNext();)
+      if (ModelUtils.findContainingModel(element) != null)
       {
-         JsonObject permissionJson = new JsonObject();
-         Permission permission = i.next();
-         JsonArray defaultParticipantsJson = createParticipantsArray(permission.getDefaultParticipants(), permission);
-         JsonArray fixedParticipantsJson = createParticipantsArray(permission.getFixedParticipants(), permission);
-         JsonArray participantsJson = createParticipantsArray(permission.getParticipants(), permission);
-         permissionJson.addProperty("id", permission.getId());
-         permissionJson.addProperty("isEmpty", permission.isEmpty());
-         permissionJson.addProperty("isAll", permission.isALL());
-         permissionJson.addProperty("defaultAll", permission.isDefaultAll());
-         permissionJson.addProperty("defaultOwner", permission.isDefaultOwner());  
-         permissionJson.add("participants", participantsJson);
-         permissionJson.add("defaultParticipants", defaultParticipantsJson);
-         permissionJson.add("fixedParticipants", fixedParticipantsJson);            
-         permissionsJson.add(permissionJson);
+         List<Permission> permissions = getPermissions(element);
+         for (Iterator<Permission> i = permissions.iterator(); i.hasNext();)
+         {
+            JsonObject permissionJson = new JsonObject();
+            Permission permission = i.next();
+            JsonArray defaultParticipantsJson = createParticipantsArray(
+                  permission.getDefaultParticipants(), permission);
+            JsonArray fixedParticipantsJson = createParticipantsArray(
+                  permission.getFixedParticipants(), permission);
+            JsonArray participantsJson = createParticipantsArray(
+                  permission.getParticipants(), permission);
+            permissionJson.addProperty("id", permission.getId());
+            permissionJson.addProperty("isEmpty", permission.isEmpty());
+            permissionJson.addProperty("isAll", permission.isALL());
+            permissionJson.addProperty("defaultAll", permission.isDefaultAll());
+            permissionJson.addProperty("defaultOwner", permission.isDefaultOwner());
+            permissionJson.add("participants", participantsJson);
+            permissionJson.add("defaultParticipants", defaultParticipantsJson);
+            permissionJson.add("fixedParticipants", fixedParticipantsJson);
+            permissionsJson.add(permissionJson);
+         }
       }
       return permissionsJson;
    }
