@@ -92,7 +92,7 @@ public class ActivityInstanceService
 
    @Resource
    CriticalityUtils criticalityUtils;
-   
+
    @Resource
    private ActivityStatisticsUtils activityStatisticsUtils;
 
@@ -128,8 +128,8 @@ public class ActivityInstanceService
     */
    public List<ActivityInstanceDTO> getAllRelocationTargets(long oid)
    {
-      //ActivityInstance ai = activityInstanceUtils.getActivityInstance(oid);
-      List<TransitionTarget> targets = RelocationUtils.getRelocateTargets(oid, new TransitionOptions(false, false, false),ScanDirection.BACKWARD);
+      List<TransitionTarget> targets = activityInstanceUtils.getRelocationTargets(oid,
+            new TransitionOptions(false, false, false), ScanDirection.BACKWARD);
       List<ActivityInstanceDTO> list = new ArrayList<ActivityInstanceDTO>();
       if (null != targets) {
          for (TransitionTarget target : targets) {
@@ -141,7 +141,7 @@ public class ActivityInstanceService
             list.add(dto);
          }
       }
-      
+
       return list;
    }
 
@@ -256,7 +256,7 @@ public class ActivityInstanceService
 
    /**
     * Get all available criticalities
-    * 
+    *
     * @return List
     */
    public List<CriticalityDTO> getCriticalities()
@@ -273,7 +273,7 @@ public class ActivityInstanceService
 
    /**
     * Get all activity instances count
-    * 
+    *
     * @return List
     */
    public InstanceCountsDTO getAllCounts()
@@ -292,7 +292,7 @@ public class ActivityInstanceService
    }
 
    /**
-    * 
+    *
     * @return
     */
    public long getActiveInstanceCount()
@@ -303,7 +303,7 @@ public class ActivityInstanceService
    }
 
    /**
-    * 
+    *
     * @return
     */
    public long getAbortedActivityInstanceCount()
@@ -314,7 +314,7 @@ public class ActivityInstanceService
    }
 
    /**
-    * 
+    *
     * @return
     */
    public long getCompletedActivityInstanceCount()
@@ -324,7 +324,7 @@ public class ActivityInstanceService
    }
 
    /**
-    * 
+    *
     * @return
     */
    public long getTotalActivityInstanceCount()
@@ -334,7 +334,7 @@ public class ActivityInstanceService
    }
 
    /**
-    * 
+    *
     * @return
     */
    public long getWaitingAcitivityInstanceCount()
@@ -365,7 +365,7 @@ public class ActivityInstanceService
    }
 
    /**
-    * 
+    *
     * @param activityOID
     * @return
     */
@@ -400,7 +400,7 @@ public class ActivityInstanceService
    }
 
    /**
-    * 
+    *
     * @param activityOID
     * @return
     */
@@ -434,7 +434,7 @@ public class ActivityInstanceService
    }
 
    /**
-    * 
+    *
     * @return
     */
    public List<CompletedActivitiesStatisticsDTO> getStatsForCompletedActivities()
@@ -443,7 +443,7 @@ public class ActivityInstanceService
    }
 
    /**
-    * 
+    *
     * @return
     */
    public List<PendingActivitiesStatisticsDTO> getPendingActivities()
@@ -457,7 +457,7 @@ public class ActivityInstanceService
    }
 
    /**
-    * 
+    *
     * @return
     */
    public List<PostponedActivitiesResultDTO> getStatsByPostponedActivities()
@@ -466,16 +466,16 @@ public class ActivityInstanceService
    }
 
    /**
-    * 
+    *
     * @return
     */
    public List<ColumnDTO> getParticipantColumns()
    {
       return activityInstanceUtils.getParticipantColumns();
    }
-   
+
    /**
-    * 
+    *
     * @return
     */
    public List<CompletedActivitiesStatisticsDTO> getPerformanceStatsByTeamLead()
@@ -484,7 +484,7 @@ public class ActivityInstanceService
    }
 
    /**
-    * 
+    *
     * @param piOid
     * @return
     */

@@ -16,47 +16,16 @@ import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtil
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isSupportsWeb;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.reflect.Reflect;
-import org.eclipse.stardust.engine.api.model.ApplicationContext;
-import org.eclipse.stardust.engine.api.model.DataMapping;
-import org.eclipse.stardust.engine.api.model.ModelParticipant;
-import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
-import org.eclipse.stardust.engine.api.model.Participant;
-import org.eclipse.stardust.engine.api.model.PredefinedConstants;
-import org.eclipse.stardust.engine.api.model.ProcessDefinition;
-import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
-import org.eclipse.stardust.engine.api.query.ActivityInstances;
-import org.eclipse.stardust.engine.api.query.FilterTerm;
-import org.eclipse.stardust.engine.api.query.ProcessInstanceFilter;
-import org.eclipse.stardust.engine.api.query.QueryResult;
-import org.eclipse.stardust.engine.api.query.SubsetPolicy;
-import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
-import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
-import org.eclipse.stardust.engine.api.runtime.AdministrationService;
-import org.eclipse.stardust.engine.api.runtime.Department;
-import org.eclipse.stardust.engine.api.runtime.Document;
-import org.eclipse.stardust.engine.api.runtime.Grant;
-import org.eclipse.stardust.engine.api.runtime.ProcessInstancePriority;
-import org.eclipse.stardust.engine.api.runtime.QueryService;
-import org.eclipse.stardust.engine.api.runtime.User;
-import org.eclipse.stardust.engine.api.runtime.UserInfo;
-import org.eclipse.stardust.engine.api.runtime.WorkflowService;
+import org.eclipse.stardust.engine.api.model.*;
+import org.eclipse.stardust.engine.api.query.*;
+import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.engine.core.query.statistics.api.CriticalExecutionTimePolicy;
 import org.eclipse.stardust.engine.core.query.statistics.api.OpenActivitiesStatistics;
 import org.eclipse.stardust.engine.core.query.statistics.api.OpenActivitiesStatisticsQuery;
@@ -70,28 +39,13 @@ import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
-import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.ColumnDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
+import org.eclipse.stardust.ui.web.rest.service.dto.*;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.OpenActivitiesDynamicUserObjectDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.PathDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.PendingActivitiesStatisticsDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.StatusDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
-import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ClientContextBean;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
-import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
-import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
+import org.eclipse.stardust.ui.web.viewscommon.utils.*;
 import org.springframework.stereotype.Component;
 
 /**
@@ -147,7 +101,7 @@ public class ActivityInstanceUtils
    }
 
    /**
-    * @param query 
+    * @param query
     * @param userId
     * @return
     */
@@ -163,9 +117,9 @@ public class ActivityInstanceUtils
    public QueryResult< ? > getActivitiesByOids(Options options, List<Long> oids, ActivityInstanceQuery query)
    {
       if(query == null){
-         query = ActivityInstanceQuery.findAll(); 
+         query = ActivityInstanceQuery.findAll();
       }
-      
+
       FilterTerm filter = query.getFilter();
       if (!CollectionUtils.isEmpty(oids))
       {
@@ -229,14 +183,14 @@ public class ActivityInstanceUtils
    public Map<String, TrivialManualActivityDTO> getTrivialManualActivitiesDetails(List<Long> oids, String context)
    {
       List<ActivityInstance> ais = getActivityInstances(oids);
-      
+
       Map<String, TrivialManualActivityDTO> ret = getTrivialManualActivities(ais, context);
 
       return ret;
    }
 
    /**
-    * 
+    *
     * @param ais
     * @param context
     * @return
@@ -330,6 +284,11 @@ public class ActivityInstanceUtils
       return serviceFactoryUtils.getWorkflowService().activateAndComplete(oid, context, outData);
    }
 
+   public List<TransitionTarget> getRelocationTargets(long oid, TransitionOptions options, ScanDirection direction)
+   {
+      return serviceFactoryUtils.getWorkflowService().getAdHocTransitionTargets(oid, options, direction);
+   }
+
    /**
     * @param oid
     * @return
@@ -394,10 +353,10 @@ public class ActivityInstanceUtils
    /**
     * @author Yogesh.Manware note: copied from AbortActivityBean#private boolean
     *         abortActivities(AbortScope abortScope)
-    * 
+    *
     * @param abortScope
     * @param activitiesToBeAborted
-    * 
+    *
     * @return
     */
    public NotificationMap abortActivities(AbortScope abortScope, List<Long> activitiesToBeAborted)
@@ -407,7 +366,7 @@ public class ActivityInstanceUtils
       if (CollectionUtils.isNotEmpty(activitiesToBeAborted))
       {
          WorkflowService workflowService = serviceFactoryUtils.getWorkflowService();
-         
+
          List<ActivityInstance> activityInstaces = getActivityInstances(activitiesToBeAborted);
          for (ActivityInstance activityInstance : activityInstaces)
          {
@@ -469,7 +428,7 @@ public class ActivityInstanceUtils
 
    /**
     * to check Activity of type is Default Case Activity
-    * 
+    *
     * @param ai
     * @return
     */
@@ -573,7 +532,7 @@ public class ActivityInstanceUtils
 
    /**
     * gets the duration
-    * 
+    *
     * @param ai
     * @return
     */
@@ -588,8 +547,8 @@ public class ActivityInstanceUtils
    }
 
    /**
-	 * 
-	 */
+   *
+   */
 
    public static String getPerformedByName(ActivityInstance activityInstance)
    {
@@ -605,7 +564,7 @@ public class ActivityInstanceUtils
    }
 
    /**
-     * 
+     *
      */
 
    public NotificationMap activate(Long activityOID)
@@ -632,7 +591,7 @@ public class ActivityInstanceUtils
    }
 
    /**
-    * 
+    *
     * @param ais
     */
    public void delegateToDefaultPerformer(List<ActivityInstance> ais)
@@ -660,7 +619,7 @@ public class ActivityInstanceUtils
 
    /**
     * Activity instance is in Application state, force suspend will be done
-    * 
+    *
     * @param ai
     */
    public void forceSuspend(ActivityInstance ai)
@@ -681,10 +640,10 @@ public class ActivityInstanceUtils
       }
    }
 
- 
+
 
    /**
-    * 
+    *
     */
    public List<ColumnDTO> getParticipantColumns()
    {
@@ -701,9 +660,9 @@ public class ActivityInstanceUtils
       return participantDTOList;
    }
 
-  
+
    /**
-    * 
+    *
     * @return
     */
    public List<PendingActivitiesStatisticsDTO> getPendingActivities()
@@ -791,7 +750,7 @@ public class ActivityInstanceUtils
    }
 
    /**
-    * 
+    *
     * @return
     */
    public List<SelectItemDTO> getAllRoles()
@@ -805,10 +764,10 @@ public class ActivityInstanceUtils
       }
       return roleList;
    }
-   
-   
+
+
    /**
-    * 
+    *
     */
    private Set<ModelParticipantInfo> geUsertRelevantModelParticipants()
    {
@@ -837,7 +796,7 @@ public class ActivityInstanceUtils
    }
 
    /**
-    * 
+    *
     */
    public List<ActivityInstanceDTO> getByProcessOid(long piOid)
    {
@@ -848,7 +807,7 @@ public class ActivityInstanceUtils
       ActivityInstances ais = serviceFactoryUtils.getQueryService().getAllActivityInstances(aiQuery);
 
       List<ActivityInstanceDTO> dtos = new ArrayList<ActivityInstanceDTO>();
-      
+
       for (ActivityInstance ai : ais)
       {
          ActivityInstanceDTO dto =  DTOBuilder.build(ai, ActivityInstanceDTO.class);
@@ -860,10 +819,10 @@ public class ActivityInstanceUtils
          if(dto.activity.implementationTypeId != "Subprocess"){
             dto.processInstance = null;
          }
-         
+
          dtos.add(dto);
       }
-      
+
       return dtos;
    }
 
