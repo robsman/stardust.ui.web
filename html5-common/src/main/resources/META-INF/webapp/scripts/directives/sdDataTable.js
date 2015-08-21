@@ -2176,6 +2176,13 @@
 			};
 
 			/*
+			 * 
+			 */
+			this.refreshUi = function () {
+				refreshUi();
+			};
+
+			/*
 			 * For single select - rowData or null if none selected
 			 * For multiple select - rowData array or empty array if none selected 
 			 */
