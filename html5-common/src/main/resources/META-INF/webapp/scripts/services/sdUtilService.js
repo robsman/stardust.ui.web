@@ -411,7 +411,8 @@
 					data[i].$$treeInfo.parents = angular.copy(parentRow.$$treeInfo.parents);
 					data[i].$$treeInfo.parents[parentRow.$$treeInfo.id] = true;
 				}
-				
+
+				data[i].$leaf = (data[i].$leaf == undefined || data[i].$leaf == true) ? true : false;
 				if (!data[i].$leaf) {
 					data[i].$expanded = data[i].$expanded ? true : false;
 
