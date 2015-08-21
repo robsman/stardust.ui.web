@@ -431,7 +431,7 @@ public class ActivityPanelController extends UIComponentBean
       catch (Exception e)
       {
          trace.error("Unable to Detach Document from Activity");
-         ExceptionHandler.handleException(e);
+         ExceptionHandler.handleException(e, propsBean.getString("views.genericRepositoryView.processAttachmntDltErr"));
       }
    }
 
