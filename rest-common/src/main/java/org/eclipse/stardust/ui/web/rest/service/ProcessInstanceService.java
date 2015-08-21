@@ -61,7 +61,8 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SwitchProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.IDataPathValueDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.AddressBookDataPathValueDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.DataPathValueDTO;
 import org.eclipse.stardust.ui.web.rest.service.helpers.AddressBookDataPathValueFilter;
 import org.eclipse.stardust.ui.web.rest.service.helpers.DefaultDataPathValueFilter;
 import org.eclipse.stardust.ui.web.rest.service.helpers.IDataPathValueFilter;
@@ -497,18 +498,20 @@ public class ProcessInstanceService
     * @param processInstanceOid
     * @return
     */
-   public List<IDataPathValueDTO> getAddressBookDTO(long processInstanceOid)
+   @SuppressWarnings("unchecked")
+   public List<AddressBookDataPathValueDTO> getAddressBookDTO(long processInstanceOid)
    {
-      return getDataPathValueDTO(getProcessInstance(processInstanceOid), new AddressBookDataPathValueFilter(), null);
+      return (List<AddressBookDataPathValueDTO>)getDataPathValueDTO(getProcessInstance(processInstanceOid), new AddressBookDataPathValueFilter(), null);
    }
 
    /**
     * @param processInstanceOid
     * @return
     */
-   public List<IDataPathValueDTO> getAllDataPathValuesDTO(long processInstanceOid)
+   @SuppressWarnings({"unchecked"})
+   public List<DataPathValueDTO> getAllDataPathValuesDTO(long processInstanceOid)
    {
-      return getDataPathValueDTO(getProcessInstance(processInstanceOid), new DefaultDataPathValueFilter(), null);
+      return (List<DataPathValueDTO>)getDataPathValueDTO(getProcessInstance(processInstanceOid), new DefaultDataPathValueFilter(), null);
    }
 
    /**
@@ -516,9 +519,10 @@ public class ProcessInstanceService
     * @param dataPathId
     * @return
     */
-   public List<IDataPathValueDTO> getDataPathValueFor(long processInstanceOid, String dataPathId)
+   @SuppressWarnings({"unchecked"})
+   public List<DataPathValueDTO> getDataPathValueFor(long processInstanceOid, String dataPathId)
    {
-      return getDataPathValueDTO(getProcessInstance(processInstanceOid), new DefaultDataPathValueFilter(), dataPathId);
+      return (List<DataPathValueDTO>) getDataPathValueDTO(getProcessInstance(processInstanceOid), new DefaultDataPathValueFilter(), dataPathId);
    }
    
    /**
@@ -526,10 +530,10 @@ public class ProcessInstanceService
     * @param dataPathValueFilter
     * @return
     */
-   public List<IDataPathValueDTO> getDataPathValueDTO(ProcessInstance processInstance,
+   public List<? extends AbstractDTO> getDataPathValueDTO(ProcessInstance processInstance,
          IDataPathValueFilter dataPathValueFilter, String dataPathId)
    {
-      List<IDataPathValueDTO> dataPathDtoList = new ArrayList<IDataPathValueDTO>();
+      List<? extends AbstractDTO> dataPathDtoList = new ArrayList<AbstractDTO>();
       ProcessDefinition processDefinition = processDefinitionUtils.getProcessDefinition(processInstance.getModelOID(),
             processInstance.getProcessID());
 
@@ -555,6 +559,12 @@ public class ProcessInstanceService
          
          for (DataPath dataPath : dataPaths)
          {
+            if (dataPath == null)
+            {
+               trace.debug("There is no datapath one or more datapathIds:");
+               continue;
+            }
+
             if (dataPath.getDirection().equals(Direction.IN) || dataPath.getDirection().equals(Direction.IN_OUT))
             {
                dataPathIds.add(dataPath.getId());
@@ -568,7 +578,7 @@ public class ProcessInstanceService
          for (DataPath dataPath : inDataPaths)
          {
             Object dataValue = dataValues.get(dataPath.getId());
-            dataPathDtoList.addAll(dataPathValueFilter.filter(dataPath, dataValue));
+            dataPathDtoList.addAll((List) dataPathValueFilter.filter(dataPath, dataValue));
          }
       }
       return dataPathDtoList;

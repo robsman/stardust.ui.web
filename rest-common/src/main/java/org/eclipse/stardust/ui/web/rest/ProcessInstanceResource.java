@@ -48,7 +48,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.IDataPathValueDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.DataPathValueDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.TrafficLightViewUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -542,7 +542,7 @@ public class ProcessInstanceResource
    @Path("{oid}/data-path-values{dataPathId:.*}")
    public Response getDataPathValues(@PathParam("oid") Long processOid, @PathParam("dataPathId") String dataPathId)
    {
-      List<IDataPathValueDTO> dataPathValuesDTO = processInstanceService.getDataPathValueFor(processOid, dataPathId);
+      List<DataPathValueDTO> dataPathValuesDTO = processInstanceService.getDataPathValueFor(processOid, dataPathId);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(dataPathValuesDTO), MediaType.APPLICATION_JSON).build();
    }
    

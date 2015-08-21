@@ -19,11 +19,11 @@ import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
+import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DataPathDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.DataPathValueDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.IDataPathValueDTO;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 
@@ -35,9 +35,9 @@ public class DefaultDataPathValueFilter implements IDataPathValueFilter
 {
    @SuppressWarnings("unchecked")
    @Override
-   public List<IDataPathValueDTO> filter(DataPath dataPath, Object dataValue)
+   public List< ? extends AbstractDTO> filter(DataPath dataPath, Object dataValue)
    {
-      List<IDataPathValueDTO> dataPathValueDTOs = new ArrayList<IDataPathValueDTO>();
+      List<DataPathValueDTO> dataPathValueDTOs = new ArrayList<DataPathValueDTO>();
 
       if (dataValue != null)
       {

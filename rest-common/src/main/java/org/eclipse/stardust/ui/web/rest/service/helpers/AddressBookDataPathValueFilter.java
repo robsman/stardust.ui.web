@@ -18,8 +18,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.AddressBookDataPathValueDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.IDataPathValueDTO;
 import org.eclipse.stardust.ui.web.viewscommon.core.EMailAddressValidator;
 
 /**
@@ -31,9 +31,9 @@ public class AddressBookDataPathValueFilter implements IDataPathValueFilter
    private static final String FAX_PATTERN = "^\\(?([0-9]{3})\\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$";
 
    @Override
-   public List<IDataPathValueDTO> filter(DataPath dataPath, Object dataValue)
+   public List< ? extends AbstractDTO> filter(DataPath dataPath, Object dataValue)
    {
-      List<IDataPathValueDTO> addressBook = new ArrayList<IDataPathValueDTO>();
+      List<AddressBookDataPathValueDTO> addressBook = new ArrayList<AddressBookDataPathValueDTO>();
 
       if (dataValue != null)
       {
@@ -48,7 +48,7 @@ public class AddressBookDataPathValueFilter implements IDataPathValueFilter
     * @param addressBook
     */
    @SuppressWarnings("rawtypes")
-   public void searchAddresses(String key, Object dataValue, List<IDataPathValueDTO> addressBook)
+   public void searchAddresses(String key, Object dataValue, List<AddressBookDataPathValueDTO> addressBook)
    {
       if (dataValue != null)
       {

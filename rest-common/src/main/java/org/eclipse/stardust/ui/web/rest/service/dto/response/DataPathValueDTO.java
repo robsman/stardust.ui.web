@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.rest.service.dto.response;
 
 import java.util.List;
 
+import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DataPathDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 
@@ -19,7 +20,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
  * @author Yogesh.Manware
  * @version $Revision: $
  */
-public class DataPathValueDTO extends IDataPathValueDTO
+public class DataPathValueDTO extends AbstractDTO
 {
    public DataPathDTO dataPath;
    public List<DocumentDTO> documents;

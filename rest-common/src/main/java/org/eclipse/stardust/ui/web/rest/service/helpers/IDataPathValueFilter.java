@@ -13,7 +13,7 @@ package org.eclipse.stardust.ui.web.rest.service.helpers;
 import java.util.List;
 
 import org.eclipse.stardust.engine.api.model.DataPath;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.IDataPathValueDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 
 /**
  * @author Yogesh.Manware
@@ -28,5 +28,5 @@ public interface IDataPathValueFilter
     * @param dataValue
     * @return
     */
-   List<IDataPathValueDTO> filter(DataPath dataPath, Object dataValue);
+   List<? extends AbstractDTO> filter(DataPath dataPath, Object dataValue);
 }

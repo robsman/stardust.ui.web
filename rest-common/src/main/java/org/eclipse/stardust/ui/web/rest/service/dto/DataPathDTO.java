@@ -32,10 +32,10 @@ public class DataPathDTO extends AbstractDTO
    @DTOAttribute("mappedType.name")
    public String type;
 
-   @DTOAttribute("isDescriptor")
+   @DTOAttribute("isDescriptor()")
    public Boolean isDescriptor;
 
-   @DTOAttribute("isKeyDescriptor")
+   @DTOAttribute("isKeyDescriptor()")
    public Boolean isKeyDescriptor;
 
    @DTOAttribute("accessPath")
