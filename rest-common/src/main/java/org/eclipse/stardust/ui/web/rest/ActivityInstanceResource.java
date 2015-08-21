@@ -46,9 +46,6 @@ import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityStateFilter;
 import org.eclipse.stardust.engine.api.query.DataFilter;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
-import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
-import org.eclipse.stardust.engine.api.query.ProcessStateFilter;
-import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.core.query.statistics.api.BenchmarkActivityStatisticsQuery;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
@@ -298,7 +295,38 @@ public class ActivityInstanceResource
    {
       try
       {
-         return Response.ok(AbstractDTO.toJson(getActivityInstanceService().getAllRelocationTargets(oid)), MediaType.APPLICATION_JSON).build();
+         return Response.ok(
+               AbstractDTO.toJson(getActivityInstanceService().getAllRelocationTargets(
+                     oid)), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/relocateActivity")
+   public Response relocate(String postedData)
+   {
+      try
+      {
+         JsonObject json = jsonIo.readJsonObject(postedData);
+         
+         AbstractDTO dto = getActivityInstanceService().relocateActivity(
+               json.get("activityInstanceOid").getAsLong(),
+               json.get("targetActivityId").getAsString());
+         if (dto != null)
+         {
+            return Response.ok(dto.toJson(), MediaType.APPLICATION_JSON).build();
+         }
+         else
+         {
+            return Response.notModified().build();
+         }
       }
       catch (Exception e)
       {

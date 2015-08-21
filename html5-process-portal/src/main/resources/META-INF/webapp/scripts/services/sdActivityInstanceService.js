@@ -326,6 +326,13 @@
 
 			return sdUtilService.ajax(REST_BASE_URL, "relocationTargets", activityInstanceOid);
 		};
+		
+		/**
+		 * 
+		 */
+		ActivityInstanceService.prototype.relocate = function(activityInstanceOid, targetAactivityId) {
 
+			return sdUtilService.ajax(REST_BASE_URL, "relocateActivity", {activityInstanceOid: activityInstanceOid, targetActivityId: targetAactivityId}, activityInstanceOid);
+		};
 	};
 })();

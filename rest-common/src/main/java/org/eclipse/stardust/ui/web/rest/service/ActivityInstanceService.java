@@ -33,8 +33,8 @@ import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.ScanDirection;
 import org.eclipse.stardust.engine.api.runtime.TransitionOptions;
+import org.eclipse.stardust.engine.api.runtime.TransitionReport;
 import org.eclipse.stardust.engine.api.runtime.TransitionTarget;
-import org.eclipse.stardust.engine.core.runtime.audittrail.management.RelocationUtils;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
@@ -128,21 +128,50 @@ public class ActivityInstanceService
     */
    public List<ActivityInstanceDTO> getAllRelocationTargets(long oid)
    {
-      List<TransitionTarget> targets = activityInstanceUtils.getRelocationTargets(oid,
-            new TransitionOptions(false, false, false), ScanDirection.BACKWARD);
+      List<TransitionTarget> targets = serviceFactoryUtils.getWorkflowService()
+            .getAdHocTransitionTargets(oid, TransitionOptions.DEFAULT,
+                  ScanDirection.BACKWARD);
       List<ActivityInstanceDTO> list = new ArrayList<ActivityInstanceDTO>();
-      if (null != targets) {
-         for (TransitionTarget target : targets) {
+      if (null != targets)
+      {
+         for (TransitionTarget target : targets)
+         {
+            // TODO - needs a new transition target DTO?
             ActivityInstanceDTO dto = new ActivityInstanceDTO();
-            dto.activityOID = target.getActivityInstanceOid();
             dto.activity = new ActivityDTO();
-            dto.activity.name  = target.getActivityName();
+            dto.activity.name = target.getActivityName();
             dto.activity.id = target.getActivityId();
             list.add(dto);
          }
       }
 
       return list;
+   }
+
+   /**
+    * @param activityOid
+    * @param targetActivityOid
+    */
+   public ActivityInstanceDTO relocateActivity(long activityOid, String activityId)
+   {
+      // TODO - not performant - check if this step can be avoided.
+      List<TransitionTarget> targets = serviceFactoryUtils.getWorkflowService()
+            .getAdHocTransitionTargets(activityOid, TransitionOptions.DEFAULT,
+                  ScanDirection.BACKWARD);
+      List<ActivityInstanceDTO> list = new ArrayList<ActivityInstanceDTO>();
+      if (null != targets)
+      {
+         for (TransitionTarget target : targets)
+         {
+            if (target.getActivityId().equals(activityId)) {
+               serviceFactoryUtils.getWorkflowService().activate(target.getActivityInstanceOid());
+               TransitionReport report = serviceFactoryUtils.getWorkflowService().performAdHocTransition(target, true);
+               return DTOBuilder.build(report.getTargetActivityInstance(), ActivityInstanceDTO.class);
+            }
+         }
+      }
+      
+      return null;
    }
 
    /**

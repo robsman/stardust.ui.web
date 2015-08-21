@@ -838,7 +838,24 @@
 	 * @param rowItem
 	 */
 	ActivityTableCompiler.prototype.openRelocationDialog = function(rowItem) {
-		rowItem.showRelocationDialog = true;
+		var self = this;
+		sdActivityInstanceService.getRelocationTargets(rowItem.activityOID).then(function(targets) {
+			rowItem.relocationTargets = [];
+			if (targets) {
+				jQuery.each(targets, function(_, target) {
+					rowItem.relocationTargets.push({
+						name: target.activity.name,
+						id: target.activity.id
+					})
+				});
+			}
+			if (rowItem.relocationTargets.length > 0) {
+				rowItem.showRelocationDialog = true;
+			} else {
+				rowItem.showNoRelocationTargetsDialog = true;
+			}
+		});
+		
 	};
 	
 	/**
@@ -846,28 +863,11 @@
 	 * @param rowItem
 	 */
 	ActivityTableCompiler.prototype.relocateActivity = function(rowItem) {
-		rowItem.showRelocationDialog = false;
-		// sdActivityInstanceService
-	};
-	
-	/**
-	 * 
-	 * @param rowItem
-	 */
-	ActivityTableCompiler.prototype.getRelocationTargets = function(rowItem) {
 		var self = this;
-		sdActivityInstanceService.getRelocationTargets(rowItem.activityOID).then(function(targets) {
-			rowItem.relocationTargets = [];
-			if (targets) {
-				jQuery.each(targets, function(_, target) {
-					rowItem.relocationTargets.push({
-						oid: target.oid,
-						name: target.activity.name,
-						id: target.activity.id
-					})
-				});
-			}
-		});
+		sdActivityInstanceService.relocate(rowItem.activityOID, rowItem.selectedTarget).then(function() {
+			// TODO
+		})
+		rowItem.showRelocationDialog = false;
 	};
 
 	/*

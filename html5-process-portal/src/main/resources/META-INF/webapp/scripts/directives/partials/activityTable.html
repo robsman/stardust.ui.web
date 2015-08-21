@@ -283,6 +283,29 @@
 							<i class="pi pi-activity-notes-empty icon-lg" ng-if ="rowData.notesCount === 0"></i>
 							<i class="pi pi-activity-notes icon-lg" ng-if ="rowData.notesCount > 0 "></i>
 						</button>
+						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.openRelocationDialog(rowData);" aid="PP-ActivityTable-OpenRelocationDialogAction"
+						    ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"
+							title="{{i18n('processportal.toolbars-workflowActions-relocation-relocate')}}" class="button-link tbl-tool-link">
+							<i class="pi pi-activity-relocate icon-lg"></i>
+							<div sd-dialog sda-modal="true"
+								sda-show="rowData.showRelocationDialog" sda-type="confirm"
+								sda-title="{{i18n('processportal.toolbars-workflowActions-relocation-dialog-title')}}"
+								sda-scope="this"
+								sda-template="plugins/html5-process-portal/partials/views/activityRelocationDialog.html"
+								sda-on-confirm="activityTableCtrl.relocateActivity(rowData)"
+								sda-confirm-action-label="{{i18n('processportal.toolbars-workflowActions-relocation-relocate')}}"
+								sda-width="400px" sda-height="70px"
+								sda-aid-prefix="RelocationDialog-confirm"></div>
+							<div sd-dialog sda-modal="true"
+								sda-show="rowData.showNoRelocationTargetsDialog" sda-type="alert"
+								sda-title="{{i18n('processportal.toolbars-workflowActions-relocation-dialog-title')}}"
+								sda-scope="this"
+								sda-template="plugins/html5-process-portal/partials/views/activityRelocationDialog.html"
+								sda-confirm-action-label="{{i18n('processportal.toolbars-workflowActions-relocation-relocate')}}"
+								sda-cancel-action-label="OK"
+								sda-width="400px" sda-height="70px"
+								sda-aid-prefix="RelocationDialog-confirm"></div>
+						</button>
 						<button ng-click="bpmCommon.stopEvent($event);" aid="PP-ActivityTable-OpenProcessDocuments"
 						    ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}" class="button-link tbl-tool-link">
@@ -324,21 +347,6 @@
 									</div>
 								</div>
 							</span>
-						</button>
-						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.openRelocationDialog(rowData);" aid="PP-ActivityTable-OpenRelocationDialogAction"
-						    ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"
-							title="Relocate" class="button-link tbl-tool-link">
-							<i class="pi pi-activity-relocate icon-lg"></i>
-							<div sd-dialog sda-modal="true"
-								sda-show="rowData.showRelocationDialog" sda-type="confirm"
-								sda-title="Relocate To"
-								sda-scope="this"
-								sda-template="plugins/html5-process-portal/partials/views/activityRelocationDialog.html"
-								sda-on-open="activityTableCtrl.getRelocationTargets(rowData)"
-								sda-on-confirm="activityTableCtrl.relocateActivity(rowData)"
-								sda-confirm-action-label="Relocate"
-								sda-width="400px" sda-height="100px"
-								sda-aid-prefix="RelocationDialog-confirm"></div>
 						</button>
 					</div>
 				</td>
