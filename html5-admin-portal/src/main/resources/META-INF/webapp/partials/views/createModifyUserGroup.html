@@ -9,7 +9,7 @@
 			<tr>
 				<td><label>{{"*  " + i18n('admin-portal-messages.views-common-id-label')+
 						i18n('admin-portal-messages.common-colon')}}</label></td>
-				<td><input name="id" type="text"
+				<td><input name="id" type="text" sd-focus ng-disabled="ctrl.mode == 'MODIFY_USER'"
 					ng-model="ctrl.newUserGroup.id" required aid="ADM-UserGrpMgmt-CreateModifyUserGroup-id">
 					<div class="msg-error"
 						ng-show="ctrl.createModifyUserGroupForm.id.$error.required && ctrl.submitted">

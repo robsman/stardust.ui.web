@@ -12,7 +12,7 @@
 				<td><label class="form-lable">*{{i18n('admin-portal-messages.views-createUser-basicPanel-account-label')
 						+ i18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><div>
-						<input type="text" name="account" ng-model="ctrl.user.account"
+						<input type="text" name="account" ng-model="ctrl.user.account" sd-focus
 							ng-change="ctrl.initDisplayFormats()" 
 							ng-disabled="ctrl.mode == 'MODIFY_USER' || ctrl.mode == 'MODIFY_PROFILE_CONFIGURATION'" required
 							aid="ADM-PartMgmt-UserPopup-Acct">
