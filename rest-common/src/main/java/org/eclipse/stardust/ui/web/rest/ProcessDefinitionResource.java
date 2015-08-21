@@ -24,6 +24,7 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDataDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
 
 import com.google.gson.JsonObject;
@@ -87,6 +88,24 @@ public class ProcessDefinitionResource
 		}
 	}
 
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{processDefinitionId}/scan-trigger-documents")
+   public Response getScanTriggerDocuments(@PathParam("processDefinitionId") String processDefinitionId)
+   {
+      try
+      {
+         List<DocumentDataDTO> documents = getProcessDefinitionService().getAllDocumentData(processDefinitionId);
+
+         return Response.ok(AbstractDTO.toJson(documents), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)

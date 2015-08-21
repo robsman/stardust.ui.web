@@ -18,26 +18,37 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.model.Activity;
+import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.engine.api.model.ParameterMapping;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.model.Trigger;
+import org.eclipse.stardust.engine.api.runtime.DeployedModel;
+import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DataPathDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDataDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentTypeDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.DescriptorColumnUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.DescriptorColumnUtils.ColumnDataType;
+import org.eclipse.stardust.ui.web.rest.service.utils.DocumentUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.springframework.stereotype.Component;
 /**
  * @author Anoop.Nair
@@ -48,11 +59,16 @@ import org.springframework.stereotype.Component;
 public class ProcessDefinitionService
 {
 
+   private static final String SCAN_TRIGGER = "scan";
+   
 	@Resource
 	private ProcessDefinitionUtils processDefinitionUtils;
 
 	@Resource
 	private ModelUtils modelUtils;
+	
+	@Resource
+	private DocumentUtils documentUtils;
 
 
    /**
@@ -132,7 +148,44 @@ public class ProcessDefinitionService
 
 	   }
 
+   public List<DocumentDataDTO> getAllDocumentData(String processDefinitionId)
+   {
+      List<DocumentDataDTO> allDocumentData = CollectionUtils.newArrayList();
+      Set<String> dataIds = CollectionUtils.newHashSet();
+      ProcessDefinition processDefinition = processDefinitionUtils.getProcessDefinition(processDefinitionId);
+      List<Trigger> triggers = processDefinition.getAllTriggers();
+      for (Trigger triggerDetails : triggers)
+      {
+         if (SCAN_TRIGGER.equals(triggerDetails.getType()))
+         {
+            for (ParameterMapping mapping : triggerDetails.getAllParameterMappings())
+            {
+               dataIds.add(mapping.getDataId());
+            }
+         }
+      }
 
+      if(CollectionUtils.isNotEmpty(dataIds))
+      {
+         DeployedModel model = ModelCache.findModelCache().getModel(processDefinition.getModelOID());
+         List<Data> allData =  model.getAllData();
+         
+         for (Data data : allData)
+         {
+            if (dataIds.contains(data.getId()))
+            {
+               DataDetails dataDetails = (DataDetails) data;
+               DocumentType documentType =  org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getDocumentTypeFromData(model, dataDetails);
+               DocumentDataDTO documentDataDTO = DTOBuilder.build(dataDetails, DocumentDataDTO.class);
+               DocumentTypeDTO documentTypeDTO = DocumentTypeDTOBuilder.build(documentType);
+               documentDataDTO.documentType = documentTypeDTO;
+               allDocumentData.add(documentDataDTO);
+            }
+         }
+      }
+      
+      return allDocumentData;
+   }
 
 
 	/**
