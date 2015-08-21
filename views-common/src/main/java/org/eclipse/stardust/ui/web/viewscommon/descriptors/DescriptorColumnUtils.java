@@ -18,7 +18,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
@@ -44,6 +46,7 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
 import org.springframework.util.CollectionUtils;
 
@@ -93,24 +96,31 @@ public class DescriptorColumnUtils
       {
          String descriptorId = descriptor.getKey();
          DataPath dataPath = descriptor.getValue();
-         Class mappedType = dataPath.getMappedType();
-         ColumnDataType columnType = determineColumnType(dataPath);
          
-         if(contentUrl!=null && determineDocumentTypeColumn(mappedType))
+         Model model = ModelCache.findModelCache().getModel(dataPath.getModelOID());
+         DataDetails dataDetails = model != null ? (DataDetails) model.getData(dataPath.getData()) : null;
+         
+         if ((contentUrl != null)
+               && (null != dataDetails && (DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId()) || DmsConstants.DATA_TYPE_DMS_DOCUMENT_LIST
+                     .equals(dataDetails.getTypeId()))))
          {
-            ColumnPreference descriptorColumn = new ProcessDocumentColumnPreference(descriptorId ,
-                  "descriptorValues." + descriptorId + "",I18nUtils.getDataPathName(dataPath), contentUrl, false, false);
+            ColumnPreference descriptorColumn = new ProcessDocumentColumnPreference(descriptorId, "descriptorValues."
+                  + descriptorId + "", I18nUtils.getDataPathName(dataPath), contentUrl, false, false);
+
             descriptorColumn.setEscape(false);
             descriptorColumns.add(descriptorColumn);
          }
-         else if(contentUrl !=null && DmsConstants.DATA_ID_ATTACHMENTS.equals(dataPath.getData()))
+         else if ((contentUrl != null) && ((DmsConstants.DATA_ID_ATTACHMENTS.equals(dataPath.getData()))))
          {
-            ColumnPreference descriptorColumn = new ProcessAttachmentColumnPreference(descriptorId,
-                  "descriptorValues." + descriptorId + "", I18nUtils.getDataPathName(dataPath), contentUrl, false, false);
+            ColumnPreference descriptorColumn = new ProcessAttachmentColumnPreference(descriptorId, "descriptorValues."
+                  + descriptorId + "", I18nUtils.getDataPathName(dataPath), contentUrl, false, false);
+
             descriptorColumn.setEscape(false);
             descriptorColumns.add(descriptorColumn);
          }
-         else{
+         else
+         {
+            ColumnDataType columnType = determineColumnType(dataPath);
             // double and float are not sortable
             boolean sortable = DescriptorFilterUtils.isDataSortable(dataPath);
             
