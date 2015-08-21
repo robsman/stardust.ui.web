@@ -309,15 +309,15 @@ public class ActivityInstanceResource
 
    @POST
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("/relocateActivity")
-   public Response relocate(String postedData)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("/{oid: \\d+}/relocate")
+   public Response relocate(@PathParam("oid") long oid, String postedData)
    {
       try
       {
          JsonObject json = jsonIo.readJsonObject(postedData);
          
-         AbstractDTO dto = getActivityInstanceService().relocateActivity(
-               json.get("activityInstanceOid").getAsLong(),
+         AbstractDTO dto = getActivityInstanceService().relocateActivity(oid,
                json.get("targetActivityId").getAsString());
          if (dto != null)
          {
