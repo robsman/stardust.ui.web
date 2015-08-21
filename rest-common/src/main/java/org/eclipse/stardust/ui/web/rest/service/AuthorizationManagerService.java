@@ -694,19 +694,12 @@ public class AuthorizationManagerService
          p.allow.add(ParticipantDTO.ALL);
       }
 
-      /*
-       * // check if it contains default participants if
-       * (permissions.isDefaultGrant(p.id)) { p.containsDefaultParticipant = true; }
-       */
-
-      String permissionId = p.id;
-
       // update grants
-      Set<ModelParticipantInfo> grants = permissions.getGrants2(permissionId);
+      Set<ModelParticipantInfo> grants = permissions.getGrants2(p.id);
       p.allow.addAll(transformGrantsToDTO(grants));
 
       // update denied grants
-      Set<ModelParticipantInfo> deny = permissions.getDeniedGrants(permissionId);
+      Set<ModelParticipantInfo> deny = permissions.getDeniedGrants(p.id);
       p.deny.addAll(transformGrantsToDTO(deny));
    }
 

@@ -76,7 +76,7 @@ public class PermissionsDetails
    {
       Set<ModelParticipantInfo> externalGrants;
 
-      if (UiPermissionUtils.isGeneralPermissionId(permissionId))
+      if (UiPermissionUtils.isGeneralPermissionId(permissionId) || UiPermissionUtils.isModelPermissionId(permissionId))
       {
          externalGrants = generalPermission.getGrants(permissionId);
       }
@@ -98,7 +98,7 @@ public class PermissionsDetails
    {
       Set<ModelParticipantInfo> externalGrants;
 
-      if (UiPermissionUtils.isGeneralPermissionId(permissionId))
+      if (UiPermissionUtils.isGeneralPermissionId(permissionId) || UiPermissionUtils.isModelPermissionId(permissionId))
       {
          externalGrants = generalPermission.getDeniedGrants(permissionId);
       }
@@ -134,7 +134,7 @@ public class PermissionsDetails
     */
    public void setGrants2(String permissionId, Set<ModelParticipantInfo> grants)
    {
-      if (UiPermissionUtils.isGeneralPermissionId(permissionId))
+      if (UiPermissionUtils.isGeneralPermissionId(permissionId) || UiPermissionUtils.isModelPermissionId(permissionId))
       {
          generalPermission.setGrants(permissionId, grants);
       }
@@ -158,7 +158,7 @@ public class PermissionsDetails
     */
    public void setDeniedGrants(String permissionId, Set<ModelParticipantInfo> grants)
    {
-      if (UiPermissionUtils.isGeneralPermissionId(permissionId))
+      if (UiPermissionUtils.isGeneralPermissionId(permissionId) || UiPermissionUtils.isModelPermissionId(permissionId))
       {
          //TODO: engine API to delete the preference entry is not exposed
          generalPermission.setDeniedGrants(permissionId, grants);
