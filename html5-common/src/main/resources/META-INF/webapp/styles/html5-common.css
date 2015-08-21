@@ -239,6 +239,12 @@
 	border-color: #21659d;
 }
 
+.button[disabled='disabled'] {
+	cursor: default;
+	opacity: 0.5;
+	filter: alpha(opacity=50);
+}
+
 /*Any .button preceeded by a .button will have this styling*/
 .button ~ .button {
 	background: #FFF !important;

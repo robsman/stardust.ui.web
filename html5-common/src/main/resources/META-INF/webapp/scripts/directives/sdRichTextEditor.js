@@ -13,6 +13,12 @@
  * @author Johnson.Quadras
  */
 
+
+/**
+ * options :
+ * @sdaReadOnly : true / false  Defaut : false
+ * @sdaPosition : bottom / top  Default : bottom
+ */
 (function(){
 	'use strict';
 
@@ -27,9 +33,10 @@
 	        link: function ($scope, elm, attr, ngModel) {
 	        	
 	            var ck = CKEDITOR.replace(elm[0]);
-	            if(attr.sdaReadOnly) {
-	            	ck.config.readOnly = true;
-	        	}
+	           
+	            ck.config.readOnly = attr.sdaReadOnly || false;
+	            ck.config.toolbarLocation = attr.sdaPosition || 'bottom';
+	         //   ck.config.toolbar = 'Full';
 	          
 	            ck.on('pasteState', function () {
 	                $scope.$apply(function () {

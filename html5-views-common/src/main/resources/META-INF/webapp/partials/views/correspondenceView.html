@@ -29,8 +29,8 @@
 				<span class="iceOutLbl" ng-if="ctrl.readOnly"> To : </span>
 			</td>
 			<td class="correspondence_right_section">	
-				<div class="address-book-field-container">
-					 <div sd-auto-complete 
+				<div class="address-book-ac-container">
+					 <div sd-auto-complete class="correspondence_to_autocomplete"
 		                            sda-item-pre-class="ctrl.addressIconMapper(item,index)" 
 		                            sda-tag-pre-class="ctrl.addressIconMapper(item,index)" 
 		                            sda-matches="ctrl.data.like.to" 
@@ -40,41 +40,15 @@
 		                            sda-change="ctrl.getAddressesAutoCompleteTO(ctrl.data.matchVal.to)" 
 		                            sda-text-property="name" 
 		                            sda-tooltip-property="value"
-		                            sda-container-class="address-book-ac-container" 
+		                            sda-container-class="address-book-ac-container-to" 
 		                            sda-item-hot-class="sd-ac-item-isActive" 
 		                            sda-selected-matches="ctrl.selected.to"
-		                            sda-read-only ="ctrl.readOnly"
-		                            >
-	                     </div>
-                    </div> 
-			</td>
-		</tr>
-		
-	
-		
-		<tr class="correspondence_section" ng-if="ctrl.selected.type == 'email' && ctrl.selected.showBcc">
-			<td class="correspondence_left_section"> 
-				<a class="iceOutLbl" href="#" ng-click="ctrl.openAddressSelector('BCC');" ng-if="!ctrl.readOnly"> Bcc : </a>
-				<span class="iceOutLbl" ng-if="ctrl.readOnly"> Bcc : </span>
-			</td>
-			<td class="correspondence_right_section">	
-				<div class="address-book-field-container">
-				 <div sd-auto-complete 
-	                            sda-item-pre-class="ctrl.addressIconMapper(item,index)" 
-	                            sda-tag-pre-class="ctrl.addressIconMapper(item,index)" 
-	                            sda-matches="ctrl.data.like.bcc" 
-	                            sda-user-entry-delimiter=","
-           						sda-user-entry="ctrl.newItemFactory(val)"
-	                            sda-match-str="ctrl.data.matchVal.bcc" 
-	                            sda-change="ctrl.getAddressesAutoCompleteBCC(ctrl.data.matchVal.bcc)" 
-	                            sda-text-property="name" 
-	                            sda-tooltip-property="value"
-	                            sda-container-class="address-book-ac-container" 
-	                            sda-item-hot-class="sd-ac-item-isActive" 
-	                            sda-selected-matches="ctrl.selected.bcc"
-	                            sda-read-only ="ctrl.readOnly"
-	                            >
-                     </div>
+		                            sda-read-only ="ctrl.readOnly">
+	                  </div>
+	                  <div >
+		                     <a ng-show="!ctrl.selected.showCc" class="iceOutLbl correspondence_to_bcc_links" ng-click ="ctrl.showCc();"  href="#">Cc</a>
+		                     <a ng-show="!ctrl.selected.showBcc" class="iceOutLbl correspondence_to_bcc_links" ng-click ="ctrl.showBcc();"  href="#">Bcc</a> 
+	             	   </div>
                     </div> 
 			</td>
 		</tr>
@@ -106,11 +80,30 @@
 			</td>
 		</tr>
 		
-		<tr ng-if="ctrl.selected.type == 'email'">
+	    <tr class="correspondence_section" ng-if="ctrl.selected.type == 'email' && ctrl.selected.showBcc">
 			<td class="correspondence_left_section"> 
+				<a class="iceOutLbl" href="#" ng-click="ctrl.openAddressSelector('BCC');" ng-if="!ctrl.readOnly"> Bcc : </a>
+				<span class="iceOutLbl" ng-if="ctrl.readOnly"> Bcc : </span>
 			</td>
 			<td class="correspondence_right_section">	
-				<a ng-show="!ctrl.selected.showBcc" ng-click ="ctrl.showBcc();">Bcc</a> 	<a ng-show="!ctrl.selected.showCc" ng-click ="ctrl.showCc();">Cc</a>
+				<div class="address-book-field-container">
+				 <div sd-auto-complete 
+	                            sda-item-pre-class="ctrl.addressIconMapper(item,index)" 
+	                            sda-tag-pre-class="ctrl.addressIconMapper(item,index)" 
+	                            sda-matches="ctrl.data.like.bcc" 
+	                            sda-user-entry-delimiter=","
+           						sda-user-entry="ctrl.newItemFactory(val)"
+	                            sda-match-str="ctrl.data.matchVal.bcc" 
+	                            sda-change="ctrl.getAddressesAutoCompleteBCC(ctrl.data.matchVal.bcc)" 
+	                            sda-text-property="name" 
+	                            sda-tooltip-property="value"
+	                            sda-container-class="address-book-ac-container" 
+	                            sda-item-hot-class="sd-ac-item-isActive" 
+	                            sda-selected-matches="ctrl.selected.bcc"
+	                            sda-read-only ="ctrl.readOnly"
+	                            >
+                     </div>
+                    </div> 
 			</td>
 		</tr>
 		
@@ -119,7 +112,7 @@
 				<span class="iceOutLbl">Subject : </span>
 			</td>
 			<td class="correspondence_right_section">	
-				<input ng-model="ctrl.selected.subject" type="text" ng-disabled="ctrl.readOnly"/>
+				<input class="correspondence_subject" ng-model="ctrl.selected.subject" type="text" ng-disabled="ctrl.readOnly"/>
 			</td>
 		</tr>
 		<tr class="correspondence_section">
@@ -136,10 +129,6 @@
 			<td class="correspondence_left_section"> 
 			</td>
 			<td class="correspondence_right_section">	
-				 <div style="float:left;padding-top: 10px;" ng-hide="ctrl.readOnly">
-					 <button class="button" ng-click="ctrl.complete()" >Complete</button>
-				     <button class="button" ng-click="ctrl.cancel()" >Cancel</button>
-				</div> 
 				<div style="float:right;padding-top: 10px;">
 				  	<div ng-hide="ctrl.readOnly">
 					  	<button  class="button-link tbl-toolbar-item tbl-tool-link spacing-right" ng-click="ctrl.openAttachmentSelector()">
@@ -148,11 +137,10 @@
 						<input class="correspondence_addressBook_fax_control" type="checkbox"/>
 						<span class="iceOutLbl">Convert to PDF </span>
 					</div>
-					
 					<div  class="correspondence-file-uploader">
-							<div ng-repeat="att in ctrl.selected.attachments"
+							<div ng-repeat="att in ctrl.selected.attachments" ng-cloak
 								class="correspondence_attachments">
-								<span class="iceOutLbl" ng-bind="att .name"> </span>
+								<span class="iceOutLbl" ng-bind="att.name"> </span>
 								<button
 									class="button-link tbl-toolbar-item tbl-tool-link spacing-right"
 									style="float: right" ng-hide="ctrl.readOnly"
@@ -160,32 +148,29 @@
 									<i class="glyphicon glyphicon-remove"></i>
 								</button>
 							</div>
-
 							<form id="uploadAttachmentForm" ng-hide="ctrl.readOnly"  method="post"  class="correspondence-file-uploader"
 								enctype="multipart/form-data">
 								<fieldset>
-									<input type="hidden" id="MAX_FILE_SIZE" name="MAX_FILE_SIZE"
-										value="300000" />
 									<div>
-									<!-- /	<label for="fileselect">Files to upload:</label>  -->
-										<input type="file" id="fileselect" name="fileselect" multiple = "multiple"/>
-										<div id="filedrag" >
-											<button  class="button-link tbl-toolbar-item tbl-tool-link" ng-click="ctrl.uploadLocalFilesToServer();">
-												<i class="glyphicon glyphicon-upload icon-1-5x"></i>
-											</button>
-											<div>Upload Process Attachment </div>
-										</div>
-										<span id="messages"> </span>
-										
+										<!-- /	<label for="fileselect">Files to upload:</label>  -->
+										<label for="fileselect" class="correspondence_file_Selector">
+	     									<i class="fa fa-upload icon-2x " style="font-size: 2em"></i>
+	  								  	</label>
+											<input type="file" id="fileselect" name="fileselect" multiple = "multiple" style="display:none"/>
+										<div  style="padding-left: 50px;" class="iceOutLbl">Upload Process Attachments </div>	
+											<div id="filedrag" >
+											</div>
 									</div>
-									
 								</fieldset>
 							</form >
+					</div>
 				</div>
 			</td>
 		</tr>
 	</table>
-		
+	<div
+		ng-include="'correspondenceDialogs.html'">
+	</div>	
 	</div>
 </body>
 </html>

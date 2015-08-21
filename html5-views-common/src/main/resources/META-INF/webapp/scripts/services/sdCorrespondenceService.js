@@ -17,10 +17,78 @@ define([],function(){
 	 */
 	function CorrespondenceService($resource, $q, sdUtilService) {
 		
-		this.getAddressBook = function (aiOid){
-			var url = sdUtilService.getBaseUrl() + "services/rest/portal/activity-instances/"+aiOid+"/address-book";
+		/**
+		 * 
+		 */
+		this.getAddressBook = function (piOid){
+			var url = sdUtilService.getBaseUrl() + "services/rest/portal/process-instances/"+piOid+"/address-book";
 			return $resource(url).query().$promise;
+		};
+		
+		/**
+		 * 
+		 */
+		this.getProcessOidForActivity = function (aiOid){
+			var deferred = $q.defer();
+			var url = sdUtilService.getBaseUrl() + "services/rest/portal/activity-instances/"+aiOid;
+			 $resource(url).get().$promise.then(function(result){
+				deferred.resolve({piOid :result.processInstance.oid })
+			})
+			return deferred.promise;
+		};
+		
+		
+		/**
+		 * 
+		 */
+		this.resolveTemplate = function (documentId){
+			var deferred = $q.defer();
+			deferred.resolve({result : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum' })
+			return deferred.promise;
+		};
+		
+		
+		/**
+		 * 
+		 */
+		this.uploadAttachments = function (files, piOid, progressHandlingFunction){
+			var deferred = $q.defer();
+			var self = this;
+			var formData = new FormData();
+			for (var i in files) {
+				formData.append("file", files[i]);
+			}	
+			
+			jQuery.ajax({
+				url:   sdUtilService.getBaseUrl() +'services/rest/portal/process-instances/'+piOid+'/documents/PROCESS_ATTACHMENTS',  
+				type: 'POST',
+				xhr: function() {  // Custom XMLHttpRequest
+					var myXhr = jQuery.ajaxSettings.xhr();
+					if(myXhr.upload){ // Check if upload property exists
+						myXhr.upload.addEventListener('progress',progressHandlingFunction, false); // For handling the progress of the upload
+					}
+					return myXhr;
+				},
+				//Ajax events
+				success: function(data, textStatus, xhr){
+					deferred.resolve(data);
+				},
+				error: function(xhr, textStatus){
+					console.log("Failure in uploading files");
+					deferred.reject(xhr);
+				},
+				// Form data
+				data: formData,
+				//Options to tell jQuery not to process data or worry about content-type.
+				cache: false,
+				contentType: false,
+				processData: false
+			});
+			return deferred.promise;
 		}
+		
+		
+		
 		
 	}
 	
