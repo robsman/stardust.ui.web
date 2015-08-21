@@ -165,7 +165,7 @@ public class ActivityInstanceService
          {
             if (target.getActivityId().equals(activityId)) {
                serviceFactoryUtils.getWorkflowService().activate(target.getActivityInstanceOid());
-               TransitionReport report = serviceFactoryUtils.getWorkflowService().performAdHocTransition(target, true);
+               TransitionReport report = serviceFactoryUtils.getWorkflowService().performAdHocTransition(target, false);
                return DTOBuilder.build(report.getTargetActivityInstance(), ActivityInstanceDTO.class);
             }
          }

@@ -865,7 +865,7 @@
 	ActivityTableCompiler.prototype.relocateActivity = function(rowItem) {
 		var self = this;
 		sdActivityInstanceService.relocate(rowItem.activityOID, rowItem.selectedTarget).then(function() {
-			// TODO
+			self.refresh();
 		})
 		rowItem.showRelocationDialog = false;
 	};
