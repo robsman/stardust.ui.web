@@ -466,6 +466,28 @@
 		};
 
 		/*
+		 *
+		 */
+		UtilService.prototype.expandTreeTable = function(treeTableData) {
+			for (var i = 0; i < treeTableData.length; i++) {
+				if (treeTableData[i].$expanded != undefined && treeTableData[i].$$treeInfo.loaded) {
+					treeTableData[i].$expanded = true;
+				}
+			}
+		};
+
+		/*
+		 *
+		 */
+		UtilService.prototype.collapseTreeTable = function(treeTableData) {
+			for (var i = 0; i < treeTableData.length; i++) {
+				if (treeTableData[i].$expanded != undefined) {
+					treeTableData[i].$expanded = false;
+				}
+			}
+		};
+
+		/*
 		 * 
 		 */
 		UtilService.prototype.insertChildrenIntoTreeTable = function(treeTableData, rowData, children) {

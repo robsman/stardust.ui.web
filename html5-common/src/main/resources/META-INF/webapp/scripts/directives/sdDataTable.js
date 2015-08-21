@@ -2176,13 +2176,6 @@
 			};
 
 			/*
-			 * 
-			 */
-			this.refreshUi = function () {
-				refreshUi();
-			};
-
-			/*
 			 * For single select - rowData or null if none selected
 			 * For multiple select - rowData array or empty array if none selected 
 			 */
@@ -2202,6 +2195,32 @@
 			 */
 			this.getData = function(index) {
 				return getPageData(index);
+			}
+
+			// This API is available only for Tree Table
+			if (treeTable) {
+				/*
+				 * 
+				 */
+				this.refreshUi = function () {
+					refreshUi();
+				};
+
+				/*
+				 * 
+				 */
+				this.expandAll = function () {
+					sdUtilService.expandTreeTable(treeTableData);
+					refreshUi();				
+				};
+	
+				/*
+				 * 
+				 */
+				this.collapseAll = function () {
+					sdUtilService.collapseTreeTable(treeTableData);
+					refreshUi();
+				};
 			}
 		}
 
