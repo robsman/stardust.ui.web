@@ -393,37 +393,34 @@
 		 * Flattens out the Tree Structure into flat array
 		 */
 		UtilService.prototype.marshalDataForTree = function(data, parentRow) {
-			var treeLevel = parentRow ? parentRow.$treeInfo.level + 1 : 0;
+			var treeLevel = parentRow ? parentRow.$$treeInfo.level + 1 : 0;
 			var retData = [];
 
 			for (var i = 0; i < data.length; i++) {
 				retData.push(data[i]);
 
-				data[i].$treeInfo = {};
-				data[i].$treeInfo.level = treeLevel;
-				data[i].$treeInfo.levels = [];
+				data[i].$$treeInfo = {};
+				data[i].$$treeInfo.level = treeLevel;
+				data[i].$$treeInfo.levels = [];
 				for (var j = 0; j < treeLevel; j++) {
-					data[i].$treeInfo.levels.push(j);
+					data[i].$$treeInfo.levels.push(j);
 				}
 
-				data[i].$treeInfo.parents = {};
+				data[i].$$treeInfo.parents = {};
 				if (parentRow) {
-					data[i].$treeInfo.parents = angular.copy(parentRow.$treeInfo.parents);
-					data[i].$treeInfo.parents[parentRow.$treeInfo.id] = true;
+					data[i].$$treeInfo.parents = angular.copy(parentRow.$$treeInfo.parents);
+					data[i].$$treeInfo.parents[parentRow.$$treeInfo.id] = true;
 				}
 				
 				if (!data[i].$leaf) {
-					data[i].$treeInfo.expanded = data[i].$expanded == true ? true : false;
-					if (data[i].$expanded == true) {
-						delete data[i].$expanded;
-					}
+					data[i].$expanded = data[i].$expanded ? true : false;
 
-					data[i].$treeInfo.id = 'r' + (Math.floor(Math.random()*10000) + 1);
-					data[i].$treeInfo.loaded = false;
+					data[i].$$treeInfo.id = 'r' + (Math.floor(Math.random()*10000) + 1);
+					data[i].$$treeInfo.loaded = false;
 					
 					// Process children
 					if (data[i].children != undefined && angular.isArray(data[i].children)) {
-						data[i].$treeInfo.loaded = true;
+						data[i].$$treeInfo.loaded = true;
 						var childrenArray = this.marshalDataForTree(data[i].children, data[i]);
 						for (var j = 0; j < childrenArray.length; j++) {
 							retData.push(childrenArray[j]);
@@ -442,8 +439,8 @@
 		UtilService.prototype.rebuildTreeTable = function(treeTableData) {
 			var rebuiltData = [], collapsedParents = {};
 			for (var i = 0; i < treeTableData.length; i++) {
-				if (!treeTableData[i].$treeInfo.expanded) {
-					collapsedParents[treeTableData[i].$treeInfo.id] = true;
+				if (!treeTableData[i].$expanded) {
+					collapsedParents[treeTableData[i].$$treeInfo.id] = true;
 				}
 						
 				if (this.isTreeTableNodeVisible(treeTableData[i], collapsedParents)) {
@@ -459,7 +456,7 @@
 		 */
 		UtilService.prototype.isTreeTableNodeVisible = function(row, collapsedParents) {
 			for (var parent in collapsedParents) {
-				if (row.$treeInfo.parents[parent]) {
+				if (row.$$treeInfo.parents[parent]) {
 					return false;
 				}
 			}
@@ -473,7 +470,7 @@
 		UtilService.prototype.insertChildrenIntoTreeTable = function(treeTableData, rowData, children) {
 			var treeRowIndex;
 			for (var i = 0; i < treeTableData.length; i++) {
-				if (treeTableData[i].$treeInfo.id == rowData.$treeInfo.id) {
+				if (treeTableData[i].$$treeInfo.id == rowData.$$treeInfo.id) {
 					treeRowIndex = i;
 					break;
 				}

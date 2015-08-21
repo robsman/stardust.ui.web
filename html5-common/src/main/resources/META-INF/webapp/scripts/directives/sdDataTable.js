@@ -548,10 +548,10 @@
 					colDef.fixed = true;
 					var treeContents = 
 						'<span class="tbl-tree-controls">' +
-							'<span ng-repeat="treeLevel in rowData.$treeInfo.levels" class="tbl-tree-indent"></span>' +
+							'<span ng-repeat="treeLevel in rowData.$$treeInfo.levels" class="tbl-tree-indent"></span>' +
 							'<button class="button-link" ng-click="$dtApi.toggleTreeNode($index)" style="margin-right: 5px;">' +
-								'<span ng-show="!rowData.$leaf && rowData.$treeInfo.expanded" class="glyphicon glyphicon-minus"></span>' +
-								'<span ng-show="!rowData.$leaf && !rowData.$treeInfo.expanded" class="glyphicon glyphicon-plus"></span>' +
+								'<span ng-show="!rowData.$leaf && rowData.$expanded" class="glyphicon glyphicon-minus"></span>' +
+								'<span ng-show="!rowData.$leaf && !rowData.$expanded" class="glyphicon glyphicon-plus"></span>' +
 							'</button>' +
 						'</span>';
 					colDef.contents = treeContents + colDef.contents;
@@ -2442,12 +2442,12 @@
 			this.toggleTreeNode = function(index) {
 				var rowData = localModeData[index];
 
-				if (rowData.$treeInfo.expanded) {
-					rowData.$treeInfo.expanded = false;
+				if (rowData.$expanded) {
+					rowData.$expanded = false;
 					refreshUi();
 				} else {
-					rowData.$treeInfo.expanded = true;
-					if (!rowData.$treeInfo.loaded) {
+					rowData.$expanded = true;
+					if (!rowData.$$treeInfo.loaded) {
 						// Load Children
 						var treeParams = {parent: rowData};
 						fetchData(treeParams).then(function(result) {
@@ -2460,21 +2460,21 @@
 									sdUtilService.insertChildrenIntoTreeTable(treeTableData, rowData, children);
 								} else {
 									rowData.$leaf = true;
-									delete rowData.$treeInfo.expanded;
+									delete rowData.$expanded;
 								}
 
-								rowData.$treeInfo.loaded = true;
+								rowData.$$treeInfo.loaded = true;
 							} catch (e) {
 								// TODO: Show Error
 								trace.error(theTableId + ':', e);
-								rowData.$treeInfo.expanded = false;
+								rowData.$expanded = false;
 							}
 
 							refreshUi();
 						}, function(error) {
 							// TODO: Show Error
 							trace.error(theTableId + ':', error);
-							rowData.$treeInfo.expanded = false;
+							rowData.$expanded = false;
 							refreshUi();
 						});
 					} else {
