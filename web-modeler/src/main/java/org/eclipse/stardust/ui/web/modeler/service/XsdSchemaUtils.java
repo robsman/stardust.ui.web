@@ -22,6 +22,7 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.QName;
 
 import org.eclipse.emf.ecore.xmi.XMLResource;
+
 import org.eclipse.stardust.common.CompareHelper;
 import org.eclipse.stardust.common.Predicate;
 import org.eclipse.stardust.common.StringUtils;
@@ -40,6 +41,7 @@ import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.XSDElementCheckForType;
 import org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils;
+
 import org.eclipse.xsd.*;
 import org.eclipse.xsd.util.XSDConstants;
 import org.eclipse.xsd.util.XSDSwitch;
@@ -1430,7 +1432,7 @@ public final class XsdSchemaUtils
                   XSDParticle p = XSDFactory.eINSTANCE.createXSDParticle();
                   if(elementJson.getAsJsonPrimitive("cardinality") != null)
                   {
-                  ParticleCardinality.get(
+                     ParticleCardinality.get(
                         elementJson.getAsJsonPrimitive("cardinality").getAsString())
                         .update(p);
                   }
@@ -1577,7 +1579,7 @@ public final class XsdSchemaUtils
          TypeDeclarationType decl = declarations.getTypeDeclaration(localName);
          if (decl != null && canResolve(decl, namespace, localName))
          {
-            addImport(schema, namespace, decl);
+            addImport(schema, namespace, decl, localName);
             useType = decl;
          }
          else
@@ -1586,7 +1588,7 @@ public final class XsdSchemaUtils
             {
                if (canResolve(typeDeclaration, namespace, localName))
                {
-                  addImport(schema, namespace, typeDeclaration);
+                  addImport(schema, namespace, typeDeclaration, localName);
                   useType = typeDeclaration;
                   break;
                }
@@ -1621,7 +1623,7 @@ public final class XsdSchemaUtils
       return false;
    }
 
-   private static void addImport(XSDSchema schema, String namespace, TypeDeclarationType decl)
+   private static void addImport(XSDSchema schema, String namespace, TypeDeclarationType decl, String localName)
    {
       List<XSDImport> xsdImports = TypeDeclarationUtils.getImports(schema);
       if (xsdImports != null)
@@ -1640,9 +1642,22 @@ public final class XsdSchemaUtils
          }
       }
 
-         XSDImport schemaImport = XSDFactory.eINSTANCE.createXSDImport();
-         schemaImport.setNamespace(namespace);
+      XSDImport schemaImport = XSDFactory.eINSTANCE.createXSDImport();
+      schemaImport.setNamespace(namespace);
       updateInternalImport(schema, schemaImport, decl);
+      
+      
+      XSDNamedComponent findComponent = findElementOrTypeDeclaration(decl.getSchema(), localName, namespace);
+      if(findComponent instanceof XSDElementDeclaration)
+      {
+         String tns = findComponent.getTargetNamespace();      
+         if (!schema.getQNamePrefixToNamespaceMap().values().contains(tns))
+         {
+            String namespacePrefix = TypeDeclarationUtils.getNamespacePrefix(decl.getSchema(), findComponent.getTargetNamespace());
+            schema.getQNamePrefixToNamespaceMap().put(namespacePrefix, tns);
+         }
+      }
+      
       schema.getContents().add(0, schemaImport);
    }
 
