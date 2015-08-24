@@ -56,12 +56,7 @@ public class FileUploadUtils
          DataHandler dataHandler = attachment.getDataHandler();
          InputStream inputStream = dataHandler.getInputStream();
 
-         System.out.println("Name: " + dataHandler.getName());
-         int i1 = 1;
-         System.out.println(i1++ + "content: " + attachment.getContentId());
-         System.out.println(i1++ + "content: " + attachment.getContentDisposition());
-         System.out.println(i1++ + "content: " + attachment.getContentType());
-         if (isFile(attachment))
+         if (isFile(attachment.getHeaders()))
          {
             documentInfoDTO = new DocumentInfoDTO();
             documentInfoDTO.name = dataHandler.getName();
@@ -151,13 +146,16 @@ public class FileUploadUtils
     * @param attachment
     * @return
     */
-   private static boolean isFile(Attachment attachment)
+   private static boolean isFile(MultivaluedMap<String, String> header)
    {
-      // could not find other way to detect if the attachment is file
-      if (attachment.getContentDisposition() != null
-            && attachment.getContentDisposition().getParameter("filename") != null)
+      //TODO: is there a better way to check if it is a file?
+      String[] contentDisposition = header.getFirst("Content-Disposition").split(";");
+      for (String attributeName : contentDisposition)
       {
-         return true;
+         if (attributeName.trim().startsWith("filename"))
+         {
+            return true;
+         }
       }
       return false;
    }

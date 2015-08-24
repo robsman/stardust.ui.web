@@ -142,9 +142,9 @@ public class RepositoryServiceImpl implements RepositoryService
          }
 
          // create document
-         document = DocumentMgmtUtility.createDocument(parentFolder.getId(), documentInfoDTO.name, documentInfoDTO.content,
-               documentInfoDTO.documentType, documentInfoDTO.contentType, documentInfoDTO.description,
-               documentInfoDTO.comments, null, null);
+         document = DocumentMgmtUtility.createDocument(parentFolder.getId(), documentInfoDTO.name,
+               documentInfoDTO.content, documentInfoDTO.documentType, documentInfoDTO.contentType,
+               documentInfoDTO.description, documentInfoDTO.comments, null, null);
 
          documents.add(document);
          documentDTOs.add(DocumentDTOBuilder.build(document));
