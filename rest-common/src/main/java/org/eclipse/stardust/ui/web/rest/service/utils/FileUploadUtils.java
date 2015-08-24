@@ -23,7 +23,6 @@ import java.util.List;
 import javax.activation.DataHandler;
 import javax.ws.rs.core.MultivaluedMap;
 
-import org.apache.cxf.attachment.DelegatingInputStream;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.Model;
@@ -96,7 +95,7 @@ public class FileUploadUtils
                documentInfoDTO.properties.put(dataHandler.getName(), inputStream.toString());
             }
          }
-         else if (inputStream instanceof DelegatingInputStream)
+         else if (inputStream instanceof InputStream)
          {
             documentInfoDTO = new DocumentInfoDTO();
             documentInfoDTO.name = dataHandler.getName();
