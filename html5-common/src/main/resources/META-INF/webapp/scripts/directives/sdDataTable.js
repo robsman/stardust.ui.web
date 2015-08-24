@@ -174,7 +174,7 @@
 		var myScope = scope;
 		var sdData = ctrl[0];
 
-		var treeTable = false, treeTableData;
+		var treeTable = false, treeTableData, treeData;
 		var tableInLocalMode, initialized;
 		var columns = [], dtColumns = [];
 		var theTable, theTableId, theDataTable, theToolbar, theColReorder;
@@ -549,9 +549,9 @@
 					var treeContents = 
 						'<span class="tbl-tree-controls">' +
 							'<span ng-repeat="treeLevel in rowData.$$treeInfo.levels" class="tbl-tree-indent"></span>' +
-							'<button class="button-link" ng-click="$dtApi.toggleTreeNode($index)" style="margin-right: 5px;">' +
-								'<span ng-show="!rowData.$leaf && rowData.$expanded" class="glyphicon glyphicon-minus"></span>' +
-								'<span ng-show="!rowData.$leaf && !rowData.$expanded" class="glyphicon glyphicon-plus"></span>' +
+							'<button class="button-link tbl-tree-action" ng-click="$dtApi.toggleTreeNode($index)" ng-disabled="rowData.$leaf" ng-style="{\'visibility\': rowData.$leaf ? \'hidden\' : \'visible\'}">' +
+								'<span ng-show="rowData.$expanded" class="glyphicon glyphicon-minus"></span>' +
+								'<span ng-show="!rowData.$expanded" class="glyphicon glyphicon-plus"></span>' +
 							'</button>' +
 						'</span>';
 					colDef.contents = treeContents + colDef.contents;
@@ -932,6 +932,7 @@
 						validateData(localModeData);
 
 						if (treeTable) {
+							treeData = localModeData;
 							treeTableData = sdUtilService.marshalDataForTree(localModeData);
 							localModeData = sdUtilService.rebuildTreeTable(treeTableData);
 						}
@@ -2221,6 +2222,13 @@
 					sdUtilService.collapseTreeTable(treeTableData);
 					refreshUi();
 				};
+
+				/*
+				 * 
+				 */
+				this.getTreeData = function () {
+					return treeData;
+				};
 			}
 		}
 
@@ -2482,6 +2490,7 @@
 								validateData(children);
 
 								if (children.length > 0) {
+									rowData.children = children;
 									children = sdUtilService.marshalDataForTree(children, rowData);
 									sdUtilService.insertChildrenIntoTreeTable(treeTableData, rowData, children);
 								} else {

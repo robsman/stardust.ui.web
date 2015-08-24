@@ -406,13 +406,22 @@
 					data[i].$$treeInfo.levels.push(j);
 				}
 
+				data[i].$$treeInfo.parent = null;
 				data[i].$$treeInfo.parents = {};
+
 				if (parentRow) {
+					data[i].$$treeInfo.parent = parentRow;
+
 					data[i].$$treeInfo.parents = angular.copy(parentRow.$$treeInfo.parents);
 					data[i].$$treeInfo.parents[parentRow.$$treeInfo.id] = true;
 				}
 
-				data[i].$leaf = (data[i].$leaf == undefined || data[i].$leaf == true) ? true : false;
+				if (data[i].children != undefined) {
+					data[i].$leaf = false;
+				} else {
+					data[i].$leaf = (data[i].$leaf == undefined || data[i].$leaf == true) ? true : false;
+				}
+
 				if (!data[i].$leaf) {
 					data[i].$expanded = data[i].$expanded ? true : false;
 
@@ -426,7 +435,6 @@
 						for (var j = 0; j < childrenArray.length; j++) {
 							retData.push(childrenArray[j]);
 						}
-						delete data[i].children;
 					}
 				}
 			}
@@ -502,7 +510,7 @@
 			var args = [treeRowIndex + 1, 0].concat(children);									
 			treeTableData.splice.apply(treeTableData, args);
 		};
-
+		
 		/**
 		 * Given an array of names generate a unique name with collisions being resolved
 		 * by appending a numeric increment to the name and then recursing until no collisions occur.

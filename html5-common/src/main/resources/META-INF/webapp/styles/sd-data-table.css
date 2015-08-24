@@ -203,6 +203,10 @@
 	width: 10px;
 }
 
+.tbl-tree-action {
+	margin-right: 5px;
+}
+
 /* ********** dataTables Overridden classes ********** */
 
 .dataTables_wrapper .dataTables_info {
