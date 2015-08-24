@@ -1611,7 +1611,7 @@
 		 * 
 		 */
 		function getPageData(index) {
-			var tableData = tableInLocalMode ? localModeData : theDataTable.fnGetData();
+			var tableData = treeTable ? localModeData : theDataTable.fnGetData();
 
 			if (index == undefined || index == null) {
 				var start = 0;
