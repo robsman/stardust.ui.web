@@ -286,7 +286,6 @@
 				attr.sdaMode = 'local';
 				attr.sdaNoPagination = 'true';
 				attr.sdaSortable = 'false';
-				attr.sdaExports = undefined;
 			}
 			
 			tableInLocalMode = attr.sdaMode == 'local';
@@ -2029,7 +2028,15 @@
 							} else if (expotCols[j].defaultContentsParser) {
 								exportVal = expotCols[j].defaultContentsParser(elemScope, locals);
 							}
-							
+
+							if (treeTable && expotCols[j].treeColumn) {
+								var indent = '';
+								for (var level = 0; level < data[i].$$treeInfo.level; level++) {
+									indent += '    ';
+								}
+								exportVal = indent + exportVal;
+							}
+
 							rowExportData.push(encoder(exportVal));
 						}
 						exportedRows.push(rowExportData);
@@ -2084,9 +2091,9 @@
 
 			var data;
 			if (exportAllRows) {
-				data = localModeData;
+				data = treeTable ? treeTableData : localModeData; // Tree Table: All Rows including collapsed rows 
 			} else {
-				data = getPageData();
+				data = treeTable ? localModeData : getPageData(); // Tree Table: As seen on UI
 			}
 
 			deferred.resolve(data);
