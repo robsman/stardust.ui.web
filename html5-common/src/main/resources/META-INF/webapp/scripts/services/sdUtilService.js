@@ -410,8 +410,6 @@
 				data[i].$$treeInfo.parents = {};
 
 				if (parentRow) {
-					data[i].$$treeInfo.parent = parentRow;
-
 					data[i].$$treeInfo.parents = angular.copy(parentRow.$$treeInfo.parents);
 					data[i].$$treeInfo.parents[parentRow.$$treeInfo.id] = true;
 				}
