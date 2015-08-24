@@ -17,7 +17,6 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -28,11 +27,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.query.DataFilter;
@@ -40,6 +39,7 @@ import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ProcessStateFilter;
 import org.eclipse.stardust.engine.core.query.statistics.api.BenchmarkProcessStatisticsQuery;
+import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.service.ProcessInstanceService;
@@ -95,29 +95,6 @@ public class ProcessInstanceResource
 
          return Response.ok(getProcessInstanceService().splitDocument(processInstanceOid, documentId, json).toString(),
                MediaType.APPLICATION_JSON).build();
-      }
-      catch (Exception e)
-      {
-         trace.error(e, e);
-
-         return Response.serverError().build();
-      }
-   }
-
-   @POST
-   @Consumes(MediaType.APPLICATION_JSON)
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("{processInstanceOid: \\d+}/documents/{dataPathId}")
-   public Response addDocument(@PathParam("processInstanceOid") String processInstanceOid,
-         @PathParam("dataPathId") String dataPathId, String postedData)
-   {
-      try
-      {
-         JsonObject json = jsonIo.readJsonObject(postedData);
-
-         return Response.ok(
-               getProcessInstanceService().addProcessInstanceDocument(Long.parseLong(processInstanceOid), dataPathId,
-                     json).toString(), MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {
@@ -552,14 +529,18 @@ public class ProcessInstanceResource
     * @return
     * @throws Exception 
     */
-   @POST   
+   @PUT   
    @Consumes(MediaType.MULTIPART_FORM_DATA)
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("{oid}/documents/PROCESS_ATTACHMENTS")
-   public Response addAttachment(List<Attachment> attachments,
-         @Context HttpServletRequest request, @PathParam("oid") Long processOid) throws Exception
+   @Path("{oid}/documents{dataPathId:.*}")
+   public Response addDocument(List<Attachment> attachments, @PathParam("oid") Long processOid,
+         @PathParam("dataPathId") String dataPathId) throws Exception
    {
-      List<DocumentDTO> processAttachments = processInstanceService.addProcessAttachments(processOid, attachments);   
+      if (StringUtils.isEmpty(dataPathId))
+      {
+         dataPathId = DmsConstants.PATH_ID_ATTACHMENTS;
+      }
+      List<DocumentDTO> processAttachments = processInstanceService.addProcessAttachments(processOid, attachments, dataPathId);   
       return Response.ok(GsonUtils.toJsonHTMLSafeString(processAttachments)).build();
    }
 

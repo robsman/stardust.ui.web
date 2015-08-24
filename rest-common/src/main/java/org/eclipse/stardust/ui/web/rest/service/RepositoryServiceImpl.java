@@ -14,15 +14,20 @@ import java.util.ArrayList;
 
 import javax.annotation.Resource;
 
+import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.FolderDTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
+import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -80,5 +85,35 @@ public class RepositoryServiceImpl implements RepositoryService
    private DocumentManagementService getDMS()
    {
       return serviceFactoryUtils.getDocumentManagementService();
+   }
+
+   /**
+    *
+    */
+   @Override
+   public DocumentDTO createDocument(DocumentInfoDTO documentInfoDTO)
+   {
+      if (documentInfoDTO.parentFolderPath == null)
+      {
+         throw new I18NException(restCommonClientMessages.getParamString("folder.notFound",
+               "unknown"));
+      }
+      
+      Folder parentFolder = DocumentMgmtUtility.createFolderIfNotExists(documentInfoDTO.parentFolderPath);
+      
+      String docName = RepositoryUtility.createDocumentName(parentFolder, documentInfoDTO.name, 0);
+
+      // create document
+      Document document = DocumentMgmtUtility.createDocument(parentFolder.getId(), docName, documentInfoDTO.content,
+            documentInfoDTO.documentType, documentInfoDTO.contentType, documentInfoDTO.description,
+            documentInfoDTO.comments, null, null);
+
+      if (documentInfoDTO.processInstance != null)
+      {
+         DMSHelper.addAndSaveProcessAttachment(documentInfoDTO.processInstance, document);
+
+      }
+
+      return DocumentDTOBuilder.build(document);
    }
 }

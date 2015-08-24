@@ -10,10 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
 
-import java.util.List;
-import java.util.Map;
-
-import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 
 /**
@@ -31,26 +29,31 @@ public interface RepositoryService
     * @return
     */
    public FolderDTO getFolder(String folderId);
-   
+
    public FolderDTO getFolder(String folderId, int levelOfDetail);
 
-  /* public DocumentDTO renameFolder(String participantQidIn);
+   public DocumentDTO createDocument(DocumentInfoDTO documentInfoDTO);
 
-   *//**
-    *  return parent folder
+   /*
+    * public DocumentDTO renameFolder(String participantQidIn);
+    *//**
+    * return parent folder
+    * 
     * @param participantQidIn
     * @return
-    *//*
-   public Map<String, List<DocumentDTO>> deleteFolder(String participantQidIn);
-
-   public DocumentDTO getDocument(String documentId);
-
-   public DocumentDTO createDocument(String participantQidIn);
-
-   public DocumentDTO deleteDocument(String participantQidIn);
-
-   public DocumentDTO updateDocument(String participantQidIn);
-
-   public DocumentDTO renameDocument(String participantQidIn);*/
+    */
+   /*
+    * public Map<String, List<DocumentDTO>> deleteFolder(String participantQidIn);
+    * 
+    * public DocumentDTO getDocument(String documentId);
+    * 
+    * 
+    * 
+    * public DocumentDTO deleteDocument(String participantQidIn);
+    * 
+    * public DocumentDTO updateDocument(String participantQidIn);
+    * 
+    * public DocumentDTO renameDocument(String participantQidIn);
+    */
 
 }

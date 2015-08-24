@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
+import java.io.Serializable;
+import java.util.Map;
+
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 
@@ -25,12 +28,15 @@ public class DocumentDTO extends AbstractDTO
 
    @DTOAttribute("name")
    public String name;
-   
+
    public String contentType;
 
    public String path;
 
    public int numPages;
+
+   @DTOAttribute("getProperties()")
+   public Map<String, Serializable> properties;
 
    public DocumentTypeDTO documentType;
 

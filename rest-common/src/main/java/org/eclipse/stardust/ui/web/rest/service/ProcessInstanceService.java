@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
 
-import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -21,9 +20,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.activation.DataHandler;
 import javax.annotation.Resource;
-import javax.ws.rs.core.MultivaluedMap;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.eclipse.stardust.common.Direction;
@@ -36,10 +33,10 @@ import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.Document;
-import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
+import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
@@ -50,7 +47,6 @@ import org.eclipse.stardust.ui.web.rest.service.dto.AttachToCaseDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.CreateCaseDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.FileInfoDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JoinProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
@@ -61,21 +57,21 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SwitchProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.AddressBookDataPathValueDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.DataPathValueDTO;
 import org.eclipse.stardust.ui.web.rest.service.helpers.AddressBookDataPathValueFilter;
 import org.eclipse.stardust.ui.web.rest.service.helpers.DefaultDataPathValueFilter;
 import org.eclipse.stardust.ui.web.rest.service.helpers.IDataPathValueFilter;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
+import org.eclipse.stardust.ui.web.rest.service.utils.DocumentTypeUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.FileUploadUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.converter.PriorityConverter;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.services.ContextPortalServices;
-import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
@@ -98,6 +94,9 @@ public class ProcessInstanceService
 
    @Resource
    private ProcessDefinitionUtils processDefinitionUtils;
+   
+   @Resource
+   private RepositoryService repositoryService;
    
    @Resource
    private RestCommonClientMessages restCommonClientMessages;
@@ -126,64 +125,53 @@ public class ProcessInstanceService
       return null;
    }
 
-   public ProcessInstanceDTO addProcessInstanceDocument(long parseLong, String dataPathId, JsonObject json)
-   {
-      // TODO Auto-generated method stub
-      return null;
-   }
-
    /**
     * @param processOid
     * @param attachments
     * @return
     * @throws Exception
     */
-   public List<DocumentDTO> addProcessAttachments(long processOid, List<Attachment> attachments) throws Exception
+   public List<DocumentDTO> addProcessAttachments(long processOid, List<Attachment> attachments, String dataPathId) throws Exception
    {
       ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processOid);
-      return addProcessAttachments(processInstance, attachments);
+      return addProcessDocuments(processInstance, attachments, dataPathId);
    }
-
+   
+ 
    /**
     * @param processInstance
     * @param attachments
+    * @param dataPathId
     * @return
     * @throws Exception
     */
-   public List<DocumentDTO> addProcessAttachments(ProcessInstance processInstance, List<Attachment> attachments)
-         throws Exception
+   public List<DocumentDTO> addProcessDocuments(ProcessInstance processInstance, List<Attachment> attachments,
+         String dataPathId) throws Exception
    {
+      // parse attachments
+      List<DocumentInfoDTO> uploadedDocuments = FileUploadUtils.parseAttachments(attachments);
+
       List<DocumentDTO> documents = new ArrayList<DocumentDTO>();
-      for (Attachment attachment : attachments)
+      for (DocumentInfoDTO documentInfoDTO : uploadedDocuments)
       {
-         DataHandler dataHandler = attachment.getDataHandler();
-         InputStream inputStream = dataHandler.getInputStream();
-         MultivaluedMap<String, String> headers = attachment.getHeaders();
-
-         FileInfoDTO fileInfo = FileUploadUtils.getFileInfo(headers);
-
-         String fileName = fileInfo.name;
-         if (fileName.lastIndexOf("\\") > 0)
+         if (DmsConstants.PATH_ID_ATTACHMENTS.equals(dataPathId))
          {
-            fileName = fileName.substring(fileName.lastIndexOf("\\") + 1, fileName.length());
+            documentInfoDTO.parentFolderPath = DocumentMgmtUtility.getProcessAttachmentsFolderPath(processInstance);
+            documentInfoDTO.processInstance = processInstance;
+         }
+         else
+         {
+            // determine DocumentType
+            DocumentType documentType = DocumentTypeUtils.getDocumentTypeForDataPath(processInstance, dataPathId);
+            if (documentType != null)
+            {
+               documentInfoDTO.documentType = documentType;
+            }
+            documentInfoDTO.parentFolderPath = DocumentMgmtUtility.getTypedDocumentsFolderPath(processInstance);
          }
 
-         Folder processAttachmentsFolder = RepositoryUtility.getProcessAttachmentsFolder(processInstance);
-
-         String docName = RepositoryUtility.createDocumentName(processAttachmentsFolder, fileName, 0);
-
-         // create document
-         Document document = DocumentMgmtUtility.createDocument(processAttachmentsFolder.getId(), docName,
-               FileUploadUtils.readEntryData(inputStream), null, fileInfo.contentType, null, null, null, null);
-
-         // update process attachment
-         boolean added = DMSHelper.addAndSaveProcessAttachment(processInstance, document);
-         if (added)
-         {
-            documents.add(DocumentDTOBuilder.build(document));
-         }
+         documents.add(repositoryService.createDocument(documentInfoDTO));
       }
-
       return documents;
    }
 

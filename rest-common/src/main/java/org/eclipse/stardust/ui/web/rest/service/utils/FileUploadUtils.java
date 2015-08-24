@@ -10,13 +10,27 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
+import javax.activation.DataHandler;
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.apache.cxf.attachment.DelegatingInputStream;
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.ui.web.rest.service.dto.FileInfoDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
+import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 
 /**
  * @author Yogesh.Manware
@@ -24,14 +38,90 @@ import org.eclipse.stardust.ui.web.rest.service.dto.FileInfoDTO;
  */
 public class FileUploadUtils
 {
+   public static String DOCUMENT_TYPE_ID = "documentTypeId";
+   public static String MODEL_ID = "modelId";
+   public static String PARENT_FOLDER_PATH = "parentFolderPath";
+
+   /**
+    * @param attachments
+    * @return
+    * @throws Exception
+    */
+   public static List<DocumentInfoDTO> parseAttachments(List<Attachment> attachments) throws Exception
+   {
+      List<DocumentInfoDTO> documents = new ArrayList<DocumentInfoDTO>();
+      DocumentInfoDTO documentInfoDTO = null;
+      String modelId = null;
+      for (Attachment attachment : attachments)
+      {
+         DataHandler dataHandler = attachment.getDataHandler();
+         InputStream inputStream = dataHandler.getInputStream();
+
+         if (inputStream instanceof ByteArrayInputStream)
+         {
+            if (CommonProperties.DESCRIPTION.equals(dataHandler.getName()))
+            {
+               documentInfoDTO.description = inputStream.toString();
+            }
+            else if (CommonProperties.COMMENTS.equals(dataHandler.getName()))
+            {
+               documentInfoDTO.comments = inputStream.toString();
+            }
+            else if (PARENT_FOLDER_PATH.equals(dataHandler.getName()))
+            {
+               documentInfoDTO.parentFolderPath = inputStream.toString();
+            }
+            else if (DOCUMENT_TYPE_ID.equals(dataHandler.getName()))
+            {
+               // TODO how to detect documentType, it should be always followed by
+               // modelId ??
+               if (StringUtils.isNotEmpty(modelId))
+               {
+                  Model model = ModelCache.findModelCache().getActiveModel(modelId);
+                  documentInfoDTO.documentType = org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils
+                        .getDocumentType(inputStream.toString(), model);
+                  modelId = null;
+               }
+            }
+            else if (MODEL_ID.equals(dataHandler.getName()))
+            {
+               modelId = inputStream.toString();
+            }
+            else
+            {
+               if (documentInfoDTO.properties == null)
+               {
+                  documentInfoDTO.properties = new HashMap<String, Serializable>();
+               }
+               documentInfoDTO.properties.put(dataHandler.getName(), inputStream.toString());
+            }
+         }
+         else if (inputStream instanceof DelegatingInputStream)
+         {
+            documentInfoDTO = new DocumentInfoDTO();
+            documentInfoDTO.name = dataHandler.getName();
+            documentInfoDTO.contentType = dataHandler.getContentType();
+            documentInfoDTO.content = readEntryData(inputStream);
+            documents.add(documentInfoDTO);
+         }
+      }
+
+      return documents;
+   }
 
    /**
     * @param header
     * @return
     * @throws UnsupportedEncodingException
+    * @Deprecated use dataHandler
     */
    public static FileInfoDTO getFileInfo(MultivaluedMap<String, String> header) throws UnsupportedEncodingException
    {
+      if (header.getFirst("Content-Disposition") == null)
+      {
+         return null;
+      }
+
       String[] contentDisposition = header.getFirst("Content-Disposition").split(";");
 
       FileInfoDTO fileInfo = new FileInfoDTO();
@@ -56,9 +146,9 @@ public class FileUploadUtils
    /**
     * @param stream
     * @return
-    * @throws Exception
+    * @throws IOException
     */
-   public static byte[] readEntryData(InputStream stream) throws Exception
+   public static byte[] readEntryData(InputStream stream) throws IOException
    {
       // create a buffer to improve performance
       byte[] buffer = new byte[2048];
