@@ -247,6 +247,25 @@ public class DMSHelper
    }
    
    /**
+    * @param processInstance
+    * @param documents
+    * @return
+    */
+   public static boolean addAndSaveProcessAttachments(ProcessInstance processInstance, List<Document> documents)
+   {
+      List<Document> processAttachments = fetchProcessAttachments(processInstance);
+      for (Document document : documents)
+      {
+         if (!containsProcessAttachment(processAttachments, document))
+         {
+            processAttachments.add(document);
+         }
+      }
+      saveProcessAttachments(processInstance, processAttachments);
+      return false;
+   }
+
+   /**
     * updates the provided process instance with provided new document
     * 
     * @param processInstance

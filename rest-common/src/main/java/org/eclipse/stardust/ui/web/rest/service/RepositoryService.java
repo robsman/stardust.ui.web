@@ -10,6 +10,10 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
 
+import java.util.List;
+import java.util.Map;
+
+import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
@@ -33,6 +37,8 @@ public interface RepositoryService
    public FolderDTO getFolder(String folderId, int levelOfDetail);
 
    public DocumentDTO createDocument(DocumentInfoDTO documentInfoDTO);
+   
+   public Map<String, Object> createProcessAttachments(ProcessInstance processInstance, List<DocumentInfoDTO> documentInfoDTO);
 
    /*
     * public DocumentDTO renameFolder(String participantQidIn);

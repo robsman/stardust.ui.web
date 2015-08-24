@@ -540,8 +540,11 @@ public class ProcessInstanceResource
       {
          dataPathId = DmsConstants.PATH_ID_ATTACHMENTS;
       }
-      List<DocumentDTO> processAttachments = processInstanceService.addProcessAttachments(processOid, attachments, dataPathId);   
-      return Response.ok(GsonUtils.toJsonHTMLSafeString(processAttachments)).build();
+
+      Map<String, Object> result = processInstanceService.addProcessDocuments(processOid, attachments,
+            dataPathId);
+      
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(result)).build();
    }
 
    /**

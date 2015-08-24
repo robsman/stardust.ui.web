@@ -124,19 +124,6 @@ public class ProcessInstanceService
       // TODO Auto-generated method stub
       return null;
    }
-
-   /**
-    * @param processOid
-    * @param attachments
-    * @return
-    * @throws Exception
-    */
-   public List<DocumentDTO> addProcessAttachments(long processOid, List<Attachment> attachments, String dataPathId) throws Exception
-   {
-      ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processOid);
-      return addProcessDocuments(processInstance, attachments, dataPathId);
-   }
-   
  
    /**
     * @param processInstance
@@ -145,34 +132,47 @@ public class ProcessInstanceService
     * @return
     * @throws Exception
     */
-   public List<DocumentDTO> addProcessDocuments(ProcessInstance processInstance, List<Attachment> attachments,
-         String dataPathId) throws Exception
+   public Map<String, Object> addProcessDocuments(long processOid, List<Attachment> attachments, String dataPathId)
+         throws Exception
    {
+      Map<String, Object> result = null;
+      
+      ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processOid);
       // parse attachments
       List<DocumentInfoDTO> uploadedDocuments = FileUploadUtils.parseAttachments(attachments);
 
-      List<DocumentDTO> documents = new ArrayList<DocumentDTO>();
-      for (DocumentInfoDTO documentInfoDTO : uploadedDocuments)
+      if (DmsConstants.PATH_ID_ATTACHMENTS.equals(dataPathId))
       {
-         if (DmsConstants.PATH_ID_ATTACHMENTS.equals(dataPathId))
-         {
-            documentInfoDTO.parentFolderPath = DocumentMgmtUtility.getProcessAttachmentsFolderPath(processInstance);
-            documentInfoDTO.processInstance = processInstance;
-         }
-         else
+         result = repositoryService.createProcessAttachments(processInstance, uploadedDocuments);
+      }
+      else
+      {
+         result = new HashMap<String, Object>();
+         Map<String, String> failures = new HashMap<String, String>();
+         result.put("failures", failures);
+         List<DocumentDTO> documentDTOs = new ArrayList<DocumentDTO>();
+         result.put("documents", documentDTOs);
+         for (DocumentInfoDTO documentInfoDTO : uploadedDocuments)
          {
             // determine DocumentType
             DocumentType documentType = DocumentTypeUtils.getDocumentTypeForDataPath(processInstance, dataPathId);
+            
             if (documentType != null)
             {
                documentInfoDTO.documentType = documentType;
             }
             documentInfoDTO.parentFolderPath = DocumentMgmtUtility.getTypedDocumentsFolderPath(processInstance);
+            try
+            {
+               documentDTOs.add(repositoryService.createDocument(documentInfoDTO));
+            }
+            catch (I18NException e)
+            {
+               failures.put(documentInfoDTO.name, e.getMessage());
+            }
          }
-
-         documents.add(repositoryService.createDocument(documentInfoDTO));
       }
-      return documents;
+      return result;
    }
 
    /**

@@ -11,12 +11,17 @@
 package org.eclipse.stardust.ui.web.rest.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
+import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
@@ -26,7 +31,6 @@ import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -87,33 +91,69 @@ public class RepositoryServiceImpl implements RepositoryService
       return serviceFactoryUtils.getDocumentManagementService();
    }
 
-   /**
-    *
-    */
    @Override
    public DocumentDTO createDocument(DocumentInfoDTO documentInfoDTO)
    {
       if (documentInfoDTO.parentFolderPath == null)
       {
-         throw new I18NException(restCommonClientMessages.getParamString("folder.notFound",
-               "unknown"));
+         throw new I18NException(restCommonClientMessages.getParamString("folder.notFound", "unknown"));
       }
-      
+
       Folder parentFolder = DocumentMgmtUtility.createFolderIfNotExists(documentInfoDTO.parentFolderPath);
-      
-      String docName = RepositoryUtility.createDocumentName(parentFolder, documentInfoDTO.name, 0);
+
+      Document document = DocumentMgmtUtility.getDocument(parentFolder.getPath(), documentInfoDTO.name);
+      if (document != null)
+      {
+         throw new I18NException(restCommonClientMessages.getParamString("document.existError", documentInfoDTO.name));
+      }
 
       // create document
-      Document document = DocumentMgmtUtility.createDocument(parentFolder.getId(), docName, documentInfoDTO.content,
-            documentInfoDTO.documentType, documentInfoDTO.contentType, documentInfoDTO.description,
-            documentInfoDTO.comments, null, null);
-
-      if (documentInfoDTO.processInstance != null)
-      {
-         DMSHelper.addAndSaveProcessAttachment(documentInfoDTO.processInstance, document);
-
-      }
+      document = DocumentMgmtUtility.createDocument(parentFolder.getId(), documentInfoDTO.name,
+            documentInfoDTO.content, documentInfoDTO.documentType, documentInfoDTO.contentType,
+            documentInfoDTO.description, documentInfoDTO.comments, null, null);
 
       return DocumentDTOBuilder.build(document);
+   }
+
+   // To support multiple process attachments upload
+   @Override
+   public Map<String, Object> createProcessAttachments(ProcessInstance processInstance,
+         List<DocumentInfoDTO> documentInfoDTOs)
+   {
+      Map<String, Object> result = new HashMap<String, Object>();
+      Map<String, String> failures = new HashMap<String, String>();
+      result.put("failures", failures);
+      List<DocumentDTO> documentDTOs = new ArrayList<DocumentDTO>();
+      result.put("documents", documentDTOs);
+
+      String parentFolderPath = DocumentMgmtUtility.getProcessAttachmentsFolderPath(processInstance);
+      Folder parentFolder = DocumentMgmtUtility.createFolderIfNotExists(parentFolderPath);
+
+      List<Document> documents = new ArrayList<Document>();
+
+      for (DocumentInfoDTO documentInfoDTO : documentInfoDTOs)
+      {
+         Document document = DocumentMgmtUtility.getDocument(parentFolder.getPath(), documentInfoDTO.name);
+         if (document != null)
+         {
+            failures.put(documentInfoDTO.name,
+                  restCommonClientMessages.getParamString("document.existError", documentInfoDTO.name));
+            continue;
+         }
+
+         // create document
+         document = DocumentMgmtUtility.createDocument(parentFolder.getId(), documentInfoDTO.name, documentInfoDTO.content,
+               documentInfoDTO.documentType, documentInfoDTO.contentType, documentInfoDTO.description,
+               documentInfoDTO.comments, null, null);
+
+         documents.add(document);
+         documentDTOs.add(DocumentDTOBuilder.build(document));
+      }
+
+      if (processInstance != null && CollectionUtils.isNotEmpty(documents))
+      {
+         DMSHelper.addAndSaveProcessAttachments(processInstance, documents);
+      }
+      return result;
    }
 }

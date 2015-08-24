@@ -56,7 +56,20 @@ public class FileUploadUtils
          DataHandler dataHandler = attachment.getDataHandler();
          InputStream inputStream = dataHandler.getInputStream();
 
-         if (inputStream instanceof ByteArrayInputStream)
+         System.out.println("Name: " + dataHandler.getName());
+         int i1 = 1;
+         System.out.println(i1++ + "content: " + attachment.getContentId());
+         System.out.println(i1++ + "content: " + attachment.getContentDisposition());
+         System.out.println(i1++ + "content: " + attachment.getContentType());
+         if (isFile(attachment))
+         {
+            documentInfoDTO = new DocumentInfoDTO();
+            documentInfoDTO.name = dataHandler.getName();
+            documentInfoDTO.contentType = dataHandler.getContentType();
+            documentInfoDTO.content = readEntryData(inputStream);
+            documents.add(documentInfoDTO);
+         }
+         else if (inputStream instanceof ByteArrayInputStream)
          {
             if (CommonProperties.DESCRIPTION.equals(dataHandler.getName()))
             {
@@ -95,14 +108,6 @@ public class FileUploadUtils
                documentInfoDTO.properties.put(dataHandler.getName(), inputStream.toString());
             }
          }
-         else if (inputStream instanceof InputStream)
-         {
-            documentInfoDTO = new DocumentInfoDTO();
-            documentInfoDTO.name = dataHandler.getName();
-            documentInfoDTO.contentType = dataHandler.getContentType();
-            documentInfoDTO.content = readEntryData(inputStream);
-            documents.add(documentInfoDTO);
-         }
       }
 
       return documents;
@@ -140,6 +145,21 @@ public class FileUploadUtils
       fileInfo.contentType = header.getFirst("Content-Type");
 
       return fileInfo;
+   }
+
+   /**
+    * @param attachment
+    * @return
+    */
+   private static boolean isFile(Attachment attachment)
+   {
+      // could not find other way to detect if the attachment is file
+      if (attachment.getContentDisposition() != null
+            && attachment.getContentDisposition().getParameter("filename") != null)
+      {
+         return true;
+      }
+      return false;
    }
 
    /**

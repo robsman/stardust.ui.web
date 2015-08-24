@@ -13,7 +13,6 @@ package org.eclipse.stardust.ui.web.rest.service.dto.request;
 import java.io.Serializable;
 import java.util.Map;
 
-import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 
 /**
@@ -34,7 +33,4 @@ public class DocumentInfoDTO
                                      // typedDocumentId
    
    public Map<String, Serializable> properties; // used to store documentType values
-
-   public ProcessInstance processInstance; // set only when the document is process
-                                           // attachment
 }
