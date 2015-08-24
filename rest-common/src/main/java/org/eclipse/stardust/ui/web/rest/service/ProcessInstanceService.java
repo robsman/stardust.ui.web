@@ -12,13 +12,18 @@ package org.eclipse.stardust.ui.web.rest.service;
 
 import java.io.Serializable;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TimeZone;
 
 import javax.annotation.Resource;
 
@@ -27,6 +32,7 @@ import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
+import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
@@ -39,6 +45,8 @@ import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
+import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
@@ -69,6 +77,7 @@ import org.eclipse.stardust.ui.web.rest.service.utils.FileUploadUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.converter.PriorityConverter;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.services.ContextPortalServices;
@@ -88,6 +97,7 @@ import com.google.gson.reflect.TypeToken;
 public class ProcessInstanceService
 {
    private static final Logger trace = LogManager.getLogger(ActivityInstanceUtils.class);
+   private static final String DATE_FORMAT = "MM/dd/yy";
 
    @Resource
    private org.eclipse.stardust.ui.web.rest.service.utils.ProcessInstanceUtils processInstanceUtilsREST;
@@ -570,6 +580,184 @@ public class ProcessInstanceService
          }
       }
       return dataPathDtoList;
+   }
+   
+   public boolean setDataPaths(long processInstanceOid, Map<String, Object> dataPathMap)
+   {
+      try
+      {
+         ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processInstanceOid);
+         ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(
+               processInstance.getModelOID(), processInstance.getProcessID());
+         List<DataPath> dataPaths = processDefinition.getAllDataPaths();
+         Map<String, List<DataPath>> outDataPathMap = CollectionUtils.newHashMap();
+         Map<String, DataPath> inDataPathMap = CollectionUtils.newHashMap();
+         Map<String, Object> outDataPathValues = CollectionUtils.newHashMap();
+         List<DataPath> outDataList = CollectionUtils.newArrayList();
+         for (DataPath dataPath : dataPaths)
+         {
+            if (DescriptorFilterUtils.isDataFilterable(dataPath)
+                  && !DmsConstants.PATH_ID_ATTACHMENTS.equals(dataPath.getId()))
+            {
+               if (dataPathMap.containsKey(dataPath.getId()) && Direction.IN.equals(dataPath.getDirection()))
+               {
+                  inDataPathMap.put(dataPath.getId(), dataPath);
+               }
+               else if (Direction.OUT.equals(dataPath.getDirection()))
+               {
+                  if (outDataPathMap.containsKey(dataPath.getData()))
+                  {
+                     outDataList = outDataPathMap.get(dataPath.getData());
+                     outDataList.add(dataPath);
+                  }
+                  else
+                  {
+                     outDataList.add(dataPath);
+                     outDataPathMap.put(dataPath.getData(), outDataList);
+                  }
+
+               }
+            }
+         }
+         if (!CollectionUtils.isEmpty(outDataPathMap))
+         {
+            for (Entry<String, DataPath> inDataPath : inDataPathMap.entrySet())
+            {
+               DataPath inData = inDataPath.getValue();
+               String dataId = inData.getData();
+               List<DataPath> outDataPaths = outDataPathMap.get(dataId);
+               if (!CollectionUtils.isEmpty(outDataPaths))
+               {
+                  Data data1 = DescriptorFilterUtils.getData(inData);
+                  for (DataPath outDataPath : outDataPaths)
+                  {
+                     if (outDataPath.getAccessPath().equals(inData.getAccessPath()))
+                     {
+                        Data data2 = DescriptorFilterUtils.getData(outDataPath);
+                        Object value = dataPathMap.get(inDataPath.getKey());
+                        if (data1.equals(data2))
+                        {
+                           outDataPathValues.put(outDataPath.getId(),
+                                 convertDataPathValue(outDataPath.getMappedType(), value));
+                           break;
+                        }
+                     }
+                  }
+
+               }
+            }
+            ContextPortalServices.getWorkflowService().setOutDataPaths(processInstance.getOID(), outDataPathValues);
+         }
+         return true;
+      }
+      catch (Exception e)
+      {
+         throw new I18NException(restCommonClientMessages.getParamString("processInstance.dataPath.conversionError",
+               String.valueOf(processInstanceOid)));
+      }
+   }
+
+   private Object convertDataPathValue(Class dataClass, Object dataPathValue) throws Exception
+   {
+      Object value = null;
+      try
+      {
+         if (dataClass == Long.class || dataClass == Integer.class || dataClass == Short.class
+               || dataClass == Byte.class || dataClass == Float.class || dataClass == Double.class
+               || dataClass == BigDecimal.class)
+         {
+            value = convertToNumber(dataPathValue, dataClass);
+         }
+         else if (dataClass == Boolean.class)
+         {
+            value = Boolean.valueOf(dataPathValue.toString());
+         }
+         else if (dataClass == Date.class || dataClass == Calendar.class)
+         {
+            if (dataPathValue instanceof Date)
+            {
+               getDateValue((Date) dataPathValue, dataClass);
+            }
+            else if (dataPathValue instanceof String)
+            {
+               Date dateValue = DateUtils.parseDateTime(dataPathValue.toString());
+               if (null == dateValue)
+               {
+                  dateValue = DateUtils.parseDateTime(dataPathValue.toString(), DATE_FORMAT, Locale.getDefault(),
+                        TimeZone.getDefault());
+               }
+               value = getDateValue(dateValue, dataClass);
+            }
+         }
+         else
+         {
+            value = dataPathValue.toString();
+         }
+      }
+      catch (Exception e)
+      {
+         throw e;
+      }
+      return value;
+
+   }
+
+   private Object getDateValue(Date value, Class mappedClass)
+   {
+      Object valueToSet = value;
+      if (mappedClass == Calendar.class)
+      {
+         Calendar cal = Calendar.getInstance();
+         cal.clear();
+         cal.setTime(value);
+         valueToSet = cal;
+      }
+      return valueToSet;
+   }
+
+   private Number convertToNumber(Object value, Class type) throws Exception
+   {
+      Number localValue = null;
+      if (value != null)
+      {
+         try
+         {
+            String strVal = value.toString();
+            if (type == Long.class)
+            {
+               localValue = new Long(strVal);
+            }
+            if (type == Integer.class)
+            {
+               localValue = new Integer(strVal);
+            }
+            else if (type == Short.class)
+            {
+               localValue = new Short(strVal);
+            }
+            else if (type == Byte.class)
+            {
+               localValue = new Byte(strVal);
+            }
+            else if (type == Double.class)
+            {
+               localValue = new Double(strVal);
+            }
+            else if (type == Float.class)
+            {
+               localValue = new Float(strVal);
+            }
+            else if (type == BigDecimal.class)
+            {
+               localValue = new BigDecimal(strVal);
+            }
+         }
+         catch (Exception e)
+         {
+            throw e;
+         }
+      }
+      return localValue;
    }
    
    /**

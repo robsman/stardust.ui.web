@@ -523,6 +523,17 @@ public class ProcessInstanceResource
       return Response.ok(GsonUtils.toJsonHTMLSafeString(dataPathValuesDTO), MediaType.APPLICATION_JSON).build();
    }
    
+   @PUT
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{oid}/data-paths")
+   public Response setDataPaths(@PathParam("oid") Long processOid, String postedData)
+   {
+      Map<String, Object> dataPaths = (Map) GsonUtils.extractMap(JsonDTO.getJsonObject(postedData), "dataPaths");
+      Boolean status = getProcessInstanceService().setDataPaths(processOid, dataPaths);
+      return Response.ok(status.toString(), MediaType.APPLICATION_JSON).build();
+   }
+   
    /**
     * @author Yogesh.Manware
     * @param processOid
