@@ -36,9 +36,10 @@ public interface RepositoryService
 
    public FolderDTO getFolder(String folderId, int levelOfDetail);
 
-   public DocumentDTO createDocument(DocumentInfoDTO documentInfoDTO);
+   public DocumentDTO createDocument(DocumentInfoDTO documentInfoDTO, ProcessInstance processInstance);
    
-   public Map<String, Object> createProcessAttachments(ProcessInstance processInstance, List<DocumentInfoDTO> documentInfoDTO);
+   public Map<String, Object> createProcessAttachments(List<DocumentInfoDTO> documentInfoDTO,
+         ProcessInstance processInstance);
 
    /*
     * public DocumentDTO renameFolder(String participantQidIn);

@@ -92,7 +92,7 @@ public class RepositoryServiceImpl implements RepositoryService
    }
 
    @Override
-   public DocumentDTO createDocument(DocumentInfoDTO documentInfoDTO)
+   public DocumentDTO createDocument(DocumentInfoDTO documentInfoDTO, ProcessInstance processInstance)
    {
       if (documentInfoDTO.parentFolderPath == null)
       {
@@ -112,13 +112,20 @@ public class RepositoryServiceImpl implements RepositoryService
             documentInfoDTO.content, documentInfoDTO.documentType, documentInfoDTO.contentType,
             documentInfoDTO.description, documentInfoDTO.comments, null, null);
 
+      // update datapath
+      if (processInstance != null)
+      {
+         Map<String, Document> documentDataPathMap = new HashMap<String, Document>();
+         documentDataPathMap.put(documentInfoDTO.dataPathId, document);
+         addSpecificDocuments(processInstance.getOID(), documentDataPathMap);
+      }
+
       return DocumentDTOBuilder.build(document);
    }
 
    // To support multiple process attachments upload
    @Override
-   public Map<String, Object> createProcessAttachments(ProcessInstance processInstance,
-         List<DocumentInfoDTO> documentInfoDTOs)
+   public Map<String, Object> createProcessAttachments(List<DocumentInfoDTO> documentInfoDTOs, ProcessInstance processInstance)
    {
       Map<String, Object> result = new HashMap<String, Object>();
       Map<String, String> failures = new HashMap<String, String>();
@@ -155,5 +162,14 @@ public class RepositoryServiceImpl implements RepositoryService
          DMSHelper.addAndSaveProcessAttachments(processInstance, documents);
       }
       return result;
+   }
+
+   /**
+    * @param processInstanceOid
+    * @param documentDataPathMap
+    */
+   private void addSpecificDocuments(long processInstanceOid, Map<String, Document> documentDataPathMap)
+   {
+      serviceFactoryUtils.getWorkflowService().setOutDataPaths(processInstanceOid, documentDataPathMap);
    }
 }

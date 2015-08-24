@@ -15,6 +15,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
@@ -61,21 +62,5 @@ public class DocumentTypeUtils
       }
 
       return allDocumentTypes;
-   }
-   
-   /**
-    * @param processInstance
-    * @param dataPathId
-    * @return
-    */
-   public static DocumentType getDocumentTypeForDataPath(ProcessInstance processInstance, String dataPathId)
-   {
-      ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(processInstance.getModelOID(),
-            processInstance.getProcessID());
-      ModelCache modelCache = ModelCache.findModelCache();
-      String data = processDefinition.getDataPath(dataPathId).getData();
-      Model model = modelCache.getModel(processInstance.getModelOID());
-      return org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils.getDocumentTypeFromData(model,
-            model.getData(data));
    }
 }

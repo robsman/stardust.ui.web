@@ -72,7 +72,6 @@ import org.eclipse.stardust.ui.web.rest.service.helpers.AddressBookDataPathValue
 import org.eclipse.stardust.ui.web.rest.service.helpers.DefaultDataPathValueFilter;
 import org.eclipse.stardust.ui.web.rest.service.helpers.IDataPathValueFilter;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
-import org.eclipse.stardust.ui.web.rest.service.utils.DocumentTypeUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.FileUploadUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.converter.PriorityConverter;
@@ -136,7 +135,7 @@ public class ProcessInstanceService
    }
  
    /**
-    * @param processInstance
+    * @param processOid
     * @param attachments
     * @param dataPathId
     * @return
@@ -146,27 +145,61 @@ public class ProcessInstanceService
          throws Exception
    {
       Map<String, Object> result = null;
-      
+
       ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processOid);
       // parse attachments
       List<DocumentInfoDTO> uploadedDocuments = FileUploadUtils.parseAttachments(attachments);
 
       if (DmsConstants.PATH_ID_ATTACHMENTS.equals(dataPathId))
       {
-         result = repositoryService.createProcessAttachments(processInstance, uploadedDocuments);
+         result = repositoryService.createProcessAttachments(uploadedDocuments, processInstance);
       }
       else
       {
+         // check if OUT dataPath exist
+         ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(
+               processInstance.getModelOID(), processInstance.getProcessID());
+         ModelCache modelCache = ModelCache.findModelCache();
+         Model model = modelCache.getModel(processInstance.getModelOID());
+         List<DataPath> dataPaths = processDefinition.getAllDataPaths();
+
+         DataDetails dataDetails = null;
+
+         boolean outDataMappingExist = false;
+         for (DataPath dataPath : dataPaths)
+         {
+            if (!dataPath.getId().equals(dataPathId))
+            {
+               continue;
+            }
+            dataDetails = (DataDetails) model.getData(dataPath.getData());
+
+            if (Direction.OUT.equals(dataPath.getDirection()) || Direction.IN_OUT.equals(dataPath.getDirection())
+                  || DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId()))
+            {
+               outDataMappingExist = true;
+               break;
+            }
+         }
+
+         if (!outDataMappingExist)
+         {
+            throw new I18NException(restCommonClientMessages.getParamString("processInstance.outDataPath.error",
+                  dataPathId));
+         }
+
+         // determine DocumentType
+         DocumentType documentType = org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils
+               .getDocumentTypeFromData(model, dataDetails);
+
          result = new HashMap<String, Object>();
          Map<String, String> failures = new HashMap<String, String>();
          result.put("failures", failures);
          List<DocumentDTO> documentDTOs = new ArrayList<DocumentDTO>();
          result.put("documents", documentDTOs);
+
          for (DocumentInfoDTO documentInfoDTO : uploadedDocuments)
          {
-            // determine DocumentType
-            DocumentType documentType = DocumentTypeUtils.getDocumentTypeForDataPath(processInstance, dataPathId);
-            
             if (documentType != null)
             {
                documentInfoDTO.documentType = documentType;
@@ -174,7 +207,8 @@ public class ProcessInstanceService
             documentInfoDTO.parentFolderPath = DocumentMgmtUtility.getTypedDocumentsFolderPath(processInstance);
             try
             {
-               documentDTOs.add(repositoryService.createDocument(documentInfoDTO));
+               documentInfoDTO.dataPathId = dataPathId;
+               documentDTOs.add(repositoryService.createDocument(documentInfoDTO, processInstance));
             }
             catch (I18NException e)
             {

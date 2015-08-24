@@ -33,4 +33,6 @@ public class DocumentInfoDTO
                                      // typedDocumentId
    
    public Map<String, Serializable> properties; // used to store documentType values
+   
+   public String dataPathId;
 }

@@ -191,7 +191,7 @@ public class DocumentResource
       List<DocumentDTO> documents = new ArrayList<DocumentDTO>();
       for (DocumentInfoDTO documentInfoDTO : uploadedDocuments)
       {
-         documents.add(repositoryService.createDocument(documentInfoDTO));
+         documents.add(repositoryService.createDocument(documentInfoDTO, null));
       }
 
       return Response.ok(GsonUtils.toJsonHTMLSafeString(documents)).build();
