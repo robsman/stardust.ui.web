@@ -179,7 +179,7 @@
 		var columns = [], dtColumns = [];
 		var theTable, theTableId, theDataTable, theToolbar, theColReorder;
 		var selectedRowIndexes = {}, rowSelectionMode = false, selectionBinding;
-		var onSelect = {}, onPagination = {}, onColumnReorder = {}, onSorting = {};
+		var onSelect = {}, onPagination = {}, onColumnReorder = {}, onSorting = {}, onTreeNodeAction = {};
 		var enableColumnSelector, columnSelectorAdmin, columnsByDisplayOrder, columnsInfoByDisplayOrder, devColumnOrderPref;
 		var columnSelectorPreference, localPrefStore = {};
 		var pageSize = 8, disablePagination;
@@ -286,6 +286,17 @@
 				attr.sdaMode = 'local';
 				attr.sdaNoPagination = 'true';
 				attr.sdaSortable = 'false';
+
+				if (attr.sdaOnTreeNodeAction) {
+					onTreeNodeAction.handler = $parse(attr.sdaOnTreeNodeAction);
+
+					var onTreeNodeActionFuncInfo = sdUtilService.parseFunction(attr.sdaOnTreeNodeAction);
+					if (onTreeNodeActionFuncInfo && onTreeNodeActionFuncInfo.params && onTreeNodeActionFuncInfo.params.length > 0) {
+						onTreeNodeAction.param = onTreeNodeActionFuncInfo.params[0];
+					} else {
+						trace.error(theTableId + ': sda-on-tree-node-action does not seems to be correcly used, it does not appear to be a function accepting parameter.');
+					}
+				}
 			}
 			
 			tableInLocalMode = attr.sdaMode == 'local';
@@ -2483,8 +2494,16 @@
 			this.toggleTreeNode = function(index) {
 				var rowData = localModeData[index];
 
+				var treeActionInfo = {
+					current : rowData
+				};
+						
 				if (rowData.$expanded) {
 					rowData.$expanded = false;
+
+					treeActionInfo.action = 'collapse';
+					fireDataTableEvent(onTreeNodeAction, treeActionInfo, 'onTreeNodeAction', true);
+					
 					refreshUi();
 				} else {
 					rowData.$expanded = true;
@@ -2512,6 +2531,9 @@
 								rowData.$expanded = false;
 							}
 
+							treeActionInfo.action = 'expand';
+							fireDataTableEvent(onTreeNodeAction, treeActionInfo, 'onTreeNodeAction', true);
+
 							refreshUi();
 						}, function(error) {
 							// TODO: Show Error
@@ -2520,6 +2542,9 @@
 							refreshUi();
 						});
 					} else {
+						treeActionInfo.action = 'expand';
+						fireDataTableEvent(onTreeNodeAction, treeActionInfo, 'onTreeNodeAction', true);
+
 						refreshUi();
 					}
 				}
