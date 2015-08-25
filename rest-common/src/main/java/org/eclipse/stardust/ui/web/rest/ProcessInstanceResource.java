@@ -14,6 +14,7 @@ import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -46,8 +47,11 @@ import org.eclipse.stardust.ui.web.rest.service.ProcessInstanceService;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDataDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.DataPathValueDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.TrafficLightViewUtils;
@@ -193,9 +197,15 @@ public class ProcessInstanceResource
       try
       {
          JsonObject json = jsonIo.readJsonObject(postedData);
-
-         return Response.ok(getProcessInstanceService().startProcess(json).toString(), MediaType.APPLICATION_JSON)
-               .build();
+         String processDefinitionId = GsonUtils.extractString(json, "processDefinitionId");
+         JsonObject documentData = GsonUtils.extractObject(json, "documentData");
+         Map<String, Type> customTokens = new HashMap<String, Type>();
+         customTokens.put("documentType", new TypeToken<DocumentTypeDTO>()
+         {
+         }.getType());
+         DocumentDataDTO documentDataDTO = DTOBuilder.buildFromJSON(documentData, DocumentDataDTO.class, customTokens);
+         return Response.ok(getProcessInstanceService().startProcess(processDefinitionId, documentDataDTO).toJson(),
+               MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {
