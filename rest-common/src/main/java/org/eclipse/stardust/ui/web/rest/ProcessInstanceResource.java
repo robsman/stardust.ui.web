@@ -132,7 +132,7 @@ public class ProcessInstanceResource
       try
       {
          return Response.ok(
-               AbstractDTO.toJson(getProcessInstanceService().getProcessInstanceDocumentsForDataPath(
+               AbstractDTO.toJson(getProcessInstanceService().getDataPathValueFor(
                      Long.parseLong(processInstanceOid), dataPathId)), MediaType.APPLICATION_JSON)
                .build();
       }

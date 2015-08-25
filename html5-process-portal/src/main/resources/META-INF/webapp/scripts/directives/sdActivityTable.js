@@ -876,19 +876,17 @@
 	ActivityTableCompiler.prototype.openProcessDocumentsPopover = function(rowItem) {
 		var self = this;
 		rowItem.contentLoaded = false;
-		sdProcessInstanceService.getProcessInstanceDocuments(rowItem.processInstance.oid).then(function (procDocs) {
+		sdProcessInstanceService.getProcessInstanceDocuments(rowItem.processInstance.oid).then(function (dataPathValues) {
 			rowItem.supportsProcessAttachments = rowItem.processInstance.supportsProcessAttachments;
-			rowItem.processAttachments = procDocs['PROCESS_ATTACHMENTS'];
 			rowItem.specificDocuments = [];
-			jQuery.each(procDocs, function(pathId, docs) {
-				if (pathId !== 'PROCESS_ATTACHMENTS') {
-					rowItem.specificDocuments = rowItem.specificDocuments
-							.concat({
-								dataPathId : pathId,
-								document : docs.length > 0 ? docs[0] : null
-							});
+			jQuery.each(dataPathValues, function(_, dataPathValue) {
+				if (dataPathValue.dataPath.id === 'PROCESS_ATTACHMENTS') {
+					rowItem.processAttachments = dataPathValue;
+				} else {
+					rowItem.specificDocuments.push(dataPathValue);
 				}
 			});
+			
 			rowItem.contentLoaded = true;
 			self.safeApply();
 		});
@@ -907,15 +905,15 @@
 	ActivityTableCompiler.prototype.openAllProcessDocumentViews = function(rowItem) {
 		var self = this;
 		if (rowItem.processAttachments) {
-			jQuery.each(rowItem.processAttachments, function(_, doc) {
+			jQuery.each(rowItem.processAttachments.documents, function(_, doc) {
 				self.openDocumentsView(doc.uuid);
 			});
 		}
 		if (rowItem.specificDocuments) {
-			jQuery.each(rowItem.specificDocuments, function(_, map) {
-				if (map.document) {
-					self.openDocumentsView(map.document.uuid);
-				}
+			jQuery.each(rowItem.specificDocuments, function(_, specificDataPath) {
+				jQuery.each(specificDataPath.documents, function(_, doc) {
+					self.openDocumentsView(doc.uuid);
+				});
 			});
 		}
 	};

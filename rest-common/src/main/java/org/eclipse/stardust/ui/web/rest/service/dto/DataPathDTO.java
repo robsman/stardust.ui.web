@@ -45,4 +45,6 @@ public class DataPathDTO extends AbstractDTO
    public String data;
    
    public String name;
+   
+   public String dataType;
 }
