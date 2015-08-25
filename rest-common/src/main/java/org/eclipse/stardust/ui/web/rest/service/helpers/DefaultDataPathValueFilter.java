@@ -39,27 +39,27 @@ public class DefaultDataPathValueFilter implements IDataPathValueFilter
    {
       List<DataPathValueDTO> dataPathValueDTOs = new ArrayList<DataPathValueDTO>();
 
-      if (dataValue != null)
+      DataPathValueDTO dataPathValueDTO = new DataPathValueDTO();
+      dataPathValueDTOs.add(dataPathValueDTO);
+
+      Model model = ModelCache.findModelCache().getModel(dataPath.getModelOID());
+      DataDetails dataDetails = model != null ? (DataDetails) model.getData(dataPath.getData()) : null;
+
+      dataPathValueDTO.dataPath = DTOBuilder.build(dataPath, DataPathDTO.class);
+      dataPathValueDTO.dataPath.name = I18nUtils.getDataPathName(dataPath);
+
+      if ((dataValue != null) && (dataValue instanceof Map))
       {
-         DataPathValueDTO dataPathValueDTO = new DataPathValueDTO();
-         dataPathValueDTOs.add(dataPathValueDTO);
-
-         Model model = ModelCache.findModelCache().getModel(dataPath.getModelOID());
-         DataDetails dataDetails = model != null ? (DataDetails) model.getData(dataPath.getData()) : null;
-
-         dataPathValueDTO.dataPath = DTOBuilder.build(dataPath, DataPathDTO.class);
-         dataPathValueDTO.dataPath.name = I18nUtils.getDataPathName(dataPath);
-
-         if (dataValue instanceof Map)
+         dataPathValueDTO.value = dataValue.toString(); // TODO: should it contain a
+                                                        // json string?
+      }
+      else if ((DmsConstants.DATA_ID_ATTACHMENTS.equals(dataPath.getData()))
+            || (null != dataDetails && (DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId()) || DmsConstants.DATA_TYPE_DMS_DOCUMENT_LIST
+                  .equals(dataDetails.getTypeId()))))
+      {
+         List<Document> documents = new ArrayList<Document>();
+         if (dataValue != null)
          {
-            dataPathValueDTO.value = dataValue.toString(); // TODO: should it contain a
-                                                           // json string?
-         }
-         else if ((DmsConstants.DATA_ID_ATTACHMENTS.equals(dataPath.getData()))
-               || (null != dataDetails && (DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId()) || DmsConstants.DATA_TYPE_DMS_DOCUMENT_LIST
-                     .equals(dataDetails.getTypeId()))))
-         {
-            List<Document> documents = new ArrayList<Document>();
             if (dataValue instanceof Document)
             {
                documents.add((Document) dataValue);
@@ -68,13 +68,13 @@ public class DefaultDataPathValueFilter implements IDataPathValueFilter
             {
                documents = ((List<Document>) dataValue);
             }
-            dataPathValueDTO.documents = DocumentDTOBuilder.build(documents);
          }
-         else
-         {
-            // it is primitive
-            dataPathValueDTO.value = dataValue.toString();
-         }
+         dataPathValueDTO.documents = DocumentDTOBuilder.build(documents);
+      }
+      else
+      {
+         // it is primitive
+         dataPathValueDTO.value = dataValue.toString();
       }
       return dataPathValueDTOs;
    }
