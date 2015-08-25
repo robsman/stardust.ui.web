@@ -59,7 +59,7 @@ public class FileUploadUtils
          if (isFile(attachment.getHeaders()))
          {
             documentInfoDTO = new DocumentInfoDTO();
-            documentInfoDTO.name = dataHandler.getName();
+            documentInfoDTO.name = new String(dataHandler.getName().getBytes("ISO-8859-1"), "UTF-8");
             documentInfoDTO.contentType = dataHandler.getContentType();
             documentInfoDTO.content = readEntryData(inputStream);
             documents.add(documentInfoDTO);

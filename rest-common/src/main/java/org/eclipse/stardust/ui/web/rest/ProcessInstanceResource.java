@@ -540,7 +540,7 @@ public class ProcessInstanceResource
     * @return
     * @throws Exception 
     */
-   @PUT   
+   @POST   
    @Consumes(MediaType.MULTIPART_FORM_DATA)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{oid}/documents{dataPathId:.*}")
