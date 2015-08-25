@@ -71,7 +71,7 @@ public class DefaultDataPathValueFilter implements IDataPathValueFilter
          }
          dataPathValueDTO.documents = DocumentDTOBuilder.build(documents);
       }
-      else
+      else if(dataValue != null)
       {
          // it is primitive
          dataPathValueDTO.value = dataValue.toString();
