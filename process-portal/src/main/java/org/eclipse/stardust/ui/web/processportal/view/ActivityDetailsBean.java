@@ -107,6 +107,7 @@ import org.eclipse.stardust.ui.web.viewscommon.dialogs.AbortActivityBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.JoinProcessDialogBean;
+import org.eclipse.stardust.ui.web.viewscommon.dialogs.RelocateActivityDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.SwitchProcessDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
@@ -132,6 +133,7 @@ import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentHandlerBean;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentContentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
+
 import org.springframework.beans.factory.DisposableBean;
 
 import com.icesoft.faces.context.effects.JavascriptContext;
@@ -1156,6 +1158,34 @@ public class ActivityDetailsBean extends UIComponentBean
          return ProcessInstanceUtils.openNotes(activityInstance.getProcessInstance(), params);
       }
       return null;
+   }
+
+   /**
+    * 
+    */
+   public void openRelocationDialog()
+   {
+      RelocateActivityDialogBean dialog = (RelocateActivityDialogBean) FacesUtils.getBeanFromContext("relocateActivityDialogBean");
+      dialog.setActivityInstanceOID(getActivityInstance().getOID());
+      dialog.setCallbackHandler(new ICallbackHandler()
+      {
+         @Override
+         public void handleEvent(EventType eventType)
+         {
+            if (eventType.equals(EventType.APPLY))
+            {
+               ActivityDetailsBean.this.interaction = null;
+               skipViewEvents = true;
+               PortalApplication.getInstance().closeView(thisView, false);
+               releaseInteraction();
+               
+               // When view close is auto-operation, sync view is required to update focus view
+               PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView();");
+               skipViewEvents = false;
+            }
+         }
+      });
+      dialog.openPopup();
    }
 
    /**

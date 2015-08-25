@@ -419,6 +419,11 @@
 		scope="portalTab">
 	</bean>
 
+	<bean name="relocateActivityDialogBean"
+		class="org.eclipse.stardust.ui.web.viewscommon.dialogs.RelocateActivityDialogBean"
+		scope="portalTab">
+	</bean>
+
 	<bean name="switchProcessDialogBean"
 		class="org.eclipse.stardust.ui.web.viewscommon.dialogs.SwitchProcessDialogBean"
 		scope="portalTab">
