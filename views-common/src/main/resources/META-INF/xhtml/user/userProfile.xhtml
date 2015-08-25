@@ -127,8 +127,8 @@
 									<ice:panelGroup>
 										<ice:inputSecret id="password" maxlength="20" size="20"
 											value="#{userProfileBean.password}" redisplay="true"
-											required="#{userProfileBean.createMode || userProfileBean.copyMode}"
-											disabled="#{(userProfileBean.modifyMode || userProfileBean.modifyProfileConfiguration) &amp;&amp; (!userProfileBean.changePassword)}">
+											required="#{userProfileBean.internalAuthentication and (userProfileBean.createMode || userProfileBean.copyMode)}"
+											disabled="#{!userProfileBean.internalAuthentication || (userProfileBean.modifyMode || userProfileBean.modifyProfileConfiguration) &amp;&amp; (!userProfileBean.changePassword)}">
 											<pc:automationTag value="auto-ADM-PartMgmt-UserPopup-Pwd" standAlone="false"/>
 										</ice:inputSecret>
 										<ice:panelGroup styleClass="msgError">
@@ -143,8 +143,8 @@
 										<ice:inputSecret id="cPWD" maxlength="20" size="20"
 											value="#{userProfileBean.confirmPassword}"
 											redisplay="true"
-											required="#{userProfileBean.createMode || userProfileBean.copyMode}"
-											disabled="#{(userProfileBean.modifyMode || userProfileBean.modifyProfileConfiguration) &amp;&amp; (!userProfileBean.changePassword)}">
+											required="#{userProfileBean.internalAuthentication and (userProfileBean.createMode || userProfileBean.copyMode)}"
+											disabled="#{!userProfileBean.internalAuthentication || (userProfileBean.modifyMode || userProfileBean.modifyProfileConfiguration) &amp;&amp; (!userProfileBean.changePassword)}">
 											<pc:automationTag value="auto-ADM-PartMgmt-UserPopup-PwdConfirm" standAlone="false"/>
 										</ice:inputSecret>
 										<ice:panelGroup styleClass="msgError">

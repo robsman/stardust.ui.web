@@ -394,7 +394,7 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
       if (getChangePassword())
       {
          String passwordConfirmation = getConfirmPassword();
-         if (StringUtils.isEmpty(passwordConfirmation) || StringUtils.isEmpty(password))
+         if ((StringUtils.isEmpty(passwordConfirmation) || StringUtils.isEmpty(password)) && isInternalAuthentication())
          {
             passwordValidationMsg = MessagesViewsCommonBean.getInstance().getString("views.createUser.password.empty");
             success = false;
@@ -907,7 +907,10 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
    {
       return userProfileConfirmationDlg;
    }
-   
-   
 
+   public boolean isInternalAuthentication()
+   {
+      return isInternalAuthentication;
+   }
+   
 }
