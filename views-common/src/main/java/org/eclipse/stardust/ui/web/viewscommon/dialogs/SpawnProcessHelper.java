@@ -17,8 +17,10 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.SubprocessSpawnInfo;
+import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
@@ -29,9 +31,14 @@ import org.eclipse.stardust.ui.web.common.table.DataTable;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ClientContextBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
 
 
 
@@ -233,6 +240,33 @@ public class SpawnProcessHelper
    public void setRootProcessInstance(ProcessInstance rootProcessInstance)
    {
       this.rootProcessInstance = rootProcessInstance;
+   }
+
+   public void activateSpawnedWorkItems()
+   {
+      if (CollectionUtils.isNotEmpty(subprocessInstances))
+      {
+         for (ProcessInstance pInstance : subprocessInstances)
+         {
+            ActivityInstance activityInstance = ServiceFactoryUtils.getWorkflowService()
+                  .activateNextActivityInstanceForProcessInstance(pInstance.getOID());
+
+            if (activityInstance != null)
+            {
+               ActivityEvent activityEvent = ActivityEvent.activated(activityInstance);
+               ParticipantWorklistCacheManager.getInstance().handleActivityEvent(null, activityEvent);
+               if (ProcessWorklistCacheManager.isInitialized())
+               {
+                  ProcessWorklistCacheManager.getInstance().handleActivityEvent(null, activityEvent);
+               }
+               SpecialWorklistCacheManager.getInstance().handleActivityEvent(null, activityEvent);
+               ClientContextBean.getCurrentInstance().getClientContext().sendActivityEvent(activityEvent);
+
+               ActivityInstanceUtils.openActivity(activityInstance, null);
+            }
+         }
+      }
+
    }
 
 }

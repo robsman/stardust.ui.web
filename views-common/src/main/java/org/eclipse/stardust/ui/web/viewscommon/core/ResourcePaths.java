@@ -118,7 +118,6 @@ public interface ResourcePaths
    
    static final String V_EXTRACT_PAGES_TABLE_COLUMNS = "/plugins/views-common/views/document/extractPageTableColumns.xhtml";
    static final String V_SPAWN_PROCESS_TABLE_COLUMNS = "/plugins/views-common/dialogs/spawnProcessTableColumns.xhtml";
-   static final String V_SPAWN_PROCESS_CONF_DLG = "/plugins/views-common/dialogs/spawnProcessConfirmDialog.xhtml";
    static final String V_EXTRACT_PAGE_CONF_DLG = "/plugins/views-common/dialogs/extractPageConfirmDialog.xhtml";
    static final String V_SWITCH_PROCESS_CONF_DLG = "/plugins/views-common/dialogs/switchProcessConfirmDialog.xhtml";
    static final String V_JOIN_PROCESS_CONF_DLG = "/plugins/views-common/dialogs/joinProcessNotificationDialog.xhtml";

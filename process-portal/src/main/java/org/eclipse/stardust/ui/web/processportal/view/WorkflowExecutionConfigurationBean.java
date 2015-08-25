@@ -17,11 +17,11 @@ import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
-import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogType;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
 import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
@@ -57,6 +57,10 @@ public class WorkflowExecutionConfigurationBean extends UIComponentBean implemen
    private  SelectItem[] abortActivityScopes;
    private String selectedAbortActivityScope;
    
+   // Spawn process
+   private boolean showSpawnedWorkItems;
+   private boolean activateSpawnedWorkItems;
+
    private MessagePropertiesBean messageBean;
    private UserProvider userProvider;
    private ConfirmationDialog workflowConfirmationDialog;
@@ -112,6 +116,12 @@ public class WorkflowExecutionConfigurationBean extends UIComponentBean implemen
       
       selectedAbortActivityScope = userPrefHelper.getSingleString(UserPreferencesEntries.V_WORKFLOW_EXEC_CONFIG_PANEL,
             UserPreferencesEntries.F_ACTIVITY_ABORT_SCOPE); 
+
+      showSpawnedWorkItems = userPrefHelper.getBoolean(UserPreferencesEntries.V_WORKFLOW_EXEC_CONFIG_PANEL,
+            UserPreferencesEntries.F_SHOW_WORK_ITEMS, true);
+
+      activateSpawnedWorkItems = userPrefHelper.getBoolean(UserPreferencesEntries.V_WORKFLOW_EXEC_CONFIG_PANEL,
+            UserPreferencesEntries.F_ACTIVATE_WORK_ITEMS, false);
    }
 
    /**
@@ -134,6 +144,13 @@ public class WorkflowExecutionConfigurationBean extends UIComponentBean implemen
          
          userPrefsHelper.setString(UserPreferencesEntries.V_WORKFLOW_EXEC_CONFIG_PANEL,
                UserPreferencesEntries.F_ACTIVITY_ABORT_SCOPE, selectedAbortActivityScope);
+
+         userPrefsHelper.setString(UserPreferencesEntries.V_WORKFLOW_EXEC_CONFIG_PANEL,
+               UserPreferencesEntries.F_SHOW_WORK_ITEMS, String.valueOf(showSpawnedWorkItems));
+
+         userPrefsHelper.setString(UserPreferencesEntries.V_WORKFLOW_EXEC_CONFIG_PANEL,
+               UserPreferencesEntries.F_ACTIVATE_WORK_ITEMS, String.valueOf(activateSpawnedWorkItems));
+
       }
 
       MessageDialog.addInfoMessage(messageBean.getString("views.workflowExecution.config.saveSuccessful"));
@@ -292,6 +309,26 @@ public class WorkflowExecutionConfigurationBean extends UIComponentBean implemen
    public ConfirmationDialog getWorkflowConfirmationDialog()
    {
       return workflowConfirmationDialog;
+   }
+
+   public boolean isShowSpawnedWorkItems()
+   {
+      return showSpawnedWorkItems;
+   }
+
+   public void setShowSpawnedWorkItems(boolean showSpawnedWorkItems)
+   {
+      this.showSpawnedWorkItems = showSpawnedWorkItems;
+   }
+
+   public boolean isActivateSpawnedWorkItems()
+   {
+      return activateSpawnedWorkItems;
+   }
+
+   public void setActivateSpawnedWorkItems(boolean activateSpawnedWorkItems)
+   {
+      this.activateSpawnedWorkItems = activateSpawnedWorkItems;
    }
    
    

@@ -59,6 +59,8 @@ public interface UserPreferencesEntries
    public static final String F_PROPAGATE_PRIORITY = "prefs.propagatePriority";
    public static final String F_PROCESS_ABORT_SCOPE = "prefs.processAbortScope";
    public static final String F_ACTIVITY_ABORT_SCOPE = "prefs.activityAbortScope";
+   public static final String F_SHOW_WORK_ITEMS = "prefs.showWorkItems";
+   public static final String F_ACTIVATE_WORK_ITEMS = "prefs.activiateWorkItems";
 
    public static final String F_IMAGE_VIEWER_SHOW_SIDE_PANEL = "prefs.imageViewer.showSidePanel";
    public static final String F_IMAGE_VIEWER_SHOW_ANNOTATIONS = "prefs.imageViewer.showAnnotation";
