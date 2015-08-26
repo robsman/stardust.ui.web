@@ -182,15 +182,6 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       super(ResourcePaths.V_processSearch);
    }
 
-   /**
-    * @return ProcessSearchBean object
-    */
-   public static ProcessSearchBean getInstance()
-   {
-      return (ProcessSearchBean) FacesContext.getCurrentInstance().getApplication().getVariableResolver()
-            .resolveVariable(FacesContext.getCurrentInstance(), BEAN_ID);
-   }
-
    /*
     * (non-Javadoc)
     * 
@@ -1427,7 +1418,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
    {
       if (!activityCriteriaInitialized)
       {
-         activitySearchProvider = new ActivitySearchProvider();
+         activitySearchProvider = new ActivitySearchProvider(this);
 
          // initialize autocomplete Selector
          performerSelector = new UserAutocompleteMultiSelector(false, true);

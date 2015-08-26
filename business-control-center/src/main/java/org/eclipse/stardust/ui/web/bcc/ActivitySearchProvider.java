@@ -81,18 +81,21 @@ public class ActivitySearchProvider implements Serializable
    
    private DataPath[] commonDescriptors;
 
+   private ProcessSearchBean processSearchBean;
+
    /**
     * 
     */
-   public ActivitySearchProvider()
+   public ActivitySearchProvider(ProcessSearchBean processSearchBean)
    {
+      this.processSearchBean = processSearchBean;
    }
 
    public ActivityFilterAttributes getFilterAttributes()
    {
       if (filterAttributes == null)
       {
-         filterAttributes = new ActivityFilterAttributes();
+         filterAttributes = new ActivityFilterAttributes(processSearchBean);
       }
       return filterAttributes;
 
@@ -123,7 +126,7 @@ public class ActivitySearchProvider implements Serializable
 
    public ISearchHandler<ActivityInstance> getSearchHandler()
    {
-      return new ActivitySearchHandler();
+      return new ActivitySearchHandler(processSearchBean);
    }
 
    /**
@@ -146,6 +149,8 @@ public class ActivitySearchProvider implements Serializable
       private String criticality;
       private int priority = ProcessSearchProvider.ALL_PRIORITIES;
 
+      private ProcessSearchBean processSearchBean;
+      
       protected ActivityInstanceQuery buildQuery()
       {
 
@@ -236,7 +241,7 @@ public class ActivitySearchProvider implements Serializable
             filter.add(new PerformingUserFilter(user.getOID()));
          }
          if (StringUtils.isNotEmpty(criticality)
-               && !criticality.equals(ProcessSearchBean.getInstance().getMessages()
+               && !criticality.equals(processSearchBean.getMessages()
                      .getString("chooseProcess.options.all.label")))
          {
             CriticalityCategory cCat = CriticalityConfigurationUtil.getCriticalityForLabel(criticality);
@@ -254,11 +259,13 @@ public class ActivitySearchProvider implements Serializable
       /**
        * 
        */
-      public ActivityFilterAttributes()
+      public ActivityFilterAttributes(ProcessSearchBean processSearchBean)
       {
          state = ACTIVITY_INSTANCE_STATE_ALIVE;
 //         startedTo = new Date();
 //         modifyTimeTo = new Date();
+
+         this.processSearchBean = processSearchBean;
       }
 
       public int getState()
@@ -375,14 +382,13 @@ public class ActivitySearchProvider implements Serializable
       if (pdsList != null && !CollectionUtils.isEmpty(pdsList))
       {
          //TODO: Review following code later
-         ProcessSearchBean searchBean = ProcessSearchBean.getInstance();
-         if (CollectionUtils.isNotEmpty(searchBean.getSelectedProcesses()))
+         if (CollectionUtils.isNotEmpty(processSearchBean.getSelectedProcesses()))
          {
-            int arraySize = searchBean.getSelectedProcesses().length;
+            int arraySize = processSearchBean.getSelectedProcesses().length;
             if (arraySize == 1)
             {
-               String selectedProcess = searchBean.getSelectedProcesses()[0];
-               ProcessDefinition pd = searchBean.getProcessDefinitions().get(selectedProcess);
+               String selectedProcess = processSearchBean.getSelectedProcesses()[0];
+               ProcessDefinition pd = processSearchBean.getProcessDefinitions().get(selectedProcess);
                if (null != pd && PredefinedConstants.CASE_PROCESS_ID.equals(pd.getId()))
                {
                   FilterAndTerm filter = query.getFilter().addAndTerm();
@@ -408,6 +414,13 @@ public class ActivitySearchProvider implements Serializable
    {
       private static final long serialVersionUID = 1L;
 
+      private ProcessSearchBean processSearchBean;
+
+      public ActivitySearchHandler(ProcessSearchBean processSearchBean)
+      {
+         this.processSearchBean = processSearchBean;
+      }
+      
       @Override
       public Query createQuery()
       {
@@ -427,8 +440,7 @@ public class ActivitySearchProvider implements Serializable
          else
          {
             // For Case PI search, selectedActivities will be null
-            ProcessSearchBean processSearch = ProcessSearchBean.getInstance();
-            if (processSearch.getFilterAttributes().isCaseOnlySearch())
+            if (processSearchBean.getFilterAttributes().isCaseOnlySearch())
             {
                filter.add(ActivityFilter.forProcess(PredefinedConstants.DEFAULT_CASE_ACTIVITY_ID,
                      PredefinedConstants.CASE_PROCESS_ID, false));
