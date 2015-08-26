@@ -29,7 +29,6 @@
 		<ippui:viewsExtension>
 			<ippui:view name="configurationTreeView" include="/plugins/common/views/configurationTree.xhtml"
 				controller="ippPortalConfig" />
-			<ippui:view name="configurationPanel" include="/plugins/common/views/configurationPanel.xhtml" />
 		</ippui:viewsExtension>
 
 	</ippui:perspectiveExtension>
