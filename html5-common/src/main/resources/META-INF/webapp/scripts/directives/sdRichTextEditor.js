@@ -30,14 +30,22 @@
 
 	    return {
 	        require: '?ngModel',
+	        scope : {
+	        	position : '@sdaPosition',
+	        	readOnly : '@sdaReadOnly',
+	        	onBlur : '&sdaOnBlur'
+	        },
 	        link: function ($scope, elm, attr, ngModel) {
 	        	
 	            var ck = CKEDITOR.replace(elm[0]);
+	            ck.config.readOnly = $scope.readOnly || false;
+	            ck.config.toolbarLocation =$scope.position || 'bottom';
+	            
+	            
+	            ck.on('blur', function() {
+	            	$scope.onBlur();
+	             });
 	           
-	            ck.config.readOnly = attr.sdaReadOnly || false;
-	            ck.config.toolbarLocation = attr.sdaPosition || 'bottom';
-	         //   ck.config.toolbar = 'Full';
-	          
 	            ck.on('pasteState', function () {
 	                $scope.$apply(function () {
 	                    ngModel.$setViewValue(ck.getData());

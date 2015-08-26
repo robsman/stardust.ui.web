@@ -10,7 +10,7 @@
 /**
  * @author Johnson.Quadras
  */
-define(["html5-views-common/js/base64" ],function(base64){
+define(["html5-views-common/js/lib/base64" ],function(base64){
 
 	var _q;
 	var trace;
@@ -20,21 +20,21 @@ define(["html5-views-common/js/base64" ],function(base64){
 	var _timeout ;
 	var interaction = null;
 	var _http = null;
-	
+
 	var filesToUpload = [];
 	var VALID_TEMPLATE_FORMATS = ['text/plain' , 'text/html']
 	var buttons = {
 			confirm : '',
 			cancel :''	
 	}
-	
+
 	var piOid = null; 
-	
+
 	/*
 	 * 
 	 */
 	function CorrespondenceCtrl($scope, $q ,$http , $filter,$timeout,sdDialogService, sdCorrespondenceService) {
-		
+
 		this.readOnly = false;
 		_q = $q;
 		_filter =$filter; 
@@ -42,17 +42,17 @@ define(["html5-views-common/js/base64" ],function(base64){
 		_sdCorrespondenceService = sdCorrespondenceService;
 		_timeout = $timeout;
 		_http = $http;
-		
+
 		this.intialize($scope);
 		this.exposeApis($scope);
 	}
-	
-	
+
+
 	// initialize
-	 CorrespondenceCtrl.prototype.initializeFileUploader = function() {
-		 var ctrl = this;
+	CorrespondenceCtrl.prototype.initializeFileUploader = function() {
+		var ctrl = this;
 		var fileselect = jQuery("#fileselect")[0],
-			filedrag = jQuery("#filedrag")[0];
+		filedrag = jQuery("#filedrag")[0];
 		// file select
 		fileselect.addEventListener("change", FileSelectHandler, false);
 		ctrl.dragDropAvailable = false;
@@ -73,12 +73,12 @@ define(["html5-views-common/js/base64" ],function(base64){
 	CorrespondenceCtrl.prototype.intialize = function($scope){
 		var ctrl = this;
 		this.correspondenceTypes = [{
-										label : 'Email',
-										id : 'email'
-									}, {
-										label : 'Print',
-										id : 'print'
-									}];
+			label : 'Email',
+			id : 'email'
+		}, {
+			label : 'Print',
+			id : 'print'
+		}];
 		this.selected = {
 				type  : 'email', // print / email
 				showBcc : false,
@@ -92,9 +92,9 @@ define(["html5-views-common/js/base64" ],function(base64){
 				attachments : [],
 				aiOid : '',
 		};
-		
-		
-		
+
+
+
 		this.dialog ={
 				selectedAddresses : [],
 				selectedAttachments : [],
@@ -114,36 +114,36 @@ define(["html5-views-common/js/base64" ],function(base64){
 					api : null
 				}
 		}
-		
+
 		this.enteredAdd = {
 				to  : '', 
 				bcc : '',
 				cc : ''
 		};
 
-				
+
 		this.data = {
-			like : {
-				to : [],
-				bcc : [],
-				cc : []
-			},
-			matchVal : {
-				to : "",
-				bcc : "",
-				cc : ""
-			}
+				like : {
+					to : [],
+					bcc : [],
+					cc : []
+				},
+				matchVal : {
+					to : "",
+					bcc : "",
+					cc : ""
+				}
 		};
-		
+
 
 		this.addressTable = null;
 		this.selectedAddresses = [];
 		this.addressEntries= [];
-		
+
 		this.i18n = $scope.$root.i18n; 
 		$scope = this.i18n;
-	
-		
+
+
 		this.interactionProvider = new bpm.portal.Interaction();
 		this.selected.aiOid = this.getActivityOid();
 		_sdCorrespondenceService.getProcessOidForActivity(ctrl.selected.aiOid).then(function(result){
@@ -151,9 +151,9 @@ define(["html5-views-common/js/base64" ],function(base64){
 			console.log(ctrl.selected.piOid);
 			piOid = ctrl.selected.piOid;
 			ctrl.loadAddressBook();
-			
+
 		});
-		
+
 
 		this.buttons = {
 				confirm : this
@@ -165,7 +165,7 @@ define(["html5-views-common/js/base64" ],function(base64){
 		if (window.File && window.FileList && window.FileReader) {
 			this.initializeFileUploader();
 		}
-		
+
 		CorrespondenceCtrl.prototype.addAttachment = function(file){
 			ctrl.selected.attachments.push(file)
 			console.log(ctrl.selected.attachments)
@@ -173,47 +173,56 @@ define(["html5-views-common/js/base64" ],function(base64){
 		CorrespondenceCtrl.prototype.showTest = function(value){
 			ctrl.test =value
 		}; 
-	
-		
+
+
 	};
-	
-	
-	
+
+
+
 	/**
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.exposeApis = function( $scope ){ 
-		
+
 		var ctrl = this;
-		
+
 		CorrespondenceCtrl.prototype.loadAttachments = loadAttachments
 		CorrespondenceCtrl.prototype.removeAttachment= removeAttachment;
-		
-		
+
+
 		ctrl.getScope= function(){
 			return $scope;
 		}
-	
+
 		CorrespondenceCtrl.prototype.addToUploadQ = addFilesToUploadQ;
 
 	}
-	
-	
+
+
 	function uploadLocalFilesToServer(files) {
 		_sdCorrespondenceService.uploadAttachments(files, piOid).then(function(data){
-			angular.forEach(data,function(item){
-				CorrespondenceCtrl.prototype.addAttachment({name : item.name});
-			});
+			console.log("File upload response");
+			console.log(data);
+			
+			if(data.documents.length > 0) {
+				angular.forEach(data.documents,function(item){
+					CorrespondenceCtrl.prototype.addAttachment({name : item.name});
+				});
+			}
+
+			if(data.failure) {
+				console.log("Failed in uploadig documents")
+				console.log(data.failure)
+			}
+
 			clearUploadQ();
-		}).then(function(failure){
-			console.log(failure);
 		});
 	}
-	
 
-	
+
+
 	CorrespondenceCtrl.prototype.getActivityOid = function(){ 
-		var uri = this.interactionProvider.getInteractionUri();
+		/*	var uri = this.interactionProvider.getInteractionUri();
 		var endcoded = uri.split('/').pop();
 		var b64 = base64.get();
 		var decodedId = b64.decode(endcoded);
@@ -221,13 +230,13 @@ define(["html5-views-common/js/base64" ],function(base64){
 		var decodedParts = partsMatcher.exec(decodedId);
 		var activityInstanceOid = decodedParts[1];
 		console.log('Activity Oid  *****: '+activityInstanceOid)
-		return activityInstanceOid;
-	//	return 1100;
+		return activityInstanceOid;*/
+		return 1208;
 	}
-	
+
 	function addFilesToUploadQ(files) {
 		var ctrl = this;
-	
+
 		console.log('addFilesToUploadQ');
 		var filesToUpload =[];
 		for (var i = 0, f; f = files[i]; i++) {
@@ -242,8 +251,8 @@ define(["html5-views-common/js/base64" ],function(base64){
 		}
 		filesToUpload = [];
 	}
-	
-	
+
+
 	/**
 	 * 
 	 */
@@ -276,7 +285,7 @@ define(["html5-views-common/js/base64" ],function(base64){
 		console.log(files)
 	}
 
-	
+
 	/**
 	 * 
 	 */
@@ -289,22 +298,22 @@ define(["html5-views-common/js/base64" ],function(base64){
 	}
 
 
-	 /**
-	  * 
-	  */
+	/**
+	 * 
+	 */
 	function showFileToBeUploaded(file) {
 		var m = jQuery("#messages");
 		var msg = 
 			"<p style='width:250px'>File Name: <strong>" + file.name +"</strong></p>";
 		m.html( msg + m.html());
 	}
-	
-	
-	
+
+
+
 	/***
 	 * Address Selection
 	 */
-	
+
 	/**
 	 * 
 	 */
@@ -322,7 +331,7 @@ define(["html5-views-common/js/base64" ],function(base64){
 		ctrl.dialog.filter.address.value = filterCriteria;
 		ctrl.data.like.cc = ctrl.getAvailableAddresses();
 	};
-	
+
 	/**
 	 * 
 	 */
@@ -357,13 +366,13 @@ define(["html5-views-common/js/base64" ],function(base64){
 		});
 		return  _filter('filter')(faxFilter, {name : ctrl.dialog.filter.address.value},false);
 	};
-	
+
 	/**
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.loadPreSelections = function(){
 		var ctrl =this;
-		
+
 		var selections = [];
 		angular.forEach(ctrl.dialog.selectedAddresses,function(data){
 			selections.push( {name: data.name})
@@ -385,14 +394,14 @@ define(["html5-views-common/js/base64" ],function(base64){
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.onAddressSelection = function(info) {
-		
+
 		var ctrl = this;
 		if (info.action == "select") {
-				//ctrl.selectedAddresses.push(info.current)
-				var found = _filter('filter')(ctrl.dialog.selectedAddresses,{name :info.current.name },true);
-				if(found && found == 0){
-					ctrl.dialog.selectedAddresses.push(info.current)	
-				}
+			//ctrl.selectedAddresses.push(info.current)
+			var found = _filter('filter')(ctrl.dialog.selectedAddresses,{name :info.current.name },true);
+			if(found && found == 0){
+				ctrl.dialog.selectedAddresses.push(info.current)	
+			}
 		} else {
 			var index = ctrl.dialog.selectedAddresses.indexOf(info.current);
 			//ctrl.selectedAddresses.splice(index,1)
@@ -436,7 +445,7 @@ define(["html5-views-common/js/base64" ],function(base64){
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.openAddressSelector = function(addressType){
-			
+
 		var ctrl = this;
 		ctrl.addressReady = true;
 		ctrl.selectedAddresses = [];
@@ -444,40 +453,40 @@ define(["html5-views-common/js/base64" ],function(base64){
 		ctrl.dialog.filter.address.value = "";
 		var title = "Select Recipients";
 		var html = '<div style="padding-bottom:10px;">'+ 
-							'<span ng-repeat = "opt in ctrl.dialog.selectedAddresses" class="spacing-right "> '+
-								'<span class="selected_address" ng-click="ctrl.removeDialogAddress(opt)">'+
-									'<i class="glyphicon glyphicon-envelope spacing-right"></i> {{opt.name}}'+
-									 '<i class="glyphicon glyphicon-remove"></i>'+
-								'</span>'+
-							'</span >'+
-						'</div>'+
-						'<i class="glyphicon glyphicon-search"> </i>	<input type="text"  class="spacing-right"  ng-model="ctrl.dialog.filter.address.value" ng-change="ctrl.addressTable.refresh();"/>'+
-							'<input class="correspondence_addressBook_fax_control" type="checkbox" ng-model="ctrl.dialog.filter.address.showFax" ng-change="ctrl.addressTable.refresh();"/>'+
-							'<span class="iceOutLbl">Fax </span>'+
-					   '<div class="correspondence_addressBook_conatiner">'+
-							'<table sd-data-table="ctrl.addressTable" sda-selection="ctrl.selectedAddresses" '+
-								' sd-data="ctrl.getAvailableAddresses();" sda-mode="local" '+
-								' sda-selectable="multiple" sda-no-pagination="true"  sda-page-size="{{ctrl.addressEnteries.length}}"  sda-ready="ctrl.addressReady" sda-on-select="ctrl.onAddressSelection(info);"> '+
-								' <thead>'+
-									'<tr>'+
-										'<th sda-label="Value"></th>'+
-										'<th sda-label="Name"></th>'+
-									'</tr>'+
-								' </thead>'+
-								' <tbody>'+
-									'<tr>'+
-										'<td>{{rowData.value}}</td>'+
-										'<td>{{rowData.name}}</td>'+
-									'</tr>'+
-								' </tbody>'+
-							' </table>'+
-					  '</div> ';
-				
+		'<span ng-repeat = "opt in ctrl.dialog.selectedAddresses" class="spacing-right "> '+
+		'<span class="selected_address" ng-click="ctrl.removeDialogAddress(opt)">'+
+		'<i class="glyphicon glyphicon-envelope spacing-right"></i> {{opt.name}}'+
+		'<i class="glyphicon glyphicon-remove"></i>'+
+		'</span>'+
+		'</span >'+
+		'</div>'+
+		'<i class="glyphicon glyphicon-search"> </i>	<input type="text"  class="spacing-right"  ng-model="ctrl.dialog.filter.address.value" ng-change="ctrl.addressTable.refresh();"/>'+
+		'<input class="correspondence_addressBook_fax_control" type="checkbox" ng-model="ctrl.dialog.filter.address.showFax" ng-change="ctrl.addressTable.refresh();"/>'+
+		'<span class="iceOutLbl">Fax </span>'+
+		'<div class="correspondence_addressBook_conatiner">'+
+		'<table sd-data-table="ctrl.addressTable" sda-selection="ctrl.selectedAddresses" '+
+		' sd-data="ctrl.getAvailableAddresses();" sda-mode="local" '+
+		' sda-selectable="multiple" sda-no-pagination="true"  sda-page-size="{{ctrl.addressEnteries.length}}"  sda-ready="ctrl.addressReady" sda-on-select="ctrl.onAddressSelection(info);"> '+
+		' <thead>'+
+		'<tr>'+
+		'<th sda-label="Value"></th>'+
+		'<th sda-label="Name"></th>'+
+		'</tr>'+
+		' </thead>'+
+		' <tbody>'+
+		'<tr>'+
+		'<td>{{rowData.value}}</td>'+
+		'<td>{{rowData.name}}</td>'+
+		'</tr>'+
+		' </tbody>'+
+		' </table>'+
+		'</div> ';
+
 		var options = {
 				title : title,
 				type : 'confirm',
 				confirmActionLabel : this.buttons.confirm,
-			    cancelActionLabel :  this.buttons.cancel,
+				cancelActionLabel :  this.buttons.cancel,
 				width : '500px',
 				onConfirm : function() {
 					if(addressType == 'TO'){
@@ -491,7 +500,7 @@ define(["html5-views-common/js/base64" ],function(base64){
 		};
 		_sdDialogService.dialog(ctrl.getScope(), options, html)
 	};
-		
+
 	/**
 	 * 
 	 */
@@ -505,20 +514,20 @@ define(["html5-views-common/js/base64" ],function(base64){
 	CorrespondenceCtrl.prototype.showBcc = function () {
 		this.selected.showBcc = true;
 	};
-	
-	
+
+
 	/**
 	 * Message Template Selector
 	 */
-	
+
 	/**
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.openMessageTemplateSelector = function() {
-			var ctrl = this;
-			ctrl.templateSelectorDialog.open();
+		var ctrl = this;
+		ctrl.templateSelectorDialog.open();
 	};
-	
+
 	/**
 	 * 
 	 */
@@ -528,7 +537,7 @@ define(["html5-views-common/js/base64" ],function(base64){
 		if(!api){
 			return true;
 		}
-		
+
 		if (api.getSelectedNodes().length < 1) {
 			return true;
 		} else {
@@ -541,14 +550,14 @@ define(["html5-views-common/js/base64" ],function(base64){
 		ctrl.dialog.templateSelector.showErorMessage = false;
 		return false;
 	}
-	
+
 	/**
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.templateFolderInit = function(api){
 		this.dialog.templateSelector.api = api;
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -559,61 +568,68 @@ define(["html5-views-common/js/base64" ],function(base64){
 		console.log(api.getSelectedNodes()[0].valueItem);
 		ctrl.templateSelectorDialog.close();
 		_sdCorrespondenceService.resolveTemplate().then(function(data) {
+			ctrl.oldMessage = data.result;
 			ctrl.selected.message = data.result;
 		});
 	}
-	
+
 	/**
 	 * Attachment Selector
 	 */
-	
+
 	/**
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.openAttachmentSelector = function () {
 		var ctrl = this;
 		ctrl.attachmentSelectorDialog.open();
-		
+
 	};
-	
+
 	/**
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.onAttachmentFolder = function(api) {
 		this.dialog.attachmentSelector.api = api;
 	};
-	
+
 	/**
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.onAttachmentSelection = function() {
 		var ctrl = this;
-		var api = ctrl.dialog.attachmentSelector.api;
+		var processApi = ctrl.dialog.attachmentSelector.api;
+		var messageTemplateApi = ctrl.dialog.templateSelector.api;
 		console.log("Selected attachments")
-		angular.forEach(api.getSelectedNodes(),function(node){
+		angular.forEach(processApi.getSelectedNodes(),function(node){
 			console.log( node.valueItem );
 		});
+		angular.forEach(messageTemplateApi.getSelectedNodes(),function(node){
+			console.log( node.valueItem );
+		});
+
 		ctrl.attachmentSelectorDialog.close();
 	}; 
-	
+
 	/**
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.isAttachmentSelectionInValid = function(){
 		var ctrl = this;
-		var api = ctrl.dialog.attachmentSelector.api;
-		if(!api){
+		var processApi = ctrl.dialog.attachmentSelector.api;
+		var messageTemplateApi = ctrl.dialog.templateSelector.api;
+		if(!processApi && !messageTemplateApi ){
 			return true;
 		}
-		
-		if (api.getSelectedNodes().length < 1) {
+
+		if (processApi.getSelectedNodes().length < 1  && messageTemplateApi.getSelectedNodes().length < 1) {
 			return true;
 		}
 		return false;
 	};
-	
-	
-	
+
+
+
 	/**
 	 * 
 	 */
@@ -622,7 +638,7 @@ define(["html5-views-common/js/base64" ],function(base64){
 		//TODO Run this through the Templating API
 		ctrl.selected.attachments.push(attachment);
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -631,29 +647,29 @@ define(["html5-views-common/js/base64" ],function(base64){
 		var index = ctrl.selected.attachments.indexOf(attachment);
 		ctrl.selected.attachments.splice(index,1);
 	}
-	
+
 	/**
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.removeDialogAddress = function(address) {
 		var ctrl = this;
 		var info = {
-			action : 'deselect',
-			current : address
+				action : 'deselect',
+				current : address
 		}
-	
+
 		var selections = [];
-		
+
 		angular.forEach( ctrl.addressTable.getSelection(),function(data){
 			if(data.name != address.name ) {
-			 selections.push({name:data.name});
+				selections.push({name:data.name});
 			}
 		});
-		
+
 		ctrl.addressTable.setSelection(selections);
 		ctrl.onAddressSelection(info);
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -663,11 +679,24 @@ define(["html5-views-common/js/base64" ],function(base64){
 			ctrl.addressEntries = data
 		});
 	};
-	
-	
+
+	/**
+	 * 
+	 */
+	CorrespondenceCtrl.prototype.onMessageChange = function(){
+		var ctrl = this;
+		if( ctrl.oldMessage != ctrl.selected.message) {
+			//TODO change this to use the identifier
+			if(ctrl.selected.message.indexOf('$$') > -1) {
+				console.log('Run through the templating engine');
+			}
+		}
+		this.oldMessage = this.selected.message;
+	}
+
 	//Dependency injection array for our controller.
 	CorrespondenceCtrl.$inject = ['$scope','$q', '$http','$filter','$timeout','sdDialogService','sdCorrespondenceService'];
-	
+
 	//Require capable return object to allow our angular code to be initialized
 	//from a require-js injection system.
 	return {
@@ -677,6 +706,6 @@ define(["html5-views-common/js/base64" ],function(base64){
 			.controller("sdCorrespondenceCtrl", CorrespondenceCtrl);
 		}
 	};
-	
+
 
 });

@@ -121,7 +121,8 @@
 				<span class="iceOutLbl" ng-if="ctrl.readOnly"> Message : </span>
 			</td>
 			<td class="correspondence_right_section">	
-				<textarea data-ng-model="ctrl.selected.message" sd-rich-text-editor ng-disabled="ctrl.readOnly" sda-readOnly="{{ctrl.readOnly}}"> </textarea>
+				<textarea id="messageEditor" data-ng-model="ctrl.selected.message"
+				 sd-rich-text-editor ng-disabled="ctrl.readOnly" sda-readOnly="{{ctrl.readOnly}}" sda-on-blur="ctrl.onMessageChange();"> </textarea>
 			</td>
 		</tr>
 		

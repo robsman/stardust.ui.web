@@ -7,7 +7,7 @@
  	   <div ng-show="ctrl.dialog.templateSelector.showErorMessage" class="msg-error correspondence_dialog_error"> Invalid file format selected.Valid formats are text and html.  </div>
            <div sd-folder-tree
 				sda-on-init="ctrl.templateFolderInit(api)"
-				sda-multiselect="false"> 
+				sda-multiselect="false"
 				sda-root-path="documents/correspondence-templates"></div>
 		</div>
 	  <div class="modal-footer" >
@@ -30,6 +30,11 @@
 
 <script type="text/ng-template" id="attachmentSelectorTemplate">
         <div sd-folder-tree
+				sda-on-init="ctrl.templateFolderInit(api)"
+				sda-multiselect="true"
+				sda-root-path="documents/correspondence-templates"></div>
+		</div>	
+		<div sd-folder-tree
 				sda-on-init="ctrl.onAttachmentFolder(api)"
 				sda-multiselect="true"> 
 				'sda-process-oid="ctrl.selected.piOid"></div>
