@@ -27,7 +27,7 @@
 			transclude : true,
 			replace : true,
 			templateUrl : sdUtilService.getBaseUrl()
-					+ 'plugins/html5-views-common/scripts/directives/partials/toolTip.html',
+					+ 'plugins/html5-views-common/html5/scripts/directives/partials/toolTip.html',
 			controller : [ '$scope', '$parse', '$attrs', '$element',
 					ToolTipController ]
 		};

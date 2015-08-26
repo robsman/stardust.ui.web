@@ -90,7 +90,7 @@
 				controller="resourceMgmtTreeViewBean" />
 
 			<ippui:view name="documentSearchView"
-				include="/plugins/html5-views-common/partials/views/documentSearchView.html">
+				include="/plugins/html5-views-common/html5/partials/views/documentSearchView.html">
 				<ippui:preferences>
 					<ippui:preferencePage name="icon"
 						include="/plugins/views-common/images/icons/page_white_find.png" />

@@ -10,7 +10,7 @@
 /**
  * @author Johnson.Quadras
  */
-define(["html5-views-common/scripts/utils/base64" ],function(base64){
+define(["html5-views-common/js/base64" ],function(base64){
 
 	var _q;
 	var trace;
@@ -220,9 +220,9 @@ define(["html5-views-common/scripts/utils/base64" ],function(base64){
 		var partsMatcher = new RegExp('^(\\d+)\\|(\\d+)$');
 		var decodedParts = partsMatcher.exec(decodedId);
 		var activityInstanceOid = decodedParts[1];
-		console.log('Activity Oid : '+activityInstanceOid)
-		return activityInstanceOid
-		//return 1100;
+		console.log('Activity Oid  *****: '+activityInstanceOid)
+		return activityInstanceOid;
+	//	return 1100;
 	}
 	
 	function addFilesToUploadQ(files) {

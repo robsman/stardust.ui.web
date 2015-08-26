@@ -247,12 +247,12 @@ table.formTable td {
 			sda-type="confirm"
 			sda-title="{{i18n('views-common-messages.views-documentSearchView-advancedTextSearch-label')}}"
 			sda-scope="this"
-			sda-template="plugins/html5-views-common/partials/views/advancedTextSearch.html"
+			sda-template="plugins/html5-views-common/html5/partials/views/advancedTextSearch.html"
 			sda-on-confirm="docSearchViewCtrl.onConfirmFromAdvanceText(res)"
 			sda-on-close="docSearchViewCtrl.onCancelFromAdvanceText(res)"
 			sda-width="800px" sda-aid-prefix="COM-AdvSrchDlg"></div>
 		<div ng-show="docSearchViewCtrl.showDocumentSearchResult"
-			ng-include="'plugins/html5-views-common/partials/views/documentSearchResult.html'">
+			ng-include="'plugins/html5-views-common/html5/partials/views/documentSearchResult.html'">
 		</div>
 	</div>
 </body>

@@ -11,11 +11,11 @@
  * @author Johnson.Quadras
  */
 
-html5Deps.loadStyleSheets("../../../");
+html5Deps.loadStyleSheets("../../");
 
 var configs = html5Deps
 		.prepareRequireJsConfig({
-			baseUrl : "../../..",
+			baseUrl : "../..",
 			paths : {
 				'i18n' : [ 'common/InfinityBPMI18N' ],
 			},
@@ -24,7 +24,7 @@ var configs = html5Deps
 					exports : "InfinityBPMI18N"
 				}
 			},
-			deps : ["require","html5-views-common/scripts/services/sdCorrespondenceService","html5-views-common/scripts/controllers/sdCorrespondenceCtrl" ]
+			deps : ["require","html5-views-common/js/sdCorrespondenceService","html5-views-common/js/sdCorrespondenceCtrl" ]
 		});
 
 require.config({

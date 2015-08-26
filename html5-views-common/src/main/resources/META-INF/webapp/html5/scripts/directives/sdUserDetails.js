@@ -14,42 +14,43 @@
 (function() {
 	'use strict';
 
-	angular.module('viewscommon-ui').directive('sdDocumentDownload', [ 'sdUtilService', DocumentDownload ]);
+	angular.module('viewscommon-ui').directive('sdUserDetails', [ 'sdUtilService' ,'sdUserService', UserDetails ]);
 	/*
 	 * 
 	 */
-	function DocumentDownload(sdUtilService) {
+	function UserDetails(sdUtilService,sdUserService) {
 
 		return {
 			restrict : 'EA',
 			scope : { // Creates a new sub scope
-				documentName : '=sdaDocumentName',
-				documentId : '=sdaDocumentId',
+				userOID : '=sdaUserOid',
+				linkDisabled : '=?sdaLinkDisabled',
+				account: '=sdaAccount',
 				autoIdPrefix: '@sdaAidPrefix'
 			},
 			transclude : true,
 			replace : true,
-			templateUrl : sdUtilService.getBaseUrl() + 'plugins/html5-views-common/scripts/directives/partials/documentDownload.html',
+			templateUrl : sdUtilService.getBaseUrl() + 'plugins/html5-views-common/html5/scripts/directives/partials/userDetailsDialog.html',
 			link : function(scope, element, attrs, ctrl) {
-				new DocumentDownloadLink(scope, element, attrs, ctrl);
+				new UserDetailsLink(scope, element, attrs, ctrl);
 			}
 		};
 
 		/**
 		 * 
 		 */
-		function DocumentDownloadLink(scope, element, attrs, ctrl) {
+		function UserDetailsLink(scope, element, attrs, ctrl) {
 
 			var self = this;
 
-			scope.documentDownloadCtrl = self;
+			scope.userDetailsCtrl = self;
 
 			initialize();
 
 			/*
 			 * 
 			 */
-			DocumentDownloadLink.prototype.safeApply = function() {
+			UserDetailsLink.prototype.safeApply = function() {
 				sdUtilService.safeApply(scope);
 			};
 
@@ -58,30 +59,31 @@
 				if (!angular.isDefined(scope.i18n)) {
 					scope.i18n = scope.$parent.i18n;
 				}
-
-				self.setShowDocumentDownload = setShowDocumentDownload;
-				self.downloadDocument = downloadDocument;
-			}
-
-			/**
-			 * 
-			 */
-			function downloadDocument(res) {
-				var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/documents";
-				window.location = sdUtilService.getRootUrl() + "/" + REST_BASE_URL + "/downloadDocument" + "/"
-						+ scope.documentId + "/" + scope.documentName;
-			}
-			;
-
-			/**
-			 * 
-			 */
-			function setShowDocumentDownload() {
-				if (scope.documentId != undefined && scope.documentName != undefined) {
-					self.showDoumentDownload = true;
+				
+				if(!angular.isDefined(scope.linkDisabled)){
+					scope.linkDisabled = false;
 				}
+
+				self.openUserDetails = openUserDetails;
 			}
-			;
+			
+			/**
+			 * 
+			 * @param documentOwner
+			 */
+			function openUserDetails() {
+				var self = this;
+				if (scope.userOID != undefined){
+					sdUserService.getUserDetails(scope.userOID).then(function(data) {
+						self.userDetails = data;
+						self.userDetails.userImageURI = sdUtilService.getRootUrl() + data.userImageURI;
+						self.showUserDetails = true;
+					}, function(error) {
+						trace.log(error);
+					});
+				}
+				
+			}
 		}
 	}
 })();
