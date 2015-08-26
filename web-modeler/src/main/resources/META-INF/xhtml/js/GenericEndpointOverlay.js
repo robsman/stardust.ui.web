@@ -78,9 +78,9 @@ define(
                this.producerOutboundConversion = m_utils.jQuerySelect("#producerRouteTab #producerOutboundConversion");
                this.producerOutboundConversion.empty();
                this.producerOutboundConversion.append("<option value=\"" + m_constants.TO_BE_DEFINED + "\">" + m_i18nUtils.getProperty("None") + "</option>");
-               this.producerOutboundConversion.append("<option value=\"fromXML\" selected>" + m_i18nUtils.getProperty("modeler.common.conversion.type.xml") + "</option>");
-               this.producerOutboundConversion.append("<option value=\"fromJSON\">" + m_i18nUtils.getProperty("modeler.common.conversion.type.json") + "</option>");
-               this.producerOutboundConversion.append("<option value=\"fromCSV\">" + m_i18nUtils.getProperty("modeler.common.conversion.type.csv") + "</option>");
+               this.producerOutboundConversion.append("<option value=\"toXML\" selected>" + m_i18nUtils.getProperty("modeler.common.conversion.type.xml") + "</option>");
+               this.producerOutboundConversion.append("<option value=\"toJSON\">" + m_i18nUtils.getProperty("modeler.common.conversion.type.json") + "</option>");
+               this.producerOutboundConversion.append("<option value=\"toCSV\">" + m_i18nUtils.getProperty("modeler.common.conversion.type.csv") + "</option>");
                
                this.producerInboundConversion = m_utils.jQuerySelect("#producerRouteTab #producerInboundConversion");
                this.producerInboundConversion.empty();
