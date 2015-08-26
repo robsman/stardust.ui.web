@@ -46,7 +46,6 @@ import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.service.ProcessInstanceService;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDataDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
@@ -543,7 +542,7 @@ public class ProcessInstanceResource
       Boolean status = getProcessInstanceService().setDataPaths(processOid, dataPaths);
       return Response.ok(status.toString(), MediaType.APPLICATION_JSON).build();
    }
-   
+
    /**
     * @author Yogesh.Manware
     * @param processOid

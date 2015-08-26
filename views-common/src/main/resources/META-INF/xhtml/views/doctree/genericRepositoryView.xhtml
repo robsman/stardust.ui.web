@@ -347,15 +347,14 @@
 							
 							<ice:panelGroup style="display: inline;">
 								<ice:commandLink actionListener="#{genericRepositoryTreeViewBean.openDocument}"
-									rendered="#{item.userObject.leafNode}">
+									rendered="#{item.userObject.leafNode || item.userObject.clickable}">
 									<pc:automationTag value="auto-COM-RepoTree-OpenLeafNode"
 										standAlone="false" />
 									<ice:outputText value="#{item.userObject.label}" />
 									<f:attribute name="userObject" value="#{item.userObject}" />
 								</ice:commandLink>
-
 								<ice:outputText value="#{item.userObject.label}"
-									rendered="#{!item.userObject.leafNode}" />
+									rendered="#{!item.userObject.leafNode and !item.userObject.clickable}" />
 							</ice:panelGroup>
 						</ice:panelGroup>
 

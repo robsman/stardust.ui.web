@@ -42,6 +42,7 @@ import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ProcessInstances;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
@@ -49,6 +50,7 @@ import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
 import org.eclipse.stardust.engine.api.runtime.Folder;
+import org.eclipse.stardust.engine.api.runtime.FolderInfo;
 import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
@@ -90,6 +92,12 @@ import com.icesoft.faces.component.inputfile.FileInfo;
 public class DocumentMgmtUtility
 {
    public static final String DOCUMENTS = "/documents";
+   public static final String PROCESS_ATTACHMENTS = "/process-attachments";
+   public static final String SPECIFIC_DOCUMENTS = "/specific-documents";
+   public static final String CORRESPONDENCE = "/correspondence";
+   public static final String CORRESPONDENCE_OUT = "/correspondence-out-";
+   
+   
    private static final String YYYYMMDD_FORMAT = "yyyyMMdd";
    private static final String DATE_TIME_SECONDS = "MM/dd/yy hh:mm:ss a";
    private static final String REALMS_FOLDER = "realms/";
@@ -478,32 +486,58 @@ public class DocumentMgmtUtility
     */
    public static Folder createFolderIfNotExists(String folderPath)
    {
-      Folder folder = getDocumentManagementService().getFolder(folderPath, Folder.LOD_NO_MEMBERS);
-    
-         if (null == folder)
-         {
-            // folder does not exist yet, create it
-            String parentPath = folderPath.substring(0, folderPath.lastIndexOf('/'));
-            String childName = folderPath.substring(folderPath.lastIndexOf('/') + 1);
+      return createFolderIfNotExists(folderPath, null);
+   }
 
-            if (StringUtils.isEmpty(parentPath))
+   /**
+    * @param folderPath
+    * @param folderInfo
+    * @return
+    */
+   public static Folder createFolderIfNotExists(String folderPath, FolderInfo folderInfo)
+   {
+      Folder folder = getDocumentManagementService().getFolder(folderPath, Folder.LOD_NO_MEMBERS);
+
+      if (null == folder)
+      {
+         // folder does not exist yet, create it
+         String parentPath = folderPath.substring(0, folderPath.lastIndexOf('/'));
+         String childName = folderPath.substring(folderPath.lastIndexOf('/') + 1);
+
+         if (StringUtils.isEmpty(parentPath))
+         {
+            // top-level reached
+            if (folderInfo == null)
             {
-               // top-level reached
-               return getDocumentManagementService().createFolder("/", DmsUtils.createFolderInfo(childName));
+               folderInfo = DmsUtils.createFolderInfo(childName);
             }
             else
             {
-               Folder parentFolder = createFolderIfNotExists(parentPath);
-               return getDocumentManagementService().createFolder(parentFolder.getId(),
-                     DmsUtils.createFolderInfo(childName));
+               folderInfo.setName(childName);
             }
+
+            return getDocumentManagementService().createFolder("/", folderInfo);
          }
          else
          {
-            return folder;
+            Folder parentFolder = createFolderIfNotExists(parentPath);
+            if (folderInfo == null)
+            {
+               folderInfo = DmsUtils.createFolderInfo(childName);
+            }
+            else
+            {
+               folderInfo.setName(childName);
+            }
+            return getDocumentManagementService().createFolder(parentFolder.getId(), folderInfo);
          }
+      }
+      else
+      {
+         return folder;
+      }
    }
-
+   
    /**
     * returns documents attached to provided process instance
     * 
@@ -984,7 +1018,7 @@ public class DocumentMgmtUtility
     */
    public static String getProcessAttachmentsFolderPath(ProcessInstance pi)
    {
-      return DmsUtils.composeDefaultPath(pi.getOID(), pi.getStartTime()) + "/" + "process-attachments";
+      return DmsUtils.composeDefaultPath(pi.getOID(), pi.getStartTime()) + PROCESS_ATTACHMENTS;
    }
    
    
@@ -996,7 +1030,25 @@ public class DocumentMgmtUtility
     */
    public static String getTypedDocumentsFolderPath(ProcessInstance pi)
    {
-      return DmsUtils.composeDefaultPath(pi.getOID(), pi.getStartTime()) + "/" + "specific-documents";
+      return DmsUtils.composeDefaultPath(pi.getOID(), pi.getStartTime()) + SPECIFIC_DOCUMENTS;
+   }
+
+   /**
+    * @param pi
+    * @return
+    */
+   public static String getCorrespondenceFolderPath(ProcessInstance pi)
+   {
+      return DmsUtils.composeDefaultPath(pi.getOID(), pi.getStartTime()) + CORRESPONDENCE;
+   }
+   
+   /**
+    * @param ai
+    * @return
+    */
+   public static String getCorrespondenceOutFolderPath(ActivityInstance ai)
+   {
+      return getCorrespondenceFolderPath(ai.getProcessInstance()) + CORRESPONDENCE_OUT + ai.getOID();
    }
    
    /**

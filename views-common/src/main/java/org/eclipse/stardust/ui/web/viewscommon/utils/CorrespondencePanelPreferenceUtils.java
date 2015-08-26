@@ -201,7 +201,7 @@ public class CorrespondencePanelPreferenceUtils
       UserPreferencesHelper userPrefsHelper = UserPreferencesHelper.getInstance(UserPreferencesEntries.M_VIEWS_COMMON,
             PreferenceScope.USER);
 
-      userPrefsHelper.setString(UserPreferencesEntries.F_CORRESPONDENCE, preferenceKey, preferenceValue);
+      userPrefsHelper.setString(UserPreferencesEntries.V_CORRESPONDENCE_PANEL, preferenceKey, preferenceValue);
    }
    
    /**
@@ -212,7 +212,7 @@ public class CorrespondencePanelPreferenceUtils
       UserPreferencesHelper userPrefsHelper = UserPreferencesHelper.getInstance(UserPreferencesEntries.M_VIEWS_COMMON,
             PreferenceScope.USER);
 
-      userPrefsHelper.resetValue(UserPreferencesEntries.F_CORRESPONDENCE, preferenceKey);      
+      userPrefsHelper.resetValue(UserPreferencesEntries.V_CORRESPONDENCE_PANEL, preferenceKey);      
    }
    
    /**
@@ -279,7 +279,7 @@ public class CorrespondencePanelPreferenceUtils
    {
       String str = StringUtils.replace(GENERIC_COMPONENT_SELECTION_KEY + key, "?",
             UserPreferencesEntries.M_VIEWS_COMMON);
-      str = StringUtils.replace(str, "#", UserPreferencesEntries.F_CORRESPONDENCE);
+      str = StringUtils.replace(str, "#", UserPreferencesEntries.V_CORRESPONDENCE_PANEL);
 
       return str;
    }

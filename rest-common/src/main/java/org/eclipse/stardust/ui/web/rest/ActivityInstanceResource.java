@@ -37,7 +37,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -54,7 +53,6 @@ import org.eclipse.stardust.ui.web.rest.service.ActivityInstanceService;
 import org.eclipse.stardust.ui.web.rest.service.DelegationComponent;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
 import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
-import org.eclipse.stardust.ui.web.rest.service.ProcessInstanceService;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
@@ -70,10 +68,10 @@ import org.eclipse.stardust.ui.web.rest.service.dto.PostponedActivitiesResultDTO
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.TrafficLightViewUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
-import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -95,9 +93,6 @@ public class ActivityInstanceResource
 
    @Autowired
    private ActivityInstanceService activityInstanceService;
-
-   @Autowired
-   private ProcessInstanceService processInstanceService;
 
    @Resource
    private ParticipantSearchComponent participantSearchComponent;
@@ -481,6 +476,21 @@ public class ActivityInstanceResource
       return Response.ok(delegationComponent.delegate(postedData), MediaType.APPLICATION_JSON).build();
    }
 
+   /**
+    * creates folder if it does not exist
+    * @author Yogesh.Manware
+    * @param processOid
+    * @return
+    */
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{oid}/correspondence-out")
+   public Response getCorrespondenceOutFolder(@PathParam("oid") Long activityOid)
+   {
+      FolderDTO folderDto = activityInstanceService.getCorrespondenceOutFolder(activityOid);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(folderDto), MediaType.APPLICATION_JSON).build();
+   }
+   
    /**
     * @author Johnson.Quadras
     * @param postedData

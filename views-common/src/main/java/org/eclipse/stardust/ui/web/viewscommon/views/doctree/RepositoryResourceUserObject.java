@@ -60,6 +60,7 @@ public abstract class RepositoryResourceUserObject extends IceUserObject
    private boolean repositoryRootNode = false;
    private boolean isVersioningSupported = true;
    private boolean isWriteSupported = true;
+   private boolean clickable = false;
 
    /**
     * custom constructor initialized a user object specific to node
@@ -382,6 +383,17 @@ public abstract class RepositoryResourceUserObject extends IceUserObject
    public boolean isDetachable()
    {
       return false;
+   }
+  
+   // Folder node but click-able
+   protected void setClickable(boolean clickable)
+   {
+      this.clickable  = clickable;
+   }
+   
+   public boolean isClickable()
+   {
+      return clickable;
    }
    
    public void detachResource()

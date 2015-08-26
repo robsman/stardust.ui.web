@@ -10,12 +10,14 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.docmgmt;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.faces.model.SelectItem;
@@ -26,9 +28,16 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ErrorCase;
 import org.eclipse.stardust.engine.api.dto.Note;
-import org.eclipse.stardust.engine.api.runtime.*;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
+import org.eclipse.stardust.engine.api.runtime.Folder;
+import org.eclipse.stardust.engine.api.runtime.FolderInfo;
+import org.eclipse.stardust.engine.api.runtime.Grant;
+import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.core.spi.dms.IRepositoryInstanceInfo;
 import org.eclipse.stardust.engine.core.spi.dms.RepositoryIdUtils;
+import org.eclipse.stardust.engine.extensions.dms.data.DmsFolderBean;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
@@ -63,10 +72,19 @@ import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocumentUserOb
  */
 public class RepositoryUtility
 {
-   public static final String CORRESPONDENCE_FOLDER = "/documents/correspondence-templates";
+   public static final String CORRESPONDENCE_TEMPLATE_FOLDER = "/documents/correspondence-templates";
    public static final String DOCUMENT_DISPLAY_MODE_PORTAL = "PORTAL";
    public static final String DOCUMENT_DISPLAY_MODE_NEWBROWSER = "NEWBROWSER";
-
+   public static final String UI_PROPERTIES = "ui-properties";
+   
+   public enum UIProperties{
+     readOnly, clickable, type 
+   }
+   
+   public enum ResourceType{
+      correspondenceOut
+   }
+   
    private static final String ARTIFACTS_SKINS = "/artifacts/skins";
    private static final String ARTIFACTS_BUNDLES = "/artifacts/bundles";
    private static final String ARTIFACTS_CONTENT = "/artifacts/content";
@@ -118,7 +136,7 @@ public class RepositoryUtility
       if (( !DMSHelper.isSecurityEnabled() || (sessionCtx.isSessionInitialized() && sessionCtx.getUser()
             .isAdministrator())))
       {
-         if (null == DocumentMgmtUtility.getFolder(CORRESPONDENCE_FOLDER))
+         if (null == DocumentMgmtUtility.getFolder(CORRESPONDENCE_TEMPLATE_FOLDER))
          {
             DocumentMgmtUtility.createFolder(DocumentMgmtUtility.DOCUMENTS,
                   CommonProperties.CORRESPONDENCE_TEMPLATES_AND_PARAGRAPHS);
@@ -174,7 +192,14 @@ public class RepositoryUtility
          processDocumentsNode.add(createProcessAttachmentsNode(processInstance));
       }
 
-      // create Noted Node
+      // create correspondence folder if it exist.
+      DefaultMutableTreeNode correspondenceFolderNode = createCorrespondenceFolderNode(processInstance);
+      if (correspondenceFolderNode != null)
+      {
+         processDocumentsNode.add(correspondenceFolderNode);
+      }
+      
+      // create Notes Node
       List<Note> notesList = ProcessInstanceUtils.getNotes(processInstance);
       DefaultMutableTreeNode processNoteNode = createVirtualNode(I18nFolderUtils.getLabel(I18nFolderUtils.NOTES_V),
             ResourcePaths.I_NOTES, processInstance);
@@ -1434,6 +1459,91 @@ public class RepositoryUtility
       return processAttachmentsNode;
    }
 
+   
+   /**
+    * @param processInstance
+    * @return
+    */
+   private static DefaultMutableTreeNode createCorrespondenceFolderNode(ProcessInstance processInstance)
+   {
+      Folder folder = DocumentMgmtUtility.getFolder(DocumentMgmtUtility.getCorrespondenceFolderPath(processInstance));
+      if (folder == null)
+      {
+         return null;
+      }
+      DefaultMutableTreeNode processCorrespondenceNode = createFolderNode(folder);
+      return processCorrespondenceNode;
+   }
+   
+   /**
+    * @param ai
+    * @return
+    */
+   public static Folder getOrCreateCorrespondenceOutFolder(ActivityInstance ai)
+   {
+      // create Correspondence folder
+      getOrCreateCorrespondenceFolder(ai.getProcessInstance());
+
+      // create Correspondence out Folder
+      String correspondenceOutFolderPath = DocumentMgmtUtility.getCorrespondenceOutFolderPath(ai);
+      Folder correspondenceOutFolder = DocumentMgmtUtility.getDocumentManagementService().getFolder(
+            correspondenceOutFolderPath, 2);
+      if (correspondenceOutFolder == null)
+      {
+         FolderInfo folderInfo = createFolderInfoWithUIProperties();
+         @SuppressWarnings("unchecked")
+         Map<String, Serializable> uiProperties = (Map<String, Serializable>) folderInfo.getProperties().get(
+               UI_PROPERTIES);
+         uiProperties.put(UIProperties.readOnly.name(), true);
+         uiProperties.put(UIProperties.clickable.name(), true);
+         uiProperties.put(UIProperties.type.name(), ResourceType.correspondenceOut.name());
+         return DocumentMgmtUtility.createFolderIfNotExists(correspondenceOutFolderPath, folderInfo);
+      }
+      else
+      {
+         return correspondenceOutFolder;
+      }
+   }
+
+   /**
+    * @param pi
+    * @return
+    */
+   public static Folder getOrCreateCorrespondenceFolder(ProcessInstance pi)
+   {
+      String correspondenceFolderPath = DocumentMgmtUtility.getCorrespondenceFolderPath(pi);
+      // check if folder is null
+      Folder correspondenceFolder = DocumentMgmtUtility.getFolder(correspondenceFolderPath);
+      if (correspondenceFolder == null)
+      {
+         FolderInfo folderInfo = createFolderInfoWithUIProperties();
+         @SuppressWarnings("unchecked")
+         Map<String, Serializable> uiProperties = (Map<String, Serializable>) folderInfo.getProperties().get(
+               UI_PROPERTIES);
+         uiProperties.put(UIProperties.readOnly.name(), true);
+         return DocumentMgmtUtility.createFolderIfNotExists(correspondenceFolderPath, folderInfo);
+      }
+      else
+      {
+         return correspondenceFolder;
+      }
+   }
+
+   /**
+    * @return
+    */
+   public static FolderInfo createFolderInfoWithUIProperties()
+   {
+      FolderInfo folderInfo = new DmsFolderBean();
+      if (folderInfo.getProperties() == null)
+      {
+         Map<String, HashMap<String, Serializable>> folderProperties = new HashMap<String, HashMap<String, Serializable>>();
+         folderInfo.setProperties(folderProperties);
+      }
+      folderInfo.setProperty(UI_PROPERTIES, new HashMap<String, Serializable>());
+      return folderInfo;
+   }
+   
    /**
     * create and return Note node
     *

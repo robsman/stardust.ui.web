@@ -53,6 +53,7 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
    private MessagesViewsCommonBean propsBean;
    private ToolTip documentToolTip;
    private Boolean detachable;
+   private boolean ParentFolderPropertiesConsidered = false;
 
    /**
     * custom constructor initialing document user object
@@ -90,6 +91,12 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
    @Override
    public void rename(String newName)
    {
+      readParentFolderProperties();
+      if (!this.isEditable())
+      {
+         MessageDialog.addErrorMessage(propsBean.getString("views.genericRepositoryView.renameNotPermitted"));
+         return;
+      }
       try
       {
          if (DocumentMgmtUtility.isDocumentExtensionChanged(newName, getDocument().getName()))
@@ -138,6 +145,13 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
    @Override
    public void deleteResource()
    {
+      readParentFolderProperties();
+      if (!this.isDeletable())
+      {
+         MessageDialog.addErrorMessage(propsBean.getString("views.genericRepositoryView.deleteNotPermitted"));
+         return;
+      }
+      
       try
       {
          // delete resource from repository
@@ -202,11 +216,37 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
    }
 
    /**
+    * read parent folder properties
+    */
+   private void readParentFolderProperties()
+   {
+      if (!ParentFolderPropertiesConsidered)
+      {
+         DefaultMutableTreeNode parentNode = (DefaultMutableTreeNode) this.wrapper.getParent();
+
+         if (parentNode.getUserObject() instanceof RepositoryFolderUserObject)
+         {
+            RepositoryFolderUserObject folderUserObject = (RepositoryFolderUserObject) parentNode.getUserObject();
+            this.setEditable(folderUserObject.isEditable());
+            this.setDeletable(folderUserObject.isDeletable());
+         }
+         ParentFolderPropertiesConsidered = true;
+      }
+   }
+   
+   /**
     * Upload new version
     */
    @Override
    public void upload()
    {
+      readParentFolderProperties();
+      if (!this.isEditable())
+      {
+         MessageDialog.addErrorMessage(propsBean.getString("views.genericRepositoryView.modifyNotPermitted"));
+         return;
+      }
+      
       DocumentUploadHelper documentUploadHelper = new DocumentUploadHelper();
       documentUploadHelper.initializeVersionUploadDialog(getDocument());
       documentUploadHelper.getFileUploadDialogAttributes().setOpenDocumentFlag(true);

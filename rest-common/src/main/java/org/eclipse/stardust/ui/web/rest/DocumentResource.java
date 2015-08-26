@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
 
 import javax.ws.rs.Consumes;
@@ -39,8 +40,11 @@ import org.eclipse.stardust.ui.web.rest.service.DocumentService;
 import org.eclipse.stardust.ui.web.rest.service.RepositoryService;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.FileUploadUtils;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -196,6 +200,29 @@ public class DocumentResource
       }
 
       return Response.ok(GsonUtils.toJsonHTMLSafeString(documents)).build();
+   }
+
+  
+   /**
+    *  @author Yogesh.Manware
+    * @param documentId
+    * @param postedData
+    * @return
+    * @throws Exception
+    */
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/{documentId: .*}/copy")
+   public Response createCopy(@PathParam("documentid") String documentId, String postedData) throws Exception
+   {
+      Map<String, Object> data = JsonDTO.getAsMap(postedData);
+      String parentFolderPath = (String) data.get("parentFolderPath");
+      // parse attachments
+      DocumentDTO documentDTO = DocumentDTOBuilder.build(DocumentMgmtUtility.createDocumentCopy(
+            DocumentMgmtUtility.getDocument(documentId), parentFolderPath));
+
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
    }
 
    /**

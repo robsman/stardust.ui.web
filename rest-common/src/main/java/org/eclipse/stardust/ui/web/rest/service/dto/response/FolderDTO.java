@@ -29,6 +29,8 @@ public class FolderDTO extends AbstractDTO
 
    public List<FolderDTO> folders;
    public List<DocumentDTO> documents;
+   public UiPropertiesDTO uiProperties;
+   public CorrespondenceMetaDataDTO correspondenceMetaDataDTO;
 
    public FolderDTO()
    {
