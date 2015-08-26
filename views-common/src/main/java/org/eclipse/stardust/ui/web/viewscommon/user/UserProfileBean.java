@@ -449,6 +449,13 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
          userToModify.setEMail(getEmail());
          userToModify.setValidFrom(getValidFrom());
          userToModify.setValidTo(getValidTo());
+         if(!isInternalAuthentication())
+         {
+            if(StringUtils.isNotEmpty(getAccount()))
+            {
+               userToModify.setAccount(getAccount());
+            }
+         }
          userToModify.setQualityAssuranceProbability(getQaOverride());
          modifiedUser = userService.modifyUser(userToModify);
          if (modifiedUser != null && modifiedUser.equals(loggedInUser))
@@ -651,7 +658,7 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
 
    public void setAccount(String account)
    {
-      if (isCreateMode() || isCopyMode())
+      if (isCreateMode() || isCopyMode() || (isModifyMode() && !isInternalAuthentication()))
       {
          this.account = account;
       }
