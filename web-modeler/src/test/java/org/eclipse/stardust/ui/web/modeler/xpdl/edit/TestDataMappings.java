@@ -220,7 +220,7 @@ public class TestDataMappings extends RecordingTestcase
 
       String command = "{\"commandId\":\"process.clone\",\"modelId\":\"ProviderModel\",\"changeDescriptions\":[{\"oid\":\"ProviderModel\",\"changes\":{\"id\":\"ProviderProcess\"}}]}";
 
-      replaySimple(command, "testCloneModelMultipleDatamappings", null);
+      replaySimple(command, "testCloneModelMultipleDatamappings", null, false);
 
       DataType data = GenericModelingAssertions.assertPrimitiveData(providerModel, "PrimitiveData", "Primitive Data", "String");
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "CLONE_ProviderProcess", "CLONE - Provider Process");
@@ -248,7 +248,7 @@ public class TestDataMappings extends RecordingTestcase
 
       String command = "{\"commandId\":\"process.clone\",\"modelId\":\"ProviderModel\",\"changeDescriptions\":[{\"oid\":\"ProviderModel\",\"changes\":{\"id\":\"DatamappingProcess\"}}]}";
 
-      replaySimple(command, "testCloneProcessUIMashUpDatamappings", null);
+      replaySimple(command, "testCloneProcessUIMashUpDatamappings", null, false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "CLONE_DatamappingProcess","CLONE - Datamapping Process");
       ActivityType activity = assertUIMashupProcess(process);

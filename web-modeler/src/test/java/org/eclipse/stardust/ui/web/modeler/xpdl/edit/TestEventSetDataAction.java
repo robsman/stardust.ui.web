@@ -104,7 +104,7 @@ public class TestEventSetDataAction extends RecordingTestcase
 
       String command = "{\"commandId\":\"process.clone\",\"modelId\":\"ProviderModel\",\"changeDescriptions\":[{\"oid\":\"ProviderModel\",\"changes\":{\"id\":\"Process1\"}}]}";
 
-      replaySimple(command, "testCloneProcessCreateSimpleIntermediateEvent", null);
+      replaySimple(command, "testCloneProcessCreateSimpleIntermediateEvent", null, false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "CLONE_Process1", "CLONE - Process 1");
       ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
@@ -131,7 +131,7 @@ public class TestEventSetDataAction extends RecordingTestcase
 
       String command = "{\"commandId\":\"process.clone\",\"modelId\":\"ProviderModel\",\"changeDescriptions\":[{\"oid\":\"ProviderModel\",\"changes\":{\"id\":\"Process1\"}}]}";
 
-      replaySimple(command, "testCloneProcessCreateSimpleIntermediateEvent", null);
+      replaySimple(command, "testCloneProcessCreateSimpleIntermediateEvent", null, false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "CLONE_Process1", "CLONE - Process 1");
       ActivityType activity = GenericModelingAssertions.assertActivity(process, "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);

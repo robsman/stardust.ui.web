@@ -246,7 +246,7 @@ public class TestCrossModelSupport extends TestGeneralModeling
 
       String command = "{\"commandId\":\"process.clone\",\"modelId\":\"ConsumerModel\",\"changeDescriptions\":[{\"oid\":\"ConsumerModel\",\"changes\":{\"id\":\"ConsumerProcess\"}}]}";
 
-      replaySimple(command, "testCloneProcessDragAndDropFromProviderToConsumer", null);
+      replaySimple(command, "testCloneProcessDragAndDropFromProviderToConsumer", null, false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(consumerModel, "CLONE_ConsumerProcess", "CLONE - ConsumerProcess");
       ActivityType activity = GenericModelingAssertions.assertActivity(process, "ProvidedProcess", "ProvidedProcess", ActivityImplementationType.SUBPROCESS_LITERAL);
@@ -272,16 +272,11 @@ public class TestCrossModelSupport extends TestGeneralModeling
 
       String command = "{\"commandId\":\"process.clone\",\"modelId\":\"ConsumerModel\",\"changeDescriptions\":[{\"oid\":\"ConsumerModel\",\"changes\":{\"id\":\"ConsumerProcess\"}}]}";
 
-      replaySimple(command, "testCloneProcessDragAndDropFromProviderToConsumer", null);
+      replaySimple(command, "testCloneProcessDragAndDropFromProviderToConsumer", null, false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(consumerModel, "CLONE_ConsumerProcess", "CLONE - ConsumerProcess");
       ActivityType activity = GenericModelingAssertions.assertActivity(process, "ProvidedProcess", "ProvidedProcess", ActivityImplementationType.SUBPROCESS_LITERAL);
       GenericModelingAssertions.assertSubProcess(activity, "ConsumerSubProcess");
-
-      saveReplayModel("C:/development/");
-
-      System.out.println();
-
    }
 
    @Test
@@ -300,7 +295,7 @@ public class TestCrossModelSupport extends TestGeneralModeling
 
       String command = "{\"commandId\":\"process.clone\",\"modelId\":\"ConsumerModel\",\"changeDescriptions\":[{\"oid\":\"ConsumerModel\",\"changes\":{\"id\":\"ConsumerSubProcess\"}}]}";
 
-      replaySimple(command, "testCloneProcessDragAndDropFromProviderToConsumer", null);
+      replaySimple(command, "testCloneProcessDragAndDropFromProviderToConsumer", null, false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(consumerModel, "CLONE_ConsumerSubProcess", "CLONE - ConsumerSubProcess");
       ActivityType activity = GenericModelingAssertions.assertActivity(process, "ConsumerUIMashup", "ConsumerUIMashup", ActivityImplementationType.APPLICATION_LITERAL);
@@ -329,7 +324,7 @@ public class TestCrossModelSupport extends TestGeneralModeling
 
       String command = "{\"commandId\":\"process.clone\",\"modelId\":\"ConsumerModel\",\"changeDescriptions\":[{\"oid\":\"ConsumerModel\",\"changes\":{\"id\":\"ConsumerProcess\"}}]}";
 
-      replaySimple(command, "testCloneProcessDragAndDropFromProviderToConsumer", null);
+      replaySimple(command, "testCloneProcessDragAndDropFromProviderToConsumer", null, false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(consumerModel, "CLONE_ConsumerProcess", "CLONE - ConsumerProcess");
       assertReferencedPrimitiveData(consumerModel, providerModel, "ProvidedPrimitive", "ProvidedPrimitive", "String");
@@ -362,7 +357,7 @@ public class TestCrossModelSupport extends TestGeneralModeling
 
       String command = "{\"commandId\":\"process.clone\",\"modelId\":\"ConsumerModel\",\"changeDescriptions\":[{\"oid\":\"ConsumerModel\",\"changes\":{\"id\":\"ConsumerSubProcess\"}}]}";
 
-      replaySimple(command, "testCloneProcessDragAndDropFromProviderToConsumer", null);
+      replaySimple(command, "testCloneProcessDragAndDropFromProviderToConsumer", null, false);
 
       ProcessDefinitionType process = GenericModelingAssertions.assertProcessInterface(consumerModel, "CLONE_ConsumerSubProcess", "CLONE - ConsumerSubProcess", 2);
 

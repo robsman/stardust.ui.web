@@ -191,7 +191,7 @@ public class RecordingTestcase
    }
 
 
-   protected void replaySimple(String command, String testScenarioName, String parameter)
+   protected void replaySimple(String command, String testScenarioName, String parameter, boolean performResponseCallback)
    {
       if (parameter != null)
       {
@@ -205,12 +205,17 @@ public class RecordingTestcase
       if (newJto != null)
       {
          newJto = jsonIo.gson().fromJson(command, CommandJto.class);
+         JsonObject response = null;
          try
          {
-            changeApiDriver.performChange(newJto);
+            response = changeApiDriver.performChange(newJto);
          }
          catch (ModelerException e)
          {
+         }
+         if (performResponseCallback && response != null)
+         {
+            manageResponse(testScenarioName, 1, command, response);
          }
       }
       System.out.println("Replay finished.");
@@ -243,30 +248,37 @@ public class RecordingTestcase
 
             if (performResponseCallback && response != null)
             {
-               TestResponse testResponse = new TestResponse(++responseNumber, response, command);
-               Method method = ReflectionUtils.findMethod(this.getClass(),
-                     testScenarioName + "Callback", new Class[] {TestResponse.class});
-               if (method != null)
-               {
-                  try
-                  {
-                     method.invoke(this, new Object[] {testResponse});
-                  }
-                  catch (InvocationTargetException t)
-                  {
-                     System.out.println("Assertion of response " + responseNumber + " failed.");
-                     t.printStackTrace();
-                     throw new AssertionError(t.getTargetException());
-                  }
-                  catch (Throwable t)
-                  {
-                  }
-               }
+               manageResponse(testScenarioName, ++responseNumber, command, response);
             }
          }
       }
       System.out.println("Replay finished.");
       return new String[] {responseString, expectedResponse};
+   }
+
+
+   private void manageResponse(String testScenarioName, int responseNumber, String command,
+         JsonObject response) throws AssertionError
+   {
+      TestResponse testResponse = new TestResponse(responseNumber, response, command);
+      Method method = ReflectionUtils.findMethod(this.getClass(),
+            testScenarioName + "Callback", new Class[] {TestResponse.class});
+      if (method != null)
+      {
+         try
+         {
+            method.invoke(this, new Object[] {testResponse});
+         }
+         catch (InvocationTargetException t)
+         {
+            System.out.println("Assertion of response " + responseNumber + " failed.");
+            t.printStackTrace();
+            throw new AssertionError(t.getTargetException());
+         }
+         catch (Throwable t)
+         {
+         }
+      }
    }
 
    protected List<TestResponse> getTestResponses()
