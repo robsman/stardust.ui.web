@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
@@ -40,7 +41,6 @@ import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
-import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.ws.DocumentInfoXto;
@@ -58,6 +58,7 @@ import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
@@ -66,6 +67,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.CreateCaseDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDataDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JoinProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
@@ -75,7 +77,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SwitchProcessDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.AddressBookDataPathValueDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.DataPathValueDTO;
@@ -121,18 +123,49 @@ public class ProcessInstanceService
    @Resource
    private RestCommonClientMessages restCommonClientMessages;
    
-   public ProcessInstanceDTO startProcess(String processDefinitionId, DocumentDataDTO documentData)
+   public ProcessInstanceDTO startProcess(List<Attachment> attachments)
    {
-      ProcessDefinition processDef = processDefinitionUtils.getProcessDefinition(processDefinitionId);
-      Model model = ModelCache.findModelCache().getModel(processDef.getModelOID());
-      final InputDocumentsXto processDocuments = createProcessDocuments(documentData);
-      StartProcessWithDocumentsCommand command = new StartProcessWithDocumentsCommand(processDefinitionId,
-            model.getModelOID(), null, true, WsApiStartProcessUtils.unmarshalToSerializable(processDocuments, model),
-            null);
-
+      String processDefinitionId = null;
+      DocumentDataDTO documentDataDTO = null;
+      DocumentInfoDTO documentInfoDTO = null;
+      InputStream inputStream = null;
+      JsonMarshaller jsonIo = new JsonMarshaller();
       ProcessInstance pi = null;
       try
       {
+         for (Attachment attachment : attachments)
+         {
+            DataHandler dataHandler = attachment.getDataHandler();
+            inputStream = dataHandler.getInputStream();
+            if ("processDefinitionId".equals(dataHandler.getName()))
+            {
+               processDefinitionId = inputStream.toString();
+            }
+            else if ("documentData".equals(dataHandler.getName()))
+            {
+               inputStream = dataHandler.getInputStream();
+               Map<String, Type> customTokens = new HashMap<String, Type>();
+               customTokens.put("documentType", new TypeToken<DocumentTypeDTO>()
+               {
+               }.getType());
+               JsonObject data = jsonIo.readJsonObject(inputStream.toString());
+               documentDataDTO = DTOBuilder.buildFromJSON(data, DocumentDataDTO.class, customTokens);
+            }
+            else
+            {
+               List<Attachment> attachmentList = CollectionUtils.newArrayList();
+               attachmentList.add(attachment);
+               documentInfoDTO = FileUploadUtils.parseAttachments(attachmentList).get(0);
+            }
+
+         }
+         ProcessDefinition processDef = processDefinitionUtils.getProcessDefinition(processDefinitionId);
+         Model model = ModelCache.findModelCache().getModel(processDef.getModelOID());
+         final InputDocumentsXto processDocuments = createProcessDocuments(documentDataDTO, documentInfoDTO);
+         StartProcessWithDocumentsCommand command = new StartProcessWithDocumentsCommand(processDefinitionId,
+               model.getModelOID(), null, true,
+               WsApiStartProcessUtils.unmarshalToSerializable(processDocuments, model), null);
+
          pi = (ProcessInstance) org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils.getWorkflowService()
                .execute(command);
          return processInstanceUtilsREST.buildProcessInstanceDTO(pi);
@@ -140,35 +173,44 @@ public class ProcessInstanceService
       catch (Exception e)
       {
          throw new I18NException(restCommonClientMessages.getParamString("processInstance.startProcess.error",
-               processDefinitionId, documentData.name));
+               processDefinitionId, documentDataDTO.name));
 
       }
 
    }
 
-   private static InputDocumentsXto createProcessDocuments(DocumentDataDTO documentData)
+   private InputDocumentsXto createProcessDocuments(DocumentDataDTO documentData, DocumentInfoDTO documentInfo)
    {
       final InputDocumentsXto inputDocs = new InputDocumentsXto();
       final InputDocumentXto inputDoc = new InputDocumentXto();
       DocumentInfoXto docInfo = new DocumentInfoXto();
       DocumentTypeXto docType = new DocumentTypeXto();
-      docType.setDocumentTypeId(documentData.documentType.getDocumentTypeId());
-      docType.setSchemaLocation(documentData.documentType.getSchemaLocation());
+      if(null != documentData.documentType)
+      {
+         docType.setDocumentTypeId(documentData.documentType.getDocumentTypeId());
+         docType.setSchemaLocation(documentData.documentType.getSchemaLocation());
+         // Specific Documents will be stored at PATH
+         inputDoc.setGlobalVariableId(documentData.id);
+      }
       docInfo.setDocumentType(docType);
-      docInfo.setName(documentData.name);
+      docInfo.setName(documentInfo.name);
+      docInfo.setDateCreated(new Date());
+      docInfo.setContentType(documentInfo.contentType);
+      docInfo.setOwner(processInstanceUtilsREST.getCurrentUser().getAccount());
       inputDoc.setDocumentInfo(docInfo);
-      inputDoc.setContent(createContent());
-      inputDoc.setTargetFolder("/Test-" + System.currentTimeMillis());
+      inputDoc.setContent(createContent(documentData, documentInfo));
       inputDocs.getInputDocument().add(inputDoc);
       return inputDocs;
    }
 
-   private static DataHandler createContent()
+   private DataHandler createContent(DocumentDataDTO documentData, DocumentInfoDTO documentInfo)
    {
-      final DocumentInfo docInfo = DmsUtils.createDocumentInfo("anonymous");
-      return new DataHandler(new DocumentContentDataSource(docInfo, "This is a sample document.".getBytes()));
+      
+      final DocumentInfo docInfo = DmsUtils.createDocumentInfo(documentInfo.name);
+      docInfo.setContentType(documentInfo.contentType);
+      docInfo.setOwner(processInstanceUtilsREST.getCurrentUser().getAccount());
+      return new DataHandler(new DocumentContentDataSource(docInfo, documentInfo.content));
    }
-
    public List<ProcessInstanceDTO> getPendingProcesses(JsonObject json)
    {
       // TODO Auto-generated method stub

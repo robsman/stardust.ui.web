@@ -188,30 +188,13 @@ public class ProcessInstanceResource
    }
 
    @PUT
-   @Consumes(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.MULTIPART_FORM_DATA)
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("processes.json")
-   public Response startProcess(String postedData)
+   @Path("processes")
+   public Response startProcess(List<Attachment> attachments)
    {
-      try
-      {
-         JsonObject json = jsonIo.readJsonObject(postedData);
-         String processDefinitionId = GsonUtils.extractString(json, "processDefinitionId");
-         JsonObject documentData = GsonUtils.extractObject(json, "documentData");
-         Map<String, Type> customTokens = new HashMap<String, Type>();
-         customTokens.put("documentType", new TypeToken<DocumentTypeDTO>()
-         {
-         }.getType());
-         DocumentDataDTO documentDataDTO = DTOBuilder.buildFromJSON(documentData, DocumentDataDTO.class, customTokens);
-         return Response.ok(getProcessInstanceService().startProcess(processDefinitionId, documentDataDTO).toJson(),
-               MediaType.APPLICATION_JSON).build();
-      }
-      catch (Exception e)
-      {
-         trace.error(e, e);
-
-         return Response.serverError().build();
-      }
+      return Response.ok(getProcessInstanceService().startProcess(attachments).toJson(), MediaType.APPLICATION_JSON)
+            .build();
    }
 
    @POST

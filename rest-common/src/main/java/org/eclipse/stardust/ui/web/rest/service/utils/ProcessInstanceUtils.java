@@ -188,6 +188,10 @@ public class ProcessInstanceUtils
       return getProcessInstance( oid, false);
    }
 
+   public User getCurrentUser()
+   {
+      return serviceFactoryUtils.getUserService().getUser();
+   }
 
    /**
     * @param instance
