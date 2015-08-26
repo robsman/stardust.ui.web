@@ -246,7 +246,7 @@ public class ProcessInstanceService
                .getDocumentTypeFromData(model, dataDetails);
 
          result = new HashMap<String, Object>();
-         Map<String, String> failures = new HashMap<String, String>();
+         List<NotificationDTO> failures = new ArrayList<NotificationDTO>();
          result.put("failures", failures);
          List<DocumentDTO> documentDTOs = new ArrayList<DocumentDTO>();
          result.put("documents", documentDTOs);
@@ -265,7 +265,7 @@ public class ProcessInstanceService
             }
             catch (I18NException e)
             {
-               failures.put(documentInfoDTO.name, e.getMessage());
+               failures.add(new NotificationDTO(null, documentInfoDTO.name, e.getMessage()));
             }
          }
       }

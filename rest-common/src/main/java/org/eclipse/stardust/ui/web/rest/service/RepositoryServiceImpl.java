@@ -24,6 +24,7 @@ import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.FolderDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
@@ -128,7 +129,7 @@ public class RepositoryServiceImpl implements RepositoryService
    public Map<String, Object> createProcessAttachments(List<DocumentInfoDTO> documentInfoDTOs, ProcessInstance processInstance)
    {
       Map<String, Object> result = new HashMap<String, Object>();
-      Map<String, String> failures = new HashMap<String, String>();
+      List<NotificationDTO> failures = new ArrayList<NotificationDTO>();
       result.put("failures", failures);
       List<DocumentDTO> documentDTOs = new ArrayList<DocumentDTO>();
       result.put("documents", documentDTOs);
@@ -143,8 +144,8 @@ public class RepositoryServiceImpl implements RepositoryService
          Document document = DocumentMgmtUtility.getDocument(parentFolder.getPath(), documentInfoDTO.name);
          if (document != null)
          {
-            failures.put(documentInfoDTO.name,
-                  restCommonClientMessages.getParamString("document.existError", documentInfoDTO.name));
+            failures.add(new NotificationDTO(null, documentInfoDTO.name, restCommonClientMessages.getParamString(
+                  "document.existError", documentInfoDTO.name)));
             continue;
          }
 
