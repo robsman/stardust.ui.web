@@ -114,7 +114,7 @@
 		</ice:panelGroup>
 		
 		<ice:panelGroup rendered="#{col.columnName == 'Actions'}">
-			<ice:panelGrid columns="6" style="float: right;" rendered="#{row.loaded}">
+			<ice:panelGrid columns="7" style="float: right;" rendered="#{row.loaded}">
 				<ice:commandLink action="#{ippPortalApp.openView}" rendered="#{!row.caseInstance}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsProcDetails" standAlone="false"/>
 					<h:graphicImage value="/plugins/views-common/images/icons/process.png"
@@ -154,6 +154,16 @@
 						style="border:none;"
 						styleClass="#{!row.caseInstance ? '' : 'iceCmdBtn-dis'}"
 						title="#{messages_bcc['views.strandedActivities.toolTip.delegateToDefaultPerformer']}" />
+				</ice:commandLink>
+				<ice:commandLink
+					actionListener="#{bean.openRelocationDialog}"
+					disabled="#{not row.activatable or row.caseInstance}" onclick="Event.stop(event);">
+					<pc:automationTag value="auto-COM-ActivityTbl-ActionsRelocate" standAlone="false"/>
+					<f:attribute name="activityInstance" value="#{row.activityInstance}" />
+					<ice:graphicImage
+						value="/plugins/views-common/images/icons/redo.png"
+						styleClass="toolbar-button"
+						title="#{processportal_msgPropsBean['toolbars.workflowActions.relocation.relocate']}" />
 				</ice:commandLink>
 				<ice:commandLink actionListener="#{bean.openDelegateDialog}" disabled="#{!row.delegable or row.caseInstance}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsDelegate" standAlone="false"/>

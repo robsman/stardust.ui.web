@@ -73,7 +73,20 @@
 					styleClass="#{not (row.refersToActivity and row.delegable) ? 'iceCmdBtn-dis' : ''}" />
 				<f:attribute name="row" value="#{row}" />
 			</ice:commandLink>
-			
+
+			<ice:commandLink
+				actionListener="#{row.activityTreeTable.activityUIBuilder.openRelocationDialog}"
+				rendered="#{row.refersToActivity}"
+				disabled="#{not (row.refersToActivity and row.activatable) }">
+				<pc:automationTag value="auto-COM-ACTHistoryTable-ActionsRelocate"
+					standAlone="false" />
+				<ice:graphicImage
+					value="/plugins/views-common/images/icons/redo.png"
+					styleClass="toolbar-button"
+					title="#{processportal_msgPropsBean['toolbars.workflowActions.relocation.relocate']}" />
+				<f:attribute name="row" value="#{row}" />
+			</ice:commandLink>
+
 			<ice:commandLink
 				actionListener="#{row.activityTreeTable.openAbortActivityDialog}"
 				rendered="#{row.refersToActivity}"

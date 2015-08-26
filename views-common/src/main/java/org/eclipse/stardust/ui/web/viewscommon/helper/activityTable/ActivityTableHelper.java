@@ -84,6 +84,7 @@ import org.eclipse.stardust.ui.web.viewscommon.dialogs.DelegationBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.JoinProcessDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.PanelConfirmation;
+import org.eclipse.stardust.ui.web.viewscommon.dialogs.RelocateActivityDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.SwitchProcessDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
@@ -244,8 +245,24 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
             delegationBean.setAis(ais);
             delegationBean.setICallbackHandler(callbackHandler);
             delegationBean.openPopup();
-         }
-      }   
+      }
+   }
+
+   /**
+    * Opens relocation dialog
+    * 
+    * @param ae
+    */
+   public void openRelocationDialog(ActionEvent ae)
+   {
+      ActivityInstance ai = (ActivityInstance) ae.getComponent().getAttributes().get(
+            "activityInstance");
+      
+      RelocateActivityDialogBean dialog = (RelocateActivityDialogBean) FacesUtils.getBeanFromContext("relocateActivityDialogBean");
+      dialog.setActivityInstance(ai);
+      dialog.setCallbackHandler(callbackHandler);
+      dialog.openPopup();
+   }
    
    /**
     * 

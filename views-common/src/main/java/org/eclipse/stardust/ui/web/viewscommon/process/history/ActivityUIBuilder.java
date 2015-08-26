@@ -27,12 +27,14 @@ import org.eclipse.stardust.ui.web.common.columnSelector.TableColumnSelectorPopu
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterOnOff;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilters;
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.FilterToolbarItem;
 import org.eclipse.stardust.ui.web.viewscommon.core.ProcessInstanceDetailConfigurationBean;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.DelegationBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.dialogs.RelocateActivityDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
 
@@ -220,6 +222,39 @@ public class ActivityUIBuilder
       else
       {
          trace.warn(this.getClass().getName() + " Method: openDelegateDialog()"
+               + " Runtime Object is not of type ActivityInstance");
+      }
+   }
+
+   /**
+    * Opens relocation dialog
+    * 
+    * @param ae
+    */
+   public void openRelocationDialog(ActionEvent ae)
+   {
+      ActivityTableEntryUserObject row = (ActivityTableEntryUserObject) ae.getComponent().getAttributes().get("row");
+      
+      if (row.getTableEntry().getRuntimeObject() instanceof ActivityInstance)
+      {
+         RelocateActivityDialogBean dialog = (RelocateActivityDialogBean) FacesUtils.getBeanFromContext("relocateActivityDialogBean");
+         dialog.setActivityInstance(((ActivityInstance) row.getTableEntry().getRuntimeObject()));
+         dialog.setCallbackHandler(new ICallbackHandler()
+         {
+            @Override
+            public void handleEvent(EventType eventType)
+            {
+               if (eventType.equals(EventType.APPLY))
+               {
+                  // TODO - refresh the process history table?
+               }
+            }
+         });
+         dialog.openPopup();
+      }
+      else
+      {
+         trace.warn(this.getClass().getName() + " Method: openRelocationDialog()"
                + " Runtime Object is not of type ActivityInstance");
       }
    }

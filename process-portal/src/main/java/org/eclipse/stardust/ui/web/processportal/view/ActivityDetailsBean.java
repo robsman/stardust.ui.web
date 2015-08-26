@@ -1166,7 +1166,7 @@ public class ActivityDetailsBean extends UIComponentBean
    public void openRelocationDialog()
    {
       RelocateActivityDialogBean dialog = (RelocateActivityDialogBean) FacesUtils.getBeanFromContext("relocateActivityDialogBean");
-      dialog.setActivityInstanceOID(getActivityInstance().getOID());
+      dialog.setActivityInstance(getActivityInstance());
       dialog.setCallbackHandler(new ICallbackHandler()
       {
          @Override

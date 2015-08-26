@@ -17,6 +17,8 @@ import java.util.Map;
 
 import javax.faces.model.SelectItem;
 
+import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.ScanDirection;
 import org.eclipse.stardust.engine.api.runtime.TransitionOptions;
 import org.eclipse.stardust.engine.api.runtime.TransitionTarget;
@@ -44,7 +46,7 @@ public class RelocateActivityDialogBean extends PopupUIComponentBean
 
    private String selectedTarget;
 
-   private long activityInstanceOID;
+   private ActivityInstance activityInstance;
 
    private ICallbackHandler callbackHandler;
 
@@ -64,10 +66,10 @@ public class RelocateActivityDialogBean extends PopupUIComponentBean
    private void loadTargets()
    {
       relocationTargets = new ArrayList<SelectItem>();
-      if (activityInstanceOID > 0)
+      if (null != activityInstance)
       {
          List<TransitionTarget> targets = ServiceFactoryUtils.getWorkflowService()
-               .getAdHocTransitionTargets(activityInstanceOID, TransitionOptions.DEFAULT,
+               .getAdHocTransitionTargets(activityInstance.getOID(), TransitionOptions.DEFAULT,
                      ScanDirection.BACKWARD);
          if (null != targets)
          {
@@ -131,14 +133,30 @@ public class RelocateActivityDialogBean extends PopupUIComponentBean
    {
       if (null != selectedTarget)
       {
-         ServiceFactoryUtils.getWorkflowService().performAdHocTransition(
-               activityVsTarget.get(selectedTarget), false);
-         closePopup();
-         if (null != callbackHandler)
+         boolean canRelocate = false;
+
+         if (activityInstance.getState().equals(ActivityInstanceState.Application))
          {
-            callbackHandler.handleEvent(ICallbackHandler.EventType.APPLY);
+            canRelocate = true;
+         }
+         if (activityInstance.getState().equals(ActivityInstanceState.Suspended))
+         {
+            ServiceFactoryUtils.getWorkflowService().activate(activityInstance.getOID());
+            canRelocate = true;
+         }
+
+         if (canRelocate)
+         {
+            ServiceFactoryUtils.getWorkflowService().performAdHocTransition(
+                  activityVsTarget.get(selectedTarget), false);            
+            if (null != callbackHandler)
+            {
+               callbackHandler.handleEvent(ICallbackHandler.EventType.APPLY);
+            }
          }
       }
+      
+      closePopup();
    }
 
    /**
@@ -184,14 +202,9 @@ public class RelocateActivityDialogBean extends PopupUIComponentBean
       return relocationEligible;
    }
 
-   public long getActivityInstanceOID()
+   public void setActivityInstance(ActivityInstance activityInstance)
    {
-      return activityInstanceOID;
-   }
-
-   public void setActivityInstanceOID(long activityInstanceOID)
-   {
-      this.activityInstanceOID = activityInstanceOID;
+      this.activityInstance = activityInstance;
    }
 
    public String getSelectedTarget()
