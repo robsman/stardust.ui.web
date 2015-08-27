@@ -9,6 +9,13 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 	<ippui:perspectiveExtension
 		targetPerspective="*" id="ippHtml5AdminPortalPerspective"
 		messageBundles="html5-admin-portal">
-
+		<ippui:viewsExtension>
+			<ippui:view name="participantMgmt"
+				include="/plugins/html5-admin-portal/partials/views/participantManagementView.html">
+				<ippui:preferences>
+					<ippui:preferencePage name="configuration" include="/plugins/admin-portal/views/participantMgtConfiguration.xhtml" />
+				</ippui:preferences>
+			</ippui:view>
+		</ippui:viewsExtension>
 	</ippui:perspectiveExtension>
 </beans>
