@@ -17,7 +17,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 
+import javax.annotation.Resource;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -36,6 +38,7 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.exception.PortalErrorClass;
 import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
+import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.service.DocumentService;
 import org.eclipse.stardust.ui.web.rest.service.RepositoryService;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
@@ -68,6 +71,9 @@ public class DocumentResource
 
    @Autowired
    private RepositoryService repositoryService;
+   
+   @Resource
+   private RestCommonClientMessages restCommonClientMessages;
    
    private final JsonMarshaller jsonIo = new JsonMarshaller();
 
@@ -202,7 +208,25 @@ public class DocumentResource
       return Response.ok(GsonUtils.toJsonHTMLSafeString(documents)).build();
    }
 
-  
+
+   /**
+    * @author Yogesh.Manware
+    * @param processOid
+    * @return
+    * @throws Exception 
+    */
+   @DELETE
+   @Consumes(MediaType.MULTIPART_FORM_DATA)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{documentId: .*}")
+   public Response deleteDocument(@PathParam("documentId") String documentId) throws Exception
+   {
+      documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
+      DocumentMgmtUtility.deleteDocumentWithVersions(DocumentMgmtUtility.getDocument(documentId));
+
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(restCommonClientMessages.get("success.message"))).build();
+   }
+   
    /**
     *  @author Yogesh.Manware
     * @param documentId

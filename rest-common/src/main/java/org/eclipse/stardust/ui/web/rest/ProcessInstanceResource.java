@@ -14,10 +14,10 @@ import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -42,15 +42,13 @@ import org.eclipse.stardust.engine.api.query.ProcessStateFilter;
 import org.eclipse.stardust.engine.core.query.statistics.api.BenchmarkProcessStatisticsQuery;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.service.ProcessInstanceService;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDataDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.DataPathValueDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.TrafficLightViewUtils;
@@ -78,6 +76,9 @@ public class ProcessInstanceResource
    @Autowired
    ProcessDefinitionService processDefService;
 
+   @Resource
+   private RestCommonClientMessages restCommonClientMessages;
+   
    public static final String ACTIVE = "Active";
 
    public static final String COMPLETED = "Completed";
@@ -142,26 +143,6 @@ public class ProcessInstanceResource
       catch (Exception e)
       {
          trace.error(e, e);
-         return Response.serverError().build();
-      }
-   }
-
-   @DELETE
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("{processInstanceOid: \\d+}/documents/{dataPathId}{documentId: (/documentId)?}")
-   public Response removeDocument(@PathParam("processInstanceOid") String processInstanceOid,
-         @PathParam("dataPathId") String dataPathId, @PathParam("documentId") String documentId)
-   {
-      try
-      {
-         return Response.ok(
-               getProcessInstanceService().removeProcessInstanceDocument(Long.parseLong(processInstanceOid),
-                     dataPathId, documentId).toString(), MediaType.APPLICATION_JSON).build();
-      }
-      catch (Exception e)
-      {
-         trace.error(e, e);
-
          return Response.serverError().build();
       }
    }
@@ -549,6 +530,29 @@ public class ProcessInstanceResource
       return Response.ok(GsonUtils.toJsonHTMLSafeString(result)).build();
    }
 
+   /**
+    * @author Yogesh.Manware
+    * @param processOid
+    * @return
+    * @throws Exception 
+    */
+   @DELETE   
+   @Consumes(MediaType.MULTIPART_FORM_DATA)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{oid}/documents{dataPathId:.*}{documentId: (/documentId)?}")
+   public Response removeDocument(List<Attachment> attachments, @PathParam("oid") Long processOid,
+         @PathParam("dataPathId") String dataPathId, @PathParam("documentId") String documentId) throws Exception
+   {
+      if (StringUtils.isEmpty(dataPathId))
+      {
+         dataPathId = DmsConstants.PATH_ID_ATTACHMENTS;
+      }
+      
+      processInstanceService.removeProcessDocument(processOid, dataPathId, documentId);
+      
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(restCommonClientMessages.get("success.message"))).build();
+   }
+   
    /**
     * Populate the options with the post data.
     * 

@@ -381,6 +381,37 @@ public class DMSHelper
       }
       return false;
    }
+
+   /**
+    * @param processInstance
+    * @param documentsToBeDetached
+    */
+   public static void detachProcessAttachments(ProcessInstance processInstance, List<Document> documentsToBeDetached)
+   {
+      List<Document> processAttachments = DMSHelper.fetchProcessAttachments(processInstance);
+
+      for (Document document : documentsToBeDetached)
+      {
+         int index = getDocumentIndex(processAttachments, document);
+         if (index > -1)
+         {
+            processAttachments.remove(index);
+
+            // the workaround: use null instead of empty list
+            if (processAttachments.isEmpty())
+            {
+               processAttachments = null;
+               break;
+            }
+         }
+         else
+         {
+            trace.warn("Document with name " + document.getName() + " is already detached");
+         }
+      }
+
+      DMSHelper.saveProcessAttachments(processInstance, processAttachments);
+   }
    
    /**
     * updates the process attachment into provided process instance

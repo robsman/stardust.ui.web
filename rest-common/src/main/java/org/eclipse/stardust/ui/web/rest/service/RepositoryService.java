@@ -17,6 +17,7 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 
 /**
  * @author Yogesh.Manware
@@ -32,14 +33,37 @@ public interface RepositoryService
     * @param folderId
     * @return
     */
-   public FolderDTO getFolder(String folderId);
+   FolderDTO getFolder(String folderId);
 
-   public FolderDTO getFolder(String folderId, int levelOfDetail);
+   /**
+    * @param folderId
+    * @param levelOfDetail
+    * @return
+    */
+   FolderDTO getFolder(String folderId, int levelOfDetail);
 
-   public DocumentDTO createDocument(DocumentInfoDTO documentInfoDTO, ProcessInstance processInstance);
-   
-   public Map<String, Object> createProcessAttachments(List<DocumentInfoDTO> documentInfoDTO,
-         ProcessInstance processInstance);
+   /**
+    * @param documentInfoDTO
+    * @param processInstance
+    * @return
+    */
+   DocumentDTO createDocument(DocumentInfoDTO documentInfoDTO, ProcessInstance processInstance);
+
+   /**
+    * @param documentInfoDTO
+    * @param processInstance
+    * @return
+    */
+   Map<String, Object> createProcessAttachments(List<DocumentInfoDTO> documentInfoDTO, ProcessInstance processInstance);
+
+   /**
+    * @param documentIds
+    * @param processInstance
+    * @return
+    * @throws ResourceNotFoundException
+    */
+   void detachProcessAttachments(List<String> documentIds, ProcessInstance processInstance)
+         throws ResourceNotFoundException;
 
    /*
     * public DocumentDTO renameFolder(String participantQidIn);

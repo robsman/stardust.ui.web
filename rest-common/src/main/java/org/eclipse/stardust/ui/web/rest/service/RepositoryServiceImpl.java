@@ -32,6 +32,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -165,6 +166,19 @@ public class RepositoryServiceImpl implements RepositoryService
       return result;
    }
 
+   @Override
+   public void detachProcessAttachments(List<String> documentIds, ProcessInstance processInstance)
+         throws ResourceNotFoundException
+   {
+      List<Document> documentsToBeDetached = new ArrayList<Document>();
+
+      for (String documentId : documentIds)
+      {
+         documentsToBeDetached.add(DocumentMgmtUtility.getDocument(documentId));
+      }
+      DMSHelper.detachProcessAttachments(processInstance, documentsToBeDetached);
+   }
+   
    /**
     * @param processInstanceOid
     * @param documentDataPathMap

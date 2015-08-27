@@ -96,6 +96,7 @@ import org.eclipse.stardust.ui.web.viewscommon.services.ContextPortalServices;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
@@ -217,12 +218,6 @@ public class ProcessInstanceService
       return null;
    }
 
-   public ProcessInstanceDTO removeProcessInstanceDocument(long processInstanceOid, String dataPathId, String documentId)
-   {
-      // TODO Auto-generated method stub
-      return null;
-   }
-
    public DocumentDTO splitDocument(long processInstanceOid, String documentId, JsonObject json)
    {
       // TODO Auto-generated method stub
@@ -230,6 +225,7 @@ public class ProcessInstanceService
    }
  
    /**
+    * @author Yogesh.Manware
     * @param processOid
     * @param attachments
     * @param dataPathId
@@ -314,6 +310,31 @@ public class ProcessInstanceService
       return result;
    }
 
+   /**
+    *  @author Yogesh.Manware
+    * @param processOid
+    * @param dataPathId
+    * @param documentId
+    * @return
+    * @throws Exception
+    */
+   public void removeProcessDocument(long processOid, String dataPathId, String documentId)
+         throws Exception
+   {
+      ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processOid);
+
+      if (DmsConstants.PATH_ID_ATTACHMENTS.equals(dataPathId))
+      {
+         ArrayList<String> documentIds = new ArrayList<String>();
+         documentIds.add(documentId);
+         repositoryService.detachProcessAttachments(documentIds, processInstance);
+      }
+      else
+      {
+         ServiceFactoryUtils.getWorkflowService().setOutDataPath(processOid, dataPathId, null);
+      }
+   }
+   
    /**
     * Returns process attachemtents and specific documents, if supported.
     * 
