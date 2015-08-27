@@ -38,6 +38,8 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.DocumentUploadHelp
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 
+import com.icesoft.util.encoding.Base64;
+
 /**
  * @author Yogesh.Manware
  * @version $Revision: $
@@ -352,6 +354,8 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
     */
    public void refresh()
    {
+      System.out.println(getFolder().getId());
+      System.out.println(getFolder().getPath());
       RepositoryUtility.refreshNode(this.wrapper);
    }
    
@@ -438,6 +442,7 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
          {
             viewKey = "folderId=" + getFolder().getId();
          }
+        viewKey = Base64.encode(viewKey);
         PortalApplication.getInstance().openViewById("correspondencePanel", viewKey, params, null, true);
       }
    }

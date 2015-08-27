@@ -419,7 +419,7 @@ public class DocumentMgmtUtility
     * @param targetFolderPath
     * @return Document
     */
-   public static Document createDocumentCopy(Document srcDoc, String targetFolderPath)
+   public static Document copyDocumentTo(Document srcDoc, String targetFolderPath)
    {
       DocumentManagementService dms = getDocumentManagementService();
       DocumentInfo docInfo = DmsUtils.createDocumentInfo(srcDoc.getName());
@@ -1064,7 +1064,7 @@ public class DocumentMgmtUtility
       createFolderIfNotExists(processAttachmentPath);
       for (Document document : documentList)
       {
-         document = createDocumentCopy(document, processAttachmentPath);
+         document = copyDocumentTo(document, processAttachmentPath);
          DMSHelper.addAndSaveProcessAttachment(processInstance, document);
       }
    }

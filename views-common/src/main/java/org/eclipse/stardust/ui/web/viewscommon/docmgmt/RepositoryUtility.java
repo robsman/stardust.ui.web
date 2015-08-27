@@ -625,7 +625,7 @@ public class RepositoryUtility
       expandTree(parentNode);
       RepositoryFolderUserObject userObject = (RepositoryFolderUserObject) parentNode.getUserObject();
       parentNode.setAllowsChildren(true);
-      Document newDocument = DocumentMgmtUtility.createDocumentCopy(getUpdatedDocument(valueNode), userObject
+      Document newDocument = DocumentMgmtUtility.copyDocumentTo(getUpdatedDocument(valueNode), userObject
             .getFolder().getPath());
       DefaultMutableTreeNode subNode = createDocumentNode(newDocument);
       ((RepositoryDocumentUserObject)subNode.getUserObject()).setNewNodeCreated(true);

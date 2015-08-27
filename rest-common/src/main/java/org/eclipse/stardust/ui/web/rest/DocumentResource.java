@@ -220,7 +220,7 @@ public class DocumentResource
       String parentFolderPath = (String) data.get("parentFolderPath");
       documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
       
-      DocumentDTO documentDTO = DocumentDTOBuilder.build(DocumentMgmtUtility.createDocumentCopy(
+      DocumentDTO documentDTO = DocumentDTOBuilder.build(DocumentMgmtUtility.copyDocumentTo(
             DocumentMgmtUtility.getDocument(documentId), parentFolderPath));
 
       return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
