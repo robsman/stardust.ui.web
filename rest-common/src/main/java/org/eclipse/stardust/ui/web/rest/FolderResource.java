@@ -22,6 +22,7 @@ import javax.ws.rs.core.Response;
 
 import org.eclipse.stardust.ui.web.rest.service.RepositoryService;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -43,10 +44,7 @@ public class FolderResource
    public Response getFolder(@PathParam("folderId") String folderId,
          @QueryParam("levelOfDetail") @DefaultValue("1") int levelOfDetail)
    {
-      if (folderId.indexOf("/") != 0)
-      {
-         folderId = "/" + folderId;
-      }
+      folderId = DocumentMgmtUtility.checkAndGetCorrectResourceId(folderId);
       FolderDTO folderContents = repositoryService.getFolder(folderId, levelOfDetail);
       return Response.ok(folderContents.toJson(), MediaType.APPLICATION_JSON).build();
    }

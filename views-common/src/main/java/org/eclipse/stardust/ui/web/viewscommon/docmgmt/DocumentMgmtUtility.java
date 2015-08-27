@@ -1401,4 +1401,15 @@ public class DocumentMgmtUtility
       REPORTS_ROOT_FOLDER + "/" + qualifiedId  + SAVED_REPORTS; 
    }
    
+   /**
+    * @param id
+    * @return
+    */
+   public static String checkAndGetCorrectResourceId(String id){
+      if (!id.startsWith("{") && !id.startsWith("/"))
+      {
+         id = "/" + id;
+      }
+      return id;
+   }
 }

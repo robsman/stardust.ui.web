@@ -213,18 +213,37 @@ public class DocumentResource
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("/{documentId: .*}/copy")
-   public Response createCopy(@PathParam("documentid") String documentId, String postedData) throws Exception
+   @Path("{documentId: .*}/copy")
+   public Response copy(@PathParam("documentId") String documentId, String postedData) throws Exception
    {
       Map<String, Object> data = JsonDTO.getAsMap(postedData);
       String parentFolderPath = (String) data.get("parentFolderPath");
-      // parse attachments
+      documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
+      
       DocumentDTO documentDTO = DocumentDTOBuilder.build(DocumentMgmtUtility.createDocumentCopy(
             DocumentMgmtUtility.getDocument(documentId), parentFolderPath));
 
       return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
    }
 
+   /**
+    *  @author Yogesh.Manware
+    * @param documentId
+    * @return
+    * @throws Exception
+    */
+   @GET
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/{documentId: .*}")
+   public Response getDocument(@PathParam("documentId") String documentId) throws Exception
+   {
+      documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
+      DocumentDTO documentDTO = DocumentDTOBuilder.build(DocumentMgmtUtility.getDocument(documentId));
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
+   }
+   
+   
    /**
     * @return
     */
