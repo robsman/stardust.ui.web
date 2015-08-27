@@ -28,10 +28,11 @@
 			scope : {
 				name : '=sdaName',
 				mimeType : '=sdaMimeType',
-				documentId : '=sdaDocumentId'
+				documentId : '=sdaDocumentId',
+				params : '=sdaParams'
 			},
 			template : '<a href="#"  ng-click="docLinkCtrl.openDocument($event);">'
-					+ '<i ng-class="docLinkCtrl.mimeIcon" style="font-size:18px;"> </i> <span ng-bind="name"></span>'
+					+ '<i ng-class="docLinkCtrl.mimeIcon icon-lg"> </i> <span ng-bind="name"></span>'
 					+ '</a>',
 			controller : [ '$scope', '$parse', '$attrs', 'sdUtilService', 'sdCommonViewUtilService', 'sdMimeTypeService',
 					DocumentLinkController ]
@@ -50,7 +51,7 @@
 		 */
 		this.openDocument = function($event) {
 			sdUtilService.stopEvent($event);
-			this.openDocumentView($scope.documentId, sdCommonViewUtilService);
+			this.openDocumentView($scope.documentId, sdCommonViewUtilService, $scope.params);
 		};
 
 		$scope.docLinkCtrl = this;
@@ -60,7 +61,7 @@
 	/**
 	 * 
 	 */
-	DocumentLinkController.prototype.openDocumentView = function(documentId, sdCommonViewUtilService) {
+	DocumentLinkController.prototype.openDocumentView = function(documentId, sdCommonViewUtilService, params) {
 		sdCommonViewUtilService.openDocumentView(documentId, true);
 	};
 

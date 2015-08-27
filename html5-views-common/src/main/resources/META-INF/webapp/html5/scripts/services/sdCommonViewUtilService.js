@@ -33,12 +33,23 @@
 		/**
 		 * 
 		 */
-		CommonViewUtilService.prototype.openDocumentView = function(documentId, nested) {
+		CommonViewUtilService.prototype.openDocumentView = function(documentId, nested, params) {
 			var viewKey = 'documentOID=' + encodeURIComponent(documentId);
 			viewKey = window.btoa(viewKey);
-			sdViewUtilService.openView('documentView', viewKey, {
-				'documentId' : documentId
-			}, nested);
+
+			var parameters = params;
+
+			if(!parameters) {
+				parameters = {
+						"documentId" :  documentId
+				}
+			} else {
+				parameters["documentId"] = documentId;
+			}
+			console.log("Document View Params");
+			console.log(parameters);
+			sdViewUtilService.openView('documentView', viewKey,parameters, nested);
+
 		};
 
 		/**

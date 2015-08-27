@@ -24,7 +24,7 @@ var configs = html5Deps
 					exports : "InfinityBPMI18N"
 				}
 			},
-			deps : ["require","html5-views-common/js/sdCorrespondenceService","html5-views-common/js/sdCorrespondenceCtrl" ]
+			deps : ["require","html5-views-common/html5/scripts/services/sdCorrespondenceService","html5-views-common/html5/scripts/controllers/sdCorrespondenceCtrl" ]
 		});
 
 require.config({
