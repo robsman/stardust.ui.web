@@ -450,12 +450,9 @@
 			};
 
 			self.openChart = function(rowItem) {
-				sdViewUtilService.openView('ganttChartView', 'processInstanceOId=' + rowItem.oid, {
-					'oid' : '' + rowItem.oid,
-					'processInstanceOId' : '' + rowItem.oid
-				}, true);
+				sdCommonViewUtilService.openGanttChartView(rowItem.oid,true);
 			};
-
+			
 			/*
 			 *
 			 */

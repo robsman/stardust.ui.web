@@ -183,6 +183,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			</ippui:preferences>
 	   	</ippui:view>
 
+		<!-- 	Move to Test project
 		<ippui:view name="ganttChartView"
 			include="/plugins/business-control-center/views/ganttChartView.xhtml"
 			controller="ganttChartSelectionBean" identityParams="processInstanceOId">
@@ -190,6 +191,10 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 				<ippui:preferencePage name="configuration"
 				include="/plugins/business-control-center/views/ganttChartConfigurationDialog.xhtml" />
 			</ippui:preferences>
+		</ippui:view> -->
+		
+		<ippui:view name="ganttChartView"
+			include="/plugins/html5-business-control-center/partials/views/ganttChartView.html">
 		</ippui:view>
 
 		<ippui:view name="processDiagramView"

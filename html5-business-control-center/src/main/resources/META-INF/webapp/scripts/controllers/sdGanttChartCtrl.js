@@ -17,8 +17,8 @@
 
 	angular.module("bcc-ui").controller(
 			'sdGanttChartCtrl',
-			['sdProcessInstanceService', 'sdLoggerService', '$filter',
-			 'sgI18nService','sdActivityInstanceService','sdCommonViewUtilService','sgI18nService','$q','sdLocalizationService',Controller]);
+			['$scope','sdProcessInstanceService', 'sdLoggerService', '$filter',
+			 'sgI18nService','sdActivityInstanceService','sdCommonViewUtilService','sgI18nService','$q','sdLocalizationService','$parse',Controller]);
 
 	var _filter = null;
 	var _sdActivityInstanceService = null;
@@ -29,6 +29,7 @@
 	var _sdCommonViewUtilService = null;
 	var _sdLocalizationService = null;
 	var _sdLoggerService = null;
+	var _parse = null;
 
 	var FINISHED_STATUSES = [2,6];
 	var ONE_DAY_IN_MIILS = 86400000
@@ -59,8 +60,8 @@
 	/**
 	 * 
 	 */
-	function Controller(sdProcessInstanceService, sdLoggerService, $filter,
-			sdPreferenceService, sdActivityInstanceService, sdCommonViewUtilService, sgI18nService, $q, sdLocalizationService) {
+	function Controller($scope, sdProcessInstanceService, sdLoggerService, $filter,
+			sdPreferenceService, sdActivityInstanceService, sdCommonViewUtilService, sgI18nService, $q, sdLocalizationService, $parse) {
 		_filter = $filter;
 		_sdProcessInstanceService = sdProcessInstanceService;
 		_sdActivityInstanceService = sdActivityInstanceService;
@@ -69,15 +70,15 @@
 		_q = $q;
 		_sdLocalizationService = sdLocalizationService;
 		_sdLoggerService = sdLoggerService;
-		this.intialize();
+		_parse = $parse;
+		this.intialize($scope);
 	};
 
 	/**
 	 * 
 	 */
-	Controller.prototype.intialize = function() {
+	Controller.prototype.intialize = function($scope) {
 		var self = this;
-
 		self.selected = {
 				process : "",
 				legend : "status",
@@ -97,6 +98,12 @@
 		self.timeFrames = self.getTimeFrames();
 		self.dataTable = null;
 		self.tableReady = false;
+		
+		//Get the process oid from the params
+		var queryGetter = _parse("panel.params.custom");
+		var params = queryGetter($scope);
+		self.selected.process = params.processInstanceOId;
+		self.tableReady = true;
 	};
 
 	/**
@@ -126,15 +133,6 @@
 			self.legends = self.getAvailableStatuses();
 		}
 	};
-	
-	/**
-	 * 
-	 */
-	Controller.prototype.getProcessInfo = function() {
-		var self = this;
-		self.tableReady = true;
-	};
-	
 
 	/**
 	 * 

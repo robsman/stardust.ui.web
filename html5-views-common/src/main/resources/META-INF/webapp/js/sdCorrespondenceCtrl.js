@@ -20,6 +20,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	var _timeout ;
 	var interaction = null;
 	var _http = null;
+	var _parse = null;
 
 	var filesToUpload = [];
 	var VALID_TEMPLATE_FORMATS = ['text/plain' , 'text/html']
@@ -33,7 +34,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	/*
 	 * 
 	 */
-	function CorrespondenceCtrl($scope, $q ,$http , $filter,$timeout,sdDialogService, sdCorrespondenceService) {
+	function CorrespondenceCtrl($scope, $q ,$http , $filter,$timeout, $parse, sdDialogService, sdCorrespondenceService) {
 
 		this.readOnly = false;
 		_q = $q;
@@ -42,6 +43,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		_sdCorrespondenceService = sdCorrespondenceService;
 		_timeout = $timeout;
 		_http = $http;
+		_parse = $parse;
 
 		this.intialize($scope);
 		this.exposeApis($scope);
@@ -146,6 +148,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 
 		this.interactionProvider = new bpm.portal.Interaction();
 		this.selected.aiOid = this.getActivityOid();
+		
 		_sdCorrespondenceService.getProcessOidForActivity(ctrl.selected.aiOid).then(function(result){
 			ctrl.selected.piOid = result.piOid;
 			console.log(ctrl.selected.piOid);
@@ -173,7 +176,13 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		CorrespondenceCtrl.prototype.showTest = function(value){
 			ctrl.test =value
 		}; 
-
+		
+		
+		//TODO  check the poarams and call the folder service.
+		//Get the process oid from the params
+		var queryGetter = _parse("panel.params.custom");
+		var params = queryGetter($scope);
+		console.log (params);
 
 	};
 

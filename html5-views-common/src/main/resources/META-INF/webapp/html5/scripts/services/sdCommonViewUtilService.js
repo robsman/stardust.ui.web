@@ -119,7 +119,15 @@
 				"userId" : "" + userId
 			}, nested);
 		};
-
+		
+		/**
+		 * 
+		 */
+		CommonViewUtilService.prototype.openGanttChartView = function(processInstanceOid,nested) {
+			sdViewUtilService.openView("ganttChartView", "oid=" + processInstanceOid, {
+				"processInstanceOId" : "" + processInstanceOid
+			}, nested);
+		};
 
 	}
 	;
