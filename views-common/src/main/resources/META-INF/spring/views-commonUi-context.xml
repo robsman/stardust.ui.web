@@ -80,7 +80,7 @@
 
 			<ippui:view name="correspondenceView"
 				include="/plugins/views-common/views/correspondence/correspondenceView.xhtml" />
-			<ippui:view name="correspondencePanel"				include="/plugins/html5-views-common/partials/views/correspondenceView.html" />				
+			<ippui:view name="correspondencePanel"				include="/plugins/html5-views-common/views/correspondenceView.html" />				
 			<ippui:view name="chatView"
 				include="/plugins/views-common/views/chat/chatView.xhtml"
 				controller="chatViewBean" />

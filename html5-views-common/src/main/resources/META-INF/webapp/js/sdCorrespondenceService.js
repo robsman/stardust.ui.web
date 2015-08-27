@@ -51,6 +51,40 @@ define([],function(){
 		/**
 		 * 
 		 */
+		this.getFolderInformationByFolderId = function (folderId){ 
+			var url =  sdUtilService.getBaseUrl() +"services/rest/portal/folders/"+folderId;
+			return $resource(url).get().$promise;
+		}
+		
+		/**
+		 * 
+		 */
+		this.getFolderInformationByActivityOid = function (aiOid){ 
+			var url =  sdUtilService.getBaseUrl() +"services/rest/portal/activity-instances/"+aiOid+"/correspondence-out";
+			return $resource(url).get().$promise;
+		}
+		
+		
+		/**
+		 * 
+		 */
+		this.copyDocumentToCorrespondenceFolder = function ( documentId, folderPath){ 
+			var restUrl = sdUtilService.getBaseUrl() +"services/rest/portal/documents/"+documentId+"/copy";
+			var requestObj = {
+				"parentFolderPath" : folderPath
+			};
+			var document = $resource(restUrl, {}, {
+				copyToFolder : {
+					method : 'POST'
+				}
+			});
+			return document.copyToFolder({}, requestObj).$promise;
+		}
+			
+		
+		/**
+		 * 
+		 */
 		this.uploadAttachments = function (files, piOid, progressHandlingFunction){
 			var deferred = $q.defer();
 			var self = this;

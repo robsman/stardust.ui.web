@@ -23,7 +23,8 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	var _parse = null;
 
 	var filesToUpload = [];
-	var VALID_TEMPLATE_FORMATS = ['text/plain' , 'text/html']
+	var VALID_TEMPLATE_FORMATS = ['text/plain' , 'text/html'];
+	var TEPMPLATING_SUPPORTED_FILE_FORMATS = ["doc","docx","html","htm","txt"]
 	var buttons = {
 			confirm : '',
 			cancel :''	
@@ -178,15 +179,48 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		}; 
 		
 		
-		//TODO  check the poarams and call the folder service.
+		CorrespondenceCtrl.prototype.handleDocumentUpload = function(item){ 
+			console.log("Document upload")
+			var fileFormat = item.name.split('.').pop();
+			
+			if(TEPMPLATING_SUPPORTED_FILE_FORMATS.indexOf(fileFormat) > -1){
+				//Run it through templating engine
+				console.log("File format supported")
+			}else{
+				console.log("File format not supported")
+				ctrl.copyDocumentToCorrespondenceFolder(item);
+			}
+		};
+		
+		//TODO  check the params and call the folder service.
 		//Get the process oid from the params
 		var queryGetter = _parse("panel.params.custom");
 		var params = queryGetter($scope);
-		console.log (params);
+		
+		
+		if(params && params.folderId) {
+			ctrl.folderId = params.folderId;
+			ctrl.getExistingFolderInformation(ctrl.folderId);
+		}else {
+			ctrl.getIntialFolderInformation(ctrl.selected.aiOid);
+		}
 
 	};
-
-
+	
+	
+	
+	
+	/**
+	 * 
+	 */
+	CorrespondenceCtrl.prototype.copyDocumentToCorrespondenceFolder = function( item ){ 
+		var ctrl = this;
+		_sdCorrespondenceService.copyDocumentToCorrespondenceFolder(item.path,ctrl.parentFolderPath).then(function(result){
+			console.log("Return from copy")
+			console.log(result);
+			ctrl.addAttachment(result);
+		});
+	}
 
 	/**
 	 * 
@@ -208,14 +242,44 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	}
 
 
+	/**
+	 * 
+	 */
+	CorrespondenceCtrl.prototype.getExistingFolderInformation = function( folderId ){
+
+		_sdCorrespondenceService.getFolderInformationByFolderId(folderId).then(function(data){
+			console.log("Return from getExistingFolderInformation using folder id "+folderId)
+			console.log(data);
+		});
+	}
+
+
+	/**
+	 * 
+	 */
+	CorrespondenceCtrl.prototype.getIntialFolderInformation = function( aiOid){
+		var ctrl = this;
+		_sdCorrespondenceService.getFolderInformationByActivityOid(aiOid).then(function(data){
+			console.log("Return from getExistingFolderInformation using  ai oid"+aiOid)
+			ctrl.parentFolderPath = data.path;
+			ctrl.folderId= data.uuid;
+			console.log(ctrl.parentFolderPath );
+		});
+		
+	}
+	
+	/**
+	 * 
+	 */
 	function uploadLocalFilesToServer(files) {
+		
 		_sdCorrespondenceService.uploadAttachments(files, piOid).then(function(data){
 			console.log("File upload response");
 			console.log(data);
 			
 			if(data.documents.length > 0) {
 				angular.forEach(data.documents,function(item){
-					CorrespondenceCtrl.prototype.addAttachment({name : item.name});
+					CorrespondenceCtrl.prototype.handleDocumentUpload(item);
 				});
 			}
 
@@ -230,6 +294,9 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 
 
 
+	/**
+	 * 
+	 */
 	CorrespondenceCtrl.prototype.getActivityOid = function(){ 
 		/*	var uri = this.interactionProvider.getInteractionUri();
 		var endcoded = uri.split('/').pop();
@@ -704,7 +771,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	}
 
 	//Dependency injection array for our controller.
-	CorrespondenceCtrl.$inject = ['$scope','$q', '$http','$filter','$timeout','sdDialogService','sdCorrespondenceService'];
+	CorrespondenceCtrl.$inject = ['$scope','$q', '$http','$filter','$timeout','$parse','sdDialogService','sdCorrespondenceService'];
 
 	//Require capable return object to allow our angular code to be initialized
 	//from a require-js injection system.
