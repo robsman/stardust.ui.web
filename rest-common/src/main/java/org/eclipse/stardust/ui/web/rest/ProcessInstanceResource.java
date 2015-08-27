@@ -187,10 +187,9 @@ public class ProcessInstanceResource
       }
    }
 
-   @PUT
+   @POST
    @Consumes(MediaType.MULTIPART_FORM_DATA)
    @Produces(MediaType.APPLICATION_JSON)
-   @Path("processes")
    public Response startProcess(List<Attachment> attachments)
    {
       return Response.ok(getProcessInstanceService().startProcess(attachments).toJson(), MediaType.APPLICATION_JSON)

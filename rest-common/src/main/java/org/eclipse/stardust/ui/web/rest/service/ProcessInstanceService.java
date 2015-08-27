@@ -185,7 +185,7 @@ public class ProcessInstanceService
       final InputDocumentXto inputDoc = new InputDocumentXto();
       DocumentInfoXto docInfo = new DocumentInfoXto();
       DocumentTypeXto docType = new DocumentTypeXto();
-      if(null != documentData.documentType)
+      if (null != documentData.documentType && null != documentData.documentType.getDocumentTypeId())
       {
          docType.setDocumentTypeId(documentData.documentType.getDocumentTypeId());
          docType.setSchemaLocation(documentData.documentType.getSchemaLocation());
