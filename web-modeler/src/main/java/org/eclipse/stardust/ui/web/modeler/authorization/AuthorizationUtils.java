@@ -116,6 +116,8 @@ public class AuthorizationUtils
             permissionJson.addProperty("id", permission.getId());
             permissionJson.addProperty("isEmpty", permission.isEmpty());
             permissionJson.addProperty("isAll", permission.isALL());
+            permissionJson.addProperty("isOwner", permission.isOWNER());
+            permissionJson.addProperty("isFixedOwner", permission.isFixedOWNER());
             permissionJson.addProperty("defaultAll", permission.isDefaultAll());
             permissionJson.addProperty("defaultOwner", permission.isDefaultOwner());
             permissionJson.add("participants", participantsJson);
