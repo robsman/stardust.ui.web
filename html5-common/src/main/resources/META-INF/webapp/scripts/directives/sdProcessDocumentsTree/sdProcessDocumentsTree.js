@@ -243,13 +243,62 @@
     });
   };
   
+  processDocumentController.prototype.normalizeData = function(data){
+	  
+	  var res =[],
+      specRoot, //root item for specific documents
+      tempDataPath,     //temp object
+      tempDoc,
+      procRoot, //root item for process attachments
+      i,j;      //iterators
+      
+	  procRoot = {itemType:'attachmentsRoot',name:'Process Attachments',items:[]};
+	  specRoot = {itemType:'specificRoot',name:'Specific Documents',items:[]};  
+	  
+	  //PROCESS ATTACHMENT PROCESSING
+	  for(i=0;i<data.length;i++){
+	    tempDataPath = data[i];
+	    if(tempDataPath.dataPath.id === "PROCESS_ATTACHMENTS"){
+	      for(j=0;j<tempDataPath.documents.length;j++){
+	        tempDoc = tempDataPath.documents[j];
+	        tempDoc.dataPathId = tempDataPath.dataPath.id;
+	        tempDoc.dataPathName = tempDataPath.dataPath.name;
+	        tempDoc.itemType = "document";
+	        procRoot.items.push(tempDoc);
+	      }
+	      data.splice(i,1); //Remove Process Attachments from main array
+	      break;
+	    }
+	  }
+	  
+	  res.push(procRoot);
+	  
+	  //SPECIFIC DOCUMENT PROCESSING
+	  for(i=0;i<data.length;i++){
+	    tempDataPath = data[i];
+	    for(j=0;j<tempDataPath.documents.length;j++){
+	      tempDoc = tempDataPath.documents[j];
+	      tempDoc.dataPathId = tempDataPath.dataPath.id;
+	      tempDoc.dataPathName = tempDataPath.dataPath.name;
+	      tempDoc.itemType = "document";
+	      specRoot.items.push(tempDoc);
+	    }
+	  }
+	  
+	  res.push(specRoot);
+	  
+	  return res;
+	  
+  }
+  
   /**
+   * RETIRED-----  TODO:Remove once developer has a warm happy feeling.
    * Convert our data as retrieved from the REST end point, into a structure
    * which can be more easily used by our tree directive.
    * @param data
    * @returns
    */
-  processDocumentController.prototype.normalizeData=function(data){
+  processDocumentController.prototype.normalizeDataOld=function(data){
     
     var res =[],
         specRoot, //root item for specific documents
