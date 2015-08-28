@@ -2,15 +2,15 @@ package org.eclipse.stardust.ui.web.rest.service.dto;
 
 import java.util.Map;
 
-public class BenchmarkProcessStatisticsResultDTO
+public class BenchmarkTLVStatisticsResultDTO
 {
 
-   public String processId;
-   public long abortedProcessCount;
-   public long completedProcessCount;
+   public String id;
+   public long abortedCount;
+   public long completedCount;
    public long totalCount;
    public Map<String, BenchmarkCategoryDTO> benchmarkCategoryCountMap;
-   public String processName;
-
+   public String name;
+   public boolean isActivity;
 
 }

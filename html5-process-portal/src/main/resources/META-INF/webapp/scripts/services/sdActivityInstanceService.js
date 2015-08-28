@@ -15,8 +15,8 @@
 	'use strict';
 
 	angular.module('workflow-ui.services').provider('sdActivityInstanceService', function () {
-		this.$get = ['$rootScope', '$http', '$q', 'sdDataTableHelperService', 'sdUtilService', function ($rootScope, $http, $q, sdDataTableHelperService, sdUtilService) {
-			var service = new ActivityInstanceService($rootScope, $http, $q, sdDataTableHelperService, sdUtilService);
+		this.$get = ['$rootScope', '$http', '$q', '$resource', 'sdDataTableHelperService', 'sdUtilService', function ($rootScope, $http, $q, $resource, sdDataTableHelperService, sdUtilService) {
+			var service = new ActivityInstanceService($rootScope, $http, $q, $resource, sdDataTableHelperService, sdUtilService);
 			return service;
 		}];
 	});
@@ -24,7 +24,7 @@
 	/*
 	 * 
 	 */
-	function ActivityInstanceService($rootScope, $http, $q, sdDataTableHelperService, sdUtilService) {
+	function ActivityInstanceService($rootScope, $http, $q, $resource, sdDataTableHelperService, sdUtilService) {
 		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/activity-instances/";
 		
 		

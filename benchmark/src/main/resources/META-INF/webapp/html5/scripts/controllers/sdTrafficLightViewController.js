@@ -18,7 +18,7 @@
 	angular.module("benchmark-app").controller(
 			'sdTrafficLightViewController',
 			[ '$q', 'benchmarkService', 'sdProcessDefinitionService', 'sdTrafficLightViewService',
-					'sdProcessInstanceService', 'sdLoggerService', '$injector', TrafficLightViewController ]);
+					'sdProcessInstanceService', 'sdActivityInstanceService', 'sdLoggerService', '$injector', TrafficLightViewController ]);
 
 	var _q;
 	var trace;
@@ -27,18 +27,20 @@
 	var _sdTrafficLightViewService;
 	var _sdProcessInstanceService;
 	var _sdBusinessObjectManagementService;
+	var _sdActivityInstanceService;
 
 	/**
 	 * 
 	 */
 	function TrafficLightViewController($q, benchmarkService, sdProcessDefinitionService, sdTrafficLightViewService,
-			sdProcessInstanceService, sdLoggerService, $injector) {
+			sdProcessInstanceService, sdActivityInstanceService, sdLoggerService, $injector) {
 		trace = sdLoggerService.getLogger('benchmark-app.sdTrafficLightViewController');
 		_q = $q;
 		_benchmarkService = benchmarkService;
 		_sdProcessDefinitionService = sdProcessDefinitionService;
 		_sdTrafficLightViewService = sdTrafficLightViewService;
 		_sdProcessInstanceService = sdProcessInstanceService;
+		_sdActivityInstanceService = sdActivityInstanceService;
 		// dynamically injecting the sdBusinessObjectManagementService from
 		// ipp-business-object-management
 		_sdBusinessObjectManagementService = $injector.get('sdBusinessObjectManagementService');
@@ -59,6 +61,7 @@
 
 		this.dataTable = null;
 		this.processDataTable = null;
+		this.activityDataTable = null;
 
 		this.showTLVCriteria = true;
 		this.selectedDrillDown = "PROCESS_WORKITEM";
@@ -116,7 +119,9 @@
 		var self = this;
 		self.showTLVStatastics = false;
 		self.showProcessTable = false;
+		self.showActivityTable = false;
 		self.processDataTable = null;
+		self.activityDataTable = null;
 		var queryData = {
 			'isAllProcessess' : false,
 			'isAllBenchmarks' : false
@@ -182,12 +187,44 @@
 		});
 
 	};
+	
+	
+	/**
+	 * 
+	 */
+	
+	TrafficLightViewController.prototype.getTlvStatsData = function(params){
+		var self = this;
+		var deferred = _q.defer();
+		var tlvData = {};
+		if(!params) {
+			tlvData.list = self.tlvStatsData.list;
+			tlvData.totalCount = self.tlvStatsData.totalCount;
+			angular.forEach(tlvData.list, function(object){
+				object.$leaf = false;
+			});
+			deferred.resolve(tlvData);
+		}else{
+			self.parentId = params.parent.id;
+			self.getActivitySatastic(params.parent.id).then(function(data){
+				tlvData.list = data.list;
+				tlvData.totalCount = data.totalCount;
+				deferred.resolve(tlvData);
+			},function(error) {
+				trace.log(error);
+				deferred.reject(error);
+			});
+		}
+		
+		return deferred.promise;
+	}
 	/**
 	 * 
 	 * @param processId
 	 */
 	TrafficLightViewController.prototype.getActivitySatastic = function(processId) {
 		var self = this;
+		var deferred = _q.defer();
 		var queryData = {};
 		queryData = self.queryData;
 		delete queryData.isAllProcessess;
@@ -195,10 +232,13 @@
 		delete queryData.processes;
 		queryData.processId = processId;
 		_sdTrafficLightViewService.getTLVActivityStatastic(queryData).then(function(data) {
-			console.log(data);
+			deferred.resolve(data);
 		}, function(error) {
 			trace.log(error);
+			deferred.reject(error);
 		});
+		
+		return deferred.promise;
 	};
 
 	/**
@@ -215,16 +255,33 @@
 	 * @param state
 	 * @param benchmarkIndex
 	 */
-	TrafficLightViewController.prototype.setDataForProcessTable = function(processId, state, benchmarkIndex) {
+	TrafficLightViewController.prototype.setDataForProcessTable = function(id, state, isActivity, benchmarkIndex) {
 		var self = this;
 		self.selectedBenchmarkCategory = benchmarkIndex;
-		self.selectedProcessId = processId;
 		self.state = state;
-		if (self.processDataTable != undefined) {
-			self.processDataTable.refresh();
-		} else {
-			self.showProcessTable = true;
+		
+		if(isActivity){
+			self.processDataTable = null;
+			self.selectedProcessId = self.parentId;
+			self.selectedActivityId = id;
+			if (self.activityDataTable != undefined) {
+				self.activityDataTable.refresh();
+			} else {
+				self.showActivityTable = true;
+				self.showProcessTable = false;
+				
+			}
+		}else{
+			self.activityDataTable = null;
+			self.selectedProcessId = id;
+			if (self.processDataTable != undefined) {
+				self.processDataTable.refresh();
+			} else {
+				self.showProcessTable = true;
+				self.showActivityTable = false;
+			}
 		}
+		
 	};
 
 	/**
@@ -262,7 +319,7 @@
 	 * @param params
 	 * @returns
 	 */
-	TrafficLightViewController.prototype.getActivitylistForTLV = function(params) {
+	TrafficLightViewController.prototype.getActivityListForTLV = function(params) {
 		var self = this;
 		var query = {
 			'options' : params.options,
@@ -271,13 +328,13 @@
 			'dayOffset' : self.queryData.dayOffset,
 			'benchmarkCategory' : self.selectedBenchmarkCategory,
 			'processId' : self.selectedProcessId,
-			'activtyId' : self.selectedActivityId,
+			'activityId' : self.selectedActivityId,
 			'state' : self.state
 		};
 
 		var deferred = _q.defer();
 		self.processList = {};
-		_sdProcessInstanceService.getProcesslistForTLV(query).then(function(data) {
+		_sdActivityInstanceService.getActivitylistForTLV(query).then(function(data) {
 			self.processList.list = data.list;
 			self.processList.totalCount = data.totalCount;
 

@@ -20,9 +20,8 @@ import org.eclipse.stardust.engine.core.query.statistics.api.BenchmarkActivitySt
 import org.eclipse.stardust.engine.core.query.statistics.api.BenchmarkCategoryCounts;
 import org.eclipse.stardust.engine.core.query.statistics.api.BenchmarkProcessStatistics;
 import org.eclipse.stardust.engine.core.query.statistics.api.BenchmarkProcessStatisticsQuery;
-import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkActivityStatisticsResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkCategoryDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkProcessStatisticsResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkTLVStatisticsResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.springframework.stereotype.Component;
@@ -94,16 +93,17 @@ public class TrafficLightViewUtils
       BenchmarkProcessStatistics stats = (BenchmarkProcessStatistics) serviceFactoryUtils.getQueryService()
             .getAllProcessInstances(query);
 
-      List<BenchmarkProcessStatisticsResultDTO> bPSRDTOList = new ArrayList<BenchmarkProcessStatisticsResultDTO>();
+      List<BenchmarkTLVStatisticsResultDTO> bPSRDTOList = new ArrayList<BenchmarkTLVStatisticsResultDTO>();
 
       for (ProcessDefinitionDTO processDef : processes)
       {
-         BenchmarkProcessStatisticsResultDTO bPSRDTO = new BenchmarkProcessStatisticsResultDTO();
-         bPSRDTO.processId = processDef.id;
-         bPSRDTO.processName = processDef.name;
-         bPSRDTO.abortedProcessCount = stats.getAbortedCountForProcess(processDef.id);
-         bPSRDTO.completedProcessCount = stats.getCompletedCountForProcess(processDef.id);
-         bPSRDTO.totalCount = bPSRDTO.abortedProcessCount + bPSRDTO.completedProcessCount;
+         BenchmarkTLVStatisticsResultDTO bPSRDTO = new BenchmarkTLVStatisticsResultDTO();
+         bPSRDTO.id = processDef.id;
+         bPSRDTO.name = processDef.name;
+         bPSRDTO.isActivity = false;
+         bPSRDTO.abortedCount = stats.getAbortedCountForProcess(processDef.id);
+         bPSRDTO.completedCount = stats.getCompletedCountForProcess(processDef.id);
+         bPSRDTO.totalCount = bPSRDTO.abortedCount + bPSRDTO.completedCount;
          BenchmarkCategoryCounts benchmarkCategoryCounts = stats.getBenchmarkCategoryCountsForProcess(processDef.id);
          bPSRDTO.benchmarkCategoryCountMap = CollectionUtils.newMap();
          if (null != benchmarkCategoryCounts)
@@ -180,19 +180,19 @@ public class TrafficLightViewUtils
       BenchmarkActivityStatistics stats = (BenchmarkActivityStatistics) serviceFactoryUtils.getQueryService()
             .getAllActivityInstances(query);
 
-      List<BenchmarkActivityStatisticsResultDTO> bASRDTOList = new ArrayList<BenchmarkActivityStatisticsResultDTO>();
+      List<BenchmarkTLVStatisticsResultDTO> bASRDTOList = new ArrayList<BenchmarkTLVStatisticsResultDTO>();
 
       Set<Pair<String, String>> keySet = stats.getBenchmarkCategoryCounts().keySet();
       for (Pair<String, String> key : keySet)
       {
-         BenchmarkActivityStatisticsResultDTO bASRDTO = new BenchmarkActivityStatisticsResultDTO();
-         bASRDTO.activityId = key.getSecond();
-         // bPSRDTO.activityName = processDef.name;
-         
-      // first = processId ,second=activityId
-         bASRDTO.abortedActivityCount = stats.getAbortedCountForActivity(key.getFirst(), key.getSecond()); 
-         bASRDTO.completedActivityCount = stats.getCompletedCountForActivity(key.getFirst(), key.getSecond());
-         bASRDTO.totalCount = bASRDTO.completedActivityCount + bASRDTO.abortedActivityCount;
+         BenchmarkTLVStatisticsResultDTO bASRDTO = new BenchmarkTLVStatisticsResultDTO();
+         bASRDTO.id = key.getSecond();
+         bASRDTO.name = getActivityOrProcessName(key.getSecond());
+         bASRDTO.isActivity = true;
+         // first = processId ,second=activityId
+         bASRDTO.abortedCount = stats.getAbortedCountForActivity(key.getFirst(), key.getSecond());
+         bASRDTO.completedCount = stats.getCompletedCountForActivity(key.getFirst(), key.getSecond());
+         bASRDTO.totalCount = bASRDTO.completedCount + bASRDTO.abortedCount;
          BenchmarkCategoryCounts benchmarkCategoryCounts = stats.getBenchmarkCategoryCountsForActivity(key.getFirst(),
                key.getSecond());
          bASRDTO.benchmarkCategoryCountMap = CollectionUtils.newMap();
@@ -221,7 +221,7 @@ public class TrafficLightViewUtils
          }
          bASRDTOList.add(bASRDTO);
       }
-      
+
       QueryResultDTO result = new QueryResultDTO();
       result.list = bASRDTOList;
       result.totalCount = bASRDTOList.size();
@@ -259,6 +259,17 @@ public class TrafficLightViewUtils
          modelName = qualifiedProcessId.substring(0, lastIndex + 1);
       }
       return modelName;
+   }
+   
+   public static String getActivityOrProcessName(String qualifiedId)
+   {
+      String name = null;
+      if (qualifiedId.indexOf("{") != -1)
+      {
+         int lastIndex = qualifiedId.lastIndexOf("}");
+         name = qualifiedId.substring(lastIndex + 1);
+      }
+      return name;
    }
 
    public static Calendar getCurrentDayEnd()
