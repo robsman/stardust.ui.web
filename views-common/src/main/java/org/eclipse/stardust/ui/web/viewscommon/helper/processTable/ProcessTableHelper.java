@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.viewscommon.helper.processTable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,6 +42,7 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceLink;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreferenceComparator;
 import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModelListener;
@@ -621,6 +623,7 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
       List<ColumnPreference> descriptorColumns = DescriptorColumnUtils.createDescriptorColumns(processTable, allDescriptors, ResourcePaths.V_DOCUMENT_DESC_COLUMNS);
       procCols.addAll(descriptorColumns);
 
+      Collections.sort(procCols, new ColumnPreferenceComparator());
       IColumnModel procInstanceColumnModel = new DefaultColumnModel(procCols, null, processFixedCols2, moduleId,
             viewId, columnModelListener);
       

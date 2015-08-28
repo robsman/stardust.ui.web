@@ -42,6 +42,7 @@ import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.column.ColumnModel;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreferenceComparator;
 import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.columnSelector.TableColumnSelectorPopup;
@@ -491,6 +492,8 @@ public class RoleAssignmentBean extends UIComponentBean
             i++;
          }
       }
+      //For Sorting Column Selector entries 
+      Collections.sort(selCols, new ColumnPreferenceComparator());
       IColumnModel columnModel = new DefaultColumnModel(selCols, fixedCols, null, UserPreferencesEntries.M_BCC,
             UserPreferencesEntries.V_ROLE_ASSIGNMENT);
       TableColumnSelectorPopup colSelecpopup = new TableColumnSelectorPopup(columnModel);

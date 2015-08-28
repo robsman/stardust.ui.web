@@ -61,6 +61,7 @@ import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreferenceComparator;
 import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModelListener;
@@ -762,6 +763,7 @@ public class WorklistTableBean extends UIComponentBean
       List<ColumnPreference> descriptorColumns = DescriptorColumnUtils.createDescriptorColumns(worklistTable, allDescriptors, ResourcePaths.V_DOCUMENT_DESC_COLUMNS);
       standardColumns.addAll(descriptorColumns);
 
+      Collections.sort(standardColumns, new ColumnPreferenceComparator());
       IColumnModel worklistColumnModel = new DefaultColumnModel(standardColumns, fixedColumns1,
             fixedColumns2, UserPreferencesEntries.M_WORKFLOW, worklistId, new ColumnModelListener());
       DescriptorColumnUtils.setDescriptorColumnFilters(worklistColumnModel, allDescriptors);
