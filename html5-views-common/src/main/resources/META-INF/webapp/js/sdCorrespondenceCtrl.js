@@ -54,6 +54,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	// initialize
 	CorrespondenceCtrl.prototype.initializeFileUploader = function() {
 		var ctrl = this;
+		
 		var fileselect = jQuery("#fileselect")[0],
 		filedrag = jQuery("#filedrag")[0];
 		// file select
@@ -70,6 +71,12 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 			ctrl.dragDropAvailable = true;
 		}
 	}
+	
+	
+	
+/*	function  initializeFileUploader() {
+		
+	}*/
 	/**
 	 * 
 	 */
@@ -167,7 +174,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		}
 		// call initialization file
 		if (window.File && window.FileList && window.FileReader) {
-			this.initializeFileUploader();
+			//this.initializeFileUploader();
 		}
 
 		CorrespondenceCtrl.prototype.addAttachment = function(file){

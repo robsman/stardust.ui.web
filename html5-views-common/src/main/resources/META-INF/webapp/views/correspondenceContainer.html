@@ -10,8 +10,10 @@
 	<link href="../css/stardust-modern.css" rel="stylesheet">
 </head>
 <body>
-
-<div ng-include="'correspondenceContent.html'"> </div>
-
+	<div ng-cloak class="view-panel"
+		ng-controller="sdCorrespondenceCtrl as ctrl">
+		<div ng-include="'../html5/partials/views/correspondenceContent.html'"></div>
+		<div ng-include="'correspondenceDialogs.html'"></div>
+	</div>
 </body>
 </html>

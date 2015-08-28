@@ -1,4 +1,4 @@
-<div ng-cloak class="view-panel" ng-controller="sdCorrespondenceCtrl as ctrl" >
+
 	<table class="correspondence_container">
 		<tr class="correspondence_section">
 			<td class="correspondence_left_section">
@@ -157,7 +157,4 @@
 			</td>
 		</tr>
 	</table>
-	<div
-		ng-include="'correspondenceDialogs.html'">
-	</div>	
-</div>
+	{{ctrl.initializeFileUploader()}}	
