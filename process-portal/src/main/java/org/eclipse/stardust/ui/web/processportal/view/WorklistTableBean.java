@@ -203,6 +203,8 @@ public class WorklistTableBean extends UIComponentBean
 
    private Boolean showAllWorklist = false;
    
+   private boolean showResubmissionTime = false;
+   
    public WorklistTableBean()
    {
       super("worklistPanel");
@@ -522,6 +524,11 @@ public class WorklistTableBean extends UIComponentBean
          }
       }
       
+      Object showResubmitTime = getParamFromView("showResubmissionTime");
+      if (null != showResubmitTime)
+      {
+         showResubmissionTime = (Boolean)showResubmitTime;
+      }
       worklistId = (String) getParamFromView("id");
 
       if (StringUtils.isEmpty(worklistId))
@@ -685,7 +692,12 @@ public class WorklistTableBean extends UIComponentBean
       ColumnPreference colDescriptors = new ColumnPreference(Constants.COL_DESCRIPTORS,
             "processDescriptorsList", this.getMessages().getString("column.descriptors"),
             Resources.VIEW_WORKLIST_COLUMNS, true, false);
-
+      
+      ColumnPreference resubmissionTimeCol = new ColumnPreference(Constants.COL_RESUBMISSION_TIME, "resubmissionTime",
+            ColumnDataType.DATE, this.getMessages().getString("column.resubmissionTime"), null,
+            true, false);
+      resubmissionTimeCol.setNoWrap(true);
+      
       ColumnPreference colPriority = new ColumnPreference(Constants.COL_PRIORITY, "priority", this
             .getMessages().getString("column.priority"), Resources.VIEW_WORKLIST_COLUMNS,
             true, true);
@@ -734,6 +746,10 @@ public class WorklistTableBean extends UIComponentBean
       standardColumns.add(criticalityCol);
       standardColumns.add(colPriority);
       standardColumns.add(colDescriptors);
+      if(showResubmissionTime)
+      {
+         standardColumns.add(resubmissionTimeCol);
+      }
       standardColumns.add(colStarted);
       standardColumns.add(colLastMod);
       standardColumns.add(durationCol);
@@ -872,12 +888,12 @@ public class WorklistTableBean extends UIComponentBean
 
             List<Note> notes = ActivityInstanceUtils.getNotes(ai);
             int notesSize = null != notes ? notes.size() : 0;
-
+            
             worklistTableEntry = new WorklistTableEntry(I18nUtils.getActivityName(ai.getActivity()),
                   processDescriptorsList, ActivityInstanceUtils.isActivatable(ai),
                   ActivityInstanceUtils.getLastPerformer(ai), ai.getProcessInstance().getPriority(), ai.getStartTime(),
                   ai.getLastModificationTime(), ai.getOID(), this.getDuration(ai), notesSize, descriptorValues,
-                  ai.getProcessInstanceOID(), ai, currentPerformerOID, showResubmissionLink);
+                  ai.getProcessInstanceOID(), ai, currentPerformerOID, showResubmissionLink, showResubmissionTime);
          }
          catch (Exception e)
          {

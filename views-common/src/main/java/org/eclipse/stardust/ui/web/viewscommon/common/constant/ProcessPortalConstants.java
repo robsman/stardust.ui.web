@@ -20,7 +20,8 @@ public interface ProcessPortalConstants
    String PROCESSPORTAL_PREFIX = "Carnot.ProcessPortal.";
    String ASSEMBLY_LINE_MODE_ENABLED = "Carnot.BpmClient.Features.AssemblyLineTaskAssignment";
    String ASSEMBLY_LINE_PUSH_SERVICE = "Carnot.BpmClient.Features.AssemblyLinePushService";   
-
+   String ID_ALL_RESUBMISSION_ACTIVITY_INSTANCES = "allResubmissionInstances";
+   
    String DESCRIPTOR_FILTER_PREFIX = PROCESSPORTAL_PREFIX + "DescriptorFilter.";
   // String CONSIDER_ONLY_ACTIVE_MODEL = DESCRIPTOR_FILTER_PREFIX + "ConsiderOnlyActiveModel";
   // String FILTER_COLUMN_DESCRIPTOR_IDS = DESCRIPTOR_FILTER_PREFIX + "ColumnDescriptorIds";

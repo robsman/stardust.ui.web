@@ -88,6 +88,8 @@ public class WorklistTableEntry extends DefaultRowModel
    private String priorityIcon;
    
    private boolean showResubmissionLink;
+   
+   private Date resubmissionTime;
 
    public WorklistTableEntry()
    {
@@ -110,10 +112,11 @@ public class WorklistTableEntry extends DefaultRowModel
     * @param processInstanceOid
     * @param activityInstance
     */
-   public WorklistTableEntry(String processName, List<ProcessDescriptor> processDescriptorsList,
-         boolean activatable, String lastPerformer, int processPriority, Date startDate,
-         Date lastModificationTime, long oid, String duration, int notesCount, Map<String, Object> descriptorValues,
-         long processInstanceOid, ActivityInstance activityInstance, long currentPerformerOID, boolean showResubmissionLink)
+   public WorklistTableEntry(String processName, List<ProcessDescriptor> processDescriptorsList, boolean activatable,
+         String lastPerformer, int processPriority, Date startDate, Date lastModificationTime, long oid,
+         String duration, int notesCount, Map<String, Object> descriptorValues, long processInstanceOid,
+         ActivityInstance activityInstance, long currentPerformerOID, boolean showResubmissionLink,
+         boolean showResubmissionTime)
    {
       super();
       defaultCaseActivity= ActivityInstanceUtils.isDefaultCaseActivity(activityInstance);
@@ -167,6 +170,12 @@ public class WorklistTableEntry extends DefaultRowModel
       {
          renderIcon = true;
          iconPath = Constants.WORKLIST_QA_FAILED_STATE_IMAGE;
+      }
+      
+      if(showResubmissionTime)
+      {
+         Date resubmissionTime = ActivityInstanceUtils.getResubmissionDate(activityInstance);
+         this.setResubmissionTime(resubmissionTime);
       }
    }
 
@@ -409,4 +418,14 @@ public class WorklistTableEntry extends DefaultRowModel
       this.showResubmissionLink = showResubmissionLink;
    }
 
+   public Date getResubmissionTime()
+   {
+      return resubmissionTime;
+   }
+
+   public void setResubmissionTime(Date resubmissionTime)
+   {
+      this.resubmissionTime = resubmissionTime;
+   }
+   
 }

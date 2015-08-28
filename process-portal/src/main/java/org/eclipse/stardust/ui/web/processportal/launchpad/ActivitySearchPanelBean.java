@@ -27,6 +27,7 @@ import org.eclipse.stardust.engine.api.query.Users;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.common.uielement.AbstractLaunchPanel;
 import org.eclipse.stardust.ui.web.processportal.common.PPUtils;
+import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -47,8 +48,6 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
 
    private static final String ID_ALL_ACTIVITY_INSTANCES = "allActivityInstances";
    
-   private static final String ID_ALL_RESUBMISSION_ACTIVITY_INSTANCES = "allResubmissionInstances";
-
    private static final int SEARCH_RESULT_MAP_SIZE = 3;
 
    private AllAvailableActivityQueryBuilder allActivityQueryBuilder;
@@ -140,10 +139,11 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
          Map<String, Object> params = CollectionUtils.newTreeMap();
          params.put(Query.class.getName(), allResubmissionActivity.createQuery());
          String name = this.getMessages().getString("resubmission");
-         String id = ID_ALL_RESUBMISSION_ACTIVITY_INSTANCES;
+         String id = ProcessPortalConstants.ID_ALL_RESUBMISSION_ACTIVITY_INSTANCES;
          params.put("id", id);
          params.put("name", name);
          params.put("showResubmitLink", true);
+         params.put("showResubmissionTime", true);
          PPUtils.openWorklistView("id=" + id, params);
 
          PPUtils.selectWorklist(null);

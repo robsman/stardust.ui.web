@@ -56,6 +56,7 @@ public class WorklistConfigurationUtil
       colsToBeSaved.add(Constants.COL_CRITICALITY);
       colsToBeSaved.add(Constants.COL_PRIORITY);
       colsToBeSaved.add(Constants.COL_DESCRIPTORS);
+      colsToBeSaved.add(Constants.COL_RESUBMISSION_TIME);
       colsToBeSaved.add(Constants.COL_STARTED);
       colsToBeSaved.add(Constants.COL_LAST_MODIFIED);
       colsToBeSaved.add(Constants.COL_DURATION);
