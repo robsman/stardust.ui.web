@@ -93,22 +93,24 @@
 				<div id="ippSuspendAnchor" style="width: 1px; height: 1px;"></div>
 			</ice:panelGroup>
 
-			<ice:commandLink actionListener="#{activityDetailsBean.saveAction}">
-				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarSave" standAlone="false"/>
+			<ice:commandLink actionListener="#{activityDetailsBean.saveAction}"
+				disabled="#{activityDetailsBean.qualityAssuranceActivity}">
+				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarSave"
+					standAlone="false" />
 				<ice:graphicImage
 					value="/plugins/views-common/images/icons/clock_save.png"
 					style="padding :0px;margin:0px;"
-					styleClass="toolbar-button toolbar-button-suspend-save"
+					styleClass="toolbar-button #{activityDetailsBean.qualityAssuranceActivity ? 'iceCmdBtn-dis' : 'toolbar-button-suspend-save'}"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.suspendAndSave']}" />
 			</ice:commandLink>
 			<ice:panelGroup>
 				<ice:commandLink
-					action="#{activityDetailsBean.toggleSaveActivityIframePopup}"
+					action="#{activityDetailsBean.toggleSaveActivityIframePopup}" disabled="#{activityDetailsBean.qualityAssuranceActivity}"
 					style="padding:0px;" immediate="true"
-					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.suspendSaveMenu']}" >
+					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.suspendSaveMenu']}">
 					<ice:graphicImage style="padding:0px;width:11px;"
 						value="/plugins/views-common/images/icons/arrow.png"
-						styleClass="toolbar-button" />
+						styleClass="toolbar-button #{activityDetailsBean.qualityAssuranceActivity ? 'iceCmdBtn-dis' : ''}" />
 				</ice:commandLink>
 				<div id="ippSaveActivityAnchor" style="width: 1px; height: 1px;"></div>
 			</ice:panelGroup>
