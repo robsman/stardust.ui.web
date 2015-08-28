@@ -24,7 +24,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -33,6 +32,8 @@ import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.dto.Note;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceAttributes;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
+import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetailsLevel;
+import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetailsOptions;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.Participant;
@@ -44,6 +45,7 @@ import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.ProcessDefinitionFilter;
 import org.eclipse.stardust.engine.api.query.ProcessDefinitionQuery;
+import org.eclipse.stardust.engine.api.query.ProcessInstanceDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceFilter;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ProcessInstances;
@@ -106,7 +108,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessContextCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDocumentDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
-
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -155,7 +156,7 @@ public class ProcessInstanceUtils
     * @param oid
     * @return
     */
-   public ProcessInstance getProcessInstance(long oid, boolean fetchDescriptors)
+   public ProcessInstance getProcessInstance(long oid, boolean fetchDescriptors, boolean withHierarchyInfo)
    {
       ProcessInstance pi = null;
       ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
@@ -167,7 +168,14 @@ public class ProcessInstanceUtils
          query.setPolicy(DescriptorPolicy.NO_DESCRIPTORS);
       }
     
-    
+      if (withHierarchyInfo)
+      {
+         ProcessInstanceDetailsPolicy processInstanceDetailsPolicy = new ProcessInstanceDetailsPolicy(
+               ProcessInstanceDetailsLevel.Default);
+         processInstanceDetailsPolicy.getOptions().add(ProcessInstanceDetailsOptions.WITH_HIERARCHY_INFO);
+         query.setPolicy(processInstanceDetailsPolicy);
+      }
+
       ProcessInstances pis = serviceFactoryUtils.getQueryService().getAllProcessInstances(query);
       
       if (!pis.isEmpty())
@@ -185,7 +193,7 @@ public class ProcessInstanceUtils
     */
    public ProcessInstance getProcessInstance(long oid)
    {
-      return getProcessInstance( oid, false);
+      return getProcessInstance( oid, false, false);
    }
 
    public User getCurrentUser()
@@ -1777,6 +1785,7 @@ public class ProcessInstanceUtils
 
       dto.auxillary = isAuxiliaryProcess(processDefinition);
       dto.processInstanceRootOID = pi.getRootProcessInstanceOID();
+      dto.parentProcessInstanceOID = pi.getParentProcessInstanceOid();
       dto.oid = pi.getOID();
 
       PriorityDTO priority = new PriorityDTO();

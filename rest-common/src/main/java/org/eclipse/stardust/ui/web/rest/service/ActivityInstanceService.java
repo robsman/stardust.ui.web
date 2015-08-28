@@ -477,7 +477,9 @@ public class ActivityInstanceService
    {
       ActivityInstance ai = getActivityInstance(activityOid);
       Folder correspondenceOutFolder = RepositoryUtility.getOrCreateCorrespondenceOutFolder(ai);
-      return FolderDTOBuilder.build(correspondenceOutFolder);
+      FolderDTO folderDTO = FolderDTOBuilder.build(correspondenceOutFolder);
+      folderDTO.documents = DocumentDTOBuilder.build(correspondenceOutFolder.getDocuments());
+      return folderDTO;
    }
    
    /**

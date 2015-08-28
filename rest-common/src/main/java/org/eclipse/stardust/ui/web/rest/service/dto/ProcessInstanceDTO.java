@@ -31,6 +31,8 @@ public class ProcessInstanceDTO extends AbstractDTO
    public String processName;
 
    public long processInstanceRootOID;
+   
+   public long parentProcessInstanceOID; //set only when requested with 'withHierarchyInfo'
 
    public PriorityDTO priority;
 

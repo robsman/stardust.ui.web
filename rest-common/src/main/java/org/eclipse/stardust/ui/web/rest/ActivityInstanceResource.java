@@ -53,6 +53,7 @@ import org.eclipse.stardust.ui.web.rest.service.ActivityInstanceService;
 import org.eclipse.stardust.ui.web.rest.service.DelegationComponent;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
 import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
+import org.eclipse.stardust.ui.web.rest.service.ProcessInstanceService;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
@@ -106,6 +107,9 @@ public class ActivityInstanceResource
    @Autowired
    ProcessDefinitionService processDefService;
 
+   @Autowired
+   private ProcessInstanceService processInstanceService;
+   
    private final JsonMarshaller jsonIo = new JsonMarshaller();
 
    public static final String ACTIVE = "Active";
@@ -131,6 +135,22 @@ public class ActivityInstanceResource
 
          return Response.serverError().build();
       }
+   }
+
+   /**
+    * @author Yogesh.Manware
+    * @param activityInstanceOid
+    * @return
+    */
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/{activityInstanceOid: \\d+}/correspondence-process-instance")
+   public Response getCorrespondenceProcessInstance(@PathParam("activityInstanceOid") Long activityInstanceOid)
+   {
+      ProcessInstanceDTO processInstanceDTO = processInstanceService
+            .getCorrespondenceProcessInstanceDTO(getActivityInstanceService().getActivityInstance(activityInstanceOid)
+                  .getProcessInstanceOID());
+      return Response.ok(processInstanceDTO.toJson(), MediaType.APPLICATION_JSON).build();
    }
 
    @POST

@@ -17,7 +17,8 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		messageBundles="html5-views-common">
 
 		<ippui:viewsExtension>
-		
+			<ippui:view name="correspondencePanel"
+				include="/plugins/html5-views-common/html5/partials/views/correspondenceView.html" />
 		</ippui:viewsExtension>
 	</ippui:perspectiveExtension>
 </beans>

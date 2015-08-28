@@ -567,13 +567,29 @@ public class ProcessInstanceService
     * @return 
     * 
     */
-   public ProcessInstanceDTO getProcessByOid(Long oid, boolean fetchDescriptors)
+   public ProcessInstanceDTO getProcessByOid(Long oid, boolean fetchDescriptors, boolean withHierarchyInfo)
    {
-      ProcessInstance process =  processInstanceUtilsREST.getProcessInstance(oid, fetchDescriptors);
-      ProcessInstanceDTO dto =  processInstanceUtilsREST.buildProcessInstanceDTO(process);
+      ProcessInstance process = processInstanceUtilsREST.getProcessInstance(oid, fetchDescriptors, withHierarchyInfo);
+      ProcessInstanceDTO dto = processInstanceUtilsREST.buildProcessInstanceDTO(process);
       return dto;
    }
 
+   /**
+    * @param oid
+    * @return
+    */
+   public ProcessInstanceDTO getCorrespondenceProcessInstanceDTO(Long oid)
+   {
+      ProcessInstance process = processInstanceUtilsREST.getProcessInstance(oid, false, true);
+      // TODO: decide criteria for Correspondence folder
+      /*
+       * if (process.getParentProcessInstanceOid() != -1) { process =
+       * processInstanceUtilsREST
+       * .getProcessInstance(process.getParentProcessInstanceOid(), false, false); }
+       */
+      ProcessInstanceDTO dto = processInstanceUtilsREST.buildProcessInstanceDTO(process);
+      return dto;
+   }
    /**
     * 
     */

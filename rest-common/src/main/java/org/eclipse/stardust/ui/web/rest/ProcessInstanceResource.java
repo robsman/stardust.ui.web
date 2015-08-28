@@ -452,9 +452,10 @@ public class ProcessInstanceResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{oid}")
    public Response getProcessByOid(@PathParam("oid") Long oid,
-         @QueryParam("fetchDescriptors") @DefaultValue("false") boolean fetchDescriptors)
+         @QueryParam("fetchDescriptors") @DefaultValue("false") boolean fetchDescriptors,
+         @QueryParam("withHierarchyInfo") @DefaultValue("false") boolean withHierarchyInfo)
    {
-      return Response.ok(processInstanceService.getProcessByOid(oid, fetchDescriptors).toJson(),
+      return Response.ok(processInstanceService.getProcessByOid(oid, fetchDescriptors, withHierarchyInfo).toJson(),
             MediaType.APPLICATION_JSON).build();
    }
 
