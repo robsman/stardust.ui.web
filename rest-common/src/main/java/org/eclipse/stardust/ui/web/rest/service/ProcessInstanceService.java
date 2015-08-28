@@ -87,12 +87,14 @@ import org.eclipse.stardust.ui.web.rest.service.helpers.IDataPathValueFilter;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.FileUploadUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessDefinitionUtils;
+import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.converter.PriorityConverter;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.services.ContextPortalServices;
+import org.eclipse.stardust.ui.web.viewscommon.utils.CorrespondencePanelPreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
@@ -607,7 +609,11 @@ public class ProcessInstanceService
    @SuppressWarnings("unchecked")
    public List<AddressBookDataPathValueDTO> getAddressBookDTO(long processInstanceOid)
    {
-      return (List<AddressBookDataPathValueDTO>)getDataPathValueDTO(getProcessInstance(processInstanceOid), new AddressBookDataPathValueFilter(), null);
+      String faxFormat = CorrespondencePanelPreferenceUtils.getCorrespondencePreferenceForUser(
+            processInstanceUtilsREST.getCurrentUser(), UserPreferencesEntries.F_CORRESPONDENCE_NUMBER_FORMAT);
+      
+      return (List<AddressBookDataPathValueDTO>) getDataPathValueDTO(getProcessInstance(processInstanceOid),
+            new AddressBookDataPathValueFilter(faxFormat), null);
    }
 
    /**

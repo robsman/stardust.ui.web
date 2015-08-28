@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.AddressBookDataPathValueDTO;
@@ -29,6 +30,17 @@ import org.eclipse.stardust.ui.web.viewscommon.core.EMailAddressValidator;
 public class AddressBookDataPathValueFilter implements IDataPathValueFilter
 {
    private static final String FAX_PATTERN = "^\\(?([0-9]{3})\\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$";
+   //Note: from Correspondence Configuration ^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$
+   
+   private String faxFormat = FAX_PATTERN;
+
+   public AddressBookDataPathValueFilter(String faxFormat)
+   {
+      if (StringUtils.isNotEmpty(faxFormat))
+      {
+         this.faxFormat = faxFormat;
+      }
+   }
 
    @Override
    public List< ? extends AbstractDTO> filter(DataPath dataPath, Object dataValue)
@@ -84,9 +96,9 @@ public class AddressBookDataPathValueFilter implements IDataPathValueFilter
     * @param dataValue
     * @return
     */
-   private static boolean isFaxNumber(String dataValue)
+   private boolean isFaxNumber(String dataValue)
    {
-      Pattern faxNumber = Pattern.compile(FAX_PATTERN);
+      Pattern faxNumber = Pattern.compile(faxFormat);
       Matcher faxNumberMatcher = faxNumber.matcher(dataValue);
 
       if (faxNumberMatcher.matches())
