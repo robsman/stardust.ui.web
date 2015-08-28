@@ -748,3 +748,8 @@ table.dataTable .group {
 .jqplot-title {
     top: -5px !important;
 }
+
+.msg-error {
+	color: red;
+	padding-left: 2px;
+}

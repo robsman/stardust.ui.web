@@ -88,7 +88,19 @@ define(
 						}, {
 							id : "Y",
 							name : this.getI18N('reporting.definitionView.years.label')
-						}]
+						}],
+						ALL_BENCHMARKS : {
+							id : "allBenchmarks",
+							name : this
+									.getI18N("reporting.definitionView.additionalFiltering.allBenchmarks"),
+									order : 0
+						},
+						ALL_CATEGORIES : {
+							id : "allCategories",
+							name : this
+									.getI18N("reporting.definitionView.additionalFiltering.allCategories"),
+							order : 0
+						}
 					};
 
 					this.reportingService = reportingService;
@@ -117,6 +129,19 @@ define(
 						return self.constants.ALL_PROCESSES.id == id;
 					})) {
 						filter.metadata.selectedProcesses = [ this.constants.ALL_PROCESSES.id ];
+					}
+				};
+				
+				/**
+				 * 
+				 */
+				ReportFilterController.prototype.selectedBenchmarkChanged = function(
+						filter) {
+					var self = this;
+					if (filter.metadata.selectedBenchmarks.some(function(id) {
+						return self.constants.ALL_BENCHMARKS.id == id;
+					})) {
+						filter.metadata.selectedBenchmarks = [ this.constants.ALL_BENCHMARKS.id ];
 					}
 				};
 
@@ -152,6 +177,11 @@ define(
 						this.filters[index].metadata.selectedProcesses
 								.push(this.constants.ALL_PROCESSES.id);
 						this.filters[index].value = [ this.constants.ALL_ACTIVITIES.id ];
+					} else if (this.filters[index].dimension == this.reportingService.metadata.objects.processInstance.dimensions.benchmarkValue.id) {
+						this.filters[index].metadata = benchmarkFilterTemplate();
+						this.filters[index].metadata.selectedBenchmarks
+								.push(this.constants.ALL_BENCHMARKS.id);
+						this.filters[index].value = [ this.constants.ALL_CATEGORIES.id ];
 					} else {
 						var dimension = this
 								.getDimension(this.filters[index].dimension);
@@ -471,6 +501,63 @@ define(
 
 						}
 					}
+					
+					// Benchmark
+					if (dimension.id == this.reportingService.metadata.objects.processInstance.dimensions.benchmarkValue.id) {
+						if (filter == null) {
+							filteredEnumItems = [];
+							filteredEnumItems
+									.push(this.constants.ALL_BENCHMARKS);
+							for (var i = 0; i < enumItems.length; i++) {
+								var process = enumItems[i];
+								filteredEnumItems.push(process);
+							}
+						} else if (filter.dimension == this.reportingService.metadata.objects.processInstance.dimensions.benchmarkValue.id) {
+
+							var selectedBenchmarks = [];
+							var self = this;
+
+							if (!filter.metadata.selectedBenchmarks
+									|| filter.metadata.selectedBenchmarks.length < 1) {
+								selectedBenchmarks = selectedBenchmarks
+										.concat(filteredEnumItems);
+							} else if (filter.metadata.selectedBenchmarks
+									.some(function(id) {
+										return self.constants.ALL_BENCHMARKS.id == id;
+									})) {
+								selectedBenchmarks = selectedBenchmarks
+										.concat(filteredEnumItems);
+							} else {
+								filteredEnumItems.forEach(function(item) {
+									if (filter.metadata.selectedBenchmarks
+											.some(function(id) {
+												return item.id == id;
+											})) {
+										selectedBenchmarks.push(item);
+									}
+								});
+							}
+
+							filteredEnumItems = [];
+							filteredEnumItems
+									.push(this.constants.ALL_CATEGORIES);
+							
+							//Get Common Categories of Selected Benchmarks
+							var self = this;
+							this.reportingService.getRuntimeBenchmarkCategories(selectedBenchmarks).done(
+									function(commonCat) {
+										for (var j = 0; j < commonCat.length; j++) {
+											jQuery('#benchmarkTable tr[id="commonCategoriesError"]').hide();
+											var category = commonCat[j];
+											category.id = category.name;
+											filteredEnumItems.push(category);
+										}
+			                        }).fail(function(data) {
+			                        	jQuery('#benchmarkTable tr[id="commonCategoriesError"]').show();
+			                        });
+						}
+					}
+						
 					return filteredEnumItems;
 				};
 
@@ -499,6 +586,13 @@ define(
 								.getCriticalityForName(filter.value);
 						filter.metadata.parameterizable = true;
 						filter.uiValue = [filter.metadata.rangeFrom/1000, filter.metadata.rangeTo/1000];
+					}
+					
+					if (dimension.id == self.reportingService.metadata.objects.processInstance.dimensions.benchmarkValue.id
+						&& filter.value.some(function(id) {
+							return self.constants.ALL_BENCHMARKS.id == id;
+						})) {
+						filter.value = [ this.constants.ALL_BENCHMARKS.id ];
 					}
 				};
 				/**
@@ -639,4 +733,11 @@ define(
 					activity_filter_nonInteractive : true
 				};
 			}
+			
+			function benchmarkFilterTemplate() {
+				return {
+					selectedBenchmarks : [],
+				};
+			}
+
 		});

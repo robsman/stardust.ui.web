@@ -136,77 +136,118 @@
 					ng-show="reportFilterController.getDimension(x.dimension).type &&
 					reportFilterController.getDimension(x.dimension).type.id === reportFilterController.getMetadata().enumerationType.id"
 					style="height: auto;">
-					<table class="filterTable"
-						ng-show="x.dimension == 'processName' || x.dimension == 'activityName'">
-						<tr ng-show="x.dimension == 'activityName'">
-							<td><label class="section2">{{reportFilterController.getI18N('reporting.definitionView.process.title')}}</label></td>
-						</tr>
-						<tr
-							ng-show="x.dimension == 'processName' || x.dimension == 'activityName'">
-							<td valign="top"><a id="pfa{{$index}}" href=""
-								ng-click="reportFilterController.toggleFilter(x, 'process_filter_auxiliary')"
-								ng-class="{true:'disabled', false:'enabled'}[x.metadata.process_filter_auxiliary]">
-									<img ng-src="{{reportFilterController.baseUrl}}/css/images/process_auxiliary.png"
-									title="{{reportFilterController.getI18N('reporting.definitionView.process.filter.auxiliary.' + x.metadata.process_filter_auxiliary)}}" />
-							</a></td>
-						</tr>
-						<tr ng-show="x.dimension == 'activityName'">
-							<td valign="top"><select id="process{{$index}}" multiple="multiple"
-								style="height: 100px; width: 250px;"
-								ng-model="x.metadata.selectedProcesses"
-								ng-change="reportFilterController.selectedProcessChanged(x)"
-								ng-options="p.id as p.name for p in reportFilterController.getEnumerators(reportFilterController.getDimension('processName'), x) | orderBy:['order','name']"></select>
+					<table style="float:left;">
+						<tr>
+							<td>
+								<table class="filterTable"
+									ng-show="x.dimension == 'processName' || x.dimension == 'activityName'">
+									<tr ng-show="x.dimension == 'activityName'">
+										<td><label class="section2">{{reportFilterController.getI18N('reporting.definitionView.process.title')}}</label></td>
+									</tr>
+									<tr
+										ng-show="x.dimension == 'processName' || x.dimension == 'activityName'">
+										<td valign="top"><a id="pfa{{$index}}" href=""
+											ng-click="reportFilterController.toggleFilter(x, 'process_filter_auxiliary')"
+											ng-class="{true:'disabled', false:'enabled'}[x.metadata.process_filter_auxiliary]">
+												<img ng-src="{{reportFilterController.baseUrl}}/css/images/process_auxiliary.png"
+												title="{{reportFilterController.getI18N('reporting.definitionView.process.filter.auxiliary.' + x.metadata.process_filter_auxiliary)}}" />
+										</a></td>
+									</tr>
+									<tr ng-show="x.dimension == 'activityName'">
+										<td valign="top"><select id="process{{$index}}" multiple="multiple"
+											style="height: 100px; width: 250px;"
+											ng-model="x.metadata.selectedProcesses"
+											ng-change="reportFilterController.selectedProcessChanged(x)"
+											ng-options="p.id as p.name for p in reportFilterController.getEnumerators(reportFilterController.getDimension('processName'), x) | orderBy:['order','name']"></select>
+										</td>
+									</tr>
+								</table>
+					
+								<table class="filterTable" id="benchmarkTable"
+									ng-show="x.dimension == 'benchmarkValue'">
+									<tr id="commonCategoriesError">
+										<td>
+											<img ng-src="{{reportFilterController.baseUrl}}/css/images/warning.png" />
+											<label class="msg-error" style="display: inline-block; vertical-align: top">{{reportFilterController.getI18N('reporting.definitionView.benchmark.noCommonCategories.error')}}</label>
+										</td>
+									</tr>
+									<tr>
+										<td><label class="section2">{{reportFilterController.getI18N('reporting.definitionView.benchmark.title')}}</label></td>
+									</tr>
+									<tr>
+										<td valign="top"><select id="process{{$index}}" multiple="multiple"
+											style="height: 100px; width: 250px;"
+											ng-model="x.metadata.selectedBenchmarks"
+											ng-change="reportFilterController.selectedBenchmarkChanged(x)"
+											ng-options="p.id as p.name for p in reportFilterController.getEnumerators(reportFilterController.getDimension('benchmarkValue'), null) | orderBy:['order','name']"></select>
+										</td>
+									</tr>
+								</table>
 							</td>
 						</tr>
 					</table>
-					<table class="filterTable" ng-show="x.dimension == 'activityName'">
+					
+					<table style="float:left;">
 						<tr>
-							<td><label class="section2">{{reportFilterController.getI18N('reporting.definitionView.activity.title')}}</label></td>
-						</tr>
-					</table>
-					<table class="filterTable" ng-show="x.dimension == 'activityName'">
-						<tr>
-							<td valign="top"><a id="afni{{$index}}" href=""
-								ng-click="reportFilterController.toggleFilter(x, 'activity_filter_nonInteractive')"
-								ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_nonInteractive]">
-									<img ng-src="{{reportFilterController.baseUrl}}/css/images/activity_application.png"
-									title="{{reportFilterController.getI18N('reporting.definitionView.activity.filter.nonInteractive.' + x.metadata.activity_filter_nonInteractive)}}" />
-							</a></td>
-							<td valign="top"><a id="afi{{$index}}" href=""
-								ng-click="reportFilterController.toggleFilter(x, 'activity_filter_interactive')"
-								ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_interactive]">
-									<img ng-src="{{reportFilterController.baseUrl}}/css/images/activity_manual.png"
-									title="{{reportFilterController.getI18N('reporting.definitionView.activity.filter.interactive.' + x.metadata.activity_filter_interactive)}}" />
-							</a></td>
-							<td valign="top"><a id="afa{{$index}}" href=""
-								ng-click="reportFilterController.toggleFilter(x, 'activity_filter_auxiliary')"
-								ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_auxiliary]">
-									<img ng-src="{{reportFilterController.baseUrl}}/css/images/activity_auxiliary.png"
-									title="{{reportFilterController.getI18N('reporting.definitionView.activity.filter.auxiliary.' + x.metadata.activity_filter_auxiliary)}}" />
-							</a></td>
-						</tr>
-					</table>
-					<table class="filterTable"
-						ng-show="reportFilterController.getDimension(x.dimension).display != 'singleSelect'">
-						<tr>
-							<td valign="top"><select id="value{{$index}}" multiple="multiple"
-								style="height: 100px; width: 250px;" ng-model="x.value"
-								ng-change="reportFilterController.selectionChanged(reportFilterController.getDimension(x.dimension), x)"
-								ng-options="y.id as y.name for y in reportFilterController.getEnumerators(reportFilterController.getDimension(x.dimension), x) | orderBy:['order','name']"></select>
+							<td>
+								<table class="filterTable" ng-show="x.dimension == 'benchmarkValue'">
+									<tr>
+										<td><label class="section2">{{reportFilterController.getI18N('reporting.definitionView.benchmark.category.title')}}</label></td>
+									</tr>
+								</table>
+					
+								<table class="filterTable" ng-show="x.dimension == 'activityName'">
+									<tr>
+										<td><label class="section2">{{reportFilterController.getI18N('reporting.definitionView.activity.title')}}</label></td>
+									</tr>
+								</table>
+								<table class="filterTable" ng-show="x.dimension == 'activityName'">
+									<tr>
+										<td valign="top"><a id="afni{{$index}}" href=""
+											ng-click="reportFilterController.toggleFilter(x, 'activity_filter_nonInteractive')"
+											ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_nonInteractive]">
+												<img ng-src="{{reportFilterController.baseUrl}}/css/images/activity_application.png"
+												title="{{reportFilterController.getI18N('reporting.definitionView.activity.filter.nonInteractive.' + x.metadata.activity_filter_nonInteractive)}}" />
+										</a></td>
+										<td valign="top"><a id="afi{{$index}}" href=""
+											ng-click="reportFilterController.toggleFilter(x, 'activity_filter_interactive')"
+											ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_interactive]">
+												<img ng-src="{{reportFilterController.baseUrl}}/css/images/activity_manual.png"
+												title="{{reportFilterController.getI18N('reporting.definitionView.activity.filter.interactive.' + x.metadata.activity_filter_interactive)}}" />
+										</a></td>
+										<td valign="top"><a id="afa{{$index}}" href=""
+											ng-click="reportFilterController.toggleFilter(x, 'activity_filter_auxiliary')"
+											ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_auxiliary]">
+												<img ng-src="{{reportFilterController.baseUrl}}/css/images/activity_auxiliary.png"
+												title="{{reportFilterController.getI18N('reporting.definitionView.activity.filter.auxiliary.' + x.metadata.activity_filter_auxiliary)}}" />
+										</a></td>
+									</tr>
+								</table>
+								<table class="filterTable"
+									ng-show="reportFilterController.getDimension(x.dimension).display != 'singleSelect'">
+									<tr>
+										<td valign="top"><select id="value{{$index}}" multiple="multiple"
+											style="height: 100px; width: 250px;" ng-model="x.value"
+											ng-change="reportFilterController.selectionChanged(reportFilterController.getDimension(x.dimension), x)"
+											ng-options="y.id as y.name for y in reportFilterController.getEnumerators(reportFilterController.getDimension(x.dimension), x) | orderBy:['order','name']"></select>
+										</td>
+										<td ng-include="'templates/parameterControl.html'"></td>
+									</tr>
+								</table>
+								<table class="filterTable"
+									ng-show="reportFilterController.getDimension(x.dimension).display == 'singleSelect'">
+									<tr>
+										<td><select id="oper{{$index}}" ng-model="x.operator" ng-disabled="reportFilterController.parameterDisplay"
+											ng-options="o.id as o.label for o in reportFilterController.getOperatorsEnum(reportFilterController.getDimension(x.dimension))"></td>
+										<td valign="top"><select id="value{{$index}}" ng-model="x.value"
+											ng-change="reportFilterController.selectionChanged(reportFilterController.getDimension(x.dimension), x)"
+											ng-options="y.id as y.name for y in reportFilterController.getEnumerators(reportFilterController.getDimension(x.dimension), x) | orderBy:['order','name']"></select>
+										</td>
+										<td ng-include="'templates/parameterControl.html'"></td>
+									</tr>
+								</table>
+					
 							</td>
-							<td ng-include="'templates/parameterControl.html'"></td>
-						</tr>
-					</table>
-					<table class="filterTable"
-						ng-show="reportFilterController.getDimension(x.dimension).display == 'singleSelect'">
-						<tr>
-							<td><select id="oper{{$index}}" ng-model="x.operator" ng-disabled="reportFilterController.parameterDisplay"
-								ng-options="o.id as o.label for o in reportFilterController.getOperatorsEnum(reportFilterController.getDimension(x.dimension))"></td>
-							<td valign="top"><select id="value{{$index}}" ng-model="x.value"
-								ng-change="reportFilterController.selectionChanged(reportFilterController.getDimension(x.dimension), x)"
-								ng-options="y.id as y.name for y in reportFilterController.getEnumerators(reportFilterController.getDimension(x.dimension), x) | orderBy:['order','name']"></select>
-							</td>
-							<td ng-include="'templates/parameterControl.html'"></td>
 						</tr>
 					</table>
 				</div>

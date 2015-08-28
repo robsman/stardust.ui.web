@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -39,8 +40,9 @@ public class BenchmarkUtils
    private static final Logger trace = LogManager.getLogger(BenchmarkUtils.class);
 
    public static final String BENCHMARK_DEFINITION_FOLDER = "/benchmark-definitions";
-   public static final String BENCHMARK_DEFINITION_ID = "id";
-   public static final String BENCHMARK_DEFINITION_NAME = "name";
+   public static final String BENCHMARK_ID = "id";
+   public static final String BENCHMARK_NAME = "name";
+   public static final String BENCHMARK_CATEGORIES = "categories";
 
    private static final JsonParser jsonParser = new JsonParser();
 
@@ -57,8 +59,8 @@ public class BenchmarkUtils
                   doc.getId());
             String fileContents = new String(documentContents);
             JsonObject benchmarkJSON = readJsonObject(fileContents);
-            String benchmarkId = benchmarkJSON.get(BENCHMARK_DEFINITION_ID).getAsString();
-            String benchmarkName = benchmarkJSON.get(BENCHMARK_DEFINITION_NAME).getAsString();
+            String benchmarkId = benchmarkJSON.get(BENCHMARK_ID).getAsString();
+            String benchmarkName = benchmarkJSON.get(BENCHMARK_NAME).getAsString();
             benchmarkInfo.put(benchmarkId, benchmarkName);
          }
       }
@@ -85,8 +87,8 @@ public class BenchmarkUtils
                   artifact.getOid());
             String contents = new String(runtimeArtifact.getContent());
             JsonObject benchmarkJSON = readJsonObject(contents);
-            String benchmarkId = benchmarkJSON.get(BENCHMARK_DEFINITION_ID).getAsString();
-            String benchmarkName = benchmarkJSON.get(BENCHMARK_DEFINITION_NAME).getAsString();
+            String benchmarkId = benchmarkJSON.get(BENCHMARK_ID).getAsString();
+            String benchmarkName = benchmarkJSON.get(BENCHMARK_NAME).getAsString();
             benchmarkInfo.put(benchmarkId, benchmarkName);
          }
       }
@@ -95,6 +97,36 @@ public class BenchmarkUtils
          throw e;
       }
       return benchmarkInfo;
+   }
+   
+   /**
+    * @return Map containing runtimeOID and JSon BenchmarkObject
+    * @throws Exception
+    */
+   public static Map<String, JsonObject> getReportingRuntimeBenchmarkDefinitionsInfo() throws Exception
+   {
+      Map<String, JsonObject> benchmarkJsons = new HashMap<String, JsonObject>();
+      try
+      {
+         DeployedRuntimeArtifactQuery query = DeployedRuntimeArtifactQuery.findActive(
+               BenchmarkDefinitionArtifactType.TYPE_ID, new Date());
+
+         DeployedRuntimeArtifacts artifacts = ServiceFactoryUtils.getQueryService().getRuntimeArtifacts(query);
+
+         for (DeployedRuntimeArtifact artifact : artifacts)
+         {
+            RuntimeArtifact runtimeArtifact = ServiceFactoryUtils.getAdministrationService().getRuntimeArtifact(
+                  artifact.getOid());
+            String contents = new String(runtimeArtifact.getContent());
+            JsonObject benchmarkJSON = readJsonObject(contents);
+            benchmarkJsons.put(String.valueOf(artifact.getOid()), benchmarkJSON);
+         }
+      }
+      catch (Exception e)
+      {
+         throw e;
+      }
+      return benchmarkJsons;
    }
 
    public static JsonObject readJsonObject(String jsonText) throws Exception
