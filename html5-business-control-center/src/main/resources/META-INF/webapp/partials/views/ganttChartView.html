@@ -105,8 +105,11 @@
 					</span>
 						<div class="popup-dlg worklist-tooltip" ng-show="rowData.toolTip"
 							ng-attr-style="margin-left:{{ctrl.getChartData(rowData).delay+ctrl.position}}px;">
-							<div class="ganttChart-popup-legend-category"
-								ng-attr-style="background-color: {{ctrl.getRowColor(rowData)}}">{{rowData.status.label}}</div>
+							<div ng-ig="rowData.benchmarkCategory" class="ganttChart-popup-legend-category"
+								ng-attr-style="background-color: {{ctrl.getRowColor(rowData)}}">
+								{{ctrl.getLabel(rowData)}}
+							</div>
+		
 							<div>{{i18n('business-control-center-messages.views-customColumn-startDate')}}
 								: {{rowData.startTime | date:ctrl.timeFormat}}</div>
 							<div ng-if="!rowData.predictedEndTime">{{i18n('business-control-center-messages.views-customColumn-endDate')}}

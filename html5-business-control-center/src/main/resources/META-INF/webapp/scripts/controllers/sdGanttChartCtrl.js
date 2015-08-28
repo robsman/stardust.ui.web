@@ -904,6 +904,21 @@
 		return rowData.sColor;
 	}
 	
+	/**
+	 * 
+	 */
+	Controller.prototype.getLabel = function(rowData)
+	{
+		console.log("Data")
+		var self = this;
+		if(self.selected.legend  == 'benchmark') {
+			if(rowData.benchmarkCategory.label){
+				return rowData.benchmarkCategory.label;
+			}
+		}
+		return rowData.status.label;  
+	}
+	
 	
 	
 	/**
