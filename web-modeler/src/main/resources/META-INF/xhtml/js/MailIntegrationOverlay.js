@@ -402,6 +402,16 @@ define(
                      }
                   }, false);
                };
+               MailIntegrationOverlay.prototype.validateRecipientsFields = function(inputField){
+            	   if(!m_utils.isEmptyString(inputField.val())){
+                 	  if(inputField.val().indexOf(';') != -1){
+                 		  this.view.errorMessages.push("To configure multiple recipients please use comma instead of semicolon.");
+                 		  inputField.addClass("error");
+                          valid = false;
+                 	  }
+                   }
+               }
+               
                /**
                 * Validates the provided values.
                 */
@@ -413,6 +423,23 @@ define(
                   this.passwordInput.removeClass("error");
                   this.templatePathInput.removeClass("error");
                   this.parameterDefinitionNameInput.removeClass("error");
+                  this.fromInput.removeClass("error");
+                  this.validateRecipientsFields(this.fromInput);
+                  this.toInput.removeClass("error");
+                  this.validateRecipientsFields(this.toInput);
+                  this.ccInput.removeClass("error");
+                  this.validateRecipientsFields(this.ccInput);
+                  this.bccInput.removeClass("error");
+                  this.validateRecipientsFields(this.bccInput);
+                 /* if(!m_utils.isEmptyString(this.fromInput.val())){
+                	  if(this.fromInput.val().indexOf(';') != -1){
+                		  this.view.errorMessages.push("To configure multiple recipients please use comma instead of semicolon.");
+                		  this.fromInput.addClass("error");
+                          valid = false;
+                	  }
+                  }*/
+                  
+                  
                   var parameterDefinitionNameInputWhithoutSpaces = this.parameterDefinitionNameInput
                            .val().replace(/ /g, "");
                   if ((parameterDefinitionNameInputWhithoutSpaces == "exchange")
