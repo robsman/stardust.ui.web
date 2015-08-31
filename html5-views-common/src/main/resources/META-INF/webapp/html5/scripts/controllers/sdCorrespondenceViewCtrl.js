@@ -17,22 +17,19 @@
 
 	angular.module("viewscommon-ui").controller(
 			'sdCorrespondenceViewCtrl',
-			['$scope','$q','sdUtilService', Controller]);
-	var _q;
-	var _sdDocumentSearchService;
-	var _sdViewUtilService;
-	var _sdUtilService;
-	var _sdMimeTypeService;
-	var trace;
-	var _sdCommonViewUtilService;
-	var _sdLoggedInUserService;
-	var _sdPreferenceService;
+			['$scope','$q','$parse','sdUtilService','sdFolderService', Controller]);
+
+	var _parse = null;
+	var _sdFolderService = null;
 
 	/*
 	 * 
 	 */
-	function Controller( $scope, $q, sdUtilService) {
+	function Controller( $scope, $q, $parse, sdUtilService, sdFolderService) {
 		this.readOnly = true;
+		
+		_parse = $parse;
+		_sdFolderService = sdFolderService;
 		
 		this.correspondenceTypes = [{
 			label : 'Email',
@@ -42,6 +39,11 @@
 			id : 'print'
 		}];
 		
+		
+		this.documentParams = {
+				
+		}
+		
 		this.selected = {
 				type  : 'email', // print / email
 				showBcc : false,
@@ -50,14 +52,76 @@
 						value : "Test@gmail.com",
 						type : 'email'
 						}],
-				bcc:[],
-				cc:[],
-				message : 'This is a sample message',
+				bcc:[	{name : "Test",
+					value : "Test@gmail.com",
+					type : 'email'
+					}],
+				cc:[	{name : "Test",
+					value : "Test@gmail.com",
+					type : 'email'
+					}],
+				content : 'This is a sample message',
 				subject : 'This is sample text',
 				templateId : 'testId',
-				attachments : [],
-				aiOid : '',
+				attachments : [{name : "Document1"}],
+				showBcc : true,
+			    showCc :   true
 		};
+		
+		this.populateCorrespondenceData(_parse);
+	}
+	
+	
+	Controller.prototype.populateCorrespondenceData = function($scope){
+		
+		var queryGetter = _parse("panel.params.custom");
+		var params = queryGetter($scope);
+		
+		if(params && params.folderId) {
+			ctrl.folderId = params.folderId;
+			ctrl.getExistingFolderInformation(ctrl.folderId);
+		} else {
+			console.error("Couldnt Retrive Folder ID");
+		}
+		
+	};
+	
+	/**
+	 * 
+	 */
+	Controller.getExistingFolderInformation = function( folderId ){
+		var ctrl = this;
+		_sdFolderService.getFolderInformationByFolderId(folderId).then(function(data){
+			console.log("Return from getExistingFolderInformation using folder id "+folderId)
+			console.log(data);
+			ctrl.selected = populateCorrespondenceMetaData(data.metaData, data.documents )
+		});
+	}
+	
+	function populateCorrespondenceMetaData(metaData, documents){
+		
+		if(metaData.to || metaData.bcc || metaData.cc) {
+			type = 'email'
+		}else{
+			type = "print";
+		}
+		
+		var uiData =  {
+			type  : type, // print / email
+			to: metaData.to,
+			bcc:metaData.bcc,
+			cc:metaData.cc,
+			content : metaData.content,
+			subject : metaData.subject,
+			templateId : '',
+			attachments : documents,
+			aiOid : '',
+			showBcc : metaData.bcc ? metaData.bcc.length > 0 : false,
+			showCc :   metaData.cc ? metaData.cc.length > 0 : false
+		}
+		
+		console.log(uiData)
+		return uiData;
 	}
 
 	

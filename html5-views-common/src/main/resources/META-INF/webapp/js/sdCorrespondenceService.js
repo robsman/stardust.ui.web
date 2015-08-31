@@ -51,14 +51,6 @@ define([],function(){
 		/**
 		 * 
 		 */
-		this.getFolderInformationByFolderId = function (folderId){ 
-			var url =  sdUtilService.getBaseUrl() +"services/rest/portal/folders/"+folderId;
-			return $resource(url).get().$promise;
-		}
-		
-		/**
-		 * 
-		 */
 		this.getFolderInformationByActivityOid = function (aiOid){ 
 			var url =  sdUtilService.getBaseUrl() +"services/rest/portal/activity-instances/"+aiOid+"/correspondence-out";
 			return $resource(url).get().$promise;
@@ -79,6 +71,33 @@ define([],function(){
 				}
 			});
 			return document.copyToFolder({}, requestObj).$promise;
+		}
+		
+		
+		/**
+		 * 
+		 */
+		this.resolveDocumentTemplate = function ( documentId, folderPath){ 
+			//TODO Get response from the templating engine.
+			var deferred = $q.defer();
+				deferred.resolve({name : documentId});
+			return deferred.promise;
+		}
+		
+		
+
+		/**
+		 * 
+		 */
+		this.removeAttachment = function ( documentId){ 
+			var restUrl = sdUtilService.getBaseUrl() +"services/rest/portal/documents/"+documentId;
+			var attachment = $resource(restUrl, {},
+				{
+				remove : {
+					method : 'DELETE'
+				}
+			});
+			return attachment.remove({}, {}).$promise;
 		}
 			
 		

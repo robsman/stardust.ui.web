@@ -18,11 +18,13 @@ var configs = html5Deps
 			baseUrl : "../..",
 			paths : {
 				'i18n' : [ 'common/InfinityBPMI18N' ],
+				'sdOpenDocumentLink': ['html5-process-portal/scripts/directives/sdOpenDocumentLink']
 			},
 			shim : {
 				'i18n' : {
 					exports : "InfinityBPMI18N"
-				}
+				},
+				'sdOpenDocumentLink' : ['html5CommonMain']
 			},
 			deps : ["require","html5-views-common/js/sdCorrespondenceService","html5-views-common/js/sdCorrespondenceCtrl" ]
 		});
@@ -34,7 +36,7 @@ require.config({
 	waitSeconds : 0
 });
 
-require(configs.deps, function(require, sdCorrespondenceService,sdCorrespondenceCtrl) {
+require(configs.deps, function(require, sdCorrespondenceService,sdCorrespondenceCtrl, sdOpenDocumentLink) {
 	jQuery(document).ready(
 			function() {
 			    var app = angular.module('correspondenceApplication',[]),

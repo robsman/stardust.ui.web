@@ -33,7 +33,7 @@
 		                            sda-selected-matches="ctrl.selected.to"
 		                            sda-read-only ="ctrl.readOnly">
 	                  </div>
-	                  <div >
+	                  <div ng-if="!ctrl.readOnly">
 		                     <a ng-show="!ctrl.selected.showCc" class="iceOutLbl correspondence_to_bcc_links" ng-click ="ctrl.showCc();"  href="#">Cc</a>
 		                     <a ng-show="!ctrl.selected.showBcc" class="iceOutLbl correspondence_to_bcc_links" ng-click ="ctrl.showBcc();"  href="#">Bcc</a> 
 	             	   </div>
@@ -109,7 +109,7 @@
 				<span class="iceOutLbl" ng-if="ctrl.readOnly"> Message : </span>
 			</td>
 			<td class="correspondence_right_section">	
-				<textarea id="messageEditor" data-ng-model="ctrl.selected.message"
+				<textarea id="messageEditor" data-ng-model="ctrl.selected.content"
 				 sd-rich-text-editor ng-disabled="ctrl.readOnly" sda-readOnly="{{ctrl.readOnly}}" sda-on-blur="ctrl.onMessageChange();"> </textarea>
 			</td>
 		</tr>
@@ -129,7 +129,10 @@
 					<div  class="correspondence-file-uploader">
 							<div ng-repeat="att in ctrl.selected.attachments" ng-cloak
 								class="correspondence_attachments">
-								<span class="iceOutLbl" ng-bind="att.name"> </span>
+							<!-- 	<span class="iceOutLbl" ng-bind="att.name"> </span> -->
+									<span sd-open-document-link sda-name="att.name" sda-params="ctrl.documentParams"	
+										sda-mime-type="att.contentType" sda-document-id="att.uuid"> 
+									</span>
 								<button
 									class="button-link tbl-toolbar-item tbl-tool-link spacing-right"
 									style="float: right" ng-hide="ctrl.readOnly"

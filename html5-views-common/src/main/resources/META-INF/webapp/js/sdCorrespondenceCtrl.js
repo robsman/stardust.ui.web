@@ -1,4 +1,5 @@
 /*******************************************************************************
+
  * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
@@ -74,9 +75,6 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	
 	
 	
-/*	function  initializeFileUploader() {
-		
-	}*/
 	/**
 	 * 
 	 */
@@ -96,7 +94,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 				to: [],
 				bcc:[],
 				cc:[],
-				message : '',
+				content : '',
 				subject : ' ',
 				templateId : '',
 				attachments : [],
@@ -157,6 +155,8 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		this.interactionProvider = new bpm.portal.Interaction();
 		this.selected.aiOid = this.getActivityOid();
 		
+		this.getIntialFolderInformation(ctrl.selected.aiOid);
+		
 		_sdCorrespondenceService.getProcessOidForActivity(ctrl.selected.aiOid).then(function(result){
 			ctrl.selected.piOid = result.piOid;
 			console.log(ctrl.selected.piOid);
@@ -193,24 +193,13 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 			if(TEPMPLATING_SUPPORTED_FILE_FORMATS.indexOf(fileFormat) > -1){
 				//Run it through templating engine
 				console.log("File format supported")
+				ctrl.resolveTemplateAndAddDocument(item);
 			}else{
 				console.log("File format not supported")
 				ctrl.copyDocumentToCorrespondenceFolder(item);
 			}
 		};
 		
-		//TODO  check the params and call the folder service.
-		//Get the process oid from the params
-		var queryGetter = _parse("panel.params.custom");
-		var params = queryGetter($scope);
-		
-		
-		if(params && params.folderId) {
-			ctrl.folderId = params.folderId;
-			ctrl.getExistingFolderInformation(ctrl.folderId);
-		}else {
-			ctrl.getIntialFolderInformation(ctrl.selected.aiOid);
-		}
 
 	};
 	
@@ -224,6 +213,19 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		var ctrl = this;
 		_sdCorrespondenceService.copyDocumentToCorrespondenceFolder(item.path,ctrl.parentFolderPath).then(function(result){
 			console.log("Return from copy")
+			console.log(result);
+			ctrl.addAttachment(result);
+		});
+	}
+	
+	
+	/**
+	 * 
+	 */
+	CorrespondenceCtrl.prototype.resolveTemplateAndAddDocument = function( item ){ 
+		var ctrl = this;
+		_sdCorrespondenceService.resolveDocumentTemplate(item.path,ctrl.parentFolderPath).then(function(result){
+			console.log("Return Data from Resolve Template" );
 			console.log(result);
 			ctrl.addAttachment(result);
 		});
@@ -252,18 +254,6 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	/**
 	 * 
 	 */
-	CorrespondenceCtrl.prototype.getExistingFolderInformation = function( folderId ){
-
-		_sdCorrespondenceService.getFolderInformationByFolderId(folderId).then(function(data){
-			console.log("Return from getExistingFolderInformation using folder id "+folderId)
-			console.log(data);
-		});
-	}
-
-
-	/**
-	 * 
-	 */
 	CorrespondenceCtrl.prototype.getIntialFolderInformation = function( aiOid){
 		var ctrl = this;
 		_sdCorrespondenceService.getFolderInformationByActivityOid(aiOid).then(function(data){
@@ -271,8 +261,36 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 			ctrl.parentFolderPath = data.path;
 			ctrl.folderId= data.uuid;
 			console.log(ctrl.parentFolderPath );
+			ctrl.selected = populateCorrespondenceMetaData(data.correspondenceMetaDataDTO, data.documents);
 		});
 		
+	}
+	
+	
+	function populateCorrespondenceMetaData(metaData, documents){
+		
+		if(metaData.to || metaData.bcc || metaData.cc) {
+			type = 'email'
+		}else{
+			type = "print";
+		}
+		
+		var uiData =  {
+			type  : type, // print / email
+			to: metaData.to,
+			bcc:metaData.bcc,
+			cc:metaData.cc,
+			content : metaData.content,
+			subject : metaData.subject,
+			templateId : '',
+			attachments : documents,
+			aiOid : '',
+			showBcc : metaData.bcc ? metaData.bcc.length > 0 : false,
+			showCc :   metaData.cc ? metaData.cc.length > 0 : false
+		}
+		
+		console.log(uiData)
+		return uiData;
 	}
 	
 	/**
@@ -305,7 +323,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.getActivityOid = function(){ 
-		/*	var uri = this.interactionProvider.getInteractionUri();
+			var uri = this.interactionProvider.getInteractionUri();
 		var endcoded = uri.split('/').pop();
 		var b64 = base64.get();
 		var decodedId = b64.decode(endcoded);
@@ -313,8 +331,8 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		var decodedParts = partsMatcher.exec(decodedId);
 		var activityInstanceOid = decodedParts[1];
 		console.log('Activity Oid  *****: '+activityInstanceOid)
-		return activityInstanceOid;*/
-		return 1208;
+		return activityInstanceOid;
+		//return 1208;
 	}
 
 	function addFilesToUploadQ(files) {
@@ -470,7 +488,11 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	 */
 	CorrespondenceCtrl.prototype.addressIconMapper = function(item, index) {
 		var tagClass = "glyphicon glyphicon-envelope"
-			return tagClass;
+		
+		if(item.type == 'fax'){
+			tagClass ="fa fa-fax";
+		}
+		return tagClass;
 	};
 
 	/**
@@ -652,7 +674,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		ctrl.templateSelectorDialog.close();
 		_sdCorrespondenceService.resolveTemplate().then(function(data) {
 			ctrl.oldMessage = data.result;
-			ctrl.selected.message = data.result;
+			ctrl.selected.content = data.result;
 		});
 	}
 
@@ -684,14 +706,20 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		var processApi = ctrl.dialog.attachmentSelector.api;
 		var messageTemplateApi = ctrl.dialog.templateSelector.api;
 		console.log("Selected attachments")
+		
+		var attachments = [];
+		
 		angular.forEach(processApi.getSelectedNodes(),function(node){
-			console.log( node.valueItem );
+			attachments.push(node.valueItem );
 		});
 		angular.forEach(messageTemplateApi.getSelectedNodes(),function(node){
-			console.log( node.valueItem );
+			attachments.push(node.valueItem );
 		});
-
 		ctrl.attachmentSelectorDialog.close();
+		
+		angular.forEach(attachments,function(item){
+			CorrespondenceCtrl.prototype.handleDocumentUpload(item);
+		})
 	}; 
 
 	/**
@@ -728,7 +756,11 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	function removeAttachment(attachment) {
 		var ctrl = this;
 		var index = ctrl.selected.attachments.indexOf(attachment);
-		ctrl.selected.attachments.splice(index,1);
+		_sdCorrespondenceService.removeAttachment(attachment.path).then(function(){
+			console.log("Attchemnt removed successfull")
+			ctrl.selected.attachments.splice(index,1);
+		});
+		
 	}
 
 	/**
@@ -768,7 +800,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	 */
 	CorrespondenceCtrl.prototype.onMessageChange = function(){
 		var ctrl = this;
-		if( ctrl.oldMessage != ctrl.selected.message) {
+		if( ctrl.oldMessage != ctrl.selected.content) {
 			//TODO change this to use the identifier
 			if(ctrl.selected.message.indexOf('$$') > -1) {
 				console.log('Run through the templating engine');
