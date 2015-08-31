@@ -492,8 +492,6 @@ public class RoleAssignmentBean extends UIComponentBean
             i++;
          }
       }
-      //For Sorting Column Selector entries 
-      Collections.sort(selCols, new ColumnPreferenceComparator());
       IColumnModel columnModel = new DefaultColumnModel(selCols, fixedCols, null, UserPreferencesEntries.M_BCC,
             UserPreferencesEntries.V_ROLE_ASSIGNMENT);
       TableColumnSelectorPopup colSelecpopup = new TableColumnSelectorPopup(columnModel);

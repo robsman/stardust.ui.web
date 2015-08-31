@@ -558,9 +558,6 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
       // Adding Descriptor Columns
       List<ColumnPreference> descriptorColumns = DescriptorColumnUtils.createDescriptorColumns(activityTable, allDescriptors, ResourcePaths.V_DOCUMENT_DESC_COLUMNS);
       activityCols.addAll(descriptorColumns);
-      
-      Collections.sort(activityCols, new ColumnPreferenceComparator());
-
       IColumnModel activityColumnModel = new DefaultColumnModel(activityCols, null, activityFixedCols2, moduleId,
             viewId, columnModelListener);
       TableColumnSelectorPopup activitySelecpopup = new TableColumnSelectorPopup(

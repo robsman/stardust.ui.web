@@ -622,8 +622,6 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
       // Adding Descriptor Columns
       List<ColumnPreference> descriptorColumns = DescriptorColumnUtils.createDescriptorColumns(processTable, allDescriptors, ResourcePaths.V_DOCUMENT_DESC_COLUMNS);
       procCols.addAll(descriptorColumns);
-
-      Collections.sort(procCols, new ColumnPreferenceComparator());
       IColumnModel procInstanceColumnModel = new DefaultColumnModel(procCols, null, processFixedCols2, moduleId,
             viewId, columnModelListener);
       

@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.common.column;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -315,12 +316,28 @@ public class DefaultColumnModel extends ColumnModel
 
       if(storedList == null)
       {
-         return cols;
+         ArrayList<ColumnPreference> selectedOrderedList = new ArrayList<ColumnPreference>();
+         ArrayList<ColumnPreference> unSelectedOrderedList = new ArrayList<ColumnPreference>();
+         for (ColumnPreference colPref : cols)
+         {
+            if (colPref != null && colPref.isVisible())
+            {
+               selectedOrderedList.add(colPref);
+            }
+            else if (colPref != null)
+            {
+               unSelectedOrderedList.add(colPref);
+            }
+         }
+         Collections.sort(unSelectedOrderedList, new ColumnPreferenceComparator());
+         selectedOrderedList.addAll(unSelectedOrderedList);
+         return selectedOrderedList;
       }
       else
       {
          ColumnPreference colPreference;
          ArrayList<ColumnPreference> selectedOrderedList = new ArrayList<ColumnPreference>();
+         ArrayList<ColumnPreference> unSelectedOrderedList = new ArrayList<ColumnPreference>();
          Map<String, ColumnPreference> colsMap = getColumnsAsMap(cols); 
          for (String colName : storedList)
          {
@@ -337,10 +354,12 @@ public class DefaultColumnModel extends ColumnModel
             if( !selectedOrderedList.contains(columnPreference) )
             {
                columnPreference.setVisible(false);
-               selectedOrderedList.add(columnPreference);
+               unSelectedOrderedList.add(columnPreference);
             }
          }
-
+         
+         Collections.sort(unSelectedOrderedList, new ColumnPreferenceComparator());
+         selectedOrderedList.addAll(unSelectedOrderedList);
          return selectedOrderedList;
       }
    }
