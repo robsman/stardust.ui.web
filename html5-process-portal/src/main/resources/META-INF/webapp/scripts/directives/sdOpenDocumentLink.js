@@ -62,7 +62,7 @@
 	 * 
 	 */
 	DocumentLinkController.prototype.openDocumentView = function(documentId, sdCommonViewUtilService, params) {
-		sdCommonViewUtilService.openDocumentView(documentId, true);
+		sdCommonViewUtilService.openDocumentView(documentId, true, params);
 	};
 
 })();

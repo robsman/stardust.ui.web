@@ -22,6 +22,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	var interaction = null;
 	var _http = null;
 	var _parse = null;
+	var _sdViewUtilService = null;
 
 	var filesToUpload = [];
 	var VALID_TEMPLATE_FORMATS = ['text/plain' , 'text/html'];
@@ -36,7 +37,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	/*
 	 * 
 	 */
-	function CorrespondenceCtrl($scope, $q ,$http , $filter,$timeout, $parse, sdDialogService, sdCorrespondenceService) {
+	function CorrespondenceCtrl($scope, $q ,$http , $filter,$timeout, $parse, sdDialogService, sdCorrespondenceService, sdViewUtilService) {
 
 		this.readOnly = false;
 		_q = $q;
@@ -46,6 +47,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		_timeout = $timeout;
 		_http = $http;
 		_parse = $parse;
+		_sdViewUtilService = sdViewUtilService;
 
 		this.intialize($scope);
 		this.exposeApis($scope);
@@ -324,6 +326,9 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	 */
 	CorrespondenceCtrl.prototype.getActivityOid = function(){ 
 			var uri = this.interactionProvider.getInteractionUri();
+			if(!uri){
+				return 1208;
+			}
 		var endcoded = uri.split('/').pop();
 		var b64 = base64.get();
 		var decodedId = b64.decode(endcoded);
@@ -332,7 +337,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		var activityInstanceOid = decodedParts[1];
 		console.log('Activity Oid  *****: '+activityInstanceOid)
 		return activityInstanceOid;
-		//return 1208;
+		
 	}
 
 	function addFilesToUploadQ(files) {
@@ -762,6 +767,20 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		});
 		
 	}
+	
+	/**
+	 * 
+	 */
+	CorrespondenceCtrl.prototype.openAttachment = function(attachment) {
+		var ctrl = this;
+		var documentId = attachment.uuid;
+		var viewKey = 'documentOID=' + encodeURIComponent(documentId);
+		viewKey = window.btoa(viewKey);
+		var  parameters = {
+				"documentId" :  documentId
+		}
+		_sdViewUtilService.openView('documentView', viewKey,parameters, false);
+	}
 
 	/**
 	 * 
@@ -810,7 +829,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	}
 
 	//Dependency injection array for our controller.
-	CorrespondenceCtrl.$inject = ['$scope','$q', '$http','$filter','$timeout','$parse','sdDialogService','sdCorrespondenceService'];
+	CorrespondenceCtrl.$inject = ['$scope','$q', '$http','$filter','$timeout','$parse','sdDialogService','sdCorrespondenceService', 'sdViewUtilService'];
 
 	//Require capable return object to allow our angular code to be initialized
 	//from a require-js injection system.

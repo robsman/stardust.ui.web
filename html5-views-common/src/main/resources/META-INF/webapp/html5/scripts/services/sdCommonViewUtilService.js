@@ -46,10 +46,7 @@
 			} else {
 				parameters["documentId"] = documentId;
 			}
-			console.log("Document View Params");
-			console.log(parameters);
 			sdViewUtilService.openView('documentView', viewKey,parameters, nested);
-
 		};
 
 		/**

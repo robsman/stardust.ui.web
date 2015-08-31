@@ -129,10 +129,9 @@
 					<div  class="correspondence-file-uploader">
 							<div ng-repeat="att in ctrl.selected.attachments" ng-cloak
 								class="correspondence_attachments">
-							<!-- 	<span class="iceOutLbl" ng-bind="att.name"> </span> -->
-									<span sd-open-document-link sda-name="att.name" sda-params="ctrl.documentParams"	
-										sda-mime-type="att.contentType" sda-document-id="att.uuid"> 
-									</span>
+								<span class="iceOutLbl" ng-bind="att.name" ng-click="ctrl.openAttachment(att)"> </span>
+								
+								
 								<button
 									class="button-link tbl-toolbar-item tbl-tool-link spacing-right"
 									style="float: right" ng-hide="ctrl.readOnly"
