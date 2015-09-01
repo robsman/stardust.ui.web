@@ -443,9 +443,18 @@
 		/*
 		 * Returns visible (expanded) tree rows
 		 */
-		UtilService.prototype.rebuildTreeTable = function(treeTableData) {
+		UtilService.prototype.rebuildTreeTable = function(treeTableData, filterFunc) {
 			var rebuiltData = [], collapsedParents = {};
 			for (var i = 0; i < treeTableData.length; i++) {
+				var visible = filterFunc(treeTableData[i]);
+				if (!visible) {
+					if (!treeTableData[i].$leaf) {
+						treeTableData[i].$expanded = false;
+						collapsedParents[treeTableData[i].$$treeInfo.id] = true;
+					}
+					continue;
+				}
+				
 				if (!treeTableData[i].$expanded) {
 					collapsedParents[treeTableData[i].$$treeInfo.id] = true;
 				}

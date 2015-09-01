@@ -186,7 +186,8 @@
 		var sortingMode, sortByGetter, enableFiltering;
 		var columnFilters;
 		var exportConfig = {}, exportAnchor = document.createElement("a"), remoteModeLastParams;
-		var localModeData, localModeRefreshInitiated;
+		var localModeData, localModeMasterData, localModeRefreshInitiated, localModeRebuildData;
+		var localModeGlobalFilter = {}, localModeSortingCols = [];
 
 		// Setup component instance
 		setup();
@@ -428,10 +429,15 @@
 				}
 			}
 
-			// Disable functionality not yet supported
-			if (tableInLocalMode) {
-				sortingMode = undefined; // Disable sorting - Causes weird angular issues, like ng-click stops working
-				enableFiltering = false; // Disable filtering
+			if (tableInLocalMode && enableFiltering && attr.sdaFilterHandler) {
+				localModeGlobalFilter.handler = $parse(attr.sdaFilterHandler);
+
+				var filterHandlerFuncInfo = sdUtilService.parseFunction(attr.sdaFilterHandler);
+				if (filterHandlerFuncInfo && filterHandlerFuncInfo.params && filterHandlerFuncInfo.params.length > 0) {
+					localModeGlobalFilter.param = filterHandlerFuncInfo.params[0];
+				} else {
+					trace.error(theTableId + ': sda-filter-handler does not seems to be correcly used, it does not appear to be a function accepting parameter.');
+				}
 			}
 		}
 
@@ -600,6 +606,18 @@
 						case 'time':
 							colDef.filterMarkup = '<div sd-date-filter></div>';
 							break;
+					}
+				}
+
+				if (hCol.attr('sda-sort-handler')) {
+					colDef.sorter = {};
+					colDef.sorter.handler = $parse(hCol.attr('sda-sort-handler'));
+
+					var sorterHandlerFuncInfo = sdUtilService.parseFunction(hCol.attr('sda-sort-handler'));
+					if (sorterHandlerFuncInfo && sorterHandlerFuncInfo.params && sorterHandlerFuncInfo.params.length > 0) {
+						colDef.sorter.param = sorterHandlerFuncInfo.params[0];
+					} else {
+						trace.error(theTableId + ': sda-sort-handler does not seems to be correcly used, it does not appear to be a function accepting parameter, for column: ' + colDef.name);
 					}
 				}
 
@@ -930,6 +948,7 @@
 			// TODO: Sorting, Filtering
 			
 			if(localModeRefreshInitiated) {
+				localModeMasterData = undefined;
 				localModeData = undefined;
 				localModeRefreshInitiated = false;
 			}
@@ -944,7 +963,13 @@
 						if (treeTable) {
 							treeData = localModeData;
 							treeTableData = sdUtilService.marshalDataForTree(localModeData);
-							localModeData = sdUtilService.rebuildTreeTable(treeTableData);
+							localModeData = sdUtilService.rebuildTreeTable(treeTableData, function(rowData) {
+								return isRowVisibleForLocalMode(rowData);
+							});
+						} else {
+							localModeSortingCols = getSortingInfo();
+							localModeMasterData = localModeData;
+							localModeData = applyFilteringAndSortingForLocalMode(localModeMasterData);
 						}
 
 						ret.iTotalRecords = localModeData.length;
@@ -965,7 +990,14 @@
 				});
 			} else {
 				if (treeTable) {
-					localModeData = sdUtilService.rebuildTreeTable(treeTableData);;
+					localModeData = sdUtilService.rebuildTreeTable(treeTableData, function(rowData) {
+						return isRowVisibleForLocalMode(rowData);
+					});
+				} else {
+					if (localModeRebuildData) {
+						localModeRebuildData = false;
+						localModeData = applyFilteringAndSortingForLocalMode(localModeMasterData);
+					}
 				}
 
 				ret.iTotalRecords = localModeData.length;
@@ -999,6 +1031,138 @@
 
 				return pageData;
 			}
+		}
+
+		/*
+		 * 
+		 */
+		function applyFilteringAndSortingForLocalMode(master) {
+			var data = [];
+
+			// Filtering
+			for(var i = 0; i < master.length; i++) {
+				if (isRowVisibleForLocalMode(master[i])) {
+					data.push(master[i]);
+				}
+			}
+
+			// Sorting
+			for (var i = 0; i < localModeSortingCols.length; i++) {
+				var sortBy = localModeSortingCols[i];
+				var colDef = columnsInfoByDisplayOrder[sortBy.name].column;
+
+				data.sort(function(row1, row2) {
+					var params = {
+						sortBy: sortBy,
+						row1: row1,
+						row2: row2
+					};
+
+					if (colDef.sorter && colDef.sorter.handler) {
+						return fireDataTableEvent(colDef.sorter, params, 'sdaSortHandler');
+					}
+					else {
+						return builtInComparatorForLocalMode(params);
+					}
+				});
+			}
+
+			return data;
+		}
+
+		/*
+		 * 
+		 */
+		function isRowVisibleForLocalMode(rowData) {
+			var visible = true;
+			if (localModeGlobalFilter.handler) {
+				visible = fireDataTableEvent(localModeGlobalFilter, rowData, 'sdaFilterHandler');
+			}
+
+			if (visible) {
+				for (var colName in columnFilters) {
+					var filterScope = columnFilters[colName].filter.scope();
+					if (filterScope.$$filterData != undefined && !jQuery.isEmptyObject(filterScope.$$filterData)) {
+						try {
+							if (!filterScope.handlers.filterCheck) {
+								trace.error(theTableId + ': Filter does not declare method called "filterCheck" for column: ' + colName);
+								continue;
+							}
+
+							filterScope.filterData = angular.copy(filterScope.$$filterData);
+							visible = filterScope.handlers.filterCheck(rowData);
+							if (!visible) {
+								break;
+							}
+						} catch(e) {
+							trace.error(theTableId + ': Error occurred filtering', e);
+						} finally {
+							delete filterScope.filterData;
+						}
+					}
+				}
+			}
+
+			return visible;
+		}
+
+		/*
+		 * 
+		 */
+		function builtInComparatorForLocalMode(params) {
+			var ret = 0;
+
+			try {
+				var value1 = params.row1[params.sortBy.field];
+				var value2 = params.row2[params.sortBy.field];
+
+				if (value1 != undefined && value1 != null && value2 != undefined && value2 != null) {
+					switch (params.sortBy.dataType) {
+						case 'string':
+							value1 = value1.toLowerCase();
+							value2 = value2.toLowerCase();
+							if (params.sortBy.dir == 'asc') {
+								ret = (value1 == value2 ? 0 : (value1 > value2 ? 1 : -1));
+							} else {
+								ret = (value2 == value1 ? 0 : (value2 > value1 ? 1 : -1));
+							}
+							break;
+						case 'int': 
+						case 'integer':
+							if (params.sortBy.dir == 'asc') {
+								ret = value1 - value2;
+							} else {
+								ret = value2 - value1;
+							}
+							break;
+						case 'date': 
+						case 'dateTime':
+						case 'time':
+							if (params.sortBy.dir == 'asc') {
+								ret = value1.getMilliseconds() - value2.getMilliseconds();
+							} else {
+								ret = value2.getMilliseconds() - value1.getMilliseconds();
+							}
+							break;
+						case 'boolean':
+							value1 = value1 == true ? 1 : 2;
+							value2 = value2 == true ? 1 : 2;
+							if (params.sortBy.dir == 'asc') {
+								ret = value1 - value2;
+							} else {
+								ret = value2 - value1;
+							}
+							break;
+						default:
+							trace.error(theTableId + ': Built-in sorting not supported for data type: ' + 
+									params.sortBy.dataType + ', column: ' + params.sortBy.name);
+					}
+				}
+			} catch (e) {
+				trace.error(theTableId + ': Error while using built in sort for Local Mode:', params);
+			}
+
+			return ret;
 		}
 
 		/*
@@ -1128,20 +1292,14 @@
 		 * 
 		 */
 		function processSortEvent() {
+			if (tableInLocalMode) {
+				localModeRebuildData = true;
+				localModeSortingCols = getSortingInfo();
+			}
+
 			// Invoke the event handler when processing is complete and data is displayed
 			$timeout(function() {
-				var sortingInfo = [];
-
-				var order = theDataTable.fnSettings().aaSorting;
-				for (var i in order) {
-					var columnInfo = columnsByDisplayOrder[order[i][0]];
-					if (columnInfo) {
-						sortingInfo.push({
-							name : columnInfo.name,
-							dir : order[i][1] == 'asc' ? 'asc' : 'desc'
-						});
-					}
-				}
+				var sortingInfo = getSortingInfo();
 
 				if (sortingMode == 'single' && sortingInfo.length > 0) {
 					sortingInfo = sortingInfo[sortingInfo.length - 1];
@@ -1153,6 +1311,28 @@
 
 				fireDataTableEvent(onSorting, sortingInfo, 'onSorting');
 			}, 0, true);
+		}
+
+		/*
+		 * 
+		 */
+		function getSortingInfo() {
+			var sortingInfo = [];
+
+			var order = theDataTable.fnSettings().aaSorting;
+			for (var i in order) {
+				var columnInfo = columnsByDisplayOrder[order[i][0]];
+				if (columnInfo) {
+					sortingInfo.push({
+						name : columnInfo.name,
+						field: columnInfo.field,
+						dataType: columnInfo.dataType,
+						dir : order[i][1] == 'asc' ? 'asc' : 'desc'
+					});
+				}
+			}
+
+			return sortingInfo;
 		}
 
 		/*
@@ -1345,10 +1525,13 @@
 		}
 
 		/*
-		 * 
+		 * rebuild = Not valid for Tree Table
 		 */
-		function refreshUi() {
+		function refreshUi(rebuild) {
 			trace.log(theTableId + ': Refreshing table Ui');
+
+			localModeRebuildData = rebuild;
+
 			theDataTable.fnDraw(true);
 		}		
 
@@ -2230,7 +2413,7 @@
 				 */
 				this.expandAll = function () {
 					sdUtilService.expandTreeTable(treeTableData);
-					refreshUi();				
+					refreshUi();
 				};
 	
 				/*
@@ -2412,7 +2595,11 @@
 					}
 				}
 				self.toggleColumnFilter(colName, true);
-				refresh();
+				if (tableInLocalMode) {
+					refreshUi(true);
+				} else {
+					refresh();
+				}
 			}
 
 			/*
@@ -2429,7 +2616,11 @@
 				}
 
 				filterScope.$$filterData = {};
-				refresh();
+				if (tableInLocalMode) {
+					refreshUi(true);
+				} else {
+					refresh();
+				}
 			}
 
 			/*
