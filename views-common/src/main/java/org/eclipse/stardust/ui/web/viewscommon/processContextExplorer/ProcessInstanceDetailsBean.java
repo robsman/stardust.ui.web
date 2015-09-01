@@ -603,6 +603,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
       DataMappingWrapper dmWrapper;
       // Store DataPath Map with all IN and OUT mappings
       updateDataPathMap();
+      boolean suppressBlankDescriptors = CommonDescriptorUtils.isSuppressBlankDescriptorsEnabled();
       DeployedModel model = ModelCache.findModelCache().getModel(processInstance.getModelOID());
       for (ProcessDescriptor processDescriptor : processDescriptors)
       {
@@ -653,14 +654,23 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
             }
             else
             {
-               descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor
-                     .getValue()));   
+               if (!suppressBlankDescriptors || (suppressBlankDescriptors
+                     && (null != processDescriptor.getValue() && StringUtils.isNotEmpty(processDescriptor.getValue()))))
+               {
+                  descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor
+                        .getValue()));   
+               }
             }
          }
          else
          {
-            descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor
-                  .getValue()));   
+            if (!suppressBlankDescriptors
+                  || (suppressBlankDescriptors && (null != processDescriptor.getValue() && StringUtils
+                        .isNotEmpty(processDescriptor.getValue()))))
+            {
+               descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor
+                     .getValue()));
+            }
          }
          
       }
@@ -690,8 +700,8 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
             Object newDescriptorValue = event.getNewValue();
             Object oldDescriptorValue = event.getOldValue();
             Object newValue = null;
-            if (null != oldDescriptorValue && null != newDescriptorValue
-                  && !oldDescriptorValue.toString().equals(newDescriptorValue))
+            if (null != newDescriptorValue
+                  && !newDescriptorValue.toString().equals(oldDescriptorValue))
             {
                userObject = (DescriptorItemTableEntry) event.getComponent().getAttributes().get("row");
                String type = userObject.getType();
@@ -760,20 +770,19 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
       {
          // read all OUT dataPath for given Data
          List<DataPathDetails> outDataPaths = outDataPathsMap.get(inDataPath.getData());
-         DeployedModel model = ModelCache.findModelCache().getModel(processInstance.getModelOID());
          if(CollectionUtils.isNotEmpty(outDataPaths))
          {
-            for(DataPathDetails dataPath : outDataPaths)
+            for(DataPathDetails outPath : outDataPaths)
             {
                // Filter dataPath with same AccessPoint and on same Qualified Model 
-               if(dataPath.getAccessPath().equals(inDataPath.getAccessPath()))
+               if(outPath.getAccessPath().equals(inDataPath.getAccessPath()))
                {
                   String data = inDataPath.getData();
-                  Data dataInMapping = model.getData(data);
-                  Data dataOutMapping = model.getData(dataPath.getData());
-                  if(dataInMapping.getQualifiedId().equals(dataOutMapping.getQualifiedId()))
+                  Data data1 = DescriptorFilterUtils.getData(inDataPath);
+                  Data data2 = DescriptorFilterUtils.getData(outPath);
+                  if (data1.equals(data2))
                   {
-                     return dataPath;
+                     return outPath;
                   }
                }
             }
@@ -811,7 +820,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    private Number convertToNumber(Object value, Class type)
    {
       Number localValue = null;
-      if(value != null)
+      if(value != null && StringUtils.isNotEmpty(value.toString()))
       {
          try
          {
