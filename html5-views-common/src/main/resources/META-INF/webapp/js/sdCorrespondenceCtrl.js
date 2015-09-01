@@ -201,11 +201,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 				ctrl.copyDocumentToCorrespondenceFolder(item);
 			}
 		};
-		
-
 	};
-	
-	
 	
 	
 	/**
@@ -226,7 +222,8 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	 */
 	CorrespondenceCtrl.prototype.resolveTemplateAndAddDocument = function( item ){ 
 		var ctrl = this;
-		_sdCorrespondenceService.resolveDocumentTemplate(item.path,ctrl.parentFolderPath).then(function(result){
+		//TODO change to pass what is requried
+		_sdCorrespondenceService.resolveAttachmentTemplate(item.path,ctrl.parentFolderPath).then(function(result){
 			console.log("Return Data from Resolve Template" );
 			console.log(result);
 			ctrl.addAttachment(result);

@@ -15,7 +15,7 @@ define([],function(){
 	/*
 	 * 
 	 */
-	function CorrespondenceService($resource, $q, sdUtilService) {
+	function CorrespondenceService($resource, $q, $http, sdUtilService) {
 		
 		/**
 		 * 
@@ -41,9 +41,67 @@ define([],function(){
 		/**
 		 * 
 		 */
-		this.resolveTemplate = function (documentId){
+		this.resolveMessageTemplate = function (documentId, piOid, template){
 			var deferred = $q.defer();
+			
+			var url = sdUtilService.getBaseUrl() + "services/rest/templating";
+
+			var templateConfig = {
+					format : "text",
+					processOid : piOid,
+					template :   template//"Hello ${PersonINDP.firstName} ${PersonINDP.lastName}"
+				};
+			
+			var postPromise = $http.post(url, templateConfig, {
+				headers : {
+					'Content-type' : 'application/json'
+				}
+			});
+			postPromise.success(function(data) {
+				console.log("Success in templating ")
+					console.log("Success")
+				deferred.resolve(data);
+			});
+			postPromise.error(function(response, status) {
+				console.log("The request failed with response " + response
+						+ " and status code " + status);
+			});
 			deferred.resolve({result : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum' })
+			return deferred.promise;
+		};
+		
+		
+		/**
+		 * 
+		 */
+		this.resolveAttachmentTemplate = function (documentId, piOid, format) {
+			var deferred = $q.defer();
+			
+			var url = sdUtilService.getBaseUrl() + "services/rest/templating";
+			$scope.templateConfiguration = {
+				
+				};
+			var templateConfig = {
+					templateUri:  documentId,     //"repository://greetings.docx",
+					format : format, //"docx",
+					processOid : piOid
+				};
+			
+			var postPromise = $http.post(url, templateConfig, {
+				headers : {
+					'Content-type' : 'application/json'
+				}
+			});
+			postPromise.success(function(data) {
+				console.log("Success in templating ")
+					console.log("Success")
+				deferred.resolve(data);
+			});
+			postPromise.error(function(response, status) {
+				console.log("The request failed with response " + response
+						+ " and status code " + status);
+			});
+			deferred.resolve({name : documentId});
 			return deferred.promise;
 		};
 		
@@ -73,16 +131,6 @@ define([],function(){
 			return document.copyToFolder({}, requestObj).$promise;
 		}
 		
-		
-		/**
-		 * 
-		 */
-		this.resolveDocumentTemplate = function ( documentId, folderPath){ 
-			//TODO Get response from the templating engine.
-			var deferred = $q.defer();
-				deferred.resolve({name : documentId});
-			return deferred.promise;
-		}
 		
 		
 
@@ -146,7 +194,7 @@ define([],function(){
 	}
 	
 	//Dependency injection array for our controller.
-	CorrespondenceService.$inject = ['$resource','$q','sdUtilService'];
+	CorrespondenceService.$inject = ['$resource','$q','$http','sdUtilService'];
 	
 	//Require capable return object to allow our angular code to be initialized
 	//from a require-js injection system.

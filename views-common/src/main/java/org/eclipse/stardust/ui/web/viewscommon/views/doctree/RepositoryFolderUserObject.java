@@ -431,7 +431,7 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
       if (this.isClickable())
       {
          Map<String, Object> params = CollectionUtils.newMap();
-         params.put("folderId", getFolder().getId());
+         params.put("folderId", getFolder().getPath());
 
          String viewKey;
          try
