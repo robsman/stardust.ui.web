@@ -195,7 +195,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 			if(TEPMPLATING_SUPPORTED_FILE_FORMATS.indexOf(fileFormat) > -1){
 				//Run it through templating engine
 				console.log("File format supported")
-				ctrl.resolveTemplateAndAddDocument(item);
+				ctrl.resolveTemplateAndAddDocument(item, fileFormat);
 			}else{
 				console.log("File format not supported")
 				ctrl.copyDocumentToCorrespondenceFolder(item);
@@ -223,7 +223,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	CorrespondenceCtrl.prototype.resolveTemplateAndAddDocument = function( item ){ 
 		var ctrl = this;
 		//TODO change to pass what is requried
-		_sdCorrespondenceService.resolveAttachmentTemplate(item.path,ctrl.parentFolderPath).then(function(result){
+		_sdCorrespondenceService.resolveAttachmentTemplate( item, ctrl.selected.piOid, ctrl.parentFolderPath).then(function(result){
 			console.log("Return Data from Resolve Template" );
 			console.log(result);
 			ctrl.addAttachment(result);
@@ -672,11 +672,12 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		var ctrl = this;
 		var api = ctrl.dialog.templateSelector.api;
 		console.log("Selected document")
-		console.log(api.getSelectedNodes()[0].valueItem);
+	   var selectedItem = 	api.getSelectedNodes()[0].valueItem;
+	
 		ctrl.templateSelectorDialog.close();
-		_sdCorrespondenceService.resolveTemplate().then(function(data) {
-			ctrl.oldMessage = data.result;
-			ctrl.selected.content = data.result;
+		_sdCorrespondenceService.resolveMessageTemplate(ctrl.selected.piOid,selectedItem.path).then(function(result) {
+			ctrl.oldMessage = result;
+			ctrl.selected.content = result;
 		});
 	}
 
@@ -818,11 +819,13 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		var ctrl = this;
 		if( ctrl.oldMessage != ctrl.selected.content) {
 			//TODO change this to use the identifier
-			if(ctrl.selected.message.indexOf('$$') > -1) {
-				console.log('Run through the templating engine');
+			if(ctrl.selected.content.indexOf('${') > -1) {
+				_sdCorrespondenceService.resolveMessageContent(ctrl.selected.piOid,ctrl.selected.content).then(function(result) {
+				  ctrl.selected.content = result;
+				});
 			}
 		}
-		this.oldMessage = this.selected.message;
+		this.oldMessage = this.selected.content;
 	}
 
 	//Dependency injection array for our controller.

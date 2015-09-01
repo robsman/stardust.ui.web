@@ -41,7 +41,7 @@ define([],function(){
 		/**
 		 * 
 		 */
-		this.resolveMessageTemplate = function (documentId, piOid, template){
+		this.resolveMessageContent = function ( piOid, content){
 			var deferred = $q.defer();
 			
 			var url = sdUtilService.getBaseUrl() + "services/rest/templating";
@@ -49,7 +49,7 @@ define([],function(){
 			var templateConfig = {
 					format : "text",
 					processOid : piOid,
-					template :   template//"Hello ${PersonINDP.firstName} ${PersonINDP.lastName}"
+					template :   content//"Hello ${PersonINDP.firstName} ${PersonINDP.lastName}"
 				};
 			
 			var postPromise = $http.post(url, templateConfig, {
@@ -66,7 +66,39 @@ define([],function(){
 				console.log("The request failed with response " + response
 						+ " and status code " + status);
 			});
-			deferred.resolve({result : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum' })
+			//deferred.resolve({result : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum' })
+			return deferred.promise;
+		};
+		
+		
+		
+		/**
+		 * 
+		 */
+		this.resolveMessageTemplate = function ( piOid, path){
+			var deferred = $q.defer();
+			
+			var url = sdUtilService.getBaseUrl() + "services/rest/templating";
+
+			var templateConfig = {
+					format : "text",
+					processOid : piOid,
+					templateUri : 'repository://'+ path//"Hello ${PersonINDP.firstName} ${PersonINDP.lastName}"
+				};
+			
+			var postPromise = $http.post(url, templateConfig, {
+				headers : {
+					'Content-type' : 'application/json'
+				}
+			});
+			postPromise.success(function(data) {
+				console.log("Success in templating ")
+				deferred.resolve(data);
+			});
+			postPromise.error(function(response, status) {
+				console.log("The request failed with response " + response
+						+ " and status code " + status);
+			});
 			return deferred.promise;
 		};
 		
@@ -74,17 +106,17 @@ define([],function(){
 		/**
 		 * 
 		 */
-		this.resolveAttachmentTemplate = function (documentId, piOid, format) {
+		this.resolveAttachmentTemplate = function (item, piOid, outputFolder) {
 			var deferred = $q.defer();
 			
 			var url = sdUtilService.getBaseUrl() + "services/rest/templating";
-			$scope.templateConfiguration = {
-				
-				};
+			var format = item.path.split('.').pop();
+			
 			var templateConfig = {
-					templateUri:  documentId,     //"repository://greetings.docx",
+					templateUri:  'repository://'+item.path,   
 					format : format, //"docx",
-					processOid : piOid
+					processOid : piOid,
+					output:{name: item.name, path: outputFolder}
 				};
 			
 			var postPromise = $http.post(url, templateConfig, {
@@ -92,16 +124,23 @@ define([],function(){
 					'Content-type' : 'application/json'
 				}
 			});
-			postPromise.success(function(data) {
+			
+			postPromise.success(function(result) {
 				console.log("Success in templating ")
 					console.log("Success")
-				deferred.resolve(data);
+				deferred.resolve({
+					path : outputFolder + "/"+item.fileName,
+					uuid : result,
+					name : item.name,
+					contentType : item.contentType,
+					numPages : item.numPages
+				});
 			});
+			
 			postPromise.error(function(response, status) {
 				console.log("The request failed with response " + response
 						+ " and status code " + status);
 			});
-			deferred.resolve({name : documentId});
 			return deferred.promise;
 		};
 		
