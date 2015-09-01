@@ -68,12 +68,12 @@
 			    showCc :   true
 		};
 		
-		this.populateCorrespondenceData(_parse);
+		this.populateCorrespondenceData($scope);
 	}
 	
 	
 	Controller.prototype.populateCorrespondenceData = function($scope){
-		
+		var ctrl = this;
 		var queryGetter = _parse("panel.params.custom");
 		var params = queryGetter($scope);
 		
@@ -83,13 +83,12 @@
 		} else {
 			console.error("Couldnt Retrive Folder ID");
 		}
-		
 	};
 	
 	/**
 	 * 
 	 */
-	Controller.getExistingFolderInformation = function( folderId ){
+	Controller.prototype.getExistingFolderInformation = function( folderId ){
 		var ctrl = this;
 		_sdFolderService.getFolderInformationByFolderId(folderId).then(function(data){
 			console.log("Return from getExistingFolderInformation using folder id "+folderId)

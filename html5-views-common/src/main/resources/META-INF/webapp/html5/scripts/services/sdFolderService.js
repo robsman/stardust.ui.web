@@ -31,7 +31,7 @@
 	/*
 	 * 
 	 */
-	function FolderService($rootScope, $resource, sdLoggerService, $q, $http, sdDataTableHelperService, sdUtilService) {
+	function FolderService( $resource, sdLoggerService, sdUtilService) {
 
 		/**
 		 * 

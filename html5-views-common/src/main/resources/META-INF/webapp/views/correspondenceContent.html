@@ -128,16 +128,23 @@
 					</div>
 					<div  class="correspondence-file-uploader">
 							<div ng-repeat="att in ctrl.selected.attachments" ng-cloak
-								class="correspondence_attachments">
-								<span class="iceOutLbl" ng-bind="att.name" ng-click="ctrl.openAttachment(att)"> </span>
-								
-								
-								<button
-									class="button-link tbl-toolbar-item tbl-tool-link spacing-right"
-									style="float: right" ng-hide="ctrl.readOnly"
-									ng-click="ctrl.removeAttachment(att)">
-									<i class="glyphicon glyphicon-remove"></i>
-								</button>
+											class="correspondence_attachments">
+									<div>
+										<span ng-if="!ctrl.readOnly" class="iceOutLbl" ng-bind="att.name"
+											ng-click="ctrl.openAttachment(att)"> </span>
+			
+										<button
+											class="button-link tbl-toolbar-item tbl-tool-link spacing-right"
+											style="float: right" ng-hide="ctrl.readOnly"
+											ng-click="ctrl.removeAttachment(att)">
+											<i class="glyphicon glyphicon-remove"></i>
+										</button>
+									</div>
+			
+									<div ng-if="ctrl.readOnly" sd-open-document-link sda-name="att.name" 
+										sda-mime-type="att.contentType" sda-document-id="att.uuid">
+								</div>
+							
 							</div>
 							<form id="uploadAttachmentForm" ng-hide="ctrl.readOnly"  method="post"  class="correspondence-file-uploader"
 								enctype="multipart/form-data">

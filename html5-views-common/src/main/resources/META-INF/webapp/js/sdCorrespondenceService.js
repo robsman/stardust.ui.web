@@ -30,9 +30,9 @@ define([],function(){
 		 */
 		this.getProcessOidForActivity = function (aiOid){
 			var deferred = $q.defer();
-			var url = sdUtilService.getBaseUrl() + "services/rest/portal/activity-instances/"+aiOid;
+			var url = sdUtilService.getBaseUrl() + "services/rest/portal/activity-instances/"+aiOid+"/correspondence-process-instance";
 			 $resource(url).get().$promise.then(function(result){
-				deferred.resolve({piOid :result.processInstance.oid })
+				deferred.resolve({piOid :result.oid })
 			})
 			return deferred.promise;
 		};
