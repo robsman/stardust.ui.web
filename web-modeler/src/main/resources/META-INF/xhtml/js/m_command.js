@@ -270,6 +270,36 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
             changes : changes
          } ]);
      },
+     createAddPermissionParticipantsCommand : function(modelId, elementUUID, changes) {
+         return new ChangeDescriptor("permission.addParticipants", modelId, [ {
+            uuid : elementUUID,
+            changes : changes
+         } ]);
+     },
+     createRemovePermissionParticipantCommand : function(modelId, elementUUID, changes) {
+         return new ChangeDescriptor("permission.removeParticipant", modelId, [ {
+            uuid : elementUUID,
+            changes : changes
+         } ]);
+     },
+     createPermissionSetAllCommand : function(modelId, elementUUID, changes) {
+         return new ChangeDescriptor("permission.setALL", modelId, [ {
+            uuid : elementUUID,
+            changes : changes
+         } ]);
+     },
+     createPermissionUnsetAllCommand : function(modelId, elementUUID, changes) {
+         return new ChangeDescriptor("permission.unsetALL", modelId, [ {
+            uuid : elementUUID,
+            changes : changes
+         } ]);
+     },
+     createPermissionRestoreDefaultsCommand : function(modelId, elementUUID, changes) {
+         return new ChangeDescriptor("permission.restoreDefaults", modelId, [ {
+            uuid : elementUUID,
+            changes : changes
+         } ]);
+     },
    };
 
    /**

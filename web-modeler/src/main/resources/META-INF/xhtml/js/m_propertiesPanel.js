@@ -757,6 +757,20 @@ define(
           return m_model;
         };
         
+        /**
+         * 
+         */
+        PropertiesPanel.prototype.getMCommandsController = function(application) {
+          return m_commandsController;
+        };
+        
+        /**
+         * 
+         */
+        PropertiesPanel.prototype.getMCommand = function(application) {
+          return m_command
+        };
+        
         
 			}
 		});

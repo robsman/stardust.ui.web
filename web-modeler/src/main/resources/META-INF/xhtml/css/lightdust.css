@@ -315,6 +315,10 @@ div.toolBar {
 	background: #ccedff;
 }
 
+tr.selected, td.selected, label.selected {
+	background: #ccedff;
+}
+
 .dataTable tbody tr td {
 	padding-top: 2px;
 	padding-bottom: 2px;

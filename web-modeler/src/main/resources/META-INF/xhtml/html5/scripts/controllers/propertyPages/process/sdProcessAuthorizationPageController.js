@@ -1,0 +1,308 @@
+/*******************************************************************************
+ * Copyright (c) 2015 SunGard CSA LLC and others. All rights reserved. This
+ * program and the accompanying materials are made available under the terms of
+ * the Eclipse Public License v1.0 which accompanies this distribution, and is
+ * available at http://www.eclipse.org/legal/epl-v10.html Contributors: SunGard
+ * CSA LLC - initial API and implementation and/or initial documentation
+ ******************************************************************************/
+
+/**
+ * @author Shrikant.Gangal
+ */
+
+(function() {
+	'use strict';
+
+	angular.module('modeler-ui').controller(
+			'sdProcessAuthorizationPageController',
+			[ '$scope', 'sdUtilService', 'sdI18nService', 'sdModelerConstants',
+					ProcessAuthorizationPageController ]);
+
+	/**
+	 * 
+	 */
+	function ProcessAuthorizationPageController($scope, sdUtilService,
+			sdI18nService, sdModelerConstants) {
+		var self = this;
+		this.i18n = sdI18nService.getInstance('bpm-modeler-messages').translate;
+		this.constants = sdModelerConstants;
+		this.selectedAuths = [];
+		this.element;
+		this.selectedPermissionsCache = [];
+
+		$scope.$on('REFRESH_PROPERTIES_PANEL',
+				function(event, propertiesPanel) {
+					self.propertiesPanel = propertiesPanel;
+					self.commandsController = propertiesPanel
+							.getMCommandsController();
+					self.commandHelper = propertiesPanel.getMCommand();
+					self.refresh();
+				});
+	}
+
+	/**
+	 * 
+	 */
+	ProcessAuthorizationPageController.prototype.refresh = function() {
+		var self = this;
+		if (!this.element || this.element != this.propertiesPanel.element) {
+			this.element = this.propertiesPanel.element;
+
+			// Reset selected participants and authorizations
+			this.selectedAuths = [];
+			this.populateParticipants();
+		} else {
+			this.applyCachedSelections();
+			this.resetParticipantSelection();
+		}
+	};
+
+	/**
+	 * 
+	 */
+	ProcessAuthorizationPageController.prototype.populateParticipants = function() {
+		this.allParticipants = [];
+		var self = this;
+		jQuery.each(this.element.model.participants, function(_, participant) {
+			self.allParticipants.push({
+				modelName : participant.model.name,
+				name : participant.name,
+				type : participant.type,
+				displayName : participant.name,
+				fullId : participant.getFullId()
+			});
+		});
+
+		var models = this.propertiesPanel.getMModel().getModels();
+		jQuery.each(models, function(id, model) {
+			if (model.id !== self.element.model.id) {
+				jQuery.each(model.participants, function(_, participant) {
+					if (participant.id !== 'Administrator') {
+						self.allParticipants.push({
+							modelName : model.name,
+							name : participant.name,
+							type : participant.type,
+							displayName : model.name + "/" + participant.name,
+							fullId : participant.getFullId()
+						});
+					}
+				});
+			}
+		});
+	};
+
+	/**
+	 * 
+	 */
+	ProcessAuthorizationPageController.prototype.addParticipantsToPermissions = function() {
+		var self = this;
+		var selectedParticipants = this.getSelectedParticipants();
+		var nochanges = true;
+		if (selectedParticipants.length > 0) {
+			jQuery
+					.each(
+							this.element.permissions,
+							function(_, permission) {
+								if (permission.selected) {
+									jQuery
+											.each(
+													permission.participants,
+													function(_, participant) {
+														if (selectedParticipants
+																.indexOf(participant.participantFullId) >= 0) {
+															selectedParticipants
+																	.splice(
+																			selectedParticipants
+																					.indexOf(participant.participantFullId),
+																			1);
+														}
+													});
+
+									var shortlist = [];
+									jQuery
+											.each(
+													selectedParticipants,
+													function(_,
+															participantFullId) {
+														shortlist
+																.push({
+																	participantFullId : participantFullId
+																});
+													})
+									if (shortlist.length > 0) {
+										self.commandsController
+												.submitCommand(self.commandHelper
+														.createAddPermissionParticipantsCommand(
+																self.element.model.id,
+																self.element.uuid,
+																{
+																	permissionID : permission.id,
+																	participants : shortlist
+																}));
+										nochanges = false;
+									}
+								}
+							});
+		}
+
+		if (nochanges) {
+			// TODO - display message
+		}
+	};
+
+	/**
+	 * 
+	 */
+	ProcessAuthorizationPageController.prototype.addAllParticipantsToPermissions = function() {
+		var self = this;
+		jQuery.each(this.element.permissions, function(_, permission) {
+			if (permission.selected) {
+				self.commandsController.submitCommand(self.commandHelper
+						.createPermissionSetAllCommand(self.element.model.id,
+								self.element.uuid, {
+									permissionID : permission.id
+								}));
+			}
+		});
+	};
+
+	/**
+	 * 
+	 */
+	ProcessAuthorizationPageController.prototype.restorePermissionDefaults = function() {
+		var self = this;
+		jQuery.each(this.element.permissions, function(_, permission) {
+			if (permission.selected) {
+				self.commandsController.submitCommand(self.commandHelper
+						.createPermissionRestoreDefaultsCommand(
+								self.element.model.id, self.element.uuid, {
+									permissionID : permission.id
+								}));
+			}
+		});
+	};
+
+	/**
+	 * 
+	 */
+	ProcessAuthorizationPageController.prototype.removeParticipant = function(
+			permissionId, participantFullId) {
+		var self = this;
+
+		self.commandsController.submitCommand(self.commandHelper
+				.createRemovePermissionParticipantCommand(
+						self.element.model.id, self.element.uuid, {
+							permissionID : permissionId,
+							participantFullId : participantFullId
+						}));
+	};
+
+	/**
+	 * 
+	 */
+	ProcessAuthorizationPageController.prototype.getSelectedPermissions = function() {
+		var selectedPermissions = [];
+		jQuery.each(this.element.permissions, function(_, permission) {
+			if (permission.selected) {
+				selectedPermissions.push(permission);
+			}
+		});
+
+		return selectedPermissions;
+	};
+
+	/**
+	 * 
+	 */
+	ProcessAuthorizationPageController.prototype.getSelectedParticipants = function() {
+		var selectedParticipants = [];
+		jQuery.each(this.allParticipants, function(_, participant) {
+			if (participant.selected) {
+				selectedParticipants.push(participant.fullId);
+			}
+		});
+
+		return selectedParticipants;
+	};
+
+	/**
+	 * TODO - move to service
+	 */
+	ProcessAuthorizationPageController.prototype.getParticipantDisplayName = function(
+			fullId) {
+		if (fullId) {
+			var m_model = this.propertiesPanel.getMModel();
+			var participant = m_model.findParticipant(fullId);
+			return participant.model.name + "/" + participant.name;
+		}
+	};
+
+	/**
+	 * TODO - for now only single selection is supported
+	 */
+	ProcessAuthorizationPageController.prototype.togglePermissionSelection = function(
+			permission) {
+		if (permission.selected) {
+			permission.selected = false;
+			this.removeFromSelectionsCache(permission.id);
+		} else {
+			jQuery.each(this.element.permissions, function(_, perm) {
+				perm.selected = false;
+			});
+			// Empty selections cache
+			this.selectedPermissionsCache.length = 0;
+
+			permission.selected = true;
+			this.addToSelectionsCache(permission.id);
+		}
+	};
+
+	/**
+	 * TODO - move to service
+	 */
+	ProcessAuthorizationPageController.prototype.toggleSelection = function(obj) {
+		obj.selected = (obj && obj.selected) ? false : true;
+	};
+
+	/**
+	 * 
+	 */
+	ProcessAuthorizationPageController.prototype.addToSelectionsCache = function(
+			permissionId) {
+		this.selectedPermissionsCache.push(permissionId);
+	}
+
+	/**
+	 * 
+	 */
+	ProcessAuthorizationPageController.prototype.removeFromSelectionsCache = function(
+			permissionId) {
+		if (this.selectedPermissionsCache.indexOf(permissionId) >= 0) {
+			this.selectedPermissionsCache.splice(this.selectedPermissionsCache
+					.indexOf(permissionId), 1);
+		}
+	}
+
+	/**
+	 * 
+	 */
+	ProcessAuthorizationPageController.prototype.applyCachedSelections = function() {
+		var self = this;
+		jQuery.each(this.element.permissions, function(_, permission) {
+			if (self.selectedPermissionsCache.indexOf(permission.id) >= 0) {
+				//permission.selected = true;
+				permission.expanded = true;
+			}
+		});
+		this.selectedPermissionsCache.length = 0;
+	}
+
+	/**
+	 * 
+	 */
+	ProcessAuthorizationPageController.prototype.resetParticipantSelection = function() {
+		jQuery.each(this.allParticipants, function(_, participant) {
+			participant.selected = false;
+		});
+	}
+})();

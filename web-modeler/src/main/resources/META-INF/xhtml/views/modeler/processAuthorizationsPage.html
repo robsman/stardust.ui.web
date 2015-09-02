@@ -1,0 +1,14 @@
+<div ng-controller="sdProcessAuthorizationPageController as ctrl"
+	ng-cloak>
+	<div>
+		<div class="heading">{{ctrl.i18n('modeler.common.authorization')}}</div>
+		<div>
+			<ng-include
+				src="'plugins/bpm-modeler/views/modeler/templates/processAuthorizationsTree.html'" />
+		</div>
+		<div>
+			<ng-include
+				src="'plugins/bpm-modeler/views/modeler/templates/authorizationsParticipantSelector.html'" />
+		</div>
+	</div>
+</div>

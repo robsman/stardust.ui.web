@@ -1,0 +1,32 @@
+<div style="margin-top: 10px;">
+	<label>{{ctrl.i18n('authorization.permissionsTree.title')}}</label>
+	<div style="float: right; margin-bottom: 10px; margin-right: 10px;">
+		<input type="button"
+			value="{{ctrl.i18n('authorization.participants.addSelected')}}"
+			ng-click="ctrl.addParticipantsToPermissions()" /> <input
+			type="button"
+			value="{{ctrl.i18n('authorization.participants.addAll')}}"
+			ng-click="ctrl.addAllParticipantsToPermissions()" /> <input
+			type="button"
+			value="{{ctrl.i18n('authorization.participants.restoreDefaults')}}"
+			ng-click="ctrl.restorePermissionDefaults()" />
+	</div>
+	<div style="height: 250px; width: 100%; overflow: auto;">
+		<table border="1" style="width: 100%; padding: 5px;" class="dataTable">
+			<thead>
+				<tr>
+					<th>{{ctrl.i18n('authorization.roleSelector.participantColumn.heading')}}</th>
+					<th>{{ctrl.i18n('authorization.roleSelector.typeColumn.heading')}}</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="participant in ctrl.allParticipants"
+					class="{{(participant.selected ? 'selected' : '')}}"
+					ng-click="ctrl.toggleSelection(participant)">
+					<td>{{participant.displayName}}</td>
+					<td>{{participant.type}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>

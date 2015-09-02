@@ -15,14 +15,18 @@ define(
 				'bpm-modeler/js/m_processDataPathPropertiesPage',
 				'bpm-modeler/js/m_processDisplayPropertiesPage',
 				'bpm-modeler/js/m_processProcessAttachmentsPropertiesPage',
-				'bpm-modeler/js/ProcessRuntimePropertiesPage' ],
+				'bpm-modeler/js/ProcessRuntimePropertiesPage',
+				'bpm-modeler/js/m_propertiesPageProvider',
+				'bpm-modeler/js/m_i18nUtils'],
 		function(m_processBasicPropertiesPage,
 				m_modelElementCommentsPropertiesPage,
 				m_processProcessInterfacePropertiesPage,
 				m_processDataPathPropertiesPage,
 				m_processDisplayPropertiesPage,
 				m_processProcessAttachmentsPropertiesPage,
-				ProcessRuntimePropertiesPage) {
+				ProcessRuntimePropertiesPage,
+				m_propertiesPageProvider,
+				m_i18nUtils) {
 			return {
 				propertiesPage : [
 						{
@@ -37,6 +41,16 @@ define(
 							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/modelElementCommentsPropertiesPage.html",
 							provider : m_modelElementCommentsPropertiesPage,
 							visibility : "always"
+						},
+						{
+							panelId : "processPropertiesPanel",
+							id : "processAuthorizationsPropertiesPage",
+							provider : m_propertiesPageProvider,
+							visibility : "always",
+							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/processAuthorizationsPage.html",
+							imageUrl : "plugins/views-common/images/icons/key.png",
+							title : m_i18nUtils.getProperty("modeler.common.authorization"),
+							html5 : true
 						},
 						{
 							panelId : "processPropertiesPanel",
