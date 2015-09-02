@@ -46,6 +46,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.PanelIntegrationStrategy;
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.MashupContextConfigManager;
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.MashupControllerUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ClientSideDataFlowUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
@@ -378,6 +379,9 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
          {
             // out data mapping was already performed
             // validate data?
+            Map<String, Serializable> data = (Map<String, Serializable>) getOutDataValues(ai);
+            RepositoryUtility.updateCorrespondenceOutFolder(data, ai);
+                        
             return true;
          }
 

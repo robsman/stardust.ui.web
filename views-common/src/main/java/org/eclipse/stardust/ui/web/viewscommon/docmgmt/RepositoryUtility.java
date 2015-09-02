@@ -76,6 +76,8 @@ public class RepositoryUtility
    public static final String DOCUMENT_DISPLAY_MODE_PORTAL = "PORTAL";
    public static final String DOCUMENT_DISPLAY_MODE_NEWBROWSER = "NEWBROWSER";
    public static final String UI_PROPERTIES = "ui-properties";
+   public static final String CORRESPONDENCE_REQUEST = "CORRESPONDENCE_REQUEST";
+   
    
    public enum UIProperties{
      readOnly, clickable, type 
@@ -1475,6 +1477,27 @@ public class RepositoryUtility
       return processCorrespondenceNode;
    }
    
+   /**
+    * @param data
+    * @param ai
+    */
+   public static void updateCorrespondenceOutFolder(Map<String, Serializable> data, ActivityInstance ai)
+   {
+      if (CollectionUtils.isEmpty(data))
+      {
+         return;
+      }
+      for (String datakey : data.keySet())
+      {
+         if (CORRESPONDENCE_REQUEST.equals(datakey))
+         {
+            Folder correspondenceOutFolder = getOrCreateCorrespondenceOutFolder(ai);
+            correspondenceOutFolder.getProperties().put("correspondenceMetaData", data.get(datakey));
+            DocumentMgmtUtility.getDocumentManagementService().updateFolder(correspondenceOutFolder);
+         }
+      }
+   }
+
    /**
     * @param ai
     * @return

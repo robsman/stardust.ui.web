@@ -51,6 +51,7 @@ import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
 import org.eclipse.stardust.ui.web.rest.service.ActivityInstanceService;
 import org.eclipse.stardust.ui.web.rest.service.DelegationComponent;
+import org.eclipse.stardust.ui.web.rest.service.MapAdapter;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
 import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.service.ProcessInstanceService;
@@ -77,6 +78,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -508,7 +510,9 @@ public class ActivityInstanceResource
    public Response getCorrespondenceOutFolder(@PathParam("oid") Long activityOid)
    {
       FolderDTO folderDto = activityInstanceService.getCorrespondenceOutFolder(activityOid);
-      return Response.ok(GsonUtils.toJsonHTMLSafeString(folderDto), MediaType.APPLICATION_JSON).build();
+      //TODO move jsonHelper and MapAdapter to Portal-Common and then modify GsonUtils
+      Gson gson = new GsonBuilder().registerTypeAdapter(Map.class, new MapAdapter()).disableHtmlEscaping().create();
+      return Response.ok(gson.toJson(folderDto, FolderDTO.class), MediaType.APPLICATION_JSON).build();
    }
    
    /**

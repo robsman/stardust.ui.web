@@ -10,7 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto.response;
 
+import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
@@ -30,7 +32,7 @@ public class FolderDTO extends AbstractDTO
    public List<FolderDTO> folders;
    public List<DocumentDTO> documents;
    public UiPropertiesDTO uiProperties;
-   public CorrespondenceMetaDataDTO correspondenceMetaDataDTO;
+   public Map<String, Serializable> correspondenceMetaDataDTO;
 
    public FolderDTO()
    {
