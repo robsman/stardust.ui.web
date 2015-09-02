@@ -24,7 +24,7 @@ var configs = html5Deps
 					exports : "InfinityBPMI18N"
 				}
 			},
-			deps : ["require","html5-views-common/js/sdCorrespondenceService","html5-views-common/js/sdCorrespondenceCtrl" ]
+			deps : ["require","html5-views-common/js/sdCorrespondenceService","html5-views-common/js/sdCorrespondenceCtrl","html5-views-common/js/lib/xml2js"]
 		});
 
 require.config({
@@ -34,7 +34,7 @@ require.config({
 	waitSeconds : 0
 });
 
-require(configs.deps, function(require, sdCorrespondenceService,sdCorrespondenceCtrl) {
+require(configs.deps, function(require, sdCorrespondenceService,sdCorrespondenceCtrl, xml2js) {
 	jQuery(document).ready(
 			function() {
 			    var app = angular.module('correspondenceApplication',[]),

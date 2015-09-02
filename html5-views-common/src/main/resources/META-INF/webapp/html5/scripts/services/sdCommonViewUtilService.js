@@ -131,8 +131,8 @@
 		/**
 		 * 
 		 */
-		CommonViewUtilService.prototype.openGanttChartView = function(processInstanceOid,nested) {
-			sdViewUtilService.openView("ganttChartView", "oid=" + processInstanceOid, {
+		CommonViewUtilService.prototype.openGanttChartView = function( processInstanceOid, nested) {
+			sdViewUtilService.openView("ganttChartView", "processInstanceOId=" + processInstanceOid, {
 				"processInstanceOId" : "" + processInstanceOid
 			}, nested);
 		};

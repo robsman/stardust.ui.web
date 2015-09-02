@@ -16,7 +16,6 @@ define([],function(){
 	 * 
 	 */
 	function CorrespondenceService($resource, $q, $http, sdUtilService) {
-		
 		/**
 		 * 
 		 */
@@ -36,8 +35,6 @@ define([],function(){
 			})
 			return deferred.promise;
 		};
-		
-		
 		/**
 		 * 
 		 */
@@ -49,8 +46,10 @@ define([],function(){
 			var templateConfig = {
 					format : "text",
 					processOid : piOid,
-					template :   content//"Hello ${PersonINDP.firstName} ${PersonINDP.lastName}"
+					template :   content
 				};
+			
+			console.log(templateConfig)
 			
 			var postPromise = $http.post(url, templateConfig, {
 				headers : {
@@ -66,11 +65,8 @@ define([],function(){
 				console.log("The request failed with response " + response
 						+ " and status code " + status);
 			});
-			//deferred.resolve({result : 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum' })
 			return deferred.promise;
 		};
-		
-		
 		
 		/**
 		 * 
@@ -83,7 +79,7 @@ define([],function(){
 			var templateConfig = {
 					format : "text",
 					processOid : piOid,
-					templateUri : 'repository://'+ path//"Hello ${PersonINDP.firstName} ${PersonINDP.lastName}"
+					templateUri : 'repository://'+ path
 				};
 			
 			var postPromise = $http.post(url, templateConfig, {
@@ -101,8 +97,6 @@ define([],function(){
 			});
 			return deferred.promise;
 		};
-		
-		
 		/**
 		 * 
 		 */
@@ -114,7 +108,7 @@ define([],function(){
 			
 			var templateConfig = {
 					templateUri:  'repository://'+item.path,   
-					format : format, //"docx",
+					format : format, 
 					processOid : piOid,
 					output:{name: item.name, path: outputFolder}
 				};
@@ -124,7 +118,6 @@ define([],function(){
 					'Content-type' : 'application/json'
 				}
 			});
-			
 			postPromise.success(function(result) {
 				console.log("Success in templating ")
 					console.log("Success")
@@ -133,7 +126,8 @@ define([],function(){
 					uuid : result,
 					name : item.name,
 					contentType : item.contentType,
-					numPages : item.numPages
+					numPages : item.numPages,
+					templateDocumentId : item.path
 				});
 			});
 			
@@ -144,15 +138,13 @@ define([],function(){
 			return deferred.promise;
 		};
 		
-		
 		/**
 		 * 
 		 */
 		this.getFolderInformationByActivityOid = function (aiOid){ 
 			var url =  sdUtilService.getBaseUrl() +"services/rest/portal/activity-instances/"+aiOid+"/correspondence-out";
 			return $resource(url).get().$promise;
-		}
-		
+		};
 		
 		/**
 		 * 
@@ -168,11 +160,8 @@ define([],function(){
 				}
 			});
 			return document.copyToFolder({}, requestObj).$promise;
-		}
+		};
 		
-		
-		
-
 		/**
 		 * 
 		 */
@@ -186,8 +175,6 @@ define([],function(){
 			});
 			return attachment.remove({}, {}).$promise;
 		}
-			
-		
 		/**
 		 * 
 		 */
@@ -226,10 +213,6 @@ define([],function(){
 			});
 			return deferred.promise;
 		}
-		
-		
-		
-		
 	}
 	
 	//Dependency injection array for our controller.
