@@ -10336,6 +10336,7 @@ img[src *='key-modified.png']{
      opacity: 0.7;
 }
 
+input[src *='key.png'],
 img[src *='key.png']{
      background-image:url('./images/flat-icons/key.png') !important;
      width:16px;
