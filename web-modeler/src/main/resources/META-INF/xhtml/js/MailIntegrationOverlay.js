@@ -431,14 +431,7 @@ define(
                   this.validateRecipientsFields(this.ccInput);
                   this.bccInput.removeClass("error");
                   this.validateRecipientsFields(this.bccInput);
-                 /* if(!m_utils.isEmptyString(this.fromInput.val())){
-                	  if(this.fromInput.val().indexOf(';') != -1){
-                		  this.view.errorMessages.push("To configure multiple recipients please use comma instead of semicolon.");
-                		  this.fromInput.addClass("error");
-                          valid = false;
-                	  }
-                  }*/
-                  
+                 
                   
                   var parameterDefinitionNameInputWhithoutSpaces = this.parameterDefinitionNameInput
                            .val().replace(/ /g, "");
@@ -1789,6 +1782,7 @@ define(
                                        "stardust:emailOverlay::attachmentsTemplateSource" :  "embedded"
                                        }
                                  }, true);
+                        this.view.errorMessagesList.empty();
                         this.view.errorMessages
                         .push("DOCUMENT_REQUEST structure is not available in the current model, please create it.");
                         this.view.showErrorMessages();
