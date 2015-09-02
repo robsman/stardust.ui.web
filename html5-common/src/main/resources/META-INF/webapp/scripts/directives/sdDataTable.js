@@ -596,15 +596,21 @@
 				}
 
 				if (colDef.filterMarkup == '') {
-					switch (bCol.attr('sda-data-type')) {
+					switch (colDef.dataType) {
+						case 'string':
+							colDef.filterMarkup = '<div sd-text-search-filter></div>';
+							break;
 						case 'int': 
 						case 'integer':
 							colDef.filterMarkup = '<div sd-number-filter></div>';
 							break;
-						case 'date': 
+						case 'date':
 						case 'dateTime':
 						case 'time':
 							colDef.filterMarkup = '<div sd-date-filter></div>';
+							break;
+						case 'boolean':
+							colDef.filterMarkup = '<div sd-boolean-filter></div>';
 							break;
 					}
 				}
@@ -1138,10 +1144,17 @@
 						case 'date': 
 						case 'dateTime':
 						case 'time':
+							if (value1.getTime) {
+								value1 = value1.getTime();
+							}
+							if (value2.getTime) {
+								value2 = value2.getTime();
+							}
+
 							if (params.sortBy.dir == 'asc') {
-								ret = value1.getMilliseconds() - value2.getMilliseconds();
+								ret = value1 - value2;
 							} else {
-								ret = value2.getMilliseconds() - value1.getMilliseconds();
+								ret = value2 - value1;
 							}
 							break;
 						case 'boolean':
@@ -1157,9 +1170,18 @@
 							trace.error(theTableId + ': Built-in sorting not supported for data type: ' + 
 									params.sortBy.dataType + ', column: ' + params.sortBy.name);
 					}
+				} else {
+					// Either value is null or both null
+					if ((value1 == undefined || value1 == null) && (value2 == undefined || value2 == null)) {
+						ret = 0;
+					} else if (value1 != undefined && value1 != null) {
+						ret = params.sortBy.dir == 'asc' ? -1 : 1;
+					} else if (value2 != undefined && value2 != null) {
+						ret = params.sortBy.dir == 'asc' ? 1 : -1;
+					}
 				}
 			} catch (e) {
-				trace.error(theTableId + ': Error while using built in sort for Local Mode:', params);
+				trace.error(theTableId + ': Error while using built in sort for Local Mode:', params, e);
 			}
 
 			return ret;
