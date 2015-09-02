@@ -58,6 +58,20 @@
 				scope.handlers.resetFilter = function() {
 					// NOP
 				};
+
+				/*
+				 * Return true to show data
+				 */
+				scope.handlers.filterCheck = function(rowData) {
+					var filterData = scope.filterData;
+					var value = rowData[scope.colData.field];
+
+					if (value) {
+						return value.toLowerCase().indexOf(filterData.textSearch.toLowerCase()) != -1;
+					}
+
+					return false;
+				};
 			}
 		};
 	}

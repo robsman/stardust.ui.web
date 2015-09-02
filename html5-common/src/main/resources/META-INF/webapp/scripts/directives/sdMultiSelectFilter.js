@@ -67,6 +67,35 @@
 				scope.handlers.resetFilter = function() {
 					// NOP
 				};
+
+				/*
+				 * Return true to show data
+				 */
+				scope.handlers.filterCheck = function(rowData) {
+					var filterData = scope.filterData;
+					var value = rowData[scope.colData.field];
+
+					var values = filterData.like;
+					if (!values || values.length == 0) {
+						return true;
+					}
+
+					if (scope.multiple === false) {
+						values = [values];
+					}
+
+					if (value) {
+						for (var i in values) {
+							if (values[i] != undefined && values[i] != null) {
+								if (values[i] == value) {
+									return true;
+								}
+							}
+						}
+					}
+
+					return false;
+				};
 			}
          }
       };

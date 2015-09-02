@@ -88,6 +88,26 @@
 				scope.handlers.resetFilter = function() {
 					// NOP
 				};
+
+				/*
+				 * Return true to show data
+				 */
+				scope.handlers.filterCheck = function(rowData) {
+					var filterData = scope.filterData;
+					var value = rowData[scope.colData.field];
+
+					if (value) {
+						if (filterData.from != undefined && filterData.to != undefined) {
+							return value >= filterData.from && value <= filterData.to;
+						} else if (filterData.from != undefined) {
+							return value >= filterData.from;
+						} else if (filterData.from != undefined) {
+							return value <= filterData.to;
+						}
+					}
+
+					return false;
+				};
 			}
 		};
 	}
