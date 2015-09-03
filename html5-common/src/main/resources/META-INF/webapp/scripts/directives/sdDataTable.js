@@ -185,7 +185,7 @@
 		var pageSize = 8, disablePagination;
 		var sortingMode, sortByGetter, enableFiltering;
 		var columnFilters;
-		var exportConfig = {}, exportAnchor = document.createElement("a"), remoteModeLastParams;
+		var exportConfig = {}, remoteModeLastParams;
 		var localModeData, localModeMasterData, localModeRefreshInitiated, localModeRebuildData;
 		var localModeGlobalFilter = {}, localModeSortingCols = [];
 
@@ -228,14 +228,14 @@
 			showElement(theTable.parent(), false);
 			showElement(theToolbar, false);
 
-			var errorToShow = 'Unknown Error'; // TODO: i18n
+			var errorToShow = 'Unknown Error';
 			if (angular.isString(e)) {
 				errorToShow = e;
 			} else if (e.status != undefined && e.statusText != undefined) {
 				errorToShow = e.status + ' - ' + e.statusText;
 			}
 
-			// TODO: i18n
+			// No need to i18n this message as this error state is expected to be reached only during development
 			var msg = 'sd-data-table is unable to process table. Pl. refer browser console for details. Reason: ' + errorToShow;
 			jQuery('<pre class="tbl-error">' + msg + '</pre>').insertAfter(theTable.parent());
 		}
@@ -289,14 +289,7 @@
 				attr.sdaSortable = 'false';
 
 				if (attr.sdaOnTreeNodeAction) {
-					onTreeNodeAction.handler = $parse(attr.sdaOnTreeNodeAction);
-
-					var onTreeNodeActionFuncInfo = sdUtilService.parseFunction(attr.sdaOnTreeNodeAction);
-					if (onTreeNodeActionFuncInfo && onTreeNodeActionFuncInfo.params && onTreeNodeActionFuncInfo.params.length > 0) {
-						onTreeNodeAction.param = onTreeNodeActionFuncInfo.params[0];
-					} else {
-						trace.error(theTableId + ': sda-on-tree-node-action does not seems to be correcly used, it does not appear to be a function accepting parameter.');
-					}
+					onTreeNodeAction = parseFunction(attr.sdaOnTreeNodeAction, 'sda-on-tree-node-action');
 				}
 			}
 			
@@ -335,26 +328,12 @@
 				}
 
 				if (attr.sdaOnSelect) {
-					onSelect.handler = $parse(attr.sdaOnSelect);
-
-					var onSelectFuncInfo = sdUtilService.parseFunction(attr.sdaOnSelect);
-					if (onSelectFuncInfo && onSelectFuncInfo.params && onSelectFuncInfo.params.length > 0) {
-						onSelect.param = onSelectFuncInfo.params[0];
-					} else {
-						trace.error(theTableId + ': sda-on-select does not seems to be correcly used, it does not appear to be a function accepting parameter.');
-					}
+					onSelect = parseFunction(attr.sdaOnSelect, 'sda-on-select');
 				}
 			}
 
 			if (attr.sdaOnPagination) {
-				onPagination.handler = $parse(attr.sdaOnPagination);
-
-				var onPaginationfuncInfo = sdUtilService.parseFunction(attr.sdaOnPagination);
-				if (onPaginationfuncInfo && onPaginationfuncInfo.params && onPaginationfuncInfo.params.length > 0) {
-					onPagination.param = onPaginationfuncInfo.params[0];
-				} else {
-					trace.error(theTableId + ': sda-on-pagination does not seems to be correcly used, it does not appear to be a function accepting parameter.');
-				}
+				onPagination = parseFunction(attr.sdaOnPagination, 'sda-on-pagination');
 			}
 
 			if (attr.sdaColumnSelector && (attr.sdaColumnSelector == 'true' || attr.sdaColumnSelector == 'admin')) {
@@ -362,14 +341,7 @@
 				columnSelectorAdmin = attr.sdaColumnSelector == 'admin' ? true : false;
 
 				if (attr.sdaOnColumnReorder) {
-					onColumnReorder.handler = $parse(attr.sdaOnColumnReorder);
-
-					var onColumnReorderfuncInfo = sdUtilService.parseFunction(attr.sdaOnColumnReorder);
-					if (onColumnReorderfuncInfo && onColumnReorderfuncInfo.params && onColumnReorderfuncInfo.params.length > 0) {
-						onColumnReorder.param = onColumnReorderfuncInfo.params[0];
-					} else {
-						trace.error(theTableId + ': sda-on-columns-reorder does not seems to be correcly used, it does not appear to be a function accepting parameter.');
-					}
+					onColumnReorder = parseFunction(attr.sdaOnColumnReorder, 'sda-on-column-reorder');
 				}
 			}
 
@@ -383,14 +355,7 @@
 				}
 
 				if (attr.sdaOnSorting) {
-					onSorting.handler = $parse(attr.sdaOnSorting);
-
-					var onSortingfuncInfo = sdUtilService.parseFunction(attr.sdaOnSorting);
-					if (onSortingfuncInfo && onSortingfuncInfo.params && onSortingfuncInfo.params.length > 0) {
-						onSorting.param = onSortingfuncInfo.params[0];
-					} else {
-						trace.error(theTableId + ': sda-on-sorting does not seems to be correcly used, it does not appear to be a function accepting parameter.');
-					}
+					onSorting = parseFunction(attr.sdaOnSorting, 'sda-on-sorting');
 				}
 			}
 
@@ -430,14 +395,7 @@
 			}
 
 			if (tableInLocalMode && enableFiltering && attr.sdaFilterHandler) {
-				localModeGlobalFilter.handler = $parse(attr.sdaFilterHandler);
-
-				var filterHandlerFuncInfo = sdUtilService.parseFunction(attr.sdaFilterHandler);
-				if (filterHandlerFuncInfo && filterHandlerFuncInfo.params && filterHandlerFuncInfo.params.length > 0) {
-					localModeGlobalFilter.param = filterHandlerFuncInfo.params[0];
-				} else {
-					trace.error(theTableId + ': sda-filter-handler does not seems to be correcly used, it does not appear to be a function accepting parameter.');
-				}
+				localModeGlobalFilter = parseFunction(attr.sdaFilterHandler, 'sda-filter-handler');
 			}
 		}
 
@@ -445,9 +403,9 @@
 		 *
 		 */
 		function cleanupAsDirective() {
-			var currentDir = "sd-data-table: " + element.attr("sd-data-table");
-			jQuery("<!-- " + currentDir + " -->").insertBefore(element);
-			element.removeAttr("sd-data-table", "");
+			var currentDir = 'sd-data-table: ' + element.attr('sd-data-table');
+			jQuery('<!-- ' + currentDir + ' -->').insertBefore(element);
+			element.removeAttr('sd-data-table', '');
 		}
 
 		/*
@@ -484,7 +442,7 @@
 
 			// Process Columns
 			var head = element.find('> thead');
-			var i18nScope = "";
+			var i18nScope = '';
 			if (head.attr('sda-i18n-scope') != undefined) {
 				i18nScope = head.attr('sda-i18n-scope');
 			}
@@ -548,7 +506,7 @@
 				
 				colDef.contents = bCol.children().html();
 				colDef.contents = colDef.contents.trim();
-				if (colDef.contents == "") {
+				if (colDef.contents == '') {
 					var contents = getDefaultContent(colDef);
 					colDef.contents = '{{' + contents + '}}';
 					colDef.defaultContentsParser = $parse(contents);
@@ -616,15 +574,7 @@
 				}
 
 				if (hCol.attr('sda-sort-handler')) {
-					colDef.sorter = {};
-					colDef.sorter.handler = $parse(hCol.attr('sda-sort-handler'));
-
-					var sorterHandlerFuncInfo = sdUtilService.parseFunction(hCol.attr('sda-sort-handler'));
-					if (sorterHandlerFuncInfo && sorterHandlerFuncInfo.params && sorterHandlerFuncInfo.params.length > 0) {
-						colDef.sorter.param = sorterHandlerFuncInfo.params[0];
-					} else {
-						trace.error(theTableId + ': sda-sort-handler does not seems to be correcly used, it does not appear to be a function accepting parameter, for column: ' + colDef.name);
-					}
+					colDef.sorter = parseFunction(hCol.attr('sda-sort-handler'), 'sda-sort-handler');
 				}
 
 				columns.push(colDef);
@@ -644,6 +594,24 @@
 			element.children('tbody').remove();
 		}
 
+		/*
+		 * 
+		 */
+		function parseFunction(funcAsStr, attribute) {
+			var retInfo = {};
+			retInfo.attribute = attribute;
+			retInfo.handler = $parse(funcAsStr);
+			
+			var funcInfo = sdUtilService.parseFunction(funcAsStr);
+			if (funcInfo && funcInfo.params && funcInfo.params.length > 0) {
+				retInfo.param = funcInfo.params[0];
+			} else {
+				trace.error(theTableId + ': ' + attribute + ' is not correcly used, it does not appear to be a function accepting parameter.');
+			}
+
+			return retInfo;
+		}
+		
 		/*
 		 * 
 		 */
@@ -722,7 +690,7 @@
 					}
 
 					if (ret == undefined || ret == null) {
-						ret = "";
+						ret = '';
 					}
 
 					return ret;
@@ -863,16 +831,16 @@
 			var dtOptions = {};
 
 			dtOptions.sDom = 'irtp';
-			dtOptions.sPaginationType = "full_numbers";
+			dtOptions.sPaginationType = 'full_numbers';
 			dtOptions.iDisplayLength = pageSize;
 			dtOptions.oLanguage = {
-					"oPaginate": {
-						"sFirst": "<i class='pi pi-step-back dataTables_paginate_icon' ></i>",
-						"sPrevious": "<i class='pi pi-step-back-one pi-rotate-180 dataTables_paginate_icon'></i>",
-						"sNext": "<i class='pi pi-step-forward-one dataTables_paginate_icon'></i>",
-						"sLast": "<i class='pi pi-step-forward dataTables_paginate_icon'></i>"
+					oPaginate: {
+						sFirst: '<i class="pi pi-step-back dataTables_paginate_icon"></i>',
+						sPrevious: '<i class="pi pi-step-back-one pi-rotate-180 dataTables_paginate_icon"></i>',
+						sNext: '<i class="pi pi-step-forward-one dataTables_paginate_icon"></i>',
+						sLast: '<i class="pi pi-step-forward dataTables_paginate_icon"></i>'
 					},
- 					"sEmptyTable": sgI18nService.translate('portal-common-messages.common-genericDataTable-noRecordsFoundLabel')
+ 					sEmptyTable: sgI18nService.translate('portal-common-messages.common-genericDataTable-noRecordsFoundLabel')
 			};
 			
 			dtOptions.aoColumns = dtColumns;
@@ -915,7 +883,7 @@
 			dtOptions.fnCreatedRow = createRowHandler;
 
 			dtOptions.bServerSide = true;
-			dtOptions.sAjaxSource = "dummy.html";
+			dtOptions.sAjaxSource = 'dummy.html';
 			dtOptions.fnServerData = tableInLocalMode ? ajaxHandlerLocalMode : ajaxHandler;
 
 			if (tableInLocalMode) {
@@ -960,7 +928,7 @@
 			}
 
 			var ret = {
-				"sEcho" : dataMap['sEcho']
+				sEcho : dataMap['sEcho']
 			};
 
 			var params = {skip : dataMap['iDisplayStart'], pageSize : dataMap['iDisplayLength']};
@@ -1079,7 +1047,7 @@
 					};
 
 					if (colDef.sorter && colDef.sorter.handler) {
-						return fireDataTableEvent(colDef.sorter, params, 'sdaSortHandler');
+						return invokeScopeFunction(colDef.sorter, params);
 					}
 					else {
 						return builtInComparatorForLocalMode(params);
@@ -1096,7 +1064,7 @@
 		function isRowVisibleForLocalMode(rowData) {
 			var visible = true;
 			if (localModeGlobalFilter.handler) {
-				visible = fireDataTableEvent(localModeGlobalFilter, rowData, 'sdaFilterHandler');
+				visible = invokeScopeFunction(localModeGlobalFilter, rowData);
 			}
 
 			if (visible) {
@@ -1105,7 +1073,7 @@
 					if (filterScope.$$filterData != undefined && !jQuery.isEmptyObject(filterScope.$$filterData)) {
 						try {
 							if (!filterScope.handlers.filterCheck) {
-								trace.error(theTableId + ': Filter does not declare method called "filterCheck" for column: ' + colName);
+								trace.error(theTableId + ': Filter does not declare method called filterCheck() for column: ' + colName);
 								continue;
 							}
 
@@ -1211,7 +1179,7 @@
 			}
 
 			var ret = {
-				"sEcho" : dataMap['sEcho']
+				sEcho : dataMap['sEcho']
 			};
 			
 			if (!initialized) {
@@ -1333,7 +1301,7 @@
 					totalPages: Math.ceil(settings._iRecordsTotal / settings._iDisplayLength)
 				};
 				
-				fireDataTableEvent(onPagination, paginationInfo, 'onPagination');
+				invokeScopeFunction(onPagination, paginationInfo);
 			}, 0, true);
 		}
 
@@ -1358,7 +1326,7 @@
 					sortByGetter.assign(elemScope, sortingInfo);
 				}
 
-				fireDataTableEvent(onSorting, sortingInfo, 'onSorting');
+				invokeScopeFunction(onSorting, sortingInfo);
 			}, 0, true);
 		}
 
@@ -1387,7 +1355,7 @@
 		/*
 		 * 
 		 */
-		function fireDataTableEvent(handleInfo, data, eventType, invokeAfterDigest) {
+		function invokeScopeFunction(handleInfo, data, invokeAfterDigest) {
 			if (handleInfo.handler) {
 				try {
 					var transObj = {};
@@ -1395,7 +1363,7 @@
 						transObj[handleInfo.param] = data;
 					} else {
 						transObj.info = data;
-						trace.warn(theTableId + ': ' + eventType + ' event handler is not properly configured, may not receive event info.');
+						trace.warn(theTableId + ': ' + handleInfo.attribute + ' is not properly implemented, may not receive params');
 					}
 
 					if (!invokeAfterDigest) {
@@ -1406,7 +1374,7 @@
 						}, 0, true);
 					}
 				} catch(e) {
-					trace.error(theTableId + ': Error while firing ' + eventType + ' event on data table', e);
+					trace.error(theTableId + ': Error while invoking function for ' + handleInfo.attribute, e);
 				}
 			}
 		}
@@ -1587,20 +1555,11 @@
 			var preferenceDelegate = {};
 
 			if (attr.sdaPreferenceDelegate) {
-				var funcInfo = sdUtilService.parseFunction(attr.sdaPreferenceDelegate);
-				if (funcInfo && funcInfo.params && funcInfo.params.length > 0) {
-					var preferenceDelagate = {
-						handler : $parse(attr.sdaPreferenceDelegate),
-						param : funcInfo.params[0]
-					}
-					var data = {
-						scope : pScope
-					}
-
-					preferenceDelegate.store = fireDataTableEvent(preferenceDelagate, data, 'PreferenceDelegate');					
-				} else {
-					sdUtilService.assert(false, 'sda-preference-delegate does not seems to be correcly used, it does not appear to be a function accepting parameter.');
+				var preferenceDelagate = parseFunction(attr.sdaPreferenceDelegate, 'sda-preference-delegate');
+				var data = {
+					scope : pScope
 				}
+				preferenceDelegate.store = invokeScopeFunction(preferenceDelagate, data);					
 			} else if(attr.sdaPreferenceModule && attr.sdaPreferenceModule != '' && 
 					attr.sdaPreferenceId && attr.sdaPreferenceId != '' &&
 					attr.sdaPreferenceName && attr.sdaPreferenceName != '') {
@@ -1832,7 +1791,7 @@
 				current : newOrder
 			};
 			
-			fireDataTableEvent(onColumnReorder, columnReorderInfo, 'onColumnReorder', true);
+			invokeScopeFunction(onColumnReorder, columnReorderInfo, true);
 		}
 
 		/*
@@ -2040,7 +1999,7 @@
 
 			selectionInfo.all = getRowSelection();
 
-			fireDataTableEvent(onSelect, selectionInfo, 'onSelect');
+			invokeScopeFunction(onSelect, selectionInfo);
 		}
 
 		/*
@@ -2087,7 +2046,7 @@
 		 * 
 		 */
 		function exposeAPIs() {
-			if (attr.sdDataTable != undefined && attr.sdDataTable != "") {
+			if (attr.sdDataTable != undefined && attr.sdDataTable != '') {
 				var dataTableAssignable = $parse(attr.sdDataTable).assign;
 				if (dataTableAssignable) {
 					trace.info(theTableId + ': Exposing API for: ' + attr.sdDataTable + ', on scope Id: ' + elemScope.$id + ', Scope:', elemScope);
@@ -2735,7 +2694,7 @@
 					rowData.$expanded = false;
 
 					treeActionInfo.action = 'collapse';
-					fireDataTableEvent(onTreeNodeAction, treeActionInfo, 'onTreeNodeAction', true);
+					invokeScopeFunction(onTreeNodeAction, treeActionInfo, true);
 					
 					refreshUi();
 				} else {
@@ -2765,7 +2724,7 @@
 							}
 
 							treeActionInfo.action = 'expand';
-							fireDataTableEvent(onTreeNodeAction, treeActionInfo, 'onTreeNodeAction', true);
+							invokeScopeFunction(onTreeNodeAction, treeActionInfo, true);
 
 							refreshUi();
 						}, function(error) {
@@ -2776,7 +2735,7 @@
 						});
 					} else {
 						treeActionInfo.action = 'expand';
-						fireDataTableEvent(onTreeNodeAction, treeActionInfo, 'onTreeNodeAction', true);
+						invokeScopeFunction(onTreeNodeAction, treeActionInfo, true);
 
 						refreshUi();
 					}
