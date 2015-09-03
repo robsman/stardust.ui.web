@@ -14,14 +14,14 @@
 	'use strict';
 
 	angular.module('modeler-ui').controller(
-			'sdProcessAuthorizationPageController',
+			'sdAuthorizationPageController',
 			[ '$scope', 'sdUtilService', 'sdI18nService', 'sdModelerConstants',
-					ProcessAuthorizationPageController ]);
+					AuthorizationPageController ]);
 
 	/**
 	 * 
 	 */
-	function ProcessAuthorizationPageController($scope, sdUtilService,
+	function AuthorizationPageController($scope, sdUtilService,
 			sdI18nService, sdModelerConstants) {
 		var self = this;
 		this.i18n = sdI18nService.getInstance('bpm-modeler-messages').translate;
@@ -44,7 +44,7 @@
 	/**
 	 * 
 	 */
-	ProcessAuthorizationPageController.prototype.refresh = function() {
+	AuthorizationPageController.prototype.refresh = function() {
 		var self = this;
 		if (this.propertiesPanel.element.type === 'processDefinition'
 				|| this.propertiesPanel.element.type === 'process') {
@@ -67,7 +67,7 @@
 	/**
 	 * 
 	 */
-	ProcessAuthorizationPageController.prototype.populateParticipants = function() {
+	AuthorizationPageController.prototype.populateParticipants = function() {
 		this.allParticipants = [];
 		var self = this;
 		jQuery.each(this.model.participants, function(_, participant) {
@@ -101,7 +101,7 @@
 	/**
 	 * 
 	 */
-	ProcessAuthorizationPageController.prototype.addParticipantsToPermissions = function() {
+	AuthorizationPageController.prototype.addParticipantsToPermissions = function() {
 		var self = this;
 		var selectedParticipants = this.getSelectedParticipants();
 		var nochanges = true;
@@ -160,7 +160,7 @@
 	/**
 	 * 
 	 */
-	ProcessAuthorizationPageController.prototype.addAllParticipantsToPermissions = function() {
+	AuthorizationPageController.prototype.addAllParticipantsToPermissions = function() {
 		var self = this;
 		jQuery.each(this.element.permissions, function(_, permission) {
 			if (permission.selected) {
@@ -176,7 +176,7 @@
 	/**
 	 * 
 	 */
-	ProcessAuthorizationPageController.prototype.restorePermissionDefaults = function() {
+	AuthorizationPageController.prototype.restorePermissionDefaults = function() {
 		var self = this;
 		jQuery.each(this.element.permissions, function(_, permission) {
 			if (permission.selected) {
@@ -192,7 +192,7 @@
 	/**
 	 * 
 	 */
-	ProcessAuthorizationPageController.prototype.removeParticipant = function(
+	AuthorizationPageController.prototype.removeParticipant = function(
 			permissionId, participantFullId) {
 		var self = this;
 
@@ -207,7 +207,7 @@
 	/**
 	 * 
 	 */
-	ProcessAuthorizationPageController.prototype.getSelectedPermissions = function() {
+	AuthorizationPageController.prototype.getSelectedPermissions = function() {
 		var selectedPermissions = [];
 		jQuery.each(this.element.permissions, function(_, permission) {
 			if (permission.selected) {
@@ -221,7 +221,7 @@
 	/**
 	 * 
 	 */
-	ProcessAuthorizationPageController.prototype.getSelectedParticipants = function() {
+	AuthorizationPageController.prototype.getSelectedParticipants = function() {
 		var selectedParticipants = [];
 		jQuery.each(this.allParticipants, function(_, participant) {
 			if (participant.selected) {
@@ -235,7 +235,7 @@
 	/**
 	 * TODO - move to service
 	 */
-	ProcessAuthorizationPageController.prototype.getParticipantDisplayName = function(
+	AuthorizationPageController.prototype.getParticipantDisplayName = function(
 			fullId) {
 		if (fullId) {
 			var m_model = this.propertiesPanel.getMModel();
@@ -247,7 +247,7 @@
 	/**
 	 * TODO - for now only single selection is supported
 	 */
-	ProcessAuthorizationPageController.prototype.togglePermissionSelection = function(
+	AuthorizationPageController.prototype.togglePermissionSelection = function(
 			permission) {
 		if (permission.selected) {
 			permission.selected = false;
@@ -267,14 +267,14 @@
 	/**
 	 * TODO - move to service
 	 */
-	ProcessAuthorizationPageController.prototype.toggleSelection = function(obj) {
+	AuthorizationPageController.prototype.toggleSelection = function(obj) {
 		obj.selected = (obj && obj.selected) ? false : true;
 	};
 
 	/**
 	 * 
 	 */
-	ProcessAuthorizationPageController.prototype.addToSelectionsCache = function(
+	AuthorizationPageController.prototype.addToSelectionsCache = function(
 			permissionId) {
 		this.selectedPermissionsCache.push(permissionId);
 	}
@@ -282,7 +282,7 @@
 	/**
 	 * 
 	 */
-	ProcessAuthorizationPageController.prototype.removeFromSelectionsCache = function(
+	AuthorizationPageController.prototype.removeFromSelectionsCache = function(
 			permissionId) {
 		if (this.selectedPermissionsCache.indexOf(permissionId) >= 0) {
 			this.selectedPermissionsCache.splice(this.selectedPermissionsCache
@@ -293,7 +293,7 @@
 	/**
 	 * 
 	 */
-	ProcessAuthorizationPageController.prototype.applyCachedSelections = function() {
+	AuthorizationPageController.prototype.applyCachedSelections = function() {
 		var self = this;
 		jQuery.each(this.element.permissions, function(_, permission) {
 			if (self.selectedPermissionsCache.indexOf(permission.id) >= 0) {
@@ -307,7 +307,7 @@
 	/**
 	 * 
 	 */
-	ProcessAuthorizationPageController.prototype.resetParticipantSelection = function() {
+	AuthorizationPageController.prototype.resetParticipantSelection = function() {
 		jQuery.each(this.allParticipants, function(_, participant) {
 			participant.selected = false;
 		});

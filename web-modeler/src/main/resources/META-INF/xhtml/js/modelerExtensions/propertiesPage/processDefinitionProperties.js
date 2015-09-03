@@ -47,7 +47,7 @@ define(
 							id : "processAuthorizationsPropertiesPage",
 							provider : m_propertiesPageProvider,
 							visibility : "always",
-							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/processAuthorizationsPage.html",
+							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/authorizationsPropertiesPage.html",
 							imageUrl : "plugins/views-common/images/icons/key.png",
 							title : m_i18nUtils.getProperty("modeler.common.authorization"),
 							html5 : true
