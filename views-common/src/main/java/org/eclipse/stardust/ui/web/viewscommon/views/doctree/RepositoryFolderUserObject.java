@@ -432,6 +432,7 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
       {
          Map<String, Object> params = CollectionUtils.newMap();
          params.put("folderId", getFolder().getPath());
+         params.put("folderName", getFolder().getName());
 
          String viewKey;
          try

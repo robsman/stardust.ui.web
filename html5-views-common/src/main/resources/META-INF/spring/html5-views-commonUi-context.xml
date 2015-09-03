@@ -18,7 +18,12 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 
 		<ippui:viewsExtension>
 			<ippui:view name="correspondencePanel"
-				include="/plugins/html5-views-common/html5/partials/views/correspondenceView.html" />
+				include="/plugins/html5-views-common/html5/partials/views/correspondenceView.html">
+			<ippui:preferences>
+				<ippui:preferencePage name="icon"
+					include="/plugins/views-common/images/icons/email_go.png" />
+			</ippui:preferences>
+			</ippui:view>
 		</ippui:viewsExtension>
 	</ippui:perspectiveExtension>
 </beans>
