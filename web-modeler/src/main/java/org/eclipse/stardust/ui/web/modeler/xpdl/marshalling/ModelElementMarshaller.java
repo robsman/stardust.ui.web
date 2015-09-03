@@ -938,7 +938,6 @@ public class ModelElementMarshaller implements ModelMarshaller
          }
          else
          {
-            boolean isSubProcess = false;
             activityJson.addProperty(ModelerConstants.TYPE_PROPERTY,
                   ModelerConstants.ACTIVITY_KEY);
 
@@ -951,7 +950,6 @@ public class ModelElementMarshaller implements ModelMarshaller
             }
             else
             {
-               isSubProcess = true;
                activityJson.addProperty(ModelerConstants.ACTIVITY_TYPE,
                      activity.getImplementation().getLiteral());
             }
@@ -1393,6 +1391,10 @@ public class ModelElementMarshaller implements ModelMarshaller
                else
                {
                   ApplicationTypeType applicationType = application.getType();
+                  if (applicationType == null) 
+                  {
+                     break;
+                  }
                   String typeId = applicationType.getId();
 
                   // TODO check if it's ok to set task type as service task if none of the
@@ -4283,20 +4285,6 @@ public class ModelElementMarshaller implements ModelMarshaller
          modelBuilderFacade = new ModelBuilderFacade(modelingSession.modelManagementStrategy());
       }
       return modelBuilderFacade;
-   }
-
-   /**
-    * @param data
-    * @param model
-    * @param jsonObj
-    */
-   private void setDataFullID(JsonObject jsonObj, ModelType model, DataType data)
-   {
-      String fullID = getDataFullID(model, data);
-      if (null != fullID)
-      {
-         jsonObj.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, fullID);
-      }
    }
 
    /**
