@@ -29,10 +29,10 @@
     _sdFolderService = sdFolderService;
 
     this.correspondenceTypes = [{
-		label : ctrl.i18n("views-common-messages.views-correspondenceView-details-type-email"),
+		label : this.i18n("views-common-messages.views-correspondenceView-details-type-email"),
 		id : 'email'
 	}, {
-		label :  ctrl.i18n("views-common-messages.views-correspondenceView-details-type-print"),
+		label :  this.i18n("views-common-messages.views-correspondenceView-details-type-print"),
 		id : 'print'
 	}];
 
