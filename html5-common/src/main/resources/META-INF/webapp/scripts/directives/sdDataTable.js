@@ -872,7 +872,7 @@
 						"sNext": "<i class='pi pi-step-forward-one dataTables_paginate_icon'></i>",
 						"sLast": "<i class='pi pi-step-forward dataTables_paginate_icon'></i>"
 					},
-					 "sEmptyTable": sgI18nService.translate('portal-common-messages.common-genericDataTable-noRecordsFoundLabel')
+ 					"sEmptyTable": sgI18nService.translate('portal-common-messages.common-genericDataTable-noRecordsFoundLabel')
 			};
 			
 			dtOptions.aoColumns = dtColumns;
@@ -929,6 +929,20 @@
 
 			try {
 				theDataTable = theTable.DataTable(dtOptions);
+
+				// Table will be refreshed again after initialization is complete, so hide some information
+
+				// Hide No Records Found Row, there will be only one row, indicating no records found
+				showElement(theTable.find('> tbody > tr'), false);
+
+				// Hide Pagination Info
+				var dataTablesInfo = angular.element(theTable.parent()).find('.dataTables_info');
+				showElement(dataTablesInfo, false);
+
+				// Show table and toolbar, this was hidden while processing raw markup in processRawMarkup()
+				showElement(theTable, true);
+				showElement(theToolbar, true);
+
 				buildDataTableCompleted();
 			} catch (e) {
 				trace.error(theTableId + ': Error occurred while using Datatables library', e);
@@ -1199,6 +1213,19 @@
 			var ret = {
 				"sEcho" : dataMap['sEcho']
 			};
+			
+			if (!initialized) {
+				// Return empty data, table will be refreshed after initialization is complete.
+				// At that time return actual data, this way it avoids duplicate requests to load 1st page.
+
+				ret.iTotalRecords = 0;
+				ret.iTotalDisplayRecords = 0;
+				ret.aaData = [];
+
+				callback(ret);
+
+				return;
+			}
 
 			var params = {skip : dataMap['iDisplayStart'], pageSize : dataMap['iDisplayLength']};
 
@@ -1510,25 +1537,21 @@
 			}
 
 			if(!initialized) {
-				// Show the element, as it's ready to be visible
-				showElement(element, true);
-				if (theToolbar) {
-					showElement(theToolbar, true);
-				}
-
 				enableRowSelection();
 
 				$timeout(function() {
-					reorderColumns(null, null, false);
+					reorderColumns(null, null);
 					doInitialSelection();
-					
 					exposeScopeInfo();
 				}, 0, false);
 
 				initialized = true;
 			} else {
 				clearState();
-				showElement(theTable, true);
+
+				// Show Pagination Info
+				var dataTablesInfo = angular.element(theTable.parent()).find('.dataTables_info');
+				showElement(dataTablesInfo, true);
 			}
 
 			sdUtilService.safeApply(elemScope);
@@ -1660,7 +1683,7 @@
 		/*
 		 * 
 		 */
-		function reorderColumns(pScope, preview, skipVisibility) {
+		function reorderColumns(pScope, preview) {
 			if (!enableColumnSelector) {
 				// Draw is required here for angular markup work properly!
 				// If this is not done then colData is not available for render templates on first pass (1st page)
@@ -1793,9 +1816,6 @@
 					}
 				});
 
-				if (!skipVisibility) {
-					showElement(theTable, false);
-				}
 				theDataTable.fnDraw(false);
 
 				// Fire Event
