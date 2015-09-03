@@ -33,6 +33,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	}
 
 	var piOid = null; 
+	var _scope = null;
 
 	/*
 	 * 
@@ -48,7 +49,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		_http = $http;
 		_parse = $parse;
 		_sdViewUtilService = sdViewUtilService;
-
+		_scope = $scope;
 		this.intialize($scope);
 		this.exposeApis($scope);
 	}
@@ -57,7 +58,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	// initialize
 	CorrespondenceCtrl.prototype.initializeFileUploader = function() {
 		var ctrl = this;
-		
+
 		var fileselect = jQuery("#fileselect")[0],
 		filedrag = jQuery("#filedrag")[0];
 		// file select
@@ -74,17 +75,17 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 			ctrl.dragDropAvailable = true;
 		}
 	}
-	
+
 	/**
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.intialize = function($scope){
 		var ctrl = this;
 		this.correspondenceTypes = [{
-			label : 'Email',
+			label : ctrl.i18n("views-common-messages.views-correspondenceView-details-type-email"),
 			id : 'email'
 		}, {
-			label : 'Print',
+			label :  ctrl.i18n("views-common-messages.views-correspondenceView-details-type-print"),
 			id : 'print'
 		}];
 		this.selected = {
@@ -99,6 +100,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 				templateId : '',
 				attachments : [],
 				aiOid : '',
+				convertToPdf : false
 		};
 
 		this.dialog ={
@@ -141,7 +143,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 				}
 		};
 
-
+		this.convertToPdf = false;
 		this.addressTable = null;
 		this.selectedAddresses = [];
 		this.addressEntries= [];
@@ -152,10 +154,10 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 
 		this.interactionProvider = new bpm.portal.Interaction();
 		this.selected.aiOid = this.getActivityOid();
-		
+
 		this.selected = this.loadExistingState(this.selected);
 		this.getIntialFolderInformation(this.selected.aiOid);
-		
+
 		_sdCorrespondenceService.getProcessOidForActivity(ctrl.selected.aiOid).then(function(result){
 			ctrl.selected.piOid = result.piOid;
 			console.log(ctrl.selected.piOid);
@@ -164,118 +166,91 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 
 		});
 
-
 		this.buttons = {
-				confirm : this
-				.i18n('views-common-messages.common-OK', 'OK'),
-				cancel : this.i18n('views-common-messages.common-Cancel',
-				'Cancel')
-		}
-		// call initialization file
-		if (window.File && window.FileList && window.FileReader) {
-			//this.initializeFileUploader();
+				confirm : ctrl.i18n('views-common-messages.common-OK', 'OK'),
+				cancel : ctrl.i18n('views-common-messages.common-Cancel','Cancel')
 		}
 
-		CorrespondenceCtrl.prototype.addAttachment = function(file){
-			ctrl.selected.attachments.push(file)
-			console.log(ctrl.selected.attachments)
-		}; 
-		CorrespondenceCtrl.prototype.showTest = function(value){
-			ctrl.test =value
-		}; 
-		
-		CorrespondenceCtrl.prototype.handleDocumentUpload = function(item){ 
-			console.log("Document upload")
-			var fileFormat = item.name.split('.').pop();
-			
-			if(TEPMPLATING_SUPPORTED_FILE_FORMATS.indexOf(fileFormat) > -1){
-				//Run it through templating engine
-				console.log("File format supported")
-				ctrl.resolveTemplateAndAddDocument(item, fileFormat);
-			}else{
-				console.log("File format not supported")
-				ctrl.copyDocumentToCorrespondenceFolder(item);
-			}
-		};
-		
-		 this.installPanelCloseHandlers($scope);
+		this.installPanelCloseHandlers($scope);
 	};
-	
-	
-	  /*
-	   * 
-	   */
-	CorrespondenceCtrl.prototype.installPanelCloseHandlers = function($scope) {
-	    var ctrl = this;
 
-	    // Setup panel close handler
-	    window.performIppAiClosePanelCommand = function(commandId) {
-	        // Call function with appropriate 'this' context
-	        var args = [commandId, $scope];
-	        ctrl.performIppAiClosePanelCommand.apply(ctrl, args);
-	    }
-	  };
-	  
-	  
-	  /**
-	   * 
-	   */
-	  CorrespondenceCtrl.prototype.getIntialFolderInformation = function( aiOid){
-		  var ctrl = this;
-		  _sdCorrespondenceService.getFolderInformationByActivityOid(aiOid).then(function(data){
-			  console.log("Return from getExistingFolderInformation using  ai oid"+aiOid)
-			  ctrl.parentFolderPath = data.path;
-			  ctrl.folderId= data.uuid;
-		  });
-	  }
-		
-	
-	
-	  /*
-	   * 
-	   */
-	CorrespondenceCtrl.prototype.performIppAiClosePanelCommand = function(commandId, $scope) {
-	    var ctrl = this;
-	    var postData = preparePostData(ctrl.selected);
-	    this.interactionProvider.saveData(null, postData);
-	    parent.InfinityBpm.ProcessPortal.confirmCloseCommandFromExternalWebApp(commandId);
-	  }
-	
+
+	/*
+	 * 
+	 */
+	CorrespondenceCtrl.prototype.installPanelCloseHandlers = function($scope) {
+		var ctrl = this;
+		// Setup panel close handler
+		window.performIppAiClosePanelCommand = function(commandId) {
+			// Call function with appropriate 'this' context
+			ctrl.performIppAiClosePanelCommand(commandId);
+		}
+	};
+
+
+	/**
+	 * 
+	 */
+	CorrespondenceCtrl.prototype.getIntialFolderInformation = function( aiOid){
+		var ctrl = this;
+		_sdCorrespondenceService.getFolderInformationByActivityOid(aiOid).then(function(data){
+			console.log("Return from getExistingFolderInformation using  ai oid"+aiOid)
+			ctrl.parentFolderPath = data.path;
+			ctrl.folderId= data.uuid;
+		});
+	}
+
+
+
+	/*
+	 * 
+	 */
+	CorrespondenceCtrl.prototype.performIppAiClosePanelCommand = function(commandId) {
+		try{
+			var postData = preparePostData(this.selected);
+			console.log("Data for post")
+			console.log(postData)
+			this.interactionProvider.saveData(null, postData);
+			parent.InfinityBpm.ProcessPortal.confirmCloseCommandFromExternalWebApp(commandId);
+		}catch(e){
+			console.log("Exception when performing Close panel command.");
+			console.log(e)
+		}
+	}
+
 	/**
 	 * 
 	 */
 	function preparePostData(uiData) {
-		
-		
+
+
 		var postData = {
 				"CORRESPONDENCE_REQUEST" : {
 					"Type" : _filter('uppercase')(uiData.type),
 					"ProcessInstanceOID" : uiData.piOid,
 					"Subject" :uiData.subject,
-					"MessageBody" : uiData.content,
+					"MessageBody" : uiData.content
 				}
 		};
-		
+
 		var to = formatOutDataAddress(uiData.to);
 		if(to && to.length > 0) {
 			postData.CORRESPONDENCE_REQUEST.To = to
 		}
-		
+
 		var bcc = formatOutDataAddress(uiData.bcc);
 		if(bcc && bcc.length > 0) {
 			postData.CORRESPONDENCE_REQUEST.BCC = bcc
 		}
-		
+
 		var cc = formatOutDataAddress(uiData.cc);
 		if(cc && cc.length > 0) {
 			postData.CORRESPONDENCE_REQUEST.CC = cc
 		}
-		
-		var attachments = formatOutDataAttachments(uiData.attachments);
-		if(attachments && attachments.length > 0) {
-			postData.CORRESPONDENCE_REQUEST.Attachments = attachments
+		if(uiData.attachments && uiData.attachments.length > 0){
+			var formated_attachments = formatOutDataAttachments(uiData.attachments);
+			postData.CORRESPONDENCE_REQUEST.Attachments = formated_attachments
 		}
-
 		return postData;
 	}
 
@@ -290,15 +265,15 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		uiData.content = data.MessageBody.__text;
 		uiData.subject = data.Subject.__text;
 		uiData.attachments =formatInDataAttachments(data.Attachments_asArray);
-		
+
 		if(uiData.bcc ){
 			uiData.showBcc = uiData.bcc.length > 0
 		}
-		
+
 		if(uiData.cc ){
 			uiData.showCc =uiData.cc.length > 0
 		}
-		
+
 		return uiData;
 	}
 
@@ -310,7 +285,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		angular.forEach(addresses,function(data){
 			if(data.Address && data.Address.length > 1) {
 				var type = "email";
-				if(data.IsFax) {
+				if(data.IsFax == "true") {
 					type = "fax";
 				}
 				outAddresses.push( {
@@ -320,7 +295,6 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 				});
 			}
 		});
-		
 		return outAddresses;
 	}
 
@@ -336,39 +310,42 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 				IsFax  : data.type != 'email'
 			})
 		});
-		
+
 		return outAddresses;
 	}
-	
+
 	/**
 	 * 
 	 */
 	function formatInDataAttachments(attachments){
 		var outAttachments = []; 
 		angular.forEach(attachments,function(data){
-			if(data.DocumentId && data.DocumentId.length > 1) {
+			if(data.Name && data.Name.length > 1) {
 				outAttachments.push({
-					path : data.DocumentId,
-					uuid :  data.DocumentId,
-					templateDocuemntId : data.TemplateDocumentId,
-					name : data.Name ? data.Name : "sample"
+					documentId : data.DocumentId,
+					documentId :  data.DocumentId,
+					templateDocumentId : data.TemplateDocumentId,
+					name : data.Name ? data.Name : "sample",
+							convertToPdf:data.ConvertToPdf
 				})
 			}
 		});
 		return outAttachments;
 	}
-	
+
 	/**
 	 * 
 	 */
 	function formatOutDataAttachments(attachments){
+		console.log("Printing attachments");
 		var outAttachments = []; 
 		angular.forEach(attachments,function(data){
-			var docid = data.path ? data.path : data.uuid;
+			var templateDocumentId = data.templateDocumentId ?  data.templateDocumentId : data.documentId;
 			outAttachments.push({
-				DocumentId : docid,
-				TemplateDocumentId :  data.templateDocuemntId,
-				Name : data.name
+				DocumentId : data.documentId,
+				TemplateDocumentId :templateDocumentId,
+				Name : data.name,
+				ConvertToPdf :data.convertToPdf ? true : false 
 			});
 		});
 		return outAttachments;
@@ -380,24 +357,28 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	CorrespondenceCtrl.prototype.copyDocumentToCorrespondenceFolder = function( item ){ 
 		var ctrl = this;
 		_sdCorrespondenceService.copyDocumentToCorrespondenceFolder(item.path,ctrl.parentFolderPath).then(function(result){
-			result.templateDocumentId = item.path;
-			ctrl.addAttachment(result);
+			//Converting data to standard format
+			ctrl.addAttachment({
+				documentId : result.path,
+				templateDocumentId : result.path,
+				name : result.name,
+				convertToPdf : false
+			});
 		});
-	}
-	
-	
+	};
+
+
 	/**
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.resolveTemplateAndAddDocument = function( item ){ 
 		var ctrl = this;
-		//TODO change to pass what is requried
-		_sdCorrespondenceService.resolveAttachmentTemplate( item, ctrl.selected.piOid, ctrl.parentFolderPath).then(function(result){
+		item.convertToPdf = ctrl.convertToPdf;
+		_sdCorrespondenceService.resolveAttachmentTemplate( item, ctrl.selected.piOid, ctrl.parentFolderPath).then(function(result) {
 			console.log("Return Data from Resolve Template" );
-			console.log(result);
-			ctrl.addAttachment(item);
+			ctrl.addAttachment(result);
 		});
-	}
+	};
 
 	/**
 	 * 
@@ -406,74 +387,89 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 
 		var ctrl = this;
 
-		CorrespondenceCtrl.prototype.loadAttachments = loadAttachments
-		CorrespondenceCtrl.prototype.removeAttachment= removeAttachment;
-
 
 		ctrl.getScope= function(){
 			return $scope;
 		}
 
-		CorrespondenceCtrl.prototype.addToUploadQ = addFilesToUploadQ;
+		CorrespondenceCtrl.prototype.addAttachment = function(file){
+			ctrl.selected.attachments.push(file);
+		}; 
+		CorrespondenceCtrl.prototype.showTest = function(value){
+			ctrl.test =value
+		}; 
 
-	}
+		CorrespondenceCtrl.prototype.handleDocumentUpload = function(item){ 
+			console.log("Document upload")
+			var fileFormat = item.name.split('.').pop();
+
+			if(TEPMPLATING_SUPPORTED_FILE_FORMATS.indexOf(fileFormat) > -1){
+				//Run it through templating engine
+				console.log("File format supported")
+				ctrl.resolveTemplateAndAddDocument(item);
+			}else{
+				console.log("File format not supported")
+				ctrl.copyDocumentToCorrespondenceFolder(item);
+			}
+		};
+
+	};
 
 	/**
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.loadExistingState = function( uiData ){
 		var inData =   this.interactionProvider.fetchData( "CORRESPONDENCE_REQUEST");
-		if(inData.CORRESPONDENCE_REQUEST) {
+		if(inData && inData.CORRESPONDENCE_REQUEST) {
 			uiData = prepareUiData(inData.CORRESPONDENCE_REQUEST, uiData);
 		}
 		return uiData;
 	};
-	
+
 	function populateCorrespondenceMetaData(metaData, documents){
-		
+
 		if(metaData.to || metaData.bcc || metaData.cc) {
 			type = 'email'
 		}else{
 			type = "print";
 		}
-		
+
 		var uiData =  {
-			type  : type, // print / email
-			to: metaData.to,
-			bcc:metaData.bcc,
-			cc:metaData.cc,
-			content : metaData.content,
-			subject : metaData.subject,
-			templateId : '',
-			attachments : documents,
-			aiOid : '',
-			showBcc : metaData.bcc ? metaData.bcc.length > 0 : false,
-			showCc :   metaData.cc ? metaData.cc.length > 0 : false
+				type  : type, // print / email
+				to: metaData.to,
+				bcc:metaData.bcc,
+				cc:metaData.cc,
+				content : metaData.content,
+				subject : metaData.subject,
+				templateId : '',
+				attachments : documents,
+				aiOid : '',
+				showBcc : metaData.bcc ? metaData.bcc.length > 0 : false,
+						showCc :   metaData.cc ? metaData.cc.length > 0 : false
 		}
 		console.log(uiData)
 		return uiData;
 	}
-	
+
 	/**
 	 * 
 	 */
 	function uploadLocalFilesToServer(files) {
-		
 		_sdCorrespondenceService.uploadAttachments(files, piOid).then(function(data){
 			console.log("File upload response");
 			console.log(data);
-			
+
 			if(data.documents.length > 0) {
 				angular.forEach(data.documents,function(item){
 					CorrespondenceCtrl.prototype.handleDocumentUpload(item);
 				});
+			}else {
+				var html = "";
+				angular.forEach(data.failures,function(response){
+					html = html+ "<div>"+response.message +"</div>";
+				});
+				_sdDialogService.error(_scope, html,{} );
 			}
-
-			if(data.failure) {
-				console.log("Failed in uploadig documents")
-				console.log(data.failure)
-			}
-
 			clearUploadQ();
 		});
 	}
@@ -482,8 +478,8 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.getActivityOid = function(){ 
-			var uri = this.interactionProvider.getInteractionUri();
-			/*if(!uri){
+		var uri = this.interactionProvider.getInteractionUri();
+		/*if(!uri){
 				return 1208;
 			}*/
 		var endcoded = uri.split('/').pop();
@@ -494,10 +490,10 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		var activityInstanceOid = decodedParts[1];
 		console.log('Activity Oid  *****: '+activityInstanceOid)
 		return activityInstanceOid;
-		
+
 	}
 
-	function addFilesToUploadQ(files) {
+	CorrespondenceCtrl.prototype.addFilesToUploadQ = function (files) {
 		var ctrl = this;
 
 		console.log('addFilesToUploadQ');
@@ -544,7 +540,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		// cancel event and hover styling
 		FileDragHover(e);
 		var files = e.target.files || e.dataTransfer.files;
-		CorrespondenceCtrl.prototype.addToUploadQ(files);
+		CorrespondenceCtrl.prototype.addFilesToUploadQ(files);
 		console.log(files)
 	}
 
@@ -557,7 +553,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		FileDragHover(e);
 		var files = e.target.files || e.dataTransfer.files;
 		console.log(files);
-		CorrespondenceCtrl.prototype.addToUploadQ(files);
+		CorrespondenceCtrl.prototype.addFilesToUploadQ(files);
 	}
 
 
@@ -651,10 +647,10 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	 */
 	CorrespondenceCtrl.prototype.addressIconMapper = function(item, index) {
 		var tagClass = "glyphicon glyphicon-envelope"
-		
-		if(item.type == 'fax'){
-			tagClass ="fa fa-fax";
-		}
+
+			if(item.type == 'fax'){
+				tagClass ="fa fa-fax";
+			}
 		return tagClass;
 	};
 
@@ -721,34 +717,34 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		ctrl.dialog.filter.address.value = "";
 		var title = "Select Recipients";
 		var html = '<div style="padding-bottom:10px;">'+ 
-		'<span ng-repeat = "opt in ctrl.dialog.selectedAddresses" class="spacing-right "> '+
-		'<span class="selected_address" ng-click="ctrl.removeDialogAddress(opt)">'+
-		'<i class="glyphicon glyphicon-envelope spacing-right"></i> {{opt.name}}'+
-		'<i class="glyphicon glyphicon-remove"></i>'+
-		'</span>'+
-		'</span >'+
-		'</div>'+
-		'<i class="glyphicon glyphicon-search"> </i>	<input type="text"  class="spacing-right"  ng-model="ctrl.dialog.filter.address.value" ng-change="ctrl.addressTable.refresh();"/>'+
-		'<input class="correspondence_addressBook_fax_control" type="checkbox" ng-model="ctrl.dialog.filter.address.showFax" ng-change="ctrl.addressTable.refresh();"/>'+
-		'<span class="iceOutLbl">Fax </span>'+
-		'<div class="correspondence_addressBook_conatiner">'+
-		'<table sd-data-table="ctrl.addressTable" sda-selection="ctrl.selectedAddresses" '+
-		' sd-data="ctrl.getAvailableAddresses();" sda-mode="local" '+
-		' sda-selectable="multiple" sda-no-pagination="true"  sda-page-size="{{ctrl.addressEnteries.length}}"  sda-ready="ctrl.addressReady" sda-on-select="ctrl.onAddressSelection(info);"> '+
-		' <thead>'+
-		'<tr>'+
-		'<th sda-label="Value"></th>'+
-		'<th sda-label="Name"></th>'+
-		'</tr>'+
-		' </thead>'+
-		' <tbody>'+
-		'<tr>'+
-		'<td>{{rowData.value}}</td>'+
-		'<td>{{rowData.name}}</td>'+
-		'</tr>'+
-		' </tbody>'+
-		' </table>'+
-		'</div> ';
+						'<span ng-repeat = "opt in ctrl.dialog.selectedAddresses" class="spacing-right "> '+
+							'<span class="selected_address" ng-click="ctrl.removeDialogAddress(opt)">'+
+								'<i class="glyphicon glyphicon-envelope spacing-right"></i> {{opt.name}}'+
+								'<i class="glyphicon glyphicon-remove"></i>'+
+							'</span>'+
+						'</span >'+
+						'</div>'+
+						'<i class="glyphicon glyphicon-search"> </i>	<input type="text"  class="spacing-right"  ng-model="ctrl.dialog.filter.address.value" ng-change="ctrl.addressTable.refresh();"/>'+
+						'<input class="correspondence_addressBook_fax_control" type="checkbox" ng-model="ctrl.dialog.filter.address.showFax" ng-change="ctrl.addressTable.refresh();"/>'+
+						'<span class="iceOutLbl">Fax </span>'+
+						'<div class="correspondence_addressBook_conatiner">'+
+						'<table sd-data-table="ctrl.addressTable" sda-selection="ctrl.selectedAddresses" '+
+						' sd-data="ctrl.getAvailableAddresses();" sda-mode="local" '+
+						' sda-selectable="multiple" sda-no-pagination="true"  sda-page-size="{{ctrl.addressEnteries.length}}"  sda-ready="ctrl.addressReady" sda-on-select="ctrl.onAddressSelection(info);"> '+
+							' <thead>'+
+								'<tr>'+
+								'<th sda-label="Value"></th>'+
+								'<th sda-label="Name"></th>'+
+								'</tr>'+
+							' </thead>'+
+							' <tbody>'+
+								'<tr>'+
+								'<td>{{rowData.value}}</td>'+
+								'<td>{{rowData.name}}</td>'+
+								'</tr>'+
+							' </tbody>'+
+						' </table>'+
+					'</div> ';
 
 		var options = {
 				title : title,
@@ -833,8 +829,8 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		var ctrl = this;
 		var api = ctrl.dialog.templateSelector.api;
 		console.log("Selected document")
-	   var selectedItem = 	api.getSelectedNodes()[0].valueItem;
-	
+		var selectedItem = 	api.getSelectedNodes()[0].valueItem;
+
 		ctrl.templateSelectorDialog.close();
 		_sdCorrespondenceService.resolveMessageTemplate( ctrl.selected.piOid, selectedItem.path).then(function(result) {
 			ctrl.oldMessage = result;
@@ -870,9 +866,9 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		var processApi = ctrl.dialog.attachmentSelector.api;
 		var messageTemplateApi = ctrl.dialog.templateSelector.api;
 		console.log("Selected attachments")
-		
+
 		var attachments = [];
-		
+
 		angular.forEach(processApi.getSelectedNodes(),function(node){
 			attachments.push(node.valueItem );
 		});
@@ -880,7 +876,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 			attachments.push(node.valueItem );
 		});
 		ctrl.attachmentSelectorDialog.close();
-		
+
 		angular.forEach(attachments,function(item){
 			CorrespondenceCtrl.prototype.handleDocumentUpload(item);
 		})
@@ -908,38 +904,48 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	/**
 	 * 
 	 */
-	function loadAttachments(attachment) {
+	CorrespondenceCtrl.prototype.loadAttachments = function(attachment) {
 		var ctrl = this;
-		//TODO Run this through the Templating API
 		ctrl.selected.attachments.push(attachment);
 	}
 
 	/**
 	 * 
 	 */
-	function removeAttachment(attachment) {
+	CorrespondenceCtrl.prototype.removeAttachment = function(attachment) {
 		var ctrl = this;
 		var index = ctrl.selected.attachments.indexOf(attachment);
-		_sdCorrespondenceService.removeAttachment(attachment.path).then(function(){
+		_sdCorrespondenceService.removeAttachment(attachment.documentId).then(function(){
 			console.log("Attchemnt removed successfull")
 			ctrl.selected.attachments.splice(index,1);
 		});
-		
+
 	}
-	
+
 	/**
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.openAttachment = function(attachment) {
-		var ctrl = this;
-		var documentId = attachment.uuid;
+		var documentId = attachment.documentId;
+		if(!documentId) {
+			documentId =  attachment.templateDocumentId;
+		}
 		var viewKey = 'documentOID=' + encodeURIComponent(documentId);
-		viewKey = window.btoa(viewKey);
 		var  parameters = {
 				"documentId" :  documentId
 		}
-		_sdViewUtilService.openView('documentView', viewKey,parameters, false);
-	}
+		var message = {
+				"type" : "OpenView",
+				"data" : {
+					"viewId" : 'documentView',
+					"viewKey" : window.btoa(viewKey),
+					"params" : parameters,
+					"nested" : true
+				}
+		};
+
+		parent.window.postMessage(JSON.stringify(message), "*");
+	};
 
 	/**
 	 * 
@@ -982,11 +988,19 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 			//TODO change this to use the identifier
 			if(ctrl.selected.content.indexOf('${') > -1) {
 				_sdCorrespondenceService.resolveMessageContent( ctrl.selected.piOid, ctrl.selected.content).then(function(result) {
-				  ctrl.selected.content = result;
+					ctrl.selected.content = result;
 				});
 			}
 		}
 		this.oldMessage = this.selected.content;
+	}
+	
+	/**
+	 * 
+	 */
+	CorrespondenceCtrl.prototype.i18n = function(key){
+		var ctrl = this;
+		return parent.i18n.translate(key)
 	}
 
 	//Dependency injection array for our controller.

@@ -2,7 +2,7 @@
 	<table class="correspondence_container">
 		<tr class="correspondence_section">
 			<td class="correspondence_left_section">
-				<span class="iceOutLbl">Type : </span>
+				<span class="iceOutLbl">{{ctrl.i18n('views-common-messages.views-correspondenceView-details-type')}}: </span>
 			</td>
 			<td class="correspondence_right_section">	
 				<select ng-model="ctrl.selected.type" class="correspondence_type_selector" ng-disabled="ctrl.readOnly"
@@ -13,8 +13,8 @@
 		</tr>
 		<tr class="correspondence_section" ng-if="ctrl.selected.type == 'email' ">
 			<td class="correspondence_left_section"> 
-				<a class="iceOutLbl" href="#" ng-click="ctrl.openAddressSelector('TO');" ng-if="!ctrl.readOnly"> To : </a>
-				<span class="iceOutLbl" ng-if="ctrl.readOnly"> To : </span>
+				<a class="iceOutLbl" href="#" ng-click="ctrl.openAddressSelector('TO');" ng-if="!ctrl.readOnly"> {{ctrl.i18n('views-common-messages.views-correspondenceView-details-to')}} : </a>
+				<span class="iceOutLbl" ng-if="ctrl.readOnly">{{ ctrl.i18n('views-common-messages.views-correspondenceView-details-to')}} : </span>
 			</td>
 			<td class="correspondence_right_section">	
 				<div class="address-book-ac-container">
@@ -34,8 +34,8 @@
 		                            sda-read-only ="ctrl.readOnly">
 	                  </div>
 	                  <div ng-if="!ctrl.readOnly">
-		                     <a ng-show="!ctrl.selected.showCc" class="iceOutLbl correspondence_to_bcc_links" ng-click ="ctrl.showCc();"  href="#">Cc</a>
-		                     <a ng-show="!ctrl.selected.showBcc" class="iceOutLbl correspondence_to_bcc_links" ng-click ="ctrl.showBcc();"  href="#">Bcc</a> 
+		                     <a ng-show="!ctrl.selected.showCc" class="iceOutLbl correspondence_to_bcc_links" ng-click ="ctrl.showCc();"  href="#">{{ctrl.i18n('views-common-messages.views-correspondenceView-details-cc')}}</a>
+		                     <a ng-show="!ctrl.selected.showBcc" class="iceOutLbl correspondence_to_bcc_links" ng-click ="ctrl.showBcc();"  href="#">{{ctrl.i18n('views-common-messages.views-correspondenceView-details-bcc')}}</a> 
 	             	   </div>
                     </div> 
 			</td>
@@ -43,8 +43,8 @@
 		
 		<tr class="correspondence_section" ng-if="ctrl.selected.type == 'email'&& ctrl.selected.showCc">
 			<td class="correspondence_left_section"> 
-				<a class="iceOutLbl" href="#" ng-click="ctrl.openAddressSelector('CC');"  ng-if="!ctrl.readOnly"> Cc : </a>
-				<span class="iceOutLbl" ng-if="ctrl.readOnly"> Cc : </span>
+				<a class="iceOutLbl" href="#" ng-click="ctrl.openAddressSelector('CC');"  ng-if="!ctrl.readOnly">{{ctrl.i18n('views-common-messages.views-correspondenceView-details-cc')}} : </a>
+				<span class="iceOutLbl" ng-if="ctrl.readOnly"> {{ctrl.i18n('views-common-messages.views-correspondenceView-details-cc')}} :  </span>
 			</td>
 			<td class="correspondence_right_section">	
 				<div class="address-book-field-container">	
@@ -70,8 +70,8 @@
 		
 	    <tr class="correspondence_section" ng-if="ctrl.selected.type == 'email' && ctrl.selected.showBcc">
 			<td class="correspondence_left_section"> 
-				<a class="iceOutLbl" href="#" ng-click="ctrl.openAddressSelector('BCC');" ng-if="!ctrl.readOnly"> Bcc : </a>
-				<span class="iceOutLbl" ng-if="ctrl.readOnly"> Bcc : </span>
+				<a class="iceOutLbl" href="#" ng-click="ctrl.openAddressSelector('BCC');" ng-if="!ctrl.readOnly">{{ctrl.i18n('views-common-messages.views-correspondenceView-details-bcc')}} :  </a>
+				<span class="iceOutLbl" ng-if="ctrl.readOnly">{{ctrl.i18n('views-common-messages.views-correspondenceView-details-bcc')}} : </span>
 			</td>
 			<td class="correspondence_right_section">	
 				<div class="address-book-field-container">
@@ -97,7 +97,7 @@
 		
 		<tr class="correspondence_section" ng-if="ctrl.selected.type == 'email'">
 			<td class="correspondence_left_section"> 
-				<span class="iceOutLbl">Subject : </span>
+				<span class="iceOutLbl">{{ctrl.i18n('views-common-messages.views.correspondenceView-details-subject')}} :  </span>
 			</td>
 			<td class="correspondence_right_section">	
 				<input class="correspondence_subject" ng-model="ctrl.selected.subject" type="text" ng-disabled="ctrl.readOnly"/>
@@ -105,15 +105,14 @@
 		</tr>
 		<tr class="correspondence_section">
 			<td class="correspondence_left_section"> 
-				<a class="iceOutLbl" href="#" ng-click="ctrl.openMessageTemplateSelector();"  ng-if="!ctrl.readOnly"> Message : </a>
-				<span class="iceOutLbl" ng-if="ctrl.readOnly"> Message : </span>
+				<a class="iceOutLbl" href="#" ng-click="ctrl.openMessageTemplateSelector();"  ng-if="!ctrl.readOnly">{{ctrl.i18n('views-common-messages.views.correspondenceView-details-message')}} : </a>
+				<span class="iceOutLbl" ng-if="ctrl.readOnly">{{ctrl.i18n('views-common-messages.views.correspondenceView-details-message')}} : </span>
 			</td>
 			<td class="correspondence_right_section">	
 				<textarea id="messageEditor" data-ng-model="ctrl.selected.content"
 				 sd-rich-text-editor ng-disabled="ctrl.readOnly" sda-readOnly="{{ctrl.readOnly}}" sda-on-blur="ctrl.onMessageChange();"> </textarea>
 			</td>
 		</tr>
-		
 		<tr class="correspondence_section">
 			<td class="correspondence_left_section"> 
 			</td>
@@ -121,10 +120,10 @@
 				<div style="float:right;padding-top: 10px;">
 				  	<div ng-hide="ctrl.readOnly">
 					  	<button  class="button-link tbl-toolbar-item tbl-tool-link spacing-right" ng-click="ctrl.openAttachmentSelector()">
-				 		  	 <i class="glyphicon glyphicon-paperclip icon-lg"></i> 
+				 		  	 <i class="glyphicon glyphicon-paperclip icon-lg" title="{{ctrl.i18n('views-common-messages.views-correspondenceView-details-template-title')}}"></i> 
 					   </button>
-						<input class="correspondence_addressBook_fax_control" type="checkbox"/>
-						<span class="iceOutLbl">Convert to PDF </span>
+						<input class="correspondence_addressBook_fax_control" type="checkbox" ng-model="ctrl.convertToPdf"/>
+						<span class="iceOutLbl">{{ctrl.i18n('views-common-messages.views.correspondenceView-details-convertToPdf')}}</span>
 					</div>
 					<div  class="correspondence-file-uploader">
 							<div ng-repeat="att in ctrl.selected.attachments" ng-cloak
@@ -152,11 +151,11 @@
 									<div>
 										<!-- /	<label for="fileselect">Files to upload:</label>  -->
 										<label for="fileselect" class="correspondence_file_Selector">
-	     									<i class="fa fa-upload icon-2x " style="font-size: 2em"></i>
+	     									<i class="fa fa-upload icon-2x " style="font-size: 2em" title="{{ctrl.i18n('views-common-messages.views-correspondenceView-details-uploadAttachments')}}"></i>
 	  								  	</label>
 											<input type="file" id="fileselect" name="fileselect" multiple = "multiple" style="display:none"/>
-										<div  style="padding-left: 50px;" class="iceOutLbl">Upload Process Attachments </div>	
-											<div id="filedrag" >
+											<div  style="padding-left: 50px;" class="iceOutLbl">{{ctrl.i18n('views-common-messages.views-correspondenceView-details-uploadAttachments')}}</div>	
+											<div id="filedrag" > 
 											</div>
 									</div>
 								</fieldset>

@@ -11,7 +11,7 @@
  * @author Johnson.Quadras
  */
 define([],function(){
-	
+
 	/*
 	 * 
 	 */
@@ -23,14 +23,14 @@ define([],function(){
 			var url = sdUtilService.getBaseUrl() + "services/rest/portal/process-instances/"+piOid+"/address-book";
 			return $resource(url).query().$promise;
 		};
-		
+
 		/**
 		 * 
 		 */
 		this.getProcessOidForActivity = function (aiOid){
 			var deferred = $q.defer();
 			var url = sdUtilService.getBaseUrl() + "services/rest/portal/activity-instances/"+aiOid+"/correspondence-process-instance";
-			 $resource(url).get().$promise.then(function(result){
+			$resource(url).get().$promise.then(function(result){
 				deferred.resolve({piOid :result.oid })
 			})
 			return deferred.promise;
@@ -40,17 +40,17 @@ define([],function(){
 		 */
 		this.resolveMessageContent = function ( piOid, content){
 			var deferred = $q.defer();
-			
+
 			var url = sdUtilService.getBaseUrl() + "services/rest/templating";
 
 			var templateConfig = {
 					format : "text",
 					processOid : piOid,
 					template :   content
-				};
-			
+			};
+
 			console.log(templateConfig)
-			
+
 			var postPromise = $http.post(url, templateConfig, {
 				headers : {
 					'Content-type' : 'application/json'
@@ -58,7 +58,7 @@ define([],function(){
 			});
 			postPromise.success(function(data) {
 				console.log("Success in templating ")
-					console.log("Success")
+				console.log("Success")
 				deferred.resolve(data);
 			});
 			postPromise.error(function(response, status) {
@@ -67,21 +67,21 @@ define([],function(){
 			});
 			return deferred.promise;
 		};
-		
+
 		/**
 		 * 
 		 */
 		this.resolveMessageTemplate = function ( piOid, path){
 			var deferred = $q.defer();
-			
+
 			var url = sdUtilService.getBaseUrl() + "services/rest/templating";
 
 			var templateConfig = {
 					format : "text",
 					processOid : piOid,
 					templateUri : 'repository://'+ path
-				};
-			
+			};
+
 			var postPromise = $http.post(url, templateConfig, {
 				headers : {
 					'Content-type' : 'application/json'
@@ -102,17 +102,23 @@ define([],function(){
 		 */
 		this.resolveAttachmentTemplate = function (item, piOid, outputFolder) {
 			var deferred = $q.defer();
-			
+
 			var url = sdUtilService.getBaseUrl() + "services/rest/templating";
-			var format = item.path.split('.').pop();
-			
+			var extension = item.path.split('.').pop();
+			var format = 	getFormat(extension)
+			var fileName = item.name;
+			if(item.convertToPdf) {
+				fileName = fileName.split(".")[0]+".pdf"
+			}
+
 			var templateConfig = {
 					templateUri:  'repository://'+item.path,   
 					format : format, 
 					processOid : piOid,
-					output:{name: item.name, path: outputFolder}
-				};
-			
+					output:{name: fileName, path: outputFolder},
+					pdf :item.convertToPdf
+			};
+
 			var postPromise = $http.post(url, templateConfig, {
 				headers : {
 					'Content-type' : 'application/json'
@@ -120,24 +126,21 @@ define([],function(){
 			});
 			postPromise.success(function(result) {
 				console.log("Success in templating ")
-					console.log("Success")
 				deferred.resolve({
-					path : outputFolder + "/"+item.fileName,
-					uuid : result,
-					name : item.name,
-					contentType : item.contentType,
-					numPages : item.numPages,
-					templateDocumentId : item.path
+					documentId : outputFolder + "/"+fileName,
+					templateDocumentId : item.path,
+					convertToPdf : item.convertToPdf,
+					name : fileName
 				});
 			});
-			
+
 			postPromise.error(function(response, status) {
 				console.log("The request failed with response " + response
 						+ " and status code " + status);
 			});
 			return deferred.promise;
 		};
-		
+
 		/**
 		 * 
 		 */
@@ -145,14 +148,14 @@ define([],function(){
 			var url =  sdUtilService.getBaseUrl() +"services/rest/portal/activity-instances/"+aiOid+"/correspondence-out";
 			return $resource(url).get().$promise;
 		};
-		
+
 		/**
 		 * 
 		 */
 		this.copyDocumentToCorrespondenceFolder = function ( documentId, folderPath){ 
 			var restUrl = sdUtilService.getBaseUrl() +"services/rest/portal/documents/"+documentId+"/copy";
 			var requestObj = {
-				"parentFolderPath" : folderPath
+					"parentFolderPath" : folderPath
 			};
 			var document = $resource(restUrl, {}, {
 				copyToFolder : {
@@ -161,18 +164,18 @@ define([],function(){
 			});
 			return document.copyToFolder({}, requestObj).$promise;
 		};
-		
+
 		/**
 		 * 
 		 */
 		this.removeAttachment = function ( documentId){ 
 			var restUrl = sdUtilService.getBaseUrl() +"services/rest/portal/documents/"+documentId;
 			var attachment = $resource(restUrl, {},
-				{
+					{
 				remove : {
 					method : 'DELETE'
 				}
-			});
+					});
 			return attachment.remove({}, {}).$promise;
 		}
 		/**
@@ -185,7 +188,7 @@ define([],function(){
 			for (var i in files) {
 				formData.append("file", files[i]);
 			}	
-			
+
 			jQuery.ajax({
 				url:   sdUtilService.getBaseUrl() +'services/rest/portal/process-instances/'+piOid+'/documents/PROCESS_ATTACHMENTS',  
 				type: 'POST',
@@ -214,10 +217,25 @@ define([],function(){
 			return deferred.promise;
 		}
 	}
-	
+
+	/**
+	 * 
+	 */
+	function getFormat(extension) {
+		var format = extension;
+		if(extension =='txt'){
+			format = "text";
+		}else if( ['html','htm','HTM'].indexOf(extension) > -1 ){
+			format = "html";
+		}else if(['docx','DOCX'].indexOf(extension) > -1){
+			format = "docx";
+		}
+		return format;
+	}
+
 	//Dependency injection array for our controller.
 	CorrespondenceService.$inject = ['$resource','$q','$http','sdUtilService'];
-	
+
 	//Require capable return object to allow our angular code to be initialized
 	//from a require-js injection system.
 	return {
