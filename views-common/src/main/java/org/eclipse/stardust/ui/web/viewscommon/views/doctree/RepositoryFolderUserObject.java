@@ -526,17 +526,6 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
    /*
     * (non-Javadoc)
     * 
-    * @see org.eclipse.stardust.ui.web.viewscommon.views.doctree.RepositoryResourceUserObject#isSendFileAllowed()
-    */
-   @Override
-   public boolean isSendFileAllowed()
-   {
-      return false;
-   }
-
-   /*
-    * (non-Javadoc)
-    * 
     * @see
     * org.eclipse.stardust.ui.web.viewscommon.views.doctree.RepositoryResourceUserObject#sendFile()
     */

@@ -228,16 +228,6 @@
 									standAlone="false" />
 							</ice:menuItem>
 
-							<ice:menuItem id="sendFile"
-								icon="/plugins/views-common/images/icons/email_attach.png"
-								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.sendFile']}"
-								action="#{item.userObject.sendFile}"
-								disabled="#{!item.userObject.sendFileAllowed}"
-								rendered="#{item.userObject.leafNode}">
-								<pc:automationTag value="auto-COM-RepoTree-MenuDlg-SendFile"
-									standAlone="false" />
-							</ice:menuItem>
-
 							<ice:menuItem id="Refresh"
 								icon="/plugins/views-common/images/icons/arrow_refresh.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.refresh']}"

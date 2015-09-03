@@ -446,11 +446,6 @@ public abstract class RepositoryResourceUserObject extends IceUserObject
    public abstract void uploadFolder();
 
    /**
-    * Send File
-    */
-   public abstract void sendFile();
-
-   /**
     * Displays Version History
     */
    public abstract void versionHistory();
@@ -477,8 +472,6 @@ public abstract class RepositoryResourceUserObject extends IceUserObject
    public abstract boolean isRefreshable();
 
    public abstract boolean isCanCreateNote();
-
-   public abstract boolean isSendFileAllowed();
 
    public abstract void createNote();
 

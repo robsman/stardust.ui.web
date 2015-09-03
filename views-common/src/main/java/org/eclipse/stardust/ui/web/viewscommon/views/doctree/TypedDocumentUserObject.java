@@ -278,19 +278,6 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
       return null;
    }
 
-   @Override
-   public void sendFile()
-   {
-      Map<String, Object> params = CollectionUtils.newTreeMap();
-      if (null != typedDocument.getProcessInstance())
-      {
-         params.put("processInstanceOID", Long.toString(typedDocument.getProcessInstance().getOID()));
-      }
-      params.put("attachment", getDocument());
-      PortalApplication.getInstance().openViewById("correspondenceView", "DocumentID=" + getDocument().getId(), params,
-            null, true);
-   }
-
    public Document getDocument()
    {
       return (Document) this.getResource();
@@ -360,12 +347,6 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
    public boolean isCanCreateNote()
    {
       return false;
-   }
-
-   @Override
-   public boolean isSendFileAllowed()
-   {
-      return this.sendFileAllowed;
    }
 
    @Override

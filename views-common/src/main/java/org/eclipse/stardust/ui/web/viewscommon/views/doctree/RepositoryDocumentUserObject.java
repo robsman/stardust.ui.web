@@ -311,20 +311,6 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
       RepositoryUtility.refreshNode(this.wrapper);
    }
 
-   @Override
-   public void sendFile()
-   {
-      Map<String, Object> params = CollectionUtils.newTreeMap();
-      ProcessInstance processInstance = getProcessInstance();
-      if (null != processInstance)
-      {
-         params.put("processInstanceOID", Long.toString(processInstance.getOID()));
-      }
-      params.put("attachment", getDocument());
-      PortalApplication.getInstance().openViewById("correspondenceView", "DocumentID=" + getDocument().getId(),
-            params, null, true);
-   }
-
    public Document getDocument()
    {
       return (Document) this.getResource();
@@ -415,12 +401,6 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
    public void setSendFileAllowed(boolean sfa)
    {
       this.sendFileAllowed = sfa;
-   }
-
-   @Override
-   public boolean isSendFileAllowed()
-   {
-      return this.sendFileAllowed;
    }
 
    @Override
