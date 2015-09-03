@@ -8,40 +8,39 @@
 
 /**
  * @author Johnson.Quadras
+ * @author Yogesh.Manware
  */
 
 (function() {
   'use strict';
 
   angular.module("viewscommon-ui").controller('sdCorrespondenceViewCtrl',
-          ['$scope', '$q', '$parse', 'sdUtilService', 'sdFolderService', Controller]);
+          ['$scope', 'sdUtilService', 'sdFolderService', 'sdI18nService', Controller]);
 
-  var _parse = null;
   var _sdFolderService = null;
+  var _sdI18nService = null;
 
   /*
    * 
    */
-  function Controller($scope, $q, $parse, sdUtilService, sdFolderService) {
+  function Controller($scope, sdUtilService, sdFolderService, sdI18nService) {
     this.readOnly = true;
-
-    _parse = $parse;
+    _sdI18nService = sdI18nService;
     _sdFolderService = sdFolderService;
-    this.correspondenceTypes = [{
-      label: 'Email',
-      id: 'email'
-    }, {
-      label: 'Print',
-      id: 'print'
-    }];
 
-    this.documentParams = {
+    this.correspondenceTypes = [
+        {
+          label: _sdFolderService
+                  .translate('admin-portal-messages.views.correspondence.panel.general.defaultType.EmailFax'),
+          id: 'email'
+        },
+        {
+          label: _sdFolderService
+                  .translate('admin-portal-messages.views.correspondence.panel.general.defaultType.print'),
+          id: 'print'
+        }];
 
-    }
-
-    this.selected = {
-
-    };
+    this.selected = {};
 
     this.documentParams = {
       disableSaveAction: true
@@ -83,6 +82,13 @@
       console.log(data);
       ctrl.selected = populateCorrespondenceMetaData(data.correspondenceMetaDataDTO, data.documents)
     });
+  }
+
+  /**
+   * 
+   */
+  Controller.prototype.i18n = function(key) {
+    return _sdI18nService.translate(key);
   }
 
   function populateCorrespondenceMetaData(metaData, documents) {
@@ -136,7 +142,7 @@
           path: data.DocumentId,
           uuid: data.DocumentId,
           templateDocuemntId: data.TemplateDocumentId,
-          name: data.Name ? data.Name : "sample"
+          name: data.Name ? data.Name : "unknown"
         })
       }
     });
