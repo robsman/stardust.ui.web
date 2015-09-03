@@ -28,6 +28,7 @@
 		this.constants = sdModelerConstants;
 		this.selectedAuths = [];
 		this.element;
+		this.model;
 		this.selectedPermissionsCache = [];
 
 		$scope.$on('REFRESH_PROPERTIES_PANEL',
@@ -45,9 +46,15 @@
 	 */
 	ProcessAuthorizationPageController.prototype.refresh = function() {
 		var self = this;
-		if (!this.element || this.element != this.propertiesPanel.element) {
-			this.element = this.propertiesPanel.element;
-
+		if (this.propertiesPanel.element.type === 'processDefinition'
+				|| this.propertiesPanel.element.type === 'process') {
+			var elem = this.propertiesPanel.element;
+		} else {
+			var elem = this.propertiesPanel.element.modelElement;
+		}
+		if (!this.element || this.element != elem) {
+			this.element = elem;
+			this.model = this.propertiesPanel.getModel();
 			// Reset selected participants and authorizations
 			this.selectedAuths = [];
 			this.populateParticipants();
@@ -63,7 +70,7 @@
 	ProcessAuthorizationPageController.prototype.populateParticipants = function() {
 		this.allParticipants = [];
 		var self = this;
-		jQuery.each(this.element.model.participants, function(_, participant) {
+		jQuery.each(this.model.participants, function(_, participant) {
 			self.allParticipants.push({
 				modelName : participant.model.name,
 				name : participant.name,
@@ -75,7 +82,7 @@
 
 		var models = this.propertiesPanel.getMModel().getModels();
 		jQuery.each(models, function(id, model) {
-			if (model.id !== self.element.model.id) {
+			if (model.id !== self.model.id) {
 				jQuery.each(model.participants, function(_, participant) {
 					if (participant.id !== 'Administrator') {
 						self.allParticipants.push({
@@ -133,7 +140,7 @@
 										self.commandsController
 												.submitCommand(self.commandHelper
 														.createAddPermissionParticipantsCommand(
-																self.element.model.id,
+																self.model.id,
 																self.element.uuid,
 																{
 																	permissionID : permission.id,
@@ -158,7 +165,7 @@
 		jQuery.each(this.element.permissions, function(_, permission) {
 			if (permission.selected) {
 				self.commandsController.submitCommand(self.commandHelper
-						.createPermissionSetAllCommand(self.element.model.id,
+						.createPermissionSetAllCommand(self.model.id,
 								self.element.uuid, {
 									permissionID : permission.id
 								}));
@@ -175,7 +182,7 @@
 			if (permission.selected) {
 				self.commandsController.submitCommand(self.commandHelper
 						.createPermissionRestoreDefaultsCommand(
-								self.element.model.id, self.element.uuid, {
+								self.model.id, self.element.uuid, {
 									permissionID : permission.id
 								}));
 			}
@@ -191,7 +198,7 @@
 
 		self.commandsController.submitCommand(self.commandHelper
 				.createRemovePermissionParticipantCommand(
-						self.element.model.id, self.element.uuid, {
+						self.model.id, self.element.uuid, {
 							permissionID : permissionId,
 							participantFullId : participantFullId
 						}));

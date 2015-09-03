@@ -77,6 +77,16 @@ define(
                   title: m_i18nUtils.getProperty("modeler.activity.propertyPages.resubmission.title"),
                   html5: true
                 },
+				{
+					panelId : "activityPropertiesPanel",
+					id : "activityAuthorizationsPropertiesPage",
+					provider : m_propertiesPageProvider,
+					visibility : "always",
+					pageHtmlUrl : "plugins/bpm-modeler/views/modeler/processAuthorizationsPage.html",
+					imageUrl : "plugins/views-common/images/icons/key.png",
+					title : m_i18nUtils.getProperty("modeler.common.authorization"),
+					html5 : true
+				},
                 {
                   panelId: "activityPropertiesPanel",
                   id: "commentsPropertiesPage",
