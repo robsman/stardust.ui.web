@@ -151,22 +151,22 @@
 							'<input type="submit" class="button secondary" value="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()" />' +
 						'</div>\n' +
 				'</div>\n' +
-				'<span ng-if="$dtApi.enableExportCSV" sd-popover id="exportOptions" sda-class="tbl-tool-link">' +
-				'<i class="pi pi-arrow-menu-dropdown button-link tbl-toolbar-item tbl-tool-link"></i>\n' +
-						'<div class="popover-body">\n' +
-							'<div><a href="" ng-hide="!$dtApi.enableSelectColumns" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})">' + 
+				'<span ng-if="$dtApi.enableExportCSV" sd-popover="$dtApi.exportPopoverHandle" sda-class="tbl-tool-link">' +
+					'<i class="pi pi-arrow-menu-dropdown button-link tbl-toolbar-item tbl-tool-link"></i>\n' +
+					'<div class="popover-body">\n' +
+						'<div><a href="" ng-hide="!$dtApi.enableSelectColumns" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})">' + 
 							'{{i18n(\'html5-common.export-options-current-page-current-fields\')}}\n' +
-							'</a></div>\n' +
-							'<div><a href="" ng-click="$dtApi.exportCSV({allRows: false, allCols: true})">' + 
-								'{{i18n(\'html5-common.export-options-current-page-all-fields\')}}\n' +
-							'</a></div>\n' +
-							'<div><a href="" ng-hide="!$dtApi.enableSelectColumns" ng-click="$dtApi.exportCSV({allRows: true, allCols: false})">' + 
-								'{{i18n(\'html5-common.export-options-all-pages-current-fields\')}}\n' +
-							'</a></div>\n' +
-							'<div><a href="" ng-click="$dtApi.exportCSV({allRows: true, allCols: true})">' + 
-								'{{i18n(\'html5-common.export-options-all-pages-all-fields\')}}\n' +
-							'</a></div>\n' +
-						'</div>\n';
+						'</a></div>\n' +
+						'<div><a href="" ng-click="$dtApi.exportCSV({allRows: false, allCols: true})">' + 
+							'{{i18n(\'html5-common.export-options-current-page-all-fields\')}}\n' +
+						'</a></div>\n' +
+						'<div><a href="" ng-hide="!$dtApi.enableSelectColumns" ng-click="$dtApi.exportCSV({allRows: true, allCols: false})">' + 
+							'{{i18n(\'html5-common.export-options-all-pages-current-fields\')}}\n' +
+						'</a></div>\n' +
+						'<div><a href="" ng-click="$dtApi.exportCSV({allRows: true, allCols: true})">' + 
+							'{{i18n(\'html5-common.export-options-all-pages-all-fields\')}}\n' +
+						'</a></div>\n' +
+					'</div>\n';
 				'</span>'+
 			'</div>\n';
 
@@ -2450,7 +2450,7 @@
 				self.applyTo = 'USER';
 				self.enableExportExcel = false; // exportConfig.EXCEL; // TODO: Support Excel download
 				self.enableExportCSV = exportConfig.CSV;
-				self.showExportOptions = false;
+				self.exportPopoverHandle = null;
 
 				self.showColumnFilters = {};
 			}
@@ -2645,20 +2645,9 @@
 			/*
 			 * 
 			 */
-			this.toggleExportOptions = function(forceHide) {
-				if (forceHide) {
-					self.showExportOptions = false;
-				} else {
-					self.showExportOptions = !self.showExportOptions;
-				}
-			}
-
-			/*
-			 * 
-			 */
 			this.exportCSV = function(options) {
+				self.exportPopoverHandle.hide();
 				exportAsCSV(options);
-				self.toggleExportOptions(true);
 			}
 
 			/*
