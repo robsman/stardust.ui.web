@@ -23,6 +23,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	var _http = null;
 	var _parse = null;
 	var _sdViewUtilService = null;
+	var trace = null;
 
 	var filesToUpload = [];
 	var VALID_TEMPLATE_FORMATS = ['text/plain' , 'text/html'];
@@ -38,7 +39,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	/*
 	 * 
 	 */
-	function CorrespondenceCtrl($scope, $q ,$http , $filter,$timeout, $parse, sdDialogService, sdCorrespondenceService, sdViewUtilService) {
+	function CorrespondenceCtrl($scope, $q ,$http , $filter,$timeout, $parse, sdDialogService, sdCorrespondenceService, sdViewUtilService, sdLoggerService) {
 
 		this.readOnly = false;
 		_q = $q;
@@ -50,6 +51,8 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		_parse = $parse;
 		_sdViewUtilService = sdViewUtilService;
 		_scope = $scope;
+		trace = sdLoggerService.getLogger('html5-views-common-ui.sdCorrespondenceCtrl');
+		
 		this.intialize($scope);
 		this.exposeApis($scope);
 	}
@@ -194,9 +197,9 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	CorrespondenceCtrl.prototype.getIntialFolderInformation = function( aiOid){
 		var ctrl = this;
 		_sdCorrespondenceService.getFolderInformationByActivityOid(aiOid).then(function(data){
-			console.log("Return from getExistingFolderInformation using  ai oid"+aiOid)
 			ctrl.parentFolderPath = data.path;
 			ctrl.folderId= data.uuid;
+			trace.log("Parent folder Id ",	ctrl.folderId);
 		});
 	}
 
@@ -208,12 +211,11 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	CorrespondenceCtrl.prototype.performIppAiClosePanelCommand = function(commandId) {
 		try{
 			var postData = preparePostData(this.selected);
-			console.log("Data for post")
-			console.log(postData)
+			trace.log("Data to be saved to structured data",postData);
 			this.interactionProvider.saveData(null, postData);
 			parent.InfinityBpm.ProcessPortal.confirmCloseCommandFromExternalWebApp(commandId);
 		}catch(e){
-			console.log("Exception when performing Close panel command.");
+			trace.error("Exception when performing Close panel command.");
 			console.log(e)
 		}
 	}
@@ -262,6 +264,8 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	 */
 	function prepareUiData(data, uiData) {
 		
+		trace.log("Data from structured data",data);
+		
 		uiData.type = data.Type ? angular.lowercase(data.Type.__text) : uiData.type ;
 		if(uiData.type == 'email'){
 			uiData.to = data.To ? formatInDataAddress(data.To_asArray) : uiData.to ;
@@ -280,7 +284,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		if(uiData.cc ){
 			uiData.showCc =uiData.cc.length > 0
 		}
-
+		trace.log("Data after conversion to ui format",uiData);
 		return uiData;
 	}
 
@@ -344,7 +348,6 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	 * 
 	 */
 	function formatOutDataAttachments(attachments){
-		console.log("Printing attachments");
 		var outAttachments = []; 
 		angular.forEach(attachments,function(data){
 			var templateDocumentId = data.templateDocumentId ?  data.templateDocumentId : data.documentId;
@@ -382,7 +385,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		var ctrl = this;
 		item.convertToPdf = ctrl.convertToPdf;
 		_sdCorrespondenceService.resolveAttachmentTemplate( item, ctrl.selected.piOid, ctrl.parentFolderPath).then(function(result) {
-			console.log("Return Data from Resolve Template" );
+			trace.log("Template Resolved successfully attachments is ", result);
 			ctrl.addAttachment(result);
 		});
 	};
@@ -403,7 +406,8 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 			var found = _filter('filter')(ctrl.selected.attachments,{name : file.name},true);
 			if(found && found.length > 0) {
 				var index = ctrl.selected.attachments.indexOf(found[0]);
-				ctrl.selected.attachments.splice(index,1)
+				ctrl.selected.attachments.splice(index,1);
+				trace.log("Document already exists deleting the previous one.");
 			}
 			ctrl.selected.attachments.push(file);
 		}; 
@@ -412,15 +416,15 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		}; 
 
 		CorrespondenceCtrl.prototype.handleDocumentUpload = function(item){ 
-			console.log("Document upload")
+		
 			var fileFormat = item.name.split('.').pop();
-
+			trace.log("Document being uploaded ",  item.name);
 			if(TEPMPLATING_SUPPORTED_FILE_FORMATS.indexOf(fileFormat) > -1){
 				//Run it through templating engine
-				console.log("File format supported")
+				trace.log("Format Supported sending to resolving template");
 				ctrl.resolveTemplateAndAddDocument(item);
 			}else{
-				console.log("File format not supported")
+				trace.log("File format not supported for templating copying directly to correspondence folder.");
 				ctrl.copyDocumentToCorrespondenceFolder(item);
 			}
 		};
@@ -431,6 +435,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.loadExistingState = function( uiData ){
+		trace.log("Loading existing structured data.");
 		var inData =   this.interactionProvider.fetchData( "CORRESPONDENCE_REQUEST");
 		if(inData && inData.CORRESPONDENCE_REQUEST) {
 			uiData = prepareUiData(inData.CORRESPONDENCE_REQUEST, uiData);
@@ -468,8 +473,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	 */
 	function uploadLocalFilesToServer(files) {
 		_sdCorrespondenceService.uploadAttachments(files, piOid).then(function(data){
-			console.log("File upload response");
-			console.log(data);
+			trace.log("File uploaded succssfully response.",data);
 
 			if(data.documents.length > 0) {
 				angular.forEach(data.documents,function(item){
@@ -491,16 +495,13 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	 */
 	CorrespondenceCtrl.prototype.getActivityOid = function(){ 
 		var uri = this.interactionProvider.getInteractionUri();
-		/*if(!uri){
-				return 1208;
-			}*/
 		var endcoded = uri.split('/').pop();
 		var b64 = base64.get();
 		var decodedId = b64.decode(endcoded);
 		var partsMatcher = new RegExp('^(\\d+)\\|(\\d+)$');
 		var decodedParts = partsMatcher.exec(decodedId);
 		var activityInstanceOid = decodedParts[1];
-		console.log('Activity Oid  *****: '+activityInstanceOid)
+		trace.log("Activity Oid is ",activityInstanceOid);
 		return activityInstanceOid;
 
 	}
@@ -508,7 +509,6 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	CorrespondenceCtrl.prototype.addFilesToUploadQ = function (files) {
 		var ctrl = this;
 
-		console.log('addFilesToUploadQ');
 		var filesToUpload =[];
 		for (var i = 0, f; f = files[i]; i++) {
 			//Avoiding duplicates
@@ -575,8 +575,6 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 			"<p style='width:250px'>File Name: <strong>" + file.name +"</strong></p>";
 		m.html( msg + m.html());
 	}
-
-
 
 	/***
 	 * Address Selection
@@ -656,7 +654,6 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	 */
 	CorrespondenceCtrl.prototype.addressIconMapper = function(item, index) {
 		var tagClass = "glyphicon glyphicon-envelope"
-
 			if(item.type == 'fax'){
 				tagClass ="fa fa-fax";
 			}
@@ -837,9 +834,8 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	CorrespondenceCtrl.prototype.onTemplateSelection = function(){
 		var ctrl = this;
 		var api = ctrl.dialog.templateSelector.api;
-		console.log("Selected document")
 		var selectedItem = 	api.getSelectedNodes()[0].valueItem;
-
+		trace.log("Template selected ",selectedItem);
 		ctrl.templateSelectorDialog.close();
 		_sdCorrespondenceService.resolveMessageTemplate( ctrl.selected.piOid, selectedItem.path).then(function(result) {
 			ctrl.oldMessage = result;
@@ -874,7 +870,6 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		var ctrl = this;
 		var processApi = ctrl.dialog.attachmentSelector.api;
 		var messageTemplateApi = ctrl.dialog.templateSelector.api;
-		console.log("Selected attachments")
 
 		var attachments = [];
 
@@ -889,6 +884,8 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		angular.forEach(attachments,function(item){
 			CorrespondenceCtrl.prototype.handleDocumentUpload(item);
 		})
+		
+		trace.log("Attachment selected ",attachments);
 	}; 
 
 	/**
@@ -925,7 +922,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		var ctrl = this;
 		var index = ctrl.selected.attachments.indexOf(attachment);
 		_sdCorrespondenceService.removeAttachment(attachment.documentId).then(function(){
-			console.log("Attchemnt removed successfull")
+			trace.log("Attachment remoced Successfully");
 			ctrl.selected.attachments.splice(index,1);
 		});
 
@@ -1013,7 +1010,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	}
 
 	//Dependency injection array for our controller.
-	CorrespondenceCtrl.$inject = ['$scope','$q', '$http','$filter','$timeout','$parse','sdDialogService','sdCorrespondenceService', 'sdViewUtilService'];
+	CorrespondenceCtrl.$inject = ['$scope','$q', '$http','$filter','$timeout','$parse','sdDialogService','sdCorrespondenceService', 'sdViewUtilService','sdLoggerService'];
 
 	//Require capable return object to allow our angular code to be initialized
 	//from a require-js injection system.
