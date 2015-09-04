@@ -20,6 +20,7 @@ import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
 public class DescriptorItemTableEntry extends DefaultRowModel
 {
    private static final long serialVersionUID = 1L;
+   String id;
    String name;
    Object value;
    String type;
@@ -39,14 +40,20 @@ public class DescriptorItemTableEntry extends DefaultRowModel
       this.value = value;
    }
 
-   public DescriptorItemTableEntry(String name, Object value, String type, Class mappedType, boolean editable)
+   public DescriptorItemTableEntry(String name, Object value, String id, String type, Class mappedType, boolean editable)
    {
       this(name, value);
+      this.id = id;
       this.type = type;
       this.mappedType = mappedType;
       this.editable = editable;
    }
    
+   public String getId()
+   {
+      return id;
+   }
+
    public String getName()
    {
       return this.name;

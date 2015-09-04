@@ -626,12 +626,12 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
                      || ProcessPortalConstants.BIG_DECIMAL_TYPE.equalsIgnoreCase(type))
                {
                   descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), convertToNumber(
-                        processDescriptor.getValue(), dataClass), type, dataClass, true));
+                        processDescriptor.getValue(), dataClass),  processDescriptor.getId(), type, dataClass, true));
                }
                else if (ProcessPortalConstants.BOOLEAN_TYPE.equalsIgnoreCase(type))
                {
                   descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), Boolean
-                        .parseBoolean(processDescriptor.getValue()), type, dataClass, true));
+                        .parseBoolean(processDescriptor.getValue()), processDescriptor.getId(), type, dataClass, true));
                }
                else if (ProcessPortalConstants.DATE_TYPE.equalsIgnoreCase(type)
                      || ProcessPortalConstants.TIMESTAMP_TYPE.equalsIgnoreCase(type)
@@ -644,12 +644,12 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
                            Locale.getDefault(), TimeZone.getDefault());
                   }
                   descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), getDateValue(
-                        dateValue, dataClass), type, dataClass, true));
+                        dateValue, dataClass), processDescriptor.getId(), type, dataClass, true));
                }
                else
                {
                   descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor
-                        .getValue(), type, dataClass, true));
+                        .getValue(), processDescriptor.getId(), type, dataClass, true));
                }
             }
             else
@@ -733,15 +733,15 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
                }
                else
                {
-                  newValue = newDescriptorValue.toString();
+                  newValue = newDescriptorValue.toString().trim();
                }
-               inDataPath = inDataPathsMap.get(userObject.getName());
+               inDataPath = inDataPathsMap.get(userObject.getId());
                outDataPath = fetchOutDataPath(inDataPath);
                if (null != outDataPath)
                {
 
                   ServiceFactoryUtils.getWorkflowService().setOutDataPath(processInstance.getOID(),
-                        outDataPath.getId(), newDescriptorValue);
+                        outDataPath.getId(), newValue);
 
                   userObject.setHasError(false);
                   validationMessageBean.addInfoMessage(
@@ -769,7 +769,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
       if(CollectionUtils.isNotEmpty(outDataPathsMap))
       {
          // read all OUT dataPath for given Data
-         List<DataPathDetails> outDataPaths = outDataPathsMap.get(inDataPath.getData());
+         List<DataPathDetails> outDataPaths = outDataPathsMap.get(inDataPath.getId());
          if(CollectionUtils.isNotEmpty(outDataPaths))
          {
             for(DataPathDetails outPath : outDataPaths)
@@ -883,14 +883,14 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
          if(dataPathDetails.getDirection().equals(Direction.OUT))
          {
             // Store all OUT dataPath on same DataId
-            if(!outDataPathsMap.containsKey(dataPathDetails.getData()))
+            if(!outDataPathsMap.containsKey(dataPathDetails.getId()))
             {
                outDataPaths = CollectionUtils.newArrayList();
-               outDataPathsMap.put(dataPathDetails.getData(), outDataPaths);  
+               outDataPathsMap.put(dataPathDetails.getId(), outDataPaths);  
             }
             else
             {
-               outDataPaths = outDataPathsMap.get(dataPathDetails.getData());
+               outDataPaths = outDataPathsMap.get(dataPathDetails.getId());
             }
             outDataPaths.add(dataPathDetails);
          }
