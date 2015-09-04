@@ -247,6 +247,37 @@
 	};
 
 	/**
+	 * 
+	 */
+	AuthorizationPageController.prototype.getParticipantIcon = function(fullId) {
+		if (fullId) {
+			var m_model = this.propertiesPanel.getMModel();
+			var participant = m_model.findParticipant(fullId);
+			if (participant.type === 'conditionalPerformerParticipant') {
+				return "plugins/bpm-modeler/images/icons/conditional.png";
+			} else if (participant.type === 'organizationParticipant') {
+				return "plugins/bpm-modeler/images/icons/organization.png";
+			} else {
+				return "plugins/bpm-modeler/images/icons/role.png";
+			}
+		}
+	};
+
+	/**
+	 * 
+	 */
+	AuthorizationPageController.prototype.isAddAllEnabled = function() {
+		return (this.getSelectedParticipants().length == 0 && this.selectedPermissionsCache.length > 0);
+	};
+
+	/**
+	 * 
+	 */
+	AuthorizationPageController.prototype.isAddSelectedEnabled = function() {
+		return (this.getSelectedParticipants().length > 0 && this.selectedPermissionsCache.length > 0);
+	};
+	
+	/**
 	 * TODO - for now only single selection is supported
 	 */
 	AuthorizationPageController.prototype.togglePermissionSelection = function(

@@ -858,4 +858,8 @@ div#outlineMsgDiv img {
 	vertical-align: middle;
 } 
 
+tr.rowEven {
+	background-color: #F3F3F3;
+}
+
 @import ('/plugins/modern/public/skins/modern/modern.css')
