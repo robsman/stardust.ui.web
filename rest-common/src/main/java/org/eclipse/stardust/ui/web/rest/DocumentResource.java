@@ -20,12 +20,14 @@ import java.util.MissingResourceException;
 import javax.annotation.Resource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -36,6 +38,7 @@ import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.rest.exception.PortalErrorClass;
 import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
 import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
@@ -238,14 +241,15 @@ public class DocumentResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{documentId: .*}/copy")
-   public Response copy(@PathParam("documentId") String documentId, String postedData) throws Exception
+   public Response copy(@PathParam("documentId") String documentId,
+         @QueryParam("overWrite") @DefaultValue("false") boolean overWrite, String postedData) throws Exception
    {
       Map<String, Object> data = JsonDTO.getAsMap(postedData);
       String parentFolderPath = (String) data.get("parentFolderPath");
       documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
       
       DocumentDTO documentDTO = DocumentDTOBuilder.build(DocumentMgmtUtility.copyDocumentTo(
-            DocumentMgmtUtility.getDocument(documentId), parentFolderPath));
+            DocumentMgmtUtility.getDocument(documentId), parentFolderPath, overWrite));
 
       return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
    }

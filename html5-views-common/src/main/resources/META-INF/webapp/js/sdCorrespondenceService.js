@@ -162,7 +162,7 @@ define([],function(){
 					method : 'POST'
 				}
 			});
-			return document.copyToFolder({}, requestObj).$promise;
+			return document.copyToFolder({overWrite:true}, requestObj).$promise;
 		};
 
 		/**

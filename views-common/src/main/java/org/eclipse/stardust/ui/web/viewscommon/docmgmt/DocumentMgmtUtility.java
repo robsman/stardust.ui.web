@@ -413,6 +413,27 @@ public class DocumentMgmtUtility
    }
 
    /**
+    * @param srcDoc
+    * @param targetFolderPath
+    * @param overWrite
+    * @return
+    */
+   public static Document copyDocumentTo(Document srcDoc, String targetFolderPath, boolean overWrite)
+   {
+      Document document = getDocument(targetFolderPath, srcDoc.getName());
+      if (overWrite && document != null)
+      {
+         DocumentManagementService dms = getDocumentManagementService();
+         document = updateDocument(document, dms.retrieveDocumentContent(srcDoc.getId()), null, null, overWrite);
+      }
+      else
+      {
+         document = copyDocumentTo(srcDoc, targetFolderPath);
+      }
+      return document;
+   }
+
+   /**
     * creates copy of the provided document
     * 
     * @param srcDoc
