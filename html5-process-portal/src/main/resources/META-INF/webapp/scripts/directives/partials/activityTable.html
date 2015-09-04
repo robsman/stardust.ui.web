@@ -53,7 +53,7 @@
 			<tr>
 				<th sda-name="activityName" sda-label-key="overview" sda-sortable="true" sda-visible="{{activityTableCtrl.isColumnVisible('activityName')}}">
 					<div sda-filter-template>
-						<div sd-process-activity-filter sda-filter-type='activity' sda-processes="activityTableCtrl.allAccessibleProcesses"></div>
+						<div sd-process-activity-filter sda-filter-type='activity' sda-processes="activityTableCtrl.fetchAllProcesses()"></div>
 					</div>
 				</th>
 				
@@ -61,7 +61,7 @@
 				
 				<th sda-name="criticality" sda-sortable="true" sda-visible="{{activityTableCtrl.isColumnVisible('criticality')}}">
 					<div sda-filter-template>
-						<div sd-criticality-filter sda-criticalities="activityTableCtrl.allAvailableCriticalities"></div>
+						<div sd-criticality-filter sda-criticalities="activityTableCtrl.fetchAllAvailableCriticalities()"></div>
 					</div>
 				</th>
 				
@@ -90,7 +90,7 @@
 				
 				<th sda-name="processName" sda-label-key="processName"  sda-sortable="false" sda-visible="{{activityTableCtrl.isColumnVisible('processDefinition')}}">
 					<div sda-filter-template>
-						<div sd-process-activity-filter sda-filter-type='process' sda-processes="activityTableCtrl.allAccessibleProcesses"></div>
+						<div sd-process-activity-filter sda-filter-type='process' sda-processes="activityTableCtrl.fetchAllProcesses()"></div>
 					</div>
 				</th>
 				

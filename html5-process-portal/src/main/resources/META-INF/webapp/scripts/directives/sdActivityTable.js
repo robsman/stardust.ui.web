@@ -165,8 +165,8 @@
 		this.dirtyDataForms = [];
 
 		// All processes with activities
-		this.allAccessibleProcesses = [];
-		this.allAvailableCriticalities = [];
+		this.allAccessibleProcesses = null;
+		this.allAvailableCriticalities = null;
 		this.availableStates = [];
 		this.availablePriorities = [];
 		this.preferenceModule = "";
@@ -409,8 +409,6 @@
 	    };
 
 	    this.fetchDescriptorCols(attr);
-	    this.fetchAllProcesses();
-	    this.fetchAllAvailableCriticalities();
 	    this.fetchAvailableStates();
 	    this.fetchAvailablePriorities();
 
@@ -774,10 +772,18 @@
 	 */
 	ActivityTableCompiler.prototype.fetchAllProcesses = function() {
 		var self = this;
+		var deferred = $q.defer();
 
-		sdProcessDefinitionService.getAllProcesses(false).then(function(processes) {
-			self.allAccessibleProcesses = processes;
-		});
+		if (!self.allAccessibleProcesses) {
+			sdProcessDefinitionService.getAllProcesses(false).then(function(processes) {
+				self.allAccessibleProcesses = processes;
+				deferred.resolve(self.allAccessibleProcesses);
+			});
+		} else {
+			deferred.resolve(self.allAccessibleProcesses);
+		}
+
+		return deferred.promise;
 	};
 
 	/*
@@ -785,9 +791,18 @@
 	 */
 	ActivityTableCompiler.prototype.fetchAllAvailableCriticalities = function() {
 		var self = this;
-		sdCriticalityService.getAllCriticalities().then(function(criticalities) {
-			self.allAvailableCriticalities = criticalities;
-		});
+		var deferred = $q.defer();
+
+		if (!self.allAvailableCriticalities) {
+			sdCriticalityService.getAllCriticalities().then(function(criticalities) {
+				self.allAvailableCriticalities = criticalities;
+				deferred.resolve(self.allAvailableCriticalities);
+			});
+		} else {
+			deferred.resolve(self.allAvailableCriticalities);
+		}
+
+		return deferred.promise;
 	};
 
 	/*

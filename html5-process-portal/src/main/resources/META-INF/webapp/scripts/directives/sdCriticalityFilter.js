@@ -66,8 +66,6 @@
     */
    var CriticalityFilterController = function($scope, $attrs, $parse) {
 	   this.intialize($scope, $attrs, $parse);
-	   this.loadAvailableCriticalities($scope);
-
 	   $scope.criticalityCtrl = this;
    };
    
@@ -88,15 +86,18 @@
     * 
     */
    CriticalityFilterController.prototype.intialize = function($scope, $attrs, $parse) {
-
 	   this.data = [];
 	   this.matchVal = "";
 	   this.like = this.like || [];
-	   $scope.filterData.rangeLike = $scope.filterData.rangeLike || [];
-	   var allCriticalitiesBinding = $parse($attrs.sdaCriticalities);
-	   this.availableCriticalities = allCriticalitiesBinding($scope);
-	   $scope.criticalityCtrl = this;
 
+	   $scope.filterData.rangeLike = $scope.filterData.rangeLike || [];
+
+	   var self = this;
+	   var allCriticalitiesBinding = $parse($attrs.sdaCriticalities);
+	   allCriticalitiesBinding($scope).then(function(result) {
+		   self.availableCriticalities = result;
+		   self.loadAvailableCriticalities($scope);
+	   });
    };
    /*
     * 

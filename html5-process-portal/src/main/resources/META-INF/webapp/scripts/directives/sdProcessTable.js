@@ -80,7 +80,7 @@
 				self.showAbortProcessDialog = false;
 				self.processesToAbort = [];
 				self.processesToJoin = [];
-				self.allAccessibleProcesses = [];
+				self.allAccessibleProcesses = null;
 				self.availableStates = [];
 
 				// Set Default values
@@ -161,7 +161,6 @@
 				self.fetchDescriptorCols();
 				self.fetchAvailableStates();
 				self.fetchAvailablePriorities();
-				self.fetchAllProcesses();
 			};
 
 			/**
@@ -688,9 +687,19 @@
 			 *
 			 */
 			self.fetchAllProcesses = function() {
-				sdProcessDefinitionService.getAllProcesses(false).then(function(processes) {
-					self.allAccessibleProcesses = processes;
-				});
+				var self = this;
+				var deferred = $q.defer();
+
+				if (!self.allAccessibleProcesses) {
+					sdProcessDefinitionService.getAllProcesses(false).then(function(processes) {
+						self.allAccessibleProcesses = processes;
+						deferred.resolve(self.allAccessibleProcesses);
+					});
+				} else {
+					deferred.resolve(self.allAccessibleProcesses);
+				}
+
+				return deferred.promise;
 			};
 
 			self.initialize(attr, scope);

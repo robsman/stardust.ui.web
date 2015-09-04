@@ -92,10 +92,14 @@
 
       var allProcessBinding = $parse($attrs.sdaProcesses);
 
-      this.allAccessibleProcesses = allProcessBinding($scope);
-      
-      trace.debug("Intialized with Filter type : ",this.filterType);
-      trace.debug("Intialized with Processes : ",this.allAccessibleProcesses);
+      allProcessBinding($scope).then(function(result) {
+    	  self.allAccessibleProcesses = result;
+
+    	  trace.debug("Intialized with Filter type : ", self.filterType);
+          trace.debug("Intialized with Processes : ", self.allAccessibleProcesses);
+
+          self.intialize($scope);
+      });
 
       /**
        * 
@@ -140,7 +144,6 @@
          }
       };
       
-      this.intialize($scope);
       $scope.filterCtrl = this;
    };
 

@@ -72,7 +72,7 @@
 			<tr>
 				<th sda-name="processName" sda-sortable="true" sda-visible="{{processTableCtrl.isColumnVisible('processName')}}">
 					<div sda-filter-template>
-						<div sd-process-activity-filter sda-filter-type='process' sda-processes="processTableCtrl.allAccessibleProcesses"></div>
+						<div sd-process-activity-filter sda-filter-type='process' sda-processes="processTableCtrl.fetchAllProcesses()"></div>
 					</div>
 				</th>
 				<th sda-name="processOID" sda-field="oid" sda-label-key="pOID" sda-sortable="true" sda-filterable="true" sda-visible="{{processTableCtrl.isColumnVisible('processOID')}}"></th>
