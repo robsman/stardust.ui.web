@@ -848,7 +848,7 @@
 
 			dtOptions.bProcessing = false;
 
-			// TODO: Datatables does not support single column sorting yet. What it has is only multi column sort
+			dtOptions.bSingleColumnSort = true;
 			dtOptions.bSort = sortingMode != undefined;
 			if (dtOptions.bSort) {
 				var dtOrder = [];
