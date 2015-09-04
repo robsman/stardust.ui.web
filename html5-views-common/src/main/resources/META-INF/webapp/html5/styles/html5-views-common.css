@@ -23,7 +23,8 @@
 
 .correspondence_left_section {
 	width: 100px;
-	vertical-align: top
+	vertical-align: top;
+	white-space:nowrap;
 }
 
 .correspondence_right_section {

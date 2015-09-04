@@ -233,20 +233,23 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 				}
 		};
 
-		var to = formatOutDataAddress(uiData.to);
-		if(to && to.length > 0) {
-			postData.CORRESPONDENCE_REQUEST.To = to
-		}
+		if(uiData.type == 'email') {
+			var to = formatOutDataAddress(uiData.to);
+			if(to && to.length > 0) {
+				postData.CORRESPONDENCE_REQUEST.To = to
+			}
 
-		var bcc = formatOutDataAddress(uiData.bcc);
-		if(bcc && bcc.length > 0) {
-			postData.CORRESPONDENCE_REQUEST.BCC = bcc
-		}
+			var bcc = formatOutDataAddress(uiData.bcc);
+			if(bcc && bcc.length > 0) {
+				postData.CORRESPONDENCE_REQUEST.BCC = bcc
+			}
 
-		var cc = formatOutDataAddress(uiData.cc);
-		if(cc && cc.length > 0) {
-			postData.CORRESPONDENCE_REQUEST.CC = cc
+			var cc = formatOutDataAddress(uiData.cc);
+			if(cc && cc.length > 0) {
+				postData.CORRESPONDENCE_REQUEST.CC = cc
+			}
 		}
+		
 		if(uiData.attachments && uiData.attachments.length > 0){
 			var formated_attachments = formatOutDataAttachments(uiData.attachments);
 			postData.CORRESPONDENCE_REQUEST.Attachments = formated_attachments
@@ -258,13 +261,17 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	 * 
 	 */
 	function prepareUiData(data, uiData) {
-		uiData.type = angular.lowercase(data.Type.__text);
-		uiData.to = formatInDataAddress(data.To_asArray);
-		uiData.bcc =  formatInDataAddress(data.BCC_asArray);
-		uiData.cc =  formatInDataAddress(data.CC_asArray);
-		uiData.content = data.MessageBody.__text;
-		uiData.subject = data.Subject.__text;
-		uiData.attachments =formatInDataAttachments(data.Attachments_asArray);
+		
+		uiData.type = data.Type ? angular.lowercase(data.Type.__text) : uiData.type ;
+		if(uiData.type == 'email'){
+			uiData.to = data.To ? formatInDataAddress(data.To_asArray) : uiData.to ;
+			uiData.bcc = data.BCC_asArray ? formatInDataAddress(data.BCC_asArray) :uiData.bcc ;
+			uiData.cc =  data.CC_asArray ?formatInDataAddress(data.CC_asArray) : uiData.cc;
+			uiData.subject = data.Subject ? data.Subject.__text :	uiData.subject ;
+		}
+	
+		uiData.content =  data.MessageBody?  data.MessageBody.__text :	uiData.content;
+		uiData.attachments =data.Attachments_asArray ? formatInDataAttachments(data.Attachments_asArray): uiData.attachments;
 
 		if(uiData.bcc ){
 			uiData.showBcc = uiData.bcc.length > 0
@@ -518,9 +525,6 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	function clearUploadQ() {
 		jQuery("#uploadAttachmentForm")[0].reset();
 		jQuery(".correspondence_file_uploading").hide()
-		/*if(filesToUpload.length){
-			filesToUpload.length = 0;
-		}*/
 	}
 
 	/**
