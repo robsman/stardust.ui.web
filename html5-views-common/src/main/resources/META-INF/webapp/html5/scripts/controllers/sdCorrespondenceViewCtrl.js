@@ -29,12 +29,12 @@
     _sdFolderService = sdFolderService;
     _parse = $parse;
     this.correspondenceTypes = [{
-		label : this.i18n("views-common-messages.views-correspondenceView-details-type-email"),
-		id : 'email'
-	}, {
-		label :  this.i18n("views-common-messages.views-correspondenceView-details-type-print"),
-		id : 'print'
-	}];
+      label: this.i18n("views-common-messages.views.correspondenceView.details.type.email"),
+      id: 'email'
+    }, {
+      label: this.i18n("views-common-messages.views.correspondenceView.details.type.print"),
+      id: 'print'
+    }];
 
     this.selected = {};
 
@@ -96,14 +96,14 @@
     var uiData = {
       type: type, // print / email
       to: formatInDataAddress(metaData.To),
-      BCC: metaData.BCC,
-      cc: metaData.CC,
+      bcc: formatInDataAddress(metaData.BCC),
+      cc: formatInDataAddress(metaData.CC),
       content: metaData.MessageBody,
       subject: metaData.Subject,
       templateId: '',
       attachments: formatInDataAttachments(metaData.Attachments),
       aiOid: '',
-      showBCC: metaData.BCC ? metaData.BCC.length > 0 : false,
+      showBcc: metaData.BCC ? metaData.BCC.length > 0 : false,
       showCc: metaData.CC ? metaData.CC.length > 0 : false
     }
     console.log("Populated object")
