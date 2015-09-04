@@ -193,7 +193,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			</ippui:preferences>
 		</ippui:view> -->
 		
-		<ippui:view name="ganttChartView"
+		<ippui:view name="ganttChartView" identityParams="processInstanceOId"
 			include="/plugins/html5-business-control-center/partials/views/ganttChartView.html">
 		</ippui:view>
 
