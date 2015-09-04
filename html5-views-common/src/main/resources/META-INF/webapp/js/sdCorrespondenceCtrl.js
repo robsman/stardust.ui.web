@@ -400,6 +400,11 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		}
 
 		CorrespondenceCtrl.prototype.addAttachment = function(file){
+			var found = _filter('filter')(ctrl.selected.attachments,{name : file.name},true);
+			if(found && found.length > 0) {
+				var index = ctrl.selected.attachments.indexOf(found[0]);
+				ctrl.selected.attachments.splice(index,1)
+			}
 			ctrl.selected.attachments.push(file);
 		}; 
 		CorrespondenceCtrl.prototype.showTest = function(value){
