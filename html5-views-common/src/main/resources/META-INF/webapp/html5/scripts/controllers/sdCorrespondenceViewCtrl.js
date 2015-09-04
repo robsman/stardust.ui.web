@@ -15,19 +15,19 @@
   'use strict';
 
   angular.module("viewscommon-ui").controller('sdCorrespondenceViewCtrl',
-          ['$scope', 'sdUtilService', 'sdFolderService', 'sdI18nService', Controller]);
+          ['$scope', 'sdUtilService', 'sdFolderService', 'sdI18nService', '$parse', Controller]);
 
   var _sdFolderService = null;
   var _sdI18nService = null;
-
+  var _parse = null;
   /*
    * 
    */
-  function Controller($scope, sdUtilService, sdFolderService, sdI18nService) {
+  function Controller($scope, sdUtilService, sdFolderService, sdI18nService, $parse) {
     this.readOnly = true;
     _sdI18nService = sdI18nService;
     _sdFolderService = sdFolderService;
-
+    _parse = $parse;
     this.correspondenceTypes = [{
 		label : this.i18n("views-common-messages.views-correspondenceView-details-type-email"),
 		id : 'email'
