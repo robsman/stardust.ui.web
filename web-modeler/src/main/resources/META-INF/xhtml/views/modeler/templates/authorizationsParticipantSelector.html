@@ -12,7 +12,7 @@
 			ng-click="ctrl.restorePermissionDefaults()" />
 	</div>
 	<div style="height: 250px; width: 100%; overflow: auto;">
-		<table border="1" style="width: 100%; padding: 5px;" class="dataTable">
+		<table style="width: 100%; padding: 5px;" class="dataTable">
 			<thead>
 				<tr>
 					<th>{{ctrl.i18n('authorization.roleSelector.participantColumn.heading')}}</th>
@@ -22,9 +22,9 @@
 			<tbody>
 				<tr ng-repeat="participant in ctrl.allParticipants"
 					class="{{(participant.selected ? 'selected' : '')}}"
-					ng-click="ctrl.toggleSelection(participant)">
+					ng-click="ctrl.toggleSelection(participant)" ng-class-even="'rowEven'">
 					<td>{{participant.displayName}}</td>
-					<td>{{participant.type}}</td>
+					<td>{{ctrl.i18n('authorization.participantType.' + participant.type)}}</td>
 				</tr>
 			</tbody>
 		</table>

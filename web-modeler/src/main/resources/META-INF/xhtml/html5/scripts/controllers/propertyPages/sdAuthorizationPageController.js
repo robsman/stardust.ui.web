@@ -80,22 +80,23 @@
 			});
 		});
 
-		var models = this.propertiesPanel.getMModel().getModels();
-		jQuery.each(models, function(id, model) {
-			if (model.id !== self.model.id) {
-				jQuery.each(model.participants, function(_, participant) {
-					if (participant.id !== 'Administrator') {
-						self.allParticipants.push({
-							modelName : model.name,
-							name : participant.name,
-							type : participant.type,
-							displayName : model.name + "/" + participant.name,
-							fullId : participant.getFullId()
-						});
-					}
-				});
-			}
-		});
+		// TODO check if cross modelling is supported - doens't seem to work
+//		var models = this.propertiesPanel.getMModel().getModels();
+//		jQuery.each(models, function(id, model) {
+//			if (model.id !== self.model.id) {
+//				jQuery.each(model.participants, function(_, participant) {
+//					if (participant.id !== 'Administrator') {
+//						self.allParticipants.push({
+//							modelName : model.name,
+//							name : participant.name,
+//							type : participant.type,
+//							displayName : model.name + "/" + participant.name,
+//							fullId : participant.getFullId()
+//						});
+//					}
+//				});
+//			}
+//		});
 	};
 
 	/**
@@ -196,6 +197,7 @@
 			permissionId, participantFullId) {
 		var self = this;
 
+		this.addToSelectionsCache(permissionId);
 		self.commandsController.submitCommand(self.commandHelper
 				.createRemovePermissionParticipantCommand(
 						self.model.id, self.element.uuid, {
