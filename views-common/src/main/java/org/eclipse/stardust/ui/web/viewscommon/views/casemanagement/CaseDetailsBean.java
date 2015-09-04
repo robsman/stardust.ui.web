@@ -570,19 +570,6 @@ public class CaseDetailsBean extends PopupUIComponentBean
       initialize();
    }
 
-   /**
-    * Open new Correspondence View
-    */
-   public void openCorrespondence()
-   {
-      if (null != processInstance)
-      {
-         Map<String, Object> params = CollectionUtils.newTreeMap();
-         params.put("processInstanceOID", Long.toString(processInstance.getOID()));
-         PortalApplication.getInstance().openViewById("correspondenceView", "DocumentID=" + processInstance.getOID(),
-               params, null, true);
-      }
-   }
 
    /**
     * Open new Chat View

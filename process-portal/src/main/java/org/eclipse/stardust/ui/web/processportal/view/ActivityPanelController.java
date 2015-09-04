@@ -33,10 +33,10 @@ import org.eclipse.stardust.engine.core.interactions.Interaction;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
-import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.FaceletPanelInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
@@ -273,21 +273,6 @@ public class ActivityPanelController extends UIComponentBean
    public boolean isSupportsWeb()
    {
       return activityDetailsBean.isSupportsWeb();
-   }
-
-   /**
-    * Open new Correspondence View
-    */
-   public void openCorrespondence()
-   {
-      ProcessInstance processInstance = activityDetailsBean.getProcessInstance();
-      if (null != processInstance)
-      {
-         Map<String, Object> params = CollectionUtils.newTreeMap();
-         params.put("processInstanceOID", Long.toString(processInstance.getOID()));
-         PortalApplication.getInstance().openViewById("correspondenceView",
-               "DocumentID=" + processInstance.getOID(), params, null, true);
-      }
    }
 
    /**

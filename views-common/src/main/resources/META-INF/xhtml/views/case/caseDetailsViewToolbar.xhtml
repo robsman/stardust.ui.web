@@ -51,14 +51,6 @@
 					
 		<ice:graphicImage value="/plugins/views-common/images/icons/toolbar-separator.png"/>	
 		
-		<pc:automationTag value="auto-COM-CaseDetView-ToolbarOpenCorrespondence"/>
-		<ice:commandButton
-			image="/plugins/views-common/images/icons/email_add.png"
-			disabled="#{!caseDetailsBean.supportsProcessAttachments}"
-			action="#{caseDetailsBean.openCorrespondence}"
-			partialSubmit="true"
-			title="#{messages_bcc['toolbars.processInstanceDetailsView.tooltip.correspondence']}"
-			styleClass="toolbar-button" />
 			
 		<pc:automationTag value="auto-COM-CaseDetView-ToolbarOpenChat"/>
 		<ice:commandButton

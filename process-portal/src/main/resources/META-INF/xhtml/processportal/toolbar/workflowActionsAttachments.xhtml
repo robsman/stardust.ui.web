@@ -47,17 +47,6 @@
 
 		<ice:panelGroup styleClass="toolbarGroupRight" 
 			rendered="#{activityDetailsBean.loadSuccessful and ippActivityPanelController.supportsProcessAttachments}">
-			<ice:commandLink
-				action="#{ippActivityPanelController.openCorrespondence}"
-				partialSubmit="true">
-				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarCorres"
-					standAlone="false" />
-				<ice:graphicImage
-					value="/plugins/views-common/images/icons/email_add.png"
-					styleClass="toolbar-button"
-					title="#{processportal_msgPropsBean['toolbars.activityPanelViewToolbar.tooltip.correspondence']}" />
-			</ice:commandLink>
-
 			<ice:commandLink action="#{ippActivityPanelController.openChat}"
 				partialSubmit="true">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarChat"

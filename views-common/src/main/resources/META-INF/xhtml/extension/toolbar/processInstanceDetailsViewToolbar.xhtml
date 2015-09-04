@@ -59,16 +59,7 @@
 		</ice:commandLink>
 
 		<ice:graphicImage value="/plugins/views-common/images/icons/toolbar-separator.png"/>	
-
-		<pc:automationTag value="auto-COM-PCEOpenCorrespondence"/>
-		<ice:commandButton
-			image="/plugins/views-common/images/icons/email_add.png"
-			disabled="#{!processInstanceDetailsBean.supportsProcessAttachments}"
-			action="#{processInstanceDetailsBean.openCorrespondence}"
-			partialSubmit="true"
-			title="#{messages_bcc['toolbars.processInstanceDetailsView.tooltip.correspondence']}"
-			styleClass="toolbar-button" />
-			
+		
 		<pc:automationTag value="auto-COM-PCEOpenChat"/>
 		<ice:commandButton
 			image="/plugins/views-common/images/icons/user_comment.png"
