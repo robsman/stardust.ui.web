@@ -900,8 +900,8 @@
 
 				// Table will be refreshed again after initialization is complete, so hide some information
 
-				// Hide No Records Found Row, there will be only one row, indicating no records found
-				showElement(theTable.find('> tbody > tr'), false);
+				// Replace no Records Found row with loading indicator
+				theTable.find('> tbody > tr').html('<span class="sc sc-lg sc-spin sc-spinner"></span>');
 
 				// Hide Pagination Info
 				var dataTablesInfo = angular.element(theTable.parent()).find('.dataTables_info');
