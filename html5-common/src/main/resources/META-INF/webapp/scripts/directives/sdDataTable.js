@@ -44,7 +44,7 @@
 			restrict : 'A',
 			require: ['sdData'],
 			scope: true,
-			compile: function(elem, attr, transclude) {				
+			compile: function(elem, attr, transclude) {
 				processRawMarkup(elem, attr);
 
 				return {
@@ -1454,19 +1454,7 @@
 				}
 			});
 
-			var rowScope = row.scope();
-			if (rowScope == undefined) {
-				rowScope = createRowScope();
-			}
-
-			rowScope.rowData = data;
-			rowScope.$index = dataIndex;
-			rowScope.$first = (dataIndex === 0);
-			//rowScope.$last = (dataIndex === (value.length - 1));
-			//rowScope.$middle = !(rowScope.$first || rowScope.$last);
-			rowScope.$odd = !(rowScope.$even = (dataIndex & 1) === 0);
-			
-			$compile(row)(rowScope);
+			row.attr('sd-data-table-row', dataIndex); // Another directive, which will handle setting of rowData
 		}
 
 		/*
@@ -1502,8 +1490,13 @@
 				var row = angular.element(rows[0]); // There will be only one row 
 				var rowScope = createRowScope();
 				$compile(row)(rowScope);
+			} else {
+				var body = angular.element(theTable.find('> tbody'));
+				var bodyScope = body.scope();
+				bodyScope.$$pageData = getPageData(); // Used by sd-data-table-row
+				$compile(body)(bodyScope);
 			}
-
+			
 			if(!initialized) {
 				enableRowSelection();
 
@@ -2749,5 +2742,34 @@
 				return selectableCols;
 			}
 		}
+	};
+
+	angular.module('bpm-common').directive('sdDataTableRow', [DataTableRowDirective]);
+
+	/*
+	 * 
+	 */
+	function DataTableRowDirective() {
+		return {
+			restrict: 'A',
+			scope: true,
+			link: function(scope, element, attr, ctrl) {
+				var index = parseInt(attr.sdDataTableRow);
+				
+				// Using isolate scope and passing data as attributes doesnot work here
+				// So retrieve data from parent via $parent
+				var pageData = scope.$parent.$$pageData;
+
+				scope.rowData = pageData[index];
+				scope.$index = index;
+				scope.$first = (index === 0);
+				scope.$last = (index === (pageData.length - 1));
+				scope.$even = !(scope.$odd = (index & 1) === 0);
+
+				scope.$on('$destroy', function() {
+					// trace.log('Row Scope ' + scope.$id + ' destroyed for parent ' + scope.$parent.$id);
+				});
+			}
+		};
 	};
 })();
