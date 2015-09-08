@@ -10,13 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.processContextExplorer;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -77,7 +73,6 @@ import org.eclipse.stardust.ui.web.viewscommon.common.PortalErrorClass;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.common.ValidationMessageBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
-import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSearchHandler;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DataMappingWrapper;
@@ -149,7 +144,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    
    private ValidationMessageBean validationMessageBean = null;
    // Store all OUT DataPaths keyed by DATAID
-   Map<String, List<DataPathDetails>> outDataPathsMap = null;
+   Map<String, DataPathDetails> outDataPathsMap = null;
    Map<String, DataPathDetails> inDataPathsMap = null; 
    
    private String startingUserLabel = null;
@@ -599,81 +594,70 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    private List<DescriptorItemTableEntry> convertToTableEntries(List<ProcessDescriptor> processDescriptors)
    {
       List<DescriptorItemTableEntry> descriptorsEntries = CollectionUtils.newList();
-      GenericDataMapping mapping;
-      DataMappingWrapper dmWrapper;
-      // Store DataPath Map with all IN and OUT mappings
-      updateDataPathMap();
-      boolean suppressBlankDescriptors = CommonDescriptorUtils.isSuppressBlankDescriptorsEnabled();
-      DeployedModel model = ModelCache.findModelCache().getModel(processInstance.getModelOID());
-      for (ProcessDescriptor processDescriptor : processDescriptors)
+      try
       {
-         DataPathDetails inDataPath = inDataPathsMap.get(processDescriptor.getId());
-         // For non-filterable OUT DataPath(complex), prevent edit
-         if (CollectionUtils.isNotEmpty(outDataPathsMap) && DescriptorFilterUtils.isDataFilterable(inDataPath))
+         GenericDataMapping mapping;
+         DataMappingWrapper dmWrapper;
+         // Store DataPath Map with all IN and OUT mappings
+         updateDataPathMap();
+         boolean suppressBlankDescriptors = CommonDescriptorUtils.isSuppressBlankDescriptorsEnabled();
+         DeployedModel model = ModelCache.findModelCache().getModel(processInstance.getModelOID());
+         for (ProcessDescriptor processDescriptor : processDescriptors)
          {
-            String data = inDataPath.getData();
-            // Get OUT dataPath for IN DataPath
-            DataPathDetails outDataPath = fetchOutDataPath(inDataPath);
-            if (null != outDataPath)
+            DataPathDetails inDataPath = inDataPathsMap.get(processDescriptor.getId());
+            // For non-filterable OUT DataPath(complex), prevent edit
+            if (CollectionUtils.isNotEmpty(outDataPathsMap) && DescriptorFilterUtils.isDataFilterable(inDataPath))
             {
-               mapping = new GenericDataMapping(outDataPath);
-               dmWrapper = new DataMappingWrapper(mapping, null, false);
-               Class dataClass = mapping.getMappedType();
-               String type = dmWrapper.getType();
-               Object value = processDescriptor.getValue();
-               if (ProcessPortalConstants.LONG_TYPE.equalsIgnoreCase(type)
-                     || ProcessPortalConstants.DOUBLE_TYPE.equalsIgnoreCase(type)
-                     || ProcessPortalConstants.BIG_DECIMAL_TYPE.equalsIgnoreCase(type))
+               // Get OUT dataPath for IN DataPath
+               DataPathDetails outDataPath = fetchOutDataPath(inDataPath);
+               if (null != outDataPath)
                {
-                  descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), convertToNumber(
-                        processDescriptor.getValue(), dataClass),  processDescriptor.getId(), type, dataClass, true));
-               }
-               else if (ProcessPortalConstants.BOOLEAN_TYPE.equalsIgnoreCase(type))
-               {
-                  descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), Boolean
-                        .parseBoolean(processDescriptor.getValue()), processDescriptor.getId(), type, dataClass, true));
-               }
-               else if (ProcessPortalConstants.DATE_TYPE.equalsIgnoreCase(type)
-                     || ProcessPortalConstants.TIMESTAMP_TYPE.equalsIgnoreCase(type)
-                     || ProcessPortalConstants.TIME_TYPE.equalsIgnoreCase(type))
-               {
-                  Date dateValue = DateUtils.parseDateTime(processDescriptor.getValue());
-                  if (null == dateValue)
+                  Class dataClass = outDataPath.getMappedType();
+                  mapping = new GenericDataMapping(outDataPath);
+                  dmWrapper = new DataMappingWrapper(mapping, null, false);
+                  String type = dmWrapper.getType();
+                  Object value = DescriptorFilterUtils.convertDataPathValue(dataClass, processDescriptor.getValue());
+                  if(null != value)
                   {
-                     dateValue = DateUtils.parseDateTime(processDescriptor.getValue(), DATE_FORMAT,
-                           Locale.getDefault(), TimeZone.getDefault());
+                     descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), value,  processDescriptor.getId(), type, dataClass, true));
                   }
-                  descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), getDateValue(
-                        dateValue, dataClass), processDescriptor.getId(), type, dataClass, true));
+                  else
+                  {
+                     descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor
+                           .getValue()));   
+                  }
                }
                else
                {
-                  descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor
-                        .getValue(), processDescriptor.getId(), type, dataClass, true));
+                  if (!suppressBlankDescriptors || (suppressBlankDescriptors
+                        && (null != processDescriptor.getValue() && StringUtils.isNotEmpty(processDescriptor.getValue()))))
+                  {
+                     descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor
+                           .getValue()));   
+                  }
                }
             }
             else
             {
-               if (!suppressBlankDescriptors || (suppressBlankDescriptors
-                     && (null != processDescriptor.getValue() && StringUtils.isNotEmpty(processDescriptor.getValue()))))
+               if (!suppressBlankDescriptors
+                     || (suppressBlankDescriptors && (null != processDescriptor.getValue() && StringUtils
+                           .isNotEmpty(processDescriptor.getValue()))))
                {
                   descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor
-                        .getValue()));   
+                        .getValue()));
                }
             }
+            
          }
-         else
-         {
-            if (!suppressBlankDescriptors
-                  || (suppressBlankDescriptors && (null != processDescriptor.getValue() && StringUtils
-                        .isNotEmpty(processDescriptor.getValue()))))
-            {
-               descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor
-                     .getValue()));
-            }
-         }
-         
       }
+      catch(Exception e)
+      {
+         FacesMessage facesMsg = ExceptionHandler.getFacesMessage(
+               new PortalException(PortalErrorClass.UNABLE_TO_CONVERT_DATAMAPPING_VALUE, e));
+
+         throw new ValidatorException(facesMsg);
+      }
+      
       return descriptorsEntries;
    }
    
@@ -706,40 +690,11 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
                userObject = (DescriptorItemTableEntry) event.getComponent().getAttributes().get("row");
                String type = userObject.getType();
                Class dataClass = userObject.getMappedType();
-               if (ProcessPortalConstants.LONG_TYPE.equalsIgnoreCase(type)
-                     || ProcessPortalConstants.DOUBLE_TYPE.equalsIgnoreCase(type)
-                     || ProcessPortalConstants.BIG_DECIMAL_TYPE.equalsIgnoreCase(type))
-               {
-                  newValue = convertToNumber(newDescriptorValue, dataClass);
-
-               }
-               else if (ProcessPortalConstants.BOOLEAN_TYPE.equalsIgnoreCase(type))
-               {
-                  newValue = Boolean.valueOf(newDescriptorValue.toString());
-               }
-               else if (ProcessPortalConstants.DATE_TYPE.equalsIgnoreCase(type)
-                     || ProcessPortalConstants.TIMESTAMP_TYPE.equalsIgnoreCase(type)
-                     || ProcessPortalConstants.TIME_TYPE.equalsIgnoreCase(type))
-               {
-                  if (newDescriptorValue instanceof Date)
-                  {
-                     newValue = getDateValue((Date) newDescriptorValue, dataClass);
-                  }
-                  else if (newDescriptorValue instanceof String)
-                  {
-                     newValue = getDateValue(DateUtils.parseDateTime((String) newDescriptorValue), dataClass);
-                  }
-
-               }
-               else
-               {
-                  newValue = newDescriptorValue.toString().trim();
-               }
                inDataPath = inDataPathsMap.get(userObject.getId());
                outDataPath = fetchOutDataPath(inDataPath);
                if (null != outDataPath)
                {
-
+                  newValue = DescriptorFilterUtils.convertDataPathValue(dataClass, newDescriptorValue);
                   ServiceFactoryUtils.getWorkflowService().setOutDataPath(processInstance.getOID(),
                         outDataPath.getId(), newValue);
 
@@ -766,103 +721,27 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
     */
    private DataPathDetails fetchOutDataPath(DataPathDetails inDataPath)
    {
-      if(CollectionUtils.isNotEmpty(outDataPathsMap))
+      if (CollectionUtils.isNotEmpty(outDataPathsMap))
       {
          // read all OUT dataPath for given Data
-         List<DataPathDetails> outDataPaths = outDataPathsMap.get(inDataPath.getId());
-         if(CollectionUtils.isNotEmpty(outDataPaths))
+         DataPathDetails outDataPath = outDataPathsMap.get(inDataPath.getId());
+         if (null != outDataPath)
          {
-            for(DataPathDetails outPath : outDataPaths)
+            // Filter dataPath with same AccessPoint and on same Qualified Model
+            if (outDataPath.getAccessPath().equals(inDataPath.getAccessPath()))
             {
-               // Filter dataPath with same AccessPoint and on same Qualified Model 
-               if(outPath.getAccessPath().equals(inDataPath.getAccessPath()))
+               String data = inDataPath.getData();
+               Data data1 = DescriptorFilterUtils.getData(inDataPath);
+               Data data2 = DescriptorFilterUtils.getData(outDataPath);
+               if (data1.equals(data2))
                {
-                  String data = inDataPath.getData();
-                  Data data1 = DescriptorFilterUtils.getData(inDataPath);
-                  Data data2 = DescriptorFilterUtils.getData(outPath);
-                  if (data1.equals(data2))
-                  {
-                     return outPath;
-                  }
+                  return outDataPath;
                }
             }
          }
       }
-      
-      return null;
-   }
-   
-   /**
-    * 
-    * @param value
-    * @param mappedClass
-    * @return
-    */
-   private Object getDateValue(Date value, Class mappedClass)
-   {
-      Object valueToSet = value;
-      if(mappedClass == Calendar.class)
-      {
-         Calendar cal = Calendar.getInstance();
-         cal.clear();
-         cal.setTime(value);
-         valueToSet = cal;
-      }
-      return valueToSet;
-   }
-   
-   /**
-    * 
-    * @param value
-    * @param type
-    * @return
-    */
-   private Number convertToNumber(Object value, Class type)
-   {
-      Number localValue = null;
-      if(value != null && StringUtils.isNotEmpty(value.toString()))
-      {
-         try
-         {
-            String strVal = value.toString();
-            if(type == Long.class)
-            {
-               localValue = new Long(strVal);
-            }
-            if(type == Integer.class)
-            {
-               localValue = new Integer(strVal);
-            }
-            else if(type == Short.class)
-            {
-               localValue = new Short(strVal);
-            }
-            else if(type == Byte.class)
-            {
-               localValue = new Byte(strVal);
-            }
-            else if(type == Double.class)
-            {
-               localValue = new Double(strVal);
-            }
-            else if(type == Float.class)
-            {
-               localValue = new Float(strVal);
-            }
-            else if( type == BigDecimal.class)
-            {
-                localValue = new BigDecimal(strVal);
-            }
-         }
-         catch (Exception e)
-         {
-            FacesMessage facesMsg = ExceptionHandler.getFacesMessage(
-                  new PortalException(PortalErrorClass.UNABLE_TO_CONVERT_DATAMAPPING_VALUE, e));
 
-            throw new ValidatorException(facesMsg);
-         }
-      }
-      return localValue;
+      return null;
    }
    
    /**
@@ -875,24 +754,13 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
       List<DataPathDetails> dataPaths = processDef.getAllDataPaths();
       DataPathDetails dataPathDetails;
       int size = dataPaths.size();
-      List<DataPathDetails> outDataPaths = null;      
       for (int i = 0; i < size; i++)
       {
          dataPathDetails = (DataPathDetails) dataPaths.get(i);
 
          if(dataPathDetails.getDirection().equals(Direction.OUT))
          {
-            // Store all OUT dataPath on same DataId
-            if(!outDataPathsMap.containsKey(dataPathDetails.getId()))
-            {
-               outDataPaths = CollectionUtils.newArrayList();
-               outDataPathsMap.put(dataPathDetails.getId(), outDataPaths);  
-            }
-            else
-            {
-               outDataPaths = outDataPathsMap.get(dataPathDetails.getId());
-            }
-            outDataPaths.add(dataPathDetails);
+            outDataPathsMap.put(dataPathDetails.getId(), dataPathDetails);  
          }
          else
          {
@@ -900,6 +768,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
          }
       }
    }
+   
    /**
     * Initializes Descriptor columns
     */
