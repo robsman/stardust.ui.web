@@ -158,19 +158,19 @@
                                         <th>{{overlayPanel.i18nLabels('header.type.title')}}</th>
                                          <th>Predefined Values</th>
                                      </tr>
-                                     <tr ng-repeat="ap in overlayPanel.getSelectedApplication().contexts.application.accessPoints | filter : {direction:'IN'}">
+                                     <tr ng-repeat="ap in overlayPanel.getApplication().contexts.application.accessPoints | filter : {direction:'IN'}"><!--  {ap:{direction:'IN'}} -->
                                         <td>{{ ap.name }}</td>
                                         <td><select disabled="true" ng-model="ap.direction">
 								                <option value="IN">In</option>
 								                <option value="OUT">Out</option>
 						                   </select></td>
                                          <td><select disabled="true" ng-model="ap.dataType">
-								                <option value="struct">Strcutred Data</option>
+								                <option value="struct">Structured Data</option>
 								                <option value="primitive">Primitive</option>
                                                 <option value="dmsDocument">Document</option>
 						                   </select></td>
                                          <td ng-show="ap.dataType =='struct'? true : false">
-                                         <select disabled="true" ng-model="ap.structuredDataTypeFullId"
+                                         	 <select disabled="true" ng-model="ap.structuredDataTypeFullId"
                                                   ng-options="structuredType.getFullId() as structuredType.name group by structuredType.modelId for structuredType in overlayPanel.getAllStructuredTypes()"
                                                   >
                                              </select>
@@ -196,7 +196,10 @@
                                          <td ng-show="ap.dataType == 'primitive'? true : false">
                                             <div ng-show="ap.primitiveDataType =='boolean'? true : false">boolean</div>
                                             <div ng-show="ap.primitiveDataType =='Calendar'? true : false">Calendar</div>
-                                             <div ng-show="ap.primitiveDataType !='Calendar' && ap.primitiveDataType !='boolean'? true : false">other</div>
+                                            <div ng-show="ap.primitiveDataType !='Calendar' && ap.primitiveDataType !='boolean'? true : false">
+                                           		<!-- <input type="text" ng-model="elt.value" ng-blur="overlayPanel.valueChanged(elt)"/> --><!-- -->
+                                           		<input type="text" ng-model="ap.attributes['carnot:engine:defaultValue']" ng-blur="overlayPanel.valueChanged(ap)"/>
+											</div>
                                          </td>
                                          <td ng-show="ap.dataType =='dmsDocument'? true : false"></td>
                                          <td ng-show="ap.dataType =='struct'? true : false"></td>
@@ -205,14 +208,14 @@
                                 <div class="heading" style="margin-top: 10px;">
                                     {{overlayPanel.i18nLabels('outputs.title')}}
                                 </div>
-                                <table cellpadding="0" cellspacing="0" class="fieldSetTable" style="width: 100%;">
+                                 <table cellpadding="0" cellspacing="0" class="fieldSetTable" style="width: 100%;">
                                      <tr>
                                         <th>{{overlayPanel.i18nLabels('header.name.title')}}</th>
                                         <th>{{overlayPanel.i18nLabels('header.direction.title')}}</th>
                                         <th>{{overlayPanel.i18nLabels('header.dataType.title')}}</th>
                                         <th>{{overlayPanel.i18nLabels('header.type.title')}}</th>
                                      </tr>
-                                     <tr ng-repeat="ap in overlayPanel.getSelectedApplication().contexts.application.accessPoints | filter : {direction:'OUT'}">
+                                     <tr ng-repeat="ap in overlayPanel.selectedApplication.contexts.application.accessPoints | filter : {direction:'OUT'}">
                                         <td>{{ ap.name }}</td>
                                         <td><select disabled="true" ng-model="ap.direction">
 								                <option value="IN">In</option>

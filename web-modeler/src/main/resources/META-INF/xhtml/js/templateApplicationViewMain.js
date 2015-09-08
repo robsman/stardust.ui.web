@@ -9,8 +9,6 @@
  ******************************************************************************/
 
 /**
- * @author Marc Gille
- * @author Robert Sauer
  */
 bpm.portal.modelerRequire.config();
 

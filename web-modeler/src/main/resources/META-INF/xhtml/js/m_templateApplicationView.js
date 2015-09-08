@@ -17,11 +17,11 @@ define(
      "bpm-modeler/js/m_model", "bpm-modeler/js/m_dataTypeSelector",
      "bpm-modeler/js/m_parameterDefinitionsPanel",
      "bpm-modeler/js/m_codeEditorAce", "bpm-modeler/js/m_i18nUtils",
-     "bpm-modeler/js/m_angularContextUtils", "bpm-modeler/js/m_extensionManager"],
+     "bpm-modeler/js/m_angularContextUtils", "bpm-modeler/js/m_extensionManager","bpm-modeler/js/m_routeDefinitionUtils"],
     function (m_utils, m_constants, m_urlUtils, m_session, m_command,
                m_commandsController, m_dialog, m_modelElementView, m_model,
                m_dataTypeSelector, m_parameterDefinitionsPanel,
-               m_codeEditorAce, m_i18nUtils, m_angularContextUtils, m_extensionManager) {
+               m_codeEditorAce, m_i18nUtils, m_angularContextUtils, m_extensionManager,m_routeDefinitionUtils) {
         return {
             initialize: function (fullId) {
                 m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
@@ -206,7 +206,73 @@ define(
                 this.modelId=this.getExtendedAttributeValue("stardust:application::template::modelId");
                 this.eltId=this.getExtendedAttributeValue("stardust:application::template::elementId");
                 this.elementType=this.getExtendedAttributeValue("stardust:application::template::elementType");
+                this.getSelectedApplication();
+//                this.accessPointsConfiguration=[];
+//                this.accessPointsConfiguration= this.populateAccessPointsConfiguration();
+//
+//                var providedConfigurationString=this.getExtendedAttributeValue("stardust:application::template::configuration");
+//                if(providedConfigurationString){
+//                	//retrieve value for a certain AP; if
+//                	var providedConfiguration=JSON.parse(providedConfigurationString);
+//                	this.accessPointsConfiguration=this.updateValuesForAccessPointsConfiguration(this.accessPointsConfiguration, providedConfiguration);
+//                }
+                
+                
+                
             };
+//            /**
+//            *
+//            */
+//            TemplateApplicationView.prototype.updateValuesForAccessPointsConfiguration = function (apConfiguration, configuration) { 
+//        		var response=[];
+//        		for(var i in apConfiguration)
+//            	{
+//        			var elt=apConfiguration[i];
+//        			var providedConfig=this.findConfigurationById(configuration, elt.ap.id);
+//        			if(providedConfig)
+//        				response.push({"ap":elt.ap,"value":providedConfig.value});
+//        			else
+//        				response.push({"ap":elt.ap,"value":""});
+//            	}
+//            	
+//            	return response;
+//            }
+//            TemplateApplicationView.prototype.findConfigurationById= function (
+//            		configuration, id)
+//           {
+//              var elt = null;
+//              for (var n = 0; n < configuration.length; n++)
+//              {
+//                 var ap = configuration[n].ap;
+//                 if (ap.id == id)
+//                 {
+//                    elt = configuration[n];
+//                    break;
+//                 }
+//              }
+//              return elt;
+//           }
+            
+            
+//            /**
+//            *
+//            */
+//            TemplateApplicationView.prototype.populateAccessPointsConfiguration = function () { 
+//            	var app=this.application;//getSelectedApplication();
+//            	var response=[];
+//            	if(app){
+//            		configurationElements=[];
+//            		for(var i in app.contexts.application.accessPoints)
+//	            	{
+//            			var ap=app.contexts.application.accessPoints[i];
+//            			
+//            			response.push({"ap":ap,"value":""});
+//	            	}
+//            	
+//            	}
+//            	return response;
+//            }
+            
             
             this.modelId;
             this.eltId;
@@ -258,7 +324,7 @@ define(
                 }
                 return elts;
             };
-            
+            var selectedApplication;
              /**
             *
             */
@@ -266,9 +332,62 @@ define(
                 if(!this.validate())
                     return;
                 m_utils.debug("===> Element ID Change" + this.eltId);
-                this.submit();
+                var attributes = this.getApplication().attributes;
+                var submitElements = {};
+                this.selectedApplication=this.findSelectedApplicationById(this.eltId);
+                if(this.selectedApplication){
+                	var accessPoints= this.selectedApplication.contexts.application.accessPoints;
+                	
+                	attributes["stardust:application::template::elementId"]=this.eltId;
+                	attributes["stardust:application::template::elementType"]=this.getElementType(this.eltId);
+                	submitElements.contexts = {
+                            application : {
+                               accessPoints : accessPoints
+                            }
+                         };
+                }else{
+                	attributes["stardust:application::template::elementId"]=null;
+                	attributes["stardust:application::template::elementType"]=null;
+                	this.elementType=null;
+                	this.elementId=null;
+                }
+                	
+                submitElements.attributes = attributes;
+                this.submitChanges(submitElements, true);
+                this.application.contexts=this.selectedApplication.contexts;
+               // this.accessPointsConfiguration= this.populateAccessPointsConfiguration();
+                //this.submit();
             };
             
+            /**
+            *
+            */
+            TemplateApplicationView.prototype.valueChanged = function (ap) { 
+            	m_utils.debug("===>Value changed for " + ap.id);
+            	if(ap.attributes["carnot:engine:defaultValue"])
+            		m_utils.debug("Default value " + ap.attributes["carnot:engine:defaultValue"]);
+
+	            var accessPoints= this.getApplication().contexts.application.accessPoints;
+            	for (var i in accessPoints) {
+                    var elt=accessPoints[i];
+                    if(elt.id==ap.id){
+                    	
+                    	elt.attributes["carnot:engine:visibility"]=false;
+                    	elt.attributes["carnot:engine:defaultValue"]=ap.attributes["carnot:engine:defaultValue"];
+                    	
+                    }
+            	}
+                var submitElements = {};
+                var attributes = this.getApplication().attributes;
+                submitElements.attributes = attributes;
+                submitElements.contexts = {
+                        application : {
+                           accessPoints : accessPoints
+                        }
+                     };
+                
+                this.submitChanges(submitElements, true);
+            }
             /**
             *
             */
@@ -365,7 +484,9 @@ define(
                 return application;
             }
             TemplateApplicationView.prototype.getSelectedApplication = function () {
-                return this.findSelectedApplicationById(this.eltId);
+            	if(!this.selectedApplication)
+            		this.selectedApplication=this.findSelectedApplicationById(this.eltId);
+                return this.selectedApplication;
             }
             
             /**
@@ -443,16 +564,18 @@ define(
                 return true;
             };
             TemplateApplicationView.prototype.getElementType= function (elementId) {
-                if(elementId){
+            	if(elementId){
                     var app=this.findSelectedApplicationById(elementId);
                     if(app!=null && app.type=="application")
-                        return "application";
+                    	this.elementType= "application";
                     if(!app){
                         var process=m_model.findProcess(elementId);
                         if(process!=null && process.type=="processDefinition")
-                           return "process";
+                        	this.elementType= "process";
                     }
                 }
+                if(this.elementType)
+                	return this.elementType;
                 return ;
             }
             /**
@@ -464,11 +587,7 @@ define(
                 attributes["stardust:application::template::modelId"]=this.modelId;
                 attributes["stardust:application::template::elementId"]=this.eltId;
                 attributes["stardust:application::template::elementType"]=this.getElementType(this.eltId);
-                this
-                  .submitChanges(
-                           {
-                              attributes :attributes
-                           }, false);
+
             };
 
         }
