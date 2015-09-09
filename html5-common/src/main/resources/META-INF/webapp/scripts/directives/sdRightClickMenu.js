@@ -17,6 +17,16 @@
           
         //controls menu visibility
         scope.showMenu = false;
+        
+        
+        scope.showMenu = function(){
+          if (!scope.showMenu) {
+            scope.showMenu = true;
+            //register for document click event to close self when clicked elsewhere
+            $(document).bind('click', popoverCloseEvent);
+            $(document).bind('contextmenu', popoverCloseEvent);
+          }
+        }
 
           //callback function from our template which wraps the users callback
           scope.invoke = function(item,e){
@@ -25,14 +35,14 @@
                 parentLi;
             
             //handle FireFox-IE-Chrome
-            elem = e.target || e.srcElement;
+            var element = e.target || e.srcElement;
           
             //Clicks can occur on the LI or the nested span
-            if(elem.nodeName==='SPAN'){
-              parentLi = angular.element(elem.parentElement);
+            if(element.nodeName==='SPAN'){
+              parentLi = angular.element(element.parentElement);
             }
             else{
-              parentLi = angular.element(elem.srcElement);
+              parentLi = angular.element(element.srcElement);
             }
             
             //user can implement this css class as desired (or not)
@@ -45,15 +55,18 @@
             
             //invoke
             this.callback({"menuItem" : menuItem,"e" : e});
-            
+
             //wait for deferred to resolve.
             deferred.promise.then(function(fx){
               
-            //on resolve hide menu
-              scope.showMenu=false;
-              
               //then remove the deferred class
               parentLi.removeClass("deferred");
+              
+              //on resolve hide menu
+              scope.showMenu = false;
+              // this is important since we want this to be called exactly once
+              $(document).unbind('click', popoverCloseEvent);
+              $(document).unbind('contextmenu', popoverCloseEvent);
               
               //let user muck about with the scope however they want by
               //invoking their function passed through as resolved data
@@ -64,12 +77,21 @@
             });
           };//scope.invoke ends.
         
-      }//Linking function ends.
-      
+    function popoverCloseEvent(event) {
+        if (!event || elem.find(event.target).length == 0) {
+          scope.$apply(function() {
+            scope.showMenu = false;
+            // this is important since we want this to be called exactly once
+            $(document).unbind('click', popoverCloseEvent);
+            $(document).unbind('contextmenu', popoverCloseEvent);
+          });
+        }
+      }
+    }//Linking function ends.
       
       return {
         template: "<div class='sd-drop-down-menu'>" +
-                    "<div class='dd-header' ng-right-click='showMenu = !showMenu' ng-transclude></div>" +
+                    "<div class='dd-header' ng-right-click='showMenu()' ng-transclude></div>" +
                     "<ul style='position:absolute;' ng-show='showMenu'>" +
                       "<span ng-click='showMenu=false'>x</span>" +
                       "<li ng-click='invoke(item,$event)'" +

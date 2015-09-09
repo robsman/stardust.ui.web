@@ -558,6 +558,7 @@
       }, function(error) {
         trace.error(error);
         self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.save.error"));
+        v.deferred.resolve();
       });
 
     }
@@ -593,6 +594,7 @@
       }, function(error) {
         trace.error(error);
         self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.save.error"));
+        v.deferred.resolve();
       });
     }
   }
