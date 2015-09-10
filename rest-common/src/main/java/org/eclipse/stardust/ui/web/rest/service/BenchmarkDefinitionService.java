@@ -38,7 +38,6 @@ import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.DocumentUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -72,7 +71,7 @@ public class BenchmarkDefinitionService
     * 
     * @return
     */
-   public List<BenchmarkDefinitionDTO> getBenchmarkDefinitions() throws Exception
+   public List<BenchmarkDefinitionDTO> getBenchmarkDefinitions()
    {
       List<BenchmarkDefinitionDTO> list = new ArrayList<BenchmarkDefinitionDTO>();
       try
@@ -95,7 +94,10 @@ public class BenchmarkDefinitionService
       }
       catch (Exception e)
       {
-         throw e;
+         String errorMsg = StringUtils.isNotEmpty(e.getLocalizedMessage())
+               ? e.getLocalizedMessage()
+               : restCommonClientMessages.getString("benchmark.design.error");
+         throw new I18NException(errorMsg);
       }
       return list;
    }
@@ -105,7 +107,7 @@ public class BenchmarkDefinitionService
     * @return
     * @throws Exception
     */
-   public List<BenchmarkDefinitionDTO> getRuntimeBenchmarkDefinitions() throws Exception
+   public List<BenchmarkDefinitionDTO> getRuntimeBenchmarkDefinitions()
    {
       List<BenchmarkDefinitionDTO> list = new ArrayList<BenchmarkDefinitionDTO>();
       try
@@ -128,7 +130,10 @@ public class BenchmarkDefinitionService
       }
       catch (Exception e)
       {
-         throw e;
+         String errorMsg = StringUtils.isNotEmpty(e.getLocalizedMessage())
+               ? e.getLocalizedMessage()
+               : restCommonClientMessages.getString("benchmark.runtime.error");
+         throw new I18NException(errorMsg);
       }
       return list;
    }
@@ -139,7 +144,7 @@ public class BenchmarkDefinitionService
     * @return
     * @throws Exception
     */
-   public BenchmarkDefinitionDTO getRuntimeBenchmarkDefinition(long runtimeOid) throws Exception
+   public BenchmarkDefinitionDTO getRuntimeBenchmarkDefinition(long runtimeOid)
    {
       BenchmarkDefinitionDTO benchmarkDto = new BenchmarkDefinitionDTO();
       try
@@ -154,7 +159,10 @@ public class BenchmarkDefinitionService
       }
       catch (Exception e)
       {
-         throw e;
+         String errorMsg = StringUtils.isNotEmpty(e.getLocalizedMessage())
+               ? e.getLocalizedMessage()
+               : restCommonClientMessages.getString("benchmark.fetch.error");
+         throw new I18NException(errorMsg);
       }
       return benchmarkDto;
    }
@@ -238,7 +246,7 @@ public class BenchmarkDefinitionService
     * @param runtimeOid
     * @throws Exception
     */
-   public void deletePublishedBenchmarkDefinition(long runtimeOid) throws Exception
+   public void deletePublishedBenchmarkDefinition(long runtimeOid)
    {
       try
       {
@@ -246,7 +254,10 @@ public class BenchmarkDefinitionService
       }
       catch (Exception e)
       {
-         throw e;
+         String errorMsg = StringUtils.isNotEmpty(e.getLocalizedMessage())
+               ? e.getLocalizedMessage()
+               : restCommonClientMessages.getParamString("benchmark.delete.error", String.valueOf(runtimeOid));
+         throw new I18NException(errorMsg);
       }
    }
    
@@ -255,7 +266,7 @@ public class BenchmarkDefinitionService
     * @param benchmarkId
     * @throws Exception
     */
-   public void publishBenchmarkDefinition(String benchmarkId) throws Exception
+   public void publishBenchmarkDefinition(String benchmarkId)
    {
       try
       {
@@ -284,9 +295,16 @@ public class BenchmarkDefinitionService
             deployedArtifacts = documentUtils.deployBenchmarkDocument(0, artifact);
          }
       }
-      catch (Exception e)
+      catch (I18NException e)
       {
          throw e;
+      }
+      catch (Exception e)
+      {
+         String errorMsg = StringUtils.isNotEmpty(e.getLocalizedMessage())
+               ? e.getLocalizedMessage()
+               : restCommonClientMessages.getParamString("benchmark.publish.error", benchmarkId);
+         throw new I18NException(errorMsg);
       }
    }
    
@@ -295,7 +313,7 @@ public class BenchmarkDefinitionService
     * 
     * @return
     */
-   public BenchmarkDefinitionDTO createBenchmarkDefinition(JsonObject benchmarkJSON) throws Exception
+   public BenchmarkDefinitionDTO createBenchmarkDefinition(JsonObject benchmarkJSON)
    {
       if (null != benchmarkJSON)
       {
@@ -313,7 +331,10 @@ public class BenchmarkDefinitionService
          }
          catch (Exception e)
          {
-            throw e;
+            String errorMsg = StringUtils.isNotEmpty(e.getLocalizedMessage())
+                  ? e.getLocalizedMessage()
+                  : restCommonClientMessages.getString("benchmark.save.error");
+            throw new I18NException(errorMsg);
          }
       }
       return null;
@@ -325,7 +346,7 @@ public class BenchmarkDefinitionService
     * @param benchmarkJSON
     * @return
     */
-   public BenchmarkDefinitionDTO updateBenchmarkDefinition(String benchmarkId, JsonObject benchmarkJSON) throws Exception
+   public BenchmarkDefinitionDTO updateBenchmarkDefinition(String benchmarkId, JsonObject benchmarkJSON)
    {
       if (null != benchmarkJSON)
       {
@@ -342,7 +363,10 @@ public class BenchmarkDefinitionService
          }
          catch (Exception e)
          {
-           throw e;
+            String errorMsg = StringUtils.isNotEmpty(e.getLocalizedMessage())
+                  ? e.getLocalizedMessage()
+                  : restCommonClientMessages.getString("benchmark.save.error");
+            throw new I18NException(errorMsg);
          }
       }
       return null;
@@ -353,7 +377,7 @@ public class BenchmarkDefinitionService
     * @param benchmarkId
     * @throws Exception
     */
-   public void deleteBenchmarkDefinition(String benchmarkId) throws Exception
+   public void deleteBenchmarkDefinition(String benchmarkId)
    {
       try
       {
@@ -365,11 +389,14 @@ public class BenchmarkDefinitionService
       }
       catch (Exception e)
       {
-         throw e;
+         String errorMsg = StringUtils.isNotEmpty(e.getLocalizedMessage())
+               ? e.getLocalizedMessage()
+               : restCommonClientMessages.getParamString("benchmark.delete.error", benchmarkId);
+         throw new I18NException(errorMsg);
       }
    }
    
-   private Document getBenchmarkDefinitionContent(String benchmarkId) throws Exception
+   private Document getBenchmarkDefinitionContent(String benchmarkId)
    {
       Folder folder = documentUtils.getFolder(BENCHMARK_DEFINITION_FOLDER);
       Document doc = null;
@@ -388,7 +415,7 @@ public class BenchmarkDefinitionService
       }
       if(null == doc)
       {
-         throw new ResourceNotFoundException("Benchmark definition not found");
+         throw new I18NException(restCommonClientMessages.getString("benchmark.fetch.error"));
       }
       return doc;
 

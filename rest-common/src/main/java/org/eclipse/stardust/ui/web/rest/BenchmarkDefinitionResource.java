@@ -10,13 +10,10 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest;
 
-import static org.eclipse.stardust.common.CollectionUtils.newHashMap;
-
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.activation.DataHandler;
@@ -30,7 +27,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
@@ -43,6 +39,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkCategoryDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
+import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -71,8 +68,6 @@ public class BenchmarkDefinitionResource
    @Path("/design-time")
    public Response getBenchmarkDefinitions()
    {
-      try
-      {
          List<BenchmarkDefinitionDTO> benchmarkDefs = benchmarkDefinitionService.getBenchmarkDefinitions();
          JsonObject benchmarkDefinitions = new JsonObject();
          JsonArray jsonArray = new JsonArray();
@@ -84,13 +79,6 @@ public class BenchmarkDefinitionResource
          benchmarkDefinitions.add("benchmarkDefinitions", jsonArray);
 
          return Response.ok(benchmarkDefinitions.toString(), MediaType.APPLICATION_JSON).build();
-      }
-      catch (Exception e)
-      {
-         trace.error("Exception while fetching design time Benchmark Definitions", e);
-
-         return Response.serverError().build();
-      }
    }
    
    @GET
@@ -98,8 +86,6 @@ public class BenchmarkDefinitionResource
    @Path("/run-time")
    public Response getRuntimeBenchmarkDefinitions()
    {
-      try
-      {
          List<BenchmarkDefinitionDTO> benchmarkDefs = benchmarkDefinitionService.getRuntimeBenchmarkDefinitions();
          JsonObject benchmarkDefinitions = new JsonObject();
          JsonArray jsonArray = new JsonArray();
@@ -111,13 +97,6 @@ public class BenchmarkDefinitionResource
          benchmarkDefinitions.add("benchmarkDefinitions", jsonArray);
 
          return Response.ok(benchmarkDefinitions.toString(), MediaType.APPLICATION_JSON).build();
-      }
-      catch (Exception e)
-      {
-         trace.error("Exception while fetching Runtime Benchmark Definitions", e);
-
-         return Response.serverError().build();
-      }
 
    }
 
@@ -126,19 +105,9 @@ public class BenchmarkDefinitionResource
    @Path("/run-time/{runtimeOid}")
    public Response getRuntimeBenchmarkDefinition(@PathParam("runtimeOid") long runtimeOid)
    {
-      try
-      {
          BenchmarkDefinitionDTO benchmarkDefinitionDTO = benchmarkDefinitionService.getRuntimeBenchmarkDefinition(runtimeOid);
          JsonObject benchmark = createBenchmarkJSON(benchmarkDefinitionDTO);
          return Response.ok(benchmark.toString()).build();   
-      }
-      catch (Exception e)
-      {
-         trace.error("Exception while fetching Runtime Benchmark Definition", e);
-
-         return Response.serverError().build();
-      }
-      
    }
    
    @GET
@@ -156,18 +125,8 @@ public class BenchmarkDefinitionResource
    @Path("/run-time/{runtimeOid}")
    public Response deletePublishedBenchmarkDefinition(@PathParam("runtimeOid") long runtimeOid)
    {
-      try
-      {
          benchmarkDefinitionService.deletePublishedBenchmarkDefinition(runtimeOid);
          return Response.ok("Run-time Benchmark " + runtimeOid + " deleted.", MediaType.APPLICATION_JSON).build();
-      }
-      catch (Exception e)
-      {
-         trace.error("Exception while deleting run-time Benchmark Definitions", e);
-
-         return Response.serverError().build();
-      }
-
    }
    
    @POST
@@ -175,19 +134,10 @@ public class BenchmarkDefinitionResource
    @Path("/run-time")
    public Response publishBenchmarkDefinition(String postedData)
    {
-      try
-      {
          JsonObject benchmarkJSON = JsonDTO.getJsonObject(postedData);
          String benchmarkId = GsonUtils.extractString(benchmarkJSON, "id");
          benchmarkDefinitionService.publishBenchmarkDefinition(benchmarkId);
          return Response.ok(" ", MediaType.APPLICATION_JSON).build();
-      }
-      catch (Exception e)
-      {
-         trace.error("Exception while publishing Benchmark Definitions", e);
-
-         return Response.serverError().build();
-      }
    }
 
    @POST
@@ -195,20 +145,11 @@ public class BenchmarkDefinitionResource
    @Path("/design-time")
    public Response createBenchmarkDefinition(String postedData)
    {
-      try
-      {
          JsonObject benchmarkData = jsonIo.readJsonObject(postedData);
          BenchmarkDefinitionDTO benchmarkDefinition = benchmarkDefinitionService
                .createBenchmarkDefinition(benchmarkData);
 
          return Response.ok(createBenchmarkJSON(benchmarkDefinition).toString(), MediaType.APPLICATION_JSON).build();
-      }
-      catch (Exception e)
-      {
-         trace.error(e, e);
-
-         return Response.serverError().build();
-      }
    }
    
    @POST
@@ -249,20 +190,11 @@ public class BenchmarkDefinitionResource
    @Path("/design-time/{id}")
    public Response updateBenchmarkDefinition(@PathParam("id") String benchmarkId, String postedData)
    {
-      try
-      {
          JsonObject benchmarkData = jsonIo.readJsonObject(postedData);
          BenchmarkDefinitionDTO benchmarkDefinition = benchmarkDefinitionService.updateBenchmarkDefinition(benchmarkId,
                benchmarkData);
 
          return Response.ok(createBenchmarkJSON(benchmarkDefinition).toString(), MediaType.APPLICATION_JSON).build();
-      }
-      catch (Exception e)
-      {
-         trace.error("Exception while updating design time Benchmark Definitions", e);
-
-         return Response.serverError().build();
-      }
    }
 
    @DELETE
@@ -270,17 +202,8 @@ public class BenchmarkDefinitionResource
    @Path("/design-time/{id}")
    public Response deleteBenchmarkDefinition(@PathParam("id") String benchmarkId)
    {
-      try
-      {
          benchmarkDefinitionService.deleteBenchmarkDefinition(benchmarkId);
          return Response.ok("Benchmark " + benchmarkId + " deleted.", MediaType.APPLICATION_JSON).build();
-      }
-      catch (Exception e)
-      {
-         trace.error("Exception while deleting design time Benchmark Definitions", e);
-
-         return Response.serverError().build();
-      }
 
    }
    
@@ -290,7 +213,7 @@ public class BenchmarkDefinitionResource
     * @return
     * @throws Exception
     */
-   private JsonObject createBenchmarkJSON(BenchmarkDefinitionDTO benchmarkDefinition) throws Exception
+   private JsonObject createBenchmarkJSON(BenchmarkDefinitionDTO benchmarkDefinition)
    {
       JsonObject benchmarkDefinitionJson = new JsonObject();
       try
@@ -301,7 +224,7 @@ public class BenchmarkDefinitionResource
       }
       catch (Exception e)
       {
-         throw e;
+         throw new I18NException(e.getLocalizedMessage());
       }
    }
 
