@@ -74,13 +74,15 @@
 				element.bind('click', function(event) {
 					handlePopoverClick(event);
 				});
-				
-				$timeout(function() {
-					scope.$apply(function() {
-						exposeAPI(attrs.sdPopover, scope);
+
+				if (angular.isDefined(attrs.sdPopover) && attrs.sdPopover != '') {
+					$timeout(function() {
+						scope.$apply(function() {
+							exposeAPI(attrs.sdPopover, scope);
+						});
 					});
-				});
-				
+				}
+
 				function handlePopoverClick(clkEvent, clickElem) {
 					// In case of ng-disabled, make sure the click is not activated
 					if (scope.popoverDisabled != true) {
