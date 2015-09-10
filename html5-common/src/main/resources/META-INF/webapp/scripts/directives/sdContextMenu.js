@@ -18,13 +18,19 @@
       // controls menu visibility
       scope.showMenu = false;
 
-      scope.showMenu = function() {
+      scope.openMenu = function() {
         if (!scope.showMenu) {
           scope.showMenu = true;
-          // register for document click event to close self when clicked
-          // elsewhere
           $(document).bind('click', popoverCloseEvent);
           $(document).bind('contextmenu', popoverCloseEvent);
+        }
+      }
+      
+      scope.closeMenu = function() {
+        if (scope.showMenu) {
+          scope.showMenu = false;
+          $(document).unbind('click', popoverCloseEvent);
+          $(document).unbind('contextmenu', popoverCloseEvent);
         }
       }
 
@@ -91,8 +97,8 @@
 
     return {
       template: "<div class='sd-drop-down-menu'>"
-              + "<div class='dd-header' ng-right-click='showMenu()' ng-transclude></div>"
-              + "<ul style='position:absolute;' ng-show='showMenu'>" + "<span ng-click='showMenu=false'>x</span>"
+              + "<div class='dd-header' ng-right-click='openMenu()' ng-transclude></div>"
+              + "<ul style='position:absolute;' ng-show='showMenu'>" + "<span ng-click='closeMenu()'>x</span>"
               + "<li ng-click='invoke(item,$event)'" + "ng-class='item.class'" + "ng-repeat='item in menuItems'>"
               + "<span>{{item.value}}</span>" + "</li>" + "</ul>" + "</div>",
       restrict: "EA",
