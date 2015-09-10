@@ -530,7 +530,7 @@
 						'</span>';
 					colDef.contents = treeContents + colDef.contents;
 				}
-				
+
 				if (bCol.attr('style')) {
 					colDef.cellStyle = bCol.attr('style');
 				}
@@ -719,7 +719,7 @@
 
 			// Compile the default toolbar, which was inserted
 			var defaultToolbar = theToolbar.children().first();
-			$compile(defaultToolbar)(defaultToolbar.scope());
+			compileMarkup(defaultToolbar, defaultToolbar.scope(), 'Toolbar');
 
 			// Create space for column filters
 			columnFilters = {};
@@ -782,13 +782,13 @@
 				hCol.prepend(columnHeader);
 
 				var header = hCol.children().first();
-				$compile(header)(header.scope());
+				compileMarkup(header, header.scope(), 'Header for ' + col.name);
 
 				if (filterDialogMarkup.length > 0) {
 					// Setup Filter Dialog Element
 					var filterDialog = angular.element(filterDialogMarkup);
 					var filterScope = elemScope.$new();
-					$compile(filterDialog)(filterScope);
+					compileMarkup(filterDialog, filterScope, 'Filter for ' + col.name);
 					theFilters.append(filterDialog);
 
 					// Setup Filter Data
@@ -1293,16 +1293,18 @@
 		 * 
 		 */
 		function firePaginationEvent() {
-			// Invoke the event handler when processing is complete and data is displayed
-			$timeout(function() {
-				var settings = theDataTable.fnSettings();
-				var paginationInfo = {
-					currentPage: (settings._iDisplayStart / settings._iDisplayLength) + 1,
-					totalPages: Math.ceil(settings._iRecordsTotal / settings._iDisplayLength)
-				};
-				
-				invokeScopeFunction(onPagination, paginationInfo);
-			}, 0, true);
+			if (onPagination.handler) {
+				// Invoke the event handler when processing is complete and data is displayed
+				$timeout(function() {
+					var settings = theDataTable.fnSettings();
+					var paginationInfo = {
+						currentPage: (settings._iDisplayStart / settings._iDisplayLength) + 1,
+						totalPages: Math.ceil(settings._iRecordsTotal / settings._iDisplayLength)
+					};
+					
+					invokeScopeFunction(onPagination, paginationInfo);
+				}, 0, true);
+			}
 		}
 
 		/*
@@ -1315,19 +1317,21 @@
 			}
 
 			// Invoke the event handler when processing is complete and data is displayed
-			$timeout(function() {
-				var sortingInfo = getSortingInfo();
-
-				if (sortingMode == 'single' && sortingInfo.length > 0) {
-					sortingInfo = sortingInfo[sortingInfo.length - 1];
-				}
-				
-				if (sortByGetter && sortByGetter.assign) {
-					sortByGetter.assign(elemScope, sortingInfo);
-				}
-
-				invokeScopeFunction(onSorting, sortingInfo);
-			}, 0, true);
+			if (onSorting.handler) {
+				$timeout(function() {
+					var sortingInfo = getSortingInfo();
+	
+					if (sortingMode == 'single' && sortingInfo.length > 0) {
+						sortingInfo = sortingInfo[sortingInfo.length - 1];
+					}
+					
+					if (sortByGetter && sortByGetter.assign) {
+						sortByGetter.assign(elemScope, sortingInfo);
+					}
+	
+					invokeScopeFunction(onSorting, sortingInfo);
+				}, 0, true);
+			}
 		}
 
 		/*
@@ -1489,12 +1493,12 @@
 				var rows = theTable.find('> tbody > tr');
 				var row = angular.element(rows[0]); // There will be only one row 
 				var rowScope = createRowScope();
-				$compile(row)(rowScope);
+				compileMarkup(row, rowScope, 'Empty row');
 			} else {
 				var body = angular.element(theTable.find('> tbody'));
 				var bodyScope = body.scope();
 				bodyScope.$$pageData = getPageData(); // Used by sd-data-table-row
-				$compile(body)(bodyScope);
+				compileMarkup(body, bodyScope, 'Table body');
 			}
 			
 			if(!initialized) {
@@ -2357,6 +2361,17 @@
 			});
 		}
 
+		/*
+		 * 
+		 */
+		function compileMarkup(elem, scope, id) {
+			var start = new Date().getTime();
+			$compile(elem)(scope);
+			var end = new Date().getTime();
+
+			trace.log(theTableId + ': Angular Compilation for: ' + id + ', Time taken: ' + (end - start) + 'ms');
+		}
+		
 		/*
 		 * Public API
 		 */
