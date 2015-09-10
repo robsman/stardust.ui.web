@@ -98,27 +98,6 @@
 			// Detach the element from the DOM to hide it from the document.
 			// it will be attached when openDialog is called
 			scope.dialogController.dialogElem.detach();
-			
-			// Dialog block element
-			var dialogContent = scope.dialogController.dialogElem.find('.modal-dialog');
-			
-			// Creating this in the scope to track changes in the height of the dialog content
-			scope.getContentHeight = function () {
-	            return dialogContent.outerHeight();
-	        };
-	        
-	        scope.$watch(scope.getContentHeight, function(height) {
-	        	if (height === 0) {
-	        		return;
-	        	}
-	        	// Now determine and set correct position for the dialog.
-	        	var w = jQuery(window);
-	        	dialogContent.css({
-				    'position':'absolute',
-				    'top':Math.abs(((w.height() - dialogContent.outerHeight()) / 2) + w.scrollTop()),
-				    'left':Math.abs(((w.width() - dialogContent.outerWidth()) / 2) + w.scrollLeft())
-				 });
-	        });
 		}
 		
 		/*
@@ -127,8 +106,10 @@
 		function DialogControllerFn($attrs, $scope, $element, $parse, $transclude, $q, $timeout) {
 			
 			var self = this;
+			var unregisterHandler;
+
 			$scope.dialogController = self;
-			
+
 			initialize();
 			
 			/*
@@ -271,7 +252,8 @@
 			function openDialog() {
 				// create a new defer on open
 				self.deferred = $q.defer();
-				
+
+				watchDialogContentHeight();
 				onOpenDialog();
 				
 				// Compiles and adds the body content in the right scope
@@ -292,7 +274,44 @@
 				
 				self.dialogElem.modal('show');
 			}
-			
+
+			/*
+			 * 
+			 */
+			function watchDialogContentHeight() {
+				// Dialog block element
+				var dialogContent = $scope.dialogController.dialogElem.find('.modal-dialog');
+				
+				// Creating this in the scope to track changes in the height of the dialog content
+				if (!$scope.getContentHeight) {
+					$scope.getContentHeight = function () {
+			            return dialogContent.outerHeight();
+			        };
+				}
+		        
+				unregisterHandler = $scope.$watch($scope.getContentHeight, function(height) {
+		        	if (height === 0) {
+		        		return;
+		        	}
+		        	// Now determine and set correct position for the dialog.
+		        	var w = jQuery(window);
+		        	dialogContent.css({
+					    'position':'absolute',
+					    'top':Math.abs(((w.height() - dialogContent.outerHeight()) / 2) + w.scrollTop()),
+					    'left':Math.abs(((w.width() - dialogContent.outerWidth()) / 2) + w.scrollLeft())
+					 });
+		        });
+			}
+
+			/*
+			 * 
+			 */
+			function unwatchDialogContentHeight() {
+				if (unregisterHandler) {
+					unregisterHandler();
+				}
+			}
+
 			function transcludeBody() {
 				// Transclude using 2 options - by use of template and trancluded content
 				// If 'sda-template' is provided, it is the content of the template that gets appended to the popup body
@@ -334,6 +353,8 @@
 				}
 				
 				hideDialog();
+				unwatchDialogContentHeight()
+
 				if (self.deferred) {
 					self.deferred.reject();
 				}
