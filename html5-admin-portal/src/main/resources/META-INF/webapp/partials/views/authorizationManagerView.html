@@ -150,7 +150,7 @@
 											ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 											class="glyphicons glyphicon sd-tree-expand"></i>
 									</div>
-									<div sd-right-click-menu
+									<div sd-context-menu
 										sda-menu-items="[{'value' :ctrl.labels.restore,
                                                'ref': genItem}]"
 										sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
@@ -170,7 +170,7 @@
 													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 													class="glyphicons glyphicon sd-tree-expand"></i>
 											</div>
-											<div sd-right-click-menu
+											<div sd-context-menu
 												sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
                                                'ref': genItem,
                                                'target' : 'allow'}]"
@@ -187,7 +187,7 @@
 										<ul ng-show="isVisible" ng-init="isVisible=false">
 											<li ng-repeat="item in genItem.allow">
 												<ul>
-													<li><a sd-right-click-menu
+													<li><a sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
                                                'ref': genItem,
                                                'role' : item,
@@ -214,7 +214,7 @@
 													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 													class="glyphicons glyphicon sd-tree-expand"></i>
 											</div>
-											<div sd-right-click-menu
+											<div sd-context-menu
 												sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
                                                'ref': genItem,
                                                'target' : 'deny'}]"
@@ -231,7 +231,7 @@
 										<ul ng-show="isVisible">
 											<li ng-repeat="item in genItem.deny">
 												<ul>
-													<li><a sd-right-click-menu
+													<li><a sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
                                                'ref': genItem,
                                                'role' : item,
@@ -299,7 +299,7 @@
 													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 													class="glyphicons glyphicon sd-tree-expand"></i>
 											</div>
-											<div sd-right-click-menu
+											<div sd-context-menu
 												sda-menu-items="[{'value' :ctrl.labels.restore,
                                                'ref': genItem}]"
 												sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
@@ -321,7 +321,7 @@
 															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 															class="glyphicons glyphicon sd-tree-expand"></i>
 													</div>
-													<div sd-right-click-menu
+													<div sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
                                                'ref': genItem,
                                                'target' : 'allow'}]"
@@ -339,7 +339,7 @@
 												<ul ng-show="isVisible">
 													<li ng-repeat="item in genItem.allow">
 														<ul>
-															<li><a sd-right-click-menu
+															<li><a sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
                                                'ref': genItem,
                                                'role' : item,
@@ -364,7 +364,7 @@
 															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 															class="glyphicons glyphicon sd-tree-expand"></i>
 													</div>
-													<div sd-right-click-menu
+													<div sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
                                                'ref': genItem,
                                                'target' : 'deny'}]"
@@ -383,7 +383,7 @@
 												<ul ng-show="isVisible">
 													<li ng-repeat="item in genItem.deny">
 														<ul>
-															<li><a sd-right-click-menu
+															<li><a sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
                                                'ref': genItem,
                                                'role' : item,
@@ -434,7 +434,7 @@
 													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 													class="glyphicons glyphicon sd-tree-expand"></i>
 											</div>
-											<div sd-right-click-menu
+											<div sd-context-menu
 												sda-menu-items="[{'value' :ctrl.labels.restore,
                                                'ref': genItem}]"
 												sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
@@ -457,7 +457,7 @@
 															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 															class="glyphicons glyphicon sd-tree-expand"></i>
 													</div>
-													<div sd-right-click-menu
+													<div sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
                                                'ref': genItem,
                                                'target' : 'allow'}]"
@@ -474,7 +474,7 @@
 												<ul ng-show="isVisible">
 													<li ng-repeat="item in genItem.allow">
 														<ul>
-															<li><a sd-right-click-menu
+															<li><a sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
                                                'ref': genItem,
                                                'role' : item,
@@ -502,7 +502,7 @@
 															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 															class="glyphicons glyphicon sd-tree-expand"></i>
 													</div>
-													<div sd-right-click-menu
+													<div sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
                                                'ref': genItem,
                                                'target' : 'deny'}]"
@@ -519,7 +519,7 @@
 												<ul ng-show="isVisible">
 													<li ng-repeat="item in genItem.deny">
 														<ul>
-															<li><a sd-right-click-menu
+															<li><a sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
                                                'ref': genItem,
                                                'role' : item,
@@ -570,7 +570,7 @@
 													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 													class="glyphicons glyphicon sd-tree-expand"></i>
 											</div>
-											<div sd-right-click-menu
+											<div sd-context-menu
 												sda-menu-items="[{'value' :ctrl.labels.restore,
                                                'ref': genItem}]"
 												sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
@@ -593,7 +593,7 @@
 															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 															class="glyphicons glyphicon sd-tree-expand"></i>
 													</div>
-													<div sd-right-click-menu
+													<div sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
                                                'ref': genItem,
                                                'target' : 'allow'}]"
@@ -610,7 +610,7 @@
 												<ul ng-show="isVisible">
 													<li ng-repeat="item in genItem.allow">
 														<ul>
-															<li><a sd-right-click-menu
+															<li><a sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
                                                'ref': genItem,
                                                'role' : item,
@@ -638,7 +638,7 @@
 															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 															class="glyphicons glyphicon sd-tree-expand"></i>
 													</div>
-													<div sd-right-click-menu
+													<div sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
                                                'ref': genItem,
                                                'target' : 'deny'}]"
@@ -655,7 +655,7 @@
 												<ul ng-show="isVisible">
 													<li ng-repeat="item in genItem.deny">
 														<ul>
-															<li><a sd-right-click-menu
+															<li><a sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
                                                'ref': genItem,
                                                'role' : item,
@@ -708,7 +708,7 @@
 											ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 											class="glyphicons glyphicon sd-tree-expand"></i>
 									</div>
-									<div sd-right-click-menu
+									<div sd-context-menu
 										sda-menu-items="[{'value' :ctrl.labels.restore,
                                                'ref': genItem}]"
 										sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
@@ -730,7 +730,7 @@
 													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 													class="glyphicons glyphicon sd-tree-expand"></i>
 											</div>
-											<div sd-right-click-menu
+											<div sd-context-menu
 												sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
                                                'ref': genItem,
                                                'target' : 'allow'}]"
@@ -748,7 +748,7 @@
 										<ul ng-show="isVisible">
 											<li ng-repeat="item in genItem.allow">
 												<ul>
-													<li><a sd-right-click-menu
+													<li><a sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
                                                'ref': genItem,
                                                'role' : item,
@@ -774,7 +774,7 @@
 													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 													class="glyphicons glyphicon sd-tree-expand"></i>
 											</div>
-											<div sd-right-click-menu
+											<div sd-context-menu
 												sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
                                                'ref': genItem,
                                                'target' : 'deny'}]"
@@ -792,7 +792,7 @@
 										<ul ng-show="isVisible">
 											<li ng-repeat="item in genItem.deny">
 												<ul>
-													<li><a sd-right-click-menu
+													<li><a sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
                                                'ref': genItem,
                                                'role' : item,
@@ -836,7 +836,7 @@
 															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 															class="glyphicons glyphicon sd-tree-expand"></i>
 													</div>
-													<div sd-right-click-menu
+													<div sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.restore,
                                                'ref': genItem}]"
 														sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
@@ -855,7 +855,7 @@
 																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 																	class="glyphicons glyphicon sd-tree-expand"></i>
 															</div>
-															<div sd-right-click-menu
+															<div sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
                                                'ref': genItem,
                                                'target' : 'allow'}]"
@@ -872,7 +872,7 @@
 														<ul ng-show="isVisible">
 															<li ng-repeat="item in genItem.allow">
 																<ul>
-																	<li><a sd-right-click-menu
+																	<li><a sd-context-menu
 																		sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
                                                    'ref': genItem,
                                                    'role' : item,
@@ -898,7 +898,7 @@
 																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 																	class="glyphicons glyphicon sd-tree-expand"></i>
 															</div>
-															<div sd-right-click-menu
+															<div sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
                                                'ref': genItem,
                                                'target' : 'deny'}]"
@@ -915,7 +915,7 @@
 														<ul ng-show="isVisible">
 															<li ng-repeat="item in genItem.deny">
 																<ul>
-																	<li><a sd-right-click-menu
+																	<li><a sd-context-menu
 																		sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
                                                    'ref': genItem,
                                                    'role' : item,
@@ -967,7 +967,7 @@
 															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 															class="glyphicons glyphicon sd-tree-expand"></i>
 													</div>
-													<div sd-right-click-menu
+													<div sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.restore,
                                                'ref': genItem}]"
 														sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
@@ -987,7 +987,7 @@
 																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 																	class="glyphicons glyphicon sd-tree-expand"></i>
 															</div>
-															<div sd-right-click-menu
+															<div sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
                                                'ref': genItem,
                                                'target' : 'allow'}]"
@@ -1004,7 +1004,7 @@
 														<ul ng-show="isVisible">
 															<li ng-repeat="item in genItem.allow">
 																<ul>
-																	<li><a sd-right-click-menu
+																	<li><a sd-context-menu
 																		sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
                                                  'ref': genItem,
                                                  'role' : item,
@@ -1030,7 +1030,7 @@
 																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 																	class="glyphicons glyphicon sd-tree-expand"></i>
 															</div>
-															<div sd-right-click-menu
+															<div sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
                                                'ref': genItem,
                                                'target' : 'deny'}]"
@@ -1048,7 +1048,7 @@
 														<ul ng-show="isVisible">
 															<li ng-repeat="item in genItem.deny">
 																<ul>
-																	<li><a sd-right-click-menu
+																	<li><a sd-context-menu
 																		sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
                                                  'ref': genItem,
                                                  'role' : item,
@@ -1105,7 +1105,7 @@
 											ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 											class="glyphicons glyphicon sd-tree-expand"></i>
 									</div>
-									<div sd-right-click-menu
+									<div sd-context-menu
 										sda-menu-items="[{'value' :ctrl.labels.restore,
                                                'ref': genItem}]"
 										sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
@@ -1127,7 +1127,7 @@
 													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 													class="glyphicons glyphicon sd-tree-expand"></i>
 											</div>
-											<div sd-right-click-menu
+											<div sd-context-menu
 												sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
                                                'ref': genItem,
                                                'target' : 'allow'}]"
@@ -1145,7 +1145,7 @@
 										<ul ng-show="isVisible">
 											<li ng-repeat="item in genItem.allow">
 												<ul>
-													<li><a sd-right-click-menu
+													<li><a sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
                                                'ref': genItem,
                                                'role' : item,
@@ -1171,7 +1171,7 @@
 													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 													class="glyphicons glyphicon sd-tree-expand"></i>
 											</div>
-											<div sd-right-click-menu
+											<div sd-context-menu
 												sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
                                                'ref': genItem,
                                                'target' : 'deny'}]"
@@ -1189,7 +1189,7 @@
 										<ul ng-show="isVisible">
 											<li ng-repeat="item in genItem.deny">
 												<ul>
-													<li><a sd-right-click-menu
+													<li><a sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
                                                'ref': genItem,
                                                'role' : item,
@@ -1233,7 +1233,7 @@
 															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 															class="glyphicons glyphicon sd-tree-expand"></i>
 													</div>
-													<div sd-right-click-menu
+													<div sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.restore,
                                                'ref': genItem}]"
 														sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
@@ -1252,7 +1252,7 @@
 																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 																	class="glyphicons glyphicon sd-tree-expand"></i>
 															</div>
-															<div sd-right-click-menu
+															<div sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
                                                'ref': genItem,
                                                'target' : 'allow'}]"
@@ -1269,7 +1269,7 @@
 														<ul ng-show="isVisible">
 															<li ng-repeat="item in genItem.allow">
 																<ul>
-																	<li><a sd-right-click-menu
+																	<li><a sd-context-menu
 																		sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
                                                    'ref': genItem,
                                                    'role' : item,
@@ -1295,7 +1295,7 @@
 																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 																	class="glyphicons glyphicon sd-tree-expand"></i>
 															</div>
-															<div sd-right-click-menu
+															<div sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
                                                'ref': genItem,
                                                'target' : 'deny'}]"
@@ -1312,7 +1312,7 @@
 														<ul ng-show="isVisible">
 															<li ng-repeat="item in genItem.deny">
 																<ul>
-																	<li><a sd-right-click-menu
+																	<li><a sd-context-menu
 																		sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
                                                    'ref': genItem,
                                                    'role' : item,
@@ -1364,7 +1364,7 @@
 															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 															class="glyphicons glyphicon sd-tree-expand"></i>
 													</div>
-													<div sd-right-click-menu
+													<div sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.restore,
                                                'ref': genItem}]"
 														sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
@@ -1384,7 +1384,7 @@
 																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 																	class="glyphicons glyphicon sd-tree-expand"></i>
 															</div>
-															<div sd-right-click-menu
+															<div sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
                                                'ref': genItem,
                                                'target' : 'allow'}]"
@@ -1401,7 +1401,7 @@
 														<ul ng-show="isVisible">
 															<li ng-repeat="item in genItem.allow">
 																<ul>
-																	<li><a sd-right-click-menu
+																	<li><a sd-context-menu
 																		sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
                                                  'ref': genItem,
                                                  'role' : item,
@@ -1427,7 +1427,7 @@
 																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 																	class="glyphicons glyphicon sd-tree-expand"></i>
 															</div>
-															<div sd-right-click-menu
+															<div sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
                                                'ref': genItem,
                                                'target' : 'deny'}]"
@@ -1445,7 +1445,7 @@
 														<ul ng-show="isVisible">
 															<li ng-repeat="item in genItem.deny">
 																<ul>
-																	<li><a sd-right-click-menu
+																	<li><a sd-context-menu
 																		sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
                                                  'ref': genItem,
                                                  'role' : item,
