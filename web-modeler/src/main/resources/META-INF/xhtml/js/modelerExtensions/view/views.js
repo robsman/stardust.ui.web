@@ -62,9 +62,9 @@ define([], function() {
 			iconUrl : "plugins/bpm-modeler/images/icons/application-c-ext-web.png"
 		},
 		{
-         viewId : "templateApplicationView",
-         label : "Template Application ${viewParams.applicationName}[20]",
-         viewHtmlUrl : "plugins/bpm-modeler/views/modeler/templateApplicationView.html",
+         viewId : "decoratorApplicationView",
+         label : "Decorator Application ${viewParams.applicationName}[20]",
+         viewHtmlUrl : "plugins/bpm-modeler/views/modeler/decoratorApplicationView.html",
          iconUrl : "plugins/bpm-modeler/images/icons/applications-blue.png"
       },
 		{

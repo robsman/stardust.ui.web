@@ -16,10 +16,10 @@ define([], function() {
 			iconPath: "plugins/bpm-modeler/images/icons/application-c-ext-web.png",
 			viewId: "uiMashupApplicationView"
 		}, {
-         id : "templateApp",
-         readableName: "Template Application",
+         id : "decoratorApp",
+         readableName: "Decorator Application",
          iconPath: "plugins/bpm-modeler/images/icons/applications-blue.png",
-         viewId: "templateApplicationView"
+         viewId: "decoratorApplicationView"
       }, {
 			id : "webservice",
 			readableName: "Web Service",

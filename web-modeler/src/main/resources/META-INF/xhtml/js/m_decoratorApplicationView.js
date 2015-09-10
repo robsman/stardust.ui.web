@@ -30,7 +30,7 @@ define(
                 m_utils.jQuerySelect("#hideGeneralProperties").hide();
                 initViewCollapseClickHandlers();
 
-                var view = new TemplateApplicationView();
+                var view = new DecoratorApplicationView();
                 i18uimashupproperties();
                 // TODO Unregister!
                 // In Initializer?
@@ -91,9 +91,9 @@ define(
                 .text(
                 m_i18nUtils
                 .getProperty("modeler.element.properties.commonProperties.publicVisibility"));
-            m_utils.jQuerySelect("label[for='availableApplicationsInput']").text(m_i18nUtils.getProperty("modeler.element.properties.applicationTemplate.availableApplications"));
-            m_utils.jQuerySelect("label[for='processInterfacesInput']").text(m_i18nUtils.getProperty("modeler.element.properties.applicationTemplate.processInterfaces"));
-            m_utils.jQuerySelect("#noSelectionErrorMessage").text(m_i18nUtils.getProperty("modeler.element.properties.applicationTemplate.noSelectionErrorMessage"));
+            m_utils.jQuerySelect("label[for='availableApplicationsInput']").text(m_i18nUtils.getProperty("modeler.element.properties.decoratorApplication.availableApplications"));
+            m_utils.jQuerySelect("label[for='processInterfacesInput']").text(m_i18nUtils.getProperty("modeler.element.properties.decoratorApplication.processInterfaces"));
+            m_utils.jQuerySelect("#noSelectionErrorMessage").text(m_i18nUtils.getProperty("modeler.element.properties.decoratorApplication.noSelectionErrorMessage"));
             
            // m_utils.jQuerySelect("label[for='availableModelsInput']").text(m_i18nUtils.getProperty("modeler.element.properties.applicationTemplate.availableApplications"));
            // m_utils.jQuerySelect("label[for='availableModelsInput']").text(m_i18nUtils.getProperty("modeler.element.properties.applicationTemplate.availableAppsOrProcInter"));
@@ -102,17 +102,17 @@ define(
         /**
          *
          */
-        function TemplateApplicationView() {
+        function DecoratorApplicationView() {
             var modelElementView = m_modelElementView.create(true);
             m_utils.inheritFields(this, modelElementView);
-            m_utils.inheritMethods(TemplateApplicationView.prototype,
+            m_utils.inheritMethods(DecoratorApplicationView.prototype,
                   modelElementView);
             /**
              *
              */
-            TemplateApplicationView.prototype.initialize = function (
+            DecoratorApplicationView.prototype.initialize = function (
             application) {
-                this.id = "templateApplicationView";
+                this.id = "decoratorApplicationView";
                 this.application = application;
                 this.view = m_utils.jQuerySelect("#" + this.id);
                 this.initializeModelElementView(application);
@@ -144,10 +144,10 @@ define(
                         });
                     }
                 });
-                this.setOverlay("templateApplicationView");
+                this.setOverlay("decoratorApplicationView");
                 this.update();
             };
-               TemplateApplicationView.prototype.i18nLabels = function(key)
+               DecoratorApplicationView.prototype.i18nLabels = function(key)
                {
                   return this.i18nValues[key];
                };
@@ -158,18 +158,18 @@ define(
                function initI18nLabels()
                {
                   var labels = {};
-                  labels['model.name.title'] = m_i18nUtils.getProperty("modeler.element.properties.applicationTemplate.model.name");
+                  labels['model.name.title'] = m_i18nUtils.getProperty("modeler.element.properties.decoratorApplication.model.name");
                   labels['header.dataType.title'] = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.dataType");
-                  labels['header.direction.title'] = m_i18nUtils.getProperty("modeler.element.properties.applicationTemplate.direction.name");
-                  labels['header.type.title'] = m_i18nUtils.getProperty("modeler.element.properties.applicationTemplate.application.type");
+                  labels['header.direction.title'] = m_i18nUtils.getProperty("modeler.element.properties.decoratorApplication.direction.name");
+                  labels['header.type.title'] = m_i18nUtils.getProperty("modeler.element.properties.decoratorApplication.application.type");
                   
                   
                   
                   labels['none.title'] = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.none");
-                  labels['application.name.title'] = m_i18nUtils.getProperty("modeler.element.properties.applicationTemplate.application.name");
-                  labels['inputs.title'] = m_i18nUtils.getProperty("modeler.element.properties.applicationTemplate.inputs");
-                  labels['outputs.title'] = m_i18nUtils.getProperty("modeler.element.properties.applicationTemplate.outputs");
-                  labels['header.name.title'] = m_i18nUtils.getProperty("modeler.element.properties.applicationTemplate.header.name");
+                  labels['application.name.title'] = m_i18nUtils.getProperty("modeler.element.properties.decoratorApplication.application.name");
+                  labels['inputs.title'] = m_i18nUtils.getProperty("modeler.element.properties.decoratorApplication.inputs");
+                  labels['outputs.title'] = m_i18nUtils.getProperty("modeler.element.properties.decoratorApplication.outputs");
+                  labels['header.name.title'] = m_i18nUtils.getProperty("modeler.element.properties.decoratorApplication.header.name");
                   
                    
                   return labels;
@@ -177,14 +177,14 @@ define(
             /**
              *
              */
-            TemplateApplicationView.prototype.getApplication = function () {
+            DecoratorApplicationView.prototype.getApplication = function () {
                 return this.application;
             };
 
             /**
              *
              */
-            TemplateApplicationView.prototype.setModelElement = function (
+            DecoratorApplicationView.prototype.setModelElement = function (
             application) {
                 this.application = application;
 
@@ -202,77 +202,15 @@ define(
             /**
             *
             */
-            TemplateApplicationView.prototype.update = function () {
-                this.modelId=this.getExtendedAttributeValue("stardust:application::template::modelId");
-                this.eltId=this.getExtendedAttributeValue("stardust:application::template::elementId");
-                this.elementType=this.getExtendedAttributeValue("stardust:application::template::elementType");
-                this.getSelectedApplication();
-//                this.accessPointsConfiguration=[];
-//                this.accessPointsConfiguration= this.populateAccessPointsConfiguration();
-//
-//                var providedConfigurationString=this.getExtendedAttributeValue("stardust:application::template::configuration");
-//                if(providedConfigurationString){
-//                	//retrieve value for a certain AP; if
-//                	var providedConfiguration=JSON.parse(providedConfigurationString);
-//                	this.accessPointsConfiguration=this.updateValuesForAccessPointsConfiguration(this.accessPointsConfiguration, providedConfiguration);
-//                }
-                
-                
-                
+            DecoratorApplicationView.prototype.update = function () {
+                this.modelId=this.getExtendedAttributeValue("stardust:application::decorator::modelId");
+                this.eltId=this.getExtendedAttributeValue("stardust:application::decorator::elementId");
+                this.elementType=this.getExtendedAttributeValue("stardust:application::decorator::elementType");
+                if(this.elementType=="application")
+                	this.getSelectedApplication();
+                else
+                	this.getSelectedProcessDefinition();
             };
-//            /**
-//            *
-//            */
-//            TemplateApplicationView.prototype.updateValuesForAccessPointsConfiguration = function (apConfiguration, configuration) { 
-//        		var response=[];
-//        		for(var i in apConfiguration)
-//            	{
-//        			var elt=apConfiguration[i];
-//        			var providedConfig=this.findConfigurationById(configuration, elt.ap.id);
-//        			if(providedConfig)
-//        				response.push({"ap":elt.ap,"value":providedConfig.value});
-//        			else
-//        				response.push({"ap":elt.ap,"value":""});
-//            	}
-//            	
-//            	return response;
-//            }
-//            TemplateApplicationView.prototype.findConfigurationById= function (
-//            		configuration, id)
-//           {
-//              var elt = null;
-//              for (var n = 0; n < configuration.length; n++)
-//              {
-//                 var ap = configuration[n].ap;
-//                 if (ap.id == id)
-//                 {
-//                    elt = configuration[n];
-//                    break;
-//                 }
-//              }
-//              return elt;
-//           }
-            
-            
-//            /**
-//            *
-//            */
-//            TemplateApplicationView.prototype.populateAccessPointsConfiguration = function () { 
-//            	var app=this.application;//getSelectedApplication();
-//            	var response=[];
-//            	if(app){
-//            		configurationElements=[];
-//            		for(var i in app.contexts.application.accessPoints)
-//	            	{
-//            			var ap=app.contexts.application.accessPoints[i];
-//            			
-//            			response.push({"ap":ap,"value":""});
-//	            	}
-//            	
-//            	}
-//            	return response;
-//            }
-            
             
             this.modelId;
             this.eltId;
@@ -280,7 +218,7 @@ define(
             /**
             *
             */
-            TemplateApplicationView.prototype.getAvailableModels = function () {
+            DecoratorApplicationView.prototype.getAvailableModels = function () {
                 var models = m_model.getModels();
                 var availableModels = [];
                 for (var i in models) {
@@ -292,7 +230,7 @@ define(
             /**
             *
             */
-            TemplateApplicationView.prototype.modelIdChanged = function () {
+            DecoratorApplicationView.prototype.modelIdChanged = function () {
                 if(!this.validate())
                     return;
                 m_utils.debug("===> Application ID Change" + this.modelId);
@@ -303,7 +241,7 @@ define(
            /**
             *
             */
-            TemplateApplicationView.prototype.getAvailableElements = function () { 
+            DecoratorApplicationView.prototype.getAvailableElements = function () { 
                 var elts={};
                 elts.applications=[];
                 elts.processes=[];
@@ -325,44 +263,66 @@ define(
                 return elts;
             };
             var selectedApplication;
+            var selectedProcessDefinition;
              /**
             *
             */
-            TemplateApplicationView.prototype.elementChanged = function () {
+            DecoratorApplicationView.prototype.elementChanged = function () {
                 if(!this.validate())
                     return;
                 m_utils.debug("===> Element ID Change" + this.eltId);
                 var attributes = this.getApplication().attributes;
                 var submitElements = {};
-                this.selectedApplication=this.findSelectedApplicationById(this.eltId);
-                if(this.selectedApplication){
-                	var accessPoints= this.selectedApplication.contexts.application.accessPoints;
-                	
-                	attributes["stardust:application::template::elementId"]=this.eltId;
-                	attributes["stardust:application::template::elementType"]=this.getElementType(this.eltId);
+                this.elementType=null;
+                this.elementType=this.getElementType(this.eltId);
+                
+                if(this.elementType=="application"){
+                	this.selectedApplication=this.findSelectedApplicationById(this.eltId);
+                	if(this.selectedApplication){
+                		var accessPoints= this.selectedApplication.contexts.application.accessPoints;
+                		attributes["stardust:application::decorator::elementId"]=this.eltId;
+                		attributes["stardust:application::decorator::elementType"]=this.elementType;
+	                	submitElements.contexts = {
+	                            application : {
+	                               accessPoints : accessPoints
+	                            }
+	                         };
+	                }
+                	else{
+	                	attributes["stardust:application::decorator::elementId"]=null;
+	                	attributes["stardust:application::decorator::elementType"]=null;
+	                	this.elementType=null;
+	                	this.elementId=null;
+	                }
+                     this.application.contexts=this.selectedApplication.contexts;
+                }else if(this.elementType=="process"){
+                	this.selectedProcessDefinition=this.findSelectedProcessDefinitionById(this.eltId);
+                	attributes["stardust:application::decorator::elementId"]=this.eltId;
+                	attributes["stardust:application::decorator::elementType"]=this.elementType;
                 	submitElements.contexts = {
                             application : {
-                               accessPoints : accessPoints
+                            	accessPoints : this.selectedProcessDefinition.formalParameters
                             }
                          };
                 }else{
-                	attributes["stardust:application::template::elementId"]=null;
-                	attributes["stardust:application::template::elementType"]=null;
+                	attributes["stardust:application::decorator::elementId"]=null;
+                	attributes["stardust:application::decorator::elementType"]=null;
                 	this.elementType=null;
                 	this.elementId=null;
+                	submitElements.contexts = {
+                            application : {
+                            	accessPoints : null
+                            }
+                         };
                 }
-                	
                 submitElements.attributes = attributes;
                 this.submitChanges(submitElements, true);
-                this.application.contexts=this.selectedApplication.contexts;
-               // this.accessPointsConfiguration= this.populateAccessPointsConfiguration();
-                //this.submit();
             };
             
             /**
             *
             */
-            TemplateApplicationView.prototype.valueChanged = function (ap) { 
+            DecoratorApplicationView.prototype.valueChanged = function (ap) { 
             	m_utils.debug("===>Value changed for " + ap.id);
             	if(ap.attributes["carnot:engine:defaultValue"])
             		m_utils.debug("Default value " + ap.attributes["carnot:engine:defaultValue"]);
@@ -389,77 +349,9 @@ define(
                 this.submitChanges(submitElements, true);
             }
             /**
-            *
-            */
-            /*TemplateApplicationView.prototype.getAvailableApplications = function () {
-                var models = m_model.getModels();
-                var availableApplications = [];
-                for (var i in models) {
-                    var model = models[i];
-                    for (var appId in model.applications) {
-                        var app=model.applications[appId];
-                        if(app.getFullId()!=this.getApplication().getFullId())
-                            availableApplications.push(model.applications[appId]);
-                    }
-                }
-                return availableApplications;
-            }
-            this.applicationId;*/
-            /**
-            *
-            */
-            /*TemplateApplicationView.prototype.applicationIdChanged = function () {
-                if(!this.validate())
-                    return;
-                m_utils.debug("===> Application ID Change" + this.applicationId);
-                this.submit();
-            };*/
-            
-            /**
-            *
-            */
-           /* TemplateApplicationView.prototype.getSelectedApplication = function () {
-                var application;
-                if(!m_utils.isEmptyString(this.applicationId)){
-                    application = m_model.findApplication(this.applicationId);
-                }
-                return application;
-            }*/
-            
-
-            //this.processId; //references the process Id selected in the available Processes dropdown
-            /**
-            * Invoked when change event occurs in availaleProcessesSelect
-            */
-         /*   TemplateApplicationView.prototype.processIdChanged = function () {
-                if(!this.validate())
-                    return;
-                m_utils.debug("===> Process ID change" + this.processId);
-                this.submit();
-            }*/
-
-            /**
-             *Returns a list of processes having Formal Parameters
-             */
-           /* TemplateApplicationView.prototype.getProcessesHavingFormalParameters = function () {
-                var models = m_model.getModels();
-                var processes = [];
-                for (var i in models) {
-                    var model = models[i];
-                    for (var j in model.processes) {
-                        var process = model.processes[j]
-                        if (this.hasProcessInterface(process)) {
-                            processes.push(process);
-                        }
-                    }
-                }
-                return processes;
-            };*/
-
-            /**
              *Returns a list of available structured types in all Models
              */
-            TemplateApplicationView.prototype.getAllStructuredTypes = function () {
+            DecoratorApplicationView.prototype.getAllStructuredTypes = function () {
                 var models = m_model.getModels();
                 var typeDeclarations = [];
                 for (var i in models) {
@@ -472,18 +364,34 @@ define(
                 return typeDeclarations;
             };
             
+            DecoratorApplicationView.prototype.findSelectedProcessDefinitionById = function (pdId) {
+                var pd;
+                if(!m_utils.isEmptyString(pdId)){
+                	pd = m_model.findProcess(pdId);
+                }
+                return pd;
+            }
+            DecoratorApplicationView.prototype.getSelectedProcessDefinition = function () {
+            	if(!this.selectedProcessDefinition)
+            		this.selectedProcessDefinition=this.findSelectedProcessDefinitionById(this.eltId);
+                return this.selectedProcessDefinition;
+            }
+            
             /**
             *
             */
             
-            TemplateApplicationView.prototype.findSelectedApplicationById = function (applicationId) {
+            DecoratorApplicationView.prototype.findSelectedApplicationById = function (applicationId) {
                 var application;
                 if(!m_utils.isEmptyString(applicationId)){
                     application = m_model.findApplication(applicationId);
                 }
                 return application;
             }
-            TemplateApplicationView.prototype.getSelectedApplication = function () {
+            /**
+             * 
+             */
+            DecoratorApplicationView.prototype.getSelectedApplication = function () {
             	if(!this.selectedApplication)
             		this.selectedApplication=this.findSelectedApplicationById(this.eltId);
                 return this.selectedApplication;
@@ -492,7 +400,7 @@ define(
             /**
             * Returns true is the Process definition has process interfaces
             */
-           TemplateApplicationView.prototype.hasProcessInterface = function (process) {
+           DecoratorApplicationView.prototype.hasProcessInterface = function (process) {
                 var hasProcessInterface = false;
                 if (process.processInterfaceType != "noInterface") {
                     hasProcessInterface = true;
@@ -503,7 +411,7 @@ define(
             /**
              * Used to inject AngularJS context
              */
-            TemplateApplicationView.prototype.setOverlay = function (overlay) {
+            DecoratorApplicationView.prototype.setOverlay = function (overlay) {
                 var deferred = jQuery.Deferred();
                 this.overlayAnchor.empty();
 
@@ -522,7 +430,7 @@ define(
             /**
              *
              */
-            TemplateApplicationView.prototype.safeApply = function (force) {
+            DecoratorApplicationView.prototype.safeApply = function (force) {
                 var self = this;
                 m_angularContextUtils.runInActiveViewContext(function ($scope) {
                     if (force) {
@@ -531,20 +439,20 @@ define(
                 });
             };
 
-            TemplateApplicationView.prototype.toString = function () {
-                return "Lightdust.TemplateApplicationView";
+            DecoratorApplicationView.prototype.toString = function () {
+                return "Lightdust.DecoratorApplicationView";
             };
            /**
             * Returns the Extended attribute value
             */
-           TemplateApplicationView.prototype.getExtendedAttributeValue = function(key)
+           DecoratorApplicationView.prototype.getExtendedAttributeValue = function(key)
            {
               return this.getApplication().attributes[key];
            };
             /*
              *
              */
-            TemplateApplicationView.prototype.validate = function () {
+            DecoratorApplicationView.prototype.validate = function () {
                 this.clearErrorMessages();
                 /*this.availableApplicationsInput.removeClass("error");
                 this.processInterfacesInput.removeClass("error");
@@ -563,7 +471,7 @@ define(
 
                 return true;
             };
-            TemplateApplicationView.prototype.getElementType= function (elementId) {
+            DecoratorApplicationView.prototype.getElementType= function (elementId) {
             	if(elementId){
                     var app=this.findSelectedApplicationById(elementId);
                     if(app!=null && app.type=="application")
@@ -581,12 +489,12 @@ define(
             /**
              *
              */
-            TemplateApplicationView.prototype.submit= function () {
+            DecoratorApplicationView.prototype.submit= function () {
             
                 var attributes=this.getApplication().attributes;
-                attributes["stardust:application::template::modelId"]=this.modelId;
-                attributes["stardust:application::template::elementId"]=this.eltId;
-                attributes["stardust:application::template::elementType"]=this.getElementType(this.eltId);
+                attributes["stardust:application::decorator::modelId"]=this.modelId;
+                attributes["stardust:application::decorator::elementId"]=this.eltId;
+                attributes["stardust:application::decorator::elementType"]=this.getElementType(this.eltId);
 
             };
 

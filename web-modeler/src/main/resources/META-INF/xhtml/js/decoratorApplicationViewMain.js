@@ -23,11 +23,11 @@ require(["require",
 		 "ckeditor",
 		 "common-plugins",
 		 "i18n",
-		 "bpm-modeler/js/m_templateApplicationView"],
+		 "bpm-modeler/js/m_decoratorApplicationView"],
 		 function(require) {
 
 	BridgeUtils.getTimeoutService()(function(){
-		require("bpm-modeler/js/m_templateApplicationView").initialize(BridgeUtils.View.getActiveViewParams().param("fullId"));
+		require("bpm-modeler/js/m_decoratorApplicationView").initialize(BridgeUtils.View.getActiveViewParams().param("fullId"));
 	});
 });
 

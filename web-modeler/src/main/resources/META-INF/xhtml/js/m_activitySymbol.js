@@ -900,10 +900,10 @@ define(
 						applicationMD.applicationViewName = "uiMashupApplicationView";
 						break;
 						
-	             case "templateApp":
+	             case "decoratorApp":
 	                  applicationMD.applicationIcon = "plugins/bpm-modeler/images/icons/applications-blue.png";
-	                  applicationMD.applicationType = "Template Application"
-	                  applicationMD.applicationViewName = "templateApplicationView";
+	                  applicationMD.applicationType = "Decorator Application"
+	                  applicationMD.applicationViewName = "decoratorApplicationView";
 	                  break;
 
 					default:

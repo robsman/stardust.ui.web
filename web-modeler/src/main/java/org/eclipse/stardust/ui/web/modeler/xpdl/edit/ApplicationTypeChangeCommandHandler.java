@@ -95,13 +95,13 @@ public class ApplicationTypeChangeCommandHandler
       }
    }
    
-   @OnCommand(commandId = "templateApplication.create")
-   public void createTemplateApp(ModelType model, JsonObject request)
+   @OnCommand(commandId = "decoratorApplication.create")
+   public void createDecoratorApp(ModelType model, JsonObject request)
    {
       String applicationName = extractString(request, ModelerConstants.NAME_PROPERTY);
 
       ApplicationType applicationType = getModelBuilderFacade().createApplication(model,
-            null, applicationName, ModelerConstants.TEMPLATE_APP_CONTEXT_TYPE_KEY);
+            null, applicationName, ModelerConstants.DECORATOR_APP_CONTEXT_TYPE_KEY);
 
       // Map newly created application to a UUID
       EObjectUUIDMapper mapper = modelService().uuidMapper();

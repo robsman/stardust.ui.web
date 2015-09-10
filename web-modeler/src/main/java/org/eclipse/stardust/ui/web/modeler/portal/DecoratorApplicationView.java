@@ -2,10 +2,10 @@ package org.eclipse.stardust.ui.web.modeler.portal;
 
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 
-public class TemplateApplicationView extends AbstractAdapterView {
-	   public TemplateApplicationView()
+public class DecoratorApplicationView extends AbstractAdapterView {
+	   public DecoratorApplicationView()
 	   {
-	      super("/plugins/bpm-modeler/views/modeler/templateApplicationView.html", "templateApplicationFrameAnchor",
+	      super("/plugins/bpm-modeler/views/modeler/decoratorApplicationView.html", "decoratorApplicationFrameAnchor",
 	            "applicationName");
 	   }
 

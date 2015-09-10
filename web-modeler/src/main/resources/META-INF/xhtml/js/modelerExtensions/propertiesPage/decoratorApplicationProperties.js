@@ -15,8 +15,8 @@ define(
 			return {
 				propertiesPage : [
 						{
-							panelId : "templateApplicationView",
-							id : "templateApplicationCommentsPropertiesPage",
+							panelId : "decoratorApplicationView",
+							id : "decoratorApplicationCommentsPropertiesPage",
 							pageHtmlUrl : "plugins/bpm-modeler/views/modeler/modelElementCommentsPropertiesPage.html",
 							provider : m_modelElementCommentsPropertiesPage,
 							visibility : "always",

@@ -23,7 +23,7 @@ define(
 				"webservice" : "webServiceApplicationView",
 				"camelSpringProducerApplication" : "camelApplicationView",
 				"interactive" : "uiMashupApplicationView",
-				"templateApp" : "templateApplicationView"
+				"decoratorApp" : "decoratorApplicationView"
 			};
 
 			return {

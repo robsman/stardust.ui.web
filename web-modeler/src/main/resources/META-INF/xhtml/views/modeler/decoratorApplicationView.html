@@ -7,7 +7,7 @@
 	xmlns:ice="http://www.icesoft.com/icefaces/component"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 <head>
-<title>Template Application</title>
+<title>Decorator Application</title>
 <link rel="stylesheet" type="text/css"
 	href="plugins/bpm-modeler/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css"></link>
 <link href="plugins/bpm-modeler/css/lightdust.css" rel="stylesheet" type="text/css" />
@@ -16,7 +16,7 @@
 <script type="text/javascript" src="plugins/bpm-modeler/js/commonRequire.js"></script>	
 </head>
 <body>
-	<div id="templateApplicationView" class="nativeHtmlViewPanel" style="visibility: hidden">
+	<div id="decoratorApplicationView" class="nativeHtmlViewPanel" style="visibility: hidden">
 		<table cellpadding="0" cellspacing="0" class="layoutTable"
 			style="width: 800px;">
 			<tr>
@@ -122,7 +122,6 @@
                                 <td><label for="availableElements" >Applications / Process Interface</label></td>
                                 <td><select id="availableElements" ng-model="overlayPanel.eltId"
                                             ng-change="overlayPanel.elementChanged()"
-                                            
                                           >
                                         <option value="">{{overlayPanel.i18nLabels('none.title')}}</option>
                                         <optgroup label="Applications" ng-show="overlayPanel.getAvailableElements().applications.length > 0?true:false">
@@ -138,32 +137,24 @@
                             </table>
 						</div>
                         <div id="mappingTab">
-                            <div id="applicationView" ng-show="(overlayPanel.elementType != null && overlayPanel.elementType=='application')? true : false">
-                                <table cellpadding="0" cellspacing="0" class="fieldSetTable" style="width: 100%;">
-                                     <tr>
-                                        <td><label id="selectedApplicationName" >{{overlayPanel.i18nLabels('model.name.title')}}</label></td>
-                                         <td><span>{{overlayPanel.getSelectedApplication().model.name}}</span></td>
-                                        <td><label id="selectedApplicationName" >{{overlayPanel.i18nLabels('application.name.title')}}</label></td>
-                                        <td><span>{{overlayPanel.getSelectedApplication().name}}</span></td>
-                                     </tr>
-                                </table>
+                            <div id="applicationView" ng-show="(overlayPanel.elementType != null && (overlayPanel.elementType=='application' || overlayPanel.elementType=='process'))? true : false">
                                 <div class="heading" style="margin-top: 10px;">
                                     {{overlayPanel.i18nLabels('inputs.title')}}
                                 </div>
                                 <table cellpadding="0" cellspacing="0" class="fieldSetTable" style="width: 100%;">
                                      <tr>
                                         <th>{{overlayPanel.i18nLabels('header.name.title')}}</th>
-                                        <th>{{overlayPanel.i18nLabels('header.direction.title')}}</th>
+                                        <!--<th>{{overlayPanel.i18nLabels('header.direction.title')}}</th>-->
                                         <th>{{overlayPanel.i18nLabels('header.dataType.title')}}</th>
                                         <th>{{overlayPanel.i18nLabels('header.type.title')}}</th>
                                          <th>Predefined Values</th>
                                      </tr>
-                                     <tr ng-repeat="ap in overlayPanel.getApplication().contexts.application.accessPoints | filter : {direction:'IN'}"><!--  {ap:{direction:'IN'}} -->
+                                     <tr ng-repeat="ap in overlayPanel.getApplication().contexts.application.accessPoints | filter : {direction:'IN'}">
                                         <td>{{ ap.name }}</td>
-                                        <td><select disabled="true" ng-model="ap.direction">
+                                        <!--<td><select disabled="true" ng-model="ap.direction">
 								                <option value="IN">In</option>
 								                <option value="OUT">Out</option>
-						                   </select></td>
+						                   </select></td>-->
                                          <td><select disabled="true" ng-model="ap.dataType">
 								                <option value="struct">Structured Data</option>
 								                <option value="primitive">Primitive</option>
@@ -205,7 +196,7 @@
                                          <td ng-show="ap.dataType =='struct'? true : false"></td>
                                       </tr>
                                 </table>
-                                <div class="heading" style="margin-top: 10px;">
+                                <!--<div class="heading" style="margin-top: 10px;">
                                     {{overlayPanel.i18nLabels('outputs.title')}}
                                 </div>
                                  <table cellpadding="0" cellspacing="0" class="fieldSetTable" style="width: 100%;">
@@ -249,23 +240,148 @@
                                              </select>
                                          </td>
                                       </tr>
-                                </table>
+                                </table>-->
                             </div>
-                            <div id="processView" ng-show="(overlayPanel.elementType != null && overlayPanel.elementType=='process')">process</div>
+                         <!--    <div id="processView" ng-show="(overlayPanel.elementType != null && overlayPanel.elementType=='process')? true : false"> -->
+                               <!-- <table cellpadding="0" cellspacing="0" class="fieldSetTable" style="width: 100%;">
+                                     <tr>
+                                        <td><label>{{overlayPanel.i18nLabels('model.name.title')}}</label></td>
+                                         <td><span>{{overlayPanel.selectedProcessDefinition.model.name}}</span></td>
+                                        <td><label>{{overlayPanel.i18nLabels('application.name.title')}}</label></td>
+                                        <td><span>{{overlayPanel.selectedProcessDefinition.name}}</span></td>
+                                     </tr>
+                                     <tr>
+                                        <td><label>Execution</label></td>
+                                         <td><select disabled="true">
+								               <option value="0">Synchronous/Shared Data</option>
+								               <option value="1" selected="selected">Synchronous/Separate Data</option>
+								               <option value="2">Asynchronous/Separate Data</option>
+						                   </select></td>
+                                        <td><input type="checkbox"/><label>Copy All Data</label></td>
+                                        <td></td>
+                                     </tr>
+                                     <tr>
+                                        <td><label>Runtime Binding</label></td>
+                                         <td><select disabled="true">
+								               <option>Please specify...</option>
+								               </select></td>
+                                        <td><input type="text"/></td>
+                                        <td></td>
+                                     </tr>
+                                </table>
+                                <div class="heading" style="margin-top: 10px;">
+                                    {{overlayPanel.i18nLabels('inputs.title')}}
+                                </div>
+                                <table cellpadding="0" cellspacing="0" class="fieldSetTable" style="width: 100%;">
+                                     <tr>
+                                        <th>{{overlayPanel.i18nLabels('header.name.title')}}</th>
+                                        <th>{{overlayPanel.i18nLabels('header.dataType.title')}}</th>
+                                        <th>{{overlayPanel.i18nLabels('header.type.title')}}</th>
+                                         <th>Predefined Values</th>
+                                     </tr>
+                                     <tr ng-repeat="fp in overlayPanel.selectedProcessDefinition.formalParameters | filter : {direction:'IN'}">
+                                        <td>{{ fp.name }}</td>
+                                         <td><select disabled="true" ng-model="fp.dataType">
+								                <option value="struct">Structured Data</option>
+								                <option value="primitive">Primitive</option>
+                                                <option value="dmsDocument">Document</option>
+						                   </select></td>
+                                         <td ng-show="pf.dataType =='struct'? true : false">
+                                         	 <select disabled="true" ng-model="fp.structuredDataTypeFullId"
+                                                  ng-options="structuredType.getFullId() as structuredType.name group by structuredType.modelId for structuredType in overlayPanel.getAllStructuredTypes()"
+                                                  >
+                                             </select>
+                                         </td>
+                                         <td ng-show="fp.dataType == 'primitive' ? true : false">
+                                            <select disabled="true" ng-model="fp.primitiveDataType">
+                                                <option value="String">Text</option>
+                                                <option value="boolean">Boolean (True, False)</option>
+                                                <option value="int">Number (e.g. 18756)</option>
+                                                <option value="long">Long Number (e.g. 18756)</option>
+                                                <option value="double">Scientific (e.g. 3.1415)</option>
+                                                <option value="Calendar">Date (e.g. 14/05/2011)</option>
+                                            </select>
+                                         </td>
+                                         <td ng-show="fp.dataType =='dmsDocument'? true : false">
+                                         <select disabled="true" ng-model="fp.structuredDataTypeFullId"
+                                                  ng-options="structuredType.getFullId() as structuredType.name group by structuredType.modelId for structuredType in overlayPanel.getAllStructuredTypes()"
+                                                  >
+                                             </select>
+                                         </td>
+                                         <td ng-show="pf.dataType == 'primitive'? true : false">
+                                            <div ng-show="fp.primitiveDataType =='boolean'? true : false">boolean</div>
+                                            <div ng-show="fp.primitiveDataType =='Calendar'? true : false">Calendar</div>
+                                            <div ng-show="fp.primitiveDataType !='Calendar' && fp.primitiveDataType !='boolean'? true : false">
+                                           		<input type="text" ng-model="elt.value" ng-blur="overlayPanel.valueChanged(elt)"/> --><!--
+                                           		<input type="text" ng-model="fp.attributes['carnot:engine:defaultValue']" ng-blur="overlayPanel.valueChanged(fp)"/>
+											</div>
+                                         </td>
+                                         <td ng-show="fp.dataType =='dmsDocument'? true : false"></td>
+                                         <td ng-show="fp.dataType =='struct'? true : false"></td>
+                                      </tr>
+                            </table> -->
+                            <!--<div class="heading" style="margin-top: 10px;">
+                                    {{overlayPanel.i18nLabels('outputs.title')}}
+                                </div>
+                                 <table cellpadding="0" cellspacing="0" class="fieldSetTable" style="width: 100%;">
+                                     <tr>
+                                        <th>{{overlayPanel.i18nLabels('header.name.title')}}</th>
+                                        <th>{{overlayPanel.i18nLabels('header.direction.title')}}</th>
+                                        <th>{{overlayPanel.i18nLabels('header.dataType.title')}}</th>
+                                        <th>{{overlayPanel.i18nLabels('header.type.title')}}</th>
+                                     </tr>
+                                     <tr ng-repeat="fp in overlayPanel.selectedProcessDefinition.formalParameters | filter : {direction:'OUT'}">
+                                        <td>{{ fp.name }}</td>
+                                        <td><select disabled="true" ng-model="fp.direction">
+								                <option value="IN">In</option>
+								                <option value="OUT">Out</option>
+						                   </select></td>
+                                         <td><select disabled="true" ng-model="fp.dataType">
+								                <option value="struct">Strcutred Data</option>
+								                <option value="primitive">Primitive</option>
+                                                <option value="dmsDocument">Document</option>
+						                   </select></td>
+                                         <td ng-show="fp.dataType =='struct'? true : false">
+                                         <select disabled="true" ng-model="fp.structuredDataTypeFullId"
+                                                  ng-options="structuredType.getFullId() as structuredType.name group by structuredType.modelId for structuredType in overlayPanel.getAllStructuredTypes()"
+                                                  >
+                                             </select>
+                                         </td>
+                                         <td ng-show="fp.dataType == 'primitive' ? true : false">
+                                            <select disabled="true" ng-model="fp.primitiveDataType">
+                                                <option value="String">Text</option>
+                                                <option value="boolean">Boolean (True, False)</option>
+                                                <option value="int">Number (e.g. 18756)</option>
+                                                <option value="long">Long Number (e.g. 18756)</option>
+                                                <option value="double">Scientific (e.g. 3.1415)</option>
+                                                <option value="Calendar">Date (e.g. 14/05/2011)</option>
+                                            </select>
+                                         </td>
+                                         <td ng-show="fp.dataType =='dmsDocument'? true : false">
+                                          <select disabled="true" ng-model="fp.structuredDataTypeFullId"
+                                                  ng-options="structuredType.getFullId() as structuredType.name group by structuredType.modelId for structuredType in overlayPanel.getAllStructuredTypes()"
+                                                  >
+                                             </select>
+                                         </td>
+                                      </tr>
+                                </table>-->
+                            
+                            
+                            <!-- </div> -->
                             <div id="errorView" ng-show="overlayPanel.elementType == null ? true : false">
                                 <label id="noSelectionErrorMessage" ></label>
                             </div>
 						</div>
- 						<div ng-repeat="ext in templateApplicationView.extensions" id="{{ext.id}}">
+ 						<div ng-repeat="ext in decoratorApplicationView.extensions" id="{{ext.id}}">
 							<sd-include src="ext.pageHtmlUrl"
-								onload="templateApplicationViewOnload(ext)" onfail="templateApplicationViewOnfail(ext)" />
+								onload="decoratorApplicationViewOnload(ext)" onfail="decoratorApplicationViewOnfail(ext)" />
 						</div>
 					</div></td>
 			</tr>
 		</table>
 	</div>
 
-	<script type="text/javascript" src="plugins/bpm-modeler/js/templateApplicationViewMain.js"></script>
+	<script type="text/javascript" src="plugins/bpm-modeler/js/decoratorApplicationViewMain.js"></script>
 
 </body>
 </html>

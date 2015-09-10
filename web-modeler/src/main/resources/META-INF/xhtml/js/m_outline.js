@@ -611,8 +611,8 @@ define(
 				} else if (type == "interactive") {
 					renameView("uiMashupApplicationView", uuid,
 							"applicationName", name)
-            } else if (type == "templateApp") {
-	               renameView("templateApplicationView", uuid,
+            } else if (type == "decoratorApp") {
+	               renameView("decoratorApplicationView", uuid,
 	                     "applicationName", name)
 				} else if (m_elementConfiguration.isUnSupportedAppType(type)) {
 					renameView("genericApplicationView", uuid,
@@ -1117,11 +1117,11 @@ define(
 															.attr("modelUUID"));
 												}
 											},
-											"createTemplateApplication" : {
+											"createDecoratorApplication" : {
                                     "label" : m_i18nUtils
-                                          .getProperty("modeler.outline.applications.contextMenu.createTemplate"),
+                                          .getProperty("modeler.outline.applications.contextMenu.createDecorator"),
                                     "action" : function(obj) {
-                                       createTemplateApplication(obj
+                                       createDecoratorApplication(obj
                                              .attr("modelUUID"));
                                     }
                                  }
@@ -1686,7 +1686,7 @@ define(
 													+ "bpm-modeler/images/icons/application-web-service.png"
 										}
 									},
-									"templateApp" : {
+									"decoratorApp" : {
                               "icon" : {
                                  "image" : m_urlUtils
                                        .getPlugsInRoot()
@@ -2111,7 +2111,7 @@ define(
 														+ "&modelUUID="
 														+ model.uuid,
 												application.uuid);
-                           } else if (data.rslt.obj.attr('rel') == "templateApp") {
+                           } else if (data.rslt.obj.attr('rel') == "decoratorApp") {
                               var model = m_model
                                     .findModelByUuid(data.rslt.obj
                                           .attr("modelUUID"));
@@ -2120,7 +2120,7 @@ define(
                                           .attr("id"));
 
                               viewManager.openView(
-                                    "templateApplicationView",
+                                    "decoratorApplicationView",
                                     "modelId="
                                           + encodeURIComponent(model.id)
                                           + "&applicationId="
@@ -2709,14 +2709,14 @@ define(
          /**
          *
          */
-        function createTemplateApplication(modelUUId) {
+        function createDecoratorApplication(modelUUId) {
            var model = m_model.findModelByUuid(modelUUId);
            var titledata = m_i18nUtils
-                 .getProperty("modeler.outline.newTemplate.namePrefix");
+                 .getProperty("modeler.outline.newDecorator.namePrefix");
            var name = m_modelerUtils.getUniqueNameForElement(model.id, titledata);
 
            m_commandsController.submitCommand(m_command
-                 .createCreateTemplateAppCommand(model.id, model.id,
+                 .createCreateDecoratorAppCommand(model.id, model.id,
                        {
                           "name" : name
                        }));

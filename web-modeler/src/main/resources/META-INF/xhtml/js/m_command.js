@@ -146,8 +146,8 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
             changes : changes
          } ]);
       },
-      createCreateTemplateAppCommand : function(modelId, oid, changes) {
-         return new ChangeDescriptor("templateApplication.create", modelId, [ {
+      createCreateDecoratorAppCommand : function(modelId, oid, changes) {
+         return new ChangeDescriptor("decoratorApplication.create", modelId, [ {
             oid : oid,
             changes : changes
          } ]);
