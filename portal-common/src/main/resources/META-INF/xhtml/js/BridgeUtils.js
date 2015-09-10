@@ -490,7 +490,7 @@ if (!window["BridgeUtils"].View) {
 			
 			if (!initialized){
 				if (hiddenCounter == undefined) {
-					hiddenCounter = 50; // Max tries
+					hiddenCounter = 3000; // Max tries is set high deliberately to support slow environments.
 				}
 
 				if (hiddenCounter > 0) {
@@ -1653,7 +1653,7 @@ if (!window["BridgeUtils"].FrameManager) {
 			BridgeUtils.log("Trying to activate Frame = " + contentId);
 
 			if (hiddenCounter == undefined) {
-				hiddenCounter = 600; // Max tries = 60 secs
+				hiddenCounter = 1800; // Max tries = 3 minutes
 			}
 
 			doWithContentFrame( contentId, function(contentFrame) {
@@ -2001,7 +2001,7 @@ if (!window["BridgeUtils"].FrameManager) {
 			} else {
 				// Just in case!? Anchor is still not available. Delay activation
 				if (hiddenCounter == undefined) {
-					hiddenCounter = 10; // Max tries
+					hiddenCounter = 600; // Max tries
 				}
 
 				BridgeUtils.log("Anchor not found. Delaying frame repositioning = " + contentId + ", Counter: " + hiddenCounter);
