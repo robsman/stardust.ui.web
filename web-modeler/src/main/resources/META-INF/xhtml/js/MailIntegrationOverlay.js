@@ -403,12 +403,12 @@ define(
                   }, false);
                };
                MailIntegrationOverlay.prototype.validateRecipientsFields = function(inputField){
-            	   if(!m_utils.isEmptyString(inputField.val())){
-                 	  if(inputField.val().indexOf(';') != -1){
-                 		  this.view.errorMessages.push("To configure multiple recipients please use comma instead of semicolon.");
-                 		  inputField.addClass("error");
+                  if(!m_utils.isEmptyString(inputField.val())){
+                    if(inputField.val().indexOf(';') != -1){
+                       this.view.errorMessages.push("To configure multiple recipients please use comma instead of semicolon.");
+                       inputField.addClass("error");
                           valid = false;
-                 	  }
+                    }
                    }
                }
                
@@ -1718,6 +1718,8 @@ define(
                 */
                MailIntegrationOverlay.prototype.updateTemplateConfTab = function(item)
                {
+                  this.view.errorMessagesList.empty();
+                  this.view.errorMessages = [];
                   this.hideTemplateErroType();
                   var submitElements = {};
                   var specificAttributes = this.getApplication().attributes;
@@ -1782,7 +1784,7 @@ define(
                                        "stardust:emailOverlay::attachmentsTemplateSource" :  "embedded"
                                        }
                                  }, true);
-                        this.view.errorMessagesList.empty();
+                        
                         this.view.errorMessages
                         .push("DOCUMENT_REQUEST structure is not available in the current model, please create it.");
                         this.view.showErrorMessages();
