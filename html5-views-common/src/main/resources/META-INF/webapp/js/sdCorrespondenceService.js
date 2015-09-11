@@ -155,14 +155,15 @@ define([],function(){
 		this.copyDocumentToCorrespondenceFolder = function ( documentId, folderPath){ 
 			var restUrl = sdUtilService.getBaseUrl() +"services/rest/portal/documents/"+documentId+"/copy";
 			var requestObj = {
-					"parentFolderPath" : folderPath
+					"targetFolderPath" : folderPath,
+					"overWrite": true
 			};
 			var document = $resource(restUrl, {}, {
 				copyToFolder : {
 					method : 'POST'
 				}
 			});
-			return document.copyToFolder({overWrite:true}, requestObj).$promise;
+			return document.copyToFolder({}, requestObj).$promise;
 		};
 
 		/**

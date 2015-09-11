@@ -241,15 +241,19 @@ public class DocumentResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{documentId: .*}/copy")
-   public Response copy(@PathParam("documentId") String documentId,
-         @QueryParam("overWrite") @DefaultValue("false") boolean overWrite, String postedData) throws Exception
+   public Response copy(@PathParam("documentId") String documentId, String postedData) throws Exception
    {
       Map<String, Object> data = JsonDTO.getAsMap(postedData);
-      String parentFolderPath = (String) data.get("parentFolderPath");
+      String targetFolderPath = (String) data.get("targetFolderPath");
+      boolean overWrite = false;
+      if (data.get("overWrite") != null)
+      {
+         overWrite = (Boolean) data.get("overWrite");
+      }
       documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
-      
+
       DocumentDTO documentDTO = DocumentDTOBuilder.build(DocumentMgmtUtility.copyDocumentTo(
-            DocumentMgmtUtility.getDocument(documentId), parentFolderPath, overWrite));
+            DocumentMgmtUtility.getDocument(documentId), targetFolderPath, overWrite));
 
       return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
    }
