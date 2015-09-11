@@ -408,8 +408,11 @@ public class ModelUtils
          {
             String parts[] = typeDeclarationId.split("\\{")[1].split("\\}");
             typeDeclarationId = parts[1];
-            Model newRefModel = getModel(model.getResolvedModelOid(parts[0]));
-            refModel = newRefModel != null ? newRefModel : refModel;
+            if (!parts[0].equals(refModel.getId()))
+            {
+               Model newRefModel = getModel(model.getResolvedModelOid(parts[0]));
+               refModel = newRefModel != null ? newRefModel : refModel;
+            }
          }
          catch (Exception e)
          {
