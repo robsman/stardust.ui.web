@@ -203,10 +203,10 @@
 			theTableId = element.attr('id');
 
 			if (attr.sdaReady) {
-				trace.log(theTableId + ': Table defines sda-ready attribute, so deferring initialization...');
+				trace.log('Table defines sda-ready attribute, so deferring initialization...');
 				var unregister = elemScope.$watch(attr.sdaReady, function(newVal, oldVal) {
 					if(newVal === true) {
-						trace.log(theTableId + ': sda-ready flag is triggered...');
+						trace.log('sda-ready flag is triggered...');
 
 						// Initialize after current digest cycle
 						$timeout(initialize);
@@ -222,7 +222,7 @@
 		 * 
 		 */
 		function showErrorOnUI(e) {
-			trace.error(theTableId + ':', e);
+			trace.error('Error', e);
 			trace.printStackTrace();
 
 			showElement(theTable.parent(), false);
@@ -244,7 +244,7 @@
 		 * 
 		 */
 		function initialize() {
-			trace.log(theTableId + ': Initializing Data Table...');
+			trace.log('Initializing Data Table...');
 
 			try {
 				processAttributes();
@@ -276,11 +276,11 @@
 		 * 
 		 */
 		function processAttributes() {
-			trace.log(theTableId + ': Processing table attributes...');
+			trace.log('Processing table attributes...');
 
 			// Tree Table
 			if (attr.sdaTreeTable != undefined) {
-				trace.log(theTableId + ': Rendering as Tree Table, Forcing local mode, no pagination, no sorting, no exports...');
+				trace.log('Rendering as Tree Table, Forcing local mode, no pagination, no sorting, no exports...');
 
 				treeTable = true;
 
@@ -412,7 +412,7 @@
 		 * 
 		 */
 		function validateMarkup() {
-			trace.log(theTableId + ': Validating table markup...');
+			trace.log('Validating table markup...');
 
 			// Check Tag Name <table>
 			var tagName = element.prop('tagName');
@@ -438,7 +438,7 @@
 		 * 
 		 */
 		function processMarkup() {
-			trace.log(theTableId + ': Processing table markup...');
+			trace.log('Processing table markup...');
 
 			// Process Columns
 			var head = element.find('> thead');
@@ -475,7 +475,7 @@
 				};
 
 				if (!colDef.name) {
-					trace.warn(theTableId + ': Column ' + (i + 1) + ' is missing attribute sda-name');
+					trace.warn('Column ' + (i + 1) + ' is missing attribute sda-name');
 					colDef.name = 'column' + (i + 1); // Default
 				}
 
@@ -606,7 +606,7 @@
 			if (funcInfo && funcInfo.params && funcInfo.params.length > 0) {
 				retInfo.param = funcInfo.params[0];
 			} else {
-				trace.error(theTableId + ': ' + attribute + ' is not correcly used, it does not appear to be a function accepting parameter.');
+				trace.error(attribute + ' is not correcly used, it does not appear to be a function accepting parameter.');
 			}
 
 			return retInfo;
@@ -668,7 +668,7 @@
 		 * 
 		 */
 		function buildDataTableInformation() {
-			trace.log(theTableId + ': Building table information...');
+			trace.log('Building table information...');
 
 			angular.forEach(columns, function(col, i) {
 				dtColumns.push({
@@ -702,7 +702,7 @@
 		 * 
 		 */
 		function createDataTable() {
-			trace.log(theTableId + ': Creating table...');
+			trace.log('Creating table...');
 
 			// Toolbar
 			theToolbar = element.prev();
@@ -892,8 +892,7 @@
 				}
 			}
 
-			trace.log(theTableId + ': Building table for ' + 
-				(tableInLocalMode ? 'local' : 'remote') + ' mode... with options: ', dtOptions);
+			trace.log('Building table for ' + (tableInLocalMode ? 'local' : 'remote') + ' mode... with options: ', dtOptions);
 
 			try {
 				theDataTable = theTable.DataTable(dtOptions);
@@ -913,7 +912,7 @@
 
 				buildDataTableCompleted();
 			} catch (e) {
-				trace.error(theTableId + ': Error occurred while using Datatables library', e);
+				trace.error('Error occurred while using Datatables library', e);
 				showErrorOnUI(e);
 			}
 		}
@@ -1073,7 +1072,7 @@
 					if (filterScope.$$filterData != undefined && !jQuery.isEmptyObject(filterScope.$$filterData)) {
 						try {
 							if (!filterScope.handlers.filterCheck) {
-								trace.error(theTableId + ': Filter does not declare method called filterCheck() for column: ' + colName);
+								trace.error('Filter does not declare method called filterCheck() for column: ' + colName);
 								continue;
 							}
 
@@ -1083,7 +1082,7 @@
 								break;
 							}
 						} catch(e) {
-							trace.error(theTableId + ': Error occurred filtering', e);
+							trace.error('Error occurred filtering', e);
 						} finally {
 							delete filterScope.filterData;
 						}
@@ -1149,7 +1148,7 @@
 							}
 							break;
 						default:
-							trace.error(theTableId + ': Built-in sorting not supported for data type: ' + 
+							trace.error('Built-in sorting not supported for data type: ' + 
 									params.sortBy.dataType + ', column: ' + params.sortBy.name);
 					}
 				} else {
@@ -1163,7 +1162,7 @@
 					}
 				}
 			} catch (e) {
-				trace.error(theTableId + ': Error while using built in sort for Local Mode:', params, e);
+				trace.error('Error while using built in sort for Local Mode:', params, e);
 			}
 
 			return ret;
@@ -1274,7 +1273,7 @@
 					var jQueryDataTableFunc = jQuery.fn.dataTable || theTable.DataTable;
 					theColReorder = new jQueryDataTableFunc.ColReorder(theDataTable, {bNoDragDrop: true});
 				} catch (e) {
-					trace.error(theTableId + ': Error occurred while enabling ColReorder, so disabling column selector', e);
+					trace.error('Error occurred while enabling ColReorder, so disabling column selector', e);
 					enableColumnSelector = false;
 				}
 			}
@@ -1367,7 +1366,7 @@
 						transObj[handleInfo.param] = data;
 					} else {
 						transObj.info = data;
-						trace.warn(theTableId + ': ' + handleInfo.attribute + ' is not properly implemented, may not receive params');
+						trace.warn(handleInfo.attribute + ' is not properly implemented, may not receive params');
 					}
 
 					if (!invokeAfterDigest) {
@@ -1378,7 +1377,7 @@
 						}, 0, true);
 					}
 				} catch(e) {
-					trace.error(theTableId + ': Error while invoking function for ' + handleInfo.attribute, e);
+					trace.error('Error while invoking function for ' + handleInfo.attribute, e);
 				}
 			}
 		}
@@ -1387,16 +1386,16 @@
 		 * 
 		 */
 		function fetchData(params) {
-			trace.log(theTableId + ': Calling sd-data with params:', params);
+			trace.log('Calling sd-data with params:', params);
 
 			var deferred = $q.defer();
 
 			var dataResult = sdData.retrieveData(params);
 			dataResult.then(function(result) {
-				trace.log(theTableId + ': sd-data returned with:', result);
+				trace.log('sd-data returned successfully');
 				deferred.resolve(result);
 			}, function(error) {
-				trace.log(theTableId + ': sd-data failed with:', error);
+				trace.log('sd-data failed with:', error);
 				deferred.reject(error);
 		    });
 
@@ -1407,18 +1406,23 @@
 		 * 
 		 */
 		function validateData(result, maxPageSize) {
-			if (tableInLocalMode) {
-				sdUtilService.assert(result && angular.isArray(result),
-					'sd-data did not return acceptable result: Missing "list" or its not an array');
-			} else {
-				sdUtilService.assert(jQuery.isPlainObject(result),
-					'sd-data did not return acceptable result: Return is not a plain object');
-				sdUtilService.assert(result.totalCount != undefined,
-					'sd-data did not return acceptable result: Missing "totalCount"');
-				sdUtilService.assert(result.list && angular.isArray(result.list),
-					'sd-data did not return acceptable result: Missing "list" or its not an array');
-				sdUtilService.assert(result.list.length <= maxPageSize,
-					'sd-data did not return acceptable result: Returned more records than expected (' + maxPageSize + ')');
+			try {
+				if (tableInLocalMode) {
+					sdUtilService.assert(result && angular.isArray(result),
+						'sd-data did not return acceptable result: Missing "list" or its not an array');
+				} else {
+					sdUtilService.assert(jQuery.isPlainObject(result),
+						'sd-data did not return acceptable result: Return is not a plain object');
+					sdUtilService.assert(result.totalCount != undefined,
+						'sd-data did not return acceptable result: Missing "totalCount"');
+					sdUtilService.assert(result.list && angular.isArray(result.list),
+						'sd-data did not return acceptable result: Missing "list" or its not an array');
+					sdUtilService.assert(result.list.length <= maxPageSize,
+						'sd-data did not return acceptable result: Returned more records than expected (' + maxPageSize + ')');
+				}
+			} catch (e) {
+				trace.error('sd-data returned with incorrect data:', result);
+				throw e;
 			}
 		}
 
@@ -1488,11 +1492,11 @@
 			// Handle empty table case
 			var count = getPageDataCount();
 			if (count == 0) {
-				trace.log(theTableId + ': Handling empty table case...');
+				trace.log('Handling empty table case...');
 
 				var rows = theTable.find('> tbody > tr');
 				var row = angular.element(rows[0]); // There will be only one row 
-				var rowScope = createRowScope();
+				var rowScope = myScope.$new();
 				compileMarkup(row, rowScope, 'Empty row');
 			} else {
 				var body = angular.element(theTable.find('> tbody'));
@@ -1526,7 +1530,7 @@
 		 * 
 		 */
 		function refresh(retainPageIndex) {
-			trace.log(theTableId + ': Refreshing table with retainPageIndex = ' + retainPageIndex);
+			trace.log('Refreshing table with retainPageIndex = ' + retainPageIndex);
 
 			if (tableInLocalMode) {
 				localModeRefreshInitiated = true;
@@ -1538,7 +1542,7 @@
 		 * rebuild = Not valid for Tree Table
 		 */
 		function refreshUi(rebuild) {
-			trace.log(theTableId + ': Refreshing table Ui');
+			trace.log('Refreshing table Ui');
 
 			localModeRebuildData = rebuild;
 
@@ -2046,10 +2050,10 @@
 			if (attr.sdDataTable != undefined && attr.sdDataTable != '') {
 				var dataTableAssignable = $parse(attr.sdDataTable).assign;
 				if (dataTableAssignable) {
-					trace.info(theTableId + ': Exposing API for: ' + attr.sdDataTable + ', on scope Id: ' + elemScope.$id + ', Scope:', elemScope);
+					trace.info('Exposing API for: ' + attr.sdDataTable + ', on scope Id: ' + elemScope.$id + ', Scope:', elemScope);
 					dataTableAssignable(elemScope, new DataTable());
 				} else {
-					trace.error(theTableId + ': Could not expose API for: ' + attr.sdDataTable + ', expression is not an assignable.');
+					trace.error('Could not expose API for: ' + attr.sdDataTable + ', expression is not an assignable.');
 				}
 			}
 		}
@@ -2065,18 +2069,6 @@
 		/*
 		 * 
 		 */
-		function createRowScope() {
-			var rowScope = myScope.$new();
-			rowScope.$on('$destroy', function() {
-				//	trace.log(theTableId + ': Row Scope ' + rowScope.$id + ' destroyed for parent ' + rowScope.$parent.$id);
-			});
-
-			return rowScope;
-		}
-
-		/*
-		 * 
-		 */
 		function destroyRowScopes() {
 			try {
 				var rows = theTable.find('> tbody > tr');
@@ -2085,7 +2077,7 @@
 					row.scope().$destroy();
 				}
 			} catch (e) {
-				trace.error(theTableId + ': Error while destroying rows scopes', e);
+				trace.error('Error while destroying rows scopes', e);
 			}
 		}
 
@@ -2123,7 +2115,7 @@
 						message.val = 'No data to export.';
 					}
 				} else {
-					trace.error(theTableId + ': Error occurred while exporting data.', result.error);
+					trace.error('Error occurred while exporting data.', result.error);
 					if (exportedRows.length > 1) {
 						message.key = 'export-error-incomplete-data';
 						message.val = 'Error occurred, however exported the data fetched till now.'; 
@@ -2193,7 +2185,7 @@
 					// Validate
 					for (var j = 0; j < expotCols.length; j++) {
 						if (!expotCols[j].exportParser && !expotCols[j].defaultContentsParser) {
-							trace.warn(theTableId + ': Cannot export column ' + expotCols[j].name + ', as sda-exporter is not defined.');
+							trace.warn('Cannot export column ' + expotCols[j].name + ', as sda-exporter is not defined.');
 						}
 					}
 
@@ -2339,7 +2331,7 @@
 		 */
 		function fetchAllInBatches(deferred, params, data) {
 			var batchNo = (params.skip / params.pageSize) + 1;
-			trace.log(theTableId + ': Fetching data for export, batch ' + batchNo);
+			trace.log('Fetching data for export, batch ' + batchNo);
 
 			fetchData(params).then(function(result) {
 				try {
@@ -2369,7 +2361,7 @@
 			$compile(elem)(scope);
 			var end = new Date().getTime();
 
-			trace.log(theTableId + ': Angular Compilation for: ' + id + ', Time taken: ' + (end - start) + 'ms');
+			trace.log('Angular Compilation for: ' + id + ', Time taken: ' + (end - start) + 'ms');
 		}
 		
 		/*
@@ -2720,7 +2712,7 @@
 								rowData.$$treeInfo.loaded = true;
 							} catch (e) {
 								// TODO: Show Error
-								trace.error(theTableId + ':', e);
+								trace.error('Error', e);
 								rowData.$expanded = false;
 							}
 
@@ -2730,7 +2722,7 @@
 							refreshUi();
 						}, function(error) {
 							// TODO: Show Error
-							trace.error(theTableId + ':', error);
+							trace.error('Error', error);
 							rowData.$expanded = false;
 							refreshUi();
 						});
