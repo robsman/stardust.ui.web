@@ -658,31 +658,6 @@
 				self.popoverDirective.show(event);
 			}
 
-			self.onSelect = function(info) {
-				// NOP
-			};
-
-			/*
-			 *
-			 */
-			self.onPagination = function(info) {
-				// NOP
-			};
-
-			/*
-			 *
-			 */
-			self.onColumnReorder = function(info) {
-				// NOP
-			};
-
-			/*
-			 *
-			 */
-			self.onSorting = function(info) {
-				// NOP
-			};
-
 			/*
 			 *
 			 */

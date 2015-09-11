@@ -63,10 +63,8 @@
 	<table sd-data-table="{{processTableCtrl.tableHandleExpr}}" sd-data="processTableCtrl.fetchPage(params)" sda-ready="processTableCtrl.ready" 
 		sda-page-size="{{processTableCtrl.sdaPageSize}}" sda-mode="remote"  aid="PP-ProcessTable-DataTable"
 		sda-selectable="multiple" sda-initial-selection="{{processTableCtrl.initialSelection}}" sda-selection="{{processTableCtrl.selectionExpr}}"
-		sda-on-select="processTableCtrl.onSelect(info)" sda-on-pagination="processTableCtrl.onPagination(info)"
 		sda-column-selector="{{processTableCtrl.columnSelector}}" sda-preference-delegate="processTableCtrl.preferenceDelegate(prefInfo)"
-		sda-on-column-reorder="processTableCtrl.onColumnReorder(info)"
-		sda-sortable="true" sda-sort-by="processTableCtrl.initialSort" sda-on-sorting="processTableCtrl.onSorting(info)"
+		sda-sortable="true" sda-sort-by="processTableCtrl.initialSort"
 		sda-exports="true" sda-exports-file-name="processTable-{{processTableCtrl.exportFileName}}">
 		<thead sda-i18n-scope="views-common-messages.views-processTable-column">
 			<tr>
