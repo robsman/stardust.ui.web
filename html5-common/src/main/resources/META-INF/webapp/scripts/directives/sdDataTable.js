@@ -2383,7 +2383,9 @@
 			 * 
 			 */
 			this.refresh = function (retainPageIndex) {
-				refresh(retainPageIndex);
+				$timeout(function() {
+					refresh(retainPageIndex);
+				}, 0, false);
 			};
 
 			/*
@@ -2414,7 +2416,9 @@
 				 * 
 				 */
 				this.refreshUi = function () {
-					refreshUi();
+					$timeout(function() {
+						refreshUi();
+					}, 0, false);
 				};
 
 				/*
