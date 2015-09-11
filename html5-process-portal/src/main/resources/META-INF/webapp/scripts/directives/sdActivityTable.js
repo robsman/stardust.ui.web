@@ -713,34 +713,6 @@
 	/*
 	 * 
 	 */
-	ActivityTableCompiler.prototype.onSelect = function(info) {
-	    // NOP
-	};
-
-	/*
-	 * 
-	 */
-	ActivityTableCompiler.prototype.onPagination = function(info) {
-	    // NOP
-	};
-
-	/*
-	 * 
-	 */
-	ActivityTableCompiler.prototype.onColumnReorder = function(info) {
-	    // NOP
-	};
-
-	/*
-	 * 
-	 */
-	ActivityTableCompiler.prototype.onSorting = function(info) {
-	    // NOP
-	};
-
-	/*
-	 * 
-	 */
 	ActivityTableCompiler.prototype.fetchDescriptorCols = function(attr) {
 		var self = this;
 
