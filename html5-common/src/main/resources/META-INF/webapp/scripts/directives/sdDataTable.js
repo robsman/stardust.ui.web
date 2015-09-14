@@ -93,10 +93,10 @@
 	 * 
 	 */
 	function showElement(element, show) {
-		if (show) {
-			element.show();
-		} else {
-			element.hide();
+		if (show && element.css('visibility') == 'hidden') {
+			element.css('visibility', 'visible');
+		} else if (!show && element.css('visibility') != 'hidden') {
+			element.css('visibility', 'hidden');
 		}
 	}
 	
