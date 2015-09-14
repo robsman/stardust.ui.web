@@ -33,10 +33,12 @@ public interface ProcessSearchParameterConstants
    String HIERARCHY_CASE = "CASE";
    String HIERARCHY_ROOT_PROCESS = "ROOT_PROCESS";
    String CASE_OWNER = "caseOwner";
+   String PROCESS_FILTERS = "processFilters";
    String PROCESSES = "processes";
    String DESCRIPTORS = "descriptors";
    String MODIFY_TIME_FROM = "modifyTimeFrom";
    String MODIFY_TIME_TO = "modifyTimeTo";
+   String ACTIVITY_FILTERS = "activityFilters";
    String ACTIVITIES = "activities";
    String PERFORMER = "performer";
    String CRITICALITY = "criticality";

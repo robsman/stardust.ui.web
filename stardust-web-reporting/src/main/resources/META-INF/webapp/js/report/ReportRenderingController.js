@@ -51,6 +51,7 @@ define(
 			      
 			      this.previewMaxFetchSize = 500;
 			      this.previewRetrieveAll = false;
+			      this.isPreviewMode = true;
 
 				/**
 				 * 

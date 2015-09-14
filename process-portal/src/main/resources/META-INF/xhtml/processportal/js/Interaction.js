@@ -329,7 +329,8 @@ if (!window.bpm.portal.Interaction) {
 			try {
 				if (path.typeName == "integer" || path.typeName == "int" || path.typeName == "java.lang.Integer" || 
 						path.typeName == "short" || path.typeName == "java.lang.Short" ||
-						path.typeName == "long" || path.typeName == "java.lang.Long") {
+						path.typeName == "long" || path.typeName == "java.lang.Long" ||
+						path.typeName == "byte") {
 					val = parseInt(value);
 				} else if (path.typeName == "float" || path.typeName == "java.lang.Float" ||
 						path.typeName == "double" || path.typeName == "decimal" || path.typeName == "java.lang.Double") {

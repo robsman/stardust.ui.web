@@ -6,7 +6,7 @@
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
-	<ice:panelGrid columns="3">
+	<ice:panelGrid columns="4">
 		<ice:commandLink
 			disabled="#{worklistTableBean.selectedItemCount eq 0 ? true : false}"
 			actionListener="#{worklistTableBean.openDelegateDialog}">
@@ -27,5 +27,17 @@
                    title="#{processportal_msgPropsBean['toolbars.worklistView.tooltip.abort']}"/>
 		</ice:commandLink>
 
+		<ice:graphicImage
+			value="/plugins/views-common/images/icons/toolbar-separator.png" style="padding-top:1px;"/>
+
+		<ice:commandLink
+			title="#{worklistTableBean.messages['tooltip.update']}"
+			action="#{worklistTableBean.refresh}" partialSubmit="true">
+			<pc:automationTag value="auto-PP-WorkList-Refresh" standAlone="false" />
+			<ice:graphicImage
+				value="/plugins/views-common/images/icons/arrow_refresh.png"
+				style="border:none;" />
+		</ice:commandLink>
+		
 	</ice:panelGrid>
 </f:view>

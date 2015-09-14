@@ -103,6 +103,8 @@ define(
 									function() {
 										// For ReportViewer always retrieve all records
 										self.renderingController.previewRetrieveAll = true;
+										//Do not show Retrieve All link.
+										self.renderingController.isPreviewMode = false;
 										// fetch and render report-data
 										self.renderingController.refreshPreview(self, self.report, self.parameters).done(function(){
 											self.updateView();

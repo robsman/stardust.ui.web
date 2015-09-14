@@ -629,6 +629,23 @@ define(
 				
 				this.serverDateFormat = "yy/mm/dd";
 				
+				this.datePickerProperties = {
+						closeText: this.getI18N("datepicker.closeText"),
+						prevText: this.getI18N("datepicker.prevText"),
+						nextText: this.getI18N("datepicker.nextText"),
+						currentText: this.getI18N("datepicker.currentText"),
+						monthNames: this.getI18N("datepicker.monthNames"),						
+						monthNamesShort: this.getI18N("datepicker.monthNamesShort"),
+						dayNames: this.getI18N("datepicker.dayNames"),
+						dayNamesShort: this.getI18N("datepicker.dayNamesShort"),
+						dayNamesMin: this.getI18N("datepicker.dayNamesMin"),
+						weekHeader: this.getI18N("datepicker.weekHeader"),
+						firstDay: 1,
+						isRTL: false,
+						showMonthAfterYear: false,
+						yearSuffix: "",
+				}
+				
 				/**
 				 * 
 				 */
@@ -2266,6 +2283,21 @@ define(
                return deferred.promise();
             };
             
+            
+
+			/**
+			 * 
+			 */
+			ReportingService.prototype.getDatePickerProperties = function() {
+				var datePickerProperties = this.datePickerProperties;
+				datePickerProperties.monthNames = datePickerProperties.monthNames.split(",");
+				datePickerProperties.monthNamesShort = datePickerProperties.monthNamesShort.split(",");
+				datePickerProperties.dayNames = datePickerProperties.dayNames.split(",");
+				datePickerProperties.dayNamesShort = datePickerProperties.dayNamesShort.split(",");
+				datePickerProperties.dayNamesMin = datePickerProperties.dayNamesMin.split(",");
+				};
+				
+				this.getDatePickerProperties();
 			}
 			
 			/**

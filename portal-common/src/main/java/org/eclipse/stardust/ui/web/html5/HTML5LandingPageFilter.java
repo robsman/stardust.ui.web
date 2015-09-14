@@ -84,7 +84,8 @@ public class HTML5LandingPageFilter implements Filter
 
          // This is required in HTTP header for IE9
          response.setHeader("X-UA-Compatible", "IE=10,chrome=1");
-         
+
+         response.setContentType("text/html; charset=UTF-8");
          ApplicationContext appContext = WebApplicationContextUtils.getWebApplicationContext(request.getSession(false)
                .getServletContext());
          
@@ -133,7 +134,6 @@ public class HTML5LandingPageFilter implements Filter
                }
 
                landingPageContent = injectArtifacts(otherStyles, landingPageContent, SKIN_AND_OTHER_STYLES_PLACE_HOLDER, false);
-
                // Return the contents
                response.getWriter().print(landingPageContent);
             }

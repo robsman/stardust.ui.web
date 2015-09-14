@@ -16,6 +16,7 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.ui.web.processportal.common.PPUtils;
+import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 
 
 
@@ -70,7 +71,11 @@ public class ActivitySearchModel implements IQueryBuilder
       params.put(Query.class.getName(), this.createQuery());
       params.put("id", getId());
       params.put("name", getName());
-
+      if(ProcessPortalConstants.ID_ALL_RESUBMISSION_ACTIVITY_INSTANCES.equals(getId()))
+      {
+         params.put("showResubmitLink", true);
+         params.put("showResubmissionTime", true);
+      }
       PPUtils.openWorklistView("id=" + getId(), params);
 
       PPUtils.selectWorklist(null);

@@ -30,5 +30,6 @@ public class Constants
    public static final String COL_ASSIGNED_TO = "Assignedto";
    public static final String COL_ACTIONS = "Actions";
    public static final String COL_CRITICALITY = "Criticality";
+   public static final String COL_RESUBMISSION_TIME = "ResubmissionTime";
    public static final String COL_BENCHMARK = "Benchmark";
 }

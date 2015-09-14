@@ -93,10 +93,10 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
    private static final long serialVersionUID = 1L;
    public static final String BEAN_ID = "processSearchBean";
    private static final Logger trace = LogManager.getLogger(ProcessSearchBean.class);
-   public static final String INTERACTIVE_ACTIVITIES = "Interactive Activities";
-   public static final String NONINTERACT_ACTIVITIES = "Non-interactive Activities";
-   public static final String AUXILIARY_ACTIVITIES = "Auxiliary Activities";
-   public static final String AUXILIARY_PROCESSES = "Auxiliary Processes";
+   public static final String INTERACTIVE_ACTIVITIES = "InteractiveActivities";
+   public static final String NONINTERACT_ACTIVITIES = "NonInteractiveActivities";
+   public static final String AUXILIARY_ACTIVITIES = "AuxiliaryActivities";
+   public static final String AUXILIARY_PROCESSES = "AuxiliaryProcesses";
 
    private static enum SEARCH_OPTION {
       PROCESSES, ACTIVITIES
@@ -180,15 +180,6 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
    public ProcessSearchBean()
    {
       super(ResourcePaths.V_processSearch);
-   }
-
-   /**
-    * @return ProcessSearchBean object
-    */
-   public static ProcessSearchBean getInstance()
-   {
-      return (ProcessSearchBean) FacesContext.getCurrentInstance().getApplication().getVariableResolver()
-            .resolveVariable(FacesContext.getCurrentInstance(), BEAN_ID);
    }
 
    /*
@@ -289,6 +280,8 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
          if (StringUtils.isNotEmpty((String)params.get(CASE_OWNER)))
             ownerSelector.searchAndPreSelect((String)params.get(CASE_OWNER));
        
+         preSelectFilters(processFilterToolbarItems, (List<String>)params.get(PROCESS_FILTERS), true);
+
          if (CollectionUtils.isNotEmpty((List<String>)params.get(PROCESSES)))
             preSelectProcesses((List<String>)params.get(PROCESSES));
 
@@ -339,8 +332,12 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
          if (StringUtils.isNotEmpty((String)params.get(PERFORMER)))
             performerSelector.searchAndPreSelect((String)params.get(PERFORMER));
 
+         preSelectFilters(processFilterToolbarItems, (List<String>)params.get(PROCESS_FILTERS), true);
+
          if (CollectionUtils.isNotEmpty((List<String>)params.get(PROCESSES)))
             preSelectProcesses((List<String>)params.get(PROCESSES));
+
+         preSelectFilters(activityFilterToolbarItems, (List<String>)params.get(ACTIVITY_FILTERS), false);
 
          if (CollectionUtils.isNotEmpty((List<String>)params.get(ACTIVITIES)))
             preSelectActivities((List<String>)params.get(ACTIVITIES));
@@ -352,6 +349,40 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       }
    }
 
+   /**
+    * @param filterToolbarItems
+    * @param filters
+    * @param process
+    */
+   private void preSelectFilters(List<FilterToolbarItem> filterToolbarItems, List<String> filters, boolean process)
+   {
+      if (CollectionUtils.isEmpty(filters))
+      {
+         filters = new ArrayList<String>();
+      }
+
+      for (FilterToolbarItem fTI : filterToolbarItems)
+      {
+         if (filters.contains(fTI.getName()))
+         {
+            fTI.setActive(true);
+         }
+         else
+         {
+            fTI.setActive(false);
+         }
+      }
+
+      if (process)
+      {
+         afterToggleProcessFilter();
+      }
+      else
+      {
+         afterToggleActivityFilter();
+      }
+   }
+   
    /**
     * @param processes
     */
@@ -693,6 +724,8 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       if (null != ownerSelector.getSelectedValue() && null != ownerSelector.getSelectedValue().getUser())
          criteria.put(CASE_OWNER, ownerSelector.getSelectedValue().getUser().getId());
 
+      criteria.put(PROCESS_FILTERS, getProcessFilters());
+      
       if (null != getSelectedProcesses() && getSelectedProcesses().length > 0)
          criteria.put(PROCESSES, getSelectedProcesses());
       
@@ -733,8 +766,12 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       if (null != performerSelector.getSelectedValue() && null != performerSelector.getSelectedValue().getUser())
          criteria.put(PERFORMER, performerSelector.getSelectedValue().getUser().getId());
 
+      criteria.put(PROCESS_FILTERS, getProcessFilters());
+
       if (null != getSelectedProcesses() && getSelectedProcesses().length > 0)
          criteria.put(PROCESSES, getSelectedProcesses());
+
+      criteria.put(ACTIVITY_FILTERS, getActivityFilters());
 
       if (null != getSelectedActivities() && getSelectedActivities().length > 0)
          criteria.put(ACTIVITIES, getSelectedActivities());
@@ -760,6 +797,14 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
    public void toggleProcessFilter(ActionEvent ae)
    {
       toggleFilter(processFilterToolbarItems, ae);
+      afterToggleProcessFilter();
+   }
+   
+   /**
+    * 
+    */
+   private void afterToggleProcessFilter()
+   {
       evaluateProcesses();
       List<ProcessDefinition> selectedProcessDefs = getSelectedProcessDefs();
       refreshDescriptorTable(selectedProcessDefs);
@@ -801,6 +846,14 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
    public void toggleActivityFilter(ActionEvent ae)
    {
       toggleFilter(activityFilterToolbarItems, ae);
+      afterToggleActivityFilter();
+   }
+   
+   /**
+    * 
+    */
+   public void afterToggleActivityFilter()
+   {
       refreshActivities(getSelectedProcessDefs());
    }
 
@@ -1365,7 +1418,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
    {
       if (!activityCriteriaInitialized)
       {
-         activitySearchProvider = new ActivitySearchProvider();
+         activitySearchProvider = new ActivitySearchProvider(this);
 
          // initialize autocomplete Selector
          performerSelector = new UserAutocompleteMultiSelector(false, true);
@@ -1507,6 +1560,46 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
    private boolean isActivitySwitchOn(String switchName)
    {
       return isSwitchOn(activityFilterToolbarItems, switchName);
+   }
+
+   /**
+    * @return
+    */
+   private String[] getProcessFilters()
+   {
+      ArrayList<String> processFilters = new ArrayList<String>();
+
+      if (isAuxiliaryProcessesSwitchOn())
+      {
+         processFilters.add(AUXILIARY_PROCESSES);
+      }
+      
+      return processFilters.toArray(new String[0]);
+   }
+
+   /**
+    * @return
+    */
+   private String[] getActivityFilters()
+   {
+      ArrayList<String> activityFilters = new ArrayList<String>();
+
+      if (isNonInteractiveActivitiesSwitchOn())
+      {
+         activityFilters.add(NONINTERACT_ACTIVITIES);
+      }
+
+      if (isInteractiveActivitiesSwitchOn())
+      {
+         activityFilters.add(INTERACTIVE_ACTIVITIES);
+      }
+
+      if (isAuxiliaryActivitiesSwitchOn())
+      {
+         activityFilters.add(AUXILIARY_ACTIVITIES);
+      }
+
+      return activityFilters.toArray(new String[0]);
    }
 
    @Override

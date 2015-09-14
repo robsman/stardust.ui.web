@@ -25,6 +25,7 @@ import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.query.Users;
 import org.eclipse.stardust.engine.core.query.statistics.api.DateRange;
+import org.eclipse.stardust.engine.core.query.statistics.api.ProcessCumulationPolicy;
 import org.eclipse.stardust.engine.core.query.statistics.api.StatisticsDateRangePolicy;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatistics;
 import org.eclipse.stardust.engine.core.query.statistics.api.UserPerformanceStatisticsQuery;
@@ -259,7 +260,10 @@ public class CompletedActivitiesBean extends UIComponentBean implements Resource
       
       UserPerformanceStatisticsQuery userPerformanceStatisticsQuery = UserPerformanceStatisticsQuery.forAllUsers();      
       userPerformanceStatisticsQuery.setPolicy(new StatisticsDateRangePolicy(dateRange));
-
+      // To allow activities from subprocess in different models in separate data space to
+      // be counted.
+      userPerformanceStatisticsQuery.setPolicy(ProcessCumulationPolicy.WITH_ROOT_PI);
+      
       userStatistics = (UserPerformanceStatistics) facade.getAllUsers(userPerformanceStatisticsQuery);
 
       if (queryExtender != null)

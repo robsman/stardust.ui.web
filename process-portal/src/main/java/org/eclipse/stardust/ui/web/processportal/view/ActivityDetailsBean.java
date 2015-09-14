@@ -3216,6 +3216,16 @@ public class ActivityDetailsBean extends UIComponentBean
       });
    }
    
+   public boolean isQualityAssuranceActivity()
+   {
+      if (QualityAssuranceState.IS_QUALITY_ASSURANCE.equals(activityInstance.getQualityAssuranceState()))
+      {
+         return true;
+      }
+      return false;
+   }
+   
+   
    /**
     * action listener to open Join process dialog
     */

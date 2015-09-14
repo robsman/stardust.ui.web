@@ -402,7 +402,7 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
       if (getChangePassword())
       {
          String passwordConfirmation = getConfirmPassword();
-         if (StringUtils.isEmpty(passwordConfirmation) || StringUtils.isEmpty(password))
+         if ((StringUtils.isEmpty(passwordConfirmation) || StringUtils.isEmpty(password)) && isInternalAuthentication())
          {
             passwordValidationMsg = MessagesViewsCommonBean.getInstance().getString("views.createUser.password.empty");
             success = false;
@@ -457,6 +457,13 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
          userToModify.setEMail(getEmail());
          userToModify.setValidFrom(getValidFrom());
          userToModify.setValidTo(getValidTo());
+         if(!isInternalAuthentication())
+         {
+            if(StringUtils.isNotEmpty(getAccount()))
+            {
+               userToModify.setAccount(getAccount());
+            }
+         }
          userToModify.setQualityAssuranceProbability(getQaOverride());
          modifiedUser = userService.modifyUser(userToModify);
          if (modifiedUser != null && modifiedUser.equals(loggedInUser))
@@ -660,7 +667,7 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
 
    public void setAccount(String account)
    {
-      if (isCreateMode() || isCopyMode())
+      if (isCreateMode() || isCopyMode() || (isModifyMode() && !isInternalAuthentication()))
       {
          this.account = account;
       }
@@ -917,10 +924,14 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
       return userProfileConfirmationDlg;
    }
    
+   public boolean isInternalAuthentication()
+   {
+      return isInternalAuthentication;
+   }
+
    public MySignaturePreferenceBean getMySignaturePreference()
    {
       return mySignaturePreference;
    }
    
-
 }
