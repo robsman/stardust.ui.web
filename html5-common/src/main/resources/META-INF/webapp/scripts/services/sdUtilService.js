@@ -31,7 +31,7 @@
 		 */
 		UtilService.prototype.safeApply = function($scope) {
 			var root = $scope.$root ? $scope.$root : $scope;
-			if (root.$$phase !== '$apply' && root.$$phase !== '$digest') {
+			if (!root.$$phase) {
 				$scope.$apply();
 			}
 		};
