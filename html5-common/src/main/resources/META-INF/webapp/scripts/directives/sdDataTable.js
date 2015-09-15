@@ -175,7 +175,7 @@
 		var sdData = ctrl[0];
 
 		var treeTable = false, treeTableData, treeData;
-		var tableInLocalMode, initialized;
+		var tableInLocalMode, initialized, firstInitiaizingDraw = true;
 		var columns = [], dtColumns = [];
 		var theTable, theTableId, theDataTable, theToolbar, theColReorder;
 		var selectedRowIndexes = {}, rowSelectionMode = false, selectionBinding;
@@ -931,6 +931,19 @@
 				sEcho : dataMap['sEcho']
 			};
 
+			if (firstInitiaizingDraw) {
+				// Return empty data, table will be refreshed during initialization for Column Reordering.
+				// At that time return actual data, this way it avoids duplicate requests to load 1st page.
+
+				ret.iTotalRecords = 0;
+				ret.iTotalDisplayRecords = 0;
+				ret.aaData = [];
+
+				callback(ret);
+
+				return;
+			}
+
 			var params = {skip : dataMap['iDisplayStart'], pageSize : dataMap['iDisplayLength']};
 
 			if(localModeRefreshInitiated) {
@@ -1181,8 +1194,8 @@
 				sEcho : dataMap['sEcho']
 			};
 			
-			if (!initialized) {
-				// Return empty data, table will be refreshed after initialization is complete.
+			if (firstInitiaizingDraw) {
+				// Return empty data, table will be refreshed during initialization for Column Reordering.
 				// At that time return actual data, this way it avoids duplicate requests to load 1st page.
 
 				ret.iTotalRecords = 0;
@@ -1504,26 +1517,33 @@
 				bodyScope.$$pageData = getPageData(); // Used by sd-data-table-row
 				compileMarkup(body, bodyScope, 'Table body');
 			}
-			
-			if(!initialized) {
+
+			if(firstInitiaizingDraw) {
+				firstInitiaizingDraw = false;
 				enableRowSelection();
 
 				$timeout(function() {
-					reorderColumns(null, null);
-					doInitialSelection();
+					reorderColumns(null, null); // This will cause another draw, at that time further initialization is to be done
 					exposeScopeInfo();
 				}, 0, false);
-
-				initialized = true;
 			} else {
-				clearState();
+				if (!initialized) {
+					// First Draw is done, this one is second caused by Column Reorder - Complete initialization
+					doInitialSelection();
+					initialized = true;
 
-				// Show Pagination Info
-				var dataTablesInfo = angular.element(theTable.parent()).find('.dataTables_info');
-				showElement(dataTablesInfo, true);
+					// Show Pagination Info
+					var dataTablesInfo = angular.element(theTable.parent()).find('.dataTables_info');
+					showElement(dataTablesInfo, true);
+
+					logCompilationTime();
+				} else {
+					clearState(); // Subsequent draws will pass from here
+					logCompilationTime();
+				}
+
+				sdUtilService.safeApply(elemScope);
 			}
-
-			sdUtilService.safeApply(elemScope);
 		}
 
 		/*
@@ -1799,13 +1819,18 @@
 		 * 
 		 */
 		function clearState() {
-			trace.log('Angular Compilation Total Time: ' + compileTime);
-			compileTime = 0;
-
 			if (getRowSelectionCount() > 0) {
 				unselectRows();
 				processSelectionBinding();
 			}
+		}
+
+		/*
+		 * 
+		 */
+		function logCompilationTime() {
+			trace.log('Angular Compilation Total Time: ' + compileTime);
+			compileTime = 0;
 		}
 
 		/*
