@@ -64,6 +64,7 @@
 .sc-badge-bg{
     position:absolute;
     z-index:2;
+    top:0px;
 }
 
 .sc-badge-icon{
