@@ -89,6 +89,17 @@ portal icon badging stem, duped from starclipse
     content:'\F08E';
 }
 
+/*Elements designed to incorporate pi elements as children*/
+button.pi{
+	background:transparent;
+	border:none;
+	cursor:pointer;
+	opacity:0.75;
+}
+button.pi:hover{
+	opacity:1.0;
+}
+
 /*
 Utility classes for portal icons
 -----------------------------------------------------------
