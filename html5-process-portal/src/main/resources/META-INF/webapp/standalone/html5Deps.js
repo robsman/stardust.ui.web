@@ -26,7 +26,7 @@ var html5Deps = function() {
 				"html5-common/styles/sdTree.css",
 				"html5-common/styles/font-icon.css",
 				"html5-process-portal/styles/html5-process-portal.css",
-				"html5-common/styles/3rd-party/font-awesome/4.2.0/css/font-awesome.min.css"
+				"html5-common/styles/3rd-party/font-awesome/4.4.0/css/font-awesome.min.css"
 				];
 		
 
