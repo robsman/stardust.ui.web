@@ -358,17 +358,27 @@
 		    				</td>
 		    				
 		    				<td style="vertical-align:top;">
-		    				
-		    					<label>
-		    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
-		    						       ng-model="data.elementRef.enableBenchmark" 
-		    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
-		    						       ng-true-value="true"
-		    						       ng-false-value="false"
-		    						       type="checkbox"/>
-		    						       {{ctrl.textMap.enableBenchmark}}
-		    					</label>
-		    					
+		    					<form>
+			    					<label>
+			    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+			    						       ng-model="data.elementRef.enableBenchmark" 
+			    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
+			    						       ng-true-value="true"
+			    						       ng-false-value="false"
+			    						       type="checkbox"/>
+			    						       {{ctrl.textMap.enableBenchmark}}
+			    					</label>
+			    					
+			    					<label>
+			    						{{ctrl.textMap.expectedDuration}}
+			    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+			    						       ng-model="data.elementRef.expectedDuration"
+			    						       style="width:30px;"
+			    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
+			    						       type="text"/>
+			    						       {{ctrl.textMap.hour}}
+			    					</label>
+		    					</form>
 
 		    				</td>
 		    				

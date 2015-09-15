@@ -61,6 +61,7 @@
 		this.showAllTreeNodes = true; //toggles display of auxiliary and non-interactive nodes.
 		this.fileDialogApi = {};
 		this.fileUploadUrl = this.benchmarkService.getFileUploadUrl();
+
 		//by default load our design time benchmarks
 		this.loadBenchmarks("DESIGN");
 		
@@ -161,6 +162,8 @@
 		this.textMap.moveRight = this.i18N("views.main.categoryDataTable.colhdr.menu.moveRight");
 		this.textMap.moveLeft = this.i18N("views.main.categoryDataTable.colhdr.menu.moveLeft");
 		this.textMap.enableBenchmark= this.i18N("views.main.categoryDataTable.cell.enableBenchmark");
+		this.textMap.expectedDuration= this.i18N("views.main.categoryDataTable.cell.expectedDuration");
+		this.textMap.hour= this.i18N("views.main.categoryDataTable.cell.hour");
 		this.textMap.currentTime= this.i18N("views.main.categoryDataTable.cell.lhs.currentTime");
 		this.textMap.freeForm= this.i18N("views.main.categoryDataTable.cell.lhs.freeForm");
 		this.textMap.laterThan= this.i18N("views.main.categoryDataTable.cell.operator.laterThan");

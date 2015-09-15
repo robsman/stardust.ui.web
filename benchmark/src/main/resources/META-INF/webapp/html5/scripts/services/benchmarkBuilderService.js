@@ -53,6 +53,7 @@
 		"id": "",
 		"categoryConditions" : [],
 		"enableBenchmark": false,
+		"expectedDuration" : "0.0",
 		"activities": []
 	};
 	
@@ -61,6 +62,7 @@
 	{
 		"id": "",
 		"enableBenchmark": false,
+		"expectedDuration" : "0.0",
 		"categoryConditions" : []
 	};
 	
