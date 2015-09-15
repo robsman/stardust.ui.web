@@ -894,6 +894,9 @@
 	           "</ul>" +
 	           "</div>";
 	  
+	  var lastMenu; //Variable we can close over to make sure we only
+	  				//have a single menu open at a time;
+	  
 	  //Parsing function for our string representing our menu item tuples.
 	  var parseMenuItems = function(v){
 	    
@@ -922,7 +925,7 @@
 	        //Compile template seperately and set scope vars
 	        var compHtml,
 	            menuItems;
-	        
+
 	        scope.menuItems=[]; //k,v pairs which are populated from an attr
 	        
 	        //Parse our string of menu items into objects we will hang on our scope.
@@ -953,7 +956,13 @@
 	          if(e.which!==3){
 	    		 return true;
 	          };
-		    	  
+	          
+	          //Check for a valid lastMenu and remove it
+	          if(lastMenu && lastMenu.remove){
+	            lastMenu.remove();
+	            lastMenu = null;
+          	  }
+	          
 	          var treeNode = elem.scope(),
 	              treeItem,
 	              deferred,
@@ -983,6 +992,7 @@
 	            if(scope.menuItems.length >1){
 		            scope.isVisible=true;
 		            compHtml=$compile(temp)(scope);
+		            lastMenu = compHtml;//Assign current menu as lastMenu
 		            compHtml.on("click",function(e2){
 		              scope.invokeCallback(null,e2);
 		              compHtml.remove();
