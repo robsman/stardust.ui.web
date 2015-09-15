@@ -188,6 +188,7 @@
 		var exportConfig = {}, remoteModeLastParams;
 		var localModeData, localModeMasterData, localModeRefreshInitiated, localModeRebuildData;
 		var localModeGlobalFilter = {}, localModeSortingCols = [];
+		var compileTime = 0;
 
 		// Setup component instance
 		setup();
@@ -932,8 +933,6 @@
 
 			var params = {skip : dataMap['iDisplayStart'], pageSize : dataMap['iDisplayLength']};
 
-			// TODO: Sorting, Filtering
-			
 			if(localModeRefreshInitiated) {
 				localModeMasterData = undefined;
 				localModeData = undefined;
@@ -973,7 +972,8 @@
 						showErrorOnUI(e);
 					}
 				}, function(error) {
-					alert('Error while fetching data'); // TODO
+					trace.error('Error while fetching data', error);
+					showErrorOnUI(error);
 				});
 			} else {
 				if (treeTable) {
@@ -1799,8 +1799,13 @@
 		 * 
 		 */
 		function clearState() {
-			unselectRows();
-			processSelectionBinding();
+			trace.log('Angular Compilation Total Time: ' + compileTime);
+			compileTime = 0;
+
+			if (getRowSelectionCount() > 0) {
+				unselectRows();
+				processSelectionBinding();
+			}
 		}
 
 		/*
@@ -1930,6 +1935,21 @@
 			} else {
 				return null;
 			}
+		}
+
+		/*
+		 * 
+		 */
+		function getRowSelectionCount() {
+			var selection = [];
+
+			if (rowSelectionMode) {
+				angular.forEach(selectedRowIndexes, function(value, key) {
+					selection.push(value);
+				});
+			}
+
+			return selection.length;
 		}
 
 		/*
@@ -2361,7 +2381,9 @@
 			$compile(elem)(scope);
 			var end = new Date().getTime();
 
-			trace.log('Angular Compilation for: ' + id + ', Time taken: ' + (end - start) + 'ms');
+			compileTime += (end - start);
+
+			trace.log('Angular Compilation For: ' + id + ', Time: ' + (end - start));
 		}
 		
 		/*
