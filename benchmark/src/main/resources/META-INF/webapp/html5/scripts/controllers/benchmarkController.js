@@ -58,7 +58,7 @@
 		this.benchmarkIsDirty = false; 
 		this.lastSaveTime = Number.NEGATIVE_INFINITY;
 		this.calendars = []; //time-off calendars
-		this.showAllTreeNodes = true; //toggles display of auxiliary and non-interactive nodes.
+		this.showAllTreeNodes = false; //toggles display of auxiliary and non-interactive nodes.
 		this.fileDialogApi = {};
 		this.fileUploadUrl = this.benchmarkService.getFileUploadUrl();
 

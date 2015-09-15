@@ -292,7 +292,7 @@
 			              ng-repeat="process in model.processDefinitions">
 			            <ul>
 			              <li sd-tree-node
-			                  ng-show="ctrl.showAllTreeNodes===true || process.interactive===true"
+			                  ng-show="ctrl.showAllTreeNodes===true || activity.interactive===false"
 			                  sda-is-leaf="true"
 			                  sda-draggable="true"
 			                  sda-label="activity.name"
