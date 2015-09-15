@@ -9,7 +9,7 @@
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 /**
- * 
+ *
  */
 package org.eclipse.stardust.ui.web.processportal.launchpad;
 
@@ -36,7 +36,7 @@ import org.springframework.beans.factory.InitializingBean;
 
 /**
  * @author roland.stamm
- * 
+ *
  */
 public class ActivitySearchPanelBean extends AbstractLaunchPanel
       implements InitializingBean, DisposableBean, IActivitySearchUserSearchHandler
@@ -47,16 +47,16 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
    private static final String ID_USER_WORKLIST_SEARCH = "userWorklistSearch";
 
    private static final String ID_ALL_ACTIVITY_INSTANCES = "allActivityInstances";
-   
+
    private static final int SEARCH_RESULT_MAP_SIZE = 3;
 
    private AllAvailableActivityQueryBuilder allActivityQueryBuilder;
-   
+
    private AllResubmissionActivity allResubmissionActivity;
-   
+
    private Map<String, ActivitySearchModel> lastSearchItems;
 
-   private List<ActivitySearchUserModel> users;   
+   private List<ActivitySearchUserModel> users;
 
    private boolean userWorklistSearchPanelVisible;
 
@@ -72,7 +72,7 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
     */
    public void afterPropertiesSet() throws Exception
@@ -91,13 +91,13 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
 
    /*
     * (non-Javadoc)
-    * 
+    *
     * @see org.springframework.beans.factory.DisposableBean#destroy()
     */
    public void destroy() throws Exception
    {
    }
-   
+
    /**
     * @return
     */
@@ -117,22 +117,22 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
    }
 
    /**
-    * 
+    *
     */
    private void clear()
    {
       lastSearchItems.clear();
    }
-   
+
    public String searchAllResubmissionActivityInstancesAction()
    {
       searchAllResubmissionActivityInstances();
       return null;
    }
-   
+
    private void searchAllResubmissionActivityInstances()
    {
-      
+
       allResubmissionActivity.executeCountQuery();
       if (allResubmissionActivity.getCountQueryResult() != null)
       {
@@ -157,7 +157,7 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
    }
 
    /**
-    * 
+    *
     */
    private void searchAllActivityInstances()
    {
@@ -183,7 +183,7 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
    }
 
    /**
-    * 
+    *
     */
    public void update()
    {
@@ -224,10 +224,10 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
          return countQueryResult;
       }
    }
-   
+
    private class AllResubmissionActivity implements IQueryBuilder
    {
-      private ActivityInstances countQueryResult;  
+      private ActivityInstances countQueryResult;
       public Query createQuery()
       {
          executeCountQuery();
@@ -244,7 +244,7 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
       {
          return countQueryResult;
       }
-      
+
    }
 
    // ************************ Worklist Search ********************************
@@ -282,12 +282,12 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
    private void filterUsers()
    {
       users.clear();
-     
+
       Users qusers = PPUtils.getUsers_anyLike(getFirstNameFilter(), getLastNameFilter());
       for (Iterator<User> iterator = qusers.iterator(); iterator.hasNext();)
       {
          User user = iterator.next();
-         users.add(new ActivitySearchUserModel(user, this));         
+         users.add(new ActivitySearchUserModel(user, this));
       }
    }
 
@@ -350,7 +350,7 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
          lastSearchItems.put(id, new ActivitySearchModel(id, name, userWorklistQueryBuilder));
       }
    }
-   
+
    public void searchAllActivityInstancesActionHTML5()
    {
       allActivityQueryBuilder.executeCountQuery();
@@ -378,7 +378,7 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
       {
          Map<String, Object> params = CollectionUtils.newTreeMap();
          String name = this.getMessages().getString("resubmission");
-         String id = ID_ALL_RESUBMISSION_ACTIVITY_INSTANCES;
+         String id = ProcessPortalConstants.ID_ALL_RESUBMISSION_ACTIVITY_INSTANCES;
          params.put("id", id);
          params.put("name", name);
          params.put("url", "services/rest/portal/worklist/resubmissionActivities");
