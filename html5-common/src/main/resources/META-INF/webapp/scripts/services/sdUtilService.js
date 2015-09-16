@@ -603,7 +603,8 @@
 		      frame.contentWindow.document.write(content);
 		      frame.contentWindow.document.close();
 		      frame.contentWindow.focus();
-		      frame.contentWindow.document.execCommand('SaveAs', true, filename);
+		      //must save as .txt as SaveAs will only work with text files in IE9 (requires a registry change otherwise)
+		      frame.contentWindow.document.execCommand('SaveAs', true, filename + ".txt");
 		      document.body.removeChild(frame);
 		      return true;
 		    }
