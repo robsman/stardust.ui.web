@@ -102,25 +102,16 @@
 		var self = this;
 		var deferred = _q.defer();
 		var result = {
-			list : [],
+			list : self.statistics.list,
 			totalCount : self.statistics.totalCount
 		}
 		//Filter
-		if(options.filters && options.filters.TeamMember && options.filters.TeamMember.textSearch !=''){
+		/*if(options.filters && options.filters.TeamMember && options.filters.TeamMember.textSearch !=''){
 			trace.log("Applying filter with team member : ",options.filters.TeamMember.textSearch );
 			result.list = _filter('filter')(self.statistics.list, {'teamMember' : {'displayName': options.filters.TeamMember.textSearch }},false)
 		}else{
 			result.list = self.statistics.list;
-		}
-		
-		//Sorting 
-		if (options.order != undefined) {
-			if(options.order[0].field == 'TeamMember' ){
-				result.list= _sdDataTableHelperService.columnSort(options, result.list, 'teamMember.displayName');
-			}
-		}
-		//paginate
-		result.list = _sdDataTableHelperService.paginate( options, result.list);
+		}*/
 		
 		deferred.resolve(result);
 		return deferred.promise;

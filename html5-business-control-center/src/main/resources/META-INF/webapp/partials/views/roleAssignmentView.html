@@ -8,7 +8,7 @@
 	<div ng-if="ctrl.createTable">
 		<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-roleAssignmentView-title')}}</div>
 		<table sd-data-table="ctrl.roleAssignmentTable"
-			sd-data="ctrl.getRoleAssignmentData(params)" sda-mode="remote"
+			sd-data="ctrl.getRoleAssignmentData(params)" sda-mode="local"
 			sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
 			sda-ready="ctrl.showRoleAssignmentTable" sda-selectable="multiple"
 			sda-selection="ctrl.rowSelectionForRoleAssignment"
@@ -18,7 +18,7 @@
 			<thead
 				sda-i18n-scope="business-control-center-messages.views-common-column">
 				<tr>
-					<th sda-name="teamMember" sda-fixed="true" sda-sortable="true">
+					<th sda-name="teamMember.displayName" sda-fixed="true" sda-sortable="true">
 					   <div sda-filter-template>
 						<div sd-text-search-filter></div>
 					   </div>
@@ -29,7 +29,7 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td sda-exporter="rowData.teamMember"><a href="#"
+					<td sda-exporter="rowData.teamMember" sda-data-type="string"><a href="#"
 						ng-click="bpmCommon.stopEvent($event); ctrl.openUserManagerView(rowData.userOid,rowData.userId);"
 						title="{{i18n('business-control-center-messages.views-userManagerDetailView-title')}}"
 						class="tbl-tool-link"

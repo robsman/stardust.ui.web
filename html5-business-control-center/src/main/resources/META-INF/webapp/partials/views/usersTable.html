@@ -1,7 +1,7 @@
 <div style="margin-top: 10px;">
 	<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-resourceAvailabilityView-accountTable-title')}}</div>
 	<table sd-data-table="ctrl.usersTable"
-		sd-data="ctrl.getProcessResourceUsers(params)" sda-mode="remote"
+		sd-data="ctrl.getProcessResourceUsers(params)" sda-mode="local"
 		sda-preference-delegate="ctrl.preferenceDelegateForUsersTable(prefInfo)"
 		sda-ready="ctrl.showUsersTable" sda-selectable="row"
 		sda-selection="ctrl.rowSelectionForUsers"
@@ -30,7 +30,7 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td sda-exporter="rowData.userName"><a href="#"
+				<td sda-exporter="rowData.userName" sda-data-type="string"><a href="#"
 					ng-click="bpmCommon.stopEvent($event); ctrl.openUserManagerView(rowData.userOid,rowData.userId);"
 					title="{{i18n('business-control-center-messages.views-userManagerDetailView-title')}}"
 					class="tbl-tool-link" aid="BCC-ResAvailability-UserTbl-UserName">{{rowData.userName}}</a></td>

@@ -131,9 +131,6 @@
 			result.totalCount = rows.length;
 		}
 
-		result.list = _sdDataTableHelperService.columnSort(options, result.list);
-		result.list = _sdDataTableHelperService.paginate(options, result.list);
-
 		deferred.resolve(result);
 		return deferred.promise;
 	};
@@ -159,9 +156,6 @@
 			result.list = rows;
 			result.totalCount = rows.length;
 		}
-
-		result.list = _sdDataTableHelperService.columnSort(options, result.list);
-		result.list = _sdDataTableHelperService.paginate(options, result.list);
 
 		deferred.resolve(result);
 		return deferred.promise;

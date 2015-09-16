@@ -90,19 +90,9 @@
 		var self = this;
 
 		var result = {
-			list : [],
+			list : self.processResourceRoleList,
 			totalCount : self.processResourceRoleList.length
 		}
-		if (options.filters != undefined) {
-			var rows = this.filterRolesArray(self.processResourceRoleList, options.filters.name.textSearch);
-			result.list = rows;
-			result.totalCount = rows.length;
-		} else {
-			result.list = self.processResourceRoleList;
-		}
-
-		result.list = _sdDataTableHelperService.columnSort(options, result.list);
-		result.list = _sdDataTableHelperService.paginate(options, result.list);
 
 		deferred.resolve(result);
 		return deferred.promise;
@@ -159,19 +149,10 @@
 		var deferred = _q.defer();
 		var self = this;
 		var result = {
-			list : [],
+			list : self.processResourceUserList,
 			totalCount : self.processResourceUserList.length
 		}
-		if (options.filters != undefined) {
-			var rows = this.filterUsersArray(self.processResourceUserList, options.filters.userName.textSearch);
-			result.list = rows;
-			result.totalCount = rows.length;
-		} else {
-			result.list = self.processResourceUserList;
-		}
 
-		result.list = _sdDataTableHelperService.columnSort(options, result.list);
-		result.list = _sdDataTableHelperService.paginate(options, result.list);
 		deferred.resolve(result);
 		return deferred.promise;
 	};

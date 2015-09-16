@@ -16,8 +16,8 @@
 	'use strict';
 
 	angular.module('bpm-common.services').provider('sdUtilService', function() {
-		this.$get = [ '$rootScope', '$parse', '$q', '$http', function($rootScope, $parse, $q, $http) {
-			var service = new UtilService($rootScope, $parse, $q, $http);
+		this.$get = [ '$rootScope', '$parse', '$q', '$http', 'sdLoggerService', function($rootScope, $parse, $q, $http, sdLoggerService) {
+			var service = new UtilService($rootScope, $parse, $q, $http, sdLoggerService);
 			return service;
 		} ];
 	});
@@ -25,7 +25,10 @@
 	/*
 	 * 
 	 */
-	function UtilService($rootScope, $parse, $q, $http) {
+	function UtilService($rootScope, $parse, $q, $http, sdLoggerService) {
+		
+		var trace = sdLoggerService.getLogger('bpm-common.services.sdUtilService');
+		
 		/*
 		 * 
 		 */
@@ -643,6 +646,26 @@
 		    }, 100);
 	   	};
 		
+	   	UtilService.prototype.resolveProperty = function(obj, field) {
+			try {
+				if (field == null || obj == null) {
+					return obj;
+				}
 
+				if (field.indexOf('.') > -1) {
+					var parts = field.split('.');
+					var current = obj;
+					for ( var j in parts) {
+						current = current[parts[j]];
+					}
+					return current;
+				}
+				return obj[field];				
+			} catch(e) {
+				trace.error('Could not resolve property: ' + field + ' of: ', obj, e);
+				return obj;
+			}
+		};
+		
 	};
 })();

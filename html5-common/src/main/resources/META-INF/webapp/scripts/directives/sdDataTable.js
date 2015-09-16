@@ -1090,7 +1090,7 @@
 							}
 
 							filterScope.filterData = angular.copy(filterScope.$$filterData);
-							visible = filterScope.handlers.filterCheck(rowData);
+							visible = filterScope.handlers.filterCheck(rowData, sdUtilService.resolveProperty(rowData, filterScope.colData.field));
 							if (!visible) {
 								break;
 							}

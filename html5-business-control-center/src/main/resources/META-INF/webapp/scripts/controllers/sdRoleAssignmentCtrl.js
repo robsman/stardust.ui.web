@@ -83,17 +83,8 @@
 			list : self.roleAssignments.list,
 			totalCount : self.roleAssignments.totalCount
 		}
-
-		if (options.filters != undefined) {
-			var rows = this.filterRoleAssignments(self.roleAssignments.list, options.filters.teamMember.textSearch);
-			result.list = rows;
-			result.totalCount = rows.length;
-		}
-
-		result.list = _sdDataTableHelperService.columnSort(options, result.list);
-		result.list = _sdDataTableHelperService.paginate(options, result.list);
+		
 		return result;
-
 	};
 
 	/**

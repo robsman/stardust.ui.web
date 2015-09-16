@@ -1,7 +1,7 @@
 <div class="view-panel-content">
 	<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-resourceAvailabilityView-rolesTable-title')}}</div>
 	<table sd-data-table="ctrl.rolesTable"
-		sd-data="ctrl.getProcessResourceRoles(params)" sda-mode="remote"
+		sd-data="ctrl.getProcessResourceRoles(params)" sda-mode="local"
 		sda-preference-delegate="ctrl.preferenceDelegateForRolesTable(prefInfo)"
 		sda-ready="ctrl.showRolesTable" sda-selectable="row"
 		sda-selection="ctrl.rowSelectionForRoles"
@@ -24,7 +24,7 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td sda-exporter="rowData.name"><a href="#"
+				<td sda-exporter="rowData.name" sda-data-type="string"><a href="#"
 					ng-click="bpmCommon.stopEvent($event); ctrl.openRoleManagerView(rowData.roleId,rowData.departmentOid,rowData.name);"
 					title="{{i18n('business-control-center-messages.views-roleManagerDetailView-title')}}"
 					class="tbl-tool-link"

@@ -23,7 +23,7 @@
 		</div>
 	</div>
 	<table sd-data-table="ctrl.assignedUsersTable"
-		sd-data="ctrl.getAssignedUsers(params)" sda-mode="remote" sda-ready="ctrl.table1"
+		sd-data="ctrl.getAssignedUsers(params)" sda-mode="local" sda-ready="ctrl.table1"
 		sda-selectable="multiple"
 		sda-preference-delegate="ctrl.preferenceForAssignedUserTable(prefInfo)"
 		sda-selection="ctrl.rowSelectionAssignedUsersTable"
@@ -48,7 +48,7 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td></td>
+				<td sda-data-type="string"></td>
 				<td style="text-align: center;"></td>
 				<td style="text-align: center;"></td>
 				<td style="text-align: center;"></td>

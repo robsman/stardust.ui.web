@@ -243,16 +243,6 @@
 				totalCount : self.activities.totalCount
 		}
 
-		//Filtering
-		if(options.filters){
-			result.list = self.applyFilter( options ,result);
-			result.totalCount = result.list.length;
-		}	
-
-		//Sorting the values
-		if (options.order != undefined) {
-			result.list = _sdDataTableHelperService.columnSort(options, result.list);
-		}
 		deferred.resolve(result);
 		return deferred.promise;
 	};
@@ -296,14 +286,6 @@
 				totalCount : self.departments.totalCount
 		}
 
-		if(options.filters && options.filters.name && options.filters.name.textSearch !='' ){
-			result.list = _filter('filter')( result.list, {"name" : options.filters.name.textSearch},false);
-		}
-
-		//Sorting the values
-		if (options.order != undefined) {
-			result.list = _sdDataTableHelperService.columnSort(options, result.list);
-		}
 		deferred.resolve(result);
 
 		return deferred.promise;

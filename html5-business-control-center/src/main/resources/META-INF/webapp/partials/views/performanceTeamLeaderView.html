@@ -9,11 +9,11 @@
 		 <table sd-data-table="ctrl.dataTable" sda-no-pagination="true"  aid="BCC-PerformanceTeamLead-DataTbl"
 			sd-data="ctrl.getStatistics(params)" sda-ready="ctrl.ready"  sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
 			sda-sortable="true" sda-sort-by="{name : 'teamMember', dir : 'desc'}"
-			sda-mode="remote" sda-no-pagination="true" sda-sortable="false" 
+			sda-mode="local" sda-no-pagination="true" sda-sortable="false" 
 			sda-exports="true" sda-exports-file-name="{{ctrl.exportFileName}}"  sda-column-selector="{{ctrl.columnSelector}}" >
 			<thead>
 				<tr>
-					<th sda-name="TeamMember" sda-sortable="true" sda-visible="true" sda-fixed="true"
+					<th sda-name="teamMember.displayName" sda-sortable="true" sda-visible="true" sda-fixed="true"
 						sda-label="{{i18n('business-control-center-messages.views-common-column-teamMember')}}">
 							<div sda-filter-template>
 								<div sd-text-search-filter></div>
@@ -25,7 +25,7 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td sda-exporter="rowData.teamMember.displayName">
+					<td sda-exporter="rowData.teamMember.displayName" sda-data-type="string">
 							<a href="#"  aid="BCC-PerformanceTeamLead-OpenUserMngrDetails"
 								ng-click="ctrl.openUserManagerDetails(rowData.teamMember);"
 								title="{{i18n('business-control-center-messages.views-userManagerDetailView-title')}}"

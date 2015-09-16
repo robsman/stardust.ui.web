@@ -62,9 +62,8 @@
 				/*
 				 * Return true to show data
 				 */
-				scope.handlers.filterCheck = function(rowData) {
+				scope.handlers.filterCheck = function(rowData, value) {
 					var filterData = scope.filterData;
-					var value = rowData[scope.colData.field];
 
 					if (value) {
 						return value.toLowerCase().indexOf(filterData.textSearch.toLowerCase()) != -1;

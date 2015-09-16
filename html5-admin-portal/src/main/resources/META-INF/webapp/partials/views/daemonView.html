@@ -13,10 +13,10 @@
 	<div class="view-panel-content">
 		<div class="tbl-title">{{i18n('admin-portal-messages.views-daemons-table-title')}}</div>
 		<table sd-data-table="ctrl.daemonDataTable"
-			sd-data="ctrl.fetchDaemons(params)" sda-mode="remote"
+			sd-data="ctrl.fetchDaemons(params)" sda-mode="local"
 			sda-page-size="{{ctrl.data.totalCount}}" sda-ready="ctrl.showDaemonTable"
 			sda-no-pagination="true"
-			sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="single"
+			sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true" sda-sort-by="{name : 'type', dir : 'asc'}"
 			sda-preference-module="ipp-administration-perspective" sda-preference-id="preference"
 			sda-preference-name="ipp-administration-perspective.daemons.selectedColumns"
 			sda-exports="true" sda-exports-file-name="daemons">
@@ -35,7 +35,7 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td sda-exporter="ctrl.getDaemonTypeLabel(rowData.type)">{{ctrl.getDaemonTypeLabel(rowData.type)}}</td>
+					<td sda-exporter="ctrl.getDaemonTypeLabel(rowData.type)" sda-data-type="string">{{ctrl.getDaemonTypeLabel(rowData.type)}}</td>
 					<td sda-data-type="dateTime"></td>
 					<td sda-data-type="dateTime"></td>
 					<td sda-exporter="ctrl.getDaemonStatus(rowData)">{{ctrl.getDaemonStatus(rowData)}}</td>

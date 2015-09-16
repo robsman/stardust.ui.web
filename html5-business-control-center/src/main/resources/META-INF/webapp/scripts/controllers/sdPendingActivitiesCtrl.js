@@ -82,11 +82,10 @@
 		trace.log('Fetching Pending activities.');
 		var self = this;
 		var result = {
-				list : [],
+				list : self.pendingActivities.list,
 				totalCount : self.pendingActivities.totalCount
 		}
-		result.list = _sdDataTableHelperService.columnSort(options, self.pendingActivities.list);
-		result.list = _sdDataTableHelperService.paginate(options,result.list);
+		
 		return result;
 	};
 	

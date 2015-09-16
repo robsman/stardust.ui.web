@@ -47,6 +47,7 @@
 		this.lookup = {};
 
 		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
+		
 		this.fetchDaemonsData();
 	}
 
@@ -104,7 +105,6 @@
 			list : self.data.list,
 			totalCount : self.data.totalCount
 		}
-		result.list = _sdDataTableHelperService.columnSort(options, result.list);
 
 		for (var i = 0, len = result.list.length; i < len; i++) {
 			self.lookup[result.list[i].type] = i;

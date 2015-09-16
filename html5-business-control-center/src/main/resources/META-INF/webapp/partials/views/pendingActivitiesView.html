@@ -15,7 +15,7 @@
 			sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
 			sda-sortable="true"
 			sda-sort-by="{name : 'overviewLabel', dir : 'asc'}"
-			sda-mode="remote" sda-sortable="false"
+			sda-mode="local" sda-sortable="false"
 			sda-exports="true" sda-exports-file-name="{{ctrl.exportFileName}}"
 			sda-column-selector="{{ctrl.columnSelector}}">
 			<thead>
@@ -30,7 +30,7 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td sda-exporter="rowData.overviewLabel">{{rowData.overviewLabel}}
+					<td sda-exporter="rowData.overviewLabel" sda-data-type="string">{{rowData.overviewLabel}}
 					</td>
 					<td ng-repeat="col in ctrl.columns"
 						sda-exporter="ctrl.getExportValue(rowData.statisticsByParticipant[colData.title])"

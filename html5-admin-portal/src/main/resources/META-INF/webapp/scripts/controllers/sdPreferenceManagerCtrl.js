@@ -130,11 +130,6 @@
 		result.list = self.filterData(result);
 		result.totalCount = result.list.length;
 
-		//Sorting the values
-		if (params.order != undefined) {
-			result.list = _sdDataTableHelperService.columnSort(params, result.list);
-		}
-
 		deferred.resolve(result);
 		return deferred.promise;
 	};
