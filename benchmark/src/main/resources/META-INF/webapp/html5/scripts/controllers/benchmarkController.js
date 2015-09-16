@@ -61,7 +61,8 @@
 		this.showAllTreeNodes = false; //toggles display of auxiliary and non-interactive nodes.
 		this.fileDialogApi = {};
 		this.fileUploadUrl = this.benchmarkService.getFileUploadUrl();
-
+		this.activeErrorMessage = "";
+		
 		//by default load our design time benchmarks
 		this.loadBenchmarks("DESIGN");
 		
@@ -188,7 +189,15 @@
 		this.textMap.showAllTreeNodes  = this.i18N("views.main.tabs.tree.button.filter.showall");
 		this.textMap.invalidDataReference = this.i18N("views.main.categoryDataTable.error.invalidDataReference");
 		this.textMap.upload = this.i18N("views.main.benchmarkDataTable.toolbar.upload");
-
+		this.textMap.genericDeleteError  = this.i18N("views.main.dialog.error.benchmarkdeletion.generic");
+		this.textMap.inUseError  = this.i18N("views.main.dialog.error.benchmarkdeletion.inuse");
+		this.textMap.dialogTitleError = this.i18N("views.main.dialog.title.error");
+		this.textMap.dialogTitleConfirm = this.i18N("views.main.dialog.title.confirm");
+		this.textMap.dialogTitlePublish = this.i18N("views.main.dialog.title.publish");
+		this.textMap.dialogTitleSuccess = this.i18N("views.main.dialog.title.success");
+		this.textMap.dialogButtonCancel  = this.i18N("views.main.dialog.buttons.cancel.default");
+		this.textMap.dialogButtonCancelOk  = this.i18N("views.main.dialog.buttons.cancel.ok");
+		this.textMap.dialogButtonCancelClose  = this.i18N("views.main.dialog.buttons.cancel.close");
 	};
 	
 	/**
@@ -509,7 +518,15 @@
 				that.loadBenchmarks("Published");
 			})
 			["catch"](function(err){
-				//TODO: handle error
+				
+				if(err.message && err.message.indexOf("ATDB01142") > -1){
+					that.activeErrorMessage = that.textMap.inUseError;
+				}
+				else{
+					that.activeErrorMessage = that.textMap.genericDeleteError;
+				}
+				that.errorDialog.open();
+				
 			});
 		}
 

@@ -13,7 +13,7 @@
 	
 	<!-- Delete Confirmation -->
 	<div sd-dialog="ctrl.deleteDialog"
-		 sda-title="Confirm"
+		 sda-title="{{ctrl.textMap.dialogTitleConfirm}}"
 	     sda-type="confirm"
 	     sda-template="plugins/benchmark/html5/partials/dialogs/deleteConfirmation.html"
 	     sda-on-open="ctrl.onOpenDeleteDialog(res)"
@@ -22,9 +22,9 @@
 	
 	<!-- Publish Confirmation -->
 	<div sd-dialog="ctrl.publishDialog"
-		 sda-title="Publish New Benchmark Definition"
+		 sda-title="{{ctrl.textMap.dialogTitlePublish}}"
 		 sda-confirm-action-label="Publish"
-		 sda-cancel-action-label="Cancel"
+		 sda-cancel-action-label="{{ctrl.textMap.dialogButtonCancel}}"
 	     sda-type="confirm"
 	     sda-template="plugins/benchmark/html5/partials/dialogs/publishConfirmation.html"
 	     sda-on-open="ctrl.onOpenPublishDialog(res)"
@@ -33,17 +33,25 @@
 	
 	<!-- Publish Success-->
 	<div sd-dialog="ctrl.publishSuccessDialog"
-		 sda-title="Success"
-		 sda-cancel-action-label="OK"
+		 sda-title="{{ctrl.textMap.dialogTitleSuccess}}"
+		 sda-cancel-action-label="{{ctrl.textMap.dialogButtonCancelOk}}"
 	     sda-type="alert"
 	     sda-template="plugins/benchmark/html5/partials/dialogs/publishSuccess.html"
 	     sda-scope="this"> 
 	</div>
 	
+	<div sd-dialog="ctrl.errorDialog"
+		 sda-title="{{ctrl.textMap.dialogTitleError}}"
+	     sda-type="alert"
+	     sda-template="plugins/benchmark/html5/partials/dialogs/error.html"
+	     sda-cancel-action-label="{{ctrl.textMap.dialogButtonCancelClose}}"
+	     sda-scope="this"> 
+	</div>
+	
 	<!-- Save Success-->
 	<div sd-dialog="ctrl.saveSuccessDialog"
-		 sda-title="Success"
-		 sda-cancel-action-label="OK"
+		 sda-title="{{ctrl.textMap.dialogTitleSuccess}}"
+		 sda-cancel-action-label="{{ctrl.textMap.dialogButtonCancelOk}}"
 	     sda-type="alert"
 	     sda-template="plugins/benchmark/html5/partials/dialogs/saveSuccess.html"
 	     sda-scope="this"> 
