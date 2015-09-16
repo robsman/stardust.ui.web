@@ -992,7 +992,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		var ctrl = this;
 		if( ctrl.oldMessage != ctrl.selected.content) {
 			//TODO change this to use the identifier
-			if(ctrl.selected.content.indexOf('${') > -1) {
+			if(ctrl.selected.content.indexOf('$') > -1) {
 				_sdCorrespondenceService.resolveMessageContent( ctrl.selected.piOid, ctrl.selected.content).then(function(result) {
 					ctrl.selected.content = result;
 				});
