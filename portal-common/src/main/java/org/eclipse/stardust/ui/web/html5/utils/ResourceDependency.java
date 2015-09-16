@@ -11,7 +11,9 @@
 package org.eclipse.stardust.ui.web.html5.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Subodh.Godbole
@@ -25,6 +27,7 @@ public class ResourceDependency
    private List<String> libs = new ArrayList<String>();
    private List<String> scripts = new ArrayList<String>();
    private List<String> styles = new ArrayList<String>();
+   private Map<String, List<String>> skip = new HashMap<String, List<String>>();
 
    /**
     * 
@@ -41,9 +44,10 @@ public class ResourceDependency
     * @param libs
     * @param scripts
     * @param styles
+    * @param skip
     */
    public ResourceDependency(String pluginId, String pluginLocation, List<String> portalPlugins, List<String> libs,
-         List<String> scripts, List<String> styles)
+         List<String> scripts, List<String> styles, Map<String, List<String>> skip)
    {
       this.pluginId = pluginId;
       this.pluginLocation = pluginLocation;
@@ -51,6 +55,27 @@ public class ResourceDependency
       this.libs = libs;
       this.scripts = scripts;
       this.styles = styles;
+      this.skip = skip;
+
+      if (null == this.libs)
+      {
+         this.libs = new ArrayList<String>();
+      }
+      
+      if (null == this.scripts)
+      {
+         this.scripts = new ArrayList<String>();
+      }
+      
+      if (null == this.styles)
+      {
+         this.styles = new ArrayList<String>();
+      }
+
+      if (null == this.skip)
+      {
+         this.skip = new HashMap<String, List<String>>();
+      }
    }
 
    public String getPluginId()
@@ -101,5 +126,10 @@ public class ResourceDependency
    public void setStyles(List<String> styles)
    {
       this.styles = styles;
+   }
+
+   public Map<String, List<String>> getSkip()
+   {
+      return skip;
    }
 }

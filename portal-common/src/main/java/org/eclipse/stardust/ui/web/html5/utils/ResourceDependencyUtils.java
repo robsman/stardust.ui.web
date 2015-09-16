@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
@@ -39,6 +40,7 @@ public class ResourceDependencyUtils
    private static final String PLUGIN_DEPENDENCY_LIBS = "libs";
    private static final String PLUGIN_DEPENDENCY_SCRIPTS = "scripts";
    private static final String PLUGIN_DEPENDENCY_STYLES = "styles";
+   private static final String PLUGIN_DEPENDENCY_SKIP = "skip";
 
    /**
     * @param resolver
@@ -60,11 +62,13 @@ public class ResourceDependencyUtils
             {
                ResourceDependency resDep = new ResourceDependency(rInfo.getPluginId(), rInfo.getPluginLocation(),
                      (List<String>) deps.get(PLUGIN_DEPENDENCY_PLUGINS), (List<String>) deps.get(PLUGIN_DEPENDENCY_LIBS),
-                     (List<String>)deps.get(PLUGIN_DEPENDENCY_SCRIPTS), (List<String>)deps.get(PLUGIN_DEPENDENCY_STYLES));
+                     (List<String>)deps.get(PLUGIN_DEPENDENCY_SCRIPTS), (List<String>)deps.get(PLUGIN_DEPENDENCY_STYLES),
+                     (Map<String, List<String>>)deps.get(PLUGIN_DEPENDENCY_SKIP));
       
                if(CollectionUtils.isEmpty(resDep.getLibs()))
                {
-                  resDep.setLibs(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_LIBS, "*.js", true));
+                  resDep.setLibs(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_LIBS, "*.js", true, resDep
+                        .getSkip().get(PLUGIN_DEPENDENCY_LIBS)));
                }
                else
                {
@@ -74,7 +78,8 @@ public class ResourceDependencyUtils
       
                if(CollectionUtils.isEmpty(resDep.getScripts()))
                {
-                  resDep.setScripts(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_SCRIPTS, "*.js", true));
+                  resDep.setScripts(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_SCRIPTS, "*.js", true,
+                        resDep.getSkip().get(PLUGIN_DEPENDENCY_SCRIPTS)));
                }
                else
                {
@@ -83,7 +88,8 @@ public class ResourceDependencyUtils
       
                if(CollectionUtils.isEmpty(resDep.getStyles()))
                {
-                  resDep.setStyles(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_STYLES, "*.css", false));
+                  resDep.setStyles(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_STYLES, "*.css", false,
+                        resDep.getSkip().get(PLUGIN_DEPENDENCY_STYLES)));
                }
                else
                {
@@ -155,14 +161,13 @@ public class ResourceDependencyUtils
          if (isListOfStrings(deps.get(PLUGIN_DEPENDENCY_PLUGINS))
                && isListOfStrings(deps.get(PLUGIN_DEPENDENCY_LIBS))
                && isListOfStrings(deps.get(PLUGIN_DEPENDENCY_SCRIPTS))
-               && isListOfStrings(deps.get(PLUGIN_DEPENDENCY_STYLES)))
+               && isListOfStrings(deps.get(PLUGIN_DEPENDENCY_STYLES))
+               && isMapOfStringWithListStrings(deps.get(PLUGIN_DEPENDENCY_SKIP)))
          {
             return deps;
          }
-         else
-         {
-            trace.error("Dependency descriptor is in incorrect format for: " + rInfo.getResourceBaseUri());
-         }
+
+         trace.error("Dependency descriptor is in incorrect format for: " + rInfo.getResourceBaseUri());
       }
       catch (Exception e)
       {
@@ -178,12 +183,45 @@ public class ResourceDependencyUtils
     */
    private static boolean isListOfStrings(Object objToTest)
    {
-      if (objToTest instanceof List<?>)
+      if (null == objToTest)
+      {
+         return true;
+      }
+      else if (objToTest instanceof List<?>)
       {
          List<?> listToTest = (List<?>)objToTest;
          for (Object object : listToTest)
          {
             if (!(object instanceof String))
+            {
+               return false;
+            }
+         }
+         
+         return true;
+      }
+      else
+      {
+         return false;
+      }
+   }
+
+   /**
+    * @param objToTest
+    * @return
+    */
+   private static boolean isMapOfStringWithListStrings(Object objToTest)
+   {
+      if (null == objToTest)
+      {
+         return true;
+      }
+      else if (objToTest instanceof Map<?, ?>)
+      {
+         Map<?, ?> mapToTest = (Map<?, ?>)objToTest;
+         for (Entry<?, ?> entry : mapToTest.entrySet())
+         {
+            if ( !(entry.getKey() instanceof String && isListOfStrings(entry.getValue())) )
             {
                return false;
             }
@@ -203,10 +241,11 @@ public class ResourceDependencyUtils
     * @param type
     * @param pattern
     * @param asc
+    * @param skip
     * @return
     */
    private static List<String> discoverPluginResources(ResourcePatternResolver resolver, ResourceInfo rInfo,
-         String type, String pattern, boolean asc)
+         String type, String pattern, boolean asc, List<String> skip)
    {
       try
       {
@@ -214,8 +253,8 @@ public class ResourceDependencyUtils
          String webUriBase = baseUri.substring(rInfo.getPluginBaseUri().length());
 
          // Get All Resources i.e. Resources including sub folders
-         List<String> allResources = PluginUtils.findWebResources(resolver, rInfo.getPluginId(), webUriBase, baseUri, "**/" + pattern);
-
+         List<String> allResources = PluginUtils.findWebResources(resolver, rInfo.getPluginId(), webUriBase, baseUri, "**/" + pattern, skip);
+         
          // Sort
          sortByFolderHierarchy(allResources, asc);
          
@@ -353,11 +392,11 @@ public class ResourceDependencyUtils
       {
 
          ResourceDependency resDep = new ResourceDependency(rInfo.getPluginId(), rInfo.getPluginLocation(),
-               new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>());
+               new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>(), null);
 
          if (CollectionUtils.isEmpty(resDep.getLibs()))
          {
-            resDep.setLibs(discoverPluginResources(resolver, rInfo, "", "*.js", true));
+            resDep.setLibs(discoverPluginResources(resolver, rInfo, "", "*.js", true, null));
          }
          else
          {
@@ -367,7 +406,7 @@ public class ResourceDependencyUtils
 
          if (CollectionUtils.isEmpty(resDep.getStyles()))
          {
-            resDep.setStyles(discoverPluginResources(resolver, rInfo, "", "*.css", false));
+            resDep.setStyles(discoverPluginResources(resolver, rInfo, "", "*.css", false, null));
          }
          else
          {
