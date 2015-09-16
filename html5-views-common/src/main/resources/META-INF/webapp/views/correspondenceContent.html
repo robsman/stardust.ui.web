@@ -110,7 +110,8 @@
 			</td>
 			<td class="correspondence_right_section">	
 				<textarea id="messageEditor" data-ng-model="ctrl.selected.content"
-				 sd-rich-text-editor ng-disabled="ctrl.readOnly" sda-readOnly="{{ctrl.readOnly}}" sda-on-blur="ctrl.onMessageChange();"> </textarea>
+				 sd-rich-text-editor ng-disabled="ctrl.readOnly" sda-readOnly="{{ctrl.readOnly}}" sda-on-blur="ctrl.onMessageChange();"
+				 sda-on-mode-change="ctrl.onMessageChange()"> </textarea>
 			</td>
 		</tr>
 		<tr class="correspondence_section">

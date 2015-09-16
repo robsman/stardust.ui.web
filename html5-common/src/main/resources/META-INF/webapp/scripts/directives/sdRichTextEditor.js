@@ -33,7 +33,8 @@
 	        scope : {
 	        	position : '@sdaPosition',
 	        	readOnly : '@sdaReadOnly',
-	        	onBlur : '&sdaOnBlur'
+	        	onBlur : '&sdaOnBlur',
+	        	onMode: '&sdaOnModeChange'
 	        },
 	        link: function ($scope, elm, attr, ngModel) {
 	        	
@@ -43,6 +44,9 @@
 	            
 	            
 	            ck.on('blur', function() {
+	              $scope.$apply(function () {
+                  ngModel.$setViewValue(ck.getData());
+	              });
 	            	$scope.onBlur();
 	             });
 	           
@@ -52,6 +56,13 @@
 	                });
 	            });
 
+	            ck.on('mode', function() {
+	              $scope.$apply(function () {
+                  ngModel.$setViewValue(ck.getData());
+                });
+                $scope.onMode();
+               });
+             
 	            ngModel.$render = function (value) {
 	                ck.setData(ngModel.$modelValue);
 	            };
