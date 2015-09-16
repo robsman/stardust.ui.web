@@ -30,7 +30,7 @@
 .sc-fw:before{
     width:1.3em;
     text-align:center;
-    display:inline-block;
+    x-display:inline-block;
 }
 
 .sc{
