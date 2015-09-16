@@ -198,6 +198,7 @@
 		this.textMap.dialogButtonCancel  = this.i18N("views.main.dialog.buttons.cancel.default");
 		this.textMap.dialogButtonCancelOk  = this.i18N("views.main.dialog.buttons.cancel.ok");
 		this.textMap.dialogButtonCancelClose  = this.i18N("views.main.dialog.buttons.cancel.close");
+		this.textMap.categoryDeleteDeny = this.i18N("views.main.dialog.category.delete.deny");
 	};
 	
 	/**
@@ -733,7 +734,13 @@
 			benchmark.isDirty = true;//v.item.bm.isDirty = true;
 			switch (v.item.action){
 				case "KILL_CAT":
-					this.benchmarkBuilderService.removeCategory(benchmark,category);
+					if(categories.length===1){
+						this.categoryDeleteDeny.open();
+					}
+					else{
+						this.benchmarkBuilderService.removeCategory(benchmark,category);
+					}
+					
 					break;
 				case "ADD_CAT":
 					this.benchmarkBuilderService.addCategory(benchmark,category);
