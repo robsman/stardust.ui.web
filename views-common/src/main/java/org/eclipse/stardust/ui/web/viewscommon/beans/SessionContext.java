@@ -348,7 +348,7 @@ public final class SessionContext implements Serializable
          httpSession.removeAttribute(Constants.HTTP_LOGIN_PROP_ATTR);
       }
       properties = properties != null ? properties : Collections.EMPTY_MAP;
-      loginData = new LoginData(null, null, properties);
+      loginData = new LoginData(null, null, properties, httpSession);
       ServiceFactory serviceFactory = loginData.getServiceFactory(request);
       initSession(serviceFactory);
    }
@@ -604,16 +604,29 @@ public final class SessionContext implements Serializable
       
       LoginData(String userName, char[] password, Map properties)
       {
+         this(userName, password, properties, (HttpSession) FacesContext.getCurrentInstance().getExternalContext()
+               .getSession(false));
+      }
+      
+      LoginData(String userName, char[] password, Map properties, HttpSession httpSession)
+      {
          this.userName = userName;
          this.password = password;
          this.properties = properties != null ? new HashMap(properties) : Collections.EMPTY_MAP;
-        
-         HttpSession httpSession = (HttpSession)FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+
          Map mergedProps = new HashMap(properties);
          mergedProps.put(SecurityProperties.CRED_USER, userName);
          mergedProps.put(SecurityProperties.CRED_PASSWORD, password);
          LoginUtils.mergeDefaultCredentials(mergedProps);
-         httpSession.setAttribute("properties",  mergedProps);
+         
+         if (null != httpSession)
+         {
+            httpSession.setAttribute("properties",  mergedProps);
+         }
+         else
+         {
+            trace.error("HTTP Session is NULL. Portal may not work as expected.", new Throwable());
+         }
       }
             
       protected ServiceFactory getServiceFactory()
