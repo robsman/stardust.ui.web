@@ -199,6 +199,8 @@
 		this.textMap.dialogButtonCancelOk  = this.i18N("views.main.dialog.buttons.cancel.ok");
 		this.textMap.dialogButtonCancelClose  = this.i18N("views.main.dialog.buttons.cancel.close");
 		this.textMap.categoryDeleteDeny = this.i18N("views.main.dialog.category.delete.deny");
+		this.textMap.emptyBenchmarkName = this.i18N("views.main.validation.error.emptyBenchmarkName");
+		this.textMap.emptyCategoryName = this.i18N("views.main.validation.error.emptyCategoryName");
 	};
 	
 	/**
@@ -375,6 +377,36 @@
 
 	}
 	
+	/**
+	 * Wrapper functiuon for our benchmarkValidationService to test if a 
+	 * benchmark is valid. Returns a complex object which contains two
+	 * properties...
+	 * (1) isValid Bool : default true
+	 * (2) errorMessage : default ""
+	 * @param benchmark
+	 */
+	benchmarkController.prototype.validateBenchmark = function(benchmark){
+		
+		var result = {isValid:true,errorMessage: ""},
+			serviceResult,
+			isValid;
+		
+		serviceResult = this.benchmarkValidationService.isBenchmarkValid(benchmark);
+		
+		if(serviceResult.isValid === false){
+			result.isValid = false;
+			switch(serviceResult.errorCode){
+				case 1:
+					result.errorMessage = this.textMap.emptyBenchmarkName;
+					break;
+				case 2:
+					result.errorMessage = this.textMap.emptyCategoryName;
+					break;
+			}
+		}
+		
+		return result;
+	}
 	
 	/**
 	 * Save the benchmark to the document repository. Only applicable for
@@ -383,12 +415,21 @@
 	 */
 	benchmarkController.prototype.saveBenchmark = function(benchmark){
 		var clone_benchmark,
+			validationResult,
 			that=this;
 		
 		//Create clean copy of our benchmark to save server-side, we have to
 		//remove transient properties such as angular $$hashKey and our book-keeping
 		//properties like 'key' and 'isDirty'.
 		clone_benchmark = this.benchmarkBuilderService.cleanAndClone(benchmark);
+		
+		//Do basic validation on our benchmark
+		validationResult = this.validateBenchmark(clone_benchmark);
+		if(validationResult.isValid === false){
+			this.activeErrorMessage = validationResult.errorMessage;
+			this.errorDialog.open();
+			return;
+		}
 		
 		this.benchmarkService.saveBenchmarks(clone_benchmark)
 		.then(function(data){

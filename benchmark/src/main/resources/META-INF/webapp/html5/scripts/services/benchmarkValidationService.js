@@ -24,6 +24,33 @@
 	}
 	
 	/**
+	 * Tests if a benchmark is valid. Only returns the last error detected so multiple
+	 * errors need to rely on multiple invocations with the assumption that someone
+	 * is fixing the prior detected error before the next invocation.
+	 * @param benchmark
+	 */
+	benchmarkValidationService.prototype.isBenchmarkValid = function(benchmark){
+		var result = {"isValid" : true, "errorCode" : -1},
+			categoryNameEmpty = false;
+		
+		if(!benchmark.name){
+			result.isValid = false;
+			result.errorCode = 1; //Empty Benchmark Name
+		}
+		
+		categoryNameEmpty = benchmark.categories.some(function(category){
+			return category.name == "";
+		});
+		
+		if(categoryNameEmpty){
+			result.isValid = false;
+			result.errorCode = 2; //Empty Category Name
+		}
+		
+		return result;
+	};
+	
+	/**
 	 * tests if a models id to determine if it is present in our
 	 * invalidData collection.
 	 * @param model
