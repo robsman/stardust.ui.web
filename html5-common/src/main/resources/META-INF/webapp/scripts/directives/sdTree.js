@@ -14,7 +14,7 @@
  */
 
 (function(){
-	
+
 	  //============================================================================
 	  //Extract module we will be adding our directives to.
 	  //============================================================================
@@ -101,7 +101,7 @@
 	        
 	        //======================================================================
 	        //Retrieve an item from the controller hashMap based on nodeId.
-	        //@Param: nodeId: Id as specified through the sdTreeNode sdaNodeId attr
+	        //Param- nodeId, Id as specified through the sdTreeNode sdaNodeId attr
 	        //======================================================================
 	        controller.api.getItem = function(nodeId){
 	          var nodeScope= controller.childNodes[nodeId];
@@ -110,7 +110,7 @@
 	        
 	        //======================================================================
 	        //Retrieve the nodeID path based on nodeId.
-	        //@Param: nodeId: Id as specified through the sdTreeNode sdaNodeId attr
+	        //Param- nodeId, Id as specified through the sdTreeNode sdaNodeId attr
 	        //======================================================================
 	        controller.api.getPath = function(nodeId){
 	          var nodeScope= controller.childNodes[nodeId];
@@ -119,7 +119,7 @@
 	        
 	        //======================================================================
 	        //Retrieve the nodeID of the parent Node relative to the nodeId param.
-	        //@Param: nodeId: Id as specified through the sdTreeNode sdaNodeId attr
+	        //Param- nodeId- Id as specified through the sdTreeNode sdaNodeId attr
 	        //======================================================================
 	        controller.api.getParentNodeId = function(nodeId){
 	          var nodeScope= controller.childNodes[nodeId],
@@ -132,7 +132,7 @@
 	        //======================================================================
 	        // Retrieve the nodeItem on the parent scope of the node specified by 
 	        // the nodeId param
-	        //@Param: nodeId: Id as specified through the sdTreeNode sdaNodeId attr
+	        //Param- nodeId- Id as specified through the sdTreeNode sdaNodeId attr
 	        //======================================================================
 	        controller.api.getParentItem = function(nodeId){
 	        	var nodeScope= controller.childNodes[nodeId];
@@ -142,7 +142,7 @@
 	        //======================================================================
 	        // Retrieve the parent nodeItem on the parent scope of the node specified by 
 	        // the nodeId param
-	        //@Param: nodeId: Id as specified through the sdTreeNode sdaNodeId attr
+	        //Param- nodeId: Id as specified through the sdTreeNode sdaNodeId attr
 	        //======================================================================
 	        controller.api.getRootItem = function(nodeId){
 	        	var nodeScope= controller.childNodes[nodeId],
@@ -152,7 +152,7 @@
 	        }
 	        //======================================================================
 	        // Whichever state the node is in (expand||collapse), do the opposite
-	        //@Param: nodeId: Id as specified through the sdTreeNode sdaNodeId attr
+	        //Param- nodeId: Id as specified through the sdTreeNode sdaNodeId attr
 	        //======================================================================
 	        controller.api.toggleNode = function(nodeId){
 	        	$timeout(function(){
@@ -164,7 +164,7 @@
 	        
 	        //======================================================================
 	        //Expand a node and that nodes parents
-	        //@Param: nodeId: Id as specified through the sdTreeNode sdaNodeId attr
+	        //Param- nodeId: Id as specified through the sdTreeNode sdaNodeId attr
 	        //======================================================================
 	        controller.api.expandNode = function(nodeId){
 	          var nodeScope= controller.childNodes[nodeId],
@@ -184,7 +184,7 @@
 	        
 	        //======================================================================
 	        //Collapse a node
-	        //@Param: nodeId: Id as specified through the sdTreeNode sdaNodeId attr
+	        //Param- nodeId: Id as specified through the sdTreeNode sdaNodeId attr
 	        //======================================================================
 	        controller.api.collapseNode = function(nodeId){
 	          var nodeScope= controller.childNodes[nodeId];
@@ -193,7 +193,7 @@
 	        
 	        //======================================================================
 	        //Set a node to edit mode, allowing user to rename that node.
-	        //@Param: nodeId: Id as specified through the sdTreeNode sdaNodeId attr
+	        //Param- nodeId: Id as specified through the sdTreeNode sdaNodeId attr
 	        //======================================================================
 	        controller.api.allowEdit = function(nodeId){
 	          var nodeScope= controller.childNodes[nodeId];
@@ -203,8 +203,8 @@
 	        //======================================================================
 	        //Set the class on the node icon element of the tree node specified by
 	        //the nodeId parameter.
-	        //@param: nodeId: Id as specified through the sdTreeNode sdaNodeId attr
-	        //@param: class: css class name to apply to the nodeID parameter.
+	        //param- nodeId: Id as specified through the sdTreeNode sdaNodeId attr
+	        //param- class: css class name to apply to the nodeID parameter.
 	        //======================================================================
 	        controller.api.setNodeIcon = function(nodeId,className){
 	          var nodeScope= controller.childNodes[nodeId];
@@ -219,9 +219,9 @@
 	        //array, else we take the invoker in good faith and add the item as the keyed
 	        //map to the nodeItem. Functionally this allows the user to actually modify
 	        //their nodeItem directly through the API.
-	        //@param: nodeId: Id as specified through the sdTreeNode sdaNodeId attr
-	        //@param: item: item to add to the nodes child collection
-	        //@param: childCollKey: value of the key mapped to the child collection
+	        //param- nodeId: Id as specified through the sdTreeNode sdaNodeId attr
+	        //param- item: item to add to the nodes child collection
+	        //param- childCollKey: value of the key mapped to the child collection
 	        //		  which we will add the item to.
 	        //======================================================================
 	        controller.api.addChildByKey = function(nodeId,item,childCollKey){
@@ -249,11 +249,11 @@
 	        //collection of the node we will add the child to. Removes any ambiguity
 	        //in instances where parse expressions fail due to lack of coverage (filters)
 	        //for example.
-	        //@param: nodeId: Id as specified through the sdTreeNode sdaNodeId attr
-	        //@param: item: item to add to the nodes child collection
-	        //@param: childCollKey: value of the key mapped to the child collection
+	        //param- nodeId: Id as specified through the sdTreeNode sdaNodeId attr
+	        //param- item: item to add to the nodes child collection
+	        //param- childCollKey: value of the key mapped to the child collection
 	        //		  which we will add the item to.
-	        //@param:cmpfx: comparator function to compare each node in the child collection
+	        //param-cmpfx- comparator function to compare each node in the child collection
 	        //		        with the node passed in by the caller.
 	        //======================================================================
 	        controller.api.removeChildByKey = function(nodeId,item,childCollKey,cmpfx){
@@ -279,10 +279,10 @@
 	        
 	        //======================================================================
 	        //Add an item to the tree.
-	        //@Param: nodeId: Id of the node we will add an item to
-	        //@Parma: item: item to add. Can be a single item or an array of items
-	        //TODO: allow adding to hashMaps, only works for arrays right now
-	        //WARNING: Only works when parent shared repeater expression with child
+	        //Param- nodeId: Id of the node we will add an item to
+	        //Parma- item: item to add. Can be a single item or an array of items
+	        //TODO- allow adding to hashMaps, only works for arrays right now
+	        //WARNING- Only works when parent shared repeater expression with child
 	        //         If not then use addChildByKey
 	        //======================================================================
 	        controller.api.addItem = function(nodeId,item){
@@ -320,9 +320,9 @@
 	        //======================================================================
 	        //Given a nodeID containing a collection, remove the item matching
 	        //the childHKey from that collection.
-	        //@param: parentNodeId: nodeId, as specified by attribute of the node
+	        //param- parentNodeId: nodeId, as specified by attribute of the node
 	        //        containing the collection we will delete from.
-	        //@param: childHKey: $$hashkey value, as computed by Angular, of the 
+	        //param- childHKey: $$hashkey value, as computed by Angular, of the 
 	        //        item we will be removing
 	        //======================================================================
 	        controller.api.removeItem = function(parentNodeId,childHkey){
