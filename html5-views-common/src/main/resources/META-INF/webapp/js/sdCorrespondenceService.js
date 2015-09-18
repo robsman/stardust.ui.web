@@ -100,9 +100,11 @@ define([],function(){
 		/**
 		 * 
 		 */
-		this.resolveAttachmentTemplate = function (item, piOid, outputFolder) {
+		this.resolveAttachmentTemplate = function (item, correspondenceData, outputFolder) {
 			var deferred = $q.defer();
-
+			
+			var piOid = correspondenceData.piOid;
+			
 			var url = sdUtilService.getBaseUrl() + "services/rest/templating";
 			var extension = item.path.split('.').pop();
 			var format = 	getFormat(extension)
@@ -115,6 +117,7 @@ define([],function(){
 					templateUri:  'repository://'+item.path,   
 					format : format, 
 					processOid : piOid,
+					parameters : {fieldsMetaData: correspondenceData.fieldMetaData},
 					output:{name: fileName, path: outputFolder},
 					pdf :item.convertToPdf
 			};

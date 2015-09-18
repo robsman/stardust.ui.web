@@ -273,7 +273,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 			uiData.cc =  data.CC_asArray ?formatInDataAddress(data.CC_asArray) : uiData.cc;
 			uiData.subject = data.Subject ? data.Subject.__text :	uiData.subject ;
 		}
-	
+
 		uiData.content =  data.MessageBody?  data.MessageBody.__text :	uiData.content;
 		uiData.attachments =data.Attachments_asArray ? formatInDataAttachments(data.Attachments_asArray): uiData.attachments;
 
@@ -284,6 +284,11 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		if(uiData.cc ){
 			uiData.showCc =uiData.cc.length > 0
 		}
+
+   	uiData.fieldMetaData = {
+      "fields": data.FieldMetaData_asArray ? formatInDataFieldsMetaData(data.FieldMetaData_asArray) : []
+    };
+		
 		trace.log("Data after conversion to ui format",uiData);
 		return uiData;
 	}
@@ -343,22 +348,37 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		});
 		return outAttachments;
 	}
+	
+	 /**
+   * 
+   */
+  function formatOutDataAddress(addresses){
+    var outAddresses = []; 
+    angular.forEach(addresses,function(data){
+      outAddresses.push( {
+        DataPath : data.name,
+        Address : data.value,
+        IsFax  : data.type != 'email'
+      })
+    });
+
+    return outAddresses;
+  }
 
 	/**
 	 * 
 	 */
-	function formatOutDataAttachments(attachments){
-		var outAttachments = []; 
-		angular.forEach(attachments,function(data){
-			var templateDocumentId = data.templateDocumentId ?  data.templateDocumentId : data.documentId;
-			outAttachments.push({
-				DocumentId : data.documentId,
-				TemplateDocumentId :templateDocumentId,
-				Name : data.name,
-				ConvertToPdf :data.convertToPdf ? true : false 
+	function formatInDataFieldsMetaData(fieldsMD){
+		var fields = []; 
+		angular.forEach(fieldsMD,function(field){
+		  fields.push({
+				type : field.Type,
+				name : field.Name,
+				location : field.Location,
+				useImageSize : (field.UseImageSize == "true")? true : false  
 			});
 		});
-		return outAttachments;
+		return fields;
 	}
 
 	/**
@@ -384,7 +404,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	CorrespondenceCtrl.prototype.resolveTemplateAndAddDocument = function( item ){ 
 		var ctrl = this;
 		item.convertToPdf = ctrl.convertToPdf;
-		_sdCorrespondenceService.resolveAttachmentTemplate( item, ctrl.selected.piOid, ctrl.parentFolderPath).then(function(result) {
+		_sdCorrespondenceService.resolveAttachmentTemplate( item, ctrl.selected, ctrl.parentFolderPath).then(function(result) {
 			trace.log("Template Resolved successfully attachments is ", result);
 			ctrl.addAttachment(result);
 		});
