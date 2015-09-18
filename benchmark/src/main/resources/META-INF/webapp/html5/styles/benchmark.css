@@ -110,7 +110,7 @@ input[type='time']{
 
 #benchmarkTable input[type='color']{
 	border:none !important;
-	width:25px;
+	width:45px;
 	height:25px;
 }
 
@@ -122,10 +122,18 @@ input[type='time']{
 	width:calc(100% - 55px);
 }
 
+.benchmarkDefinitionMain input[type='radio'],
+.benchmarkDefinitionMain input[type='checkbox']{
+	border:none !important;
+}
+
+.benchmarkDefinitionMain input,
+.benchmarkDefinitionMain select,
 #benchmarkTable input,
 #benchmarkTable select
 {
 	padding:0px;
+	min-height:20px;
 	margin:2px;
 	width: initial;
 }

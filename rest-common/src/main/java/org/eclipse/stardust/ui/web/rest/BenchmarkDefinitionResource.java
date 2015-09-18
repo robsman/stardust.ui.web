@@ -173,6 +173,10 @@ public class BenchmarkDefinitionResource
 			}
 			
 			String content = bos.toString();
+			
+			//Required as IE will place a BOM (Byte Order Mark) at the head of the file.
+			content = content.substring(content.indexOf("{"));
+			
 			JsonObject benchmarkData = jsonIo.readJsonObject(content);
 	        BenchmarkDefinitionDTO benchmarkDefinition = benchmarkDefinitionService.createBenchmarkDefinition(benchmarkData);
 	        
