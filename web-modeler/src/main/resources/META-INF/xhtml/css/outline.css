@@ -37,7 +37,7 @@ div#outline {
 
 td#toolbar div.toolDiv {
 	margin: 2px 4px 5px;
-	padding: 3px;
+	padding: 0px;
 	cursor: pointer;
 	float: left;
 }
