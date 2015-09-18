@@ -236,10 +236,26 @@ define(
 											// only panel initialized
 											// asynchronously
 											view.activate(ruleSet, true);
-											//Do this here as now the buttons actually exist.
+											//Do this here as now the DOM elements actually exist.
 											if(mode==="PUBLISHED"){
+												//disable parameter definition UI
 												m_utils.jQuerySelect("#deleteParameterDefinitionButton").remove();
 												m_utils.jQuerySelect("#addParameterDefinitionButton").remove();
+												m_utils.jQuerySelect("#parameterDefinitionNameInput").attr("disabled","disabled");
+												m_utils.jQuerySelect("#parameterDefinitionDirectionSelect").attr("disabled","disabled");
+												m_utils.jQuerySelect("#primitiveDataTypeSelect").attr("disabled","disabled");
+												m_utils.jQuerySelect("#dataTypeSelect").attr("disabled","disabled");
+												
+												//on click the parameter definition table re-enables its UI so we have to
+												//monitor for those events and disable after the fact.
+												m_utils.jQuerySelect("#parameterDefinitionsTable").on("click",function(){
+													m_utils.jQuerySelect("#deleteParameterDefinitionButton").remove();
+													m_utils.jQuerySelect("#addParameterDefinitionButton").remove();
+													m_utils.jQuerySelect("#parameterDefinitionNameInput").attr("disabled","disabled");
+													m_utils.jQuerySelect("#parameterDefinitionDirectionSelect").attr("disabled","disabled");
+													m_utils.jQuerySelect("#primitiveDataTypeSelect").attr("disabled","disabled");
+													m_utils.jQuerySelect("#dataTypeSelect").attr("disabled","disabled");
+												})
 											}
 										}
 									});
@@ -374,8 +390,7 @@ define(
 				/**
 				 * 
 				 */
-				RuleSetView.prototype.activate = function(ruleSet,
-						decisionTableUpdate) {
+				RuleSetView.prototype.activate = function(ruleSet,decisionTableUpdate) {
 					var drlText="";
 					this.ruleSet = ruleSet;
 

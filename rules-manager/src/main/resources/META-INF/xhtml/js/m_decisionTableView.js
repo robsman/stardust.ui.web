@@ -145,10 +145,10 @@ define(
 					
 					if(mode==="PUBLISHED"){
 						
-						$("#categoryDropdown").hide();
-						$("#addRow").hide();
-						$("#nameInput").attr("disabled","disabled");
-						$("#descriptionTextarea").attr("disabled","disabled");
+						m_utils.jQuerySelect("#categoryDropdown").hide();
+						m_utils.jQuerySelect("#addRow").hide();
+						m_utils.jQuerySelect("#nameInput").attr("disabled","disabled");
+						m_utils.jQuerySelect("#descriptionTextarea").attr("disabled","disabled");
 						
 						delete extData.contextMenu; 
 						extData.columns.forEach(function(v){
