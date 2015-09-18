@@ -154,9 +154,54 @@ define(
 			
 			/*Publishes a design-time rule set*/
 			var publishRuleSet = function(uuid){
+				
 				//Find our ruleSet as we will need the id from it for our url.
 				var ruleSet = RuleSet.findRuleSetByUuid(uuid,"DESIGN");
-				RuleSet.publishRuleSet(ruleSet.id);
+				
+				//Set up success callback;
+				var successCallback = function(){
+					
+					var message = m_i18nUtils.getProperty("rules.messages.publish.success", "Ruleset, {0} was successfully published.");
+					message = message.replace("{0}", ruleSet.name);
+					
+					var data = {
+							"attributes" : {
+								"width" : "400px",
+								"height" : "200px",
+								"src" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/popups/notificationDialog.html"
+							},
+							"payload" : {
+								"title" : m_i18nUtils.getProperty("rules.messages.publish.title.success","Success"),
+								"message" : message,
+								"okButtonText" :  m_i18nUtils.getProperty("rules.messages.confirm.close","Close")
+							}
+						};
+					
+					parent.iPopupDialog.openPopup(data);
+				};
+				
+				//Set up error callback;
+				var errorCallback = function(){
+					
+					var message = m_i18nUtils.getProperty("rules.messages.publish.error","An error occurred publishing ruleset, {0}.");
+					message = message.replace("{0}",ruleSet.name);
+					
+					var data = {
+						"attributes" : {
+							"width" : "400px",
+							"height" : "200px",
+							"src" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/popups/errorDialog.html"
+						},
+						"payload" : {
+							"title" :  m_i18nUtils.getProperty("rules.messages.warning","Warning"),
+							"message" :  message,
+							"okButtonText" : m_i18nUtils.getProperty("rules.messages.confirm.close","Close")
+						}
+					};
+					
+					parent.iPopupDialog.openPopup(data);
+				};
+				RuleSet.publishRuleSet(ruleSet.id,successCallback,errorCallback);
 			};
 			
 			var exportRuleSet = function(uuid,mode) {
@@ -1028,7 +1073,7 @@ define(
 																deleteElementAction(
 																		obj.context.lastChild.data,
 																		function() {
-																			deleteRuleSet(obj.attr("id"));
+																			deleteRunTimeRuleSet(obj.attr("id"));
 																			viewManager.closeViewsForElement(obj.attr("id"));
 																		});
 															}
@@ -1169,7 +1214,7 @@ define(
 					}
 					
 					//extract actual ruleSet
-					ruleSet = RuleSet.findRuleSetByUuid(ruleSetUuid);
+					ruleSet = RuleSet.findRuleSetByUuid(ruleSetUUID,"PUBLISHED");
 					
 					//Delete URL
 					url = m_urlUtils.getContextName();
@@ -1184,7 +1229,23 @@ define(
 							reloadOutlineTree(true,"PUBLISHED");
 						},
 						error: function(){
-							//TODO: Popup dialog error
+							var message = m_i18nUtils.getProperty("rules.messages.delete.error","An error occurred deleting ruleset, {0}.");
+							message = message.replace("{0}",ruleSet.name);
+							
+							var data = {
+								"attributes" : {
+									"width" : "400px",
+									"height" : "200px",
+									"src" : m_urlUtils.getPlugsInRoot() + "bpm-modeler/popups/errorDialog.html"
+								},
+								"payload" : {
+									"title" :  m_i18nUtils.getProperty("rules.messages.warning","Warning"),
+									"message" :  message,
+									"okButtonText" : m_i18nUtils.getProperty("rules.messages.confirm.close","Close")
+								}
+							};
+							
+							parent.iPopupDialog.openPopup(data);
 						}
 					});
 				};

@@ -149,12 +149,12 @@ define([ "bpm-modeler/js/m_utils",
 			
 			//Set up callback object
 			callbacks = {
-					success : function(){alert("TODO: Success Info Dialog");},
-					error : function(){alert("TODO: Error Info Dialog");}
+					success : successCallback,
+					error : errorCallback
 			};
 			
-			debugger;
 			m_communicationController.postData(options,data,callbacks);
+			
 		},
 		
 		typeObject : function(json) {

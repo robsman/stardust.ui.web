@@ -201,7 +201,7 @@ public class RulesManagementResource
     * @return
     */
    @DELETE
-   @Path("rules-sets/run-time/{ruleSetId}")
+   @Path("rule-sets/run-time/{ruleSetId}")
    public Response deleteRuntimeRuleSet(@PathParam("ruleSetId") String ruleSetId)
    {
       try
