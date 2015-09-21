@@ -1,5 +1,5 @@
 {
-	"portal-plugins" : ["html5-common"],
+	"portal-plugins" : ["html5-views-common"],
 	
 	"libs" : [],
 
