@@ -315,9 +315,9 @@
 			var restUrl = REST_BASE_URL + 'getRelatedProcesses?';
 			
 			if (matchAny != undefined) {
-				restUrl += '?matchAny=' + matchAny;
+				restUrl += 'matchAny=' + matchAny;
 			} else {
-				restUrl += '?matchAny=false';
+				restUrl += 'matchAny=false';
 			}
 			
 			if (searchCases != undefined) {
