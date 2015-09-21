@@ -177,8 +177,7 @@ public class BenchmarkConfigurationTableBean extends UIComponentBean implements 
             if (!(PredefinedConstants.PREDEFINED_MODEL_ID.equals(model.getId())))
             {
                List<BenchmarkConfiguration> benchmarkConfigurationList = new ArrayList<BenchmarkConfiguration>();
-               List<ProcessDefinition> allProcessDefinitions = ProcessDefinitionUtils.getAllProcessDefinitions(model,
-                     nonAuxiliaryProcessDefs);
+               List<ProcessDefinition> allProcessDefinitions = ProcessDefinitionUtils.getProcessDefinitionsForModel(true, nonAuxiliaryProcessDefs, true, model);
                for (ProcessDefinition processDefinition : allProcessDefinitions)
                {
                   String defBenchmarkId = getBenchmarkFromPreferences(benchmarkPreferences, processDefinition.getQualifiedId(), false);
@@ -296,12 +295,12 @@ public class BenchmarkConfigurationTableBean extends UIComponentBean implements 
 
          for (BenchmarkConfigurations benchmarkConfiguration : modifiedBmModelConfs)
          {
-            bmPreferencesMap.put(benchmarkConfiguration.getModelId(), benchmarkConfiguration.getDefaultBenchmarkId());
+            updateBenchmarkPreferences(benchmarkConfiguration.getModelId(), benchmarkConfiguration.getDefaultBenchmarkId());
          }
 
          for (BenchmarkConfiguration benchmarkConfiguration : modifiedBmProcDefConfs)
          {
-            bmPreferencesMap.put(benchmarkConfiguration.getProcessId(), benchmarkConfiguration.getDefaultBenchmarkId());
+            updateBenchmarkPreferences(benchmarkConfiguration.getProcessId(), benchmarkConfiguration.getDefaultBenchmarkId());
          }
 
          administrationService.savePreferences(benchmarkPreferences);
@@ -460,6 +459,20 @@ public class BenchmarkConfigurationTableBean extends UIComponentBean implements 
    public void setNonAuxiliaryProcessDefs(Boolean nonAuxiliaryProcessDefs)
    {
       this.nonAuxiliaryProcessDefs = nonAuxiliaryProcessDefs;
+   }
+   
+   private void updateBenchmarkPreferences(String qualifiedID, String defaultBMId)
+   {
+      Map<String, Serializable> bmPreferencesMap = benchmarkPreferences.getPreferences();
+      if (defaultBMId.equals("-1"))
+      {
+         bmPreferencesMap.remove(qualifiedID);
+      }
+      else
+      {
+         bmPreferencesMap.put(qualifiedID, defaultBMId);
+      }
+
    }
 
 }
