@@ -61,6 +61,7 @@ public abstract class RepositoryResourceUserObject extends IceUserObject
    private boolean isVersioningSupported = true;
    private boolean isWriteSupported = true;
    private boolean clickable = false;
+   private boolean folderContentReadOnly = false;
 
    /**
     * custom constructor initialized a user object specific to node
@@ -306,13 +307,20 @@ public abstract class RepositoryResourceUserObject extends IceUserObject
 
    public void setEditable(boolean editable){
       isEditable = editable; 
-      if(isEditable){
-         
-      }
    }
    
    public void setDeletable(boolean deletable){
       isDeletable = deletable; 
+   }
+   
+   public boolean isFolderContentReadOnly()
+   {
+      return folderContentReadOnly;
+   }
+
+   public void setFolderContentReadOnly(boolean folderContentReadOnly)
+   {
+      this.folderContentReadOnly = folderContentReadOnly;
    }
    
    public boolean isMenuPopupApplicable()

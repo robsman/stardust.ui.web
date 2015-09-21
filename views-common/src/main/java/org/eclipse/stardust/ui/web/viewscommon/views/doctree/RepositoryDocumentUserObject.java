@@ -19,17 +19,16 @@ import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.PrintDocumentAnnotations;
-import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.viewscommon.common.DocumentToolTip;
 import org.eclipse.stardust.ui.web.viewscommon.common.ToolTip;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.DocumentUploadHelper;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.DocumentUploadHelper;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
@@ -49,7 +48,6 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
    private static final long serialVersionUID = 1296615449302077105L;
    private boolean opened;
    private MIMEType mType = MimeTypesHelper.DEFAULT;
-   private boolean sendFileAllowed = false;
    private MessagesViewsCommonBean propsBean;
    private ToolTip documentToolTip;
    private Boolean detachable;
@@ -58,12 +56,12 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
    /**
     * custom constructor initialing document user object
     *
-    * @param defaultMutableTreeNode
+    * @param node
     * @param document
     */
-   public RepositoryDocumentUserObject(DefaultMutableTreeNode defaultMutableTreeNode, Document document)
+   public RepositoryDocumentUserObject(DefaultMutableTreeNode node, Document document, DefaultMutableTreeNode parentNode)
    {
-      super(defaultMutableTreeNode, document);
+      super(node, document);
       propsBean = MessagesViewsCommonBean.getInstance();
       this.mType = MimeTypesHelper.detectMimeType(document.getName(), document.getContentType());
 
@@ -81,22 +79,23 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
          setLeafIcon(ResourcePaths.I_DOCUMENT_PATH + this.mType.getIconPath());
       }
 
-      defaultMutableTreeNode.setAllowsChildren(false);
+      node.setAllowsChildren(false);
       this.setLeaf(true);
       this.setCanUploadFile(false);
 
       documentToolTip = new DocumentToolTip(null, document);
+      
+      if (parentNode != null) //for refresh operation, parent node may not be provided
+      {
+         parentNode.add(node);
+         // initialize the parameters influenced by parent folder
+         readParentFolderProperties();
+      }
    }
 
    @Override
    public void rename(String newName)
    {
-      readParentFolderProperties();
-      if (!this.isEditable())
-      {
-         MessageDialog.addErrorMessage(propsBean.getString("views.genericRepositoryView.renameNotPermitted"));
-         return;
-      }
       try
       {
          if (DocumentMgmtUtility.isDocumentExtensionChanged(newName, getDocument().getName()))
@@ -145,13 +144,6 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
    @Override
    public void deleteResource()
    {
-      readParentFolderProperties();
-      if (!this.isDeletable())
-      {
-         MessageDialog.addErrorMessage(propsBean.getString("views.genericRepositoryView.deleteNotPermitted"));
-         return;
-      }
-      
       try
       {
          // delete resource from repository
@@ -227,8 +219,8 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
          if (parentNode.getUserObject() instanceof RepositoryFolderUserObject)
          {
             RepositoryFolderUserObject folderUserObject = (RepositoryFolderUserObject) parentNode.getUserObject();
-            this.setEditable(folderUserObject.isEditable());
-            this.setDeletable(folderUserObject.isDeletable());
+            this.setEditable(!folderUserObject.isFolderContentReadOnly());
+            this.setDeletable(!folderUserObject.isFolderContentReadOnly());
          }
          ParentFolderPropertiesConsidered = true;
       }
@@ -240,13 +232,6 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
    @Override
    public void upload()
    {
-      readParentFolderProperties();
-      if (!this.isEditable())
-      {
-         MessageDialog.addErrorMessage(propsBean.getString("views.genericRepositoryView.modifyNotPermitted"));
-         return;
-      }
-      
       DocumentUploadHelper documentUploadHelper = new DocumentUploadHelper();
       documentUploadHelper.initializeVersionUploadDialog(getDocument());
       documentUploadHelper.getFileUploadDialogAttributes().setOpenDocumentFlag(true);
@@ -396,11 +381,6 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
    public boolean isCanCreateNote()
    {
       return false;
-   }
-
-   public void setSendFileAllowed(boolean sfa)
-   {
-      this.sendFileAllowed = sfa;
    }
 
    @Override

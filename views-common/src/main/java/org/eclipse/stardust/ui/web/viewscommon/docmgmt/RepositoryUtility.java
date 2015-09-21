@@ -445,7 +445,6 @@ public class RepositoryUtility
    {
       node.removeAllChildren();
       int size = documentsList.size();
-      RepositoryDocumentUserObject docUserObject;
       DefaultMutableTreeNode docNode;
       if (!node.getAllowsChildren() && size > 0)
       {
@@ -453,10 +452,7 @@ public class RepositoryUtility
       }
       for (int n = 0; n < size; ++n)
       {
-         docNode = createDocumentNode(documentsList.get(n));
-         docUserObject = (RepositoryDocumentUserObject) docNode.getUserObject();
-         docUserObject.setSendFileAllowed(true);
-         node.add(docNode);
+         docNode = createDocumentNode(documentsList.get(n), node);
       }
    }
 
@@ -505,10 +501,9 @@ public class RepositoryUtility
       // create new documents nodes
       for (int i = 0; i < documentCount; i++)
       {
-         DefaultMutableTreeNode documentNode = createDocumentNode((Document) refreshedFolder.getDocuments().get(i));
+         DefaultMutableTreeNode documentNode = createDocumentNode((Document) refreshedFolder.getDocuments().get(i), node);
          ((RepositoryDocumentUserObject)documentNode.getUserObject()).setVersioningSupported(versionSupported);
          ((RepositoryDocumentUserObject)documentNode.getUserObject()).setWriteSupported(writeSupported);
-         node.add(documentNode);
       }
       folderUserObject.setExpanded(true);
    }
@@ -610,9 +605,8 @@ public class RepositoryUtility
       parentNode.setAllowsChildren(true);
       Document document = DocumentMgmtUtility.createBlankDocument(parentUserObject.getFolder().getId(), contentType,
             null);
-      DefaultMutableTreeNode subNode = createDocumentNode(document);
+      DefaultMutableTreeNode subNode = createDocumentNode(document, parentNode);
       ((RepositoryDocumentUserObject)subNode.getUserObject()).setNewNodeCreated(true);
-      parentNode.add(subNode);
       return subNode;
    }
 
@@ -629,9 +623,8 @@ public class RepositoryUtility
       parentNode.setAllowsChildren(true);
       Document newDocument = DocumentMgmtUtility.copyDocumentTo(getUpdatedDocument(valueNode), userObject
             .getFolder().getPath());
-      DefaultMutableTreeNode subNode = createDocumentNode(newDocument);
+      DefaultMutableTreeNode subNode = createDocumentNode(newDocument, parentNode);
       ((RepositoryDocumentUserObject)subNode.getUserObject()).setNewNodeCreated(true);
-      parentNode.add(subNode);
       return newDocument;
    }
 
@@ -963,14 +956,15 @@ public class RepositoryUtility
 
    /**
     * creates new document node
-    *
     * @param document
-    * @return Document Node
+    * @param parentNode
+    * @return
     */
-   public static DefaultMutableTreeNode createDocumentNode(Document document)
+   public static DefaultMutableTreeNode createDocumentNode(Document document, DefaultMutableTreeNode parentNode)
    {
       DefaultMutableTreeNode node = new DefaultMutableTreeNode();
-      RepositoryDocumentUserObject repositoryDocumentUserObject = new RepositoryDocumentUserObject(node, document);
+      RepositoryDocumentUserObject repositoryDocumentUserObject = new RepositoryDocumentUserObject(node, document,
+            parentNode);
       node.setUserObject(repositoryDocumentUserObject);
       return node;
    }
@@ -1711,7 +1705,7 @@ public class RepositoryUtility
                for (int i = 0; i < documentCount; i++)
                {
                   doc = (Document) refreshedFolder.getDocuments().get(i);
-                  node.add(createDocumentNode(doc));
+                  createDocumentNode(doc, node);
                }
             }
             ((RepositoryFolderUserObject) node.getUserObject()).setExpanded(true);
@@ -1727,7 +1721,7 @@ public class RepositoryUtility
          if (null != refreshedDocument)
          {
             RepositoryDocumentUserObject repositoryDocumentUserObject = new RepositoryDocumentUserObject(node,
-                  refreshedDocument);
+                  refreshedDocument, null);
             node.setUserObject(repositoryDocumentUserObject);
          }
          else

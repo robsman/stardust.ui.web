@@ -103,6 +103,7 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
             this.setCanCreateFile(false);
             this.setCanCreateFolder(false);
             this.setCanUploadFile(false);
+            this.setFolderContentReadOnly(true);
 
             if (uiProperties.get(RepositoryUtility.UIProperties.clickable.name()) != null)
             {
@@ -323,7 +324,7 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
       // after file upload
       if (DocumentUploadEventType.DOCUMENT_CREATED == eventType)
       {
-         DefaultMutableTreeNode subNode = RepositoryUtility.createDocumentNode(document);
+         DefaultMutableTreeNode subNode = RepositoryUtility.createDocumentNode(document, this.wrapper);
          RepositoryDocumentUserObject userObject = (RepositoryDocumentUserObject) subNode.getUserObject();
          userObject.setNewNodeCreated(true);
          this.wrapper.add(subNode);
