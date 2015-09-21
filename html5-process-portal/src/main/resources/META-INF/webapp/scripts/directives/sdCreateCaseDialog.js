@@ -352,7 +352,8 @@
 			function isActiveProcessInstances() {
 				var isActivePIs = true;
 				angular.forEach(self.processInstances, function(pi) {
-					if (pi.status != 'Active') {
+					// ACTIVE status has value  = 0
+					if (pi.status.value != 0) {
 						isActivePIs = false;
 					}
 				})
