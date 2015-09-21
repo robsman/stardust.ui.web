@@ -402,6 +402,7 @@
 	
 		    					<div ng-show="data.elementRef.enableBenchmark">
 		    						<select ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+		    								ie-select-fix
 		    						        ng-disabled="ctrl.benchmarkFilter==='Published'"
 		    						        ng-model="catInst.type">
 	    						        <option value="freeform">{{ctrl.textMap.freeForm}}</option>
@@ -420,6 +421,7 @@
 		    						<div ng-show="catInst.type==='dataExpression'">
 		    						
 			    					<select ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+			    							ie-select-fix
 			    					        ng-disabled="ctrl.benchmarkFilter==='Published'"
 			    					        ng-options="operand.name for operand in ctrl.attributeOperands track by operand.id"
 			    					        ng-model="catInst.details.condition.lhs">
@@ -427,6 +429,7 @@
 
 		    						<div>
 				    					<select ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+				    							ie-select-fix
 				    					        ng-disabled="ctrl.benchmarkFilter==='Published'"
 				    					        ng-model="catInst.details.condition.operator">
 				    						<option value=">">{{ctrl.textMap.laterThan}}</option>
@@ -437,6 +440,7 @@
 			    					<div>
 				    					
 				    					<select ng-model="catInst.details.condition.rhs"
+				    							ie-select-fix
 				    							ng-disabled="ctrl.benchmarkFilter==='Published'"
 				    					 		ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
 				    					        ng-options="item.name group by item.groupName for item in data.modelData track by item.id">
