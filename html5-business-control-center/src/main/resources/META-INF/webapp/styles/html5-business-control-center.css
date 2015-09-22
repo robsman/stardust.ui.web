@@ -22,7 +22,7 @@
 
 #gantt_chart_container {
 	overflow-x: auto;
-	min-height: 300px;
+	min-height: 600px;
 	width :100%
 }
 

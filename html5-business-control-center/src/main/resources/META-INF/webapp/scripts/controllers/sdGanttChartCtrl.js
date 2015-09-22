@@ -94,7 +94,7 @@
 		self.majorTimeFrames = null;
 		self.minorTimeFrames = null;
 		self.timeFormat =_sdLocalizationService.getInfo().dateTimeFormat;
-		self.showAuxillary = false;
+		self.showAuxiliary = false;
 		self.timeFrames = self.getTimeFrames();
 		self.dataTable = null;
 		self.tableReady = false;
@@ -189,7 +189,6 @@
 		}else{
 			//Show data
 			found[0].expanded = true;
-			console.log("Data already fetched");
 			self.onTimeFrameChange();
 		}
 	
@@ -489,17 +488,6 @@
 		self.position = event.offsetX +xOffset - 100 - $("#ganttChart").scrollLeft();
 	};
 	
-	/**
-	 * 
-	 */
-	Controller.prototype.auxComparator = function(auxValue, showAux) {
-	   if (showAux) {
-		   return true;
-	   }
-	   else {
-		   return !auxValue;
-	   }
-   };
 	
 	/**
 	 * 
@@ -614,21 +602,34 @@
 	/**
 	 * 
 	 */
-	Controller.prototype.toggleAuxillary = function() {
-		this.showAuxillary = !this.showAuxillary;
+	Controller.prototype.toggleAuxiliary = function() {
+		this.showAuxiliary = !this.showAuxiliary;
+		this.dataTable.refreshUi();
 	};
 	
 	/**
 	 * 
 	 */
 	Controller.prototype.getAuxTitle = function() {
-		if(this.showAuxillary){
-			return "Hide Auxillary"
+		if(this.showAuxiliary){
+			return "Hide auxiliary"
 		}
-		return "Show Auxillary";
+		return "Show auxiliary";
 	};
 	
-	
+	/**
+	 * 
+	 */
+	Controller.prototype.auxFilter = function(rowData) {
+		console.log("Row Data")
+		console.log(rowData)
+		if (this.showAuxiliary) {
+			return true;
+		} else {
+			return !rowData.auxiliary;
+		}
+
+	};
 	
 	/**
 	 * After tree table
@@ -734,8 +735,6 @@
 		normalizedData.days = self.getGraphData(normalizedData,'days');
 		normalizedData.hours = self.getGraphData(normalizedData,'hours');
 		normalizedData.minutes = self.getGraphData(normalizedData,'minutes');
-		console.log("*****Data *****")
-		console.log(normalizedData)
 		return normalizedData;
 	}
 	
@@ -749,8 +748,6 @@
 		normalizedData.days = self.getGraphData(normalizedData,'days');
 		normalizedData.hours = self.getGraphData(normalizedData,'hours');
 		normalizedData.minutes = self.getGraphData(normalizedData,'minutes');
-		console.log("*****Data *****")
-		console.log(normalizedData)
 		return normalizedData;
 	}
 	
@@ -763,11 +760,11 @@
 		var bColor = self.getBarColor(activity,"Activity", true);
 		
 		var piOid = null;
-		var auxillary = activity.auxillary;
+		var auxiliary = activity.auxillary;
 		if(activity.activity.implementationTypeId == 'Subprocess'){
 			var process =  _sdProcessInstanceService.getProcessByStartingActivityOid( activity.activityOID, true);
 			piOid = process.oid
-			auxillary = process.auxillary;
+			auxiliary = process.auxillary;
 		}
 		
 		var data = {
@@ -782,7 +779,7 @@
 				benchmarkCategory : activity.benchmark,
 				type : activity.activity.implementationTypeId,
 				subProcessId : (activity.processInstance) ? activity.processInstance.oid : null,
-				auxillary : auxillary,
+				auxiliary : auxiliary,
 				piOid : piOid
 		}
 		
@@ -808,7 +805,7 @@
 				status : piData.status,
 				benchmarkCategory : piData.benchmark,
 				type : "process",
-				auxillary : piData.auxillary
+				auxiliary : piData.auxillary
 		}
 		return data;
 	};
@@ -893,7 +890,6 @@
 	 */
 	Controller.prototype.getLabel = function(rowData)
 	{
-		console.log("Data")
 		var self = this;
 		if(self.selected.legend  == 'benchmark') {
 			if(rowData.benchmarkCategory.label){
