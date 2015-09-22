@@ -21,11 +21,14 @@ import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.ScanDirection;
 import org.eclipse.stardust.engine.api.runtime.TransitionOptions;
+import org.eclipse.stardust.engine.api.runtime.TransitionReport;
 import org.eclipse.stardust.engine.api.runtime.TransitionTarget;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.viewscommon.common.spi.user.impl.IppUser;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 
@@ -147,8 +150,22 @@ public class RelocateActivityDialogBean extends PopupUIComponentBean
 
          if (canRelocate)
          {
-            ServiceFactoryUtils.getWorkflowService().performAdHocTransition(
-                  activityVsTarget.get(selectedTarget), false);            
+            TransitionReport report = ServiceFactoryUtils.getWorkflowService()
+                  .performAdHocTransition(activityVsTarget.get(selectedTarget), false);
+            ActivityInstance target = report.getTargetActivityInstance();
+            IppUser loggedInUser = new IppUser();
+            
+            // Activate the activity if it's interactive and can be activated by current user
+            if (null != target
+                  && target.getActivity().isInteractive()
+                  && loggedInUser.isInRole(target.getActivity()
+                        .getDefaultPerformer()
+                        .getQualifiedId()))
+            {
+               // TODO check what parameters to pass
+               ActivityInstanceUtils.openActivity(target, new HashMap<String, Object>());
+            }
+
             if (null != callbackHandler)
             {
                callbackHandler.handleEvent(ICallbackHandler.EventType.APPLY);
