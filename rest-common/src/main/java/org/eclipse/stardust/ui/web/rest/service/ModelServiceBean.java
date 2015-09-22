@@ -10,6 +10,9 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
 
+import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isAuxiliaryActivity;
+import static org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils.isAuxiliaryProcess;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -30,6 +33,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ParticipantManagementUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.springframework.stereotype.Component;
@@ -67,6 +71,7 @@ public class ModelServiceBean
             if (includePredefinedModel || !(PredefinedConstants.PREDEFINED_MODEL_ID.equals(model.getId())))
             {
                ModelDTO modelDTO = DTOBuilder.build(model, ModelDTO.class);
+               String modelName = I18nUtils.getModelName(model);
                List<ProcessDefinitionDTO> processDefitionDTOList = CollectionUtils.newArrayList();
                List<Data> modelData = model.getAllData();
                List<ProcessDefinition> processDefinitions = model.getAllProcessDefinitions();
@@ -85,6 +90,9 @@ public class ModelServiceBean
                {
                   ProcessDefinitionDTO processDefinitionDTO = DTOBuilder.build(processDefinition,
                         ProcessDefinitionDTO.class);
+                  processDefinitionDTO.modelName = modelName;
+                  processDefinitionDTO.auxillary = isAuxiliaryProcess(processDefinition);
+                  processDefinitionDTO.name = I18nUtils.getProcessName(processDefinition);
                   processDefitionDTOList.add(processDefinitionDTO);
                   activityDTOList = CollectionUtils.newArrayList();
                   List<Activity> activities = processDefinition.getAllActivities();
@@ -92,6 +100,9 @@ public class ModelServiceBean
                   for (Activity activity : activities)
                   {
                      ActivityDTO activityDTO = DTOBuilder.build(activity, ActivityDTO.class);
+                     activityDTO.auxillary = isAuxiliaryActivity(activity);
+                     activityDTO.name = I18nUtils.getActivityName(activity);
+                     activityDTO.runtimeElementOid = activity.getRuntimeElementOID();
                      activityDTOList.add(activityDTO);
                   }
                   processDefinitionDTO.activities = activityDTOList;
