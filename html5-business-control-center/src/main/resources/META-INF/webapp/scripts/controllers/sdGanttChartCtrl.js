@@ -126,8 +126,8 @@
 			}	
 			self.legendCategories.push(benchmark)	
 			self.selected.legend = "benchmark";
-			
 			self.legends = self.benchmarkCategories;
+			
 		}else {
 			self.selected.legend = "status";
 			self.legends = self.getAvailableStatuses();
@@ -165,8 +165,6 @@
 		return deferred.promise;
 	}
 
-
-	//TODO visit this after the tree table has been implemented.
 	/**
 	 * 
 	 */
@@ -348,8 +346,6 @@
 			width : (daysInMonth * dayWidth) + (daysInMonth - 1),
 			value : new Date(first)
 		});
-
-
 	};
 
 	/**
@@ -664,11 +660,8 @@
 						self.getBenchmarkCategories(rootProcess).then(function() {
 							self.getChildren(rootProcess.oid).then(function(childrens){
 								parent.children = childrens;
-								
 								data.list   = [parent];
 								data.totalCount =	data.list.length;
-								console.log("Data from table")
-								console.log(data)
 								deferred.resolve(data);
 							});
 						});
@@ -689,8 +682,6 @@
 							
 							data.list   = [parent];
 							data.totalCount =	data.list.length;
-							console.log("Data from table")
-							console.log(data)
 							deferred.resolve(data);
 						});
 					});	

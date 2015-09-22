@@ -41,7 +41,11 @@
 	border-bottom: 2px solid white;
 	color: white;
 	display: inline-block;
-	font-weight: bold
+	font-weight: bold;
+	white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;  
+    -o-text-overflow: ellipsis; 
 }
 
 .minorTimeLine {
@@ -87,4 +91,3 @@
 	text-align: left;
 	white-space:nowrap;
 }
-
