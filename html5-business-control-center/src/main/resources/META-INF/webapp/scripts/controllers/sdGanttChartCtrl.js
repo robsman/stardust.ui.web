@@ -145,12 +145,6 @@
 		if(benchmarkPresent){
 
 			_sdProcessInstanceService.getBenchmarkCategories(data.benchmark.oid).then(function(data){ 
-				var complete = {
-						label :  _sgI18nService
-						.translate('views-common-messages.views-activityTable-statusFilter-completed'),
-						color: "#AAAAAA"
-				}
-				self.benchmarkCategories.push(complete);
 
 				angular.forEach(data.categories,function(cat){
 					var d = {
@@ -524,7 +518,6 @@
 				self.legends = self.benchmarkCategories;
 				break;
 		}
-		self.drawChart();
 	};
 	/**
 	 * 
@@ -946,7 +939,8 @@
 
 		//If the item doesnt have a end time or a activity for a process which has stil not completed.
 
-		if(!item.endTime || (!self.process.endTime && FINISHED_STATUSES.indexOf(status.value) < 0)) {
+		
+		if(!item.endTime ||  FINISHED_STATUSES.indexOf(item.status.value) < 0) {
 			item.endTime = self.currentTime.getTime();
 		}
 
