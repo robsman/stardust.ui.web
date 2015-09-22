@@ -67,7 +67,6 @@
 	 */
 	WorklistViewCtrl.prototype.handleViewEvents = function(event) {
 		if (event.type == "ACTIVATED") {
-			this.refresh();
 			this.registerForAutoRefresh();
 		} else if (event.type == "DEACTIVATED") {
 		    if(this.timer){
