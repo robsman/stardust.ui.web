@@ -143,14 +143,6 @@
 					style="margin-right:-2px;padding-right:-2px;" title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.abort']}" />
 			</ice:commandLink>
 
-			<ice:commandLink action="#{activityDetailsBean.openRelocationDialog}"
-				immediate="true" >
-				<ice:graphicImage
-					value="/plugins/views-common/images/icons/redo.png"
-					styleClass="toolbar-button"
-					title="#{processportal_msgPropsBean['toolbars.workflowActions.relocation.relocate']}" />
-			</ice:commandLink>
-
 			<ice:panelGroup>
 				<ice:commandLink
 					action="#{activityDetailsBean.toggleSwitchProcessIframePopup}"
@@ -164,6 +156,14 @@
 				</ice:commandLink>
 				<div id="ippSwitchAnchor" style="width: 1px; height: 1px;"></div>
 			</ice:panelGroup>
+
+			<ice:commandLink action="#{activityDetailsBean.openRelocationDialog}"
+				immediate="true" >
+				<ice:graphicImage
+					value="/plugins/views-common/images/icons/redo.png"
+					styleClass="toolbar-button"
+					title="#{processportal_msgPropsBean['toolbars.workflowActions.relocation.relocate']}" />
+			</ice:commandLink>
 
 			<ice:panelGroup rendered="#{activityDetailsBean.caseEnabled}">
 				<ice:commandLink
