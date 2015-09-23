@@ -941,11 +941,13 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	CorrespondenceCtrl.prototype.removeAttachment = function(attachment) {
 		var ctrl = this;
 		var index = ctrl.selected.attachments.indexOf(attachment);
-		_sdCorrespondenceService.removeAttachment(attachment.documentId).then(function(){
-			trace.log("Attachment remoced Successfully");
-			ctrl.selected.attachments.splice(index,1);
-		});
-
+		_sdCorrespondenceService.removeAttachment(attachment.documentId).then(function() {
+        trace.log("Attachment remoced Successfully");
+        ctrl.selected.attachments.splice(index, 1);
+      }, function(e) {
+        trace.log("Exception Occurred, seems that document is already deleted" );
+        ctrl.selected.attachments.splice(index, 1)
+      });
 	}
 
 	/**
