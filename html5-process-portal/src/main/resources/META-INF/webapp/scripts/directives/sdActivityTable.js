@@ -153,6 +153,7 @@
 	ActivityTableCompiler.prototype.initialize = function(attr, scope, $filter) {
 		var scopeToUse = scope.$parent;
 		var self = this;
+		this.scope = scope;
 
 		// Define data
 		this.activities = {};
@@ -853,7 +854,14 @@
 		var self = this;
 		sdActivityInstanceService.relocate(rowItem.activityOID, rowItem.selectedTarget).then(function() {
 			self.refresh();
-		})
+		}, function(errorMessage) {
+			trace.error("Error in relocating worklist item : " + rowItem.activityOID + ".Error : " + errorMessage);
+			var options = { 
+					title : sgI18nService.translate('views-common-messages.common-error', 'Error')
+					};
+			var message = sgI18nService.translate('processportal.toolbars-workflowActions-relocation-dialog-notAuthorized');
+			sdDialogService.error(self.scope, message, options)
+		});
 		rowItem.showRelocationDialog = false;
 	};
 

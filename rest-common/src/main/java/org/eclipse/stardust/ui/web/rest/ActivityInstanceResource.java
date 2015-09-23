@@ -37,6 +37,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang.StringUtils;
+
+import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -74,6 +76,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.TrafficLightViewUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -344,6 +347,11 @@ public class ActivityInstanceResource
          {
             return Response.notModified().build();
          }
+      }
+      catch(AccessForbiddenException e)
+      {
+         return Response.status(500).type("text/plain")
+               .entity(e.getMessage()).build();
       }
       catch (Exception e)
       {

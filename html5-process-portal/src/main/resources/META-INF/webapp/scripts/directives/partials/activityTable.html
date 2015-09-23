@@ -282,7 +282,7 @@
 							<i class="pi pi-activity-notes icon-lg" ng-if ="rowData.notesCount > 0 "></i>
 						</button>
 						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.openRelocationDialog(rowData);" aid="PP-ActivityTable-OpenRelocationDialogAction"
-						    ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"
+						    ng-disabled="!rowData.activatable"
 							title="{{i18n('processportal.toolbars-workflowActions-relocation-relocate')}}" class="button-link tbl-tool-link">
 							<i class="pi pi-activity-relocate icon-lg"></i>
 							<div sd-dialog sda-modal="true"
