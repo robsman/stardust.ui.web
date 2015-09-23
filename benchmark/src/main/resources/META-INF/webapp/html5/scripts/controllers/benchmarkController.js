@@ -53,7 +53,6 @@
 		this.dataTableApi = {}; //Api retrieved from our dataTable directive
 		this.showBenchmarks = true; //should we show the benchmarks data table
 		this.benchmarkDataRows = []; //Array of objects which populate our category-benchmark table
-		this.currentUser = sdLoggedInUserService.getUserInfo(); //current user
 		this.benchmarkFilter ="Design"; //Filter value for our benchmark service call.
 		this.benchmarkIsDirty = false; 
 		this.lastSaveTime = Number.NEGATIVE_INFINITY;
@@ -68,6 +67,16 @@
 		
 		//initializing text map using our i18n method
 		this.initTextMap();
+		
+		//This leverages the whoAmI REST endpoint
+		this.currentUser = sdLoggedInUserService.getUserInfo(); //current user
+		
+		//TODO:remove once we have this data available from service call, hardocde for now for testing.
+		this.currentUser.permissions={};
+		this.currentUser.permissions.model={};
+		this.currentUser.permissions.model.readRuntimeArtifact = true;
+		this.currentUser.permissions.model.deployRuntimeArtifact = true;
+		
 		
 		//initialize our attribute operands we will use in our condition dropdowns (lhs and rhs).
 		//requires textMap be initialized first.

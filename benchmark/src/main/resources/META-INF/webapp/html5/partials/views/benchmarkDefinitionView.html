@@ -91,7 +91,7 @@
 		        ng-model="ctrl.benchmarkFilter" 
 		        ng-change="ctrl.onStatusChange(ctrl.benchmarkFilter)">
 			<option selected value="Design">{{ctrl.textMap.design}}</option>
-			<option value="Published">{{ctrl.textMap.published}}</option>
+			<option ng-if="ctrl.currentUser.permissions.model.readRuntimeArtifact" value="Published">{{ctrl.textMap.published}}</option>
 		</select>
 		
 		<div ng-show="ctrl.benchmarkFilter==='Published'">
@@ -165,6 +165,7 @@
 			    <span>|</span>
 			    
 			    <a href="" 
+			       ng-if="ctrl.currentUser.permissions.model.deployRuntimeArtifact"
 			       ng-click="ctrl.publishBenchmark(ctrl.selectedBenchmark.id)" 
 			       title="{{ctrl.textMap.publishBenchmark}}" 
 			       class="tbl-toolbar-item tbl-tool-link">
