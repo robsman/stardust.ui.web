@@ -194,23 +194,23 @@ public class CorrespondencePanelPreferenceUtils
    }
 
    /**
-    * Saves the user's signature preference into JCR.
+    * Saves the user's preference.
     */
    public static void savePreference(final String preferenceKey, final String preferenceValue)
    {
       UserPreferencesHelper userPrefsHelper = UserPreferencesHelper.getInstance(UserPreferencesEntries.M_VIEWS_COMMON,
-            PreferenceScope.USER);
+            PreferenceScope.PARTITION);
 
       userPrefsHelper.setString(UserPreferencesEntries.V_CORRESPONDENCE_PANEL, preferenceKey, preferenceValue);
    }
    
    /**
-    * Resets the user's signature preference into JCR.
+    * Resets the user's preference.
     */
    public static void resetPreference(final String preferenceKey)
    {
       UserPreferencesHelper userPrefsHelper = UserPreferencesHelper.getInstance(UserPreferencesEntries.M_VIEWS_COMMON,
-            PreferenceScope.USER);
+            PreferenceScope.PARTITION);
 
       userPrefsHelper.resetValue(UserPreferencesEntries.V_CORRESPONDENCE_PANEL, preferenceKey);      
    }
