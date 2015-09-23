@@ -67,6 +67,7 @@ import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
+import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSUtils;
@@ -956,7 +957,7 @@ public class DocumentMgmtUtility
       Document document = getDocumentManagementService().getDocument(documentId);
       if (null == document)
       {
-         throw new ResourceNotFoundException(MessagesViewsCommonBean.getInstance().getString(
+         throw new I18NException(MessagesViewsCommonBean.getInstance().getString(
                "views.myDocumentsTreeView.documentNotFound"));
       }
       return document;
