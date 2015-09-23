@@ -454,8 +454,10 @@
     this.resetMessages();
 
     scope.$parent.isVisible = true;
+    scope.iconClass= "isDeferred";
     _sdAuthorizationManagerService.savePermissions(self.selectedParticipants, allow, deny).then(function(result) {
       var permissions = result.permissions;
+      scope.iconClass= "";
       // update all selected nodes
       for (var i = 0; i < permissions.length; i++) {
         for (var j = 0; allow.length; j++) {
@@ -473,6 +475,7 @@
       }
       self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
     }, function(error) {
+      scope.iconClass= "";
       trace.error(error);
       self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.save.error"));
     });
