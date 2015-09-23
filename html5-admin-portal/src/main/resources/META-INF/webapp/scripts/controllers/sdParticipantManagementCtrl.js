@@ -396,12 +396,16 @@
               adminMessages('views.participantMgmt.participantTree.contextMenu.modifyDepartment')));
       menu.push("(createUser, LABEL)".replace('LABEL',
               adminMessages('views.participantMgmt.participantTree.contextMenu.createUser')));
+      menu.push("(removeAllUsers, LABEL)".replace('LABEL',
+              adminMessages('views.participantMgmt.participantTree.contextMenu.removeAllUsers')));
     } else if (item.type === "USER") {
       menu.push("(delete, LABEL)".replace('LABEL',
               adminMessages('views.participantMgmt.participantTree.contextMenu.removeUserGrant')));
     } else {
       menu.push("(createUser, LABEL)".replace('LABEL',
               adminMessages('views.participantMgmt.participantTree.contextMenu.createUser')));
+      menu.push("(removeAllUsers, LABEL)".replace('LABEL',
+              adminMessages('views.participantMgmt.participantTree.contextMenu.removeAllUsers')));
     }
 
     menuData.deferred.resolve(menu.toString());
@@ -514,7 +518,18 @@
       this.modifyParticipantPostUsrCr = true;
       this.openCreateCopyModifyUser('CREATE_USER');
       break;
-
+    
+    case 'menu-removeAllUsers':
+      var participant = data.valueItem;
+      var usersToBeRemoved = [];
+      for (var i = 0; i < participant.children.length; i++) {
+        if (participant.children[i].type == "USER") {
+          usersToBeRemoved.push(participant.children[i]);
+        }
+      }
+      this.saveParticipants(data, [participant], null, usersToBeRemoved);
+      break;  
+      
     default:
       break;
     }
@@ -535,7 +550,7 @@
     var participants = this.selectedTreeNodes;
 
     if (this.selectedTreeNodes.indexOf(dropTarget) == -1) {
-      participants = [dropTarget];
+      participants.push(dropTarget);
     }
 
     this.saveParticipants(data, participants, this.rowSelectionForAllUsersTable);
