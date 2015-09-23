@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.ws.rs.core.Response.Status;
@@ -43,7 +44,6 @@ import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
-
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ParticipantManagementUtils;
@@ -161,17 +161,18 @@ public class ParticipantServiceImpl implements ParticipantService
    public Map<String, List<ParticipantDTO>> modifyParticipant(HashSet<String> participant, HashSet<String> add,
          HashSet<String> remove)
    {
-      HashSet<String> allUsers = new HashSet<String>();
+      HashSet<String> selectedUsers = new HashSet<String>();
+      
       if (CollectionUtils.isNotEmpty(add))
       {
-         allUsers.addAll(add);
+         selectedUsers.addAll(add);
       }
       if (CollectionUtils.isNotEmpty(remove))
       {
-         allUsers.addAll(remove);
+         selectedUsers.addAll(remove);
       }
 
-      List<User> users = UserUtils.getUsers(allUsers, null, UserDetailsLevel.Minimal);
+      Set<User> users = getAllSelectedUsers(selectedUsers);
 
       Map<String, List<ParticipantDTO>> participantsMap = new HashMap<String, List<ParticipantDTO>>();
 
@@ -182,17 +183,15 @@ public class ParticipantServiceImpl implements ParticipantService
          {
             for (String userId : add)
             {
-               // TODO: consider realmId
                User user = getUser(users, userId);
                if (participantContainer.participantType.equals(ParticipantType.DEPARTMENT.name()))
                {
-                  addUserToModelParticipant(user,
-                        participantContainer.department
-                              .getScopedParticipant((ModelParticipant) participantContainer.modelparticipant));
+                  user.addGrant(participantContainer.department
+                        .getScopedParticipant((ModelParticipant) participantContainer.modelparticipant));
                }
                else
                {
-                  addUserToModelParticipant(user, participantContainer.modelparticipant);
+                  user.addGrant(participantContainer.modelparticipant);
                }
             }
          }
@@ -201,21 +200,21 @@ public class ParticipantServiceImpl implements ParticipantService
          {
             for (String userId : remove)
             {
-               // TODO: consider realmId
                User user = getUser(users, userId);
                if (participantContainer.participantType.equals(ParticipantType.DEPARTMENT.name()))
                {
-                  removeUserToModelParticipant(user,
-                        participantContainer.department
-                              .getScopedParticipant((ModelParticipant) participantContainer.modelparticipant));
+                  user.removeGrant(participantContainer.department
+                        .getScopedParticipant((ModelParticipant) participantContainer.modelparticipant));
                }
                else
                {
-                  removeUserToModelParticipant(user, participantContainer.modelparticipant);
+                  user.removeGrant(participantContainer.modelparticipant);
                }
             }
          }
-
+         
+         updateSelectedUsers(users);
+         
          List<ParticipantDTO> participantDTOs = new ArrayList<ParticipantDTO>();
          participantDTOs.addAll(getSubParticipants(participantContainer));
          participantsMap.put(participantQId, participantDTOs);
@@ -228,10 +227,9 @@ public class ParticipantServiceImpl implements ParticipantService
     * @param userId
     * @return
     */
-   private User getUser(List<User> users, String userId)
+   private User getUser(Set<User> users, String userId)
    {
       // TODO: consider realmId
-
       for (User user : users)
       {
          if (user.getId().equals(userId))
@@ -243,28 +241,34 @@ public class ParticipantServiceImpl implements ParticipantService
    }
 
    /**
-    * @param user
-    * @param qualifiedParticipantInfo
+    * @param usersList
+    * @return
     */
-   private void addUserToModelParticipant(User user, QualifiedModelParticipantInfo qualifiedParticipantInfo)
+   private Set<User> getAllSelectedUsers(HashSet<String> allUsers)
    {
+      // TODO: consider realmId
+      Users usersList = UserUtils.getUsers(allUsers, null, UserDetailsLevel.Minimal);
+      Set<User> users = new HashSet<User>();
       UserService userService = serviceFactoryUtils.getUserService();
-      User userToModify = userService.getUser(user.getOID());
-      userToModify.addGrant(qualifiedParticipantInfo);
-      userService.modifyUser(userToModify);
+      for (User user2 : usersList)
+      {
+         users.add(userService.getUser(user2.getOID()));
+      }
+      return users;
    }
 
    /**
-    * @param user
-    * @param qualifiedParticipantInfo
+    * @param users
     */
-   private void removeUserToModelParticipant(User user, QualifiedModelParticipantInfo qualifiedParticipantInfo)
+   private void updateSelectedUsers(Set<User> users)
    {
       UserService userService = serviceFactoryUtils.getUserService();
-      User userToModify = userService.getUser(user.getOID());
-      userToModify.removeGrant(qualifiedParticipantInfo);
-      userService.modifyUser(userToModify);
+      for (User user2 : users)
+      {
+         userService.modifyUser(user2);
+      }
    }
+   
    /**
     * 
     * @param participantQidIn

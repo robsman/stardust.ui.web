@@ -520,14 +520,21 @@
       break;
     
     case 'menu-removeAllUsers':
-      var participant = data.valueItem;
+      var participants = this.selectedTreeNodes;
+      if (participants.indexOf(data.valueItem) == -1) {
+        participants.push(data.valueItem);
+      }
+      
       var usersToBeRemoved = [];
-      for (var i = 0; i < participant.children.length; i++) {
-        if (participant.children[i].type == "USER") {
-          usersToBeRemoved.push(participant.children[i]);
+      for (var i = 0; i < participants.length; i++) {
+        for (var j = 0; j < participants[i].children.length; j++) {
+          if (participants[i].children[j].type == "USER") {
+            usersToBeRemoved.push(participants[i].children[j]);
+          }
         }
       }
-      this.saveParticipants(data, [participant], null, usersToBeRemoved);
+      
+      this.saveParticipants(data, participants, null, usersToBeRemoved);
       break;  
       
     default:
@@ -545,7 +552,7 @@
   }
 
   // handle users drop event
-  ParticipantManagementCtrl.prototype.handleUserDropAction = function(data, users) {
+  ParticipantManagementCtrl.prototype.handleUserDropAction = function(data) {
     var dropTarget = data.srcScope.nodeItem;
     var participants = this.selectedTreeNodes;
 
