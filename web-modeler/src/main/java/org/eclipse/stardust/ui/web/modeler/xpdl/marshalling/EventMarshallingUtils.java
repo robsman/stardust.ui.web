@@ -834,6 +834,8 @@ public class EventMarshallingUtils
       {
          createDelegateAction(eventHandler);
       }
+      
+      eventHandler.setAutoBind(true);
    }
 
    private static void setUseConstant(EventHandlerType eventHandler, String delayValue, String delayUnit)
