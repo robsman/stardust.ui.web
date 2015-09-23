@@ -73,6 +73,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.DMSUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
@@ -94,7 +95,7 @@ public class DocumentMgmtUtility
    public static final String DOCUMENTS = "/documents";
    public static final String PROCESS_ATTACHMENTS = "/process-attachments";
    public static final String SPECIFIC_DOCUMENTS = "/specific-documents";
-   public static final String CORRESPONDENCE = "/correspondence";
+   public static final String CORRESPONDENCE = "/Correspondence";
    public static final String CORRESPONDENCE_OUT = "/correspondence-out-";
    
    
@@ -1053,16 +1054,20 @@ public class DocumentMgmtUtility
    {
       return DmsUtils.composeDefaultPath(pi.getOID(), pi.getStartTime()) + SPECIFIC_DOCUMENTS;
    }
-
+   
    /**
-    * @param pi
+    * @param processInstance
     * @return
     */
-   public static String getCorrespondenceFolderPath(ProcessInstance pi)
+   public static String getCorrespondenceFolderPath(ProcessInstance processInstance)
    {
-      return DmsUtils.composeDefaultPath(pi.getOID(), pi.getStartTime()) + CORRESPONDENCE;
+      if (processInstance.getOID() != processInstance.getScopeProcessInstanceOID())
+      {
+         processInstance = ProcessInstanceUtils.getProcessInstance(processInstance.getScopeProcessInstanceOID());
+      }
+      return DmsUtils.composeDefaultPath(processInstance.getOID(), processInstance.getStartTime()) + CORRESPONDENCE;
    }
-   
+
    /**
     * @param ai
     * @return
