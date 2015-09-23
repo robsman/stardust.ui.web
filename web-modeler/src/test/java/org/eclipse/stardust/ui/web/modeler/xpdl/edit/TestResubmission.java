@@ -44,7 +44,8 @@ public class TestResubmission extends RecordingTestcase
       assertThat(eventHandler.getBindAction(), is(not(nullValue())));
       assertThat(eventHandler.getEventAction().size(), is(1));
       assertThat(eventHandler.getBindAction().size(), is(1));
-
+      assertThat(eventHandler.isAutoBind(), is(true));
+      
       BindActionType bindAction = eventHandler.getBindAction().get(0);
       GenericModelingAssertions.assertAttribute(bindAction, "carnot:engine:targetState", "7");
 
@@ -79,6 +80,7 @@ public class TestResubmission extends RecordingTestcase
       assertThat(eventHandler.getBindAction(), is(not(nullValue())));
       assertThat(eventHandler.getEventAction().size(), is(2));
       assertThat(eventHandler.getBindAction().size(), is(1));
+      assertThat(eventHandler.isAutoBind(), is(true));
 
       BindActionType bindAction = eventHandler.getBindAction().get(0);
       GenericModelingAssertions.assertAttribute(bindAction, "carnot:engine:targetState", "7");
@@ -117,6 +119,7 @@ public class TestResubmission extends RecordingTestcase
       assertThat(eventHandler.getBindAction(), is(not(nullValue())));
       assertThat(eventHandler.getEventAction().size(), is(1));
       assertThat(eventHandler.getBindAction().size(), is(1));
+      assertThat(eventHandler.isAutoBind(), is(true));
 
       BindActionType bindAction = eventHandler.getBindAction().get(0);
       GenericModelingAssertions.assertAttribute(bindAction, "carnot:engine:targetState", "7");
