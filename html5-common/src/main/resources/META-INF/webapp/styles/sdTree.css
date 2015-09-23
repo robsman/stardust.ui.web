@@ -25,6 +25,13 @@ ul.sd-tree i {
   color: #A69A88;
 }
 
+ul.sd-tree i.isDeferred:before{
+	font: normal normal normal 14px/1 FontAwesome !important;
+	content: "\f110" !important;
+	-webkit-animation: fa-spin 2s infinite linear;
+	animation: fa-spin 2s infinite linear;
+}
+
 ul.sd-tree input{
   border:none;
 }

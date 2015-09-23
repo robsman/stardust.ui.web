@@ -630,7 +630,10 @@
 	                  arrPath,
 	                  hashKey,
 	                  parentPath,
-	                  collObj;
+	                  collObj,
+	                  srcScope;
+	              
+	              srcScope = angular.element(e.srcElement || e.target).scope();
 	              
 	              this.attrs=attrs;
 	              
@@ -655,8 +658,10 @@
 	                //based on the isVisible state. Requires resolution.
 	                case 'node-expand':
 	                  op = (this.isVisible)?'node-collapse':'node-expand';
+	                  rootCtrl.api.setNodeIcon(srcScope.nodeId, "isDeferred");
 	                  deferred.promise.then(function(){
-	                    rootCtrl.api.toggleNode(that.nodeId);
+	                    rootCtrl.api.toggleNode(srcScope.nodeId);
+	                    rootCtrl.api.setNodeIcon(srcScope.nodeId, "");
 	                  });
 	                  break;
 	                
@@ -666,7 +671,10 @@
 	                  }else{
 	                	  data.dropData =  JSON.parse(e.dataTransfer.getData("text/plain"));
 	                  }
-	                  
+	                  rootCtrl.api.setNodeIcon(srcScope.nodeId, "isDeferred");
+	                  deferred.promise.then(function(){
+	                    rootCtrl.api.setNodeIcon(srcScope.nodeId, "");
+	                  });
 	                  break;
 	                case 'node-dragend':
 	                  data.dragData = this.nodeItem;
@@ -677,10 +685,11 @@
 	                  arrPath = this.path.split(",");
 	                  hashKey = this[this.repeater.lhs].$$hashKey;
 	                  parentPath = (arrPath.length >1)?arrPath[arrPath.length-2]:arrPath[0];
-	                  
-	                  //alert(that.nodeId);
+	                  rootCtrl.api.setNodeIcon(that.nodeId, "isDeferred");
+
 	                  deferred.promise.then(function(){
 	                    rootCtrl.api.removeItem(parentPath,hashKey);
+	                    rootCtrl.api.setNodeIcon(that.nodeId, "");
 	                  });
 	                  break;
 	                
@@ -705,10 +714,10 @@
 	                  else{
 	                	  inputElem.value=spanElem.innerText;
 	                  }
-	                  
+	                  rootCtrl.api.setNodeIcon(that.nodeId, "isDeferred");
 	                  deferred.promise
 	                  .then(function(){
-	                    //anythign to do here????
+	                	  rootCtrl.api.setNodeIcon(that.nodeId, "");
 	                  })
 	                  .catch(function(){
 	                    //Reset to the initial value which is still in our span elem
