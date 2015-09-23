@@ -332,8 +332,11 @@ public class ParticipantServiceImpl implements ParticipantService
             {
                departmentInfo = participantManagementUtils.getDepartment(organization, parentDepartmentId);
             }
-            modelParticipant = getDepartment(departmentInfo.getOID()).getScopedParticipant(
-                  (ModelParticipant) modelParticipant);
+            if (departmentInfo != null)
+            {
+               modelParticipant = getDepartment(departmentInfo.getOID()).getScopedParticipant(
+                     (ModelParticipant) modelParticipant);
+            }
             pType = ParticipantManagementUtils.getParticipantType(modelParticipant).name();
          }
       }
