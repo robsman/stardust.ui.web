@@ -155,7 +155,7 @@
 				</ice:commandLink>
 				<ice:commandLink
 					actionListener="#{bean.openRelocationDialog}"
-					disabled="#{not row.relocationSource or not row.activatable or row.caseInstance}" onclick="Event.stop(event);">
+					disabled="#{not row.relocationEligible}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsRelocate" standAlone="false"/>
 					<f:attribute name="activityInstance" value="#{row.activityInstance}" />
 					<ice:outputText

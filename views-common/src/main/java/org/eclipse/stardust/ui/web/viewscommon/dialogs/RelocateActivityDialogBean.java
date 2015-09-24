@@ -143,21 +143,16 @@ public class RelocateActivityDialogBean extends PopupUIComponentBean
       {
          try
          {
-            boolean canRelocate = false;
-
-            // TODO - check what happens in case of application activity
-            if (activityInstance.getState().equals(ActivityInstanceState.Application))
+            if (ActivityInstanceUtils.isRelocationEligible(activityInstance))
             {
-               canRelocate = true;
-            }
-            else if (activityInstance.getState().equals(ActivityInstanceState.Suspended))
-            {
-               ServiceFactoryUtils.getWorkflowService().activate(activityInstance.getOID());
-               canRelocate = true;
-            }
-
-            if (canRelocate)
-            {
+               if (activityInstance.getActivity().isInteractive()
+                     && activityInstance.getState().equals(
+                           ActivityInstanceState.Suspended))
+               {
+                  ServiceFactoryUtils.getWorkflowService().activate(
+                        activityInstance.getOID());
+               }
+               
                TransitionReport report = ServiceFactoryUtils.getWorkflowService()
                      .performAdHocTransition(activityVsTarget.get(selectedTarget), false);
                ActivityInstance target = report.getTargetActivityInstance();

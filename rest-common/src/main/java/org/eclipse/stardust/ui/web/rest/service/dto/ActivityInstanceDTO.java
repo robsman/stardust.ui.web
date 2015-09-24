@@ -70,7 +70,7 @@ public class ActivityInstanceDTO extends AbstractDTO
    
    public boolean activatable;
    
-   public boolean relocationSource;
+   public boolean relocationEligible;
 
    public Map<String, DescriptorDTO> descriptorValues;
    

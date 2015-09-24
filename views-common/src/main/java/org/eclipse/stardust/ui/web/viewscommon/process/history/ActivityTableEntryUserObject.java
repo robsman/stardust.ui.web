@@ -51,7 +51,7 @@ public class ActivityTableEntryUserObject extends NodeUserObject
    private CriticalityCategory criticality;
    private int criticalityValue;
    private String criticalityLabel;
-   private boolean relocationSource;
+   private boolean relocationEligible;
    QualityAssuranceCodesBean qualityAssuranceCodesBean;
 
    /**
@@ -105,10 +105,7 @@ public class ActivityTableEntryUserObject extends NodeUserObject
          {
             formatType = QualityAssuranceUtils.getQAActivityInstanceType(formatType, ai);
          }
-         if (null != ai.getActivity().getAttribute("carnot:engine:relocate:source"))
-         {
-            relocationSource = (Boolean) ai.getActivity().getAttribute("carnot:engine:relocate:source");
-         }
+         relocationEligible = ActivityInstanceUtils.isRelocationEligible(ai);
       }
       
       //set icons
@@ -355,9 +352,9 @@ public class ActivityTableEntryUserObject extends NodeUserObject
       return activatable;
    }
 
-   public boolean isRelocationSource()
+   public boolean isRelocationEligible()
    {
-      return relocationSource;
+      return relocationEligible;
    }
 
    public boolean isDelegable()

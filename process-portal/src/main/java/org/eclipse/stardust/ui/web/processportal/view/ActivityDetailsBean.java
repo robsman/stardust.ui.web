@@ -3381,15 +3381,10 @@ public class ActivityDetailsBean extends UIComponentBean
       return false;
    }
    
-   public boolean isRelocationSource()
+   public boolean isRelocationEligible()
    {
-      if (null != activityInstance
-            && null != activityInstance.getActivity().getAttribute("carnot:engine:relocate:source"))
-      {
-         return ((Boolean) activityInstance.getActivity().getAttribute("carnot:engine:relocate:source"));
-      }
 
-      return false;
+      return ActivityInstanceUtils.isRelocationEligible(activityInstance);
    }
 
    private void setActivityInstance(ActivityInstance ai)

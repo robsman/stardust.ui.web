@@ -171,7 +171,16 @@ public class ActivityInstanceService
          for (TransitionTarget target : targets)
          {
             if (target.getActivityId().equals(activityId)) {
-               serviceFactoryUtils.getWorkflowService().activate(target.getActivityInstanceOid());
+               ActivityInstance activityInstance = activityInstanceUtils.getActivityInstance(target.getActivityInstanceOid());
+               if (org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isRelocationEligible(activityInstance))
+               {
+                  if (activityInstance.getActivity().isInteractive()
+                        && activityInstance.getState().equals(
+                              ActivityInstanceState.Suspended))
+                  {
+                     serviceFactoryUtils.getWorkflowService().activate(target.getActivityInstanceOid());
+                  }
+               }
                TransitionReport report = serviceFactoryUtils.getWorkflowService().performAdHocTransition(target, false);
                return DTOBuilder.build(report.getTargetActivityInstance(), ActivityInstanceDTO.class);
             }

@@ -186,6 +186,32 @@ public class ActivityInstanceUtils
          }
       }
    }
+   
+   /**
+    * @param ai
+    * @return
+    */
+   public static boolean isRelocationEligible(ActivityInstance ai)
+   {
+      boolean canRelocate = false;
+      if (null != ai.getActivity().getAttribute("carnot:engine:relocate:source")
+            && (Boolean) ai.getActivity().getAttribute("carnot:engine:relocate:source"))
+      {
+         if (ai.getActivity().isInteractive()
+               && (ai.getState().equals(ActivityInstanceState.Application) || ai.getState()
+                     .equals(ActivityInstanceState.Suspended)))
+         {
+            canRelocate = true;
+         }
+         else if (ai.getState().equals(ActivityInstanceState.Hibernated)
+               || ai.getState().equals(ActivityInstanceState.Interrupted))
+         {
+            canRelocate = true;
+         }
+      }
+
+      return canRelocate;
+   }
 
    /**
     * @param ai
