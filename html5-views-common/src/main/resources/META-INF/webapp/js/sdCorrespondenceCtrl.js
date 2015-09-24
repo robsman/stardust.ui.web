@@ -215,8 +215,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 			this.interactionProvider.saveData(null, postData);
 			parent.InfinityBpm.ProcessPortal.confirmCloseCommandFromExternalWebApp(commandId);
 		}catch(e){
-			trace.error("Exception when performing Close panel command.");
-			console.log(e)
+			trace.error("Exception when performing Close panel command.",e);
 		}
 	}
 
@@ -291,6 +290,23 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		
 		trace.log("Data after conversion to ui format",uiData);
 		return uiData;
+	}
+	
+	/**
+	 * 
+	 */
+	function formatOutDataAttachments( attachments ){
+		var outAttachments = []; 
+		angular.forEach(attachments,function(data){
+			var templateDocumentId = data.templateDocumentId ?  data.templateDocumentId : data.documentId;
+			outAttachments.push({
+				DocumentId : data.documentId,
+				TemplateDocumentId :templateDocumentId,
+				Name : data.name,
+				ConvertToPdf :data.convertToPdf ? true : false 
+			});
+		});
+		return outAttachments;
 	}
 
 	/**
