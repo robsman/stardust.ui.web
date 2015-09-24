@@ -37,7 +37,7 @@
 .currentTimeLine {
   position: absolute;
   height: 100%;
-  border-left: 1px dotted #000;
+  border-left: 1px dotted #7081FF;
   z-index: 2;
 }
 

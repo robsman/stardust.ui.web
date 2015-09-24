@@ -104,7 +104,9 @@
 		var params = queryGetter($scope);
 		self.selected.process = params.processInstanceOId;
 		self.tableReady = true;
+		
 		self.currentTimeLine = {};
+		self.estimatedEndTimeLine = {};
 	};
 
 	/**
@@ -180,7 +182,6 @@
 			}); 
 		});
 		self.expectedDurations = durations;
-		console.log(durations)
 	}
 
 	/**
@@ -460,7 +461,7 @@
 		if (second.getTime() < minDuration) {
 			second.setTime(minDuration);
 		}else{
-			second.setTime(second.getTime() + (ONE_HOUR_IN_MIILS/2));
+			second.setTime(second.getTime() + (ONE_HOUR_IN_MIILS));
 		}
 		var quaterHours = [];
 		var days = [];
@@ -500,23 +501,6 @@
 		});
 	};
 
-
-	/**
-	 * 
-	 */
-	Controller.prototype.computeCurrentTimeLine = function(factor){
-		var self = this;
-		var currentTime = self.computeDifference(self.process.startTime,self.currentTime,factor);
-		return currentTime.difference * factor.minorFactorWidth +currentTime.padding+ 220;
-	}
-	
-	/**
-	 * 
-	 */
-	Controller.prototype.getCurrentTimeLine = function(){
-		console.log(this.currentTimeLine[self.selected.timeFrame])
-		return this.currentTimeLine[self.selected.timeFrame];
-	}
 	/**
 	 * 
 	 */
@@ -588,7 +572,6 @@
 			end = new Date(self.process.endTime);
 		}
 		else if(self.process.expectedEndTime ) {
-
 			if(new Date(self.process.expectedEndTime) > end ){
 				end = new Date(self.process.expectedEndTime);
 			}
@@ -800,8 +783,40 @@
 		normalizedData.days = self.getGraphData(normalizedData,'days');
 		normalizedData.hours = self.getGraphData(normalizedData,'hours');
 		normalizedData.minutes = self.getGraphData(normalizedData,'minutes');
+		
+		self.calculateGridLines('days',normalizedData.days);
+		self.calculateGridLines('hours',normalizedData.hours);
+		self.calculateGridLines('minutes',normalizedData.minutes);
+		
+		self.determineAppropriateTimeFrame(normalizedData);
 		return normalizedData;
 	}
+	
+	/**
+	 * 
+	 */
+	Controller.prototype.calculateGridLines = function(timeFrame, data){
+		this.currentTimeLine[timeFrame] = data.delay + data.completed + 220;
+		if(data.inflight) {
+			this.estimatedEndTimeLine[timeFrame] = data.delay + data.completed + data.inflight+220;
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	Controller.prototype.determineAppropriateTimeFrame = function(data){
+		
+		if(  (data.endTime - data.startTime) < ONE_HOUR_IN_MIILS  ){
+			this.selected.timeFrame = "minutes";
+		}else if((data.endTime - data.startTime) < ONE_DAY_IN_MIILS) {
+			this.selected.timeFrame = "hours";
+		}else{
+			this.selected.timeFrame = "days";
+		}
+		this.onTimeFrameChange();
+	}
+
 
 	/**
 	 * 
@@ -1033,10 +1048,6 @@
 				inflight : inflight
 		};
 		
-		if(!self.currentTimeLine[timeFrame]){
-			self.currentTimeLine[timeFrame] = delay + self.computeCurrentTimeLine(factor);
-		}
-
 		return graphData;
 	}
 
