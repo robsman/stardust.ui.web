@@ -38,6 +38,7 @@ import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantService;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ModelDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
@@ -62,7 +63,7 @@ public class ParticipantResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("participants")
-   public Response modifyParticipant(String postedData)
+   public Response modifyParticipant(String postedData, @QueryParam("lazyLoad") @DefaultValue("false") Boolean lazyLoad)
    {
       Map grantsMap = null;
       if (StringUtils.isNotEmpty(postedData))
@@ -88,11 +89,23 @@ public class ParticipantResource
       }
 
       Map<String, List<ParticipantDTO>> participantDTOs = participantService.modifyParticipant(participants,
-            usersToBeAdded, usersToBeRemoved);
+            usersToBeAdded, usersToBeRemoved, lazyLoad);
 
       return Response.ok(GsonUtils.toJsonHTMLSafeString(participantDTOs), MediaType.APPLICATION_JSON).build();
    }
 
+   // get sub-participants for give participant Id
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("participants/tree")
+   public Response getParticipantTree(@QueryParam("lazyLoad") @DefaultValue("false") Boolean lazyLoad)
+         throws UnsupportedEncodingException
+   {
+      List<ModelDTO> modelParticipants = participantService.getParticipantTree(lazyLoad);
+      return Response.ok(AbstractDTO.toJson(modelParticipants), MediaType.APPLICATION_JSON).build();
+   }
+   
    // get sub-participants for give participant Id
    @GET
    @Produces(MediaType.APPLICATION_JSON)

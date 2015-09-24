@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.stardust.ui.web.rest.service.dto.ModelDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 
@@ -24,6 +25,13 @@ import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
  */
 public interface ParticipantService
 {
+   
+   /**
+    * @param participantQidIn
+    * @return
+    */
+   public List<ModelDTO> getParticipantTree(boolean lazyLoad);
+   
    /**
     * @param participantQidIn
     * @return
@@ -49,5 +57,5 @@ public interface ParticipantService
     * @return
     */
    public Map<String, List<ParticipantDTO>> modifyParticipant(HashSet<String> participants,
-         HashSet<String> usersToBeAdded, HashSet<String> usersToBeRemoved);
+         HashSet<String> usersToBeAdded, HashSet<String> usersToBeRemoved, boolean lazyLoad);
 }

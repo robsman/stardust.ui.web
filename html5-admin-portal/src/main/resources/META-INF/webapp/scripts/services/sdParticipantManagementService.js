@@ -180,30 +180,29 @@
 
     // get Models which also contains top level Organizations and top level
     // Roles
-    ParticipantManagementService.prototype.getModels = function() {
-      var restUrl = sdUtilService.getBaseUrl() + "services/rest/portal/models?includePredefinedModel=true&allActive=true";
+    ParticipantManagementService.prototype.getModelParticipants = function(lazyLoad) {
+      var restUrl = sdUtilService.getBaseUrl() + "services/rest/portal/participants/tree";
       var modelsResource = $resource(restUrl);
-
-      return modelsResource.query().$promise;
+      return modelsResource.query({'lazyLoad': lazyLoad}).$promise;
     };
 
     // get Sub-Participants for provided participants
     ParticipantManagementService.prototype.getSubParticipants = function(participant) {
-      var participantId = encodeURIComponent(getParticipatUiId(participant));
+      var participantId = encodeURIComponent(getParticipatQId(participant));
       var restUrl = sdUtilService.getBaseUrl() + "services/rest/portal/participants/" + participantId;
       var participantResource = $resource(restUrl);
       return participantResource.query().$promise;
     };
 
     // get Sub-Participants for provided participants
-    ParticipantManagementService.prototype.saveParticipants = function(participants, addUsers, removeUsers) {
+    ParticipantManagementService.prototype.saveParticipants = function(participants, addUsers, removeUsers, lazyLoad) {
       var data = {};
       data.participants = [];
       data.add = null;
       data.remove = null;
 
       for (var i = 0; i < participants.length; i++) {
-        data.participants.push(getParticipatUiId(participants[i]));
+        data.participants.push(getParticipatQId(participants[i]));
       }
 
       if (addUsers) {
@@ -224,7 +223,7 @@
       var restUrl = sdUtilService.getBaseUrl() + "services/rest/portal/participants/";
       var participantResource = $resource(restUrl);
 
-      return participantResource.save({}, data).$promise;
+      return participantResource.save({'lazyLoad': lazyLoad}, data).$promise;
     };
 
     // create or modify department
@@ -234,7 +233,7 @@
 
     // delete department
     ParticipantManagementService.prototype.deleteDepartment = function(department) {
-      var departmentId = encodeURIComponent(getParticipatUiId(department));
+      var departmentId = encodeURIComponent(getParticipatQId(department));
       return departmentResource.remove({
         departmentId: departmentId
       }).$promise;
@@ -242,7 +241,7 @@
   }
 
   // prepares participantId in a contracted format
-  function getParticipatUiId(participant) {
+  function getParticipatQId(participant) {
     if (participant.uiQualifiedId) { return participant.uiQualifiedId }
     return participant.qualifiedId;
   }

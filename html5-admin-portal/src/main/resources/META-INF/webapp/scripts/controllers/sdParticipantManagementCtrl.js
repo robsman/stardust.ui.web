@@ -28,6 +28,7 @@
   var _sdUserService;
   var _sdLoggedInUserService;
   var _sdPreferenceService, _sdMessageService;
+  var  lazyLoad = false;
 
   /**
    * 
@@ -361,7 +362,7 @@
     var isSelected = "";
 
     if (this.selectedTreeNodes.some(function(treeNode) {
-      return item.nodeId === treeNode.nodeId;
+      return getParticipatQId(item) === getParticipatQId(treeNode);
     })) {
       isSelected = " selected ";
     }
@@ -418,41 +419,39 @@
   // Handle our tree callbacks inclduing lazy load on node expand
   ParticipantManagementCtrl.prototype.eventCallback = function(data, e) {
     this.resetMessages();
-    var promises = [], that = this;
-
     this.selectedItem = data.valueItem;
 
     // On expansion of a node we need to build out its children
     if (data.treeEvent === "node-expand") {
-      // No data to retrieve at model level as child items are returned in the
-      // loadModels call (see constructor)
-      if (data.valueItem.isLoaded === true || data.valueItem.type === "model") {
-        data.deferred.resolve();
-        return;
-      }
-
-      if (!data.valueItem.type) {
-        // assume it is a model
+      if (!lazyLoad) {
+        //complete tree is already loaded
         data.valueItem.isLoaded = true;
         data.deferred.resolve();
       } else {
-        // If expanding a role expect an array of users to be returned
-        // If expanding an org expect a mixed array of roles and orgs to be
-        // returned
-        _sdParticipantManagementService.getSubParticipants(data.valueItem).then(function(users) {
-          // Add a uniqueID to each item that we can leverage as the
-          // nodeID
-          // needed by our tree directive.
-          users.forEach(function(v) {
-            v.nodeId = _sdParticipantManagementService.createGuid();
-          });
-          // always add to children as template recurses on this
-          data.valueItem.children = users;
-          // add isLoaded = true so we know we can skip this node next
-          // expansion
+        // No data to retrieve at model level as child items are returned in the
+        // loadModels call (see constructor)
+        if (data.valueItem.isLoaded === true || data.valueItem.type === "model") {
+          data.deferred.resolve();
+          return;
+        }
+  
+        if (!data.valueItem.type) {
+          // assume it is a model
           data.valueItem.isLoaded = true;
           data.deferred.resolve();
-        });
+        } else {
+          // If expanding a role expect an array of users to be returned
+          // If expanding an org expect a mixed array of roles and orgs to be
+          // returned
+          _sdParticipantManagementService.getSubParticipants(data.valueItem).then(function(users) {
+            // always add to children as template recurses on this
+            data.valueItem.children = users;
+            // add isLoaded = true so we know we can skip this node next
+            // expansion
+            data.valueItem.isLoaded = true;
+            data.deferred.resolve();
+          });
+        }
       }
     } else if (data.treeEvent === "node-dragend" || data.treeEvent === "node-drop") {
       console.log("Drag-Drop");
@@ -463,7 +462,7 @@
       data.deferred.resolve();
     } else if (data.treeEvent === "node-click") {
       console.log("Node selected..");
-      this.handleTreeNodeClick(data, e);
+      this.addToSelectedNodes(data, e.ctrlKey);
       data.deferred.resolve();
     }
 
@@ -510,7 +509,7 @@
               });
       break;
     case 'menu-removeUser':
-      var participant = this.treeApi.getParentItem(data.valueItem.nodeId);
+      var participant = this.treeApi.getParentItem(data.valueItem.uuid);
       this.saveParticipants(data, [participant], null, [data.valueItem]);
       break;
 
@@ -520,10 +519,10 @@
       break;
     
     case 'menu-removeAllUsers':
-      var participants = this.selectedTreeNodes;
-      if (participants.indexOf(data.valueItem) == -1) {
-        participants.push(data.valueItem);
+      if (getIndexOfParticipant(this.selectedTreeNodes, data.valueItem) == -1) {
+        this.selectedTreeNodes.push(data.valueItem);
       }
+      var participants = this.selectedTreeNodes;
       
       var usersToBeRemoved = [];
       for (var i = 0; i < participants.length; i++) {
@@ -547,43 +546,43 @@
   ParticipantManagementCtrl.prototype.createUserCallback = function(user) {
     if (this.modifyParticipantPostUsrCr) {
       this.modifyParticipantPostUsrCr = false;
-      this.saveParticipants(this.contextParticipantNode, [this.contextParticipantNode.valueItem], [user]);
+
+      if (getIndexOfParticipant(this.selectedTreeNodes, this.contextParticipantNode.valueItem) == -1) {
+        this.selectedTreeNodes.push(this.contextParticipantNode.valueItem);
+      }
+
+      this.saveParticipants(this.contextParticipantNode, this.selectedTreeNodes, [user]);
     }
   }
 
   // handle users drop event
   ParticipantManagementCtrl.prototype.handleUserDropAction = function(data) {
     var dropTarget = data.srcScope.nodeItem;
-    var participants = this.selectedTreeNodes;
-
-    if (this.selectedTreeNodes.indexOf(dropTarget) == -1) {
-      participants.push(dropTarget);
+    if (getIndexOfParticipant(this.selectedTreeNodes, dropTarget) == -1) {
+      this.addToSelectedNodes(data, true);
     }
-
-    this.saveParticipants(data, participants, this.rowSelectionForAllUsersTable);
+    this.saveParticipants(data, this.selectedTreeNodes, this.rowSelectionForAllUsersTable);
   }
 
   // save the participant
   ParticipantManagementCtrl.prototype.saveParticipants = function(data, participants, addUsers, removeUsers) {
     var self = this;
-    _sdParticipantManagementService.saveParticipants(participants, addUsers, removeUsers).then(function(result) {
+    _sdParticipantManagementService.saveParticipants(participants, addUsers, removeUsers, lazyLoad).then(function(result) {
       // update the tree with server response
       for (var i = 0; i < participants.length; i++) {
-        participants[i].children = result[getParticipatUiId(participants[i])];
-        participants[i].children.forEach(function(v) {
-          v.nodeId = _sdParticipantManagementService.createGuid();
-        });
+        participants[i].children = result[getParticipatQId(participants[i])];
       }
       data.deferred.resolve();
     }, function(response) {
       if (response.data && response.data.message) {
         self.showParticipantMessage(response.data.message, "error");
       }
+      self.selectedTreeNodes = [];
     });
   }
 
   // handle tree node click
-  ParticipantManagementCtrl.prototype.handleTreeNodeClick = function(data, event) {
+  ParticipantManagementCtrl.prototype.addToSelectedNodes = function(data, update) {
     var selectedNode = data.srcScope.nodeItem;
 
     // model node is selected
@@ -591,12 +590,16 @@
 
     this.resetMessages();
 
-    if (('ORGANIZATON_SCOPED_EXPLICIT' === selectedNode.type) || 'USER' === selectedNode.type) { return; }
+    if (('ORGANIZATON_SCOPED_EXPLICIT' === selectedNode.type) || 'USER' === selectedNode.type) { 
+      this.showParticipantMessage(_sdI18nService.getInstance('views-common-messages').translate(
+      'views.participantTree.inValidSelection'), "info");
+      return; 
+      }
 
     // if the droptarget was already selected then remove it
-    var participantIndex = this.selectedTreeNodes.indexOf(selectedNode);
+    var participantIndex = getIndexOfParticipant(this.selectedTreeNodes, selectedNode);
 
-    if (event.ctrlKey) {
+    if (update) {
       if (participantIndex >= 0) {
         this.selectedTreeNodes.splice(participantIndex, 1);
       } else {
@@ -610,6 +613,7 @@
       }
     }
   }
+  
 
   // open create or modify cepartment dialog
   ParticipantManagementCtrl.prototype.openCreateModifyDepartment = function() {
@@ -659,11 +663,6 @@
         contextParticipant.description = department.description;
       } else {
         contextParticipant.children.push(department);
-        contextParticipant.children.forEach(function(v) {
-          if (!v.nodeId) {
-            v.nodeId = _sdParticipantManagementService.createGuid();
-          }
-        });
       }
       self.contextParticipantNode.deferred.resolve();
     }, function(response) {
@@ -677,15 +676,7 @@
   // load Models
   ParticipantManagementCtrl.prototype.loadModels = function() {
     var that = this;
-    _sdParticipantManagementService.getModels().then(function(data) {
-      data.forEach(function(v) {
-        v.allTopLevelOrganizations = removeCasePerformer(v.allTopLevelOrganizations);
-        v.children = v.allTopLevelRoles.concat(v.allTopLevelOrganizations);
-        v.children.forEach(function(v) {
-          v.nodeId = _sdParticipantManagementService.createGuid();
-        });
-        v.nodeId = _sdParticipantManagementService.createGuid();
-      });
+    _sdParticipantManagementService.getModelParticipants(lazyLoad).then(function(data) {
       that.models = data;
     });
   };
@@ -729,21 +720,16 @@
     }
   }
 
+  function getIndexOfParticipant(participants, participant) {
+    for (var i = 0; i < participants.length; i++) {
+      if (getParticipatQId(participants[i]) == getParticipatQId(participant)) { return i; }
+    }
+    return -1;
+  }
+  
   // prepares participantId in a contracted format
-  function getParticipatUiId(participant) {
+  function getParticipatQId(participant) {
     if (participant.uiQualifiedId) { return participant.uiQualifiedId }
     return participant.qualifiedId;
   }
-
-  function removeCasePerformer(result) {
-    if (result) {
-      for (var i = 0; i < result.length; i++) {
-        if ("{PredefinedModel}CasePerformer" === result[i].qualifiedId) {
-          result.splice(i, 1);
-        }
-      }
-    }
-    return result;
-  }
-
 })();

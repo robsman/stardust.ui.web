@@ -112,10 +112,10 @@ public class ModelServiceBean
                modelList.add(modelDTO);
 
                // Add all top-level Organizations
-               updateTopLevelOrganizations(model, modelDTO);
+               modelDTO.allTopLevelOrganizations = updateTopLevelOrganizations(model);
 
                // Add all top-level Roles
-               updateTopLevelRoles(model, modelDTO);
+               modelDTO.allTopLevelRoles = updateTopLevelRoles(model);
             }
          }
       }
@@ -128,15 +128,41 @@ public class ModelServiceBean
    }
 
    /**
+    * return just model and its participants
+    * 
+    * @return
+    * @throws Exception
+    */
+   public List<ModelDTO> getModelParticipants() 
+   {
+      List<ModelDTO> modelList = CollectionUtils.newArrayList();
+      Collection<DeployedModel> models = CollectionUtils.newArrayList();
+      models = ModelCache.findModelCache().getActiveModels();
+
+      for (DeployedModel model : models)
+      {
+         ModelDTO modelDTO = DTOBuilder.build(model, ModelDTO.class);
+         modelList.add(modelDTO);
+         // Add all top-level Organizations
+         modelDTO.children = updateTopLevelOrganizations(model);
+         // Add all top-level Roles
+         modelDTO.children.addAll(updateTopLevelRoles(model));
+      }
+      
+      return modelList;
+   }
+   
+   /**
     * @param model
     * @param modelDto
+    * @return 
     */
-   private void updateTopLevelOrganizations(Model model, ModelDTO modelDto)
+   private List<ParticipantDTO> updateTopLevelOrganizations(Model model)
    {
       List<Organization> topLevelOrganizations = null;
 
       topLevelOrganizations = model.getAllTopLevelOrganizations();
-      modelDto.allTopLevelOrganizations = new ArrayList<ParticipantDTO>();
+      List<ParticipantDTO> allTopLevelOrganizations = new ArrayList<ParticipantDTO>();
 
       for (Organization organization : topLevelOrganizations)
       {
@@ -145,21 +171,24 @@ public class ModelServiceBean
          {
             ParticipantDTO participantDTO = new ParticipantDTO(organization);
             participantDTO.type = ParticipantManagementUtils.getParticipantType(organization).name();
-            modelDto.allTopLevelOrganizations.add(participantDTO);
+            allTopLevelOrganizations.add(participantDTO);
          }
       }
+
+      return allTopLevelOrganizations;
    }
 
    /**
     * @param model
     * @param modelDto
     * @param adminRoleAdded
+    * @return
     */
-   private void updateTopLevelRoles(Model model, ModelDTO modelDto)
+   private ArrayList<ParticipantDTO> updateTopLevelRoles(Model model)
    {
       List<Role> topLevelRoles = null;
       topLevelRoles = model.getAllTopLevelRoles();
-      modelDto.allTopLevelRoles = new ArrayList<ParticipantDTO>();
+      ArrayList<ParticipantDTO> allTopLevelRoles = new ArrayList<ParticipantDTO>();
 
       for (Role role : topLevelRoles)
       {
@@ -170,7 +199,7 @@ public class ModelServiceBean
             {
                ParticipantDTO participantDTO = new ParticipantDTO(role);
                participantDTO.type = ParticipantManagementUtils.getParticipantType(role).name();
-               modelDto.allTopLevelRoles.add(participantDTO);
+               allTopLevelRoles.add(participantDTO);
             }
             continue;
          }
@@ -181,8 +210,9 @@ public class ModelServiceBean
          {
             ParticipantDTO participantDTO = new ParticipantDTO(role);
             participantDTO.type = ParticipantManagementUtils.getParticipantType(role).name();
-            modelDto.allTopLevelRoles.add(participantDTO);
+            allTopLevelRoles.add(participantDTO);
          }
       }
+      return allTopLevelRoles;
    }
 }

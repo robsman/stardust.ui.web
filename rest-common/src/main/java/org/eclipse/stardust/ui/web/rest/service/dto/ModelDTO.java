@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
@@ -41,5 +42,9 @@ public class ModelDTO extends AbstractDTO
    
    public List<ParticipantDTO> allTopLevelRoles;
    
+   public List<ParticipantDTO> children; //contains both organization and roles
+   
    public List<DataDTO> data;
+   
+   public String uuid = UUID.randomUUID().toString(); //necessary for tree directive
 }

@@ -11,6 +11,7 @@ package org.eclipse.stardust.ui.web.rest.service;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,6 +45,7 @@ import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
+import org.eclipse.stardust.ui.web.rest.service.dto.ModelDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ParticipantManagementUtils;
@@ -53,6 +55,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferen
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -66,6 +69,7 @@ import org.springframework.stereotype.Component;
 @Scope(value = "session", proxyMode = ScopedProxyMode.INTERFACES)
 public class ParticipantServiceImpl implements ParticipantService
 {
+   public static final String CASE_PERFORMER = "{PredefinedModel}CasePerformer";
    private static final Logger trace = LogManager.getLogger(ParticipantServiceImpl.class);
 
    @Resource
@@ -74,6 +78,67 @@ public class ParticipantServiceImpl implements ParticipantService
    @Resource
    private ParticipantManagementUtils participantManagementUtils;
 
+   @Autowired
+   private ModelServiceBean modelService;
+   
+   /**
+    * @param participantQidIn
+    * @return
+    * @throws Exception 
+    */
+   public List<ModelDTO> getParticipantTree(boolean lazyLoad)
+   {
+      // get Active Models along with top level Participants
+      List<ModelDTO> models = modelService.getModelParticipants();
+
+      for (ModelDTO modelDTO : models)
+      {
+         Iterator<ParticipantDTO> participantIterator = modelDTO.children.iterator();
+         while (participantIterator.hasNext())
+         {
+            ParticipantDTO participantDTO = participantIterator.next();
+            if (CASE_PERFORMER.equals(participantDTO.qualifiedId))
+            {
+               participantIterator.remove();
+               if (lazyLoad)
+               {
+                  break;
+               }
+               else
+               {
+                  continue;
+               }
+            }
+            if (!lazyLoad)
+            {
+               populateChildrenRecursively(participantDTO);
+            }
+         }
+      }
+      return models;
+   }
+   
+   /**
+    * @param participantDTO
+    */
+   private void populateChildrenRecursively(ParticipantDTO participantDTO)
+   {
+      String fullId = participantDTO.uiQualifiedId;
+      if (StringUtils.isEmpty(fullId))
+      {
+         fullId = participantDTO.qualifiedId;
+      }
+      ParticipantContainer participantContainer = getParticipantContainerFromQialifiedId(fullId);
+      participantDTO.children = getSubParticipants(participantContainer);
+      for (ParticipantDTO childParticipantDTO : participantDTO.children)
+      {
+         if (!ParticipantType.USER.name().equals(childParticipantDTO.type))
+         {
+            populateChildrenRecursively(childParticipantDTO);
+         }
+      }
+   }
+   
    /**
     * @param participantQidIn
     * @return
@@ -159,10 +224,10 @@ public class ParticipantServiceImpl implements ParticipantService
     */
    @Override
    public Map<String, List<ParticipantDTO>> modifyParticipant(HashSet<String> participant, HashSet<String> add,
-         HashSet<String> remove)
+         HashSet<String> remove, boolean lazyLoad)
    {
       HashSet<String> selectedUsers = new HashSet<String>();
-      
+
       if (CollectionUtils.isNotEmpty(add))
       {
          selectedUsers.addAll(add);
@@ -175,6 +240,8 @@ public class ParticipantServiceImpl implements ParticipantService
       Set<User> users = getAllSelectedUsers(selectedUsers);
 
       Map<String, List<ParticipantDTO>> participantsMap = new HashMap<String, List<ParticipantDTO>>();
+
+      Map<String, ParticipantContainer> participantContainers = new HashMap<String, ParticipantContainer>();
 
       for (String participantQId : participant)
       {
@@ -195,7 +262,7 @@ public class ParticipantServiceImpl implements ParticipantService
                }
             }
          }
-         
+
          if (CollectionUtils.isNotEmpty(remove))
          {
             for (String userId : remove)
@@ -212,12 +279,26 @@ public class ParticipantServiceImpl implements ParticipantService
                }
             }
          }
-         
-         updateSelectedUsers(users);
-         
+         participantContainers.put(participantQId, participantContainer);
+      }
+      
+      updateSelectedUsers(users);
+
+      for (String pId : participantContainers.keySet())
+      {
          List<ParticipantDTO> participantDTOs = new ArrayList<ParticipantDTO>();
-         participantDTOs.addAll(getSubParticipants(participantContainer));
-         participantsMap.put(participantQId, participantDTOs);
+         participantDTOs.addAll(getSubParticipants(participantContainers.get(pId)));
+         if (!lazyLoad)
+         {
+            for (ParticipantDTO participantDTO : participantDTOs)
+            {
+               if (!ParticipantType.USER.name().equals(participantDTO.type))
+               {
+                  populateChildrenRecursively(participantDTO);
+               }
+            }
+         }
+         participantsMap.put(pId, participantDTOs);
       }
       return participantsMap;
    }

@@ -11,6 +11,9 @@
 
 package org.eclipse.stardust.ui.web.rest.service.dto.response;
 
+import java.util.List;
+import java.util.UUID;
+
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
@@ -37,6 +40,8 @@ public class ParticipantDTO extends AbstractDTO
    public String parentDepartmentName;
    public String organization; // used only for departments
    public String description; // used only for departments
+   public List<ParticipantDTO> children;
+   public String uuid = UUID.randomUUID().toString(); //necessary for tree directive
 
    public ParticipantDTO()
    {}
