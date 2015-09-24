@@ -198,8 +198,9 @@ public class ActivityInstanceUtils
             && (Boolean) ai.getActivity().getAttribute("carnot:engine:relocate:source"))
       {
          if (ai.getActivity().isInteractive()
-               && (ai.getState().equals(ActivityInstanceState.Application) || ai.getState()
-                     .equals(ActivityInstanceState.Suspended)))
+               && (ai.getState().equals(ActivityInstanceState.Application)
+                     || ai.getState().equals(ActivityInstanceState.Suspended) || ai.getState()
+                     .equals(ActivityInstanceState.Hibernated)))
          {
             canRelocate = true;
          }
