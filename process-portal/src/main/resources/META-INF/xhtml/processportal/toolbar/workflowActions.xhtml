@@ -158,6 +158,7 @@
 			</ice:panelGroup>
 
 			<ice:commandLink action="#{activityDetailsBean.openRelocationDialog}"
+				rendered="#{activityDetailsBean.relocationSource}"
 				immediate="true" >
 				<ice:graphicImage
 					value="/plugins/views-common/images/icons/redo.png"

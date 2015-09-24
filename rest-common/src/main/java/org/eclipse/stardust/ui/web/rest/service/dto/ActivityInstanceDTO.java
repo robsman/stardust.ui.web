@@ -69,6 +69,8 @@ public class ActivityInstanceDTO extends AbstractDTO
    public String qualityAssuranceState;
    
    public boolean activatable;
+   
+   public boolean relocationSource;
 
    public Map<String, DescriptorDTO> descriptorValues;
    

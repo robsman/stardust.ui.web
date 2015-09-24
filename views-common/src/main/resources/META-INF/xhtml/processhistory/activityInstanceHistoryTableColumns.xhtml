@@ -77,7 +77,7 @@
 			<ice:commandLink
 				actionListener="#{row.activityTreeTable.activityUIBuilder.openRelocationDialog}"
 				rendered="#{row.refersToActivity}"
-				disabled="#{not (row.refersToActivity and row.activatable) }">
+				disabled="#{not (row.refersToActivity and row.activatable and row.relocationSource) }">
 				<pc:automationTag value="auto-COM-ACTHistoryTable-ActionsRelocate"
 					standAlone="false" />
 				<ice:graphicImage

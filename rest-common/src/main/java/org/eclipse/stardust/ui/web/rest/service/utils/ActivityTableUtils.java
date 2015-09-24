@@ -32,6 +32,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
+
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -104,6 +105,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDocumentDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
+
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -711,6 +713,7 @@ public class ActivityTableUtils
                dto.status.label = ActivityInstanceUtils.getActivityStateLabel(ai);
                dto.descriptorValues = getProcessDescriptors(modelCache, ai);
                dto.activatable = findIfActivatable(ai);
+               dto.relocationSource = findIfRelocationSource(ai);
                dto.benchmark = getBenchmarkForActivity(ai);
                
                List<Note> notes = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getNotes(ai
@@ -865,6 +868,22 @@ public class ActivityTableUtils
       }
 
       return isActivable;
+   }
+
+   /**
+    * 
+    * @param ai
+    * @return
+    */
+   protected static boolean findIfRelocationSource(ActivityInstance ai)
+   {
+      boolean isSource = false;
+      if (null != ai.getActivity().getAttribute("carnot:engine:relocate:source"))
+      {
+         isSource = (Boolean) ai.getActivity().getAttribute("carnot:engine:relocate:source");
+      }
+
+      return isSource;
    }
 
    /**

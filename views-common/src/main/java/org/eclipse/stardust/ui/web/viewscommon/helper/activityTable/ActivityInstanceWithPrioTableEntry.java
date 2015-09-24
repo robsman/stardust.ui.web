@@ -53,6 +53,7 @@ public class ActivityInstanceWithPrioTableEntry extends DefaultRowModel
    private boolean delegable;
    private boolean activatable;
    private boolean abortActivity;
+   private boolean relocationSource;
    private String status;
    private boolean abortProcess;
    private CriticalityCategory criticality;
@@ -93,7 +94,10 @@ public class ActivityInstanceWithPrioTableEntry extends DefaultRowModel
       processId = I18nUtils.getProcessName(ProcessDefinitionUtils.getProcessDefinition(aiWithPrio.getActivityInstance()
             .getModelOID(), aiWithPrio.getProcessId()));
       
-
+      if (null != aiWithPrio.getActivityInstance().getActivity().getAttribute("carnot:engine:relocate:source"))
+      {
+         relocationSource = (Boolean) aiWithPrio.getActivityInstance().getActivity().getAttribute("carnot:engine:relocate:source");
+      }
       delegable = ActivityInstanceUtils.isDelegable(aiWithPrio.getActivityInstance());
       activatable = ActivityInstanceUtils.isActivatable(aiWithPrio.getActivityInstance());
       status = ActivityInstanceUtils.getActivityStateLabel(aiWithPrio.getActivityInstance());  
@@ -237,6 +241,11 @@ public class ActivityInstanceWithPrioTableEntry extends DefaultRowModel
    public boolean isActivatable()
    {
       return activatable;
+   }
+
+   public boolean isRelocationSource()
+   {
+      return relocationSource;
    }
 
    public String getProcessInstanceName()
