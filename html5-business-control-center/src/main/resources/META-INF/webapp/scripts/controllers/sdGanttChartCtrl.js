@@ -28,7 +28,7 @@
 	var _sdProcessInstanceService = null;
 	var _sdCommonViewUtilService = null;
 	var _sdLocalizationService = null;
-	var _sdLoggerService = null;
+	var trace = null;
 	var _parse = null;
 
 	var FINISHED_STATUSES = [2,6];
@@ -69,7 +69,7 @@
 		_sgI18nService = sgI18nService
 		_q = $q;
 		_sdLocalizationService = sdLocalizationService;
-		_sdLoggerService = sdLoggerService;
+		trace = sdLoggerService.getLogger('html5-bcc-ui.sdGanttChartCtrl');;
 		_parse = $parse;
 		this.intialize($scope);
 	};
@@ -169,8 +169,9 @@
 		return deferred.promise;
 	}
 
-
-
+	/**
+	 * 
+	 */
 	Controller.prototype.extractExpectedDurations = function(processDefinitions){
 		var self = this;
 		var durations = {};
@@ -224,7 +225,6 @@
 		}
 
 		if(!found[0].dataFetched){
-			console.log("Fetching sub process data");
 			self.getSubprocessData(row).then(function(activityList){
 				found[0].dataFetched= true;
 				found[0].expanded = true;
@@ -365,7 +365,6 @@
 		var current = new Date(first);
 		self.minorTimeFrameWidth = dayWidth;
 		var temptableHolder =''
-			//self.drawCurrentTimeLine(first, second, factor);
 
 			while (second > first) {
 
@@ -416,7 +415,6 @@
 		var currentDay = new Date(first);
 		self.minorTimeFrameWidth = hourWidth;
 		var temptableHolder = '';
-		//self.drawCurrentTimeLine(first, second, factor);
 
 		while (second > first) {
 			if (isNextDay(currentDay,first)) {
@@ -469,7 +467,6 @@
 		var quaterHourWidth = factor.majorFactorWidth;
 		var currentDay = new Date(first);
 		self.minorTimeFrameWidth = quaterHourWidth;
-		//self.drawCurrentTimeLine(first, second, factor);
 		
 		while (second > first) {
 			if (isNextDay(currentDay,first)) {
@@ -658,8 +655,6 @@
 	 * 
 	 */
 	Controller.prototype.auxFilter = function(rowData) {
-		console.log("Row Data")
-		console.log(rowData)
 		if (this.showAuxiliary) {
 			return true;
 		} else {
@@ -671,14 +666,13 @@
 	/**
 	 * After tree table
 	 */
-
 	Controller.prototype.fetchData = function(params){
 		var self = this;
 		var deferred = _q.defer();
 		var data = {};
 
 		if(!params) {
-
+			
 			self.currentTime = new Date(); //Current Time Load once intially
 
 			_sdProcessInstanceService.getProcessByOid(self.selected.process).then(function(process){
@@ -687,6 +681,7 @@
 
 				//Root Oid present then the process is a subprocess. Draw chart with root process.
 				if(process.processInstanceRootOID){
+					trace.debug("Fetching data for parent process",process.processInstanceRootOID);
 					_sdProcessInstanceService.getProcessByOid(process.processInstanceRootOID).then(function(rootProcess){
 						self.process = rootProcess;
 						self.getBenchmarkCategories(rootProcess).then(function() {
@@ -708,6 +703,7 @@
 
 
 				} else {
+					trace.debug("Fetching data for  process",process.oid);
 					self.getBenchmarkCategories(process).then(function() {
 					
 						self.process.expectedEndTime = self.getExpectedDurationForProcess(process.qualifiedId) * ONE_HOUR_IN_MIILS + process.startTime;
@@ -728,7 +724,8 @@
 			});
 
 		} else {
-
+			
+			trace.debug("Lazy loading children for parent",params.parent.piOid);
 			self.getChildren(params.parent.piOid, params.parent.qualifiedId).then(function(childrens) {
 				data.list = childrens;
 				data.totalCount =	data.list.length;
@@ -739,7 +736,9 @@
 		return deferred.promise;
 	};
 
-
+	/**
+	 * 
+	 */
 	Controller.prototype.getChildren = function(oid, qId) {
 		var self = this;
 		var defered = _q.defer();
@@ -790,6 +789,31 @@
 		
 		self.determineAppropriateTimeFrame(normalizedData);
 		return normalizedData;
+	}
+	
+	/**
+	 * 
+	 */
+	Controller.prototype.calculateGridLines = function(timeFrame, data){
+		this.currentTimeLine[timeFrame] = data.delay + data.completed + 220;
+		if(data.inflight) {
+			this.estimatedEndTimeLine[timeFrame] = data.delay + data.completed + data.inflight+220;
+		}
+	}
+	
+	/**
+	 * 
+	 */
+	Controller.prototype.determineAppropriateTimeFrame = function(data){
+		
+		if(  (data.endTime - data.startTime) < ONE_HOUR_IN_MIILS  ){
+			this.selected.timeFrame = "minutes";
+		}else if((data.endTime - data.startTime) < ONE_DAY_IN_MIILS) {
+			this.selected.timeFrame = "hours";
+		}else{
+			this.selected.timeFrame = "days";
+		}
+		this.onTimeFrameChange();
 	}
 	
 	/**
@@ -900,7 +924,6 @@
 		}
 	}
 
-
 	/**
 	 * 
 	 */
@@ -941,7 +964,6 @@
 		return start;
 	}
 
-
 	/**
 	 * 
 	 */
@@ -959,7 +981,6 @@
 
 		return rowData.days;
 	}
-
 	/**
 	 * 
 	 */
@@ -974,7 +995,6 @@
 		}
 		return rowData.sColor;
 	}
-
 	/**
 	 * 
 	 */
@@ -988,9 +1008,6 @@
 		}
 		return rowData.status.label;  
 	}
-
-
-
 	/**
 	 * 
 	 */
@@ -1041,7 +1058,6 @@
 				inflight = 2;
 			}
 		}
-
 		var graphData = {
 				delay : delay,
 				completed : completed,
@@ -1050,8 +1066,6 @@
 		
 		return graphData;
 	}
-
-
 
 
 })();
