@@ -10,16 +10,15 @@
 		<ice:commandLink name="#{ganttChartSelectionBean.ganttChart.messages['expandAll']}" actionListener="#{ganttChartSelectionBean.ganttChart.treeTable.expandAll}"
 			style="vertical-align: middle;">
 			<pc:automationTag value="auto-BCC-GanttChart-GanttChrtTbl-ToolbarExpandAll" standAlone="false"/>
-			<h:graphicImage value="/plugins/views-common/images/icons/toggle-expand.png"
-				style="border: none;" 
+			<h:outputText
+				styleClass="pi pi-expand-all icon-lg" 
 				title="#{ganttChartSelectionBean.ganttChart.messages['expandAll']}" />
 		</ice:commandLink>	
 		
 		<ice:commandLink name="#{ganttChartSelectionBean.ganttChart.messages['collapseAll']}" actionListener="#{ganttChartSelectionBean.ganttChart.treeTable.collapseAll}"
 			style="vertical-align: middle;">
 			<pc:automationTag value="auto-BCC-GanttChart-GanttChrtTbl-ToolbarCollapseAll" standAlone="false"/>
-			<h:graphicImage value="/plugins/views-common/images/icons/toggle.png"
-				style="border: none; padding-left: 10px;" 
+			<h:outputText styleClass="pi pi-collapse-all icon-lg"
 				title="#{ganttChartSelectionBean.ganttChart.messages['collapseAll']}" />
 		</ice:commandLink>
 	</ice:panelGrid>

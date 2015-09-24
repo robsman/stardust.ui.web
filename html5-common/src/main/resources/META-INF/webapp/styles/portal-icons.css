@@ -89,6 +89,11 @@ portal icon badging stem, duped from starclipse
     content:'\F08E';
 }
 
+.pi-badge-icon-arrow-l:before{
+	font-family:starclipse;
+    content:'\F090';
+}
+
 /*Elements designed to incorporate pi elements as children*/
 button.pi{
 	background:transparent;
@@ -179,12 +184,7 @@ Icon implementations
 .pi-reset:before,
 .pi-refresh:before{
 	font-family:FontAwesome;
-	content: "\f01e";
-}
-
-.pi-user:before{
-	font-family: starclipes;
-    content:'\F041';
+	content: "\f021";
 }
 
 .pi-arrow-d:before{
@@ -197,7 +197,7 @@ Icon implementations
     content:'\F006';
 }
 
-.pi-arrow-menu-dropdown:before{
+.pi-menu-dropdown:before{
 	font-family: FontAwesome;
 	content: "\f078";
 }
@@ -257,6 +257,11 @@ Icon implementations
 	content: "\e106";
 }
 
+.pi-eye-slash:before {
+	font-family: 'FontAwesome';
+	content: "\f070";
+}
+
 /*Data Table Directive*/
 .pi-step-back-one:after{
 	font-family: FontAwesome;
@@ -278,14 +283,9 @@ Icon implementations
 	content: "\f051";
 }
 
-.pi-th:before{
+.pi-column-selector:before{
 	font-family: FontAwesome;
 	content: "\f00a";
-}
-
-.pi-export:before{
-	font-family: FontAwesome;
-	content: "\f019";
 }
 
 .pi-saved:before{
@@ -298,35 +298,40 @@ Icon implementations
 	content: "\f0b0";
 }
 
-.pi-lock:before{
+.pi-lock:before,
+.pi-pi-param-disable:before{
 	font-family: starclipse;
-	content: "\f034";
+	content: "\f023";
 }
 
-.pi-unlock:before{
+.pi-unlock:before,
+.pi-pi-param-enable:before,
+.pi-authorization-manager:before{
 	font-family: starclipse;
-	content: "\f063"
+	content: "\f09c"
 }
 
 
 
 /*Activity Overview Table*/
-.pi-activity:before{
+.pi-activity:before,
+.pi-manual-activity-overview:before,
+.pi-non-interactive-activity-:before{
 	font-family:FontAwesome;
 	content:"\f013";
 }
 
-.pi-activity-notes-empty:before{
+.pi-notes-empty:before{
 	font-family:FontAwesome;
 	content:"\f0e6";
 }
 
 .pi-activity-complete:before{
 	font-family:FontAwesome;
-	content:"\f046";
+	content:"\f14a";
 }
 
-.pi-activity-notes:before{
+.pi-notes:before{
 	font-family:FontAwesome;
 	content:"\f086";
 }
@@ -336,33 +341,19 @@ Icon implementations
 	content: "\f00d";
 }
 
+.pi-user:before,
 .pi-activity-delegate:before{
 	font-family: "FontAwesome";
 	content: "\f007";
 }
 
-.pi-activity-pi-documents:before{
-	font-family: "FontAwesome";
-	content: "\f07b";
-}
-
-.pi-activity-relocate:before {
+.pi-rotate-right:before {
 	font-family: "FontAwesome";
 	content: "\f01e"
 }
 
 
 /*Process Overview Table*/
-.pi-process-notes-empty:before{
-	font-family:FontAwesome;
-	content:"\f0e6";
-}
-
-.pi-process-notes:before{
-	font-family:FontAwesome;
-	content:"\f086";
-}
- 
 .pi-process-abort:before,
 .pi-abort:before,
 .pi-close:before{
@@ -375,12 +366,16 @@ Icon implementations
 	content: "\f0c7";
 }
 
-.pi-process:before{
+.pi-process:before,
+.pi-root-process:before,
+.pi-spawn-process:before,
+.pi-process-details:before,
+.pi-process-overview:before{
 	font-family: 'FontAwesome';
 	content: "\f085";
 }
 
-.pi-process-recover:before{
+.pi-recover:before{
 	font-family: 'FontAwesome';
 	content: "\f112";
 }
@@ -388,4 +383,209 @@ Icon implementations
 .pi-process-documents:before{
 	font-family: "FontAwesome";
 	content: "\f07b";
+}
+
+.pi-search:before{
+	font-family: "FontAwesome";
+	content: "\f002";
+}
+
+.pi-sort:before{
+	font-family: "FontAwesome";
+	content: "\f0dc";
+}
+
+.pi-link:before,
+.pi-linked-processes{
+	font-family: "FontAwesome";
+	content: "\f0c1";
+}
+
+.pi-case:before{
+	font-family: "starclipse";
+	content: "\f003";
+}
+
+.pi-version:before{
+	font-family: "FontAwesome";
+	content: "\f02d";
+}
+
+.pi-upload:before{
+	font-family: "FontAwesome";
+	content: "\f093";
+}
+
+.pi-download:before,
+.pi-export:before,
+.pi-download-document:before{
+	font-family: "FontAwesome";
+	content: "\f019";
+}
+
+.pi-pop-out:before{
+	font-family: "FontAwesome";
+	content: "\f08e";
+}
+
+.pi-delete:before,
+.pi-delete-model:before{
+	font-family: "FontAwesome";
+	content: "\f056";
+}
+
+.pi-edit:before,
+.pi-edit-qa-probability:before{
+	font-family: "FontAwesome";
+	content: "\f040";
+}
+
+.pi-rename:before{
+	font-family: "FontAwesome";
+	content: "\f044";
+}
+
+.pi-clone:before,
+.pi-clone-permissions:before{
+	font-family: "FontAwesome";
+	content: "\f24d";
+}
+
+.pi-view-tab:before{
+	font-family: "FontAwesome";
+	content: "\f0ea";
+}
+
+.pi-undo:before{
+	font-family: "FontAwesome";
+	content: "\f0e2";
+}
+
+.pi-cut:before{
+	font-family: "FontAwesome";
+	content: "\f0c4";
+}
+
+.pi-page-up:before{
+	font-family: "FontAwesome";
+	content: "\f062";
+}
+
+.pi-page-down:before{
+	font-family: "FontAwesome";
+	content: "\f063";
+}
+
+.pi-resubmit:before{
+	font-family: "FontAwesome";
+	content: "\f079";
+}
+
+.pi-bookmark:before{
+	font-family: "FontAwesome";
+	content: "\f097";
+}
+
+.pi-extract-pages:before{
+	font-family: "FontAwesome";
+	content: "\f0f6";
+}
+
+.pi-create:before,
+.pi-create-user:before,
+.pi-create-user-group:before{
+	font-family: "FontAwesome";
+	content: "\f055";
+}
+
+.pi-invalidate-user:before,
+.pi-invalidate-user-group:before{
+	font-family: "FontAwesome";
+	content: "\f05e";
+}
+
+.pi-prev-page:before{
+	font-family: "FontAwesome";
+	content: "\f104";
+}
+
+.pi-fast-rewind:before{
+	font-family: "FontAwesome";
+	content: "\f100";
+}
+
+.pi-next-page:before{
+	font-family: "FontAwesome";
+	content: "\f105";
+}
+
+.pi-fast-forward:before{
+	font-family: "FontAwesome";
+	content: "\f101";
+}
+
+.pi-deputy:before,
+.pi-deputy-managemen:before{
+	font-family: "FontAwesome";
+	content: "\f21b";
+}
+
+.pi-information:before{
+	font-family: "FontAwesome";
+	content: "\f05a";
+}
+
+.pi-expand-all:before{
+	font-family: "FontAwesome";
+	content: "\f196";
+}
+
+.pi-collapse-all:before{
+	font-family: "FontAwesome";
+	content: "\f147";
+}
+
+.pi-deploy-model:before{
+	font-family: "FontAwesome";
+	content: "\f0ac";
+}
+
+.pi-attach-document:before{
+	font-family: "FontAwesome";
+	content: "\f0c6";
+}
+
+.pi-export-excel:before{
+	font-family: "FontAwesome";
+	content: "\f1c3";
+}
+
+.pi-print:before{
+	font-family: "FontAwesome";
+	content: "\f02f";
+}
+
+.pi-chat:before{
+	font-family: "FontAwesome";
+	content: "\f0e5";
+}
+
+.pi-qa-passed:before{
+	font-family: "FontAwesome";
+	content: "\f087";
+}
+
+.pi-qa-failed:before{
+	font-family: "FontAwesome";
+	content: "\f088";
+}
+
+.pi-quick-complete:before{
+	font-family:FontAwesome;
+	content:"\f046";
+}
+
+.pi-user-status:before{
+	font-family:FontAwesome;
+	content:"\f111";
 }

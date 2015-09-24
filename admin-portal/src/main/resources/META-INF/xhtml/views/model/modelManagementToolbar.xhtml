@@ -39,8 +39,8 @@
 					<pc:automationTag
 						value="auto-ADM-ModelMgmt-ModelTreeTbl-ToolbarExpandAll"
 						standAlone="false" />
-					<h:graphicImage value="/plugins/views-common/images/icons/toggle-expand.png"
-						style="border: none;"
+					<h:outputText
+						styleClass="pi pi-expand-all icon-lg"
 						title="#{modelManagementBean.messages['expandAll']}" />
 				</ice:commandLink>
 
@@ -51,9 +51,8 @@
 					<pc:automationTag
 						value="auto-ADM-ModelMgmt-ModelTreeTbl-ToolbarCollapseAll"
 						standAlone="false" />
-					<h:graphicImage
-						value="/plugins/views-common/images/icons/toggle.png"
-						style="border: none;"
+					<h:outputText
+						styleClass="pi pi-collapse-all icon-lg"
 						title="#{modelManagementBean.messages['collapseAll']}" />
 				</ice:commandLink>
 
@@ -84,9 +83,8 @@
 					<pc:automationTag
 						value="auto-ADM-ModelMgmt-ModelTreeTbl-ToolbarDeployRpt"
 						standAlone="false" />
-					<h:graphicImage
-						value="/plugins/views-common/images/icons/server_go.png"
-						style="border: none;"
+					<h:outputText
+						styleClass="pi pi-deploy-model icon-lg"
 						title="#{modelManagementBean.messages['deploymodel']}" />
 				</ice:commandLink>
 

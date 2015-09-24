@@ -87,20 +87,19 @@
 					<pc:automationTag
 						value="auto-COM-ProcDetConf-ProcFilterTbl-FilterIcon"
 						standAlone="false" />
-					<ice:commandButton name="#{row.name}"
+					<ice:commandLink name="#{row.name}"
 						actionListener="#{processInstanceDetailConfigurationBean.toggleFilter}"
 						title="#{processInstanceDetailConfigurationBean.messages['visibile']}"
-						image="/plugins/views-common/images/icons/eye.png"
-						rendered="#{row.active}" style="vertical-align: middle;">
+						rendered="#{row.active}" style="vertical-align: middle;"
+						styleClass="pi-eye-open icon-lg">
 						<f:attribute value="#{row.name}" name="testName" />
-					</ice:commandButton>
-					<ice:commandButton name="#{row.name}" styleClass="iceCmdBtn-dis"
+					</ice:commandLink>
+					<ice:commandLink name="#{row.name}" styleClass="pi-eye-close icon-lg"
 						actionListener="#{processInstanceDetailConfigurationBean.toggleFilter}"
 						title="#{processInstanceDetailConfigurationBean.messages['invisibile']}"
-						image="/plugins/views-common/images/icons/eye.png"
 						rendered="#{!row.active}" style="vertical-align: middle;">
 						<f:attribute value="#{row.name}" name="testName" />
-					</ice:commandButton>
+					</ice:commandLink>
 				</ice:column>
 			</ice:dataTable>
 		</ice:panelGrid>

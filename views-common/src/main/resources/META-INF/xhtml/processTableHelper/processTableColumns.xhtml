@@ -15,9 +15,8 @@
 					style="border: none;"
 					title="#{messages_bcc['common.tooltip.process']}"
 					rendered="#{row.processInstanceOID==row.processInstanceRootOID}" />
-				<h:graphicImage
-					value="/plugins/views-common/images/icons/process.png"
-					style="border: none;"
+				<h:outputText
+					styleClass="pi pi-process icon-lg"
 					title="#{messages_bcc['common.tooltip.subProcess']}"
 					rendered="#{row.processInstanceOID!=row.processInstanceRootOID}" />
 				<ice:commandLink value="#{row.processInstanceName}"
@@ -33,9 +32,8 @@
 			</ice:panelGrid>
 
 			<ice:panelGrid columns="2" rendered="#{row.caseInstance}">
-				<h:graphicImage
-					value="/plugins/views-common/images/icons/envelope.png"
-					style="border: none;"
+				<h:outputText
+					styclass="pi pi-case icon-lg"
 					title="#{messages_bcc['common.tooltip.case']}" />
 				<ice:commandLink value="#{row.processInstanceName}"
 					action="#{ippPortalApp.openView}" rendered="#{row.caseInstance}"
@@ -124,8 +122,8 @@
 			<ice:panelGrid columns="7" style="float: right;">
 				<ice:commandLink action="#{ippPortalApp.openView}" rendered="#{!row.caseInstance}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsProcDetails" standAlone="false"/>
-					<h:graphicImage value="/plugins/views-common/images/icons/process.png"
-						style="border: none;" title="#{messages_bcc['common.tooltip.contextExplorer']}"/>
+					<h:outputText styleClass="pi pi-process icon-lg" 
+					 title="#{messages_bcc['common.tooltip.contextExplorer']}"/>
 					<f:param name="viewId" value="processInstanceDetailsView" />
 					<f:param name="nested" value="true" />
 	                <f:param name="viewParams"
@@ -135,9 +133,8 @@
 				<ice:commandLink action="#{ippPortalApp.openView}"
 					rendered="#{row.caseInstance}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsProcDetails" standAlone="false"/>
-					<h:graphicImage
-						value="/plugins/views-common/images/icons/process.png"
-						style="border: none;"
+					<h:outputText
+						styleClass="pi pi-process icon-lg"
 						title="#{messages_bcc['common.tooltip.contextExplorer']}" />
 					<f:param name="viewId" value="caseDetailsView" />
 					<f:param name="nested" value="true" />
@@ -150,17 +147,15 @@
 					disabled="#{not row.enableTerminate}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsTerminate"
 						standAlone="false" />
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/abort_process.png"
-						title="#{views_common_msgPropsBean['common.tooltip.terminate']}" styleClass="#{row.enableTerminate? '' : 'iceCmdBtn-dis'}" />
+					<ice:outputText
+						title="#{views_common_msgPropsBean['common.tooltip.terminate']}" styleClass="#{row.enableTerminate? '' : 'iceCmdBtn-dis'} pi pi-process-abort icon-lg" />
 					<f:attribute name="processInstance" value="#{row.processInstance}" />
 				</ice:commandLink>
 				<!-- Rendered when process termination is not allowed -->
 				<ice:panelGroup rendered="#{!(row.enableTerminate)}">
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsTerminateMenu"
 						standAlone="false" />
-					<ice:graphicImage styleClass="iceCmdBtn-dis"
-						value="/plugins/views-common/images/icons/arrow.png" />
+					<ice:outputText styleClass="iceCmdBtn-dis pi-menu-dropdown" />
 				</ice:panelGroup>
 				<!-- Rendered when process termination is allowed -->
 				<ice:panelGroup rendered="#{(row.enableTerminate)}">
@@ -174,9 +169,8 @@
 
 				<ice:commandLink actionListener="#{bean.recoverProcess}" disabled="#{not row.enableRecover}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsRecover" standAlone="false"/>
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/recover_process.png"
-						title="#{messages_bcc['common.tooltip.recover']}"  styleClass="#{row.enableRecover ? '' : 'iceCmdBtn-dis'}" />
+					<ice:outputText
+						title="#{messages_bcc['common.tooltip.recover']}"  styleClass="#{row.enableRecover ? '' : 'iceCmdBtn-dis'} pi pi-recover icon-lg" />
 					<f:attribute name="processInstance" value="#{row.processInstance}" />
 				</ice:commandLink>
 				<ice:commandLink action="#{ippPortalApp.openView}" onclick="Event.stop(event);">
@@ -198,17 +192,17 @@
 				<ice:commandLink rendered="#{row.notesCount gt 0}"
 					actionListener="#{bean.openNotes}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsNotes" standAlone="false"/>
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/mime-types/notes-filled.png"
-						title="#{messages_bcc['common.tooltip.notes']}" />
+					<ice:outputText
+						title="#{messages_bcc['common.tooltip.notes']}" 
+						styleClass="pi-notes icon-lg"/>
 					<f:attribute name="processInstance" value="#{row.processInstance}" />
 				</ice:commandLink>
 				<ice:commandLink rendered="#{row.notesCount le 0}"
 					actionListener="#{bean.openNotes}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsNotes" standAlone="false"/>
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/notes-blank.png"
-						title="#{messages_bcc['common.tooltip.notes']}" />
+					<ice:outputText
+						title="#{messages_bcc['common.tooltip.notes']}" 
+						styleClass="pi-notes-empty icon-lg" />
 					<f:attribute name="processInstance" value="#{row.processInstance}" />
 				</ice:commandLink>
 			</ice:panelGrid>

@@ -117,8 +117,8 @@
 			<ice:panelGrid columns="7" style="float: right;" rendered="#{row.loaded}">
 				<ice:commandLink action="#{ippPortalApp.openView}" rendered="#{!row.caseInstance}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsProcDetails" standAlone="false"/>
-					<h:graphicImage value="/plugins/views-common/images/icons/process.png"
-						style="border: none;" title="#{messages_bcc['common.tooltip.contextExplorer']}"/>
+					<h:outputText styleClass="pi pi-process icon-lg"  
+					 title="#{messages_bcc['common.tooltip.contextExplorer']}"/>
 					<f:param name="viewId" value="processInstanceDetailsView" />
 					<f:param name="nested" value="true" />
 	                <f:param name="viewParams"
@@ -127,8 +127,8 @@
 				
 				<ice:commandLink action="#{ippPortalApp.openView}" rendered="#{row.caseInstance}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsProcDetails" standAlone="false"/>
-					<h:graphicImage value="/plugins/views-common/images/icons/process.png"
-						style="border: none;" title="#{messages_bcc['common.tooltip.contextExplorer']}"/>
+					<h:outputText styleClass="pi pi-process icon-lg" 
+						 title="#{messages_bcc['common.tooltip.contextExplorer']}"/>
 					<f:param name="viewId" value="caseDetailsView" />
 					<f:param name="nested" value="true" />
 	                <f:param name="viewParams"
@@ -139,10 +139,8 @@
 					disabled="#{not row.activatable or row.caseInstance}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsActivate" standAlone="false"/>
 					<f:param name="oid" value="#{row.activityOID}" />
-					<ice:graphicImage
-						url="/plugins/views-common/images/icons/process-history/activity_state.png"
-	                    style="border:none;" 
-	                    styleClass="#{row.activatable and !row.caseInstance ? '' : 'iceCmdBtn-dis'}"
+					<ice:outputText
+	                    styleClass="#{row.activatable and !row.caseInstance ? '' : 'iceCmdBtn-dis'} pi pi-activate icon-lg"
 	                    title="#{messages_bcc['common.tooltip.activate']}"/>
 				</ice:commandLink>
 				<ice:commandLink actionListener="#{bean.performDefaultDelegation}"
@@ -160,33 +158,31 @@
 					disabled="#{not row.relocationSource or not row.activatable or row.caseInstance}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsRelocate" standAlone="false"/>
 					<f:attribute name="activityInstance" value="#{row.activityInstance}" />
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/redo.png"
-						styleClass="toolbar-button"
+					<ice:outputText
+						styleClass="pi pi-rotate-right icon-lg"
 						title="#{processportal_msgPropsBean['toolbars.workflowActions.relocation.relocate']}" />
 				</ice:commandLink>
 				<ice:commandLink actionListener="#{bean.openDelegateDialog}" disabled="#{!row.delegable or row.caseInstance}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsDelegate" standAlone="false"/>
-					<h:graphicImage value="/plugins/views-common/images/icons/process-history/delegate.png"
-						style="border: none;" 
-						styleClass="#{row.delegable and !row.caseInstance ? '' : 'iceCmdBtn-dis'}"
-						title="#{messages_bcc['common.tooltip.delegate']}"/>
+					<h:outputText  
+						styleClass="#{row.delegable and !row.caseInstance ? '' : 'iceCmdBtn-dis'} pi pi-badge-portrait pi-fw pi-activity-delegate icon-lg pi-left pi-top" 
+						title="#{messages_bcc['common.tooltip.delegate']}">
+						<h:outputText styleClass="pi pi-badge-icon pi-badge-icon-arrow-r" title="#{messages_bcc['common.tooltip.delegate']}"/>	
+					</h:outputText>
 					<f:attribute name="activityInstance" value="#{row.activityInstance}" />
 				</ice:commandLink>
 				<ice:commandLink actionListener="#{bean.openAbortDialog}" disabled="#{not row.abortActivity}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsAbort" standAlone="false"/>
-					<ice:graphicImage
-						url="/plugins/views-common/images/icons/cross.png"
-	                    style="border:none;" styleClass="#{row.abortActivity ? '' : 'iceCmdBtn-dis'}" 
+					<ice:outputText
+						styleClass="#{row.abortActivity ? '' : 'iceCmdBtn-dis'} pi pi-activity-abort icon-lg" 
 	                    title="#{messages_bcc['common.tooltip.abort']}"/>
+	                   <!-- Rendered when process termination is not allowed -->
+						<ice:outputText rendered="#{!row.abortProcess or row.caseInstance }">
+								<ice:outputText styleClass="iceCmdBtn-dis pi-menu-dropdown" />
+						</ice:outputText>
 	                 <f:attribute name="activityInstance" value="#{row.activityInstance}" />
 				</ice:commandLink>
 				
-				<!-- Rendered when process termination is not allowed -->
-				<ice:panelGroup rendered="#{!row.abortProcess or row.caseInstance }">
-					<ice:graphicImage styleClass="iceCmdBtn-dis"
-						value="/plugins/views-common/images/icons/arrow.png" />
-				</ice:panelGroup>
 				<!-- Rendered when process termination is allowed -->
 				<ice:panelGroup rendered="#{row.abortProcess and !row.caseInstance}">
 					<c:set var="activityInstance" value="#{row.activityInstance}" />
@@ -197,24 +193,23 @@
 				
 				<!--	Notes	-->
 				<ice:panelGroup rendered="#{row.caseInstance }">
-					<ice:graphicImage styleClass="iceCmdBtn-dis"
-						value="/plugins/views-common/images/icons/notes-blank.png" />
+					<ice:outputText styleClass="iceCmdBtn-dis pi-notes-empty icon-lg"/>
 				</ice:panelGroup>
 				
 				<ice:commandLink rendered="#{row.notesCount gt 0 and !row.caseInstance}"
 					actionListener="#{bean.openNotes}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsNotes" standAlone="false"/>
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/mime-types/notes-filled.png"
-						title="#{messages_bcc['common.tooltip.notes']}" />
+					<ice:outputText
+						title="#{messages_bcc['common.tooltip.notes']}" 
+						styleClass="pi-notes-empty icon-lg"/>
 					<f:attribute name="activityInstance" value="#{row.activityInstance}" />
 				</ice:commandLink>
 				<ice:commandLink rendered="#{row.notesCount le 0 and !row.caseInstance}"
 					actionListener="#{bean.openNotes}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsNotes" standAlone="false"/>
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/notes-blank.png"
-						title="#{messages_bcc['common.tooltip.notes']}" />
+					<ice:outputText
+						title="#{messages_bcc['common.tooltip.notes']}" 
+						styleClass="pi-notes-empty icon-lg"/>
 					<f:attribute name="activityInstance" value="#{row.activityInstance}" />
 				</ice:commandLink>
 			</ice:panelGrid>

@@ -11,21 +11,18 @@
 			<pc:automationTag
 				value="auto-ADM-QAMgmt-Activity-Toolbar-ShowHideABSActivities"
 				standAlone="false" />
-			<h:graphicImage
-				value="/plugins/views-common/images/icons/book_open.png"
-				style="border: none;"
+			<h:outputText
 				title="#{messages_admin['views.qaManagementView.toolbar.showHideAbsActivites.title']}"
-				styleClass="#{!(qaManagementBean.showAbsoleteActivities) ? 'iceCmdBtn-dis' : ''}" />
+				styleClass="#{!(qaManagementBean.showAbsoleteActivities) ? 'iceCmdBtn-dis' : ''} pi pi-eye-slash icon-lg" />
 		</ice:commandLink>
 
 		<ice:commandLink action="#{qaManagementBean.editActivityQA}"
 			disabled="#{qaManagementBean.selectedActivitiesCount eq 0}">
 			<pc:automationTag value="auto-ADM-QAMgmt-Activity-Toolbar-EditQA"
 				standAlone="false" />
-			<h:graphicImage value="/plugins/views-common/images/icons/pencil.png"
-				style="border: none;"
+			<h:outputText 
 				title="#{messages_admin['views.qaManagementView.toolbar.editQA.title']}"
-				styleClass="#{(qaManagementBean.selectedActivitiesCount eq 0) ? 'iceCmdBtn-dis' : ''}" />
+				styleClass="#{(qaManagementBean.selectedActivitiesCount eq 0) ? 'iceCmdBtn-dis' : ''} pi pi-edit icon-lg" />
 		</ice:commandLink>
 	</ice:panelGrid>
 </f:view>

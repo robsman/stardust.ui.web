@@ -273,18 +273,18 @@
 						<button ng-if="activityTableCtrl.isActivityTableMode();" class="button-link tbl-tool-link" aid="PP-ActivityTable-AbortPopoverAction"
 						    ng-disabled="!rowData.abortProcess || rowData.isCaseInstance"
 							title ="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}" ng-click="activityTableCtrl.openAbortPopover($event, rowData); bpmCommon.stopEvent($event);" >
-							<i class="pi pi-arrow-menu-dropdown"></i>
+							<i class="pi pi-menu-dropdown"></i>
 						</button>
 						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openNotes(rowData);" aid="PP-ActivityTable-OpenNotesAction"
 						    ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-notes')}}" class="button-link tbl-tool-link">
-							<i class="pi pi-activity-notes-empty icon-lg" ng-if ="rowData.notesCount === 0"></i>
-							<i class="pi pi-activity-notes icon-lg" ng-if ="rowData.notesCount > 0 "></i>
+							<i class="pi pi-notes-empty icon-lg" ng-if ="rowData.notesCount === 0"></i>
+							<i class="pi pi-notes icon-lg" ng-if ="rowData.notesCount > 0 "></i>
 						</button>
 						<button ng-click="bpmCommon.stopEvent($event); activityTableCtrl.openRelocationDialog(rowData);" aid="PP-ActivityTable-OpenRelocationDialogAction"
 						    ng-disabled="!(rowData.activatable && rowData.relocationSource)"
 							title="{{i18n('processportal.toolbars-workflowActions-relocation-relocate')}}" class="button-link tbl-tool-link">
-							<i class="pi pi-activity-relocate icon-lg"></i>
+							<i class="pi pi-rotate-right icon-lg"></i>
 							<div sd-dialog sda-modal="true"
 								sda-show="rowData.showRelocationDialog" sda-type="confirm"
 								sda-title="{{i18n('processportal.toolbars-workflowActions-relocation-dialog-title')}}"
@@ -308,7 +308,7 @@
 						    ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}" class="button-link tbl-tool-link">
 							<span sd-popover id="processDocuments" sda-on-open="activityTableCtrl.openProcessDocumentsPopover(rowData);">
-								<i class="pi pi-activity-pi-documents"></i>
+								<i class="pi pi-process-documents"></i>
 								<div class="popover-body" style="text-align: left; min-width: 100px;">
 									<div ng-show="rowData.contentLoaded">
 										<div ng-if="rowData.supportsProcessAttachments">

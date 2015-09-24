@@ -65,9 +65,7 @@
 										rendered="#{caseDetailsBean.canManageCase}">
 										<pc:automationTag value="auto-COM-CaseDetView-EnableEditCaseName"
 											standAlone="false" />
-										<h:graphicImage
-											value="/plugins/views-common/images/icons/pencil.png"
-											style="border: none;"
+										<h:outputText styclass="pi pi-edit icon-lg"
 											title="#{views_common_msgPropsBean['views.case.tooltip.updateName']}" />
 									</ice:commandLink>
 								</ice:panelGroup>
@@ -117,10 +115,8 @@
 									rendered="#{caseDetailsBean.canManageCase and not caseDetailsBean.inactiveCase}">
 									<pc:automationTag value="auto-COM-CaseDetView-OpenDelegateCase"
 											standAlone="false" />
-									<h:graphicImage
-										value="/plugins/views-common/images/icons/pencil.png"
-										style="border: none;"
-										title="#{views_common_msgPropsBean['views.case.tooltip.delegateCase']}" />
+									<h:outputText
+										title="#{views_common_msgPropsBean['views.case.tooltip.delegateCase']} pi pi-edit icon-lg" />
 								</ice:commandLink>
 							</ice:column>
 
@@ -151,9 +147,7 @@
 										rendered="#{caseDetailsBean.canManageCase}">
 										<pc:automationTag value="auto-COM-CaseDetView-EnableEditDescription"
 											standAlone="false" />
-										<h:graphicImage
-											value="/plugins/views-common/images/icons/pencil.png"
-											style="border: none;"
+										<h:outputText styleClass="pi pi-edit icon-lg"
 											title="#{views_common_msgPropsBean['views.case.tooltip.updateDescription']}" />
 									</ice:commandLink>
 								</ice:panelGroup>

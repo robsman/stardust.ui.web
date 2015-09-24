@@ -8,13 +8,14 @@
 	
 	<ice:panelGrid columns="16" cellspacing="0" cellpadding="2" style="padding-right: 10px;">
 		<pc:automationTag value="auto-COM-PCETerminate"/>
-		<ice:commandButton
-			image="/plugins/views-common/images/icons/abort_process.png"
+		<ice:commandLink
 			action="#{processInstanceDetailsBean.terminateProcess}" 
 			disabled="#{!processInstanceDetailsBean.abortProcess}"
 			partialSubmit="true"
 			title="#{views_common_msgPropsBean['common.tooltip.terminate']}"
-			styleClass="toolbar-button" />
+			styleClass="toolbar-button" >
+			<i class="pi pi-process-abort icon-lg"></i>
+		</ice:commandLink>
 		<!-- Rendered when process termination is allowed -->
 		<ice:panelGroup
 			rendered="#{(processInstanceDetailsBean.abortProcess)}">
@@ -26,17 +27,15 @@
 		<!-- Rendered when process termination is not allowed -->
 		<ice:panelGroup
 			rendered="#{!(processInstanceDetailsBean.abortProcess)}">
-			<ice:graphicImage styleClass="iceCmdBtn-dis"
-				value="/plugins/views-common/images/icons/arrow.png" />
+			<ice:outputText styleClass="iceCmdBtn-dis pi-menu-dropdown" />
 		</ice:panelGroup>
 		
 		<pc:automationTag value="auto-COM-PCERecover"/>
-		<ice:commandButton
-			image="/plugins/views-common/images/icons/recover_process.png"
+		<ice:commandLink
 			action="#{processInstanceDetailsBean.recoverProcess}"
 			partialSubmit="true"
 			title="#{messages_bcc['common.tooltip.recover']}"
-			styleClass="toolbar-button" />
+			styleClass="pi pi-recover icon-lg" />
 			
 		<!-- Case Menu -->
 		<ice:panelGroup
@@ -61,20 +60,22 @@
 		<ice:graphicImage value="/plugins/views-common/images/icons/toolbar-separator.png"/>	
 		
 		<pc:automationTag value="auto-COM-PCEOpenChat"/>
-		<ice:commandButton
-			image="/plugins/views-common/images/icons/user_comment.png"
+		<ice:commandLink
 			disabled="#{!processInstanceDetailsBean.supportsProcessAttachments}"
 			action="#{processInstanceDetailsBean.openChat}" partialSubmit="true"
 			title="#{messages_bcc['toolbars.processInstanceDetailsView.tooltip.chat']}"
-			styleClass="toolbar-button" />
+			styleClass="toolbar-button">
+			<i styleClass="pi pi-chat icon-lg" />
+		</ice:commandLink>
 		<ice:graphicImage value="/plugins/views-common/images/icons/toolbar-separator.png"/>
 		
 		<pc:automationTag value="auto-COM-PCEUpdate"/>
-		<ice:commandButton
-			image="/plugins/views-common/images/icons/arrow_refresh.png"
+		<ice:commandLink
 			action="#{processInstanceDetailsBean.update}" partialSubmit="true"
 			title="#{messages_bcc['toolbars.common.tooltip.update']}"
-			styleClass="toolbar-button" />
+			styleClass="toolbar-button">
+			<i class="pi pi-refresh icon-lg" />
+		</ice:commandLink>
 	</ice:panelGrid>
 
 </f:view>

@@ -7,23 +7,23 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
 	<ice:panelGrid columns="2">
-		<ice:commandButton
-			image="/plugins/views-common/images/icons/email_go.png"
+		<ice:commandLink
 			actionListener="#{correspondenceViewBean.sendMessage}"
 			title="#{messages_bcc['toolbars.processInstanceDetailsView.tooltip.correspondenceSend']}"
 			styleClass="toolbar-button">
 			<pc:automationTag value="auto-COM-CorrView-ToolbarSend"
 				standAlone="false" />
+			<i styclass="pi pi-case icon-lg" ></i>
 		</ice:commandButton>
-		<ice:commandButton
-			image="/plugins/views-common/images/icons/printer.png"
+		<ice:commandLink
 			disabled="#{!correspondenceViewBean.printAvailable}"
 			action="#{correspondenceViewBean.print}"
 			title="#{messages_bcc['toolbars.processInstanceDetailsView.tooltip.print']}"
 			styleClass="toolbar-button">
 			<pc:automationTag value="auto-COM-CorrView-ToolbarPrint"
 				standAlone="false" />
-		</ice:commandButton>
+			<i class="pi pi-print icon-lg" />
+		</ice:commandLink>
 	</ice:panelGrid>
 
 </f:view>

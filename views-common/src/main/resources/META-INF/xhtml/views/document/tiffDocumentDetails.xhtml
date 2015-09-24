@@ -85,9 +85,9 @@
 								actionListener="#{contentHandler.tiffDocumentHolder.copyPage}"
 								disabled="#{!contentHandler.tiffDocumentHolder.editable}">
 								<pc:automationTag value="auto-COM-DocView-TiffDocView-CopyPage" standAlone="false" />
-								<ice:graphicImage title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.cut']}"
+								<ice:outputText title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.cut']}"
 									rendered="#{contentHandler.tiffDocumentHolder.documentContent != null}"
-									value="/plugins/views-common/images/icons/cut.png"
+									styleClass="pi pi-cut icon-lg"
 									style="#{!contentHandler.tiffDocumentHolder.editable ? 'opacity : 0.4; filter:alpha(opacity=40);' : ''}" />
 							</ice:commandLink>
 							<ice:outputLabel value=" " />
@@ -95,9 +95,9 @@
 								actionListener="#{contentHandler.tiffDocumentHolder.pastePage}"
 								disabled="#{!contentHandler.tiffDocumentHolder.insertEnabled or !contentHandler.tiffDocumentHolder.editable}">
 								<pc:automationTag value="auto-COM-DocView-TiffDocView-PastePage" standAlone="false" />
-								<ice:graphicImage title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.paste']}"
+								<ice:outputText title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.paste']}"
 									rendered="#{contentHandler.tiffDocumentHolder.documentContent != null}"
-									value="/plugins/views-common/images/icons/paste_plain.png"
+									styleClass="pi pi-view-tab icon-lg"
 									style="#{(!contentHandler.tiffDocumentHolder.insertEnabled) or !contentHandler.tiffDocumentHolder.editable ? 'opacity : 0.4; filter:alpha(opacity=40);' : ''}" />
 							</ice:commandLink>
 							<ice:outputLabel value=" " />
@@ -110,10 +110,10 @@
 								<pc:automationTag
 									value="auto-COM-DocView-TiffDocView-MovePageUp"
 									standAlone="false" />
-								<ice:graphicImage
+								<ice:outputText
 									title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.movePageUp']}"
 									rendered="#{contentHandler.tiffDocumentHolder.documentContent != null}"
-									value="/plugins/views-common/images/icons/arrow-skip-090.png"
+									styleClass="pi pi-page-up icon-lg"
 									style="#{!(contentHandler.tiffDocumentHolder.selectedPageNumber gt contentHandler.tiffDocumentHolder.minPageIndex) or !contentHandler.tiffDocumentHolder.editable ? 'opacity : 0.4; filter:alpha(opacity=40);' : ''}" />
 							</ice:commandLink>
 							<ice:outputLabel value=" " />
@@ -121,9 +121,9 @@
 								actionListener="#{contentHandler.tiffDocumentHolder.movePageDown}"
 								disabled="#{!(contentHandler.tiffDocumentHolder.selectedPageNumber lt contentHandler.tiffDocumentHolder.maxPageIndex) or !contentHandler.tiffDocumentHolder.editable}">
 								<pc:automationTag value="auto-COM-DocView-TiffDocView-MovePageDown" standAlone="false" />
-								<ice:graphicImage title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.movePageDown']}"
+								<ice:outputText title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.movePageDown']}"
 									rendered="#{contentHandler.tiffDocumentHolder.documentContent != null}"
-									value="/plugins/views-common/images/icons/arrow-skip-270.png"
+									styleClass="pi pi-page-down icon-lg"
 									style="#{!(contentHandler.tiffDocumentHolder.selectedPageNumber lt contentHandler.tiffDocumentHolder.maxPageIndex) or !contentHandler.tiffDocumentHolder.editable ? 'opacity : 0.4; filter:alpha(opacity=40);' : ''}" />
 							</ice:commandLink>
 							<ice:outputLabel value=" " />
@@ -144,9 +144,9 @@
 								actionListener="#{contentHandler.tiffDocumentHolder.reversePageOrder}"
 								disabled="#{!contentHandler.tiffDocumentHolder.editable}">
 								<pc:automationTag value="auto-COM-DocView-TiffDocView-ReversePageOrder" standAlone="false" />
-								<ice:graphicImage title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.reversePageOrder']}"
+								<ice:outputText title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.reversePageOrder']}"
 									rendered="#{contentHandler.tiffDocumentHolder.documentContent != null}"
-									value="/plugins/views-common/images/icons/blue-document-convert.png"
+									styleClass="pi pi-refresh icon-lg"
 									style="#{!contentHandler.tiffDocumentHolder.editable ? 'opacity : 0.4; filter:alpha(opacity=40);' : ''}" />
 							</ice:commandLink>
 							<ice:outputLabel value=" " />
@@ -157,10 +157,12 @@
 								actionListener="#{contentHandler.tiffDocumentHolder.addBookmark}"
 								disabled="#{!contentHandler.tiffDocumentHolder.editable}">
 								<pc:automationTag value="auto-COM-DocView-TiffDocView-AddBookmark" standAlone="false" />
-								<ice:graphicImage title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.addBookmark']}"
+								<ice:outputText title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.addBookmark']}"
 									rendered="#{contentHandler.tiffDocumentHolder.documentContent != null}"
-									value="/plugins/views-common/images/icons/bookmark--plus.png"
-									style="#{!contentHandler.tiffDocumentHolder.editable ? 'opacity : 0.4; filter:alpha(opacity=40);' : ''}" />
+									styleClass="pi pi-bookmark icon-lg"
+									style="#{!contentHandler.tiffDocumentHolder.editable ? 'opacity : 0.4; filter:alpha(opacity=40);' : ''}">
+									<h:outputText styleClass="pi pi-badge-icon-plus pi-bottom pi-right" title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.addBookmark']}" />
+								</ice:outputText>
 							</ice:commandLink>
 							<ice:outputLabel value=" " />
 							<ice:commandLink
@@ -168,10 +170,12 @@
 								disabled="#{contentHandler.modified or !contentHandler.tiffDocumentHolder.editable or not contentHandler.tiffDocumentHolder.bookmarkManager.extractEnable}"
 								style="#{(contentHandler.modified or !contentHandler.tiffDocumentHolder.editable or not contentHandler.tiffDocumentHolder.bookmarkManager.extractEnable) ? 'opacity : 0.5; filter:alpha(opacity=50);' : ''}">
 								<pc:automationTag value="auto-COM-DocView-TiffDocView-ExtractPage" standAlone="false" />
-								<ice:graphicImage
+								<ice:outputText
 									title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.extractPages']}"
 									rendered="#{contentHandler.tiffDocumentHolder.documentContent != null}"
-									value="/plugins/views-common/images/icons/page_go.png" />
+									styleClass="pi pi-extract-pages icon-lg">
+									<h:outputText styleClass="pi pi-arrow-r pi-bottom pi-right" title="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.extractPages']}"/>	
+								</ice:outputText>
 							</ice:commandLink>
 						</ice:panelGroup>
 						<ice:panelGroup scrollWidth="200px" scrollHeight="1050px">
@@ -269,8 +273,8 @@
 								toolbarUrl="/plugins/views-common/views/document/tiffBookmarkToolbar.xhtml" />
 							<ice:panelGroup styleClass="clearing" />
 							<ice:panelGrid columns="2">
-								<ice:graphicImage title="#{views_common_msgPropsBean['views.tiffViewer.bookmarks.addBookmark']}" 
-									value="/plugins/views-common/images/icons/add.png"
+								<ice:outputText title="#{views_common_msgPropsBean['views.tiffViewer.bookmarks.addBookmark']}" 
+									styleClass="pi pi-create icon-lg"
 									style="#{!contentHandler.tiffDocumentHolder.editable ? 'opacity : 0.4; filter:alpha(opacity=40);' : ''}" />
 								<ice:commandLink actionListener="#{contentHandler.tiffDocumentHolder.bookmarkManager.addNewBookmark}"
 									disabled="#{!contentHandler.tiffDocumentHolder.editable}">

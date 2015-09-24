@@ -17,8 +17,7 @@
 				<pc:automationTag
 					value="auto-PP-WorklistPnlConf-worklistTable-toolbar-Import"
 					standAlone="false" />
-				<ice:graphicImage styleClass="toolbar-button"
-					value="/plugins/views-common/images/icons/page_white_get.png"
+				<ice:outputText styleClass="pi pi-upload icon-lg"
 					title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.loadConf']}" />
 			</ice:commandLink>
 
@@ -40,8 +39,8 @@
 				<pc:automationTag
 					value="auto-PP-WorklistPnlConf-worklistTable-toolbar-add"
 					standAlone="false" />
-				<ice:graphicImage value="/plugins/views-common/images/icons/add.png"
-					styleClass="toolbar-button"
+				<ice:outputText 
+					styleClass="toolbar-button pi pi-create icon-lg"
 					title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.add']}" />
 			</ice:commandLink>
 
@@ -50,10 +49,9 @@
 				<pc:automationTag
 					value="auto-PP-WorklistPnlConf-worklistTable-toolbar-delete"
 					standAlone="false" />
-				<ice:graphicImage
-					value="/plugins/views-common/images/icons/delete.png"
+				<ice:outputText
 					title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.delete']}"
-					styleClass="#{bean.deleteDisabled ? 'toolbar-button-dis' : 'toolbar-button'}" />
+					styleClass="#{bean.deleteDisabled ? 'toolbar-button-dis' : 'toolbar-button'} pi pi-delete icon-lg" />
 			</ice:commandLink>
 		</ice:panelGroup>
 	</ice:panelGrid>

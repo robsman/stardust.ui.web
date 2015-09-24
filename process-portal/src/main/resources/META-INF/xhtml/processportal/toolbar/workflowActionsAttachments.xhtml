@@ -40,7 +40,7 @@
 				action="#{ippActivityPanelController.toggleLinkedProcessIframePopup}"
 				title="#{views_common_msgPropsBean['linkedProcessTable.table']}">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarProcAttach" standAlone="false"/>
-				<ice:graphicImage value="/plugins/views-common/images/icons/link.png" /> 
+				<ice:outputText styleClass="pi pi-linked-processes icon-lg" /> 
 			</ice:commandLink>
 			<div id="ippLinkedProcessAnchor" style="width: 1px; height: 1px;"></div>
 		</ice:panelGroup>
@@ -51,9 +51,8 @@
 				partialSubmit="true">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarChat"
 					standAlone="false" />
-				<ice:graphicImage
-					value="/plugins/views-common/images/icons/user_comment.png"
-					styleClass="toolbar-button"
+				<ice:outputText
+					styleClass="pi pi-chat icon-lg"
 					title="#{processportal_msgPropsBean['toolbars.activityPanelViewToolbar.tooltip.chat']}" />
 			</ice:commandLink>
 		</ice:panelGroup>	

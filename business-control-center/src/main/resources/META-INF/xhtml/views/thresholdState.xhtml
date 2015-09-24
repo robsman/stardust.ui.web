@@ -13,7 +13,7 @@
 	<h:graphicImage title="#{messages_bcc['views.trafficLightView.warning']}" rendered="#{thresholdState eq 2}"
 		style="border: none;" value="/plugins/views-common/images/icons/status-away.png" />
 	
-	<h:graphicImage title="#{messages_bcc['views.trafficLightView.normal']}" rendered="#{thresholdState eq 3}"
-		style="border: none;" value="/plugins/views-common/images/icons/status.png"	/>
+	<h:outputText title="#{messages_bcc['views.trafficLightView.normal']}" rendered="#{thresholdState eq 3}"
+		styleClass="pi pi-user-status icon-lg"	/>
 	
 </f:view>	

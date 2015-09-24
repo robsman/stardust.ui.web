@@ -10,27 +10,21 @@
 		<ice:commandLink action="#{securityDialog.removeRoles}"
 			disabled="#{!securityDialog.rolesEditable}">
 			<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl-ToolbarRemove" standAlone="false"/>
-			<h:graphicImage
-				value="/plugins/views-common/images/icons/group_delete.png"
-				style="border: none;"
-				styleClass="#{!securityDialog.rolesEditable ? 'iceCmdBtn-dis' : ''}"
+			<h:outputText
+				styleClass="#{!securityDialog.rolesEditable ? 'iceCmdBtn-dis' : ''} pi pi-delete icon-lg"
 				title="#{securityDialog.messages['securityDialog.table.toolbar.delete']}" />
 		</ice:commandLink>
 		<ice:commandLink action="#{securityDialog.addParticipant}" disabled="#{!securityDialog.modifyACL}">
 			<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl-ToolbarAdd" standAlone="false"/>
-			<h:graphicImage
-				value="/plugins/views-common/images/icons/group_add.png"
-				style="border: none;"
-				styleClass="#{!securityDialog.modifyACL ? 'iceCmdBtn-dis' : ''}"
+			<h:outputText
+				styleClass="#{!securityDialog.modifyACL ? 'iceCmdBtn-dis' : ''} pi pi-create icon-lg"
 				title="#{securityDialog.messages['securityDialog.table.toolbar.addParticipants']}" />
 		</ice:commandLink>
 		<ice:commandLink action="#{securityDialog.editRoles}"
 			disabled="#{!securityDialog.rolesEditable}">
 			<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl-ToolbarEdit" standAlone="false"/>
-			<h:graphicImage
-				value="/plugins/views-common/images/icons/group_edit.png"
-				style="border: none;"
-				styleClass="#{!securityDialog.rolesEditable ? 'iceCmdBtn-dis' : ''}"
+			<h:outputText
+				styleClass="#{!securityDialog.rolesEditable ? 'iceCmdBtn-dis' : ''} pi pi-edit icon-lg"
 				title="#{securityDialog.messages['securityDialog.table.toolbar.editPermissions']}" />
 		</ice:commandLink>
 	</ice:panelGrid>

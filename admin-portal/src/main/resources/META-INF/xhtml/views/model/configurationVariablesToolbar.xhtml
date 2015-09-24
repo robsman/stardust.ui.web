@@ -19,9 +19,8 @@
 				<pc:automationTag
 					value="auto-ADM-ConfigVariable-ConfigTreeTbl-ToolbarImport"
 					standAlone="false" />
-				<h:graphicImage
-					value="/plugins/views-common/images/icons/page_white_get.png"
-					style="border: none;"
+				<h:outputText
+					styleClass="pi pi-upload icon-lg"
 					title="#{configurationVariablesBean.messages['import']}" />
 			</ice:commandLink>
 			<!-- action="#{configurationVariablesBean.downloadFile}" target="_blank" -->
@@ -60,8 +59,7 @@
 				<pc:automationTag
 					value="auto-ADM-ConfigVariable-ConfigTreeTbl-ToolbarAllConfig"
 					standAlone="false" />
-				<h:graphicImage value="/plugins/views-common/images/icons/eye.png"
-					style="border: none;"
+				<h:outputText styeClass="pi pi-eye-open icon-lg"
 					title="#{configurationVariablesBean.messages['show.all']}" />
 			</ice:commandLink>
 			
@@ -73,8 +71,8 @@
 				<pc:automationTag
 					value="auto-ADM-ConfigVariable-ConfigTreeTbl-ToolbarShowActMdl"
 					standAlone="false" />
-				<h:graphicImage value="/plugins/views-common/images/icons/eye.png"
-					style="border: none;opacity: 0.3;filter: alpha(opacity=30);"
+				<h:outputText 
+					styleClass="pi pi-eye-close icon-lg"
 					title="#{configurationVariablesBean.messages['show.active']}" />
 			</ice:commandLink>
 		
@@ -90,8 +88,8 @@
 				<pc:automationTag
 					value="auto-ADM-ConfigVariable-ConfigTreeTbl-ToolbarExpandAll"
 					standAlone="false" />
-				<h:graphicImage value="/plugins/views-common/images/icons/toggle-expand.png"
-					style="border: none;"
+				<h:outputText
+					styleClass="pi pi-expand-all icon-lg"
 					title="#{configurationVariablesBean.messages['expandAll']}" />
 			</ice:commandLink>
 
@@ -102,9 +100,8 @@
 				<pc:automationTag
 					value="auto-ADM-ConfigVariable-ConfigTreeTbl-ToolbarCollapseAll"
 					standAlone="false" />
-				<h:graphicImage
-					value="/plugins/views-common/images/icons/toggle.png"
-					style="border: none;"
+				<h:outputText
+					styleClass="pi pi-collapse-all icon-lg"					
 					title="#{configurationVariablesBean.messages['collapseAll']}" />
 			</ice:commandLink>
 		</ice:panelGrid>

@@ -68,8 +68,7 @@
 						action="#{ippActivityPanelController.openProcessDetail}" onclick="closeLinkedProcessIframe();">
 						<pc:automationTag value="auto-PP-LinkedProcDlg-SwitchProcess" />
 						<ice:panelGrid columns="2">
-							<ice:graphicImage
-								value="/plugins/views-common/images/icons/process.png" />
+							<ice:outputText styClass="pi pi-process icon-lg" />
 							<ice:outputText
 								value="#{ippActivityPanelController.linkedProcess.fromProcessName}"
 								style="white-space: nowrap;" />
@@ -91,8 +90,7 @@
 						action="#{ippActivityPanelController.openProcessDetail}" onclick="closeLinkedProcessIframe();">
 						<pc:automationTag value="auto-PP-LinkedProcDlg-JoinProcess" />
 						<ice:panelGrid columns="2">
-							<ice:graphicImage
-								value="/plugins/views-common/images/icons/process.png" />
+							<ice:outputText styClass="pi pi-process icon-lg" />
 							<ice:outputText
 								value="#{ippActivityPanelController.linkedProcess.joinProcessName}"
 								style="white-space: nowrap;" />

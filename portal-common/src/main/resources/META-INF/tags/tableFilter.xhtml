@@ -49,10 +49,10 @@
 	   			<ice:commandLink rendered="#{not filterPopup.dataFilters.filtersSet}"
 	   				action="#{filterPopup.openPopup}" disabled="#{disabled}">
 	   				<pc:automationTag value="auto-DT-ColFilterOpen" standAlone="false" />
-		   			<ice:graphicImage value="/plugins/common/images/icons/filter.png"
+		   			<ice:outputText 
 		   				title="#{common_msgPropsBean['common.filterPopup.showFilter.tooltip']}"
-						style="vertical-align:top; border:none;"
-						styleClass="#{disabled ? 'iceCmdBtn-dis' : ''} portal-std-icon" />
+						style="vertical-align:top;"
+						styleClass="#{disabled ? 'iceCmdBtn-dis' : ''} pi pi-filter" />
 				</ice:commandLink>
 
 	   			<ice:commandLink action="#{filterPopup.openPopup}" disabled="#{disabled}">

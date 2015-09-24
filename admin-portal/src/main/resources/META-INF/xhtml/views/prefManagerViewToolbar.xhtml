@@ -10,8 +10,7 @@
 		<ice:commandLink
 			actionListener="#{createOrModifyPreference.openModifyPrefDialog}"
 			disabled="#{prefManagerBean.readOnly}">
-			<h:graphicImage value="/plugins/views-common/images/icons/add.png"
-				style="border: none;" styleClass="#{!prefManagerBean.readOnly? '' : 'iceCmdBtn-dis'}"
+			<h:outputText styleClass="#{!prefManagerBean.readOnly? '' : 'iceCmdBtn-dis'} pi pi-create icon-lg"
 				title="#{prefManagerBean.messages['modifyPreference.add.title']}" />
 			<f:attribute name="selectedView"
 				value="#{prefManagerBean.selectedView}" />
@@ -22,17 +21,17 @@
 		</ice:commandLink>
 
 		<ice:commandLink actionListener="#{prefManagerBean.removePreference}" disabled="#{prefManagerBean.readOnly}">
-			<h:graphicImage value="/plugins/views-common/images/icons/delete.png"
-				style="border: none;" styleClass="#{!prefManagerBean.readOnly? '' : 'iceCmdBtn-dis'}"
+			<h:outputText  
+				styleClass="#{!prefManagerBean.readOnly? '' : 'iceCmdBtn-dis'} pi pi-delete icon-lg"
 				title="#{prefManagerBean.messages['modifyPreference.delete.label']}" />
 			<pc:automationTag value="auto-ADM-PrefMngrView-ToolbarRemove"
 				standAlone="false" />
 		</ice:commandLink>
 		
 		<ice:commandLink actionListener="#{createOrModifyPreference.openModifyPrefDialog}" disabled="#{prefManagerBean.readOnly}">
-			<h:graphicImage value="/plugins/views-common/images/icons/pencil.png"
-				style="border: none;" styleClass="#{!prefManagerBean.readOnly? '' : 'iceCmdBtn-dis'}"
-				title="#{prefManagerBean.messages['modifyPreference.edit.title']}" />
+			<h:outputText 
+				styleClass="#{!prefManagerBean.readOnly? '' : 'iceCmdBtn-dis'}"
+				title="#{prefManagerBean.messages['modifyPreference.edit.title']} pi pi-edit icon-lg" />
 			<f:attribute name="editRow" value="true" />
 			<pc:automationTag value="auto-ADM-PrefMngrView-ToolbarEdit"
 				standAlone="false" />

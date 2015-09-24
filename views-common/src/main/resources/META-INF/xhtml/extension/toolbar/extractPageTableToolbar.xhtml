@@ -9,13 +9,13 @@
 	<ice:panelGrid columns="2">
 		<ice:commandLink actionListener="#{extractPageDialogBean.add}" >
 			<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-ToolbarAdd" standAlone="false"/>
-			<ice:graphicImage value="/plugins/views-common/images/icons/add.png"				
+			<ice:outputText styleClass="pi pi-create icon-lg"				
 				title="#{views_common_msgPropsBean['common.add']}" />
 		</ice:commandLink>
 		<ice:commandLink actionListener="#{extractPageDialogBean.delete}" disabled="#{!extractPageDialogBean.rowSelected}">
 			<pc:automationTag value="auto-COM-ExtractPageDlg-ExtPageTbl-ToolbarDelete" standAlone="false"/>		
-			<ice:graphicImage value="/plugins/views-common/images/icons/delete.png"
-				styleClass="#{!extractPageDialogBean.rowSelected ? 'iceCmdBtn-dis' : ''}"
+			<ice:outputText
+				styleClass="#{!extractPageDialogBean.rowSelected ? 'iceCmdBtn-dis' : ''} pi pi-delete icon-lg"
 				title="#{views_common_msgPropsBean['common.delete']}" />
 		</ice:commandLink>
 

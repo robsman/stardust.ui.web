@@ -12,30 +12,30 @@
 			action="#{documentHandlerBean.showPreviousVersion}">
 			<pc:automationTag value="auto-COM-DocView-ToolbarShowPrevVersion"
 				standAlone="false" />
-			<ice:graphicImage
-				value="/plugins/views-common/images/icons/book_previous.png"
-				title="#{documentHandlerBean.messages['versionToolBar.showPreviousVersion']}"
-				styleClass="#{documentHandlerBean.showPrev ? 'toolbar-button' : 'toolbar-button-dis'}" />
+			<ice:outputText
+				styleClass="#{documentHandlerBean.showPrev ? 'toolbar-button' : 'toolbar-button-dis'} pi pi-version icon-lg">
+				<h:outputText styleClass="pi pi-badge-icon pi-badge-icon-arrow-l pi-top pi-left" title="#{documentHandlerBean.messages['versionToolBar.showPreviousVersion']}" />
+			</ice:outputText>
 		</ice:commandLink>
 
 		<ice:commandLink disabled="#{!documentHandlerBean.showNext}"
 			action="#{documentHandlerBean.showNextVersion}">
 			<pc:automationTag value="auto-COM-DocView-ToolbarShowNextVersion"
 				standAlone="false" />
-			<ice:graphicImage
-				value="/plugins/views-common/images/icons/book_next.png"
-				styleClass="#{documentHandlerBean.showNext ? 'toolbar-button' : 'toolbar-button-dis'}"
-				title="#{documentHandlerBean.messages['versionToolBar.showNextVersion']}" />
+			<ice:outputText
+				styleClass="#{documentHandlerBean.showNext ? 'toolbar-button' : 'toolbar-button-dis'} pi pi-version icon-lg" 
+				title="#{documentHandlerBean.messages['versionToolBar.showNextVersion']}">
+				<h:outputText styleClass="pi pi-badge-icon pi-badge-icon-arrow-r pi-top pi-right" title="#{documentHandlerBean.messages['versionToolBar.showNextVersion']}" />	
+			</ice:outputText>
 		</ice:commandLink>
 
 		<ice:commandLink disabled="#{!documentHandlerBean.revertible}"
 			action="#{documentHandlerBean.revertToVersion}">
 			<pc:automationTag value="auto-COM-DocView-ToolbarRevertToVersion"
 				standAlone="false" />
-			<ice:graphicImage
-				value="/plugins/views-common/images/icons/arrow_switch.png"
+			<ice:outputText
 				title="#{documentHandlerBean.messages['versionToolBar.revertToVersion']}"
-				styleClass="#{documentHandlerBean.revertible ? 'toolbar-button' : 'toolbar-button-dis'}" />
+				styleClass="#{documentHandlerBean.revertible ? '' : 'toolbar-button-dis'} pi pi-undo icon-lg" />
 		</ice:commandLink>
 
 		<ice:commandLink
@@ -43,10 +43,9 @@
 			action="#{documentHandlerBean.uploadNewVersion}">
 			<pc:automationTag value="auto-COM-DocView-ToolbarUploadNewVersion"
 				standAlone="false" />
-			<ice:graphicImage
-				value="/plugins/views-common/images/icons/page_white_get.png"
+			<ice:outputText
 				title="#{views_common_msgPropsBean['views.genericRepositoryView.treeMenuItem.newVersion']}"
-				styleClass="#{documentHandlerBean.documentContentInfo.supportsVersioning ? 'toolbar-button' : 'toolbar-button-dis'}"/>
+				styleClass="#{documentHandlerBean.documentContentInfo.supportsVersioning ? '' : 'toolbar-button-dis'} pi pi-upload icon-lg"/>
 		</ice:commandLink>
 
 		<ice:panelGroup rendered="#{not empty documentHandlerBean.fileOutputResource}"
@@ -61,24 +60,24 @@
 			</ice:outputResource>	
 		</ice:panelGroup>
 
-		<ice:commandButton rendered="#{!documentHandlerBean.poppedOut}"
-			image="/plugins/views-common/images/icons/external.png"
+		<ice:commandLink rendered="#{!documentHandlerBean.poppedOut}"
 			title="#{documentHandlerBean.messages['popOut.title']}"
 			action="#{documentHandlerBean.popOutDocument}" immediate="true"
 			styleClass="toolbar-button"
 			disabled="#{documentHandlerBean.contentHandler == null}">
 			<pc:automationTag value="auto-COM-DocView-ToolbarPopOutDoc"
 				standAlone="false" />
-		</ice:commandButton>
+			<i class="pi pi-pop-out icon-lg" ></i>
+		</ice:commandLink>
 
-		<ice:commandButton rendered="#{documentHandlerBean.poppedOut}"
-			image="/plugins/views-common/images/icons/external_sw.png"
+		<ice:commandLink rendered="#{documentHandlerBean.poppedOut}"
 			title="#{documentHandlerBean.messages['popIn.title']}" 
 			action="#{documentHandlerBean.popInDocument}" immediate="true"
 			styleClass="toolbar-button">
 			<pc:automationTag value="auto-COM-DocView-ToolbarPopInDoc"
 				standAlone="false" />
-		</ice:commandButton>
+			<i class="pi pi-pop-out icon-lg" />
+		</ice:commandLink>
 
 		<ice:panelGroup
 			rendered="#{not empty documentHandlerBean.contentHandler.toolbarUrl}"
@@ -93,9 +92,7 @@
 				action="#{documentHandlerBean.save}">
 				<pc:automationTag value="auto-COM-DocView-SaveBtn"
 					standAlone="false" />
-				<ice:graphicImage
-					value="/plugins/views-common/images/icons/disk.png"
-					styleClass="toolbar-button" />
+				<ice:outputText styleClass=" toolbar-buttonpi pi-save icon-lg" />
 			</ice:commandLink>
 		</ice:panelGroup>
 		

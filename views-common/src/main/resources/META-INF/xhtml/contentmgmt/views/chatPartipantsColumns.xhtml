@@ -11,8 +11,8 @@
 			<ice:graphicImage
 				value="/plugins/views-common/images/icons/user_red.png"
 				rendered="#{row.inviter and row.online}" />
-			<ice:graphicImage
-				value="/plugins/views-common/images/icons/user_gray.png"
+			<ice:outputText
+				styleClass="pi pi-user icon-lg"
 				rendered="#{!row.online and !row.inviter}" />
 			<ice:graphicImage
 				value="/plugins/views-common/images/icons/user_green.png"

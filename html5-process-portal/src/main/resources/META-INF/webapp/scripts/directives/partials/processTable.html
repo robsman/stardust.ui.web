@@ -197,14 +197,14 @@
 						<button class="button-link tbl-tool-link" ng-disabled="!rowData.enableTerminate"  aid="PP-ProcessTable-AbortPopoverAction"
 						    title="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}"
 							ng-click="processTableCtrl.openAbortPopover($event, rowData); bpmCommon.stopEvent($event);">
-							<i class="pi pi-arrow-menu-dropdown"></i>
+							<i class="pi pi-menu-dropdown"></i>
 						</button>
 						
 						<button ng-click="processTableCtrl.recoverProcess(this, rowData)" aid="PP-ProcessTable-RecoverAction"
 						    title="{{i18n('views-common-messages.common-tooltip-recover')}}" 
 							ng-disabled="!rowData.enableRecover" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
 				            <div class="sc-badge">
-				                <i class="pi pi-process-recover icon-lg"></i>
+				                <i class="pi pi-recover icon-lg"></i>
 				            </div>
 						</button>
 						
@@ -218,8 +218,8 @@
 						<button ng-click="bpmCommon.stopEvent($event); processTableCtrl.openNotes(rowData);"
 						    aid="PP-ProcessTable-OpenNotes"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-notes')}}" class="button-link tbl-tool-link">
-							<i class="pi pi-process-notes-empty icon-lg" ng-if ="rowData.notesCount === 0" ></i>
-							<i class="pi pi-process-notes icon-lg" ng-if ="rowData.notesCount > 0" ></i>
+							<i class="pi pi-notes-empty icon-lg" ng-if ="rowData.notesCount === 0" ></i>
+							<i class="pi pi-notes icon-lg" ng-if ="rowData.notesCount > 0" ></i>
 						</button>
 
 						<button ng-click="bpmCommon.stopEvent($event);" aid="PP-ProcessTable-OpenProcessDocuments"

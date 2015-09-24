@@ -34,8 +34,8 @@
 						value="#{securityDialog.messages['securityDialog.columnValue.inherit']}" />
 				</ice:panelGrid>
 				<ice:panelGrid columns="2" rendered="#{row.create =='Allow'}">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/status.png" />
+					<ice:outputText 
+						styleClass="pi pi-user-status icon-lg" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.allow']}" />
 				</ice:panelGrid>
@@ -69,8 +69,8 @@
 						value="#{securityDialog.messages['securityDialog.columnValue.inherit']}" />
 				</ice:panelGrid>
 				<ice:panelGrid columns="2" rendered="#{row.read == 'Allow'}">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/status.png" />
+					<ice:outputText
+						styleClass="pi pi-user-status icon-lg" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.allow']}" />
 				</ice:panelGrid>
@@ -103,8 +103,8 @@
 						value="#{securityDialog.messages['securityDialog.columnValue.inherit']}" />
 				</ice:panelGrid>
 				<ice:panelGrid columns="2" rendered="#{row.modify == 'Allow'}">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/status.png" />
+					<ice:outputText
+						styleClass="pi pi-user-status icon-lg" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.allow']}" />
 				</ice:panelGrid>
@@ -138,8 +138,8 @@
 						value="#{securityDialog.messages['securityDialog.columnValue.inherit']}" />
 				</ice:panelGrid>
 				<ice:panelGrid columns="2" rendered="#{row.delete == 'Allow'}">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/status.png" />
+					<ice:outputText
+						styleClass="pi pi-user-status icon-lg" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.allow']}" />
 				</ice:panelGrid>
@@ -173,8 +173,8 @@
 						value="#{securityDialog.messages['securityDialog.columnValue.inherit']}" />
 				</ice:panelGrid>
 				<ice:panelGrid columns="2" rendered="#{row.readAcl =='Allow'}">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/status.png" />
+					<ice:outputText
+						styleClass="pi pi-user-status icon-lg" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.allow']}" />
 				</ice:panelGrid>
@@ -210,8 +210,8 @@
 					
 				</ice:panelGrid>
 				<ice:panelGrid columns="2" rendered="#{row.modifyAcl =='Allow'}">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/status.png" />
+					<ice:outputText
+						styleClass="pi pi-user-status icon-lg" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.allow']}" />
 				</ice:panelGrid>

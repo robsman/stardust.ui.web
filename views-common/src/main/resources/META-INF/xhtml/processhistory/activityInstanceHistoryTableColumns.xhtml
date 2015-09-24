@@ -57,8 +57,8 @@
 				disabled="#{not (row.refersToActivity and row.activatable) }">
 				<pc:automationTag value="auto-COM-ACTHistoryTable-ActionsOpen" standAlone="false"/>
 				<f:param name="oid" value="#{row.tableEntry.OID}" />
-				<ice:graphicImage url="/plugins/views-common/images/icons/process-history/activity_state.png"
-					styleClass="#{not (row.refersToActivity and row.activatable) ? 'iceCmdBtn-dis' : ''}"
+				<ice:outputText 
+					styleClass="#{not (row.refersToActivity and row.activatable) ? 'iceCmdBtn-dis' : ''} pi pi-activate icon-lg"
 					title="#{common_msgPropsBean['common.activity.activate']}" />
 			</ice:commandLink>
 
@@ -67,10 +67,11 @@
 				rendered="#{row.refersToActivity}"
 				disabled="#{not (row.refersToActivity and row.delegable)}">
 				<pc:automationTag value="auto-COM-ACTHistoryTable-ActionsDelegate" standAlone="false"/>
-				<h:graphicImage
-					value="/plugins/views-common/images/icons/process-history/delegate.png"
-					title="#{views_common_msgPropsBean['delegation.tooltip.title']}"
-					styleClass="#{not (row.refersToActivity and row.delegable) ? 'iceCmdBtn-dis' : ''}" />
+				<h:outputText
+					styleClass="#{not (row.refersToActivity and row.delegable) ? 'iceCmdBtn-dis' : ''} pi pi-badge-portrait pi-fw pi-activity-delegate icon-lg pi-left pi-top"  
+					title="#{views_common_msgPropsBean['delegation.tooltip.title']}">
+					<h:outputText styleClass="pi pi-badge-icon pi-badge-icon-arrow-r" title="#{views_common_msgPropsBean['delegation.tooltip.title']}" />	
+				</h:outputText>
 				<f:attribute name="row" value="#{row}" />
 			</ice:commandLink>
 
@@ -80,9 +81,8 @@
 				disabled="#{not (row.refersToActivity and row.activatable and row.relocationSource) }">
 				<pc:automationTag value="auto-COM-ACTHistoryTable-ActionsRelocate"
 					standAlone="false" />
-				<ice:graphicImage
-					value="/plugins/views-common/images/icons/redo.png"
-					styleClass="toolbar-button"
+				<ice:outputText
+					styleClass="pi pi-rotate-right icon-lg"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.relocation.relocate']}" />
 				<f:attribute name="row" value="#{row}" />
 			</ice:commandLink>
@@ -92,10 +92,9 @@
 				rendered="#{row.refersToActivity}"
 				disabled="#{not (row.refersToActivity and row.abortActivity)}">
 				<pc:automationTag value="auto-COM-ACTHistoryTable-ActionsAbort" standAlone="false"/>
-				<h:graphicImage
-					value="/plugins/views-common/images/icons/cross.png"
+				<h:outputText
 					title="#{common_msgPropsBean['common.activity.abort']}"
-					styleClass="#{not (row.refersToActivity and row.abortActivity) ? 'iceCmdBtn-dis' : ''}" />
+					styleClass="#{not (row.refersToActivity and row.abortActivity) ? 'iceCmdBtn-dis' : ''} pi pi-activity-abort icon-lg" />
 				<f:attribute name="row" value="#{row}" />
 			</ice:commandLink>
 
