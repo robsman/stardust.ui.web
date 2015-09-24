@@ -30,6 +30,8 @@ public class ProcessInstanceDTO extends AbstractDTO
    @DTOAttribute("processName")
    public String processName;
 
+   public String qualifiedId;
+
    public long processInstanceRootOID;
    
    public long parentProcessInstanceOID; //set only when requested with 'withHierarchyInfo'

@@ -22,7 +22,7 @@
 
 #gantt_chart_container {
 	overflow-x: auto;
-	min-height: 600px;
+	min-height: 350px;
 	width :100%
 }
 
@@ -32,6 +32,13 @@
 
 .gantt-chart-legend-symbol {
 	margin-left: 5px;
+}
+
+.currentTimeLine {
+  position: absolute;
+  height: 100%;
+  border-left: 1px dotted #000;
+  z-index: 2;
 }
 
 .majorTimeLine {
@@ -46,6 +53,7 @@
     overflow: hidden;
     text-overflow: ellipsis;  
     -o-text-overflow: ellipsis; 
+     z-index: 3;
 }
 
 .minorTimeLine {
@@ -54,18 +62,26 @@
 	color: white;
 	border-right: 1px solid;
 	display: inline-block;
+	z-index: 3;
 }
 
-.timeLineCompleted {
+.timeline {
 	display: inline-block;
 	margin-top: 5px;
 	margin-bottom: 5px;
 }
 
+.timeLineCompleted {
+	border-top-left-radius: 6px;
+	border-bottom-left-radius: 6px;
+}
+
 .timeLineInflight {
-	opacity: 0.4;
-	margin-left: -10px;
-	padding-right: 10px
+	opacity: 0.3;
+	margin-left: -2px;
+	padding-right: 2px;
+	border-top-right-radius: 6px;
+	border-bottom-right-radius: 6px;
 }
 
 .ganttChart-currentTimeLine {

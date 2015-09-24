@@ -22,7 +22,7 @@
 
 	var _filter = null;
 	var _sdActivityInstanceService = null;
-	var TOTAL_WIDTH = 900;
+	var TOTAL_WIDTH = 1000;
 	var _sgI18nService = null;
 	var _q = null;
 	var _sdProcessInstanceService = null;
@@ -98,12 +98,13 @@
 		self.timeFrames = self.getTimeFrames();
 		self.dataTable = null;
 		self.tableReady = false;
-		
+
 		//Get the process oid from the params
 		var queryGetter = _parse("panel.params.custom");
 		var params = queryGetter($scope);
 		self.selected.process = params.processInstanceOId;
 		self.tableReady = true;
+		self.currentTimeLine = {};
 	};
 
 	/**
@@ -127,7 +128,7 @@
 			self.legendCategories.push(benchmark)	
 			self.selected.legend = "benchmark";
 			self.legends = self.benchmarkCategories;
-			
+
 		}else {
 			self.selected.legend = "status";
 			self.legends = self.getAvailableStatuses();
@@ -140,12 +141,13 @@
 	Controller.prototype.getBenchmarkCategories = function(data) {
 		var deferred = _q.defer();
 		var self = this;
-		
+
 		var benchmarkPresent = data.benchmark.value > 0 ;
 		if(benchmarkPresent){
 
-			_sdProcessInstanceService.getBenchmarkCategories(data.benchmark.oid).then(function(data){ 
+			_sdProcessInstanceService.getBenchmarkDetailsProcess(data.benchmark.oid, self.process.qualifiedId).then(function(data){ 
 
+				self.extractExpectedDurations(data.processDefinitions);
 				angular.forEach(data.categories,function(cat){
 					var d = {
 							label : cat.name,
@@ -161,22 +163,65 @@
 			self.populateLegendCategories(false, null)
 			deferred.resolve();
 		}
-		
+
 		return deferred.promise;
 	}
+
+
+
+	Controller.prototype.extractExpectedDurations = function(processDefinitions){
+		var self = this;
+		var durations = {};
+		angular.forEach(processDefinitions,function(process){
+			durations[process.id]  = {expectedDuration : process.expectedDuration,activities: {}};
+
+			angular.forEach(process.activities,function(activity){
+				durations[process.id].activities[activity.id] = activity.expectedDuration;
+			}); 
+		});
+		self.expectedDurations = durations;
+		console.log(durations)
+	}
+
+	/**
+	 * 
+	 */
+	Controller.prototype.getExpectedDurationForProcess = function(pQid){
+		var self = this;
+		if(self.expectedDurations) {
+			
+			if(self.expectedDurations[pQid]) {
+				return self.expectedDurations[pQid].expectedDuration;
+			}
+			
+		}
+		return undefined;
+	}
+
+	/**
+	 * 
+	 */
+	Controller.prototype.getExpectedDurationForActivity = function(pQid, aid){
+		var self = this;
+		if(self.expectedDurations && self.expectedDurations[pQid]) {
+			return self.expectedDurations[pQid].activities[aid].expectedDuration;
+		}
+		return 0;
+	}
+
 
 	/**
 	 * 
 	 */
 	Controller.prototype.expandSubProcess = function(row){
 		var self = this;
-	
+
 		var found = _filter("filter")(self.data.list, { oid : row.oid}, true);
-		
+
 		if( found && found.length != 1 ){
 			return;
 		}
-		
+
 		if(!found[0].dataFetched){
 			console.log("Fetching sub process data");
 			self.getSubprocessData(row).then(function(activityList){
@@ -185,15 +230,15 @@
 				self.addActivitiesToChartData(activityList);
 				self.onTimeFrameChange();
 			});
-			
+
 		}else{
 			//Show data
 			found[0].expanded = true;
 			self.onTimeFrameChange();
 		}
-	
+
 	};
-	
+
 
 	/**
 	 * 
@@ -204,7 +249,7 @@
 		var found = ""
 			if (!hasBenchmark) {
 				var statuses = self.getAvailableStatuses();
-				
+
 				if(type == "Process") {
 					found = _filter("filter")(statuses,{piValue : value} , true)
 				}else {
@@ -319,27 +364,27 @@
 		var current = new Date(first);
 		self.minorTimeFrameWidth = dayWidth;
 		var temptableHolder =''
-		//self.drawCurrentTimeLine(first, second, factor);
+			//self.drawCurrentTimeLine(first, second, factor);
 
-		while (second > first) {
+			while (second > first) {
 
-			if (isNextMonth(current,first)) {
-				var record = new Date(first);
-				record.setMonth(first.getMonth() - 1);
-				self.majorTimeFrames.push({
-					width : (daysInMonth * dayWidth) + (daysInMonth - 1),
-					value : record
+				if (isNextMonth(current,first)) {
+					var record = new Date(first);
+					record.setMonth(first.getMonth() - 1);
+					self.majorTimeFrames.push({
+						width : (daysInMonth * dayWidth) + (daysInMonth - 1),
+						value : record
+					});
+					daysInMonth = 0;
+					current =new Date( first);
+				}
+				temptableHolder = temptableHolder + '<span class="minorTimeLine" style="width :'+ self.minorTimeFrameWidth+'px;">'+new Date(first).getDate()+'</span>'
+				self.minorTimeFrames.push({
+					value : new Date(first)
 				});
-				daysInMonth = 0;
-				current =new Date( first);
+				daysInMonth = daysInMonth + 1;
+				first.setDate(first.getDate() + 1);
 			}
-			temptableHolder = temptableHolder + '<span class="minorTimeLine" style="width :'+ self.minorTimeFrameWidth+'px;">'+new Date(first).getDate()+'</span>'
-			self.minorTimeFrames.push({
-				value : new Date(first)
-			});
-			daysInMonth = daysInMonth + 1;
-			first.setDate(first.getDate() + 1);
-		}
 		document.getElementById("minorTimeLine").innerHTML = temptableHolder;
 		self.majorTimeFrames.push({
 			width : (daysInMonth * dayWidth) + (daysInMonth - 1),
@@ -391,7 +436,7 @@
 			hoursInDay = hoursInDay + 1;
 			first.setHours(first.getHours() + 1);
 		}
-		
+
 		document.getElementById("minorTimeLine").innerHTML = temptableHolder;
 		self.majorTimeFrames.push({
 			width : (hoursInDay * hourWidth) + (hoursInDay - 1),
@@ -409,7 +454,7 @@
 		var second = endTime;
 		var factor = FACTORS.minutes;
 		var temptableHolder = '';
-		 
+
 
 		var minDuration = first.getTime() + 4 * ONE_HOUR_IN_MIILS;
 		if (second.getTime() < minDuration) {
@@ -423,8 +468,8 @@
 		var quaterHourWidth = factor.majorFactorWidth;
 		var currentDay = new Date(first);
 		self.minorTimeFrameWidth = quaterHourWidth;
-
 		//self.drawCurrentTimeLine(first, second, factor);
+		
 		while (second > first) {
 			if (isNextDay(currentDay,first)) {
 				var record = new Date(first);
@@ -447,7 +492,7 @@
 
 			first.setTime(first.getTime() + ONE_HOUR_IN_MIILS);
 		}
-		
+
 		document.getElementById("minorTimeLine").innerHTML = temptableHolder;
 		self.majorTimeFrames.push({
 			width : (quaterHoursInADay * quaterHourWidth) + (quaterHoursInADay - 1),
@@ -459,14 +504,19 @@
 	/**
 	 * 
 	 */
-	Controller.prototype.drawCurrentTimeLine = function(start,end, factor){
-		var self = this;	
-
-		self.currentTimeLine = {
-				height : self.data.list.length * 32
-		}
+	Controller.prototype.computeCurrentTimeLine = function(factor){
+		var self = this;
+		var currentTime = self.computeDifference(self.process.startTime,self.currentTime,factor);
+		return currentTime.difference * factor.minorFactorWidth +currentTime.padding+ 220;
 	}
-
+	
+	/**
+	 * 
+	 */
+	Controller.prototype.getCurrentTimeLine = function(){
+		console.log(this.currentTimeLine[self.selected.timeFrame])
+		return this.currentTimeLine[self.selected.timeFrame];
+	}
 	/**
 	 * 
 	 */
@@ -487,8 +537,8 @@
 		}
 		self.position = event.offsetX +xOffset - 100 - $("#ganttChart").scrollLeft();
 	};
-	
-	
+
+
 	/**
 	 * 
 	 */
@@ -503,6 +553,7 @@
 				break;
 		}
 	};
+	
 	/**
 	 * 
 	 */
@@ -512,7 +563,7 @@
 					_sdCommonViewUtilService.openActivityView(col.oid);
 				});
 	};
-	
+
 	/**
 	 * 
 	 */
@@ -520,8 +571,8 @@
 		var self = this;
 		self.drawTimeFrames();
 	};
-	
-	
+
+
 	/**
 	 * 
 	 */
@@ -529,17 +580,20 @@
 		var self = this;
 		self.majorTimeFrames = [];
 		self.minorTimeFrames = [];
-		
+
 		var start = self.getStartTime();
 		var end = new Date();
-		
+
 		if(self.process.endTime) {
 			end = new Date(self.process.endTime);
 		}
-		else if(self.process.predictedEndTime) {
-			end = new Date(self.process.predictedEndTime);
+		else if(self.process.expectedEndTime ) {
+
+			if(new Date(self.process.expectedEndTime) > end ){
+				end = new Date(self.process.expectedEndTime);
+			}
 		}
-		
+
 		switch (self.selected.timeFrame) {
 			case "minutes":
 				self.drawTimeFrameMinutes(start, end);
@@ -584,14 +638,14 @@
 		}
 		return false;
 	}
-	
+
 	/**
 	 * 
 	 */
 	Controller.prototype.expandAll = function() {
 		this.dataTable.expandAll();
 	};
-	
+
 	/**
 	 * 
 	 */
@@ -606,7 +660,7 @@
 		this.showAuxiliary = !this.showAuxiliary;
 		this.dataTable.refreshUi();
 	};
-	
+
 	/**
 	 * 
 	 */
@@ -616,7 +670,7 @@
 		}
 		return "Show auxiliary";
 	};
-	
+
 	/**
 	 * 
 	 */
@@ -630,36 +684,37 @@
 		}
 
 	};
-	
+
 	/**
 	 * After tree table
 	 */
-	
+
 	Controller.prototype.fetchData = function(params){
 		var self = this;
 		var deferred = _q.defer();
 		var data = {};
-		
+
 		if(!params) {
-			
+
 			self.currentTime = new Date(); //Current Time Load once intially
-			
+
 			_sdProcessInstanceService.getProcessByOid(self.selected.process).then(function(process){
 				self.benchmarkCategories = [];
 				self.process = process;
-			
+
 				//Root Oid present then the process is a subprocess. Draw chart with root process.
 				if(process.processInstanceRootOID){
 					_sdProcessInstanceService.getProcessByOid(process.processInstanceRootOID).then(function(rootProcess){
 						self.process = rootProcess;
-						self.drawTimeFrames();
-						
-						var parent = self.constructDataForProcess(rootProcess);
-						parent.children = [];
-						parent.$leaf =  false
-						parent.$expanded =  true
 						self.getBenchmarkCategories(rootProcess).then(function() {
-							self.getChildren(rootProcess.oid).then(function(childrens){
+							self.process.expectedEndTime = self.getExpectedDurationForProcess(rootProcess.qualifiedId) * ONE_HOUR_IN_MIILS + process.startTime;
+							self.drawTimeFrames();
+							var parent = self.constructDataForProcess(rootProcess);
+							parent.children = [];
+							parent.$leaf =  false
+							parent.$expanded =  true
+
+							self.getChildren(rootProcess.oid,rootProcess.qualifiedId).then(function(childrens){
 								parent.children = childrens;
 								data.list   = [parent];
 								data.totalCount =	data.list.length;
@@ -667,105 +722,113 @@
 							});
 						});
 					});
-				
+
 
 				} else {
-					var parent = self.constructDataForProcess(process);
-					parent.children = [];
-					parent.$leaf =  false
-					parent.$expanded =  true
-
-					
-					self.drawTimeFrames();
 					self.getBenchmarkCategories(process).then(function() {
-						self.getChildren(process.oid).then(function(childrens){
+					
+						self.process.expectedEndTime = self.getExpectedDurationForProcess(process.qualifiedId) * ONE_HOUR_IN_MIILS + process.startTime;
+						var parent = self.constructDataForProcess(process);
+						parent.children = [];
+						parent.$leaf =  false
+						parent.$expanded =  true
+						self.drawTimeFrames();
+
+						self.getChildren(process.oid,process.qualifiedId).then(function(childrens){
 							parent.children = childrens;
-							
 							data.list   = [parent];
 							data.totalCount =	data.list.length;
 							deferred.resolve(data);
 						});
 					});	
-					
 				}
-			
-
 			});
 
 		} else {
-			
-			self.getChildren(params.parent.piOid).then(function(childrens) {
+
+			self.getChildren(params.parent.piOid, params.parent.qualifiedId).then(function(childrens) {
 				data.list = childrens;
 				data.totalCount =	data.list.length;
 				deferred.resolve(data);
 			})
-			
+
 		}
 		return deferred.promise;
 	};
-	
-	
-	Controller.prototype.getChildren = function(oid) {
+
+
+	Controller.prototype.getChildren = function(oid, qId) {
 		var self = this;
 		var defered = _q.defer();
 		var children = []
 		_sdActivityInstanceService.getByProcessOid(oid).then(function(activityList){
 			angular.forEach(activityList, function(activity){
-				var activityGraphData  = self.constructDataForActivity(activity);
+				var activityGraphData  = self.constructDataForActivity(qId,activity);
 				children.push(activityGraphData)
 			});
-			
+
 			defered.resolve(children);
-			
+
 		});
 		return defered.promise;
 	}
-	
+
 	/**
 	 * 
 	 */
-	Controller.prototype.constructDataForActivity = function(data) {
+	Controller.prototype.constructDataForActivity = function(pQId ,data) {
 		var self = this;
-		var normalizedData = this.normalizeActivityData(data);
-		
+		var normalizedData = this.normalizeActivityData(pQId,data);
+
 		if(normalizedData.piOid){
 			normalizedData.$leaf = false;
 		}
-		
+
 		normalizedData.days = self.getGraphData(normalizedData,'days');
 		normalizedData.hours = self.getGraphData(normalizedData,'hours');
 		normalizedData.minutes = self.getGraphData(normalizedData,'minutes');
 		return normalizedData;
 	}
-	
+
 	/**
 	 * 
 	 */
 	Controller.prototype.constructDataForProcess = function(data){
 		var self = this;
 		var normalizedData = self.normalizeProcessData(data)
-		
+
 		normalizedData.days = self.getGraphData(normalizedData,'days');
 		normalizedData.hours = self.getGraphData(normalizedData,'hours');
 		normalizedData.minutes = self.getGraphData(normalizedData,'minutes');
 		return normalizedData;
 	}
-	
+
 	/**
 	 * 
 	 */
-	Controller.prototype.normalizeActivityData = function(activity) {
+	Controller.prototype.normalizeActivityData = function(pQId,activity) {
 		var self = this;
 		var statusColor = self.getBarColor(activity.status.value,"Activity", false);
 		var bColor = self.getBarColor(activity,"Activity", true);
-		
+
 		var piOid = null;
+		var expectedDuraion = null;
+		var qualifiedId = null;
 		var auxiliary = activity.auxillary;
 		if(activity.activity.implementationTypeId == 'Subprocess'){
 			var process =  _sdProcessInstanceService.getProcessByStartingActivityOid( activity.activityOID, true);
 			piOid = process.oid
 			auxiliary = process.auxillary;
+			qualifiedId = process.qualifiedId;
+			expectedDuraion = self.getExpectedDurationForProcess(process.qualifiedId);
 		}
+
+		if(!expectedDuraion) {
+			var activityId = activity.activity.name.replace(/\s/g, "");
+			expectedDuraion = self.getExpectedDurationForActivity(pQId,activityId);
+		}
+		
+		
 		
 		var data = {
 				name : activity.activity.name,
@@ -779,14 +842,14 @@
 				benchmarkCategory : activity.benchmark,
 				type : activity.activity.implementationTypeId,
 				subProcessId : (activity.processInstance) ? activity.processInstance.oid : null,
-				auxiliary : auxiliary,
-				piOid : piOid
+						auxiliary : auxiliary,
+						piOid : piOid,
+						expectedEndTime : expectedDuraion ? (activity.startTime+expectedDuraion * ONE_HOUR_IN_MIILS) : 0,
+								qualifiedId :qualifiedId
 		}
-		
 		return data;
-		
 	};
-	
+
 	/**
 	 * 
 	 */
@@ -794,27 +857,39 @@
 		var self = this;
 		var statusColor = self.getBarColor(piData.status.value,"Process",false);
 		var bColor = self.getBarColor(piData,"Process", true);
+
+		var expectedDuraion = self.getExpectedDurationForProcess(piData.qualifiedId);
+
 		var data = {
 				name : piData.processName,
 				startTime :  piData.startTime,
 				endTime :  piData.endTime,
-				predictedEndTime :   piData.predictedEndTime,
-				sColor : statusColor,
-				bColor : bColor,
-				activatable : piData.activatable,
-				status : piData.status,
-				benchmarkCategory : piData.benchmark,
-				type : "process",
-				auxiliary : piData.auxillary
+				expectedEndTime :  expectedDuraion ? (piData.startTime+expectedDuraion * ONE_HOUR_IN_MIILS) : 0,
+						sColor : statusColor,
+						bColor : bColor,
+						activatable : piData.activatable,
+						status : piData.status,
+						benchmarkCategory : piData.benchmark,
+						type : "process",
+						auxiliary : piData.auxillary,
 		}
 		return data;
 	};
-	
-	
+
 	/**
 	 * 
 	 */
-	 function getFactor (timeframe){
+	Controller.prototype.getClassForCompletedBar = function(length) { 
+		if(length < 1){
+			return "img-rounded"
+		}
+	}
+
+
+	/**
+	 * 
+	 */
+	function getFactor (timeframe){
 		var factor = null;
 		switch (timeframe) {
 			case "minutes":
@@ -829,13 +904,13 @@
 		}
 		return factor;
 	}
-	
-	 /**
-	  * 
-	  */
+
+	/**
+	 * 
+	 */
 	Controller.prototype.getStartTime = function(timeFrame){
 		var self = this;
-		
+
 		var start = new Date(self.process.startTime);
 		switch (timeFrame) {
 			case "minutes":
@@ -850,8 +925,8 @@
 		}
 		return start;
 	}
-	
-	
+
+
 	/**
 	 * 
 	 */
@@ -866,10 +941,10 @@
 			case "days":
 				return rowData.days;
 		}
-		
+
 		return rowData.days;
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -884,7 +959,7 @@
 		}
 		return rowData.sColor;
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -898,9 +973,9 @@
 		}
 		return rowData.status.label;  
 	}
-	
-	
-	
+
+
+
 	/**
 	 * 
 	 */
@@ -912,12 +987,11 @@
 		var factor =  getFactor(timeFrame);
 		var startTime = self.getStartTime(timeFrame)
 		var minorFactorWidth =factor.minorFactorWidth;
-	
 
 		var delay = self.computeDifference(startTime.getTime(),
 				item.startTime, factor);
 		var inflightLength = null;
-
+		
 
 		var status = item.status;
 		if(self.selected.legend == "benchmark" && item.benchmarkCategory.label) {
@@ -925,8 +999,6 @@
 		}
 
 		//If the item doesnt have a end time or a activity for a process which has stil not completed.
-
-		
 		if(!item.endTime ||  FINISHED_STATUSES.indexOf(item.status.value) < 0) {
 			item.endTime = self.currentTime.getTime();
 		}
@@ -934,36 +1006,41 @@
 		var completedLength = self.computeDifference(item.startTime,
 				item.endTime, factor)
 
-				if(item.predictedEndTime) {
-					inflightLength  = self.computeDifference(item.endTime,
-							item.predictedEndTime, factor);
-				}	
+		if(item.expectedEndTime && FINISHED_STATUSES.indexOf(item.status.value) < 0) {
+					inflightLength  = self.computeDifference(item.endTime,item.expectedEndTime, factor);
+		}else {
+			item.expectedEndTime = null;
+		}
 
 
 		var delay = (delay.difference * minorFactorWidth)  + delay.padding -1;
 		var completed =  completedLength.difference * minorFactorWidth + completedLength.padding;
-		if( completedLength.difference < 1){
+		if( completedLength.difference < 2){
 			completed = 2;
 		}
 
 		var inflight = 0;
 		if(inflightLength) {
 			inflight = (inflightLength.difference * minorFactorWidth) + inflightLength.padding;
-			if(inflightLength.difference < 1){
+			if(inflightLength.difference < 2){
 				inflight = 2;
 			}
 		}
 
-		 var graphData = {
-			delay : delay,
-			completed : completed,
-			inflight : inflight
+		var graphData = {
+				delay : delay,
+				completed : completed,
+				inflight : inflight
 		};
-		 
-		 return graphData;
+		
+		if(!self.currentTimeLine[timeFrame]){
+			self.currentTimeLine[timeFrame] = delay + self.computeCurrentTimeLine(factor);
+		}
+
+		return graphData;
 	}
 
-	
-	
+
+
 
 })();

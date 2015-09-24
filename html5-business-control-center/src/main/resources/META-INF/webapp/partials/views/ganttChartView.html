@@ -23,8 +23,7 @@
 <div id="gantt_chart_container">
 		
 	<table sd-data-table="ctrl.dataTable" sd-data="ctrl.fetchData(params)" sda-ready="ctrl.tableReady" style="width: auto;"
-			sda-mode="local" sda-no-pagination="true"
-			sda-tree-table>
+			sda-mode="local" sda-no-pagination="true" sda-filter-handler="ctrl.auxFilter(rowData);" sda-tree-table>
 			<thead >
 				<tr>
 					<th sda-label="">  
@@ -41,12 +40,14 @@
 							           <i class="sc icon-lg sc-minus"> </i>
 							 </button>
 							<button class="button-link tbl-toolbar-item tbl-tool-link" 
-							        title="{{ctrl.getAuxTitle();}}" ng-click="ctrl.toggleAuxillary();">
-							        <i class="pi icon-lg pi-eye-open"> </i>
+							        title="{{ctrl.getAuxTitle();}}" ng-click="ctrl.toggleAuxiliary();">
+							        <i class="icon-lg pi " ng-class="{'pi-eye-open' : ctrl.showAuxiliary,'pi-eye-close' : !ctrl.showAuxiliary}" > </i>
 							</button>
 						</div>
 					</th>
 					<th  sda-label=""  >
+					 	<div class="currentTimeLine" ng-attr-style="left :{{ctrl.currentTimeLine[ctrl.selected.timeFrame]}}px;">.</div>
+					
 						<div style="clear:both;"> 
 								<span ng-repeat = "major in ctrl.majorTimeFrames" class="majorTimeLine" ng-attr-style="width :{{major.width}}px;" ng-mouseenter="major.toolTip = true;ctrl.mouseEnter($event, 75)" ng-mouseleave="major.toolTip = false" >
 										<span ng-if="ctrl.selected.timeFrame == 'days'"> {{major.value |  date:'MMMM yyyy'}} </span>
@@ -64,6 +65,7 @@
 											<span ng-if="ctrl.selected.timeFrame == 'hours'"> {{minor.value}}</span>
 											<span ng-if="ctrl.selected.timeFrame == 'minutes'"> {{minor.value}}</span>
 								</span>
+								
 						</div> 
 					
 					
@@ -89,17 +91,13 @@
 					<td style="padding-left: 0px;"> 
 						<span ng-mouseleave="rowData.toolTip = false"> <span
 							ng-mouseenter="rowData.toolTip = true;ctrl.mouseEnter($event)"
-							class="timeLineCompleted img-rounded"
+							class="timeline timeLineCompleted" ng-class="ctrl.getClassForCompletedBar(ctrl.getChartData(rowData).inflight);"
 							ng-attr-style="width :{{ctrl.getChartData(rowData).completed}}px ; margin-left :{{ctrl.getChartData(rowData).delay}}px ; background-color: {{ctrl.getRowColor(rowData)}};color:{{ctrl.getRowColor(rowData)}}">.
-						</span> 
-						<span ng-if="rowData.type == 'process' && ctrl.getChartData(rowData).inflight > 0"
-							class="ganttChart-currentTimeLine"
-							ng-attr-style="height:{{ctrl.currentTimeLine.height}}px;">
 						</span> 
 						<span
 							ng-mouseenter="rowData.toolTip = true;ctrl.mouseEnter($event,ctrl.getChartData(rowData).completed)"
 							ng-if="ctrl.getChartData(rowData).inflight > 0"
-							class="timeLineCompleted timeLineInflight img-rounded"
+							class="timeline timeLineInflight"
 							ng-attr-style="width :{{ctrl.getChartData(rowData).inflight}}px ; background-color: {{ctrl.getRowColor(rowData)}};color:{{ctrl.getRowColor(rowData)}}">.
 						</span>
 					</span>
@@ -112,10 +110,10 @@
 		
 							<div>{{i18n('business-control-center-messages.views-customColumn-startDate')}}
 								: {{rowData.startTime | date:ctrl.timeFormat}}</div>
-							<div ng-if="!rowData.predictedEndTime">{{i18n('business-control-center-messages.views-customColumn-endDate')}}
+							<div ng-if="!rowData.expectedEndTime">{{i18n('business-control-center-messages.views-customColumn-endDate')}}
 								: {{rowData.endTime | date:ctrl.timeFormat}}</div>
-							<div ng-if="rowData.predictedEndTime">{{i18n('business-control-center-messages.views-customColumn-endtDate')}}
-								: {{rowData.predictedEndTime | date:ctrl.timeFormats}}</div>
+							<div ng-if="rowData.expectedEndTime">{{i18n('business-control-center-messages.views-customColumn-endDate')}}
+								: {{rowData.expectedEndTime | date:ctrl.timeFormat}}</div>
 						</div>
 					</td>
 				</tr>

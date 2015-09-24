@@ -16,7 +16,8 @@
 	'use strict';
 
 	angular.module('workflow-ui.services').provider('sdProcessInstanceService', function () {
-		this.$get = ['$rootScope', '$resource', '$http', '$filter', 'sdUtilService','sdDataTableHelperService','$q', function ($rootScope, $resource, $http, $filter, sdUtilService, sdDataTableHelperService, $q) {
+		this.$get = ['$rootScope', '$resource', '$http', '$filter', 'sdUtilService','sdDataTableHelperService','$q',
+		             function ($rootScope, $resource, $http, $filter, sdUtilService, sdDataTableHelperService, $q) {
 			var service = new ProcessInstanceService($rootScope, $resource, $http, $filter, sdUtilService, sdDataTableHelperService, $q);
 			return service;
 		}];
@@ -32,18 +33,27 @@
 		/**
 		 * 
 		 */
-		ProcessInstanceService.prototype.getBenchmarkCategories = function(bOid) {
+		ProcessInstanceService.prototype.getBenchmarkDetailsProcess = function(bOid,pQId) {
 			var deferred = $q.defer();
 			
 			var restUrl = sdUtilService.getBaseUrl() + "services/rest/portal/benchmark-definitions/run-time/"+bOid;
 			
+			var result = {}
+			
 			$resource(restUrl).get().$promise.then(function(data){ 
-				var result = {
-						name  :  data.content.name,
-						categories : data.content.categories
-				}
+
+				result.name  = data.content.name,
+				result.categories = data.content.categories
+				
+				var processDefinitions = {};
+
+				angular.forEach(data.content.models,function(model){  
+					processDefinitions = model.processDefinitions;			
+				});
+				result.processDefinitions = processDefinitions;
+			
 				deferred.resolve(result);
-			});;
+			});
 			return deferred.promise;
 		}
 		
@@ -68,7 +78,7 @@
 			if(!sync) {
 				return $resource(restUrl).get().$promise;
 			} else {
-				 return sdUtilService.syncAjax(restUrl);
+				return sdUtilService.syncAjax(restUrl);
 			}
 		}
 

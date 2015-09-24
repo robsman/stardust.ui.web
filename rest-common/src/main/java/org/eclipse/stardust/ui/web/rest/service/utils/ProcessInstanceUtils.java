@@ -1787,6 +1787,7 @@ public class ProcessInstanceUtils
       dto.processInstanceRootOID = pi.getRootProcessInstanceOID();
       dto.parentProcessInstanceOID = pi.getParentProcessInstanceOid();
       dto.oid = pi.getOID();
+      dto.qualifiedId = processDefinition.getQualifiedId();
 
       PriorityDTO priority = new PriorityDTO();
       priority.value = pi.getPriority();
