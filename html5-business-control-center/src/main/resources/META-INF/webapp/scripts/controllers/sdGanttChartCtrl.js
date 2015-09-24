@@ -1006,7 +1006,7 @@
 		var completedLength = self.computeDifference(item.startTime,
 				item.endTime, factor)
 
-		if(item.expectedEndTime && FINISHED_STATUSES.indexOf(item.status.value) < 0) {
+		if(item.expectedEndTime && FINISHED_STATUSES.indexOf(item.status.value) < 0 && item.endTime < item.expectedEndTime) {
 					inflightLength  = self.computeDifference(item.endTime,item.expectedEndTime, factor);
 		}else {
 			item.expectedEndTime = null;
