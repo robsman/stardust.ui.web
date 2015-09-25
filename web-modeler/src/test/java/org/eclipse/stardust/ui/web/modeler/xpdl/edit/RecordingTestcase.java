@@ -63,6 +63,7 @@ public class RecordingTestcase
    protected String PROVIDER_MODEL_ID2 = "ProviderModel2";
 
    protected String CONSUMER_MODEL_ID = "ConsumerModel";
+   protected String UPGRADE_MODEL_ID = "UpgradeModel";
 
    protected byte[] consumerModelModelBytes;
 
@@ -97,6 +98,7 @@ public class RecordingTestcase
    protected ModelType providerModel2;
 
    protected ModelType consumerModel;
+   protected ModelType upgradeModel;
 
    protected String modelLocation = "../../service/rest/";
 
@@ -188,8 +190,15 @@ public class RecordingTestcase
             eObjectUUIDMapper.map(i.next());
          }
       }
+      if (includeUpgradeModel())
+      {
+         eObjectUUIDMapper.map(upgradeModel);
+         for (Iterator<EObject> i = upgradeModel.eAllContents(); i.hasNext();)
+         {
+            eObjectUUIDMapper.map(i.next());
+         }
+      }      
    }
-
 
    protected void replaySimple(String command, String testScenarioName, String parameter, boolean performResponseCallback)
    {
@@ -288,7 +297,10 @@ public class RecordingTestcase
 
    public void saveModel()
    {
-      XpdlModelIoUtils.saveModel(providerModel);
+      if (providerModel != null)
+      {      
+         XpdlModelIoUtils.saveModel(providerModel);
+      }
       if (providerModel2 != null)
       {
          XpdlModelIoUtils.saveModel(providerModel2);
@@ -297,6 +309,10 @@ public class RecordingTestcase
       {
          XpdlModelIoUtils.saveModel(consumerModel);
       }
+      if (upgradeModel != null)
+      {
+         XpdlModelIoUtils.saveModel(upgradeModel);
+      }      
    }
 
    protected void saveReplayModel(String filePath)
@@ -351,7 +367,23 @@ public class RecordingTestcase
             e.printStackTrace();
          }
       }
-
+      if (upgradeModel != null)
+      {
+         bytes = XpdlModelIoUtils.saveModel(upgradeModel);
+         xmlString = new String(bytes);
+         try
+         {
+            PrintWriter out = new PrintWriter(filePath + "/" + upgradeModel.getName()
+                  + ".xpdl");
+            out.println(xmlString);
+            out.flush();
+            out.close();
+         }
+         catch (FileNotFoundException e)
+         {
+            e.printStackTrace();
+         }
+      }
    }
 
    @Before
@@ -385,6 +417,10 @@ public class RecordingTestcase
       Mockito.when(consumerModel.getId()).thenReturn(CONSUMER_MODEL_ID);
       Mockito.when(consumerModel.getName()).thenReturn(CONSUMER_MODEL_ID + ".xpdl");
 
+      final Document upgradeModel = Mockito.mock(Document.class);
+      Mockito.when(upgradeModel.getId()).thenReturn(UPGRADE_MODEL_ID);
+      Mockito.when(upgradeModel.getName()).thenReturn(UPGRADE_MODEL_ID + ".xpdl");
+            
       Folder modelsFolder = Mockito.mock(Folder.class);
 
       if (includeConsumerModel())
@@ -400,12 +436,14 @@ public class RecordingTestcase
                   asList(providerModel, consumerModel));
          }
       }
+      else if (includeUpgradeModel())
+      {
+         Mockito.when(modelsFolder.getDocuments()).thenReturn(asList(upgradeModel));         
+      }
       else
       {
          Mockito.when(modelsFolder.getDocuments()).thenReturn(asList(providerModel));
-
       }
-
 
       DocumentManagementService dmsService = mockServiceFactoryLocator.get()
             .getDocumentManagementService();
@@ -467,6 +505,25 @@ public class RecordingTestcase
                   }
                }
             });
+      
+      Mockito.when(dmsService.retrieveDocumentContent(upgradeModel.getId())).thenAnswer(
+            new Answer<byte[]>()
+            {
+               @Override
+               public byte[] answer(InvocationOnMock invocation) throws Throwable
+               {
+                  InputStream isModel = getClass().getResourceAsStream(
+                        modelLocation + upgradeModel.getName());
+                  try
+                  {
+                     return toByteArray(isModel);
+                  }
+                  finally
+                  {
+                     closeQuietly(isModel);
+                  }
+               }
+            });      
    }
 
    @Before
@@ -500,11 +557,14 @@ public class RecordingTestcase
    {
       return false;
    }
-   
+
+   protected boolean includeUpgradeModel()
+   {
+      return false;
+   }
+      
    protected String getProviderModelID()
    {
       return this.PROVIDER_MODEL_ID;
    }
-
-
 }
