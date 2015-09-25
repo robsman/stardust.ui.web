@@ -178,10 +178,13 @@ ul.sd-tree i.invalid:before{
 	color: red !important;
 }
 
-.sd-tree .match {
-	color: rgb(250, 250, 250);
+.sd-tree .match > div > a {
 	background: rgb(77, 114, 171);
 	border-radius: 2px;
+}
+
+.sd-tree .match > div > a > span{
+  color : #FFF !important;
 }
 
 .sd-tree .hide {

@@ -434,7 +434,76 @@
   ParticipantManagementCtrl.prototype.onTreeInit = function(api) {
     this.treeApi = api;
   };
-
+  
+  /**
+   * Wrapper for our TreeApi's filter function.
+   * @param filter - string to match upon, in the case when no
+   * 				 filter is passed then the tree will be 
+   * 				 reset to its unfiltered state.
+   */
+  ParticipantManagementCtrl.prototype.filterTree = function(filter){
+	  var comparatorFx; //filterFX for the filterTree invocation.
+	  
+	  comparatorFx= function(nodeItem){
+		  console.log(nodeItem);
+		  return nodeItem.name.indexOf(filter) > -1;
+	  }
+	  
+	  //deselect all currently selected nodes
+	  this.selectedTreeNodes = [];
+	  
+	  //If no filter passed then just reset the tree
+	  if(filter===undefined){
+		  //invocation with no parameters will reset the tree
+		  this.treeApi.filterTree();
+	  }
+	  //Otherwise invoke our treeAPI's filter function
+	  else{
+		  //filter tree forcing an internal elementMap update,
+		  //ideally we should only pass true when we know that
+		  //the tree is dirty to avoid needless overhead.
+		  //TODO: maintain proper dirty state of tree.
+		  this.treeApi.filterTree(comparatorFx,true);
+	  }
+	  
+  };
+  
+  /**
+   * Filter the participant tree based on the users selected in the user table.
+   */
+  ParticipantManagementCtrl.prototype.filterByTableSelection = function(){
+	  
+	  var comparatorFx, //filterFX for the filterTree invocation.
+	  	  that = this;
+	  
+	  if(this.rowSelectionForAllUsersTable.length ===0){
+		  return;
+	  }
+	  
+	  //deselect all currently selected nodes
+	  this.selectedTreeNodes = [];
+	  
+	  comparatorFx= function(nodeItem){
+		  return that.rowSelectionForAllUsersTable.some(function(v){
+			  return v.oid === nodeItem.OID && nodeItem.type==="USER";
+		  });
+	  };
+	  
+	  this.treeApi.filterTree(comparatorFx,true);
+  }
+  
+  ParticipantManagementCtrl.prototype.filterForEmptyUsers = function(){
+	  var comparatorFx; //filterFX for the filterTree invocation.
+	  
+	  //deselect all currently selected nodes
+	  this.selectedTreeNodes = [];
+	  
+	  comparatorFx= function(nodeItem){
+		  return nodeItem.type !== "USER" && nodeItem.children.length===0;
+	  }
+	  this.treeApi.filterTree(comparatorFx,true);
+  };
+  
   // Handle our tree callbacks inclduing lazy load on node expand
   ParticipantManagementCtrl.prototype.eventCallback = function(data, e) {
     this.resetMessages();

@@ -77,17 +77,16 @@
 						<i class="sc icon-lg sc-torch"></i>
 					</button>
 				</div> -->
-				<div class="view-panel-toolbar toolbar-buttons">
-					<span sd-refresh sda-on-refresh="ctrl.treeInit();"
-						aid="COM-PartMgr-RefreshParticipantTree"></span>
-				</div>
 
-				<!-- <div>
-					<input type="text" ng-model="myFilter" />
-					<button ng-click="ctrl.applyFilter(myFilter)"
-						aid="COM-PartMgr-ApplyFilter">Filter</button>
-					<button ng-click="ctrl.applyFilter()" aid="COM-PartMgr-ResetFilter">Reset</button>
-				</div> -->
+
+				<div>
+					<input ng-blur="ctrl.filterTree(myFilter)" type="text" ng-model="myFilter" aid="COM-PartMgr-ApplyFilter" />
+					<!--button class="pi pi-refresh pi-1x" ng-click="ctrl.filterTree()" aid="COM-PartMgr-ResetFilter"></button-->
+					<span sd-refresh sda-on-refresh="ctrl.treeInit();" aid="COM-PartMgr-RefreshParticipantTree"></span>
+					<button class="pi pi-ban pi-1x" ng-click="ctrl.filterForEmptyUsers()"></button>
+					<button class="pi pi-torch pi-1x" ng-click="ctrl.filterByTableSelection()"></button>
+				</div>
+				
 			</div>
 			<div class="permission-tree">
 				<ul sd-tree="ctrl.onTreeInit(api)"

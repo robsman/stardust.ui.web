@@ -76,6 +76,12 @@
 	      },
 	      link:function(scope,elem,attrs,controller){
 	        
+	    	//Build an internal map of nodeIds to their actual element references.
+		    //This will be incomplete for lazy loaded nodes
+	        $timeout(function(){
+	           controller.api.updateElementMap();
+	        },0);  
+	    	  
 	        elem.addClass("sd-tree"); //Drives our child CSS structure
 	        controller.treeRoot=scope; //Share our scope to descendant directives
 	        controller.api.eventCallback=scope.callback; //user defined event cback
@@ -84,6 +90,127 @@
 	        controller.api.getMenuItems =scope.getMenuItems; //Retrieve menuItems
 	        controller.childNodes ={}; //Each descendant sdTreeNode will map to here
 	        controller.api.getDomAttachment = scope.getDomAttachment;//ref our dom attachement callback
+	        
+	        //======================================================================
+	        //Builds a map of each nodeId hashed to a jquery element and an 
+	        //angular scope. This function is called after the initial sdTree 
+	        //compilation, but thereafter must be invoked manaully in order to
+	        //keep the element map in synch with nodes added or removed after 
+	        //inital tree compilation.
+	        //======================================================================
+	        controller.api.updateElementMap = function(){
+	        	
+	           var objScope,
+                  elements,
+                  tempElem;
+	           
+	           
+	           
+	           elements = $('[sda-node-id]',elem);
+	           controller.elementalMap = {};
+	           for(var i = 0 ; i < elements.length; i++){
+	        	   tempElem = elements[i];
+	        	   objScope = angular.element(tempElem).scope();
+	        	   controller.elementalMap[objScope.nodeId] = {
+	        			   "scope" : objScope, 
+	        			   "elem" : $(tempElem)
+	        	   };
+	           }
+	        };
+	        
+	        //======================================================================
+	        //Reset the tree to an entirely collapsed state, removing all match
+	        //and hide classes that were added by the filterTree function
+	        //======================================================================
+	        controller.api.resetFilter = function(){
+	        	for(var key in controller.elementalMap){
+	        		tempObj = controller.elementalMap[key];
+	        		tempObj.scope.isVisible=false;
+	        		tempObj.elem.removeClass("match");
+	        		tempObj.elem.removeClass("hide");
+	        	}  
+	        };
+	        
+	        //======================================================================
+	        //Filters the tree, hiding and collapsing nodes which do not return true
+	        //from the supplied comparator function. For nodes that return true then
+	        //a match class is added.
+	        //Param: comparatorFX - comparator function supplied by the caller, the 
+	        //nodeItem is passed into the invocation and boolean True/False should
+	        //be returned. True values are considered matches.
+	        //======================================================================
+	        controller.api.filterTree = function(comparatorFx,forceUpdate){
+	        	
+	            var matches = [], //collection of matched nodes based on filter
+	                childRecurse,
+	                tempObj;
+	            
+	            //By default we do not force updates of the element map
+	            forceUpdate = (forceUpdate===undefined)?false:forceUpdate;
+	            
+	            //ensure that we have an up-to-date map of the tree
+	            if(forceUpdate===true){
+	            	controller.api.updateElementMap();
+	            }
+	            
+	            if(!angular.isFunction(comparatorFx)){
+	              controller.api.resetFilter();
+	              return;
+	            }
+	                
+	            //Recursive funtion to show or hide all scopes beneath current scope
+	            childRecurse = function(cs,isVisible){
+	               for(; cs; cs= cs.$$nextSibling) {
+	                      cs.isVisible=isVisible;
+	                      childRecurse(cs.$$childHead);
+	                }
+	            };
+	            
+	            //step 1: reset entire tree, but look for matches along the way
+	            for(var key in controller.elementalMap){
+	                tempObj = controller.elementalMap[key];
+	                tempObj.scope.isVisible=false;
+	                tempObj.elem.removeClass("match");
+	                tempObj.elem.removeClass("hide");
+	                if(comparatorFx(tempObj.scope.nodeItem)===true){
+	                  matches.push(tempObj);
+	                }
+	            }
+	            
+	            //step 2 ,iterate over matches expanding to the root
+	            matches.forEach(function(v){
+	              v.scope.isVisible = true;
+	              v.elem.addClass("match");
+	              childRecurse(v.scope.$$childHead,true);
+	              v = v.scope.$parent;
+	              while(v){
+	                if( v.hasOwnProperty("isVisible")){v.isVisible=true;}
+	                 v = v.$parent;
+	              }
+	            });
+	            
+	            //now hide all non visible nodes
+	            for(key in controller.elementalMap){
+	              tempObj = controller.elementalMap[key];
+	              if(tempObj.scope.isVisible===false){
+	                tempObj.elem.addClass("hide");
+	              }
+	            }
+	
+	            //collapse children
+	            for(var i = matches.length-1;i>=0;i--){
+	                childRecurse(matches[i].scope.$$childHead,false);
+	            }
+	            
+	            //One final cleanup pass to take care of any children
+	            //of matches that were matches themselves which were
+	            //closed in the collapse children step
+	            for(i = matches.length-1;i>=0;i--){
+	                matches[i].scope.isVisible=true;
+	            }
+
+	        };
+	        
 	        
 	        //======================================================================
 	        //Empty all elements from the controllers childNodes collection.
@@ -407,7 +534,8 @@
 	          getParentNodeId : controller.api.getParentNodeId,
 	          setNodeIcon : controller.api.setNodeIcon,
 	          removeChildByKey : controller.api.removeChildByKey,
-	          purgeChildNodes : controller.api.purgeChildNodes
+	          purgeChildNodes : controller.api.purgeChildNodes,
+	          filterTree  : controller.api.filterTree
 	        };
 	        
 	        scope.treeInit({api:publicApi});

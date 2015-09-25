@@ -709,3 +709,13 @@ Icon implementations
 	font-family:FontAwesome;
 	content:"\f0c0";
 }
+
+.pi-ban:before{
+	font-family:FontAwesome;
+	content: "\f05e";
+}
+
+.pi-torch:before{
+	font-family:starclipse;
+	content: '\F09F';
+}
