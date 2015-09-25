@@ -367,17 +367,34 @@
       isSelected = " selected ";
     }
 
-    if (!item.type) { return "sc sc-fw icon-lg sc-spiral" + isSelected; }
+    if (!item.type) { return "sc sc-fw icon-lg sc-spiral" + isSelected; } //model
 
-    if (item.type === "USER") { return "sc sc-fw icon-lg pi-user" + isSelected; }
-
-    if (item.type === "ROLE_UNSCOPED") { return "pi-role" + isSelected; }
-
-    if (item.type === "ROLE_SCOPED") { return "sc sc-fw icon-lg pi-scope-role" + isSelected; }
+    var styleClass = "sc sc-fw icon-lg ";
+    switch (item.type) {
+      case "ORGANIZATON_SCOPED_EXPLICIT": styleClass += "pi-org ";
+        break;
+      case "ORGANIZATON_SCOPED_IMPLICIT": styleClass += "pi-org ";
+        break;
+      case "ORGANIZATION_UNSCOPED": styleClass += "pi-org ";
+        break;
+      case "ROLE_SCOPED": styleClass += "pi-scope-role ";
+        break;
+      case "ROLE_UNSCOPED": styleClass += "pi-role ";
+        break;
+      case "USERGROUP": styleClass += "pi-user-group ";
+        break;
+      case "USER": styleClass += "pi-user ";
+        break;
+      case "DEPARTMENT": styleClass += "pi-department ";
+        break;
+      case "DEPARTMENT_DEFAULT": styleClass += "pi-department ";
+        break;
+      default: styleClass += "pi-department ";
+        break;
+    }
+    styleClass += isSelected;
     
-    if (item.type === "DEPARTMENT") { return "sc sc-fw icon-lg pi-department" + isSelected; }
-
-    return "sc sc-fw icon-lg pi-org" + isSelected;
+    return styleClass;
   };
 
   ParticipantManagementCtrl.prototype.menuCallback = function(menuData) {
