@@ -6,38 +6,38 @@
 			<button ng-if="activityTableCtrl.isWorklistMode()" sda-column="TRIVIAL_DATA"  aid="PP-ActivityTable-CompleteAll"
 					ng-disabled="!activityTableCtrl.containsAllTrivialManualActivities()"  ng-click="activityTableCtrl.$openCompleteDialog()" 
 					title="{{i18n('processportal.views-worklistPanel-tooltip-completeAll')}}" class="button-link tbl-toolbar-item tbl-tool-link">
-			 		  <i class="glyphicon glyphicon-share-alt icon-lg"></i>
+			 		  <i class="pi pi-quick-complete icon-lg"></i>
 			</button>
 			<button ng-if=" activityTableCtrl.defaultDelegateEnabled" ng-disabled="activityTableCtrl.dataTable.getSelection() < 1"  aid="PP-ActivityTable-DefaultDelegate"
 				    href="#" ng-click="activityTableCtrl.$openDefaultDelegationDialog( activityTableCtrl.dataTable.getSelection() );" 
 			        title="{{i18n('views-common-messages.common-toolTip-delegateToDefaultPerformer')}}" class="button-link tbl-toolbar-item tbl-tool-link" >
-			  		 <i class="glyphicon glyphicon-user icon-lg"></i>
+			  		 <i class="pi pi-user icon-lg"></i>
 			</button>
 			<button ng-disabled="activityTableCtrl.dataTable.getSelection() < 1" href="#" ng-click="activityTableCtrl.$openDelegateDialog();" aid="PP-ActivityTable-DelegateAll"
 			        title="{{i18n('processportal.toolbars-worklistView-tooltip-delegate')}}" class="button-link tbl-toolbar-item tbl-tool-link " >
-			  		 <i class="sc sc-badge-portrait icon-lg sc-user sc-left sc-top delegate-icon">
-                  	    <i class="sc sc-badge-icon sc-badge-icon-arrow-r icon-1-5x delegate-icon-arrow" ></i>
-               		 </i>
+			  		 <i class="pi pi-badge-portrait pi-fw pi-activity-delegate icon-lg pi-left pi-top">
+			         	<i class="pi pi-badge-icon pi-badge-icon-arrow-r"></i>
+			         </i>
 			</button>
 			<button ng-disabled="activityTableCtrl.dataTable.getSelection() < 1" aid="PP-ActivityTable-AbortAll" ng-click="activityTableCtrl.$openAbortDialog(activityTableCtrl.dataTable.getSelection())" 
 			        title="{{i18n('processportal.toolbars-worklistView-tooltip-abort')}}" class="button-link tbl-toolbar-item tbl-tool-link " ng-class="{'tbl-tool-joined-link' : activityTableCtrl.isActivityTableMode()}">
-			   <i class="glyphicon glyphicon-remove icon-lg"></i>
+			   <i class="pi pi-abort icon-lg"></i>
 			</button>
 			<button ng-if="activityTableCtrl.isActivityTableMode();" aid="PP-ActivityTable-AbortPopover" ng-click="activityTableCtrl.openAbortPopover($event)" ng-disabled="activityTableCtrl.dataTable.getSelection() < 1" 
 					class="button-link tbl-toolbar-item tbl-tool-link" 
 			        title ="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}">
-				<i class="glyphicon glyphicon-chevron-right icon-rotate-90"></i>
+				<i class="pi pi-menu-dropdown"></i>
 			</button>
 			<button ng-disabled="!activityTableCtrl.isPriorityChanged();" aid="PP-ActivityTable-SavePriority" ng-if="activityTableCtrl.priorityEditable" ng-click="activityTableCtrl.savePriorityChanges();" 
 			      title="{{i18n('views-common-messages.common-tooltip-savePriorityChanges')}}"  class="button-link tbl-toolbar-item tbl-tool-link">
-				<i class="glyphicon glyphicon-floppy-saved icon-lg"></i>
+				<i class="pi pi-save icon-lg"></i>
 			</button>
 		</div>
 		<div class="tbl-toolbar-section">
 			<button ng-click="activityTableCtrl.refresh()" ng-if="activityTableCtrl.isWorklistMode();" aid="PP-ActivityTable-refresh"
 					 title="{{i18n('processportal.launchPanels-worklists-button-refresh')}}"
 					 class="button-link tbl-toolbar-item tbl-tool-link">
-					 <i class="glyphicon glyphicon-refresh icon-lg"></i>
+					 <i class="pi pi-refresh icon-lg icon-lg"></i>
 			</button>
 		</div>
 	</div>
@@ -308,7 +308,7 @@
 						    ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}" class="button-link tbl-tool-link">
 							<span sd-popover id="processDocuments" sda-on-open="activityTableCtrl.openProcessDocumentsPopover(rowData);">
-								<i class="pi pi-process-documents"></i>
+								<i class="pi pi-process-documents icon-lg"></i>
 								<div class="popover-body" style="text-align: left; min-width: 100px;">
 									<div ng-show="rowData.contentLoaded">
 										<div ng-if="rowData.supportsProcessAttachments">

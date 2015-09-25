@@ -5,33 +5,28 @@
 			<!-- Abort process dialog -->
 			<button ng-disabled="processTableCtrl.dataTable.getSelection() < 1" ng-click="processTableCtrl.openAbortDialog(processTableCtrl.dataTable.getSelection())" aid="PP-ProcessTable-AbortAll"
 			  title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}" class="button-link tbl-toolbar-item tbl-tool-link tbl-tool-joined-link">
-			   <i class="sc sc-gear-close icon-lg"></i>
+			   <i class="pi pi-abort icon-lg"></i>
 			</button>
 			
 			<button class="button-link tbl-tool-link" ng-disabled="processTableCtrl.dataTable.getSelection() < 1" 
 			  title="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}" aid="PP-ProcessTable-AbortAllPopover"
 				ng-click="processTableCtrl.openAbortPopover($event);">
-				<i class="glyphicon glyphicon-chevron-right icon-rotate-90"></i>
+				<i class="pi pi-menu-dropdown"></i>
 			</button>
 			
 			<button ng-click="processTableCtrl.recoverProcess(this, processTableCtrl.dataTable.getSelection())" aid="PP-ProcessTable-RecoverAll"
 			  title="{{i18n('views-common-messages.common-tooltip-recover')}}" 
 				ng-disabled="processTableCtrl.dataTable.getSelection() < 1" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
 				 <div class="sc-badge">
-				         <i class="sc sc-badge-portrait sc-cog sc-left sc-top icon-lg">
-				                    <i class="sc sc-badge-bg sc-badge-bg-circle" ></i>
-				                    <i class="sc sc-badge-icon sc-badge-icon-arrow-l" style="color: white;"></i>
-				       </i>
+				         <i class="pi pi-recover icon-lg" />
 				  </div>
 			</button>
 			
 			<span sd-popover ng-disabled="processTableCtrl.dataTable.getSelection() < 1" id="caseMenu" title="{{i18n('views-common-messages.views-case-tooltip-menu')}}" style="margin-left : -5px;">
-               <div class="sc-badge">
-	                <i class="sc sc-badge-portrait sc-envelope-alt sc-right icon-lg">
-	                    <i class="sc sc-badge-bg sc-badge-bg-circle sc-stroke"></i>
-	                    <i class="sc sc-badge-icon sc-badge-icon-arrow-d" style="color:white"></i>
-	                </i>
-	                </div>
+               <div>
+	                <i class="pi pi-case icon-lg"></i>
+	                <i class="pi pi-bottom pi-menu-dropdown icon-sm" />
+                </div>
 				<div id="caseMenu" class="popover-body">
 					<div>
 						<button ng-disabled="processTableCtrl.dataTable.getSelection() < 1"  aid="PP-ProcessTable-AttachCase"
@@ -54,7 +49,7 @@
 			        aid="PP-ProcessTable-SavePriority"
 			        title="{{i18n('views-common-messages.common-tooltip-savePriorityChanges')}}"
 				    class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
-				<i class="glyphicon glyphicon-floppy-saved icon-lg"></i>
+				<i class="pi pi-save icon-lg"></i>
 			</button>
 		</div>
 	</div>
@@ -225,7 +220,7 @@
 						<button ng-click="bpmCommon.stopEvent($event);" aid="PP-ProcessTable-OpenProcessDocuments"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}" class="button-link tbl-tool-link">
 							<span sd-popover id="processDocuments" sda-on-open="processTableCtrl.openProcessDocumentsPopover(rowData);">
-								<i class="pi pi-process-documents"></i>
+								<i class="pi pi-process-documents icon-lg"></i>
 								<div class="popover-body" style="text-align: left; min-width: 100px;">
 									<div ng-show="rowData.contentLoaded">
 										<div ng-if="rowData.supportsProcessAttachments">

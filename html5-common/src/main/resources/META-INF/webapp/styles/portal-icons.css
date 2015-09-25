@@ -202,7 +202,8 @@ Icon implementations
 	content: "\f078";
 }
 
-.pi-flag:before{
+.pi-flag:before,
+.pi-criticalty-flag:before{
 	font-family: starclipse;
     content:'\F060';
 }
@@ -326,7 +327,7 @@ Icon implementations
 	content:"\f0e6";
 }
 
-.pi-activity-complete:before{
+.pi-quick-complete:before{
 	font-family:FontAwesome;
 	content:"\f14a";
 }
@@ -342,6 +343,7 @@ Icon implementations
 }
 
 .pi-user:before,
+.pi-role:before,
 .pi-activity-delegate:before{
 	font-family: "FontAwesome";
 	content: "\f007";
@@ -411,6 +413,7 @@ Icon implementations
 	content: "\f02d";
 }
 
+.pi-import:before,
 .pi-upload:before{
 	font-family: "FontAwesome";
 	content: "\f093";
@@ -451,7 +454,8 @@ Icon implementations
 	content: "\f24d";
 }
 
-.pi-view-tab:before{
+.pi-view-tab:before,
+.pi-worklist-view:before{
 	font-family: "FontAwesome";
 	content: "\f0ea";
 }
@@ -580,7 +584,13 @@ Icon implementations
 	content: "\f088";
 }
 
-.pi-quick-complete:before{
+.pi-qa-waiting:before{
+	font-family: "FontAwesome";
+	content: "\f251";
+}
+
+.pi-activity-complete:before,
+.pi-terminated-events:before{
 	font-family:FontAwesome;
 	content:"\f046";
 }
@@ -594,19 +604,108 @@ Icon implementations
 	font-family:FontAwesome;
 	content:"\f0e8";
 }
+
 .pi-role:before{
 	font-family:FontAwesome;
 	content:"\f235";
 }
+
 .pi-department:before{
 	font-family:FontAwesome;
 	content:"\f02b";
 }
+
 .pi-scope-role:before{
 	font-family:FontAwesome;
 	content:"\f235";
 }
-.pi-user:before{
+
+.pi-process-manager:before{
 	font-family:FontAwesome;
-	content:"\f007";
+	content:"\f0ad";
+}
+
+.pi-activity-pending:before{
+	font-family:FontAwesome;
+	content:"\f21e";
+}
+
+.pi-activity-stranded:before{
+	font-family:FontAwesome;
+	content:"\f071";
+}
+
+.pi-html:before{
+	font-family:FontAwesome;
+	content:"\f13b";
+}
+
+.pi-image:before{
+	font-family:FontAwesome;
+	content:"\f03e";
+}
+
+.pi-text:before{
+	font-family:FontAwesome;
+	content:"\f0f6";
+}
+
+.pi-css:before{
+	font-family:FontAwesome;
+	content:"\f13c";
+}
+
+.pi-xml-json:before{
+	font-family:FontAwesome;
+	content:"\f1c9";
+}
+
+.pi-csv-excel:before{
+	font-family:FontAwesome;
+	content:"\f1c3";
+}
+
+.pi-pdf:before{
+	font-family:FontAwesome;
+	content:"\f1c1";
+}
+
+.pi-word:before{
+	font-family:FontAwesome;
+	content:"\f1c2";
+}
+
+.pi-ppt:before{
+	font-family:FontAwesome;
+	content:"\f1c4";
+}
+
+.pi-zip:before{
+	font-family:FontAwesome;
+	content:"\f1c6";
+}
+
+.pi-audio:before{
+	font-family:FontAwesome;
+	content:"\f1c7";
+}
+
+.pi-video:before{
+	font-family:FontAwesome;
+	content:"\f1c8";
+}
+
+.pi-other:before{
+	font-family:FontAwesome;
+	content:"\f016";
+}
+
+.pi-report:before{
+	font-family:FontAwesome;
+	content:"\f0ce";
+}
+
+.pi-groups:before{
+	font-family:FontAwesome;
+	content:"\f0c0";
 }

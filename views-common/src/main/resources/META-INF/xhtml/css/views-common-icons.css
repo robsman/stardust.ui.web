@@ -8,67 +8,77 @@
  * Contributors:
  *     SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
- .clipboard-task {
-	background: url("../images/icons/clipboard-task.png") no-repeat;
+ .clipboard-task:before{
+	font-family: "FontAwesome";
+	content: "\f0ea";
 }
 
-.activity {
-	background: url("../images/icons/process-history/activity.png")
-		no-repeat;
+.activity:before{
+	font-family: "FontAwesome";
+	content:"\f013";
 }
 
-.process {
-	background: url("../images/icons/process.png") no-repeat;
+.process:before{
+	font-family: "FontAwesome";
+	content: "\f00d";
 }
 
 .page_white_find {
 	background: url("../images/icons/page_white_find.png") no-repeat;
 }
 
-.envelope {
-	background: url("../images/icons/envelope.png") no-repeat;
+.envelope:before {
+	font-family: "FontAwesome";
+	content: "\f0e0";
 }
 
 .chart-pie {
 	background: url("../images/icons/chart-pie.png") no-repeat;
 }
 
-.user-silhouette {
-	background: url("../images/icons/user-silhouette.png") no-repeat;
+.user-silhouette:before{
+	font-family: "FontAwesome";
+	content: "\f21b";
 }
 
-.process_manager {
-	background: url("../images/icons/process_manager.png") no-repeat;
+.process_manager:before{
+	font-family:"FontAwesome";
+	content:"\f0ad";
 }
 
-.cog_search {
-	background: url("../images/icons/cog_search.png") no-repeat;
+.cog_search:before{
+	font-family: "FontAwesome";
+	content: "\f002";
 }
 
-.pending_activities {
-	background: url("../images/icons/pending_activities.png") no-repeat;
+.pending_activities:before{
+	font-family:"FontAwesome";
+	content:"\f21e";
 }
 
-.activity_completed {
-	background:
-		url("../images/icons/process-history/activity_completed.png")
-		no-repeat;
+.activity_completed:before{
+	font-family:"FontAwesome";
+	content:"\f046";
 }
 
-.activity_postponed {
-	background: url("../images/icons/activity_postponed.png") no-repeat;
+.activity_postponed:before{
+	font-family: "FontAwesome";
+	content:"\f21e";
 }
 
-.activity_stranded {
-	background: url("../images/icons/activity_stranded.png") no-repeat;
+.activity_stranded:before{
+	font-family: "FontAwesome";
+	content:"\f071";
 }
 
-.group {
-	background: url("../images/icons/group.png") no-repeat;
+.group:before{
+	font-family:FontAwesome;
+	content:"\f0c0";
 }
 
-.role {
-	background: url("../images/icons/role.png") no-repeat;
+.role:before{
+	font-family: "FontAwesome";
+	content: "\f007";
 }
 
 .group_key {
@@ -91,52 +101,58 @@
 	background: url("../images/icons/money-coin.png") no-repeat;
 }
 
-.criticality_manager {
-	background: url("../images/icons/criticality_manager.png") no-repeat;
+.criticality_manager:before{
+	font-family: starclipse;
+    content:'\F060';
 }
 
-.criticality_manager {
-	background: url("../images/icons/criticality_manager.png") no-repeat;
+.notes-filled:before{
+	font-family: "FontAwesome";
+	content:"\f086";
 }
 
-.notes-filled {
-	background: url("../images/icons/mime-types/notes-filled.png") no-repeat;
+.notes-blank:before{
+	font-family:"FontAwesome";
+	content:"\f0e6";
 }
 
-.notes-blank {
-	background: url("../images/icons/notes-blank.png") no-repeat;
+.activity_qa_passed:before{
+	font-family: "FontAwesome";
+	content: "\f087";
 }
 
-.activity_qa_passed {
-	background: url("../images/icons/activity_qa_passed.png") no-repeat;
+.activity_qa_failed:before{
+	font-family: "FontAwesome";
+	content: "\f088";
 }
 
-.activity_qa_failed {
-	background: url("../images/icons/activity_qa_failed.png") no-repeat;
+.activity_qa_await:before{
+	font-family: "FontAwesome";
+	content: "\f251";
 }
 
-.activity_qa_await {
-	background: url("../images/icons/activity_qa_await.png") no-repeat;
-}
-
-.html {
-	background: url("../images/icons/mime-types/html.png") no-repeat;
+.html:before{
+	font-family:"FontAwesome";
+	content:"\f13b";
 }
 
 .document-image {
 	background: url("../images/icons/mime-types/document-image.png") no-repeat;
 }
 
-.images {
-	background: url("../images/icons/mime-types/images.png") no-repeat;
+.images:before{
+	font-family:"FontAwesome";
+	content:"\f03e";
 }
 
-.document-pdf-text {
-	background: url("../images/icons/mime-types/document-pdf-text.png") no-repeat;
+.document-pdf-text:before{
+	font-family:"FontAwesome";
+	content:"\f1c1";
 }
 
-.document-word-text {
-	background: url("../images/icons/mime-types/document-word-text.png") no-repeat;
+.document-word-text:before{
+	font-family:"FontAwesome";
+	content:"\f1c2";
 }
 
 .document-film {
@@ -147,39 +163,46 @@
 	background: url("../images/icons/mime-types/document-flash-movie.png") no-repeat;
 }
 
-.document-music {
-	background: url("../images/icons/mime-types/document-music.png") no-repeat;
+.document-music:before{
+	font-family:"FontAwesome";
+	content:"\f1c7";
 }
 
-.document-zipper {
-	background: url("../images/icons/mime-types/document-zipper.png") no-repeat;
+.document-zipper:before{
+	font-family:"FontAwesome";
+	content:"\f1c6";
 }
 
-.document-text {
-	background: url("../images/icons/mime-types/document-text.png") no-repeat;
+.document-text:before{
+	font-family:"FontAwesome";
+	content:"\f0f6";
 }
 
 .document-code {
 	background: url("../images/icons/mime-types/document-code.png") no-repeat;
 }
 
-.document-powerpoint {
-	background: url("../images/icons/mime-types/document-powerpoint.png") no-repeat;
+.document-powerpoint:before{
+	font-family:"FontAwesome";
+	content:"\f1c4";
 }
 
-.document-excel {
-	background: url("../images/icons/mime-types/document-excel.png") no-repeat;
+.document-excel:before{
+	font-family: "FontAwesome";
+	content:"\f1c3";
 }
 
 .tree_document {
 	background: url("../images/icons/mime-types/tree_document.gif") no-repeat;
 }
 
-.report {
-	background: url("../images/icons/mime-types/report.png") no-repeat;
+.report:before{
+	font-family: "FontAwesome";
+	content:"\f0ce";
 }
 
-.document-excel-csv {
-	background: url("../images/icons/mime-types/document-excel-csv.png") no-repeat;
+.document-excel-csv:before{
+	font-family: "FontAwesome";
+	content:"\f1c3";
 }
 

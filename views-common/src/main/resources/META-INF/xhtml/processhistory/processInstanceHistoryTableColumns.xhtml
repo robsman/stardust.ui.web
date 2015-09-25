@@ -105,7 +105,7 @@
 				<f:attribute name="processInstance" value="#{row.processInstance}" />
 			</ice:commandLink>
 			<ice:panelGroup rendered="#{!(row.enableTerminate)}">
-				<ice:outputText styleClass="iceCmdBtn-dis pi pi-menu-dropdown" />
+				<ice:outputText styleClass="iceCmdBtn-dis pi pi-menu-dropdown icon-sm" />
 			</ice:panelGroup>
 			<ice:panelGroup rendered="#{(row.enableTerminate)}">
 				<c:set var="processInstance" value="#{row.processInstance}" />

@@ -21,12 +21,12 @@
 					title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-showHideAbsActivites-title')}}"
 					class="button-link tbl-toolbar-item tbl-tool-link">
 					<!-- 	Replace with pen book icon for show obsolete activities -->
-					<i class=" sc sc-book-open icon-lg" ng-class="{iconDisabled:qaManagementCtrl.showObsoleteActivities }"></i>
+					<i class="pi pi-eye-slash icon-lg" ng-class="{iconDisabled:qaManagementCtrl.showObsoleteActivities }"></i>
 				</button>
 				<button ng-click="qaManagementCtrl.editActivityQa();" ng-disabled="qaManagementCtrl.activityTable.getSelection() < 1"
 					title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-editQA-title')}}"  aid="ADM-QAMgmt-EditActivityQA"
 					class="button-link tbl-toolbar-item tbl-tool-link ">
-					<i class=" glyphicon glyphicon-pencil icon-lg"></i>
+					<i class="pi pi-edit icon-lg"></i>
 				</button>
 			</div>
 		</div>
@@ -84,10 +84,10 @@
 						<td sda-data-type="string">
 							<!-- Icons for various Participant types -->
 							<span ng-if="rowData.performerType == 'ROLE'"  class="spacing-right"> <span class="icon-lg" style="color:#A2B5CD">(</span> <i
-								class="sc icon-lg sc-user" style="color:#A2B5CD; margin-left: -6px;"></i> <span class="icon-lg" style="color:#A2B5CD">)</span>
+								class="pi icon-lg pi-user" style="color:#A2B5CD; margin-left: -6px;"></i> <span class="icon-lg" style="color:#A2B5CD">)</span>
 						   </span> 
 						   <span ng-if="rowData.performerType == 'SCOPED_ROLE'"  class="spacing-right"> <span class="icon-lg"  style="color:'#000'">(</span> <i
-								class="sc icon-lg sc-user" style="color:#A2B5CD ;margin-left: -6px;""></i> <span class="icon-lg">)</span>
+								class="pi icon-lg pi-user" style="color:#A2B5CD ;margin-left: -6px;""></i> <span class="icon-lg">)</span>
 						   </span>
 						    <span ng-if="rowData.performerType == 'SCOPED_ORGANIZATION'"  class="spacing-right"> 
 						    	<i class="sc sc-organization icon-lg "></i>
@@ -99,7 +99,7 @@
 						    	<i class="sc sc-user icon-lg "></i>
 						    </span>
 						     <span ng-if="rowData.performerType == 'USERGROUP'"  class="spacing-right"> 
-						    	<i class="sc sc-users icon-lg "></i>
+						    	<i class="sc pi-groups icon-lg "></i>
 						    </span>
 						 <span ng-bind="rowData.defaultPerformer"></span>
 						</td>
@@ -155,7 +155,7 @@
 				<tbody>
 					<tr>
 						<td sda-data-type="string">
-							<i class="sc sc-badge-portrait  icon-lg sc-users sc-right  spacing-right">
+							<i class="sc sc-badge-portrait  icon-lg pi-groups sc-right  spacing-right">
 								<i class="sc sc-badge-bg sc-badge-bg-circle "></i> <i
 								class="sc sc-badge-icon sc-badge-icon-chain" style="color : white"></i>
 							</i>
