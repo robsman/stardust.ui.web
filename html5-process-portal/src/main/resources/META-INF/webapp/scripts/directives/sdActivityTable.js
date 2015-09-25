@@ -1153,13 +1153,14 @@
 					.copy(firstItem.dataMappings);
 					self.completeDialog.outData = angular
 					.copy(firstItem.inOutData);
+					
+					self.completeDialog.description = firstItem.activity.description;
 
 					self.completeAllDialog.confirmLabel = sgI18nService.translate(
-							'views-common-messages.common-confirm', 'Confirm');
+							'processportal.views-completeActivityDialog-homogeneous-complete', 'Complete');
 					self.completeAllDialog.cancelLabel = sgI18nService.translate(
 							'views-common-messages.common-cancel', 'Cancel');
-					self.completeAllDialog.title = sgI18nService.translate(
-							'processportal.views-completeActivityDialog-form-title', 'Complete Activities')
+					self.completeAllDialog.title = firstItem.activity.name;
 				} else {
 
 					self.completeDialog.confirmationType = CONFIRMATION_TYPE_GENERIC;

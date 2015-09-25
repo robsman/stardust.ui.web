@@ -226,16 +226,10 @@ padding : 5px;;
 	margin: 10px 0 10px 0;
 	font-size: .9em;
 }
-.complete-activity-legend {
-    border-style: none;
-    border-width: 0;
-    font-size: 1.27em;
-    line-height: 4px;
-    margin-bottom: 0px;
-    background :white;
-    width:90px;
-}
 
+.complete-activity-description {
+    margin-bottom: 10px;
+}
 
 .delegate-icon {
 	margin-left: 5px;
