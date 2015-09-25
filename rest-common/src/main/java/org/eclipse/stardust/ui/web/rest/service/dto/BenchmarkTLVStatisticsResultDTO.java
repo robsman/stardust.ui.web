@@ -6,6 +6,7 @@ public class BenchmarkTLVStatisticsResultDTO
 {
 
    public String id;
+   public String parentId;
    public long abortedCount;
    public long completedCount;
    public long totalCount;

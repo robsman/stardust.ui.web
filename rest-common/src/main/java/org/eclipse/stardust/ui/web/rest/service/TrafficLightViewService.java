@@ -14,7 +14,10 @@
 
 package org.eclipse.stardust.ui.web.rest.service;
 
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -26,6 +29,8 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.TrafficLightViewUtils;
 import org.springframework.stereotype.Component;
+
+import com.google.gson.JsonElement;
 
 @Component
 public class TrafficLightViewService
@@ -42,8 +47,17 @@ public class TrafficLightViewService
    }
 
    public QueryResultDTO getActivityBenchmarkStatistics(String processId, List<Long> bOids, String dateType,
-         Integer dayOffset, List<BenchmarkCategoryDTO> benchmarkCategories)
+         Integer dayOffset, List<BenchmarkCategoryDTO> benchmarkCategories, Set<String> processActivitySet)
    {
-      return trafficLightViewUtils.getActivityBenchmarkStatistics(processId, bOids, dateType, dayOffset, benchmarkCategories);
+      return trafficLightViewUtils.getActivityBenchmarkStatistics(processId, bOids, dateType, dayOffset, benchmarkCategories,processActivitySet);
+   }
+
+   public QueryResultDTO getTrafficLightViewStatasticByBO(Boolean isAllBenchmarks, Boolean isAllProcessess,
+         List<Long> bOids, List<ProcessDefinitionDTO> processes, String dateType, Integer dayOffset,
+         List<BenchmarkCategoryDTO> benchmarkCategories, String businessObjectQualifiedId,
+         Set<String> selBOInstances, String groupBybusinessQualifiedId, Set<String> selGroupByBOInstances)
+   {
+      return trafficLightViewUtils.getTrafficLightViewStatasticByBO(isAllBenchmarks,isAllProcessess,bOids,processes,dateType,dayOffset,
+                 benchmarkCategories,businessObjectQualifiedId,selBOInstances,groupBybusinessQualifiedId,selGroupByBOInstances);
    }
 }

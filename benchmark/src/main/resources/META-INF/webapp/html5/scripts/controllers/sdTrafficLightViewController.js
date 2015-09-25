@@ -18,7 +18,7 @@
 	angular.module("benchmark-app").controller(
 			'sdTrafficLightViewController',
 			[ '$q', 'benchmarkService', 'sdProcessDefinitionService', 'sdTrafficLightViewService',
-					'sdProcessInstanceService', 'sdActivityInstanceService', 'sdLoggerService', '$injector', TrafficLightViewController ]);
+					'sdProcessInstanceService', 'sdActivityInstanceService', 'sdLoggerService', '$injector', 'sdUtilService', TrafficLightViewController ]);
 
 	var _q;
 	var trace;
@@ -28,12 +28,13 @@
 	var _sdProcessInstanceService;
 	var _sdBusinessObjectManagementService;
 	var _sdActivityInstanceService;
+	var _sdUtilService;
 
 	/**
 	 * 
 	 */
 	function TrafficLightViewController($q, benchmarkService, sdProcessDefinitionService, sdTrafficLightViewService,
-			sdProcessInstanceService, sdActivityInstanceService, sdLoggerService, $injector) {
+			sdProcessInstanceService, sdActivityInstanceService, sdLoggerService, $injector, sdUtilService) {
 		trace = sdLoggerService.getLogger('benchmark-app.sdTrafficLightViewController');
 		_q = $q;
 		_benchmarkService = benchmarkService;
@@ -41,6 +42,7 @@
 		_sdTrafficLightViewService = sdTrafficLightViewService;
 		_sdProcessInstanceService = sdProcessInstanceService;
 		_sdActivityInstanceService = sdActivityInstanceService;
+		_sdUtilService = sdUtilService;
 		// dynamically injecting the sdBusinessObjectManagementService from
 		// ipp-business-object-management
 		_sdBusinessObjectManagementService = $injector.get('sdBusinessObjectManagementService');
@@ -70,7 +72,8 @@
 
 		this.bOInstanceMap = {};
 		this.bOPrimaryKeyMap = {};
-
+		this.bOPrimaryKeyTypeMap = {};
+		
 		this.relatedBOMap = {};
 		this.selectedBusinessObjectInstances = [];
 		this.selectedRelatedBusinessObjectInstances = [];
@@ -87,7 +90,8 @@
 				var benchmarkDefintion = {
 					'oid' : benchmarkDef.metadata.runtimeOid,
 					'name' : benchmarkDef.content.name,
-					'categories' : benchmarkDef.content.categories
+					'categories' : benchmarkDef.content.categories,
+					'models' : benchmarkDef.content.models
 				};
 				self.benchmarkDefinitions.push(benchmarkDefintion);
 			});
@@ -172,14 +176,51 @@
 			queryData.categories = self.categories;
 			self.queryData = queryData;
 			self.tlvCriteriaForm.$error.benchmarksNotIdentical = false;
-			_sdTrafficLightViewService.getTLVStatastic(queryData).then(function(data) {
-				self.tlvStatsData = {};
-				self.tlvStatsData.list = data.list;
-				self.tlvStatsData.totalCount = data.totalCount;
-				self.showTLVStatastics = true;
-			}, function(error) {
-				trace.log(error);
-			});
+			if(self.selectedDrillDown == "PROCESS_WORKITEM"){
+				_sdTrafficLightViewService.getTLVStatastic(queryData).then(function(data) {
+					self.tlvStatsData = {};
+					self.tlvStatsData.list = data.list;
+					self.tlvStatsData.totalCount = data.totalCount;
+					self.showTLVStatastics = true;
+				}, function(error) {
+					trace.log(error);
+				});	
+			}else if(self.selectedDrillDown == "BUSINESS_OBJECT" && self.selectedBusinessObject != undefined){
+				 queryData.businessObjectQualifiedId  = self.selectedBusinessObject.businessObjectQualifiedId;
+				 queryData.businessObjectType = self.bOPrimaryKeyTypeMap[self.selectedBusinessObject.businessObjectQualifiedId];
+				if(!_sdUtilService.isEmpty(self.selectedBusinessObjectInstances)){
+					var boInstances = [];
+					angular.forEach(self.selectedBusinessObjectInstances,function(boInstance){
+						boInstances.push(boInstance[self.primaryKeyForBO]);
+					});
+					
+				  queryData.selectedBusinessObjectInstances = boInstances;	
+				}
+				
+				if(self.selectedRelatedBusinessObject.businessObjectQualifiedId != undefined){
+				  queryData.groupBybusinessQualifiedId = self.selectedRelatedBusinessObject.businessObjectQualifiedId;
+				  queryData.groupBybusinessObjectType = self.bOPrimaryKeyTypeMap[self.selectedRelatedBusinessObject.businessObjectQualifiedId];
+				  if(!_sdUtilService.isEmpty(self.selectedRelatedBusinessObjectInstances)){
+						var groupbyBOInstances = [];
+						angular.forEach(self.selectedRelatedBusinessObjectInstances,function(groupbyBOInstance){
+							groupbyBOInstances.push(groupbyBOInstance[self.selectedRelatedBusinessObject.otherForeignKeyField]);
+						});
+						
+						queryData.selectedRelatedBusinessObjectInstances = groupbyBOInstances;
+					}
+				}
+				self.queryData = queryData;
+				
+				_sdTrafficLightViewService.getTLVStatasticByBusinessObject(queryData).then(function(data) {
+					self.tlvStatsData = {};
+					self.tlvStatsData.list = data.list;
+					self.tlvStatsData.totalCount = data.totalCount;
+					self.showTLVStatastics = true;
+				}, function(error) {
+					trace.log(error);
+				});	
+			}
+			
 		}, function(error) {
 			self.errorMsg = error.data.message;
 			self.tlvCriteriaForm.$error.benchmarksNotIdentical = true;
@@ -188,6 +229,32 @@
 
 	};
 	
+	
+	
+	/**
+	 * 
+	 */
+	TrafficLightViewController.prototype.createProcessActivityArray = function(bOids,processId){
+		var benchmarkProcessActivityArray = [];
+		var self = this;
+		bOids.forEach(function(bOid){
+				self.benchmarkDefinitions.forEach(function(benchmarkDefinition){
+					if(bOid == benchmarkDefinition.oid){
+						benchmarkDefinition.models.forEach(function(model){
+							model.processDefinitions.forEach(function(procDef){
+								if(procDef.id == processId){
+									procDef.activities.forEach(function(activity){
+										var qualifiedActivityId = '{'+ model.id +'}' + activity.id;
+										benchmarkProcessActivityArray.push(qualifiedActivityId);
+									});
+								}
+							});
+						});
+					}
+				});
+			});
+		return benchmarkProcessActivityArray;
+	};
 	
 	/**
 	 * 
@@ -205,7 +272,7 @@
 			});
 			deferred.resolve(tlvData);
 		}else{
-			self.parentId = params.parent.id;
+			//self.parentId = params.parent.id;
 			self.getActivitySatastic(params.parent.id).then(function(data){
 				tlvData.list = data.list;
 				tlvData.totalCount = data.totalCount;
@@ -231,6 +298,7 @@
 		delete queryData.isAllBenchmarks;
 		delete queryData.processes;
 		queryData.processId = processId;
+		queryData.processActivityArray = self.createProcessActivityArray(queryData.bOids,processId);
 		_sdTrafficLightViewService.getTLVActivityStatastic(queryData).then(function(data) {
 			deferred.resolve(data);
 		}, function(error) {
@@ -255,14 +323,14 @@
 	 * @param state
 	 * @param benchmarkIndex
 	 */
-	TrafficLightViewController.prototype.setDataForProcessTable = function(id, state, isActivity, benchmarkIndex) {
+	TrafficLightViewController.prototype.setDataForProcessTable = function(id, state, isActivity, parentId, benchmarkIndex) {
 		var self = this;
 		self.selectedBenchmarkCategory = benchmarkIndex;
 		self.state = state;
 		
 		if(isActivity){
 			self.processDataTable = null;
-			self.selectedProcessId = self.parentId;
+			self.selectedProcessId = parentId;
 			self.selectedActivityId = id;
 			if (self.activityDataTable != undefined) {
 				self.activityDataTable.refresh();
@@ -419,6 +487,12 @@
 				if (!self.businessObjectModels[n].businessObjects[m].types) {
 					self.businessObjectModels[n].businessObjects[m].types = {};
 				}
+				// creating map of businessObjectQualifiedId and PrimaryKeyType
+				angular.forEach(self.businessObjectModels[n].businessObjects[m].fields,function(object){
+					if(object.primaryKey){
+						self.bOPrimaryKeyTypeMap[self.businessObjectModels[n].businessObjects[m].businessObjectQualifiedId]	= object.type;
+					}
+				});
 
 				self.businessObjectModels[n].businessObjects[m].modelOid = self.businessObjectModels[n].oid;
 				self.businessObjectModels[n].businessObjects[m].label = self.businessObjectModels[n].name + "/"
@@ -481,7 +555,10 @@
 			trace.log(error);
 		});
 	};
-	
+	/**
+	 * 
+	 * @param relatedMatchVal
+	 */
 	TrafficLightViewController.prototype.getRelatedBOInstanceMatches = function(relatedMatchVal){
 		var self = this;
 		var results = [];
@@ -495,4 +572,14 @@
 
 		self.relatedBusinessObjectInstancesData = results;
 	};
+	/**
+	 * 
+	 */
+    TrafficLightViewController.prototype.getfontSize = function(count){
+    	var fontSize = 10;
+    	if(count != 0){
+    		fontSize = fontSize + count + 2;
+    	}
+    	return fontSize;
+    };
 })();

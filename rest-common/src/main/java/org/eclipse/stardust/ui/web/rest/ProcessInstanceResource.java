@@ -344,12 +344,12 @@ public class ProcessInstanceResource
 
          if (dateType.equals(TrafficLightViewUtils.BUSINESS_DATE))
          {
-            benchmarkFilter.add((DataFilter.between(TrafficLightViewUtils.getModelName(processId)
-                  + TrafficLightViewUtils.BUSINESS_DATE, (Serializable) startDate, (Serializable) endDate)));
+            query.where((DataFilter.between(TrafficLightViewUtils.getModelName(processId)
+                  + TrafficLightViewUtils.BUSINESS_DATE, startDate.getTime(), endDate.getTime())));
          }
          else
          {
-            benchmarkFilter.add(ProcessInstanceQuery.START_TIME.between(startDate.getTimeInMillis(),
+            query.where(ProcessInstanceQuery.START_TIME.between(startDate.getTimeInMillis(),
                   endDate.getTimeInMillis()));
          }
 
@@ -361,15 +361,15 @@ public class ProcessInstanceResource
 
          if (state.equals(ACTIVE))
          {
-            query.getFilter().add(ProcessStateFilter.ACTIVE);
+            query.where(ProcessStateFilter.ACTIVE);
          }
          else if (state.equals(COMPLETED))
          {
-            query.getFilter().add(ProcessStateFilter.COMPLETED);
+            query.where(ProcessStateFilter.COMPLETED);
          }
          else if (state.equals(ABORTED))
          {
-            query.getFilter().add(ProcessStateFilter.ABORTED);
+            query.where(ProcessStateFilter.ABORTED);
          }
 
          return Response.ok(GsonUtils.toJsonHTMLSafeString(processInstanceService.getProcessInstances(query, options)),
