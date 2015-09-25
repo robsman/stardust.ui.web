@@ -36,6 +36,8 @@
 		
 		this.registerForAutoRefresh();
 		
+		this.refreshRequired = false;
+		
 		/*
 		 * This needs to be defined here as it requires access to $scope
 		 */
@@ -44,8 +46,13 @@
 		};
 	}
 	
+	/**
+	 * 
+	 */
+	WorklistViewCtrl.prototype.registerRefreshRequired = function() {
+		this.refreshRequired = true;
+	};
 	
-
 	/*
 	 * 
 	 */
@@ -67,6 +74,10 @@
 	 */
 	WorklistViewCtrl.prototype.handleViewEvents = function(event) {
 		if (event.type == "ACTIVATED") {
+			if(this.refreshRequired) {
+				this.refresh();
+				this.refreshRequired = false;
+			}
 			this.registerForAutoRefresh();
 		} else if (event.type == "DEACTIVATED") {
 		    if(this.timer){

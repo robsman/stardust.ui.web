@@ -325,21 +325,24 @@
 										<div ng-if="rowData.specificDocuments.length > 0">
 											<div class="popoverHeading"><b>{{i18n('processportal.toolbars-workflowActions-processDocuments-specificDocuments')}}</b></div>
 											<div ng-repeat="map in rowData.specificDocuments">
+										
 												<div ng-if="map.documents.length > 0">
-													<a ng-repeat="doc in map.documents" href="#" ng-click="activityTableCtrl.openDocumentsView(doc.uuid)">{{map.dataPath.name}}</a>
+													<a ng-repeat="doc in map.documents" href="" ng-click="activityTableCtrl.openDocumentsView(doc.uuid)">{{map.dataPath.name}}</a>
 												</div>
+													
 												<div ng-if="map.documents.length < 1">
 													<span>&lt{{map.dataPath.name}}&gt</span>
 												</div>
 											</div>
 										</div>
 										<div ng-if="rowData.processAttachments.documents.length > 0 || rowData.specificDocuments.documents.length > 0">
-											<a href="#" ng-click="activityTableCtrl.openAllProcessDocumentViews(rowData)"><B>{{i18n('processportal.toolbars-workflowActions-processDocuments-openAllDocuments')}}</B></a>
+											<a href="" ng-click="activityTableCtrl.openAllProcessDocumentViews(rowData);"><B>{{i18n('processportal.toolbars-workflowActions-processDocuments-openAllDocuments')}}</B></a>
 										</div>
 										<div ng-if="!rowData.supportsProcessAttachments && rowData.specificDocuments.length == 0">
 											{{i18n('processportal.toolbars-workflowActions-processDocuments-noProcessDocuments')}}
 										</div>
 									</div>
+										<a  href="" ng-click="alert();">test</a>
 									<div ng-hide="rowData.contentLoaded">
 										{{i18n('views-common-messages.common-loading')}}
 									</div>

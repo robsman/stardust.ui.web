@@ -51,7 +51,7 @@
 		<div class="view-panel-toolbar heading"
 			ng-bind="i18n('admin-portal-messages.views-common-activityTable-title')"></div>
 
-		<div sd-activity-table="ctrl.dataTable" sda-mode="activityTable"
+		<div sd-activity-table="ctrl.dataTable" sda-mode="activityTable" sda-register-refresh-required="ctrl.registerRefreshRequired()"
 			sd-data="ctrl.getData(params);"
 			sda-preference-module="ipp-views-common"
 			sda-preference-id="preference"

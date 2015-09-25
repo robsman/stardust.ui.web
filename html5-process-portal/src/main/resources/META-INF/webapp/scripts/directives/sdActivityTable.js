@@ -412,6 +412,12 @@
 	    this.fetchDescriptorCols(attr);
 	    this.fetchAvailableStates();
 	    this.fetchAvailablePriorities();
+	    
+	    //Refreshing when Item is activated //remove on completion of server push 
+	    this.registerRefreshHandler = $parse(attr.sdaRegisterRefreshRequired);
+	    ActivityTableCompiler.prototype.registerRefreshRequired = function(){
+	    	 this.registerRefreshHandler(scopeToUse);
+	    }
 
 	    /*
 	     * 
@@ -802,7 +808,7 @@
 	 * 
 	 */
 	ActivityTableCompiler.prototype.activateItem = function(rowItem) {
-
+		
 		if(rowItem.showResubmitLink){
 			trace.debug("Openinig resubmission confirmation for ",rowItem.activityOID);
 			this.showResubmissionConfirmation(rowItem);
@@ -810,7 +816,7 @@
 			trace.debug("Activate :",rowItem.activityOID);
 			this.activateAndOpenView(rowItem);
 		}
-
+		this.registerRefreshRequired();
 	};
 	
 	/*
