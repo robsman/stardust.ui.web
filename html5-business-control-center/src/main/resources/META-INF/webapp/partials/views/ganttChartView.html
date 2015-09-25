@@ -8,9 +8,10 @@
 		</br>
 		
 		<div> 
-			<select ng-model="ctrl.selected.legend" ng-change="ctrl.onLegendChange();" 
-					ng-options="opt.id as opt.label for opt in ctrl.legendCategories">
+			<select ng-model="ctrl.selected.legend" ng-change="ctrl.onLegendChange();"  ng-if ="ctrl.legendCategories.length > 1"
+					ng-options="opt.id as opt.label for opt in ctrl.legendCategories" >
 			</select>
+			<span class="iceOutLbl" ng-if ="ctrl.legendCategories.length < 2">{{ctrl.legendCategories[0].label}}: </span>
 		<span ng-repeat=" opt in ctrl.legends" class="gantt-chart-legend-option">
 			<span ng-bind="opt.label"> </span>
 			<i class="sc sc-square icon-lg gantt-chart-legend-symbol" ng-attr-style="color:{{opt.color}}; background-color :{{opt.color}}"></i>
