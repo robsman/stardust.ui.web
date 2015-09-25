@@ -1119,8 +1119,8 @@
 		var CONFIRMATION_TYPE_DATAMAPPING = 'dataMapping'
 
 		self.completeAllDialog = {
-				confirmLabel : sgI18nService.translate('processportal.views-common-messages.common-Yes', 'yes'),
-				cancelLabel : sgI18nService.translate('processportal.views-common-messages.common-No', 'no'),
+				confirmLabel : sgI18nService.translate('portal-common-messages.common-yes', 'Yes'),
+				cancelLabel : sgI18nService.translate('portal-common-messages.common-no', 'No'),
 				title : sgI18nService.translate('processportal.views-completeActivityDialog-title', 'Confirm')
 		};
 

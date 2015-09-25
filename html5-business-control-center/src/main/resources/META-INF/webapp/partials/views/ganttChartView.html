@@ -47,8 +47,8 @@
 						</div>
 					</th>
 					<th  sda-label=""  >
-					 	<div class="currentTimeLine" ng-attr-style="left :{{ctrl.currentTimeLine[ctrl.selected.timeFrame]}}px;" ng-if="ctrl.process.expectedEndTime > 0">.</div>
-					 	<div class="currentTimeLine" ng-attr-style="left :{{ctrl.estimatedEndTimeLine[ctrl.selected.timeFrame]}}px;" ng-if="ctrl.process.expectedEndTime > 0">.</div>
+					 	<div class="currentTimeLine" ng-attr-style="left :{{ctrl.currentTimeLine[ctrl.selected.timeFrame]}}px;" ng-if="ctrl.estimatedEndTimeLine[ctrl.selected.timeFrame] > 0">.</div>
+					 	<div class="currentTimeLine" ng-attr-style="left :{{ctrl.estimatedEndTimeLine[ctrl.selected.timeFrame]}}px;" ng-if="ctrl.estimatedEndTimeLine[ctrl.selected.timeFrame] > 0">.</div>
 					
 						<div style="clear:both;"> 
 								<span ng-repeat = "major in ctrl.majorTimeFrames" class="majorTimeLine" ng-attr-style="width :{{major.width}}px;" ng-mouseenter="major.toolTip = true;ctrl.mouseEnter($event, 75)" ng-mouseleave="major.toolTip = false" >
