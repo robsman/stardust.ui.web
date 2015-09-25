@@ -402,8 +402,8 @@ Icon implementations
 }
 
 .pi-case:before{
-	font-family: "starclipse";
-	content: "\f003";
+	font-family: "FontAwesome";
+	content: "\f0e0";
 }
 
 .pi-version:before{

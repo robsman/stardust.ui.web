@@ -73,16 +73,15 @@
 				immediate="true">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarSuspend" standAlone="false"/>
                 <ice:outputText
-					style="padding :0px;margin:0px;"
 					styleClass="pi pi-undo icon-lg"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.suspend']}"/>
 					
 				<ice:commandLink
 					action="#{activityDetailsBean.toggleSuspendActivityIframePopup}"
-					style="padding:0px;" immediate="true"
+					immediate="true"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.suspendMenu']}" >
-					<ice:outputText style="padding:0px;margin:0px;width:11px;"
-						styleClass="pi-menu-dropdown" />
+					<ice:outputText
+						styleClass="pi pi-menu-dropdown" />
 				</ice:commandLink>
 				<div id="ippSuspendAnchor" style="width: 1px; height: 1px;"></div>
 			</ice:commandLink>
@@ -91,10 +90,8 @@
 				disabled="#{activityDetailsBean.qualityAssuranceActivity}">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarSave"
 					standAlone="false" />
-				<ice:graphicImage
-					value="/plugins/views-common/images/icons/clock_save.png"
-					style="padding :0px;margin:0px;"
-					styleClass="toolbar-button #{activityDetailsBean.qualityAssuranceActivity ? 'iceCmdBtn-dis' : 'toolbar-button-suspend-save'}"
+				<ice:outputText
+					styleClass="#{activityDetailsBean.qualityAssuranceActivity ? 'iceCmdBtn-dis' : 'toolbar-button-suspend-save'} pi pi-save icon-lg"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.suspendAndSave']}" />
 			</ice:commandLink>
 
@@ -102,8 +99,8 @@
 					action="#{activityDetailsBean.toggleSaveActivityIframePopup}" disabled="#{activityDetailsBean.qualityAssuranceActivity}"
 					style="padding:0px;" immediate="true"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.suspendSaveMenu']}" >
-					<ice:outputText style="padding:0px;width:11px;"
-					styleClass="#{activityDetailsBean.qualityAssuranceActivity ? 'iceCmdBtn-dis' : ''} pi-menu-dropdown" />
+					<ice:outputText
+					styleClass="#{activityDetailsBean.qualityAssuranceActivity ? 'iceCmdBtn-dis' : ''} pi pi-menu-dropdown" />
 				</ice:commandLink>
 				<div id="ippSaveActivityAnchor" style="width: 1px; height: 1px;"></div>
 
@@ -132,7 +129,7 @@
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarAbort" standAlone="false"/>
 				<ice:outputText
 					styleClass="#{!activityDetailsBean.abortable ? 'iceCmdBtn-dis' : ''} pi pi-activity-abort icon-lg"
-					style="margin-right:-2px;padding-right:-2px;" title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.abort']}" />
+					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.abort']}" />
 			</ice:commandLink>
 
 			<ice:commandLink
@@ -141,8 +138,8 @@
 				title="#{views_common_msgPropsBean['views.abortProcess.menu.tooltip']}"
 				disabled="#{!activityDetailsBean.abortableProcess}">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarSwitchJoin" standAlone="false"/>
-				<ice:outputText style="padding:0px;"
-					styleClass="#{!activityDetailsBean.abortableProcess ? 'iceCmdBtn-dis' : ''} pi-menu-dropdown" />
+				<ice:outputText
+					styleClass="#{!activityDetailsBean.abortableProcess ? 'iceCmdBtn-dis' : ''} pi pi-menu-dropdown" />
 			</ice:commandLink>
 			<div id="ippSwitchAnchor" style="width: 1px; height: 1px;"></div>
 
@@ -162,7 +159,7 @@
 					<pc:automationTag value="auto-PP-ActivityPnl-ToolbarCase" standAlone="false"/>
 					<ice:outputText 
 						styleClass="pi pi-case icon-lg">
-						<ice:outputText styleClass="pi-menu-dropdown icon-sm" />
+						<ice:outputText styleClass="pi pi-menu-dropdown icon-sm" />
 					</ice:outputText>
 				</ice:commandLink>
 				<div id="ippCaseAnchor" style="width: 1px; height: 1px;"></div>
