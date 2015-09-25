@@ -48,10 +48,11 @@ public class FolderResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{folderId : .*}")
    public Response getFolder(@PathParam("folderId") String folderId,
-         @QueryParam("levelOfDetail") @DefaultValue("1") int levelOfDetail)
+         @QueryParam("levelOfDetail") @DefaultValue("1") int levelOfDetail,
+         @QueryParam("create") @DefaultValue("false") boolean createIfDoesNotExist)
    {
       folderId = DocumentMgmtUtility.checkAndGetCorrectResourceId(folderId);
-      FolderDTO folderContents = repositoryService.getFolder(folderId, levelOfDetail);
+      FolderDTO folderContents = repositoryService.getFolder(folderId, levelOfDetail, createIfDoesNotExist);
       // TODO move jsonHelper and MapAdapter to Portal-Common and then modify GsonUtils
       Gson gson = new GsonBuilder().registerTypeAdapter(Map.class, new MapAdapter()).disableHtmlEscaping().create();
       return Response.ok(gson.toJson(folderContents, FolderDTO.class), MediaType.APPLICATION_JSON).build();

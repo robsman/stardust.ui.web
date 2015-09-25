@@ -19,6 +19,7 @@
  * -----------------------------------------------------------------------------------
  * @sdaRootPath - Root path to base the folder tree on
  * @sdaMultiselect - string 'True' || 'False', whether the tree supports multiple node selection.
+ * @sdaCreateFolder - create folder if it does not exist
  * &sdaOnInit - function to passback the tree api to the user (api only supports .getSelectedNodes())
  * &sdaEventCallback - user callback to listen for events on.
  * 
@@ -52,7 +53,7 @@
   //on the relative path passed to the function. All paths
   //are relative to the top level 'folders' directory
   //representing the root level of the document repository.
-  sdFolderService.prototype.getFolders = function(path){
+  sdFolderService.prototype.getFolders = function(path, create){
     
     var that = this,
     	url,
@@ -60,8 +61,10 @@
 
     path = path || "";
     
+    create = create || "false";
+    
     url = this.rootUrl + "services/rest/portal/folders/" + path;
-    url += "/?levelOfDetail=2";
+    url += "/?levelOfDetail=2&create=" + create;
     
     this.$http.get(url)
     .then(function(res){
@@ -246,7 +249,7 @@
         
     root.items=[];
     
-    this.folderService.getFolders(that.$scope.rootPath)
+    this.folderService.getFolders(that.$scope.rootPath, that.$scope.createFolder)
     .then(function(data){
     	root.name= data.name;
     	root.uuid = data.uuid;
@@ -301,6 +304,7 @@
         rootPath : "@sdaRootPath",
         allowMultiselect : "@sdaMultiselect",
         onInit : "&sdaOnInit",
+        createFolder : "@sdaCreateFolder",
         eventCallback: "&sdaEventCallback"
       },
       controller: "sdFolderTreeController",

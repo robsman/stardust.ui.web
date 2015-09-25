@@ -56,25 +56,28 @@ public class RepositoryServiceImpl implements RepositoryService
    /**
     *
     */
-   public FolderDTO getFolder(String folderId)
+   public FolderDTO getFolder(String folderId, int levelOfDetail, boolean createIfDoesNotExist)
    {
-      return getFolder(folderId, 1);
-   }
-
-   /**
-    *
-    */
-   public FolderDTO getFolder(String folderId, int levelOfDetail)
-   {
+      // remove the trailing slash if it exist
+      if (folderId.length() != 1 && folderId.charAt(folderId.length() - 1) == '/')
+      {
+         folderId = folderId.substring(0, folderId.length() - 1);
+      }
+      
       // fetching of children information may be time consuming, may need to be
       // parameterized later
       Folder folder = getDMS().getFolder(folderId, levelOfDetail);
 
-      if (folder == null)
+      if (folder == null && !createIfDoesNotExist)
       {
          throw new I18NException(restCommonClientMessages.getParamString("folder.notFound", folderId));
       }
 
+      if (folder == null)
+      {
+         folder = DocumentMgmtUtility.createFolderIfNotExists(folderId);
+      }
+      
       FolderDTO folderDTO = FolderDTOBuilder.build(folder);
       folderDTO.folders = new ArrayList<FolderDTO>();
       folderDTO.documents = new ArrayList<DocumentDTO>();

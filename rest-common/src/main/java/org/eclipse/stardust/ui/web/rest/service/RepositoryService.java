@@ -28,19 +28,12 @@ public interface RepositoryService
 {
 
    /**
-    * Return the {folders: [], documents: []}
-    * 
-    * @param folderId
-    * @return
-    */
-   FolderDTO getFolder(String folderId);
-
-   /**
     * @param folderId
     * @param levelOfDetail
+    * @param createIfDoesNotExist
     * @return
     */
-   FolderDTO getFolder(String folderId, int levelOfDetail);
+   FolderDTO getFolder(String folderId, int levelOfDetail, boolean createIfDoesNotExist);
 
    /**
     * @param documentInfoDTO
