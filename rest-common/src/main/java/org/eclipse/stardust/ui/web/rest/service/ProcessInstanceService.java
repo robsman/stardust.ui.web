@@ -187,7 +187,10 @@ public class ProcessInstanceService
          docType.setDocumentTypeId(documentData.documentType.getDocumentTypeId());
          docType.setSchemaLocation(documentData.documentType.getSchemaLocation());
          // Specific Documents will be stored at PATH
-         inputDoc.setGlobalVariableId(documentData.id);
+         if (!documentData.id.equals(DmsConstants.DATA_ID_ATTACHMENTS))
+         {
+            inputDoc.setGlobalVariableId(documentData.id);
+         }
       }
       docInfo.setDocumentType(docType);
       docInfo.setName(documentInfo.name);
