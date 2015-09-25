@@ -67,7 +67,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			include="/plugins/html5-admin-portal/partials/views/passwordManagementView.html" />		<ippui:view name="criticalityConf"
 			include="/plugins/html5-admin-portal/partials/views/criticalityConfig.html"/>			
 		<ippui:view name="qaManagementView" 
-			include="/plugins/html5-admin-portal/partials/views/qaManagementView.html" />		<ippui:view name="prefManagerBean" 			include="/plugins/html5-admin-portal/partials/views/preferenceManagerView.html"/>
+			include="/plugins/html5-admin-portal/partials/views/qaManagementView.html" />		<ippui:view name="prefManagerBean" 			include="/plugins/html5-admin-portal/partials/views/preferenceManagerView.html"/>		<ippui:view name="participantMgmt"				include="/plugins/html5-admin-portal/partials/views/participantManagementView.html">				<ippui:preferences>					<ippui:preferencePage name="configuration" include="/plugins/admin-portal/views/participantMgtConfiguration.xhtml" />				</ippui:preferences>		</ippui:view>
 			
 	</ippui:perspective>
 

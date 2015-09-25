@@ -76,8 +76,11 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			</ippui:preferences>
 		</ippui:view>
 
-		<ippui:view name="notesPanel" include="/plugins/processportal/notesPanel.xhtml"  controller="processportal_NotesBean" 
-		/>
+		<ippui:view name="notesPanel" include="/plugins/processportal/notesPanel.xhtml"  controller="processportal_NotesBean"/>
+		<!--  Keep the below commented view here only in 9.1 above view def will be replaced by HTML5 view -->
+		<!-- <ippui:view name="notesPanelHtml5"
+				include="/plugins/html5-process-portal/partials/views/notesPanel.html">
+			</ippui:view> -->
 
 	</ippui:perspective>
 
