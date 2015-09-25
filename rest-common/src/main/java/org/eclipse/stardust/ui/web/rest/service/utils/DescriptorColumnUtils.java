@@ -7,6 +7,7 @@
  */
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -26,7 +27,7 @@ public class DescriptorColumnUtils
 		{
 			return ColumnDataType.BOOLEAN;
 		}
-		if (Date.class.equals(mappedType))
+		if (Date.class.equals(mappedType) || Calendar.class.equals(mappedType))
 		{
 			return ColumnDataType.DATE;
 		}
