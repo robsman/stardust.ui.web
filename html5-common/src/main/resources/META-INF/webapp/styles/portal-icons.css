@@ -589,3 +589,24 @@ Icon implementations
 	font-family:FontAwesome;
 	content:"\f111";
 }
+
+.pi-org:before{
+	font-family:FontAwesome;
+	content:"\f0e8";
+}
+.pi-role:before{
+	font-family:FontAwesome;
+	content:"\f235";
+}
+.pi-department:before{
+	font-family:FontAwesome;
+	content:"\f02b";
+}
+.pi-scope-role:before{
+	font-family:FontAwesome;
+	content:"\f235";
+}
+.pi-user:before{
+	font-family:FontAwesome;
+	content:"\f007";
+}

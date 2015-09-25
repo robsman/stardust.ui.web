@@ -369,13 +369,15 @@
 
     if (!item.type) { return "sc sc-fw icon-lg sc-spiral" + isSelected; }
 
-    if (item.type === "USER") { return "js-icon icon-lg glyphicon glyphicon-user" + isSelected; }
+    if (item.type === "USER") { return "sc sc-fw icon-lg pi-user" + isSelected; }
 
-    if (item.type === "ROLE_UNSCOPED") { return "sc sc-fw icon-lg sc-cog" + isSelected; }
+    if (item.type === "ROLE_UNSCOPED") { return "pi-role" + isSelected; }
 
-    if (item.type === "ROLE_SCOPED") { return "sc sc-fw icon-lg sc-cog" + isSelected; }
+    if (item.type === "ROLE_SCOPED") { return "sc sc-fw icon-lg pi-scope-role" + isSelected; }
+    
+    if (item.type === "DEPARTMENT") { return "sc sc-fw icon-lg pi-department" + isSelected; }
 
-    return "sc sc-badge-portrait sc-fw icon-lg sc-users sc-right" + isSelected;
+    return "sc sc-fw icon-lg pi-org" + isSelected;
   };
 
   ParticipantManagementCtrl.prototype.menuCallback = function(menuData) {
