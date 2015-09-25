@@ -13,7 +13,6 @@ package org.eclipse.stardust.ui.web.rest;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -63,7 +62,7 @@ public class ParticipantResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("participants")
-   public Response modifyParticipant(String postedData, @QueryParam("lazyLoad") @DefaultValue("false") Boolean lazyLoad)
+   public Response modifyParticipant(String postedData)
    {
       Map grantsMap = null;
       if (StringUtils.isNotEmpty(postedData))
@@ -89,7 +88,7 @@ public class ParticipantResource
       }
 
       Map<String, List<ParticipantDTO>> participantDTOs = participantService.modifyParticipant(participants,
-            usersToBeAdded, usersToBeRemoved, lazyLoad);
+            usersToBeAdded, usersToBeRemoved);
 
       return Response.ok(GsonUtils.toJsonHTMLSafeString(participantDTOs), MediaType.APPLICATION_JSON).build();
    }
@@ -111,11 +110,12 @@ public class ParticipantResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("participants/{participantId}")
-   public Response getSubParticipants(@PathParam("participantId") String participantId)
+   public Response getSubParticipants(@PathParam("participantId") String participantId,
+         @QueryParam("lazyLoad") @DefaultValue("false") Boolean lazyLoad)
          throws UnsupportedEncodingException
    {
       participantId = URLDecoder.decode(participantId, "UTF-8");
-      List<ParticipantDTO> participants = participantService.getParticipant(participantId);
+      List<ParticipantDTO> participants = participantService.getSubParticipants(participantId, lazyLoad);
       return Response.ok(AbstractDTO.toJson(participants), MediaType.APPLICATION_JSON).build();
    }
 
@@ -138,15 +138,12 @@ public class ParticipantResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("department")
-   public Response createModifyDepartment(String postData) throws Exception
+   public Response createModifyDepartment(String postData,
+         @QueryParam("lazyLoad") @DefaultValue("false") Boolean lazyLoad) throws Exception
    {
       DepartmentDTO departmentDTO = DTOBuilder.buildFromJSON(postData, DepartmentDTO.class);
-      List<ParticipantDTO> participants = participantService.createModifyDepartment(departmentDTO);
-
-      Map<String, List<ParticipantDTO>> result = new HashMap<String, List<ParticipantDTO>>();
-      result.put("participants", participants);
-
-      return Response.ok(GsonUtils.toJsonHTMLSafeString(result), MediaType.APPLICATION_JSON).build();
+      ParticipantDTO participant = participantService.createModifyDepartment(departmentDTO, lazyLoad);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(participant), MediaType.APPLICATION_JSON).build();
    }
 
    @DELETE

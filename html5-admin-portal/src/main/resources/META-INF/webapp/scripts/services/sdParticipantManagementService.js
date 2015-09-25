@@ -187,15 +187,15 @@
     };
 
     // get Sub-Participants for provided participants
-    ParticipantManagementService.prototype.getSubParticipants = function(participant) {
+    ParticipantManagementService.prototype.getSubParticipants = function(participant, lazyLoad) {
       var participantId = encodeURIComponent(getParticipatQId(participant));
       var restUrl = sdUtilService.getBaseUrl() + "services/rest/portal/participants/" + participantId;
       var participantResource = $resource(restUrl);
-      return participantResource.query().$promise;
+      return participantResource.query({'lazyLoad': lazyLoad}).$promise;
     };
 
     // get Sub-Participants for provided participants
-    ParticipantManagementService.prototype.saveParticipants = function(participants, addUsers, removeUsers, lazyLoad) {
+    ParticipantManagementService.prototype.saveParticipants = function(participants, addUsers, removeUsers) {
       var data = {};
       data.participants = [];
       data.add = null;
@@ -223,12 +223,12 @@
       var restUrl = sdUtilService.getBaseUrl() + "services/rest/portal/participants/";
       var participantResource = $resource(restUrl);
 
-      return participantResource.save({'lazyLoad': lazyLoad}, data).$promise;
+      return participantResource.save(data).$promise;
     };
 
     // create or modify department
-    ParticipantManagementService.prototype.createModifyDepartment = function(department) {
-      return departmentResource.save(department).$promise;
+    ParticipantManagementService.prototype.createModifyDepartment = function(department, lazyLoad) {
+      return departmentResource.save({'lazyLoad': lazyLoad}, department).$promise;
     };
 
     // delete department

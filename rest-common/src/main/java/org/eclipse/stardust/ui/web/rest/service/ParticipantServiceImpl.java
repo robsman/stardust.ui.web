@@ -143,21 +143,40 @@ public class ParticipantServiceImpl implements ParticipantService
     * @param participantQidIn
     * @return
     */
-   public List<ParticipantDTO> getParticipant(String participantQidIn)
+   public List<ParticipantDTO> getSubParticipants(String participantQidIn, boolean lazyLoad)
    {
       ParticipantContainer participantContainer = getParticipantContainerFromQialifiedId(participantQidIn);
-      return getSubParticipants(participantContainer);
+      return getSubParticipants(participantContainer, lazyLoad);
    }
 
+   /**
+    * @param participantContainer
+    * @param lazyLoad
+    * @return
+    */
+   private List<ParticipantDTO> getSubParticipants(ParticipantContainer participantContainer, boolean lazyLoad)
+   {
+      List<ParticipantDTO> participantDTOs = getSubParticipants(participantContainer);
+      if (!lazyLoad)
+      {
+         for (ParticipantDTO childParticipantDTO : participantDTOs)
+         {
+            if (!ParticipantType.USER.name().equals(childParticipantDTO.type))
+            {
+               populateChildrenRecursively(childParticipantDTO);
+            }
+         }
+      }
+      return participantDTOs;
+   }
+   
    /**
     * create or modify department
     * 
     */
-   public List<ParticipantDTO> createModifyDepartment(DepartmentDTO departmentDTO)
+   public ParticipantDTO createModifyDepartment(DepartmentDTO departmentDTO, boolean lazyLoad)
    {
       ParticipantContainer participantContainer = getParticipantContainerFromQialifiedId(departmentDTO.uiQualifiedId);
-      List<ParticipantDTO> participants = new ArrayList<ParticipantDTO>();
-
       QualifiedModelParticipantInfo modelParticipant = participantContainer.modelparticipant;
       DepartmentInfo parentDepartment = participantContainer.department;
 
@@ -175,23 +194,25 @@ public class ParticipantServiceImpl implements ParticipantService
             throw new PortalRestException(Status.BAD_REQUEST, MessagesViewsCommonBean.getInstance().getString(
                   "views.participantTree.duplicateDepartment.error"));
          }
-         adminService.createDepartment(departmentDTO.id, departmentDTO.name, departmentDTO.description,
-               parentDepartment, (OrganizationInfo) modelParticipant);
-
-         participants = getSubParticipants(participantContainer);
+         Department updatedDepartment = adminService.createDepartment(departmentDTO.id, departmentDTO.name,
+               departmentDTO.description, parentDepartment, (OrganizationInfo) modelParticipant);
+         ParticipantDTO participantDTO = getParticipant(updatedDepartment);
+         if (!lazyLoad)
+         {
+            populateChildrenRecursively(participantDTO);
+         }
+         return participantDTO;
       }
       else if (ParticipantType.DEPARTMENT.name().equals(participantContainer.participantType))
       {
          // modify department
          DepartmentInfo departmentInfo = participantContainer.department;
-         Department department = adminService.modifyDepartment(departmentInfo.getOID(), departmentDTO.name,
+         Department updatedDepartment = adminService.modifyDepartment(departmentInfo.getOID(), departmentDTO.name,
                departmentDTO.description);
-         // return parent node
-         participantContainer.participantType = ParticipantType.ORGANIZATON_SCOPED_EXPLICIT.name();
-         participants = getSubParticipants(participantContainer);
+         return getParticipant(updatedDepartment);
       }
-
-      return participants;
+      
+      return null;
    }
 
    /**
@@ -224,7 +245,7 @@ public class ParticipantServiceImpl implements ParticipantService
     */
    @Override
    public Map<String, List<ParticipantDTO>> modifyParticipant(HashSet<String> participant, HashSet<String> add,
-         HashSet<String> remove, boolean lazyLoad)
+         HashSet<String> remove)
    {
       HashSet<String> selectedUsers = new HashSet<String>();
 
@@ -287,18 +308,16 @@ public class ParticipantServiceImpl implements ParticipantService
       for (String pId : participantContainers.keySet())
       {
          List<ParticipantDTO> participantDTOs = new ArrayList<ParticipantDTO>();
+         List<ParticipantDTO> newUsers = new ArrayList<ParticipantDTO>();
          participantDTOs.addAll(getSubParticipants(participantContainers.get(pId)));
-         if (!lazyLoad)
+         for (ParticipantDTO participantDTO : participantDTOs)
          {
-            for (ParticipantDTO participantDTO : participantDTOs)
+            if (ParticipantType.USER.name().equals(participantDTO.type))
             {
-               if (!ParticipantType.USER.name().equals(participantDTO.type))
-               {
-                  populateChildrenRecursively(participantDTO);
-               }
+               newUsers.add(participantDTO);
             }
          }
-         participantsMap.put(pId, participantDTOs);
+         participantsMap.put(pId, newUsers);
       }
       return participantsMap;
    }
@@ -409,10 +428,8 @@ public class ParticipantServiceImpl implements ParticipantService
 
          if (superOrganizations != null)
          {
-            for (Organization organization : superOrganizations)
-            {
-               departmentInfo = participantManagementUtils.getDepartment(organization, parentDepartmentId);
-            }
+            departmentInfo = getDepartmentInfoFromSuperOrganizations(superOrganizations, parentDepartmentId);
+            
             if (departmentInfo != null)
             {
                modelParticipant = getDepartment(departmentInfo.getOID()).getScopedParticipant(
@@ -453,6 +470,34 @@ public class ParticipantServiceImpl implements ParticipantService
       return participantContainer;
    }
 
+   /**
+    * retrieve department by traversing through hierarchy of parent organizations
+    * 
+    * @param superOrganizations
+    * @param parentDepartmentId
+    * @return
+    */
+   private DepartmentInfo getDepartmentInfoFromSuperOrganizations(List<Organization> superOrganizations,
+         String parentDepartmentId)
+   {
+      DepartmentInfo departmentInfo = null;
+      for (Organization organization : superOrganizations)
+      {
+         departmentInfo = participantManagementUtils.getDepartment(organization, parentDepartmentId);
+         if (departmentInfo != null)
+         {
+            return departmentInfo;
+         }
+      }
+
+      for (Organization organization : superOrganizations)
+      {
+         return getDepartmentInfoFromSuperOrganizations(organization.getAllSuperOrganizations(), parentDepartmentId);
+      }
+
+      return null;
+   }   
+   
    /**
     * @param modelparticipant
     * @param department
@@ -539,7 +584,7 @@ public class ParticipantServiceImpl implements ParticipantService
       // Add all Departments
       for (Department department : deptList)
       {
-         getParticipant(department, participantDTOs);
+         participantDTOs.add(getParticipant(department));
       }
    }
 
@@ -654,11 +699,10 @@ public class ParticipantServiceImpl implements ParticipantService
     * @param department
     * @param participantDTOs
     */
-   private void getParticipant(Department department, List<ParticipantDTO> participantDTOs)
+   private ParticipantDTO getParticipant(Department department)
    {
       ParticipantDTO participantDTO = new ParticipantDTO(department);
       participantDTO.type = ParticipantType.DEPARTMENT.name();
-      participantDTOs.add(participantDTO);
 
       if (department.getParentDepartment() != null)
       {
@@ -672,6 +716,8 @@ public class ParticipantServiceImpl implements ParticipantService
       }
 
       participantDTO.uiQualifiedId += "[" + department.getId() + "]";
+      
+      return participantDTO;
    }
 
    /**

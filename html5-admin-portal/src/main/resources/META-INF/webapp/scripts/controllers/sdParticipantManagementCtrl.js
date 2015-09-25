@@ -423,7 +423,7 @@
 
     // On expansion of a node we need to build out its children
     if (data.treeEvent === "node-expand") {
-      if (!lazyLoad) {
+      if (!lazyLoad) {  
         //complete tree is already loaded
         data.valueItem.isLoaded = true;
         data.deferred.resolve();
@@ -443,9 +443,9 @@
           // If expanding a role expect an array of users to be returned
           // If expanding an org expect a mixed array of roles and orgs to be
           // returned
-          _sdParticipantManagementService.getSubParticipants(data.valueItem).then(function(users) {
+          _sdParticipantManagementService.getSubParticipants(data.valueItem, lazyLoad).then(function(participants) {
             // always add to children as template recurses on this
-            data.valueItem.children = users;
+            data.valueItem.children = participants;
             // add isLoaded = true so we know we can skip this node next
             // expansion
             data.valueItem.isLoaded = true;
@@ -567,10 +567,20 @@
   // save the participant
   ParticipantManagementCtrl.prototype.saveParticipants = function(data, participants, addUsers, removeUsers) {
     var self = this;
-    _sdParticipantManagementService.saveParticipants(participants, addUsers, removeUsers, lazyLoad).then(function(result) {
+    _sdParticipantManagementService.saveParticipants(participants, addUsers, removeUsers).then(function(result) {
       // update the tree with server response
       for (var i = 0; i < participants.length; i++) {
-        participants[i].children = result[getParticipatQId(participants[i])];
+        //remove all users
+        var nonUserParticipants = [];
+        if (participants[i].children) {
+          for (var j = 0; j < participants[i].children.length; j++) {
+            if (!(participants[i].children[j].type === "USER")) {
+              nonUserParticipants.push(participants[i].children[j]);
+            }
+          }
+        }
+        // update users received from server
+        participants[i].children = result[getParticipatQId(participants[i])].concat(nonUserParticipants);
       }
       data.deferred.resolve();
     }, function(response) {
@@ -649,20 +659,19 @@
     // delete unwanted parameters
     delete self.department.parentDepartmentName;
     delete self.department.organization;
-    _sdParticipantManagementService.createModifyDepartment(this.department).then(function(data) {
-      var participants = data.participants;
+    _sdParticipantManagementService.createModifyDepartment(this.department, lazyLoad).then(function(department) {
       var contextParticipant = self.contextParticipantNode.valueItem;
-      var department = undefined;
-      for (var i = 0; i < participants.length; i++) {
-        if (self.department.id === participants[i].id) {
-          department = participants[i];
-        }
-      }
       if (contextParticipant.type == "DEPARTMENT") {
+        // modify department
         contextParticipant.name = department.name;
         contextParticipant.description = department.description;
       } else {
-        contextParticipant.children.push(department);
+        // add new department
+        if (contextParticipant.children) {
+          contextParticipant.children.push(department);
+        } else {
+          contextParticipant.children = [department];
+        }
       }
       self.contextParticipantNode.deferred.resolve();
     }, function(response) {

@@ -25,24 +25,24 @@ import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
  */
 public interface ParticipantService
 {
-   
+
    /**
     * @param participantQidIn
     * @return
     */
    public List<ModelDTO> getParticipantTree(boolean lazyLoad);
-   
+
    /**
     * @param participantQidIn
     * @return
     */
-   public List<ParticipantDTO> getParticipant(String participantQidIn);
+   public List<ParticipantDTO> getSubParticipants(String participantQidIn, boolean lazyLoad);
 
    /**
     * @param departmentDTO
     * @return
     */
-   public List<ParticipantDTO> createModifyDepartment(DepartmentDTO departmentDTO);
+   public ParticipantDTO createModifyDepartment(DepartmentDTO departmentDTO, boolean lazyLoad);
 
    /**
     * @param departmentQualifiedId
@@ -57,5 +57,5 @@ public interface ParticipantService
     * @return
     */
    public Map<String, List<ParticipantDTO>> modifyParticipant(HashSet<String> participants,
-         HashSet<String> usersToBeAdded, HashSet<String> usersToBeRemoved, boolean lazyLoad);
+         HashSet<String> usersToBeAdded, HashSet<String> usersToBeRemoved);
 }
