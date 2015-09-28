@@ -69,16 +69,12 @@ public class AbstractAdapterView implements ViewEventHandler {
 		switch (event.getType())
 		{
 		case TO_BE_ACTIVATED:
-			//PortalApplication.getInstance().addEventScript("InfinityBpm.ProcessPortal.createOrActivateContentFrame('" + iframeId + "', '" + pagePath + event.getView().getParams() + "', {anchorId:'" + anchorId + "', anchorYAdjustment:10, zIndex:200});");
 			break;
 
 		case TO_BE_DEACTIVATED:
-			//PortalApplication.getInstance().addEventScript("InfinityBpm.ProcessPortal.deactivateContentFrame('" + iframeId + "');");
 			break;
 
 		case CLOSED:
-//			PortalApplication.getInstance().addEventScript(
-//					"InfinityBpm.ProcessPortal.closeContentFrame('" + iframeId + "');");
 			break;
 
 		case LAUNCH_PANELS_ACTIVATED:

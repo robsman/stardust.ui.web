@@ -60,7 +60,8 @@ public abstract class AbstractAdapterView implements ViewEventHandler
          Object keyParamValue = (StringUtils.isNotEmpty(keyParam)) ? event.getView().getViewParams().get(keyParam) : "";
          PortalApplication.getInstance().addEventScript(
                "InfinityBpm.ProcessPortal.createOrActivateContentFrame('" + iframeId + "', '" + pagePath
-                     + event.getView().getParams() + "', {anchorId:'" + anchorId
+                     + event.getView().getParams() + "', {html5ViewId: '" + event.getView().getHtml5FwViewId()
+                     + "', anchorId:'" + anchorId
                      + "', anchorYAdjustment:10, zIndex:200, frmAttrs: {displayName: '" + keyParamValue + "'}});");
          fireResizeIframeEvent();
 

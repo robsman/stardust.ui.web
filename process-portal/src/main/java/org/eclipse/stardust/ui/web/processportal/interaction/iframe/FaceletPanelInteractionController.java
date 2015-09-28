@@ -55,23 +55,12 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
       switch (event.getType())
       {
       case TO_BE_ACTIVATED:
-         String uri = provideIframePanelUri(activityInstance, event.getView());
-
-//         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-//               "InfinityBpm.ProcessPortal.createOrActivateContentFrame('"
-//                     + getContentFrameId(activityInstance) + "', '" + uri + "');");
          break;
 
       case TO_BE_DEACTIVATED:
-//         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-//               "InfinityBpm.ProcessPortal.deactivateContentFrame('"
-//                     + getContentFrameId(activityInstance) + "');");
          break;
 
       case CLOSED:
-//         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-//               "InfinityBpm.ProcessPortal.closeContentFrame('"
-//                     + getContentFrameId(activityInstance) + "');");
          break;
 
       case LAUNCH_PANELS_ACTIVATED:
@@ -80,9 +69,6 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
       case RESTORED_TO_NORMAL:
       case PINNED:
       case PERSPECTIVE_CHANGED:
-//         JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-//               "InfinityBpm.ProcessPortal.resizeContentFrame('"
-//                     + getContentFrameId(activityInstance) + "');");
          break;
       }
    }
@@ -97,7 +83,7 @@ public class FaceletPanelInteractionController implements IActivityInteractionCo
          String uri = provideIframePanelUri(activityInstance, event.getView());
 
          eventScript = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('"
-               + getContentFrameId(activityInstance) + "', '" + uri + "');";
+               + getContentFrameId(activityInstance) + "', '" + uri + "', {html5ViewId: '" + event.getView().getHtml5FwViewId() + "'});";
          break;
 
       case TO_BE_DEACTIVATED:
