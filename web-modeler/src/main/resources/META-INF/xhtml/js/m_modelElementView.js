@@ -12,13 +12,13 @@
  * @author Marc.Gille
  */
 define(
-		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants",
+		[ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_model", "bpm-modeler/js/m_constants",
 				"bpm-modeler/js/m_extensionManager",
 				"bpm-modeler/js/m_session", "bpm-modeler/js/m_command",
 				"bpm-modeler/js/m_commandsController", "bpm-modeler/js/m_user",
 				"bpm-modeler/js/m_dialog", "bpm-modeler/js/m_view",
 				"bpm-modeler/js/m_i18nUtils", "bpm-modeler/js/m_angularContextUtils" ],
-		function(m_utils, m_constants, m_extensionManager, m_session,
+		function(m_utils, m_model, m_constants, m_extensionManager, m_session,
 				m_command, m_commandsController, m_user, m_dialog, m_view,
 				m_i18nUtils, m_angularContextUtils) {
 			return {
@@ -596,5 +596,26 @@ define(
 						viewContainerDiv.width(availableWidth);	
 					}
 				};
+		        
+		        /**
+		         * 
+		         */
+				ModelElementView.prototype.getMModel = function(application) {
+		          return m_model;
+		        };
+		        
+		        /**
+		         * 
+		         */
+		        ModelElementView.prototype.getMCommandsController = function(application) {
+		          return m_commandsController;
+		        };
+		        
+		        /**
+		         * 
+		         */
+		        ModelElementView.prototype.getMCommand = function(application) {
+		          return m_command
+		        };
 			}
 		});
