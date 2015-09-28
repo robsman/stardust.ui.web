@@ -39,10 +39,10 @@ if (!window["BridgeUtils"]) {
 						console.error(str);
 					}
 				} else {
-					console.log("* " + str);
+						console.log("* " + str);
+					}
 				}
 			}
-		}
 
 		/*
 		 * 
@@ -1586,6 +1586,7 @@ if (!window["BridgeUtils"].FrameManager) {
 								'style',
 								'display: none; z-index:100; position: relative; top: 450px; left: 100px; width: 400px; height: 300px;');
 				if (advanceArgs != undefined) {
+					contentFrame.setAttribute('html5ViewId', advanceArgs.html5ViewId);
 					contentFrame.setAttribute('noUnloadWarning',
 							advanceArgs.noUnloadWarning);
 					// Loop through custom attributes and add those as well
@@ -1659,6 +1660,7 @@ if (!window["BridgeUtils"].FrameManager) {
 			doWithContentFrame( contentId, function(contentFrame) {
 				if (advanceArgs != undefined) {
 					var anchorId = advanceArgs.anchorId;
+					var html5ViewId = advanceArgs.html5ViewId;
 					var width = advanceArgs.width;
 					var height = advanceArgs.height;
 					var openOnRight = advanceArgs.openOnRight;
@@ -1786,33 +1788,56 @@ if (!window["BridgeUtils"].FrameManager) {
 						contentFrame.setAttribute('widthAdjustment', widthAdjustment);
 						contentFrame.setAttribute('heightAdjustment', heightAdjustment);
 						contentFrame.setAttribute('positionType', positionType);
-						
-						// Finally make iFrame visible
-						contentFrame.style.display = 'inline';
-	
+
 						addIframe(contentId, posX, posY);
-						
-						// This is needed because if page is scrolled at the time of iFrame activation
-						// Then it has to be readjusted for scroll position.
-						handleScroll();
-						handleViewScroll(viewFrameData.win, contentFrame);
-						BridgeUtils.log("Frame Activated = " + contentId);
+					
+						// Finally make iFrame visible
+						var showFrame = !html5ViewId || isViewActive(html5ViewId);
+
+						if (showFrame) {
+							contentFrame.style.display = 'inline';
+
+							// This is needed because if page is scrolled at the time of iFrame activation
+							// Then it has to be readjusted for scroll position.
+							handleScroll();
+							handleViewScroll(viewFrameData.win, contentFrame);
+							BridgeUtils.log("Frame Activated = " + contentId);
+						} else {
+							console.log("Skiping Activation of Frame for: " + html5ViewId);
+						}
 					}
 				}
 				
 				if (delayActivation){
-					// Anchor is still loading. Delay activation
-					BridgeUtils.log("Something is not right. Delaying frame activation = " + contentId + ", Counter: " + hiddenCounter);
-					if (hiddenCounter >= 0) {
-						window.setTimeout(function(){
-							activate(contentId, advanceArgs, --hiddenCounter);
-						}, 100);
+					if (!html5ViewId || isViewActive(html5ViewId)) {
+						// Anchor is still loading. Delay activation
+						BridgeUtils.log("Something is not right. Delaying frame activation = " + contentId + ", Counter: " + hiddenCounter);
+						if (hiddenCounter >= 0) {
+							window.setTimeout(function(){
+								activate(contentId, advanceArgs, --hiddenCounter);
+							}, 100);
+						} else {
+							BridgeUtils.log("Max tries exceeded for frame activation, for " + contentId, "e");
+							contentFrame.style.display = 'inline';
+						}
 					} else {
-						BridgeUtils.log("Max tries exceeded for frame activation, for " + contentId, "e");
-						contentFrame.style.display = 'inline';
+						console.log("Skiping Activation of Frame for: " + html5ViewId);
 					}
 				}
 			});
+		}
+
+		/*
+		 * Private
+		 */
+		function isViewActive(html5ViewId) {
+			if (html5ViewId) {
+				 var activeView = BridgeUtils.View.getActiveView();
+				 if (activeView != null && activeView.path == html5ViewId) {
+					 return true;
+				 }
+			}
+			return false;
 		}
 
 		/*

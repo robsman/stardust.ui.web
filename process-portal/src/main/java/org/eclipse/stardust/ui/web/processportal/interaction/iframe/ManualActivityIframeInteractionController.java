@@ -302,9 +302,9 @@ public class ManualActivityIframeInteractionController implements IActivityInter
          break;
       case TO_BE_ACTIVATED:
          String uri = providePanelUri(activityInstance);
-
+         
          eventScript = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('"
-               + getContentFrameId(activityInstance) + "', '" + uri + "');";
+               + getContentFrameId(activityInstance) + "', '" + uri + "', {html5ViewId: '" + event.getView().getHtml5FwViewId() + "'});";
          break;
 
       case TO_BE_DEACTIVATED:
