@@ -31,6 +31,7 @@ import org.eclipse.stardust.ui.web.rest.service.UserService;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.UserPermissionsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,6 +125,28 @@ public class UserResource
       {
          UserDTO loggedInUser = userService.getLoggedInUser();
          return Response.ok(loggedInUser.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+
+   }
+
+   /**
+    * This method returns runtime permissions for logged in user.
+    * 
+    * @return
+    */
+   @GET
+   @Path("/whoAmI/runtime-permissions")
+   public Response getPermissionsForLoggedInUser()
+   {
+      try
+      {
+         UserPermissionsDTO permissionsDTO = userService.getPermissionsForLoggedInUser();
+         return Response.ok(permissionsDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {

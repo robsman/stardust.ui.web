@@ -11,6 +11,10 @@
 
 package org.eclipse.stardust.ui.web.rest.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.log.LogManager;
@@ -19,10 +23,13 @@ import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.UserPermissionsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.viewscommon.common.spi.user.impl.IppUser;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.stereotype.Component;
@@ -39,6 +46,9 @@ public class UserService
    private ServiceFactoryUtils serviceFactoryUtils;
 
    private static final Logger trace = LogManager.getLogger(UserService.class);
+
+   @Resource
+   private UserProvider userProvider;
 
    /**
     * Gets the logged In User
@@ -65,6 +75,7 @@ public class UserService
       return userCountsDTO;
 
    }
+
 
    /**
     * 
@@ -109,5 +120,32 @@ public class UserService
       userDTO.displayName = UserUtils.getUserDisplayLabel(user);
       userDTO.userImageURI = MyPicturePreferenceUtils.getUsersImageURI(user);
       return userDTO;
+   }
+
+   /**
+    * 
+    */
+   public UserPermissionsDTO getPermissionsForLoggedInUser()
+   {
+      org.eclipse.stardust.ui.web.common.spi.user.User loggedInUser = userProvider.getUser();
+
+      Set<String> allPermissionIds = serviceFactoryUtils.getAdministrationService().getGlobalPermissions()
+            .getAllPermissionIds();
+
+      List<String> availablePermissions = new ArrayList<String>();
+
+      IppUser ippUser = (IppUser) loggedInUser;
+      for (String permission : allPermissionIds)
+      {
+         System.out.println(permission);
+         System.out.println(ippUser.hasPermission(permission));
+         if (ippUser.hasPermission(permission))
+         {
+            availablePermissions.add(permission);
+         }
+      }
+
+      UserPermissionsDTO result = new UserPermissionsDTO(availablePermissions);
+      return result;
    }
 }

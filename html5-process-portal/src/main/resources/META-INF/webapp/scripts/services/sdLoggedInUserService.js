@@ -28,6 +28,7 @@
 	 */
 	function LoggedInUserService(sdUtilService) {
 		var userCache = null;
+		var permissionCache = null;
 
 		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/user";
 		/**
@@ -40,6 +41,18 @@
 			}
 			return userCache;
 		};
+		
+		/**
+		 * 
+		 */
+		this.getRuntimePermissions = function() {
+			var restUrl = REST_BASE_URL + "/whoAmI/runtime-permissions";
+			if (!permissionCache) {
+				permissionCache = sdUtilService.syncAjax(restUrl).availablePermissions;
+			}
+			return permissionCache;
+		};
+		
 		this.getUserInfo();
 	}
 })();

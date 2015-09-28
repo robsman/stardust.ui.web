@@ -177,7 +177,15 @@ public class IppUser implements User
    public boolean hasPermission(ExecutionPermission.Id exePermissionId)
    {
       String permissionId = exePermissionId.toString();
+      return hasPermission(permissionId);
+   }
 
+   /**
+    * @param permissionId
+    * @return
+    */
+   public boolean hasPermission(String permissionId)
+   {
       if (null == permissionsCache)
       {
          permissionsCache = new HashMap<String, Boolean>();
