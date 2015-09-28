@@ -147,10 +147,10 @@
                               <th>{{overlayPanel.i18nLabels('header.name.title')}}</th>
                               <!--<th>{{overlayPanel.i18nLabels('header.direction.title')}}</th>-->
                               <th>{{overlayPanel.i18nLabels('header.dataType.title')}}</th>
-                              <th>{{overlayPanel.i18nLabels('header.type.title')}}</th>
+                              <!-- <th>{{overlayPanel.i18nLabels('header.type.title')}}</th> -->
                               <th>Predefined Values</th>
                            </tr>
-                           <tr
+                           <tr align="center" 
                               ng-repeat="ap in overlayPanel.getApplication().contexts.application.accessPoints | filter : {direction:'IN'}">
                               <td>{{ ap.name }}</td>
                               <td><select disabled="true" ng-model="ap.dataType">
@@ -162,18 +162,6 @@
                                  disabled="true" ng-model="ap.structuredDataTypeFullId"
                                  ng-options="structuredType.getFullId() as structuredType.name group by structuredType.modelId for structuredType in overlayPanel.getAllStructuredTypes()">
                               </select></td>
-                              <td ng-show="ap.dataType == 'primitive' ? true : false">
-                                 <select disabled="true" ng-model="ap.primitiveDataType">
-                                    <option value="String">Text</option>
-                                    <option value="boolean">Boolean (True, False)</option>
-                                    <option value="int">Number (e.g. 18756)</option>
-                                    <option value="long">Long Number (e.g. 18756)</option>
-                                    <option value="double">Scientific (e.g.
-                                       3.1415)</option>
-                                    <option value="Calendar">Date (e.g.
-                                       14/05/2011)</option>
-                              </select>
-                              </td>
                               <td ng-show="ap.dataType =='dmsDocument'? true : false">
                                  <select disabled="true"
                                  ng-model="ap.structuredDataTypeFullId"
