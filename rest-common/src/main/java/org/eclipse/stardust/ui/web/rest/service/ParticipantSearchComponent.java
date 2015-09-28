@@ -25,6 +25,7 @@ import org.eclipse.stardust.engine.api.dto.UserDetailsLevel;
 import org.eclipse.stardust.engine.api.model.Organization;
 import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
+import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.UserQuery;
@@ -140,7 +141,7 @@ public class ParticipantSearchComponent
     */
    public String searchAllParticipants(String searchText, int maxMatches)
    {
-      return searchAllParticipants(searchText, maxMatches, 15, true);
+      return searchAllParticipants(searchText, maxMatches, 15, true, true);
    }
    
    /**
@@ -149,7 +150,7 @@ public class ParticipantSearchComponent
     * @param type 
     * @return
     */
-   public String searchAllParticipants(String searchText, int maxMatches, int type, boolean filterPredefinedModel)
+   public String searchAllParticipants(String searchText, int maxMatches, int type, boolean filterPredefinedModel, boolean filterScopedParticipant)
    {
       List<ParticipantDTO> selectedParticipants = new ArrayList<ParticipantDTO>();
       QueryService service = serviceFactoryUtils.getQueryService();
@@ -181,7 +182,24 @@ public class ParticipantSearchComponent
       //TODO: is there a requirement for separate role and organizations?
       if (containsOrganization(type) && containsRole(type))
       {
-         List<Participant> rolesAndOrgs = ParticipantUtils.getAllUnScopedModelParticipant(filterPredefinedModel);
+         List<Participant> rolesAndOrgs = null;
+         if(filterScopedParticipant)
+         {
+            rolesAndOrgs = ParticipantUtils.getAllUnScopedModelParticipant(filterPredefinedModel);   
+         }
+         else
+         {
+            List<QualifiedModelParticipantInfo> allParticipants = ParticipantUtils.getAllModelParticipants(filterPredefinedModel);
+            rolesAndOrgs = CollectionUtils.newArrayList();
+            for (QualifiedModelParticipantInfo participant : allParticipants)
+            {
+               if (participant instanceof Participant)
+               {
+                  rolesAndOrgs.add((Participant) participant);
+               }
+            }
+         }
+         
          selectedParticipants.addAll(copyToParticipantDTOList(rolesAndOrgs, searchText));
          
          if (containsDepartment(type))

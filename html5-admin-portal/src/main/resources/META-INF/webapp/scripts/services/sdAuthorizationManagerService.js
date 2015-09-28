@@ -35,7 +35,8 @@
     // Search Participant
     AMService.prototype.searchParticipants = function() {
       // Prepare URL
-      var participantSearchResult = $resource(PART_REST_BASE_URL);
+    var participantSearchResult = $resource(PART_REST_BASE_URL
+					+ "?filterScopedParticipant=false");
 
       return participantSearchResult.query().$promise;
     };

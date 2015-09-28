@@ -126,12 +126,13 @@ public class ParticipantResource
    public Response searchParticipants(@QueryParam("searchText") @DefaultValue("") String searchText,
          @QueryParam("maxMatches") @DefaultValue("8") Integer maxMatches,
          @QueryParam("searchType") @DefaultValue("3") Integer searchType,
-         @QueryParam("filterPredefinedModel") @DefaultValue("false") Boolean filterPredefinedModel)
+         @QueryParam("filterPredefinedModel") @DefaultValue("false") Boolean filterPredefinedModel,
+         @QueryParam("filterScopedParticipant") @DefaultValue("true") boolean filterScopedParticipant)
    {
       // search all unscoped participants including predefined ones
       return Response
             .ok(participantSearchComponent.searchAllParticipants(searchText, maxMatches, searchType,
-                  filterPredefinedModel), MediaType.APPLICATION_JSON).build();
+                  filterPredefinedModel, filterScopedParticipant), MediaType.APPLICATION_JSON).build();
    }
 
    @POST
