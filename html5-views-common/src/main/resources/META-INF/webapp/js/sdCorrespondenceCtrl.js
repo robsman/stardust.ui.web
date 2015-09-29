@@ -39,7 +39,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	/*
 	 * 
 	 */
-	function CorrespondenceCtrl($scope, $q ,$http , $filter,$timeout, $parse, sdDialogService, sdCorrespondenceService, sdViewUtilService, sdLoggerService) {
+	function CorrespondenceCtrl($scope, $q ,$http , $filter,$timeout, $parse, sdDialogService, sdCorrespondenceService, sdViewUtilService, sdLoggerService, sdPreferenceService) {
 
 		this.readOnly = false;
 		_q = $q;
@@ -51,6 +51,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		_parse = $parse;
 		_sdViewUtilService = sdViewUtilService;
 		_scope = $scope;
+		_sdPreferenceService = sdPreferenceService;
 		trace = sdLoggerService.getLogger('html5-views-common-ui.sdCorrespondenceCtrl');
 		
 		this.intialize($scope);
@@ -92,7 +93,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 			id : 'print'
 		}];
 		this.selected = {
-				type  : 'email', // print / email
+				type  : 'print', // print / email
 				showBcc : false,
 				showCc : false,
 				to: [],
@@ -105,6 +106,17 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 				aiOid : '',
 				convertToPdf : false
 		};
+		
+		var preferedCorrespondenceType = this.getDefaultCorrespondenceType();
+		
+
+		if (preferedCorrespondenceType) {
+			if (preferedCorrespondenceType == 'Print') {
+				this.selected.type = 'print'
+			} else {
+				this.selected.type = 'email';
+			}
+		}
 
 		this.dialog ={
 				selectedAddresses : [],
@@ -189,8 +201,20 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 			ctrl.performIppAiClosePanelCommand(commandId);
 		}
 	};
-
-
+	
+	/**
+	 * 
+	 */
+	CorrespondenceCtrl.prototype.getDefaultCorrespondenceType = function (){
+		    var moduleId = 'ipp-views-common';
+		    var preferenceId = 'preference';
+		    var scope = 'PARTITION';
+		    var config =  _sdPreferenceService.getStore(scope, moduleId, preferenceId);
+		    config.fetch();
+		    var fromParent = false;
+		    var type = config.getValue('ipp-views-common.correspondencePanel.prefs.correspondence.defaultType', fromParent);
+		    return type;
+	}
 	/**
 	 * 
 	 */
@@ -1048,7 +1072,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	}
 
 	//Dependency injection array for our controller.
-	CorrespondenceCtrl.$inject = ['$scope','$q', '$http','$filter','$timeout','$parse','sdDialogService','sdCorrespondenceService', 'sdViewUtilService','sdLoggerService'];
+	CorrespondenceCtrl.$inject = ['$scope','$q', '$http','$filter','$timeout','$parse','sdDialogService','sdCorrespondenceService', 'sdViewUtilService','sdLoggerService', 'sdPreferenceService'];
 
 	//Require capable return object to allow our angular code to be initialized
 	//from a require-js injection system.
