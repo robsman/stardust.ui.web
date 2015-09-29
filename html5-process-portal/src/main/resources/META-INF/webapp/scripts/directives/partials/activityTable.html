@@ -120,12 +120,12 @@
 				</th>
 					
 				<th sda-column="DESCRIPTOR_COLUMNS" ng-repeat="descCol in activityTableCtrl.descriptorCols" sda-visible="{{activityTableCtrl.isColumnVisible('descriptorCols')}}" 
-					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}" sda-sortable="{{descCol.sortable}}">
+					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}" sda-sortable="{{descCol.sortable}}" sda-filterable="{{descCol.filterable}}">
 					<div sda-filter-template ng-if="descCol.filterable">
-						<div ng-if="colData.dataType =='NUMBER'"><div sd-number-filter></div></div>
-						<div ng-if="colData.dataType =='DATE'"><div sd-date-filter></div></div>
-						<div ng-if="colData.dataType =='BOOLEAN'"><div sd-boolean-filter></div></div>
-						<div ng-if="colData.dataType =='STRING'"><div sd-text-search-filter></div></div>
+						<div ng-if="colData.dataType =='NUMBER'"><div sd-number-table-filter></div></div>
+						<div ng-if="colData.dataType =='DATE'"><div sd-date-table-filter></div></div>
+						<div ng-if="colData.dataType =='BOOLEAN'"><div sd-boolean-table-filter></div></div>
+						<div ng-if="colData.dataType =='STRING'"><div sd-text-search-table-filter></div></div>
 					</div>
 				</th>
 				
