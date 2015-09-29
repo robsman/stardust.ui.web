@@ -45,12 +45,12 @@
 				<tr>
 					<th sda-name="name" sda-label="{{i18n('views-common-messages.delegation-userOrRole')}}" sda-sortable="false" sda-filterable="true">
 						<div sda-filter-template>
-							<div sd-text-search-filter></div>
+							<div sd-text-search-table-filter></div>
 						</div>
 					</th>
 					<th sda-name="type" sda-visible="true" sda-label="{{i18n('views-common-messages.delegation-type')}}" sda-sortable="false" sda-filterable="true">
 						<div sda-filter-template>
-			  				<div sd-multi-select-filter sda-options="delegateActivityController.participantTypes" sda-label="name" sda-multiple="false"></div>
+			  				<div sd-multi-select-table-filter sda-options="delegateActivityController.participantTypes" sda-label="name" sda-multiple="false"></div>
 						</div>
 					</th>
 				</tr>

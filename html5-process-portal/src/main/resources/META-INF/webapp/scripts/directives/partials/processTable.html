@@ -87,7 +87,7 @@
 				
 				<th sda-name="status" sda-sortable="false" sda-visible="{{processTableCtrl.isColumnVisible('status')}}">
 					<div sda-filter-template>
-						<div sd-multi-select-filter sda-options="processTableCtrl.availableStates"></div>
+						<div sd-multi-select-table-filter sda-options="processTableCtrl.availableStates"></div>
 					</div>
 				</th>
 				
@@ -104,10 +104,10 @@
 					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}"
 					sda-sortable="{{descCol.sortable}}" sda-visible="{{processTableCtrl.isColumnVisible(descCol.id)}}">
 					<div sda-filter-template ng-if="descCol.filterable">
-						<div ng-if="colData.dataType =='NUMBER'"><div sd-number-filter></div></div>
-						<div ng-if="colData.dataType =='DATE'"><div sd-date-filter></div></div>
-						<div ng-if="colData.dataType =='BOOLEAN'"><div sd-boolean-filter></div></div>
-						<div ng-if="colData.dataType =='STRING'"><div sd-text-search-filter></div></div>
+						<div ng-if="colData.dataType =='NUMBER'"><div sd-number-table-filter></div></div>
+						<div ng-if="colData.dataType =='DATE'"><div sd-date-table-filter></div></div>
+						<div ng-if="colData.dataType =='BOOLEAN'"><div sd-boolean-table-filter></div></div>
+						<div ng-if="colData.dataType =='STRING'"><div sd-text-search-table-filter></div></div>
 					</div>
 				</th>
 				

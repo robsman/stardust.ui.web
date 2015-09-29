@@ -35,7 +35,8 @@
 			<div class="participantTable">
 				<table sd-data-table="ctrl.dataTable" sd-data="ctrl.participants"
 					sda-mode="local" sda-selectable="multiple"
-					sda-selection="ctrl.selection" sda-no-pagination="true"
+					sda-selection="ctrl.selection" sda-no-pagination="false" 
+					sda-page-size="{{ctrl.pageSize}}"
 					sda-on-select="ctrl.onParticipantSelect(selectionInfo)"
 					sda-sortable="true" sda-exports="true"
 					sda-column-selector="{{ctrl.columnSelector}}"
@@ -50,14 +51,14 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td sda-field="name" sda-exporter="rowData.name"><a href=""
+							<td sda-field="name"  sda-data-type="string"sda-exporter="rowData.name"><a href=""
 								class="{{rowData.type | lowercase}}"
 								ng-class="{'selected' : ctrl.selectedRoles.indexOf(role) >=0}"
 								sd-data-drag ng-model="rowData"
 								sda-dragstart="ctrl.roleDragStart($data, $event)"> <span
 									style="margin-left: 18px;"> {{rowData.name}}</span>
 							</a></td>
-							<td sda-field="type"></td>
+							<td sda-field="type" sda-data-type="string"></td>
 							<td sda-field="description"></td>
 						</tr>
 					</tbody>

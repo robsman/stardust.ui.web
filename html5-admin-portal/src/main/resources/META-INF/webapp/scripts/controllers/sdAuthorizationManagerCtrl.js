@@ -17,7 +17,7 @@
   angular.module("admin-ui").controller(
           'sdAuthorizationManagerCtrl',
           ['$interval', '$timeout', '$scope', '$q', 'sdLoggerService', 'sdUtilService', 'sdI18nService',
-              'sdMessageService', 'sdAuthorizationManagerService', AMCtrl]);
+              'sdMessageService', 'sdAuthorizationManagerService','sdPortalConfigurationService', AMCtrl]);
 
   var trace;
   var _sdAuthorizationManagerService;
@@ -30,12 +30,15 @@
     ROLE: "ROLE"
   }
   var All = null;
+  
+  
+  var DEFAULT_PAGE_SIZE = 30;
 
   /**
    * 
    */
   function AMCtrl($interval, $timeout, $scope, $q, sdLoggerService, sdUtilService, sdI18nService, sdMessageService,
-          sdAuthorizationManagerService) {
+          sdAuthorizationManagerService, sdPortalConfigurationService) {
 
     var self = this;
 
@@ -80,6 +83,9 @@
     this.labels.removeAllParticipants = i18n("views.authorizationManagerViewHtml5.permissionTree.removeAll");
     this.labels.restore = i18n("views.authorizationManagerViewHtml5.permissionTree.restore");
 
+    var pageSizePreference = sdPortalConfigurationService.getPageSize();
+    this.pageSize = pageSizePreference > DEFAULT_PAGE_SIZE ? pageSizePreference: DEFAULT_PAGE_SIZE;
+    
     AMCtrl.prototype.safeApply = function() {
       sdUtilService.safeApply($scope);
     }

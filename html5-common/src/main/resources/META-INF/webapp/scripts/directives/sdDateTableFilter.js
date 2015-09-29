@@ -15,34 +15,31 @@
 
 (function(){
 	'use strict';
+	
 
-	angular.module('bpm-common').directive('sdNumberFilter', ['sdUtilService', NumberFilterDirective]);
+	angular.module('bpm-common').directive('sdDateTableFilter', ['sdUtilService','$filter', DateFilterDirective]);
 
 	/*
 	 * 
 	 */
-	function NumberFilterDirective(sdUtilService) {
+	function DateFilterDirective(sdUtilService, $filter) {
 		return {
 			restrict: 'A',
-			template:
+			template: 
 				'<form name="filterForm">' +
 					'<table cellspacing="2" cellpadding="2" style="white-space: nowrap;">' +
 						'<tr>' +
 							'<td><label class="label-form">{{i18n(\'portal-common-messages.common-filterPopup-betweenFilter-first\')}}</label></td>' +
 							'<td>' +
-								'<input type="number" id="from" name="from" ng-model="filterData.from" ng-model-onblur sd-validate="integer" />' +
-								'<div class="msg-error" ng-show="filterForm[\'from\'].$error.number || filterForm[\'from\'].$error.validate">' +
-									'{{i18n(\'html5-common.converter-number-error\')}}' +
-								'</div>' +
+								'<div sd-date-time-picker ng-model="filterData.from" id="from" name="from" ng-model-onblur> </div>' +
+								'<div class="msg-error" ng-show="filterForm[\'from\'].$error.validate">{{i18n(\'html5-common.date-error\')}}</div>' +
 							'</td>' +
 						'</tr>' +
 						'<tr>' +
 							'<td><label class="label-form">{{i18n(\'portal-common-messages.common-filterPopup-betweenFilter-last\')}}</label></td>' +
 							'<td>' +
-								'<input type="number" id="to" name="to" ng-model="filterData.to" ng-model-onblur sd-validate="integer" />' +
-								'<div class="msg-error" ng-show="filterForm[\'to\'].$error.number || filterForm[\'to\'].$error.validate">' +
-									'{{i18n(\'html5-common.converter-number-error\')}}' +
-								'</div>' +
+        							'<div sd-date-time-picker ng-model="filterData.to" id="to" name="to" ng-model-onblur> </div>' +
+        							'<div class="msg-error" ng-show="filterForm[\'to\'].$error.validate">{{i18n(\'html5-common.date-error\')}}</div>' +
 							'</td>' +
 						'</tr>' +
 					'</table>' +
@@ -61,17 +58,17 @@
 						} else {
 							if (!sdUtilService.isEmpty(scope.filterData.from) && !sdUtilService.isEmpty(scope.filterData.to)) {
 								if (scope.filterData.from <= scope.filterData.to) {
-									scope.setFilterTitle(scope.filterData.from + ' - ' + scope.filterData.to);
+									scope.setFilterTitle(formatDate(scope.filterData.from) + ' - ' + formatDate(scope.filterData.to));
 									return true;
 								} else {
 									scope.filterForm.$error.range = true;
 								}
 							} else {
 								if (!sdUtilService.isEmpty(scope.filterData.from)) {
-									scope.setFilterTitle('> ' + scope.filterData.from);
+									scope.setFilterTitle('> ' + formatDate(scope.filterData.from));
 									delete scope.filterData.to;
 								} else {
-									scope.setFilterTitle('< ' + scope.filterData.to);
+									scope.setFilterTitle('< ' + formatDate(scope.filterData.to));
 									delete scope.filterData.from;
 								}
 								return true;
@@ -107,6 +104,15 @@
 
 					return false;
 				};
+
+				/*
+				 * 
+				 */
+				function formatDate(mills) {
+				    var date = new Date(mills);
+				    var angularDateFilter = $filter('sdDateTimeFilter');
+				    return angularDateFilter(date);
+				}
 			}
 		};
 	}

@@ -15,7 +15,7 @@
 
 (function() {
    'use strict';
-   angular.module('bpm-common').directive('sdBooleanFilter', [ BooleanFilterDirective ]);
+   angular.module('bpm-common').directive('sdBooleanTableFilter', [ BooleanFilterDirective ]);
 
    /*
     * 

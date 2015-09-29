@@ -10,7 +10,7 @@
 (function() {
    'use strict';
 
-   angular.module('bpm-common').directive('sdMultiSelectFilter',
+   angular.module('bpm-common').directive('sdMultiSelectTableFilter',
             [ '$parse', 'sdUtilService', MultiSelectFilter ]);
 
    /*

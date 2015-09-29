@@ -61,7 +61,7 @@
 			</div>
 			<table sd-data-table="ctrl.allUsersTable"
 				sd-data="ctrl.getAllUsers(params)" sda-mode="remote"
-				sda-selectable="multiple"
+				sda-selectable="multiple" sda-page-size="{{ctrl.pageSize}}"
 				sda-selection="ctrl.rowSelectionForAllUsersTable"
 				sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
 				sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
@@ -72,28 +72,28 @@
 					<tr>
 						<th sda-name="name">
 							<div sda-filter-template>
-								<div sd-name-filter></div>
+								<div sd-name-table-filter></div>
 							</div>
 						</th>
 						<th sda-name="oid" sda-sortable="true"></th>
 						<th sda-name="account" sda-sortable="true">
 							<div sda-filter-template>
-								<div sd-text-search-filter></div>
+								<div sd-text-search-table-filter></div>
 							</div>
 						</th>
 						<th sda-name="realm">
 							<div sda-filter-template>
-								<div sd-text-search-filter></div>
+								<div sd-text-search-table-filter></div>
 							</div>
 						</th>
 						<th sda-name="validFrom">
 							<div sda-filter-template>
-								<div sd-date-filter></div>
+								<div sd-date-table-filter></div>
 							</div>
 						</th>
 						<th sda-name="validTo">
 							<div sda-filter-template>
-								<div sd-date-filter></div>
+								<div sd-date-table-filter></div>
 							</div>
 						</th>
 						<th sda-name="eMail" sda-label-key="email"></th>

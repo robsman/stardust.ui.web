@@ -18,6 +18,7 @@
           'sdParticipantManagementCtrl',
           ['$q', 'sdParticipantManagementService', 'sdLoggerService', 'sdUtilService', 'sdUserService',
               'sdLoggedInUserService', 'sdPreferenceService', 'sdI18nService', '$scope', 'sdMessageService',
+              'sdPortalConfigurationService',
               ParticipantManagementCtrl]);
 
   var _q;
@@ -29,12 +30,14 @@
   var _sdLoggedInUserService;
   var _sdPreferenceService, _sdMessageService;
   var  lazyLoad = false;
+  
+  var DEFAULT_PAGE_SIZE = 30;
 
   /**
    * 
    */
   function ParticipantManagementCtrl($q, sdParticipantManagementService, sdLoggerService, sdUtilService, sdUserService,
-          sdLoggedInUserService, sdPreferenceService, sdI18nService, $scope, sdMessageService) {
+          sdLoggedInUserService, sdPreferenceService, sdI18nService, $scope, sdMessageService, sdPortalConfigurationService) {
     trace = sdLoggerService.getLogger('admin-ui.sdParticipantManagementCtrl');
     _q = $q;
     _sdParticipantManagementService = sdParticipantManagementService;
@@ -51,7 +54,9 @@
     this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
     this.rowSelectionForAllUsersTable = null;
     this.exportFileNameForAllUsers = "AllUsers";
-
+    
+    var pageSizePreference = sdPortalConfigurationService.getPageSize();
+    this.pageSize = pageSizePreference > DEFAULT_PAGE_SIZE ? pageSizePreference: DEFAULT_PAGE_SIZE;
     this.getAllCounts();
 
     this.treeInit();

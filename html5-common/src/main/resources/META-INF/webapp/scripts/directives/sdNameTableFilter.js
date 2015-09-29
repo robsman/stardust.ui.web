@@ -16,7 +16,7 @@
 (function() {
 	'use strict';
 
-	angular.module('bpm-common').directive('sdNameFilter', [ 'sdUtilService', '$filter', NameFilterDirective ]);
+	angular.module('bpm-common').directive('sdNameTableFilter', [ 'sdUtilService', '$filter', NameFilterDirective ]);
 
 	/*
 	 * 

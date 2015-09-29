@@ -557,19 +557,19 @@
 				if (colDef.filterMarkup == '') {
 					switch (colDef.dataType) {
 						case 'string':
-							colDef.filterMarkup = '<div sd-text-search-filter></div>';
+							colDef.filterMarkup = '<div sd-text-search-table-filter></div>';
 							break;
 						case 'int': 
 						case 'integer':
-							colDef.filterMarkup = '<div sd-number-filter></div>';
+							colDef.filterMarkup = '<div sd-number-table-filter></div>';
 							break;
 						case 'date':
 						case 'dateTime':
 						case 'time':
-							colDef.filterMarkup = '<div sd-date-filter></div>';
+							colDef.filterMarkup = '<div sd-date-table-filter></div>';
 							break;
 						case 'boolean':
-							colDef.filterMarkup = '<div sd-boolean-filter></div>';
+							colDef.filterMarkup = '<div sd-boolean-table-filter></div>';
 							break;
 					}
 				}

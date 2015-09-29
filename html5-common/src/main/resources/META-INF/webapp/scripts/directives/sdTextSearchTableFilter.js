@@ -16,7 +16,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdTextSearchFilter', ['sdUtilService', TextSearchFilterDirective]);
+	angular.module('bpm-common').directive('sdTextSearchTableFilter', ['sdUtilService', TextSearchFilterDirective]);
 
 	/*
 	 * 
