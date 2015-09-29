@@ -244,8 +244,10 @@
 							model.processDefinitions.forEach(function(procDef){
 								if(procDef.id == processId){
 									procDef.activities.forEach(function(activity){
-										var qualifiedActivityId = '{'+ model.id +'}' + activity.id;
-										benchmarkProcessActivityArray.push(qualifiedActivityId);
+										if(activity.enableBenchmark){
+											var qualifiedActivityId = '{'+ model.id +'}' + activity.id;
+											benchmarkProcessActivityArray.push(qualifiedActivityId);	
+										}										
 									});
 								}
 							});
@@ -545,7 +547,10 @@
 		var primaryKeys = [];
 		angular.forEach(self.selectedBusinessObjectInstances, function(selBOInstance) {
 			angular.forEach(selBOInstance[self.selectedRelatedBusinessObject.otherForeignKeyField],function(id){
-				primaryKeys.push(id);
+				if(id !=null){
+					primaryKeys.push(id);
+				}
+				
 			});	
 		});
 		_sdBusinessObjectManagementService.getRelatedBusinessObjectInstances(

@@ -40,6 +40,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.query.ActivityFilter;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityStateFilter;
@@ -661,10 +662,10 @@ public class ActivityInstanceResource
             startDate = TrafficLightViewUtils.getPastStartDate(dayOffset);
          }
 
-         if (dateType.equals(TrafficLightViewUtils.BUSINESS_DATE))
+         if (dateType.equals(PredefinedConstants.BUSINESS_DATE))
          {
             query.where((DataFilter.between(TrafficLightViewUtils.getModelName(processId)
-                  + TrafficLightViewUtils.BUSINESS_DATE, startDate.getTime(), endDate.getTime())));
+                  + PredefinedConstants.BUSINESS_DATE, startDate.getTime(), endDate.getTime())));
          }
          else
          {
@@ -675,7 +676,9 @@ public class ActivityInstanceResource
          if (postJSON.getAsJsonPrimitive("benchmarkCategory") != null)
          {
             Long benchmarkCategory = postJSON.getAsJsonPrimitive("benchmarkCategory").getAsLong();
-            benchmarkFilter.add(ActivityInstanceQuery.BENCHMARK_VALUE.isEqual(benchmarkCategory));
+            query.where(ActivityInstanceQuery.BENCHMARK_VALUE.isEqual(benchmarkCategory));
+         }else{
+            query.where(ActivityInstanceQuery.BENCHMARK_VALUE.greaterThan(0l));
          }
 
          if (state.equals(ACTIVE))
