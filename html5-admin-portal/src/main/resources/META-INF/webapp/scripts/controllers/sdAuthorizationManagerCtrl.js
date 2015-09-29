@@ -60,7 +60,10 @@
       list: [],
       totalCount: 0
     };
-
+    
+    //Expose scope ID for use as salt on DOM element IDs
+    this.scopeId = $scope.$id;
+    
     // Track our multi selectable roles
     this.selectedParticipants = [];
 
@@ -289,47 +292,6 @@
       }]
     };
 
-    // Acquire our classic DOM references after angular has finished compiling
-    // our page. This block is entirely concerned with building a structure we
-    // can leverage for our filtering operations.
-    this.$timeout(function() {
-
-      var scope, rootNode, ulNodeList, nonFilterableNodes, // array
-      // which
-      // will
-      // hold
-      // all
-      // nodes
-      // in
-      // the
-      // tree
-      filterableNodes, // only those nodes with a class of
-      // js-filterable,
-      temp;
-
-      rootNode = document.querySelectorAll("ul.sd-tree")[0];
-      nonFilterableNodes = rootNode.querySelectorAll("ul.sd-tree .tree-node span:not(.js-filterable)");
-      filterableNodes = rootNode.querySelectorAll("ul.sd-tree .tree-node .js-filterable");
-      ulNodeList = rootNode.querySelectorAll("ul");
-
-      // Loop over
-      for (var i = 0; i < nonFilterableNodes.length; i++) {
-        temp = angular.element(nonFilterableNodes.item(i));
-        that.allNodes.push(that.buildNodeEntry(temp, false));
-      }
-
-      for (i = 0; i < filterableNodes.length; i++) {
-        temp = angular.element(filterableNodes.item(i));
-        that.allNodes.push(that.buildNodeEntry(temp, true));
-      }
-
-      for (i = 0; i < ulNodeList.length; i++) {
-        temp = angular.element(ulNodeList.item(i));
-        that.ulNodes.push(that.buildNodeEntry(temp, true));
-      }
-
-    }, 0);
-
   }
 
   // Handle select and multi selects of our permissions.
@@ -383,33 +345,192 @@
     return obj;
   };
 
-  // Filter function which works against our allNodes array
-  AMCtrl.prototype.applyFilter = function(filter) {
-    var matches = [];
-
-    // step 1: collapse entire tree, but look for matches along the way
-    this.allNodes.forEach(function(v) {
-      v.scope.isVisible = false;
-      v.elem.removeClass("match");
-      if (v.filterable && v.text && v.text.search(filter) > -1) {
-        matches.push(v);
+  /**
+   * Takes an array of participants and tests each participant to see
+   * if its qualifiedId matches that of the nodeItems participantQualifiedId.
+   * If the nodeItem does not have a participantQualifiedId property or indexOf
+   * returns -1 then false is returned.
+   */
+  AMCtrl.prototype.applyFlashlightFilter = function(selectedParticipants){
+	var filterFx;
+	
+	if(!selectedParticipants.length || selectedParticipants.length ==0){
+		return;
+	}
+	
+	filterFx = function(nodeItem){
+		
+		if(nodeItem.participantQualifiedId){
+			return selectedParticipants.some(function(p){
+				return p.qualifiedId === nodeItem.participantQualifiedId;
+			});
+		}
+		else{
+			return false;
+		}
+	}
+	this.applyFilter(filterFx);
+  } 
+  
+  /**
+   * Takes a string value and passes a simple indexOf test
+   * to the base ApplyFilter function.
+   * @param val
+   */
+  AMCtrl.prototype.applyTextFilter = function(val){
+	  var filterFx;
+	  
+	  if(!val){return;}
+	  
+	  filterFx = function(nodeItem){
+		if(!nodeItem.name){
+			return false;
+		}
+		return nodeItem.name.indexOf(val) > -1;
+	  }
+	  
+	  this.applyFilter(filterFx);
+  }
+  
+  /**
+   * Reset the Dom structure of our tree so that hidden nodes are visible
+   * and matched nodes are unmatched. It does not modify node expansion state.
+   */
+  AMCtrl.prototype.resetFilter = function(){
+	  var treeRoot;
+	  
+	  treeRoot =$("#authTree" + this.scopeId);
+	  $(".match-custom",treeRoot).removeClass("match-custom");
+	  $(".hide",treeRoot).removeClass("hide");
+  }
+  
+  /**
+   * Filter the DOM structure representing our authorization tree.
+   * @param comparatorFx - function which will test the provided
+   * nodeItem object for a match.
+   */
+  AMCtrl.prototype.applyFilter = function(comparatorFx) {
+    var matches = [],
+    	treeRoot,
+    	elements,
+    	elementalMap = {},
+    	objScope,
+    	tempElem,
+    	tempObj,
+    	parentScope,
+    	childRecurse;
+    
+    
+    //Recursive funtion to show or hide all scopes beneath current scope
+    childRecurse = function(cs,isVisible){
+       for(; cs; cs= cs.$$nextSibling) {
+              cs.isVisible=isVisible;
+              childRecurse(cs.$$childHead);
+        }
+    };
+    
+    //We need the root of our tree...
+    treeRoot =$("#authTree" + this.scopeId);
+    //...so that we can extract individual nodes from its context
+    elements = $('li',treeRoot);
+    
+    //Loop over every tree node and build a collection
+    for(var i = 0 ; i < elements.length; i++){
+    	
+      tempElem = elements[i];
+      objScope = angular.element(tempElem).scope();
+ 	   
+      //Scope can have one of three named items on it so test appropriately.
+      //Very fine point in this implementation is that the item types appear
+      //hierarchially so we will need to test the lowest type in the hierarchy first
+      //to avoid erroneously placing an object as the nodeItem which is being inherited from
+      //the prototype chain. 
+      //TODO:This bit of nastiness could be removed by naming all the targets
+      //of our ng-repeat with the same name so that prototypically inherited objects are overwritten.
+      //I will leave that for a time when we aren't 1 week from the RC.
+	  if(objScope.item){
+		  if(!elementalMap.hasOwnProperty(objScope.item.$$hashKey)){
+	 		  elementalMap[objScope.item.$$hashKey] = {
+		 			   "scope" : objScope, 
+		 			   "elem" : $(tempElem),
+		 			   "nodeItem" : objScope.item,
+		 			   "nodeType" : "participant"
+		 	   };
+		  }
+	  }
+ 	  else if(objScope.genItem){
+ 		 if(!elementalMap.hasOwnProperty(objScope.genItem.$$hashKey)){
+		  elementalMap[objScope.genItem.$$hashKey] = {
+	 			   "scope" : objScope, 
+	 			   "elem" : $(tempElem),
+	 			   "nodeItem" : objScope.genItem,
+	 			   "nodeType" : "genItem"
+	 	   };
+ 		 }
+ 	  }
+ 	  else if(objScope.labelItem){
+ 		 if(!elementalMap.hasOwnProperty(objScope.labelItem.$$hashKey)){
+ 		  elementalMap[objScope.labelItem.$$hashKey] = {
+ 	 			   "scope" : objScope, 
+ 	 			   "elem" : $(tempElem),
+ 	 			   "nodeItem" : objScope.labelItem,
+ 	 			   "nodeType" : "label"
+ 	 	   };
+ 		 }
+ 	   }	   
+    }//for loop ends
+    
+    //step 1: reset entire tree, but look for matches along the way
+    $(".match-custom",treeRoot).removeClass("match-custom"); //remove all match classes
+    for(var key in elementalMap){
+    	
+        tempObj = elementalMap[key];
+        tempObj.scope.isVisible=false;
+        tempObj.elem.removeClass("hide");
+        
+        //test our angular object from our scope by injecting it into the compartorFx.
+        if(comparatorFx(tempObj.nodeItem)===true){
+          matches.push(tempObj);
+        }
+    }
+    
+    //step 2 ,iterate over matches expanding to the root
+    matches.forEach(function(v){
+      v.scope.isVisible = true;
+      v.elem.addClass("match-custom");
+      childRecurse(v.scope.$$childHead,true);
+      v = v.scope.$parent;
+      while(v){
+        if( v.hasOwnProperty("isVisible")){v.isVisible=true;}
+         v = v.$parent;
       }
     });
-
-    if (filter) {
-      // step 2 ,iterate over matches expanding to the root
-      matches.forEach(function(v) {
-        v.scope.isVisible = true;
-        v.elem.addClass("match");
-        v = v.scope.$parent;
-        while (v) {
-          if (v.hasOwnProperty("isVisible")) {
-            v.isVisible = true;
-          }
-          v = v.$parent;
-        }
-      });
+    
+    //now hide all non visible nodes
+    for(key in elementalMap){
+      tempObj = elementalMap[key];
+      if(tempObj.scope.isVisible===false){
+        tempObj.elem.addClass("hide");
+      }
     }
+
+    //collapse children
+    for(var i = matches.length-1;i>=0;i--){
+        childRecurse(matches[i].scope.$$childHead,false);
+    }
+    
+    //One final cleanup pass to take care of any children
+    //of matches that were matches themselves which were
+    //closed in the collapse children step
+    for(i = matches.length-1;i>=0;i--){
+        matches[i].scope.isVisible=true;
+        parentScope = matches[i].scope.$parent;
+        while(parentScope){
+            if( parentScope.hasOwnProperty("isVisible")){parentScope.isVisible=true;}
+            parentScope= parentScope.$parent;
+        }
+    }
+
   };
 
   // Add a role to a permission ALLOW,

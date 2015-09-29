@@ -100,30 +100,22 @@
 			</header>
 			<div ng-show="ctrl.showMessage2" sd-message></div>
 			<div sda-toolbar>
-				<div class="tbl-toolbar-section">
-					<button ng-click="ctrl.highlightParticipants()"
-						title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.highlightParticipants')}}"
-						class="button-link tbl-toolbar-item tbl-tool-link"
-						style="margin-right: 0px;">
-						<i class="sc sc-fw icon-lg sc-torch"></i>
-					</button>
-				</div>
-				<div class="view-panel-toolbar toolbar-buttons">
-					<span sd-refresh sda-on-refresh="ctrl.refreshPermissions();"
-					      aid="COM-AuthMgr-RefreshPermissions"></span>
-				</div>
-
 				<div>
 					<input type="text" ng-model="myFilter" />
-					<button ng-click="ctrl.applyFilter(myFilter)" aid="COM-AuthMgr-ApplyFilter">Filter</button>
-					<button ng-click="ctrl.applyFilter()" aid="COM-AuthMgr-ResetFilter">Reset</button>
+					<button class="pi pi-filter pi-1x" ng-click="ctrl.applyTextFilter(myFilter)" aid="COM-AuthMgr-ApplyFilter"></button>
+					<button class="pi pi-clear pi-1x" ng-click="ctrl.resetFilter()"></button>
+					<button title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.highlightParticipants')}}" 
+					        class="pi pi-torch pi-1x" 
+					        ng-click="ctrl.applyFlashlightFilter(ctrl.selectedParticipants)" ></button>
+					<button class="pi pi-refresh pi-1x" ng-click="ctrl.refreshPermissions()"></button> 
+					<!--button class="" ng-click="ctrl.applyFilter()" aid="COM-AuthMgr-ResetFilter">Reset</button-->
 				</div>
 			</div>
 			<br>
 
 			<!-- Permission Tree related code -->
 			<div class="permission-tree">
-				<ul class="sd-tree">
+				<ul id="authTree{{ctrl.scopeId}}" class="sd-tree">
 					<!--General Permissions Start-->
 					<li ng-repeat="labelItem in ctrl.treeLabels.gp"
 						ng-init="isVisible=false">

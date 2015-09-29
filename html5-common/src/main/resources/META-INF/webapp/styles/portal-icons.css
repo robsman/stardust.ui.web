@@ -202,6 +202,11 @@ Icon implementations
 	content: "\f078";
 }
 
+.pi-clear:before{
+	font-family: FontAwesome;
+	content: "\f1f8";
+}
+
 .pi-flag:before,
 .pi-criticalty-flag:before{
 	font-family: starclipse;

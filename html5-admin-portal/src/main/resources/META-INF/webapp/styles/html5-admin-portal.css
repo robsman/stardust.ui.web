@@ -66,3 +66,19 @@
 	overflow: auto;
     height: 650px;
 }
+
+/*Custom match rule for the Authorization Management Tree*/
+.x-sd-tree .match-custom{
+	background: rgb(77, 114, 171);
+	border-radius: 2px;
+	color: #FFF;
+}
+
+.sd-tree li.match-custom > ul > li > a.tree-node > div > div.dd-header  .js-filterable,
+.sd-tree li.match-custom > .title-section > a.tree-node > span,
+.sd-tree li.match-custom > .title-section  > div .js-filterable
+{
+	background: rgb(77, 114, 171);
+	border-radius: 2px;
+	color: #FFF;
+}
