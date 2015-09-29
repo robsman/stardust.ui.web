@@ -2729,8 +2729,17 @@ public class ModelElementMarshaller implements ModelMarshaller
                         PredefinedConstants.CLASS_NAME_ATT));
          }
 
-         Method method = ClassesHelper.getMethodBySignature(
-            getModelingSession().classLoaderProvider().classLoader(), className, methodName);
+         Method method = null;
+         try
+         {
+            method = ClassesHelper.getMethodBySignature(
+               getModelingSession().classLoaderProvider().classLoader(), className, methodName);
+         }
+         catch (Throwable e)
+         {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+         }
 
          ClassesHelper.addParameterAccessPoints(accessPointsJson, method);
          ClassesHelper.addReturnTypeAccessPoint(accessPointsJson, method);
