@@ -1446,6 +1446,10 @@
 			row = angular.element(row);
 			row.addClass(CLASSES.BODY_TR);
 
+			// Hide row so that uncompiled markup is not visible 
+			row.addClass('ng-hide');
+			row.attr('ng-show', 'true');
+
 			var cells = row.find('> td');
 			cells.addClass(CLASSES.TD);
 
