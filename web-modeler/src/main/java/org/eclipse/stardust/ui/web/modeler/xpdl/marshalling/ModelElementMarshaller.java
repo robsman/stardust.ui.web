@@ -863,7 +863,7 @@ public class ModelElementMarshaller implements ModelMarshaller
          for (TransitionConnectionType transitionConnection : poolSymbol.getTransitionConnection())
          {
             JsonObject connectionJson = toTransitionConnectionJson(transitionConnection);
-            if (hasNotJsonNull(connectionJson, ModelerConstants.MODEL_ELEMENT_PROPERTY))
+            if (connectionJson != null && hasNotJsonNull(connectionJson, ModelerConstants.MODEL_ELEMENT_PROPERTY))
             {
                connectionsJson.add(
                      extractString(
@@ -2941,6 +2941,11 @@ public class ModelElementMarshaller implements ModelMarshaller
 
       IFlowObjectSymbol targetActivitySymbol = transitionConnection.getTargetActivitySymbol();
 
+      if(sourceActivitySymbol == null || targetActivitySymbol == null)
+      {
+         return null;
+      }
+      
       if (transitionConnection.getTransition() != null)
       {
          TransitionType transition = transitionConnection.getTransition();
