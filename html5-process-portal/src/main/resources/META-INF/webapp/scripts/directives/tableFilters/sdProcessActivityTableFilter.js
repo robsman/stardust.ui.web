@@ -14,18 +14,18 @@
  (function() {
    'use strict';
 
-   angular.module('bpm-common').directive('sdProcessActivityFilter',[ '$filter', '$parse', 'sdUtilService','sdLoggerService', ActivityFilter]);
+   angular.module('bpm-common').directive('sdProcessActivityTableFilter',[ '$filter', '$parse', 'sdUtilService','sdLoggerService', ActivityFilter]);
 
    var trace = null;
    /*
     *
     */
    function ActivityFilter( $filter, $parse, sdUtilService, sdLoggerService) {
-       trace = sdLoggerService.getLogger('bpm-common.sdProcessActivityFilter');
+       trace = sdLoggerService.getLogger('bpm-common.sdProcessActivityTableFilter');
      
        return {
          restrict : 'A',
-         templateUrl : sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/processActivityFilter.html',
+         templateUrl : sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/tableFilters/processActivityTableFilter.html',
          controller : [ '$scope', '$attrs', '$filter', '$parse', FilterController ],
          link : function(scope, element, attr, ctrl) {
 

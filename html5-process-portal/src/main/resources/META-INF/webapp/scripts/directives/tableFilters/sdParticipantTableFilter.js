@@ -14,7 +14,7 @@
 (function() {
 	'use strict';
 
-	angular.module('bpm-common').directive( 'sdParticipantFilter',[ 'sdUtilService','sdActivityInstanceService','$q', ParticipantFilter]);
+	angular.module('bpm-common').directive( 'sdParticipantTableFilter',[ 'sdUtilService','sdActivityInstanceService','$q', ParticipantFilter]);
 	/*
 	 */
 	function ParticipantFilter( sdUtilService , sdActivityInstanceService , $q ) {

@@ -14,7 +14,7 @@
 (function() {
 	'use strict';
 
-   angular.module('bpm-common').directive( 'sdUserFilter',[ 'sdUtilService', UserFilterDirective]);
+   angular.module('bpm-common').directive( 'sdUserTableFilter',[ 'sdUtilService', UserFilterDirective]);
    /*
     * 
     */

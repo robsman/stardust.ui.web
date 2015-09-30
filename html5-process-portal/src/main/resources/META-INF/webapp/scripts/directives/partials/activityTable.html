@@ -51,7 +51,7 @@
 			<tr>
 				<th sda-name="activityName" sda-label-key="overview" sda-sortable="true" sda-visible="{{activityTableCtrl.isColumnVisible('activityName')}}">
 					<div sda-filter-template>
-						<div sd-process-activity-filter sda-filter-type='activity' sda-processes="activityTableCtrl.fetchAllProcesses()"></div>
+						<div sd-process-activity-table-filter sda-filter-type='activity' sda-processes="activityTableCtrl.fetchAllProcesses()"></div>
 					</div>
 				</th>
 				
@@ -59,13 +59,13 @@
 				
 				<th sda-name="criticality" sda-sortable="true" sda-visible="{{activityTableCtrl.isColumnVisible('criticality')}}">
 					<div sda-filter-template>
-						<div sd-criticality-filter sda-criticalities="activityTableCtrl.fetchAllAvailableCriticalities()"></div>
+						<div sd-criticality-table-filter sda-criticalities="activityTableCtrl.fetchAllAvailableCriticalities()"></div>
 					</div>
 				</th>
 				
 				<th sda-name="priority" sda-sortable="true" sda-visible="{{activityTableCtrl.isColumnVisible('priority')}}">
 					<div sda-filter-template>
-						<div sd-priority-filter></div>
+						<div sd-priority-table-filter></div>
 					</div>
 				</th>
 				
@@ -88,7 +88,7 @@
 				
 				<th sda-name="processName" sda-label-key="processName"  sda-sortable="false" sda-visible="{{activityTableCtrl.isColumnVisible('processDefinition')}}">
 					<div sda-filter-template>
-						<div sd-process-activity-filter sda-filter-type='process' sda-processes="activityTableCtrl.fetchAllProcesses()"></div>
+						<div sd-process-activity-table-filter sda-filter-type='process' sda-processes="activityTableCtrl.fetchAllProcesses()"></div>
 					</div>
 				</th>
 				
@@ -104,14 +104,14 @@
 				
 				<th sda-name="assignedTo" sda-sortable="false"  sda-filterable="false" sda-visible="{{activityTableCtrl.isColumnVisible('assignedTo')}}">
 					<div ng-if="activityTableCtrl.isActivityTableMode();" sda-filter-template>
-						<div sd-participant-filter></div>
+						<div sd-participant-table-filter></div>
 					</div>
 				</th>
 				
 				<th sda-name="completedBy" ng-if ="activityTableCtrl.isActivityTableMode();" sda-sortable="false" 
 				    sda-label="{{i18n('views-common-messages.views-activityTable-activityTable-column-completedBy')}}" sda-visible="{{activityTableCtrl.isColumnVisible('completedBy')}}" >
 					<div sda-filter-template>
-						<div sd-user-filter></div>
+						<div sd-user-table-filter></div>
 					</div>
 				</th>
 				

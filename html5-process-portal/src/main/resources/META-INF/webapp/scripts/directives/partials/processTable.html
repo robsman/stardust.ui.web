@@ -65,13 +65,13 @@
 			<tr>
 				<th sda-name="processName" sda-sortable="true" sda-visible="{{processTableCtrl.isColumnVisible('processName')}}">
 					<div sda-filter-template>
-						<div sd-process-activity-filter sda-filter-type='process' sda-processes="processTableCtrl.fetchAllProcesses()"></div>
+						<div sd-process-activity-table-filter sda-filter-type='process' sda-processes="processTableCtrl.fetchAllProcesses()"></div>
 					</div>
 				</th>
 				<th sda-name="processOID" sda-field="oid" sda-label-key="pOID" sda-sortable="true" sda-filterable="true" sda-visible="{{processTableCtrl.isColumnVisible('processOID')}}"></th>
 				<th sda-name="priority" sda-sortable="true" sda-visible="{{processTableCtrl.isColumnVisible('priority')}}">
 					<div sda-filter-template>
-						<div sd-priority-filter></div>
+						<div sd-priority-table-filter></div>
 					</div>
 				</th>
 				<th sda-name="benchmark" sda-sortable="true" sda-visible="{{processTableCtrl.isColumnVisible('benchmark')}}">
@@ -79,7 +79,7 @@
 				<th sda-name="descriptors" sda-visible="{{processTableCtrl.isColumnVisible('descriptors')}}"></th>
 				<th sda-name="startingUser" sda-sortable="true" sda-visible="{{processTableCtrl.isColumnVisible('startingUser')}}">
 					<div sda-filter-template>
-						<div sd-user-filter></div>
+						<div sd-user-table-filter></div>
 					</div>
 				</th>
 				<th sda-name="startTime" sda-sortable="true" sda-filterable="true" sda-visible="{{processTableCtrl.isColumnVisible('startTime')}}"></th>
@@ -101,9 +101,9 @@
 					sda-visible="{{processTableCtrl.isColumnVisible('caseOwner')}}">
 				</th>
 				<th ng-repeat="descCol in processTableCtrl.descritorCols"
-					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}"
+					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}"  sda-filterable="{{descCol.filterable}}" 
 					sda-sortable="{{descCol.sortable}}" sda-visible="{{processTableCtrl.isColumnVisible(descCol.id)}}">
-					<div sda-filter-template ng-if="descCol.filterable">
+					<div sda-filter-template>
 						<div ng-if="colData.dataType =='NUMBER'"><div sd-number-table-filter></div></div>
 						<div ng-if="colData.dataType =='DATE'"><div sd-date-table-filter></div></div>
 						<div ng-if="colData.dataType =='BOOLEAN'"><div sd-boolean-table-filter></div></div>

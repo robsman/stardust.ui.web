@@ -468,7 +468,7 @@
 					dataType: bCol.attr('sda-data-type'),
 					visible: hCol.attr('sda-visible') == undefined || hCol.attr('sda-visible') == 'true' ? true : false,
 					sortable: hCol.attr('sda-sortable') == 'true' ? true : false,
-					filterable: hCol.attr('sda-filterable') == 'true' ? true : false,
+					filterable: hCol.attr('sda-filterable') == undefined || hCol.attr('sda-filterable') == '' ? undefined : (hCol.attr('sda-filterable') == 'true'? true : false),	
 					exportable: hCol.attr('sda-exportable') == undefined || hCol.attr('sda-exportable') == 'true' ? true : false,
 					exportParser: bCol.attr('sda-exporter') ? $parse(bCol.attr('sda-exporter')) : null,
 					fixed: hCol.attr('sda-fixed') != undefined && hCol.attr('sda-fixed') == 'true' ? true : false,
@@ -541,16 +541,18 @@
 				}
 
 				colDef.filterMarkup = '';
-				var filterTemplate = hCol.find('> [sda-filter-template]');
-				if (filterTemplate && filterTemplate.length > 0) {
-					filterTemplate.remove();
-					colDef.filterable = true;
-				
-					var url = filterTemplate.attr('sda-filter-template');
-					if (url != undefined && url != null && url != '') {
-						colDef.filterMarkup = '<div ng-include="\'' + url + '\'"></div>';
-					} else {
-						colDef.filterMarkup = filterTemplate.html();
+				if(colDef.filterable == undefined || colDef.filterable) {
+					var filterTemplate = hCol.find('> [sda-filter-template]');
+					if (filterTemplate && filterTemplate.length > 0) {
+						filterTemplate.remove();
+						colDef.filterable = true;
+					
+						var url = filterTemplate.attr('sda-filter-template');
+						if (url != undefined && url != null && url != '') {
+							colDef.filterMarkup = '<div ng-include="\'' + url + '\'"></div>';
+						} else {
+							colDef.filterMarkup = filterTemplate.html();
+						}
 					}
 				}
 
