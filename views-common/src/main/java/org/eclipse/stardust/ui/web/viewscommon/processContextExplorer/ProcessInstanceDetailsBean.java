@@ -11,6 +11,8 @@
 package org.eclipse.stardust.ui.web.viewscommon.processContextExplorer;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -44,8 +46,10 @@ import org.eclipse.stardust.engine.api.query.ProcessInstanceDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
+import org.eclipse.stardust.engine.api.query.RawQueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
+import org.eclipse.stardust.engine.api.runtime.HistoricalEvent;
 import org.eclipse.stardust.engine.api.runtime.PredefinedProcessInstanceLinkTypes;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
@@ -59,10 +63,21 @@ import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
+import org.eclipse.stardust.ui.web.common.columnSelector.TableColumnSelectorPopup;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
+import org.eclipse.stardust.ui.web.common.filter.ITableDataFilter;
+import org.eclipse.stardust.ui.web.common.filter.TableDataFilterPopup;
+import org.eclipse.stardust.ui.web.common.filter.TableDataFilterSearch;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
+import org.eclipse.stardust.ui.web.common.table.DataTableSortModel;
+import org.eclipse.stardust.ui.web.common.table.IQuery;
+import org.eclipse.stardust.ui.web.common.table.IQueryResult;
+import org.eclipse.stardust.ui.web.common.table.ISortHandler;
+import org.eclipse.stardust.ui.web.common.table.IUserObjectBuilder;
+import org.eclipse.stardust.ui.web.common.table.PaginatorDataTable;
+import org.eclipse.stardust.ui.web.common.table.SortCriterion;
 import org.eclipse.stardust.ui.web.common.table.SortableTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
@@ -73,9 +88,13 @@ import org.eclipse.stardust.ui.web.viewscommon.common.PortalErrorClass;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.common.ValidationMessageBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.viewscommon.common.table.IppFilterHandler;
+import org.eclipse.stardust.ui.web.viewscommon.common.table.IppQueryResult;
 import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSearchHandler;
+import org.eclipse.stardust.ui.web.viewscommon.common.table.IppSortHandler;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DataMappingWrapper;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorColumnUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.JoinProcessDialogBean;
@@ -99,6 +118,8 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.GenericRepositoryTreeViewBean;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.GenericRepositoryTreeViewBean.RepositoryMode;
 
+import com.icesoft.faces.component.paneltabset.TabChangeEvent;
+
 /**
  * @author Ankita.Patel
  * @version $Revision: $
@@ -110,7 +131,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    private static final Logger trace = LogManager.getLogger(ProcessInstanceDetailsBean.class);
    private static final String STATE_PREFIX = "views.processTable.statusFilter.";
    private static final String VIEW_ID = "processInstanceDetailsView";
-   private static final String DATE_FORMAT = "MM/dd/yy";
+   private final static String COL_DESC_DETAILS = "DescDetails";   
 
    private ProcessInstance processInstance;
    private Long processInstanceOID;
@@ -135,6 +156,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    private boolean genericRepositoryTreeInitialized = false;
    private boolean genericRepositoryTreeExpanded = false;
    private boolean descriptorsPanelInitialized = false;
+   private boolean descriptorsHistoryPanelInitialized = false;
    private boolean linkedProcessPanelInitialized = false;
    private boolean hasSpawnProcessPermission;
    private boolean hasSwitchProcessPermission;
@@ -148,6 +170,11 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    Map<String, DataPathDetails> inDataPathsMap = null; 
    
    private String startingUserLabel = null;
+   
+   private int selectedTabIndex = 0;
+   private List<DescriptorHistoryTableEntry> descriptorsHistoryList;
+   private PaginatorDataTable<DescriptorHistoryTableEntry, DescriptorHistoryTableEntry> descriptorHistoryTable;
+   private String descriptorSearchTxt;
 
    /**
     * 
@@ -273,6 +300,22 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
          }
       }
    }
+   
+   public void descriptorTabChange(TabChangeEvent tabChangeEvent) 
+   {
+      selectedTabIndex = tabChangeEvent.getNewTabIndex();
+
+      if (selectedTabIndex == 1)
+      { 
+         if(!descriptorsHistoryPanelInitialized)
+         {
+            descriptorsHistoryList = CollectionUtils.newArrayList();
+            initializeDescriptorHistoryTable();
+         }
+         descriptorsHistoryPanelInitialized = true;
+         updateDescriptorHistory();
+      }
+   }  
   
    /**
     * 
@@ -792,7 +835,83 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
             new SortableTableComparator<DescriptorItemTableEntry>("name", true));
 
    }
+   
+   private void initializeDescriptorHistoryTable()
+   {
 
+      ColumnPreference timeStampCol = new ColumnPreference("TimeStamp", "timestamp", ColumnDataType.DATE, this.getMessages().getString("descriptors.history.timeStamp"),
+            true, true);
+      timeStampCol.setNoWrap(true);
+
+      ColumnPreference eventCol = new ColumnPreference("EventType", "eventType", ColumnDataType.STRING, this.getMessages().getString("descriptors.history.event"), true, false);
+      eventCol.setNoWrap(true);
+
+      ColumnPreference userCol = new ColumnPreference("User", "user", ColumnDataType.STRING, this.getMessages().getString("descriptors.history.user"), true, false);
+      userCol.setNoWrap(true);
+
+      ColumnPreference detailsCol = new ColumnPreference("DescDetails", "descDetails", ColumnDataType.STRING,
+            this.getMessages().getString("descriptors.history.details"), new TableDataFilterPopup(new TableDataFilterSearch()), true, false);
+      detailsCol.setNoWrap(true);
+
+      List<ColumnPreference> cols = new ArrayList<ColumnPreference>();
+      cols.add(timeStampCol);
+      cols.add(eventCol);
+      cols.add(userCol);
+      cols.add(detailsCol);
+
+      IColumnModel daemonsColumnModel = new DefaultColumnModel(cols, null, null, UserPreferencesEntries.M_VIEWS_COMMON,
+            UserPreferencesEntries.V_PROCESS_INSTANCE_DETAILS);
+      TableColumnSelectorPopup colSelecPopup = new TableColumnSelectorPopup(daemonsColumnModel);
+      
+      IppSearchHandler<DescriptorHistoryTableEntry> searchHandler = new DescriptorHistorySearchHandler();
+      IppFilterHandler filterHandler = new DescriptorHistoryFilterHandler();
+      ISortHandler sortHandler = new DescriptorHistorySortHandler();
+      descriptorHistoryTable = new PaginatorDataTable<DescriptorHistoryTableEntry, DescriptorHistoryTableEntry>(colSelecPopup, searchHandler, filterHandler, sortHandler, new IUserObjectBuilder<DescriptorHistoryTableEntry>()
+      {
+
+         public DescriptorHistoryTableEntry createUserObject(Object resultRow)
+         {
+            return (DescriptorHistoryTableEntry) resultRow;
+         }
+      }, new DataTableSortModel<DescriptorHistoryTableEntry>("timestamp", true));
+      
+      descriptorHistoryTable.initialize();
+
+   }
+
+   public void updateDescriptorHistory()
+   {
+      descriptorsHistoryList = fetchDescriptorHistory();
+      descriptorHistoryTable.refresh();
+   }
+   
+   private List<DescriptorHistoryTableEntry> fetchDescriptorHistory()
+   {
+      List<DescriptorHistoryTableEntry> descriptorsHistory = CollectionUtils.newArrayList();
+      List<HistoricalEvent> events = DescriptorColumnUtils.getProcessDescriptorsHistory(this.processInstance);
+      if (CollectionUtils.isNotEmpty(events))
+      {
+         for (HistoricalEvent event : events)
+         {
+            String descriptorDetails = (String) event.getDetails();
+            if(StringUtils.isNotEmpty(descriptorDetails) && descriptorDetails.contains("'"))
+            {
+               String [] token = descriptorDetails.split("'");
+               if(token.length ==6)
+               {
+                  String processDefinition = token[1];
+                  String processInstanceOID = token [3];
+                  String dataPathId = token[5];
+                  descriptorDetails = MessagesViewsCommonBean.getInstance().getParamString("views.processInstanceDetailsView.descriptors.history.descriptorDetails", processDefinition, processInstanceOID, dataPathId);
+               }
+            }
+            descriptorsHistory.add(new DescriptorHistoryTableEntry(event.getEventTime(), null, event.getEventType()
+                  .getName(), I18nUtils.getUserLabel(event.getUser()), descriptorDetails));
+         }
+      }
+      return descriptorsHistory;
+   }
+   
    /**
     * 
     */
@@ -1145,7 +1264,154 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
          return queryService.getAllProcessInstances((ProcessInstanceQuery) query);
       }
    }
+   
+   /**
+    * 
+    * @param list
+    * @param filterNamePattern
+    * @return
+    */
+   private List<DescriptorHistoryTableEntry> filterResult(List<DescriptorHistoryTableEntry> list, String filterNamePattern)
+   {
+      List<DescriptorHistoryTableEntry> filteredList = CollectionUtils.newArrayList();
 
+      for (DescriptorHistoryTableEntry row : descriptorsHistoryList)
+      {
+         String descriptorDetails = row.getDescDetails();
+         if (StringUtils.isNotEmpty(descriptorDetails) && descriptorDetails.contains(filterNamePattern))
+         {
+            filteredList.add(row);
+         }
+      }
+      
+      return filteredList;
+   }
+   
+   private List<DescriptorHistoryTableEntry> getPaginatedSubList(List<DescriptorHistoryTableEntry> list, int startIndex,
+         int pageSize)
+   {
+      int listSize = list.size();
+      int toIndex = listSize > (startIndex + pageSize) ? startIndex + pageSize : listSize;
+      List<DescriptorHistoryTableEntry> result = list.subList(startIndex, toIndex);
+      return result;
+   }
+   
+   /**
+    * 
+    * @author Sidharth.Singh
+    * @version $Revision: $
+    */
+   public class DescriptorHistoryFilterHandler extends IppFilterHandler
+   {
+      private static final long serialVersionUID = -2173022668039757090L;
+
+      @Override
+      public void applyFiltering(Query query, List<ITableDataFilter> filters)
+      {
+         descriptorSearchTxt = null;
+         for (ITableDataFilter tableDataFilter : filters)
+         {
+            String filterName = tableDataFilter.getName();
+            if (COL_DESC_DETAILS.equals(filterName))
+            {
+               descriptorSearchTxt = ((TableDataFilterSearch) tableDataFilter).getValue();
+            }
+         }
+      }
+
+   }
+   
+   /**
+    * 
+    * @author Sidharth.Singh
+    * @version $Revision: $
+    */
+   public class DescriptorHistorySearchHandler extends IppSearchHandler<DescriptorHistoryTableEntry>
+   {
+      private static final long serialVersionUID = -3543070769771871255L;
+
+      @Override
+      public Query createQuery()
+      {
+         return null;// No query for engine call
+      }
+
+      @Override
+      public QueryResult<DescriptorHistoryTableEntry> performSearch(Query query)
+      {
+         return new RawQueryResult<DescriptorHistoryTableEntry>(descriptorsHistoryList, null, false, Long.valueOf(descriptorsHistoryList.size()));
+      }
+
+      @Override
+      public IQueryResult<DescriptorHistoryTableEntry> performSearch(IQuery iQuery, int startRow, int pageSize)
+      {
+         List<DescriptorHistoryTableEntry> resultList = StringUtils.isEmpty(descriptorSearchTxt)
+               ? descriptorsHistoryList
+               : filterResult(descriptorsHistoryList, descriptorSearchTxt);
+
+         List<DescriptorHistoryTableEntry> result = getPaginatedSubList(resultList, startRow, pageSize);
+         applySorting(result);
+         RawQueryResult<DescriptorHistoryTableEntry> queryResult = new RawQueryResult<DescriptorHistoryTableEntry>(result,
+               null, false, Long.valueOf(resultList.size()));
+
+         return new IppQueryResult<DescriptorHistoryTableEntry>(queryResult);
+      }
+      
+      /**
+       * 
+       * @param result
+       */
+      private void applySorting(List<DescriptorHistoryTableEntry> result)
+      {
+         DescriptorHistorySortHandler roleAssignmentSortHandler = (DescriptorHistorySortHandler) descriptorHistoryTable
+               .getISortHandler();
+
+         if (null != roleAssignmentSortHandler.getSortCriterion())
+         {
+            SortCriterion sortCriterion = roleAssignmentSortHandler.getSortCriterion();
+            Comparator<DescriptorHistoryTableEntry> comparator = new SortableTableComparator<DescriptorHistoryTableEntry>(
+                  sortCriterion.getProperty(), sortCriterion.isAscending());
+            Collections.sort(result, comparator);
+         }
+      }
+
+   }
+   
+   /**
+    * 
+    * @author Sidharth.Singh
+    * @version $Revision: $
+    */
+   private class DescriptorHistorySortHandler extends IppSortHandler
+   {
+      private static final long serialVersionUID = -2562964400250132610L;
+
+      private SortCriterion sortCriterion;
+
+      @Override
+      public void applySorting(Query query, List<SortCriterion> sortCriterias)
+      {}
+
+      public void applySorting(IQuery iQuery, List<SortCriterion> sortCriterias)
+      {
+         if (CollectionUtils.isNotEmpty(sortCriterias))
+         {
+            sortCriterion = sortCriterias.get(0);
+         }
+         else
+         {
+            sortCriterion = null;
+         }
+
+      }
+
+      public SortCriterion getSortCriterion()
+      {
+         return sortCriterion;
+      }
+
+   }
+   
    /**
     * check authorization for SpawnProcess
     * 
@@ -1189,8 +1455,31 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    public void setValidationMessageBean(ValidationMessageBean validationMessageBean)
    {
       this.validationMessageBean = validationMessageBean;
+   }
+
+   public boolean isDescriptorsHistoryPanelInitialized()
+   {
+      return descriptorsHistoryPanelInitialized;
+   }
+
+   public int getSelectedTabIndex()
+   {
+      return selectedTabIndex;
+   }
+
+   public void setSelectedTabIndex(int selectedTabIndex)
+   {
+      this.selectedTabIndex = selectedTabIndex;
    }  
    
-   
+   public List<DescriptorHistoryTableEntry> getDescriptorsHistoryList()
+   {
+      return descriptorsHistoryList;
+   }
+
+   public PaginatorDataTable<DescriptorHistoryTableEntry, DescriptorHistoryTableEntry> getDescriptorHistoryTable()
+   {
+      return descriptorHistoryTable;
+   }
 
 }

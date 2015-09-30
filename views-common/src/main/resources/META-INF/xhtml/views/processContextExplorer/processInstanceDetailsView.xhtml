@@ -134,28 +134,44 @@
 			<f:facet name="header">
 				<ice:panelGroup>
 					<ice:outputText value="#{messages_bcc['common.descriptor.title']}">
-						<pc:automationTag value="auto-COM-PCEDescriptor" standAlone="false"/>	
+						<pc:automationTag value="auto-COM-PCEDescriptor"
+							standAlone="false" />
 					</ice:outputText>
 				</ice:panelGroup>
 			</f:facet>
-			<ice:panelGroup>
-				<ice:panelGroup>
-					<ice:inputHidden id="descriptorViewMsg"/>
-					<ui:include
-						src="/plugins/views-common/common/validationMessage.xhtml">
-						<ui:param name="validationMessageBean"
-							value="#{processInstanceDetailsBean.validationMessageBean}" />
-					</ui:include>
-				</ice:panelGroup>
-				<pc:automationTag value="auto-COM-PCEDescriptorTable"/>
-				<pc:genericDataTable bean="#{processInstanceDetailsBean}"
-					id="descriptorList"
-					table="#{processInstanceDetailsBean.descriptorTable}"
-					sortSupported="true" exportExcel="false" exportCsv="false" />
+			<ice:panelGroup id="tabSetTabs">
+				<ice:panelTabSet id="processInstanceDescriptorTab"
+					tabChangeListener="#{processInstanceDetailsBean.descriptorTabChange}"
+					selectedIndex="#{processInstanceDetailsBean.selectedTabIndex}">
+					<ice:panelTab rendered="true"
+						label="#{views_common_msgPropsBean['views.processInstanceDetailsView.descriptors.current']}">
+						<ice:panelGroup>
+							<ice:inputHidden id="descriptorViewMsg" />
+							<ui:include
+								src="/plugins/views-common/common/validationMessage.xhtml">
+								<ui:param name="validationMessageBean"
+									value="#{processInstanceDetailsBean.validationMessageBean}" />
+							</ui:include>
+						</ice:panelGroup>
+						<pc:automationTag value="auto-COM-PCEDescriptorTable" />
+						<pc:genericDataTable bean="#{processInstanceDetailsBean}"
+							id="descriptorList"
+							table="#{processInstanceDetailsBean.descriptorTable}"
+							sortSupported="true" exportExcel="false" exportCsv="false" />
+					</ice:panelTab>
+					<ice:panelTab rendered="true"
+						label="#{views_common_msgPropsBean['views.processInstanceDetailsView.descriptors.history']}">
+						<pc:automationTag value="auto-COM-Desc-Event-DataTable" />
+						<pc:genericDataTable exportExcel="true" exportCsv="true"
+							bean="#{processInstanceDetailsBean}" id="descEventList"
+							table="#{processInstanceDetailsBean.descriptorHistoryTable}"
+							sortSupported="true" />
+					</ice:panelTab>
+				</ice:panelTabSet>
 			</ice:panelGroup>
 		</ice:panelCollapsible>
-		
-			<ice:panelCollapsible
+
+		<ice:panelCollapsible
 			expanded="#{processInstanceDetailsBean.linkedProcessPanelExpanded}">
 			<f:facet name="header">
 				<ice:panelGroup>

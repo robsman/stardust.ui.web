@@ -21,7 +21,15 @@ import java.util.Map.Entry;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
+import org.eclipse.stardust.engine.api.query.FilterOrTerm;
+import org.eclipse.stardust.engine.api.query.HistoricalEventPolicy;
+import org.eclipse.stardust.engine.api.query.ProcessInstanceFilter;
+import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.HistoricalEvent;
+import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.api.runtime.QueryService;
+import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
@@ -37,6 +45,7 @@ import org.eclipse.stardust.ui.web.common.filter.TableDataFilterSearch;
 import org.eclipse.stardust.ui.web.common.table.DataTable;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
 import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataMapping;
 import org.eclipse.stardust.ui.web.viewscommon.common.ProcessAttachmentColumnPreference;
@@ -442,6 +451,32 @@ public class DescriptorColumnUtils
       {
          return DataType.DOUBLE;
       }
+      return null;
+   }
+
+   /**
+    * 
+    * @param scopeProcessInstance
+    * @return
+    */
+   public static List<HistoricalEvent> getProcessDescriptorsHistory(ProcessInstance scopeProcessInstance)
+   {
+      ProcessInstanceQuery piQuery = ProcessInstanceQuery.findAll();
+      FilterOrTerm orTerm =  piQuery.getFilter().addOrTerm();
+                  
+      piQuery.setPolicy(HistoricalEventPolicy.ALL_EVENTS);
+      orTerm.add(new ProcessInstanceFilter(scopeProcessInstance.getOID(), false));
+      
+      ServiceFactory sf = SessionContext.findSessionContext().getServiceFactory();
+      QueryService qs = (sf != null) ? sf.getQueryService() : null;
+   
+      if (qs != null)
+      {
+         ProcessInstance pi = qs.findFirstProcessInstance(piQuery);
+         List<HistoricalEvent> events = pi.getHistoricalEvents();
+         return events;
+      }
+      
       return null;
    }
 }
