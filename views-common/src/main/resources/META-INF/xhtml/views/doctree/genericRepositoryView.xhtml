@@ -110,7 +110,7 @@
 								<f:attribute name="userObject" value="#{item.userObject}" />
 							</ice:menuItem>
 
-							<ice:menuItem id="delete"
+							<ice:menuItem id="delete" styleClass="deleteFile"
 								icon="/plugins/views-common/images/icons/page_white_delete.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.delete']}"
 								actionListener="#{genericRepositoryTreeViewBean.confirmDeleteResource}"								
@@ -154,7 +154,7 @@
 								<f:attribute name="userObject" value="#{item.userObject}" />
 							</ice:menuItem>
 
-							<ice:menuItem id="createTextDocument"
+							<ice:menuItem id="createTextDocument" styleClass="createFile"
 								icon="/plugins/views-common/images/icons/page_white_add.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.createNewDoc']}"
 								rendered="#{item.userObject.canCreateFile and !item.userObject.leafNode}"
@@ -195,7 +195,7 @@
 									standAlone="false" />
 							</ice:menuItem>
 
-							<ice:menuItem id="version"
+							<ice:menuItem id="version" styleClass="versionHistory"
 								icon="/plugins/views-common/images/icons/book_open.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.versionHistory']}"
 								action="#{item.userObject.versionHistory}"
@@ -227,7 +227,7 @@
 									standAlone="false" />
 							</ice:menuItem>
 
-							<ice:menuItem id="Refresh"
+							<ice:menuItem id="Refresh" styleClass="refresh"
 								icon="/plugins/views-common/images/icons/arrow_refresh.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.refresh']}"
 								action="#{item.userObject.refresh}"
