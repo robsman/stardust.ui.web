@@ -116,12 +116,14 @@
 					       ng-model="myFilter" />
 					<button class="pi pi-filter pi-1x" 
 							title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.permissionTree.toolbar.filter.title')}}"
+							ng-disabled="!myFilter || myFilter.length==0"
 					        ng-click="ctrl.applyTextFilter(myFilter)" 
 					        aid="COM-AuthMgr-ApplyFilter"></button>
 					<button class="pi pi-clear pi-1x" 
 							title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.permissionTree.toolbar.reserFilter.title')}}"
 					        ng-click="ctrl.resetFilter()"></button>
 					<button class="pi pi-torch pi-1x" 
+							ng-disabled="ctrl.selectedParticipants.length==0"
 					        title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.permissionTree.toolbar.flashlight.title')}}"
 					        ng-click="ctrl.applyFlashlightFilter(ctrl.selectedParticipants)" ></button>
 					<button class="pi pi-refresh pi-1x" 

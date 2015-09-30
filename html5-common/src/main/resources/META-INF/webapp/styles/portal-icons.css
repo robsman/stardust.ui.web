@@ -108,15 +108,25 @@ portal icon badging stem, duped from starclipse
 	content: '\F096';
 }
 
-/*Elements designed to incorporate pi elements as children*/
+/*Elements (other than i) designed to incorporate pi*/
 button.pi{
 	background:transparent;
 	border:none;
 	cursor:pointer;
 	opacity:0.75;
 }
+
 button.pi:hover{
 	opacity:1.0;
+}
+
+button.pi:focus {
+	outline:0;
+}
+
+button.pi:disabled {
+	opacity:0.4;
+	cursor:not-allowed;
 }
 
 /*
