@@ -70,12 +70,17 @@
 		
 		//This leverages the whoAmI REST endpoint
 		this.currentUser = sdLoggedInUserService.getUserInfo(); //current user
+		this.currentUser.permissions = sdLoggedInUserService.getRuntimePermissions();
 		
-		//TODO:remove once we have this data available from service call, hardocde for now for testing.
-		this.currentUser.permissions={};
-		this.currentUser.permissions.model={};
-		this.currentUser.permissions.model.readRuntimeArtifact = true;
-		this.currentUser.permissions.model.deployRuntimeArtifact = true;
+		//Test if user can read runtime artifact and assign to our object
+		this.readRuntimeArtifact = this.currentUser.permissions.some(function(v){
+			return v==="readRuntimeArtifact";
+		});
+		
+		//Test if user can deploy runtime artifact and assign to our object
+		this.currentUser.deployRuntimeArtifact = this.currentUser.permissions.some(function(v){
+			return v==="deployRuntimeArtifact";
+		});
 		
 		
 		//initialize our attribute operands we will use in our condition dropdowns (lhs and rhs).
