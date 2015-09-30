@@ -386,6 +386,11 @@
 				first.setDate(first.getDate() + 1);
 			}
 		document.getElementById("minorTimeLine").innerHTML = temptableHolder;
+		
+		//If the first has been incremented to the 1st of next month .Show the major tool bar with the previous month
+		if(first.getDate() == 1) {
+			first.setDate(first.getDate() - 1)
+		}
 		self.majorTimeFrames.push({
 			width : (daysInMonth * dayWidth) + (daysInMonth - 1),
 			value : new Date(first)
