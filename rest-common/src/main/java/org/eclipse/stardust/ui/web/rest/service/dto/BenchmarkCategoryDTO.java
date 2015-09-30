@@ -3,7 +3,7 @@ package org.eclipse.stardust.ui.web.rest.service.dto;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 
 @DTOClass
-public class BenchmarkCategoryDTO extends AbstractDTO
+public class BenchmarkCategoryDTO extends AbstractDTO implements Comparable<BenchmarkCategoryDTO>
 {
    public String color; 
    public int index;
@@ -46,6 +46,14 @@ public class BenchmarkCategoryDTO extends AbstractDTO
       else if (!name.equals(other.name))
          return false;
       return true;
+   }
+   
+   @Override
+   public int compareTo(BenchmarkCategoryDTO o)
+   {
+      int index = o.index;       
+      //ascending order
+      return this.index - index;
    }
    
    
