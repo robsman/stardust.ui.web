@@ -78,7 +78,7 @@
 		});
 		
 		//Test if user can deploy runtime artifact and assign to our object
-		this.currentUser.deployRuntimeArtifact = this.currentUser.permissions.some(function(v){
+		this.deployRuntimeArtifact = this.currentUser.permissions.some(function(v){
 			return v==="deployRuntimeArtifact";
 		});
 		
