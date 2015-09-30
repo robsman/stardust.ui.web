@@ -1,4 +1,5 @@
-<div class="propertiesPage">
+<div ng-controller="sdAuthorizationPageController as ctrl"
+	ng-cloak
 	<div>
 		<div>
 			<table>
@@ -6,13 +7,13 @@
 					<td>
 						<div style="width: 300px;">
 							<ng-include
-								src="'plugins/bpm-modeler/views/modeler/templates/authorizationPermissionsTreeForView.html'" />
+								src="'plugins/bpm-modeler/views/modeler/templates/authorizationPermissionsTree.html'" />
 						</div>
 					</td>
 					<td>
 						<div>
 							<ng-include
-								src="'plugins/bpm-modeler/views/modeler/templates/authorizationsParticipantSelectorForView.html'" />
+								src="'plugins/bpm-modeler/views/modeler/templates/authorizationsParticipantSelector.html'" />
 						</div>
 					</td>
 				</tr>

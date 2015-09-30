@@ -350,6 +350,9 @@ define(
 					for ( var n in this.propertiesPages) {
 						this.propertiesPages[n].setElement();
 					}
+					m_angularContextUtils.runInAngularContext(function($scope) {
+						$scope.$broadcast('VIEW_MODEL_ELEMENT_INITIALIZED');
+					});
 				};
 
 				/**

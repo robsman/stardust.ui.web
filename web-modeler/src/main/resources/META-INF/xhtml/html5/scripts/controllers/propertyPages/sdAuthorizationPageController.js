@@ -29,24 +29,39 @@
 		this.selectedAuths = [];
 		this.element;
 		this.model;
+		this.scope = $scope;
 		this.selectedPermissionsCache = [];
 
 		$scope.$on('REFRESH_PROPERTIES_PANEL',
 				function(event, propertiesPanel) {
-					self.propertiesPanel = propertiesPanel;
-					self.commandsController = propertiesPanel
-							.getMCommandsController();
-					self.commandHelper = propertiesPanel.getMCommand();
+					self.init();
+					self.refresh();
+				});
+		$scope.$on('VIEW_MODEL_ELEMENT_INITIALIZED',
+				function(event, propertiesPanel) {
+					self.init();
 					self.refresh();
 				});
 	}
+	
+	/**
+	 * 
+	 */
+	AuthorizationPageController.prototype.init = function() {
+		this.propertiesPanel = this.scope.page.propertiesPanel;
+		this.commandsController = this.propertiesPanel
+				.getMCommandsController();
+		this.commandHelper = this.propertiesPanel.getMCommand();
+	};
 
 	/**
 	 * 
 	 */
 	AuthorizationPageController.prototype.refresh = function() {
 		var self = this;
-		if (this.propertiesPanel.element.type === 'processDefinition'
+		if (this.propertiesPanel.getModelElement && this.propertiesPanel.getModelElement()) {
+			var elem = this.propertiesPanel.getModelElement();
+		} else  if (this.propertiesPanel.element.type === 'processDefinition'
 				|| this.propertiesPanel.element.type === 'process') {
 			var elem = this.propertiesPanel.element;
 		} else {
