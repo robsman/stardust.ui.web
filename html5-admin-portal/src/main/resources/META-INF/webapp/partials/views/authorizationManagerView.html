@@ -111,14 +111,22 @@
 			<div ng-show="ctrl.showMessage2" sd-message></div>
 			<div sda-toolbar>
 				<div>
-					<input type="text" ng-model="myFilter" />
-					<button class="pi pi-filter pi-1x" ng-click="ctrl.applyTextFilter(myFilter)" aid="COM-AuthMgr-ApplyFilter"></button>
-					<button class="pi pi-clear pi-1x" ng-click="ctrl.resetFilter()"></button>
-					<button title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.highlightParticipants')}}" 
-					        class="pi pi-torch pi-1x" 
+					<input class="search" 
+					       type="text" 
+					       ng-model="myFilter" />
+					<button class="pi pi-filter pi-1x" 
+							title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.permissionTree.toolbar.filter.title')}}"
+					        ng-click="ctrl.applyTextFilter(myFilter)" 
+					        aid="COM-AuthMgr-ApplyFilter"></button>
+					<button class="pi pi-clear pi-1x" 
+							title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.permissionTree.toolbar.reserFilter.title')}}"
+					        ng-click="ctrl.resetFilter()"></button>
+					<button class="pi pi-torch pi-1x" 
+					        title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.permissionTree.toolbar.flashlight.title')}}"
 					        ng-click="ctrl.applyFlashlightFilter(ctrl.selectedParticipants)" ></button>
-					<button class="pi pi-refresh pi-1x" ng-click="ctrl.refreshPermissions()"></button> 
-					<!--button class="" ng-click="ctrl.applyFilter()" aid="COM-AuthMgr-ResetFilter">Reset</button-->
+					<button class="pi pi-refresh pi-1x" 
+							title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.permissionTree.toolbar.refresh.title')}}"
+							ng-click="ctrl.refreshPermissions()"></button> 
 				</div>
 			</div>
 			<br>
