@@ -421,7 +421,8 @@ Icon implementations
 	content: "\f0e0";
 }
 
-.pi-version:before{
+.pi-version:before,
+.pi-document-versions:before{
 	font-family: "FontAwesome";
 	content: "\f02d";
 }
