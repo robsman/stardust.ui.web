@@ -814,7 +814,7 @@ public class ProcessInstanceUtils
       }
       else
       {
-         targetProcessInstance = serviceFactoryUtils.getWorkflowService().mergeCases(sourceProcessInstanceOid,
+         targetProcessInstance = serviceFactoryUtils.getWorkflowService().mergeCases(targetProcessInstanceOid,
                new long[] {sourceProcessInstanceOid}, linkComment);
 
          CommonDescriptorUtils.reCalculateCaseDescriptors(srcProcessInstance);
