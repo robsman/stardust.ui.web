@@ -500,6 +500,15 @@
         }
     }
     
+    //If no matches bail out.
+    if(matches.length===0){
+    	this.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.filter.noMatches"));
+    	return;
+    }else
+    {
+    	this.resetMessages();
+    }
+    
     //step 2 ,iterate over matches expanding to the root
     matches.forEach(function(v){
       v.scope.isVisible = true;

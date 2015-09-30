@@ -108,7 +108,9 @@
 				<div class="heading"
 					ng-bind="sdI18nHtml5Admin('views.authorizationManagerViewHtml5.permissions.label')"></div>
 			</header>
-			<div ng-show="ctrl.showMessage2" sd-message></div>
+			<div style="min-height:22px;">
+				<div ng-show="ctrl.showMessage2" sd-message></div>
+			</div>
 			<div sda-toolbar>
 				<div>
 					<input class="search" 
