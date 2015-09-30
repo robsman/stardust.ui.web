@@ -1057,7 +1057,8 @@ define(
                   }
                   attributes["stardust:emailOverlay::templateSource"] = this.templateSourceSelect.val();
                   attributes["carnot:engine:camel::routeEntries"] = this.getRoute(attributes, aps);
-
+				  attributes["stardust:emailOverlay::templateConfigurations"]=angular.toJson(this.templateConfigurations);
+					 
                   this.view.submitChanges({
                      attributes : attributes,
                      contexts : {
