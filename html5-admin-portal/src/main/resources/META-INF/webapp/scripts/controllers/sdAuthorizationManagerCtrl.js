@@ -547,6 +547,8 @@
     var permission = scope.$parent.$parent.genItem;
     var allow = null;
     var deny = null;
+    
+    //examine permissions, if scoped
     if (this.selectedAllow.indexOf(permission) == -1) {
       allow = [permission];
       deny = [];
@@ -577,11 +579,57 @@
 
   // update permissions pertaining to all selected nodes
   AMCtrl.prototype.updatePermissions = function(scope, allow, deny) {
-    var self = this;
+    var self = this,
+    	isScopedPresent = false,
+    	isAllowModelOnly= true,
+    	isDenyModelOnly = true;
+    
     this.resetMessages();
 
+
+    //Iterate over selectedParticipants to check if at least one particpant is scoped then allow and deny
+    //must only be within the model root node of our tree, test by permission prefix in the set 
+    //'activity.,processDefinition.,data.'
+    //if so dialog and abort.
+    
+    //First test, do we have at least one scoped participant type?
+    isScopedPresent = this.selectedParticipants.some(function(participant){
+    	return participant.type === "SCOPED_ROLE" || participant.type == "SCOPED_ORGANIZATION";
+    });
+    
+    //Second test, are all allow nodes only in the model root?
+    allow.forEach(function(item){
+    	isAllowModelOnly = isAllowModelOnly && (
+			item.id.indexOf("processDefinition.") === 0 ||
+	       	item.id.indexOf("activity.") === 0 ||
+	       	item.id.indexOf("data.") === 0)
+    });
+    
+
+    //Third test, are all deny nodes only in the model root?
+    deny.forEach(function(item){
+    	isDenyModelOnly = isDenyModelOnly && (
+			item.id.indexOf("processDefinition.") === 0 ||
+	       	item.id.indexOf("activity.") === 0 ||
+	       	item.id.indexOf("data.") === 0)
+    });
+    
+    //Final test, 
+    if(isScopedPresent && !(isAllowModelOnly && isDenyModelOnly)){
+    	
+    	self.$timeout(function(){
+    		self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.scoped.error"));
+    	},0);
+    	
+    	return;
+    }
+    
+    //Expand node so we can see the soon-to-be added participants
     scope.$parent.isVisible = true;
+    
+    //set icon for the node to the spinner
     scope.iconClass= "isDeferred";
+    
     _sdAuthorizationManagerService.savePermissions(self.selectedParticipants, allow, deny).then(function(result) {
       var permissions = result.permissions;
       scope.iconClass= "";

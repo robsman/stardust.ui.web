@@ -16,6 +16,9 @@
 						aid="COM-AuthMgr-CloneParticipant">
 						<i class="pi pi-badge-portrait pi-fw pi-activity-delegate icon-lg pi-left pi-top">
 							<i class="pi pi-badge-icon pi-badge-icon-arrow-r"></i>
+						<i class="sc sc-badge-portrait sc-user icon-lg sc-right"> 
+						 <i style="color:green;" class="sc sc-badge-bg sc-badge-bg-circle sc-stroke go"></i> 
+						 <i style="color:#fff;" class="sc sc-badge-icon sc-badge-icon-user"></i>
 						</i>
 
 					</button>
@@ -50,14 +53,21 @@
 					</thead>
 					<tbody>
 						<tr>
-							<td sda-field="name"  sda-data-type="string"sda-exporter="rowData.name"><a href=""
-								class="{{rowData.type | lowercase}}"
-								ng-class="{'selected' : ctrl.selectedRoles.indexOf(role) >=0}"
-								sd-data-drag ng-model="rowData"
-								sda-dragstart="ctrl.roleDragStart($data, $event)"> <span
-									style="margin-left: 18px;"> {{rowData.name}}</span>
-							</a></td>
-							<td sda-field="type" sda-data-type="string"></td>
+							<td sda-field="name" sda-exporter="rowData.name">
+								<a href=""
+								   ng-class="{'selected-custom' : ctrl.selectedRoles.indexOf(role) >=0}"
+								   sd-data-drag ng-model="rowData"
+								   sda-dragstart="ctrl.roleDragStart($data, $event)"> 
+								   <i class="pi" 
+									   ng-class="{'pi-role' : rowData.type.indexOf('ROLE') > -1,
+									              'pi-organization':  rowData.type.indexOf('ORGANIZATION') > -1}">
+								   </i>
+								   <span style="margin-left: 18px;">
+									{{rowData.name}}
+								   </span>
+								</a>
+							</td>
+							<td sda-field="type"></td>
 							<td sda-field="description"></td>
 						</tr>
 					</tbody>
@@ -127,8 +137,8 @@
 									ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
 									class="glyphicons glyphicon sd-tree-expand"></i>
 							</div>
-							<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
-								class="js-icon pi pi-process-details"></i> <span>{{labelItem.name}}</span>
+							<a title="" class="tree-node" aid="{{labelItem.id}}"> 
+								<i class="js-icon glyphicon glyphicon-cog"></i> <span>{{labelItem.name}}</span>
 							</a>
 						</div> <!--Permission in General Permissions loop...-->
 						<ul ng-show="isVisible">
@@ -168,7 +178,7 @@
                                                'target' : 'allow'}]"
 												sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
 												<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
-													ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
+													ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
 													ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
 													title="" class="tree-node" aid="{{item.name}}"> <i
 													class="js-icon glyphicon glyphicon-ok-circle {{iconClass}}"></i> <span>{{item.name}}</span>
@@ -212,7 +222,7 @@
                                                'target' : 'deny'}]"
 												sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
 												<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
-													ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
+													ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
 													ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
 													title="" class="tree-node" aid="{{labelItem.id}}"> <i
 													class="js-icon glyphicon glyphicon-ban-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
@@ -319,7 +329,7 @@
                                                'target' : 'allow'}]"
 														sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
 														<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
-															ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
+															ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
 															ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
 															title="" class="tree-node"
 															aid="{{labelItem.id}}"> <i
@@ -362,7 +372,7 @@
                                                'target' : 'deny'}]"
 														sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
 														<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
-															ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
+															ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
 															ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
 															title="" class="tree-node"
 															aid="{{labelItem.id}}"> <i
@@ -455,7 +465,7 @@
                                                'target' : 'allow'}]"
 														sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
 														<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
-															ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
+															ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
 															ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
 															title="" class="tree-node" aid="{{labelItem.id}}"> <i
 															class="js-icon glyphicon glyphicon-ok-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
@@ -500,7 +510,7 @@
                                                'target' : 'deny'}]"
 														sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
 														<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
-															ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
+															ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
 															ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
 															title="" class="tree-node" aid="{{labelItem.id}}"> <i
 															class="js-icon glyphicon glyphicon-ban-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
@@ -591,7 +601,7 @@
                                                'target' : 'allow'}]"
 														sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
 														<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
-															ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
+															ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
 															ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
 															title="" class="tree-node" aid="{{labelItem.id}}"> <i
 															class="js-icon glyphicon glyphicon-ok-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
@@ -636,7 +646,7 @@
                                                'target' : 'deny'}]"
 														sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
 														<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
-															ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
+															ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
 															ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
 															title="" class="tree-node" aid="{{labelItem.id}}"> <i
 															class="js-icon glyphicon glyphicon-ban-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
@@ -728,7 +738,7 @@
                                                'target' : 'allow'}]"
 												sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
 												<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
-													ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
+													ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
 													ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
 													title="" class="tree-node" aid="{{labelItem.id}}"> <i
 													class="js-icon glyphicon glyphicon-ok-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
@@ -772,7 +782,7 @@
                                                'target' : 'deny'}]"
 												sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
 												<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
-													ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
+													ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
 													ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
 													title="" class="tree-node" aid="{{labelItem.id}}"> <i
 													class="js-icon glyphicon glyphicon-ban-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
@@ -853,7 +863,7 @@
                                                'target' : 'allow'}]"
 																sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
 																<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
-																	ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
+																	ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
 																	ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
 																	title="" class="tree-node" aid="{{labelItem.id}}"> <i
 																	class="js-icon glyphicon glyphicon-ok-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
@@ -896,7 +906,7 @@
                                                'target' : 'deny'}]"
 																sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
 																<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
-																	ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
+																	ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
 																	ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
 																	title="" class="tree-node" aid="{{labelItem.id}}"> <i
 																	class="js-icon glyphicon glyphicon-ban-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
@@ -985,7 +995,7 @@
                                                'target' : 'allow'}]"
 																sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
 																<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
-																	ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
+																	ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
 																	ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
 																	title="" class="tree-node" aid="{{labelItem.id}}"> <i
 																	class="js-icon glyphicon glyphicon-ok-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
@@ -1028,7 +1038,7 @@
                                                'target' : 'deny'}]"
 																sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
 																<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
-																	ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
+																	ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
 																	ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
 																	title="" class="tree-node" aid="{{labelItem.id}}"> <i
 																	class="js-icon glyphicon glyphicon-ban-circle {{iconClass}}"></i> <span
@@ -1125,7 +1135,7 @@
                                                'target' : 'allow'}]"
 												sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
 												<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
-													ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
+													ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
 													ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
 													title="" class="tree-node" aid="{{labelItem.id}}"> <i
 													class="js-icon glyphicon glyphicon-ok-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
@@ -1169,7 +1179,7 @@
                                                'target' : 'deny'}]"
 												sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
 												<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
-													ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
+													ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
 													ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
 													title="" class="tree-node" aid="{{labelItem.id}}"> <i
 													class="js-icon glyphicon glyphicon-ban-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
@@ -1250,7 +1260,7 @@
                                                'target' : 'allow'}]"
 																sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
 																<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
-																	ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
+																	ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
 																	ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
 																	title="" class="tree-node" aid="{{labelItem.id}}"> <i
 																	class="js-icon glyphicon glyphicon-ok-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
@@ -1293,7 +1303,7 @@
                                                'target' : 'deny'}]"
 																sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
 																<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
-																	ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
+																	ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
 																	ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
 																	title="" class="tree-node" aid="{{labelItem.id}}"> <i
 																	class="js-icon glyphicon glyphicon-ban-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
@@ -1382,7 +1392,7 @@
                                                'target' : 'allow'}]"
 																sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
 																<a sd-data-drop sda-drop="ctrl.allowRole($data,$event)"
-																	ng-class="{'selected':ctrl.selectedAllow.indexOf(genItem)>-1}"
+																	ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
 																	ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
 																	title="" class="tree-node" aid="{{labelItem.id}}"> <i
 																	class="js-icon glyphicon glyphicon-ok-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
@@ -1425,7 +1435,7 @@
                                                'target' : 'deny'}]"
 																sda-menu-callback='ctrl.removeAllParticipants(menuItem,e)'>
 																<a sd-data-drop sda-drop="ctrl.denyRole($data,$event)"
-																	ng-class="{'selected':ctrl.selectedDeny.indexOf(genItem)>-1}"
+																	ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
 																	ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
 																	title="" class="tree-node" aid="{{labelItem.id}}"> <i
 																	class="js-icon glyphicon glyphicon-ban-circle {{iconClass}}"></i> <span

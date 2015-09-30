@@ -67,11 +67,20 @@
     height: 650px;
 }
 
-/*Custom match rule for the Authorization Management Tree*/
-.x-sd-tree .match-custom{
-	background: rgb(77, 114, 171);
-	border-radius: 2px;
-	color: #FFF;
+/*
+Custom match rules for the Authorization Management Tree:
+Auth tree is a hand-stitched implementation of a tree rather
+than an instance of the sdTree directive. It's DOM structure
+deviates from that of sdTree causing several of the styles we
+would like to inherit from sdTree to no longer work with the 
+auth tree implementation. Therefore, we have added
+custom styles below to handle these cases.
+---------------------------------------------------------
+*/
+.sd-tree a.selected-custom span{
+	background: #EEE2CF !important;
+  	color: #708090 !important;
+  	border-radius: 5px !important;
 }
 
 .sd-tree li.match-custom > ul > li > a.tree-node > div > div.dd-header  .js-filterable,
