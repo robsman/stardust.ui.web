@@ -31,9 +31,9 @@
 				</c:when>
 
 				<c:otherwise>
-					<h:graphicImage
-						value="/plugins/views-common/images/icons/tick.png"
-						style="border: none;" rendered="#{row.userInRole}" />
+					<h:outputText
+						styleClass="pi pi-save icon-lg"
+						rendered="#{row.userInRole}" />
 					<h:outputText
 						rendered="#{not row.userInRole}" 
 						styleClass="pi pi-abort icon-lg" />

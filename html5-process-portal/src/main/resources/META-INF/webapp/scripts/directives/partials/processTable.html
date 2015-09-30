@@ -120,22 +120,22 @@
 					<span class="spacing-right">
 							<span title="{{i18n('business-control-center-messages.common-tooltip-process')}}"
 								ng-if="!rowData.caseInstance && rowData.oid == rowData.processInstanceRootOID" >
-								<i class="sc sc-badge-portrait icon-lg sc-cog sc-right">
-		                   			 <i style="color:blue" class="sc sc-badge-bg sc-badge-bg-circle "></i>
+								<i class="pi pi-badge-portrait icon-lg pi-activity pi-right">
+		                   			 <i style="color:blue" class="pi pi-badge-bg pi-badge-bg-circle "></i>
 		               			 </i>
 							</span>
 							<span src="plugins/views-common/images/icons/process.png"
 								style="border: none;"
 								title="{{i18n('business-control-center-messages.common-tooltip-subProcess')}}"
 								ng-if="!rowData.caseInstance && rowData.oid != rowData.processInstanceRootOID" >
-									<i class="sc sc-badge-portrait icon-lg sc-cog">
+									<i class="pi pi-badge-portrait icon-lg pi-activity">
 		               				 </i>
 							</span>
 							<span src="plugins/views-common/images/icons/envelope.png"
 								style="border: none;"
 								title="{{i18n('business-control-center-messages.common-tooltip-case')}}"
 								ng-if="rowData.caseInstance" >
-									<i class="sc icon-lg sc-envelope-alt"></i>
+									<i class="pi pi-case icon-lg"></i>
 							</span>
 					</span>
 					<a  href="#" aid="PP-ProcessTable-OpenProcessHistory"

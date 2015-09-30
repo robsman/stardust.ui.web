@@ -149,8 +149,7 @@ define(
 														create : false,
 														rename : {
 															label : I18NUtils.getProperty('reporting.definitionView.contextmenu.rename.label'), 
-															icon : self.reportingService.getRootUrl()
-                                                         + "/plugins/views-common/images/icons/rename.png",
+															icon : "pi pi-rename icon-lg",
 															action : function(
 																	obj) {
 																jQuery(
@@ -164,8 +163,7 @@ define(
 														},
 														deleteReport : {
 															label : I18NUtils.getProperty('reporting.definitionView.contextmenu.delete.label'), // I18N
-															icon : self.reportingService.getRootUrl()
-                                                         + "/plugins/views-common/images/icons/delete.png",
+															icon : "pi pi-delete icon-lg",
 															action : function(
 																	obj) {
 				                                       self.deleteElementAction(
@@ -198,8 +196,7 @@ define(
 														},
 														download : {
 															label : I18NUtils.getProperty('reporting.definitionView.contextmenu.download.label'), 
-															icon : self.reportingService.getRootUrl()
-                                                         + "/plugins/views-common/images/icons/page_white_put.png",
+															icon : "pi pi-download icon-lg",
 															action : function(
 																	obj) {
 																var path = obj.attr("path")
@@ -208,8 +205,7 @@ define(
 														},
 														clone : {
                                              label : I18NUtils.getProperty('reporting.definitionView.contextmenu.clone.label'),
-                                             icon : self.reportingService.getRootUrl()
-                                                         + "/plugins/bpm-reporting/images/icons/report_add.png",
+                                             icon : "pi pi-clone icon-lg",
                                              action : function(
                                                    obj) {
                                                 self.openView("reportDefinitionView",
@@ -228,8 +224,7 @@ define(
                                           create : false,
                                           upload : {
                                              label : I18NUtils.getProperty('reporting.definitionView.contextmenu.upload.label'),
-                                             icon : self.reportingService.getRootUrl()
-                                                         + "/plugins/views-common/images/icons/page_white_get.png",
+                                             icon : "pi pi-upload icon-lg",
                                              action : function(
                                                    obj) {
                                                 scope = angular.element(document).scope();

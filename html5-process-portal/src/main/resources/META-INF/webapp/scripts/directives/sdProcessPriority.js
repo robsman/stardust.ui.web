@@ -30,7 +30,7 @@
 			   sdaValueChanged : '='
 		   },
 		   template :
-			   '<i ng-if="!sdaEditable" class="glyphicon glyphicon-flag icon-lg" ' +
+			   '<i ng-if="!sdaEditable" class="pi pi-flag icon-lg" ' +
 		   			'ng-class="\'priority-flag-\'+sdaPriority.name" ' +
 		   			'ng-mouseenter=\'processPriorityCtrl.toolTip.show = true\' ' +
 		   			'ng-mouseleave=\'processPriorityCtrl.toolTip.show = false\'>\n' +

@@ -103,7 +103,7 @@
     * 
     */
    CriticalityFilterController.prototype.tagPreMapper = function(item, index) {
-	   var tagClass = "glyphicon glyphicon-flag criticality-flag-" + item.color;
+	   var tagClass = "pi pi-flag criticality-flag-" + item.color;
 	   return tagClass;
    };
 

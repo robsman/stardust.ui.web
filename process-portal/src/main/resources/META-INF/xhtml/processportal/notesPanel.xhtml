@@ -68,8 +68,7 @@
 				action="#{processportal_NotesBean.saveNote}">
 				<pc:automationTag value="auto-PP-NotesView-Save" standAlone="false"/>
 				<ice:panelGrid columns="2">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/disk.png" />
+					<ice:outputText styClass="pi pi-save icon-lg" />
 					<ice:outputText
 						value="#{processportal_NotesBean.messages['button.save']}" />
 				</ice:panelGrid>

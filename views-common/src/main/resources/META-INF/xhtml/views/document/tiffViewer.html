@@ -3,6 +3,9 @@
   <title>Pharmacy Canvas</title>
   <link type="text/css" rel="stylesheet" href="../../../graphics-common/css/thirdparty/smoothness/jquery-ui-1.10.2.custom.css"></link>
   <link type="text/css" rel="stylesheet" href="../../../graphics-common/css/jquery-ui-custom_nirvana.css"></link>
+  <link rel="stylesheet" type="text/css" href="../../../html5-common/styles/font-icon.css" />
+  <link rel="stylesheet" type="text/css" href="../../../html5-common/styles/3rd-party/font-awesome/4.4.0/css/font-awesome.min.css" />
+  <link rel="stylesheet" type="text/css" href="../../../html5-common/styles/portal-icons.css" />
   <script type="text/javascript" src="../../../common/InfinityBPMI18N.js"></script>
   <script type="text/javascript" src="../../../graphics-common/js/thirdparty/json2.js"></script>
   <script type="text/javascript" src="../../../graphics-common/js/thirdparty/raphael.js"></script>
@@ -97,53 +100,53 @@
 				</div>
 			</td>
 			<td class="buttonHolder">			
-				<img id="zoomOut" src="../../images/icons/zoom_out.png" title="Zoom Out" i18nPropKey="tiffViewer.toolBar.tool.zoomOut" class="toolBarCtrl" />
+				<i class="pi pi-zoom-out icon-lg" id="zoomOut" title="Zoom Out" i18nPropKey="tiffViewer.toolBar.tool.zoomOut" class="toolBarCtrl" />
 			</td>
 			<td>
 				<div id="slider" title="Zoom" style='width : 100px' >
 				</div>
 			</td>
 			<td class="buttonHolder">
-				<img id="zoomIn" src="../../images/icons/zoom_in.png" title="Zoom In" i18nPropKey="tiffViewer.toolBar.tool.zoomIn" class="toolBarCtrl" />
+				<i class="pi pi-zoom-in icon-lg" id="zoomIn" title="Zoom In" i18nPropKey="tiffViewer.toolBar.tool.zoomIn" class="toolBarCtrl" />
 			</td>
 			<td>
 				<img src="../../images/icons/toolbar-separator.png" />
 			</td>
 			<td class="buttonHolder">
-				<img id="fitToWindow" src="../../images/icons/document-resize-actual.png" title="Fit To Window" i18nPropKey="tiffViewer.toolBar.tool.fitToWindow" class="toolBarCtrl" />
+				<i class="pi pi-fit-to-window icon-lg" id="fitToWindow" title="Fit To Window" i18nPropKey="tiffViewer.toolBar.tool.fitToWindow" class="toolBarCtrl" />
 			</td>
 			<td class="buttonHolder">
-				<img id="fitToHeight" src="../../images/icons/fit-to-height.png" title="Fit To Height" i18nPropKey="tiffViewer.toolBar.tool.fitToHeight" class="toolBarCtrl" />
+				<i class="pi pi-fit-to-height icon-lg" id="fitToHeight" title="Fit To Height" i18nPropKey="tiffViewer.toolBar.tool.fitToHeight" class="toolBarCtrl" />
 			</td>
 			<td class="buttonHolder">
-				<img id="fitToWidth" src="../../images/icons/fit-to-width.png" title="Fit To Width" i18nPropKey="tiffViewer.toolBar.tool.fitToWidth" class="toolBarCtrl" />
+				<i class="pi pi-fit-to-width icon-lg" id="fitToWidth" title="Fit To Width" i18nPropKey="tiffViewer.toolBar.tool.fitToWidth" class="toolBarCtrl" />
 			</td>
 			<td>
 				<img src="../../images/icons/toolbar-separator.png" />
 			</td>
 			<td class="buttonHolder">
-				<img id="rotateRight" src="../../images/icons/arrow_rotate_clockwise.png" title="Rotate Right" i18nPropKey="tiffViewer.toolBar.tool.rotateRight" class="toolBarCtrl" />
+				<i class="pi pi-rotate-right icon-lg" id="rotateRight" title="Rotate Right" i18nPropKey="tiffViewer.toolBar.tool.rotateRight" class="toolBarCtrl" />
 			</td>
 			<td class="buttonHolder">
-				<img id="rotateLeft" src="../../images/icons/arrow_rotate_anticlockwise.png" title="Rotate Left" i18nPropKey="tiffViewer.toolBar.tool.rotateLeft" class="toolBarCtrl" />
+				<i class="pi pi-rotate-left icon-lg" id="rotateLeft" src="../../images/icons/arrow_rotate_anticlockwise.png" title="Rotate Left" i18nPropKey="tiffViewer.toolBar.tool.rotateLeft" class="toolBarCtrl" />
 			</td>
 			<td>
 				<img src="../../images/icons/toolbar-separator.png" />
 			</td>
 			<td class="buttonHolder">
-				<img id="grayScale" src="../../images/icons/gradient.png" title="Grayscale" i18nPropKey="tiffViewer.toolBar.tool.grayscale" class="toolBarCtrl" />
+				<i class="pi pi-grayscale icon-lg" id="grayScale" title="Grayscale" i18nPropKey="tiffViewer.toolBar.tool.grayscale" class="toolBarCtrl" />
 			</td>
 			<td class="buttonHolder">
-				<img id="invert" src="../../images/icons/ui-color-picker-switch.png" title="Invert" i18nPropKey="tiffViewer.toolBar.tool.invert" class="toolBarCtrl" />
+				<i class="pi pi-invert icon-lg" id="invert" title="Invert" i18nPropKey="tiffViewer.toolBar.tool.invert" class="toolBarCtrl" />
 			</td>
 			<td>
 				<img src="../../images/icons/toolbar-separator.png" />
 			</td>
 			<td class="buttonHolder">
-				<img id="stickyNote" src="../../images/icons/note.png" title="Note" i18nPropKey="tiffViewer.toolBar.tool.note" class="toolBarCtrl" /> <!-- style="opacity: 0.3; filter:alpha(opacity=30);"  -->
+				<i class="pi pi-note icon-lg" id="stickyNote" title="Note" i18nPropKey="tiffViewer.toolBar.tool.note" class="toolBarCtrl" /> <!-- style="opacity: 0.3; filter:alpha(opacity=30);"  -->
 			</td>
 			<td class="buttonHolder">
-				<img id="highlighter" src="../../images/icons/paintbrush.png" title="Highlighter" i18nPropKey="tiffViewer.toolBar.tool.highlighter" class="toolBarCtrl" /> <!-- style="opacity: 0.3; filter:alpha(opacity=30);" -->
+				<i class="pi pi-highlighter icon-lg" id="highlighter" title="Highlighter" i18nPropKey="tiffViewer.toolBar.tool.highlighter" class="toolBarCtrl" /> <!-- style="opacity: 0.3; filter:alpha(opacity=30);" -->
 			</td>
 			<td class="buttonHolder">
 				<img id="stamp" src="../../images/icons/stamp.png" title="Stamps" i18nPropKey="tiffViewer.toolBar.tool.stamps" class="toolBarCtrl" />
@@ -161,7 +164,7 @@
 				</table>
 			</td>
 			<td class="buttonHolder">
-				<img id="showHideAnnotations" src="../../images/icons/eye.png" title="Show Hide Annotations" i18nPropKey="tiffViewer.toolBar.tool.showHideAnnotations" class="toolBarCtrl" />
+				<i class="pi pi-eye-slash icon-lg" id="showHideAnnotations" title="Show Hide Annotations" i18nPropKey="tiffViewer.toolBar.tool.showHideAnnotations" class="toolBarCtrl" />
 			</td>
 		 </tr>
 		</table>			

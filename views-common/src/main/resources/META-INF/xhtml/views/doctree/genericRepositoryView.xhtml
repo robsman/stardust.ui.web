@@ -69,7 +69,7 @@
 								rendered="#{item.userObject.draggable}"
 								styleClass="document-tree-view-icon"
 								menuPopup="repositoryViewPopup">
-								<ice:graphicImage value="#{item.userObject.leafIcon}" />
+								<i class="#{item.userObject.leafIcon}"></i>
 							</ice:panelGroup>
 	
 							<ice:panelGroup style="display: inline" draggable="false"
@@ -81,8 +81,7 @@
 								dropMask="dragging,drag_cancel,hover_start,hover_end"
 								dropValue="#{item}"
 								dropListener="#{genericRepositoryTreeViewBean.dropPanelListener}">
-								<ice:graphicImage value="#{item.userObject.leafIcon}"
-									width="16px" height="16px" />
+								<i class="#{item.userObject.leafIcon}"></i>
 							</ice:panelGroup>
 	
 							<ice:panelGroup style="display: inline;" 
@@ -100,7 +99,7 @@
 						<ice:menuPopup id="repositoryViewPopup" 
 							displayListener="#{genericRepositoryTreeViewBean.menuPopupListener}"
 							rendered="#{item.userObject.menuPopupApplicable}">
-							<ice:menuItem id="rename"
+							<ice:menuItem id="rename" styleClass="rename"
 								icon="/plugins/views-common/images/icons/rename.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.rename']}"
 								actionListener="#{genericRepositoryTreeViewBean.rename}"
@@ -186,7 +185,7 @@
 									standAlone="false" />
 							</ice:menuItem>
 
-							<ice:menuItem id="uploadDocument"
+							<ice:menuItem id="uploadDocument" styleClass="upload"
 								icon="/plugins/views-common/images/icons/page_white_get.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.uploadFile']}"
 								action="#{item.userObject.upload}"
@@ -207,7 +206,7 @@
 									standAlone="false" />
 							</ice:menuItem>
 
-							<ice:menuItem id="downloadFile"
+							<ice:menuItem id="downloadFile" styleClass="exportMnuItem"
 								icon="/plugins/views-common/images/icons/page_white_put.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.download']}"
 								action="#{item.userObject.download}"
@@ -217,7 +216,7 @@
 									standAlone="false" />
 							</ice:menuItem>
 
-							<ice:menuItem id="uploadVersion"
+							<ice:menuItem id="uploadVersion" styleClass="upload"
 								disabled="#{!item.userObject.editable or !item.userObject.versioningSupported}"
 								icon="/plugins/views-common/images/icons/page_white_get.png"
 								rendered="#{item.userObject.leafNode}"

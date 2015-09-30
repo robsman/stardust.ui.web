@@ -172,6 +172,14 @@ Utility classes for portal icons
 	color:red;
 }
 
+.pi-color-green:before{
+	color:green;
+}
+
+.pi-color-red:before{
+	color:red;
+}
+
 /*
 Icon implementations
 -----------------------------------------------------------
@@ -207,7 +215,6 @@ Icon implementations
 	content: "\f1f8";
 }
 
-.pi-flag:before,
 .pi-criticalty-flag:before{
 	font-family: starclipse;
     content:'\F060';
@@ -305,15 +312,15 @@ Icon implementations
 }
 
 .pi-lock:before,
-.pi-pi-param-disable:before{
-	font-family: starclipse;
+.pi-param-disable:before{
+	font-family: FontAwesome;
 	content: "\f023";
 }
 
 .pi-unlock:before,
-.pi-pi-param-enable:before,
+.pi-param-enable:before,
 .pi-authorization-manager:before{
-	font-family: starclipse;
+	font-family: FontAwesome;
 	content: "\f09c"
 }
 
@@ -321,7 +328,8 @@ Icon implementations
 
 /*Activity Overview Table*/
 .pi-activity:before,
-.pi-manual-activity-overview:before,
+.pi-activity-overview:before,
+.pi-manual-activity:before,
 .pi-non-interactive-activity-:before{
 	font-family:FontAwesome;
 	content:"\f013";
@@ -389,7 +397,7 @@ Icon implementations
 
 .pi-process-documents:before{
 	font-family: "FontAwesome";
-	content: "\f07b";
+	content: "\f114";
 }
 
 .pi-search:before{
@@ -431,7 +439,8 @@ Icon implementations
 	content: "\f019";
 }
 
-.pi-pop-out:before{
+.pi-pop-out:before,
+.pi-report-pop-out:before{
 	font-family: "FontAwesome";
 	content: "\f08e";
 }
@@ -465,7 +474,8 @@ Icon implementations
 	content: "\f0ea";
 }
 
-.pi-undo:before{
+.pi-undo:before,
+.pi-rotate-left:before{
 	font-family: "FontAwesome";
 	content: "\f0e2";
 }
@@ -595,7 +605,8 @@ Icon implementations
 }
 
 .pi-activity-complete:before,
-.pi-terminated-events:before{
+.pi-terminated-events:before,
+.pi-check-box-checked:before{
 	font-family:FontAwesome;
 	content:"\f046";
 }
@@ -723,4 +734,95 @@ Icon implementations
 .pi-torch:before{
 	font-family:starclipse;
 	content: '\F09F';
+}
+
+.pi-check-box-unchecked:before{
+	font-family:FontAwesome;
+	content:"\f096";
+}
+
+.pi-check-box-unchecked:before{
+	font-family:FontAwesome;
+	content:"\f096";
+}
+
+.pi-document-repository:before{
+	font-family:FontAwesome;
+	content:"\f115";
+}
+
+.pi-folder:before{
+	font-family:FontAwesome;
+	content:"\f07b";
+}
+
+.pi-folder-open:before{
+	font-family:FontAwesome;
+	content:"\f07c";
+}
+
+.pi-move-pages:before,
+.pi-process-attachments:before{
+	font-family: "starclipse";
+	content:'\F04E';
+}
+
+.pi-favorite:before{
+	font-family:"FontAwesome";
+	content:"\f005";
+}
+
+.pi-favorite-not:before{
+	font-family:"FontAwesome";
+	content:"\f006";
+}
+
+.pi-zoom-in:before{
+	font-family:"FontAwesome";
+	content:"\f00e";
+}
+
+.pi-zoom-out:before{
+	font-family:"FontAwesome";
+	content:"\f010";
+}
+
+.pi-fit-to-window:before{
+	font-family:"FontAwesome";
+	content:"\f047";
+}
+
+.pi-fit-to-height:before{
+	font-family:"FontAwesome";
+	content:"\f07d";
+}
+
+.pi-fit-to-width:before{
+	font-family:"FontAwesome";
+	content:"\f07e";
+}
+
+.pi-grayscale:before{
+	font-family:"FontAwesome";
+	content:"\f042";
+}
+
+.pi-invert:before{
+	font-family:"FontAwesome";
+	content:"\f15c";
+}
+
+.pi-note:before{
+	font-family:"FontAwesome";
+	content:"\f24a";
+}
+
+.pi-highlighter:before{
+	font-family:"FontAwesome";
+	content:"\f1fc";
+}
+
+.pi-model:before{
+	font-family:"starclipse";
+	content:'\F09E';
 }

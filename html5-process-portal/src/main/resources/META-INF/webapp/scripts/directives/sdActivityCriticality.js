@@ -28,9 +28,9 @@
         	 '<span ng-mouseenter="criticalityCtrl.toolTip.show = true" ng-mouseleave="criticalityCtrl.toolTip.show = false">\n' +
 	        	 '<span data-ng-repeat="t in criticalityCtrl.getFlagCount(criticalityCtrl.criticality.count) track by $index">\n' +
 	    	 		'<i ng-show="criticalityCtrl.criticality.color != \'WHITE\' && criticalityCtrl.criticality.color!=\'WHITE_WARNING\'" ' +
-	                    'class="glyphicon glyphicon-flag icon-lg" ng-class="\'criticality-flag-\'+criticalityCtrl.criticality.color"></i>\n' +
+	                    'class="pi pi-flag icon-lg" ng-class="\'criticality-flag-\'+criticalityCtrl.criticality.color"></i>\n' +
 	                '<i ng-show="criticalityCtrl.criticality.color == \'WHITE\'" '+
-	                    'class="glyphicon glyphicon-flag icon-lg criticality-flag-WHITE"></i>\n'+
+	                    'class="pi pi-flag icon-lg criticality-flag-WHITE"></i>\n'+
 	                '<i ng-show="criticalityCtrl.criticality.color == \'WHITE_WARNING\'" '+
 	                	'class="glyphicon icon-lg criticality-flag-WHITE-WARNING glyphicon-exclamation-triangle"></i>\n' +
 	             '</span>\n' +

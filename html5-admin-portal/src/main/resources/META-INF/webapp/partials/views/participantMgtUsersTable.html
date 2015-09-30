@@ -33,13 +33,11 @@
 						title="{{!ctrl.hideInvalidatedUsers ? i18n('admin-portal-messages.views-participantMgmt-filters-invalidatedUsers-hideUser') : i18n('admin-portal-messages.views-participantMgmt-filters-invalidatedUsers-showUser')}}"
 						class="button-link tbl-toolbar-item tbl-tool-link"
 						aid="ADM-PartMgmt-Filters-InvalidatedUsers-HideUser">
-						<i ng-if="!ctrl.hideInvalidatedUsers" class="sc sc-badge-portrait sc-fw icon-lg sc-user sc-right">
-                            <i style="color: #770000;" class="sc sc-badge-bg sc-badge-bg-circle  stop"></i>
-                            <i style="  color: #fff;" class="sc sc-badge-icon sc-badge-icon-ban"></i>
+						<i ng-if="!ctrl.hideInvalidatedUsers" class="pi pi-badge-portrait pi-fw pi-activity-delegate icon-lg pi-left pi-top">
+                            <i class="pi pi-badge-icon pi-badge-icon-arrow-r"></i>
                        </i>
-                       <i ng-if="ctrl.hideInvalidatedUsers" class="sc sc-badge-portrait sc-fw icon-lg sc-user sc-right" style="opacity:0.7">
-                            <i style="color: #770000;" class="sc sc-badge-bg sc-badge-bg-circle  stop"></i>
-                            <i style="  color: #fff;" class="sc sc-badge-icon sc-badge-icon-ban"></i>
+                       <i ng-if="ctrl.hideInvalidatedUsers" class="pi pi-badge-portrait pi-fw pi-activity-delegate icon-lg pi-left pi-top" style="opacity:0.7">
+                            <i class="pi pi-badge-icon pi-badge-icon-arrow-r"></i>
                        </i>
 					</button>
 				</div>

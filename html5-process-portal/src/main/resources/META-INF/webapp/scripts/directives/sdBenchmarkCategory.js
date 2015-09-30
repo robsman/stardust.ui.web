@@ -25,7 +25,7 @@
 		   scope : {
 			   sdaValue : '=',
 		   },
-		   template : '<i ng-if="sdaValue.color" class="glyphicon glyphicon-flag icon-lg" '+
+		   template : '<i ng-if="sdaValue.color" class="pi pi-flag icon-lg" '+
 		   						'ng-style="benchmarkCtrl.flagStyle" '+
 		   						'ng-mouseenter=\'benchmarkCtrl.toolTip.show = true\' '+
 		   						'ng-mouseleave=\'benchmarkCtrl.toolTip.show = false\'> '+

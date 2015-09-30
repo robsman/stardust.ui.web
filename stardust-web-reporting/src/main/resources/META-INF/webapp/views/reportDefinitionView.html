@@ -13,6 +13,9 @@
 <link rel="stylesheet" type="text/css" href="../css/bpm-reporting.custom.jquery.ui.css" />
 <link rel="stylesheet" type="text/css" href="../css/bpm-reporting.css">
 <link rel="stylesheet" type="text/css" href="../css/bpm-reporting-table.css" />
+<link rel="stylesheet" type="text/css" href="../../html5-common/styles/font-icon.css" > </link>
+<link rel="stylesheet" type="text/css" href="../../html5-common/styles/3rd-party/font-awesome/4.4.0/css/font-awesome.min.css"></link>
+<link rel="stylesheet" type="text/css" href="../../html5-common/styles/portal-icons.css" > </link>
 
 
 <style type="text/css">
@@ -218,8 +221,8 @@ table.formTable td {
 													<tr ng-repeat="column in report.dataSet.computedColumns"
 														class="{{$parent.getComputedColumnStyleClass(column)}}">
 														<td><a id="auto-reporting-dataSourceTab-CompColDelete{{$index}}" href=""
-															ng-click="$parent.deleteComputedColumn(column)"><img
-																src="../css/images/delete.png" /> </a></td>
+															ng-click="$parent.deleteComputedColumn(column)"><i 
+																class="pi pi-delete icon-lg"></i> </a></td>
 														<td><input id="auto-reporting-dataSourceTab-CompColId{{$index}}" type="text" ng-model="column.id"
 															ng-click="$parent.selectComputedColumn(column)" /></td>
 														<td><input id="auto-reporting-dataSourceTab-CompColName{{$index}}" type="text" ng-model="column.name"
@@ -230,8 +233,8 @@ table.formTable td {
 																	value="" ng-hide="column.type">{{getI18N('reporting.definitionView.pleaseSelect.label')}}</option></select></td>
 													</tr>
 													<tr>
-														<td><a id="auto-reporting-dataSourceTab-CompColAdd" href="" ng-click="addComputedColumn()"><img
-																src="../css/images/add.png" /> </a></td>
+														<td><a id="auto-reporting-dataSourceTab-CompColAdd" href="" ng-click="addComputedColumn()"><i
+																class="pi pi-create icon icon-lg"></i> </a></td>
 														<td></td>
 														<td></td>
 														<td></td>

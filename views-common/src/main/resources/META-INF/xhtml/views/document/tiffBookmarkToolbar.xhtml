@@ -20,7 +20,7 @@
 				<ice:outputText title="#{views_common_msgPropsBean['views.tiffViewer.bookmarks.addBookmark']}"
 					styleClass="pi pi-bookmark icon-lg"
 					style="#{bean.inEditMode or !bean.documentEditable? 'opacity: 0.4; filter:alpha(opacity=40)' : 'opacity: 1; filter:alpha(opacity=100)'}">
-					<h:outputText styleClass="pi pi-plus-sign pi-bottom pi-right icon-sm" title="#{views_common_msgPropsBean['views.tiffViewer.bookmarks.addBookmark']}"/>	
+					<h:outputText styleClass="pi pi-plus-sign pi-color-green pi-bottom pi-right icon-sm" title="#{views_common_msgPropsBean['views.tiffViewer.bookmarks.addBookmark']}"/>	
 				</ice:outputText>
 			</ice:commandLink>
 			<ice:commandLink actionListener="#{bean.deleteSelectedBookmarks}"				
@@ -31,7 +31,7 @@
 				<ice:outputText title="#{views_common_msgPropsBean['views.tiffViewer.bookmarks.deleteBookmark']}"
 					styleClass="pi pi-bookmark icon-lg"
 					style="#{(!bean.atLeastOneRowSelected or bean.inEditMode or !bean.documentEditable) ?  'opacity: 0.4; filter:alpha(opacity=40)' : 'opacity: 1; filter:alpha(opacity=100)'}">
-					<h:outputText styleClass="pi pi-minus-sign pi-bottom pi-right icon-sm" title="#{views_common_msgPropsBean['views.tiffViewer.bookmarks.deleteBookmark']}"/>
+					<h:outputText styleClass="pi pi-minus-sign pi-color-red pi-bottom pi-right icon-sm" title="#{views_common_msgPropsBean['views.tiffViewer.bookmarks.deleteBookmark']}"/>
 				</ice:outputText>
 			</ice:commandLink>
 			<ice:commandLink actionListener="#{bean.enterEditMode}"

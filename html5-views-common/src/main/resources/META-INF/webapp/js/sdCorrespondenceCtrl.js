@@ -786,7 +786,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 						'<span ng-repeat = "opt in ctrl.dialog.selectedAddresses" class="spacing-right "> '+
 							'<span class="selected_address" ng-click="ctrl.removeDialogAddress(opt)">'+
 								'<i class="glyphicon glyphicon-envelope spacing-right"></i> {{opt.name}}'+
-								'<i class="glyphicon glyphicon-remove"></i>'+
+								'<i class="pi pi-close icon-lg"></i>'+
 							'</span>'+
 						'</span >'+
 						'</div>'+

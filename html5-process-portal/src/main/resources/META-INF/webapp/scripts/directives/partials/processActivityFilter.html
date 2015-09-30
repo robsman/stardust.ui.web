@@ -5,7 +5,7 @@
 		title="{{filterCtrl.showAuxillaryProcess ? i18n('views-common-messages.processHistory-processTable-hideAuxiliaryProcess') :
 	i18n('views-common-messages.processHistory-processTable-showAuxiliaryProcess') }}"
 		ng-click="filterCtrl.showHideAuxillaryProcess()">
-		<i class="glyphicon glyphicon-cog auxillary-gear"
+		<i class="pi pi-process-details auxillary-gear"
 			ng-class="{auxillaryGearDisabled:!filterCtrl.showAuxillaryProcess }"></i>
 	</button>
 </div>
@@ -26,7 +26,7 @@
 			title="{{filterCtrl.showAuxillaryActivity ? i18n('views-common-messages.processHistory-processTable-hideAuxiliaryActivities') :
 	i18n('views-common-messages.processHistory-processTable-showAuxiliaryActivities') }}"
 			ng-click="filterCtrl.showHideAuxillaryActivity()">
-			<i class="glyphicon glyphicon-cog auxillary-gear"
+			<i class="pi pi-process-details auxillary-gear"
 				ng-class="{auxillaryGearDisabled:!filterCtrl.showAuxillaryActivity }"></i>
 		</button>
 	</div>

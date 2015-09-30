@@ -85,7 +85,7 @@ public class DMSUtils
     */
    public static String getDocumentIcon(Document document)
    {
-      String path = DOCUMENT_ICON_BASE_PATH + MimeTypesHelper.detectMimeType(document.getName(), document.getContentType()).getIconPath();
+      String path = MimeTypesHelper.detectMimeType(document.getName(), document.getContentType()).getIconPath();
       return path;
    }
    

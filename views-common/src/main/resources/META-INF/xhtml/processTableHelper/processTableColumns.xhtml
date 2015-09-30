@@ -10,9 +10,7 @@
 
 		<ice:panelGroup rendered="#{col.columnName == 'ProcessName'}">
 			<ice:panelGrid columns="2" rendered="#{!row.caseInstance}">
-				<h:graphicImage
-					value="/plugins/views-common/images/icons/process-history/processrootblue.png"
-					style="border: none;"
+				<h:outputText styleClass="pi pi-root-process icon-lg"
 					title="#{messages_bcc['common.tooltip.process']}"
 					rendered="#{row.processInstanceOID==row.processInstanceRootOID}" />
 				<h:outputText
@@ -87,7 +85,7 @@
 			<!--	Benchmark	-->
 		<ice:panelGroup rendered="#{col.columnName == 'Benchmark'}" >
 			<ice:panelGroup panelTooltip="benchmarkToolTip"  style="text-align:center" rendered="#{not empty row.benchmarkColor}">
-				<i class="glyphicon glyphicon-flag portal-glyph-icon" style="color: #{row.benchmarkColor}"> </i>
+				<i class="pi pi-flag portal-glyph-icon" style="color: #{row.benchmarkColor}"> </i>
 			</ice:panelGroup>
 			<ice:panelTooltip id="benchmarkToolTip"
 				styleClass="tooltip viewTooltipPanel">
