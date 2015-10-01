@@ -16,5 +16,6 @@
 }
 
 .bell {
-    background: url("../images/icons/bell.png") no-repeat;
+    font-family:FontAwesome;
+	content:"\f0f3";
 }

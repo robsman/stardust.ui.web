@@ -722,7 +722,8 @@ Icon implementations
 	content:"\f0ce";
 }
 
-.pi-groups:before{
+.pi-groups:before,
+.pi-user-group-manager{
 	font-family:FontAwesome;
 	content:"\f0c0";
 }
@@ -826,4 +827,21 @@ Icon implementations
 .pi-model:before{
 	font-family:"starclipse";
 	content:'\F09E';
+}
+
+.pi-pie-chart:before,
+.pi-report-management:before{
+	font-family:"FontAwesome";
+	content:'\f200';
+}
+
+.pi-resource-performance:before,
+.pi-performance-team-lead:before{
+	font-family:"FontAwesome";
+	content:'\f201';
+}
+
+.pi-flag:before{
+	font-family:"FontAwesome";
+	content:'\f024';
 }

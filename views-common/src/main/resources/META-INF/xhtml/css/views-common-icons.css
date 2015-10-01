@@ -23,8 +23,9 @@
 	content: "\f085";
 }
 
-.page_white_find {
-	background: url("../images/icons/page_white_find.png") no-repeat;
+.page_white_find:before{
+	font-family: "FontAwesome";
+	content: "\f002";
 }
 
 .envelope:before {
@@ -32,8 +33,9 @@
 	content: "\f0e0";
 }
 
-.chart-pie {
-	background: url("../images/icons/chart-pie.png") no-repeat;
+.chart-pie:before {
+	font-family:"FontAwesome";
+	content:'\f200';
 }
 
 .user-silhouette:before{
@@ -81,24 +83,29 @@
 	content: "\f007";
 }
 
-.group_key {
-	background: url("../images/icons/group_key.png") no-repeat;
+.group_key:before {
+	font-family:FontAwesome;
+	content:"\f0c0";
 }
 
-.chart-up {
-	background: url("../images/icons/chart-up.png") no-repeat;
+.chart-up:before {
+	font-family:"FontAwesome";
+	content:'\f201';
 }
 
-.chart-up-color {
-	background: url("../images/icons/chart-up-color.png") no-repeat;
+.chart-up-color:before {
+	font-family:"FontAwesome";
+	content:'\f1fe';
 }
 
-.traffic_light {
-	background: url("../images/icons/traffic_light.png") no-repeat;
+.traffic_light:before {
+	font-family:"FontAwesome";
+	content:'\f024';
 }
 
-.money-coin {
-	background: url("../images/icons/money-coin.png") no-repeat;
+.money-coin:before {
+	font-family:"FontAwesome";
+	content:'\f0d6';
 }
 
 .criticality_manager:before{
@@ -136,8 +143,9 @@
 	content:"\f13b";
 }
 
-.document-image {
-	background: url("../images/icons/mime-types/document-image.png") no-repeat;
+.document-image:before {
+	font-family:"FontAwesome";
+	content:"\f1c5;";
 }
 
 .images:before{
@@ -155,12 +163,14 @@
 	content:"\f1c2";
 }
 
-.document-film {
-	background: url("../images/icons/mime-types/document-film.png") no-repeat;
+.document-film:before {
+	font-family:"FontAwesome";
+	content:"\f1c8";
 }
 
-.document-flash-movie {
-	background: url("../images/icons/mime-types/document-flash-movie.png") no-repeat;
+.document-flash-movie:before {
+	font-family:"FontAwesome";
+	content:"\f1c8";
 }
 
 .document-music:before{
@@ -178,8 +188,9 @@
 	content:"\f0f6";
 }
 
-.document-code {
-	background: url("../images/icons/mime-types/document-code.png") no-repeat;
+.document-code:before {
+	font-family:"FontAwesome";
+	content:"\f1c9";
 }
 
 .document-powerpoint:before{
@@ -192,8 +203,9 @@
 	content:"\f1c3";
 }
 
-.tree_document {
-	background: url("../images/icons/mime-types/tree_document.gif") no-repeat;
+.tree_document:before {
+	font-family: "FontAwesome";
+	content:"\f016";
 }
 
 .report:before{
