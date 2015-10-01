@@ -95,7 +95,7 @@
 
 				// Set custom values
 				self.customizeWithAttributeValues(attr, scope, scopeToUse);
-
+				self.documentPopoverHandle = null;
 				// Process TableHandle and then set data table instance
 				self.tableHandleExpr = 'processTableCtrl.dataTable';
 
@@ -108,6 +108,7 @@
 					result : {}
 				};
 
+				
 				var unregister = scope.$watch(self.tableHandleExpr, function(newVal, oldVal) {
 					if (newVal != undefined && newVal != null && newVal != oldVal) {
 						if (attr.sdProcessTable) {
@@ -691,9 +692,13 @@
 		/**
 		 * TODO - check if duplication in ActivityTableCompiler can be avoided
 		 */
-		ProcessTableCompiler.prototype.openProcessDocumentsPopover = function(rowItem) {
-
+		ProcessTableCompiler.prototype.openProcessDocumentsPopover = function(rowItem, $event) {
 			var self = this;
+			
+			self.processPopover = {
+					data : rowItem
+			}
+		
 			rowItem.contentLoaded = false;
 			sdProcessInstanceService.getProcessInstanceDocuments(rowItem.oid).then(function (dataPathValues) {
 				rowItem.supportsProcessAttachments = rowItem.supportsProcessAttachments;
@@ -707,7 +712,8 @@
 				});
 				
 				rowItem.contentLoaded = true;
-				self.safeApply();
+				self.processPopover.data = rowItem;
+				self.documentPopoverHandle.show($event);
 			});
 		};
 		

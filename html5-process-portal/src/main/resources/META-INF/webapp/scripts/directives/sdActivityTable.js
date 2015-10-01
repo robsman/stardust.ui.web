@@ -235,10 +235,10 @@
 				});
 			}
 		}
-
+		this.documentPopoverHandle = null;
 	    // Process TableHandle and then set data table instance
 	    this.tableHandleExpr = 'activityTableCtrl.dataTable';
-
+	 
 	    var unregister = scope.$watch(this.tableHandleExpr, function(newVal, oldVal) {
 	    	if (newVal != undefined && newVal != null && newVal != oldVal) {
 	    		if (attr.sdActivityTable) {
@@ -870,12 +870,15 @@
 		});
 		rowItem.showRelocationDialog = false;
 	};
-
+	
 	/*
 	 * 
 	 */
-	ActivityTableCompiler.prototype.openProcessDocumentsPopover = function(rowItem) {
+	ActivityTableCompiler.prototype.openProcessDocumentsPopover = function(rowItem, $event) {
 		var self = this;
+		self.processPopover = {
+				data  : rowItem
+		}
 		rowItem.contentLoaded = false;
 		sdProcessInstanceService.getProcessInstanceDocuments(rowItem.processInstance.oid).then(function (dataPathValues) {
 			rowItem.supportsProcessAttachments = rowItem.processInstance.supportsProcessAttachments;
@@ -887,9 +890,10 @@
 					rowItem.specificDocuments.push(dataPathValue);
 				}
 			});
-			
+		
 			rowItem.contentLoaded = true;
-			self.safeApply();
+			self.processPopover.data = rowItem;
+			self.documentPopoverHandle.show($event);
 		});
 	};
 	

@@ -217,46 +217,9 @@
 							<i class="pi pi-notes icon-lg" ng-if ="rowData.notesCount > 0" ></i>
 						</button>
 
-						<button ng-click="bpmCommon.stopEvent($event);" aid="PP-ProcessTable-OpenProcessDocuments"
+						<button ng-click="processTableCtrl.openProcessDocumentsPopover(rowData, $event);" aid="PP-ProcessTable-OpenProcessDocuments"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}" class="button-link tbl-tool-link">
-							<span sd-popover id="processDocuments" sda-on-open="processTableCtrl.openProcessDocumentsPopover(rowData);">
-								<i class="pi pi-process-documents icon-lg"></i>
-								<div class="popover-body" style="text-align: left; min-width: 100px;">
-									<div ng-show="rowData.contentLoaded">
-										<div ng-if="rowData.supportsProcessAttachments">
-											<div class="popoverHeading"><b>{{i18n('processportal.toolbars-workflowActions-processDocuments-processAttachments')}}</b></div>
-											<div ng-show="rowData.processAttachments.documents.length > 0">
-												<div ng-repeat="doc in rowData.processAttachments.documents">
-													<a href="#" ng-click="processTableCtrl.openDocumentsView(doc.uuid)">{{doc.name}}</a>
-												</div>
-											</div>
-											<div ng-hide="rowData.processAttachments.documents.length > 0">
-												{{i18n('processportal.toolbars-workflowActions-processDocuments-noProcessAttachments')}}
-											</div>
-										</div>
-										<div ng-if="rowData.specificDocuments.length > 0">
-											<div class="popoverHeading"><b>{{i18n('processportal.toolbars-workflowActions-processDocuments-specificDocuments')}}</b></div>
-											<div ng-repeat="map in rowData.specificDocuments">
-												<div ng-if="map.documents.length > 0">
-													<a ng-repeat="doc in map.documents" href="#" ng-click="processTableCtrl.openDocumentsView(doc.uuid)">{{map.dataPath.name}}</a>
-												</div>
-												<div ng-if="map.documents.length < 1">
-													<span>&lt{{map.dataPath.name}}&gt</span>
-												</div>
-											</div>
-										</div>
-										<div ng-if="rowData.processAttachments.documents.length > 0 || rowData.specificDocuments.documents.length > 0">
-											<a href="#" ng-click="processTableCtrl.openAllProcessDocumentViews(rowData)"><B>{{i18n('processportal.toolbars-workflowActions-processDocuments-openAllDocuments')}}</B></a>
-										</div>
-										<div ng-if="!rowData.supportsProcessAttachments && rowData.specificDocuments.length == 0">
-											{{i18n('processportal.toolbars-workflowActions-processDocuments-noProcessDocuments')}}
-										</div>
-									</div>
-									<div ng-hide="rowData.contentLoaded">
-										{{i18n('views-common-messages.common-loading')}}
-									</div>
-								</div>
-							</span>
+							<i class="pi pi-process-documents icon-lg"></i>
 						</button>
 					</div>
 				</td>
@@ -284,8 +247,53 @@
 				</button>
 			</div>
 		</div>
+	</span> <span sd-popover="processTableCtrl.documentPopoverHandle"
+		id="processDocuments">
+		<div class="popover-body" style="text-align: left; min-width: 100px;">
+			<div ng-show="processTableCtrl.processPopover.data.contentLoaded">
+				<div ng-if="processTableCtrl.processPopover.data.supportsProcessAttachments">
+					<div class="popoverHeading">
+						<b>{{i18n('processportal.toolbars-workflowActions-processDocuments-processAttachments')}}</b>
+					</div>
+					<div ng-show="processTableCtrl.processPopover.data.processAttachments.documents.length > 0">
+						<div ng-repeat="doc in processTableCtrl.processPopover.data.processAttachments.documents">
+							<a href="#"
+								ng-click="processTableCtrl.openDocumentsView(doc.uuid)">{{doc.name}}</a>
+						</div>
+					</div>
+					<div ng-hide="processTableCtrl.processPopover.data.processAttachments.documents.length > 0">
+						{{i18n('processportal.toolbars-workflowActions-processDocuments-noProcessAttachments')}}
+					</div>
+				</div>
+				<div ng-if="processTableCtrl.processPopover.data.specificDocuments.length > 0">
+					<div class="popoverHeading">
+						<b>{{i18n('processportal.toolbars-workflowActions-processDocuments-specificDocuments')}}</b>
+					</div>
+					<div ng-repeat="map in processTableCtrl.processPopover.data.specificDocuments">
+						<div ng-if="map.documents.length > 0">
+							<a ng-repeat="doc in map.documents" href="#"
+								ng-click="processTableCtrl.openDocumentsView(doc.uuid)">{{map.dataPath.name}}</a>
+						</div>
+						<div ng-if="map.documents.length < 1">
+							<span>&lt{{map.dataPath.name}}&gt</span>
+						</div>
+					</div>
+				</div>
+				<div
+					ng-if="processTableCtrl.processPopover.data.processAttachments.documents.length > 0 || processTableCtrl.processPopover.data.specificDocuments.documents.length > 0">
+					<a href="#"
+						ng-click="processTableCtrl.openAllProcessDocumentViews(processTableCtrl.processPopover.data)"><B>{{i18n('processportal.toolbars-workflowActions-processDocuments-openAllDocuments')}}</B></a>
+				</div>
+				<div
+					ng-if="!processTableCtrl.processPopover.data.supportsProcessAttachments && processTableCtrl.processPopover.data.specificDocuments.length == 0">
+					{{i18n('processportal.toolbars-workflowActions-processDocuments-noProcessDocuments')}}
+				</div>
+			</div>
+			<div ng-hide="processTableCtrl.processPopover.data.contentLoaded">
+				{{i18n('views-common-messages.common-loading')}}</div>
+		</div>
 	</span>
-			
+
 	<div sd-join-process-dialog sda-show-dialog="processTableCtrl.showJoinProcessDialog" sda-on-confirm="processTableCtrl.joinCompleted"
 	     sda-process-instances="processTableCtrl.processesToAbort" >
 	</div>
