@@ -114,7 +114,7 @@ define(
 								"elementId" : ruleSet.id,
 								"title": ruleSet.description
 							},
-							"data" : ruleSet.name
+							"data" : { title : ruleSet.name , icon : 'pi pi-rule-set icon-lg'}
 						}, null, true);
 				jQuery(displayScope + "#outline").jstree("set_type", "ruleSet",
 						"#" + ruleSet.uuid);
@@ -132,7 +132,7 @@ define(
 								"draggable" : true,
 								"elementId" : decTable.id
 							},
-							"data" : decTable.name
+							"data" : { title : decTable.name , icon : 'pi pi-decision-table icon-lg icon-image'}
 						}, null, true);
 			};
 			
@@ -148,7 +148,7 @@ define(
 								"draggable" : true,
 								"elementId" : techRule.id
 							},
-							"data" : techRule.name
+							"data" : { title : techRule.name , icon : 'pi pi-technical-rule icon-lg icon-image'}
 						}, null, true);
 			};
 			
@@ -1095,33 +1095,16 @@ define(
 									types : {
 										"types" : {
 											"ruleSet" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "rules-manager/images/icons/rule-set.png"
-												},
 												"valid_children" : [ "rule","TechnicalRule","DecisionTable" ]
 											},
 											"rule" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "rules-manager/images/icons/rule.png"
-												}
+												
 											},
 											"TechnicalRule" : {
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "rules-manager/images/icons/script_gear.png"
-												}
+												
 											},
 											"DecisionTable":{
-												"icon" : {
-													"image" : m_urlUtils
-															.getPlugsInRoot()
-															+ "rules-manager/images/icons/dt_icon.png"
-												}
+												
 											}
 										}
 									},

@@ -247,3 +247,10 @@ a.jstree-search.ipp-disabled-text:hover{
 .handsontable-pass{
 	background: #dddddd;
 }
+
+.tool-section{
+	margin-right: 8px;
+	padding-right: 8px;
+	border-right: 1px dotted gray;
+	float: left;
+}

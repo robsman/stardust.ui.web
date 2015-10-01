@@ -891,7 +891,7 @@ Icon implementations
 	font-family:"FontAwesome";
 	content:'\f249';
 }
-
+.pi-add-column:before,
 .pi-process-diagram:before{
 	font-family:"FontAwesome";
 	content:'\f039';
@@ -941,3 +941,64 @@ Icon implementations
 	font-family: "FontAwesome";
 	content: "\f054";
 }
+
+.pi-rule:before {
+	font-family: FontAwesome;
+	content: "\f07b";
+}
+
+.pi-technical-rule:before{
+	font-family: FontAwesome;
+	content: "\f1ea";
+}
+
+.pi-decision-table:before{
+	font-family: FontAwesome;
+	content: "\f0ce";
+}
+
+.pi-column-attributes:before{
+	font-family: FontAwesome;
+	content: "\f0ce";
+}
+
+.pi-column-actions:before{
+	font-family: FontAwesome;
+	content: "\f0ce";
+}
+
+.pi-column-conditions:before{
+	font-family: FontAwesome;
+	content: "\f0ce";
+}
+
+.pi-column-attribute:before{
+	font-family: FontAwesome;
+	content: "\f02b";
+}
+
+.pi-column-primitive:before{
+	font-family: FontAwesome;
+	content: "\f1c0";
+}
+
+.pi-column-sequence:before{
+	font-family: FontAwesome;
+	content: "\f1b3";
+}
+
+.pi-palette:before{
+	font-family: FontAwesome;
+	content: "\f044";
+}
+
+.pi-font{
+	font-family: FontAwesome;
+	content: "\f031";
+}
+
+.pi-replace{
+	font-family: FontAwesome;
+	content: "\f0ea";
+}
+
