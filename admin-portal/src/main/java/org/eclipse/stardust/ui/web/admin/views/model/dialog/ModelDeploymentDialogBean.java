@@ -17,10 +17,12 @@ import java.util.Map;
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 
+import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.ui.web.admin.messages.AdminMessagesPropertiesBean;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.wizard.Wizard;
 import org.eclipse.stardust.ui.web.viewscommon.wizard.WizardFlowEvent;
 import org.eclipse.stardust.ui.web.viewscommon.wizard.WizardPage;
@@ -261,11 +263,24 @@ public class ModelDeploymentDialogBean extends Wizard implements ViewEventHandle
          setAllowBrowse(Boolean.valueOf((String) requestParams.get("allowBrowse")));
       }
       setOverwrite(false);
-      openPopup();
+
       ModelDeployTableEntry modelTableEntry = new ModelDeployTableEntry();
       modelTableEntry.setFileName((String) requestParams.get("fileName"));
       modelTableEntry.setFilePath((String) requestParams.get("filePath"));
       modelTableEntry.setDeploymentAction(overwrite ? 2 : 1);
+
+      if (null != (String) requestParams.get("modelId"))
+      {
+         DeployedModel model = ModelUtils.getActiveModel((String) requestParams.get("modelId"));
+         if (null != model)
+         {
+            modelTableEntry.setDeploymentAction(2);
+            setOverwriteModel(model.getModelOID(), model.getName(), model.getVersion());
+         }
+      }
+
+      openPopup();
+      
       deploymentPage.addModelToModelList(modelTableEntry);
       deploymentPage.initialize();
    }

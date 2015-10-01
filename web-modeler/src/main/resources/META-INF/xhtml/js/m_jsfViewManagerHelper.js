@@ -29,7 +29,7 @@ define(["bpm-modeler/js/m_utils"], function(m_utils) {
 			portalWinDoc.win.contentWindow.iceSubmit(linkForm, link);
 		},
 
-		openModelDeploymentDialog : function(modelDeployerLinkId, modelFileName, modleFilePath, formId) {
+		openModelDeploymentDialog : function(modelDeployerLinkId, modelId, modelFileName, modleFilePath, formId) {
 			var portalWinDoc = m_utils.getOutlineWindowAndDocument();
 
 			var link = portalWinDoc.doc.getElementById(modelDeployerLinkId);
@@ -40,6 +40,7 @@ define(["bpm-modeler/js/m_utils"], function(m_utils) {
 			linkForm['fromlaunchPanels'].value = "true";
 			linkForm['fileName'].value = modelFileName;
 			linkForm['filePath'].value = modleFilePath;
+			linkForm['modelId'].value = modelId;
 
 			portalWinDoc.win.contentWindow.iceSubmit(linkForm, link);
 		},

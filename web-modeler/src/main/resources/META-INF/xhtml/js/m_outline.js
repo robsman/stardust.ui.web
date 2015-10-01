@@ -397,7 +397,7 @@ define(
 				}
 			}
 
-			var deployModel = function(modelUUID) {
+			var deployModel = function(modelUUID, overwrite) {
 				var model = m_model.findModelByUuid(modelUUID);
 				var modeleDeployerLink = m_utils.jQuerySelect(
 						"a[id $= 'model_deployer_link']",
@@ -408,7 +408,7 @@ define(
 
 				if (model.fileName && model.filePath) {
 					m_jsfViewManagerHelper.openModelDeploymentDialog(
-							modeleDeployerLinkId, model.fileName,
+							modeleDeployerLinkId, overwrite ? model.id : undefined, model.fileName,
 							model.filePath, formId);
 				} else {
 					alert("Cannot deploy: Model file name / path not available");
@@ -944,9 +944,23 @@ define(
 											"deploy" : {
 												"label" : m_i18nUtils
 														.getProperty("modeler.outline.model.contextMenu.deploy"),
-												"action" : function(obj) {
-													deployModel(obj
-															.attr("id"));
+												"submenu": {
+													"newVersion" : {
+														"label" : m_i18nUtils
+														.getProperty("modeler.outline.model.contextMenu.deploy.createNewVersion"),
+														"action" : function(obj) {
+															deployModel(obj
+																	.attr("id"));
+														}
+													},
+													"overwrite" : {
+														"label" : m_i18nUtils
+														.getProperty("modeler.outline.model.contextMenu.deploy.overwriteLastVersion"),
+														"action" : function(obj) {
+															deployModel(obj
+																	.attr("id"), true);
+														}
+													}
 												}
 											},
 											"download" : {
