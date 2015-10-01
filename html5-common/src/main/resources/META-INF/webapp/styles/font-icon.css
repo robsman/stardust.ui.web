@@ -59,3 +59,8 @@
 	-ms-transform: rotate(90deg);
 	transform: rotate(90deg);
 }
+
+/* Add this class where background image already exists and needs to be overridden */
+.icon-image {
+	background: none !important;
+}

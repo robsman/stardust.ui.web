@@ -123,19 +123,9 @@ define(
 										types : {
 											"types" : {
 												folder : {
-													icon : {
-														image : this.reportingService
-																.getRootUrl()
-																+ "/plugins/bpm-reporting/images/icons/folder.png"
-													},
 													valid_children : ["report", "folder"]
 												},
 												report : {
-													icon : {
-														image : this.reportingService
-																.getRootUrl()
-																+ "/plugins/bpm-reporting/css/images/report.png"
-													},
 													valid_children : []
 												}
 											}
@@ -653,7 +643,10 @@ define(
 								rel : "folder",
 								elementId : folder.id
 							},
-							data : folder.name
+							data : {
+								title: folder.name,
+								icon : "pi pi-folder icon-lg icon-image"
+							}
 						}, null, true);
 
 				if (folder.reportDefinitions) {
@@ -685,7 +678,8 @@ define(
 																	"class" : "showTooltip",
 																	title : reportDefinition.description
 																},
-																title : reportDefinition.name
+																title : reportDefinition.name,
+																icon : "pi pi-report icon-lg icon-image"
 															}
 														},
 														null,
