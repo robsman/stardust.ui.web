@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -32,7 +34,9 @@ import org.eclipse.stardust.engine.core.query.statistics.api.BenchmarkCategoryCo
 import org.eclipse.stardust.engine.core.query.statistics.api.BenchmarkProcessStatistics;
 import org.eclipse.stardust.engine.core.query.statistics.api.BenchmarkProcessStatisticsQuery;
 import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkCategoryDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkTLVStatisticsByBOResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkTLVStatisticsResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.BusinessObjectStatisticDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.springframework.stereotype.Component;
@@ -43,7 +47,7 @@ public class TrafficLightViewUtils
 
    @Resource
    ServiceFactoryUtils serviceFactoryUtils;
-   
+
    public QueryResultDTO getTrafficLightViewStatastic(Boolean isAllBenchmarks, Boolean isAllProcessess,
          List<Long> bOids, List<ProcessDefinitionDTO> processes, String dateType, Integer dayOffset,
          List<BenchmarkCategoryDTO> benchmarkCategories)
@@ -88,8 +92,8 @@ public class TrafficLightViewUtils
       {
          for (String processId : setOfprocesses)
          {
-            dateFilter.add((DataFilter.between(getModelName(processId) + PredefinedConstants.BUSINESS_DATE, startDate.getTime(),
-                  endDate.getTime())));
+            dateFilter.add((DataFilter.between(getModelName(processId) + PredefinedConstants.BUSINESS_DATE,
+                  startDate.getTime(), endDate.getTime())));
          }
 
       }
@@ -185,8 +189,8 @@ public class TrafficLightViewUtils
 
       if (dateType.equals(PredefinedConstants.BUSINESS_DATE))
       {
-         query.where((DataFilter.between(getModelName(processId) + PredefinedConstants.BUSINESS_DATE, startDate.getTime(),
-               endDate.getTime())));
+         query.where((DataFilter.between(getModelName(processId) + PredefinedConstants.BUSINESS_DATE,
+               startDate.getTime(), endDate.getTime())));
       }
       else
       {
@@ -287,108 +291,204 @@ public class TrafficLightViewUtils
       return now;
    }
 
-   public QueryResultDTO getTrafficLightViewStatasticByBO(Boolean isAllBenchmarks, Boolean isAllProcessess,
-         List<Long> bOids, List<ProcessDefinitionDTO> processes, String dateType, Integer dayOffset,
-         List<BenchmarkCategoryDTO> benchmarkCategories, String businessObjectQualifiedId, Set<String> selBOInstances,
-         String groupBybusinessQualifiedId, Set<String> selGroupByBOInstances)
+   public BenchmarkTLVStatisticsByBOResultDTO getTrafficLightViewStatasticByBO(Boolean isAllBenchmarks,
+         Boolean isAllProcessess, List<Long> bOids, List<ProcessDefinitionDTO> processes, String dateType,
+         Integer dayOffset, List<BenchmarkCategoryDTO> benchmarkCategories, String businessObjectQualifiedId,
+         Set<String> selBOInstances, String groupBybusinessQualifiedId, Set<String> selGroupByBOInstances)
    {
       Set<ProcessDefinition> processDefns = new HashSet<ProcessDefinition>();
-      if (!isAllProcessess)
+      for (ProcessDefinitionDTO process : processes)
+      {
+         ProcessDefinition benchmarkProcess = serviceFactoryUtils.getQueryService().getProcessDefinition(process.id);
+         processDefns.add(benchmarkProcess);
+      }
+
+      BusinessObjectQuery businessObjectQuery = BusinessObjectQuery.findForBusinessObject(businessObjectQualifiedId);
+      businessObjectQuery.setPolicy(new BusinessObjectQuery.Policy(Option.WITH_DESCRIPTION));
+
+      BusinessObjects bos = serviceFactoryUtils.getQueryService().getAllBusinessObjects(businessObjectQuery);
+      BusinessObject baseData = bos.get(0);
+
+      Set<Serializable> selBOInstancesSet = Collections.<Serializable> emptySet();
+
+      if (selBOInstances != null)
+      {
+         selBOInstancesSet = new HashSet<Serializable>((Collection< ? extends Serializable>) selBOInstances);
+      }
+
+      BusinessObject baseGroupBy = null;
+      Set<Serializable> selGroupByBOInstancesSet = null;
+      if (groupBybusinessQualifiedId != null)
+      {
+         businessObjectQuery = BusinessObjectQuery.findForBusinessObject(groupBybusinessQualifiedId);
+
+         bos = serviceFactoryUtils.getQueryService().getAllBusinessObjects(businessObjectQuery);
+         baseGroupBy = bos.get(0);
+
+         if (selGroupByBOInstances != null)
+         {
+            selGroupByBOInstancesSet = new HashSet<Serializable>(
+                  (Collection< ? extends Serializable>) selGroupByBOInstances);
+         }
+
+      }
+
+      BenchmarkProcessStatisticsQuery query = BenchmarkProcessStatisticsQuery.forProcessesAndBusinessObject(
+            processDefns, baseData, selBOInstancesSet, baseGroupBy, selGroupByBOInstancesSet);
+
+      FilterOrTerm benchmarkFilter = query.getFilter().addOrTerm();
+
+      for (Long bOid : bOids)
+      {
+         benchmarkFilter.add(BenchmarkProcessStatisticsQuery.BENCHMARK_OID.isEqual(bOid));
+      }
+
+      Calendar startDate = getCurrentDayStart();
+      Calendar endDate = getCurrentDayEnd();
+
+      if (dayOffset > 0)
+      {
+         endDate = getfutureEndDate(dayOffset);
+      }
+      else if (dayOffset < 0)
+      {
+         startDate = getPastStartDate(dayOffset);
+      }
+
+      FilterOrTerm businessDateFilter = query.getFilter().addOrTerm();
+
+      if (dateType.equals(PredefinedConstants.BUSINESS_DATE))
       {
          for (ProcessDefinitionDTO process : processes)
          {
-            ProcessDefinition benchmarkProcess = serviceFactoryUtils.getQueryService().getProcessDefinition(process.id);
-            processDefns.add(benchmarkProcess);
+            businessDateFilter.add((DataFilter.between(getModelName(process.id) + PredefinedConstants.BUSINESS_DATE,
+                  startDate.getTime(), endDate.getTime())));
          }
-
-         BusinessObjectQuery businessObjectQuery = BusinessObjectQuery.findForBusinessObject(businessObjectQualifiedId);
-         businessObjectQuery.setPolicy(new BusinessObjectQuery.Policy(Option.WITH_DESCRIPTION));
-
-         BusinessObjects bos = serviceFactoryUtils.getQueryService().getAllBusinessObjects(businessObjectQuery);
-         BusinessObject baseData = bos.get(0);
-
-         Set<Serializable> selBOInstancesSet = Collections.<Serializable> emptySet();
-
-         if (selBOInstances != null)
-         {
-            selBOInstancesSet = new HashSet<Serializable>((Collection< ? extends Serializable>) selBOInstances);
-         }
-
-         BusinessObject baseGroupBy = null;
-         Set<Serializable> selGroupByBOInstancesSet = null;
-         if (groupBybusinessQualifiedId != null)
-         {
-            businessObjectQuery = BusinessObjectQuery.findForBusinessObject(groupBybusinessQualifiedId);
-
-            bos = serviceFactoryUtils.getQueryService().getAllBusinessObjects(businessObjectQuery);
-            baseGroupBy = bos.get(0);
-
-            if (selGroupByBOInstances != null)
-            {
-               selGroupByBOInstancesSet = new HashSet<Serializable>(
-                     (Collection< ? extends Serializable>) selGroupByBOInstances);
-            }
-
-         }
-
-         BenchmarkProcessStatisticsQuery query = BenchmarkProcessStatisticsQuery.forProcessesAndBusinessObject(
-               processDefns, baseData, selBOInstancesSet, baseGroupBy, selGroupByBOInstancesSet);
-
-         FilterOrTerm benchmarkFilter = query.getFilter().addOrTerm();
-
-         for (Long bOid : bOids)
-         {
-            benchmarkFilter.add(BenchmarkProcessStatisticsQuery.BENCHMARK_OID.isEqual(bOid));
-         }
-
-         Calendar startDate = getCurrentDayStart();
-         Calendar endDate = getCurrentDayEnd();
-
-         if (dayOffset > 0)
-         {
-            endDate = getfutureEndDate(dayOffset);
-         }
-         else if (dayOffset < 0)
-         {
-            startDate = getPastStartDate(dayOffset);
-         }
-
-         FilterOrTerm businessDateFilter = query.getFilter().addOrTerm();
-
-         if (dateType.equals(PredefinedConstants.BUSINESS_DATE))
-         {
-            for (ProcessDefinitionDTO process : processes)
-            {
-               businessDateFilter.add((DataFilter.between(getModelName(process.id) + PredefinedConstants.BUSINESS_DATE,
-                     startDate.getTime(), endDate.getTime())));
-            }
-
-         }
-         else
-         {
-
-            query.where(ProcessInstanceQuery.START_TIME.between(startDate.getTimeInMillis(), endDate.getTimeInMillis()));
-         }
-
-         BenchmarkBusinessObjectStatistics stats = (BenchmarkBusinessObjectStatistics) serviceFactoryUtils
-               .getQueryService().getAllProcessInstances(query);
-
-         System.out.println(stats.getBenchmarkCategoryCount("100", null, 1));
-         System.out.println(stats.getBenchmarkCategoryCount("100", null, 2));
-
-         /*
-          * for (String groupBy : stats.getGroupByValues()) { // if user hasnt set a
-          * groupby you get only one item, namely
-          * BenchmarkBusinessObjectStatistics.NO_GROUPBY_VALUE for (String filter :
-          * stats.getFilterValues(groupBy)) { stats.getBenchmarkCategoryCount(groupBy,
-          * filter, ...) }
-          * 
-          * }
-          */
-         System.out.println(stats);
 
       }
-      // TODO Auto-generated method stub
-      return null;
+      else
+      {
+
+         query.where(ProcessInstanceQuery.START_TIME.between(startDate.getTimeInMillis(), endDate.getTimeInMillis()));
+      }
+
+      BenchmarkBusinessObjectStatistics stats = (BenchmarkBusinessObjectStatistics) serviceFactoryUtils
+            .getQueryService().getAllProcessInstances(query);
+      BenchmarkTLVStatisticsByBOResultDTO bTLVStatsByBOResultDTO = new BenchmarkTLVStatisticsByBOResultDTO();
+
+      Set<String> groupByValues = stats.getGroupByValues();
+      if (!(groupByValues.size() == 1 && groupByValues.contains(BenchmarkBusinessObjectStatistics.NO_GROUPBY_VALUE)))
+      {
+         List<BusinessObjectStatisticDTO> businessObjectsResultList = new ArrayList<BusinessObjectStatisticDTO>();
+         for (String groupByName : groupByValues)
+         {
+            if (!groupByName.equals(BenchmarkBusinessObjectStatistics.NO_GROUPBY_VALUE))
+            {
+               BusinessObjectStatisticDTO boGroupLevel = new BusinessObjectStatisticDTO();
+               boGroupLevel.name = groupByName;
+               boGroupLevel.isGroup = true;
+               boGroupLevel.abortedCount = stats.getAbortedCount(groupByName, null);
+               boGroupLevel.completedCount = stats.getCompletedCount(groupByName, null);
+               boGroupLevel.totalCount = boGroupLevel.abortedCount + boGroupLevel.completedCount;
+               Map<String, BenchmarkCategoryDTO> benchmarkCategoryCountMap = new HashMap<String, BenchmarkCategoryDTO>();
+               for (BenchmarkCategoryDTO benchmarkCategory : benchmarkCategories)
+               {
+                  benchmarkCategory.count = stats.getBenchmarkCategoryCount(groupByName, null, benchmarkCategory.index);
+                  boGroupLevel.totalCount = boGroupLevel.totalCount + benchmarkCategory.count;
+                  benchmarkCategoryCountMap.put(benchmarkCategory.name, benchmarkCategory);
+               }
+               boGroupLevel.benchmarkCategoryCountMap = benchmarkCategoryCountMap;
+               businessObjectsResultList.add(boGroupLevel);
+
+               Set<String> filterValues = stats.getFilterValues(groupByName);
+               if (!filterValues.isEmpty())
+               {
+                  Map<String, List<BusinessObjectStatisticDTO>> businessObjectsForGroupByMap = new HashMap<String, List<BusinessObjectStatisticDTO>>();
+                  List<BusinessObjectStatisticDTO> boFilterLevelList = new ArrayList<BusinessObjectStatisticDTO>();
+                  for (String filterValueName : filterValues)
+                  {
+                     BusinessObjectStatisticDTO boFilterLevel = new BusinessObjectStatisticDTO();
+                     boFilterLevel.name = filterValueName;
+                     boFilterLevel.parentId = groupByName;
+                     boFilterLevel.isGroup = false;
+                     boFilterLevel.abortedCount = stats.getAbortedCount(groupByName, filterValueName);
+                     boFilterLevel.completedCount = stats.getCompletedCount(groupByName, filterValueName);
+                     boFilterLevel.totalCount = boFilterLevel.abortedCount + boFilterLevel.completedCount;
+                     Map<String, BenchmarkCategoryDTO> benchmarkCategoryCountMapFilterLevel = new HashMap<String, BenchmarkCategoryDTO>();
+                     for (BenchmarkCategoryDTO benchmarkCategory : benchmarkCategories)
+                     {
+                        benchmarkCategory.count = stats.getBenchmarkCategoryCount(groupByName, filterValueName,
+                              benchmarkCategory.index);
+                        boFilterLevel.totalCount = boFilterLevel.totalCount + benchmarkCategory.count;
+                        benchmarkCategoryCountMapFilterLevel.put(benchmarkCategory.name, benchmarkCategory);
+                     }
+                     boFilterLevel.benchmarkCategoryCountMap = benchmarkCategoryCountMapFilterLevel;
+                     boFilterLevelList.add(boFilterLevel);
+                  }
+                  businessObjectsForGroupByMap.put(groupByName, boFilterLevelList);
+                  bTLVStatsByBOResultDTO.businessObjectsForGroupByMap = businessObjectsForGroupByMap;
+               }
+            }
+            else
+            {
+
+               Set<String> filterValues = stats.getFilterValues(null);
+               if (!filterValues.isEmpty())
+               {
+                  for (String filterValueName : filterValues)
+                  {
+                     BusinessObjectStatisticDTO boFilterLevel = new BusinessObjectStatisticDTO();
+                     boFilterLevel.name = filterValueName;
+                     boFilterLevel.isGroup = false;
+                     boFilterLevel.abortedCount = stats.getAbortedCount(null, filterValueName);
+                     boFilterLevel.completedCount = stats.getCompletedCount(null, filterValueName);
+                     boFilterLevel.totalCount = boFilterLevel.abortedCount + boFilterLevel.completedCount;
+                     Map<String, BenchmarkCategoryDTO> benchmarkCategoryCountMapFilterLevel = new HashMap<String, BenchmarkCategoryDTO>();
+                     for (BenchmarkCategoryDTO benchmarkCategory : benchmarkCategories)
+                     {
+                        benchmarkCategory.count = stats.getBenchmarkCategoryCount(null, filterValueName,
+                              benchmarkCategory.index);
+                        boFilterLevel.totalCount = boFilterLevel.totalCount + benchmarkCategory.count;
+                        benchmarkCategoryCountMapFilterLevel.put(benchmarkCategory.name, benchmarkCategory);
+                     }
+                     boFilterLevel.benchmarkCategoryCountMap = benchmarkCategoryCountMapFilterLevel;
+                     businessObjectsResultList.add(boFilterLevel);
+                  }
+               }
+            }
+            bTLVStatsByBOResultDTO.businessObjectsResultList = businessObjectsResultList;
+         }
+      }
+      else
+      {
+         Set<String> filterValues = stats.getFilterValues(null);
+         if (!filterValues.isEmpty())
+         {
+            List<BusinessObjectStatisticDTO> boFilterLevelList = new ArrayList<BusinessObjectStatisticDTO>();
+            for (String filterValueName : filterValues)
+            {
+               BusinessObjectStatisticDTO boFilterLevel = new BusinessObjectStatisticDTO();
+               boFilterLevel.name = filterValueName;
+               boFilterLevel.isGroup = false;
+               boFilterLevel.abortedCount = stats.getAbortedCount(null, filterValueName);
+               boFilterLevel.completedCount = stats.getCompletedCount(null, filterValueName);
+               boFilterLevel.totalCount = boFilterLevel.abortedCount + boFilterLevel.completedCount;
+               Map<String, BenchmarkCategoryDTO> benchmarkCategoryCountMapFilterLevel = new HashMap<String, BenchmarkCategoryDTO>();
+               for (BenchmarkCategoryDTO benchmarkCategory : benchmarkCategories)
+               {
+                  benchmarkCategory.count = stats.getBenchmarkCategoryCount(null, filterValueName,
+                        benchmarkCategory.index);
+                  boFilterLevel.totalCount = boFilterLevel.totalCount + benchmarkCategory.count;
+                  benchmarkCategoryCountMapFilterLevel.put(benchmarkCategory.name, benchmarkCategory);
+               }
+               boFilterLevel.benchmarkCategoryCountMap = benchmarkCategoryCountMapFilterLevel;
+               boFilterLevelList.add(boFilterLevel);
+            }
+            bTLVStatsByBOResultDTO.businessObjectsResultList = boFilterLevelList;
+         }
+      }
+
+      System.out.println(stats);
+      return bTLVStatsByBOResultDTO;
    }
 }

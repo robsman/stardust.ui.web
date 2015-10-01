@@ -35,6 +35,7 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.service.TrafficLightViewService;
 import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkCategoryDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkTLVStatisticsByBOResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.springframework.stereotype.Component;
@@ -192,7 +193,7 @@ public class TrafficLightViewResource
 
       
       
-      QueryResultDTO result = trafficLightViewService.getTrafficLightViewStatasticByBO(isAllBenchmarks, isAllProcessess,
+      BenchmarkTLVStatisticsByBOResultDTO result = trafficLightViewService.getTrafficLightViewStatasticByBO(isAllBenchmarks, isAllProcessess,
             bOids, processes, dateType, dayOffset, benchmarkCategories, businessObjectQualifiedId, selBOInstances, groupBybusinessQualifiedId, selGroupByBOInstances);
       return Response.ok(result.toJson(), MediaType.APPLICATION_JSON).build();
    }

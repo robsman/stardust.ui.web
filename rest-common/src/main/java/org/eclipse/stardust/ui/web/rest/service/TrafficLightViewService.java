@@ -25,6 +25,7 @@ import javax.annotation.Resource;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkCategoryDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkTLVStatisticsByBOResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.TrafficLightViewUtils;
@@ -52,7 +53,7 @@ public class TrafficLightViewService
       return trafficLightViewUtils.getActivityBenchmarkStatistics(processId, bOids, dateType, dayOffset, benchmarkCategories,processActivitySet);
    }
 
-   public QueryResultDTO getTrafficLightViewStatasticByBO(Boolean isAllBenchmarks, Boolean isAllProcessess,
+   public BenchmarkTLVStatisticsByBOResultDTO getTrafficLightViewStatasticByBO(Boolean isAllBenchmarks, Boolean isAllProcessess,
          List<Long> bOids, List<ProcessDefinitionDTO> processes, String dateType, Integer dayOffset,
          List<BenchmarkCategoryDTO> benchmarkCategories, String businessObjectQualifiedId,
          Set<String> selBOInstances, String groupBybusinessQualifiedId, Set<String> selGroupByBOInstances)

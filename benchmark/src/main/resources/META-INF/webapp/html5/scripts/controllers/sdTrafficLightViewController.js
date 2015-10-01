@@ -62,6 +62,7 @@
 		this.getAllProcesses();
 
 		this.dataTable = null;
+		this.dataTableForBO = null;
 		this.processDataTable = null;
 		this.activityDataTable = null;
 
@@ -122,6 +123,7 @@
 	TrafficLightViewController.prototype.showTrafficLightView = function() {
 		var self = this;
 		self.showTLVStatastics = false;
+		self.showTLVStatasticsByBO = false;
 		self.showProcessTable = false;
 		self.showActivityTable = false;
 		self.processDataTable = null;
@@ -212,10 +214,14 @@
 				self.queryData = queryData;
 				
 				_sdTrafficLightViewService.getTLVStatasticByBusinessObject(queryData).then(function(data) {
-					self.tlvStatsData = {};
-					self.tlvStatsData.list = data.list;
-					self.tlvStatsData.totalCount = data.totalCount;
-					self.showTLVStatastics = true;
+					self.tlvBOStatsData = {};
+					self.tlvBOStatsDrillDownData = {};
+					self.tlvBOStatsData.list = data.businessObjectsResultList;
+					self.tlvBOStatsData.totalCount = data.businessObjectsResultList.length;
+					if(data.businessObjectsForGroupByMap != undefined){
+						self.tlvBOStatsDrillDownData = data.businessObjectsForGroupByMap;
+					}
+					self.showTLVStatasticsByBO = true;
 				}, function(error) {
 					trace.log(error);
 				});	
@@ -287,6 +293,34 @@
 		
 		return deferred.promise;
 	}
+	
+	TrafficLightViewController.prototype.getTlvStatsDataByBO = function(params){
+		var self = this;
+		var deferred = _q.defer();
+		var tlvData = {};
+		if(!params) {
+			tlvData.list = self.tlvBOStatsData.list;
+			tlvData.totalCount = self.tlvBOStatsData.totalCount;
+			angular.forEach(tlvData.list, function(object){
+				if(object.isGroup){
+					object.$leaf = false;
+				}
+				
+			});
+			deferred.resolve(tlvData);
+		}else{
+			var drillDownList = self.tlvBOStatsDrillDownData[params.parent.name];
+
+				tlvData.list = drillDownList;
+				tlvData.totalCount = drillDownList.length;
+				deferred.resolve(tlvData);
+			
+		}
+		
+		return deferred.promise;
+	}
+	
+	
 	/**
 	 * 
 	 * @param processId
