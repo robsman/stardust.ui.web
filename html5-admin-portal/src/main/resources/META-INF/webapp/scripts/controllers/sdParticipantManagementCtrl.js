@@ -547,14 +547,11 @@
         }
       }
     } else if (data.treeEvent === "node-dragend" || data.treeEvent === "node-drop") {
-      console.log("Drag-Drop");
       this.handleUserDropAction(data, this.rowSelectionForAllUsersTable);
     } else if (data.treeEvent.indexOf("menu-") == 0 || (data.treeEvent === "node-delete")) {
-      console.log("Menu-Option selected");
       this.handleMenuClick(data, e);
       data.deferred.resolve();
     } else if (data.treeEvent === "node-click") {
-      console.log("Node selected..");
       this.addToSelectedNodes(data, e.ctrlKey);
       data.deferred.resolve();
     }
@@ -674,6 +671,11 @@
         }
         // update users received from server
         participants[i].children = result[getParticipatQId(participants[i])].concat(nonUserParticipants);
+        
+        //expand all selected nodes to show newly added users
+        self.selectedTreeNodes.forEach(function(node){
+        	self.treeApi.childNodes[node.uuid].isVisible=true;
+        });
       }
       data.deferred.resolve();
     }, function(response) {
