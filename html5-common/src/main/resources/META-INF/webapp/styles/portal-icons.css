@@ -31,7 +31,7 @@ Supported fonts we wrap for our portal icon (pi-) classes
 	font-style: normal;
 	font-weight: normal;
 	line-height: 1;
-	color: #A69A88;
+	color: blue !important;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale; 
 }
@@ -358,7 +358,7 @@ Icon implementations
 .pi-activity:before,
 .pi-activity-overview:before,
 .pi-manual-activity:before,
-.pi-non-interactive-activity-:before{
+.pi-non-interactive-activity:before{
 	font-family:FontAwesome;
 	content:"\f013";
 }
@@ -541,6 +541,7 @@ Icon implementations
 	content: "\f0f6";
 }
 
+.pi-add-row:before,
 .pi-create:before,
 .pi-create-user:before,
 .pi-create-user-group:before{
@@ -1002,3 +1003,37 @@ Icon implementations
 	content: "\f0ea";
 }
 
+.pi-process-diagram:before{
+	font-family:"FontAwesome";
+	content:'\f039';
+}
+
+.pi-panel-expand:before{
+	font-family:"FontAwesome";
+	content:'\f061';
+}
+
+.pi-panel-collapse:before{
+	font-family:"FontAwesome";
+	content:'\f063';
+}
+
+.pi-exception-circle:before{
+	font-family:"FontAwesome";
+	content:'\f06a';
+}
+
+.pi-activity-state:before{
+	font-family:"FontAwesome";
+	content:"\f013";
+}
+
+.pi-activity-auxiliary:before{
+	font-family:"FontAwesome";
+	content:'\f0a3';
+}
+
+.pi-font:before{
+	font-family:"FontAwesome";
+	content:'\f031';
+}

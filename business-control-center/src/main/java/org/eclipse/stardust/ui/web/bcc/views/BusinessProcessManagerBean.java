@@ -200,15 +200,13 @@ public class BusinessProcessManagerBean extends UIViewComponentBean
             processFilterToolbarItems = new ArrayList<FilterToolbarItem>();
             FilterToolbarItem auxiliaryProcess = new FilterToolbarItem("" + 0, "auxiliaryProcess",
                   "processHistory.processTable.showAuxiliaryProcess",
-                  "processHistory.processTable.hideAuxiliaryProcess", "process_auxiliary.png",
-                  Constants.PROCESS_HISTORY_IMAGES_BASE_PATH);
+                  "processHistory.processTable.hideAuxiliaryProcess", "pi pi-process-auxiliary icon-lg");
             auxiliaryProcess.setActive(false);
             processFilterToolbarItems.add(auxiliaryProcess);
 
             FilterToolbarItem auxiliaryActivity = new FilterToolbarItem("" + 1, "auxiliaryActivity",
                   "processHistory.processTable.showAuxiliaryActivities",
-                  "processHistory.processTable.hideAuxiliaryActivities", "activity_auxiliary.png",
-                  Constants.PROCESS_HISTORY_IMAGES_BASE_PATH);
+                  "processHistory.processTable.hideAuxiliaryActivities", "pi pi-activity-auxiliary icon-lg");
             auxiliaryActivity.setActive(false);
             processFilterToolbarItems.add(auxiliaryActivity);
 

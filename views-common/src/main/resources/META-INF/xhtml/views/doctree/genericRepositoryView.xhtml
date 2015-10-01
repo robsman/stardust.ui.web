@@ -131,7 +131,7 @@
 								<f:attribute name="userObject" value="#{item.userObject}" />
 							</ice:menuItem>
 
-								<ice:menuItem id="deleteFolder"
+								<ice:menuItem id="deleteFolder" styleClass="deleteFolder"
 									icon="/plugins/views-common/images/icons/folder_delete.png"
 									value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.delete']}"
 									actionListener="#{genericRepositoryTreeViewBean.confirmDeleteResource}"
@@ -142,7 +142,7 @@
 									<f:attribute name="userObject" value="#{item.userObject}" />
 								</ice:menuItem>
 
-								<ice:menuItem id="createSubfolder"
+								<ice:menuItem id="createSubfolder" styleClass="createFolder"
 								icon="/plugins/views-common/images/icons/folder_add.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.createSubFolder']}"
 								actionListener="#{genericRepositoryTreeViewBean.createSubfolder}"
@@ -237,7 +237,7 @@
 									standAlone="false" />
 							</ice:menuItem>
 
-							<ice:menuItem id="securitySettings"
+							<ice:menuItem id="securitySettings" styleClass="settingsMnuItem"
 								icon="/plugins/views-common/images/icons/wrench.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.security']}"
 								action="#{securityDialog.open}"

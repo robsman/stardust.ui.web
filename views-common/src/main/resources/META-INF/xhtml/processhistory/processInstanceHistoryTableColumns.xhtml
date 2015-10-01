@@ -146,9 +146,8 @@
 			</ice:commandLink>
 			<ice:commandLink action="#{ippPortalApp.openView}">
 				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsProcDiag" standAlone="false"/>
-				<h:graphicImage rendered="#{ippBCCDiagramBean != null and ippBCCDiagramBean.diagramSupported}"
-					value="/plugins/views-common/images/icons/process_diagram.gif"
-					style="border: none;"
+				<h:outputText rendered="#{ippBCCDiagramBean != null and ippBCCDiagramBean.diagramSupported}"
+					styleClass="pi pi-process-diagram icon-lg"
 					title="#{messages_bcc['views.processDiagramView.tooltip.viewDiagram']}" />
 				<f:param name="viewId" value="processDiagramView" />
 				<f:param name="nested" value="true" />

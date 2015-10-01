@@ -40,9 +40,9 @@
 				rendered="#{filterToolbarItem.visible}"
 				style="vertical-align: middle;">
 				<pc:automationTag value="auto-COM-PCEHistoryTable-#{filterToolbarItem.name}" standAlone="false"/>
-				<h:graphicImage value="#{filterToolbarItem.image}"
+				<h:outputText
 					style="border: none; padding-right: 10px;"
-					styleClass="#{filterToolbarItem.styleClass}"
+					styleClass="#{filterToolbarItem.styleClass} #{filterToolbarItem.image}"
 					title="#{views_common_msgPropsBean[filterToolbarItem.messsageKey]}" />
 			</h:commandLink>
 		</ui:repeat>

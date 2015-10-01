@@ -377,7 +377,7 @@ public class ProcessActivityDataFilter extends TableDataFilterCustom
 
       FilterToolbarItem auxiliaryProcessFilter = new FilterToolbarItem("0", AUXILIARY_PROCESSES,
             "processHistory.processTable.hideAuxiliaryProcess", "processHistory.processTable.showAuxiliaryProcess",
-            "process_auxiliary.png", Constants.PROCESS_HISTORY_IMAGES_BASE_PATH);
+            "pi pi-process-auxiliary icon-lg");
       auxiliaryProcessFilter.setActive(false);
 
       processFilterToolbarItems = new ArrayList<FilterToolbarItem>();
@@ -388,7 +388,7 @@ public class ProcessActivityDataFilter extends TableDataFilterCustom
          // initialize activity list filter tool-bar
          FilterToolbarItem auxiliaryActivityFilter = new FilterToolbarItem("0", AUXILIARY_ACTIVITIES,
                "processHistory.processTable.hideAuxiliaryActivities",
-               "processHistory.processTable.showAuxiliaryActivities", "activity_auxiliary.png",
+               "processHistory.processTable.showAuxiliaryActivities", "pi pi-activity-auxiliary icon-lg",
                Constants.PROCESS_HISTORY_IMAGES_BASE_PATH);
          auxiliaryActivityFilter.setActive(false);
 

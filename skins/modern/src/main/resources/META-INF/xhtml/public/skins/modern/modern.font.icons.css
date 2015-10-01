@@ -27,7 +27,8 @@
 .overwriteModel a,
 .exportModel a,
 .caseMenu a,
-.renameVrtItem a,
+.renameVrtItem span,
+.renameVrtItem-dis span,
 .exportMnuItemVrtItem a {
       text-decoration: initial;
 }
@@ -40,12 +41,18 @@
 .exportModel a img,
 .caseMenu a img,
 .renameVrtItem a img,
+.renameVrtItem-dis span img,
 .uploadVrtItem a img,
 .exportMnuItemVrtItem a img,
 .refreshVrtItem a img,
 .versionHistoryVrtItem a img,
 .deleteFileVrtItem a img,
-.createFileVrtItem a img {
+.createFileVrtItem a img,
+.dropDownMnuItemItem a img,
+.settingsMnuItemVrtItem a img,
+.createFolderVrtItem a img,
+.deleteFolderVrtItem a img,
+.deleteFolderVrtItem-dis span img {
     background-image: none !important;
     position: absolute;
     margin-left: -15px;
@@ -100,6 +107,12 @@
     content: "\f078";
 }
 
+.renameVrtItem-dis > span:before {
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f078";
+}
+
 .uploadVrtItem a:before{
     font-family: FontAwesome;
     font-size: 16px;
@@ -135,6 +148,37 @@
     font-size: 16px;
     content: "\f055";
 }
+
+.dropDownMnuItemItem a:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f078";
+}
+
+.settingsMnuItemVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f0ad";
+}
+
+.createFolderVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f0fe";
+}
+
+.deleteFolderVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f146";
+}
+
+.deleteFolderVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f146";
+}
+
 	
 
 

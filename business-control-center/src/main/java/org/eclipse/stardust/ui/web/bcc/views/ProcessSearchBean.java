@@ -1283,7 +1283,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       processFilterToolbarItems = new ArrayList<FilterToolbarItem>();
       FilterToolbarItem auxiliaryProcessFilter = new FilterToolbarItem("0", AUXILIARY_PROCESSES,
             "processHistory.processTable.showAuxiliaryProcess", "processHistory.processTable.hideAuxiliaryProcess",
-            "process_auxiliary.png", Constants.PROCESS_HISTORY_IMAGES_BASE_PATH);
+            "pi pi-process-auxiliary icon-lg");
       auxiliaryProcessFilter.setActive(false);
       processFilterToolbarItems.add(auxiliaryProcessFilter);
       
@@ -1428,19 +1428,17 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
          int i = 0;
          FilterToolbarItem nonInteractActivity = new FilterToolbarItem("" + i++, NONINTERACT_ACTIVITIES,
                "processHistory.activityTable.showApplicationActivity",
-               "processHistory.activityTable.hideApplicationActivity", "activity_application.png",
-               Constants.PROCESS_HISTORY_IMAGES_BASE_PATH);
+               "processHistory.activityTable.hideApplicationActivity", "pi pi-non-interactive-activity icon-lg");
          nonInteractActivity.setActive(false);
 
          FilterToolbarItem interactActivity = new FilterToolbarItem("" + i++, INTERACTIVE_ACTIVITIES,
                "processHistory.activityTable.showManualActivity", "processHistory.activityTable.hideManualActivity",
-               "activity_manual.png", Constants.PROCESS_HISTORY_IMAGES_BASE_PATH);
+               "pi pi-manual-activity icon-lg");
          interactActivity.setActive(true);
 
          FilterToolbarItem auxActivity = new FilterToolbarItem("" + i++, AUXILIARY_ACTIVITIES,
                "processHistory.activityTable.showAuxiliaryActivity",
-               "processHistory.activityTable.hideAuxiliaryActivity", "activity_auxiliary.png",
-               Constants.PROCESS_HISTORY_IMAGES_BASE_PATH);
+               "processHistory.activityTable.hideAuxiliaryActivity", "pi pi-activity-auxiliary icon-lg");
          auxActivity.setActive(false);
 
          activityFilterToolbarItems = new ArrayList<FilterToolbarItem>();

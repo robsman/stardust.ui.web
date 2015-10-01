@@ -10,9 +10,8 @@
 				styleClass="#{validationMessageBean.styleClass!=null ? validationMessageBean.styleClass : ''}">
 				<ice:panelSeries var="message"
 					value="#{validationMessageBean.errorMessages}">
-					<ice:graphicImage
-						url="/plugins/views-common/images/icons/process-history/exception.png"
-						styleClass="messagePanelImg"
+					<ice:outputText
+						styleClass="pi pi-exception-circle icon-lg"
 						rendered="#{validationMessageBean.styleClass!=null}" />
 					<h:outputText value="#{message}"
 						styleClass="#{validationMessageBean.styleClass!=null ? 'messagePanelText' : 'validationMsgDlgTxt1'}" />

@@ -26,8 +26,8 @@
 				<ice:panelGrid columns="2">
 					<ice:commandLink actionListener="#{myReportsPanelBean.removeFromFavorite}">
 						<pc:automationTag value="auto-BCC-LP-RemFavReportView" standAlone="false"/>
-						<ice:graphicImage
-							value="/plugins/views-common/images/icons/star.png"
+						<ice:outputText
+							styleClass="pi pi-favorite-not icon-lg"
 							title="#{views_common_msgPropsBean['views.myReportsView.removeFromFavorite.title']}" />
 						<f:attribute name="documentId" value="#{report.key}" />
 					</ice:commandLink>

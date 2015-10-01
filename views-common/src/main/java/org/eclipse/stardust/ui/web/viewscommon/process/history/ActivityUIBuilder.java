@@ -77,29 +77,27 @@ public class ActivityUIBuilder
 
       activityFilterToolbarItems.add(new FilterToolbarItem("" + i++, "ApplicationActivity",
             "processHistory.activityTable.showApplicationActivity",
-            "processHistory.activityTable.hideApplicationActivity", "activity_application.png",
-            Constants.PROCESS_HISTORY_IMAGES_BASE_PATH));
+            "processHistory.activityTable.hideApplicationActivity", "pi pi-non-interactive-activity icon-lg"));
       activityFilterToolbarItems.add(new FilterToolbarItem("" + i++, "ManualActivity",
             "processHistory.activityTable.showManualActivity", "processHistory.activityTable.hideManualActivity",
-            "activity_manual.png", Constants.PROCESS_HISTORY_IMAGES_BASE_PATH));
+            "pi pi-manual-activity icon-lg"));
       activityFilterToolbarItems.add(new FilterToolbarItem("" + i++, "Auxiliary",
             "processHistory.activityTable.showAuxiliaryActivity", "processHistory.activityTable.hideAuxiliaryActivity",
-            "activity_auxiliary.png", Constants.PROCESS_HISTORY_IMAGES_BASE_PATH));
+            "pi pi-activity-auxiliary icon-lg"));
 
       activityFilterToolbarItems.add(new FilterToolbarItem("" + i++, "Delegate",
-            "processHistory.activityTable.showDelegate", "processHistory.activityTable.hideDelegate", "delegate.png",
-            Constants.PROCESS_HISTORY_IMAGES_BASE_PATH));
+            "processHistory.activityTable.showDelegate", "processHistory.activityTable.hideDelegate", "pi pi-activity-delegate icon-lg"));
       activityFilterToolbarItems.add(new FilterToolbarItem("" + i++, "Exception",
             "processHistory.activityTable.showException", "processHistory.activityTable.hideException",
-            "exception.png", Constants.PROCESS_HISTORY_IMAGES_BASE_PATH));
+            "pi pi-exception-circle icon-lg"));
 
       activityFilterToolbarItems.add(new FilterToolbarItem("" + i++, "ActivityCompleted",
             "processHistory.activityTable.showEventsCompleted", "processHistory.activityTable.hideEventsCompleted",
-            "activity_completed.png", Constants.PROCESS_HISTORY_IMAGES_BASE_PATH));
+            "pi pi-activity-complete icon-lg"));
 
       activityFilterToolbarItems.add(new FilterToolbarItem("" + i++, "StateChange",
             "processHistory.activityTable.showStateChange", "processHistory.activityTable.hideStateChange",
-            "activity_state.png", Constants.PROCESS_HISTORY_IMAGES_BASE_PATH));
+            "pi pi-activity-state icon-lg"));
 
       setValuesFromConfiguration();
    }
