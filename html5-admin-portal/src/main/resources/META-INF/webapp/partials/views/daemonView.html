@@ -46,14 +46,14 @@
 							class="button-link tbl-tool-link"
 							aid="ADM-Daemon-DataTable-ActionStop">
 							<i
-								ng-class="'glyphicon glyphicon-stop'" style="color:red;"></i>
+								ng-class="'pi pi-stop-daemon icon-lg'" style="color:red;"></i>
 						</button>
 						<button ng-show="!rowData.running" ng-click="bpmCommon.stopEvent($event); ctrl.startDaemon(rowData);"
 							ng-attr-title="{{i18n('admin-portal-messages.views-daemons-startDaemon')}}"
 							class="button-link tbl-tool-link"
 							aid="ADM-Daemon-DataTable-ActionStart">
 							<i
-								ng-class="'glyphicon glyphicon-play'" style="color:green;"></i>
+								ng-class="'pi pi-start-daemon icon-lg'" style="color:green;"></i>
 						</button>
 					</td>
 				</tr>

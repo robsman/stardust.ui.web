@@ -1,13 +1,13 @@
 <div class="sd-abort-noti-dlg">
 <div class="modal-body">
 	<div id="infoSign" ng-if="switchProcessController.switchProcess.switchCompleted">
-		<i style="color: grey;" class="glyphicon glyphicon-exclamation-sign"></i>
+		<i style="color: grey;" class="pi pi-information-circle icon-lg"></i>
 	</div>
 	<div id="infoSign" ng-if="!switchProcessController.switchProcess.switchCompleted">
 		<i ng-show="switchProcessController.abortNotification.totalCount === switchProcessController.processInstances.length" 
 			style="color: red;" class="glyphicon glyphicon-remove-sign"></i>
 		<i ng-show="switchProcessController.abortNotification.totalCount < switchProcessController.processInstances.length" 
-			style="color: #D7AD01;" class="glyphicon glyphicon-exclamation-sign"></i>
+			style="color: #D7AD01;" class="pi pi-information-circle icon-lg"></i>
 	</div>
 	<div id="infoSign" ng-if="switchProcessController.abortNotification.list == undefined">
 		<i style="color: red;" class="glyphicon glyphicon-remove-sign"></i>

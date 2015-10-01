@@ -1018,6 +1018,7 @@ Icon implementations
 	content:'\f063';
 }
 
+.pi-information-circle:before,
 .pi-exception-circle:before{
 	font-family:"FontAwesome";
 	content:'\f06a';
@@ -1036,4 +1037,15 @@ Icon implementations
 .pi-font:before{
 	font-family:"FontAwesome";
 	content:'\f031';
+}
+
+.pi-start-daemon:before{
+	font-family:"FontAwesome";
+	content:'\f04b';
+}
+
+.pi-stop-daemon:before{
+	font-family:"FontAwesome";
+	content:'\f04d';
+	color: 'red'
 }
