@@ -1814,14 +1814,34 @@ public class ModelElementMarshaller implements ModelMarshaller
       // UUID is being used
       eventSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
             eventHandler.getElementOid());
+      
+      // Calcuate Lane offset for hostActivitySymbol
+      int laneOffsetX = 0;
+      int laneOffsetY = 0;
+      ISwimlaneSymbol container = (hostActivitySymbol.eContainer() instanceof ISwimlaneSymbol)
+            ? (ISwimlaneSymbol) hostActivitySymbol.eContainer()
+            : null;
+      while (null != container)
+      {
+         laneOffsetX += container.getXPos();
+         laneOffsetY += container.getYPos();
 
+         // recurse
+         container = (container.eContainer() instanceof ISwimlaneSymbol)
+               ? (ISwimlaneSymbol) container.eContainer()
+               : null;
+      }
+      
+      long activitySymbolXPos = hostActivitySymbol.getXPos() + laneOffsetX;
+      long activitySymbolYPos = hostActivitySymbol.getYPos() + laneOffsetY;
+      
       // guess coordinates relative to the hosting activity's symbol
       // TODO handle multiple events per activity, avoid collisions with explicit
       // intermediate event symbols
       eventSymbolJson.addProperty(ModelerConstants.X_PROPERTY,
-            hostActivitySymbol.getXPos() + (hostActivitySymbol.getWidth() - 24));
+            activitySymbolXPos + (hostActivitySymbol.getWidth() - 24));
       eventSymbolJson.addProperty(ModelerConstants.Y_PROPERTY,
-            hostActivitySymbol.getYPos() + (hostActivitySymbol.getHeight() - 12));
+            activitySymbolYPos + (hostActivitySymbol.getHeight() - 12));
       eventSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY, 24);
       eventSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY, 24);
 
