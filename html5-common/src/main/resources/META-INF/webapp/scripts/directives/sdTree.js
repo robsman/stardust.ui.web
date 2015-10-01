@@ -119,13 +119,13 @@
 	        };
 	        
 	        //======================================================================
-	        //Reset the tree to an entirely collapsed state, removing all match
-	        //and hide classes that were added by the filterTree function
+	        //Reset the tree removing all match and hide classes that were added 
+	        //by the filterTree function. Does not collapse nodes or update the 
+	        //underlying elementalMap map.
 	        //======================================================================
 	        controller.api.resetFilter = function(){
 	        	for(var key in controller.elementalMap){
 	        		tempObj = controller.elementalMap[key];
-	        		tempObj.scope.isVisible=false;
 	        		tempObj.elem.removeClass("match");
 	        		tempObj.elem.removeClass("hide");
 	        	}  
@@ -138,6 +138,7 @@
 	        //Param: comparatorFX - comparator function supplied by the caller, the 
 	        //nodeItem is passed into the invocation and boolean True/False should
 	        //be returned. True values are considered matches.
+	        //Returns: array of matches.
 	        //======================================================================
 	        controller.api.filterTree = function(comparatorFx,forceUpdate){
 	        	
@@ -208,6 +209,11 @@
 	            for(i = matches.length-1;i>=0;i--){
 	                matches[i].scope.isVisible=true;
 	            }
+	            
+	            //return array of matched nodeItems to invoker
+	            return matches.map(function(tempObj){
+	            	return tempObj.scope.nodeItem;
+	            });
 
 	        };
 	        
@@ -535,7 +541,8 @@
 	          setNodeIcon : controller.api.setNodeIcon,
 	          removeChildByKey : controller.api.removeChildByKey,
 	          purgeChildNodes : controller.api.purgeChildNodes,
-	          filterTree  : controller.api.filterTree
+	          filterTree  : controller.api.filterTree,
+	          resetFilter   : controller.api.resetFilter
 	        };
 	        
 	        scope.treeInit({api:publicApi});

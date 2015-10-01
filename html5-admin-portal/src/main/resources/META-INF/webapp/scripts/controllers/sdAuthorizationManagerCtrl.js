@@ -386,7 +386,10 @@
   AMCtrl.prototype.applyTextFilter = function(val){
 	  var filterFx;
 	  
-	  if(!val){return;}
+	  if(val === undefined || !val){
+		  this.resetFilter();
+		  return;
+	  }
 	  
 	  filterFx = function(nodeItem){
 		if(!nodeItem.name){

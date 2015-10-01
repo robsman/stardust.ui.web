@@ -7,31 +7,29 @@
 					ng-bind="sdI18nHtml5Admin('views.authorizationManagerViewHtml5.participant.label')"></div>
 			</header>
 			<div ng-show="ctrl.showMessage" sd-message></div>
-			<div sda-toolbar>
-				<div class="tbl-toolbar-section">
-					<button ng-click="ctrl.cloneParticipant()"
-						title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.cloneParticipant')}}"
-						class="button-link tbl-toolbar-item tbl-tool-link"
-						style="margin-right: 0px;"
-						aid="COM-AuthMgr-CloneParticipant">
-						<i class="pi pi-badge-portrait pi-fw pi-activity-delegate icon-lg pi-left pi-top">
-							<i class="pi pi-badge-icon pi-badge-icon-arrow-r"></i>
-						<i class="sc sc-badge-portrait sc-user icon-lg sc-right"> 
-						 <i style="color:green;" class="sc sc-badge-bg sc-badge-bg-circle sc-stroke go"></i> 
-						 <i style="color:#fff;" class="sc sc-badge-icon sc-badge-icon-user"></i>
-						</i>
+                 <div sda-toolbar>
+                    <div class="tbl-toolbar-section">
+                           <button ng-click="ctrl.cloneParticipant()"
+                                  title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.cloneParticipant')}}"
+                                  class="button-link tbl-toolbar-item tbl-tool-link"
+                                  style="margin-right: 0px;"
+                                  aid="COM-AuthMgr-CloneParticipant">
+                                  <i class="pi pi-badge-portrait pi-fw pi-activity-delegate icon-lg pi-left pi-top">
+                                         <i class="pi pi-badge-icon pi-badge-icon-arrow-r"></i>
+                                  </i>
 
-					</button>
-					<button ng-click="ctrl.resetParticipants()"
-						title="Reset Participant(s)"
-						class="button-link tbl-toolbar-item tbl-tool-link"
-						style="margin-right: 0px; opacity: 0.4"
-						aid="COM-AuthMgr-ResetParticipants">
-						<i class="pi pi-user icon-lg" ></i>
-					</button>
-				</div>
-				<span sd-refresh sda-on-refresh="ctrl.refreshParticipants();" aid="COM-AuthMgr-RefreshParticipants"></span>
-			</div>
+                           </button>
+                           <button ng-click="ctrl.resetParticipants()"
+                                  title="Reset Participant(s)"
+                                  class="button-link tbl-toolbar-item tbl-tool-link"
+                                  style="margin-right: 0px; opacity: 0.4"
+                                  aid="COM-AuthMgr-ResetParticipants">
+                                  <i class="pi pi-user icon-lg" ></i>
+                           </button>
+                    </div>
+                    <span sd-refresh sda-on-refresh="ctrl.refreshParticipants();" aid="COM-AuthMgr-RefreshParticipants"></span>
+              </div>
+
 
 			<!-- Data table -->
 			<div class="participantTable">
@@ -115,6 +113,7 @@
 				<div>
 					<input class="search" 
 					       type="text" 
+					       ng-keypress="($event.which === 13)?ctrl.applyTextFilter(myFilter):0"
 					       ng-model="myFilter" />
 					<button class="pi pi-filter pi-1x" 
 							title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.permissionTree.toolbar.filter.title')}}"
