@@ -8,6 +8,7 @@
  * Contributors:
  *     SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
- .report-definition {
-	background: url("../images/icons/report-definition.png") no-repeat;
+ .report-definition:before{
+	font-family: "FontAwesome";
+	content: "\f15b";
 }

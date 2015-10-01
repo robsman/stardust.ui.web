@@ -181,8 +181,8 @@
 				</ice:commandLink>
 				<ice:commandLink action="#{ippPortalApp.openView}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsGanttChart" standAlone="false"/>
-					<h:graphicImage value="/plugins/views-common/images/icons/diagram/gantt_diagram.gif"
-						style="border: none;" title="#{messages_bcc['views.processSearchView.tooltip.viewGanttChart']}" />
+					<h:outputText styleClass="pi pi-gantt-chart icon-lg"
+						title="#{messages_bcc['views.processSearchView.tooltip.viewGanttChart']}" />
 					<f:param name="viewId" value="ganttChartView" />
 					<f:param name="nested" value="true" />
 	                <f:param name="viewParams" value="processInstanceOId=#{row.processInstanceOID}" />
@@ -192,7 +192,7 @@
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsNotes" standAlone="false"/>
 					<ice:outputText
 						title="#{messages_bcc['common.tooltip.notes']}" 
-						styleClass="pi-notes icon-lg"/>
+						styleClass="pi pi-notes icon-lg"/>
 					<f:attribute name="processInstance" value="#{row.processInstance}" />
 				</ice:commandLink>
 				<ice:commandLink rendered="#{row.notesCount le 0}"
@@ -200,7 +200,7 @@
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsNotes" standAlone="false"/>
 					<ice:outputText
 						title="#{messages_bcc['common.tooltip.notes']}" 
-						styleClass="pi-notes-empty icon-lg" />
+						styleClass="pi pi-notes-empty icon-lg" />
 					<f:attribute name="processInstance" value="#{row.processInstance}" />
 				</ice:commandLink>
 			</ice:panelGrid>

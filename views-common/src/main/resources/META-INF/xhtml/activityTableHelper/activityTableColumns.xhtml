@@ -193,7 +193,7 @@
 				
 				<!--	Notes	-->
 				<ice:panelGroup rendered="#{row.caseInstance }">
-					<ice:outputText styleClass="iceCmdBtn-dis pi-notes-empty icon-lg"/>
+					<ice:outputText styleClass="iceCmdBtn-dis pi pi-notes-empty icon-lg"/>
 				</ice:panelGroup>
 				
 				<ice:commandLink rendered="#{row.notesCount gt 0 and !row.caseInstance}"
@@ -201,7 +201,7 @@
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsNotes" standAlone="false"/>
 					<ice:outputText
 						title="#{messages_bcc['common.tooltip.notes']}" 
-						styleClass="pi-notes-empty icon-lg"/>
+						styleClass="pi pi-notes-empty icon-lg"/>
 					<f:attribute name="activityInstance" value="#{row.activityInstance}" />
 				</ice:commandLink>
 				<ice:commandLink rendered="#{row.notesCount le 0 and !row.caseInstance}"
@@ -209,7 +209,7 @@
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsNotes" standAlone="false"/>
 					<ice:outputText
 						title="#{messages_bcc['common.tooltip.notes']}" 
-						styleClass="pi-notes-empty icon-lg"/>
+						styleClass="pi pi-notes-empty icon-lg"/>
 					<f:attribute name="activityInstance" value="#{row.activityInstance}" />
 				</ice:commandLink>
 			</ice:panelGrid>

@@ -723,7 +723,7 @@ Icon implementations
 }
 
 .pi-groups:before,
-.pi-user-group-manager{
+.pi-user-group-manager:before{
 	font-family:FontAwesome;
 	content:"\f0c0";
 }
@@ -753,7 +753,8 @@ Icon implementations
 	content:"\f115";
 }
 
-.pi-folder:before{
+.pi-folder:before,
+.pi-rule-set:before{
 	font-family:FontAwesome;
 	content:"\f07b";
 }
@@ -844,4 +845,24 @@ Icon implementations
 .pi-flag:before{
 	font-family:"FontAwesome";
 	content:'\f024';
+}
+
+.pi-process-auxiliary:before{
+	font-family:"starclipse";
+	content:'\F02D';
+}
+
+.pi-gantt-chart:before{
+	font-family:"starclipse";
+	content:'\F049';
+}
+
+.pi-stamp:before{
+	font-family:"FontAwesome";
+	content:'\f249';
+}
+
+.pi-process-diagram:before{
+	font-family:"FontAwesome";
+	content:'\f039';
 }

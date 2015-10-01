@@ -47,9 +47,9 @@
 
 								<ice:commandLink action="#{ippPortalApp.openView}">
 									<pc:automationTag value="auto-COM-PCEOverview-GanttChart" standAlone="false"/>
-									<h:graphicImage
-										value="/plugins/views-common/images/icons/diagram/gantt_diagram.gif"
-										style="border: none;" title="#{messages_bcc['views.processDiagramView.tooltip.viewGanttChart.title']}"/>
+									<h:outputText
+										styleClass="pi pi-gantt-chart icon-lg"
+										title="#{messages_bcc['views.processDiagramView.tooltip.viewGanttChart.title']}"/>
 									<f:param name="viewId" value="ganttChartView" />
 									<f:param name="nested" value="true" />
 									<f:param name="viewParams"

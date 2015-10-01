@@ -218,3 +218,12 @@
 	content:"\f1c3";
 }
 
+.user_group_manager:before{
+	font-family: "FontAwesome";
+	content:"\f0c0";
+}
+
+.password_security:before{
+	font-family: "FontAwesome";
+	content:"\f084";
+}

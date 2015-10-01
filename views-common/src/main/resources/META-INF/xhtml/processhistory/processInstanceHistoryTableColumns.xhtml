@@ -156,9 +156,8 @@
 			</ice:commandLink>
 			<ice:commandLink action="#{ippPortalApp.openView}">
 				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsGanttChart" standAlone="false"/>
-				<h:graphicImage
-					value="/plugins/views-common/images/icons/diagram/gantt_diagram.gif"
-					style="border: none;"
+				<h:outputText
+					styleClass="pi pi-gantt-chart icon-lg"
 					title="#{messages_bcc['views.processSearchView.tooltip.viewGanttChart']}" />
 				<f:param name="viewId" value="ganttChartView" />
 				<f:param name="nested" value="true" />
