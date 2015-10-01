@@ -896,3 +896,38 @@ Icon implementations
 	font-family:"FontAwesome";
 	content:'\f039';
 }
+
+.pi-database:before {
+	font-family: "FontAwesome";
+	content: "\f1c0";	
+}
+
+.pi-dataset:before {
+	font-family: "FontAwesome";
+	content: "\f0ce";
+}
+
+.pi-layout:before {
+	font-family: "FontAwesome";
+	content: "\f1ec";
+}
+
+.pi-bar-chart:before {
+	font-family: "FontAwesome";
+	content: "\f080";
+}
+
+.pi-storage:before {
+	font-family: "FontAwesome";
+	content: "\f233";
+}
+
+.pi-scheduling:before {
+	font-family: "FontAwesome";
+	content: "\f274";
+}
+
+.pi-error:before {
+	font-family: "FontAwesome";
+	content: "\f071";
+}
