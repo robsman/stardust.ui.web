@@ -303,8 +303,24 @@
   // Handle select and multi selects of our permissions.
   AMCtrl.prototype.addSelectedPermission = function(permission, e, target) {
 
-    var srcArray = this.selectedAllow;
-
+    var srcArray = this.selectedAllow,
+    	scope,
+    	self;
+    
+    self = this;
+    
+    scope = angular.element(e.srcElement || e.target).scope();
+    
+    permission.setExpansionState = function(val){
+    	scope.$parent.$parent.isVisible = true;
+    }
+    
+    permission.setIconClass = function(val){
+    	self.$timeout(function(){
+    		scope.$parent.$parent.iconClass = val;
+    	},0);
+    }
+    
     if (target === "deny") {
       srcArray = this.selectedDeny;
     }
@@ -414,31 +430,20 @@
   }
   
   /**
-   * Filter the DOM structure representing our authorization tree.
-   * @param comparatorFx - function which will test the provided
-   * nodeItem object for a match.
+   * Builds a hashmap of our permission tree giving us access to scope,nodeItems,
+   * raw DOM elements etc. We can leverage this to do those things we normally would
+   * do through the sdTree directives published API.
+   * @returns
    */
-  AMCtrl.prototype.applyFilter = function(comparatorFx) {
-    var matches = [],
-    	treeRoot,
-    	elements,
-    	elementalMap = {},
-    	objScope,
-    	tempElem,
-    	tempObj,
-    	parentScope,
-    	childRecurse;
-    
-    
-    //Recursive funtion to show or hide all scopes beneath current scope
-    childRecurse = function(cs,isVisible){
-       for(; cs; cs= cs.$$nextSibling) {
-              cs.isVisible=isVisible;
-              childRecurse(cs.$$childHead);
-        }
-    };
-    
-    //We need the root of our tree...
+  AMCtrl.prototype.getPermissionTreeElements = function(){
+	  
+	var treeRoot,
+		elements,
+		elementalMap = {},
+		objScope,
+		tempElem;
+
+	 //We need the root of our tree...
     treeRoot =$("#authTree" + this.scopeId);
     //...so that we can extract individual nodes from its context
     elements = $('li',treeRoot);
@@ -488,6 +493,35 @@
  		 }
  	   }	   
     }//for loop ends
+	return elementalMap;
+  }
+  
+  /**
+   * Filter the DOM structure representing our authorization tree.
+   * @param comparatorFx - function which will test the provided
+   * nodeItem object for a match.
+   */
+  AMCtrl.prototype.applyFilter = function(comparatorFx) {
+    var matches = [],
+    	treeRoot,
+    	elements,
+    	elementalMap = {},
+    	objScope,
+    	tempElem,
+    	tempObj,
+    	parentScope,
+    	childRecurse;
+    
+    //Get our elements and their scopes etc...
+    elementalMap = this.getPermissionTreeElements();
+    
+    //Recursive funtion to show or hide all scopes beneath current scope
+    childRecurse = function(cs,isVisible){
+       for(; cs; cs= cs.$$nextSibling) {
+              cs.isVisible=isVisible;
+              childRecurse(cs.$$childHead);
+        }
+    };
     
     //step 1: reset entire tree, but look for matches along the way
     $(".match-custom",treeRoot).removeClass("match-custom"); //remove all match classes
@@ -594,14 +628,17 @@
     var self = this,
     	isScopedPresent = false,
     	isAllowModelOnly= true,
-    	isDenyModelOnly = true;
+    	isDenyModelOnly = true,
+    	affectedDenyNodes=[],
+    	affectedAllowNodes=[],
+    	elementalMap;
     
     this.resetMessages();
 
 
     //Iterate over selectedParticipants to check if at least one particpant is scoped then allow and deny
     //must only be within the model root node of our tree, test by permission prefix in the set 
-    //'activity.,processDefinition.,data.'
+    //['activity.','processDefinition.','data.']
     //if so dialog and abort.
     
     //First test, do we have at least one scoped participant type?
@@ -636,24 +673,40 @@
     	return;
     }
     
-    //Expand node so we can see the soon-to-be added participants
-    scope.$parent.isVisible = true;
-    
     //set icon for the node to the spinner
     scope.iconClass= "isDeferred";
+    scope.$parent.$parent.isVisible = true;
+    
+    allow.forEach(function(item){
+    	if(item.setExpansionState){
+	    	item.setExpansionState(true);
+	    	item.setIconClass("isDeferred");
+    	}
+    });
+    deny.forEach(function(item){
+    	if(item.setExpansionState){
+	    	item.setExpansionState(true);
+	    	item.setIconClass("isDeferred");
+    	}
+    });
+    
+
+    
     
     _sdAuthorizationManagerService.savePermissions(self.selectedParticipants, allow, deny).then(function(result) {
       var permissions = result.permissions;
-      scope.iconClass= "";
+      
+
+     
       // update all selected nodes
       for (var i = 0; i < permissions.length; i++) {
-        for (var j = 0; allow.length; j++) {
+        for (var j = 0; j < allow.length; j++) {
           if (permissions[i].id == allow[j].id) {
             allow[j].allow = permissions[i].allow;
             break;
           }
         }
-        for (var j = 0; deny.length; j++) {
+        for (var j = 0; j < deny.length; j++) {
           if (permissions[i].id == deny[j].id) {
             deny[j].deny = permissions[i].deny;
             break;
@@ -662,9 +715,21 @@
       }
       self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
     }, function(error) {
-      scope.iconClass= "";
       trace.error(error);
       self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.save.error"));
+    })
+    ['finally'](function(){
+    	scope.iconClass= "";
+    	allow.forEach(function(item){
+    		if(item.setIconClass){
+    			item.setIconClass("");
+    		}
+	    });
+	    deny.forEach(function(item){
+	    	if(item.setIconClass){
+	    		item.setIconClass("");
+	    	}
+	    });
     });
   }
 
