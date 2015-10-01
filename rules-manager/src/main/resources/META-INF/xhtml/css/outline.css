@@ -83,3 +83,10 @@ td#toolbar div.toolSeparator {
 	float: left;
 	margin-top: 4px;
 }
+
+.toolSection{
+	margin-right: 8px;
+	padding-right: 8px;
+	border-right: 1px dotted gray;
+	float: left;
+}

@@ -327,6 +327,7 @@ Icon implementations
 
 
 /*Activity Overview Table*/
+.pi-parameters:before,
 .pi-activity:before,
 .pi-activity-overview:before,
 .pi-manual-activity:before,
@@ -362,6 +363,7 @@ Icon implementations
 	content: "\f007";
 }
 
+.pi-redo:before,
 .pi-rotate-right:before {
 	font-family: "FontAwesome";
 	content: "\f01e"
