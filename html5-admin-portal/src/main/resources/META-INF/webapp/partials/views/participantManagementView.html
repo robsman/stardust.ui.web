@@ -67,7 +67,8 @@
 		<section style="float: left; padding-left: 30px; width: 33%">
 			<header>
 				<div class="heading"
-					ng-bind="sdI18n('admin-portal-messages.views.participantMgmt.participantTree.title')"></div>
+					ng-bind="sdI18n('admin-portal-messages.views.participantMgmt.participantTree.title')">
+				</div>
 			</header>
 			<div ng-show="ctrl.showMessage2" sd-message></div>
 			<div sda-toolbar>
@@ -75,6 +76,7 @@
 					<input  type="text"  
 					        ng-keypress="($event.which === 13)?ctrl.filterTree(myFilter):0" 
 					        ng-model="myFilter" 
+					        class="search"
 					        aid="COM-PartMgr-ApplyFilter" />
 					<button ng-disabled="!myFilter || myFilter.length==0" 
 							title="{{i18n('views.participantManagementViewHtml5.participantTree.toolbar.filter.title')}}"
