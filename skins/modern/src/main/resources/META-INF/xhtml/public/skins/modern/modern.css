@@ -6893,6 +6893,12 @@ a span.iceOutFrmt{
 	position: relative;
 	bottom: 2px;
 }
+
+td a span.iceOutFrmt{
+	bottom: 0px;
+}
+
+
 a span.iceOutFrmt:hover{
 	color:#28303B;
 }
