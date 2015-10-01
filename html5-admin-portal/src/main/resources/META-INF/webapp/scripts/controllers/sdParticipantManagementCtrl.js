@@ -447,10 +447,10 @@
    * 				 reset to its unfiltered state.
    */
   ParticipantManagementCtrl.prototype.filterTree = function(filter){
-	  var comparatorFx; //filterFX for the filterTree invocation.
+	  var comparatorFx, //filterFX for the filterTree invocation.
+	  	  matches; //match array returned from our filter function;
 	  
 	  comparatorFx= function(nodeItem){
-		  console.log(nodeItem);
 		  return nodeItem.name.indexOf(filter) > -1;
 	  }
 	  
@@ -458,9 +458,9 @@
 	  this.selectedTreeNodes = [];
 	  
 	  //If no filter passed then just reset the tree
-	  if(filter===undefined){
+	  if(filter===undefined || !filter){
 		  //invocation with no parameters will reset the tree
-		  this.treeApi.filterTree();
+		  this.treeApi.resetFilter();
 	  }
 	  //Otherwise invoke our treeAPI's filter function
 	  else{
@@ -468,7 +468,7 @@
 		  //ideally we should only pass true when we know that
 		  //the tree is dirty to avoid needless overhead.
 		  //TODO: maintain proper dirty state of tree.
-		  this.treeApi.filterTree(comparatorFx,true);
+		  matches = this.treeApi.filterTree(comparatorFx,true);
 	  }
 	  
   };
@@ -798,7 +798,14 @@
     if (item.type === "USER") { return true; }
     return false;
   }
-
+  
+  /**
+   * Reset nodes affected by our filter action.
+   */
+  ParticipantManagementCtrl.prototype.resetFilter = function(){
+	  this.treeApi.resetFilter();
+  };
+  
   ParticipantManagementCtrl.prototype.resetMessages = function() {
     this.showMessage2 = false;
     _sdMessageService.showMessage({

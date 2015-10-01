@@ -20,6 +20,7 @@
 			<div
 				ng-include="'plugins/html5-admin-portal/partials/views/participantMgtUsersTable.html'">
 			</div>
+			
 			<div ng-if="ctrl.loadUserProfileDialog">
 				<div sd-dialog sda-modal="true"
 					sda-show="ctrl.showUserProfileDialog" sda-type="confirm"
@@ -70,24 +71,32 @@
 			</header>
 			<div ng-show="ctrl.showMessage2" sd-message></div>
 			<div sda-toolbar>
-				<!-- 			<div class="tbl-toolbar-section">
-					<button ng-click="ctrl.highlightParticipants()"
-						title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.highlightParticipants')}}"
-						class="button-link tbl-toolbar-item tbl-tool-link">
-						<i class="sc icon-lg sc-torch"></i>
-					</button>
-				</div> -->
-
-
 				<div>
-					<input ng-blur="ctrl.filterTree(myFilter)" type="text" ng-model="myFilter" aid="COM-PartMgr-ApplyFilter" />
-					<!--button class="pi pi-refresh pi-1x" ng-click="ctrl.filterTree()" aid="COM-PartMgr-ResetFilter"></button-->
-					<span sd-refresh sda-on-refresh="ctrl.treeInit();" aid="COM-PartMgr-RefreshParticipantTree"></span>
-					<button class="pi pi-ban pi-1x" ng-click="ctrl.filterForEmptyUsers()"></button>
-					<button class="pi pi-torch pi-1x" ng-click="ctrl.filterByTableSelection()"></button>
+					<input  type="text"  
+					        ng-keypress="($event.which === 13)?ctrl.filterTree(myFilter):0" 
+					        ng-model="myFilter" 
+					        aid="COM-PartMgr-ApplyFilter" />
+					<button ng-disabled="!myFilter || myFilter.length==0" 
+							title="{{i18n('views.participantManagementViewHtml5.participantTree.toolbar.filter.title')}}"
+					        class="pi pi-filter pi-1x" 
+					        ng-click="ctrl.filterTree(myFilter)"></button>
+					<button class="pi pi-clear pi-1x" 
+							title="{{i18n('views.participantManagementViewHtml5.participantTree.toolbar.reserFilter.title')}}"
+					        ng-click="ctrl.resetFilter()"></button>
+					<button class="pi pi-ban pi-1x" 
+							title="{{i18n('views.participantManagementViewHtml5.participantTree.toolbar.emptyNode.title')}}"
+					        ng-click="ctrl.filterForEmptyUsers()"></button>
+					<button class="pi pi-torch pi-1x"
+							ng-disabled="ctrl.rowSelectionForAllUsersTable.length===0" 
+							title="{{i18n('views.participantManagementViewHtml5.participantTree.toolbar.flashlight.title')}}"
+					        ng-click="ctrl.filterByTableSelection()"></button>
+					<button class="pi pi-refresh pi-1x" 
+							title="{{i18n('views.participantManagementViewHtml5.participantTree.toolbar.refresh.title')}}"
+					        ng-click="ctrl.treeInit()"></button>
 				</div>
 				
 			</div>
+			
 			<div class="permission-tree">
 				<ul sd-tree="ctrl.onTreeInit(api)"
 					sda-menu-callback="ctrl.menuCallback(item)"
@@ -109,6 +118,7 @@
 					</li>
 				</ul>
 			</div>
+			
 			<div ng-show="ctrl.showCreateOrModifyDeparatmentDialog">
 				<div sd-dialog sda-modal="true"
 					sda-show="ctrl.showCreateOrModifyDeparatmentDialog"
@@ -121,6 +131,7 @@
 					sda-width="400px" sda-height="300px"
 					sda-aid-prefix="ADM-PartMgmt-DepartmentPopup"></div>
 			</div>
+			
 		</section>
 	</div>
 
