@@ -879,7 +879,6 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
       }, new DataTableSortModel<DescriptorHistoryTableEntry>("timestamp", false));
       descriptorHistoryTable.setISortHandler(sortHandler);
       descriptorHistoryTable.initialize();
-
    }
 
    public void updateDescriptorHistory()
@@ -1378,32 +1377,12 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
          
          List<DescriptorHistoryTableEntry> result = getPaginatedSubList(resultList, startRow, pageSize);
          
-         applySorting(result);
-         
          RawQueryResult<DescriptorHistoryTableEntry> queryResult = new RawQueryResult<DescriptorHistoryTableEntry>(result,
                null, false, Long.valueOf(resultList.size()));
 
          return new IppQueryResult<DescriptorHistoryTableEntry>(queryResult);
       }
       
-   }
-   
-   /**
-    * 
-    * @param result
-    */
-   private void applySorting(List<DescriptorHistoryTableEntry> result)
-   {
-      DescriptorHistorySortHandler descriptorHistorySortHandler = (DescriptorHistorySortHandler) descriptorHistoryTable
-            .getISortHandler();
-
-      if (null != descriptorHistorySortHandler.getSortCriterion())
-      {
-         SortCriterion sortCriterion = descriptorHistorySortHandler.getSortCriterion();
-         Comparator<DescriptorHistoryTableEntry> comparator = new SortableTableComparator<DescriptorHistoryTableEntry>(
-               sortCriterion.getProperty(), sortCriterion.isAscending());
-         Collections.sort(result, comparator);
-      }
    }
    
    /**
@@ -1426,6 +1405,9 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
          if (CollectionUtils.isNotEmpty(sortCriterias))
          {
             sortCriterion = sortCriterias.get(0);
+            Comparator<DescriptorHistoryTableEntry> comparator = new SortableTableComparator<DescriptorHistoryTableEntry>(
+                  sortCriterion.getProperty(), sortCriterion.isAscending());
+            Collections.sort(descriptorsHistoryList, comparator);
          }
          else
          {

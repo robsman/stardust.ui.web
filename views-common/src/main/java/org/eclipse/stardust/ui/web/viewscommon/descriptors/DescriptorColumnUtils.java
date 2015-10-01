@@ -27,6 +27,7 @@ import org.eclipse.stardust.engine.api.query.ProcessInstanceFilter;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.HistoricalEvent;
+import org.eclipse.stardust.engine.api.runtime.HistoricalEventType;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
@@ -464,7 +465,9 @@ public class DescriptorColumnUtils
       ProcessInstanceQuery piQuery = ProcessInstanceQuery.findAll();
       FilterOrTerm orTerm =  piQuery.getFilter().addOrTerm();
                   
-      piQuery.setPolicy(HistoricalEventPolicy.ALL_EVENTS);
+      piQuery.setPolicy(new HistoricalEventPolicy(
+            new HistoricalEventType[] {HistoricalEventType.DataChange}));
+
       orTerm.add(new ProcessInstanceFilter(scopeProcessInstance.getOID(), false));
       
       ServiceFactory sf = SessionContext.findSessionContext().getServiceFactory();
@@ -472,7 +475,7 @@ public class DescriptorColumnUtils
    
       if (qs != null)
       {
-         ProcessInstance pi = qs.findFirstProcessInstance(piQuery);
+         ProcessInstance pi = qs.getAllProcessInstances(piQuery).get(0);
          List<HistoricalEvent> events = pi.getHistoricalEvents();
          return events;
       }
