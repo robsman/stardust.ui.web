@@ -931,3 +931,13 @@ Icon implementations
 	font-family: "FontAwesome";
 	content: "\f071";
 }
+
+.pi-trigger-expand:before {
+	font-family: "FontAwesome";
+	content: "\f078";
+}
+
+.pi-trigger-collapse:before {
+	font-family: "FontAwesome";
+	content: "\f054";
+}

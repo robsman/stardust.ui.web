@@ -64,3 +64,11 @@
 .icon-image {
 	background: none !important;
 }
+
+/* Add this class where iceOutput class exists and needs to be overridden */
+.icon-outTxt {
+    padding-left: 0px;
+    padding-right: 0px;
+    padding-top: 0px;
+    padding-bottom: 0px;
+}

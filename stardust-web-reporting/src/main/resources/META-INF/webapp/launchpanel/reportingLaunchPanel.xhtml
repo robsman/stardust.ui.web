@@ -7,19 +7,13 @@
 	xmlns:ice="http://www.icesoft.com/icefaces/component"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 <body>
-	<ice:panelGroup styleClass="panelHeader">
-		<ice:commandLink action="#{reportingPerspective.toggle}">
-			<ice:panelGrid columns="2">
-				<ice:graphicImage rendered="#{!reportingPerspective.expanded}"
-					value="/plugins/common/images/panelHeader-triggerExpand.png"
-					style="border: none" />
-				<ice:graphicImage rendered="#{reportingPerspective.expanded}"
-					value="/plugins/common/images/panelHeader-triggerCollapse.png"
-					style="border: none" />
-				<ice:outputText styleClass="panelHeaderTitle"
-					value="#{bpmReportingMessages['launchpanels.myReports.title']}" />
-			</ice:panelGrid>
-		</ice:commandLink>
+	<ice:panelGroup>
+		<ui:include src="/plugins/common/templates/launchPanelTemplate.xhtml">
+			<ui:param name="bean" value="#{reportingPerspective}" />
+			<ui:param name="title" value="#{bpmReportingMessages['launchpanels.myReports.title']}" />
+			<ui:param name="collapsible" value="true" />
+			<ui:param name="showRefreshLink" value="false" />
+		</ui:include>
 	</ice:panelGroup>
 
 	<ice:panelGrid columns="1" style="margin-top: 10px;" rendered="#{reportingPerspective.expanded}">
