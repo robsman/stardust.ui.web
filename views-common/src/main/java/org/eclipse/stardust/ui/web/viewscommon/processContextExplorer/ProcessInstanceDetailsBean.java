@@ -110,6 +110,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
@@ -800,14 +801,16 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
       for (int i = 0; i < size; i++)
       {
          dataPathDetails = (DataPathDetails) dataPaths.get(i);
-
-         if(dataPathDetails.getDirection().equals(Direction.OUT))
+         if(null != dataPathDetails.getDirection())
          {
-            outDataPathsMap.put(dataPathDetails.getId(), dataPathDetails);  
-         }
-         else
-         {
-            inDataPathsMap.put(dataPathDetails.getId(), dataPathDetails);
+            if(dataPathDetails.getDirection().equals(Direction.OUT))
+            {
+               outDataPathsMap.put(dataPathDetails.getId(), dataPathDetails);  
+            }
+            else
+            {
+               inDataPathsMap.put(dataPathDetails.getId(), dataPathDetails);
+            }
          }
       }
    }
@@ -873,8 +876,8 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
          {
             return (DescriptorHistoryTableEntry) resultRow;
          }
-      }, new DataTableSortModel<DescriptorHistoryTableEntry>("timestamp", true));
-      
+      }, new DataTableSortModel<DescriptorHistoryTableEntry>("timestamp", false));
+      descriptorHistoryTable.setISortHandler(sortHandler);
       descriptorHistoryTable.initialize();
 
    }
@@ -882,33 +885,56 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    public void updateDescriptorHistory()
    {
       descriptorsHistoryList = fetchDescriptorHistory();
-      descriptorHistoryTable.refresh();
+      
+      descriptorHistoryTable.refresh(true);
    }
    
    private List<DescriptorHistoryTableEntry> fetchDescriptorHistory()
    {
       List<DescriptorHistoryTableEntry> descriptorsHistory = CollectionUtils.newArrayList();
-      List<HistoricalEvent> events = DescriptorColumnUtils.getProcessDescriptorsHistory(this.processInstance);
-      if (CollectionUtils.isNotEmpty(events))
+      try
       {
-         for (HistoricalEvent event : events)
+         List<HistoricalEvent> events = DescriptorColumnUtils.getProcessDescriptorsHistory(this.processInstance);
+         DeployedModel model = ModelCache.findModelCache().getModel(this.processInstance.getModelOID());
+         if (CollectionUtils.isNotEmpty(events))
          {
-            String descriptorDetails = (String) event.getDetails();
-            if(StringUtils.isNotEmpty(descriptorDetails) && descriptorDetails.contains("'"))
+            for (HistoricalEvent event : events)
             {
-               String [] token = descriptorDetails.split("'");
-               if(token.length ==6)
+               String descriptorDetails = (String) event.getDetails();
+               if (StringUtils.isNotEmpty(descriptorDetails))
                {
-                  String processDefinition = token[1];
-                  String processInstanceOID = token [3];
-                  String dataPathId = token[5];
-                  descriptorDetails = MessagesViewsCommonBean.getInstance().getParamString("views.processInstanceDetailsView.descriptors.history.descriptorDetails", processDefinition, processInstanceOID, dataPathId);
+                  if (descriptorDetails.contains("'"))
+                  {
+                     // TODO - provide better way to split and read params
+                     String[] token = descriptorDetails.split("'");
+                     if (null != token && token.length == 6)
+                     {
+                        String dataId = token[1];
+                        Data data = model.getData(dataId);
+                        dataId = I18nUtils.getDataName(data);
+                        String processInstanceOID = token[3];
+                        String dataPathId = token[5];
+                        DataPath dataPath = outDataPathsMap.get(dataPathId);
+                        if (null != dataPath)
+                        {
+                           dataPathId = I18nUtils.getDataPathName(dataPath);
+                        }
+                        descriptorDetails = MessagesViewsCommonBean.getInstance().getParamString(
+                              "views.processInstanceDetailsView.descriptors.history.descriptorDetails", dataId,
+                              processInstanceOID, dataPathId);
+                     }
+                  }
+                  descriptorsHistory.add(new DescriptorHistoryTableEntry(event.getEventTime(), null, event
+                        .getEventType().getName(), I18nUtils.getUserLabel(event.getUser()), descriptorDetails));
                }
             }
-            descriptorsHistory.add(new DescriptorHistoryTableEntry(event.getEventTime(), null, event.getEventType()
-                  .getName(), I18nUtils.getUserLabel(event.getUser()), descriptorDetails));
          }
       }
+      catch (Exception e)
+      {
+         trace.error(e);
+      }
+
       return descriptorsHistory;
    }
    
@@ -1348,33 +1374,36 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
          List<DescriptorHistoryTableEntry> resultList = StringUtils.isEmpty(descriptorSearchTxt)
                ? descriptorsHistoryList
                : filterResult(descriptorsHistoryList, descriptorSearchTxt);
-
+         
+         
          List<DescriptorHistoryTableEntry> result = getPaginatedSubList(resultList, startRow, pageSize);
+         
          applySorting(result);
+         
          RawQueryResult<DescriptorHistoryTableEntry> queryResult = new RawQueryResult<DescriptorHistoryTableEntry>(result,
                null, false, Long.valueOf(resultList.size()));
 
          return new IppQueryResult<DescriptorHistoryTableEntry>(queryResult);
       }
       
-      /**
-       * 
-       * @param result
-       */
-      private void applySorting(List<DescriptorHistoryTableEntry> result)
+   }
+   
+   /**
+    * 
+    * @param result
+    */
+   private void applySorting(List<DescriptorHistoryTableEntry> result)
+   {
+      DescriptorHistorySortHandler descriptorHistorySortHandler = (DescriptorHistorySortHandler) descriptorHistoryTable
+            .getISortHandler();
+
+      if (null != descriptorHistorySortHandler.getSortCriterion())
       {
-         DescriptorHistorySortHandler roleAssignmentSortHandler = (DescriptorHistorySortHandler) descriptorHistoryTable
-               .getISortHandler();
-
-         if (null != roleAssignmentSortHandler.getSortCriterion())
-         {
-            SortCriterion sortCriterion = roleAssignmentSortHandler.getSortCriterion();
-            Comparator<DescriptorHistoryTableEntry> comparator = new SortableTableComparator<DescriptorHistoryTableEntry>(
-                  sortCriterion.getProperty(), sortCriterion.isAscending());
-            Collections.sort(result, comparator);
-         }
+         SortCriterion sortCriterion = descriptorHistorySortHandler.getSortCriterion();
+         Comparator<DescriptorHistoryTableEntry> comparator = new SortableTableComparator<DescriptorHistoryTableEntry>(
+               sortCriterion.getProperty(), sortCriterion.isAscending());
+         Collections.sort(result, comparator);
       }
-
    }
    
    /**

@@ -1051,7 +1051,7 @@ public class DescriptorFilterUtils
    public static Number convertToNumber(Object value, Class type) throws Exception
    {
       Number localValue = null;
-      if (value != null)
+      if (value != null && StringUtils.isNotEmpty(value.toString()))
       {
          try
          {
