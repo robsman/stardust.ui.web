@@ -582,38 +582,46 @@ public class ParticipantManagementUtils
    {
       User modifiedUser = null;
       UserService userService = UserUtils.getUserService();
+      boolean passwordChanged = false;
       if (null != userDTO && null != userService)
       {
          User userToModify = UserUtils.getUser(userDTO.oid, UserDetailsLevel.Full);
          SessionContext ctx = SessionContext.findSessionContext();
          User loggedInUser = ctx != null ? ctx.getUser() : null;
-         boolean passwordChanged = userDTO.changePassword;
-         if (passwordChanged)
+         if(!userDTO.isInternalAuthentication)
          {
-            userToModify.setPassword(userDTO.password);
-         }
-         userToModify.setFirstName(userDTO.firstName);
-         userToModify.setLastName(userDTO.lastName);
-         userToModify.setDescription(userDTO.description);
-         userToModify.setEMail(userDTO.eMail);
-         if (userDTO.validFrom != null)
-         {
-            userToModify.setValidFrom(new Date(userDTO.validFrom));
+            userToModify.setAccount(userDTO.account);
          }
          else
          {
-            userToModify.setValidFrom(null);
-         }
-         if (userDTO.validTo != null)
-         {
-            userToModify.setValidTo(new Date(userDTO.validTo));
-         }
-         else
-         {
-            userToModify.setValidTo(null);
-         }
+            passwordChanged = userDTO.changePassword;
+            if (passwordChanged)
+            {
+               userToModify.setPassword(userDTO.password);
+            }
+            userToModify.setFirstName(userDTO.firstName);
+            userToModify.setLastName(userDTO.lastName);
+            userToModify.setDescription(userDTO.description);
+            userToModify.setEMail(userDTO.eMail);
+            if (userDTO.validFrom != null)
+            {
+               userToModify.setValidFrom(new Date(userDTO.validFrom));
+            }
+            else
+            {
+               userToModify.setValidFrom(null);
+            }
+            if (userDTO.validTo != null)
+            {
+               userToModify.setValidTo(new Date(userDTO.validTo));
+            }
+            else
+            {
+               userToModify.setValidTo(null);
+            }
 
-         userToModify.setQualityAssuranceProbability(userDTO.qaOverride);
+            userToModify.setQualityAssuranceProbability(userDTO.qaOverride);
+         }
          modifiedUser = userService.modifyUser(userToModify);
          if (modifiedUser != null && modifiedUser.equals(loggedInUser))
          {

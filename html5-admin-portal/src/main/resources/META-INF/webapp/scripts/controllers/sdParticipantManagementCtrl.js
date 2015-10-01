@@ -239,7 +239,7 @@
     }
 
     // Validate password
-    if (self.user.changePassword) {
+    if (self.user.changePassword && self.user.internalAuthentication) {
       if (_sdUtilService.validatePassword(self.user.password, self.user.confirmPassword)) {
         error = true;
         self.userProfileForm.$error.passwordMismatch = true;
