@@ -79,32 +79,32 @@ portal icon badging stem, duped from starclipse
 /*badge backgrounds*/
 .pi-badge-bg-square:before{
 	font-family:starclipse;
-    content:'\F084';
+    content:'\F084'; /* sc-badge-bg-square */
 }
 .pi-badge-bg-circle:before{
 	font-family:starclipse;
-    content:'\F085';
+    content:'\F085'; /* sc-badge-bg-circle */
 }
 
 /*badge icons*/
 .pi-badge-icon-plus:before{
 	font-family:starclipse;
-    content:'\F086';
+    content:'\F086'; /* sc-badge-icon-plus */
 }
 
 .pi-badge-icon-arrow-r:before{
 	font-family:starclipse;
-    content:'\F08E';
+    content:'\F08E'; /* sc-badge-icon-arrow-r */
 }
 
 .pi-badge-icon-arrow-l:before{
 	font-family:starclipse;
-    content:'\F090';
+    content:'\F090'; /* sc-badge-icon-arrow-l */
 }
 
 .pi-badge-icon-tag:before{
 	font-family:starclipse;
-	content: '\F096';
+	content: '\F096'; /* sc-badge-icon-tag */
 }
 
 /*Elements (other than i) designed to incorporate pi*/
@@ -212,143 +212,143 @@ Icon implementations
 */
 .pi-activate:before{
 	font-family:FontAwesome;
-    content:'\F0E7';
+    content:'\F0E7'; /* fa-bolt */
 }
 
 .pi-reset:before,
 .pi-refresh:before{
 	font-family:FontAwesome;
-	content: "\f021";
+	content: "\f021"; /* fa-refresh */
 }
 
 .pi-arrow-d:before{
 	font-family: starclipse;
-    content:'\F004';
+    content:'\F004'; /* sc-arrow-d */
 }
 
 .pi-arrow-r:before{
 	font-family: starclipse;
-    content:'\F006';
+    content:'\F006'; /* sc-arrow-r */
 }
 
 .pi-menu-dropdown:before{
 	font-family: FontAwesome;
-	content: "\f078";
+	content: "\f078"; /* fa-chevron-down */
 }
 
 .pi-clear:before{
 	font-family: FontAwesome;
-	content: "\f1f8";
+	content: "\f1f8"; /* fa-trash */
 }
 
 .pi-flag:before,
 .pi-criticalty-flag:before{
 	font-family: starclipse;
-    content:'\F060';
+    content:'\F060'; /* sc-flag */
 }
 
 .pi-exclamation-triangle:before{
 	font-family: starclipse;
-    content:'\F029';
+    content:'\F029'; /* sc-exclamation-triangle */
 }
 
 .pi-download:before{
 	font-family: 'Glyphicons Halflings';
-	content: "\e026";
+	content: "\e026"; /* glyphicon-download */
 }
 
 .pi-plus-sign:before {
 	font-family: 'Glyphicons Halflings';
-  	content: "\e081";
+  	content: "\e081"; /* glyphicon-plus-sign */
 }
 
 .pi-minus-sign:before {
 	font-family: 'Glyphicons Halflings';
-  	content: "\e082";
+  	content: "\e082"; /* glyphicon-minus-sign */
 }
 
 .pi-copy:before {
 	font-family: 'Glyphicons Halflings';
-  	content: "\e205";
+  	content: "\e205"; /* glyphicon-copy */
 }
 
 .pi-cloud-upload:before {
 	font-family: 'Glyphicons Halflings';
-  	content: "\e198";
+  	content: "\e198"; /* glyphicon-cloud-upload */
 }
 
 .pi-floppy-disk:before {
 	font-family: 'Glyphicons Halflings';
-  	content: "\e172";
+  	content: "\e172"; /* glyphicon-floppy-disk */
 }
 
 .pi-globe:before {
 	font-family: 'Glyphicons Halflings';
-  	content: "\e135";
+  	content: "\e135"; /* glyphicon-globe */
 }
 
 .pi-eye-open:before {
 	font-family: 'Glyphicons Halflings';
-  	content: "\e105";
+  	content: "\e105"; /* glyphicon-eye-open */
 }
 
 .pi-eye-close:before {
 	font-family: 'Glyphicons Halflings';
-	content: "\e106";
+	content: "\e106"; /* glyphicon-eye-close */
 }
 
 .pi-eye-slash:before {
 	font-family: 'FontAwesome';
-	content: "\f070";
+	content: "\f070"; /* fa-eye-slash */
 }
 
 /*Data Table Directive*/
 .pi-step-back-one:after{
 	font-family: FontAwesome;
-	content: "\f04b";
+	content: "\f04b"; /* fa-play */
 }
 
 .pi-step-back:before{
 	font-family: FontAwesome;
-	content: "\f048";
+	content: "\f048"; /* fa-step-backward */
 }
 
 .pi-step-forward-one:before{
 	font-family: FontAwesome;
-	content: "\f04b";
+	content: "\f04b"; /* fa-play */
 }
 
 .pi-step-forward:before{
 	font-family: FontAwesome;
-	content: "\f051";
+	content: "\f051"; /* fa-step-forward */
 }
 
 .pi-column-selector:before{
 	font-family: FontAwesome;
-	content: "\f00a";
+	content: "\f00a"; /* fa-th */
 }
 
 .pi-saved:before{
 	font-family: 'Glyphicons Halflings';
-	content: "\e173";
+	content: "\e173"; /* glyphicon-floppy-saved */
 }
 
 .pi-filter:before{
 	font-family: FontAwesome;
-	content: "\f0b0";
+	content: "\f0b0"; /* fa-filter */
 }
 
 .pi-lock:before,
 .pi-param-disable:before{
 	font-family: FontAwesome;
-	content: "\f023";
+	content: "\f023"; /* fa-lock */
 }
 
 .pi-unlock:before,
 .pi-param-enable:before,
 .pi-authorization-manager:before{
 	font-family: FontAwesome;
-	content: "\f09c"
+	content: "\f09c" /* fa-unlock */
 }
 
 
@@ -360,27 +360,27 @@ Icon implementations
 .pi-manual-activity:before,
 .pi-non-interactive-activity:before{
 	font-family:FontAwesome;
-	content:"\f013";
+	content:"\f013"; /* fa-cog */
 }
 
 .pi-notes-empty:before{
 	font-family:FontAwesome;
-	content:"\f0e6";
+	content:"\f0e6"; /* fa-comments-o */
 }
 
 .pi-quick-complete:before{
 	font-family:FontAwesome;
-	content:"\f14a";
+	content:"\f14a"; /* fa-check-square */
 }
 
 .pi-notes:before{
 	font-family:FontAwesome;
-	content:"\f086";
+	content:"\f086"; /* fa-comments*/
 }
 
 .pi-activity-abort:before{
 	font-family: 'FontAwesome';
-	content: "\f00d";
+	content: "\f00d"; /* fa-times */
 }
 
 .pi-user:before,
@@ -388,13 +388,13 @@ Icon implementations
 .pi-participant:before,
 .pi-activity-delegate:before{
 	font-family: "FontAwesome";
-	content: "\f007";
+	content: "\f007"; /* fa-user */
 }
 
 .pi-redo:before,
 .pi-rotate-right:before {
 	font-family: "FontAwesome";
-	content: "\f01e"
+	content: "\f01e" /* fa-repeat */
 }
 
 
@@ -403,12 +403,12 @@ Icon implementations
 .pi-abort:before,
 .pi-close:before{
 	font-family: 'FontAwesome';
-	content: "\f00d";
+	content: "\f00d"; /* fa-times */
 }
 
 .pi-save:before{
 	font-family: 'FontAwesome';
-	content: "\f0c7";
+	content: "\f0c7"; /* fa-floppy-o */
 }
 
 .pi-process:before,
@@ -417,128 +417,128 @@ Icon implementations
 .pi-process-details:before,
 .pi-process-overview:before{
 	font-family: 'FontAwesome';
-	content: "\f085";
+	content: "\f085"; /* fa-cogs */
 }
 
 .pi-recover:before{
 	font-family: 'FontAwesome';
-	content: "\f112";
+	content: "\f112"; /* fa-reply */
 }
 
 .pi-process-documents:before{
 	font-family: "FontAwesome";
-	content: "\f114";
+	content: "\f114"; /* fa-folder-o */
 }
 
 .pi-search:before{
 	font-family: "FontAwesome";
-	content: "\f002";
+	content: "\f002"; /* fa-search */
 }
 
 .pi-sort:before{
 	font-family: "FontAwesome";
-	content: "\f0dc";
+	content: "\f0dc"; /* fa-sort */
 }
 
 .pi-link:before,
 .pi-linked-processes{
 	font-family: "FontAwesome";
-	content: "\f0c1";
+	content: "\f0c1"; /* fa-link */
 }
 
 .pi-case:before{
 	font-family: "FontAwesome";
-	content: "\f0e0";
+	content: "\f0e0"; /* fa-envelope */
 }
 
 .pi-version:before,
 .pi-document-versions:before{
 	font-family: "FontAwesome";
-	content: "\f02d";
+	content: "\f02d"; /* fa-book */
 }
 
 .pi-import:before,
 .pi-upload:before{
 	font-family: "FontAwesome";
-	content: "\f093";
+	content: "\f093"; /* fa-upload */
 }
 
 .pi-download:before,
 .pi-export:before,
 .pi-download-document:before{
 	font-family: "FontAwesome";
-	content: "\f019";
+	content: "\f019"; /* fa-download */
 }
 
 .pi-pop-out:before,
 .pi-report-pop-out:before{
 	font-family: "FontAwesome";
-	content: "\f08e";
+	content: "\f08e"; /* fa-external-link */
 }
 
 .pi-delete:before,
 .pi-delete-model:before{
 	font-family: "FontAwesome";
-	content: "\f056";
+	content: "\f056"; /* fa-minus-circle */
 }
 
 .pi-edit:before,
 .pi-edit-qa-probability:before{
 	font-family: "FontAwesome";
-	content: "\f040";
+	content: "\f040"; /* fa-pencil */
 }
 
 .pi-rename:before{
 	font-family: "FontAwesome";
-	content: "\f044";
+	content: "\f044"; /* fa-pencil-square-o */
 }
 
 .pi-clone:before,
 .pi-clone-permissions:before{
 	font-family: "FontAwesome";
-	content: "\f24d";
+	content: "\f24d"; /* fa-clone */
 }
 
 .pi-view-tab:before,
 .pi-worklist-view:before{
 	font-family: "FontAwesome";
-	content: "\f0ea";
+	content: "\f0ea"; /* fa-clipboard */
 }
 
 .pi-undo:before,
 .pi-rotate-left:before{
 	font-family: "FontAwesome";
-	content: "\f0e2";
+	content: "\f0e2"; /* fa-undo */
 }
 
 .pi-cut:before{
 	font-family: "FontAwesome";
-	content: "\f0c4";
+	content: "\f0c4"; /* fa-scissors */
 }
 
 .pi-page-up:before{
 	font-family: "FontAwesome";
-	content: "\f062";
+	content: "\f062"; /* fa-arrow-up */
 }
 
 .pi-page-down:before{
 	font-family: "FontAwesome";
-	content: "\f063";
+	content: "\f063"; /* fa-arrow-down */
 }
 
 .pi-resubmit:before{
 	font-family: "FontAwesome";
-	content: "\f079";
+	content: "\f079"; /* fa-retweet */
 }
 
 .pi-bookmark:before{
 	font-family: "FontAwesome";
-	content: "\f097";
+	content: "\f097"; /* fa-bookmark-o */
 }
 
 .pi-extract-pages:before{
 	font-family: "FontAwesome";
-	content: "\f0f6";
+	content: "\f0f6"; /* fa-file-text-o */
 }
 
 .pi-add-row:before,
@@ -546,506 +546,506 @@ Icon implementations
 .pi-create-user:before,
 .pi-create-user-group:before{
 	font-family: "FontAwesome";
-	content: "\f055";
+	content: "\f055"; /* fa-plus-circle */
 }
 
 .pi-invalidate-user:before,
 .pi-invalidate-user-group:before{
 	font-family: "FontAwesome";
-	content: "\f05e";
+	content: "\f05e"; /* fa-ban */
 }
 
 .pi-prev-page:before{
 	font-family: "FontAwesome";
-	content: "\f104";
+	content: "\f104"; /* fa-angle-left */
 }
 
 .pi-fast-rewind:before{
 	font-family: "FontAwesome";
-	content: "\f100";
+	content: "\f100"; /* fa-angle-double-left */
 }
 
 .pi-next-page:before{
 	font-family: "FontAwesome";
-	content: "\f105";
+	content: "\f105"; /* fa-angle-right */
 }
 
 .pi-fast-forward:before{
 	font-family: "FontAwesome";
-	content: "\f101";
+	content: "\f101"; /* fa-angle-double-right */
 }
 
 .pi-deputy:before,
 .pi-deputy-managemen:before{
 	font-family: "FontAwesome";
-	content: "\f21b";
+	content: "\f21b"; /* fa-user-secret */
 }
 
 .pi-information:before{
 	font-family: "FontAwesome";
-	content: "\f05a";
+	content: "\f05a"; /* fa-info-circle */
 }
 
 .pi-expand-all:before{
 	font-family: "FontAwesome";
-	content: "\f196";
+	content: "\f196"; /* fa-plus-square-o */
 }
 
 .pi-collapse-all:before{
 	font-family: "FontAwesome";
-	content: "\f147";
+	content: "\f147"; /* fa-minus-square-o */
 }
 
 .pi-deploy-model:before{
 	font-family: "FontAwesome";
-	content: "\f0ac";
+	content: "\f0ac"; /* fa-globe */
 }
 
 .pi-attach-document:before{
 	font-family: "FontAwesome";
-	content: "\f0c6";
+	content: "\f0c6"; /* fa-paperclip */
 }
 
 .pi-export-excel:before{
 	font-family: "FontAwesome";
-	content: "\f1c3";
+	content: "\f1c3"; /* fa-file-excel-o */
 }
 
 .pi-print:before{
 	font-family: "FontAwesome";
-	content: "\f02f";
+	content: "\f02f"; /* fa-print */
 }
 
 .pi-chat:before{
 	font-family: "FontAwesome";
-	content: "\f0e5";
+	content: "\f0e5"; /* fa-comment-o */
 }
 
 .pi-qa-passed:before{
 	font-family: "FontAwesome";
-	content: "\f087";
+	content: "\f087"; /* fa-thumbs-o-up */
 }
 
 .pi-qa-failed:before{
 	font-family: "FontAwesome";
-	content: "\f088";
+	content: "\f088"; /* fa-thumbs-o-down */
 }
 
 .pi-qa-waiting:before{
 	font-family: "FontAwesome";
-	content: "\f251";
+	content: "\f251"; /* fa-hourglass-start */
 }
 
 .pi-activity-complete:before,
 .pi-terminated-events:before,
 .pi-check-box-checked:before{
 	font-family:FontAwesome;
-	content:"\f046";
+	content:"\f046"; /* fa-check-square-o */
 }
 
 .pi-user-status:before{
 	font-family:FontAwesome;
-	content:"\f111";
+	content:"\f111"; /* fa-circle */
 }
 
 .pi-org:before{
 	font-family:FontAwesome;
-	content:"\f0e8";
+	content:"\f0e8"; /* fa-sitemap */
 }
 
 .pi-role:before{
 	font-family:FontAwesome;
-	content:"\f235";
+	content:"\f235"; /* fa-user-times */
 }
 
 .pi-department:before{
 	font-family:FontAwesome;
-	content:"\f02b";
+	content:"\f02b"; /* fa-tag */
 }
 
 .pi-scope-role:before{
 	font-family:FontAwesome;
-	content:"\f235";
+	content:"\f235"; /* fa-user-times */
 }
 
 .pi-process-manager:before{
 	font-family:FontAwesome;
-	content:"\f0ad";
+	content:"\f0ad"; /* fa-wrench */
 }
 
 .pi-activity-pending:before{
 	font-family:FontAwesome;
-	content:"\f21e";
+	content:"\f21e"; /* fa-heartbeat */
 }
 
 .pi-activity-stranded:before{
 	font-family:FontAwesome;
-	content:"\f071";
+	content:"\f071"; /* fa-exclamation-triangle */
 }
 
 .pi-html:before{
 	font-family:FontAwesome;
-	content:"\f13b";
+	content:"\f13b"; /* fa-html5 */
 }
 
 .pi-image:before{
 	font-family:FontAwesome;
-	content:"\f03e";
+	content:"\f03e"; /* fa-picture-o */
 }
 
 .pi-text:before{
 	font-family:FontAwesome;
-	content:"\f0f6";
+	content:"\f0f6"; /* fa-file-text-o */
 }
 
 .pi-css:before{
 	font-family:FontAwesome;
-	content:"\f13c";
+	content:"\f13c"; /* fa-css3 */
 }
 
 .pi-xml-json:before{
 	font-family:FontAwesome;
-	content:"\f1c9";
+	content:"\f1c9"; /* fa-file-code-o */
 }
 
 .pi-csv-excel:before{
 	font-family:FontAwesome;
-	content:"\f1c3";
+	content:"\f1c3"; /* fa-file-excel-o */
 }
 
 .pi-pdf:before{
 	font-family:FontAwesome;
-	content:"\f1c1";
+	content:"\f1c1"; /* fa-file-pdf-o */
 }
 
 .pi-word:before{
 	font-family:FontAwesome;
-	content:"\f1c2";
+	content:"\f1c2"; /* fa-file-word-o */
 }
 
 .pi-ppt:before{
 	font-family:FontAwesome;
-	content:"\f1c4";
+	content:"\f1c4"; /* fa-file-powerpoint-o */
 }
 
 .pi-zip:before{
 	font-family:FontAwesome;
-	content:"\f1c6";
+	content:"\f1c6"; /* fa-file-archive-o */
 }
 
 .pi-audio:before{
 	font-family:FontAwesome;
-	content:"\f1c7";
+	content:"\f1c7"; /* fa-file-audio-o */
 }
 
 .pi-video:before{
 	font-family:FontAwesome;
-	content:"\f1c8";
+	content:"\f1c8"; /* fa-file-video-o */
 }
 
 .pi-other:before{
 	font-family:FontAwesome;
-	content:"\f016";
+	content:"\f016"; /* fa-file-o */
 }
 
 .pi-report:before{
 	font-family:FontAwesome;
-	content:"\f0ce";
+	content:"\f0ce"; /* fa-table */
 }
 
 .pi-groups:before,
 .pi-user-group-manager:before{
 	font-family:FontAwesome;
-	content:"\f0c0";
+	content:"\f0c0"; /* fa-users */
 }
 
 .pi-ban:before{
 	font-family:FontAwesome;
-	content: "\f05e";
+	content: "\f05e"; /* fa-ban */
 }
 
 .pi-torch:before{
 	font-family:starclipse;
-	content: '\F09F';
+	content: '\F09F'; /* sc-torch */
 }
 
 .pi-organization:before{
 	font-family:FontAwesome;
-	content:"\f0e8";
+	content:"\f0e8"; /* fa-sitemap */
 }
 
 .pi-check-box-unchecked:before{
 	font-family:FontAwesome;
-	content:"\f096";
+	content:"\f096"; /* fa-square-o */
 }
 
 .pi-document-repository:before{
 	font-family:FontAwesome;
-	content:"\f115";
+	content:"\f115"; /* fa-folder-open-o */
 }
 
 .pi-folder:before,
 .pi-rule-set:before{
 	font-family:FontAwesome;
-	content:"\f07b";
+	content:"\f07b"; /* fa-folder */
 }
 
 .pi-folder-open:before{
 	font-family:FontAwesome;
-	content:"\f07c";
+	content:"\f07c"; /* fa-folder-open */
 }
 
 .pi-move-pages:before,
 .pi-process-attachments:before{
 	font-family: "starclipse";
-	content:'\F04E';
+	content:'\F04E'; /* sc-documents-text-o */
 }
 
 .pi-favorite:before{
 	font-family:"FontAwesome";
-	content:"\f005";
+	content:"\f005"; /* fa-star */
 }
 
 .pi-favorite-not:before{
 	font-family:"FontAwesome";
-	content:"\f006";
+	content:"\f006"; /* fa-star-o */
 }
 
 .pi-zoom-in:before{
 	font-family:"FontAwesome";
-	content:"\f00e";
+	content:"\f00e"; /* fa-search-plus */
 }
 
 .pi-zoom-out:before{
 	font-family:"FontAwesome";
-	content:"\f010";
+	content:"\f010"; /* fa-search-minus */
 }
 
 .pi-fit-to-window:before{
 	font-family:"FontAwesome";
-	content:"\f047";
+	content:"\f047"; /* fa-arrows */
 }
 
 .pi-fit-to-height:before{
 	font-family:"FontAwesome";
-	content:"\f07d";
+	content:"\f07d"; /* fa-arrows-v */
 }
 
 .pi-fit-to-width:before{
 	font-family:"FontAwesome";
-	content:"\f07e";
+	content:"\f07e"; /* fa-arrows-h */
 }
 
 .pi-grayscale:before{
 	font-family:"FontAwesome";
-	content:"\f042";
+	content:"\f042"; /* fa-adjust */
 }
 
 .pi-invert:before{
 	font-family:"FontAwesome";
-	content:"\f15c";
+	content:"\f15c"; /* fa-file-text */
 }
 
 .pi-note:before{
 	font-family:"FontAwesome";
-	content:"\f24a";
+	content:"\f24a"; /* fa-sticky-note-o */
 }
 
 .pi-highlighter:before{
 	font-family:"FontAwesome";
-	content:"\f1fc";
+	content:"\f1fc"; /* fa-paint-brush */
 }
 
 .pi-model:before{
 	font-family:"starclipse";
-	content:'\F09E';
+	content:'\F09E'; /* sc-spiral */
 }
 
 .pi-pie-chart:before,
 .pi-report-management:before{
 	font-family:"FontAwesome";
-	content:'\f200';
+	content:'\f200'; /* fa-pie-chart */
 }
 
 .pi-resource-performance:before,
 .pi-performance-team-lead:before{
 	font-family:"FontAwesome";
-	content:'\f201';
+	content:'\f201'; /* fa-line-chart */
 }
 
 .pi-flag:before{
 	font-family:"FontAwesome";
-	content:'\f024';
+	content:'\f024'; /* fa-flag */
 }
 
 .pi-process-auxiliary:before{
 	font-family:"starclipse";
-	content:'\F02D';
+	content:'\F02D'; /* sc-cogs */
 }
 
 .pi-gantt-chart:before{
 	font-family:"starclipse";
-	content:'\F049';
+	content:'\F049'; /* sc-task */
 }
 
 .pi-stamp:before{
 	font-family:"FontAwesome";
-	content:'\f249';
+	content:'\f249'; /* fa-sticky-note */
 }
 .pi-add-column:before,
 .pi-process-diagram:before{
 	font-family:"FontAwesome";
-	content:'\f039';
+	content:'\f039'; /* fa-align-justify */
 }
 
 .pi-database:before {
 	font-family: "FontAwesome";
-	content: "\f1c0";	
+	content: "\f1c0"; /* fa-database */
 }
 
 .pi-dataset:before {
 	font-family: "FontAwesome";
-	content: "\f0ce";
+	content: "\f0ce"; /* fa-table */
 }
 
 .pi-layout:before {
 	font-family: "FontAwesome";
-	content: "\f1ec";
+	content: "\f1ec"; /* fa-calculator */
 }
 
 .pi-bar-chart:before {
 	font-family: "FontAwesome";
-	content: "\f080";
+	content: "\f080"; /* fa-bar-chart */
 }
 
 .pi-storage:before {
 	font-family: "FontAwesome";
-	content: "\f233";
+	content: "\f233"; /* fa-server */
 }
 
 .pi-scheduling:before {
 	font-family: "FontAwesome";
-	content: "\f274";
+	content: "\f274"; /* fa-calendar-check-o */
 }
 
 .pi-error:before {
 	font-family: "FontAwesome";
-	content: "\f071";
+	content: "\f071"; /* fa-exclamation-triangle */
 }
 
 .pi-trigger-expand:before {
 	font-family: "FontAwesome";
-	content: "\f078";
+	content: "\f078"; /* fa-chevron-down */
 }
 
 .pi-trigger-collapse:before {
 	font-family: "FontAwesome";
-	content: "\f054";
+	content: "\f054"; /* fa-chevron-right */
 }
 
 .pi-rule:before {
 	font-family: FontAwesome;
-	content: "\f07b";
+	content: "\f07b"; /* fa-folder */
 }
 
 .pi-technical-rule:before{
 	font-family: FontAwesome;
-	content: "\f1ea";
+	content: "\f1ea"; /* fa-newspaper-o */
 }
 
 .pi-decision-table:before{
 	font-family: FontAwesome;
-	content: "\f0ce";
+	content: "\f0ce"; /* fa-table */
 }
 
 .pi-column-attributes:before{
 	font-family: FontAwesome;
-	content: "\f0ce";
+	content: "\f0ce"; /* fa-table */
 }
 
 .pi-column-actions:before{
 	font-family: FontAwesome;
-	content: "\f0ce";
+	content: "\f0ce"; /* fa-table */
 }
 
 .pi-column-conditions:before{
 	font-family: FontAwesome;
-	content: "\f0ce";
+	content: "\f0ce"; /* fa-table */
 }
 
 .pi-column-attribute:before{
 	font-family: FontAwesome;
-	content: "\f02b";
+	content: "\f02b"; /* fa-tag */
 }
 
 .pi-column-primitive:before{
 	font-family: FontAwesome;
-	content: "\f1c0";
+	content: "\f1c0"; /* fa-database */
 }
 
 .pi-column-sequence:before{
 	font-family: FontAwesome;
-	content: "\f1b3";
+	content: "\f1b3"; /* fa-cubes */
 }
 
 .pi-palette:before{
 	font-family: FontAwesome;
-	content: "\f044";
+	content: "\f044"; /* fa-pencil-square-o */
 }
 
 .pi-font{
 	font-family: FontAwesome;
-	content: "\f031";
+	content: "\f031"; /* fa-font */
 }
 
 .pi-replace{
 	font-family: FontAwesome;
-	content: "\f0ea";
+	content: "\f0ea"; /* fa-clipboard */
 }
 
 .pi-process-diagram:before{
 	font-family:"FontAwesome";
-	content:'\f039';
+	content:'\f039'; /* fa-align-justify */
 }
 
 .pi-panel-expand:before{
 	font-family:"FontAwesome";
-	content:'\f061';
+	content:'\f061'; /* fa-arrow-right */
 }
 
 .pi-panel-collapse:before{
 	font-family:"FontAwesome";
-	content:'\f063';
+	content:'\f063'; /* fa-arrow-down */
 }
 
 .pi-information-circle:before,
 .pi-exception-circle:before{
 	font-family:"FontAwesome";
-	content:'\f06a';
+	content:'\f06a'; /* fa-exclamation-circle */
 }
 
 .pi-activity-state:before{
 	font-family:"FontAwesome";
-	content:"\f013";
+	content:"\f013"; /* fa-cog */
 }
 
 .pi-activity-auxiliary:before{
 	font-family:"FontAwesome";
-	content:'\f0a3';
+	content:'\f0a3'; /* fa-certificate */
 }
 
 .pi-font:before{
 	font-family:"FontAwesome";
-	content:'\f031';
+	content:'\f031'; /* fa-font */
 }
 
 .pi-start-daemon:before{
 	font-family:"FontAwesome";
-	content:'\f04b';
+	content:'\f04b'; /* fa-play */
 }
 
 .pi-stop-daemon:before{
 	font-family:"FontAwesome";
-	content:'\f04d';
+	content:'\f04d'; /* fa-stop */
 	color: 'red'
 }
