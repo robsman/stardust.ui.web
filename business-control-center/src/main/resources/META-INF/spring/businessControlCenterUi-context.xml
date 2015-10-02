@@ -185,11 +185,20 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		
 		<ippui:view name="ganttChartView" identityParams="processInstanceOId"
 			include="/plugins/html5-business-control-center/partials/views/ganttChartView.html">
+			<ippui:preferences>
+				<ippui:preferencePage name="icon"
+					include="/does-not-exist/gantt-chart.png" />
+			</ippui:preferences>
 		</ippui:view>
 
 		<ippui:view name="processDiagramView"
 			include="/plugins/business-control-center/views/processDiagramView.xhtml"
-			controller="ippBCCDiagramBean" identityParams="processInstanceOId" />
+			controller="ippBCCDiagramBean" identityParams="processInstanceOId">
+			<ippui:preferences>
+				<ippui:preferencePage name="icon"
+					include="/does-not-exist/process-diagram.png" />
+			</ippui:preferences>
+		</ippui:view>
 
 		<ippui:view name="deputyTeamMemberView"
 			include="/plugins/html5-business-control-center/partials/views/deputyManagementView.html">

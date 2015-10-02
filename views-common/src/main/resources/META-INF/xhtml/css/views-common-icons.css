@@ -8,152 +8,237 @@
  * Contributors:
  *     SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
- .clipboard-task:before{
+ 
+/* Workflow Execution Views */
+ 
+.clipboard-task:before{
 	font-family: "FontAwesome";
-	content: "\f0ea";
+	content: "\f0ea"; /* fa-clipboard */
 }
 
 .activity:before{
 	font-family: "FontAwesome";
-	content:"\f013";
-}
-
-.process:before{
-	font-family: "FontAwesome";
-	content: "\f085";
-}
-
-.page_white_find:before{
-	font-family: "FontAwesome";
-	content: "\f002";
-}
-
-.envelope:before {
-	font-family: "FontAwesome";
-	content: "\f0e0";
-}
-
-.chart-pie:before {
-	font-family:"FontAwesome";
-	content:'\f200';
-}
-
-.user-silhouette:before{
-	font-family: "FontAwesome";
-	content: "\f21b";
-}
-
-.process_manager:before{
-	font-family:"FontAwesome";
-	content:"\f0ad";
-}
-
-.cog_search:before{
-	font-family: "FontAwesome";
-	content: "\f002";
-}
-
-.pending_activities:before{
-	font-family:"FontAwesome";
-	content:"\f21e";
-}
-
-.activity_completed:before{
-	font-family:"FontAwesome";
-	content:"\f046";
-}
-
-.activity_postponed:before{
-	font-family: "FontAwesome";
-	content:"\f21e";
-}
-
-.activity_stranded:before{
-	font-family: "FontAwesome";
-	content:"\f071";
-}
-
-.group:before{
-	font-family:FontAwesome;
-	content:"\f0c0";
-}
-
-.role:before{
-	font-family: "FontAwesome";
-	content: "\f007";
-}
-
-.group_key:before {
-	font-family:FontAwesome;
-	content:"\f0c0";
-}
-
-.chart-up:before {
-	font-family:"FontAwesome";
-	content:'\f201';
-}
-
-.chart-up-color:before {
-	font-family:"FontAwesome";
-	content:'\f1fe';
-}
-
-.traffic_light:before {
-	font-family:"FontAwesome";
-	content:'\f024';
-}
-
-.money-coin:before {
-	font-family:"FontAwesome";
-	content:'\f0d6';
-}
-
-.criticality_manager:before{
-	font-family: starclipse;
-    content:'\F060';
+	content:"\f013"; /* fa-cog */
 }
 
 .notes-filled:before{
 	font-family: "FontAwesome";
-	content:"\f086";
+	content:"\f086"; /* fa-comments */
 }
 
 .notes-blank:before{
 	font-family:"FontAwesome";
-	content:"\f0e6";
+	content:"\f0e6"; /* fa-comments-o */
+}
+
+.my-documents-view:before,
+.repository-view:before {
+	font-family: "FontAwesome";
+	content:"\f115"; /* fa-folder-open-o */
+}
+
+.page_white_find:before{
+	font-family: "FontAwesome";
+	content: "\f002"; /* fa-search */
 }
 
 .activity_qa_passed:before{
 	font-family: "FontAwesome";
-	content: "\f087";
+	content: "\f087"; /* fa-thumbs-o-up */
 }
 
 .activity_qa_failed:before{
 	font-family: "FontAwesome";
-	content: "\f088";
+	content: "\f088"; /* fa-thumbs-o-down */
 }
 
 .activity_qa_await:before{
 	font-family: "FontAwesome";
-	content: "\f251";
+	content: "\f251"; /* fa-hourglass-start */
 }
 
-.html:before{
+/* Business Control Center Views */
+
+.chat-view:before {
+	font-family: "FontAwesome";
+	content:"\f0e5"; /* fa-comment-o */
+}
+ 
+.process_manager:before{
 	font-family:"FontAwesome";
-	content:"\f13b";
+	content:"\f0ad"; /* fa-wrench */
 }
 
-.document-image:before {
+.cog_search:before{
+	font-family: "FontAwesome";
+	content: "\f002"; /* fa-search */
+}
+
+.pending_activities:before{
 	font-family:"FontAwesome";
-	content:"\f1c5;";
+	content:"\f21e"; /* fa-heartbeat */
 }
 
-.images:before{
+.activity_completed:before{
 	font-family:"FontAwesome";
-	content:"\f03e";
+	content:"\f046"; /* fa-check-square-o */
 }
 
-.document-pdf-text:before{
+.activity_postponed:before{
+	font-family: "FontAwesome";
+	content:"\f017"; /* fa-clock-o */
+}
+
+.activity_stranded:before{
+	font-family: "FontAwesome";
+	content:"\f071"; /* fa-exclamation-triangle */
+}
+
+.group:before{
+	font-family:FontAwesome;
+	content:"\f0f4"; /* fa-coffee */
+}
+
+.role:before{
+	font-family: "FontAwesome";
+	content: "\f234"; /* fa-user-plus */
+}
+
+.group_key:before {
+	font-family:FontAwesome;
+	content:"\f090"; /* fa-sign-in */
+}
+
+.chart-up:before {
+	font-family:"FontAwesome";
+	content:'\f201'; /* fa-line-chart */
+}
+
+.chart-up-color:before {
+	font-family:"FontAwesome";
+	content:'\f1fe'; /* fa-area-chart */
+}
+
+.traffic_light:before {
+	font-family:"FontAwesome";
+	content:'\f024'; /* fa-flag */
+}
+
+.money-coin:before {
+	font-family:"FontAwesome";
+	content:'\f0d6'; /* fa-money */
+}
+
+.criticality_manager:before{
+	font-family: "FontAwesome";
+    content:'\f024'; /* fa-flag */
+}
+
+.gantt-chart:before{
+	font-family: starclipse;
+    content:'\F049'; /* sc-task */
+}
+
+.process-diagram:before{
+	font-family: starclipse;
+    content:'\F060'; /* sc-flag */
+}
+
+.process:before{
+	font-family: "FontAwesome";
+	content: "\f085"; /* fa-cogs */
+}
+
+.envelope:before {
+	font-family: "FontAwesome";
+	content: "\f0e0"; /* fa-envelope */
+}
+
+.chart-pie:before {
+	font-family:"FontAwesome";
+	content:'\f200'; /* fa-pie-chart */
+}
+
+.user-silhouette:before{
+	font-family: "FontAwesome";
+	content: "\f21b"; /* fa-user-secret */
+}
+
+/* Admininistration Perspective Views */
+ 
+ .log-entries:before {
+	font-family:"FontAwesome";
+	content:"\f090"; /* fa-sign-in */
+}
+
+.realm-manager:before {
+	font-family:"FontAwesome";
+	content:"\f1b2"; /* fa-cube */
+}
+
+.daemons:before {
+	font-family:"FontAwesome";
+	content:'\f0E7'; /* fa-bolt */
+}
+
+.user-group:before {
+	font-family:"FontAwesome";
+	content:"\f0c0"; /* fa-users */
+}
+
+.activity-overview:before {
+	font-family:"FontAwesome";
+	content:"\f013"; /* fa-cog */
+}
+
+.process-overview:before {
+	font-family:"FontAwesome";
+	content:"\f085"; /* fa-cogs */
+}
+
+.model-manager:before {
+	font-family: "starclipse";
+	content: '\f09E'; /* sc-spiral */
+}
+
+.configuration-variables:before {
+	font-family:"FontAwesome";
+	content:"\f044"; /* fa-pencil-square-o */
+}
+
+.password-security:before {
+	font-family:"FontAwesome";
+	content:"\f084"; /* fa-key */
+}
+
+.criticality-configuration:before {
+	font-family:"FontAwesome";
+	content:"\f11d"; /* fa-flag-o */
+}
+
+.qa-manager:before {
+	font-family:"FontAwesome";
+	content:"\f087"; /* fa-thumbs-o-up */
+}
+
+.preference-store:before {
+	font-family:"FontAwesome";
+	content:"\f14a"; /* fa-check-square */
+}
+
+.participant-manager:before {
+	font-family:"FontAwesome";
+	content:"\f007"; /* fa-user */
+}
+
+.authorization-manager-view:before {
+	font-family: "FontAwesome";
+	content:"\f09c"; /* fa-unlock */
+}
+
+/* Document Viewer Views */
+ 
+ .document-pdf-text:before{
 	font-family:"FontAwesome";
 	content:"\f1c1";
 }
@@ -203,6 +288,21 @@
 	content:"\f1c3";
 }
 
+.html:before{
+	font-family:"FontAwesome";
+	content:"\f13b";
+}
+
+.document-image:before {
+	font-family:"FontAwesome";
+	content:"\f1c5";
+}
+
+.images:before{
+	font-family:"FontAwesome";
+	content:"\f03e";
+}
+
 .tree_document:before {
 	font-family: "FontAwesome";
 	content:"\f016";
@@ -216,14 +316,4 @@
 .document-excel-csv:before{
 	font-family: "FontAwesome";
 	content:"\f1c3";
-}
-
-.user_group_manager:before{
-	font-family: "FontAwesome";
-	content:"\f0c0";
-}
-
-.password_security:before{
-	font-family: "FontAwesome";
-	content:"\f084";
 }

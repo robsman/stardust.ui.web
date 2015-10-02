@@ -43,31 +43,31 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		
 		<!-- VIEWS -->
 		<ippui:view name="overview"
-			include="/plugins/html5-admin-portal/partials/views/overviewView.html"/>
+			include="/plugins/html5-admin-portal/partials/views/overviewView.html">	   		<ippui:preferences>				<ippui:preferencePage name="icon" include="/does-not-exist/log-entries.png" />			</ippui:preferences>		</ippui:view>
 		<ippui:view name="realmMgmt"
-			include="/plugins/html5-admin-portal/partials/views/realmManagement.html" />
+			include="/plugins/html5-admin-portal/partials/views/realmManagement.html">	   		<ippui:preferences>				<ippui:preferencePage name="icon" include="/does-not-exist/realm-manager.png" />			</ippui:preferences>		</ippui:view>
 		<ippui:view name="daemons"
-			include="/plugins/html5-admin-portal/partials/views/daemonView.html"/>
+			include="/plugins/html5-admin-portal/partials/views/daemonView.html">	   		<ippui:preferences>				<ippui:preferencePage name="icon" include="/does-not-exist/daemons.png" />			</ippui:preferences>		</ippui:view>
 		<ippui:view name="userGroupMgmt"
-			include="/plugins/html5-admin-portal/partials/views/userGroupView.html"/>
+			include="/plugins/html5-admin-portal/partials/views/userGroupView.html">	   		<ippui:preferences>				<ippui:preferencePage name="icon" include="/does-not-exist/user-group.png" />			</ippui:preferences>		</ippui:view>
 		<ippui:view name="activityView"
-			include="/plugins/html5-admin-portal/partials/views/activityView.html" />
+			include="/plugins/html5-admin-portal/partials/views/activityView.html">	   		<ippui:preferences>				<ippui:preferencePage name="icon" include="/does-not-exist/activity-overview.png" />			</ippui:preferences>		</ippui:view>
 		<ippui:view name="processView"
-			include="/plugins/html5-admin-portal/partials/views/processOverview.html"/>
+			include="/plugins/html5-admin-portal/partials/views/processOverview.html">	   		<ippui:preferences>				<ippui:preferencePage name="icon" include="/does-not-exist/process-overview.png" />			</ippui:preferences>		</ippui:view>
 			
 		<ippui:view name="modelManagementView"
-			include="/plugins/admin-portal/views/model/modelManagementView.xhtml" controller="modelManagementBean"/>	
+			include="/plugins/admin-portal/views/model/modelManagementView.xhtml" controller="modelManagementBean">	   		<ippui:preferences>				<ippui:preferencePage name="icon" include="/does-not-exist/model-manager.png" />			</ippui:preferences>		</ippui:view>	
 		
 		<ippui:view name="deployModelView"
 			include="/plugins/admin-portal/views/model/deployModelView.xhtml" controller="deployModelBean"/>
 
 		<ippui:view name="configurationVariablesView"
-			include="/plugins/admin-portal/views/model/configurationVariablesView.xhtml" controller="configurationVariablesBean"/>					
+			include="/plugins/admin-portal/views/model/configurationVariablesView.xhtml" controller="configurationVariablesBean">	   		<ippui:preferences>				<ippui:preferencePage name="icon" include="/does-not-exist/configuration-variables.png" />			</ippui:preferences>		</ippui:view>					
 		<ippui:view name="passwordMgmt"
-			include="/plugins/html5-admin-portal/partials/views/passwordManagementView.html" />		<ippui:view name="criticalityConf"
-			include="/plugins/html5-admin-portal/partials/views/criticalityConfig.html"/>			
+			include="/plugins/html5-admin-portal/partials/views/passwordManagementView.html">	   		<ippui:preferences>				<ippui:preferencePage name="icon" include="/does-not-exist/password-security.png" />			</ippui:preferences>		</ippui:view>		<ippui:view name="criticalityConf"
+			include="/plugins/html5-admin-portal/partials/views/criticalityConfig.html">	   		<ippui:preferences>				<ippui:preferencePage name="icon" include="/does-not-exist/criticality-configuration.png" />			</ippui:preferences>		</ippui:view>			
 		<ippui:view name="qaManagementView" 
-			include="/plugins/html5-admin-portal/partials/views/qaManagementView.html" />		<ippui:view name="prefManagerBean" 			include="/plugins/html5-admin-portal/partials/views/preferenceManagerView.html"/>		<ippui:view name="participantMgmt"				include="/plugins/html5-admin-portal/partials/views/participantManagementView.html">				<ippui:preferences>					<ippui:preferencePage name="configuration" include="/plugins/admin-portal/views/participantMgtConfiguration.xhtml" />				</ippui:preferences>		</ippui:view>
+			include="/plugins/html5-admin-portal/partials/views/qaManagementView.html">	   		<ippui:preferences>				<ippui:preferencePage name="icon" include="/does-not-exist/qa-manager.png" />			</ippui:preferences>		</ippui:view>		<ippui:view name="prefManagerBean" 			include="/plugins/html5-admin-portal/partials/views/preferenceManagerView.html">	   		<ippui:preferences>				<ippui:preferencePage name="icon" include="/does-not-exist/preference-store.png" />			</ippui:preferences>		</ippui:view>		<ippui:view name="participantMgmt"				include="/plugins/html5-admin-portal/partials/views/participantManagementView.html">				<ippui:preferences>					<ippui:preferencePage name="configuration" include="/plugins/admin-portal/views/participantMgtConfiguration.xhtml" />				<ippui:preferencePage name="icon" include="/does-not-exist/participant-manager.png" />				</ippui:preferences>		</ippui:view>
 			
 	</ippui:perspective>
 

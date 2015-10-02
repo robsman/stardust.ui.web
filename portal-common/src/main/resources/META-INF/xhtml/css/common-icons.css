@@ -12,10 +12,10 @@
 
 .tabIcon-generic:before{
 	font-family:FontAwesome;
-	content:"\f016";
+	content:"\f016"; /* fa-file-o */
 }
 
 .bell {
     font-family:FontAwesome;
-	content:"\f0f3";
+	content:"\f0f3"; /* fa-bell */
 }
