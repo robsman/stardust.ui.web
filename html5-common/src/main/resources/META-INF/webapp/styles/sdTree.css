@@ -164,8 +164,14 @@ ul.sd-tree .title-section a{
   border:solid 1px #fff;
 }
 
-ul.sd-tree a.tree-node:hover{
-  background:#ddd;
+ul.sd-tree a.tree-node:hover span{
+  background:#ffffe0;
+  text-decoration:underline;
+}
+
+.sd-tree .match > div > a > span{
+	background: #f4f4f4;
+	border-radius: 2px;
 }
 
 ul.sd-tree i.selected + span {
@@ -178,14 +184,6 @@ ul.sd-tree i.invalid:before{
 	color: red !important;
 }
 
-.sd-tree .match > div > a {
-	background: rgb(77, 114, 171);
-	border-radius: 2px;
-}
-
-.sd-tree .match > div > a > span{
-  color : #FFF !important;
-}
 
 .sd-tree .hide {
 	display: none;

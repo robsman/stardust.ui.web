@@ -7163,8 +7163,15 @@ li.sg-tab:hover{
 .navbar .nav>li>a,
 .navbar .noLinkSpan
 {
-	color:#9aa1ab;
+	color:#dedede;
 }
+
+.navbar .nav>li>a:hover span,
+.navbar .noLinkSpan:hover span
+{
+	color:#fff !important;
+}
+
 
 /*Bell icon in SG main nav bar*/
 i.viewIconBase.bell{
