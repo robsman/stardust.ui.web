@@ -140,8 +140,8 @@
 }
 
 .process-diagram:before{
-	font-family: starclipse;
-    content:'\F060'; /* sc-flag */
+	font-family:"FontAwesome";
+	content:'\f039'; /* fa-align-justify */
 }
 
 .process:before{
