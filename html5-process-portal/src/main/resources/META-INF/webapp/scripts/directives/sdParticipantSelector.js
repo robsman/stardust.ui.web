@@ -103,22 +103,25 @@
 			
 			function tagPreMapper(item, index) {
 				var tagClass = '';
-
+				console.log(item.type);
 				switch (item.type) {
 				case 'USER':
-					tagClass = 'sd-particpant-img-tag-user';
+					tagClass = 'pi pi-1x pi-user';
 					break;
 				case 'ROLE':
-					tagClass = 'sd-particpant-img-tag-role';
+					tagClass = 'pi pi-1x pi-role';
+					break;
+				case 'SCOPED_ROLE':
+					tagClass = 'pi pi-1x pi-role'; //TODO:user-cog single icon from sc
 					break;
 				case 'ORGANIZATION':
-					tagClass = 'sd-particpant-img-tag-org';
+					tagClass = 'pi pi-1x pi-organization';
 					break;
 				case 'DEPARTMENT':
-					tagClass = 'sd-particpant-img-tag-dept';
+					tagClass = 'pi pi-1x pi-department';
 					break;
 				case 'USERGROUP':
-					tagClass = 'sd-particpant-img-tag-ugrp';
+					tagClass = 'pi pi-1x pi-user-group';
 					break;
 				}
 				return tagClass;

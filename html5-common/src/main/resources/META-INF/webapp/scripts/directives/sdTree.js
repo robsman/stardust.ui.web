@@ -592,8 +592,8 @@
 	          'ng-init="isVisible=false" class="title-section">',
 	          '<div class="expand-section">',
 	          '<i ng-click="invokeCallback(\'node-expand\',$event)" ',
-	          'ng-class="{\'sd-tree-expand\':!isVisible && !isLeaf,',
-	          '\'sd-tree-collapse\':isVisible }" class="glyphicons glyphicon"></i>',
+	          'ng-class="{\'pi-arrow-r\':!isVisible && !isLeaf,',
+	          '\'pi-arrow-d\':isVisible }" class="pi"></i>',
 	          '</div>',
 	          '<a href="" ' + dragdropStr + ' title="{{' + attrs.sdaTitle + '}}" ng-model="nodeItem"  ng-click="invokeCallback(\'node-click\',$event)"  class="tree-node">',
 	          '<i ng-class="getIconClass() + \' \' + iconClass" class="js-icon pi pi-badge">' +

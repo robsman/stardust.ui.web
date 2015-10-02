@@ -31,7 +31,7 @@ Supported fonts we wrap for our portal icon (pi-) classes
 	font-style: normal;
 	font-weight: normal;
 	line-height: 1;
-	color: #A69A88;
+	color: red !important;/*#A69A88;*/
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale; 
 }
@@ -112,11 +112,11 @@ button.pi{
 	background:transparent;
 	border:none;
 	cursor:pointer;
-	opacity:0.75;
+	color:#A69A88;
 }
 
 button.pi:hover{
-	opacity:1.0;
+	color:#906C37;
 }
 
 button.pi:focus {
@@ -384,7 +384,6 @@ Icon implementations
 }
 
 .pi-user:before,
-.pi-role:before,
 .pi-participant:before,
 .pi-activity-delegate:before{
 	font-family: "FontAwesome";
@@ -754,6 +753,7 @@ Icon implementations
 }
 
 .pi-groups:before,
+.pi-user-group,
 .pi-user-group-manager:before{
 	font-family:FontAwesome;
 	content:"\f0c0"; /* fa-users */
@@ -923,6 +923,10 @@ Icon implementations
 	content: "\f233"; /* fa-server */
 }
 
+.pi-calendar:before{
+	font-family: "FontAwesome";
+	content: "\f073"; /* fa-calendar */
+}
 .pi-scheduling:before {
 	font-family: "FontAwesome";
 	content: "\f274"; /* fa-calendar-check-o */
@@ -943,6 +947,7 @@ Icon implementations
 	content: "\f054"; /* fa-chevron-right */
 }
 
+.pi-folder:before,
 .pi-rule:before {
 	font-family: FontAwesome;
 	content: "\f07b"; /* fa-folder */

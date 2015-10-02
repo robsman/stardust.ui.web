@@ -5616,7 +5616,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 /* Styles for ice:tree */
 
 .iceTreeRow a, .iceTreeRow a .iceOutTxt {
-	color: #00629A;
+	color: #A69A88;
 }
 
 .iceTreeRow a:hover {
@@ -5624,7 +5624,12 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 }
 
 .iceTreeRow a .iceOutTxt:hover {
-	color: #B0232B;
+	color: #906C37 ;
+	text-decoration: none;
+}	
+
+.iceTreeRow a:hover:before{
+	color: #906C37 !important;
 	text-decoration: none;
 }	
 
@@ -7706,6 +7711,13 @@ x-img[src *='disk_multiple.png']:hover{
 {
 	background-image: url(./images/flat-icons/application-web-service.png) !important;
 	background-position: 0 0 !important;
+	opacity:0.7;
+}
+
+.jstree li[rel="erroredModel"] > a > .jstree-icon
+{
+    background-image:url('./images/flat-icons/model-error.png') !important;
+    background-position: 0 0 !important;
 	opacity:0.7;
 }
 

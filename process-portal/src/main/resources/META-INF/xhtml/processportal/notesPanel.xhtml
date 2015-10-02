@@ -68,9 +68,7 @@
 				action="#{processportal_NotesBean.saveNote}">
 				<pc:automationTag value="auto-PP-NotesView-Save" standAlone="false"/>
 				<ice:panelGrid columns="2">
-					<ice:outputText styClass="pi pi-save icon-lg" />
-					<ice:outputText
-						value="#{processportal_NotesBean.messages['button.save']}" />
+					<ice:outputText styleClass="pi pi-save icon-lg" title="#{processportal_NotesBean.messages['button.save']}"/>
 				</ice:panelGrid>
 			</ice:commandLink>
 			<ice:commandLink rendered="#{processportal_NotesBean.editMode}"
@@ -78,10 +76,7 @@
 				action="#{processportal_NotesBean.cancelNote}">
 				<pc:automationTag value="auto-PP-NotesView-Cancel" standAlone="false"/>
 				<ice:panelGrid columns="2">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/cross.png"  title="#{processportal_NotesBean.messages['button.cancel']}"/>
-					<ice:outputText
-						value="#{processportal_NotesBean.messages['button.cancel']}" />
+					<ice:outputText styleClass="pi pi-delete pi-1x" title="#{processportal_NotesBean.messages['button.cancel']}"/>
 				</ice:panelGrid>
 			</ice:commandLink>
 		</ice:panelGrid>
