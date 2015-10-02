@@ -12,12 +12,16 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
+import org.eclipse.stardust.ui.web.modeler.authorization.AuthorizationExtensionRegistry;
 
 public final class ClassesHelper
 {
+   private static final Logger trace = LogManager.getLogger(ClassesHelper.class);
 
    private static final Map<String, Class<? >> PRIMITIVE_NAME_TYPE_MAP = new HashMap<String, Class<? >>();
 
@@ -328,7 +332,7 @@ public final class ClassesHelper
       }
       catch (Throwable t)
       {
-         t.printStackTrace();         
+         trace.info("Class '" + className + "' or method '" + methodSignature + "' could not be found.");         
          throw t;
       }
 
