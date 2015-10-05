@@ -96,19 +96,19 @@
 		
 		<div ng-show="ctrl.benchmarkFilter==='Published'">
 		
-			<a href="" 
+			<button 
 		       ng-click="ctrl.downloadBenchmarkAsFile(ctrl.selectedBenchmark,ctrl.benchmarkFilter)" 
+		       ng-disabled="!ctrl.selectedBenchmark"
 		       title="{{ctrl.textMap.downloadBenchmark}}" 
-		       class="tbl-toolbar-item tbl-tool-link">
-		       <i class="pi pi-download"></i>
-		    </a>
+		       class="pi pi-1x pi-download">
+		    </button>
 		    
-		    <a href="" 
+		    <button 
 		       ng-click="ctrl.deleteBenchmark(ctrl.selectedBenchmark.id)" 
+		       ng-disabled="!ctrl.selectedBenchmark"
 		       title="{{ctrl.textMap.deleteBenchmark}}" 
-		       class="tbl-toolbar-item tbl-tool-link">
-		       <i class="pi pi-minus-sign"></i>
-		    </a>	
+		       class="pi pi-1x pi-minus-sign">
+		    </button>	
 		    
 		</div>
 		

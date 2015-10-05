@@ -1,10 +1,5 @@
 <div class="view-panel ng-hide" ng-show="true" ng-controller="sdOverviewCtrl as ctrl" sg-stretch-to-bottom>
-	<div class="view-panel-toolbar toolbar-buttons">
-		<div class="view-toolbar-section">
-			<span sd-refresh sda-on-refresh="ctrl.refresh();"
-			aid="ADM-Overview"></span>
-		</div>
-	</div>
+
 		<div class="overview-wrapper">
 			<div>
 				<div class="view-panel-toolbar heading">
@@ -57,6 +52,9 @@
 			<div class="view-panel-content">
 				<div class="view-panel-toolbar heading">
 					{{i18n('admin-portal-messages.views-overview-logTable-title')}}</div>
+				<div sda-toolbar>
+					<span sd-refresh sda-on-refresh="ctrl.refresh();" aid="ADM-Overview"></span>
+				</div>
 				<table sd-data-table="ctrl.allLogEntriesTable"
 					sd-data="ctrl.getAllLogEntries(params)" sda-mode="remote"
 					sda-selectable="multiple"

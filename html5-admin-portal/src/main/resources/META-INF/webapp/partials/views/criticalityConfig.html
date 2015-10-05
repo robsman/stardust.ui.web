@@ -1,13 +1,6 @@
 <div class="view-panel" ng-controller="sdCriticalityConfigCtrl as ctrl"
 	sg-stretch-to-bottom>
-	<!-- Save Button -->
-
-	<div class="view-panel-toolbar toolbar-buttons">
-		<div class="view-toolbar-section" >
-			<span sd-save sda-on-save="ctrl.save()" 
-			      aid="ADM-CriticalityConfig-Toolbar"></sapn>
-		</div>
-	</div>
+	
 	<div>
 		<div class="heading" ng-bind="i18n('admin-portal-messages.views-criticalityConf-criticality-categories-title')"></div>
 		<div class="clearing"></div>
@@ -154,6 +147,12 @@
 		</div>
 		<div class="clearing"></div>
 	</div>
+	
+	<!-- Save Button -->
+	<button ng-bind="i18n('admin-portal-messages.views-criticalityConf-save-label')" 
+			ng-click="ctrl.save();" 
+			aid="ADM-PwdMgmt-SaveBtn" 
+			class="button">Save</button>
 	
 	<div sd-dialog sda-show="ctrl.showImportDlg" sda-type="alert" sda-cancel-action-label="{{i18n('views-common-messages.common-ok')}}"
 		sda-on-close="ctrl.importCriticalities()" sda-title="{{i18n('admin-portal-messages.views-criticalityConf-importDialog-title')}}"

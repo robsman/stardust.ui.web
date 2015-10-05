@@ -1,17 +1,12 @@
 <div class="view-panel ng-hide" ng-show="true" ng-controller="sdUserGroupCtrl as ctrl"
 	sg-stretch-to-bottom>
 
-	<!-- View Toolbar -->
-	<div class="view-panel-toolbar toolbar-buttons">
-		<div class="view-toolbar-section" >
-			<span sd-refresh sda-on-refresh="ctrl.refresh();"
-			aid="ADM-UserGrpMgmt"></span>
-		</div>
-	</div>
+
 	
 	<div class="view-panel-toolbar">
 		<label>{{i18n('admin-portal-messages.views-userGroupMgmt-userGroups-label')}}</label>
 	</div>
+	
 	<div>
 		<table>
 			<tr>
@@ -44,6 +39,7 @@
 					<i class="pi pi-invalidate-user-group pi-lg" />
 				</button>
 			</div>
+			<span sd-refresh sda-on-refresh="ctrl.refresh();" aid="ADM-UserGrpMgmt"></span>
 		</div>
 		<table sd-data-table="ctrl.userGroupDataTable"
 			sd-data="ctrl.fetchUserGroups(params)" sda-mode="remote"
