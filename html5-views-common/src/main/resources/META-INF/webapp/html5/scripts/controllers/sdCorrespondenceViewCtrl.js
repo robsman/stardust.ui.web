@@ -60,10 +60,10 @@
   };
 
   Controller.prototype.addressIconMapper = function(item, index) {
-    var tagClass = "glyphicon glyphicon-envelope"
+    var tagClass = "pi pi-email"
 
     if (item.type == 'fax') {
-      tagClass = "fa fa-fax";
+      tagClass = "pi pi-fax";
     }
     return tagClass;
   };
@@ -146,7 +146,7 @@
   }
 
   function isEmail(metaData) {
-    if (metaData.To || metaData.BCC || metaData.CC) { return true }
+    if (metaData && (metaData.To || metaData.BCC || metaData.CC)) { return true }
     return false;
   }
 

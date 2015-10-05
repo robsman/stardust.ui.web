@@ -453,6 +453,7 @@ Icon implementations
 	content: "\f0c1"; /* fa-link */
 }
 
+.pi-email:before,
 .pi-case:before{
 	font-family: "FontAwesome";
 	content: "\f0e0"; /* fa-envelope */
@@ -1066,4 +1067,9 @@ Icon implementations
 .pi-dialog-close:before {
 	font-family: "FontAwesome";
 	content: "\f00d"; /* fa-times */
+}
+
+.pi-fax:before {
+	font-family: "FontAwesome";
+	content: "\f1ac"; /* fa-fax */
 }

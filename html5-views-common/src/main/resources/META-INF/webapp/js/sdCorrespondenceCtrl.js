@@ -713,9 +713,9 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	 * 
 	 */
 	CorrespondenceCtrl.prototype.addressIconMapper = function(item, index) {
-		var tagClass = "glyphicon glyphicon-envelope"
+		var tagClass = "pi pi-email"
 			if(item.type == 'fax'){
-				tagClass ="fa fa-fax";
+				tagClass ="pi pi-fax";
 			}
 		return tagClass;
 	};
@@ -790,7 +790,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 							'</span>'+
 						'</span >'+
 						'</div>'+
-						'<i class="glyphicon glyphicon-search"> </i>	<input type="text"  class="spacing-right"  ng-model="ctrl.dialog.filter.address.value" ng-change="ctrl.addressTable.refresh();"/>'+
+						'<i class="pi pi-search icon-lg"> </i>	<input type="text"  class="spacing-right"  ng-model="ctrl.dialog.filter.address.value" ng-change="ctrl.addressTable.refresh();"/>'+
 						'<input class="correspondence_addressBook_fax_control" type="checkbox" ng-model="ctrl.dialog.filter.address.showFax" ng-change="ctrl.addressTable.refresh();"/>'+
 						'<span class="iceOutLbl">Fax </span>'+
 						'<div class="correspondence_addressBook_conatiner">'+
