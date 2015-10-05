@@ -225,7 +225,7 @@ public class ProcessUIBuilder
       processFilterToolbarItems = new ArrayList<FilterToolbarItem>();
       FilterToolbarItem filterToolbarItem = new FilterToolbarItem("" + i++, "AuxiliaryProcess",
             "processHistory.processTable.showAuxiliaryProcess", "processHistory.processTable.hideAuxiliaryProcess",
-            "pi pi-process-auxiliary icon-lg");
+            "pi pi-process-auxiliary pi-lg");
       filterToolbarItem.setActive(ProcessInstanceDetailConfigurationBean.isAuxiliaryProcessFilterOn());
       processFilterToolbarItems.add(filterToolbarItem);
    }

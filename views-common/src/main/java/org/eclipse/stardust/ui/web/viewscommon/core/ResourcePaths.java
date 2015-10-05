@@ -50,23 +50,23 @@ public interface ResourcePaths
    
    static final String V_DOCUMENT_DESC_COLUMNS = "/plugins/views-common/processTableHelper/documentDescriptorColumns.xhtml";
 
-   static final String I_FOLDER_CORRESPONDANCE = "pi pi-folder icon-lg";
+   static final String I_FOLDER_CORRESPONDANCE = "pi pi-folder pi-lg";
    
    static final String I_EMAIL_GO = "/plugins/views-common/images/icons/email_go.png";
 
-   static final String I_FOLDER_PERSONAL = "pi pi-folder icon-lg";
+   static final String I_FOLDER_PERSONAL = "pi pi-folder pi-lg";
 
-   static final String I_FOLDER = "pi pi-folder icon-lg";
+   static final String I_FOLDER = "pi pi-folder pi-lg";
 
    static final String I_DOCUMENT = "/plugins/views-common/images/icons/layout_content.png";
 
    static final String I_DOCUMENT_PATH = "/plugins/views-common/images/icons/mime-types/";
 
-   static final String I_PROCESS = "pi pi-process icon-lg";
+   static final String I_PROCESS = "pi pi-process pi-lg";
    
    static final String I_CASE = "/plugins/views-common/images/icons/envelope.png";
 
-   static final String I_PROCESS_ATTACHMENT = "pi pi-process-attachments icon-lg";
+   static final String I_PROCESS_ATTACHMENT = "pi pi-process-attachments pi-lg";
    
    static final String I_PROCESS_ATTACHMENT_BLANK = "/plugins/views-common/images/icons/document_set-blank-dropPanel.png";
    static final String I_PROCESS_ATTACHMENT_FILLED = "/plugins/views-common/images/icons/document_set-filled-dropPanel.png";
@@ -74,7 +74,7 @@ public interface ResourcePaths
    static final String I_NOTES_BLANK = "/plugins/views-common/images/icons/notes-blank-dropPanel.png";
    static final String I_NOTES_FILLED = "/plugins/views-common/images/icons/notes-filled-dropPanel.png";
    
-   static final String I_NOTES = "pi pi-document-repository icon-lg";
+   static final String I_NOTES = "pi pi-document-repository pi-lg";
 
    static final String I_NOTES_FILE = "/plugins/views-common/images/icons/mime-types/notes-filled.png";
    static final String MIME_TYPE_PATH = "/plugins/views-common/images/icons/mime-types/";
@@ -116,7 +116,7 @@ public interface ResourcePaths
    static final String VIEW_DOCUMENT_SEARCH_COLUMN = "/plugins/views-common/views/documentsearch/documentSearchColumns.xhtml";
    static final String I_EMPTY_CORE_DOCUMENT = "/plugins/views-common/images/icons/page_white_error.png";
    static final String I_CORE_DOCUMENTS = "/plugins/views-common/images/icons/page_white_gear.png";
-   static final String I_REPORT = "pi pi-report icon-lg";
+   static final String I_REPORT = "pi pi-report pi-lg";
    
    static final String V_EXTRACT_PAGES_TABLE_COLUMNS = "/plugins/views-common/views/document/extractPageTableColumns.xhtml";
    static final String V_SPAWN_PROCESS_TABLE_COLUMNS = "/plugins/views-common/dialogs/spawnProcessTableColumns.xhtml";

@@ -42,6 +42,47 @@ Supported fonts we wrap for our portal icon (pi-) classes
 	font-size: 1.33333333em !important
 }
 
+.pi-sm {
+	font-size: 0.7777em;
+	line-height: 0.75em;
+}
+
+.pi-0-5x {
+	font-size: 0.5em;
+}
+
+.pi-1-5x {
+	font-size: 1.5em;
+}
+
+.pi-2x {
+	font-size: 2em;
+}
+
+.pi-2-5x {
+	font-size: 2.5em;
+}
+
+.pi-3x {
+	font-size: 3em;
+}
+
+.pi-3-5x {
+	font-size: 3.5em;
+}
+
+.pi-4x {
+	font-size: 4em;
+}
+
+.pi-4-5x {
+	font-size: 4.5em;
+}
+
+.pi-5x {
+	font-size: 5em;
+}
+
 
 /*
 portal icon badging stem, duped from starclipse
@@ -182,6 +223,13 @@ Utility classes for portal icons
 }
 .pi-5x{
     font-size:80px;
+}
+
+.pi-rotate-90 {
+	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
+	-webkit-transform: rotate(90deg);
+	-ms-transform: rotate(90deg);
+	transform: rotate(90deg);
 }
 
 .pi-rotate-180{

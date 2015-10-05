@@ -8,53 +8,6 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-.icon-sm {
-	font-size: 0.7777em;
-	line-height: 0.75em;
-}
-
-.icon-0-5x {
-	font-size: 0.5em;
-}
-
-.icon-1-5x {
-	font-size: 1.5em;
-}
-
-.icon-2x {
-	font-size: 2em;
-}
-
-.icon-2-5x {
-	font-size: 2.5em;
-}
-
-.icon-3x {
-	font-size: 3em;
-}
-
-.icon-3-5x {
-	font-size: 3.5em;
-}
-
-.icon-4x {
-	font-size: 4em;
-}
-
-.icon-4-5x {
-	font-size: 4.5em;
-}
-
-.icon-5x {
-	font-size: 5em;
-}
-
-.icon-rotate-90 {
-	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
-	-webkit-transform: rotate(90deg);
-	-ms-transform: rotate(90deg);
-	transform: rotate(90deg);
-}
 
 /* Add this class where background image already exists and needs to be overridden */
 .icon-image {

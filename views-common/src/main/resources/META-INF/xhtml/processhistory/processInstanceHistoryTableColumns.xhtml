@@ -105,7 +105,7 @@
 				<f:attribute name="processInstance" value="#{row.processInstance}" />
 			</ice:commandLink>
 			<ice:panelGroup rendered="#{!(row.enableTerminate)}">
-				<ice:outputText styleClass="iceCmdBtn-dis pi pi-menu-dropdown icon-sm" />
+				<ice:outputText styleClass="iceCmdBtn-dis pi pi-menu-dropdown pi-sm" />
 			</ice:panelGroup>
 			<ice:panelGroup rendered="#{(row.enableTerminate)}">
 				<c:set var="processInstance" value="#{row.processInstance}" />
@@ -140,7 +140,7 @@
 				<ice:outputText
 					styleClass="#{!row.disableSpawnProcess and processHistoryTable.enableSpawnProcess? '' : 'iceCmdBtn-dis'} pi pi-process pi-lg" 
 					title="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}">
-					<h:outputText styleClass="pi pi-plus-sign pi-bottom pi-right icon-sm" title="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}"/>	
+					<h:outputText styleClass="pi pi-plus-sign pi-bottom pi-right pi-sm" title="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}"/>	
 				</ice:outputText>
 				<f:attribute name="processInstance" value="#{row.processInstance}" />
 			</ice:commandLink>

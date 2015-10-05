@@ -1283,7 +1283,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       processFilterToolbarItems = new ArrayList<FilterToolbarItem>();
       FilterToolbarItem auxiliaryProcessFilter = new FilterToolbarItem("0", AUXILIARY_PROCESSES,
             "processHistory.processTable.showAuxiliaryProcess", "processHistory.processTable.hideAuxiliaryProcess",
-            "pi pi-process-auxiliary icon-lg");
+            "pi pi-process-auxiliary pi-lg");
       auxiliaryProcessFilter.setActive(false);
       processFilterToolbarItems.add(auxiliaryProcessFilter);
       
@@ -1428,17 +1428,17 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
          int i = 0;
          FilterToolbarItem nonInteractActivity = new FilterToolbarItem("" + i++, NONINTERACT_ACTIVITIES,
                "processHistory.activityTable.showApplicationActivity",
-               "processHistory.activityTable.hideApplicationActivity", "pi pi-non-interactive-activity icon-lg");
+               "processHistory.activityTable.hideApplicationActivity", "pi pi-non-interactive-activity pi-lg");
          nonInteractActivity.setActive(false);
 
          FilterToolbarItem interactActivity = new FilterToolbarItem("" + i++, INTERACTIVE_ACTIVITIES,
                "processHistory.activityTable.showManualActivity", "processHistory.activityTable.hideManualActivity",
-               "pi pi-manual-activity icon-lg");
+               "pi pi-manual-activity pi-lg");
          interactActivity.setActive(true);
 
          FilterToolbarItem auxActivity = new FilterToolbarItem("" + i++, AUXILIARY_ACTIVITIES,
                "processHistory.activityTable.showAuxiliaryActivity",
-               "processHistory.activityTable.hideAuxiliaryActivity", "pi pi-activity-auxiliary icon-lg");
+               "processHistory.activityTable.hideAuxiliaryActivity", "pi pi-activity-auxiliary pi-lg");
          auxActivity.setActive(false);
 
          activityFilterToolbarItems = new ArrayList<FilterToolbarItem>();

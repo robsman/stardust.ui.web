@@ -77,27 +77,27 @@ public class ActivityUIBuilder
 
       activityFilterToolbarItems.add(new FilterToolbarItem("" + i++, "ApplicationActivity",
             "processHistory.activityTable.showApplicationActivity",
-            "processHistory.activityTable.hideApplicationActivity", "pi pi-non-interactive-activity icon-lg"));
+            "processHistory.activityTable.hideApplicationActivity", "pi pi-non-interactive-activity pi-lg"));
       activityFilterToolbarItems.add(new FilterToolbarItem("" + i++, "ManualActivity",
             "processHistory.activityTable.showManualActivity", "processHistory.activityTable.hideManualActivity",
-            "pi pi-manual-activity icon-lg"));
+            "pi pi-manual-activity pi-lg"));
       activityFilterToolbarItems.add(new FilterToolbarItem("" + i++, "Auxiliary",
             "processHistory.activityTable.showAuxiliaryActivity", "processHistory.activityTable.hideAuxiliaryActivity",
-            "pi pi-activity-auxiliary icon-lg"));
+            "pi pi-activity-auxiliary pi-lg"));
 
       activityFilterToolbarItems.add(new FilterToolbarItem("" + i++, "Delegate",
-            "processHistory.activityTable.showDelegate", "processHistory.activityTable.hideDelegate", "pi pi-activity-delegate icon-lg"));
+            "processHistory.activityTable.showDelegate", "processHistory.activityTable.hideDelegate", "pi pi-activity-delegate pi-lg"));
       activityFilterToolbarItems.add(new FilterToolbarItem("" + i++, "Exception",
             "processHistory.activityTable.showException", "processHistory.activityTable.hideException",
-            "pi pi-exception-circle icon-lg"));
+            "pi pi-exception-circle pi-lg"));
 
       activityFilterToolbarItems.add(new FilterToolbarItem("" + i++, "ActivityCompleted",
             "processHistory.activityTable.showEventsCompleted", "processHistory.activityTable.hideEventsCompleted",
-            "pi pi-activity-complete icon-lg"));
+            "pi pi-activity-complete pi-lg"));
 
       activityFilterToolbarItems.add(new FilterToolbarItem("" + i++, "StateChange",
             "processHistory.activityTable.showStateChange", "processHistory.activityTable.hideStateChange",
-            "pi pi-activity-state icon-lg"));
+            "pi pi-activity-state pi-lg"));
 
       setValuesFromConfiguration();
    }

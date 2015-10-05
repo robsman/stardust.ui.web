@@ -68,34 +68,34 @@ public class ProcessInstanceDetailConfigurationBean extends UIComponentBean
 
       filterToolbarItems.add(new FilterToolbarItem("" + i++, this.getMessages().getString("nonInteractiveActivities"),
             "processHistory.activityTable.showApplicationActivity",
-            "processHistory.activityTable.hideApplicationActivity", "pi pi-non-interactive-activity icon-lg"));
+            "processHistory.activityTable.hideApplicationActivity", "pi pi-non-interactive-activity pi-lg"));
 
       filterToolbarItems.add(new FilterToolbarItem("" + i++, this.getMessages().getString("interactiveActivities"),
             "processHistory.activityTable.showManualActivity", "processHistory.activityTable.hideManualActivity",
-            "pi pi-manual-activity icon-lg"));
+            "pi pi-manual-activity pi-lg"));
 
       filterToolbarItems.add(new FilterToolbarItem("" + i++, this.getMessages().getString("auxiliaryActivities"),
             "processHistory.activityTable.showAuxiliaryActivity", "processHistory.activityTable.hideAuxiliaryActivity",
-            "pi pi-activity-auxiliary icon-lg"));
+            "pi pi-activity-auxiliary pi-lg"));
 
       filterToolbarItems.add(new FilterToolbarItem("" + i++, this.getMessages().getString("delegationEvents"),
-            "processHistory.activityTable.showDelegate", "processHistory.activityTable.hideDelegate", "pi pi-activity-delegate icon-lg"));
+            "processHistory.activityTable.showDelegate", "processHistory.activityTable.hideDelegate", "pi pi-activity-delegate pi-lg"));
 
       filterToolbarItems.add(new FilterToolbarItem("" + i++, this.getMessages().getString("exceptions"),
             "processHistory.activityTable.showException", "processHistory.activityTable.hideException",
-            "pi pi-exception-circle icon-lg"));
+            "pi pi-exception-circle pi-lg"));
 
       filterToolbarItems.add(new FilterToolbarItem("" + i++, this.getMessages().getString("terminatedEvents"),
             "processHistory.activityTable.showEventsCompleted", "processHistory.activityTable.hideEventsCompleted",
-            "pi pi-activity-complete icon-lg"));
+            "pi pi-activity-complete pi-lg"));
 
       filterToolbarItems.add(new FilterToolbarItem("" + i++, this.getMessages().getString("stateChangeEvents"),
             "processHistory.activityTable.showStateChange", "processHistory.activityTable.hideStateChange",
-            "pi pi-activity-state icon-lg"));
+            "pi pi-activity-state pi-lg"));
 
       filterToolbarItems.add(new FilterToolbarItem("" + i++, this.getMessages().getString("auxiliaryProcesses"),
             "processHistory.processTable.showAuxiliaryProcess", "processHistory.processTable.hideAuxiliaryProcess",
-            "pi pi-process-auxiliary icon-lg"));
+            "pi pi-process-auxiliary pi-lg"));
    }
 
    public List<FilterToolbarItem> getFilterToolbarItems()

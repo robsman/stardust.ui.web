@@ -82,7 +82,7 @@
 					immediate="true"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.suspendMenu']}" >
 					<ice:outputText
-						styleClass="pi pi-menu-dropdown icon-sm" />
+						styleClass="pi pi-menu-dropdown pi-sm" />
 				</ice:commandLink>
 				<div id="ippSuspendAnchor" style="width: 1px; height: 1px;"></div>
 			</ice:commandLink>
@@ -101,7 +101,7 @@
 					style="padding:0px;" immediate="true"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.suspendSaveMenu']}" >
 					<ice:outputText
-					styleClass="#{activityDetailsBean.qualityAssuranceActivity ? 'iceCmdBtn-dis' : ''} pi pi-menu-dropdown icon-sm" />
+					styleClass="#{activityDetailsBean.qualityAssuranceActivity ? 'iceCmdBtn-dis' : ''} pi pi-menu-dropdown pi-sm" />
 				</ice:commandLink>
 				<div id="ippSaveActivityAnchor" style="width: 1px; height: 1px;"></div>
 			</ice:commandLink>
@@ -140,7 +140,7 @@
 					disabled="#{!activityDetailsBean.abortableProcess}">
 					<pc:automationTag value="auto-PP-ActivityPnl-ToolbarSwitchJoin" standAlone="false"/>
 					<ice:outputText
-						styleClass="#{!activityDetailsBean.abortableProcess ? 'iceCmdBtn-dis' : ''} pi pi-menu-dropdown icon-sm" />
+						styleClass="#{!activityDetailsBean.abortableProcess ? 'iceCmdBtn-dis' : ''} pi pi-menu-dropdown pi-sm" />
 				</ice:commandLink>
 				<div id="ippSwitchAnchor" style="width: 1px; height: 1px;"></div>
 			</ice:commandLink>
@@ -161,7 +161,7 @@
 					<pc:automationTag value="auto-PP-ActivityPnl-ToolbarCase" standAlone="false"/>
 					<ice:outputText 
 						styleClass="pi pi-case pi-lg">
-						<ice:outputText styleClass="pi pi-menu-dropdown icon-sm" />
+						<ice:outputText styleClass="pi pi-menu-dropdown pi-sm" />
 					</ice:outputText>
 				</ice:commandLink>
 				<div id="ippCaseAnchor" style="width: 1px; height: 1px;"></div>
@@ -171,7 +171,7 @@
 				<ice:outputText
 					styleClass="#{activityDetailsBean.enableSpawnProcess ? '': 'iceCmdBtn-dis'} pi pi-process pi-lg"
 					title="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}">
-					<h:outputText styleClass="pi pi-plus-sign pi-bottom pi-right icon-sm" title="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}"/>	
+					<h:outputText styleClass="pi pi-plus-sign pi-bottom pi-right pi-sm" title="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}"/>	
 				</ice:outputText>
 				<f:param name="processInstanceOID"
 					value="#{activityDetailsBean.activityInstance.processInstanceOID}" />					
@@ -182,7 +182,7 @@
 				<ice:outputText
 					styleClass="pi pi-process pi-lg"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.processContextExplorer']}">
-					<h:outputText styleClass="pi pi-information pi-bottom pi-right icon-sm" title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.processContextExplorer']}"/>	
+					<h:outputText styleClass="pi pi-information pi-bottom pi-right pi-sm" title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.processContextExplorer']}"/>	
 				</ice:outputText>
 				<f:param name="viewId" value="processInstanceDetailsView" />
 				<f:param name="nested" value="true" />

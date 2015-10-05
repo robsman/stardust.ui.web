@@ -31,104 +31,104 @@ public class MimeTypesHelper implements Serializable
    private Set<MIMEType> allMimeTypes = new HashSet<MIMEType>();
 
    public static final MIMEType XHTML = new MIMEType("text/xhtml", new String[] {"xhtml", "htm"}, "html.png",
-         "icon-lg pi pi-html", "XHTML");
+         "pi-lg pi pi-html", "XHTML");
 
    public static final MIMEType HTML = new MIMEType("text/html", new String[] {"html", "htm"}, "html.png",
-         "icon-lg pi pi-html", "HTML");
+         "pi-lg pi pi-html", "HTML");
 
    public static final MIMEType JPG = new MIMEType("image/jpeg", new String[] {"jpg", "jpeg"}, "document-image.png",
-         "icon-lg pi pi-image", "JPEG");
+         "pi-lg pi pi-image", "JPEG");
 
-   public static final MIMEType PJPG = new MIMEType("image/pjpeg", "jpg", "document-image.png", "icon-lg pi pi-image",
+   public static final MIMEType PJPG = new MIMEType("image/pjpeg", "jpg", "document-image.png", "pi-lg pi pi-image",
          "PJPEG");
 
-   public static final MIMEType XPNG = new MIMEType("image/x-png", "jpg", "document-image.png", "icon-lg pi pi-image",
+   public static final MIMEType XPNG = new MIMEType("image/x-png", "jpg", "document-image.png", "pi-lg pi pi-image",
          "X-PNG");
 
-   public static final MIMEType GIF = new MIMEType("image/gif", "gif", "document-image.png", "icon-lg pi pi-image",
+   public static final MIMEType GIF = new MIMEType("image/gif", "gif", "document-image.png", "pi-lg pi pi-image",
          "GIF");
 
    public static final MIMEType TIFF = new MIMEType("image/tiff", new String[] {"tif", "tiff"}, "images.png",
-         "icon-lg pi pi-image", "Tiff");
+         "pi-lg pi pi-image", "Tiff");
 
    public static final MIMEType PDF = new MIMEType("application/pdf", "pdf", "document-pdf-text.png",
-         "icon-lg pi pi-pdf",
+         "pi-lg pi pi-pdf",
          "PDF");
 
-   public static final MIMEType RTF = new MIMEType("text/rtf", "rtf", "document-word-text.png", "icon-lg pi pi-word",
+   public static final MIMEType RTF = new MIMEType("text/rtf", "rtf", "document-word-text.png", "pi-lg pi pi-word",
          "");
 
    public static final MIMEType DOC = new MIMEType("application/msword", "doc", "document-word-text.png",
-         "icon-lg pi pi-ppt",
+         "pi-lg pi pi-ppt",
          "");
 
    public static final MIMEType MOV = new MIMEType("video/quicktime", "mov", "document-film.png",
-         "icon-lg pi pi-video",
+         "pi-lg pi pi-video",
          "Video");
 
-   public static final MIMEType WMF = new MIMEType("video/x-ms-wmv", "wmf", "document-film.png", "icon-lg pi pi-video",
+   public static final MIMEType WMF = new MIMEType("video/x-ms-wmv", "wmf", "document-film.png", "pi-lg pi pi-video",
          "Video");
 
    public static final MIMEType AVI = new MIMEType("video/x-msvideo", "avi", "document-film.png",
-         "icon-lg pi pi-video",
+         "pi-lg pi pi-video",
          "Video");
 
    public static final MIMEType SWF = new MIMEType("application/x-shockwave-flash", "swf", "document-flash-movie.png",
-         "icon-lg pi pi-video", "Shockwave Flash");
+         "pi-lg pi pi-video", "Shockwave Flash");
 
    public static final MIMEType WMA = new MIMEType("audio/x-ms-wma", "wma", "document-music.png",
-         "icon-lg pi pi-audio",
+         "pi-lg pi pi-audio",
          "Audio");
 
-   public static final MIMEType MP3 = new MIMEType("audio/mpeg", "mp3", "document-music.png", "icon-lg pi pi-audio",
+   public static final MIMEType MP3 = new MIMEType("audio/mpeg", "mp3", "document-music.png", "pi-lg pi pi-audio",
          "Audio");
 
    public static final MIMEType ZIP = new MIMEType("application/zip", "zip", "document-zipper.png",
-         "icon-lg pi pi-zip", "");
+         "pi-lg pi pi-zip", "");
 
-   public static final MIMEType TXT = new MIMEType("text/plain", "txt", "document-text.png", "icon-lg pi pi-text",
+   public static final MIMEType TXT = new MIMEType("text/plain", "txt", "document-text.png", "pi-lg pi pi-text",
          "Text");
 
    public static final MIMEType XML = new MIMEType("text/xml", new String[] {"xml", "xpdl"}, "document-code.png",
-         "icon-lg pi pi-xml-json", "XML");
+         "pi-lg pi pi-xml-json", "XML");
 
    public static final MIMEType PPT = new MIMEType("application/vnd.ms-powerpoint", "ppt", "document-powerpoint.png",
-         "icon-lg pi pi-ppt", "");
+         "pi-lg pi pi-ppt", "");
 
    public static final MIMEType XLS = new MIMEType("application/vnd.ms-excel", "xls", "document-excel.png",
-         "icon-lg pi pi-csv-excel", "");
+         "pi-lg pi pi-csv-excel", "");
 
-   public static final MIMEType PNG = new MIMEType("image/png", "png", "document-image.png", "icon-lg pi pi-image",
+   public static final MIMEType PNG = new MIMEType("image/png", "png", "document-image.png", "pi-lg pi pi-image",
          "PNG");
 
    public static final MIMEType DEFAULT = new MIMEType("application/octet-stream", "", "tree_document.gif",
-         "icon-lg pi pi-other", "");
+         "pi-lg pi pi-other", "");
    public static final MIMEType MS2007_DOC = new MIMEType(
          "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx", "document-word-text.png",
-         "icon-lg pi pi-word", "");
+         "pi-lg pi pi-word", "");
    public static final MIMEType MS2007_XLS = new MIMEType(
          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlsx", "document-excel.png",
-         "icon-lg pi pi-csv-excel", "");
+         "pi-lg pi pi-csv-excel", "");
    public static final MIMEType MS2007_PPT = new MIMEType(
          "application/vnd.openxmlformats-officedocument.presentationml.presentation", "pptx",
-         "document-powerpoint.png", "icon-lg pi pi-ppt", "");
+         "document-powerpoint.png", "pi-lg pi pi-ppt", "");
 
    public static final MIMEType BPM_RPT_DESIGN = new MIMEType("application/bpmrptdesign", "bpmrptdesign", "report.png",
-         "icon-lg pi pi-ppt", "Reports");
+         "pi-lg pi pi-ppt", "Reports");
 
    public static final MIMEType BPM_RPT = new MIMEType("application/bpmrpt", "bpmrpt", "report.png",
-         "icon-lg pi pi-xml-json",
+         "pi-lg pi pi-xml-json",
          "Reports");
    
-   public static final MIMEType CSS = new MIMEType("text/css", "css", "document-text.png", "icon-lg pi pi-css", "CSS");
+   public static final MIMEType CSS = new MIMEType("text/css", "css", "document-text.png", "pi-lg pi pi-css", "CSS");
 
    public static final MIMEType X_MPEG = new MIMEType("audio/x-mpeg", "mp3", "document-music.png",
-         "icon-lg pi pi-audio",
+         "pi-lg pi pi-audio",
          "Audio");
 
    public static final MIMEType CSV = new MIMEType("text/csv", "csv",
  "document-excel-csv.png",
-         "icon-lg pi pi-csv-excel",
+         "pi-lg pi pi-csv-excel",
          "CSV");
 
    public MimeTypesHelper()
