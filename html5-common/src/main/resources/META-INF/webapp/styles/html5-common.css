@@ -421,15 +421,8 @@ to {
 	margin-top: 15px;
 }
 
-.close {
+.dlg-close {
 	float: right;
-	font-size: 1.91em;
-	font-weight: bold;
-	line-height: 1;
-	color: #000;
-	text-shadow: 0 1px 0 #fff;
-	filter: alpha(opacity = 20);
-	opacity: .2;
 }
 
 .close:hover, .close:focus {
