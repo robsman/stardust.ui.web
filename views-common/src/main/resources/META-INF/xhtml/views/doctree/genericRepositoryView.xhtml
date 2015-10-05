@@ -121,7 +121,7 @@
 								<f:attribute name="userObject" value="#{item.userObject}" />
 							</ice:menuItem>
 							
-							<ice:menuItem id="detachable"
+							<ice:menuItem id="detachable" styleClass="detachFile"
 								icon="/plugins/views-common/images/icons/page_detach.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.detach']}"
 								actionListener="#{genericRepositoryTreeViewBean.confirmDetachResource}"								
@@ -175,7 +175,7 @@
 								</c:forEach>
 							</ice:menuItem>
 
-							<ice:menuItem id="createNote"
+							<ice:menuItem id="createNote" styleClass="createNote"
 								icon="/plugins/views-common/images/icons/note_add.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.createNote']}"
 								action="#{item.userObject.createNote}"
@@ -253,7 +253,7 @@
 								<f:param name="isLeafNode" value="#{item.userObject.leafNode}" />
 							</ice:menuItem>
 
-							<ice:menuItem id="AddtoZip"
+							<ice:menuItem id="AddtoZip" styleClass="exportMnuItem"
 								icon="/plugins/views-common/images/icons/mime-types/document-zipper.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.backupConf']}"
 								action="#{item.userObject.download}"
@@ -262,7 +262,7 @@
 									standAlone="false" />
 							</ice:menuItem>
 
-							<ice:menuItem id="UploadZip"
+							<ice:menuItem id="UploadZip" styleClass="upload"
 								icon="/plugins/views-common/images/icons/mime-types/document-zipper.png"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.loadConf']}"
 								action="#{item.userObject.uploadFolder}"
@@ -273,7 +273,7 @@
 									value="#{item.userObject.resourceItem}" />
 							</ice:menuItem>
 							
-							<ice:menuItem id="makeDefaultRepo"
+							<ice:menuItem id="makeDefaultRepo" styleClass="defaultRepo"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.repo.makeDefault']}"
 								icon="/plugins/views-common/images/icons/repositry-default.png"
 								actionListener="#{genericRepositoryTreeViewBean.confirmSwitchDefaultRepo}"
@@ -286,7 +286,7 @@
 								<f:attribute name="userObject" value="#{item.userObject}" />	
 							</ice:menuItem>
 							
-							<ice:menuItem id="unbindRepo"
+							<ice:menuItem id="unbindRepo" styleClass="unbindRepo"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.repo.unbindRepo']}"
 								icon="/plugins/views-common/images/icons/database_delete.png"
 								actionListener="#{genericRepositoryTreeViewBean.confirmUnbindRepository}"
@@ -297,7 +297,7 @@
 								<f:attribute name="userObject" value="#{item.userObject}" />
 							</ice:menuItem>
 							
-							<ice:menuItem id="showProperties"
+							<ice:menuItem id="showProperties" styleClass="properties"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.repo.properties']}"
 								icon="/plugins/views-common/images/icons/page_white_database.png"
 								actionListener="#{genericRepositoryTreeViewBean.showRepositoryProperties}"
@@ -308,7 +308,7 @@
 									value="#{item.userObject.repositoryInstance.repositoryId}" />	
 							</ice:menuItem>
 							
-							<ice:menuItem id="bindRepo"
+							<ice:menuItem id="bindRepo" styleClass="bindRepo"
 								value="#{genericRepositoryTreeViewBean.messages['treeMenuItem.repo.bindRepo']}"
 								icon="/plugins/views-common/images/icons/database_add.png"
 								actionListener="#{genericRepositoryTreeViewBean.openBindRepoDialog}"
@@ -354,13 +354,13 @@
 								standAlone="false" />
 							<ice:inputText value="#{item.userObject.name}"
 								partialSubmit="true" />
-							<ice:commandButton id="image_button__rename_accept"
-								image="/plugins/views-common/images/icons/button_bid_accept.gif"
+							<ice:commandLink id="image_button__rename_accept"
+								styleClass="pi pi-check pi-color-green icon-lg"
 								action="#{item.userObject.renameAccept}"
 								style="border: 0px;width: 15px;height:15px;" />
-							<ice:commandButton id="image_button_rename_decline"
+							<ice:commandLink id="image_button_rename_decline"
 								immediate="true"
-								image="/plugins/views-common/images/icons/button_bid_decline.gif"
+								styleClass="pi pi-close pi-color-red icon-lg"
 								action="#{item.userObject.renameDecline}"
 								rendered="#{not item.userObject.newNodeCreated}"
 								style="border: 0px;width: 15px;height:15px" />

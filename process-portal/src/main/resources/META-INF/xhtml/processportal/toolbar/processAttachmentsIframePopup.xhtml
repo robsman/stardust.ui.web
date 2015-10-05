@@ -21,6 +21,9 @@
 		<ice:outputStyle href="/plugins/common/css/nirvanaRime-override.css" />
 		<ice:outputStyle href="/plugins/common/css/nirvanaPortal.css" />
 		<ice:outputStyle href="/plugins/common/css/portalComponentStyle.css" />
+		<link rel="stylesheet" href="../../html5-common/styles/font-icon.css" > </link>
+		<link rel="stylesheet" href="../../html5-common/styles/3rd-party/font-awesome/4.4.0/css/font-awesome.min.css"></link>
+		<link rel="stylesheet" href="../../html5-common/styles/portal-icons.css" > </link>
 	
 		<c:forEach items="#{ippPortalApp.skinFiles}" var="skinFile">
 			<ice:outputStyle href="#{skinFile}" />
@@ -90,7 +93,7 @@
 							<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarOpenNewDocument" />
 							<f:attribute name="documentInfo" value="#{processDocument}" />
 							<ice:panelGrid columns="2">
-								<ice:graphicImage value="#{processDocument.documentIcon}" />
+								<i class="#{processDocument.documentIcon}"></i>
 								<ice:outputText value="#{processDocument.name}" style="white-space: nowrap;" />
 							</ice:panelGrid>
 						</ice:commandLink>
@@ -100,7 +103,8 @@
 							<pc:automationTag
 								value="auto-PP-ProcAttachDlg-ToolbarDeleteDocument" standAlone="false" />
 							<h:outputText
-								style="padding-left:5px;" title="#{processportal_msgPropsBean['toolbars.workflowActions.document.detach']} pi pi-delete pi-lg"/>
+								style="padding-left:5px;" title="#{processportal_msgPropsBean['toolbars.workflowActions.document.detach']}"
+								styleClass="pi pi-delete pi-lg"/>
 							<f:attribute name="documentInfo" value="#{processDocument}" />
 						</ice:commandLink>
 					</ice:panelGrid>
@@ -114,7 +118,7 @@
 							<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarOpenAttachment" />
 							<f:attribute name="documentInfo" value="#{processAttachment}" />
 							<ice:panelGrid columns="2">
-								<ice:graphicImage value="#{processAttachment.documentIcon}" />
+								<i class="#{processAttachment.documentIcon}"></i>
 								<ice:outputText value="#{processAttachment.name}" style="white-space: nowrap;" />
 							</ice:panelGrid>
 						</ice:commandLink>
@@ -123,7 +127,8 @@
 							<pc:automationTag
 								value="auto-PP-ProcAttachDlg-ToolbarDeleteDocument" standAlone="false" />
 							<h:outputText
-								style="padding-left:5px;" title="#{processportal_msgPropsBean['toolbars.workflowActions.document.detach']} pi pi-delete pi-lg"/>
+								style="padding-left:5px;" title="#{processportal_msgPropsBean['toolbars.workflowActions.document.detach']}"
+								styleClass="pi pi-delete pi-lg"/>
 							<f:attribute name="documentInfo" value="#{processAttachment}"/>
 						</ice:commandLink>
 					</ice:panelGrid>

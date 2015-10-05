@@ -1151,3 +1151,13 @@ Icon implementations
 	font-family: "FontAwesome";
 	content: "\f1ac"; /* fa-fax */
 }
+
+.pi-check:before{
+	font-family:"FontAwesome";
+	content:'\f00c'; /* fa-check */
+}
+
+.pi-email-go:before{
+	font-family:"FontAwesome";
+	content:'\f045'; /* fa-share-square-o */
+}

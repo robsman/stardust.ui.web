@@ -55,25 +55,24 @@
 				name="#{configurationVariablesBean.messages['show.all']}"
 				actionListener="#{configurationVariablesBean.toggleVersion}"
 					rendered="#{!configurationVariablesBean.showActiveModel}"
-				style="vertical-align: middle;">
+				style="vertical-align: middle;"
+				title="#{configurationVariablesBean.messages['show.all']}">
 				<pc:automationTag
 					value="auto-ADM-ConfigVariable-ConfigTreeTbl-ToolbarAllConfig"
 					standAlone="false" />
-				<h:outputText styeClass="pi pi-eye-open pi-lg"
-					title="#{configurationVariablesBean.messages['show.all']}" />
+				<i class="pi pi-eye-open pi-lg"></i>
 			</ice:commandLink>
 			
 			<ice:commandLink
 				rendered="#{configurationVariablesBean.showActiveModel}"
 				name="#{configurationVariablesBean.messages['show.active']}"
 				actionListener="#{configurationVariablesBean.toggleVersion}"
-				style="vertical-align: middle;">
+				style="vertical-align: middle;"
+				title="#{configurationVariablesBean.messages['show.active']}">
 				<pc:automationTag
 					value="auto-ADM-ConfigVariable-ConfigTreeTbl-ToolbarShowActMdl"
 					standAlone="false" />
-				<h:outputText 
-					styleClass="pi pi-eye-close pi-lg"
-					title="#{configurationVariablesBean.messages['show.active']}" />
+				<i class="pi pi-eye-close pi-lg"></i>
 			</ice:commandLink>
 		
 		

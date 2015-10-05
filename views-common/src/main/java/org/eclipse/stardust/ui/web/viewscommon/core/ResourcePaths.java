@@ -58,7 +58,7 @@ public interface ResourcePaths
 
    static final String I_FOLDER = "pi pi-folder pi-lg";
 
-   static final String I_DOCUMENT = "/plugins/views-common/images/icons/layout_content.png";
+   static final String I_DOCUMENT = "pi pi-case pi-lg";
 
    static final String I_DOCUMENT_PATH = "/plugins/views-common/images/icons/mime-types/";
 
@@ -82,7 +82,7 @@ public interface ResourcePaths
    static final String V_NOTES_TOOLTIP = "/plugins/views-common/views/doctree/toolTip.xhtml";
    
    static final String I_REPOSITORY_ROOT = "/plugins/views-common/images/icons/folder_database.png";
-   static final String I_REPOSITORY = "/plugins/views-common/images/icons/database.png";
+   static final String I_REPOSITORY = "pi pi-database pi-lg";
    static final String I_REPOSITORY_DEFAULT  = "/plugins/views-common/images/icons/repositry-default.png";
    
    static final String V_AUTOCOMPLETE_MULTI_USER_SELECTOR = "/plugins/views-common/user/userAutocompleteMultiSelector.xhtml";

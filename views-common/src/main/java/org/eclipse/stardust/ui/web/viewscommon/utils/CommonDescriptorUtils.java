@@ -131,8 +131,7 @@ public class CommonDescriptorUtils
    
    public static String getDocumentIcon(String fileName, String contentType)
    {
-      return "/plugins/views-common/images/icons/mime-types/"
-            + MimeTypesHelper.detectMimeType(fileName, contentType).getIconPath();
+      return MimeTypesHelper.detectMimeType(fileName, contentType).getIcon();
    }
    
    /**

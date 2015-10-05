@@ -52,7 +52,15 @@
 .settingsMnuItemVrtItem a img,
 .createFolderVrtItem a img,
 .deleteFolderVrtItem a img,
-.deleteFolderVrtItem-dis span img {
+.deleteFolderVrtItem-dis span img,
+.createNoteVrtItem a img,
+.defaultRepoVrtItem a img,
+.defaultRepoVrtItem-dis span img,
+.bindRepoVrtItem a img,
+.unbindRepoVrtItem a img,
+.unbindRepoVrtItem-dis span img,
+.propertiesVrtItem a img,
+.detachFileVrtItem a img {
     background-image: none !important;
     position: absolute;
     margin-left: -15px;
@@ -104,13 +112,13 @@
 .renameVrtItem a:before {
     font-family: FontAwesome;
     font-size: 16px;
-    content: "\f078";
+    content: "\f044";
 }
 
 .renameVrtItem-dis > span:before {
     font-family: FontAwesome;
     font-size: 16px;
-    content: "\f078";
+    content: "\f044";
 }
 
 .uploadVrtItem a:before{
@@ -179,7 +187,53 @@
     content: "\f146";
 }
 
-	
+.createNoteVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f055";
+}
+
+.defaultRepoVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f0fe";
+}
+
+.defaultRepoVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f0fe";
+}
+
+.bindRepoVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f055";
+}
+
+.unbindRepoVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f056";
+}
+
+.unbindRepoVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f056";
+}
+
+.propertiesVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f1e8";
+}
+
+.detachFileVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f180";
+}	
 
 
 
