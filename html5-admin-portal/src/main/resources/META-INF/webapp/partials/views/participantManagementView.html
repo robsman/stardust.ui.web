@@ -79,21 +79,21 @@
 					        class="search"
 					        aid="COM-PartMgr-ApplyFilter" />
 					<button ng-disabled="!myFilter || myFilter.length==0" 
-							title="{{i18n('views.participantManagementViewHtml5.participantTree.toolbar.filter.title')}}"
+							title="{{i18n('admin-portal-messages.views-participantManagementViewHtml5-participantTree-toolbar-filter-title')}}"
 					        class="pi pi-filter pi-1x" 
 					        ng-click="ctrl.filterTree(myFilter)"></button>
 					<button class="pi pi-clear pi-1x" 
-							title="{{i18n('views.participantManagementViewHtml5.participantTree.toolbar.reserFilter.title')}}"
+							title="{{i18n('admin-portal-messages.views-participantManagementViewHtml5-participantTree-toolbar-reserFilter-title')}}"
 					        ng-click="ctrl.resetFilter()"></button>
 					<button class="pi pi-ban pi-1x" 
-							title="{{i18n('views.participantManagementViewHtml5.participantTree.toolbar.emptyNode.title')}}"
+							title="{{i18n('admin-portal-messages.views-participantManagementViewHtml5-participantTree-toolbar-emptyNode-title')}}"
 					        ng-click="ctrl.filterForEmptyUsers()"></button>
 					<button class="pi pi-torch pi-1x"
 							ng-disabled="ctrl.rowSelectionForAllUsersTable.length===0" 
-							title="{{i18n('views.participantManagementViewHtml5.participantTree.toolbar.flashlight.title')}}"
+							title="{{i18n('admin-portal-messages.views-participantManagementViewHtml5-participantTree-toolbar-flashlight-title')}}"
 					        ng-click="ctrl.filterByTableSelection()"></button>
 					<button class="pi pi-refresh pi-1x" 
-							title="{{i18n('views.participantManagementViewHtml5.participantTree.toolbar.refresh.title')}}"
+							title="{{i18n('admin-portal-messages.views-participantManagementViewHtml5-participantTree-toolbar-refresh-title')}}"
 					        ng-click="ctrl.treeInit()"></button>
 				</div>
 				

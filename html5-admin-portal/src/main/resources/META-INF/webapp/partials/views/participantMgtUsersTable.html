@@ -3,6 +3,7 @@
 		<div>
 			<div sda-toolbar>
 				<div class="tbl-toolbar-section">
+				
 					<button
 						ng-click="bpmCommon.stopEvent($event); ctrl.openCreateCopyModifyUser('CREATE_USER');"
 						title="{{i18n('views-common-messages.common-create')}}"
@@ -10,14 +11,7 @@
 						aid="ADM-PartMgmt-ToolbarCreateUser">
 						<i class="pi pi-create pi-lg" />
 					</button>
-					<button
-						ng-disabled="!(ctrl.rowSelectionForAllUsersTable.length == 1)"
-						ng-click="bpmCommon.stopEvent($event); ctrl.openCreateCopyModifyUser('COPY_USER',ctrl.rowSelectionForAllUsersTable[0].oid);"
-						title="{{i18n('admin-portal-messages.common-copy')}}"
-						class="button-link tbl-toolbar-item tbl-tool-link"
-						aid="ADM-PartMgmt-ToolbarCopyUser">
-						<i class="pi pi-clone pi-lg" />
-					</button>
+					
 					<button
 						ng-disabled="!(ctrl.rowSelectionForAllUsersTable.length > 0)"
 						ng-click="bpmCommon.stopEvent($event); ctrl.invalidateUsers();"
@@ -26,6 +20,16 @@
 						aid="ADM-PartMgmt-ToolbarInvalidateUser">
 						<i class="pi pi-delete pi-lg" />
 					</button>
+					
+					<button
+						ng-disabled="!(ctrl.rowSelectionForAllUsersTable.length == 1)"
+						ng-click="bpmCommon.stopEvent($event); ctrl.openCreateCopyModifyUser('COPY_USER',ctrl.rowSelectionForAllUsersTable[0].oid);"
+						title="{{i18n('admin-portal-messages.common-copy')}}"
+						class="button-link tbl-toolbar-item tbl-tool-link"
+						aid="ADM-PartMgmt-ToolbarCopyUser">
+						<i class="pi pi-clone pi-lg" />
+					</button>
+					
 				</div>
 				<div class="tbl-toolbar-section">
 					<button
@@ -33,12 +37,8 @@
 						title="{{!ctrl.hideInvalidatedUsers ? i18n('admin-portal-messages.views-participantMgmt-filters-invalidatedUsers-hideUser') : i18n('admin-portal-messages.views-participantMgmt-filters-invalidatedUsers-showUser')}}"
 						class="button-link tbl-toolbar-item tbl-tool-link"
 						aid="ADM-PartMgmt-Filters-InvalidatedUsers-HideUser">
-						<i ng-if="!ctrl.hideInvalidatedUsers" class="pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top">
-                            <i class="pi pi-badge-icon pi-badge-icon-arrow-r"></i>
-                       </i>
-                       <i ng-if="ctrl.hideInvalidatedUsers" class="pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top" style="opacity:0.7">
-                            <i class="pi pi-badge-icon pi-badge-icon-arrow-r"></i>
-                       </i>
+						<i ng-if="!ctrl.hideInvalidatedUsers" class="pi pi-eye-close"></i>
+                       	<i ng-if="ctrl.hideInvalidatedUsers" class="pi pi-eye-open"></i>
 					</button>
 				</div>
 				<span sd-refresh sda-on-refresh="ctrl.refresh();" aid="PP-PartMgmt"></span>
