@@ -1173,3 +1173,8 @@ Icon implementations
 	font-family:"FontAwesome";
 	content:'\f05e'; /* fa-ban */
 }
+
+.pi-reverse:before{
+	font-family:"FontAwesome";
+	content:'\f074'; /* fa-reverse */
+}
