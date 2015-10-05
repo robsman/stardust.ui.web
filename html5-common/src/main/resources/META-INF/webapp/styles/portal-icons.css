@@ -225,6 +225,8 @@ Utility classes for portal icons
     font-size:80px;
 }
 
+
+/* Rotation */
 .pi-rotate-90 {
 	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
 	-webkit-transform: rotate(90deg);
@@ -240,6 +242,27 @@ Utility classes for portal icons
     -o-transform: rotate(180deg);
     transform: rotate(180deg);
 }
+
+/* To bridge gap (especially with ICEfaces) where images are used */
+
+/* Add this class where background image already exists and needs to be overridden */
+.pi-img {
+	background: none !important;
+}
+
+/* Add this class where iceOutput class exists and needs to be overridden */
+.pi-outTxt {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+    padding-top: 0px !important;
+    padding-bottom: 0px !important;
+}
+
+/* Add this class where iceCmdLnk is used */
+.pi-cmdLnk:hover {
+	text-decoration: none !important;
+}
+
 
 /*
  primary meta colors (should probably be moved out of pi to a more ubiquitous selector)

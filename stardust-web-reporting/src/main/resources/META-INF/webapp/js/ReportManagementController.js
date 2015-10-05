@@ -645,7 +645,7 @@ define(
 							},
 							data : {
 								title: folder.name,
-								icon : "pi pi-folder pi-lg icon-image"
+								icon : "pi pi-folder pi-lg pi-img"
 							}
 						}, null, true);
 
@@ -679,7 +679,7 @@ define(
 																	title : reportDefinition.description
 																},
 																title : reportDefinition.name,
-																icon : "pi pi-report pi-lg icon-image"
+																icon : "pi pi-report pi-lg pi-img"
 															}
 														},
 														null,
