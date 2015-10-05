@@ -50,11 +50,11 @@ public interface ResourcePaths
    
    static final String V_DOCUMENT_DESC_COLUMNS = "/plugins/views-common/processTableHelper/documentDescriptorColumns.xhtml";
 
-   static final String I_FOLDER_CORRESPONDANCE = "/plugins/views-common/images/icons/folder_page.png";
+   static final String I_FOLDER_CORRESPONDANCE = "pi pi-folder icon-lg";
    
    static final String I_EMAIL_GO = "/plugins/views-common/images/icons/email_go.png";
 
-   static final String I_FOLDER_PERSONAL = "/plugins/views-common/images/icons/folder_user.png";
+   static final String I_FOLDER_PERSONAL = "pi pi-folder icon-lg";
 
    static final String I_FOLDER = "pi pi-folder icon-lg";
 

@@ -76,7 +76,7 @@ public class RepositoryDocumentUserObject extends RepositoryResourceUserObject
       }
      else
       {
-         setLeafIcon(ResourcePaths.I_DOCUMENT_PATH + this.mType.getIconPath());
+         setLeafIcon(this.mType.getIcon());
       }
 
       node.setAllowsChildren(false);

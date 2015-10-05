@@ -26,19 +26,21 @@ public final class MIMEType implements Serializable
    private String iconPath;
    private String type;
    private String userFriendlyName;
+   private String icon;
 
-   public MIMEType(String type, String[] fileExtension, String iconPath, String userFriendlyName)
+   public MIMEType(String type, String[] fileExtension, String iconPath, String piIcon, String userFriendlyName)
    {
       super();
       this.fileExtension = fileExtension;
       this.type = type;
       this.iconPath = iconPath;
       this.userFriendlyName = userFriendlyName;
+      this.icon = piIcon;
    }
 
-   public MIMEType(String type, String fileExtension, String iconPath, String userFriendlyName)
+   public MIMEType(String type, String fileExtension, String iconPath, String piIcon, String userFriendlyName)
    {
-      this(type, new String[] {fileExtension}, iconPath, userFriendlyName);
+      this(type, new String[] {fileExtension}, iconPath, piIcon, userFriendlyName);
    }
    
    public boolean containsExtension(String ext)
@@ -73,6 +75,11 @@ public final class MIMEType implements Serializable
    public String getIconPath()
    {
       return iconPath;
+   }
+
+   public String getIcon()
+   {
+      return icon;
    }
 
    /**
