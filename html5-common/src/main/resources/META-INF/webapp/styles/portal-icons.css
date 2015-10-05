@@ -176,12 +176,12 @@ button.pi:disabled {
 	cursor:not-allowed;
 }
 
-.icon-cmdLnk, .icon-cmdLnk .pi {
+.pi-cmdLnk, .pi-cmdLnk .pi {
 	color: #A69A88 !important;
 }
 
-.icon-cmdLnk:hover, .icon-cmdLnk:hover .pi {
-	color:#906C37 !important;
+.pi-cmdLnk:hover, .pi-cmdLnk:hover .pi {
+	color: #906C37 !important;
 }
 
 /*
