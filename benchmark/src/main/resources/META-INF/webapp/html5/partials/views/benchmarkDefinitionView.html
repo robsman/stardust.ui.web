@@ -114,64 +114,71 @@
 		
 		<div ng-show="ctrl.benchmarkFilter==='Design'">
 		
-			<div  sda-toolbar>
+			<div sda-toolbar>
+			
+				<div class="tbl-toolbar-section">
+				
+				    <button
+				       ng-click="ctrl.createBenchmark()" 
+				       title="{{ctrl.textMap.addBenchmark}}" 
+				       class="pi pi-1x pi-plus-sign">
+				    </button>
+	
+				    <button 
+				       ng-click="ctrl.deleteBenchmark(ctrl.selectedBenchmark.id)" 
+				       ng-disabled="!ctrl.selectedBenchmark"
+				       title="{{ctrl.textMap.deleteBenchmark}}" 
+				       class="pi pi-1x pi-minus-sign">
+				    </button>
+			    
+			    </div>
+			    
+			    <div class="tbl-toolbar-section">
+			    
+				    <button
+				       ng-click="ctrl.downloadBenchmarkAsFile(ctrl.selectedBenchmark,ctrl.benchmarkFilter)" 
+				       ng-disabled="!ctrl.selectedBenchmark"
+				       title="{{ctrl.textMap.downloadBenchmark}}" 
+				       class="pi pi-1x pi-download">
+				    </button>
+				    
+				    <button 
+				       ng-click="ctrl.uploadBenchmarkFromFile()" 
+				       title="{{ctrl.textMap.upload}}" 
+				       class="pi pi-1x pi-cloud-upload">
+				    </button>
 
-			    <a href="" 
-			       ng-click="ctrl.createBenchmark()" 
-			       title="{{ctrl.textMap.addBenchmark}}" 
-			       class="tbl-toolbar-item tbl-tool-link">
-			       <i class="pi pi-plus-sign"></i>
-			    </a>
-
-			    <a href="" 
-			       ng-click="ctrl.deleteBenchmark(ctrl.selectedBenchmark.id)" 
-			       title="{{ctrl.textMap.deleteBenchmark}}" 
-			       class="tbl-toolbar-item tbl-tool-link">
-			       <i class="pi pi-minus-sign"></i>
-			    </a>	
+			    </div>
 			    
-			    <span>|</span>
+			    <div class="tbl-toolbar-section">
 			    
-			    <a href="" 
-			       ng-click="ctrl.downloadBenchmarkAsFile(ctrl.selectedBenchmark,ctrl.benchmarkFilter)" 
-			       title="{{ctrl.textMap.downloadBenchmark}}" 
-			       class="tbl-toolbar-item tbl-tool-link">
-			       <i class="pi pi-download"></i>
-			    </a>
+				    <button 
+				       ng-click="ctrl.cloneBenchmark(ctrl.selectedBenchmark.id)" 
+				       ng-disabled="!ctrl.selectedBenchmark"
+				       title="{{ctrl.textMap.cloneBenchmark}}" 
+				       class="pi pi-1x pi-copy">
+				    </button>
+	
+				    <button 
+				       ng-click="ctrl.saveBenchmark(ctrl.selectedBenchmark)" 
+				       ng-disabled="!ctrl.selectedBenchmark"
+				       title="{{ctrl.textMap.saveBenchmark}}" 
+				       class="pi pi-1x pi-floppy-disk">
+				    </button>
+				    
+			    </div>
 			    
-			    <a href="" 
-			       ng-click="ctrl.uploadBenchmarkFromFile()" 
-			       title="{{ctrl.textMap.upload}}" 
-			       class="tbl-toolbar-item tbl-tool-link">
-			       <i class="pi pi-cloud-upload"></i>
-			    </a>
-
-			    <span>|</span>
+			    <div class="tbl-toolbar-section">
 			    
-			    <a href="" 
-			       ng-click="ctrl.cloneBenchmark(ctrl.selectedBenchmark.id)" 
-			       title="{{ctrl.textMap.cloneBenchmark}}" 
-			       class="tbl-toolbar-item tbl-tool-link">
-			       <i class="pi pi-copy"></i>
-			    </a>
-
-			    <a href="" 
-			       ng-click="ctrl.saveBenchmark(ctrl.selectedBenchmark)" 
-			       title="{{ctrl.textMap.saveBenchmark}}" 
-			       class="tbl-toolbar-item tbl-tool-link">
-			       <i class="pi pi-floppy-disk"></i>
-			    </a>
+				    <button 
+				       ng-if="ctrl.deployRuntimeArtifact"
+				       ng-disabled="!ctrl.selectedBenchmark"
+				       ng-click="ctrl.publishBenchmark(ctrl.selectedBenchmark.id)" 
+				       title="{{ctrl.textMap.publishBenchmark}}"
+				       class="pi pi-1x pi-globe">
+				    </button>	    
 			    
-			    <span>|</span>
-			    
-			    <a href="" 
-			       ng-if="ctrl.deployRuntimeArtifact"
-			       ng-click="ctrl.publishBenchmark(ctrl.selectedBenchmark.id)" 
-			       title="{{ctrl.textMap.publishBenchmark}}" 
-			       class="tbl-toolbar-item tbl-tool-link">
-			       <i class="pi pi-globe"></i>
-			    </a>	    
-			    
+			    </div>
 			    
 			</div>
 			
