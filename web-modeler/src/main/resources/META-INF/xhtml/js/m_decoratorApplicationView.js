@@ -223,7 +223,8 @@ define(
                 var availableModels = [];
                 for (var i in models) {
                     var model = models[i];
-                    availableModels.push(model);
+                    if(model.id!=this.getApplication().model.id)
+                       availableModels.push(model);
                 }
                 return availableModels;
             };
