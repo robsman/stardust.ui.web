@@ -14,10 +14,8 @@
 
 package org.eclipse.stardust.ui.web.rest.service;
 
-import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Resource;
@@ -25,13 +23,11 @@ import javax.annotation.Resource;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkCategoryDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkProcessActivitiesTLVStatisticsResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkTLVStatisticsByBOResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.TrafficLightViewUtils;
 import org.springframework.stereotype.Component;
-
-import com.google.gson.JsonElement;
 
 @Component
 public class TrafficLightViewService
@@ -41,24 +37,23 @@ public class TrafficLightViewService
 
    private static final Logger trace = LogManager.getLogger(TrafficLightViewService.class);
 
-   public QueryResultDTO getTrafficLightViewStatastic(Boolean isAllBenchmarks, Boolean isAllProcessess, List<Long> bOids, List<ProcessDefinitionDTO> processes, String dateType, Integer dayOffset, List<BenchmarkCategoryDTO> benchmarkCategories)
+   public BenchmarkProcessActivitiesTLVStatisticsResultDTO getTrafficLightViewStatastic(Boolean isAllBenchmarks,
+         Boolean isAllProcessess, List<Long> bOids, List<ProcessDefinitionDTO> processes, String dateType,
+         Integer dayOffset, List<BenchmarkCategoryDTO> benchmarkCategories,
+         Map<String, List<String>> processActivitiesMap)
    {
 
-      return trafficLightViewUtils.getTrafficLightViewStatastic(isAllBenchmarks,isAllProcessess,bOids,processes,dateType,dayOffset,benchmarkCategories);
+      return trafficLightViewUtils.getTrafficLightViewStatastic(isAllBenchmarks, isAllProcessess, bOids, processes,
+            dateType, dayOffset, benchmarkCategories, processActivitiesMap);
    }
 
-   public QueryResultDTO getActivityBenchmarkStatistics(String processId, List<Long> bOids, String dateType,
-         Integer dayOffset, List<BenchmarkCategoryDTO> benchmarkCategories, Set<String> processActivitySet)
-   {
-      return trafficLightViewUtils.getActivityBenchmarkStatistics(processId, bOids, dateType, dayOffset, benchmarkCategories,processActivitySet);
-   }
-
-   public BenchmarkTLVStatisticsByBOResultDTO getTrafficLightViewStatasticByBO(Boolean isAllBenchmarks, Boolean isAllProcessess,
-         List<Long> bOids, List<ProcessDefinitionDTO> processes, String dateType, Integer dayOffset,
-         List<BenchmarkCategoryDTO> benchmarkCategories, String businessObjectQualifiedId,
+   public BenchmarkTLVStatisticsByBOResultDTO getTrafficLightViewStatasticByBO(Boolean isAllBenchmarks,
+         Boolean isAllProcessess, List<Long> bOids, List<ProcessDefinitionDTO> processes, String dateType,
+         Integer dayOffset, List<BenchmarkCategoryDTO> benchmarkCategories, String businessObjectQualifiedId,
          Set<String> selBOInstances, String groupBybusinessQualifiedId, Set<String> selGroupByBOInstances)
    {
-      return trafficLightViewUtils.getTrafficLightViewStatasticByBO(isAllBenchmarks,isAllProcessess,bOids,processes,dateType,dayOffset,
-                 benchmarkCategories,businessObjectQualifiedId,selBOInstances,groupBybusinessQualifiedId,selGroupByBOInstances);
+      return trafficLightViewUtils.getTrafficLightViewStatasticByBO(isAllBenchmarks, isAllProcessess, bOids, processes,
+            dateType, dayOffset, benchmarkCategories, businessObjectQualifiedId, selBOInstances,
+            groupBybusinessQualifiedId, selGroupByBOInstances);
    }
 }

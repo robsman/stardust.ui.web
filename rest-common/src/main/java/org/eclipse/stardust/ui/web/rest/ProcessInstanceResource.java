@@ -37,6 +37,7 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.query.DataFilter;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
+import org.eclipse.stardust.engine.api.query.ProcessDefinitionFilter;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ProcessStateFilter;
 import org.eclipse.stardust.engine.core.query.statistics.api.BenchmarkProcessStatisticsQuery;
@@ -78,7 +79,7 @@ public class ProcessInstanceResource
 
    @Resource
    private RestCommonClientMessages restCommonClientMessages;
-   
+
    public static final String ACTIVE = "Active";
 
    public static final String COMPLETED = "Completed";
@@ -117,8 +118,7 @@ public class ProcessInstanceResource
       {
          return Response.ok(
                AbstractDTO.toJson(getProcessInstanceService().getProcessInstanceDocuments(
-                     Long.parseLong(processInstanceOid))), MediaType.APPLICATION_JSON)
-               .build();
+                     Long.parseLong(processInstanceOid))), MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {
@@ -136,9 +136,8 @@ public class ProcessInstanceResource
       try
       {
          return Response.ok(
-               AbstractDTO.toJson(getProcessInstanceService().getDataPathValueFor(
-                     Long.parseLong(processInstanceOid), dataPathId)), MediaType.APPLICATION_JSON)
-               .build();
+               AbstractDTO.toJson(getProcessInstanceService().getDataPathValueFor(Long.parseLong(processInstanceOid),
+                     dataPathId)), MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {
@@ -317,11 +316,27 @@ public class ProcessInstanceResource
 
          Integer dayOffset = postJSON.getAsJsonPrimitive("dayOffset").getAsInt();
 
-         String processId = postJSON.getAsJsonPrimitive("processId").getAsString();
+         JsonArray processIds = postJSON.getAsJsonArray("processIds");
+
+         Type processType = new TypeToken<List<String>>()
+         {
+         }.getType();
+         List<String> processIDs = new ArrayList<String>();
+         if (null != processIds)
+         {
+            processIDs = new Gson().fromJson(processIds.toString(), processType);
+
+         }
 
          String state = postJSON.getAsJsonPrimitive("state").getAsString();
 
-         ProcessInstanceQuery query = ProcessInstanceQuery.findForProcess(processId);
+         ProcessInstanceQuery query = new ProcessInstanceQuery();
+
+         FilterOrTerm processIdFilter = query.getFilter().addOrTerm();
+         for (String processId : processIDs)
+         {
+            processIdFilter.add(new ProcessDefinitionFilter(processId));
+         }
 
          FilterOrTerm benchmarkFilter = query.getFilter().addOrTerm();
 
@@ -344,20 +359,25 @@ public class ProcessInstanceResource
 
          if (dateType.equals(PredefinedConstants.BUSINESS_DATE))
          {
-            query.where((DataFilter.between(TrafficLightViewUtils.getModelName(processId)
-                  + PredefinedConstants.BUSINESS_DATE, startDate.getTime(), endDate.getTime())));
+            FilterOrTerm businessDateFilter = query.getFilter().addOrTerm();
+            for (String processId : processIDs)
+            {
+               businessDateFilter.add((DataFilter.between(TrafficLightViewUtils.getModelName(processId)
+                     + PredefinedConstants.BUSINESS_DATE, startDate.getTime(), endDate.getTime())));
+            }
          }
          else
          {
-            query.where(ProcessInstanceQuery.START_TIME.between(startDate.getTimeInMillis(),
-                  endDate.getTimeInMillis()));
+            query.where(ProcessInstanceQuery.START_TIME.between(startDate.getTimeInMillis(), endDate.getTimeInMillis()));
          }
 
          if (postJSON.getAsJsonPrimitive("benchmarkCategory") != null)
          {
             Long benchmarkCategory = postJSON.getAsJsonPrimitive("benchmarkCategory").getAsLong();
             query.where(ProcessInstanceQuery.BENCHMARK_VALUE.isEqual(benchmarkCategory));
-         }else{
+         }
+         else
+         {
             query.where(ProcessInstanceQuery.BENCHMARK_VALUE.greaterThan(0l));
          }
 
@@ -497,7 +517,7 @@ public class ProcessInstanceResource
       List<DataPathValueDTO> dataPathValuesDTO = processInstanceService.getDataPathValueFor(processOid, dataPathId);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(dataPathValuesDTO), MediaType.APPLICATION_JSON).build();
    }
-   
+
    @PUT
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
@@ -513,9 +533,9 @@ public class ProcessInstanceResource
     * @author Yogesh.Manware
     * @param processOid
     * @return
-    * @throws Exception 
+    * @throws Exception
     */
-   @POST   
+   @POST
    @Consumes(MediaType.MULTIPART_FORM_DATA)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{oid}/documents{dataPathId:.*}")
@@ -527,9 +547,8 @@ public class ProcessInstanceResource
          dataPathId = DmsConstants.PATH_ID_ATTACHMENTS;
       }
 
-      Map<String, Object> result = processInstanceService.addProcessDocuments(processOid, attachments,
-            dataPathId);
-      
+      Map<String, Object> result = processInstanceService.addProcessDocuments(processOid, attachments, dataPathId);
+
       return Response.ok(GsonUtils.toJsonHTMLSafeString(result)).build();
    }
 
@@ -537,9 +556,9 @@ public class ProcessInstanceResource
     * @author Yogesh.Manware
     * @param processOid
     * @return
-    * @throws Exception 
+    * @throws Exception
     */
-   @DELETE   
+   @DELETE
    @Consumes(MediaType.MULTIPART_FORM_DATA)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{oid}/documents{dataPathId:.*}{documentId: (/documentId)?}")
@@ -550,12 +569,12 @@ public class ProcessInstanceResource
       {
          dataPathId = DmsConstants.PATH_ID_ATTACHMENTS;
       }
-      
+
       processInstanceService.removeProcessDocument(processOid, dataPathId, documentId);
-      
+
       return Response.ok(GsonUtils.toJsonHTMLSafeString(restCommonClientMessages.get("success.message"))).build();
    }
-   
+
    /**
     * Populate the options with the post data.
     * 

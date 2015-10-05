@@ -95,56 +95,6 @@
 		/**
 		 * 
 		 */
-		TrafficLightViewService.prototype.getTLVStatasticByBusinessObject = function(query) {
-			// Prepare URL
-			var restUrl = REST_BASE_URL + "/:type";
-
-			var postData = query;
-
-			var tlvStats = $resource(restUrl, {
-				type : '@type'
-			}, {
-				fetch : {
-					method : 'POST'
-				}
-			});
-
-			var urlTemplateParams = {};
-			urlTemplateParams.type = "statsByBO";
-
-			return tlvStats.fetch(urlTemplateParams, postData).$promise;
-
-		};
-		
-		
-		/**
-		 * 
-		 */
-		TrafficLightViewService.prototype.getTLVStatasticByBusinessObject = function(query) {
-			// Prepare URL
-			var restUrl = REST_BASE_URL + "/:type";
-
-			var postData = query;
-
-			var tlvStats = $resource(restUrl, {
-				type : '@type'
-			}, {
-				fetch : {
-					method : 'POST'
-				}
-			});
-
-			var urlTemplateParams = {};
-			urlTemplateParams.type = "statsByBO";
-
-			return tlvStats.fetch(urlTemplateParams, postData).$promise;
-
-		};
-		
-		
-		/**
-		 * 
-		 */
 		TrafficLightViewService.prototype.getTLVActivityStatastic = function(query) {
 			// Prepare URL
 			var restUrl = REST_BASE_URL + "/:type";

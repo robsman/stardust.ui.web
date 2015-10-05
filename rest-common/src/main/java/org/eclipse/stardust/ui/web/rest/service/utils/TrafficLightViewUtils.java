@@ -34,11 +34,11 @@ import org.eclipse.stardust.engine.core.query.statistics.api.BenchmarkCategoryCo
 import org.eclipse.stardust.engine.core.query.statistics.api.BenchmarkProcessStatistics;
 import org.eclipse.stardust.engine.core.query.statistics.api.BenchmarkProcessStatisticsQuery;
 import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkCategoryDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkProcessActivitiesTLVStatisticsResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkTLVStatisticsByBOResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkTLVStatisticsResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.BusinessObjectStatisticDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -47,10 +47,27 @@ public class TrafficLightViewUtils
 
    @Resource
    ServiceFactoryUtils serviceFactoryUtils;
+   
+   public static final String TOTAL_PROCESS = "Total Process";
+   
+   public static final String TOTAL_ACTIVITY = "Total Activity";
 
-   public QueryResultDTO getTrafficLightViewStatastic(Boolean isAllBenchmarks, Boolean isAllProcessess,
-         List<Long> bOids, List<ProcessDefinitionDTO> processes, String dateType, Integer dayOffset,
-         List<BenchmarkCategoryDTO> benchmarkCategories)
+   /**
+    * 
+    * @param isAllBenchmarks
+    * @param isAllProcessess
+    * @param bOids
+    * @param processes
+    * @param dateType
+    * @param dayOffset
+    * @param benchmarkCategories
+    * @param processActivitiesMap
+    * @return
+    */
+   public BenchmarkProcessActivitiesTLVStatisticsResultDTO getTrafficLightViewStatastic(Boolean isAllBenchmarks,
+         Boolean isAllProcessess, List<Long> bOids, List<ProcessDefinitionDTO> processes, String dateType,
+         Integer dayOffset, List<BenchmarkCategoryDTO> benchmarkCategories,
+         Map<String, List<String>> processActivitiesMap)
    {
       Set<String> setOfprocesses = new TreeSet<String>();
       for (ProcessDefinitionDTO processDef : processes)
@@ -108,56 +125,149 @@ public class TrafficLightViewUtils
 
       List<BenchmarkTLVStatisticsResultDTO> bPSRDTOList = new ArrayList<BenchmarkTLVStatisticsResultDTO>();
 
+      // Created Object for Total Process Row
+      BenchmarkTLVStatisticsResultDTO processStatsTotal = new BenchmarkTLVStatisticsResultDTO();
+      processStatsTotal.name = TOTAL_PROCESS;
+      processStatsTotal.benchmarkCategoryCountMap = CollectionUtils.newMap();
+      processStatsTotal.isActivity = false;
+
       for (ProcessDefinitionDTO processDef : processes)
       {
          BenchmarkTLVStatisticsResultDTO bPSRDTO = new BenchmarkTLVStatisticsResultDTO();
          bPSRDTO.id = processDef.id;
          bPSRDTO.name = processDef.name;
          bPSRDTO.isActivity = false;
+
          bPSRDTO.abortedCount = stats.getAbortedCountForProcess(processDef.id);
+         processStatsTotal.abortedCount = processStatsTotal.abortedCount + bPSRDTO.abortedCount;
+
          bPSRDTO.completedCount = stats.getCompletedCountForProcess(processDef.id);
+         processStatsTotal.completedCount = processStatsTotal.completedCount + bPSRDTO.completedCount;
+
          bPSRDTO.totalCount = bPSRDTO.abortedCount + bPSRDTO.completedCount;
+         processStatsTotal.totalCount = processStatsTotal.totalCount + bPSRDTO.totalCount;
+
          BenchmarkCategoryCounts benchmarkCategoryCounts = stats.getBenchmarkCategoryCountsForProcess(processDef.id);
-         populateBenchmarkCategoryResult(benchmarkCategories, bPSRDTO, benchmarkCategoryCounts);
+         // this method will populate the counts of benchmark category for the process.
+         populateBenchmarkCategoryResult(benchmarkCategories, bPSRDTO, benchmarkCategoryCounts, processStatsTotal);
+         
          bPSRDTOList.add(bPSRDTO);
       }
+      // map will store activity stats for each process selected
+      Map<String, List<BenchmarkTLVStatisticsResultDTO>> bASRDTOMap = new HashMap<String, List<BenchmarkTLVStatisticsResultDTO>>();
 
-      QueryResultDTO result = new QueryResultDTO();
-      result.list = bPSRDTOList;
-      result.totalCount = bPSRDTOList.size();
+      // Created object for total activity row.
+      BenchmarkTLVStatisticsResultDTO activityStatsTotal = new BenchmarkTLVStatisticsResultDTO();
+      activityStatsTotal.name = TOTAL_ACTIVITY;
+      activityStatsTotal.benchmarkCategoryCountMap = CollectionUtils.newMap();
+      activityStatsTotal.isActivity = true;
+
+      // Calling activity statistics
+      getActivityBenchmarkStatistics(processes, bOids, dateType, dayOffset, benchmarkCategories, processActivitiesMap,
+            bASRDTOMap, activityStatsTotal);
+
+      List<BenchmarkTLVStatisticsResultDTO> benchmarkTLVProcessStas = new ArrayList<BenchmarkTLVStatisticsResultDTO>();
+      benchmarkTLVProcessStas.add(0, processStatsTotal); // setting total process row at index 0
+      benchmarkTLVProcessStas.add(1, activityStatsTotal);// setting total activity row at index 1
+      benchmarkTLVProcessStas.addAll(2, bPSRDTOList);
+      BenchmarkProcessActivitiesTLVStatisticsResultDTO result = new BenchmarkProcessActivitiesTLVStatisticsResultDTO();
+      result.benchmarkTLVProcessStas = benchmarkTLVProcessStas;
+      result.bATLVStatsMap = bASRDTOMap;
       return result;
    }
-
+   
+   /**
+    * 
+    * @param benchmarkCategories
+    * @param bPSRDTO
+    * @param benchmarkCategoryCounts
+    * @param statsTotal
+    */
    private void populateBenchmarkCategoryResult(List<BenchmarkCategoryDTO> benchmarkCategories,
-         BenchmarkTLVStatisticsResultDTO bPSRDTO, BenchmarkCategoryCounts benchmarkCategoryCounts)
+         BenchmarkTLVStatisticsResultDTO bPSRDTO, BenchmarkCategoryCounts benchmarkCategoryCounts,
+         BenchmarkTLVStatisticsResultDTO statsTotal)
    {
       bPSRDTO.benchmarkCategoryCountMap = CollectionUtils.newMap();
       if (null != benchmarkCategoryCounts)
       {
-         for (BenchmarkCategoryDTO benchmarkCategory : benchmarkCategories)
+         for (BenchmarkCategoryDTO bCategory : benchmarkCategories)
          {
+            BenchmarkCategoryDTO benchmarkCategory = new BenchmarkCategoryDTO();
+            benchmarkCategory.color = bCategory.color;
+            benchmarkCategory.name = bCategory.name;
+            benchmarkCategory.index = bCategory.index;
             benchmarkCategory.count = benchmarkCategoryCounts.getBenchmarkCategoryCount().get(benchmarkCategory.index) != null
                   ? benchmarkCategoryCounts.getBenchmarkCategoryCount().get(benchmarkCategory.index)
                   : 0;
             bPSRDTO.totalCount = bPSRDTO.totalCount + benchmarkCategory.count;
             bPSRDTO.benchmarkCategoryCountMap.put(benchmarkCategory.name, benchmarkCategory);
+
+            Map<String, BenchmarkCategoryDTO> totalBenchmarkCategoryMap = statsTotal.benchmarkCategoryCountMap;
+            if (totalBenchmarkCategoryMap.get(benchmarkCategory.name) != null)
+            {
+               BenchmarkCategoryDTO totalBenchmarkCategory = totalBenchmarkCategoryMap.get(benchmarkCategory.name);
+               totalBenchmarkCategory.count = totalBenchmarkCategory.count + benchmarkCategory.count;
+               statsTotal.benchmarkCategoryCountMap.put(benchmarkCategory.name, totalBenchmarkCategory);
+               statsTotal.totalCount = statsTotal.totalCount + benchmarkCategory.count;
+            }
+            else
+            {
+               statsTotal.benchmarkCategoryCountMap.put(benchmarkCategory.name, benchmarkCategory);
+               statsTotal.totalCount = statsTotal.totalCount + benchmarkCategory.count;
+            }
+
          }
       }
       else
       {
-         for (BenchmarkCategoryDTO benchmarkCategory : benchmarkCategories)
+         for (BenchmarkCategoryDTO bCategory : benchmarkCategories)
          {
+            BenchmarkCategoryDTO benchmarkCategory = new BenchmarkCategoryDTO();
+            benchmarkCategory.color = bCategory.color;
+            benchmarkCategory.name = bCategory.name;
+            benchmarkCategory.index = bCategory.index;
             benchmarkCategory.count = 0L;
             bPSRDTO.benchmarkCategoryCountMap.put(benchmarkCategory.name, benchmarkCategory);
+            Map<String, BenchmarkCategoryDTO> totalBenchmarkCategoryMap = statsTotal.benchmarkCategoryCountMap;
+            if (totalBenchmarkCategoryMap.get(benchmarkCategory.name) != null)
+            {
+               BenchmarkCategoryDTO totalBenchmarkCategory = totalBenchmarkCategoryMap.get(benchmarkCategory.name);
+               totalBenchmarkCategory.count = totalBenchmarkCategory.count + benchmarkCategory.count;
+               statsTotal.benchmarkCategoryCountMap.put(benchmarkCategory.name, totalBenchmarkCategory);
+               statsTotal.totalCount = statsTotal.totalCount + benchmarkCategory.count;
+            }
+            else
+            {
+               statsTotal.benchmarkCategoryCountMap.put(benchmarkCategory.name, benchmarkCategory);
+               statsTotal.totalCount = statsTotal.totalCount + benchmarkCategory.count;
+            }
          }
       }
    }
-
-   public QueryResultDTO getActivityBenchmarkStatistics(String processId, List<Long> bOids, String dateType,
-         Integer dayOffset, List<BenchmarkCategoryDTO> benchmarkCategories, Set<String> processActivitySet)
+   /**
+    * 
+    * @param processes
+    * @param bOids
+    * @param dateType
+    * @param dayOffset
+    * @param benchmarkCategories
+    * @param processActivitiesMap
+    * @param bASRDTOMap
+    * @param activityStatsTotal
+    */
+   private void getActivityBenchmarkStatistics(List<ProcessDefinitionDTO> processes, List<Long> bOids, String dateType,
+         Integer dayOffset, List<BenchmarkCategoryDTO> benchmarkCategories,
+         Map<String, List<String>> processActivitiesMap, Map<String, List<BenchmarkTLVStatisticsResultDTO>> bASRDTOMap,
+         BenchmarkTLVStatisticsResultDTO activityStatsTotal)
    {
+      Set<String> setOfprocesses = new TreeSet<String>();
+      for (ProcessDefinitionDTO processDef : processes)
+      {
+         setOfprocesses.add(processDef.id);
+
+      }
       // Query
-      BenchmarkActivityStatisticsQuery query = BenchmarkActivityStatisticsQuery.forProcessId(processId);
+      BenchmarkActivityStatisticsQuery query = BenchmarkActivityStatisticsQuery.forProcessIds(setOfprocesses);
 
       // Only for the selected benchmarks.
       FilterOrTerm benchmarkFilter = query.getFilter().addOrTerm();
@@ -168,9 +278,13 @@ public class TrafficLightViewUtils
       }
 
       FilterTerm activityFilter = query.getFilter().addOrTerm();
-      for (String activityId : processActivitySet)
+
+      for (String process : processActivitiesMap.keySet())
       {
-         activityFilter.add(ActivityFilter.forProcess(activityId, processId));
+         for (String activityId : processActivitiesMap.get(process))
+         {
+            activityFilter.add(ActivityFilter.forProcess(activityId, process));
+         }
       }
 
       // Only for date.
@@ -187,42 +301,53 @@ public class TrafficLightViewUtils
          startDate = getPastStartDate(dayOffset);
       }
 
+      FilterTerm dateFilter = query.getFilter().addOrTerm();
       if (dateType.equals(PredefinedConstants.BUSINESS_DATE))
       {
-         query.where((DataFilter.between(getModelName(processId) + PredefinedConstants.BUSINESS_DATE,
-               startDate.getTime(), endDate.getTime())));
+         for (String processId : setOfprocesses)
+         {
+            dateFilter.add((DataFilter.between(getModelName(processId) + PredefinedConstants.BUSINESS_DATE,
+                  startDate.getTime(), endDate.getTime())));
+         }
+
       }
       else
       {
+
          query.where(ActivityInstanceQuery.START_TIME.between(startDate.getTimeInMillis(), endDate.getTimeInMillis()));
       }
 
       BenchmarkActivityStatistics stats = (BenchmarkActivityStatistics) serviceFactoryUtils.getQueryService()
             .getAllActivityInstances(query);
 
-      List<BenchmarkTLVStatisticsResultDTO> bASRDTOList = new ArrayList<BenchmarkTLVStatisticsResultDTO>();
-
-      for (String activityId : processActivitySet)
+      for (String processId : processActivitiesMap.keySet())
       {
-         BenchmarkTLVStatisticsResultDTO bASRDTO = new BenchmarkTLVStatisticsResultDTO();
-         bASRDTO.id = activityId;
-         bASRDTO.parentId = processId;
-         bASRDTO.name = getActivityOrProcessName(activityId);
-         bASRDTO.isActivity = true;
+         List<BenchmarkTLVStatisticsResultDTO> bASRDTOList = new ArrayList<BenchmarkTLVStatisticsResultDTO>();
+         for (String activityId : processActivitiesMap.get(processId))
+         {
+            BenchmarkTLVStatisticsResultDTO bASRDTO = new BenchmarkTLVStatisticsResultDTO();
+            bASRDTO.id = activityId;
+            bASRDTO.parentId = processId;
+            bASRDTO.name = getActivityOrProcessName(activityId);
+            bASRDTO.isActivity = true;
 
-         bASRDTO.abortedCount = stats.getAbortedCountForActivity(processId, activityId);
-         bASRDTO.completedCount = stats.getCompletedCountForActivity(processId, activityId);
-         bASRDTO.totalCount = bASRDTO.completedCount + bASRDTO.abortedCount;
-         BenchmarkCategoryCounts benchmarkCategoryCounts = stats.getBenchmarkCategoryCountsForActivity(processId,
-               activityId);
-         populateBenchmarkCategoryResult(benchmarkCategories, bASRDTO, benchmarkCategoryCounts);
-         bASRDTOList.add(bASRDTO);
+            bASRDTO.abortedCount = stats.getAbortedCountForActivity(processId, activityId);
+            activityStatsTotal.abortedCount = activityStatsTotal.abortedCount + bASRDTO.abortedCount;
+
+            bASRDTO.completedCount = stats.getCompletedCountForActivity(processId, activityId);
+            activityStatsTotal.completedCount = activityStatsTotal.completedCount + bASRDTO.completedCount;
+
+            bASRDTO.totalCount = bASRDTO.completedCount + bASRDTO.abortedCount;
+            activityStatsTotal.totalCount = activityStatsTotal.totalCount + bASRDTO.totalCount;
+
+            BenchmarkCategoryCounts benchmarkCategoryCounts = stats.getBenchmarkCategoryCountsForActivity(processId,
+                  activityId);
+            populateBenchmarkCategoryResult(benchmarkCategories, bASRDTO, benchmarkCategoryCounts, activityStatsTotal);
+            bASRDTOList.add(bASRDTO);
+         }
+         bASRDTOMap.put(processId, bASRDTOList);
+
       }
-
-      QueryResultDTO result = new QueryResultDTO();
-      result.list = bASRDTOList;
-      result.totalCount = bASRDTOList.size();
-      return result;
    }
 
    public static Calendar getPastStartDate(Integer dayOffset)
@@ -290,7 +415,21 @@ public class TrafficLightViewUtils
 
       return now;
    }
-
+   /**
+    * 
+    * @param isAllBenchmarks
+    * @param isAllProcessess
+    * @param bOids
+    * @param processes
+    * @param dateType
+    * @param dayOffset
+    * @param benchmarkCategories
+    * @param businessObjectQualifiedId
+    * @param selBOInstances
+    * @param groupBybusinessQualifiedId
+    * @param selGroupByBOInstances
+    * @return
+    */
    public BenchmarkTLVStatisticsByBOResultDTO getTrafficLightViewStatasticByBO(Boolean isAllBenchmarks,
          Boolean isAllProcessess, List<Long> bOids, List<ProcessDefinitionDTO> processes, String dateType,
          Integer dayOffset, List<BenchmarkCategoryDTO> benchmarkCategories, String businessObjectQualifiedId,
@@ -487,8 +626,6 @@ public class TrafficLightViewUtils
             bTLVStatsByBOResultDTO.businessObjectsResultList = boFilterLevelList;
          }
       }
-
-      System.out.println(stats);
       return bTLVStatsByBOResultDTO;
    }
 }

@@ -176,14 +176,16 @@
 			queryData.dateType = self.selectedDateType;
 			queryData.dayOffset = self.dayOffset;
 			queryData.categories = self.categories;
+			queryData.processActivityMap = self.createProcessActivityArray(queryData.bOids,queryData.processes);
 			self.queryData = queryData;
 			self.tlvCriteriaForm.$error.benchmarksNotIdentical = false;
 			if(self.selectedDrillDown == "PROCESS_WORKITEM"){
 				_sdTrafficLightViewService.getTLVStatastic(queryData).then(function(data) {
 					self.tlvStatsData = {};
-					self.tlvStatsData.list = data.list;
-					self.tlvStatsData.totalCount = data.totalCount;
-					self.showTLVStatastics = true;
+					self.tlvStatsData.list = data.benchmarkTLVProcessStas;
+					self.tlvStatsData.totalCount = data.benchmarkTLVProcessStas.length;
+					self.bATLVStatsMap = data.bATLVStatsMap;
+					self.showTLVStatastics = true;														
 				}, function(error) {
 					trace.log(error);
 				});	
@@ -240,28 +242,34 @@
 	/**
 	 * 
 	 */
-	TrafficLightViewController.prototype.createProcessActivityArray = function(bOids,processId){
-		var benchmarkProcessActivityArray = [];
+	TrafficLightViewController.prototype.createProcessActivityArray = function(bOids,processes){
+		var benchmarkProcessActivityMap= {};
 		var self = this;
-		bOids.forEach(function(bOid){
+		processes.forEach(function(process){
+			bOids.forEach(function(bOid){
 				self.benchmarkDefinitions.forEach(function(benchmarkDefinition){
 					if(bOid == benchmarkDefinition.oid){
 						benchmarkDefinition.models.forEach(function(model){
 							model.processDefinitions.forEach(function(procDef){
-								if(procDef.id == processId){
-									procDef.activities.forEach(function(activity){
+								if(procDef.id == process.id){
+									var benchmarkProcessActivityArray = [];
+									procDef.activities.forEach(function(activity){										
 										if(activity.enableBenchmark){
 											var qualifiedActivityId = '{'+ model.id +'}' + activity.id;
 											benchmarkProcessActivityArray.push(qualifiedActivityId);	
 										}										
 									});
+									benchmarkProcessActivityMap[process.id] = benchmarkProcessActivityArray;
 								}
 							});
 						});
 					}
 				});
 			});
-		return benchmarkProcessActivityArray;
+			
+		});
+		
+		return benchmarkProcessActivityMap;
 	};
 	
 	/**
@@ -276,19 +284,22 @@
 			tlvData.list = self.tlvStatsData.list;
 			tlvData.totalCount = self.tlvStatsData.totalCount;
 			angular.forEach(tlvData.list, function(object){
-				object.$leaf = false;
+				if(!(object.name == "Total Process" || object.name == "Total Activity")){
+			    	object.$leaf = false;
+				}				
 			});
 			deferred.resolve(tlvData);
 		}else{
-			//self.parentId = params.parent.id;
-			self.getActivitySatastic(params.parent.id).then(function(data){
-				tlvData.list = data.list;
-				tlvData.totalCount = data.totalCount;
-				deferred.resolve(tlvData);
-			},function(error) {
-				trace.log(error);
-				deferred.reject(error);
-			});
+			var activityList = self.bATLVStatsMap[params.parent.id];
+			    if(activityList != undefined){
+			    	tlvData.list = activityList;
+					tlvData.totalCount = activityList.length;
+			    }else{
+			    	tlvData.list = [];
+			    	tlvData.totalCount = 0;
+			    }
+				
+				deferred.resolve(tlvData);			
 		}
 		
 		return deferred.promise;
@@ -310,9 +321,14 @@
 			deferred.resolve(tlvData);
 		}else{
 			var drillDownList = self.tlvBOStatsDrillDownData[params.parent.name];
-
-				tlvData.list = drillDownList;
-				tlvData.totalCount = drillDownList.length;
+                if(drillDownList != undefined){
+                	tlvData.list = drillDownList;
+    				tlvData.totalCount = drillDownList.length;
+                }else{
+                	tlvData.list = [];
+			    	tlvData.totalCount = 0;
+                }
+				
 				deferred.resolve(tlvData);
 			
 		}
@@ -320,31 +336,6 @@
 		return deferred.promise;
 	}
 	
-	
-	/**
-	 * 
-	 * @param processId
-	 */
-	TrafficLightViewController.prototype.getActivitySatastic = function(processId) {
-		var self = this;
-		var deferred = _q.defer();
-		var queryData = {};
-		queryData = self.queryData;
-		delete queryData.isAllProcessess;
-		delete queryData.isAllBenchmarks;
-		delete queryData.processes;
-		queryData.processId = processId;
-		queryData.processActivityArray = self.createProcessActivityArray(queryData.bOids,processId);
-		_sdTrafficLightViewService.getTLVActivityStatastic(queryData).then(function(data) {
-			deferred.resolve(data);
-		}, function(error) {
-			trace.log(error);
-			deferred.reject(error);
-		});
-		
-		return deferred.promise;
-	};
-
 	/**
 	 * 
 	 */
@@ -377,7 +368,15 @@
 			}
 		}else{
 			self.activityDataTable = null;
-			self.selectedProcessId = id;
+			self.selectedProcessId = [];
+			if(id != undefined){
+		     self.selectedProcessId.push(id);	
+			}else{
+				self.queryData.processes.forEach(function(process){
+					self.selectedProcessId.push(process.id)
+				});
+			}
+
 			if (self.processDataTable != undefined) {
 				self.processDataTable.refresh();
 			} else {
@@ -401,7 +400,7 @@
 			'dateType' : self.queryData.dateType,
 			'dayOffset' : self.queryData.dayOffset,
 			'benchmarkCategory' : self.selectedBenchmarkCategory,
-			'processId' : self.selectedProcessId,
+			'processIds' : self.selectedProcessId,
 			'state' : self.state
 		};
 

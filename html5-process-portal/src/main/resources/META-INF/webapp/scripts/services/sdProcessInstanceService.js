@@ -135,7 +135,7 @@
 		    postData.dateType = query.dateType;
 		    postData.dayOffset = query.dayOffset;
 		    postData.benchmarkCategory = query.benchmarkCategory;
-		    postData.processId = query.processId;
+		    postData.processIds = query.processIds;
 		    postData.state = query.state;
 		    
 		    var processList = $resource(restUrl, {

@@ -13,7 +13,6 @@
  */
 package org.eclipse.stardust.ui.web.rest;
 
-import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.annotation.Resource;
 import javax.ws.rs.POST;
@@ -35,9 +33,9 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.rest.service.TrafficLightViewService;
 import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkCategoryDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkProcessActivitiesTLVStatisticsResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkTLVStatisticsByBOResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -103,11 +101,31 @@ public class TrafficLightViewResource
 
       }
 
-      QueryResultDTO result = trafficLightViewService.getTrafficLightViewStatastic(isAllBenchmarks, isAllProcessess,
-            bOids, processes, dateType, dayOffset, benchmarkCategories);
+      JsonObject processActivityMap = postJSON.getAsJsonObject("processActivityMap");
+      Set<Entry<String, JsonElement>> processActivityMapEntrySet = processActivityMap.entrySet();
+
+      Map<String, List<String>> processActivitiesMap = new HashMap<String, List<String>>();
+      for (Entry<String, JsonElement> entry : processActivityMapEntrySet)
+      {
+         JsonArray processActivityArray = entry.getValue().getAsJsonArray();
+
+         Type processActivityType = new TypeToken<List<String>>()
+         {
+         }.getType();
+         List<String> activities = new ArrayList<String>();
+         if (null != processActivityArray)
+         {
+            activities = new Gson().fromJson(processActivityArray.toString(), processActivityType);
+
+         }
+         processActivitiesMap.put(entry.getKey(), activities);
+      }
+      BenchmarkProcessActivitiesTLVStatisticsResultDTO result = trafficLightViewService.getTrafficLightViewStatastic(
+            isAllBenchmarks, isAllProcessess, bOids, processes, dateType, dayOffset, benchmarkCategories,
+            processActivitiesMap);
       return Response.ok(result.toJson(), MediaType.APPLICATION_JSON).build();
    }
-   
+
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/statsByBO")
@@ -155,99 +173,46 @@ public class TrafficLightViewResource
          benchmarkCategories = new Gson().fromJson(categories.toString(), typeBenchmarkCategories);
 
       }
-     
+
       String businessObjectQualifiedId = postJSON.getAsJsonPrimitive("businessObjectQualifiedId").getAsString();
       String businessObjectType = postJSON.getAsJsonPrimitive("businessObjectType").getAsString();
-     
+
       JsonArray selectedBusinessObjectInstances = postJSON.getAsJsonArray("selectedBusinessObjectInstances");
-      
+
       Type boInstances = new TypeToken<Set<String>>()
-            {
-            }.getType();
+      {
+      }.getType();
       Set<String> selBOInstances = new HashSet<String>();
       if (null != selectedBusinessObjectInstances)
-            {
-               selBOInstances = new Gson().fromJson(selectedBusinessObjectInstances.toString(), boInstances);
+      {
+         selBOInstances = new Gson().fromJson(selectedBusinessObjectInstances.toString(), boInstances);
 
-            }
-      
+      }
+
       String groupBybusinessQualifiedId = null;
       Set<String> selGroupByBOInstances = null;
-      if(postJSON.getAsJsonPrimitive("groupBybusinessQualifiedId") != null){
-          groupBybusinessQualifiedId = postJSON.getAsJsonPrimitive("groupBybusinessQualifiedId").getAsString();
-          String groupBybusinessObjectType = postJSON.getAsJsonPrimitive("groupBybusinessObjectType").getAsString();
-          
-          JsonArray selectedRelatedBusinessObjectInstances = postJSON.getAsJsonArray("selectedRelatedBusinessObjectInstances");
-          
-          Type groupbyBOInstances = new TypeToken<Set<String>>()
-                {
-                }.getType();
-                selGroupByBOInstances = new HashSet<String>();
-                if (null != selectedRelatedBusinessObjectInstances)
-                {
-                   selGroupByBOInstances = new Gson().fromJson(selectedRelatedBusinessObjectInstances.toString(), groupbyBOInstances);
-                }
-      }
-      
-            
-
-      
-      
-      BenchmarkTLVStatisticsByBOResultDTO result = trafficLightViewService.getTrafficLightViewStatasticByBO(isAllBenchmarks, isAllProcessess,
-            bOids, processes, dateType, dayOffset, benchmarkCategories, businessObjectQualifiedId, selBOInstances, groupBybusinessQualifiedId, selGroupByBOInstances);
-      return Response.ok(result.toJson(), MediaType.APPLICATION_JSON).build();
-   }
-
-   @POST
-   @Produces(MediaType.APPLICATION_JSON)
-   @Path("/activityStats")
-   public Response getTrafficLightViewActivityStatastic(String postData)
-   {
-      JsonMarshaller jsonIo = new JsonMarshaller();
-      JsonObject postJSON = jsonIo.readJsonObject(postData);
-
-      JsonArray bOidsArray = postJSON.getAsJsonArray("bOids");
-      Type type = new TypeToken<List<Long>>()
+      if (postJSON.getAsJsonPrimitive("groupBybusinessQualifiedId") != null)
       {
-      }.getType();
-      List<Long> bOids = new ArrayList<Long>();
-      if (null != bOidsArray)
-      {
-         bOids = new Gson().fromJson(bOidsArray.toString(), type);
+         groupBybusinessQualifiedId = postJSON.getAsJsonPrimitive("groupBybusinessQualifiedId").getAsString();
+         String groupBybusinessObjectType = postJSON.getAsJsonPrimitive("groupBybusinessObjectType").getAsString();
 
+         JsonArray selectedRelatedBusinessObjectInstances = postJSON
+               .getAsJsonArray("selectedRelatedBusinessObjectInstances");
+
+         Type groupbyBOInstances = new TypeToken<Set<String>>()
+         {
+         }.getType();
+         selGroupByBOInstances = new HashSet<String>();
+         if (null != selectedRelatedBusinessObjectInstances)
+         {
+            selGroupByBOInstances = new Gson().fromJson(selectedRelatedBusinessObjectInstances.toString(),
+                  groupbyBOInstances);
+         }
       }
 
-      String processId = postJSON.getAsJsonPrimitive("processId").getAsString();
-      String dateType = postJSON.getAsJsonPrimitive("dateType").getAsString();
-
-      Integer dayOffset = postJSON.getAsJsonPrimitive("dayOffset").getAsInt();
-
-      JsonArray categories = postJSON.getAsJsonArray("categories");
-
-      Type typeBenchmarkCategories = new TypeToken<List<BenchmarkCategoryDTO>>()
-      {
-      }.getType();
-      List<BenchmarkCategoryDTO> benchmarkCategories = new ArrayList<BenchmarkCategoryDTO>();
-      if (null != categories)
-      {
-         benchmarkCategories = new Gson().fromJson(categories.toString(), typeBenchmarkCategories);
-
-      }
-      
-      JsonArray processActivityArray = postJSON.getAsJsonArray("processActivityArray");
-      
-      Type processActivityType = new TypeToken<Set<String>>()
-            {
-            }.getType();
-            Set<String> processActivitySet = new TreeSet<String>();
-            if (null != processActivityArray)
-            {
-               processActivitySet = new Gson().fromJson(processActivityArray.toString(), processActivityType);
-
-            }
-  
-      QueryResultDTO result = trafficLightViewService.getActivityBenchmarkStatistics(processId, bOids, dateType,
-            dayOffset, benchmarkCategories,processActivitySet);
+      BenchmarkTLVStatisticsByBOResultDTO result = trafficLightViewService.getTrafficLightViewStatasticByBO(
+            isAllBenchmarks, isAllProcessess, bOids, processes, dateType, dayOffset, benchmarkCategories,
+            businessObjectQualifiedId, selBOInstances, groupBybusinessQualifiedId, selGroupByBOInstances);
       return Response.ok(result.toJson(), MediaType.APPLICATION_JSON).build();
    }
 }
