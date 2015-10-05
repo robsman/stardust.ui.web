@@ -19,7 +19,7 @@
 		<ice:commandLink actionListener="#{trafficLightViewManagerBean.notPassedActivityHelper.openDelegateDialog}" disabled="#{trafficLightViewManagerBean.notPassedActivityHelper.selectedItemCount eq 0 ? true : false}">
 			<pc:automationTag value="auto-BCC-TrafficLgt-PendActTbl-ToolbarDelegate" standAlone="false"/>
 			<h:outputText 
-				styleClass="#{trafficLightViewManagerBean.notPassedActivityHelper.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''} pi pi-badge-portrait pi-fw pi-activity-delegate icon-lg pi-left pi-top" 
+				styleClass="#{trafficLightViewManagerBean.notPassedActivityHelper.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''} pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top" 
 				title="#{views_common_msgPropsBean['common.tooltip.delegate']}">
 				<h:outputText styleClass="pi pi-badge-icon pi-badge-icon-arrow-r" title="#{views_common_msgPropsBean['common.tooltip.delegate']}" />	
 			</h:outputText>
@@ -50,7 +50,7 @@
 			disabled="#{!trafficLightViewManagerBean.notPassedActivityHelper.priorityChanged}">
 			<pc:automationTag value="auto-BCC-TrafficLgt-PendActTbl-ToolbarSave" standAlone="false"/>
 			<ice:outputText
-                   styleClass="#{!trafficLightViewManagerBean.notPassedActivityHelper.priorityChanged ? 'iceCmdBtn-dis' : ''} pi pi-save icon-lg"
+                   styleClass="#{!trafficLightViewManagerBean.notPassedActivityHelper.priorityChanged ? 'iceCmdBtn-dis' : ''} pi pi-save pi-lg"
                    title="#{views_common_msgPropsBean['common.tooltip.savePriorityChanges']}"/>
 		</ice:commandLink>
 		<ice:panelConfirmation id="delegateToDefaultPerformer"  

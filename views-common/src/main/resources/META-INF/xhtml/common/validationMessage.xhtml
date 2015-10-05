@@ -11,7 +11,7 @@
 				<ice:panelSeries var="message"
 					value="#{validationMessageBean.errorMessages}">
 					<ice:outputText
-						styleClass="pi pi-exception-circle icon-lg"
+						styleClass="pi pi-exception-circle pi-lg"
 						rendered="#{validationMessageBean.styleClass!=null}" />
 					<h:outputText value="#{message}"
 						styleClass="#{validationMessageBean.styleClass!=null ? 'messagePanelText' : 'validationMsgDlgTxt1'}" />
@@ -27,7 +27,7 @@
 					value="#{validationMessageBean.infoMessages}">
 					<ice:outputText
 						rendered="#{validationMessageBean.styleClass!=null}"
-						styleClass="messagePanelImg pi pi-information icon-lg" />
+						styleClass="messagePanelImg pi pi-information pi-lg" />
 					<h:outputText value="#{message}"
 						styleClass="#{validationMessageBean.styleClass!=null ? 'messagePanelText' : 'validationMsgDlgTxt1'}" />
 					<ice:panelGroup styleClass="clearing" />

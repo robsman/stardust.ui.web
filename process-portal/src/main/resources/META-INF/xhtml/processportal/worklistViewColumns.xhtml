@@ -145,7 +145,7 @@
 				<pc:automationTag value="auto-PP-WorkList-ActionsProcDetails" standAlone="false"/>
 				<ice:outputText
 					title="#{worklistTableBean.messages['tooltip.processContextExplorer']}"
-					styleClass="pi pi-process icon-lg" />
+					styleClass="pi pi-process pi-lg" />
 									
 				<f:param name="viewId" value="#{row.defaultCaseActivity ? 'caseDetailsView' : 'processInstanceDetailsView'}" />
 				<f:param name="nested" value="true" />
@@ -159,7 +159,7 @@
 				disabled="#{!row.delegable or row.defaultCaseActivity}" onclick="Event.stop(event);">
 				<pc:automationTag value="auto-PP-WorkList-ActionsDelegate" standAlone="false"/>
 				<ice:outputText
-					styleClass="#{row.delegable ? '' : 'iceCmdBtn-dis'} pi pi-badge-portrait pi-fw pi-activity-delegate pi-left pi-top icon-lg" 
+					styleClass="#{row.delegable ? '' : 'iceCmdBtn-dis'} pi pi-badge-portrait pi-fw pi-activity-delegate pi-left pi-top pi-lg" 
 					title="#{worklistTableBean.messages['tooltip.delegate']}">
 					<h:outputText styleClass="pi pi-badge-icon pi-badge-icon-arrow-r" title="#{worklistTableBean.messages['tooltip.delegate']}" />	
 				</ice:outputText>
@@ -173,14 +173,14 @@
 				disabled="#{!row.abortActivity or row.defaultCaseActivity}" onclick="Event.stop(event);">
 				<pc:automationTag value="auto-PP-WorkList-ActionsAbort" standAlone="false"/>
 				<ice:outputText
-					styleClass="#{row.abortActivity ? '' : 'iceCmdBtn-dis'} pi pi-abort icon-lg"
+					styleClass="#{row.abortActivity ? '' : 'iceCmdBtn-dis'} pi pi-abort pi-lg"
 					title="#{worklistTableBean.messages['tooltip.abort']}"/>
 				<f:attribute name="activityInstance" value="#{row.activityInstance}" />
 			</ice:commandLink>
 
 			<!--	Notes	-->
 			<ice:panelGroup rendered="#{row.defaultCaseActivity }">
-				<ice:outputText styleClass="iceCmdBtn-dis pi pi-notes-empty icon-lg" />
+				<ice:outputText styleClass="iceCmdBtn-dis pi pi-notes-empty pi-lg" />
 			</ice:panelGroup>
 						
 			<ice:commandLink rendered="#{row.notesCount gt 0 and !row.defaultCaseActivity}" 
@@ -188,7 +188,7 @@
 				<pc:automationTag value="auto-PP-WorkList-ActionsNotes" standAlone="false"/>
 				<ice:outputText
 					title="#{worklistTableBean.messages['tooltip.notes']}"
-					styleClass="pi pi-notes icon-lg">
+					styleClass="pi pi-notes pi-lg">
 				</ice:outputText>
 				<f:param name="oid" value="#{row.oid}" />
 			</ice:commandLink>
@@ -197,7 +197,7 @@
 				<pc:automationTag value="auto-PP-WorkList-ActionsNotes" standAlone="false"/>
 				<ice:outputText
 					title="#{worklistTableBean.messages['tooltip.notesEmpty']}"
-					styleClass="pi pi-notes-empty icon-lg"> 
+					styleClass="pi pi-notes-empty pi-lg"> 
 				</ice:outputText>
 				<f:param name="oid" value="#{row.oid}" />
 			</ice:commandLink>

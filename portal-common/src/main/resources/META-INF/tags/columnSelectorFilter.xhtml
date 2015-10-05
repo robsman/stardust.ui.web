@@ -36,7 +36,7 @@
 				<pc:automationTag value="auto-DT-ColSelector" standAlone="false" />
 				<ice:outputText
 					style="vertical-align:top;"
-					styleClass="#{(disabled || (!ippPortalApp.loggedInUser.administrator and filterPopup.columnModel.lock)) ? 'iceCmdBtn-dis' : ''} pi pi-column-selector icon-lg"
+					styleClass="#{(disabled || (!ippPortalApp.loggedInUser.administrator and filterPopup.columnModel.lock)) ? 'iceCmdBtn-dis' : ''} pi pi-column-selector pi-lg"
 					title="#{filterPopup.title}" />
 			</ice:commandLink>
 		</ice:panelGroup>
@@ -64,7 +64,7 @@
 						<pc:automationTag value="auto-DT-ColSelector-CloseLink" standAlone="false"/>
 						<ice:commandLink title="#{common_msgPropsBean['common.filterPopup.close']}"
 							action="#{filterPopup.closePopup}" styleClass="icon-cmdLnk">
-							<ice:outputText styleClass="pi pi-dialog-close icon-lg icon-outTxt" />
+							<ice:outputText styleClass="pi pi-dialog-close pi-lg icon-outTxt" />
 						</ice:commandLink>
 					</td>
 				</tr></table>
@@ -98,10 +98,10 @@
 											standAlone="false" />
 										<ice:outputText rendered="#{filterPopup.lock}"
 											title="#{common_msgPropsBean['common.filterPopup.unlock']}" 
-											styleClass="#{filterPopup.lockDisabled ? 'iceCmdBtn-dis' : ''} pi pi-lock icon-lg"/>
+											styleClass="#{filterPopup.lockDisabled ? 'iceCmdBtn-dis' : ''} pi pi-lock pi-lg"/>
 										<ice:outputText rendered="#{!filterPopup.lock}"
 											title="#{common_msgPropsBean['common.filterPopup.lock']}" 
-											styleClass="#{filterPopup.lockDisabled ? 'iceCmdBtn-dis' : ''} pi pi-unlock icon-lg"/>
+											styleClass="#{filterPopup.lockDisabled ? 'iceCmdBtn-dis' : ''} pi pi-unlock pi-lg"/>
 									</ice:commandLink>
 								</ice:panelGrid>
 								<ice:panelGrid columns="1" styleClass="toolbarGroupLeft" 
@@ -110,7 +110,7 @@
 									disabled="#{!filterPopup.lockDisabled}">
 										<pc:automationTag value="auto-DT-ColSelector-Reset" standAlone="false"/>
 										<ice:outputText 
-											styleClass="#{!filterPopup.lockDisabled ? 'iceCmdBtn-dis' : ''} pi pi-reset icon-lg"
+											styleClass="#{!filterPopup.lockDisabled ? 'iceCmdBtn-dis' : ''} pi pi-reset pi-lg"
 											title="#{common_msgPropsBean['common.reset']}"/>
 									</ice:commandLink>
 								</ice:panelGrid>

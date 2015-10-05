@@ -26,7 +26,7 @@
 			disabled="#{!processHistoryTable.processTreeTable.priorityChanged}">
 			<pc:automationTag value="auto-COM-PCEHistoryTable-ToolbarSave" standAlone="false"/>
 			<ice:outputText
-				styleClass="#{!processHistoryTable.processTreeTable.priorityChanged ? 'iceCmdBtn-dis' : ''} pi pi-save icon-lg"
+				styleClass="#{!processHistoryTable.processTreeTable.priorityChanged ? 'iceCmdBtn-dis' : ''} pi pi-save pi-lg"
 				title="#{views_common_msgPropsBean['processHistory.processTable.applyChanges']}" />
 		</ice:commandLink>
 		
@@ -52,7 +52,7 @@
 			actionListener="#{processHistoryTable.processTreeTable.treeTable.expandAll}"
 			style="vertical-align: middle;">
 			<pc:automationTag value="auto-COM-PCEHistoryTable-ToolbarExpandAll" standAlone="false"/>
-			<h:outputText styleClass="pi pi-expand-all icon-lg" 
+			<h:outputText styleClass="pi pi-expand-all pi-lg" 
 				title="#{views_common_msgPropsBean['processHistory.processTable.expandAllLabel']}" />
 		</ice:commandLink>
 
@@ -60,7 +60,7 @@
 			actionListener="#{processHistoryTable.processTreeTable.treeTable.collapseAll}"
 			style="vertical-align: middle;">
 			<pc:automationTag value="auto-COM-PCEHistoryTable-ToolbarCollapseAll" standAlone="false"/>
-			<h:outputText styleClass="pi pi-collapse-all icon-lg"
+			<h:outputText styleClass="pi pi-collapse-all pi-lg"
 				title="#{views_common_msgPropsBean['processHistory.processTable.collapseAllLabel']}" />
 		</ice:commandLink>
 	</h:panelGroup>

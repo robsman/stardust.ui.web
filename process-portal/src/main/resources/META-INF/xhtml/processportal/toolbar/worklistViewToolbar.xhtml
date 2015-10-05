@@ -12,7 +12,7 @@
 			actionListener="#{worklistTableBean.openDelegateDialog}">
 			<pc:automationTag value="auto-PP-WorkList-ToolbarDelegate" standAlone="false"/>
 			<h:outputText
-				styleClass="#{worklistTableBean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''} pi pi-badge-portrait pi-fw pi-activity-delegate icon-lg pi-left pi-top"
+				styleClass="#{worklistTableBean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''} pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top"
 				title="#{processportal_msgPropsBean['toolbars.worklistView.tooltip.delegate']}">
 				<h:outputText styleClass="pi pi-badge-icon pi-badge-icon-arrow-r" title="#{processportal_msgPropsBean['toolbars.worklistView.tooltip.delegate']}"/>	
 			</h:outputText>
@@ -22,7 +22,7 @@
 			disabled="#{worklistTableBean.selectedItemCount eq 0 ? true : false}">
 			<pc:automationTag value="auto-PP-WorkList-ToolbarAbort" standAlone="false"/>
 			<ice:outputText
-                   styleClass="#{worklistTableBean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''} pi pi-activity-abort icon-lg" 
+                   styleClass="#{worklistTableBean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''} pi pi-activity-abort pi-lg" 
                    title="#{processportal_msgPropsBean['toolbars.worklistView.tooltip.abort']}"/>
 		</ice:commandLink>
 
@@ -33,7 +33,7 @@
 			title="#{worklistTableBean.messages['tooltip.update']}"
 			action="#{worklistTableBean.refresh}" partialSubmit="true">
 			<pc:automationTag value="auto-PP-WorkList-Refresh" standAlone="false" />
-			<ice:outputText styleClass="pi pi-refresh icon-lg" />
+			<ice:outputText styleClass="pi pi-refresh pi-lg" />
 		</ice:commandLink>
 		
 	</ice:panelGrid>

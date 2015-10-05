@@ -6,7 +6,7 @@
 				ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openAttachToProcessDialog(docSearchViewCtrl.rowSelection);"
 				title="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-attachToProcess')}}"
 				class="button-link tbl-toolbar-item tbl-tool-link" aid="COM-SrchDoc-DocSrchTbl-AtchToProcess">
-				<i class="pi pi-attach-document icon-lg"></i>
+				<i class="pi pi-attach-document pi-lg"></i>
 			</button>
 		</div>
 	</div>
@@ -118,14 +118,14 @@
 							title="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-tooltip-process')}}"
 							class="button-link tbl-tool-link"
 							aid="COM-SrchDoc-DocSrchTbl-ActionsOpenProc">
-							<i class="pi pi-process icon-lg"></i>
+							<i class="pi pi-process pi-lg"></i>
 						</button>
 						<button
 							ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openAttachToProcessDialog(rowData);"
 							title="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-attachToProcess')}}"
 							class="button-link tbl-tool-link"
 							aid="COM-SrchDoc-DocSrchTbl-ActionsAttachDocToProc">
-							<i class="pi pi-fw icon-lg pi-attach-document"></i>
+							<i class="pi pi-fw pi-lg pi-attach-document"></i>
 						</button>
 						<sd-document-download sda-document-id="rowData.documentId"
 							sda-document-name="rowData.documentName" sda-aid-prefix="COM-SrchDoc-DocSrchTbl-ActionsDownload"></sd-document-download>
@@ -134,7 +134,7 @@
 							title="{{i18n('views-common-messages.views-myDocumentsTreeView-documentTree-versionHistory')}}"
 							class="button-link tbl-tool-link"
 							aid="COM-SrchDoc-DocSrchTbl-ActionsVersionHistory">
-							<i class="pi pi-fw icon-lg pi-document-versions"></i>
+							<i class="pi pi-fw pi-lg pi-document-versions"></i>
 						</button>
 					</div>
 				</td>

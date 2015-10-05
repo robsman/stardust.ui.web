@@ -8,7 +8,7 @@
 						title="{{i18n('views-common-messages.common-create')}}"
 						class="button-link tbl-toolbar-item tbl-tool-link"
 						aid="ADM-PartMgmt-ToolbarCreateUser">
-						<i class="pi pi-create icon-lg" />
+						<i class="pi pi-create pi-lg" />
 					</button>
 					<button
 						ng-disabled="!(ctrl.rowSelectionForAllUsersTable.length == 1)"
@@ -16,7 +16,7 @@
 						title="{{i18n('admin-portal-messages.common-copy')}}"
 						class="button-link tbl-toolbar-item tbl-tool-link"
 						aid="ADM-PartMgmt-ToolbarCopyUser">
-						<i class="pi pi-clone icon-lg" />
+						<i class="pi pi-clone pi-lg" />
 					</button>
 					<button
 						ng-disabled="!(ctrl.rowSelectionForAllUsersTable.length > 0)"
@@ -24,7 +24,7 @@
 						title="{{i18n('admin-portal-messages.views-participantMgmt-invalidateUser-title')}}"
 						class="button-link tbl-toolbar-item tbl-tool-link"
 						aid="ADM-PartMgmt-ToolbarInvalidateUser">
-						<i class="pi pi-delete icon-lg" />
+						<i class="pi pi-delete pi-lg" />
 					</button>
 				</div>
 				<div class="tbl-toolbar-section">
@@ -33,10 +33,10 @@
 						title="{{!ctrl.hideInvalidatedUsers ? i18n('admin-portal-messages.views-participantMgmt-filters-invalidatedUsers-hideUser') : i18n('admin-portal-messages.views-participantMgmt-filters-invalidatedUsers-showUser')}}"
 						class="button-link tbl-toolbar-item tbl-tool-link"
 						aid="ADM-PartMgmt-Filters-InvalidatedUsers-HideUser">
-						<i ng-if="!ctrl.hideInvalidatedUsers" class="pi pi-badge-portrait pi-fw pi-activity-delegate icon-lg pi-left pi-top">
+						<i ng-if="!ctrl.hideInvalidatedUsers" class="pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top">
                             <i class="pi pi-badge-icon pi-badge-icon-arrow-r"></i>
                        </i>
-                       <i ng-if="ctrl.hideInvalidatedUsers" class="pi pi-badge-portrait pi-fw pi-activity-delegate icon-lg pi-left pi-top" style="opacity:0.7">
+                       <i ng-if="ctrl.hideInvalidatedUsers" class="pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top" style="opacity:0.7">
                             <i class="pi pi-badge-icon pi-badge-icon-arrow-r"></i>
                        </i>
 					</button>

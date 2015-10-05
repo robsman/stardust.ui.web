@@ -11,20 +11,20 @@
 			disabled="#{!securityDialog.rolesEditable}">
 			<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl-ToolbarRemove" standAlone="false"/>
 			<h:outputText
-				styleClass="#{!securityDialog.rolesEditable ? 'iceCmdBtn-dis' : ''} pi pi-delete icon-lg"
+				styleClass="#{!securityDialog.rolesEditable ? 'iceCmdBtn-dis' : ''} pi pi-delete pi-lg"
 				title="#{securityDialog.messages['securityDialog.table.toolbar.delete']}" />
 		</ice:commandLink>
 		<ice:commandLink action="#{securityDialog.addParticipant}" disabled="#{!securityDialog.modifyACL}">
 			<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl-ToolbarAdd" standAlone="false"/>
 			<h:outputText
-				styleClass="#{!securityDialog.modifyACL ? 'iceCmdBtn-dis' : ''} pi pi-create icon-lg"
+				styleClass="#{!securityDialog.modifyACL ? 'iceCmdBtn-dis' : ''} pi pi-create pi-lg"
 				title="#{securityDialog.messages['securityDialog.table.toolbar.addParticipants']}" />
 		</ice:commandLink>
 		<ice:commandLink action="#{securityDialog.editRoles}"
 			disabled="#{!securityDialog.rolesEditable}">
 			<pc:automationTag value="auto-COM-SecurityDlg-SecurityDlgTbl-ToolbarEdit" standAlone="false"/>
 			<h:outputText
-				styleClass="#{!securityDialog.rolesEditable ? 'iceCmdBtn-dis' : ''} pi pi-edit icon-lg"
+				styleClass="#{!securityDialog.rolesEditable ? 'iceCmdBtn-dis' : ''} pi pi-edit pi-lg"
 				title="#{securityDialog.messages['securityDialog.table.toolbar.editPermissions']}" />
 		</ice:commandLink>
 	</ice:panelGrid>

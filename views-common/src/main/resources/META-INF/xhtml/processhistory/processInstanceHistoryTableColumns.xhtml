@@ -78,7 +78,7 @@
 			<ice:commandLink action="#{ippPortalApp.openView}" rendered="#{!row.caseInstance}">
 				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsProcDetail" standAlone="false"/>
 				<h:outputText
-					styleClass="pi pi-process icon-lg"
+					styleClass="pi pi-process pi-lg"
 					title="#{messages_bcc['common.tooltip.contextExplorer']}" />
 				<f:param name="viewId" value="processInstanceDetailsView" />
 				<f:param name="nested" value="true" />
@@ -88,7 +88,7 @@
 			<ice:commandLink action="#{ippPortalApp.openView}" rendered="#{row.caseInstance}">
 				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsProcDetail" standAlone="false"/>
 				<h:outputText
-					styleClass="pi pi-process-abort icon-lg"
+					styleClass="pi pi-process-abort pi-lg"
 					title="#{messages_bcc['common.tooltip.contextExplorer']}" />
 				<f:param name="viewId" value="caseDetailsView" />
 				<f:param name="nested" value="true" />
@@ -101,7 +101,7 @@
 				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsTerminate" standAlone="false"/>
 				<ice:outputText
 					title="#{views_common_msgPropsBean['common.tooltip.terminate']}"
-					styleClass="#{row.enableTerminate? '' : 'iceCmdBtn-dis'} pi pi-process-abort icon-lg" />
+					styleClass="#{row.enableTerminate? '' : 'iceCmdBtn-dis'} pi pi-process-abort pi-lg" />
 				<f:attribute name="processInstance" value="#{row.processInstance}" />
 			</ice:commandLink>
 			<ice:panelGroup rendered="#{!(row.enableTerminate)}">
@@ -119,7 +119,7 @@
 				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsRecover" standAlone="false"/>
 				<ice:outputText
 					title="#{messages_bcc['common.tooltip.recover']}"
-					styleClass="#{row.enableRecover ? '' : 'iceCmdBtn-dis'} pi pi-recover icon-lg" />
+					styleClass="#{row.enableRecover ? '' : 'iceCmdBtn-dis'} pi pi-recover pi-lg" />
 				<f:attribute name="processInstance" value="#{row.processInstance}" />
 			</ice:commandLink>
 			<ice:commandLink 
@@ -138,7 +138,7 @@
 				disabled="#{row.disableSpawnProcess}">
 				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsSpawn" standAlone="false"/>
 				<ice:outputText
-					styleClass="#{!row.disableSpawnProcess and processHistoryTable.enableSpawnProcess? '' : 'iceCmdBtn-dis'} pi pi-process icon-lg" 
+					styleClass="#{!row.disableSpawnProcess and processHistoryTable.enableSpawnProcess? '' : 'iceCmdBtn-dis'} pi pi-process pi-lg" 
 					title="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}">
 					<h:outputText styleClass="pi pi-plus-sign pi-bottom pi-right icon-sm" title="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}"/>	
 				</ice:outputText>
@@ -147,7 +147,7 @@
 			<ice:commandLink action="#{ippPortalApp.openView}">
 				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsProcDiag" standAlone="false"/>
 				<h:outputText rendered="#{ippBCCDiagramBean != null and ippBCCDiagramBean.diagramSupported}"
-					styleClass="pi pi-process-diagram icon-lg"
+					styleClass="pi pi-process-diagram pi-lg"
 					title="#{messages_bcc['views.processDiagramView.tooltip.viewDiagram']}" />
 				<f:param name="viewId" value="processDiagramView" />
 				<f:param name="nested" value="true" />
@@ -156,7 +156,7 @@
 			<ice:commandLink action="#{ippPortalApp.openView}">
 				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsGanttChart" standAlone="false"/>
 				<h:outputText
-					styleClass="pi pi-gantt-chart icon-lg"
+					styleClass="pi pi-gantt-chart pi-lg"
 					title="#{messages_bcc['views.processSearchView.tooltip.viewGanttChart']}" />
 				<f:param name="viewId" value="ganttChartView" />
 				<f:param name="nested" value="true" />
@@ -167,7 +167,7 @@
 				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsNote" standAlone="false"/>
 				<ice:outputText
 					title="#{messages_bcc['common.tooltip.notes']}" 
-					styleClass="pi pi-notes icon-lg"/>
+					styleClass="pi pi-notes pi-lg"/>
 				<f:attribute name="processInstance" value="#{row.processInstance}" />
 			</ice:commandLink>
 			<ice:commandLink rendered="#{row.notesCount le 0}"
@@ -175,7 +175,7 @@
 				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsNote" standAlone="false"/>
 				<ice:outputText
 					title="#{messages_bcc['common.tooltip.notes']}" 
-					styleClass="pi pi-notes-empty icon-lg"/>
+					styleClass="pi pi-notes-empty pi-lg"/>
 				<f:attribute name="processInstance" value="#{row.processInstance}" />
 			</ice:commandLink>
 		</ice:panelGrid>

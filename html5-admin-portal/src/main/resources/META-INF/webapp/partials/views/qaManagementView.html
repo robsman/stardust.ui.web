@@ -21,12 +21,12 @@
 					title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-showHideAbsActivites-title')}}"
 					class="button-link tbl-toolbar-item tbl-tool-link">
 					<!-- 	Replace with pen book icon for show obsolete activities -->
-					<i class="pi pi-eye-slash icon-lg" ng-class="{iconDisabled:qaManagementCtrl.showObsoleteActivities }"></i>
+					<i class="pi pi-eye-slash pi-lg" ng-class="{iconDisabled:qaManagementCtrl.showObsoleteActivities }"></i>
 				</button>
 				<button ng-click="qaManagementCtrl.editActivityQa();" ng-disabled="qaManagementCtrl.activityTable.getSelection() < 1"
 					title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-editQA-title')}}"  aid="ADM-QAMgmt-EditActivityQA"
 					class="button-link tbl-toolbar-item tbl-tool-link ">
-					<i class="pi pi-edit icon-lg"></i>
+					<i class="pi pi-edit pi-lg"></i>
 				</button>
 			</div>
 		</div>
@@ -68,37 +68,37 @@
 				<tbody>
 					<tr>
 						<td sda-data-type="string">
-							<i class=" spacing-right sc icon-lg sc-spiral"> </i>
+							<i class=" spacing-right sc pi-lg sc-spiral"> </i>
 							<span ng-bind="rowData.modelName"></span>
 						</td>
 						<td sda-data-type="string">
-							<i class="pi pi-process-details spacing-right icon-lg"> </i>
+							<i class="pi pi-process-details spacing-right pi-lg"> </i>
 							<span ng-bind="rowData.processName"></span>
 						</td>
 						<td sda-data-type="string">
-						<i class="pi pi-badge-portrait pi-fw pi-activity-delegate icon-lg pi-left pi-top">
+						<i class="pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top">
 							<i class="pi pi-badge-icon pi-badge-icon-arrow-r"></i>
 						</i>
 						<span ng-bind="rowData.activityName"></span></td>
 						<td sda-data-type="string">
 							<!-- Icons for various Participant types -->
 							<span ng-if="rowData.performerType == 'ROLE'"  class="spacing-right"> <span class="icon-lg" style="color:#A2B5CD">(</span> <i
-								class="pi icon-lg pi-user" style="color:#A2B5CD; margin-left: -6px;"></i> <span class="icon-lg" style="color:#A2B5CD">)</span>
+								class="pi pi-lg pi-user" style="color:#A2B5CD; margin-left: -6px;"></i> <span class="icon-lg" style="color:#A2B5CD">)</span>
 						   </span> 
 						   <span ng-if="rowData.performerType == 'SCOPED_ROLE'"  class="spacing-right"> <span class="icon-lg"  style="color:'#000'">(</span> <i
-								class="pi icon-lg pi-user" style="color:#A2B5CD ;margin-left: -6px;""></i> <span class="icon-lg">)</span>
+								class="pi pi-lg pi-user" style="color:#A2B5CD ;margin-left: -6px;""></i> <span class="icon-lg">)</span>
 						   </span>
 						    <span ng-if="rowData.performerType == 'SCOPED_ORGANIZATION'"  class="spacing-right"> 
-						    	<i class="sc sc-organization icon-lg "></i>
+						    	<i class="sc sc-organization pi-lg "></i>
 						    </span>
 						      <span ng-if="rowData.performerType == 'ORGANIZATION'"  class="spacing-right"> 
-						    	<i class="sc sc-organization icon-lg "></i>
+						    	<i class="sc sc-organization pi-lg "></i>
 						    </span>
 						     <span ng-if="rowData.performerType == 'USER'"  class="spacing-right"> 
-						    	<i class="pi pi-user icon-lg "></i>
+						    	<i class="pi pi-user pi-lg "></i>
 						    </span>
 						     <span ng-if="rowData.performerType == 'USERGROUP'"  class="spacing-right"> 
-						    	<i class="sc pi-groups icon-lg "></i>
+						    	<i class="sc pi-groups pi-lg "></i>
 						    </span>
 						 <span ng-bind="rowData.defaultPerformer"></span>
 						</td>
@@ -131,7 +131,7 @@
 					<button ng-click="qaManagementCtrl.editDepartmentQa();" ng-disabled="qaManagementCtrl.departmentTable.getSelection() < 1"
 						title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-editQA-title')}}" aid="ADM-QAMgmt-EditDepartmentQA"
 						class="button-link tbl-toolbar-item tbl-tool-link">
-						<i class="pi pi-edit-qa-probability icon-lg"></i>
+						<i class="pi pi-edit-qa-probability pi-lg"></i>
 					</button>
 				</div>
 			</div>
@@ -154,7 +154,7 @@
 				<tbody>
 					<tr>
 						<td sda-data-type="string">
-						<i class="pi pi-badge-portrait pi-fw pi-activity-delegate icon-lg pi-left pi-top">
+						<i class="pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top">
 							<i class="pi pi-badge-icon pi-badge-icon-arrow-r"></i>
 						</i>
 							<span ng-bind="rowData.name"></span>

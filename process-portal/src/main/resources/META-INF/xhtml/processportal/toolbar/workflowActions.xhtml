@@ -64,7 +64,7 @@
 				actionListener="#{activityDetailsBean.completeAction}">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarComplete" standAlone="false"/>
 				<ice:outputText
-					styleClass="pi pi-activity-complete icon-lg"
+					styleClass="pi pi-activity-complete pi-lg"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.complete']}" />
 			</ice:commandLink>
 
@@ -74,7 +74,7 @@
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarSuspend" standAlone="false"/>
                 <ice:outputText
                 	style="padding-left: 2px;"
-					styleClass="pi pi-undo icon-lg"
+					styleClass="pi pi-undo pi-lg"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.suspend']}"/>
 					
 				<ice:commandLink
@@ -93,7 +93,7 @@
 					standAlone="false" />
 				<ice:outputText
 					style="padding-left: 2px;"
-					styleClass="#{activityDetailsBean.qualityAssuranceActivity ? 'iceCmdBtn-dis' : 'toolbar-button-suspend-save'} pi pi-save icon-lg"
+					styleClass="#{activityDetailsBean.qualityAssuranceActivity ? 'iceCmdBtn-dis' : 'toolbar-button-suspend-save'} pi pi-save pi-lg"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.suspendAndSave']}" />
 			
 				<ice:commandLink
@@ -111,7 +111,7 @@
 				immediate="true" rendered="#{activityDetailsBean.resubmitable}">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarResubmit" standAlone="false"/>
 				<ice:outputText
-					styleClass="pi pi-resubmit icon-lg"
+					styleClass="pi pi-resubmit pi-lg"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.resubmit']}" />
 			</ice:commandLink>
 			
@@ -120,7 +120,7 @@
 				disabled="#{!activityDetailsBean.delegable}">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarDelegate" standAlone="false"/>
 				<ice:outputText
-					styleClass="#{!activityDetailsBean.delegable ? 'iceCmdBtn-dis' : ''} pi pi-badge-portrait pi-fw pi-activity-delegate icon-lg pi-left pi-top"
+					styleClass="#{!activityDetailsBean.delegable ? 'iceCmdBtn-dis' : ''} pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.delegate']}">
 					<h:outputText styleClass="pi pi-badge-icon pi-badge-icon-arrow-r" title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.delegate']}" />	
 				</ice:outputText>
@@ -130,7 +130,7 @@
 				immediate="true" disabled="#{!activityDetailsBean.abortable}">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarAbort" standAlone="false"/>
 				<ice:outputText
-					styleClass="#{!activityDetailsBean.abortable ? 'iceCmdBtn-dis' : ''} pi pi-activity-abort icon-lg"
+					styleClass="#{!activityDetailsBean.abortable ? 'iceCmdBtn-dis' : ''} pi pi-activity-abort pi-lg"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.abort']}" />
 
 				<ice:commandLink
@@ -149,7 +149,7 @@
 				rendered="#{activityDetailsBean.relocationEligible}"
 				immediate="true" >
 				<ice:outputText
-					styleClass="pi pi-rotate-right icon-lg"
+					styleClass="pi pi-rotate-right pi-lg"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.relocation.relocate']}" />
 			</ice:commandLink>
 
@@ -160,7 +160,7 @@
 					title="#{views_common_msgPropsBean['views.case.tooltip.menu']}">
 					<pc:automationTag value="auto-PP-ActivityPnl-ToolbarCase" standAlone="false"/>
 					<ice:outputText 
-						styleClass="pi pi-case icon-lg">
+						styleClass="pi pi-case pi-lg">
 						<ice:outputText styleClass="pi pi-menu-dropdown icon-sm" />
 					</ice:outputText>
 				</ice:commandLink>
@@ -169,7 +169,7 @@
 
 			<ice:commandLink action="#{spawnProcessDialogBean.openPopup}" rendered="#{activityDetailsBean.enableSpawnProcess}">								
 				<ice:outputText
-					styleClass="#{activityDetailsBean.enableSpawnProcess ? '': 'iceCmdBtn-dis'} pi pi-process icon-lg"
+					styleClass="#{activityDetailsBean.enableSpawnProcess ? '': 'iceCmdBtn-dis'} pi pi-process pi-lg"
 					title="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}">
 					<h:outputText styleClass="pi pi-plus-sign pi-bottom pi-right icon-sm" title="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}"/>	
 				</ice:outputText>
@@ -180,7 +180,7 @@
 			<ice:commandLink action="#{ippPortalApp.openView}" immediate="true">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarProcDetails" standAlone="false"/>
 				<ice:outputText
-					styleClass="pi pi-process icon-lg"
+					styleClass="pi pi-process pi-lg"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.processContextExplorer']}">
 					<h:outputText styleClass="pi pi-information pi-bottom pi-right icon-sm" title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.processContextExplorer']}"/>	
 				</ice:outputText>

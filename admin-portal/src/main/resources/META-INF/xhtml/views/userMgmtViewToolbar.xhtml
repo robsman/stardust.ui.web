@@ -9,7 +9,7 @@
 	<ice:panelGrid columns="5">
 		<ice:commandLink actionListener="#{userMgmtBean.openCreateUserDialog}">
 			<pc:automationTag value="auto-ADM-PartMgmt-ToolbarCreateUser" standAlone="false"/>
-			<h:outputText styleClass="pi pi-create icon-lg"
+			<h:outputText styleClass="pi pi-create pi-lg"
 				 title="#{messages_admin['common.create']}" />
 		</ice:commandLink>
 
@@ -18,13 +18,13 @@
 			<pc:automationTag value="auto-ADM-PartMgmt-ToolbarCopyUser" standAlone="false"/>
 			<h:outputText
 				title="#{messages_admin['common.copy']}"
-				styleClass="#{!(userMgmtBean.selectedItemCount eq 1) ? 'iceCmdBtn-dis' : ''} pi pi-clone icon-lg"/>
+				styleClass="#{!(userMgmtBean.selectedItemCount eq 1) ? 'iceCmdBtn-dis' : ''} pi pi-clone pi-lg"/>
 		</ice:commandLink>
 
 		<ice:commandLink actionListener="#{userMgmtBean.invalidateUser}" disabled="#{userMgmtBean.selectedItemCount eq 0}">
 			<pc:automationTag value="auto-ADM-PartMgmt-ToolbarInvalidateUser" standAlone="false"/>
 			<h:outputText 
-				styleClass="#{userMgmtBean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''} pi pi-delete icon-lg"
+				styleClass="#{userMgmtBean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''} pi pi-delete pi-lg"
 				title="#{userMgmtBean.messages['invalidateUser.title']}" />
 		</ice:commandLink>
 		<span class="toolbarGroupLeft" style="padding-right: 0px; "/>

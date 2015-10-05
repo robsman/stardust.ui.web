@@ -62,7 +62,7 @@
 						action="#{ippActivityPanelController.uploadProcessAttachment}" immediate="true" onclick="closeIframe();">
 						<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarUpload" />
 						<ice:panelGrid columns="2">
-							<ice:outputText styleClass="pi pi-upload icon-lg" />
+							<ice:outputText styleClass="pi pi-upload pi-lg" />
 							<ice:outputText style="white-space: nowrap;"
 								value="#{processportal_msgPropsBean['toolbars.workflowActions.upload.document']}" />
 						</ice:panelGrid>
@@ -73,7 +73,7 @@
 						<f:param name="folderId"
 							value="#{ippActivityPanelController.processAttachmentsFolderId}" />
 						<ice:panelGrid columns="2">
-							<ice:outputText styleClass="pi pi-create icon-lg" />
+							<ice:outputText styleClass="pi pi-create pi-lg" />
 							<ice:outputText style="white-space: nowrap;"
 								value="#{processportal_msgPropsBean['toolbars.workflowActions.create.new.file']}" />
 						</ice:panelGrid>
@@ -100,7 +100,7 @@
 							<pc:automationTag
 								value="auto-PP-ProcAttachDlg-ToolbarDeleteDocument" standAlone="false" />
 							<h:outputText
-								style="padding-left:5px;" title="#{processportal_msgPropsBean['toolbars.workflowActions.document.detach']} pi pi-delete icon-lg"/>
+								style="padding-left:5px;" title="#{processportal_msgPropsBean['toolbars.workflowActions.document.detach']} pi pi-delete pi-lg"/>
 							<f:attribute name="documentInfo" value="#{processDocument}" />
 						</ice:commandLink>
 					</ice:panelGrid>
@@ -123,7 +123,7 @@
 							<pc:automationTag
 								value="auto-PP-ProcAttachDlg-ToolbarDeleteDocument" standAlone="false" />
 							<h:outputText
-								style="padding-left:5px;" title="#{processportal_msgPropsBean['toolbars.workflowActions.document.detach']} pi pi-delete icon-lg"/>
+								style="padding-left:5px;" title="#{processportal_msgPropsBean['toolbars.workflowActions.document.detach']} pi pi-delete pi-lg"/>
 							<f:attribute name="documentInfo" value="#{processAttachment}"/>
 						</ice:commandLink>
 					</ice:panelGrid>

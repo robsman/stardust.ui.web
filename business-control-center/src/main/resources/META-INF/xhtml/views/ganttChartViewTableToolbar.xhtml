@@ -11,14 +11,14 @@
 			style="vertical-align: middle;">
 			<pc:automationTag value="auto-BCC-GanttChart-GanttChrtTbl-ToolbarExpandAll" standAlone="false"/>
 			<h:outputText
-				styleClass="pi pi-expand-all icon-lg" 
+				styleClass="pi pi-expand-all pi-lg" 
 				title="#{ganttChartSelectionBean.ganttChart.messages['expandAll']}" />
 		</ice:commandLink>	
 		
 		<ice:commandLink name="#{ganttChartSelectionBean.ganttChart.messages['collapseAll']}" actionListener="#{ganttChartSelectionBean.ganttChart.treeTable.collapseAll}"
 			style="vertical-align: middle;">
 			<pc:automationTag value="auto-BCC-GanttChart-GanttChrtTbl-ToolbarCollapseAll" standAlone="false"/>
-			<h:outputText styleClass="pi pi-collapse-all icon-lg"
+			<h:outputText styleClass="pi pi-collapse-all pi-lg"
 				title="#{ganttChartSelectionBean.ganttChart.messages['collapseAll']}" />
 		</ice:commandLink>
 	</ice:panelGrid>

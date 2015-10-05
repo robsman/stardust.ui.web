@@ -91,10 +91,10 @@
 						actionListener="#{processInstanceDetailConfigurationBean.toggleFilter}"
 						title="#{processInstanceDetailConfigurationBean.messages['visibile']}"
 						rendered="#{row.active}" style="vertical-align: middle;"
-						styleClass="pi-eye-open icon-lg">
+						styleClass="pi-eye-open pi-lg">
 						<f:attribute value="#{row.name}" name="testName" />
 					</ice:commandLink>
-					<ice:commandLink name="#{row.name}" styleClass="pi-eye-close icon-lg"
+					<ice:commandLink name="#{row.name}" styleClass="pi-eye-close pi-lg"
 						actionListener="#{processInstanceDetailConfigurationBean.toggleFilter}"
 						title="#{processInstanceDetailConfigurationBean.messages['invisibile']}"
 						rendered="#{!row.active}" style="vertical-align: middle;">

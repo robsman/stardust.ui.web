@@ -13,7 +13,7 @@
 				standAlone="false" />
 			<h:outputText
 				title="#{messages_admin['views.qaManagementView.toolbar.showHideAbsActivites.title']}"
-				styleClass="#{!(qaManagementBean.showAbsoleteActivities) ? 'iceCmdBtn-dis' : ''} pi pi-eye-slash icon-lg" />
+				styleClass="#{!(qaManagementBean.showAbsoleteActivities) ? 'iceCmdBtn-dis' : ''} pi pi-eye-slash pi-lg" />
 		</ice:commandLink>
 
 		<ice:commandLink action="#{qaManagementBean.editActivityQA}"
@@ -22,7 +22,7 @@
 				standAlone="false" />
 			<h:outputText 
 				title="#{messages_admin['views.qaManagementView.toolbar.editQA.title']}"
-				styleClass="#{(qaManagementBean.selectedActivitiesCount eq 0) ? 'iceCmdBtn-dis' : ''} pi pi-edit icon-lg" />
+				styleClass="#{(qaManagementBean.selectedActivitiesCount eq 0) ? 'iceCmdBtn-dis' : ''} pi pi-edit pi-lg" />
 		</ice:commandLink>
 	</ice:panelGrid>
 </f:view>

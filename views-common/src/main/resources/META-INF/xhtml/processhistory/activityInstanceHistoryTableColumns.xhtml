@@ -58,7 +58,7 @@
 				<pc:automationTag value="auto-COM-ACTHistoryTable-ActionsOpen" standAlone="false"/>
 				<f:param name="oid" value="#{row.tableEntry.OID}" />
 				<ice:outputText 
-					styleClass="#{not (row.refersToActivity and row.activatable) ? 'iceCmdBtn-dis' : ''} pi pi-activate icon-lg"
+					styleClass="#{not (row.refersToActivity and row.activatable) ? 'iceCmdBtn-dis' : ''} pi pi-activate pi-lg"
 					title="#{common_msgPropsBean['common.activity.activate']}" />
 			</ice:commandLink>
 
@@ -68,7 +68,7 @@
 				disabled="#{not (row.refersToActivity and row.delegable)}">
 				<pc:automationTag value="auto-COM-ACTHistoryTable-ActionsDelegate" standAlone="false"/>
 				<h:outputText
-					styleClass="#{not (row.refersToActivity and row.delegable) ? 'iceCmdBtn-dis' : ''} pi pi-badge-portrait pi-fw pi-activity-delegate icon-lg pi-left pi-top"  
+					styleClass="#{not (row.refersToActivity and row.delegable) ? 'iceCmdBtn-dis' : ''} pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top"  
 					title="#{views_common_msgPropsBean['delegation.tooltip.title']}">
 					<h:outputText styleClass="pi pi-badge-icon pi-badge-icon-arrow-r" title="#{views_common_msgPropsBean['delegation.tooltip.title']}" />	
 				</h:outputText>
@@ -82,7 +82,7 @@
 				<pc:automationTag value="auto-COM-ACTHistoryTable-ActionsRelocate"
 					standAlone="false" />
 				<ice:outputText
-					styleClass="pi pi-rotate-right icon-lg"
+					styleClass="pi pi-rotate-right pi-lg"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.relocation.relocate']}" />
 				<f:attribute name="row" value="#{row}" />
 			</ice:commandLink>
@@ -94,7 +94,7 @@
 				<pc:automationTag value="auto-COM-ACTHistoryTable-ActionsAbort" standAlone="false"/>
 				<h:outputText
 					title="#{common_msgPropsBean['common.activity.abort']}"
-					styleClass="#{not (row.refersToActivity and row.abortActivity) ? 'iceCmdBtn-dis' : ''} pi pi-activity-abort icon-lg" />
+					styleClass="#{not (row.refersToActivity and row.abortActivity) ? 'iceCmdBtn-dis' : ''} pi pi-activity-abort pi-lg" />
 				<f:attribute name="row" value="#{row}" />
 			</ice:commandLink>
 

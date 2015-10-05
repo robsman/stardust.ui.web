@@ -9,7 +9,7 @@
 							<tr>
 								<td valign="top"><a id="filter{{$index}}" href=""
 									ng-click="reportFilterController.deleteFilter(x)"><i
-										class="pi pi-delete icon-lg"
+										class="pi pi-delete pi-lg"
 										title="{{reportFilterController.reportFilterController.getI18N('reporting.definitionView.additionalFiltering.removeFilter')}}" ></i>
 								</a></td>
 							</tr>
@@ -149,7 +149,7 @@
 										<td valign="top"><a id="pfa{{$index}}" href=""
 											ng-click="reportFilterController.toggleFilter(x, 'process_filter_auxiliary')"
 											ng-class="{true:'disabled', false:'enabled'}[x.metadata.process_filter_auxiliary]">
-												<i class="pi pi-auxiliary-process icon-lg"
+												<i class="pi pi-auxiliary-process pi-lg"
 												title="{{reportFilterController.getI18N('reporting.definitionView.process.filter.auxiliary.' + x.metadata.process_filter_auxiliary)}}" />
 										</a></td>
 									</tr>
@@ -206,13 +206,13 @@
 										<td valign="top"><a id="afni{{$index}}" href=""
 											ng-click="reportFilterController.toggleFilter(x, 'activity_filter_nonInteractive')"
 											ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_nonInteractive]">
-												<i class="pi pi-manual-activity icon-lg"
+												<i class="pi pi-manual-activity pi-lg"
 												title="{{reportFilterController.getI18N('reporting.definitionView.activity.filter.nonInteractive.' + x.metadata.activity_filter_nonInteractive)}}"></i>
 										</a></td>
 										<td valign="top"><a id="afi{{$index}}" href=""
 											ng-click="reportFilterController.toggleFilter(x, 'activity_filter_interactive')"
 											ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_interactive]">
-												<i class="pi pi-manual-activity icon-lg" 
+												<i class="pi pi-manual-activity pi-lg" 
 													title="{{reportFilterController.getI18N('reporting.definitionView.activity.filter.interactive.' + x.metadata.activity_filter_interactive)}}" >
 													<i class="pi-user pi-bottom pi-right icon-sm"></i>
 												</i>
@@ -220,7 +220,7 @@
 										<td valign="top"><a id="afa{{$index}}" href=""
 											ng-click="reportFilterController.toggleFilter(x, 'activity_filter_auxiliary')"
 											ng-class="{true:'disabled', false:'enabled'}[x.metadata.activity_filter_auxiliary]">
-												<i class="pi pi-activity-auxiliary icon-lg"
+												<i class="pi pi-activity-auxiliary pi-lg"
 												title="{{reportFilterController.getI18N('reporting.definitionView.activity.filter.auxiliary.' + x.metadata.activity_filter_auxiliary)}}"></i>
 										</a></td>
 									</tr>
@@ -283,7 +283,7 @@
 							<tr>
 								<td valign="top"><a id="auto-reporting-dataSetTab-addFilter" href=""
 									ng-click="reportFilterController.addFilter()"><i
-										class="pi pi-create icon-lg"
+										class="pi pi-create pi-lg"
 										title="{{reportFilterController.getI18N('reporting.definitionView.additionalFiltering.addFilter')}}" ></i>
 								</a></td>
 							</tr>

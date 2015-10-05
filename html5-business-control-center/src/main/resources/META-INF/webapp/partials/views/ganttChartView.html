@@ -14,7 +14,7 @@
 			<span class="iceOutLbl" ng-if ="ctrl.legendCategories.length < 2">{{ctrl.legendCategories[0].label}}: </span>
 		<span ng-repeat=" opt in ctrl.legends" class="gantt-chart-legend-option">
 			<span ng-bind="opt.label"> </span>
-			<i class="sc sc-square icon-lg gantt-chart-legend-symbol" ng-attr-style="color:{{opt.color}}; background-color :{{opt.color}}"></i>
+			<i class="sc sc-square pi-lg gantt-chart-legend-symbol" ng-attr-style="color:{{opt.color}}; background-color :{{opt.color}}"></i>
 		</span>
 		
 		</div>
@@ -34,15 +34,15 @@
 						<div>	
 							<button class="button-link tbl-toolbar-item tbl-tool-link" 
 							        title="{{i18n('business-control-center-messages.views-ganttChartView-expandAll')}}" ng-click="ctrl.expandAll();">
-							           <i class="pi pi-create icon-lg"> </i>
+							           <i class="pi pi-create pi-lg"> </i>
 							</button>
 							<button class="button-link tbl-toolbar-item tbl-tool-link" 
 							        title="{{i18n('business-control-center-messages.views-ganttChartView-collapseAll')}}" ng-click="ctrl.collapseAll();">
-							           <i class="pi pi-delete icon-lg"> </i>
+							           <i class="pi pi-delete pi-lg"> </i>
 							 </button>
 							<button class="button-link tbl-toolbar-item tbl-tool-link" 
 							        title="{{ctrl.getAuxTitle();}}" ng-click="ctrl.toggleAuxiliary();">
-							        <i class="icon-lg pi " ng-class="{'pi-eye-open' : ctrl.showAuxiliary,'pi-eye-close' : !ctrl.showAuxiliary}" > </i>
+							        <i class="pi-lg pi " ng-class="{'pi-eye-open' : ctrl.showAuxiliary,'pi-eye-close' : !ctrl.showAuxiliary}" > </i>
 							</button>
 						</div>
 					</th>
@@ -78,7 +78,7 @@
 				<tr>
 					<td sda-tree-column >
 						<span class="identifierIcon spacing-right"  ng-switch on="rowData.type"> 
-							<span ng-switch-default>  <i class="sc sc-cog icon-lg"> </i></span>
+							<span ng-switch-default>  <i class="sc sc-cog pi-lg"> </i></span>
 							<span ng-switch-when="process"> <i class="sc sc-cogs icon-1-5x "></i></span>
 							<span ng-switch-when="Subprocess"><i class="sc sc-cogs icon-1-5x"></i></span>
 						</span>
@@ -86,7 +86,7 @@
 						<span ng-bind="rowData.name" class="spacing-right"> </span> 
 						<span ng-show="rowData.activatable">
 							<button ng-click="ctrl.activate(rowData);" class="button-link tbl-tool-link" title="{{i18n('business-control-center-messages.common-tooltip-activate')}}">
-								 <span ><i class="pi pi-activate icon-lg"></i> </span>
+								 <span ><i class="pi pi-activate pi-lg"></i> </span>
 							</button>
 						</span> 
 					</td>

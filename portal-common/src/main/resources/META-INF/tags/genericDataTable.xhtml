@@ -150,7 +150,7 @@
 								
 								<ice:commandLink rendered="#{!table.supportExportToExcel}" disabled="#{!table.supportExportToExcel}" >	
 									<ice:outputText style="vertical-align:top; border:none; padding-left:5px;"
-												styleClass="iceCmdBtn-dis pi pi-export-excel icon-lg"
+												styleClass="iceCmdBtn-dis pi pi-export-excel pi-lg"
 												title="#{common_msgPropsBean['common.genericDataTable.asExcel']}" />
 								</ice:commandLink>
 							</ice:panelGroup>
@@ -474,24 +474,24 @@
 							<c:if test="#{table.paginatorFastStep > 0}">
 								<f:facet name="fastforward">
 					            	<ice:outputText id="#{id}fastforward"
-											styleClass="pi pi-fast-forward icon-lg"
+											styleClass="pi pi-fast-forward pi-lg"
 											title="#{common_msgPropsBean['common.genericDataTable.paginator.fastforward.title']}" />
 					               </f:facet>
 					               <f:facet name="fastrewind">
 					            	<ice:outputText id="#{id}fastrewind"
-											styleClass="pi pi-fast-rewind icon-lg"
+											styleClass="pi pi-fast-rewind pi-lg"
 											title="#{common_msgPropsBean['common.genericDataTable.paginator.fastrewind.title']}" />
 					               </f:facet>
 							</c:if>
 						</c:if>
 						<f:facet name="previous">
 			            	<ice:outputText id="#{id}previouspage"
-									styleClass="pi pi-prev-page icon-lg"
+									styleClass="pi pi-prev-page pi-lg"
 									title="#{common_msgPropsBean['common.genericDataTable.paginator.previous.title']}" />
 						</f:facet>
 			            <f:facet name="next">
 			            	<ice:outputText id="#{id}nextpage"
-									styleClass="pi pi-next-page icon-lg"
+									styleClass="pi pi-next-page pi-lg"
 									title="#{common_msgPropsBean['common.genericDataTable.paginator.next.title']}" />
 						</f:facet>
 					</ice:dataPaginator>

@@ -20,7 +20,7 @@
 						value="auto-ADM-CriticalityConfig-CategoriesTableToolbar-Import"
 						standAlone="false" />
 					<h:outputText
-						styleClass="pi pi-upload icon-lg" title="#{messages_admin['views.criticalityConf.criticality.categories.toolbar.import']}" />
+						styleClass="pi pi-upload pi-lg" title="#{messages_admin['views.criticalityConf.criticality.categories.toolbar.import']}" />
 				</ice:commandLink>
 				<ice:panelGroup styleClass="export"
 					title="#{messages_admin['views.criticalityConf.criticality.categories.toolbar.export']}">
@@ -38,7 +38,7 @@
 						value="auto-ADM-CriticalityConfig-CategoriesTableToolbar-Add"
 						standAlone="false" />
 					<ice:outputText
-						styleClass="pi pi-create icon-lg" />
+						styleClass="pi pi-create pi-lg" />
 				</ice:commandLink>
 				<ice:commandLink actionListener="#{bean.removeRows}"
 					title="#{messages_admin['views.criticalityConf.criticality.categories.toolbar.delete']}"
@@ -47,7 +47,7 @@
 						value="auto-ADM-CriticalityConfig-CategoriesTableToolbar-Delete"
 						standAlone="false" />
 					<ice:outputText
-						styleClass="#{bean.deleteEnabled ? '' : 'iceCmdBtn-dis'} pi pi-delete icon-lg" />
+						styleClass="#{bean.deleteEnabled ? '' : 'iceCmdBtn-dis'} pi pi-delete pi-lg" />
 				</ice:commandLink>
 				<ice:commandLink actionListener="#{bean.editRow}"
 					title="#{messages_admin['views.criticalityConf.criticality.categories.toolbar.edit']}"
@@ -56,7 +56,7 @@
 						value="auto-ADM-CriticalityConfig-CategoriesTableToolbar-Edit"
 						standAlone="false" />
 					<ice:outputText
-						styleClass="#{bean.editEnabled ? '' : 'iceCmdBtn-dis'} pi pi-edit icon-lg" />
+						styleClass="#{bean.editEnabled ? '' : 'iceCmdBtn-dis'} pi pi-edit pi-lg" />
 				</ice:commandLink>
 			</ice:panelGrid>
 		</ice:panelGrid>

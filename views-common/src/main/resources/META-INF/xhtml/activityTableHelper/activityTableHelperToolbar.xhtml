@@ -19,7 +19,7 @@
 		<ice:commandLink actionListener="#{bean.openDelegateDialog}" disabled="#{bean.selectedItemCount eq 0 ? true : false}">
 			<pc:automationTag value="auto-COM-ActivityTbl-ToolbarDelegate" standAlone="false"/>
 			<h:outputText 
-				styleClass="#{bean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''} pi pi-badge-portrait pi-fw pi-activity-delegate icon-lg pi-left pi-top" 
+				styleClass="#{bean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''} pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top" 
 				title="#{views_common_msgPropsBean['common.tooltip.delegate']}">
 				<h:outputText styleClass="pi pi-badge-icon pi-badge-icon-arrow-r" title="#{views_common_msgPropsBean['common.tooltip.delegate']}"/>	
 			</h:outputText>
@@ -27,7 +27,7 @@
 		<ice:commandLink actionListener="#{bean.openAbortDialog}" disabled="#{bean.selectedItemCount eq 0 ? true : false}">
 			<pc:automationTag value="auto-COM-ActivityTbl-ToolbarAbort" standAlone="false"/>
 			<ice:outputText
-				styleClass="#{bean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''} pi pi-activity-abort icon-lg" 
+				styleClass="#{bean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''} pi pi-activity-abort pi-lg" 
                    title="#{views_common_msgPropsBean['common.tooltip.abort']}"/>
               <!-- Rendered when no row is selected -->
              <ice:outputText
@@ -48,7 +48,7 @@
 			disabled="#{!bean.priorityChanged}">
 			<pc:automationTag value="auto-COM-ActivityTbl-ToolbarSavePrio" standAlone="false"/>
 			<ice:outputText
-                   styleClass="#{!bean.priorityChanged ? 'iceCmdBtn-dis' : ''} pi pi-save icon-lg"
+                   styleClass="#{!bean.priorityChanged ? 'iceCmdBtn-dis' : ''} pi pi-save pi-lg"
                    title="#{views_common_msgPropsBean['common.tooltip.savePriorityChanges']}"/>
 		</ice:commandLink>
 		<ice:panelConfirmation id="delegateToDefaultPerformer" 

@@ -11,7 +11,7 @@
 		<pc:automationTag value="auto-COM-CaseDetView-ToolbarTerminate"/>		
 		
 		<ice:panelGroup>
-			<ice:graphicImage styleClass="iceCmdBtn-dis pi-process-abort icon-lg" />
+			<ice:graphicImage styleClass="iceCmdBtn-dis pi-process-abort pi-lg" />
 		</ice:panelGroup>
 
 		<!-- Rendered when process termination is allowed -->
@@ -34,7 +34,7 @@
 			action="#{caseDetailsBean.recoverProcess}"
 			partialSubmit="true"
 			title="#{messages_bcc['common.tooltip.recover']}"
-			styleClass="pi pi-recover icon-lg" />
+			styleClass="pi pi-recover pi-lg" />
 
 		<pc:automationTag value="auto-COM-CaseDetView-ToolbarAttachToCase"/>					
 		<ice:commandLink actionListener="#{caseDetailsBean.attachToCase}"
@@ -54,7 +54,7 @@
 			action="#{caseDetailsBean.openChat}" partialSubmit="true"
 			title="#{messages_bcc['toolbars.processInstanceDetailsView.tooltip.chat']}"
 			styleClass="toolbar-button">
-			<i styleClass="pi pi-chat icon-lg" />
+			<i styleClass="pi pi-chat pi-lg" />
 		</ice:commandLink>
 		<ice:graphicImage value="/plugins/views-common/images/icons/toolbar-separator.png"/>
 		
@@ -63,7 +63,7 @@
 			action="#{caseDetailsBean.update}" partialSubmit="true"
 			title="#{messages_bcc['toolbars.common.tooltip.update']}"
 			styleClass="toolbar-button">
-			<i class="pi pi-refresh icon-lg" />
+			<i class="pi pi-refresh pi-lg" />
 		</ice:commandLink>
 	</ice:panelGrid>
 </f:view>	

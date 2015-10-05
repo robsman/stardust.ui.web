@@ -5,7 +5,7 @@
 			<!-- Abort process dialog -->
 			<button ng-disabled="processTableCtrl.dataTable.getSelection() < 1" ng-click="processTableCtrl.openAbortDialog(processTableCtrl.dataTable.getSelection())" aid="PP-ProcessTable-AbortAll"
 			  title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}" class="button-link tbl-toolbar-item tbl-tool-link tbl-tool-joined-link">
-			   <i class="pi pi-abort icon-lg"></i>
+			   <i class="pi pi-abort pi-lg"></i>
 			</button>
 			
 			<button class="button-link tbl-tool-link" ng-disabled="processTableCtrl.dataTable.getSelection() < 1" 
@@ -18,13 +18,13 @@
 			  title="{{i18n('views-common-messages.common-tooltip-recover')}}" 
 				ng-disabled="processTableCtrl.dataTable.getSelection() < 1" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
 				 <div class="sc-badge">
-				         <i class="pi pi-recover icon-lg" />
+				         <i class="pi pi-recover pi-lg" />
 				  </div>
 			</button>
 			
 			<span sd-popover ng-disabled="processTableCtrl.dataTable.getSelection() < 1" id="caseMenu" title="{{i18n('views-common-messages.views-case-tooltip-menu')}}" style="margin-left : -5px;">
                <div>
-	                <i class="pi pi-case icon-lg"></i>
+	                <i class="pi pi-case pi-lg"></i>
 	                <i class="pi pi-bottom pi-menu-dropdown icon-sm" />
                 </div>
 				<div id="caseMenu" class="popover-body">
@@ -49,7 +49,7 @@
 			        aid="PP-ProcessTable-SavePriority"
 			        title="{{i18n('views-common-messages.common-tooltip-savePriorityChanges')}}"
 				    class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
-				<i class="pi pi-save icon-lg"></i>
+				<i class="pi pi-save pi-lg"></i>
 			</button>
 		</div>
 	</div>
@@ -120,7 +120,7 @@
 					<span class="spacing-right">
 							<span title="{{i18n('business-control-center-messages.common-tooltip-process')}}"
 								ng-if="!rowData.caseInstance && rowData.oid == rowData.processInstanceRootOID" >
-								<i class="pi pi-badge-portrait icon-lg pi-activity pi-right">
+								<i class="pi pi-badge-portrait pi-lg pi-activity pi-right">
 		                   			 <i style="color:blue" class="pi pi-badge-bg pi-badge-bg-circle "></i>
 		               			 </i>
 							</span>
@@ -128,14 +128,14 @@
 								style="border: none;"
 								title="{{i18n('business-control-center-messages.common-tooltip-subProcess')}}"
 								ng-if="!rowData.caseInstance && rowData.oid != rowData.processInstanceRootOID" >
-									<i class="pi pi-badge-portrait icon-lg pi-activity">
+									<i class="pi pi-badge-portrait pi-lg pi-activity">
 		               				 </i>
 							</span>
 							<span src="plugins/views-common/images/icons/envelope.png"
 								style="border: none;"
 								title="{{i18n('business-control-center-messages.common-tooltip-case')}}"
 								ng-if="rowData.caseInstance" >
-									<i class="pi pi-case icon-lg"></i>
+									<i class="pi pi-case pi-lg"></i>
 							</span>
 					</span>
 					<a  href="#" aid="PP-ProcessTable-OpenProcessHistory"
@@ -179,13 +179,13 @@
 					<div style="text-align: right; white-space: nowrap;">
 						<button ng-click="bpmCommon.stopEvent($event); processTableCtrl.openProcessHistory(rowData);" aid="PP-ProcessTable-OpenProcessHistoryAction"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-processContextExplorer')}}" class="button-link tbl-tool-link">
-							<i class="pi pi-process icon-lg"></i>
+							<i class="pi pi-process pi-lg"></i>
 						</button>
 						
 						<button ng-click="bpmCommon.stopEvent($event); processTableCtrl.openAbortDialog(rowData);"
 						    ng-disabled="!rowData.enableTerminate"  aid="PP-ProcessTable-AbortAction"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-abort')}}" class="button-link tbl-tool-link tbl-tool-joined-link">
-							<i class="pi pi-process-abort icon-lg" ></i>
+							<i class="pi pi-process-abort pi-lg" ></i>
 						</button>
 						
 						<!-- abort menu -->
@@ -199,7 +199,7 @@
 						    title="{{i18n('views-common-messages.common-tooltip-recover')}}" 
 							ng-disabled="!rowData.enableRecover" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
 				            <div class="sc-badge">
-				                <i class="pi pi-recover icon-lg"></i>
+				                <i class="pi pi-recover pi-lg"></i>
 				            </div>
 						</button>
 						
@@ -207,19 +207,19 @@
 						<button class="button-link tbl-tool-link"   aid="PP-ProcessTable-OpenGrantChart"
 							title="{{i18n('business-control-center-messages.views-processSearchView-tooltip-viewGanttChart')}}"
 							ng-click="processTableCtrl.openChart(rowData); bpmCommon.stopEvent($event);">
-							<i class="pi pi-gantt-chart icon-lg" ></i>
+							<i class="pi pi-gantt-chart pi-lg" ></i>
 						</button>
 						
 						<button ng-click="bpmCommon.stopEvent($event); processTableCtrl.openNotes(rowData);"
 						    aid="PP-ProcessTable-OpenNotes"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-notes')}}" class="button-link tbl-tool-link">
-							<i class="pi pi-notes-empty icon-lg" ng-if ="rowData.notesCount === 0" ></i>
-							<i class="pi pi-notes icon-lg" ng-if ="rowData.notesCount > 0" ></i>
+							<i class="pi pi-notes-empty pi-lg" ng-if ="rowData.notesCount === 0" ></i>
+							<i class="pi pi-notes pi-lg" ng-if ="rowData.notesCount > 0" ></i>
 						</button>
 
 						<button ng-click="processTableCtrl.openProcessDocumentsPopover(rowData, $event);" aid="PP-ProcessTable-OpenProcessDocuments"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}" class="button-link tbl-tool-link">
-							<i class="pi pi-process-documents icon-lg"></i>
+							<i class="pi pi-process-documents pi-lg"></i>
 						</button>
 					</div>
 				</td>

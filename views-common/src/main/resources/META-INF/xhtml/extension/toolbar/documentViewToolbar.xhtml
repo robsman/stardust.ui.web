@@ -13,7 +13,7 @@
 			<pc:automationTag value="auto-COM-DocView-ToolbarShowPrevVersion"
 				standAlone="false" />
 			<ice:outputText
-				styleClass="#{documentHandlerBean.showPrev ? '' : 'toolbar-button-dis'} pi pi-version icon-lg">
+				styleClass="#{documentHandlerBean.showPrev ? '' : 'toolbar-button-dis'} pi pi-version pi-lg">
 				<h:outputText styleClass="pi pi-badge-icon pi-badge-icon-arrow-l pi-top pi-left" title="#{documentHandlerBean.messages['versionToolBar.showPreviousVersion']}" />
 			</ice:outputText>
 		</ice:commandLink>
@@ -23,7 +23,7 @@
 			<pc:automationTag value="auto-COM-DocView-ToolbarShowNextVersion"
 				standAlone="false" />
 			<ice:outputText
-				styleClass="#{documentHandlerBean.showNext ? '' : 'toolbar-button-dis'} pi pi-version icon-lg" 
+				styleClass="#{documentHandlerBean.showNext ? '' : 'toolbar-button-dis'} pi pi-version pi-lg" 
 				title="#{documentHandlerBean.messages['versionToolBar.showNextVersion']}">
 				<h:outputText styleClass="pi pi-badge-icon pi-badge-icon-arrow-r pi-top pi-right" title="#{documentHandlerBean.messages['versionToolBar.showNextVersion']}" />	
 			</ice:outputText>
@@ -35,7 +35,7 @@
 				standAlone="false" />
 			<ice:outputText
 				title="#{documentHandlerBean.messages['versionToolBar.revertToVersion']}"
-				styleClass="#{documentHandlerBean.revertible ? '' : 'toolbar-button-dis'} pi pi-undo icon-lg" />
+				styleClass="#{documentHandlerBean.revertible ? '' : 'toolbar-button-dis'} pi pi-undo pi-lg" />
 		</ice:commandLink>
 
 		<ice:commandLink
@@ -45,7 +45,7 @@
 				standAlone="false" />
 			<ice:outputText
 				title="#{views_common_msgPropsBean['views.genericRepositoryView.treeMenuItem.newVersion']}"
-				styleClass="#{documentHandlerBean.documentContentInfo.supportsVersioning ? '' : 'toolbar-button-dis'} pi pi-upload icon-lg"/>
+				styleClass="#{documentHandlerBean.documentContentInfo.supportsVersioning ? '' : 'toolbar-button-dis'} pi pi-upload pi-lg"/>
 		</ice:commandLink>
 
 		<ice:panelGroup rendered="#{not empty documentHandlerBean.fileOutputResource}"
@@ -67,7 +67,7 @@
 			disabled="#{documentHandlerBean.contentHandler == null}">
 			<pc:automationTag value="auto-COM-DocView-ToolbarPopOutDoc"
 				standAlone="false" />
-			<i class="pi pi-pop-out icon-lg" ></i>
+			<i class="pi pi-pop-out pi-lg" ></i>
 		</ice:commandLink>
 
 		<ice:commandLink rendered="#{documentHandlerBean.poppedOut}"
@@ -76,7 +76,7 @@
 			styleClass="toolbar-button">
 			<pc:automationTag value="auto-COM-DocView-ToolbarPopInDoc"
 				standAlone="false" />
-			<i class="pi pi-pop-out icon-lg" />
+			<i class="pi pi-pop-out pi-lg" />
 		</ice:commandLink>
 
 		<ice:panelGroup
@@ -92,7 +92,7 @@
 				action="#{documentHandlerBean.save}">
 				<pc:automationTag value="auto-COM-DocView-SaveBtn"
 					standAlone="false" />
-				<ice:outputText styleClass="pi pi-save icon-lg" />
+				<ice:outputText styleClass="pi pi-save pi-lg" />
 			</ice:commandLink>
 		</ice:panelGroup>
 		

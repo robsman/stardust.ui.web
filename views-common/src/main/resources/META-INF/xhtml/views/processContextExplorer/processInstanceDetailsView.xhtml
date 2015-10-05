@@ -48,7 +48,7 @@
 								<ice:commandLink action="#{ippPortalApp.openView}">
 									<pc:automationTag value="auto-COM-PCEOverview-GanttChart" standAlone="false"/>
 									<h:outputText
-										styleClass="pi pi-gantt-chart icon-lg"
+										styleClass="pi pi-gantt-chart pi-lg"
 										title="#{messages_bcc['views.processDiagramView.tooltip.viewGanttChart.title']}"/>
 									<f:param name="viewId" value="ganttChartView" />
 									<f:param name="nested" value="true" />
@@ -59,7 +59,7 @@
 									<pc:automationTag value="auto-COM-PCEOverview-ProcessDiag" standAlone="false"/>
 									<h:outputText
 										rendered="#{(ippBCCDiagramBean != null) and ippBCCDiagramBean.diagramSupported}"
-										styleClass="pi pi-process-diagram icon-lg"
+										styleClass="pi pi-process-diagram pi-lg"
 										title="#{messages_bcc['views.processDiagramView.tooltip.viewDiagram']}" />
 									<f:param name="viewId" value="processDiagramView" />
 									<f:param name="nested" value="true" />

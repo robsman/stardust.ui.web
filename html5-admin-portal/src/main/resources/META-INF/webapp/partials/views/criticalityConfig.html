@@ -18,13 +18,13 @@
 				<button ng-click="ctrl.showImportDialog()" title="{{i18n('admin-portal-messages.views-criticalityConf-criticality-categories-toolbar-import')}}" 
 						class="button-link tbl-toolbar-item tbl-tool-link" 
 						aid="ADM-CriticalityConfig-CategoriesTableToolbar-Import">
-				   <i class="pi pi-import icon-lg" ></i>
+				   <i class="pi pi-import pi-lg" ></i>
 				</button>
 				<!-- Export -->
 				<button ng-click="ctrl.exportCriticalities()" title="{{i18n('admin-portal-messages.views-criticalityConf-criticality-categories-toolbar-export')}}" 
 						class="button-link tbl-toolbar-item tbl-tool-link" 
 						aid="ADM-CriticalityConfig-CategoriesTableToolbar-Export">
-				   <i class="pi pi-export icon-lg" ></i>
+				   <i class="pi pi-export pi-lg" ></i>
 				</button>
 			</div>
 			<div class="tbl-toolbar-section">
@@ -32,21 +32,21 @@
 				<button ng-click="ctrl.addRow()" title="{{i18n('admin-portal-messages.views-criticalityConf-criticality-categories-toolbar-add')}}" 
 						class="button-link tbl-toolbar-item tbl-tool-link" 
 						aid="ADM-CriticalityConfig-CategoriesTableToolbar-Add">
-				   <i class="pi pi-create icon-lg" ></i>
+				   <i class="pi pi-create pi-lg" ></i>
 				</button>
 				<!-- Remove -->
 				<button ng-disabled="ctrl.dataTable.getSelection() < 1" ng-click="ctrl.removeRows()" 
 					title="{{i18n('admin-portal-messages.views-criticalityConf-criticality-categories-toolbar-delete')}}" 
 					class="button-link tbl-toolbar-item tbl-tool-link" 
 					aid="ADM-CriticalityConfig-CategoriesTableToolbar-Delete">
-				   <i class="pi pi-delete icon-lg" ></i>
+				   <i class="pi pi-delete pi-lg" ></i>
 				</button>
 				<!-- Edit -->
 				<button ng-disabled="!ctrl.isEditable()" ng-click="ctrl.editRows()" 
 					title="{{i18n('admin-portal-messages.views-criticalityConf-criticality-categories-toolbar-edit')}}" 
 					class="button-link tbl-toolbar-item tbl-tool-link" 
 					aid="ADM-CriticalityConfig-CategoriesTableToolbar-Edit">
-				   <i class="pi pi-edit icon-lg"></i>
+				   <i class="pi pi-edit pi-lg"></i>
 				</button>
 			</div>
 		</div>
@@ -149,7 +149,7 @@
 		</textarea>
 		<div class="clearing"></div>
 		<div>
-			<i class="pi pi-information-circle icon-lg"></i>
+			<i class="pi pi-information-circle pi-lg"></i>
 			<span ng-bind="i18n('admin-portal-messages.views-criticalityConf-criticality-defaultformula-infoMessage')"></span>
 		</div>
 		<div class="clearing"></div>
@@ -161,7 +161,7 @@
 		sda-aid-prefix="ADM-CriticalityConfig-ImportDlg">
 		<div><span ng-bind="i18n('admin-portal-messages.views-criticalityConf-importDialog-info')"></span></div>
 		<div>
-			<i style="color: red !important" class="glyphicon glyphicon-remove-sign icon-lg"></i> 
+			<i style="color: red !important" class="glyphicon glyphicon-remove-sign pi-lg"></i> 
 			<span ng-bind="i18n('admin-portal-messages.views-criticalityConf-importDialog-warning')"></span>
 		</div>
 		<br />

@@ -10,13 +10,13 @@
 		<ice:commandLink action="#{realmMgmtBean.openPopup}">
 			<pc:automationTag value="auto-ADM-RealmMgmt-ToolbarCreate" standAlone="false" />
 			<h:outputText 
-				styleClass="pi pi-create icon-lg" title="#{messages_admin['common.create']}" />
+				styleClass="pi pi-create pi-lg" title="#{messages_admin['common.create']}" />
 		</ice:commandLink>	
 		<ice:commandLink panelConfirmation="deleteRealm" action="#{realmMgmtBean.deleteUserRealm}" disabled="#{realmMgmtBean.selectedItemCount eq 0 ? true : false}">
 			<pc:automationTag value="auto-ADM-RealmMgmt-ToolbarDel" standAlone="false" />
 			<h:outputText 
 				style="vertical-align:top;"
-				styleClass="#{realmMgmtBean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''} pi pi-delete icon-lg"
+				styleClass="#{realmMgmtBean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''} pi pi-delete pi-lg"
 				title="#{messages_admin['common.delete']}" />
 		</ice:commandLink>	
 		

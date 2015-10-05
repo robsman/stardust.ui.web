@@ -11,14 +11,14 @@
 			<pc:automationTag value="auto-ADM-UserGrpMgmt-ToolbarCreateUserGrp" standAlone="false"/>
 			<h:outputText
 				title="#{messages_admin['common.create']}" 
-				styleClass="pi pi-create icon-lg"/>
+				styleClass="pi pi-create pi-lg"/>
 			<f:attribute name="editable" value="all" />
 		</ice:commandLink>	
 
 		<ice:commandLink actionListener="#{userGroupMgmtBean.invalidateUserGroup}" disabled="#{userGroupMgmtBean.selectedItemCount eq 0 ? true : false}">
 			<pc:automationTag value="auto-ADM-UserGrpMgmt-ToolbarInvalidateUserGrp" standAlone="false"/>
 			<h:outputText 
-				styleClass="#{userGroupMgmtBean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''} pi pi-invalidate-user-group icon-lg"
+				styleClass="#{userGroupMgmtBean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''} pi pi-invalidate-user-group pi-lg"
 				title="#{userGroupMgmtBean.messages['invalidateUserGroup.tooltip.title']}" />
 		</ice:commandLink>	
 	</ice:panelGrid>	
