@@ -7,32 +7,38 @@
 					ng-bind="sdI18nHtml5Admin('views.authorizationManagerViewHtml5.participant.label')"></div>
 			</header>
 			<div ng-show="ctrl.showMessage" sd-message></div>
-                 <div sda-toolbar>
-                    <div class="tbl-toolbar-section">
-                           <button ng-click="ctrl.cloneParticipant()"
-                                  title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.cloneParticipant')}}"
-                                  class="button-link tbl-toolbar-item tbl-tool-link"
-                                  style="margin-right: 0px;"
-                                  aid="COM-AuthMgr-CloneParticipant">
-                                  <i class="pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top">
-                                         <i class="pi pi-badge-icon pi-badge-icon-arrow-r"></i>
-                                  </i>
-
-                           </button>
-                           <button ng-click="ctrl.resetParticipants()"
-                                  title="Reset Participant(s)"
-                                  class="button-link tbl-toolbar-item tbl-tool-link"
-                                  style="margin-right: 0px; opacity: 0.4"
-                                  aid="COM-AuthMgr-ResetParticipants">
-                                  <i class="pi pi-user pi-lg" ></i>
-                           </button>
-                    </div>
-                    <span sd-refresh sda-on-refresh="ctrl.refreshParticipants();" aid="COM-AuthMgr-RefreshParticipants"></span>
-              </div>
+			
+            
 
 
 			<!-- Data table -->
 			<div class="participantTable">
+			
+				<div sda-toolbar>
+	               <div class="tbl-toolbar-section">
+	                      <button ng-click="ctrl.cloneParticipant()"
+	                             title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.cloneParticipant')}}"
+	                             class="button-link tbl-toolbar-item tbl-tool-link"
+	                             style="margin-right: 0px;"
+	                             aid="COM-AuthMgr-CloneParticipant">
+	                             <i class="pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top">
+	                                    <i class="pi pi-badge-icon pi-badge-icon-arrow-r"></i>
+	                             </i>
+	
+	                      </button>
+	                      <button ng-click="ctrl.resetParticipants()"
+	                             title="Reset Participant(s)"
+	                             class="button-link tbl-toolbar-item tbl-tool-link"
+	                             style="margin-right: 0px; opacity: 0.4"
+	                             aid="COM-AuthMgr-ResetParticipants">
+	                             <i class="pi pi-user pi-lg" ></i>
+	                      </button>
+	               </div>
+	               <span sd-refresh 
+	                     sda-on-refresh="ctrl.refreshParticipants();" 
+	                     aid="COM-AuthMgr-RefreshParticipants"></span>
+         		</div>
+				
 				<table sd-data-table="ctrl.dataTable" sd-data="ctrl.participants"
 					sda-mode="local" sda-selectable="multiple"
 					sda-selection="ctrl.selection" sda-no-pagination="false" 
@@ -133,7 +139,7 @@
 				</div>
 			</div>
 			<br>
-
+			
 			<!-- Permission Tree related code -->
 			<div class="permission-tree">
 				<ul id="authTree{{ctrl.scopeId}}" class="sd-tree">
@@ -145,11 +151,11 @@
 							<div class="expand-section"
 								ng-show="ctrl.data.general.length > 0">
 								<i ng-click="isVisible=!isVisible"
-									ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-									class="glyphicons glyphicon sd-tree-expand"></i>
+									ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+									class="pi"></i>
 							</div>
 							<a title="" class="tree-node" aid="{{labelItem.id}}"> 
-								<i class="js-icon glyphicon glyphicon-cog"></i> <span>{{labelItem.name}}</span>
+								<i class="pi pi-cog"></i> <span>{{labelItem.name}}</span>
 							</a>
 						</div> <!--Permission in General Permissions loop...-->
 						<ul ng-show="isVisible">
@@ -160,8 +166,8 @@
 								<div class="title-section">
 									<div class="expand-section" ng-show="true">
 										<i ng-click="isVisible=!isVisible"
-											ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-											class="glyphicons glyphicon sd-tree-expand"></i>
+											ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+											class="pi"></i>
 									</div>
 									<div sd-context-menu
 										sda-menu-items="[{'value' :ctrl.labels.restore,
@@ -180,8 +186,8 @@
 											<div class="expand-section">
 												<i ng-click="isVisible=!isVisible"
 													ng-show="genItem.allow.length > 0"
-													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-													class="glyphicons glyphicon sd-tree-expand"></i>
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
 											</div>
 											<div sd-context-menu
 												sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
@@ -192,7 +198,7 @@
 													ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
 													ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
 													title="" class="tree-node" aid="{{item.name}}"> <i
-													class="js-icon glyphicon glyphicon-ok-circle {{iconClass}}"></i> <span>{{item.name}}</span>
+													class="js-icon pi pi-allow {{iconClass}}"></i> <span>{{item.name}}</span>
 												</a>
 											</div>
 										</div>
@@ -224,8 +230,8 @@
 											<div class="expand-section">
 												<i ng-click="isVisible=!isVisible"
 													ng-show="genItem.deny.length > 0"
-													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-													class="glyphicons glyphicon sd-tree-expand"></i>
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
 											</div>
 											<div sd-context-menu
 												sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
@@ -236,7 +242,7 @@
 													ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
 													ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
 													title="" class="tree-node" aid="{{labelItem.id}}"> <i
-													class="js-icon glyphicon glyphicon-ban-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+													class="js-icon pi pi-deny {{iconClass}}"></i> <span>{{labelItem.name}}</span>
 												</a>
 											</div>
 										</div>
@@ -276,8 +282,8 @@
 						<div class="title-section">
 							<div class="expand-section" ng-show="true">
 								<i ng-click="isVisible=!isVisible"
-									ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-									class="glyphicons glyphicon sd-tree-expand"></i>
+									ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+									class="pi"></i>
 							</div>
 							<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
 								class="js-icon pi pi-process-details"></i> <span>{{labelItem.name}}</span>
@@ -292,8 +298,8 @@
 									<div class="expand-section"
 										ng-show="ctrl.data.processDefinitions.length > 0">
 										<i ng-click="isVisible=!isVisible"
-											ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-											class="glyphicons glyphicon sd-tree-expand"></i>
+											ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+											class="pi"></i>
 									</div>
 									<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
 										class="js-icon pi pi-process-details"></i> <span>{{labelItem.name}}</span>
@@ -309,8 +315,8 @@
 										<div class="title-section">
 											<div class="expand-section" ng-show="true">
 												<i ng-click="isVisible=!isVisible"
-													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-													class="glyphicons glyphicon sd-tree-expand"></i>
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
 											</div>
 											<div sd-context-menu
 												sda-menu-items="[{'value' :ctrl.labels.restore,
@@ -331,8 +337,8 @@
 													<div class="expand-section"
 														ng-show="genItem.allow.length > 0">
 														<i ng-click="isVisible=!isVisible"
-															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-															class="glyphicons glyphicon sd-tree-expand"></i>
+															ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+															class="pi"></i>
 													</div>
 													<div sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
@@ -344,7 +350,7 @@
 															ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
 															title="" class="tree-node"
 															aid="{{labelItem.id}}"> <i
-															class="js-icon glyphicon glyphicon-ok-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+															class="js-icon pi pi-allow {{iconClass}}"></i> <span>{{labelItem.name}}</span>
 														</a>
 													</div>
 												</div>
@@ -374,8 +380,8 @@
 													<div class="expand-section"
 														ng-show="genItem.deny.length > 0">
 														<i ng-click="isVisible=!isVisible"
-															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-															class="glyphicons glyphicon sd-tree-expand"></i>
+															ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+															class="pi"></i>
 													</div>
 													<div sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
@@ -387,7 +393,7 @@
 															ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
 															title="" class="tree-node"
 															aid="{{labelItem.id}}"> <i
-															class="js-icon glyphicon glyphicon-ban-circle {{iconClass}}"></i> <span
+															class="js-icon pi pi-deny {{iconClass}}"></i> <span
 															class="js-filterable">{{labelItem.name}}</span>
 														</a>
 													</div>
@@ -427,8 +433,8 @@
 									<div class="expand-section"
 										ng-show="ctrl.data.activities.length > 0">
 										<i ng-click="isVisible=!isVisible"
-											ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-											class="glyphicons glyphicon sd-tree-expand"></i>
+											ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+											class="pi"></i>
 									</div>
 									<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
 										class="js-icon pi pi-process-details"></i> <span>{{labelItem.name}}</span>
@@ -444,8 +450,8 @@
 										<div class="title-section">
 											<div class="expand-section" ng-show="true">
 												<i ng-click="isVisible=!isVisible"
-													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-													class="glyphicons glyphicon sd-tree-expand"></i>
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
 											</div>
 											<div sd-context-menu
 												sda-menu-items="[{'value' :ctrl.labels.restore,
@@ -467,8 +473,8 @@
 													<div class="expand-section"
 														ng-show="genItem.allow.length > 0">
 														<i ng-click="isVisible=!isVisible"
-															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-															class="glyphicons glyphicon sd-tree-expand"></i>
+															ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+															class="pi"></i>
 													</div>
 													<div sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
@@ -479,7 +485,7 @@
 															ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
 															ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
 															title="" class="tree-node" aid="{{labelItem.id}}"> <i
-															class="js-icon glyphicon glyphicon-ok-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+															class="js-icon pi pi-allow {{iconClass}}"></i> <span>{{labelItem.name}}</span>
 														</a>
 													</div>
 												</div>
@@ -512,8 +518,8 @@
 													<div class="expand-section"
 														ng-show="genItem.deny.length > 0">
 														<i ng-click="isVisible=!isVisible"
-															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-															class="glyphicons glyphicon sd-tree-expand"></i>
+															ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+															class="pi"></i>
 													</div>
 													<div sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
@@ -524,7 +530,7 @@
 															ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
 															ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
 															title="" class="tree-node" aid="{{labelItem.id}}"> <i
-															class="js-icon glyphicon glyphicon-ban-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+															class="js-icon pi pi-deny {{iconClass}}"></i> <span>{{labelItem.name}}</span>
 														</a>
 													</div>
 												</div>
@@ -563,8 +569,8 @@
 								<div class="title-section">
 									<div class="expand-section" ng-show="ctrl.data.data.length > 0">
 										<i ng-click="isVisible=!isVisible"
-											ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-											class="glyphicons glyphicon sd-tree-expand"></i>
+											ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+											class="pi"></i>
 									</div>
 									<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
 										class="js-icon pi pi-process-details"></i> <span>{{labelItem.name}}</span>
@@ -580,8 +586,8 @@
 										<div class="title-section">
 											<div class="expand-section" ng-show="true">
 												<i ng-click="isVisible=!isVisible"
-													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-													class="glyphicons glyphicon sd-tree-expand"></i>
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
 											</div>
 											<div sd-context-menu
 												sda-menu-items="[{'value' :ctrl.labels.restore,
@@ -603,8 +609,8 @@
 													<div class="expand-section"
 														ng-show="genItem.allow.length > 0">
 														<i ng-click="isVisible=!isVisible"
-															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-															class="glyphicons glyphicon sd-tree-expand"></i>
+															ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+															class="pi"></i>
 													</div>
 													<div sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
@@ -615,7 +621,7 @@
 															ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
 															ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
 															title="" class="tree-node" aid="{{labelItem.id}}"> <i
-															class="js-icon glyphicon glyphicon-ok-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+															class="js-icon pi pi-allow {{iconClass}}"></i> <span>{{labelItem.name}}</span>
 														</a>
 													</div>
 												</div>
@@ -648,8 +654,8 @@
 													<div class="expand-section"
 														ng-show="genItem.deny.length > 0">
 														<i ng-click="isVisible=!isVisible"
-															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-															class="glyphicons glyphicon sd-tree-expand"></i>
+															ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+															class="pi"></i>
 													</div>
 													<div sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
@@ -660,7 +666,7 @@
 															ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
 															ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
 															title="" class="tree-node" aid="{{labelItem.id}}"> <i
-															class="js-icon glyphicon glyphicon-ban-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+															class="js-icon pi pi-deny {{iconClass}}"></i> <span>{{labelItem.name}}</span>
 														</a>
 													</div>
 												</div>
@@ -701,8 +707,8 @@
 						<div class="title-section">
 							<div class="expand-section" ng-show="true">
 								<i ng-click="isVisible=!isVisible"
-									ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-									class="glyphicons glyphicon sd-tree-expand"></i>
+									ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+									class="pi"></i>
 							</div>
 							<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
 								class="js-icon pi pi-process-details"></i> <span>{{labelItem.name}}</span>
@@ -718,8 +724,8 @@
 								<div class="title-section">
 									<div class="expand-section" ng-show="true">
 										<i ng-click="isVisible=!isVisible"
-											ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-											class="glyphicons glyphicon sd-tree-expand"></i>
+											ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+											class="pi"></i>
 									</div>
 									<div sd-context-menu
 										sda-menu-items="[{'value' :ctrl.labels.restore,
@@ -740,8 +746,8 @@
 											<div class="expand-section">
 												<i ng-click="isVisible=!isVisible"
 													ng-show="genItem.allow.length > 0"
-													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-													class="glyphicons glyphicon sd-tree-expand"></i>
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
 											</div>
 											<div sd-context-menu
 												sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
@@ -752,7 +758,7 @@
 													ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
 													ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
 													title="" class="tree-node" aid="{{labelItem.id}}"> <i
-													class="js-icon glyphicon glyphicon-ok-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+													class="js-icon pi pi-allow {{iconClass}}"></i> <span>{{labelItem.name}}</span>
 												</a>
 											</div>
 										</div>
@@ -784,8 +790,8 @@
 											<div class="expand-section">
 												<i ng-click="isVisible=!isVisible"
 													ng-show="genItem.deny.length > 0"
-													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-													class="glyphicons glyphicon sd-tree-expand"></i>
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
 											</div>
 											<div sd-context-menu
 												sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
@@ -796,7 +802,7 @@
 													ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
 													ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
 													title="" class="tree-node" aid="{{labelItem.id}}"> <i
-													class="js-icon glyphicon glyphicon-ban-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+													class="js-icon pi pi-deny {{iconClass}}"></i> <span>{{labelItem.name}}</span>
 												</a>
 											</div>
 										</div>
@@ -830,8 +836,8 @@
 										<div class="title-section">
 											<div class="expand-section" ng-show="true">
 												<i ng-click="isVisible=!isVisible"
-													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-													class="glyphicons glyphicon sd-tree-expand"></i>
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
 											</div>
 											<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
 												class="js-icon pi pi-process-details"></i> <span>{{labelItem.name}}</span>
@@ -846,8 +852,8 @@
 												<div class="title-section">
 													<div class="expand-section" ng-show="true">
 														<i ng-click="isVisible=!isVisible"
-															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-															class="glyphicons glyphicon sd-tree-expand"></i>
+															ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+															class="pi"></i>
 													</div>
 													<div sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.restore,
@@ -865,8 +871,8 @@
 														<div class="title-section">
 															<div class="expand-section" ng-show="true">
 																<i ng-click="isVisible=!isVisible"
-																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-																	class="glyphicons glyphicon sd-tree-expand"></i>
+																	ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+																	class="pi"></i>
 															</div>
 															<div sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
@@ -877,7 +883,7 @@
 																	ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
 																	ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
 																	title="" class="tree-node" aid="{{labelItem.id}}"> <i
-																	class="js-icon glyphicon glyphicon-ok-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+																	class="js-icon pi pi-allow {{iconClass}}"></i> <span>{{labelItem.name}}</span>
 																</a>
 															</div>
 														</div>
@@ -908,8 +914,8 @@
 															<div class="expand-section"
 																ng-show="genItem.deny.length >0">
 																<i ng-click="isVisible=!isVisible"
-																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-																	class="glyphicons glyphicon sd-tree-expand"></i>
+																	ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+																	class="pi"></i>
 															</div>
 															<div sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
@@ -920,7 +926,7 @@
 																	ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
 																	ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
 																	title="" class="tree-node" aid="{{labelItem.id}}"> <i
-																	class="js-icon glyphicon glyphicon-ban-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+																	class="js-icon pi pi-deny {{iconClass}}"></i> <span>{{labelItem.name}}</span>
 																</a>
 															</div>
 														</div>
@@ -961,8 +967,8 @@
 										<div class="title-section">
 											<div class="expand-section" ng-show="true">
 												<i ng-click="isVisible=!isVisible"
-													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-													class="glyphicons glyphicon sd-tree-expand"></i>
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
 											</div>
 											<a title="" class="tree-node" aid="{{labelItem.name}}"> <i
 												class="js-icon pi pi-process-details"></i> <span>{{labelItem.name}}</span>
@@ -977,8 +983,8 @@
 												<div class="title-section">
 													<div class="expand-section" ng-show="true">
 														<i ng-click="isVisible=!isVisible"
-															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-															class="glyphicons glyphicon sd-tree-expand"></i>
+															ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+															class="pi"></i>
 													</div>
 													<div sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.restore,
@@ -997,8 +1003,8 @@
 															<div class="expand-section"
 																ng-show="genItem.allow.length > 0">
 																<i ng-click="isVisible=!isVisible"
-																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-																	class="glyphicons glyphicon sd-tree-expand"></i>
+																	ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+																	class="pi"></i>
 															</div>
 															<div sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
@@ -1009,7 +1015,7 @@
 																	ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
 																	ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
 																	title="" class="tree-node" aid="{{labelItem.id}}"> <i
-																	class="js-icon glyphicon glyphicon-ok-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+																	class="js-icon pi pi-allow {{iconClass}}"></i> <span>{{labelItem.name}}</span>
 																</a>
 															</div>
 														</div>
@@ -1040,8 +1046,8 @@
 															<div class="expand-section"
 																ng-show="genItem.deny.length >0">
 																<i ng-click="isVisible=!isVisible"
-																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-																	class="glyphicons glyphicon sd-tree-expand"></i>
+																	ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+																	class="pi"></i>
 															</div>
 															<div sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
@@ -1052,7 +1058,7 @@
 																	ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
 																	ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
 																	title="" class="tree-node" aid="{{labelItem.id}}"> <i
-																	class="js-icon glyphicon glyphicon-ban-circle {{iconClass}}"></i> <span
+																	class="js-icon pi pi-deny {{iconClass}}"></i> <span
 																	class="js-filterable">{{labelItem.name}}</span>
 																</a>
 															</div>
@@ -1098,8 +1104,8 @@
 						<div class="title-section">
 							<div class="expand-section" ng-show="true">
 								<i ng-click="isVisible=!isVisible"
-									ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-									class="glyphicons glyphicon sd-tree-expand"></i>
+									ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+									class="pi"></i>
 							</div>
 							<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
 								class="js-icon pi pi-process-details"></i> <span>{{labelItem.name}}</span>
@@ -1115,8 +1121,8 @@
 								<div class="title-section">
 									<div class="expand-section" ng-show="true">
 										<i ng-click="isVisible=!isVisible"
-											ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-											class="glyphicons glyphicon sd-tree-expand"></i>
+											ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+											class="pi"></i>
 									</div>
 									<div sd-context-menu
 										sda-menu-items="[{'value' :ctrl.labels.restore,
@@ -1137,8 +1143,8 @@
 											<div class="expand-section">
 												<i ng-click="isVisible=!isVisible"
 													ng-show="genItem.allow.length > 0"
-													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-													class="glyphicons glyphicon sd-tree-expand"></i>
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
 											</div>
 											<div sd-context-menu
 												sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
@@ -1149,7 +1155,7 @@
 													ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
 													ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
 													title="" class="tree-node" aid="{{labelItem.id}}"> <i
-													class="js-icon glyphicon glyphicon-ok-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+													class="js-icon pi pi-allow {{iconClass}}"></i> <span>{{labelItem.name}}</span>
 												</a>
 											</div>
 										</div>
@@ -1181,8 +1187,8 @@
 											<div class="expand-section">
 												<i ng-click="isVisible=!isVisible"
 													ng-show="genItem.deny.length > 0"
-													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-													class="glyphicons glyphicon sd-tree-expand"></i>
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
 											</div>
 											<div sd-context-menu
 												sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
@@ -1193,7 +1199,7 @@
 													ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
 													ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
 													title="" class="tree-node" aid="{{labelItem.id}}"> <i
-													class="js-icon glyphicon glyphicon-ban-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+													class="js-icon pi pi-deny {{iconClass}}"></i> <span>{{labelItem.name}}</span>
 												</a>
 											</div>
 										</div>
@@ -1227,8 +1233,8 @@
 										<div class="title-section">
 											<div class="expand-section" ng-show="true">
 												<i ng-click="isVisible=!isVisible"
-													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-													class="glyphicons glyphicon sd-tree-expand"></i>
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
 											</div>
 											<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
 												class="js-icon pi pi-process-details"></i> <span>{{labelItem.name}}</span>
@@ -1243,8 +1249,8 @@
 												<div class="title-section">
 													<div class="expand-section" ng-show="true">
 														<i ng-click="isVisible=!isVisible"
-															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-															class="glyphicons glyphicon sd-tree-expand"></i>
+															ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+															class="pi"></i>
 													</div>
 													<div sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.restore,
@@ -1262,8 +1268,8 @@
 														<div class="title-section">
 															<div class="expand-section" ng-show="true">
 																<i ng-click="isVisible=!isVisible"
-																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-																	class="glyphicons glyphicon sd-tree-expand"></i>
+																	ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+																	class="pi"></i>
 															</div>
 															<div sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
@@ -1274,7 +1280,7 @@
 																	ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
 																	ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
 																	title="" class="tree-node" aid="{{labelItem.id}}"> <i
-																	class="js-icon glyphicon glyphicon-ok-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+																	class="js-icon pi pi-allow {{iconClass}}"></i> <span>{{labelItem.name}}</span>
 																</a>
 															</div>
 														</div>
@@ -1305,8 +1311,8 @@
 															<div class="expand-section"
 																ng-show="genItem.deny.length >0">
 																<i ng-click="isVisible=!isVisible"
-																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-																	class="glyphicons glyphicon sd-tree-expand"></i>
+																	ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+																	class="pi"></i>
 															</div>
 															<div sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
@@ -1317,7 +1323,7 @@
 																	ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
 																	ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
 																	title="" class="tree-node" aid="{{labelItem.id}}"> <i
-																	class="js-icon glyphicon glyphicon-ban-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+																	class="js-icon pi pi-deny {{iconClass}}"></i> <span>{{labelItem.name}}</span>
 																</a>
 															</div>
 														</div>
@@ -1358,8 +1364,8 @@
 										<div class="title-section">
 											<div class="expand-section" ng-show="true">
 												<i ng-click="isVisible=!isVisible"
-													ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-													class="glyphicons glyphicon sd-tree-expand"></i>
+													ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+													class="pi"></i>
 											</div>
 											<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
 												class="js-icon pi pi-process-details"></i> <span>{{labelItem.name}}</span>
@@ -1374,8 +1380,8 @@
 												<div class="title-section">
 													<div class="expand-section" ng-show="true">
 														<i ng-click="isVisible=!isVisible"
-															ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-															class="glyphicons glyphicon sd-tree-expand"></i>
+															ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+															class="pi"></i>
 													</div>
 													<div sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.restore,
@@ -1394,8 +1400,8 @@
 															<div class="expand-section"
 																ng-show="genItem.allow.length > 0">
 																<i ng-click="isVisible=!isVisible"
-																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-																	class="glyphicons glyphicon sd-tree-expand"></i>
+																	ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+																	class="pi"></i>
 															</div>
 															<div sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
@@ -1406,7 +1412,7 @@
 																	ng-class="{'selected-custom':ctrl.selectedAllow.indexOf(genItem)>-1}"
 																	ng-click="ctrl.addSelectedPermission(genItem,$event,'allow')"
 																	title="" class="tree-node" aid="{{labelItem.id}}"> <i
-																	class="js-icon glyphicon glyphicon-ok-circle {{iconClass}}"></i> <span>{{labelItem.name}}</span>
+																	class="js-icon pi pi-allow {{iconClass}}"></i> <span>{{labelItem.name}}</span>
 																</a>
 															</div>
 														</div>
@@ -1437,8 +1443,8 @@
 															<div class="expand-section"
 																ng-show="genItem.deny.length >0">
 																<i ng-click="isVisible=!isVisible"
-																	ng-class="{'sd-tree-expand':!isVisible ,'sd-tree-collapse':isVisible }"
-																	class="glyphicons glyphicon sd-tree-expand"></i>
+																	ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
+																	class="pi"></i>
 															</div>
 															<div sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeAllParticipants,
@@ -1449,7 +1455,7 @@
 																	ng-class="{'selected-custom':ctrl.selectedDeny.indexOf(genItem)>-1}"
 																	ng-click="ctrl.addSelectedPermission(genItem,$event,'deny')"
 																	title="" class="tree-node" aid="{{labelItem.id}}"> <i
-																	class="js-icon glyphicon glyphicon-ban-circle {{iconClass}}"></i> <span
+																	class="js-icon pi pi-deny {{iconClass}}"></i> <span
 																	class="js-filterable">{{labelItem.name}}</span>
 																</a>
 															</div>

@@ -9,6 +9,11 @@ ul.sd-tree{
 	padding: 1em;
 }
 
+ul.sd-tree i:before,
+ul.sd-tree i:after{
+	font-style:normal;
+}
+
 ul.sd-tree , 
 .sd-tree ul
 {

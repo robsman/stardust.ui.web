@@ -161,6 +161,7 @@ button.pi{
 	border:none;
 	cursor:pointer;
 	color:#A69A88;
+	padding:3px;
 }
 
 button.pi:hover{
@@ -444,7 +445,8 @@ Icon implementations
 .pi-activity:before,
 .pi-activity-overview:before,
 .pi-manual-activity:before,
-.pi-non-interactive-activity:before{
+.pi-non-interactive-activity:before,
+.pi-cog:before{
 	font-family:FontAwesome;
 	content:"\f013"; /* fa-cog */
 }
@@ -1160,4 +1162,14 @@ Icon implementations
 .pi-email-go:before{
 	font-family:"FontAwesome";
 	content:'\f045'; /* fa-share-square-o */
+}
+
+.pi-allow:before{
+	font-family:"FontAwesome";
+	content:'\f05d'; /* fa-check-circle-o */
+}
+
+.pi-deny:before{
+	font-family:"FontAwesome";
+	content:'\f05e'; /* fa-ban */
 }
