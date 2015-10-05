@@ -24,9 +24,9 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			<ippui:view name="trafficLightViewNew"
 				include="/plugins/benchmark/html5/partials/views/trafficLightView.html"/>
 					
-			<ippui:view name="ganttChartViewNew"
+			<!-- <ippui:view name="ganttChartViewNew"
 				include="/plugins/benchmark/views/ganttChartViewFrameAdapter.xhtml"
-				controller="ganttChartViewNew" />
+				controller="ganttChartViewNew" /> -->
 				
 	 		<ippui:view name="benchmarkPanelView"
 				include="/plugins/benchmark/views/benchmarkPanel.xhtml" 
