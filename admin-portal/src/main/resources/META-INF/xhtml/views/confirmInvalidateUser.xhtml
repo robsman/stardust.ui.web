@@ -13,10 +13,12 @@
 					<pc:automationTag value="auto-ADM-PartMgmt-ConfInvalidateDlg-Header"/>
 					<ice:outputText value="#{userMgmtBean.messages['confirmInvalidate.title']}"
 						styleClass="headerText" />
-					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+					<ice:commandlLink title="#{common_msgPropsBean['common.close']}"
 						action="#{userMgmtBean.closePopup}"
 						immediate="true"
-						styleClass="windowClose" />
+						styleClass="windowClose icon-cmdLnk">
+						<ice:outputText styleClass="pi pi-dialog-close icon-lg icon-outTxt" />
+					</ice:commandlLink>
 				</ice:panelGroup>
 			</f:facet>
 		

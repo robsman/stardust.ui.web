@@ -56,15 +56,16 @@
 			<f:facet name="header">
 				<pc:automationTag value="auto-DT-ColSelector-Header"/>
 				<table cellpadding="0" cellspacing="0" width="100%"><tr>
-					<td>
+					<td> 
 						<ice:outputText value="#{filterPopup.title}"
 							styleClass="headerText" />
 					</td>
 					<td style="text-align: right">
 						<pc:automationTag value="auto-DT-ColSelector-CloseLink" standAlone="false"/>
-						<ice:commandButton title="#{common_msgPropsBean['common.filterPopup.close']}"
-							action="#{filterPopup.closePopup}"
-							styleClass="windowClose" />
+						<ice:commandLink title="#{common_msgPropsBean['common.filterPopup.close']}"
+							action="#{filterPopup.closePopup}" styleClass="icon-cmdLnk">
+							<ice:outputText styleClass="pi pi-dialog-close icon-lg icon-outTxt" />
+						</ice:commandLink>
 					</td>
 				</tr></table>
 			</f:facet>

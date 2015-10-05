@@ -6270,16 +6270,6 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	padding-right: 3px;
 }
 
-.popupDialogHdr .windowClose {
-	background-image:none;
-	background: url(./images/flat-icons/dialog-windowbttn-close.png) no-repeat !important;
-	border: none !important;
-	float: right;
-	padding-top: 6px;
-	padding-right: 10px;
-	cursor: pointer;
-}
-
 .popupDialogBody {
 	width: auto;
 	text-align: center;

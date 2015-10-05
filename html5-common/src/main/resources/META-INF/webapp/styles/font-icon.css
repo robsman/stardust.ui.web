@@ -72,3 +72,8 @@
     padding-top: 0px !important;
     padding-bottom: 0px !important;
 }
+
+/* Add this class where iceCmdLnk is used */
+.icon-cmdLnk:hover {
+	text-decoration: none !important;
+}

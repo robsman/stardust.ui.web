@@ -128,6 +128,14 @@ button.pi:disabled {
 	cursor:not-allowed;
 }
 
+.icon-cmdLnk, .icon-cmdLnk .pi {
+	color: #A69A88 !important;
+}
+
+.icon-cmdLnk:hover, .icon-cmdLnk:hover .pi {
+	color:#906C37 !important;
+}
+
 /*
 Utility classes for portal icons
 -----------------------------------------------------------
@@ -1053,4 +1061,9 @@ Icon implementations
 	font-family:"FontAwesome";
 	content:'\f04d'; /* fa-stop */
 	color: 'red'
+}
+
+.pi-dialog-close:before {
+	font-family: "FontAwesome";
+	content: "\f00d"; /* fa-times */
 }

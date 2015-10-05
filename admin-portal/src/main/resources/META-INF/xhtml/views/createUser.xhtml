@@ -16,10 +16,12 @@
 					<pc:automationTag value="auto-ADM-PartMgmt-UserPopupHeader"/>
 					<ice:outputText value="#{userProfileBean.headerTitle}" styleClass="headerText" />
 					<pc:automationTag value="auto-ADM-UserMgmt-UserPopup-CloseLink" standAlone="false"/>
-					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+					<ice:commandLink title="#{common_msgPropsBean['common.close']}"
 						action="#{userProfileBean.closePopup}"
 						immediate="true"
-						styleClass="windowClose" />
+						styleClass="windowClose icon-cmdLnk">
+						<ice:outputText styleClass="pi pi-dialog-close icon-lg icon-outTxt" />
+					</ice:commandLink>
 				</ice:panelGroup>
 			</f:facet>
 			<f:facet name="body">

@@ -103,12 +103,13 @@
 							styleClass="headerText" />
 					</td>
 					<td style="text-align: right">
-						<ice:commandButton
+						<ice:commandLink
 							action="#{filterPopup.closePopup}" immediate="true"
 							title="#{common_msgPropsBean['common.filterPopup.close']}"
-							styleClass="windowClose">
+							styleClass="windowClose icon-cmdLnk">
 							<pc:automationTag value="auto-DT-ColFilterClose" standAlone="false" />
-						</ice:commandButton>	
+							<ice:outputText styleClass="pi pi-dialog-close icon-lg icon-outTxt" />
+						</ice:commandLink>	
 					</td>
 				</tr></table>
 			</f:facet>

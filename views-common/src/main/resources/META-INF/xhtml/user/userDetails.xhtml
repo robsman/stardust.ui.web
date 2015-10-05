@@ -15,9 +15,11 @@
 					<ice:outputText
 						value="#{views_common_msgPropsBean['views.userDetails.title']}"
 						styleClass="headerText" />
-					<ice:commandButton title="#{views_common_msgPropsBean['common.close']}"
+					<ice:commandLink title="#{views_common_msgPropsBean['common.close']}"
 						action="#{userDetailsBean.closePopup}" immediate="true"
-						styleClass="windowClose" />
+						styleClass="windowClose icon-cmdLnk">
+						<ice:outputText styleClass="pi pi-dialog-close icon-lg icon-outTxt" />
+					</ice:commandLink>
 				</ice:panelGroup>
 			</f:facet>
 			<f:facet name="body">
