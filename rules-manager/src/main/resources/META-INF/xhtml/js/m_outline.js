@@ -114,7 +114,7 @@ define(
 								"elementId" : ruleSet.id,
 								"title": ruleSet.description
 							},
-							"data" : { title : ruleSet.name , icon : 'pi pi-rule-set icon-lg'}
+							"data" : { title : ruleSet.name , icon : 'pi pi-rule-set pi-lg'}
 						}, null, true);
 				jQuery(displayScope + "#outline").jstree("set_type", "ruleSet",
 						"#" + ruleSet.uuid);
@@ -132,7 +132,7 @@ define(
 								"draggable" : true,
 								"elementId" : decTable.id
 							},
-							"data" : { title : decTable.name , icon : 'pi pi-decision-table icon-lg icon-image'}
+							"data" : { title : decTable.name , icon : 'pi pi-decision-table pi-lg icon-image'}
 						}, null, true);
 			};
 			
@@ -148,7 +148,7 @@ define(
 								"draggable" : true,
 								"elementId" : techRule.id
 							},
-							"data" : { title : techRule.name , icon : 'pi pi-technical-rule icon-lg icon-image'}
+							"data" : { title : techRule.name , icon : 'pi pi-technical-rule pi-lg icon-image'}
 						}, null, true);
 			};
 			

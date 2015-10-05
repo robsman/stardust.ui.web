@@ -139,7 +139,7 @@ define(
 														create : false,
 														rename : {
 															label : I18NUtils.getProperty('reporting.definitionView.contextmenu.rename.label'), 
-															icon : "pi pi-rename icon-lg",
+															icon : "pi pi-rename pi-lg",
 															action : function(
 																	obj) {
 																jQuery(
@@ -153,7 +153,7 @@ define(
 														},
 														deleteReport : {
 															label : I18NUtils.getProperty('reporting.definitionView.contextmenu.delete.label'), // I18N
-															icon : "pi pi-delete icon-lg",
+															icon : "pi pi-delete pi-lg",
 															action : function(
 																	obj) {
 				                                       self.deleteElementAction(
@@ -186,7 +186,7 @@ define(
 														},
 														download : {
 															label : I18NUtils.getProperty('reporting.definitionView.contextmenu.download.label'), 
-															icon : "pi pi-download icon-lg",
+															icon : "pi pi-download pi-lg",
 															action : function(
 																	obj) {
 																var path = obj.attr("path")
@@ -195,7 +195,7 @@ define(
 														},
 														clone : {
                                              label : I18NUtils.getProperty('reporting.definitionView.contextmenu.clone.label'),
-                                             icon : "pi pi-clone icon-lg",
+                                             icon : "pi pi-clone pi-lg",
                                              action : function(
                                                    obj) {
                                                 self.openView("reportDefinitionView",
@@ -214,7 +214,7 @@ define(
                                           create : false,
                                           upload : {
                                              label : I18NUtils.getProperty('reporting.definitionView.contextmenu.upload.label'),
-                                             icon : "pi pi-upload icon-lg",
+                                             icon : "pi pi-upload pi-lg",
                                              action : function(
                                                    obj) {
                                                 scope = angular.element(document).scope();
@@ -645,7 +645,7 @@ define(
 							},
 							data : {
 								title: folder.name,
-								icon : "pi pi-folder icon-lg icon-image"
+								icon : "pi pi-folder pi-lg icon-image"
 							}
 						}, null, true);
 
@@ -679,7 +679,7 @@ define(
 																	title : reportDefinition.description
 																},
 																title : reportDefinition.name,
-																icon : "pi pi-report icon-lg icon-image"
+																icon : "pi pi-report pi-lg icon-image"
 															}
 														},
 														null,

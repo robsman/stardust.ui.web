@@ -36,6 +36,13 @@ Supported fonts we wrap for our portal icon (pi-) classes
 	-moz-osx-font-smoothing: grayscale; 
 }
 
+
+/* Sizing */
+.pi-lg {
+	font-size: 1.33333333em !important
+}
+
+
 /*
 portal icon badging stem, duped from starclipse
 ------------------------------------------------

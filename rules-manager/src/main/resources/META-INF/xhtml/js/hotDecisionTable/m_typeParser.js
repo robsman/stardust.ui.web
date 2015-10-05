@@ -35,11 +35,11 @@ define(["require",
    *************************************************/
   var contextName=m_urlUtils.getContextName();
   var attributeImage="pi pi-column-attribute",
-  	  attributeRootImage="pi pi-column-attributes icon-lg icon-image",
-	  seqImage="pi pi-column-attributes icon-lg icon-image",
-	  elementImage="pi pi-primitiv icon-lg icon-image",
-	  conditionImage="pi pi-column-conditions icon-lg icon-image",
-	  actionImage="pi pi-column-actions icon-lg icon-image",
+  	  attributeRootImage="pi pi-column-attributes pi-lg icon-image",
+	  seqImage="pi pi-column-attributes pi-lg icon-image",
+	  elementImage="pi pi-primitiv pi-lg icon-image",
+	  conditionImage="pi pi-column-conditions pi-lg icon-image",
+	  actionImage="pi pi-column-actions pi-lg icon-image",
   	  actionTitle=m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.root.actions","Actions"),
   	  conditionTitle=m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.root.conditions","Conditions"),
   	  attributeTitle=m_i18nUtils.getProperty("rules.propertyView.decisiontableview.dialog.addcolumn.tree.root.attributes","Attributes");

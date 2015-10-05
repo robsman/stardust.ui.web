@@ -371,7 +371,7 @@
 	    	var self = this;
 	    	trace.log('Worklist Item submitted for resubmission : '+rowItem.activityOID);
 	    	var title = sgI18nService.translate('views-common-messages.common-confirm', 'Confirm');
-	    	var html = '<span><i  class="sc sc-exclamation-circle popup-warning-icon icon-lg" ></i></span><span>'
+	    	var html = '<span><i  class="sc sc-exclamation-circle popup-warning-icon pi-lg" ></i></span><span>'
 	    		+ sgI18nService.translate('processportal.views-worklistPanel-resubmit-confirm',
 	    		'Reactivate the activity ?') + '</span>';
 	    	var options = {

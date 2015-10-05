@@ -786,11 +786,11 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 						'<span ng-repeat = "opt in ctrl.dialog.selectedAddresses" class="spacing-right "> '+
 							'<span class="selected_address" ng-click="ctrl.removeDialogAddress(opt)">'+
 								'<i class="glyphicon glyphicon-envelope spacing-right"></i> {{opt.name}}'+
-								'<i class="pi pi-close icon-lg"></i>'+
+								'<i class="pi pi-close pi-lg"></i>'+
 							'</span>'+
 						'</span >'+
 						'</div>'+
-						'<i class="pi pi-search icon-lg"> </i>	<input type="text"  class="spacing-right"  ng-model="ctrl.dialog.filter.address.value" ng-change="ctrl.addressTable.refresh();"/>'+
+						'<i class="pi pi-search pi-lg"> </i>	<input type="text"  class="spacing-right"  ng-model="ctrl.dialog.filter.address.value" ng-change="ctrl.addressTable.refresh();"/>'+
 						'<input class="correspondence_addressBook_fax_control" type="checkbox" ng-model="ctrl.dialog.filter.address.showFax" ng-change="ctrl.addressTable.refresh();"/>'+
 						'<span class="iceOutLbl">Fax </span>'+
 						'<div class="correspondence_addressBook_conatiner">'+

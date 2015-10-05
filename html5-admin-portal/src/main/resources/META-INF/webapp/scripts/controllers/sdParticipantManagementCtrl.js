@@ -372,9 +372,9 @@
       isSelected = " selected ";
     }
 
-    if (!item.type) { return "sc sc-fw icon-lg sc-spiral" + isSelected; } //model
+    if (!item.type) { return "sc sc-fw pi-lg sc-spiral" + isSelected; } //model
 
-    var styleClass = "sc sc-fw icon-lg ";
+    var styleClass = "sc sc-fw pi-lg ";
     switch (item.type) {
       case "ORGANIZATON_SCOPED_EXPLICIT": styleClass += "pi-org ";
         break;

@@ -32,7 +32,7 @@
 				params : '=sdaParams'
 			},
 			template : '<a href="#"  ng-click="docLinkCtrl.openDocument($event);">'
-					+ '<i ng-class="docLinkCtrl.mimeIcon" class="icon-lg"> </i> <span ng-bind="name"></span>'
+					+ '<i ng-class="docLinkCtrl.mimeIcon" class="pi-lg"> </i> <span ng-bind="name"></span>'
 					+ '</a>',
 			controller : [ '$scope', '$parse', '$attrs', 'sdUtilService', 'sdCommonViewUtilService', 'sdMimeTypeService',
 					DocumentLinkController ]
