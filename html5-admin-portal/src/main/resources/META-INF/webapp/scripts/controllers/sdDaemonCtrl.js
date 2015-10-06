@@ -33,6 +33,7 @@
 	 */
 	function controller(sdDaemonService, sdLoggedInUserService, sgI18nService, $filter, $q, sdDataTableHelperService,
 			sdLoggerService) {
+		
 		_sdDaemonService = sdDaemonService;
 		_sdLoggedInUserService = sdLoggedInUserService;
 		_sgI18nService = sgI18nService;
@@ -42,9 +43,6 @@
 		trace = sdLoggerService.getLogger('admin-ui.sdDaemonCtrl');
 
 		this.initialize();
-
-		// this.data = {};
-		this.lookup = {};
 
 		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
 		
@@ -92,7 +90,7 @@
 			}
 
 		}, function(error) {
-			trace.log(error);
+			trace.log("Error in fetching Daemons",error);
 		});
 	};
 
@@ -104,10 +102,6 @@
 		var result = {
 			list : self.data.list,
 			totalCount : self.data.totalCount
-		}
-
-		for (var i = 0, len = result.list.length; i < len; i++) {
-			self.lookup[result.list[i].type] = i;
 		}
 
 		return result;
@@ -157,13 +151,20 @@
 	 * 
 	 */
 	controller.prototype.updateDaemonStatus = function(resultDaemon) {
-		var itemRowIndex = this.lookup[resultDaemon.type];
-		var tableDaemonData = this.daemonDataTable.getData(itemRowIndex);
-		tableDaemonData.running = resultDaemon.running;
-		tableDaemonData.startTime = resultDaemon.startTime;
-		tableDaemonData.lastExecutionTime = resultDaemon.lastExecutionTime;
-		//tableDaemonData.acknowledgementState = resultDaemon.acknowledgementState;
-		tableDaemonData.daemonExecutionState = resultDaemon.daemonExecutionState;
+		var targetRow = null;
+		
+		for (var i = 0, len = this.daemonDataTable.getData().length; i < len; i++) {
+			if(this.daemonDataTable.getData()[i].type == resultDaemon.type) {
+				targetRow = this.daemonDataTable.getData()[i];
+				break;
+			}
+		}
+		if(targetRow) {
+			targetRow.running = resultDaemon.running;
+			targetRow.startTime = resultDaemon.startTime;
+			targetRow.lastExecutionTime = resultDaemon.lastExecutionTime;
+			targetRow.daemonExecutionState = resultDaemon.daemonExecutionState;
+		}
 	};
 
 })();
