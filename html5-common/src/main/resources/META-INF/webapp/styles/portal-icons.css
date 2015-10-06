@@ -1216,3 +1216,18 @@ Icon implementations
 	font-family:"FontAwesome";
 	content:'\f151'; /* fa-caret-square-o-up */
 }
+
+.pi-revised:before{
+	font-family:"FontAwesome";
+	content:'\f05c'; /* fa-times-circle-o  */
+	color: red !important;
+}
+
+.pi-clock:before { 
+	font-family: "FontAwesome";
+	content: '\f017'; /* fa-clock-o  */
+}
+
+.pi-disabled:before{
+	opacity : 0.4;
+}

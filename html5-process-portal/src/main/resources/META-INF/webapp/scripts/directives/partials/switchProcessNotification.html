@@ -5,12 +5,12 @@
 	</div>
 	<div id="infoSign" ng-if="!switchProcessController.switchProcess.switchCompleted">
 		<i ng-show="switchProcessController.abortNotification.totalCount === switchProcessController.processInstances.length" 
-			style="color: red;" class="glyphicon glyphicon-remove-sign"></i>
+			 class="pi pi-deny pi-lg pi-danger"></i>
 		<i ng-show="switchProcessController.abortNotification.totalCount < switchProcessController.processInstances.length" 
-			style="color: #D7AD01;" class="pi pi-information-circle pi-lg"></i>
+			 class="pi pi-information-circle pi-lg"></i>
 	</div>
 	<div id="infoSign" ng-if="switchProcessController.abortNotification.list == undefined">
-		<i style="color: red;" class="glyphicon glyphicon-remove-sign"></i>
+		<i  class="pi pi-deny pi-lg pi-danger"></i>
 	</div>
 	<div id="notificationBody" class="notification-body">
 		<div>

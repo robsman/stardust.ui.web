@@ -17,7 +17,7 @@
 			<button ng-click="processTableCtrl.recoverProcess(this, processTableCtrl.dataTable.getSelection())" aid="PP-ProcessTable-RecoverAll"
 			  title="{{i18n('views-common-messages.common-tooltip-recover')}}" 
 				ng-disabled="processTableCtrl.dataTable.getSelection() < 1" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
-				 <div class="sc-badge">
+				 <div class="pi-badge">
 				         <i class="pi pi-recover pi-lg" />
 				  </div>
 			</button>
@@ -198,7 +198,7 @@
 						<button ng-click="processTableCtrl.recoverProcess(this, rowData)" aid="PP-ProcessTable-RecoverAction"
 						    title="{{i18n('views-common-messages.common-tooltip-recover')}}" 
 							ng-disabled="!rowData.enableRecover" class="button-link tbl-toolbar-item tbl-tool-link" style="padding-left: 0px;">
-				            <div class="sc-badge">
+				            <div class="pi-badge">
 				                <i class="pi pi-recover pi-lg"></i>
 				            </div>
 						</button>

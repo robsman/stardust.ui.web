@@ -32,7 +32,7 @@
 	                '<i ng-show="criticalityCtrl.criticality.color == \'WHITE\'" '+
 	                    'class="pi pi-flag pi-lg criticality-flag-WHITE"></i>\n'+
 	                '<i ng-show="criticalityCtrl.criticality.color == \'WHITE_WARNING\'" '+
-	                	'class="glyphicon pi-lg criticality-flag-WHITE-WARNING glyphicon-exclamation-triangle"></i>\n' +
+	                	'class="pi pi-lg criticality-flag-WHITE-WARNING pi-information"></i>\n' +
 	             '</span>\n' +
 	        '</span>\n' +
          	'<div class="popup-dlg worklist-tooltip" style="color: black" ng-show="criticalityCtrl.toolTip.show">\n' +
