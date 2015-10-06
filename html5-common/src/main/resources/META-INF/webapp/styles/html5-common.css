@@ -106,7 +106,7 @@
 
 .popup-dlg-hdr {
 	border-bottom: 1px solid #CCCCCC;
-	padding: 5px;
+	padding: 5px 0px 5px 0px;
 }
 
 .popup-dlg-hdr-txt {
@@ -118,7 +118,6 @@
 
 .popup-dlg-cls {
 	float: right;
-	margin: 5px 0px 0px 10px;
 	cursor: pointer;
 }
 

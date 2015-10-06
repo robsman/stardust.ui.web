@@ -169,7 +169,7 @@ button.pi{
 	padding:3px;
 }
 
-button.pi:hover{
+button.pi:hover, button .pi:hover{
 	color:#906C37;
 }
 

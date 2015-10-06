@@ -122,7 +122,9 @@
 				'<div ng-if="$dtApi.showSelectColumns" class="popup-dlg">\n' +
 				'<div class="popup-dlg-hdr">\n' +
 					'<span class="popup-dlg-hdr-txt">{{i18n("portal-common-messages.common-filterPopup-selectColumnsLabel")}}</span>\n' + 
-					'<span class="popup-dlg-cls pi pi-close pi-lg" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()"></span>\n' +
+					'<button class="button-link popup-dlg-cls" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()">\n' +
+						'<i class="pi pi-close pi-lg" />\n' +
+					'</button>\n' +
 				'</div>\n' +
 				'<div class="popup-dlg-cnt tbl-col-selector">\n' +
 							'<div>\n' +
@@ -761,7 +763,9 @@
 							'<div class="popup-dlg-hdr">\n' +
 								'<span class="popup-dlg-hdr-txt">' +
 									'{{i18n("portal-common-messages.common-filterPopup-dataFilterByLabel")}} ' + col.title + '</span>\n' + 
-								'<span class="popup-dlg-cls pi pi-close pi-lg" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="' + toggleFilter + '"></span>\n' +
+								'<button class="button-link popup-dlg-cls" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="' + toggleFilter + '">\n' +
+									'<i class="pi pi-close pi-lg" />\n' +
+								'</button>\n' +
 							'</div>\n' +
 							'<div class="popup-dlg-cnt tbl-col-flt-dlg-cnt">\n' +
 								'<div ng-if="' + filterVisible + '">\n' + 
