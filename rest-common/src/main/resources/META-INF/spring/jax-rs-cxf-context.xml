@@ -52,7 +52,7 @@
          <bean class="org.eclipse.stardust.ui.web.rest.TrafficLightViewResource" /> 
          <bean class="org.eclipse.stardust.ui.web.rest.SchemaDefinitionResource" />        
          <bean class="org.eclipse.stardust.ui.web.rest.misc.RestResource" />
-         <bean class="org.eclipse.stardust.ui.web.rest.HeartBeatResource" />
+         <bean class="org.eclipse.stardust.ui.web.rest.SessionResource" />
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>
             <bean class="org.eclipse.stardust.ui.web.rest.exception.PortalRestExceptionMapper"/>
