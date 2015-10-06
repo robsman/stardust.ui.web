@@ -435,8 +435,7 @@
 	    		processesToAbort.push(item.processInstance);
 	    	});
 	    	self.processesToAbort = processesToAbort;
-
-	    	self.popoverDirective.show(event);
+	    	self.popoverDirective.show(event,151);
 	    };
 
 	    /*

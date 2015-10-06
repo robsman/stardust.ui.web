@@ -83,7 +83,7 @@
 					});
 				}
 
-				function handlePopoverClick(clkEvent, clickElem) {
+				function handlePopoverClick(clkEvent, clickElem , minWidth) {
 					// In case of ng-disabled, make sure the click is not activated
 					if (scope.popoverDisabled != true) {
 						
@@ -105,11 +105,11 @@
 									$(document).unbind('click', popoverCloseEvent);
 								} else if (scope.showPopover === true) {
 									popoverBodyContainer.css({'visibility': 'hidden'});
+									minWidth = minWidth || popoverBodyContainer.outerWidth();
 									$timeout(function() {
 										var xPos = clkEvent.pageX - 5;
 										var yPos = clkEvent.pageY + 5;
-										
-										var maxAllowedXPos = jQuery(window).width() - popoverBodyContainer.outerWidth();
+										var maxAllowedXPos = jQuery(window).width() - ( minWidth);
 										var maxAllowedYPos = jQuery(window).height() - popoverBodyContainer.outerHeight();
 										
 										if (xPos > maxAllowedXPos) {
@@ -139,9 +139,9 @@
 				
 				// API with open & close functions
 				function PopoverApi() {
-					this.show = function(event) {
+					this.show = function(event,minWidth) {
 						$timeout(function() {
-							handlePopoverClick(event, event.target);
+							handlePopoverClick(event, event.target, minWidth);
 						});
 					},
 					this.hide = function() {

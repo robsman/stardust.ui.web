@@ -23,8 +23,9 @@
 			        title="{{i18n('processportal.toolbars-worklistView-tooltip-abort')}}" class="button-link tbl-toolbar-item tbl-tool-link " ng-class="{'tbl-tool-joined-link' : activityTableCtrl.isActivityTableMode()}">
 			   <i class="pi pi-abort pi-lg"></i>
 			</button>
-			<button ng-if="activityTableCtrl.isActivityTableMode();" aid="PP-ActivityTable-AbortPopover" ng-click="activityTableCtrl.openAbortPopover($event)" ng-disabled="activityTableCtrl.dataTable.getSelection() < 1" 
+			<button ng-if="activityTableCtrl.isActivityTableMode();" aid="PP-ActivityTable-AbortPopover" ng-click="activityTableCtrl.openAbortPopover($event,null,141)" ng-disabled="activityTableCtrl.dataTable.getSelection() < 1" 
 					class="button-link tbl-toolbar-item tbl-tool-link" 
+					style="position:relative;"
 			        title ="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}">
 				<i class="pi pi-menu-dropdown"></i>
 			</button>
