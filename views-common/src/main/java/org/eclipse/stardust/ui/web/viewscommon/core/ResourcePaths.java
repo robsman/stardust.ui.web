@@ -68,11 +68,11 @@ public interface ResourcePaths
 
    static final String I_PROCESS_ATTACHMENT = "pi pi-process-attachments pi-lg";
    
-   static final String I_PROCESS_ATTACHMENT_BLANK = "/plugins/views-common/images/icons/document_set-blank-dropPanel.png";
-   static final String I_PROCESS_ATTACHMENT_FILLED = "/plugins/views-common/images/icons/document_set-filled-dropPanel.png";
+   static final String I_PROCESS_ATTACHMENT_BLANK = "pi pi-process-attachments-empty pi-lg";
+   static final String I_PROCESS_ATTACHMENT_FILLED = "pi pi-process-attachments pi-lg";
 
-   static final String I_NOTES_BLANK = "/plugins/views-common/images/icons/notes-blank-dropPanel.png";
-   static final String I_NOTES_FILLED = "/plugins/views-common/images/icons/notes-filled-dropPanel.png";
+   static final String I_NOTES_BLANK = "pi pi-notes-empty pi-lg";
+   static final String I_NOTES_FILLED = "pi pi-notes pi-lg";
    
    static final String I_NOTES = "pi pi-document-repository pi-lg";
 

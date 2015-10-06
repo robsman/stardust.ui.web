@@ -45,7 +45,7 @@
 			</ice:panelGroup>
 
 			<ice:commandLink rendered="#{activityDetailsBean.qaCodeIframeBean.qualityAssuranceActivityInstance}"
-				action="#{activityDetailsBean.completeQualityAssurancePass}">
+				action="#{activityDetailsBean.completeQualityAssurancePass}" style="margin-left: 5px;">
 				<pc:automationTag value="auto-PP-ActivityPnl-Toolbar-QAPass" standAlone="false"/>
 				<ice:outputText
 					styleClass="pi pi-qa-passed icong-lg"
@@ -53,7 +53,7 @@
 			</ice:commandLink>
 			
 			<ice:commandLink rendered="#{activityDetailsBean.qaCodeIframeBean.qualityAssuranceActivityInstance}"
-				action="#{activityDetailsBean.completeQualityAssuranceFail}">
+				action="#{activityDetailsBean.completeQualityAssuranceFail}" style="margin-left: 5px;">
 				<pc:automationTag value="auto-PP-ActivityPnl-Toolbar-QAFail" standAlone="false"/>
 				<ice:outputText
 					styleClass="pi pi-qa-failed icong-lg"
@@ -61,7 +61,7 @@
 			</ice:commandLink>
 			
 			<ice:commandLink rendered="#{!activityDetailsBean.qaCodeIframeBean.qualityAssuranceActivityInstance}"
-				actionListener="#{activityDetailsBean.completeAction}">
+				actionListener="#{activityDetailsBean.completeAction}" style="margin-left: 5px;">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarComplete" standAlone="false"/>
 				<ice:outputText
 					styleClass="pi pi-activity-complete pi-lg"
@@ -70,10 +70,9 @@
 
 			<ice:commandLink
 				actionListener="#{activityDetailsBean.suspendAction}"
-				immediate="true">
+				immediate="true" style="margin-left: 8px;">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarSuspend" standAlone="false"/>
                 <ice:outputText
-                	style="padding-left: 2px;"
 					styleClass="pi pi-undo pi-lg"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.suspend']}"/>
 					
@@ -88,11 +87,10 @@
 			</ice:commandLink>
 
 			<ice:commandLink actionListener="#{activityDetailsBean.saveAction}"
-				disabled="#{activityDetailsBean.qualityAssuranceActivity}">
+				disabled="#{activityDetailsBean.qualityAssuranceActivity}" style="margin-left: 8px;">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarSave"
 					standAlone="false" />
 				<ice:outputText
-					style="padding-left: 2px;"
 					styleClass="#{activityDetailsBean.qualityAssuranceActivity ? 'iceCmdBtn-dis' : 'toolbar-button-suspend-save'} pi pi-save pi-lg"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.suspendAndSave']}" />
 			
@@ -108,7 +106,7 @@
 
 			<ice:commandLink
 				actionListener="#{activityDetailsBean.resubmitAction}"
-				immediate="true" rendered="#{activityDetailsBean.resubmitable}">
+				immediate="true" rendered="#{activityDetailsBean.resubmitable}" style="margin-left: 5px;">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarResubmit" standAlone="false"/>
 				<ice:outputText
 					styleClass="pi pi-resubmit pi-lg"
@@ -117,7 +115,7 @@
 			
 			<ice:commandLink
 				actionListener="#{activityDetailsBean.openDelegateDialog}"
-				disabled="#{!activityDetailsBean.delegable}">
+				disabled="#{!activityDetailsBean.delegable}" style="margin-left: 5px;">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarDelegate" standAlone="false"/>
 				<ice:outputText
 					styleClass="#{!activityDetailsBean.delegable ? 'iceCmdBtn-dis' : ''} pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top"
@@ -127,7 +125,7 @@
 			</ice:commandLink>
 
 			<ice:commandLink actionListener="#{activityDetailsBean.abortAction}"
-				immediate="true" disabled="#{!activityDetailsBean.abortable}">
+				immediate="true" disabled="#{!activityDetailsBean.abortable}" style="margin-left: 5px;">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarAbort" standAlone="false"/>
 				<ice:outputText
 					styleClass="#{!activityDetailsBean.abortable ? 'iceCmdBtn-dis' : ''} pi pi-activity-abort pi-lg"
@@ -147,7 +145,7 @@
 
 			<ice:commandLink action="#{activityDetailsBean.openRelocationDialog}"
 				rendered="#{activityDetailsBean.relocationEligible}"
-				immediate="true" >
+				immediate="true" style="margin-left: 5px;">
 				<ice:outputText
 					styleClass="pi pi-rotate-right pi-lg"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.relocation.relocate']}" />
@@ -156,10 +154,10 @@
 			<ice:panelGroup rendered="#{activityDetailsBean.caseEnabled}">
 				<ice:commandLink
 					action="#{activityDetailsBean.toggleCaseIframePopup}"
-					style="padding:0px;" immediate="true"
-					title="#{views_common_msgPropsBean['views.case.tooltip.menu']}">
+					immediate="true"
+					title="#{views_common_msgPropsBean['views.case.tooltip.menu']}" style="margin-left: 5px;">
 					<pc:automationTag value="auto-PP-ActivityPnl-ToolbarCase" standAlone="false"/>
-					<ice:outputText 
+					<ice:outputText
 						styleClass="pi pi-case pi-lg">
 						<ice:outputText styleClass="pi pi-menu-dropdown pi-sm" />
 					</ice:outputText>
@@ -167,7 +165,7 @@
 				<div id="ippCaseAnchor" style="width: 1px; height: 1px;"></div>
 			</ice:panelGroup>
 
-			<ice:commandLink action="#{spawnProcessDialogBean.openPopup}" rendered="#{activityDetailsBean.enableSpawnProcess}">								
+			<ice:commandLink action="#{spawnProcessDialogBean.openPopup}" rendered="#{activityDetailsBean.enableSpawnProcess}" style="margin-left: 5px;">								
 				<ice:outputText
 					styleClass="#{activityDetailsBean.enableSpawnProcess ? '': 'iceCmdBtn-dis'} pi pi-process pi-lg"
 					title="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}">
@@ -177,12 +175,11 @@
 					value="#{activityDetailsBean.activityInstance.processInstanceOID}" />					
 			</ice:commandLink>
 			
-			<ice:commandLink action="#{ippPortalApp.openView}" immediate="true">
+			<ice:commandLink action="#{ippPortalApp.openView}" immediate="true" style="margin-left: 5px;">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarProcDetails" standAlone="false"/>
 				<ice:outputText
 					styleClass="pi pi-process pi-lg"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.processContextExplorer']}">
-					<h:outputText styleClass="pi pi-information pi-bottom pi-right pi-sm" title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.processContextExplorer']}"/>	
 				</ice:outputText>
 				<f:param name="viewId" value="processInstanceDetailsView" />
 				<f:param name="nested" value="true" />

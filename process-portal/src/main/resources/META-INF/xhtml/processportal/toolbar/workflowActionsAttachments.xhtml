@@ -21,16 +21,16 @@
 				action="#{ippActivityPanelController.toggleNotesIframePopup}"
 				title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.notes']}">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarNotes" standAlone="false"/>
-				<ice:graphicImage value="#{ippActivityPanelController.notesIcon}"/> 
+				<ice:outputText styleClass="#{ippActivityPanelController.notesIcon}" />
 			</ice:commandLink>
 			<div id="ippNotesAnchor" style="width: 1px; height: 1px;"></div>
 		</ice:panelGroup>
-		<ice:panelGroup rendered="#{ippActivityPanelController.supportsProcessAttachments or ippActivityPanelController.supportsProcessDocuments}">			
+		<ice:panelGroup rendered1="#{ippActivityPanelController.supportsProcessAttachments or ippActivityPanelController.supportsProcessDocuments}" style="margin-left: 8px;">			
 			<ice:commandLink immediate="true"
 				action="#{ippActivityPanelController.toggleProcessAttachmentsIframePopup}"
 				title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.processDocuments']}">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarProcAttach" standAlone="false"/>
-				<ice:graphicImage value="#{ippActivityPanelController.processAttachmentsIcon}" /> 
+				<ice:outputText styleClass="#{ippActivityPanelController.processAttachmentsIcon}" />
 			</ice:commandLink>
 			<div id="ippProcessAttachmentsAnchor" style="width: 1px; height: 1px;"></div>
 		</ice:panelGroup>

@@ -896,6 +896,11 @@ Icon implementations
 	content:'\F04E'; /* sc-documents-text-o */
 }
 
+.pi-process-attachments-empty:before{
+	font-family: "starclipse";
+	content:'\F04C'; /* sc-documents-o */
+}
+
 .pi-favorite:before{
 	font-family:"FontAwesome";
 	content:"\f005"; /* fa-star */
