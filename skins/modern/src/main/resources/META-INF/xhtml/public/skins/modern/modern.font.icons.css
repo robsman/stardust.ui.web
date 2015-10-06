@@ -19,6 +19,13 @@
 /**************************FONT IMPORTS START****************************/
 /************************************************************************/
 
+.tbl-tool-bar-style,
+.tbl-tool-bar-style-dis {
+    margin-right: 6px;
+    padding: 0px;
+    cursor: pointer;
+}
+
 /** Icefaces DataExporter tag   **/
 .export a,
 .exportAsExcel a,
@@ -60,7 +67,19 @@
 .unbindRepoVrtItem a img,
 .unbindRepoVrtItem-dis span img,
 .propertiesVrtItem a img,
-.detachFileVrtItem a img {
+.detachFileVrtItem a img,
+.cutVrtItem a img,
+.cutVrtItem span img,
+.pasteVrtItem a img,
+.pasteVrtItem-dis span img,
+.pageUpVrtItem a img,
+.pageUpVrtItem-dis span img,
+.pageDownVrtItem a img,
+.pageDownVrtItem-dis span img,
+.reversePageVrtItem a img,
+.reversePageVrtItem-dis span img,
+.addBookmarkVrtItem a img,
+.addBookmarkVrtItem-dis span img {
     background-image: none !important;
     position: absolute;
     margin-left: -15px;
@@ -233,7 +252,79 @@
     font-family: FontAwesome;
     font-size: 16px;
     content: "\f180";
-}	
+}
+
+.cutVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f0c4";
+}
+
+.cutVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f0c4";
+}		
+
+.pasteVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f0ea";
+}
+
+.pasteVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f0ea";
+}
+
+.pageUpVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f062";
+}
+
+.pageUpVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f062";
+}
+
+.pageDownVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f063";
+}
+
+.pageDownVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f063";
+}
+
+.reversePageVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f021";
+}
+
+.reversePageVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f021";
+}
+
+.addBookmarkVrtItem a:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f097";
+}
+
+.addBookmarkVrtItem-dis > span:before{
+    font-family: FontAwesome;
+    font-size: 12px;
+    content: "\f097";
+}
 
 
 
