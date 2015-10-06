@@ -134,7 +134,7 @@
       if (angular.isDefined(self.dataTable)) {
         self.dataTable.refresh(true);
         if (!init) {
-          self.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
+          self.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.success"), "info");
         }
       }
     }, function(error) {
