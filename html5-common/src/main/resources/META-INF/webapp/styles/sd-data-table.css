@@ -39,17 +39,17 @@
 
 .tbl-hdr-col.sorting {
 	cursor: pointer;
-	background: transparent url("../images/icons/arrows-ud-10X16.png") no-repeat scroll 100% 90%;
+	background: none;
 }
 
 .tbl-hdr-col.sorting_asc {
 	cursor: pointer;
-	background: transparent url("../images/icons/arrows-ud-d10X16.png") no-repeat scroll 100% 90%;
+	background: none;
 }
 
 .tbl-hdr-col.sorting_desc {
 	cursor: pointer;
-	background: transparent url("../images/icons/arrows-ud-u10X16.png") no-repeat scroll 100% 90%;
+	background: none;
 }
 
 .tbl-hdr-col-label {

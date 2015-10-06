@@ -1231,3 +1231,23 @@ Icon implementations
 .pi-disabled:before{
 	opacity : 0.4;
 }
+
+.tbl-hdr-col.sorting .pi-tbl-sort, .tbl-hdr-col.sorting_desc .pi-tbl-sort, .tbl-hdr-col.sorting_asc .pi-tbl-sort {
+	float: right;
+    margin-right: -15px;
+}
+
+.tbl-hdr-col.sorting .pi-tbl-sort:before {
+	font-family: "FontAwesome";
+    content: "\f0dc"; /* fa-sort */
+}
+	
+.tbl-hdr-col.sorting_desc .pi-tbl-sort:before {
+	font-family: "FontAwesome";
+	content: "\f0dd"; /* fa-sort-desc */
+}
+
+.tbl-hdr-col.sorting_asc .pi-tbl-sort:before {
+	font-family: "FontAwesome";
+    content: "\f0de"; /* fa-sort-asc */
+}

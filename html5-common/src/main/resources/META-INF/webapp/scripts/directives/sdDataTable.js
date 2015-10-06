@@ -778,7 +778,10 @@
 				var columnHeader = 
 					'<div>\n' + 
 						'<div class="tbl-col-flt-wrapper">' + filterMarkup + '</div>\n' +
-						'<div class="tbl-hdr-col-label">' + col.title + '</div>\n' +
+						'<div>\n' + 
+							'<span class="tbl-hdr-col-label">' + col.title + '</span>' + 
+							'<span class="pi pi-tbl-sort pi-lg" />' +
+						'</div>\n' +
 					'</div>';
 
 				var hCol = angular.element(headCols[i]);
