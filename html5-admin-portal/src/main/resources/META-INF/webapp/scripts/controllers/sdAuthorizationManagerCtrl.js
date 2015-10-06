@@ -670,11 +670,6 @@
     
     //Final test, 
     if(isScopedPresent && !(isAllowModelOnly && isDenyModelOnly)){
-    	
-    	self.$timeout(function(){
-    		self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.scoped.error"));
-    	},0);
-    	
     	return;
     }
     
