@@ -941,26 +941,20 @@ define(
 															.attr("elementId"));
 												}
 											},
-											"deploy" : {
+											"deployNewVersion" : {
 												"label" : m_i18nUtils
-														.getProperty("modeler.outline.model.contextMenu.deploy"),
-												"submenu": {
-													"newVersion" : {
-														"label" : m_i18nUtils
-														.getProperty("modeler.outline.model.contextMenu.deploy.createNewVersion"),
-														"action" : function(obj) {
-															deployModel(obj
-																	.attr("id"));
-														}
-													},
-													"overwrite" : {
-														"label" : m_i18nUtils
-														.getProperty("modeler.outline.model.contextMenu.deploy.overwriteLastVersion"),
-														"action" : function(obj) {
-															deployModel(obj
-																	.attr("id"), true);
-														}
-													}
+												.getProperty("modeler.outline.model.contextMenu.deploy.createNewVersion"),
+												"action" : function(obj) {
+													deployModel(obj
+															.attr("id"));
+												}
+											},
+											"deployOverwriteLast" : {
+												"label" : m_i18nUtils
+												.getProperty("modeler.outline.model.contextMenu.deploy.overwriteLastVersion"),
+												"action" : function(obj) {
+													deployModel(obj
+															.attr("id"), true);
 												}
 											},
 											"download" : {
