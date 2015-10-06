@@ -152,7 +152,7 @@
 						'</div>\n' +
 				'</div>\n' +
 				'<span ng-if="$dtApi.enableExportCSV" sd-popover="$dtApi.exportPopoverHandle" sda-class="tbl-tool-link">' +
-					'<i class="pi pi-menu-dropdown button-link tbl-toolbar-item tbl-tool-link"></i>\n' +
+					'<i class="pi pi-menu-dropdown"></i>\n' +
 					'<div class="popover-body">\n' +
 						'<div><a href="" ng-hide="!$dtApi.enableSelectColumns" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})">' + 
 							'{{i18n(\'html5-common.export-options-current-page-current-fields\')}}\n' +
