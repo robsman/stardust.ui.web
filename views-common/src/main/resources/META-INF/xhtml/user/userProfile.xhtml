@@ -357,19 +357,10 @@
 										<f:selectItem itemValue="MyComputer"
 											itemLabel="#{messages_admin['views.createUser.mySignaturePanel.option.myComputer.label']}" />
 									</ice:selectOneRadio>
-									<ice:panelGroup styleClass="clearing" />
-									<ice:panelGroup
-										rendered="#{userProfileBean.mySignaturePreference.noPictureSelected}">
-										<ice:outputText
-											value="#{messages_admin['views.createUser.mySignaturePanel.signaturePreview']}"
-											styleClass="label-form" />
-										<ice:panelGroup styleClass="clearing" />
-										<ice:graphicImage
-											url="/plugins/views-common/images/icons/user-default.png"
-											height="128px" width="128px" />
-									</ice:panelGroup>
+									
 									<ice:panelGroup
 										rendered="#{userProfileBean.mySignaturePreference.myComputerSelected}">
+										<ice:panelGroup styleClass="clearing" />
 										<ice:inputFile id="imageSignatureUploadComponent"
 											label="#{views_common_msgPropsBean['views.myDocumentsTreeView.fileUploadDialog.upload']}"
 											actionListener="#{userProfileBean.mySignaturePreference.uploadActionListener}" />
@@ -387,20 +378,21 @@
 											<ice:outputText
 												value="#{messages_admin['views.createUser.mySignaturePanel.option.myComputerGuidancetext']}" />
 										</ice:panelGrid>
-
-										<ice:panelGroup styleClass="clearing" />
-										<ice:panelGroup styleClass="clearing" />
-										<ice:panelGroup>
-											<ice:outputText
-												value="#{messages_admin['views.createUser.mySignaturePanel.signaturePreview']}"
-												styleClass="label-form" />
-										</ice:panelGroup>
-										<ice:panelGroup styleClass="clearing" />
-										<ice:panelGroup>
-											<ice:graphicImage
-												value="#{userProfileBean.mySignaturePreference.currentImage}"
-												alt="#{messages_admin['views.createUser.myPicturePanel.picturePreview.noImage']}"
-												height="128px" width="128px" />
+										<ice:panelGroup rendered="#{userProfileBean.mySignaturePreference.currentImageNotEmpty}">
+											<ice:panelGroup styleClass="clearing" />
+											<ice:panelGroup styleClass="clearing" />
+											<ice:panelGroup>
+												<ice:outputText
+													value="#{messages_admin['views.createUser.mySignaturePanel.signaturePreview']}"
+													styleClass="label-form" />
+											</ice:panelGroup>
+											<ice:panelGroup styleClass="clearing" />
+											<ice:panelGroup >
+												<ice:graphicImage
+													value="#{userProfileBean.mySignaturePreference.currentImage}"
+													alt="#{messages_admin['views.createUser.myPicturePanel.picturePreview.noImage']}"
+													style="max-height :128px; max-width : 128px;"  />
+											</ice:panelGroup>
 										</ice:panelGroup>
 									</ice:panelGroup>
 									<ice:panelGroup styleClass="clearing" />
