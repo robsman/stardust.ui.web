@@ -70,6 +70,7 @@
 		this.selectedDrillDown = "PROCESS_WORKITEM";
 		this.dayOffset = 0;
 		this.selectedDateType = "BUSINESS_DATE";
+		this.selectedBOType = "PROCESSES";
 
 		this.bOInstanceMap = {};
 		this.bOPrimaryKeyMap = {};
@@ -391,6 +392,29 @@
 		}
 		
 	};
+	/**
+	 * This methos will be used for showing process or activity table for business objects.
+	 */
+	TrafficLightViewController.prototype.setDataForBOProcessActivityTable = function(instanceOids){
+		var self = this;
+		self.instanceOids = instanceOids;
+		if(self.selectedBOType == "ACTIVITIES"){
+			if (self.activityDataTable != undefined) {
+				self.activityDataTable.refresh();
+			} else {
+				self.showActivityTable = true;
+				self.showProcessTable = false;
+				
+			}
+		}else{
+			if (self.processDataTable != undefined) {
+				self.processDataTable.refresh();
+			} else {
+				self.showProcessTable = true;
+				self.showActivityTable = false;
+			}			
+		}
+	}
 
 	/**
 	 * 
@@ -399,15 +423,26 @@
 	 */
 	TrafficLightViewController.prototype.getProcesslistForTLV = function(params) {
 		var self = this;
-		var query = {
-			'options' : params.options,
-			'bOids' : self.queryData.bOids,
-			'dateType' : self.queryData.dateType,
-			'dayOffset' : self.queryData.dayOffset,
-			'benchmarkCategory' : self.selectedBenchmarkCategory,
-			'processIds' : self.selectedProcessIds,
-			'state' : self.state
-		};
+		var query = {};
+		if(self.selectedDrillDown == "PROCESS_WORKITEM"){
+			query = {
+					'options' : params.options,
+					'bOids' : self.queryData.bOids,
+					'dateType' : self.queryData.dateType,
+					'dayOffset' : self.queryData.dayOffset,
+					'benchmarkCategory' : self.selectedBenchmarkCategory,
+					'processIds' : self.selectedProcessIds,
+					'state' : self.state,
+					'drillDownType' : self.selectedDrillDown
+				};
+		}else{
+			 query = {
+					'options' : params.options,
+					'oids' : self.instanceOids,
+					'drillDownType' : self.selectedDrillDown
+				};
+		}
+		
 
 		var deferred = _q.defer();
 		self.processList = {};
@@ -452,7 +487,9 @@
 
 		return deferred.promise;
 	};
-
+    /**
+     * 
+     */
 	TrafficLightViewController.prototype.drillDownChange = function() {
 		var self = this;
 		if (self.selectedDrillDown == 'BUSINESS_OBJECT') {

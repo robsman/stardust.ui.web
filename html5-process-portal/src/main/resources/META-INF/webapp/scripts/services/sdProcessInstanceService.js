@@ -130,13 +130,18 @@
 			restUrl = restUrl + separator + queryParams.substr(1);
 		    }
 		    var postData = sdDataTableHelperService.convertToPostParams(query.options);
-
-		    postData.bOids = query.bOids;
-		    postData.dateType = query.dateType;
-		    postData.dayOffset = query.dayOffset;
-		    postData.benchmarkCategory = query.benchmarkCategory;
-		    postData.processIds = query.processIds;
-		    postData.state = query.state;
+		    postData.drillDownType = query.drillDownType;
+            if(query.drillDownType == "PROCESS_WORKITEM"){
+            	postData.bOids = query.bOids;
+    		    postData.dateType = query.dateType;
+    		    postData.dayOffset = query.dayOffset;
+    		    postData.benchmarkCategory = query.benchmarkCategory;
+    		    postData.processIds = query.processIds;
+    		    postData.state = query.state;
+            }else{
+            	postData.oids = query.oids;
+            }
+		    
 		    
 		    var processList = $resource(restUrl, {
 

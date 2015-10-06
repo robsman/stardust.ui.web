@@ -1,5 +1,7 @@
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
+import java.util.Set;
+
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 
 @DTOClass
@@ -9,6 +11,7 @@ public class BenchmarkCategoryDTO extends AbstractDTO implements Comparable<Benc
    public int index;
    public String name;
    public Long count;
+   public Set<Long> instanceOids;
    @Override
    public int hashCode()
    {

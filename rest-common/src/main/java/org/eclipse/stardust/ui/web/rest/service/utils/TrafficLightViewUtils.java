@@ -514,7 +514,9 @@ public class TrafficLightViewUtils
       BenchmarkBusinessObjectStatistics stats = (BenchmarkBusinessObjectStatistics) serviceFactoryUtils
             .getQueryService().getAllProcessInstances(query);
       BenchmarkTLVStatisticsByBOResultDTO bTLVStatsByBOResultDTO = new BenchmarkTLVStatisticsByBOResultDTO();
-
+      
+      BusinessObjectStatisticDTO totalBOSDTO = getTotalForBOProcessStatistic(benchmarkCategories,stats);
+      
       Set<String> groupByValues = stats.getGroupByValues();
       if (!(groupByValues.size() == 1 && groupByValues.contains(BenchmarkBusinessObjectStatistics.NO_GROUPBY_VALUE)))
       {
@@ -526,16 +528,22 @@ public class TrafficLightViewUtils
                BusinessObjectStatisticDTO boGroupLevel = new BusinessObjectStatisticDTO();
                boGroupLevel.name = groupByName;
                boGroupLevel.isGroup = true;
+               
                boGroupLevel.abortedCount = stats.getAbortedCount(groupByName, null);
+               boGroupLevel.abortedInstanceOids = stats.getAbortedInstanceOIDs(groupByName, null);
+               
                boGroupLevel.completedCount = stats.getCompletedCount(groupByName, null);
+               boGroupLevel.completedInstanceOids = stats.getCompletedInstanceOIDs(groupByName, null);
+                     
                boGroupLevel.totalCount = boGroupLevel.abortedCount + boGroupLevel.completedCount;
-               Map<String, BenchmarkCategoryDTO> benchmarkCategoryCountMap = new HashMap<String, BenchmarkCategoryDTO>();
-               for (BenchmarkCategoryDTO benchmarkCategory : benchmarkCategories)
-               {
-                  benchmarkCategory.count = stats.getBenchmarkCategoryCount(groupByName, null, benchmarkCategory.index);
-                  boGroupLevel.totalCount = boGroupLevel.totalCount + benchmarkCategory.count;
-                  benchmarkCategoryCountMap.put(benchmarkCategory.name, benchmarkCategory);
-               }
+               Set<Long> totalInstanceOids = new HashSet<Long>();
+               totalInstanceOids.addAll(boGroupLevel.abortedInstanceOids);
+               totalInstanceOids.addAll(boGroupLevel.completedInstanceOids);
+               
+               
+               Map<String, BenchmarkCategoryDTO> benchmarkCategoryCountMap = populateBenchmarkCategoryForBusinessObject(benchmarkCategories, stats, groupByName, null, boGroupLevel, totalInstanceOids);
+               
+               boGroupLevel.totalInstanceOids = totalInstanceOids;
                boGroupLevel.benchmarkCategoryCountMap = benchmarkCategoryCountMap;
                businessObjectsResultList.add(boGroupLevel);
 
@@ -544,26 +552,9 @@ public class TrafficLightViewUtils
                {
                   Map<String, List<BusinessObjectStatisticDTO>> businessObjectsForGroupByMap = new HashMap<String, List<BusinessObjectStatisticDTO>>();
                   List<BusinessObjectStatisticDTO> boFilterLevelList = new ArrayList<BusinessObjectStatisticDTO>();
-                  for (String filterValueName : filterValues)
-                  {
-                     BusinessObjectStatisticDTO boFilterLevel = new BusinessObjectStatisticDTO();
-                     boFilterLevel.name = filterValueName;
-                     boFilterLevel.parentId = groupByName;
-                     boFilterLevel.isGroup = false;
-                     boFilterLevel.abortedCount = stats.getAbortedCount(groupByName, filterValueName);
-                     boFilterLevel.completedCount = stats.getCompletedCount(groupByName, filterValueName);
-                     boFilterLevel.totalCount = boFilterLevel.abortedCount + boFilterLevel.completedCount;
-                     Map<String, BenchmarkCategoryDTO> benchmarkCategoryCountMapFilterLevel = new HashMap<String, BenchmarkCategoryDTO>();
-                     for (BenchmarkCategoryDTO benchmarkCategory : benchmarkCategories)
-                     {
-                        benchmarkCategory.count = stats.getBenchmarkCategoryCount(groupByName, filterValueName,
-                              benchmarkCategory.index);
-                        boFilterLevel.totalCount = boFilterLevel.totalCount + benchmarkCategory.count;
-                        benchmarkCategoryCountMapFilterLevel.put(benchmarkCategory.name, benchmarkCategory);
-                     }
-                     boFilterLevel.benchmarkCategoryCountMap = benchmarkCategoryCountMapFilterLevel;
-                     boFilterLevelList.add(boFilterLevel);
-                  }
+                  
+                  populateFilterValuesCount(benchmarkCategories, stats, boFilterLevelList, groupByName, filterValues);
+                  
                   businessObjectsForGroupByMap.put(groupByName, boFilterLevelList);
                   bTLVStatsByBOResultDTO.businessObjectsForGroupByMap = businessObjectsForGroupByMap;
                }
@@ -574,29 +565,14 @@ public class TrafficLightViewUtils
                Set<String> filterValues = stats.getFilterValues(null);
                if (!filterValues.isEmpty())
                {
-                  for (String filterValueName : filterValues)
-                  {
-                     BusinessObjectStatisticDTO boFilterLevel = new BusinessObjectStatisticDTO();
-                     boFilterLevel.name = filterValueName;
-                     boFilterLevel.isGroup = false;
-                     boFilterLevel.abortedCount = stats.getAbortedCount(null, filterValueName);
-                     boFilterLevel.completedCount = stats.getCompletedCount(null, filterValueName);
-                     boFilterLevel.totalCount = boFilterLevel.abortedCount + boFilterLevel.completedCount;
-                     Map<String, BenchmarkCategoryDTO> benchmarkCategoryCountMapFilterLevel = new HashMap<String, BenchmarkCategoryDTO>();
-                     for (BenchmarkCategoryDTO benchmarkCategory : benchmarkCategories)
-                     {
-                        benchmarkCategory.count = stats.getBenchmarkCategoryCount(null, filterValueName,
-                              benchmarkCategory.index);
-                        boFilterLevel.totalCount = boFilterLevel.totalCount + benchmarkCategory.count;
-                        benchmarkCategoryCountMapFilterLevel.put(benchmarkCategory.name, benchmarkCategory);
-                     }
-                     boFilterLevel.benchmarkCategoryCountMap = benchmarkCategoryCountMapFilterLevel;
-                     businessObjectsResultList.add(boFilterLevel);
-                  }
+                  populateFilterValuesCount(benchmarkCategories, stats, businessObjectsResultList, null,
+                        filterValues);
                }
             }
-            bTLVStatsByBOResultDTO.businessObjectsResultList = businessObjectsResultList;
+            
          }
+         businessObjectsResultList.add(0, totalBOSDTO);
+         bTLVStatsByBOResultDTO.businessObjectsResultList = businessObjectsResultList; 
       }
       else
       {
@@ -604,28 +580,109 @@ public class TrafficLightViewUtils
          if (!filterValues.isEmpty())
          {
             List<BusinessObjectStatisticDTO> boFilterLevelList = new ArrayList<BusinessObjectStatisticDTO>();
-            for (String filterValueName : filterValues)
-            {
-               BusinessObjectStatisticDTO boFilterLevel = new BusinessObjectStatisticDTO();
-               boFilterLevel.name = filterValueName;
-               boFilterLevel.isGroup = false;
-               boFilterLevel.abortedCount = stats.getAbortedCount(null, filterValueName);
-               boFilterLevel.completedCount = stats.getCompletedCount(null, filterValueName);
-               boFilterLevel.totalCount = boFilterLevel.abortedCount + boFilterLevel.completedCount;
-               Map<String, BenchmarkCategoryDTO> benchmarkCategoryCountMapFilterLevel = new HashMap<String, BenchmarkCategoryDTO>();
-               for (BenchmarkCategoryDTO benchmarkCategory : benchmarkCategories)
-               {
-                  benchmarkCategory.count = stats.getBenchmarkCategoryCount(null, filterValueName,
-                        benchmarkCategory.index);
-                  boFilterLevel.totalCount = boFilterLevel.totalCount + benchmarkCategory.count;
-                  benchmarkCategoryCountMapFilterLevel.put(benchmarkCategory.name, benchmarkCategory);
-               }
-               boFilterLevel.benchmarkCategoryCountMap = benchmarkCategoryCountMapFilterLevel;
-               boFilterLevelList.add(boFilterLevel);
-            }
+            
+            populateFilterValuesCount(benchmarkCategories, stats, boFilterLevelList, null,
+                  filterValues);
+            
+            boFilterLevelList.add(0, totalBOSDTO);
             bTLVStatsByBOResultDTO.businessObjectsResultList = boFilterLevelList;
          }
       }
       return bTLVStatsByBOResultDTO;
+   }
+   /**
+    * 
+    * @param benchmarkCategories
+    * @param stats
+    * @param groupByName
+    * @param filterValueName
+    * @param boFilterLevel
+    * @param totalFilterLevelInstanceOids
+    * @return
+    */
+   private Map<String, BenchmarkCategoryDTO> populateBenchmarkCategoryForBusinessObject(
+         List<BenchmarkCategoryDTO> benchmarkCategories, BenchmarkBusinessObjectStatistics stats, String groupByName,
+         String filterValueName, BusinessObjectStatisticDTO boFilterLevel, Set<Long> totalFilterLevelInstanceOids)
+   {
+      Map<String, BenchmarkCategoryDTO> benchmarkCategoryCountMapFilterLevel = new HashMap<String, BenchmarkCategoryDTO>();
+      for (BenchmarkCategoryDTO bCategory : benchmarkCategories)
+      {
+         BenchmarkCategoryDTO benchmarkCategory = new BenchmarkCategoryDTO();
+         benchmarkCategory.color = bCategory.color;
+         benchmarkCategory.name = bCategory.name;
+         benchmarkCategory.index = bCategory.index;
+         benchmarkCategory.count = stats.getBenchmarkCategoryCount(groupByName, filterValueName,
+               benchmarkCategory.index);
+         benchmarkCategory.instanceOids = stats.getInstanceOIDsForBenchmarkCategory(groupByName, filterValueName, benchmarkCategory.index); 
+         boFilterLevel.totalCount = boFilterLevel.totalCount + benchmarkCategory.count;
+         benchmarkCategoryCountMapFilterLevel.put(benchmarkCategory.name, benchmarkCategory);
+         totalFilterLevelInstanceOids.addAll(benchmarkCategory.instanceOids);
+      }
+      return benchmarkCategoryCountMapFilterLevel;
+   }
+   /**
+    * 
+    * @param benchmarkCategories
+    * @param stats
+    * @param businessObjectsResultList
+    * @param groupByName
+    * @param filterValues
+    */
+   private void populateFilterValuesCount(List<BenchmarkCategoryDTO> benchmarkCategories,
+         BenchmarkBusinessObjectStatistics stats, List<BusinessObjectStatisticDTO> businessObjectsResultList,
+         String groupByName, Set<String> filterValues)
+   {
+      for (String filterValueName : filterValues)
+      {
+         BusinessObjectStatisticDTO boFilterLevel = new BusinessObjectStatisticDTO();
+         boFilterLevel.name = filterValueName;
+         boFilterLevel.parentId = groupByName;
+         boFilterLevel.isGroup = false;
+         
+         boFilterLevel.abortedCount = stats.getAbortedCount(groupByName, filterValueName);
+         boFilterLevel.abortedInstanceOids = stats.getAbortedInstanceOIDs(groupByName, filterValueName);
+         
+         boFilterLevel.completedCount = stats.getCompletedCount(groupByName, filterValueName);
+         boFilterLevel.completedInstanceOids = stats.getCompletedInstanceOIDs(groupByName, filterValueName);
+         
+         boFilterLevel.totalCount = boFilterLevel.abortedCount + boFilterLevel.completedCount;
+         Set<Long> totalFilterLevelInstanceOids = new HashSet<Long>();
+         totalFilterLevelInstanceOids.addAll(boFilterLevel.abortedInstanceOids);
+         totalFilterLevelInstanceOids.addAll(boFilterLevel.completedInstanceOids);
+         
+         Map<String, BenchmarkCategoryDTO> benchmarkCategoryCountMapFilterLevel = populateBenchmarkCategoryForBusinessObject(
+               benchmarkCategories, stats, groupByName, filterValueName, boFilterLevel, totalFilterLevelInstanceOids);
+         boFilterLevel.benchmarkCategoryCountMap = benchmarkCategoryCountMapFilterLevel;
+         boFilterLevel.totalInstanceOids = totalFilterLevelInstanceOids;
+         businessObjectsResultList.add(boFilterLevel);
+      }
+   }
+   /**
+    * 
+    * @param benchmarkCategories
+    * @param stats
+    * @return
+    */
+   private BusinessObjectStatisticDTO getTotalForBOProcessStatistic(List<BenchmarkCategoryDTO> benchmarkCategories, BenchmarkBusinessObjectStatistics stats)
+   {
+      BusinessObjectStatisticDTO totalBOSDTO = new BusinessObjectStatisticDTO();
+      totalBOSDTO.name = "TOTAL";
+      totalBOSDTO.isGroup = true;
+      
+      totalBOSDTO.abortedCount = stats.getAbortedCount(null, null);
+      totalBOSDTO.abortedInstanceOids = stats.getAbortedInstanceOIDs(null, null);
+      
+      totalBOSDTO.completedCount = stats.getCompletedCount(null, null);
+      totalBOSDTO.completedInstanceOids = stats.getCompletedInstanceOIDs(null, null);
+      
+      totalBOSDTO.totalCount = totalBOSDTO.abortedCount  + totalBOSDTO.completedCount;
+      Set<Long> totalFilterLevelInstanceOids = new HashSet<Long>();
+      totalFilterLevelInstanceOids.addAll(totalBOSDTO.abortedInstanceOids);
+      totalFilterLevelInstanceOids.addAll(totalBOSDTO.completedInstanceOids);
+      
+      Map<String, BenchmarkCategoryDTO> benchmarkCategoryCountMapFilterLevel = populateBenchmarkCategoryForBusinessObject(benchmarkCategories, stats, null, null, totalBOSDTO, totalFilterLevelInstanceOids);
+      totalBOSDTO.benchmarkCategoryCountMap = benchmarkCategoryCountMapFilterLevel; 
+      totalBOSDTO.totalInstanceOids = totalFilterLevelInstanceOids;
+      return totalBOSDTO;
    }
 }

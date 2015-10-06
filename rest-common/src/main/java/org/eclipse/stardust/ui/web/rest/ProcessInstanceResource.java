@@ -301,97 +301,126 @@ public class ProcessInstanceResource
 
          JsonMarshaller jsonIo = new JsonMarshaller();
          JsonObject postJSON = jsonIo.readJsonObject(postData);
-         JsonArray bOidsArray = postJSON.getAsJsonArray("bOids");
-         Type type = new TypeToken<List<Long>>()
-         {
-         }.getType();
-         List<Long> bOids = new ArrayList<Long>();
-         if (null != bOidsArray)
-         {
-            bOids = new Gson().fromJson(bOidsArray.toString(), type);
 
-         }
-
-         String dateType = postJSON.getAsJsonPrimitive("dateType").getAsString();
-
-         Integer dayOffset = postJSON.getAsJsonPrimitive("dayOffset").getAsInt();
-
-         JsonArray processIds = postJSON.getAsJsonArray("processIds");
-
-         Type processType = new TypeToken<List<String>>()
-         {
-         }.getType();
-         List<String> processIDs = new ArrayList<String>();
-         if (null != processIds)
-         {
-            processIDs = new Gson().fromJson(processIds.toString(), processType);
-
-         }
-
-         String state = postJSON.getAsJsonPrimitive("state").getAsString();
-
+         String drillDownType = postJSON.getAsJsonPrimitive("drillDownType").getAsString();
          ProcessInstanceQuery query = new ProcessInstanceQuery();
 
-         FilterOrTerm processIdFilter = query.getFilter().addOrTerm();
-         for (String processId : processIDs)
+         if (drillDownType.equals("PROCESS_WORKITEM"))
          {
-            processIdFilter.add(new ProcessDefinitionFilter(processId));
-         }
+            JsonArray bOidsArray = postJSON.getAsJsonArray("bOids");
+            Type type = new TypeToken<List<Long>>()
+            {
+            }.getType();
+            List<Long> bOids = new ArrayList<Long>();
+            if (null != bOidsArray)
+            {
+               bOids = new Gson().fromJson(bOidsArray.toString(), type);
 
-         FilterOrTerm benchmarkFilter = query.getFilter().addOrTerm();
+            }
 
-         for (Long bOid : bOids)
-         {
-            benchmarkFilter.add(BenchmarkProcessStatisticsQuery.BENCHMARK_OID.isEqual(bOid));
-         }
+            String dateType = postJSON.getAsJsonPrimitive("dateType").getAsString();
 
-         Calendar startDate = TrafficLightViewUtils.getCurrentDayStart();
-         Calendar endDate = TrafficLightViewUtils.getCurrentDayEnd();
+            Integer dayOffset = postJSON.getAsJsonPrimitive("dayOffset").getAsInt();
 
-         if (dayOffset > 0)
-         {
-            endDate = TrafficLightViewUtils.getfutureEndDate(dayOffset);
-         }
-         else if (dayOffset < 0)
-         {
-            startDate = TrafficLightViewUtils.getPastStartDate(dayOffset);
-         }
+            JsonArray processIds = postJSON.getAsJsonArray("processIds");
 
-         if (dateType.equals(PredefinedConstants.BUSINESS_DATE))
-         {
-            FilterOrTerm businessDateFilter = query.getFilter().addOrTerm();
+            Type processType = new TypeToken<List<String>>()
+            {
+            }.getType();
+            List<String> processIDs = new ArrayList<String>();
+            if (null != processIds)
+            {
+               processIDs = new Gson().fromJson(processIds.toString(), processType);
+
+            }
+
+            String state = postJSON.getAsJsonPrimitive("state").getAsString();
+
+            FilterOrTerm processIdFilter = query.getFilter().addOrTerm();
             for (String processId : processIDs)
             {
-               businessDateFilter.add((DataFilter.between(TrafficLightViewUtils.getModelName(processId)
-                     + PredefinedConstants.BUSINESS_DATE, startDate.getTime(), endDate.getTime())));
+               processIdFilter.add(new ProcessDefinitionFilter(processId));
+            }
+
+            FilterOrTerm benchmarkFilter = query.getFilter().addOrTerm();
+
+            for (Long bOid : bOids)
+            {
+               benchmarkFilter.add(BenchmarkProcessStatisticsQuery.BENCHMARK_OID.isEqual(bOid));
+            }
+
+            Calendar startDate = TrafficLightViewUtils.getCurrentDayStart();
+            Calendar endDate = TrafficLightViewUtils.getCurrentDayEnd();
+
+            if (dayOffset > 0)
+            {
+               endDate = TrafficLightViewUtils.getfutureEndDate(dayOffset);
+            }
+            else if (dayOffset < 0)
+            {
+               startDate = TrafficLightViewUtils.getPastStartDate(dayOffset);
+            }
+
+            if (dateType.equals(PredefinedConstants.BUSINESS_DATE))
+            {
+               FilterOrTerm businessDateFilter = query.getFilter().addOrTerm();
+               for (String processId : processIDs)
+               {
+                  businessDateFilter.add((DataFilter.between(TrafficLightViewUtils.getModelName(processId)
+                        + PredefinedConstants.BUSINESS_DATE, startDate.getTime(), endDate.getTime())));
+               }
+            }
+            else
+            {
+               query.where(ProcessInstanceQuery.START_TIME.between(startDate.getTimeInMillis(),
+                     endDate.getTimeInMillis()));
+            }
+
+            if (postJSON.getAsJsonPrimitive("benchmarkCategory") != null)
+            {
+               Long benchmarkCategory = postJSON.getAsJsonPrimitive("benchmarkCategory").getAsLong();
+               query.where(ProcessInstanceQuery.BENCHMARK_VALUE.isEqual(benchmarkCategory));
+            }
+            else
+            {
+               query.where(ProcessInstanceQuery.BENCHMARK_VALUE.greaterThan(0l));
+            }
+
+            if (state.equals(ACTIVE))
+            {
+               query.where(ProcessStateFilter.ALIVE);
+            }
+            else if (state.equals(COMPLETED))
+            {
+               query.where(ProcessStateFilter.COMPLETED);
+            }
+            else if (state.equals(ABORTED))
+            {
+               query.where(ProcessStateFilter.ABORTED);
             }
          }
          else
          {
-            query.where(ProcessInstanceQuery.START_TIME.between(startDate.getTimeInMillis(), endDate.getTimeInMillis()));
-         }
+            // for business object by process
 
-         if (postJSON.getAsJsonPrimitive("benchmarkCategory") != null)
-         {
-            Long benchmarkCategory = postJSON.getAsJsonPrimitive("benchmarkCategory").getAsLong();
-            query.where(ProcessInstanceQuery.BENCHMARK_VALUE.isEqual(benchmarkCategory));
-         }
-         else
-         {
-            query.where(ProcessInstanceQuery.BENCHMARK_VALUE.greaterThan(0l));
-         }
+            JsonArray instanceOids = postJSON.getAsJsonArray("oids");
 
-         if (state.equals(ACTIVE))
-         {
-            query.where(ProcessStateFilter.ALIVE);
-         }
-         else if (state.equals(COMPLETED))
-         {
-            query.where(ProcessStateFilter.COMPLETED);
-         }
-         else if (state.equals(ABORTED))
-         {
-            query.where(ProcessStateFilter.ABORTED);
+            Type processType = new TypeToken<List<Long>>()
+            {
+            }.getType();
+            List<Long> oids = new ArrayList<Long>();
+            if (null != instanceOids)
+            {
+               oids = new Gson().fromJson(instanceOids.toString(), processType);
+
+            }
+
+            FilterOrTerm oidsFilter = query.getFilter().addOrTerm();
+            for (Long oid : oids)
+            {
+               oidsFilter.add(ProcessInstanceQuery.OID.isEqual(oid));
+            }
+
          }
 
          return Response.ok(GsonUtils.toJsonHTMLSafeString(processInstanceService.getProcessInstances(query, options)),
