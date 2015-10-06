@@ -1187,3 +1187,12 @@ Icon implementations
 	color: 'red';
 }
 
+.pi-bold:before{
+	font-family:"FontAwesome";
+	content:'\f032'; /* fa-bold */
+}
+
+.pi-italic:before{
+	font-family:"FontAwesome";
+	content:'\f033'; /* fa-italic */
+}
