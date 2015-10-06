@@ -1044,7 +1044,7 @@ Icon implementations
 
 .pi-trigger-collapse:before {
 	font-family: "FontAwesome";
-	content: "\f054"; /* fa-chevron-right */
+	content: "\f077"; /* fa-chevron-up */
 }
 
 .pi-folder:before,
