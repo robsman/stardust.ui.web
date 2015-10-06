@@ -34,8 +34,8 @@
 				<f:facet name="center">
 					<ice:panelGroup>
 						<h:panelGrid columns="2" style="width: 100%; margin-bottom: 5px;">
-							<ice:graphicImage rendered="#{fileSaveDialog.viewWarning}" style="margin-left:2px; margin-right:5px"
-								url="/plugins/views-common/images/icons/dialog-icon-warning.jpg" />
+							<ice:outputText styleClass="pi pi-dialog-warning pi-lg" rendered="#{fileSaveDialog.viewWarning}" 
+							style="margin-left:2px; margin-right:5px"/>
 							<ice:outputText
 								rendered="#{not empty fileSaveDialog.headerMessage}"
 								value="#{fileSaveDialog.headerMessage}" escape="false"

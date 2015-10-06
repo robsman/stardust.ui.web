@@ -39,11 +39,11 @@
 						<c:if test="#{dialogBean.contentTypeAsString != 'NONE'}">
 							<f:facet name="west">
 								<ice:panelGroup>
-									<ice:graphicImage url="/plugins/common/images/icons/dialog-icon-error.jpg"
+									<ice:outputText styleClass="pi pi-dialog-error pi-lg"
 										rendered="#{dialogBean.contentTypeAsString eq 'ERROR'}" />
-									<ice:graphicImage url="/plugins/common/images/icons/dialog-icon-warning.jpg"
+									<ice:outputText styleClass="pi pi-dialog-warning pi-lg"
 										rendered="#{dialogBean.contentTypeAsString eq 'WARNING'}" />
-									<ice:graphicImage url="/plugins/common/images/icons/dialog-icon-info.jpg"
+									<ice:outputText styleClass="pi pi-dialog-info pi-lg"
 										rendered="#{dialogBean.contentTypeAsString eq 'INFO'}" />
 								</ice:panelGroup>
 							</f:facet>

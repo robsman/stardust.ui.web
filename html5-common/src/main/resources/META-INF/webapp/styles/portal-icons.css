@@ -669,7 +669,8 @@ Icon implementations
 	content: "\f21b"; /* fa-user-secret */
 }
 
-.pi-information:before{
+.pi-information:before,
+.pi-dialog-info:before{
 	font-family: "FontAwesome";
 	content: "\f05a"; /* fa-info-circle */
 }
@@ -1113,7 +1114,8 @@ Icon implementations
 }
 
 .pi-information-circle:before,
-.pi-exception-circle:before{
+.pi-exception-circle:before,
+.pi-dialog-warning:before{
 	font-family:"FontAwesome";
 	content:'\f06a'; /* fa-exclamation-circle */
 }
@@ -1178,3 +1180,10 @@ Icon implementations
 	font-family:"FontAwesome";
 	content:'\f074'; /* fa-reverse */
 }
+
+.pi-dialog-error:before{
+	font-family:"FontAwesome";
+	content:'\f057'; /* fa-times-circle */
+	color: 'red';
+}
+

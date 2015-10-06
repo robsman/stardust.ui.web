@@ -31,11 +31,11 @@
 	
 					<f:facet name="west">
 						<ice:panelGroup>
-							<ice:graphicImage url="/plugins/common/images/icons/dialog-icon-error.jpg"
+							<ice:outputText styleClass="pi pi-dialog-error pi-lg"
 								rendered="#{ippMessageDialog.messageType eq 'ERROR'}" />
-							<ice:graphicImage url="/plugins/common/images/icons/dialog-icon-warning.jpg"
+							<ice:outputText styleClass="pi pi-dialog-warning pi-lg"
 								rendered="#{ippMessageDialog.messageType eq 'WARNING'}" />
-							<ice:graphicImage url="/plugins/common/images/icons/dialog-icon-info.jpg"
+							<ice:outputText styleClass="pi pi-dialog-info pi-lg"
 								rendered="#{ippMessageDialog.messageType eq 'INFO'}" />
 						</ice:panelGroup>
 					</f:facet>
