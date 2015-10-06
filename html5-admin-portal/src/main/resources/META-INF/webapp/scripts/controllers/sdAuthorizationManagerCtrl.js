@@ -27,7 +27,9 @@
   var i18n;
   var ParticipantType = {
     ORGANIZATION: "ORGANIZATION",
-    ROLE: "ROLE"
+    ROLE: "ROLE",
+    SCOPED_ROLE : "SCOPED_ROLE",
+    SCOPED_ORGANIZATION : "SCOPED_ORGANIZATION"
   }
   var All = null;
   
@@ -100,9 +102,12 @@
     var orgs = 0, roles = 0;
     this.selectedParticipants = [];
     for (var i = 0; i < selectInfo.all.length; i++) {
-      if (selectInfo.all[i].type == ParticipantType.ORGANIZATION) {
+      if (selectInfo.all[i].type == ParticipantType.ORGANIZATION || 
+    	  selectInfo.all[i].type == ParticipantType.SCOPED_ORGANIZATION) {
         orgs++;
-      } else if (selectInfo.all[i].type == ParticipantType.ROLE) {
+      } 
+      else if (selectInfo.all[i].type == ParticipantType.ROLE ||  
+    		   selectInfo.all[i].type == ParticipantType.SCOPED_ROLE) {
         roles++;
       }
       this.selectedParticipants.push(selectInfo.all[i]);
