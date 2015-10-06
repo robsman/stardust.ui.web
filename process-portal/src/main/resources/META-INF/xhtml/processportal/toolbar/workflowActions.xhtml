@@ -16,15 +16,13 @@
 				action="#{activityDetailsBean.toggleAssemblyLinePushService}">
 				<pc:automationTag value="auto-PP-ActivityPnl-ToolbarAssemblyFeeds"
 					standAlone="false" />
-				<ice:graphicImage
+				<ice:outputText
 					rendered="#{activityDetailsBean.assemblyLinePushService}"
-					value="/plugins/views-common/images/icons/lightning_delete.png"
-					styleClass="toolbar-button"
+					styleClass="pi pi-assembly-line-push-off pi-lg"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.disableAssemblyLineFeedIn']}" />
-				<ice:graphicImage
+				<ice:outputText
 					rendered="#{not activityDetailsBean.assemblyLinePushService}"
-					value="/plugins/views-common/images/icons/lightning.png"
-					styleClass="toolbar-button"
+					styleClass="pi pi-assembly-line-push-on pi-lg"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.enableAssemblyLineFeedIn']}" />
 			</ice:commandLink>
 		</ice:panelGroup>
@@ -33,22 +31,22 @@
 				rendered="#{activityDetailsBean.qaCodeIframeBean.qualityAssuranceCodesVisible}">
 				<ice:commandLink disabled="#{activityDetailsBean.qaCodeIframeBean.qualityAssuranceCodesDisabled}"
 					action="#{activityDetailsBean.toggleQualityAssuranceCodesIframePopup}"
-					style="padding:0px;"
+					style="margin-right: 5px;"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.qaCodes']}">
 					<pc:automationTag value="auto-PP-ActivityPnl-Toolbar-QACodes"
 						standAlone="false" />
-					<ice:graphicImage style="padding-right:5px;" styleClass="#{activityDetailsBean.qaCodeIframeBean.qualityAssuranceCodesDisabled ? 'iceCmdBtn-dis' : ''}"
-						value="/plugins/views-common/images/icons/wrench_exclamation_menu.png" />
+					<ice:outputText
+						styleClass="#{activityDetailsBean.qaCodeIframeBean.qualityAssuranceCodesDisabled ? 'iceCmdBtn-dis' : ''} pi pi-qa-codes pi-lg" />
 				</ice:commandLink>
 				<div id="ippQualityAssuranceCodesAnchor" style="width: 1px; height: 1px;"></div>
 				<td class="toolbarGroupRight" style="padding-left: 0px;" />
 			</ice:panelGroup>
 
 			<ice:commandLink rendered="#{activityDetailsBean.qaCodeIframeBean.qualityAssuranceActivityInstance}"
-				action="#{activityDetailsBean.completeQualityAssurancePass}" style="margin-left: 5px;">
+				action="#{activityDetailsBean.completeQualityAssurancePass}" style="margin-left: 0px;">
 				<pc:automationTag value="auto-PP-ActivityPnl-Toolbar-QAPass" standAlone="false"/>
 				<ice:outputText
-					styleClass="pi pi-qa-passed icong-lg"
+					styleClass="pi pi-qa-passed pi-lg"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.qaPass']}" />
 			</ice:commandLink>
 			
@@ -56,7 +54,7 @@
 				action="#{activityDetailsBean.completeQualityAssuranceFail}" style="margin-left: 5px;">
 				<pc:automationTag value="auto-PP-ActivityPnl-Toolbar-QAFail" standAlone="false"/>
 				<ice:outputText
-					styleClass="pi pi-qa-failed icong-lg"
+					styleClass="pi pi-qa-failed pi-lg"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.qaFail']}" />
 			</ice:commandLink>
 			

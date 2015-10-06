@@ -1256,3 +1256,18 @@ Icon implementations
 	font-family: "FontAwesome";
     content: "\f0de"; /* fa-sort-asc */
 }
+
+.pi-assembly-line-push-on:before {
+	font-family: "FontAwesome";
+	content: "\f0e7"; /* fa-bolt */
+}
+
+.pi-assembly-line-push-off:before {
+	font-family: "FontAwesome";
+	content: "\f056"; /* fa-minus-circle */
+}
+
+.pi-qa-codes:before {
+	font-family: "FontAwesome";
+	content: "\f0ad"; /* fa-wrench */
+}
