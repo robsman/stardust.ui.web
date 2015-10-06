@@ -39,11 +39,11 @@
 						<c:if test="#{dialogBean.contentTypeAsString != 'NONE'}">
 							<f:facet name="west">
 								<ice:panelGroup>
-									<ice:outputText styleClass="pi pi-dialog-error pi-lg"
+									<ice:outputText styleClass="pi pi-dialog-error pi-2x"
 										rendered="#{dialogBean.contentTypeAsString eq 'ERROR'}" />
-									<ice:outputText styleClass="pi pi-dialog-warning pi-lg"
+									<ice:outputText styleClass="pi pi-dialog-warning pi-2x"
 										rendered="#{dialogBean.contentTypeAsString eq 'WARNING'}" />
-									<ice:outputText styleClass="pi pi-dialog-info pi-lg"
+									<ice:outputText styleClass="pi pi-dialog-info pi-2x"
 										rendered="#{dialogBean.contentTypeAsString eq 'INFO'}" />
 								</ice:panelGroup>
 							</f:facet>
