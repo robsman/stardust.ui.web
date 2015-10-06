@@ -84,10 +84,11 @@ auth tree implementation. Therefore, we have added
 custom styles below to handle these cases.
 ---------------------------------------------------------
 */
-.sd-tree a.selected-custom span{
-	background: #EEE2CF !important;
-  	color: #708090 !important;
-  	border-radius: 5px !important;
+
+.sd-tree .title-section,
+.sd-tree a
+{
+	position:relative;
 }
 
 .sd-tree li.match-custom > ul > li > a.tree-node > div > div.dd-header  .js-filterable,
@@ -98,3 +99,11 @@ custom styles below to handle these cases.
 	border-radius: 2px;
 	color: #FFF;
 }
+
+.sd-tree a.selected-custom span{
+	background: #EEE2CF !important;
+  	color: #708090 !important;
+  	border-radius: 5px !important;
+}
+
+
