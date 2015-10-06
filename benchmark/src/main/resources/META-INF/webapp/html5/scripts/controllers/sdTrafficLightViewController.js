@@ -357,8 +357,13 @@
 		
 		if(isActivity){
 			self.processDataTable = null;
-			self.selectedProcessId = parentId;
-			self.selectedActivityId = id;
+			self.processActivitiesMap={};
+			
+			if(id != undefined){
+				 self.processActivitiesMap[parentId] = [id];
+			}else{
+				self.processActivitiesMap = self.queryData.processActivityMap;
+			}
 			if (self.activityDataTable != undefined) {
 				self.activityDataTable.refresh();
 			} else {
@@ -368,12 +373,12 @@
 			}
 		}else{
 			self.activityDataTable = null;
-			self.selectedProcessId = [];
+			self.selectedProcessIds = [];
 			if(id != undefined){
-		     self.selectedProcessId.push(id);	
+		     self.selectedProcessIds.push(id);	
 			}else{
 				self.queryData.processes.forEach(function(process){
-					self.selectedProcessId.push(process.id)
+					self.selectedProcessIds.push(process.id)
 				});
 			}
 
@@ -400,7 +405,7 @@
 			'dateType' : self.queryData.dateType,
 			'dayOffset' : self.queryData.dayOffset,
 			'benchmarkCategory' : self.selectedBenchmarkCategory,
-			'processIds' : self.selectedProcessId,
+			'processIds' : self.selectedProcessIds,
 			'state' : self.state
 		};
 
@@ -430,8 +435,7 @@
 			'dateType' : self.queryData.dateType,
 			'dayOffset' : self.queryData.dayOffset,
 			'benchmarkCategory' : self.selectedBenchmarkCategory,
-			'processId' : self.selectedProcessId,
-			'activityId' : self.selectedActivityId,
+			'processActivitiesMap' : self.processActivitiesMap,
 			'state' : self.state
 		};
 

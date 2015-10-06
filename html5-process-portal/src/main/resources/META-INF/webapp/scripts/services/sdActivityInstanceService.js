@@ -101,10 +101,9 @@
 		    postData.bOids = query.bOids;
 		    postData.dateType = query.dateType;
 		    postData.dayOffset = query.dayOffset;
-		    postData.benchmarkCategory = query.benchmarkCategory;
-		    postData.processId = query.processId;
+		    postData.benchmarkCategory = query.benchmarkCategory;		   
 		    postData.state = query.state;
-		    postData.activityId = query.activityId;
+		    postData.processActivitiesMap = query.processActivitiesMap;
 		    
 		    var activityList = $resource(restUrl, {
 

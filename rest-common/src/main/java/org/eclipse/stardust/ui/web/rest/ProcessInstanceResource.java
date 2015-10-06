@@ -383,7 +383,7 @@ public class ProcessInstanceResource
 
          if (state.equals(ACTIVE))
          {
-            query.where(ProcessStateFilter.ACTIVE);
+            query.where(ProcessStateFilter.ALIVE);
          }
          else if (state.equals(COMPLETED))
          {

@@ -15,10 +15,12 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.faces.FacesException;
@@ -81,6 +83,7 @@ import org.springframework.stereotype.Component;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 
@@ -112,7 +115,7 @@ public class ActivityInstanceResource
 
    @Autowired
    private ProcessInstanceService processInstanceService;
-   
+
    private final JsonMarshaller jsonIo = new JsonMarshaller();
 
    public static final String ACTIVE = "Active";
@@ -313,9 +316,8 @@ public class ActivityInstanceResource
    {
       try
       {
-         return Response.ok(
-               AbstractDTO.toJson(getActivityInstanceService().getAllRelocationTargets(
-                     oid)), MediaType.APPLICATION_JSON).build();
+         return Response.ok(AbstractDTO.toJson(getActivityInstanceService().getAllRelocationTargets(oid)),
+               MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {
@@ -334,7 +336,7 @@ public class ActivityInstanceResource
       try
       {
          JsonObject json = jsonIo.readJsonObject(postedData);
-         
+
          AbstractDTO dto = getActivityInstanceService().relocateActivity(oid,
                json.get("targetActivityId").getAsString());
          if (dto != null)
@@ -501,6 +503,7 @@ public class ActivityInstanceResource
 
    /**
     * creates folder if it does not exist
+    * 
     * @author Yogesh.Manware
     * @param processOid
     * @return
@@ -511,11 +514,11 @@ public class ActivityInstanceResource
    public Response getCorrespondenceOutFolder(@PathParam("oid") Long activityOid)
    {
       FolderDTO folderDto = activityInstanceService.getCorrespondenceOutFolder(activityOid);
-      //TODO move jsonHelper and MapAdapter to Portal-Common and then modify GsonUtils
+      // TODO move jsonHelper and MapAdapter to Portal-Common and then modify GsonUtils
       Gson gson = new GsonBuilder().registerTypeAdapter(Map.class, new MapAdapter()).disableHtmlEscaping().create();
       return Response.ok(gson.toJson(folderDto, FolderDTO.class), MediaType.APPLICATION_JSON).build();
    }
-   
+
    /**
     * @author Johnson.Quadras
     * @param postedData
@@ -635,13 +638,37 @@ public class ActivityInstanceResource
 
          Integer dayOffset = postJSON.getAsJsonPrimitive("dayOffset").getAsInt();
 
-         String processId = postJSON.getAsJsonPrimitive("processId").getAsString();
-         String activityId = postJSON.getAsJsonPrimitive("activityId").getAsString();
+         JsonObject processActivityMap = postJSON.getAsJsonObject("processActivitiesMap");
+         Set<Entry<String, JsonElement>> processActivityMapEntrySet = processActivityMap.entrySet();
 
+         Map<String, List<String>> processActivitiesMap = new HashMap<String, List<String>>();
+         for (Entry<String, JsonElement> entry : processActivityMapEntrySet)
+         {
+            JsonArray processActivityArray = entry.getValue().getAsJsonArray();
+
+            Type processActivityType = new TypeToken<List<String>>()
+            {
+            }.getType();
+            List<String> activities = new ArrayList<String>();
+            if (null != processActivityArray)
+            {
+               activities = new Gson().fromJson(processActivityArray.toString(), processActivityType);
+
+            }
+            processActivitiesMap.put(entry.getKey(), activities);
+         }
          String state = postJSON.getAsJsonPrimitive("state").getAsString();
 
          ActivityInstanceQuery query = new ActivityInstanceQuery();
-         query.where(ActivityFilter.forProcess(activityId, processId));
+         FilterOrTerm processActivityFilter = query.getFilter().addOrTerm();
+         for (String processId : processActivitiesMap.keySet())
+         {
+            for (String activityId : processActivitiesMap.get(processId))
+            {
+               processActivityFilter.add(ActivityFilter.forProcess(activityId, processId));
+            }
+
+         }
 
          FilterOrTerm benchmarkFilter = query.getFilter().addOrTerm();
 
@@ -664,20 +691,25 @@ public class ActivityInstanceResource
 
          if (dateType.equals(PredefinedConstants.BUSINESS_DATE))
          {
-            query.where((DataFilter.between(TrafficLightViewUtils.getModelName(processId)
-                  + PredefinedConstants.BUSINESS_DATE, startDate.getTime(), endDate.getTime())));
+            FilterOrTerm businessDateFilter = query.getFilter().addOrTerm();
+            for (String processId : processActivitiesMap.keySet())
+            {
+               businessDateFilter.add((DataFilter.between(TrafficLightViewUtils.getModelName(processId)
+                     + PredefinedConstants.BUSINESS_DATE, startDate.getTime(), endDate.getTime())));
+            }
          }
          else
          {
-            query.where(ActivityInstanceQuery.START_TIME.between(startDate.getTimeInMillis(),
-                  endDate.getTimeInMillis()));
+            query.where(ActivityInstanceQuery.START_TIME.between(startDate.getTimeInMillis(), endDate.getTimeInMillis()));
          }
 
          if (postJSON.getAsJsonPrimitive("benchmarkCategory") != null)
          {
             Long benchmarkCategory = postJSON.getAsJsonPrimitive("benchmarkCategory").getAsLong();
             query.where(ActivityInstanceQuery.BENCHMARK_VALUE.isEqual(benchmarkCategory));
-         }else{
+         }
+         else
+         {
             query.where(ActivityInstanceQuery.BENCHMARK_VALUE.greaterThan(0l));
          }
 
