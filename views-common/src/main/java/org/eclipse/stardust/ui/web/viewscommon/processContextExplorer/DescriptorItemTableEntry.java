@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.processContextExplorer;
 
+import java.util.Date;
+
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
 
 
@@ -27,6 +29,8 @@ public class DescriptorItemTableEntry extends DefaultRowModel
    Class mappedType;
    boolean editable = false;
    boolean hasError;
+   Date lastModified;
+   String modifiedBy;
    
 
    /**
@@ -93,6 +97,25 @@ public class DescriptorItemTableEntry extends DefaultRowModel
    {
       this.hasError = hasError;
    }
-   
+
+   public Date getLastModified()
+   {
+      return lastModified;
+   }
+
+   public void setLastModified(Date lastModified)
+   {
+      this.lastModified = lastModified;
+   }
+
+   public String getModifiedBy()
+   {
+      return modifiedBy;
+   }
+
+   public void setModifiedBy(String modifiedBy)
+   {
+      this.modifiedBy = modifiedBy;
+   }
 
 }

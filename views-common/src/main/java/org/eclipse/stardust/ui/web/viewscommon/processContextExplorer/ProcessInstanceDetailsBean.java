@@ -110,7 +110,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
@@ -118,8 +117,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.GenericRepositoryTreeViewBean;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.GenericRepositoryTreeViewBean.RepositoryMode;
-
-import com.icesoft.faces.component.paneltabset.TabChangeEvent;
 
 /**
  * @author Ankita.Patel
@@ -169,6 +166,8 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    // Store all OUT DataPaths keyed by DATAID
    Map<String, DataPathDetails> outDataPathsMap = null;
    Map<String, DataPathDetails> inDataPathsMap = null; 
+   
+   Map<String, DescriptorHistoryTableEntry> outDataPathHistoryMap = CollectionUtils.newHashMap();
    
    private String startingUserLabel = null;
    
@@ -302,22 +301,6 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
       }
    }
    
-   public void descriptorTabChange(TabChangeEvent tabChangeEvent) 
-   {
-      selectedTabIndex = tabChangeEvent.getNewTabIndex();
-
-      if (selectedTabIndex == 1)
-      { 
-         if(!descriptorsHistoryPanelInitialized)
-         {
-            descriptorsHistoryList = CollectionUtils.newArrayList();
-            initializeDescriptorHistoryTable();
-         }
-         descriptorsHistoryPanelInitialized = true;
-         updateDescriptorHistory();
-      }
-   }  
-  
    /**
     * 
     * @param processInstance
@@ -615,10 +598,13 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
             inDataPathsMap = CollectionUtils.newHashMap();
             outDataPathsMap = CollectionUtils.newHashMap();
             validationMessageBean.setStyleClass("messagePanel");
+            descriptorsHistoryList = CollectionUtils.newArrayList();
             initializeDescriptorColumns();
+            initializeDescriptorHistoryTable();
          }
 
          validationMessageBean.reset();
+         updateDescriptorHistory();
          List<DescriptorItemTableEntry> descriptorList = convertToTableEntries(CommonDescriptorUtils.createProcessDescriptors(processInstance, false));
          
          descriptorTable.setList(descriptorList);
@@ -661,14 +647,16 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
                   dmWrapper = new DataMappingWrapper(mapping, null, false);
                   String type = dmWrapper.getType();
                   Object value = DescriptorFilterUtils.convertDataPathValue(dataClass, processDescriptor.getValue());
-                  if(null != value)
+                  DescriptorItemTableEntry entry = null;
+                  
+                  entry = new DescriptorItemTableEntry(processDescriptor.getKey(), value,  processDescriptor.getId(), type, dataClass, true);
+                  descriptorsEntries.add(entry);
+                  
+                  if(CollectionUtils.isNotEmpty(outDataPathHistoryMap) && outDataPathHistoryMap.containsKey(processDescriptor.getId()))
                   {
-                     descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), value,  processDescriptor.getId(), type, dataClass, true));
-                  }
-                  else
-                  {
-                     descriptorsEntries.add(new DescriptorItemTableEntry(processDescriptor.getKey(), processDescriptor
-                           .getValue()));   
+                     DescriptorHistoryTableEntry descriptorEventHistory = outDataPathHistoryMap.get(processDescriptor.getId());
+                     entry.setLastModified(descriptorEventHistory.getTimestamp());
+                     entry.setModifiedBy(descriptorEventHistory.getUser());
                   }
                }
                else
@@ -729,8 +717,14 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
             Object oldDescriptorValue = event.getOldValue();
             Object newValue = null;
             if (null != newDescriptorValue
-                  && !newDescriptorValue.toString().equals(oldDescriptorValue))
+                  && !newDescriptorValue.equals(oldDescriptorValue))
             {
+               if (null != oldDescriptorValue && null != newDescriptorValue
+                     && newDescriptorValue.toString().equals(oldDescriptorValue.toString())
+                     || (null == oldDescriptorValue && StringUtils.isEmpty(newDescriptorValue.toString())))
+               {
+                  return;
+               }
                userObject = (DescriptorItemTableEntry) event.getComponent().getAttributes().get("row");
                String type = userObject.getType();
                Class dataClass = userObject.getMappedType();
@@ -826,10 +820,19 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
       ColumnPreference valueCol = new ColumnPreference("Value", "value", this.getMessages().getString("column.value"),
             ResourcePaths.V_DESC_TABLE_COLUMNS, true, true);
       valueCol.setEscape(false);
+      
+      ColumnPreference lastModifiedCol = new ColumnPreference("LastModified", "lastModified", ColumnDataType.DATE, this.getMessages().getString("descriptors.lastModified"),
+            true, true);
+      lastModifiedCol.setNoWrap(true);
 
+      ColumnPreference modifiedByCol = new ColumnPreference("ModifiedBy", "modifiedBy", ColumnDataType.STRING, this.getMessages().getString("descriptors.modifiedBy"), true, false);
+      modifiedByCol.setNoWrap(true);
+      
       List<ColumnPreference> descriptoCols = new ArrayList<ColumnPreference>();
       descriptoCols.add(nameCol);
       descriptoCols.add(valueCol);
+      descriptoCols.add(lastModifiedCol);
+      descriptoCols.add(modifiedByCol);
 
       IColumnModel descriptorColumnModel = new DefaultColumnModel(descriptoCols, null,
             null, UserPreferencesEntries.M_VIEWS_COMMON, UserPreferencesEntries.V_PROCESS_INSTANCE_DETAILS);
@@ -921,10 +924,12 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
                         descriptorDetails = MessagesViewsCommonBean.getInstance().getParamString(
                               "views.processInstanceDetailsView.descriptors.history.descriptorDetails", dataId,
                               processInstanceOID, dataPathId);
+                        DescriptorHistoryTableEntry entry = new DescriptorHistoryTableEntry(event.getEventTime(), null, event
+                              .getEventType().getName(), I18nUtils.getUserLabel(event.getUser()), descriptorDetails);
+                        descriptorsHistory.add(entry);
+                        outDataPathHistoryMap.put(dataPathId, entry);
                      }
                   }
-                  descriptorsHistory.add(new DescriptorHistoryTableEntry(event.getEventTime(), null, event
-                        .getEventType().getName(), I18nUtils.getUserLabel(event.getUser()), descriptorDetails));
                }
             }
          }
