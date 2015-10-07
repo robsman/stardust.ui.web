@@ -669,7 +669,7 @@ Icon implementations
 }
 
 .pi-deputy:before,
-.pi-deputy-managemen:before{
+.pi-deputy-management:before{
 	font-family: "FontAwesome";
 	content: "\f21b"; /* fa-user-secret */
 }
@@ -973,7 +973,9 @@ Icon implementations
 	content:'\f201'; /* fa-line-chart */
 }
 
-.pi-flag:before{
+.pi-flag:before,
+.pi-traffic-light:before,
+.pi-criticality_manager:before{
 	font-family:"FontAwesome";
 	content:'\f024'; /* fa-flag */
 }
@@ -1229,12 +1231,13 @@ Icon implementations
 	color: red !important;
 }
 
-.pi-clock:before { 
+.pi-clock:before,
+.pi-activity-postponed:before { 
 	font-family: "FontAwesome";
 	content: '\f017'; /* fa-clock-o  */
 }
 
-.pi-disabled{
+.pi-disabled:before{
 	opacity : 0.4;
 }
 
@@ -1290,4 +1293,34 @@ Icon implementations
 .pi-square:before{
 	font-family:starclipse;
     content:'\F03E';/* sc-square  */
+}
+
+.pi-resource-manager:before { 
+	font-family: "FontAwesome";
+	content: '\f13c'; /* fa-css3 */
+}
+
+.pi-resource-availability:before { 
+	font-family: "FontAwesome";
+	content:"\f0f4"; /* fa-coffee */
+}
+
+.pi-role-assignment:before{ 
+	font-family: "FontAwesome";
+	content: "\f234"; /* fa-user-plus */
+}
+
+.pi-costs:before {
+	font-family:"FontAwesome";
+	content:'\f0d6'; /* fa-money */
+}
+
+.pi-resource-login:before {
+	font-family:"FontAwesome";
+	content:'\f090'; /* fa-sign-in */
+}
+
+.pi-performance-team-lead:before{
+	font-family:"FontAwesome";
+	content:'\f1fe'; /* fa-area-chart */
 }

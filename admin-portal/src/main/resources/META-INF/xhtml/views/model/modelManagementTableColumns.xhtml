@@ -63,7 +63,7 @@
 		<ice:menuBar displayOnClick="true" style="text-align: center;"
 			styleClass="modelMenuBar" immediate="false"
 			rendered="#{row.type=='MODEL_VERSION' and row.actionAllowed }">
-			<ice:menuItem id="menuPopup" styleClass=""
+			<ice:menuItem id="menuPopup" styleClass="modelSettingsMnuItem"
 				icon="/plugins/views-common/images/icons/wrench_closed.png"
 				 value="">
 				<ice:menuItem icon="/plugins/views-common/images/icons/cross.png" styleClass="modelMnuItm deleteModel"
@@ -85,7 +85,7 @@
 					<f:attribute name="type" value="OVERWRITE" />
 				</ice:menuItem>
 				<ice:menuItem
-					icon="/plugins/views-common/images/icons/page_white_put.png" styleClass="modelMnuItm export"
+					icon="/plugins/views-common/images/icons/page_white_put.png" styleClass="modelMnuItm exportModel"
 					value="#{modelManagementBean.messages['actions.export']}"
 					actionListener="#{modelManagementBean.popUpActionListener}">
 					<pc:automationTag

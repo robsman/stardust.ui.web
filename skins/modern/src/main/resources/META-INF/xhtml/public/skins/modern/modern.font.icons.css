@@ -30,14 +30,21 @@
 .export a,
 .exportAsExcel a,
 .exportAsCsv a,
-.deleteModel a,
-.overwriteModel a,
-.exportModel a,
 .caseMenu a,
 .renameVrtItem span,
 .renameVrtItem-dis span,
 .exportMnuItemVrtItem a {
       text-decoration: initial;
+}
+
+.deleteModel a,
+.overwriteModel a, 
+.exportModel a,
+.deleteModel a:hover,
+.overwriteModel a:hover, 
+.exportModel a:hover {
+	text-decoration: initial;
+	margin-left: 5px;
 }
 
 .export a img,
@@ -79,7 +86,8 @@
 .reversePageVrtItem a img,
 .reversePageVrtItem-dis span img,
 .addBookmarkVrtItem a img,
-.addBookmarkVrtItem-dis span img {
+.addBookmarkVrtItem-dis span img,
+.modelSettingsMnuItemItem a img {
     background-image: none !important;
     position: absolute;
     margin-left: -15px;
@@ -326,6 +334,9 @@
     content: "\f097";
 }
 
-
-
+.modelSettingsMnuItemItem a:before{
+    font-family: FontAwesome;
+    font-size: 16px;
+    content: "\f0ad"; /* fa-wrench */
+}
 

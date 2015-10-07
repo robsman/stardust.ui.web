@@ -63,22 +63,13 @@
 	</f:subview>
 	<ice:panelGroup effect="#{processportal_NotesBean.effect}">
 		<ice:panelGrid columns="3">
-			<ice:commandLink rendered="#{processportal_NotesBean.editMode}"
-				style="font-weight: bold;"
-				action="#{processportal_NotesBean.saveNote}">
-				<pc:automationTag value="auto-PP-NotesView-Save" standAlone="false"/>
-				<ice:panelGrid columns="2">
-					<ice:outputText styleClass="pi pi-save pi-lg" title="#{processportal_NotesBean.messages['button.save']}"/>
-				</ice:panelGrid>
-			</ice:commandLink>
-			<ice:commandLink rendered="#{processportal_NotesBean.editMode}"
-				style="font-weight: bold;"
-				action="#{processportal_NotesBean.cancelNote}">
-				<pc:automationTag value="auto-PP-NotesView-Cancel" standAlone="false"/>
-				<ice:panelGrid columns="2">
-					<ice:outputText styleClass="pi pi-delete pi-1x" title="#{processportal_NotesBean.messages['button.cancel']}"/>
-				</ice:panelGrid>
-			</ice:commandLink>
+			<ice:commandButton rendered="#{processportal_NotesBean.editMode}" value="#{processportal_NotesBean.messages['button.save']}"
+							action="#{processportal_NotesBean.saveNote}"
+							styleClass="button"/>
+							
+			<ice:commandButton rendered="#{processportal_NotesBean.editMode}" value="#{processportal_NotesBean.messages['button.cancel']}"
+							action="#{processportal_NotesBean.cancelNote}"
+							styleClass="button secondary"/>
 		</ice:panelGrid>
 	</ice:panelGroup>
 

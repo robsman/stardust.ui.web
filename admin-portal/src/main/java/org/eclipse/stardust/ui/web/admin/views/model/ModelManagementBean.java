@@ -428,26 +428,26 @@ public class ModelManagementBean extends UIComponentBean implements ViewEventHan
 
       FilterToolbarItem versionTool = new FilterToolbarItem(ModelManagementTreeItem.Type.MODEL_VERSION.name(),
             ModelManagementTreeItem.Type.MODEL_VERSION.name(), "version",
-            "/plugins/views-common/images/icons/book_open.png");
+            "pi pi-version pi-lg");
       versionTool.setActive(false);
       filterToolbarItems.add(versionTool);
 
       FilterToolbarItem consumerTool = new FilterToolbarItem(
             ModelManagementTreeItem.Type.MODEL_VERSION_PROVIDER.name(),
             ModelManagementTreeItem.Type.MODEL_VERSION_PROVIDER.name(), "provider",
-            "/plugins/views-common/images/icons/resultset_next.png");
+            "pi pi-step-forward-one pi-lg");
       filterToolbarItems.add(consumerTool);
 
       FilterToolbarItem providerTool = new FilterToolbarItem(
             ModelManagementTreeItem.Type.MODEL_VERSION_CONSUMER.name(),
             ModelManagementTreeItem.Type.MODEL_VERSION_CONSUMER.name(), "consumer",
-            "/plugins/views-common/images/icons/resultset_previous.png");
+            "pi pi-step-back-one pi-rotate-180 pi-lg");
       filterToolbarItems.add(providerTool);
 
       FilterToolbarItem primaryInterfaceTool = new FilterToolbarItem(
             ModelManagementTreeItem.Type.PRIMARY_INTERFACE.name(),
             ModelManagementTreeItem.Type.PRIMARY_INTERFACE.name(), "primaryinterface",
-            "/plugins/views-common/images/icons/cog.png");
+            "pi pi-cog pi-lg");
       filterToolbarItems.add(primaryInterfaceTool);
 
       Collections.unmodifiableCollection(filterToolbarItems);

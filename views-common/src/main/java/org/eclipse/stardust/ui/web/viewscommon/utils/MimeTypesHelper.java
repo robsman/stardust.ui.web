@@ -114,10 +114,10 @@ public class MimeTypesHelper implements Serializable
          "document-powerpoint.png", "pi-lg pi pi-ppt", "");
 
    public static final MIMEType BPM_RPT_DESIGN = new MIMEType("application/bpmrptdesign", "bpmrptdesign", "report.png",
-         "pi-lg pi pi-ppt", "Reports");
+         "pi-lg pi pi-report", "Reports");
 
    public static final MIMEType BPM_RPT = new MIMEType("application/bpmrpt", "bpmrpt", "report.png",
-         "pi-lg pi pi-xml-json",
+         "pi-lg pi pi-bar-chart",
          "Reports");
    
    public static final MIMEType CSS = new MIMEType("text/css", "css", "document-text.png", "pi-lg pi pi-css", "CSS");

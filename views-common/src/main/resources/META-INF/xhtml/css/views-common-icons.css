@@ -317,3 +317,8 @@
 	font-family: "FontAwesome";
 	content:"\f1c3";
 }
+
+.resource-manager-view:before { 
+	font-family: "FontAwesome";
+	content: '\f13c'; /* fa-css3   */
+}

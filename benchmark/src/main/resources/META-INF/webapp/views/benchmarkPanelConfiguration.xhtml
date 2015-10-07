@@ -50,18 +50,18 @@
 			</ice:panelGroup>
 	
 			<c:if test="#{not empty benchmarkConfigurationTableBean}">
-				<ice:commandButton
+				<ice:commandLink
 					actionListener="#{benchmarkConfigurationTableBean.toggleAuxPDFilter}"
 					title="#{benchmarkMessages['views.benchmarkPanelConfiguration.defaultBenchmarks.showAuxProcess.title']}"
-					image="/plugins/views-common/images/icons/eye.png"
 					rendered="#{benchmarkConfigurationTableBean.nonAuxiliaryProcessDefs}">
-				</ice:commandButton>
-				<ice:commandButton styleClass="iceCmdBtn-dis"
+					<i class="pi pi-eye-open pi-lg"></i>
+				</ice:commandLink>
+				<ice:commandLink styleClass="iceCmdBtn-dis"
 					actionListener="#{benchmarkConfigurationTableBean.toggleAuxPDFilter}"
 					title="#{benchmarkMessages['views.benchmarkPanelConfiguration.defaultBenchmarks.hideAuxProcess.title']}"
-					image="/plugins/views-common/images/icons/eye.png"
 					rendered="#{!benchmarkConfigurationTableBean.nonAuxiliaryProcessDefs}">
-				</ice:commandButton>
+					<i class="pi pi-eye-close pi-lg"></i>
+				</ice:commandLink>
 			</c:if>
 	
 			<ice:panelGroup styleClass="clearing" />
