@@ -205,7 +205,19 @@
 		}
 
 		this.customizeWithAttributeValues(attr, scope, scopeToUse);
-
+		
+		if(attr.sdaExtraColumns) {
+			this.extraColumns = JSON.parse(attr.sdaExtraColumns);
+		}
+		if((query!=null && query.id == 'allResubmissionInstances')) {
+			if(null == this.extraColumns) {
+				this.extraColumns = [];
+			}
+			if(!this.showResubmissionTime()) {
+				this.extraColumns.push("resubmissionTime");
+			}
+		}
+		
 		if (attr.sdaPageSize) {
 			this.sdaPageSize = attr.sdaPageSize;
 		}
@@ -664,11 +676,12 @@
 		var query = angular.extend({}, this.query);
 		options.descriptorColumns = self.descriptorCols;
 		query.options = options;
-
+		
 		var showResubmitLink = false;
 		if(query.id == 'allResubmissionInstances'){
 			showResubmitLink  = true;
 		}
+		options.extraColumns = self.extraColumns;
 			
 		if (angular.isDefined(this.sdDataCtrl)) { //If sdData is provided
 			
@@ -1340,6 +1353,16 @@
 	 */
 	ActivityTableCompiler.prototype.isWorklistMode = function() {
 	    return this.mode === DEFAULT_VALUES.WORKLIST.NAME;
+	};
+	
+	/**
+	 * 
+	 */
+	ActivityTableCompiler.prototype.showResubmissionTime = function() {
+	    if(this.extraColumns && $.inArray('resubmissionTime', this.extraColumns) > -1) {
+	    	return true;
+	    }
+	    return false;
 	};
 
 	/**

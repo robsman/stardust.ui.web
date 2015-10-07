@@ -22,6 +22,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.common.error.ConcurrencyException;
 import org.eclipse.stardust.common.log.LogManager;
@@ -397,7 +398,14 @@ public class ActivityInstanceService
    public QueryResultDTO getAllInstances(Options options, ActivityInstanceQuery query)
    {
       QueryResult< ? > queryResult = activityInstanceUtils.getActivityInstances(options, query);
-      return ActivityTableUtils.buildTableResult(queryResult, MODE.ACTIVITY_TABLE);
+      if(CollectionUtils.isNotEmpty(options.extraColumns))
+      {
+         return ActivityTableUtils.buildTableResult(queryResult, MODE.ACTIVITY_TABLE, null, options.extraColumns);
+      }
+      else
+      {
+         return ActivityTableUtils.buildTableResult(queryResult, MODE.ACTIVITY_TABLE);   
+      }
    }
 
    /**
@@ -406,7 +414,14 @@ public class ActivityInstanceService
    public QueryResultDTO getInstancesByOids( Options options, List<Long> oids, ActivityInstanceQuery query)
    {
       QueryResult< ? > queryResult = activityInstanceUtils.getActivitiesByOids(options, oids, query);
-      return ActivityTableUtils.buildTableResult(queryResult, MODE.ACTIVITY_TABLE);
+      if(CollectionUtils.isNotEmpty(options.extraColumns))
+      {
+         return ActivityTableUtils.buildTableResult(queryResult, MODE.ACTIVITY_TABLE, null, options.extraColumns);
+      }
+      else
+      {
+         return ActivityTableUtils.buildTableResult(queryResult, MODE.ACTIVITY_TABLE);   
+      }
    }
 
    /**

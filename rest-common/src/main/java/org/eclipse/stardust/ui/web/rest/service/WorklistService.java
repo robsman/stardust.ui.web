@@ -15,6 +15,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.ui.web.rest.Options;
@@ -127,7 +128,32 @@ public class WorklistService
    public QueryResultDTO getWorklistForResubmissionActivities(Options options)
    {
       QueryResult< ? > queryResult = worklistUtils.getWorklistForResubmissionActivities(options);
-      return getTableResult(queryResult, options.fetchTrivialManualActivities);
+      QueryResultDTO resultDTO = null;
+      if (options.fetchTrivialManualActivities)
+      {
+         Map<String, TrivialManualActivityDTO> trivialManualActivities = activityInstanceUtils
+               .getTrivialManualActivities((List<ActivityInstance>) queryResult, "default");
+         if(CollectionUtils.isNotEmpty(options.extraColumns))
+         {
+            resultDTO = ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST, trivialManualActivities, options.extraColumns);
+         }
+         else
+         {
+            resultDTO = ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST, trivialManualActivities);   
+         }
+      }
+      else
+      {
+         if(CollectionUtils.isNotEmpty(options.extraColumns))
+         {
+            resultDTO = ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST, null, options.extraColumns);
+         }
+         else
+         {
+            resultDTO = ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);   
+         }
+      }
+      return resultDTO;
    }
 
    /***

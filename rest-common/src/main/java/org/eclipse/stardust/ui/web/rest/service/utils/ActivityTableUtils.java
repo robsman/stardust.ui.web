@@ -32,7 +32,6 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -90,6 +89,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.WorklistFilterDTO.Descriptor
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
@@ -105,7 +105,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDocumentDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
-
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
@@ -599,6 +598,17 @@ public class ActivityTableUtils
       {
          options.fetchTrivialManualActivities = postJSON.get("fetchTrivialManualActivities").getAsBoolean();
       }
+      if (null != postJSON.get("extraColumns"))
+      {
+         JsonArray extraColumns = postJSON.get("extraColumns").getAsJsonArray();
+         List<String> extraColumnsList = new ArrayList<String>();
+         for (JsonElement jsonElement : extraColumns)
+         {
+            extraColumnsList.add(jsonElement.getAsString());
+         }
+         options.extraColumns = extraColumnsList;
+      }
+      
       return options;
    }
 
@@ -662,16 +672,20 @@ public class ActivityTableUtils
    {
       return buildTableResult(queryResult, mode, null);
    }
+   
+   public static QueryResultDTO buildTableResult(QueryResult< ? > queryResult, MODE mode, Map<String, TrivialManualActivityDTO> trivialManualActivityDetails)
+   {
+      return buildTableResult(queryResult, mode, trivialManualActivityDetails, null);
+   }
    /**
     * @param queryResult
     * @return
     */
-   public static QueryResultDTO buildTableResult(QueryResult< ? > queryResult, MODE mode, Map<String, TrivialManualActivityDTO> trivialManualActivityDetails)
+   public static QueryResultDTO buildTableResult(QueryResult< ? > queryResult, MODE mode, Map<String, TrivialManualActivityDTO> trivialManualActivityDetails, List<String> extraColumns)
    {
       List<ActivityInstanceDTO> list = new ArrayList<ActivityInstanceDTO>();
       List<CriticalityCategory> criticalityConfigurations = CriticalityUtils.getCriticalityConfiguration();
     
-      
       ModelCache modelCache = ModelCache.findModelCache();
       QueryResultDTO resultDTO = new QueryResultDTO();
       if (null != queryResult)
@@ -723,10 +737,19 @@ public class ActivityTableUtils
                   dto.notesCount = notes.size();
                }
                
+               if (CollectionUtils.isNotEmpty(extraColumns) && extraColumns.contains(Constants.RESUBMISSION_TIME))
+               {
+                  Date resubmissionDate = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils
+                        .getResubmissionDate(ai);
+                  if (null != resubmissionDate)
+                  {
+                     dto.resubmissionTime = resubmissionDate.getTime();
+                  }
+               }
                ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(
                      ai.getModelOID(), ai.getProcessDefinitionId());
                dto.processInstance.supportsProcessAttachments = ProcessDefinitionUtils.supportsProcessAttachments(processDefinition);
-
+               
                if (mode.equals(MODE.ACTIVITY_TABLE))
                {
                   dto.completedBy = ActivityInstanceUtils.getPerformedByName(ai);

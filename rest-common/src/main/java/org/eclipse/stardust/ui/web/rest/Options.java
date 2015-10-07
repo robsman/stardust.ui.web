@@ -26,6 +26,8 @@ public class Options {
 	public boolean allDescriptorsVisible;
 	public String worklistId;
 	public boolean fetchTrivialManualActivities;
+    // Extra Columns fetched conditionally
+    public List<String> extraColumns;
 
 	public Options() {
 

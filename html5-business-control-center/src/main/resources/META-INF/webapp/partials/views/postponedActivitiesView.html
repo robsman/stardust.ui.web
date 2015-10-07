@@ -73,7 +73,7 @@
 		<div class="view-panel-toolbar">{{i18n('business-control-center-messages.views-postponedActivities-selectedActivitiesTable-title')}}</div>
 
 		<div sd-activity-table="ctrl.activityTable" sda-mode="activityTable" aid="BCC-PostponedActvities-Activity-DataTable"
-			sd-data="ctrl.getActivitiesByOids(params);"
+			sd-data="ctrl.getActivitiesByOids(params);" sda-extra-columns='["resubmissionTime"]'
 			sda-preference-module="ipp-views-common"
 			sda-preference-id="preference"
 			sda-preference-name="ipp-views-common.activityWithPrio.selectedColumns"></div>

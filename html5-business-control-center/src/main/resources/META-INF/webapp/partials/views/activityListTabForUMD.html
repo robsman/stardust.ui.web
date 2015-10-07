@@ -1,6 +1,6 @@
 <div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-userManagerDetailView-activityList-table-title')}}
 	{{ctrl.userManagerDetails.userAccount}}</div>
 <div sd-activity-table="ctrl.activityTable" sda-mode="activityTable"
-	sd-data="ctrl.getActivitiesForUser(params);"
+	sd-data="ctrl.getActivitiesForUser(params);" sda-extra-columns='["resubmissionTime"]'
 	sda-preference-module="ipp-views-common" sda-preference-id="preference"
 	sda-preference-name="ipp-views-common.activityWithPrio.selectedColumns"></div>

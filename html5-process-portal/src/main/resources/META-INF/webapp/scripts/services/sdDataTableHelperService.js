@@ -71,7 +71,7 @@
 			if (found && found.length > 0) {
 				postData.descriptors.fetchAll = true;
 			}
-
+			
 			var visibleDescriptors = [];
 
 			angular.forEach(options.descriptorColumns, function(descriptor) {
@@ -97,6 +97,10 @@
 				postData.fetchTrivialManualActivities = true;
 			} else {
 				postData.fetchTrivialManualActivities = false;
+			}
+			// fetch extra Columns
+			if(options.extraColumns) {
+				postData.extraColumns = options.extraColumns;
 			}
 			return postData;
 		};

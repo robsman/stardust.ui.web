@@ -89,7 +89,7 @@
 	</div>
 	
 	<div sd-activity-table="ctrl.activityTable" sda-mode="activityTable"
-		sd-data="ctrl.getActivitiesByOids(params);"
+		sd-data="ctrl.getActivitiesByOids(params);" sda-extra-columns='["resubmissionTime"]'
 		sda-ready="ctrl.showActivityTable"
 		sda-preference-module="ipp-views-common"
 		sda-preference-id="preference"

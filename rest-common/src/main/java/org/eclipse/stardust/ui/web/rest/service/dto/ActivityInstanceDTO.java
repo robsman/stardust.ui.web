@@ -83,6 +83,8 @@ public class ActivityInstanceDTO extends AbstractDTO
    public BenchmarkDTO benchmark;
 
    public boolean auxillary;
+   
+   public Long resubmissionTime;
 
    public void setQualityAssuranceState(QualityAssuranceState state)
    {

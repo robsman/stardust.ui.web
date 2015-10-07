@@ -76,6 +76,8 @@
 				<th sda-name="descriptors" sda-sortable="false"  sda-filterable="false"  sda-visible="{{activityTableCtrl.isColumnVisible('descriptors')}}">
 				</th>
 				
+				<th sda-name="resubmissionTime"  sda-label-key="resubmissionTime" ng-if="activityTableCtrl.showResubmissionTime()"></th>
+								
 				<th sda-name="startTime"  sda-label-key="started" sda-sortable="true" sda-filterable="true" sda-visible="{{activityTableCtrl.isColumnVisible('startTime')}}"></th>
 				
 				<th sda-name="lastModified" sda-label-key="lastmodification" sda-sortable="true" sda-filterable="true" sda-visible="{{activityTableCtrl.isColumnVisible('lastModified')}}">
@@ -193,6 +195,9 @@
 						</tr>
 					</table>
 					<div sd-editor-template></div>
+				</td>
+				
+				<td sda-field="resubmissionTime" sda-data-type="dateTime" ng-if="activityTableCtrl.showResubmissionTime()">
 				</td>
 				
 				<td sda-field="startTime" sda-data-type="dateTime">

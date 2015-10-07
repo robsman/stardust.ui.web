@@ -18,6 +18,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.ui.web.rest.Options;
@@ -85,6 +86,10 @@ public class RoleManagerDetailService
    public QueryResultDTO getAllActivitiesForRole(String roleId,
          String departmentOid, Options options){
       QueryResult<ActivityInstance> queryResult = roleManagerDetailUtils.getAllActivitiesForRole(roleId, departmentOid, options);
+      if(CollectionUtils.isNotEmpty(options.extraColumns))
+      {
+         return ActivityTableUtils.buildTableResult(queryResult, MODE.ACTIVITY_TABLE, null, options.extraColumns);
+      }
       return ActivityTableUtils.buildTableResult(queryResult,MODE.ACTIVITY_TABLE);
    }
 }
