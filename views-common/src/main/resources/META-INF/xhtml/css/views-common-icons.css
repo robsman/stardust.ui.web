@@ -144,7 +144,7 @@
 	content:'\f039'; /* fa-align-justify */
 }
 
-.process:before{
+.process-view:before{
 	font-family: "FontAwesome";
 	content: "\f085"; /* fa-cogs */
 }

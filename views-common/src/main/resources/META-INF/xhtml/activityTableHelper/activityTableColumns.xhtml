@@ -147,11 +147,11 @@
 					rendered="#{bean.strandedActivityView}" disabled="#{row.caseInstance}" onclick="Event.stop(event);">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsDefaultDelegate" standAlone="false"/>
 					<f:attribute name="activityInstance" value="#{row.activityInstance}" />
-					<ice:graphicImage
-						url="/plugins/views-common/images/icons/user-silhouette.png"
-						style="border:none;"
-						styleClass="#{!row.caseInstance ? '' : 'iceCmdBtn-dis'}"
-						title="#{messages_bcc['views.strandedActivities.toolTip.delegateToDefaultPerformer']}" />
+					<ice:outputText
+						styleClass="#{!row.caseInstance ? '' : 'iceCmdBtn-dis'} pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top"
+						title="#{messages_bcc['views.strandedActivities.toolTip.delegateToDefaultPerformer']}">
+						<h:outputText styleClass="pi pi-badge-icon pi-badge-icon-arrow-r" title="#{messages_bcc['views.strandedActivities.toolTip.delegateToDefaultPerformer']}"/>
+					</ice:outputText>
 				</ice:commandLink>
 				<ice:commandLink
 					actionListener="#{bean.openRelocationDialog}"

@@ -49,9 +49,8 @@
 		<ice:commandLink action="#{spawnProcessDialogBean.openPopup}" rendered="#{processInstanceDetailsBean.enableSpawnProcess}"
 			immediate="true" disabled="#{processInstanceDetailsBean.disableSpawnProcess}">
 			<pc:automationTag value="auto-COM-PCESpawnProcess" standAlone="false" />
-			<ice:graphicImage
-				value="/plugins/views-common/images/icons/cog_add.png"
-				styleClass="#{!processInstanceDetailsBean.disableSpawnProcess and processInstanceDetailsBean.enableSpawnProcess? '' : 'iceCmdBtn-dis'}"
+			<ice:outputText
+				styleClass="#{!processInstanceDetailsBean.disableSpawnProcess and processInstanceDetailsBean.enableSpawnProcess? '' : 'iceCmdBtn-dis'} pi pi-spawn-process pi-lg"
 				title="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}" />
 			<f:param name="processInstanceOID"
 				value="#{processInstanceDetailsBean.processInstanceOID}" />
@@ -65,7 +64,7 @@
 			action="#{processInstanceDetailsBean.openChat}" partialSubmit="true"
 			title="#{messages_bcc['toolbars.processInstanceDetailsView.tooltip.chat']}"
 			styleClass="toolbar-button">
-			<i styleClass="pi pi-chat pi-lg" />
+			<i class="pi pi-chat pi-lg" />
 		</ice:commandLink>
 		<ice:graphicImage value="/plugins/views-common/images/icons/toolbar-separator.png"/>
 		

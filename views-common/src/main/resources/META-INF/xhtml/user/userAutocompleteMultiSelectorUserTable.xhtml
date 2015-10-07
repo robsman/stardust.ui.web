@@ -48,9 +48,8 @@
 												action="#{user.removeUser}" disabled="#{not user.removeable}">
 											<pc:automationTag value="auto-COM-UserMultiSel-ActionsRemove"
 												standAlone="false" />
-											<ice:graphicImage
-												value="/plugins/views-common/images/icons/dialog-windowbttn-close.png"
-												styleClass="#{(not user.removeable) ? 'iceCmdBtn-dis' : 'icon-style'}" />
+											<ice:outputText
+												styleClass="#{(not user.removeable) ? 'iceCmdBtn-dis' : 'icon-style'} pi pi-dialog-close pi-lg" />
 											</ice:commandLink>
 										</td>
 								</tr>

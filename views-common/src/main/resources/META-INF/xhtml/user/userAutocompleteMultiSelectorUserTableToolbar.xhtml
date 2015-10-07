@@ -29,8 +29,7 @@
 		<ice:panelGroup rendered="#{col.columnName == 'Actions'}">
 			<ice:commandLink action="#{row.removeUser}"
 				rendered="#{row.removeable}">
-				<ice:graphicImage value="/plugins/views-common/images/icons/dialog-windowbttn-close.png"
-					styleClass="toolbar-button" />
+				<ice:outputText styleClass="pi pi-dialog-close pi-lg" />
 			</ice:commandLink>
 		</ice:panelGroup>
 	</ice:panelGroup>

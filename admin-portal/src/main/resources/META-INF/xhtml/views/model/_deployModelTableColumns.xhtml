@@ -38,9 +38,7 @@
 				actionListener="#{modelDeploymentDialogBean.deploymentPage.removeUploadedFile}">
 				<pc:automationTag
 					value="auto-ADM-ModelDeployDlg-DeployModelTbl-RemFile" standAlone="false" />
-				<h:graphicImage
-					value="/plugins/views-common/images/icons/delete.png"
-					style="border: none;" />
+				<ice:outputText styleClass="pi pi-delete pi-lg"/>
 				<f:attribute name="row" value="#{row}" />
 			</ice:commandLink>
 
