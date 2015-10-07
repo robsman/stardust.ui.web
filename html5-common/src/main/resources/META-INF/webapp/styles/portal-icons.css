@@ -42,6 +42,10 @@ Supported fonts we wrap for our portal icon (pi-) classes
 	font-size: 1.33333333em !important
 }
 
+.pi-md {
+	font-size: 1.15em !important
+}
+
 .pi-sm {
 	font-size: 0.7777em;
 	line-height: 0.75em;
@@ -187,12 +191,12 @@ button.pi:disabled {
 }
 
 /* For ICEfaces */
-.pi-cmdLnk, .pi-cmdLnk .pi, .iceCmdLnk .pi, .iceCmdLnk-dis .pi {
+.pi-cmdLnk, .pi-cmdLnk .pi, .iceCmdLnk .pi, .iceCmdLnk-dis .pi, .iceMnuBarItem .pi {
 	color: #A69A88 !important;
 }
 
 /* For ICEfaces */
-.pi-cmdLnk:hover, .pi-cmdLnk:hover .pi, .iceCmdLnk:hover .pi, .iceCmdLnk-dis .pi:hover {
+.pi-cmdLnk:hover, .pi-cmdLnk:hover .pi, .iceCmdLnk:hover .pi, .iceCmdLnk-dis .pi:hover, .iceMnuBarItem .pi:hover {
 	color: #906C37 !important;
 }
 
@@ -271,7 +275,7 @@ Utility classes for portal icons
 }
 
 /* Add this class where iceCmdLnk is used */
-.pi-cmdLnk:hover {
+.pi-cmdLnk:hover, span.pi:hover {
 	text-decoration: none !important;
 }
 
@@ -545,7 +549,7 @@ Icon implementations
 }
 
 .pi-email:before,
-.pi-case:before{
+span.pi-case:before{
 	font-family: "FontAwesome";
 	content: "\f0e0"; /* fa-envelope */
 }
@@ -1329,4 +1333,9 @@ Icon implementations
 .pi-performance-team-lead:before{
 	font-family:"FontAwesome";
 	content:'\f1fe'; /* fa-area-chart */
+}
+
+span.pi-abort-menu-open:before {
+	font-family:"FontAwesome";
+	content: '\f078'; /* arrow-circle-down */
 }

@@ -142,11 +142,11 @@
 
 
 				<ice:commandLink actionListener="#{bean.terminateProcess}"
-					disabled="#{not row.enableTerminate}" onclick="Event.stop(event);">
+					disabled="#{not row.enableTerminate}" onclick="Event.stop(event);" styleClass="pi-cmdLnk">
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsTerminate"
 						standAlone="false" />
 					<ice:outputText
-						title="#{views_common_msgPropsBean['common.tooltip.terminate']}" styleClass="#{row.enableTerminate? '' : 'iceCmdBtn-dis'} pi pi-process-abort pi-lg" />
+						title="#{views_common_msgPropsBean['common.tooltip.terminate']}" styleClass="#{row.enableTerminate? '' : 'iceCmdBtn-dis'} pi pi-process-abort pi-lg" style="padding-right: 0px;"/>
 					<f:attribute name="processInstance" value="#{row.processInstance}" />
 				</ice:commandLink>
 				<!-- Rendered when process termination is not allowed -->
@@ -165,13 +165,14 @@
 					<ui:param name="bean" value="#{bean}" />
 				</ice:panelGroup>
 
-				<ice:commandLink actionListener="#{bean.recoverProcess}" disabled="#{not row.enableRecover}" onclick="Event.stop(event);">
+				<ice:commandLink actionListener="#{bean.recoverProcess}" disabled="#{not row.enableRecover}" onclick="Event.stop(event);"
+					styleClass="pi-cmdLnk">
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsRecover" standAlone="false"/>
 					<ice:outputText
 						title="#{messages_bcc['common.tooltip.recover']}"  styleClass="#{row.enableRecover ? '' : 'iceCmdBtn-dis'} pi pi-recover pi-lg" />
 					<f:attribute name="processInstance" value="#{row.processInstance}" />
 				</ice:commandLink>
-				<ice:commandLink action="#{ippPortalApp.openView}" onclick="Event.stop(event);">
+				<ice:commandLink action="#{ippPortalApp.openView}" onclick="Event.stop(event);" style="margin-left: 5px;">
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsProcessDiag" standAlone="false"/>
 					<h:outputText rendered="#{ippBCCDiagramBean != null and ippBCCDiagramBean.diagramSupported}" 
 						styleClass="pi pi-process-diagram pi-lg"
@@ -180,7 +181,7 @@
 					<f:param name="nested" value="true" />
 	                <f:param name="viewParams" value="processInstanceOId=#{row.processInstanceOID}" />
 				</ice:commandLink>
-				<ice:commandLink action="#{ippPortalApp.openView}" onclick="Event.stop(event);">
+				<ice:commandLink action="#{ippPortalApp.openView}" onclick="Event.stop(event);" style="margin-left: 8px;">
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsGanttChart" standAlone="false"/>
 					<h:outputText styleClass="pi pi-gantt-chart pi-lg"
 						title="#{messages_bcc['views.processSearchView.tooltip.viewGanttChart']}" />
@@ -189,7 +190,7 @@
 	                <f:param name="viewParams" value="processInstanceOId=#{row.processInstanceOID}" />
 				</ice:commandLink>
 				<ice:commandLink rendered="#{row.notesCount gt 0}"
-					actionListener="#{bean.openNotes}" onclick="Event.stop(event);">
+					actionListener="#{bean.openNotes}" onclick="Event.stop(event);" styleClass="pi-cmdLnk">
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsNotes" standAlone="false"/>
 					<ice:outputText
 						title="#{messages_bcc['common.tooltip.notes']}" 
@@ -197,7 +198,7 @@
 					<f:attribute name="processInstance" value="#{row.processInstance}" />
 				</ice:commandLink>
 				<ice:commandLink rendered="#{row.notesCount le 0}"
-					actionListener="#{bean.openNotes}" onclick="Event.stop(event);">
+					actionListener="#{bean.openNotes}" onclick="Event.stop(event);" styleClass="pi-cmdLnk">
 					<pc:automationTag value="auto-COM-ProcTbl-ActionsNotes" standAlone="false"/>
 					<ice:outputText
 						title="#{messages_bcc['common.tooltip.notes']}" 
