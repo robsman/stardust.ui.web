@@ -539,7 +539,7 @@ Icon implementations
 }
 
 .pi-link:before,
-.pi-linked-processes{
+.pi-linked-processes:before{
 	font-family: "FontAwesome";
 	content: "\f0c1"; /* fa-link */
 }
