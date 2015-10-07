@@ -214,6 +214,7 @@
 						queryData.selectedRelatedBusinessObjectInstances = groupbyBOInstances;
 					}
 				}
+				queryData.selectedBOType = self.selectedBOType;
 				self.queryData = queryData;
 				
 				_sdTrafficLightViewService.getTLVStatasticByBusinessObject(queryData).then(function(data) {
@@ -305,7 +306,11 @@
 		
 		return deferred.promise;
 	}
-	
+	/**
+	 * 
+	 * @param params
+	 * @returns
+	 */
 	TrafficLightViewController.prototype.getTlvStatsDataByBO = function(params){
 		var self = this;
 		var deferred = _q.defer();
@@ -464,16 +469,26 @@
 	 */
 	TrafficLightViewController.prototype.getActivityListForTLV = function(params) {
 		var self = this;
-		var query = {
+		var query = {};
+		if(self.selectedDrillDown == "PROCESS_WORKITEM"){
+		   query = {
 			'options' : params.options,
 			'bOids' : self.queryData.bOids,
 			'dateType' : self.queryData.dateType,
 			'dayOffset' : self.queryData.dayOffset,
 			'benchmarkCategory' : self.selectedBenchmarkCategory,
 			'processActivitiesMap' : self.processActivitiesMap,
-			'state' : self.state
+			'state' : self.state,
+			'drillDownType' : self.selectedDrillDown
 		};
-
+		}else{
+			 query = {
+						'options' : params.options,
+						'oids' : self.instanceOids,
+						'drillDownType' : self.selectedDrillDown
+					};
+		}
+		
 		var deferred = _q.defer();
 		self.processList = {};
 		_sdActivityInstanceService.getActivitylistForTLV(query).then(function(data) {

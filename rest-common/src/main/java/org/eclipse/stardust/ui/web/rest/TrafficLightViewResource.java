@@ -50,6 +50,17 @@ public class TrafficLightViewResource
 {
    public static final Logger trace = LogManager.getLogger(TrafficLightViewResource.class);
 
+   public enum SUPPORTED_NUMERIC_TYPES
+   {
+      BYTE("byte"), SHORT("short"), INTEGER("integer"), INT("int"), LONG("long");
+      private String value;
+
+      private SUPPORTED_NUMERIC_TYPES(String value)
+      {
+         this.value = value;
+      }
+   }
+
    @Resource
    private TrafficLightViewService trafficLightViewService;
 
@@ -162,6 +173,8 @@ public class TrafficLightViewResource
 
       Integer dayOffset = postJSON.getAsJsonPrimitive("dayOffset").getAsInt();
 
+      String selectedBOType = postJSON.getAsJsonPrimitive("selectedBOType").getAsString();
+
       JsonArray categories = postJSON.getAsJsonArray("categories");
 
       Type typeBenchmarkCategories = new TypeToken<List<BenchmarkCategoryDTO>>()
@@ -178,41 +191,75 @@ public class TrafficLightViewResource
       String businessObjectType = postJSON.getAsJsonPrimitive("businessObjectType").getAsString();
 
       JsonArray selectedBusinessObjectInstances = postJSON.getAsJsonArray("selectedBusinessObjectInstances");
-
-      Type boInstances = new TypeToken<Set<String>>()
+      Set<?> selBOInstances;
+      if (businessObjectType.equals(SUPPORTED_NUMERIC_TYPES.INT.value) || businessObjectType.equals(SUPPORTED_NUMERIC_TYPES.INTEGER.value) 
+            || businessObjectType.equals(SUPPORTED_NUMERIC_TYPES.LONG.value) || businessObjectType.equals(SUPPORTED_NUMERIC_TYPES.SHORT.value)
+            || businessObjectType.equals(SUPPORTED_NUMERIC_TYPES.BYTE.value))
       {
-      }.getType();
-      Set<String> selBOInstances = new HashSet<String>();
-      if (null != selectedBusinessObjectInstances)
-      {
-         selBOInstances = new Gson().fromJson(selectedBusinessObjectInstances.toString(), boInstances);
+         Type boInstances = new TypeToken<Set<Number>>()
+               {
+               }.getType();
+                 selBOInstances = new HashSet<Number>();
+               if (null != selectedBusinessObjectInstances)
+               {
+                  selBOInstances = new Gson().fromJson(selectedBusinessObjectInstances.toString(), boInstances);
 
+               }
+      }else{
+         Type boInstances = new TypeToken<Set<String>>()
+               {
+               }.getType();
+                 selBOInstances = new HashSet<String>();
+               if (null != selectedBusinessObjectInstances)
+               {
+                  selBOInstances = new Gson().fromJson(selectedBusinessObjectInstances.toString(), boInstances);
+
+               }
       }
 
       String groupBybusinessQualifiedId = null;
-      Set<String> selGroupByBOInstances = null;
+      Set<?> selGroupByBOInstances = null;
       if (postJSON.getAsJsonPrimitive("groupBybusinessQualifiedId") != null)
       {
          groupBybusinessQualifiedId = postJSON.getAsJsonPrimitive("groupBybusinessQualifiedId").getAsString();
          String groupBybusinessObjectType = postJSON.getAsJsonPrimitive("groupBybusinessObjectType").getAsString();
-
          JsonArray selectedRelatedBusinessObjectInstances = postJSON
                .getAsJsonArray("selectedRelatedBusinessObjectInstances");
 
-         Type groupbyBOInstances = new TypeToken<Set<String>>()
+         if (groupBybusinessObjectType.equals(SUPPORTED_NUMERIC_TYPES.INT.value) || groupBybusinessObjectType.equals(SUPPORTED_NUMERIC_TYPES.INTEGER.value) 
+               || groupBybusinessObjectType.equals(SUPPORTED_NUMERIC_TYPES.LONG.value) || groupBybusinessObjectType.equals(SUPPORTED_NUMERIC_TYPES.SHORT.value)
+               || groupBybusinessObjectType.equals(SUPPORTED_NUMERIC_TYPES.BYTE.value))
          {
-         }.getType();
-         selGroupByBOInstances = new HashSet<String>();
-         if (null != selectedRelatedBusinessObjectInstances)
-         {
-            selGroupByBOInstances = new Gson().fromJson(selectedRelatedBusinessObjectInstances.toString(),
-                  groupbyBOInstances);
+            Type groupbyBOInstances = new TypeToken<Set<Number>>()
+            {
+            }.getType();
+            selGroupByBOInstances = new HashSet<Number>();
+            if (null != selectedRelatedBusinessObjectInstances)
+            {
+               selGroupByBOInstances = new Gson().fromJson(selectedRelatedBusinessObjectInstances.toString(),
+                     groupbyBOInstances);
+            }
+
+         }else{
+
+            Type groupbyBOInstances = new TypeToken<Set<String>>()
+            {
+            }.getType();
+            selGroupByBOInstances = new HashSet<String>();
+            if (null != selectedRelatedBusinessObjectInstances)
+            {
+               selGroupByBOInstances = new Gson().fromJson(selectedRelatedBusinessObjectInstances.toString(),
+                     groupbyBOInstances);
+            }
          }
+
+         
       }
 
       BenchmarkTLVStatisticsByBOResultDTO result = trafficLightViewService.getTrafficLightViewStatasticByBO(
             isAllBenchmarks, isAllProcessess, bOids, processes, dateType, dayOffset, benchmarkCategories,
-            businessObjectQualifiedId, selBOInstances, groupBybusinessQualifiedId, selGroupByBOInstances);
+            businessObjectQualifiedId, selBOInstances, groupBybusinessQualifiedId, selGroupByBOInstances,
+            selectedBOType);
       return Response.ok(result.toJson(), MediaType.APPLICATION_JSON).build();
    }
 }

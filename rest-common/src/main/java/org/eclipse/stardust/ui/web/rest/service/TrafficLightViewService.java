@@ -50,10 +50,10 @@ public class TrafficLightViewService
    public BenchmarkTLVStatisticsByBOResultDTO getTrafficLightViewStatasticByBO(Boolean isAllBenchmarks,
          Boolean isAllProcessess, List<Long> bOids, List<ProcessDefinitionDTO> processes, String dateType,
          Integer dayOffset, List<BenchmarkCategoryDTO> benchmarkCategories, String businessObjectQualifiedId,
-         Set<String> selBOInstances, String groupBybusinessQualifiedId, Set<String> selGroupByBOInstances)
+         Set<?> selBOInstances, String groupBybusinessQualifiedId, Set<?> selGroupByBOInstances, String selectedBOType)
    {
       return trafficLightViewUtils.getTrafficLightViewStatasticByBO(isAllBenchmarks, isAllProcessess, bOids, processes,
             dateType, dayOffset, benchmarkCategories, businessObjectQualifiedId, selBOInstances,
-            groupBybusinessQualifiedId, selGroupByBOInstances);
+            groupBybusinessQualifiedId, selGroupByBOInstances, selectedBOType);
    }
 }

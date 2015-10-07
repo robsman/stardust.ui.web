@@ -11,111 +11,122 @@
 /*
  * @author Subodh.Godbole
  */
-(function(){
+(function() {
 	'use strict';
 
-	angular.module('workflow-ui.services').provider('sdActivityInstanceService', function () {
-		this.$get = ['$rootScope', '$http', '$q', '$resource', 'sdDataTableHelperService', 'sdUtilService', function ($rootScope, $http, $q, $resource, sdDataTableHelperService, sdUtilService) {
-			var service = new ActivityInstanceService($rootScope, $http, $q, $resource, sdDataTableHelperService, sdUtilService);
-			return service;
-		}];
-	});
+	angular.module('workflow-ui.services').provider(
+			'sdActivityInstanceService',
+			function() {
+				this.$get = [
+						'$rootScope',
+						'$http',
+						'$q',
+						'$resource',
+						'sdDataTableHelperService',
+						'sdUtilService',
+						function($rootScope, $http, $q, $resource, sdDataTableHelperService, sdUtilService) {
+							var service = new ActivityInstanceService($rootScope, $http, $q, $resource,
+									sdDataTableHelperService, sdUtilService);
+							return service;
+						} ];
+			});
 
 	/*
 	 * 
 	 */
 	function ActivityInstanceService($rootScope, $http, $q, $resource, sdDataTableHelperService, sdUtilService) {
 		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/activity-instances/";
-		
-		
+
 		/*
 		 * 
 		 */
 		ActivityInstanceService.prototype.getByProcessOid = function(piOid) {
 
-		    return sdUtilService.ajax(REST_BASE_URL,'' , "process/oid/"+piOid);
+			return sdUtilService.ajax(REST_BASE_URL, '', "process/oid/" + piOid);
 		};
-		
+
 		/*
 		 * 
 		 */
 		ActivityInstanceService.prototype.reactivate = function(activityOID) {
 
-		    var data = {activityOID : activityOID}
-		    return sdUtilService.ajax(REST_BASE_URL,'' , data);
+			var data = {
+				activityOID : activityOID
+			}
+			return sdUtilService.ajax(REST_BASE_URL, '', data);
 		};
-		
 
 		/*
 		 * 
 		 */
 		ActivityInstanceService.prototype.activate = function(activityOID) {
 
-		    var data = {activityOID : activityOID}
-		    return sdUtilService.ajax(REST_BASE_URL,'activate' , data);
+			var data = {
+				activityOID : activityOID
+			}
+			return sdUtilService.ajax(REST_BASE_URL, 'activate', data);
 		};
-		
-		
+
 		/*
 		 * 
 		 */
 		ActivityInstanceService.prototype.getAllCounts = function() {
-			return sdUtilService.ajax(REST_BASE_URL,'' , "allCounts");
+			return sdUtilService.ajax(REST_BASE_URL, '', "allCounts");
 		};
-		
+
 		/*
 		 * 
 		 */
 		ActivityInstanceService.prototype.getAllActivities = function(query) {
-			var restUrl = REST_BASE_URL+ 'allActivities';
+			var restUrl = REST_BASE_URL + 'allActivities';
 			var queryParams = sdDataTableHelperService.convertToQueryParams(query.options);
 
 			if (queryParams.length > 0) {
 				restUrl = restUrl + "?" + queryParams.substr(1);
 			}
-			
+
 			var postData = sdDataTableHelperService.convertToPostParams(query.options);
 
 			return sdUtilService.ajax(restUrl, '', postData);
 		};
-		
-		
-		
+
 		/*
 		 * 
 		 */
 		ActivityInstanceService.prototype.getActivitylistForTLV = function(query) {
-		    var restUrl = REST_BASE_URL + "forTLVByCategory";
+			var restUrl = REST_BASE_URL + "forTLVByCategory";
 
-		    var queryParams = sdDataTableHelperService.convertToQueryParams(query.options);
+			var queryParams = sdDataTableHelperService.convertToQueryParams(query.options);
 
-		    if (queryParams.length > 0) {
-			var separator = "?";
-			if (/[?]/.test(restUrl)) {
-			    separator = "&";
+			if (queryParams.length > 0) {
+				var separator = "?";
+				if (/[?]/.test(restUrl)) {
+					separator = "&";
+				}
+				restUrl = restUrl + separator + queryParams.substr(1);
 			}
-			restUrl = restUrl + separator + queryParams.substr(1);
-		    }
-		    var postData = sdDataTableHelperService.convertToPostParams(query.options);
-
-		    postData.bOids = query.bOids;
-		    postData.dateType = query.dateType;
-		    postData.dayOffset = query.dayOffset;
-		    postData.benchmarkCategory = query.benchmarkCategory;		   
-		    postData.state = query.state;
-		    postData.processActivitiesMap = query.processActivitiesMap;
-		    
-		    var activityList = $resource(restUrl, {
-
-		    }, {
-			fetch : {
-			    method : 'POST'
+			var postData = sdDataTableHelperService.convertToPostParams(query.options);
+			postData.drillDownType = query.drillDownType;
+			if (query.drillDownType == "PROCESS_WORKITEM") {
+				postData.bOids = query.bOids;
+				postData.dateType = query.dateType;
+				postData.dayOffset = query.dayOffset;
+				postData.benchmarkCategory = query.benchmarkCategory;
+				postData.state = query.state;
+				postData.processActivitiesMap = query.processActivitiesMap;
+			} else {
+				postData.oids = query.oids;
 			}
-		    });
+			var activityList = $resource(restUrl, {
 
-		    return activityList.fetch({}, postData).$promise;
+			}, {
+				fetch : {
+					method : 'POST'
+				}
+			});
+
+			return activityList.fetch({}, postData).$promise;
 		};
-
 
 		/*
 		 * 
@@ -144,7 +155,7 @@
 		ActivityInstanceService.prototype.completeAll = function(activities) {
 			return sdUtilService.ajax(REST_BASE_URL, "completeAll", activities);
 		};
-		
+
 		/*
 		 * Get/Search participant
 		 * 
@@ -153,7 +164,7 @@
 		ActivityInstanceService.prototype.getParticipants = function(query) {
 			console.log("Getting participants for:");
 			console.log(query);
-			
+
 			var options = "";
 			if (query.options) {
 				if (query.options.skip != undefined) {
@@ -162,7 +173,7 @@
 				if (query.options.pageSize != undefined) {
 					options += "&pageSize=" + query.options.pageSize;
 				}
-				
+
 				if (query.options.filters != undefined) {
 					if (query.options.filters.name != undefined) {
 						query.data.searchText = query.options.filters.name.textSearch;
@@ -178,23 +189,21 @@
 			if (options.length > 0) {
 				restUrl = restUrl + "?" + options.substr(1);
 			}
-			
+
 			return sdUtilService.ajax(restUrl, '', query.data);
 		};
-		
-		
+
 		/*
 		 */
-		ActivityInstanceService.prototype.getMatchingParticpants = function( searchText , maxItems) {
-			
+		ActivityInstanceService.prototype.getMatchingParticpants = function(searchText, maxItems) {
+
 			var restUrl = REST_BASE_URL;
-			
-			var params = "searchAllParticipants/"+searchText+"/"+maxItems;
-			
+
+			var params = "searchAllParticipants/" + searchText + "/" + maxItems;
+
 			return sdUtilService.ajax(restUrl, '', params);
 		};
-		
-		
+
 		/*
 		 * Expected data in following format:
 		 * {
@@ -212,30 +221,29 @@
 		 */
 		ActivityInstanceService.prototype.delegateActivities = function(data) {
 			console.log("Delegating activities...");
-			
+
 			var participantType = data.participant.type;
 			var participantData = data.participant.OID;
-			switch(participantType) {
-				case 'USER':
-				case 'DEPARTMENT':
-					participantData = data.participant.OID;
-					break;
-				case 'ROLE':
-				case 'ORGANIZATION':
-					participantData = data.participant.id;
-					break;
+			switch (participantType) {
+			case 'USER':
+			case 'DEPARTMENT':
+				participantData = data.participant.OID;
+				break;
+			case 'ROLE':
+			case 'ORGANIZATION':
+				participantData = data.participant.id;
+				break;
 			}
 
 			var delegateData = {
-					activities: data.activities,
-					participant: participantData,
-					participantType: participantType
+				activities : data.activities,
+				participant : participantData,
+				participantType : participantType
 			};
-			
+
 			return sdUtilService.ajax(REST_BASE_URL, "delegate", delegateData);
 		};
-		
-		
+
 		/**
 		 * Expected data 
 		 * [{oid : status} , {..},...]
@@ -244,80 +252,79 @@
 		ActivityInstanceService.prototype.performDefaultDelegate = function(delegateData) {
 			return sdUtilService.ajax(REST_BASE_URL, "performDefaultDelegate", delegateData);
 		};
-		
+
 		/**
 		 * 
 		 */
-		ActivityInstanceService.prototype.abortActivities = function( scope, activities) {
+		ActivityInstanceService.prototype.abortActivities = function(scope, activities) {
 			var requestObj = {
-					scope : scope,
-					activities : activities
+				scope : scope,
+				activities : activities
 			};
 			return sdUtilService.ajax(REST_BASE_URL, "abort", requestObj);
-			
+
 		};
-		
-		
+
 		/**
 		 * 
 		 */
-		ActivityInstanceService.prototype.getStatsForCompletedActivities = function( ) {
+		ActivityInstanceService.prototype.getStatsForCompletedActivities = function() {
 			return sdUtilService.ajax(REST_BASE_URL, "", 'statistics/completedActivities');
 		};
-		
+
 		/**
 		 * 
 		 */
-		ActivityInstanceService.prototype.getPendingActivities = function( ) {
+		ActivityInstanceService.prototype.getPendingActivities = function() {
 			return sdUtilService.ajax(REST_BASE_URL, "", 'pendingActivities');
 		};
-		
+
 		/**
 		 * 
 		 */
-		ActivityInstanceService.prototype.getRoleColumns = function( ) {
+		ActivityInstanceService.prototype.getRoleColumns = function() {
 			return sdUtilService.ajax(REST_BASE_URL, "", 'allRoleColumns');
 		};
-		
+
 		/**
 		 * 
 		 */
-		ActivityInstanceService.prototype.getStatsForPostponedActivities = function( ) {
+		ActivityInstanceService.prototype.getStatsForPostponedActivities = function() {
 			return sdUtilService.ajax(REST_BASE_URL, "", 'statistics/postponedActivities');
 		};
-		
+
 		/**
 		 * 
 		 */
-		ActivityInstanceService.prototype.getParticipantColumns = function( ) {
+		ActivityInstanceService.prototype.getParticipantColumns = function() {
 			return sdUtilService.ajax(REST_BASE_URL, "", 'participantColumns');
 		};
-		
+
 		/**
 		 * 
 		 */
-		ActivityInstanceService.prototype.getCompletedActivityStatsByTeamLead = function( ) {
+		ActivityInstanceService.prototype.getCompletedActivityStatsByTeamLead = function() {
 			return sdUtilService.ajax(REST_BASE_URL, "", 'statistics/completedActivitiesByTeamLead');
 		};
-		
+
 		/**
 		 * 
 		 */
-		ActivityInstanceService.prototype.getByOids = function( query, oidsArray ) {
+		ActivityInstanceService.prototype.getByOids = function(query, oidsArray) {
 			var oids = oidsArray.join(',');
 			var restUrl = REST_BASE_URL + "oids";
-		    restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, 'oids='+oids);
-		    
+			restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, 'oids=' + oids);
+
 			var queryParams = sdDataTableHelperService.convertToQueryParams(query.options);
 			if (queryParams.length > 0) {
-			    restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, queryParams.substr(1));
+				restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, queryParams.substr(1));
 			}
 
 			var postData = sdDataTableHelperService.convertToPostParams(query.options);
 
 			return sdUtilService.ajax(restUrl, '', postData);
 		};
-		
+
 		/**
 		 * 
 		 */
@@ -325,13 +332,16 @@
 
 			return sdUtilService.ajax(REST_BASE_URL, "relocationTargets", activityInstanceOid);
 		};
-		
+
 		/**
 		 * 
 		 */
 		ActivityInstanceService.prototype.relocate = function(activityInstanceOid, targetAactivityId) {
 
-			return sdUtilService.ajax(REST_BASE_URL, activityInstanceOid + "/relocate", {targetActivityId: targetAactivityId}, activityInstanceOid);
+			return sdUtilService.ajax(REST_BASE_URL, activityInstanceOid + "/relocate", {
+				targetActivityId : targetAactivityId
+			}, activityInstanceOid);
 		};
-	};
+	}
+	;
 })();

@@ -428,12 +428,13 @@ public class TrafficLightViewUtils
     * @param selBOInstances
     * @param groupBybusinessQualifiedId
     * @param selGroupByBOInstances
+    * @param selectedBOType 
     * @return
     */
    public BenchmarkTLVStatisticsByBOResultDTO getTrafficLightViewStatasticByBO(Boolean isAllBenchmarks,
          Boolean isAllProcessess, List<Long> bOids, List<ProcessDefinitionDTO> processes, String dateType,
          Integer dayOffset, List<BenchmarkCategoryDTO> benchmarkCategories, String businessObjectQualifiedId,
-         Set<String> selBOInstances, String groupBybusinessQualifiedId, Set<String> selGroupByBOInstances)
+         Set< ? > selBOInstances, String groupBybusinessQualifiedId, Set< ? > selGroupByBOInstances, String selectedBOType)
    {
       Set<ProcessDefinition> processDefns = new HashSet<ProcessDefinition>();
       for (ProcessDefinitionDTO process : processes)
@@ -471,17 +472,8 @@ public class TrafficLightViewUtils
          }
 
       }
-
-      BenchmarkProcessStatisticsQuery query = BenchmarkProcessStatisticsQuery.forProcessesAndBusinessObject(
-            processDefns, baseData, selBOInstancesSet, baseGroupBy, selGroupByBOInstancesSet);
-
-      FilterOrTerm benchmarkFilter = query.getFilter().addOrTerm();
-
-      for (Long bOid : bOids)
-      {
-         benchmarkFilter.add(BenchmarkProcessStatisticsQuery.BENCHMARK_OID.isEqual(bOid));
-      }
-
+      
+      
       Calendar startDate = getCurrentDayStart();
       Calendar endDate = getCurrentDayEnd();
 
@@ -493,29 +485,76 @@ public class TrafficLightViewUtils
       {
          startDate = getPastStartDate(dayOffset);
       }
+      
+      BenchmarkBusinessObjectStatistics stats = null;
+      // if selected business object search for processes then BenchmarkProcessStatisticsQuery will be called 
+      if(selectedBOType.equals("PROCESSES")){
+         BenchmarkProcessStatisticsQuery query = BenchmarkProcessStatisticsQuery.forProcessesAndBusinessObject(
+               processDefns, baseData, selBOInstancesSet, baseGroupBy, selGroupByBOInstancesSet);
+         
+         FilterOrTerm benchmarkFilter = query.getFilter().addOrTerm();
 
-      FilterOrTerm businessDateFilter = query.getFilter().addOrTerm();
-
-      if (dateType.equals(PredefinedConstants.BUSINESS_DATE))
-      {
-         for (ProcessDefinitionDTO process : processes)
+         for (Long bOid : bOids)
          {
-            businessDateFilter.add((DataFilter.between(getModelName(process.id) + PredefinedConstants.BUSINESS_DATE,
-                  startDate.getTime(), endDate.getTime())));
+            benchmarkFilter.add(BenchmarkProcessStatisticsQuery.BENCHMARK_OID.isEqual(bOid));
          }
+         
+         FilterOrTerm businessDateFilter = query.getFilter().addOrTerm();
 
+         if (dateType.equals(PredefinedConstants.BUSINESS_DATE))
+         {
+            for (ProcessDefinitionDTO process : processes)
+            {
+               businessDateFilter.add((DataFilter.between(getModelName(process.id) + PredefinedConstants.BUSINESS_DATE,
+                     startDate.getTime(), endDate.getTime())));
+            }
+
+         }
+         else
+         {
+
+            query.where(ProcessInstanceQuery.START_TIME.between(startDate.getTimeInMillis(), endDate.getTimeInMillis()));
+         }
+         
+         stats = (BenchmarkBusinessObjectStatistics) serviceFactoryUtils
+               .getQueryService().getAllProcessInstances(query);
+     
+      }else{
+         // selected business object search for activities hence BenchmarkActivityStatisticsQuery will be called.
+         BenchmarkActivityStatisticsQuery query = BenchmarkActivityStatisticsQuery.forProcessesAndBusinessObject(
+               processDefns, baseData, selBOInstancesSet, baseGroupBy, selGroupByBOInstancesSet);
+         FilterOrTerm benchmarkFilter = query.getFilter().addOrTerm();
+
+         for (Long bOid : bOids)
+         {
+            benchmarkFilter.add(BenchmarkActivityStatisticsQuery.BENCHMARK_OID.isEqual(bOid));
+         }
+         
+         FilterOrTerm businessDateFilter = query.getFilter().addOrTerm();
+
+         if (dateType.equals(PredefinedConstants.BUSINESS_DATE))
+         {
+            for (ProcessDefinitionDTO process : processes)
+            {
+               businessDateFilter.add((DataFilter.between(getModelName(process.id) + PredefinedConstants.BUSINESS_DATE,
+                     startDate.getTime(), endDate.getTime())));
+            }
+
+         }
+         else
+         {
+
+            query.where(ActivityInstanceQuery.START_TIME.between(startDate.getTimeInMillis(), endDate.getTimeInMillis()));
+         }
+         
+         stats = (BenchmarkBusinessObjectStatistics) serviceFactoryUtils
+               .getQueryService().getAllActivityInstances(query);
+     
       }
-      else
-      {
-
-         query.where(ProcessInstanceQuery.START_TIME.between(startDate.getTimeInMillis(), endDate.getTimeInMillis()));
-      }
-
-      BenchmarkBusinessObjectStatistics stats = (BenchmarkBusinessObjectStatistics) serviceFactoryUtils
-            .getQueryService().getAllProcessInstances(query);
+      
       BenchmarkTLVStatisticsByBOResultDTO bTLVStatsByBOResultDTO = new BenchmarkTLVStatisticsByBOResultDTO();
       
-      BusinessObjectStatisticDTO totalBOSDTO = getTotalForBOProcessStatistic(benchmarkCategories,stats);
+      BusinessObjectStatisticDTO totalBOSDTO = getTotalForBOStatistic(benchmarkCategories,stats);
       
       Set<String> groupByValues = stats.getGroupByValues();
       if (!(groupByValues.size() == 1 && groupByValues.contains(BenchmarkBusinessObjectStatistics.NO_GROUPBY_VALUE)))
@@ -663,7 +702,7 @@ public class TrafficLightViewUtils
     * @param stats
     * @return
     */
-   private BusinessObjectStatisticDTO getTotalForBOProcessStatistic(List<BenchmarkCategoryDTO> benchmarkCategories, BenchmarkBusinessObjectStatistics stats)
+   private BusinessObjectStatisticDTO getTotalForBOStatistic(List<BenchmarkCategoryDTO> benchmarkCategories, BenchmarkBusinessObjectStatistics stats)
    {
       BusinessObjectStatisticDTO totalBOSDTO = new BusinessObjectStatisticDTO();
       totalBOSDTO.name = "TOTAL";
