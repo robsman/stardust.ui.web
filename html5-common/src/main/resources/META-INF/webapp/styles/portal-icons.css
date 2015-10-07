@@ -173,6 +173,10 @@ button.pi:hover, button .pi:hover{
 	color:#906C37;
 }
 
+button.pi[disabled='disabled']:hover, button[disabled='disabled'] .pi:hover{
+	color:#A69A88;
+}
+
 button.pi:focus {
 	outline:0;
 }
@@ -182,11 +186,13 @@ button.pi:disabled {
 	cursor:not-allowed;
 }
 
-.pi-cmdLnk, .pi-cmdLnk .pi, .iceCmdLnk .pi {
+/* For ICEfaces */
+.pi-cmdLnk, .pi-cmdLnk .pi, .iceCmdLnk .pi, .iceCmdLnk-dis .pi {
 	color: #A69A88 !important;
 }
 
-.pi-cmdLnk:hover, .pi-cmdLnk:hover .pi, .iceCmdLnk:hover .pi {
+/* For ICEfaces */
+.pi-cmdLnk:hover, .pi-cmdLnk:hover .pi, .iceCmdLnk:hover .pi, .iceCmdLnk-dis .pi:hover {
 	color: #906C37 !important;
 }
 
