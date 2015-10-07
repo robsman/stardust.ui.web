@@ -107,3 +107,12 @@
 	text-align: left;
 	white-space:nowrap;
 }
+
+.gantt-chart-time-frame-picker{
+	margin: 5px 5px 5px 0;
+}
+
+.gantt-chart-tool-bar {
+	margin: 0 5px 2px 5px;
+}
+

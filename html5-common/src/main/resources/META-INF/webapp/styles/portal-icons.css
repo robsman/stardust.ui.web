@@ -1234,7 +1234,7 @@ Icon implementations
 	content: '\f017'; /* fa-clock-o  */
 }
 
-.pi-disabled:before{
+.pi-disabled{
 	opacity : 0.4;
 }
 
@@ -1271,7 +1271,7 @@ Icon implementations
 .pi-qa-codes:before {
 	font-family: "FontAwesome";
 	content: "\f0ad"; /* fa-wrench */
-
+}
 
 .pi-loading:before,
 .pi-spinner:before{
@@ -1284,4 +1284,10 @@ Icon implementations
   -moz-animation: spin 2s infinite linear;
   -o-animation: spin 2s infinite linear;
   animation: spin 2s infinite linear;
+}
+
+.pi-legend:before,
+.pi-square:before{
+	font-family:starclipse;
+    content:'\F03E';/* sc-square  */
 }

@@ -14,7 +14,7 @@
 			<span class="iceOutLbl" ng-if ="ctrl.legendCategories.length < 2">{{ctrl.legendCategories[0].label}}: </span>
 		<span ng-repeat=" opt in ctrl.legends" class="gantt-chart-legend-option">
 			<span ng-bind="opt.label"> </span>
-			<i class="sc sc-square pi-lg gantt-chart-legend-symbol" ng-attr-style="color:{{opt.color}}; background-color :{{opt.color}}"></i>
+			<i class="pi pi-legend pi-lg gantt-chart-legend-symbol" ng-attr-style="color:{{opt.color}}; background-color :{{opt.color}}"></i>
 		</span>
 		
 		</div>
@@ -28,10 +28,10 @@
 			<thead >
 				<tr>
 					<th sda-label="">  
-						<div>
+						<div class="gantt-chart-time-frame-picker">
 							<select ng-model="ctrl.selected.timeFrame" ng-change="ctrl.onTimeFrameChange();" ng-options="opt.id as opt.label for opt in ctrl.timeFrames"> </select> 
 						</div>
-						<div>	
+						<div class="gantt-chart-tool-bar">	
 							<button class="button-link tbl-toolbar-item tbl-tool-link" 
 							        title="{{i18n('business-control-center-messages.views-ganttChartView-expandAll')}}" ng-click="ctrl.expandAll();">
 							           <i class="pi pi-create pi-lg"> </i>
@@ -78,9 +78,9 @@
 				<tr>
 					<td sda-tree-column >
 						<span class="identifierIcon spacing-right"  ng-switch on="rowData.type"> 
-							<span ng-switch-default>  <i class="sc sc-cog pi-lg"> </i></span>
-							<span ng-switch-when="process"> <i class="sc sc-cogs pi-1-5x "></i></span>
-							<span ng-switch-when="Subprocess"><i class="sc sc-cogs pi-1-5x"></i></span>
+							<span ng-switch-default>  <i class="pi pi-activity pi-lg"> </i></span>
+							<span ng-switch-when="process"> <i class="pi pi-process pi-lg"></i></span>
+							<span ng-switch-when="Subprocess"><i class="pi pi-process  pi-lg"></i></span>
 						</span>
 						
 						<span ng-bind="rowData.name" class="spacing-right"> </span> 
