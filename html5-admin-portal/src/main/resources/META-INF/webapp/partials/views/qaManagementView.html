@@ -6,10 +6,10 @@
 		</div>
 	</div>
 	<!-- Activities -->
-	<div class="view-panel-toolbar">
-		<i class="sc sc-arrow-d" ng-show="qaManagementCtrl.isActivitiesPanelExpanded" ng-click="qaManagementCtrl.expandActivitiesPanel(false);"> </i> 
-		<i class="sc sc-arrow-r" ng-show="!qaManagementCtrl.isActivitiesPanelExpanded" ng-click="qaManagementCtrl.expandActivitiesPanel(true);"> </i> 
-		<span ng-bind="i18n('admin-portal-messages.views-qaManagementView-activities-label')" class="heading"> 
+	<div class="heading">
+		<i class="pi pi-trigger-expand pi-lg" ng-show="qaManagementCtrl.isActivitiesPanelExpanded" ng-click="qaManagementCtrl.expandActivitiesPanel(false);"> </i> 
+		<i class="pi pi-trigger-collapse pi-lg" ng-show="!qaManagementCtrl.isActivitiesPanelExpanded" ng-click="qaManagementCtrl.expandActivitiesPanel(true);"> </i> 
+		<span ng-bind="i18n('admin-portal-messages.views-qaManagementView-activities-label')" > 
 		</span>
 	</div>
 	<!-- Activities Panel-->
@@ -68,7 +68,7 @@
 				<tbody>
 					<tr>
 						<td sda-data-type="string">
-							<i class=" spacing-right sc pi-lg sc-spiral"> </i>
+							<i class=" spacing-right pi pi-model pi-lg"> </i>
 							<span ng-bind="rowData.modelName"></span>
 						</td>
 						<td sda-data-type="string">
@@ -89,16 +89,16 @@
 								class="pi pi-lg pi-user" style="color:#A2B5CD ;margin-left: -6px;""></i> <span class="pi-lg">)</span>
 						   </span>
 						    <span ng-if="rowData.performerType == 'SCOPED_ORGANIZATION'"  class="spacing-right"> 
-						    	<i class="sc sc-organization pi-lg "></i>
+						    	<i class="pi pi-organization pi-lg "></i>
 						    </span>
 						      <span ng-if="rowData.performerType == 'ORGANIZATION'"  class="spacing-right"> 
-						    	<i class="sc sc-organization pi-lg "></i>
+						    	<i class="pi pi-organization pi-lg "></i>
 						    </span>
 						     <span ng-if="rowData.performerType == 'USER'"  class="spacing-right"> 
 						    	<i class="pi pi-user pi-lg "></i>
 						    </span>
 						     <span ng-if="rowData.performerType == 'USERGROUP'"  class="spacing-right"> 
-						    	<i class="sc pi-groups pi-lg "></i>
+						    	<i class="pi pi-groups pi-lg "></i>
 						    </span>
 						 <span ng-bind="rowData.defaultPerformer"></span>
 						</td>
@@ -118,12 +118,12 @@
 	<br />
 	<!-- Departments -->
 	<div ng-if="qaManagementCtrl.departments.totalCount > 0">
-		<div class="view-panel-toolbar">
-			<i class="sc sc-arrow-d" ng-show="qaManagementCtrl.isDepartmentsPanelExpanded"ng-click="qaManagementCtrl.expandDepartmentsPanel(false);"> 
+		<div class="heading">
+			<i class="pi pi-trigger-expand pi-lg" ng-show="qaManagementCtrl.isDepartmentsPanelExpanded"ng-click="qaManagementCtrl.expandDepartmentsPanel(false);"> 
 			</i> 
-			<i class="sc sc-arrow-r" ng-show="!qaManagementCtrl.isDepartmentsPanelExpanded" ng-click="qaManagementCtrl.expandDepartmentsPanel(true);"> 
+			<i class="pi pi-trigger-collapse pi-lg" ng-show="!qaManagementCtrl.isDepartmentsPanelExpanded" ng-click="qaManagementCtrl.expandDepartmentsPanel(true);"> 
 			</i> 
-			<span ng-bind="i18n('admin-portal-messages.views-qaManagementView-departments-label')" class="heading"></span>
+			<span ng-bind="i18n('admin-portal-messages.views-qaManagementView-departments-label')"></span>
 		</div>
 		<div ng-show="qaManagementCtrl.isDepartmentsPanelExpanded">
 			<div sda-toolbar>

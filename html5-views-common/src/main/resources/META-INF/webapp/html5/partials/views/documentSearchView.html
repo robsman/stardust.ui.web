@@ -10,14 +10,14 @@ table.formTable td {
 	<div class="view-panel ng-hide" ng-show="true"
 		ng-controller="sdDocumentSearchViewCtrl as docSearchViewCtrl"
 		sg-stretch-to-bottom>
-		<div class="view-panel-toolbar"
+		<div class="heading"
 			ng-click="docSearchViewCtrl.setShowDocumentSearchCriteria()"
 			aid="COM-SrchDoc-ShowHideCriteria">
 			<i ng-show="docSearchViewCtrl.showDocumentSearchCriteria"
-				class="sc sc-arrow-d pi-lg"></i> <i
-				ng-show="!docSearchViewCtrl.showDocumentSearchCriteria"
-				class="sc sc-arrow-r pi-lg"></i> <span
-				style="color: #2F6871; font-weight: bold; font-size: 11px;">{{i18n('views-common-messages.views-documentSearchView-documentSearchCriteria-label')}}</span>
+				class="pi pi-trigger-expand"></i> 
+			<i ng-show="!docSearchViewCtrl.showDocumentSearchCriteria"
+				class="pi pi-trigger-collapse"></i> 
+			<span>{{i18n('views-common-messages.views-documentSearchView-documentSearchCriteria-label')}}</span>
 		</div>
 		<div ng-show="docSearchViewCtrl.showDocumentSearchCriteria">
 			<form name="docSearchViewCtrl.searchCriteriaForm">

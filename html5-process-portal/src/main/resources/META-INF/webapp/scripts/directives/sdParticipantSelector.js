@@ -112,7 +112,7 @@
 					tagClass = 'pi pi-1x pi-role';
 					break;
 				case 'SCOPED_ROLE':
-					tagClass = 'pi pi-1x pi-role'; //TODO:user-cog single icon from sc
+					tagClass = 'pi pi-1x pi-role';
 					break;
 				case 'ORGANIZATION':
 					tagClass = 'pi pi-1x pi-organization';

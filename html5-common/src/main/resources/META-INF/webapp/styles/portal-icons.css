@@ -1271,4 +1271,17 @@ Icon implementations
 .pi-qa-codes:before {
 	font-family: "FontAwesome";
 	content: "\f0ad"; /* fa-wrench */
+
+
+.pi-loading:before,
+.pi-spinner:before{
+	font-family: "FontAwesome";
+	content: '\f110'; /* fa-spinner  */
+}
+
+.pi-spin {
+  -webkit-animation: spin 2s infinite linear;
+  -moz-animation: spin 2s infinite linear;
+  -o-animation: spin 2s infinite linear;
+  animation: spin 2s infinite linear;
 }

@@ -18,7 +18,7 @@
 				ng-click="bpmCommon.stopEvent($event); ctrl.openAddCustomColumnDlg();"
 				title="{{i18n('business-control-center-messages.views-toolbar-addColumn')}}"
 				class="button-link tbl-toolbar-item tbl-tool-link">
-				<i class="sc sc-fw sc-1x sc-plus-circle"></i>
+				<i class="pi pi-create pi-lg"></i>
 			</button>
 		</div>
 	</div>
@@ -65,15 +65,15 @@
 								: </b> <span
 								ng-if="rowData.statisticsByColumns[colData.title].state == 1"
 								title="{{i18n('business-control-center-messages.views-trafficLightView-critical')}}">
-								<i class="sc sc-fw sc-2x sc-circle" style="color: red"></i>
+								<i class="pi pi-user-status pi-2x pi-danger" ></i>
 							</span> <span
 								ng-if="rowData.statisticsByColumns[colData.title].state == 2"
 								title="{{i18n('business-control-center-messages.views-trafficLightView-warning')}}">
-								<i class="sc sc-fw sc-2x sc-circle" style="color: yellow"></i>
+								<i class="pi pi-user-status pi-2x pi-warning" ></i>
 							</span> <span
 								ng-if="rowData.statisticsByColumns[colData.title].state == 3"
 								title="{{i18n('business-control-center-messages.views-trafficLightView-normal')}}">
-								<i class="sc sc-fw pi-lg sc-circle" style="color: green"></i>
+								<i class="pi pi-user-status pi-2x pi-success" ></i>
 							</span>
 						</div>
 					</td>

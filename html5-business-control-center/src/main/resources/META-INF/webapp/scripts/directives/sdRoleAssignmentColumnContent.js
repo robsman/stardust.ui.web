@@ -26,8 +26,8 @@
 				value : '=sdaValue'
 			},
 
-			template : '<div><i ng-if="ctrl.value == true" class="sc sc-fw sc-2x sc-check"  style="color: green"><\/i>'
-					+ '<i ng-if="ctrl.value == false" class="sc sc-fw sc-2x sc-close" style="color: red"><\/i>'
+			template : '<div><i ng-if="ctrl.value == true" class="pi pi-lg pi-check pi-success"><\/i>'
+					+ '<i ng-if="ctrl.value == false" class="pi p-lg pi-close pi-danger"><\/i>'
 					+ '<\/div>',
 			controller : [ '$scope', '$parse', '$attrs', RoleAssignmentColumnContentCtrl ]
 		};
