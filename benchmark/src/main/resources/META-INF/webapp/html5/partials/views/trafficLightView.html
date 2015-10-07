@@ -12,13 +12,13 @@
 				ng-show="ctrl.tlvCriteriaForm.$error.benchmarksNotIdentical">
 				{{ctrl.errorMsg}}</div>
 			<div>
-				<span>{{i18n('benchmark-messages.views-trafficLightView-processes-label')}}</span>
+				<label style="vertical-align: top; display: inline" class="form-lable">{{i18n('benchmark-messages.views-trafficLightView-processes-label')}}</label>
 				<select size="5"
 					style="white-space: nowrap; margin: 5px; padding: 0;"
 					multiple="multiple" ng-model="ctrl.selectedProcesses"
 					ng-options="opt as opt.name for opt in ctrl.processes">
 				</select>
-				<span>{{i18n('benchmark-messages.views-trafficLightView-benchmarks-label')}}</span>
+				<label style="vertical-align: top; display: inline; margin-left: 10px" class="form-lable">{{i18n('benchmark-messages.views-trafficLightView-benchmarks-label')}}</label>
 				<select size="5"
 					style="white-space: nowrap; margin: 5px; padding: 0;"
 					multiple="multiple" ng-model="ctrl.selectedBenchmarks"
@@ -26,19 +26,19 @@
 				</select>
 			</div>
 			<div>
-				<span>{{i18n('benchmark-messages.views-trafficLightView-drilldown-label')}}</span>
+				<label style="display: inline;" class="form-lable">{{i18n('benchmark-messages.views-trafficLightView-drilldown-label')}}</label>
 				<select size="1"
 					style="white-space: nowrap; margin: 5px; padding: 0;"
 					ng-model="ctrl.selectedDrillDown"
 					ng-change="ctrl.drillDownChange()">
-					<option value="PROCESS_WORKITEM">Process/Work Item</option>
-					<option value="BUSINESS_OBJECT">Business Object</option>
+					<option value="PROCESS_WORKITEM">{{i18n('benchmark-messages.views-trafficLightView-processOrWorkItem-label')}}</option>
+					<option value="BUSINESS_OBJECT">{{i18n('benchmark-messages.views-trafficLightView-businessObject-label')}}</option>
 				</select>
 			</div>
 			<div ng-if="ctrl.showBusinessObjects">
 			   <table>
 			     <tr>
-			       <td><span>{{i18n('benchmark-messages.views-trafficLightView-businessObject-label')}}</span>
+			       <td><label style="display: inline;" class="form-lable">{{i18n('benchmark-messages.views-trafficLightView-businessObject-label')}}</label>
 					   <select ng-model="ctrl.selectedBusinessObject"
 							ng-options="businessObject as businessObject.label for businessObject in ctrl.businessObjects"
 							ng-change="ctrl.getBusinessObjectInstances()"></select>
@@ -51,7 +51,8 @@
 						sda-item-hot-class="sd-ac-item-isActive"
 						sda-selected-matches="ctrl.selectedBusinessObjectInstances"
 						sda-allow-duplicates="false"
-                    	sda-allow-multiple="true"></div>
+                    	sda-allow-multiple="true"
+                    	sda-clear-on-select="true"></div>
 			       </td>
 			     </tr>
 			   </table>
@@ -59,7 +60,7 @@
 			<div ng-if="ctrl.showGroupByObjects" style="margin-top: 5px;">
 			    <table>
 			      <tr><td>
-			          <span>{{i18n('benchmark-messages.views-trafficLightView-groupBy-label')}}</span>
+			          <label style="display: inline;" class="form-lable">{{i18n('benchmark-messages.views-trafficLightView-groupBy-label')}}</label>
 				       <select ng-model="ctrl.selectedRelatedBusinessObject"
 						ng-options="businessObject as businessObject.label for businessObject in ctrl.relatedBusinessObjects"
 						ng-change="ctrl.getRelatedBOInstances()"></select>
@@ -72,27 +73,28 @@
 						sda-item-hot-class="sd-ac-item-isActive"
 						sda-selected-matches="ctrl.selectedRelatedBusinessObjectInstances"
 						sda-allow-duplicates="false"
-                    	sda-allow-multiple="true"></div>
+                    	sda-allow-multiple="true"
+                    	sda-clear-on-select="true"></div>
 			     	 </td>
 			      </tr>
 			    </table>
 			</div>
 			<div>
-				<span>{{i18n('benchmark-messages.views-trafficLightView-date-label')}}</span>
+				<label style="display: inline;" class="form-lable">{{i18n('benchmark-messages.views-trafficLightView-date-label')}}</label>
 				<select size="1"
 					style="white-space: nowrap; margin: 5px; padding: 0;"
 					ng-model="ctrl.selectedDateType">
-					<option value="BUSINESS_DATE">Business Date</option>
-					<option value="STARTTIME_DATE">Start Time Date</option>
-				</select> <span>{{i18n('benchmark-messages.views-trafficLightView-offset-label')}}</span>
-				<input ng-model="ctrl.dayOffset" type="number">
-				<div ng-if="ctrl.showBusinessObjects">
-					<span>Show</span>
+					<option value="BUSINESS_DATE">{{i18n('benchmark-messages.views-trafficLightView-businessDate-label')}}</option>
+					<option value="STARTTIME_DATE">{{i18n('benchmark-messages.views-trafficLightView-startTimeDate-label')}}</option>
+				</select> <label style="display: inline;" class="form-lable">{{i18n('benchmark-messages.views-trafficLightView-offset-label')}}</label>
+				<input ng-model="ctrl.dayOffset" type="number"><label class="form-lable" style="margin-left: 3px; display: inline;">{{i18n('benchmark-messages.views-trafficLightView-day-label')}}</label>
+				<div ng-if="ctrl.showBusinessObjects" style="margin-left: 10px;display: inline;">
+					<label style="display: inline;" class="form-lable">{{i18n('benchmark-messages.views-trafficLightView-show-label')}}</label>
 					<select size="1"
 						style="white-space: nowrap; margin: 5px; padding: 0;"
 						ng-model="ctrl.selectedBOType">
-						<option value="PROCESSES">Processes</option>
-						<option value="ACTIVITIES">Activities</option>
+						<option value="PROCESSES">{{i18n('benchmark-messages.views-trafficLightView-processes-label')}}</option>
+						<option value="ACTIVITIES">{{i18n('benchmark-messages.views-trafficLightView-activities-label')}}</option>
 					</select>
 				</div>
 			</div>
