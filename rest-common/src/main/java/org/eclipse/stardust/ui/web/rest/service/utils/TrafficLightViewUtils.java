@@ -51,6 +51,8 @@ public class TrafficLightViewUtils
    public static final String TOTAL_PROCESS = "Total Process";
    
    public static final String TOTAL_ACTIVITY = "Total Activity";
+   
+   public static final String TOTAL = "Total";
 
    /**
     * 
@@ -553,8 +555,9 @@ public class TrafficLightViewUtils
       }
       
       BenchmarkTLVStatisticsByBOResultDTO bTLVStatsByBOResultDTO = new BenchmarkTLVStatisticsByBOResultDTO();
-      
-      BusinessObjectStatisticDTO totalBOSDTO = getTotalForBOStatistic(benchmarkCategories,stats);
+      // Calculate the counts for Total row.
+      BusinessObjectStatisticDTO totalBOSDTO = getTotalForBOStatistic(benchmarkCategories,stats);    
+      bTLVStatsByBOResultDTO.totalBusinessObjectStatistic = totalBOSDTO;
       
       Set<String> groupByValues = stats.getGroupByValues();
       if (!(groupByValues.size() == 1 && groupByValues.contains(BenchmarkBusinessObjectStatistics.NO_GROUPBY_VALUE)))
@@ -610,7 +613,6 @@ public class TrafficLightViewUtils
             }
             
          }
-         businessObjectsResultList.add(0, totalBOSDTO);
          bTLVStatsByBOResultDTO.businessObjectsResultList = businessObjectsResultList; 
       }
       else
@@ -622,8 +624,7 @@ public class TrafficLightViewUtils
             
             populateFilterValuesCount(benchmarkCategories, stats, boFilterLevelList, null,
                   filterValues);
-            
-            boFilterLevelList.add(0, totalBOSDTO);
+
             bTLVStatsByBOResultDTO.businessObjectsResultList = boFilterLevelList;
          }
       }
@@ -705,7 +706,7 @@ public class TrafficLightViewUtils
    private BusinessObjectStatisticDTO getTotalForBOStatistic(List<BenchmarkCategoryDTO> benchmarkCategories, BenchmarkBusinessObjectStatistics stats)
    {
       BusinessObjectStatisticDTO totalBOSDTO = new BusinessObjectStatisticDTO();
-      totalBOSDTO.name = "TOTAL";
+      totalBOSDTO.name = TOTAL;
       totalBOSDTO.isGroup = true;
       
       totalBOSDTO.abortedCount = stats.getAbortedCount(null, null);

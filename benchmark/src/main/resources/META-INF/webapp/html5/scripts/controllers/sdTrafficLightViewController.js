@@ -218,8 +218,11 @@
 				self.queryData = queryData;
 				
 				_sdTrafficLightViewService.getTLVStatasticByBusinessObject(queryData).then(function(data) {
+					self.tlvBOStatsTotal = {};
 					self.tlvBOStatsData = {};
 					self.tlvBOStatsDrillDownData = {};
+					self.tlvBOStatsTotal.list = [data.totalBusinessObjectStatistic];
+					self.tlvBOStatsTotal.totalCount = self.tlvBOStatsTotal.list.length;
 					self.tlvBOStatsData.list = data.businessObjectsResultList;
 					self.tlvBOStatsData.totalCount = data.businessObjectsResultList.length;
 					if(data.businessObjectsForGroupByMap != undefined){
@@ -316,17 +319,25 @@
 		var deferred = _q.defer();
 		var tlvData = {};
 		if(!params) {
-			tlvData.list = self.tlvBOStatsData.list;
-			tlvData.totalCount = self.tlvBOStatsData.totalCount;
-			angular.forEach(tlvData.list, function(object){
-				if(object.isGroup){
-					object.$leaf = false;
-				}
-				
+			tlvData.list = self.tlvBOStatsTotal.list;
+			tlvData.totalCount = self.tlvBOStatsTotal.totalCount;
+			angular.forEach(tlvData.list, function(object){				
+					object.$leaf = false;				
 			});
+			
 			deferred.resolve(tlvData);
 		}else{
-			var drillDownList = self.tlvBOStatsDrillDownData[params.parent.name];
+			if(params.parent.name == "Total"){
+				tlvData.list = self.tlvBOStatsData.list;
+				tlvData.totalCount = self.tlvBOStatsData.totalCount;
+				angular.forEach(tlvData.list, function(object){
+					if(object.isGroup){
+						object.$leaf = false;
+					}
+					
+				});
+			}else {
+				var drillDownList = self.tlvBOStatsDrillDownData[params.parent.name];
                 if(drillDownList != undefined){
                 	tlvData.list = drillDownList;
     				tlvData.totalCount = drillDownList.length;
@@ -334,9 +345,9 @@
                 	tlvData.list = [];
 			    	tlvData.totalCount = 0;
                 }
-				
-				deferred.resolve(tlvData);
-			
+			}
+							
+				deferred.resolve(tlvData);			
 		}
 		
 		return deferred.promise;
