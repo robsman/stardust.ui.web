@@ -92,7 +92,7 @@
 				include="/plugins/html5-views-common/html5/partials/views/documentSearchView.html">
 				<ippui:preferences>
 					<ippui:preferencePage name="icon"
-						include="/plugins/views-common/images/icons/page_white_find.png" />
+						include="/does-not-exist/document-search.png" />
 				</ippui:preferences>
 			</ippui:view>
 
@@ -126,7 +126,7 @@
 			
 			<ippui:view name="myReportsView"
 			include="/plugins/views-common/views/report/myReportsView.xhtml"
-			controller="myReportsViewBean" >			<ippui:preferences>				<ippui:preferencePage name="icon"					include="/plugins/views-common/images/icons/chart-pie.png" />			</ippui:preferences>			</ippui:view>
+			controller="myReportsViewBean" >			<ippui:preferences>				<ippui:preferencePage name="icon"					include="/does-not-exist/report-view.png" />			</ippui:preferences>			</ippui:view>
 				
 			<ippui:view name="imageViewerConfig"
 				include="/plugins/views-common/views/document/imageViewerConfiguration.xhtml">
@@ -134,7 +134,7 @@
 					<ippui:preferencePage name="configuration"
 						include="/plugins/views-common/views/document/imageViewerConfiguration.xhtml" />
 				</ippui:preferences>
-			</ippui:view>						<ippui:view name="deputyManagementView"			include="/plugins/views-common/deputy/deputyManagementView.xhtml"			controller="deputyManagementBean">	   		<ippui:preferences>				<ippui:preferencePage name="configuration"					include="/plugins/views-common/deputy/deputyManagementView.xhtml" />				<ippui:preferencePage name="icon"					include="/plugins/views-common/images/icons/user-silhouette.png" />			</ippui:preferences>		</ippui:view>
+			</ippui:view>						<ippui:view name="deputyManagementView"			include="/plugins/views-common/deputy/deputyManagementView.xhtml"			controller="deputyManagementBean">	   		<ippui:preferences>				<ippui:preferencePage name="configuration"					include="/plugins/views-common/deputy/deputyManagementView.xhtml" />				<ippui:preferencePage name="icon"					include="/does-not-exist/deputy-management.png" />			</ippui:preferences>		</ippui:view>
 	 	<ippui:view name="authorizationManagerView"			include="/plugins/html5-admin-portal/partials/views/authorizationManagerView.html"			requiredRoles="Administrator">			<ippui:preferences>				<ippui:preferencePage name="icon"					include="/does-not-exist/authorization-manager-view.png" />			</ippui:preferences>		</ippui:view>				<ippui:view name="correspondencePanelView"			include="/plugins/views-common/user/correspondencePanel.xhtml">			<ippui:preferences>				<ippui:preferencePage name="configuration"					include="/plugins/views-common/user/correspondencePanel.xhtml" />			</ippui:preferences>		</ippui:view>					
 		</ippui:viewsExtension>
 

@@ -37,7 +37,7 @@
 	content:"\f115"; /* fa-folder-open-o */
 }
 
-.page_white_find:before{
+.document-search:before{
 	font-family: "FontAwesome";
 	content: "\f002"; /* fa-search */
 }
@@ -154,12 +154,12 @@
 	content: "\f0e0"; /* fa-envelope */
 }
 
-.chart-pie:before {
+.report-view:before {
 	font-family:"FontAwesome";
 	content:'\f200'; /* fa-pie-chart */
 }
 
-.user-silhouette:before{
+.deputy-management:before{
 	font-family: "FontAwesome";
 	content: "\f21b"; /* fa-user-secret */
 }
