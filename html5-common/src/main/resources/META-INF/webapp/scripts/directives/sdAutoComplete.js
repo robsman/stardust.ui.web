@@ -160,6 +160,11 @@ angular.module('bpm-common.directives')
           $scope.dataList.splice(idx,1);
         }
         
+        //clear user input on select
+        if($scope.clearOnSelect===true){
+        	$scope.matchStr ="";
+        }
+        
         $scope.dataSelected.push(item);
         if (angular.isDefined($attrs.sdaOnSelectionChange)) {
           $scope.onSelectionChange({selectedData: $scope.dataSelected});
@@ -254,6 +259,7 @@ angular.module('bpm-common.directives')
     "controller"   : "autoCompleteController",
     "scope"        : { 
         dataList           : "=sdaMatches",
+        clearOnSelect	   : "=sdaClearOnSelect",
         allowMultiple      : "=sdaAllowMultiple",
         textProperty       : "@sdaTextProperty",
         allowUserEntry     : "=sdAllowUserEntry",
