@@ -390,15 +390,11 @@ Icon implementations
 }
 
 .pi-eye-open:before {
-	font-family: 'Glyphicons Halflings';
-  	content: "\e105"; /* glyphicon-eye-open */
+	font-family: 'FontAwesome';
+  	content: "\f06e"; /* fa-eye */
 }
 
-.pi-eye-close:before {
-	font-family: 'Glyphicons Halflings';
-	content: "\e106"; /* glyphicon-eye-close */
-}
-
+.pi-eye-close:before,
 .pi-eye-slash:before {
 	font-family: 'FontAwesome';
 	content: "\f070"; /* fa-eye-slash */
