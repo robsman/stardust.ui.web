@@ -13,7 +13,7 @@
 			disabled="#{!processInstanceDetailsBean.abortProcess}"
 			partialSubmit="true"
 			title="#{views_common_msgPropsBean['common.tooltip.terminate']}"
-			styleClass="toolbar-button" >
+			styleClass="toolbar-button">
 			<i class="pi pi-process-abort pi-lg"></i>
 		</ice:commandLink>
 		<!-- Rendered when process termination is allowed -->
@@ -39,7 +39,8 @@
 			
 		<!-- Case Menu -->
 		<ice:panelGroup
-			rendered="#{processInstanceDetailsBean.processInstanceOID==processInstanceDetailsBean.processInstance.rootProcessInstanceOID}">
+			rendered="#{processInstanceDetailsBean.processInstanceOID==processInstanceDetailsBean.processInstance.rootProcessInstanceOID}"
+			style="padding-left: 5px;">
 			<c:set var="bean" value="#{processInstanceDetailsBean}" />
 			<c:set var="processInstance" value="#{processInstanceDetailsBean.processInstance}" />
 			<ui:include src="/plugins/views-common/common/caseMenuBar.xhtml" />
