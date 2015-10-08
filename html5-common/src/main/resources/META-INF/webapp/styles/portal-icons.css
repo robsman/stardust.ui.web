@@ -837,7 +837,7 @@ span.pi-case:before{
 
 .pi-role:before{
 	font-family:FontAwesome;
-	content:"\f235"; /* fa-user-times */
+	content:"\f263"; /* fa-odnoklassnik */
 }
 
 .pi-department:before{
@@ -847,7 +847,7 @@ span.pi-case:before{
 
 .pi-scope-role:before{
 	font-family:FontAwesome;
-	content:"\f235"; /* fa-user-times */
+	content:"\f264"; /* fa-odnoklassniki-square */
 }
 
 .pi-process-manager:before{
