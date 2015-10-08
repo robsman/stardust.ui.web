@@ -116,6 +116,7 @@
   ParticipantManagementCtrl.prototype.openCreateCopyModifyUser = function(mode, oid) {
     var self = this;
     self.mode = mode;
+    self.submitted = false;
     _sdParticipantManagementService.openCreateCopyModifyUser(mode, oid).then(function(data) {
       self.user = data;
       if (mode == 'CREATE_USER') {
@@ -183,6 +184,7 @@
    */
   ParticipantManagementCtrl.prototype.onConfirmFromCreateUser = function(res) {
     var self = this;
+    self.submitted = true;
     if (self.userProfileForm.$valid) {
       var error = this.validateData();
       if (error) {
@@ -258,6 +260,7 @@
   ParticipantManagementCtrl.prototype.onCloseFromCreateUser = function(res) {
     var self = this;
     self.loadUserProfileDialog = false;
+    self.submitted = false;
     delete self.user;
   };
   /**

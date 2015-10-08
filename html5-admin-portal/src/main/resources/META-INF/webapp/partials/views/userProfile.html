@@ -17,8 +17,8 @@
 							ng-disabled="(ctrl.mode == 'MODIFY_USER' && ctrl.user.isInternalAuthentication) || ctrl.mode == 'MODIFY_PROFILE_CONFIGURATION'" required
 							aid="ADM-PartMgmt-UserPopup-Acct">
 						<div class="msg-error"
-							ng-show="ctrl.userProfileForm.account.$error.required">
-							<span>Required!</span>
+							ng-show="ctrl.userProfileForm.account.$error.required && ctrl.submitted">
+						    <span ng-bind="i18n('html5-common.required-value')"></span>
 						</div>
 					</div></td>
 			</tr>
@@ -31,8 +31,8 @@
 							aid="ADM-PartMgmt-UserPopup-FirstName"
 							ng-disabled="ctrl.mode == 'MODIFY_USER' && !ctrl.user.isInternalAuthentication">
 						<div class="msg-error"
-							ng-show="ctrl.userProfileForm.firstName.$error.required">
-							<span>Required!</span>
+							ng-show="ctrl.userProfileForm.firstName.$error.required && ctrl.submitted">
+						    <span ng-bind="i18n('html5-common.required-value')"></span>
 						</div>
 					</div></td>
 			</tr>
@@ -44,8 +44,8 @@
 							ng-change="ctrl.initDisplayFormats()" required aid="ADM-PartMgmt-UserPopup-LastName"
 							ng-disabled="ctrl.mode == 'MODIFY_USER' && !ctrl.user.isInternalAuthentication">
 						<div class="msg-error"
-							ng-show="ctrl.userProfileForm.lastName.$error.required">
-							<span>Required!</span>
+							ng-show="ctrl.userProfileForm.lastName.$error.required && ctrl.submitted">
+						    <span ng-bind="i18n('html5-common.required-value')"></span>
 						</div>
 					</div></td>
 			</tr>
@@ -75,8 +75,8 @@
 							ng-disabled="(!ctrl.user.changePassword || !ctrl.user.isInternalAuthentication)" ng-required="ctrl.user.changePassword && ctrl.user.isInternalAuthentication"
 							aid="ADM-PartMgmt-UserPopup-Pwd">
 						<div class="msg-error"
-							ng-show="ctrl.userProfileForm.password.$error.required">
-							<span>Required!</span>
+							ng-show="ctrl.userProfileForm.password.$error.required && ctrl.submitted">
+						    <span ng-bind="i18n('html5-common.required-value')"></span>
 						</div>
 
 					</div></td>
@@ -90,8 +90,8 @@
 							ng-disabled="!ctrl.user.changePassword || !ctrl.user.isInternalAuthentication" ng-required="ctrl.user.changePassword && ctrl.user.isInternalAuthentication"
 							aid="ADM-PartMgmt-UserPopup-PwdConfirm">
 						<div class="msg-error"
-							ng-show="ctrl.userProfileForm.confirmPassword.$error.required">
-							<span>Required!</span>
+							ng-show="ctrl.userProfileForm.confirmPassword.$error.required && ctrl.submitted">
+						    <span ng-bind="i18n('html5-common.required-value')"></span>
 						</div>
 					</div></td>
 			</tr>
