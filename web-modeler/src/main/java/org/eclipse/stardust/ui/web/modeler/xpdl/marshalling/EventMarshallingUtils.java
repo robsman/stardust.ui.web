@@ -865,7 +865,7 @@ public class EventMarshallingUtils
          AttributeUtil.setAttribute(eventHandler, "carnot:engine:data", null);
       }
       AttributeUtil.setAttribute(eventHandler,
-            ModelerConstants.SD_SET_DATA_ACTION_DATA_PATH, dataPath);
+            PredefinedConstants.SET_DATA_ACTION_DATA_PATH_ATT, dataPath);
    }
 
    private static void createDelegateAction(EventHandlerType eventHandler)
@@ -950,7 +950,7 @@ public class EventMarshallingUtils
       }
 
       String dataPath = AttributeUtil.getAttributeValue(eventHandler,
-            ModelerConstants.SD_SET_DATA_ACTION_DATA_PATH);
+            PredefinedConstants.SET_DATA_ACTION_DATA_PATH_ATT);
       if (data != null)
       {
          rsJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY, dataPath);
