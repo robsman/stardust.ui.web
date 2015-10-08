@@ -675,9 +675,12 @@ public class ActivityPanelController extends UIComponentBean
                PredefinedProcessInstanceLinkTypes.SWITCH);
          ProcessInstance joinProcessLink = ProcessInstanceUtils.getLinkInfo(processInstance, LinkDirection.TO,
                  PredefinedProcessInstanceLinkTypes.JOIN);
+         ProcessInstance relatedProcessLink = ProcessInstanceUtils.getLinkInfo(processInstance, LinkDirection.TO_FROM,
+               PredefinedProcessInstanceLinkTypes.RELATED);
          linkedProcess = LinkedProcessBean.getCurrent();
          linkedProcess.setFromLinkedProcess(fromProcessLink);
          linkedProcess.setJoinLinkedProcess(joinProcessLink);
+         linkedProcess.setRelatedLinkedProcess(relatedProcessLink);
          if (null != fromProcessLink)
          {
             ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(
@@ -691,6 +694,13 @@ public class ActivityPanelController extends UIComponentBean
                   joinProcessLink.getModelOID(), joinProcessLink.getProcessID());
             linkedProcess.setJoinProcessName(propsBean.getParamString("views.linkedProcess.processname",
                   I18nUtils.getProcessName(processDefinition), Long.valueOf(joinProcessLink.getOID()).toString()));
+         }
+         if(null != relatedProcessLink)
+         {
+            ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(
+                  relatedProcessLink.getModelOID(), relatedProcessLink.getProcessID());
+            linkedProcess.setRelatedProcessName(propsBean.getParamString("views.linkedProcess.processname",
+                  I18nUtils.getProcessName(processDefinition), Long.valueOf(relatedProcessLink.getOID()).toString()));
          }
       }
       activityDetailsBean.toggleLinkedProcessIframePopup();

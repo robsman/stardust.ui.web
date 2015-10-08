@@ -100,7 +100,30 @@
 			</ice:panelGroup>
 		</ice:panelGroup>
 		<ice:panelGroup
-			rendered="#{(ippActivityPanelController.linkedProcess.fromLinkedProcess eq null) and (ippActivityPanelController.linkedProcess.joinLinkedProcess eq null)}">
+			rendered="#{ippActivityPanelController.linkedProcess.relatedLinkedProcess!=null}">
+			<ice:panelGroup style="background-color: #EAEAEA;text-align: center;">
+				<ice:outputText
+					value="#{views_common_msgPropsBean['views.linkProcessDialog.label.related']}"
+					style="text-align: center;" />
+			</ice:panelGroup>
+			<ice:panelGroup>
+				<ice:panelGrid columns="1">
+					<ice:commandLink styleClass="action-link"
+						action="#{ippActivityPanelController.openProcessDetail}"
+						onclick="closeLinkedProcessIframe();">
+						<pc:automationTag value="auto-PP-LinkedProcDlg-RelatedProcess" />
+						<ice:panelGrid columns="2">
+							<ice:outputText styClass="pi pi-process pi-lg" />
+							<ice:outputText
+								value="#{ippActivityPanelController.linkedProcess.relatedProcessName}"
+								style="white-space: nowrap;" />
+						</ice:panelGrid>
+					</ice:commandLink>
+				</ice:panelGrid>
+			</ice:panelGroup>
+		</ice:panelGroup>
+		<ice:panelGroup
+			rendered="#{(ippActivityPanelController.linkedProcess.fromLinkedProcess eq null) and (ippActivityPanelController.linkedProcess.joinLinkedProcess eq null) and (ippActivityPanelController.linkedProcess.relatedLinkedProcess eq null)}">
 			<ice:panelGroup style="background-color: #EAEAEA;text-align: center;">
 				<ice:outputText
 					value="#{views_common_msgPropsBean['view.linkedProcess.label.norecord']}"
