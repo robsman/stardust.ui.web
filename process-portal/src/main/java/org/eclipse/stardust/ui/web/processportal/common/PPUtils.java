@@ -704,6 +704,12 @@ public class PPUtils
             User user = UserUtils.getUser(userInfo.getId());
             iconPath = MyPicturePreferenceUtils.getUsersImageURI(user);   
          }
+         
+         if (iconPath.endsWith("user-default.png"))
+         {
+            iconPath = "pi pi-user pi-lg";
+         }
+         
          break;
 
       case USERGROUP:

@@ -266,6 +266,10 @@ Utility classes for portal icons
 	background: none !important;
 }
 
+.iceOutTxt.pi {
+	color: #A69A88;
+} 
+
 /* Add this class where iceOutput class exists and needs to be overridden */
 .pi-outTxt {
     padding-left: 0px !important;
@@ -953,6 +957,11 @@ span.pi-case:before{
 	content:"\f0e8"; /* fa-sitemap */
 }
 
+.pi-scope-organization:before{
+	font-family:FontAwesome;
+	content:"\f0e8"; /* fa-sitemap */
+}
+
 .pi-check-box-unchecked:before{
 	font-family:FontAwesome;
 	content:"\f096"; /* fa-square-o */
@@ -1343,6 +1352,11 @@ span.pi-case:before{
 .tbl-hdr-col.sorting_asc .pi-tbl-sort:before {
 	font-family: "FontAwesome";
     content: "\f0de"; /* fa-sort-asc */
+}
+
+.pi-assembly-line:before {
+	font-family: "FontAwesome";
+	content: "\f0e7"; /* fa-bolt */
 }
 
 .pi-assembly-line-push-on:before {

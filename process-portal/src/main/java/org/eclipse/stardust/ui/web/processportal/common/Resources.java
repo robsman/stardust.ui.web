@@ -18,48 +18,44 @@ package org.eclipse.stardust.ui.web.processportal.common;
  */
 public final class Resources
 {
-
-   private static final String BASE_PATH = "/plugins/views-common/images/icons/";
-   
    public static final String VIEW_NOTES_COLUMNS = "/plugins/processportal/notesTableColumns.xhtml";
    public static final String VIEW_WORKLIST_COLUMNS = "/plugins/processportal/worklistViewColumns.xhtml";
 
    public final static class Icons
    {
-
       public static final String getOrganization()
       {
-         return BASE_PATH + "chart_organisation.png";
+         return "pi pi-organization pi-lg";
       }
 
       public static final String getRole()
       {
-         return BASE_PATH + "role.png";
+         return "pi pi-role pi-lg";
       }
 
       public static final String getScopedOrganization()
       {
-         return BASE_PATH + "group_link.png";
+         return "pi pi-scope-organization pi-lg";
       }
 
       public static final String getScopedRole()
       {
-         return BASE_PATH + "role_scoped.png";
+         return "pi pi-scope-role pi-lg";
       }
 
       public static final String getUser()
       {
-         return BASE_PATH + "user.png";
+         return "pi pi-user pi-lg";
       }
 
       public static final String getUserGroup()
       {
-         return BASE_PATH + "group.png";
+         return "pi pi-user-group pi-lg";
       }
 
       public static final String getAssemblyLine()
       {
-         return BASE_PATH + "lightning.png";
+         return "pi pi-assembly-line pi-lg";
       }
    }
 
