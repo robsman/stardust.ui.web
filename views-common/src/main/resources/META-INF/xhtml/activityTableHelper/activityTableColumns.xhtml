@@ -136,7 +136,8 @@
 				</ice:commandLink>
 				
 				<ice:commandLink actionListener="#{ippActivityHelper.openActivity}"
-					disabled="#{not row.activatable or row.caseInstance}" onclick="Event.stop(event);">
+					disabled="#{not row.activatable or row.caseInstance}" onclick="Event.stop(event);"
+					styleClass="pi-cmdLnk">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsActivate" standAlone="false"/>
 					<f:param name="oid" value="#{row.activityOID}" />
 					<ice:outputText
@@ -144,7 +145,8 @@
 	                    title="#{messages_bcc['common.tooltip.activate']}"/>
 				</ice:commandLink>
 				<ice:commandLink actionListener="#{bean.performDefaultDelegation}"
-					rendered="#{bean.strandedActivityView}" disabled="#{row.caseInstance}" onclick="Event.stop(event);">
+					rendered="#{bean.strandedActivityView}" disabled="#{row.caseInstance}" onclick="Event.stop(event);"
+					styleClass="pi-cmdLnk">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsDefaultDelegate" standAlone="false"/>
 					<f:attribute name="activityInstance" value="#{row.activityInstance}" />
 					<ice:outputText
@@ -155,7 +157,8 @@
 				</ice:commandLink>
 				<ice:commandLink
 					actionListener="#{bean.openRelocationDialog}"
-					disabled="#{not row.relocationEligible}" onclick="Event.stop(event);">
+					disabled="#{not row.relocationEligible}" onclick="Event.stop(event);"
+					styleClass="pi-cmdLnk">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsRelocate" standAlone="false"/>
 					<f:attribute name="activityInstance" value="#{row.activityInstance}" />
 					<ice:outputText
@@ -171,7 +174,8 @@
 					</h:outputText>
 					<f:attribute name="activityInstance" value="#{row.activityInstance}" />
 				</ice:commandLink>
-				<ice:commandLink actionListener="#{bean.openAbortDialog}" disabled="#{not row.abortActivity}" onclick="Event.stop(event);">
+				<ice:commandLink actionListener="#{bean.openAbortDialog}" disabled="#{not row.abortActivity}" onclick="Event.stop(event);"
+					styleClass="pi-cmdLnk">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsAbort" standAlone="false"/>
 					<ice:outputText
 						styleClass="#{row.abortActivity ? '' : 'iceCmdBtn-dis'} pi pi-activity-abort pi-lg" 
@@ -197,7 +201,8 @@
 				</ice:panelGroup>
 				
 				<ice:commandLink rendered="#{row.notesCount gt 0 and !row.caseInstance}"
-					actionListener="#{bean.openNotes}" onclick="Event.stop(event);">
+					actionListener="#{bean.openNotes}" onclick="Event.stop(event);"
+					styleClass="pi-cmdLnk">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsNotes" standAlone="false"/>
 					<ice:outputText
 						title="#{messages_bcc['common.tooltip.notes']}" 
@@ -205,7 +210,8 @@
 					<f:attribute name="activityInstance" value="#{row.activityInstance}" />
 				</ice:commandLink>
 				<ice:commandLink rendered="#{row.notesCount le 0 and !row.caseInstance}"
-					actionListener="#{bean.openNotes}" onclick="Event.stop(event);">
+					actionListener="#{bean.openNotes}" onclick="Event.stop(event);"
+					styleClass="pi-cmdLnk">
 					<pc:automationTag value="auto-COM-ActivityTbl-ActionsNotes" standAlone="false"/>
 					<ice:outputText
 						title="#{messages_bcc['common.tooltip.notes']}" 

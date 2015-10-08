@@ -12,17 +12,19 @@
 			disabled="#{bean.selectedItemCount eq 0 ? true : false}"
 			panelConfirmation="delegateToDefaultPerformer">
 			<pc:automationTag value="auto-COM-ActivityTbl-ToolbarDefaultDelegate" standAlone="false"/>
-			<h:graphicImage value="/plugins/views-common/images/icons/user-silhouette.png"
-				style="border: none;" styleClass="#{bean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}"
-				title="#{views_common_msgPropsBean['common.toolTip.delegateToDefaultPerformer']}"/>
+			<ice:outputText 
+				styleClass="#{bean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''} pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-top" 
+				title="#{views_common_msgPropsBean['common.toolTip.delegateToDefaultPerformer']}">	
+			</ice:outputText>
 		</ice:commandLink>
-		<ice:commandLink actionListener="#{bean.openDelegateDialog}" disabled="#{bean.selectedItemCount eq 0 ? true : false}">
+		<ice:commandLink actionListener="#{bean.openDelegateDialog}" disabled="#{bean.selectedItemCount eq 0 ? true : false}"
+			style="padding-left: 5px;">
 			<pc:automationTag value="auto-COM-ActivityTbl-ToolbarDelegate" standAlone="false"/>
-			<h:outputText 
+			<ice:outputText 
 				styleClass="#{bean.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''} pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top" 
 				title="#{views_common_msgPropsBean['common.tooltip.delegate']}">
-				<h:outputText styleClass="pi pi-badge-icon pi-badge-icon-arrow-r" title="#{views_common_msgPropsBean['common.tooltip.delegate']}"/>	
-			</h:outputText>
+				<ice:outputText styleClass="pi pi-badge-icon pi-badge-icon-arrow-r" title="#{views_common_msgPropsBean['common.tooltip.delegate']}"/>	
+			</ice:outputText>
 		</ice:commandLink>
 		<ice:commandLink actionListener="#{bean.openAbortDialog}" disabled="#{bean.selectedItemCount eq 0 ? true : false}">
 			<pc:automationTag value="auto-COM-ActivityTbl-ToolbarAbort" standAlone="false"/>

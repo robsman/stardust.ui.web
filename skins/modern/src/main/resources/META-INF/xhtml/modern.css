@@ -6062,7 +6062,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	cell-spacing: 0;
 	white-space: nowrap;
 	padding-bottom: 2px;
-	padding-right: 8px;
+	padding-right: 5px;
 	background: transparent url(./skin-images/icons/toolbar-separator.png) no-repeat scroll right center;
 }	
 
