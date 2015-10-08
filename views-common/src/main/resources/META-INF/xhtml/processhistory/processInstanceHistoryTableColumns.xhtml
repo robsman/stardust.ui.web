@@ -153,7 +153,7 @@
 				<f:param name="nested" value="true" />
 				<f:param name="viewParams" value="processInstanceOId=#{row.OID}" />
 			</ice:commandLink>
-			<ice:commandLink action="#{ippPortalApp.openView}">
+			<ice:commandLink action="#{ippPortalApp.openView}" style="padding-left: 5px;"> 
 				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsGanttChart" standAlone="false"/>
 				<h:outputText
 					styleClass="pi pi-gantt-chart pi-lg"

@@ -55,7 +55,7 @@
 									<f:param name="viewParams"
 										value="processInstanceOId=#{processInstanceDetailsBean.processInstance.OID}" />
 								</ice:commandLink>
-								<ice:commandLink action="#{ippPortalApp.openView}">
+								<ice:commandLink action="#{ippPortalApp.openView}" style="padding-left: 5px;">
 									<pc:automationTag value="auto-COM-PCEOverview-ProcessDiag" standAlone="false"/>
 									<h:outputText
 										rendered="#{(ippBCCDiagramBean != null) and ippBCCDiagramBean.diagramSupported}"

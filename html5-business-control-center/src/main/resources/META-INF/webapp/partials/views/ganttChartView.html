@@ -34,15 +34,15 @@
 						<div class="gantt-chart-tool-bar">	
 							<button class="button-link tbl-toolbar-item tbl-tool-link" 
 							        title="{{i18n('business-control-center-messages.views-ganttChartView-expandAll')}}" ng-click="ctrl.expandAll();">
-							           <i class="pi pi-create pi-lg"> </i>
+							           <i class="pi pi-expand-all pi-lg"> </i>
 							</button>
 							<button class="button-link tbl-toolbar-item tbl-tool-link" 
 							        title="{{i18n('business-control-center-messages.views-ganttChartView-collapseAll')}}" ng-click="ctrl.collapseAll();">
-							           <i class="pi pi-delete pi-lg"> </i>
+							           <i class="pi pi-collapse-all pi-lg"> </i>
 							 </button>
 							<button class="button-link tbl-toolbar-item tbl-tool-link" 
 							        title="{{ctrl.getAuxTitle();}}" ng-click="ctrl.toggleAuxiliary();">
-							        <i class="pi-lg pi " ng-class="{'pi-eye-open' : ctrl.showAuxiliary,'pi-eye-close' : !ctrl.showAuxiliary}" > </i>
+							        <i ng-class="ctrl.showAuxiliary ? 'pi pi-lg pi-eye-open' : 'pi pi-lg pi-eye-close'" > </i>
 							</button>
 						</div>
 					</th>
