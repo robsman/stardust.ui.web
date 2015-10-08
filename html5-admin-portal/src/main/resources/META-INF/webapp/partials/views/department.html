@@ -19,7 +19,7 @@
 				<td><label class="form-lable">{{sdI18n('admin-portal-messages.views.participantMgmt.modifyDepartment.parentDepartment.label')
 						+ sdI18n('admin-portal-messages.common.colon')}}</label></td>
 				<td><div>
-						<span>{{ctrl.department.parentDepartmentName}}<span>
+						<span>{{ctrl.department.parentDepartmentName}}</span>
 					</div></td>
 			</tr>
 			<tr>
@@ -30,8 +30,8 @@
 							ng-disabled="ctrl.department.mode == 'Modify'" required
 							aid="ADM-PartMgmt-DepartmentPopup-Acct">
 						<div class="msg-error"
-							ng-show="ctrl.userProfileForm.account.$error.required">
-							<span>Required!</span>
+							ng-show="ctrl.departmentForm.account.$error.required && ctrl.submitted">
+						    <span ng-bind="i18n('html5-common.required-value')"></span>
 						</div>
 					</div></td>
 			</tr>
@@ -42,8 +42,8 @@
 						<input type="text" name="name" ng-model='ctrl.department.name'
 							required aid="ADM-PartMgmt-DepartmentPopup-Name">
 						<div class="msg-error"
-							ng-show="ctrl.userProfileForm.firstName.$error.required">
-							<span>Required!</span>
+							ng-show="ctrl.departmentForm.name.$error.required && ctrl.submitted">
+						    <span ng-bind="i18n('html5-common.required-value')"></span>
 						</div>
 					</div></td>
 			</tr>

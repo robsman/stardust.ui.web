@@ -726,6 +726,7 @@
   // open create or modify cepartment dialog
   ParticipantManagementCtrl.prototype.openCreateModifyDepartment = function() {
     var self = this;
+    self.submitted = false;
     var participant = this.contextParticipantNode.valueItem;
 
     if (participant.type == "DEPARTMENT") { //modify department
@@ -754,30 +755,35 @@
   // persist department
   ParticipantManagementCtrl.prototype.createModifyDepartment = function() {
     var self = this;
-    // delete unwanted parameters
-    delete self.department.parentDepartmentName;
-    delete self.department.organization;
-    _sdParticipantManagementService.createModifyDepartment(this.department, lazyLoad).then(function(department) {
-      var contextParticipant = self.contextParticipantNode.valueItem;
-      if (contextParticipant.type == "DEPARTMENT") {
-        // modify department
-        contextParticipant.name = department.name;
-        contextParticipant.description = department.description;
-      } else {
-        // add new department
-        if (contextParticipant.children) {
-          contextParticipant.children.push(department);
-        } else {
-          contextParticipant.children = [department];
-        }
-      }
-      self.contextParticipantNode.deferred.resolve();
-    }, function(response) {
-      if (response.data && response.data.message) {
-        self.showParticipantMessage(response.data.message, "error");
-      }
-    });
-
+    self.submitted = true;
+    
+    if (self.departmentForm.$valid){
+    	 // delete unwanted parameters
+        delete self.department.parentDepartmentName;
+        delete self.department.organization;
+        _sdParticipantManagementService.createModifyDepartment(this.department, lazyLoad).then(function(department) {
+          var contextParticipant = self.contextParticipantNode.valueItem;
+          if (contextParticipant.type == "DEPARTMENT") {
+            // modify department
+            contextParticipant.name = department.name;
+            contextParticipant.description = department.description;
+          } else {
+            // add new department
+            if (contextParticipant.children) {
+              contextParticipant.children.push(department);
+            } else {
+              contextParticipant.children = [department];
+            }
+          }
+          self.contextParticipantNode.deferred.resolve();
+        }, function(response) {
+          if (response.data && response.data.message) {
+            self.showParticipantMessage(response.data.message, "error");
+          }
+        });
+    }else{
+    	return false;
+    }
   };
 
   // load Models
