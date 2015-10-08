@@ -2597,18 +2597,21 @@
 		    	var html = '<span>'
 		    		+ sgI18nService.translate('portal-common-messages.common-preferenceScope-resetConfimation',
 		    		'Are you sure you want to reset the Preferences?') + '</span>';
+		    	
 		    	var options = {
 		    			title : title,
-		    			type : 'confirm',
-		    			onConfirm : function() {
-		    				setColumnSelectionFromPreference(self.applyTo, null);
-		    				reorderColumns(self.applyTo);
-		    				self.toggleColumnSelector();
-		    			},
-		    			confirmActionLabel : sgI18nService.translate('views-common-messages.common-yes', 'Yes'),
-		    			cancelActionLabel : sgI18nService.translate('views-common-messages.common-no', 'No')
-		    	};
-		    	sdDialogService.dialog(scope, options, html)
+						dialogActionType : 'YES_NO'
+					};
+				
+		    	var defer = sdDialogService.confirm
+							(scope, sgI18nService.translate('portal-common-messages.common-preferenceScope-resetConfimation'), 
+							options);
+		    	
+		    	defer.then(function() {
+		    		setColumnSelectionFromPreference(self.applyTo, null);
+    				reorderColumns(self.applyTo);
+    				self.toggleColumnSelector();
+				});
 			};
 
 			/*

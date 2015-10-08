@@ -781,7 +781,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		ctrl.selectedAddresses = [];
 		ctrl.dialog.selectedAddresses = [];
 		ctrl.dialog.filter.address.value = "";
-		var title = "Select Recipients";
+	
 		var html = '<div style="padding-bottom:10px;">'+ 
 						'<span ng-repeat = "opt in ctrl.dialog.selectedAddresses" class="spacing-right "> '+
 							'<span class="selected_address" ng-click="ctrl.removeDialogAddress(opt)">'+
@@ -812,23 +812,26 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 						' </table>'+
 					'</div> ';
 
+		
 		var options = {
-				title : title,
-				type : 'confirm',
-				confirmActionLabel : this.buttons.confirm,
-				cancelActionLabel :  this.buttons.cancel,
-				width : '500px',
-				onConfirm : function() {
-					if(addressType == 'TO'){
-						ctrl.addAddress(ctrl.dialog.selectedAddresses, ctrl.selected.to)
-					}else if(addressType == 'CC'){
-						ctrl.addAddress(ctrl.dialog.selectedAddresses, ctrl.selected.cc)
-					}else if(addressType == 'BCC'){
-						ctrl.addAddress(ctrl.dialog.selectedAddresses, ctrl.selected.bcc)
-					}
+    			title :	ctrl.i18n("views-common-messages.views-correspondenceView-details-addressBook-title"),
+				dialogActionType : 'YES_NO',
+				width : '500px'
+			};
+		
+	    	var defer = _sdDialogService.confirm
+						(ctrl.getScope(), html, options);
+	    	
+	    	defer.then(function() {
+	    		if(addressType == 'TO'){
+					ctrl.addAddress(ctrl.dialog.selectedAddresses, ctrl.selected.to)
+				}else if(addressType == 'CC'){
+					ctrl.addAddress(ctrl.dialog.selectedAddresses, ctrl.selected.cc)
+				}else if(addressType == 'BCC'){
+					ctrl.addAddress(ctrl.dialog.selectedAddresses, ctrl.selected.bcc)
 				}
-		};
-		_sdDialogService.dialog(ctrl.getScope(), options, html)
+			});
+		
 	};
 
 	/**

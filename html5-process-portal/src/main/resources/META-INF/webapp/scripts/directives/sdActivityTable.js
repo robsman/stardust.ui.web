@@ -382,21 +382,19 @@
 	    this.showResubmissionConfirmation = function(rowItem) {
 	    	var self = this;
 	    	trace.log('Worklist Item submitted for resubmission : '+rowItem.activityOID);
+	    	
 	    	var title = sgI18nService.translate('views-common-messages.common-confirm', 'Confirm');
-	    	var html = '<span><i class="pi pi-dialog-warning popup-warning-icon pi-2x" ></i></span><span>'
-	    		+ sgI18nService.translate('processportal.views-worklistPanel-resubmit-confirm',
-	    		'Reactivate the activity ?') + '</span>';
+	    	
 	    	var options = {
-	    			title : title,
-	    			type : 'confirm',
-	    			onConfirm : function() {
-	    				self.reactivateItem(rowItem, scope, self);
-	    			},
-	    			confirmActionLabel : sgI18nService.translate('views-common-messages.common-yes', 'Yes'),
-	    			cancelActionLabel : sgI18nService.translate('views-common-messages.common-no', 'No')
-	    	};
+		    			title : title,
+						dialogActionType : 'YES_NO'
+					};
 
-	    	sdDialogService.dialog(scope, options, html)
+	    	var defer = sdDialogService.confirm(scope, sgI18nService.translate('processportal.views-worklistPanel-resubmit-confirm'), options);
+
+	    	defer.then(function() {
+	    		self.reactivateItem(rowItem, scope, self);
+	    	});
 	    };
 
 	    /**
@@ -497,23 +495,21 @@
 	     */
 	    self.openDefaultDelegationDialog = function(rowItems) {
 	    	var self = this;
-
-	    	var title = sgI18nService.translate('views-common-messages.common-confirm', 'Confirm');
-	    	var html = sgI18nService.translate(
-	    			'views-common-messages.views-strandedActivities-confirmDefaultDelegate', 'Confirm');
+	    	
 	    	var options = {
-	    			title : title,
-	    			type : 'confirm',
-	    			onConfirm : function() {
-	    				self.performDefaultDelegate(scope, sdActivityInstanceService, sdDialogService, sgI18nService,
-	    						rowItems);
-	    			},
-	    			confirmActionLabel : sgI18nService.translate('views-common-messages.common-yes', 'Yes'),
-	    			cancelActionLabel : sgI18nService.translate('views-common-messages.common-no', 'No')
-	    	};
-
-	    	sdDialogService.dialog(scope, options, html)
-
+    			title : gI18nService.translate('views-common-messages.common-confirm', 'Confirm'),
+				dialogActionType : 'YES_NO'
+			};
+		
+	    	var defer = sdDialogService.confirm
+						(scope, sgI18nService.translate(
+				    			'views-common-messages.views-strandedActivities-confirmDefaultDelegate'), 
+						options);
+	    	
+	    	defer.then(function() {
+	    		self.performDefaultDelegate(scope, sdActivityInstanceService, sdDialogService, sgI18nService,
+						rowItems);
+			});
 	    };
 	};
 

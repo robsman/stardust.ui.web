@@ -53,7 +53,7 @@
 			var data = {
 				activityOID : activityOID
 			}
-			return sdUtilService.ajax(REST_BASE_URL, '', data);
+			return sdUtilService.ajax(REST_BASE_URL, 'reactivate', data);
 		};
 
 		/*
