@@ -204,7 +204,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			include="/plugins/html5-business-control-center/partials/views/deputyManagementView.html">
 			<ippui:preferences>
 				<ippui:preferencePage name="icon"
-					include="/plugins/views-common/images/icons/user-silhouette.png" />
+					include="/does-not-exist/deputy-management.png" />
 			</ippui:preferences>
 		</ippui:view>
 		<ippui:view name="roleManagerDetailView"

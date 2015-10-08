@@ -7,7 +7,7 @@
 		ng-show="!renderingController.hideReportPreview && !renderingController.renderingFailed && !renderingController.showRetrieveAll && report.dataSet.type != 'processHistory' && !isInstance() && !isReRun() && !isEmbedded() && renderingController.isPreviewMode">
 		<table cellpadding="0" cellspacing="0" class="formTable">
 			<tr>
-				<td><img ng-src="{{reportingService.getRootUrl()}}/plugins/bpm-reporting/css/images/information.png"></img></td>
+				<td><i class="pi pi-information pi-lg"></i></td>
 				<td><label><b>{{getI18N('reporting.definitionView.previewLargeDataset.label')}}</b>
 						<a href="#" ng-click="reloadTable(true);"><b>{{getI18N('reporting.definitionView.retrieveAll.label')}}</b></a>
 				</label></td>
@@ -18,7 +18,7 @@
 	<div ng-show="renderingController.hideReportPreview">
 		<table cellpadding="0" cellspacing="0" class="formTable">
 			<tr ng-show="!renderingController.renderingFailed">
-				<td><img ng-src="{{reportingService.getRootUrl()}}/plugins/bpm-reporting/css/images/clock.gif"></img> </td>
+				<td><i class="pi pi-clock pi-lg"></i> </td>
 				<td><lable>
 					{{getI18N('reporting.definitionView.retrieving')}}</label></td>
 			</tr>
