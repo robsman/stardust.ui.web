@@ -158,8 +158,9 @@ public class CorrespondencePanelPreferenceUtils
    {
       String picturePreference = null;
       QueryService queryService = SessionContext.findSessionContext().getServiceFactory().getQueryService();
-      List<Preferences> prefs = queryService.getAllPreferences(PreferenceQuery.findPreferencesForUsers(user
-            .getRealm().getId(), user.getId(), UserPreferencesEntries.M_VIEWS_COMMON, REFERENCE_ID));
+      List<Preferences> prefs = queryService.getAllPreferences(PreferenceQuery.findPreferences(
+            org.eclipse.stardust.engine.core.preferences.PreferenceScope.PARTITION,
+            UserPreferencesEntries.M_VIEWS_COMMON, REFERENCE_ID));
       for (Preferences userPref : prefs)
       {
          picturePreference = (String) userPref.getPreferences().get(getPreferencesId(userPreferencesEntryKey));
