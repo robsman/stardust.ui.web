@@ -103,7 +103,47 @@
     self.allUsersTable.refresh();
     self.getAllCounts();
   };
-
+  
+  ParticipantManagementCtrl.prototype.isDroppable = function(item){
+	  var result=true;
+	 
+	  switch (item.type){
+	  	  case undefined:
+		  case "USER":
+		  case "ROLE_SCOPED":
+		  case "ORGANIZATON_SCOPED_IMPLICIT":
+		  case "ORGANIZATON_SCOPED_EXPLICIT":
+		  case "ORGANIZATION_SCOPED_IMPLICIT":
+		  case "ORGANIZATION_SCOPED_EXPLICIT":
+			  result = false;
+			  break;
+	  }
+	  
+	  return result;
+  }
+  
+  /**
+   * Returns a DOM string representing the sdTreeNode template we want the 
+   * the sdTreeCurseFx directive to leverage in producing a treeNode for
+   * a particular nodeScope.
+   * @param nodeScope - Scope from the recursive build step in our sdTree.
+   * @returns {String}
+   */
+  ParticipantManagementCtrl.prototype.recursiveTreeNodeFactory = function(nodeScope){
+	  var template;
+	  
+	  template ='<li sd-tree-node ng-repeat="item in item.children" \
+					 sda-droppable-expr="ctrl.isDroppable(item)" sda-menu-items="(,)" \
+					 sda-node-id="item.uuid" sda-is-leaf="!item.children || item.children.length == 0" \
+					 sda-label="item.name"> \
+					<ul> \
+						<li sd-tree-curse-fx></li> \
+					</ul> \
+				</li>';
+	  
+	  return template;
+  };
+  
   ParticipantManagementCtrl.prototype.changeHideInvalidatedUsersFlag = function() {
     var self = this;
     self.hideInvalidatedUsers = !self.hideInvalidatedUsers;

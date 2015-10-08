@@ -103,17 +103,20 @@
 				<ul sd-tree="ctrl.onTreeInit(api)"
 					sda-menu-callback="ctrl.menuCallback(item)"
 					sda-icon-callback="ctrl.iconCallback(item)"
+					sda-recurse-factory = "ctrl.recursiveTreeNodeFactory(item)"
 					sda-event-callback="ctrl.eventCallback(data,e)">
-					<li sd-tree-node sda-node-id="item.uuid" sda-label="item.name"
-						sda-menu-items="(,)" sda-is-leaf="ctrl.isLeaf(item)"
-						sda-draggable="true" ng-repeat="item in ctrl.models">
+					<li sd-tree-node sda-node-id="item.uuid" 
+						sda-label="item.name"
+						sda-menu-items="(,)" 
+						sda-is-leaf="item.children.length == 0"
+						ng-repeat="item in ctrl.models">
 						<ul>
 							<li sd-tree-node ng-repeat="item in item.children"
-								sda-draggable="true" sda-droppable="true" sda-menu-items="(,)"
-								sda-node-id="item.uuid" sda-is-leaf="ctrl.isLeaf(item)"
-								sda-label="item.name">
+								sda-droppable-expr="ctrl.isDroppable(item)"
+								sda-node-id="item.uuid" sda-is-leaf="!item.children || item.children.length == 0"
+								sda-label="item.name" >
 								<ul>
-									<li sd-tree-curse></li>
+									<li sd-tree-curse-fx></li>
 								</ul>
 							</li>
 						</ul>

@@ -69,7 +69,8 @@
 	        treeInit: "&sdTree",
 	        getMenuItems: "&sdaMenuCallback",
 	        getIconClass: "&sdaIconCallback",
-	        getDomAttachment: "&sdaDomCallback"
+	        getDomAttachment: "&sdaDomCallback",
+	        recurseFactory : "&sdaRecurseFactory"
 	      },
 	      controller: function(){
 	        this.api={};
@@ -86,6 +87,7 @@
 	        controller.treeRoot=scope; //Share our scope to descendant directives
 	        controller.api.eventCallback=scope.callback; //user defined event cback
 	        controller.api.iconCallback=scope.getIconClass;//user defined icon cback
+	        controller.api.recurseFactory = scope.recurseFactory;
 	        controller.api.id = scope.$id;//Share our unique id to descendants
 	        controller.api.getMenuItems =scope.getMenuItems; //Retrieve menuItems
 	        controller.childNodes ={}; //Each descendant sdTreeNode will map to here
@@ -583,6 +585,10 @@
 	        	dragdropStr +=" sd-data-drop sda-drop='drop($data,$event)' ";
 	        }
 	        
+	        if(attrs.sdaDroppableExpr){
+	        	dragdropStr +="DROP_EXPR_TARGET";
+	        };
+	        
 	        
 	        //TODO: Factor out as many watches as you can from the template.
 	        //TODO: isLeaf needs to work.
@@ -618,6 +624,7 @@
 	        this.repeatExpression =  $attrs.sdaRecurseExpr || $attrs.ngRepeat;
 	        this.nodeIdExpression =$attrs.sdaNodeId;
 	        this.leafExpression =$attrs.sdaIsLeaf;
+	        this.dropExpression = $attrs.sdaDroppable;
 	        this.menuItems = $attrs.sdaMenuItems;
 	      },
 	      
@@ -632,7 +639,29 @@
 	          //below us. We must set it in PRE!
 	          pre: function(scope, iterStartElement, attrs, controllers){
 	            var localCtrl=controllers[0];
+	            var dropTargetElem;
+	            var compDTElem;
 	            localCtrl.template = template;
+	            
+	            //Modify iterStartElement by parsing new attribute sda-droppable-expr
+	            //then do what the template function does when it finds sda-droppable = true;
+	            if(attrs.sdaDroppableExpr){
+	            	if($parse(attrs.sdaDroppableExpr)(scope)===true){
+	            		
+	            		//Manipulate DOM to add needed elements.
+	            		dropTargetElem  = iterStartElement[0].querySelector("a[DROP_EXPR_TARGET]");
+	            		dropTargetElem.removeAttribute("DROP_EXPR_TARGET");
+	            		dropTargetElem.setAttribute("sd-data-drop","");
+	            		dropTargetElem.setAttribute("sda-drop","drop($data,$event)");
+	            		
+	            		//This is actually the second compilation of this element meaning we have now
+	            		//duplicated our ng-click handler but as our invoke scope method leverages
+	            		//stopImmediatePropagation for events this should not be an issue.
+	            		compDTElem = $compile(dropTargetElem)(scope);
+
+	            	}
+	            }
+	            
 	          },
 	          
 	          post: function(scope,elem,attrs,controllers){
@@ -653,7 +682,7 @@
 	            //Parse the leaf expression against our scope
 	            var isLeaf = $parse(localCtrl.leafExpression)(scope);
 	            scope.isLeaf = !!isLeaf;//allow truthiness for objects etc
-	            
+
 	            //Parse out repeat expression
 	            scope.repeater=parseRepeatExpr(localCtrl.repeatExpression);
 	            
@@ -754,6 +783,7 @@
 	            scope.invokeCallback = function(name,e){
 	              if(e && e.preventDefault){
 	                e.preventDefault();
+	                e.stopImmediatePropagation();
 	                e.stopPropagation();
 	              }
 
@@ -924,6 +954,39 @@
 	    };
 	  });
 	  
+	  //============================================================================
+	  // TreeNode Recursive Target, stamps itself out based on DOM string returned
+	  // from the sdTree sda=recurse-factory invocation target. Unlike sdTreeCurse
+	  // this will stamp out actual sdTreeNodes.
+	  //============================================================================
+	  mod.directive("sdTreeCurseFx",function($compile,$parse){
+	    
+	    return{
+	      
+	      require:["^sdTreeNode","^sdTree"],
+	      
+	      compile: function(telem,attrs,controllers){
+	        
+	        return{
+	          
+	        post: function(scope, elem, attrs, controllers) {
+
+	            var rootCtrl = controllers[1], 
+	                template, //Raw DOM string
+	                compTemplate; //compiled element ready to be inserted
+	            
+	            template = rootCtrl.api.recurseFactory({item:scope});
+	            compTemplate = $compile(template)(scope);
+	            elem.replaceWith(compTemplate);
+	            scope.elem = elem;
+
+	          }//Post-Link end
+	          
+	        };//Compile End
+	      }
+	    };
+	
+	  });	  
 	  
 	  //============================================================================
 	  // TreeNode Recursive Target, stamps itself out based on its parent sdTreeNode

@@ -169,6 +169,7 @@ ul.sd-tree .title-section a{
   border:solid 1px #fff;
 }
 
+ul.sd-tree a.drop-over span,
 ul.sd-tree a.tree-node:hover span{
   background:#ffffe0;
   text-decoration:underline;

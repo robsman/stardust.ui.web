@@ -33,7 +33,13 @@
 	      elem.bind("dragenter",function(e){
 	    	console.log("Drag-enter");
 	        e.preventDefault();
+	        //e.target.style.background = "#FF0000";
+	        elem.addClass("drop-over");
 	        return true;
+	      });
+	      
+	      elem.bind("dragleave",function(e){
+	    	  elem.removeClass("drop-over");  
 	      });
 	      
 	      elem.bind("dragover",function(e){
@@ -57,6 +63,7 @@
 	        var data = e.dataTransfer.getData(dataType);
 	        var fn = $parse(attrs.sdaDrop);
 	        fn(scope, {$data: data, $event: e});
+	        elem.removeClass("drop-over");
 	        console.log("Drop");
 	      });
 	    }
