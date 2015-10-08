@@ -308,6 +308,84 @@ Utility classes for portal icons
 	color:red;
 }
 
+/* Perspective Icons */
+.perspective-icon {
+	font-size: 18px !important; /* Using fixed size in px and not em purposefully */
+} 
+
+.pi-perspective-default:before {
+	font-family: "FontAwesome";
+	content: "\f111"; /* fa-circle */
+}
+
+.pi-perspective-admin:before {
+	font-family: "FontAwesome";
+	content: "\f0ad"; /* fa-wrench */
+}
+
+.pi-perspective-calendar:before {
+	font-family: "FontAwesome";
+	content: "\f073"; /* fa-calendar */
+}
+
+.pi-perspective-reporting:before {
+	font-family: "FontAwesome";
+	content: "\f201"; /* fa-line-chart */
+}
+
+.pi-perspective-control-center:before {
+	font-family: "FontAwesome";
+	content: "\f044"; /* fa-pencil-square-o */
+}
+
+.pi-perspective-modeler:before {
+	font-family: "starclipse";
+	content: "\F09E"; /* sc-spiral */
+}
+
+.pi-perspective-workflow:before {
+	font-family: "FontAwesome";
+	content: "\f013"; /* fa-cog */
+}
+
+.pi-perspective-simple-modeler:after {
+	font-family: "starclipse";
+	content: "\F09E"; /* sc-spiral-custom */
+}
+
+.pi-perspective-simple-modeler:before {
+	font-family: "starclipse";
+	content: "\F08E"; /* sc-arrow-r-custom */
+    font-size: 1.5em;
+    position: relative;
+    left: 80%;
+}
+
+.pi-perspective-simple-modeler {
+	margin-left: -12px;
+	margin-right: 2px;
+	margin-top: -8px !important;
+}
+
+.pi-perspective-rules-manager:after {
+	font-family: "starclipse";
+	content: "\F0A6"; /* sc-scroll-custom */
+}
+
+.pi-perspective-rules-manager:before {
+	font-family: "starclipse";
+	content: "\F08F"; /* sc-badge-cog-custom */
+    font-size: 2.0em;
+    position: relative;
+    left: 80%;
+}
+
+.pi-perspective-rules-manager {
+	margin-left: -12px;
+	margin-right: 6px;
+	margin-top: -15px !important;
+}
+
 /*
 Icon implementations
 -----------------------------------------------------------

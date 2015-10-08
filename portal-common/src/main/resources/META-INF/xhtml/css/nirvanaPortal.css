@@ -270,7 +270,7 @@ div#loginBox .buttonContainer input{
 }
 
 .topMenuIframeBar table {
-	margin-top: 1px !important;
+	margin-top: -1px !important;
 }
 
 .topMenuIframeBar .menuItm a{

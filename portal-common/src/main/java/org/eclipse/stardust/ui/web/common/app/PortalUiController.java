@@ -405,7 +405,7 @@ public class PortalUiController
 
       if (StringUtils.isEmpty(icon))
       {
-         icon = "sc sc-lg sc-circle"; // Default Icon
+         icon = "pi pi-perspective-default"; // Default Icon
       }
 
       // Check if icon is image URL or a css class. It's mapping with MenuItem -

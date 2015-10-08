@@ -19,7 +19,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 	<ippui:perspective id="WorkflowExecution" messageBundles="processportal" default="true" 
 		controller="workflowPerspectiveEventHandler">
 		<ippui:preferences>
-			<ippui:preferencePage name="icon" include="sc sc-lg sc-cog" />
+			<ippui:preferencePage name="icon" include="pi pi-perspective-workflow" />
 			<ippui:preferencePage name="helpDocumentation"
 				include="/plugins/doc/portal/execution-clients/carnot-clients.html" />
 			<ippui:preferencePage name="configuration" include="/plugins/processportal/workflowExecutionConfiguration.xhtml" />
