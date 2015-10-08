@@ -58,10 +58,20 @@
     var pageSizePreference = sdPortalConfigurationService.getPageSize();
     this.pageSize = pageSizePreference > DEFAULT_PAGE_SIZE ? pageSizePreference: DEFAULT_PAGE_SIZE;
     this.getAllCounts();
-
     this.treeInit();
+
   }
 
+  /**
+   * quick ballpark calculation to set a max height on our dataTable wrapper so that it will scroll.
+   */
+  ParticipantManagementCtrl.prototype.getMaxTableHeight = function(){
+	var height;
+	height = window.innerHeight;
+	//now fudge it by estimating portal dressing height
+	return (height - 225) + "px";
+	
+  }
   /**
    * @returns
    */
