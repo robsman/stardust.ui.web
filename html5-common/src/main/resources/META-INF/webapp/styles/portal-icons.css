@@ -1339,3 +1339,8 @@ span.pi-abort-menu-open:before {
 	font-family:"FontAwesome";
 	content: '\f078'; /* arrow-circle-down */
 }
+
+span.pi-case-menu-open:after {
+	font-family:"FontAwesome";
+	content: '\f078'; /* arrow-circle-down */
+}

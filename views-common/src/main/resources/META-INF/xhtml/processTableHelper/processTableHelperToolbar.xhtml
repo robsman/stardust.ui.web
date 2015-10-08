@@ -37,20 +37,11 @@
 		</ice:commandLink>	
 		
 		<!-- Case Menu -->
-		<ice:panelGroup
-			rendered="#{!(bean.selectedItemCount eq 0 ? true : false)}">
+		<ice:panelGroup>
 			<pc:automationTag value="auto-COM-ProcTbl-ToolbarCaseMenu" standAlone="false"/>	
-			<ui:include src="/plugins/views-common/common/caseMenuBar.xhtml" />
-			<ui:param name="bean" value="#{bean}" />
-		</ice:panelGroup>
-		<!-- Rendered when no row is selected -->
-		<ice:panelGroup
-			rendered="#{bean.selectedItemCount eq 0 ? true : false}">
-			<ice:commandLink actionListener="#{bean.recoverProcess}"
-				disabled="true">
-				<pc:automationTag value="auto-COM-ProcTbl-ToolbarCaseMenu" standAlone="false"/>
-				<ice:outputText styleClass="pi pi-case pi-lg" />
-			</ice:commandLink>
+			<ui:include src="/plugins/views-common/common/caseMenuBar.xhtml">
+				<ui:param name="disabled" value="#{(bean.selectedItemCount eq 0 ? true : false)}" />
+			</ui:include>
 		</ice:panelGroup>
 		
 		<ice:commandLink actionListener="#{bean.applyChanges}" 
