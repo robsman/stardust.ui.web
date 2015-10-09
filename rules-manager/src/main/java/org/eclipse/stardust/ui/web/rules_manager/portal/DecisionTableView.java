@@ -28,6 +28,6 @@ public class DecisionTableView extends AbstractAdapterView {
    {
       super.handleEvent(event);
       
-      event.getView().setIcon("/plugins/rules-manager/images/icons/decision-table.png");
+      event.getView().setIcon("/doesnot-exist/pi-decision-table.png");
    }	
 }

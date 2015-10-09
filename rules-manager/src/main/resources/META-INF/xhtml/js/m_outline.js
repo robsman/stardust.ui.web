@@ -132,7 +132,7 @@ define(
 								"draggable" : true,
 								"elementId" : decTable.id
 							},
-							"data" : { title : decTable.name , icon : 'pi pi-decision-table pi-lg pi-img'}
+							"data" : { title : decTable.name , icon : 'pi pi-decision-table pi-lg '}
 						}, null, true);
 			};
 			
@@ -148,7 +148,7 @@ define(
 								"draggable" : true,
 								"elementId" : techRule.id
 							},
-							"data" : { title : techRule.name , icon : 'pi pi-technical-rule pi-lg pi-img'}
+							"data" : { title : techRule.name , icon : 'pi pi-technical-rule pi-lg '}
 						}, null, true);
 			};
 			

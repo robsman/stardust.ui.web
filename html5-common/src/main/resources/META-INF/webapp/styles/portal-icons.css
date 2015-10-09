@@ -975,10 +975,14 @@ span.pi-case:before{
 	content:"\f115"; /* fa-folder-open-o */
 }
 
-.pi-folder:before,
-.pi-rule-set:before{
+.pi-folder:before{
 	font-family:FontAwesome;
 	content:"\f07b"; /* fa-folder */
+}
+
+.pi-rule-set:before{
+	font-family:FontAwesome;
+	content:"\f01c"; /* fa-inbox */
 }
 
 .pi-folder-open:before{

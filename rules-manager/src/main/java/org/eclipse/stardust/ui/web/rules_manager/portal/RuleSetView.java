@@ -33,6 +33,6 @@ public class RuleSetView extends AbstractAdapterView {
    {
       super.handleEvent(event);
 
-      event.getView().setIcon("/plugins/rules-manager/images/icons/rule-set.png");
+      event.getView().setIcon("/doesnot-exist/pi-rule-set.png");
    }
 }
