@@ -132,6 +132,8 @@ public class TrafficLightViewUtils
       processStatsTotal.name = TOTAL_PROCESS;
       processStatsTotal.benchmarkCategoryCountMap = CollectionUtils.newMap();
       processStatsTotal.isActivity = false;
+      // this will create the count zero benchmark categories map for total process row.
+      createInitialBenchmarkCategoryMap(benchmarkCategories, processStatsTotal);
 
       for (ProcessDefinitionDTO processDef : processes)
       {
@@ -163,6 +165,9 @@ public class TrafficLightViewUtils
       activityStatsTotal.name = TOTAL_ACTIVITY;
       activityStatsTotal.benchmarkCategoryCountMap = CollectionUtils.newMap();
       activityStatsTotal.isActivity = true;
+      
+   // this will create the count zero benchmark categories map for total activity row.
+      createInitialBenchmarkCategoryMap(benchmarkCategories, activityStatsTotal);
 
       // Calling activity statistics
       getActivityBenchmarkStatistics(processes, bOids, dateType, dayOffset, benchmarkCategories, processActivitiesMap,
@@ -176,6 +181,24 @@ public class TrafficLightViewUtils
       result.benchmarkTLVProcessStas = benchmarkTLVProcessStas;
       result.bATLVStatsMap = bASRDTOMap;
       return result;
+   }
+
+   /**
+    * 
+    * @param benchmarkCategories
+    * @param statsTotal
+    */
+   private void createInitialBenchmarkCategoryMap(List<BenchmarkCategoryDTO> benchmarkCategories,
+         BenchmarkTLVStatisticsResultDTO statsTotal)
+   {
+      for(BenchmarkCategoryDTO bCategory : benchmarkCategories){
+         BenchmarkCategoryDTO benchmarkCategory = new BenchmarkCategoryDTO();
+         benchmarkCategory.color = bCategory.color;
+         benchmarkCategory.name = bCategory.name;
+         benchmarkCategory.index = bCategory.index;
+         benchmarkCategory.count = 0l;
+         statsTotal.benchmarkCategoryCountMap.put(bCategory.name, benchmarkCategory);
+      }
    }
    
    /**
@@ -205,19 +228,10 @@ public class TrafficLightViewUtils
             bPSRDTO.benchmarkCategoryCountMap.put(benchmarkCategory.name, benchmarkCategory);
 
             Map<String, BenchmarkCategoryDTO> totalBenchmarkCategoryMap = statsTotal.benchmarkCategoryCountMap;
-            if (totalBenchmarkCategoryMap.get(benchmarkCategory.name) != null)
-            {
-               BenchmarkCategoryDTO totalBenchmarkCategory = totalBenchmarkCategoryMap.get(benchmarkCategory.name);
-               totalBenchmarkCategory.count = totalBenchmarkCategory.count + benchmarkCategory.count;
-               statsTotal.benchmarkCategoryCountMap.put(benchmarkCategory.name, totalBenchmarkCategory);
-               statsTotal.totalCount = statsTotal.totalCount + benchmarkCategory.count;
-            }
-            else
-            {
-               statsTotal.benchmarkCategoryCountMap.put(benchmarkCategory.name, benchmarkCategory);
-               statsTotal.totalCount = statsTotal.totalCount + benchmarkCategory.count;
-            }
-
+            BenchmarkCategoryDTO totalBenchmarkCategory = totalBenchmarkCategoryMap.get(benchmarkCategory.name);
+            totalBenchmarkCategory.count = totalBenchmarkCategory.count + benchmarkCategory.count;
+            statsTotal.benchmarkCategoryCountMap.put(benchmarkCategory.name, totalBenchmarkCategory);
+            statsTotal.totalCount = statsTotal.totalCount + benchmarkCategory.count;
          }
       }
       else
@@ -230,19 +244,12 @@ public class TrafficLightViewUtils
             benchmarkCategory.index = bCategory.index;
             benchmarkCategory.count = 0L;
             bPSRDTO.benchmarkCategoryCountMap.put(benchmarkCategory.name, benchmarkCategory);
+            
             Map<String, BenchmarkCategoryDTO> totalBenchmarkCategoryMap = statsTotal.benchmarkCategoryCountMap;
-            if (totalBenchmarkCategoryMap.get(benchmarkCategory.name) != null)
-            {
-               BenchmarkCategoryDTO totalBenchmarkCategory = totalBenchmarkCategoryMap.get(benchmarkCategory.name);
-               totalBenchmarkCategory.count = totalBenchmarkCategory.count + benchmarkCategory.count;
-               statsTotal.benchmarkCategoryCountMap.put(benchmarkCategory.name, totalBenchmarkCategory);
-               statsTotal.totalCount = statsTotal.totalCount + benchmarkCategory.count;
-            }
-            else
-            {
-               statsTotal.benchmarkCategoryCountMap.put(benchmarkCategory.name, benchmarkCategory);
-               statsTotal.totalCount = statsTotal.totalCount + benchmarkCategory.count;
-            }
+            BenchmarkCategoryDTO totalBenchmarkCategory = totalBenchmarkCategoryMap.get(benchmarkCategory.name);
+            totalBenchmarkCategory.count = totalBenchmarkCategory.count + benchmarkCategory.count;
+            statsTotal.benchmarkCategoryCountMap.put(benchmarkCategory.name, totalBenchmarkCategory);
+            statsTotal.totalCount = statsTotal.totalCount + benchmarkCategory.count;      
          }
       }
    }
