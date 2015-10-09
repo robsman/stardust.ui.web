@@ -30,7 +30,6 @@ import org.eclipse.stardust.common.Direction;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.engine.api.dto.DataDetails;
-import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
@@ -714,55 +713,32 @@ public class ProcessInstanceService
                processInstance.getModelOID(), processInstance.getProcessID());
          List<DataPath> dataPaths = processDefinition.getAllDataPaths();
          Map<String, DataPath> outDataPathMap = CollectionUtils.newHashMap();
-         Map<String, DataPath> inDataPathMap = CollectionUtils.newHashMap();
          Map<String, Object> outDataPathValues = CollectionUtils.newHashMap();
          for (DataPath dataPath : dataPaths)
          {
             if (DescriptorFilterUtils.isDataFilterable(dataPath)
                   && !DmsConstants.PATH_ID_ATTACHMENTS.equals(dataPath.getId()))
             {
-               if (dataPathMap.containsKey(dataPath.getId()))
+               if (dataPathMap.containsKey(dataPath.getId()) && !Direction.IN.equals(dataPath.getDirection()))
                {
-                  if (Direction.IN.equals(dataPath.getDirection()))
-                  {
-                     inDataPathMap.put(dataPath.getId(), dataPath);
-                  }
-                  else
-                  {
                      outDataPathMap.put(dataPath.getId(), dataPath);
-                  }
-
                }
             }
+            else
+            {
+               trace.error(" Nested DataPath found " + dataPath.getId() + " Type  "
+                     + dataPath.getMappedType() + " Direction " + dataPath.getDirection());
+            }
+            
          }
          if (!CollectionUtils.isEmpty(outDataPathMap))
          {
-            for (Entry<String, DataPath> inDataPath : inDataPathMap.entrySet())
+            for (Entry<String, DataPath> outPath : outDataPathMap.entrySet())
             {
-               DataPath inData = inDataPath.getValue();
-               DataPath outDataPath = outDataPathMap.get(inDataPath.getKey());
-               if (null != outDataPath)
-               {
-                  Data data1 = DescriptorFilterUtils.getData(inData);
-                  if (outDataPath.getAccessPath().equals(inData.getAccessPath()))
-                  {
-                     Data data2 = DescriptorFilterUtils.getData(outDataPath);
-                     Object value = dataPathMap.get(inDataPath.getKey());
-                     if (data1.equals(data2))
-                     {
-                        outDataPathValues.put(outDataPath.getId(),
-                              DescriptorFilterUtils.convertDataPathValue(outDataPath.getMappedType(), value));
-                     }
-                     else
-                     {
-                        trace.info("IN DataPath and OUT DataPath data mismatch for :: "+inDataPath.getKey());
-                     }
-                  }
-               }
-               else
-               {
-                  trace.info("OUT DataPath not found of IN DataPath :: "+inDataPath.getKey());
-               }
+               DataPath outDataPath = outPath.getValue();
+               Object value = dataPathMap.get(outPath.getKey());
+               outDataPathValues.put(outDataPath.getId(),
+                     DescriptorFilterUtils.convertDataPathValue(outDataPath.getMappedType(), value));
             }
             ContextPortalServices.getWorkflowService().setOutDataPaths(processInstance.getOID(), outDataPathValues);
          }
