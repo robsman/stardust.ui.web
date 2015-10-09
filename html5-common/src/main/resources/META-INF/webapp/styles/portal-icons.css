@@ -339,7 +339,7 @@ Utility classes for portal icons
 
 .pi-perspective-control-center:before {
 	font-family: "FontAwesome";
-	content: "\f200"; /* fa-pencil-square-o */
+	content: "\f200"; /* fa-pie-chart */
 }
 
 .pi-perspective-modeler:before {
@@ -453,7 +453,7 @@ Icon implementations
 
 .pi-copy:before {
 	font-family: FontAwesome;
-  	content: "\f0ea"; /* glyphicon-copy */
+  	content: "\f0ea"; /* fa-clipboard */
 }
 
 .pi-cloud-upload:before {
