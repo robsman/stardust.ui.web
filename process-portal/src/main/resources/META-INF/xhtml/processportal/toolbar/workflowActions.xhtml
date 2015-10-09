@@ -165,9 +165,8 @@
 
 			<ice:commandLink action="#{spawnProcessDialogBean.openPopup}" rendered="#{activityDetailsBean.enableSpawnProcess}" style="margin-left: 5px;">								
 				<ice:outputText
-					styleClass="#{activityDetailsBean.enableSpawnProcess ? '': 'iceCmdBtn-dis'} pi pi-process pi-lg"
+					styleClass="#{activityDetailsBean.enableSpawnProcess ? '': 'iceCmdBtn-dis'} pi pi-spawn-process pi-lg"
 					title="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}">
-					<h:outputText styleClass="pi pi-plus-sign pi-bottom pi-right pi-sm" title="#{views_common_msgPropsBean['views.spawnProcessDialog.title']}"/>	
 				</ice:outputText>
 				<f:param name="processInstanceOID"
 					value="#{activityDetailsBean.activityInstance.processInstanceOID}" />					

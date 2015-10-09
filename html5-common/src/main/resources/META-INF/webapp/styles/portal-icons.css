@@ -598,7 +598,6 @@ Icon implementations
 
 .pi-process:before,
 .pi-root-process:before,
-.pi-spawn-process:before,
 .pi-process-details:before,
 .pi-process-overview:before{
 	font-family: 'FontAwesome';
@@ -729,6 +728,7 @@ span.pi-case:before{
 
 .pi-add-row:before,
 .pi-create:before,
+.pi-spawn-process:before,
 .pi-create-user:before,
 .pi-create-user-group:before{
 	font-family: "FontAwesome";

@@ -35,7 +35,9 @@
 			action="#{processInstanceDetailsBean.recoverProcess}"
 			partialSubmit="true"
 			title="#{messages_bcc['common.tooltip.recover']}"
-			styleClass="pi pi-recover pi-lg" />
+			styleClass="pi pi-cmdLnk">
+			<ice:outputText styleClass="pi pi-recover pi-lg" />
+		</ice:commandLink>
 			
 		<!-- Case Menu -->
 		<ice:panelGroup
