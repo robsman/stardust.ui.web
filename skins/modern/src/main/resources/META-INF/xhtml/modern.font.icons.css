@@ -103,13 +103,15 @@
 .exportAsExcel a:before {
       font-family: FontAwesome;
       font-size: 16px;
-      content: '\f019';
+      content: '\f1c3'; /* fa-file-excel */
+      color: #A69A88 !important
 }
 
 .exportAsCsv a:before {
       font-family: FontAwesome;
       font-size: 16px;
-      content: '\f019';
+      content: '\f0f6'; /* fa-file-text */
+      color: #A69A88 !important
 }
 
 .deleteModel a:before {
