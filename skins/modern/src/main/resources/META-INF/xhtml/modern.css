@@ -1045,11 +1045,14 @@ img
 	height: 16px;
 }
 
-.heading
+x-.heading
 {
+	color: #A69A88;
+	font-size:1.27em;
+	font-weight: normal !important;
 	height: 20px;
 	line-height: 20px;
-	border-bottom: 1px solid #CCCCCC;
+	x-border-bottom: 1px solid #CCCCCC;
 	background: none;
 	white-space: nowrap;
 	clear: both;

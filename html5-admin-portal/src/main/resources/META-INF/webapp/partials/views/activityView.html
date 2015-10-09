@@ -1,13 +1,10 @@
 <div class="view-panel ng-hide" ng-show="true" ng-controller="sdActivityOverviewCtrl as ctrl"
 	sg-stretch-to-bottom>
-	<div class="toolbar-buttons">
-		<div class="view-toolbar-section">
-			<span sd-refresh sda-on-refresh="ctrl.refresh();" aid="ADM-ActivityView"></span>
-		</div>
-	</div>
 
-	<div class="view-panel-toolbar heading"
-		ng-bind="i18n('admin-portal-messages.views-common-activities-label')"></div>
+
+	<span class="view-panel-toolbar heading" ng-bind="i18n('admin-portal-messages.views-common-activities-label')"></span>
+	<button ng-click="ctrl.refresh()" 
+	        class="pi pi-refresh right pi-1x"></button>
 	<div>
 		<table>
 			<tr>
@@ -47,8 +44,6 @@
 	</div>
 
 	<div class="view-panel-content">
-		<div class="view-panel-toolbar heading"
-			ng-bind="i18n('admin-portal-messages.views-common-activityTable-title')"></div>
 
 		<div sd-activity-table="ctrl.dataTable" sda-mode="activityTable" sda-register-refresh-required="ctrl.registerRefreshRequired()"
 			sd-data="ctrl.getData(params);" sda-extra-columns='["resubmissionTime"]'

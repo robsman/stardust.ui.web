@@ -1,14 +1,12 @@
 <div class="view-panel ng-hide" ng-show="true" ng-controller="sdQaManagementViewCtrl as qaManagementCtrl" sg-stretch-to-bottom>
 	<!-- Save Button -->
-	<div class="view-panel-toolbar toolbar-buttons">
+	<!--div class="view-panel-toolbar toolbar-buttons">
 		<div class="view-toolbar-section" >
 			<span sd-save sda-on-save="qaManagementCtrl.saveChanges();" aid="ADM-QAMgmt-SaveChanges"></span>
 		</div>
-	</div>
+	</div-->
 	<!-- Activities -->
-	<div class="heading">
-		<i class="pi pi-trigger-expand pi-lg" ng-show="qaManagementCtrl.isActivitiesPanelExpanded" ng-click="qaManagementCtrl.expandActivitiesPanel(false);"> </i> 
-		<i class="pi pi-trigger-collapse pi-lg" ng-show="!qaManagementCtrl.isActivitiesPanelExpanded" ng-click="qaManagementCtrl.expandActivitiesPanel(true);"> </i> 
+	<div class="heading view-panel-toolbar">
 		<span ng-bind="i18n('admin-portal-messages.views-qaManagementView-activities-label')" > 
 		</span>
 	</div>
@@ -29,6 +27,7 @@
 					<i class="pi pi-edit pi-lg"></i>
 				</button>
 			</div>
+			
 		</div>
 		<!-- Activities Table -->
 		<div ng-if="qaManagementCtrl.activityTableReady">
@@ -171,4 +170,8 @@
 			</table>
 		</div>
 	</div>
+	<button class="button" 
+	        ng-click="qaManagementCtrl.saveChanges()" 
+	        aid="ADM-QAMgmt-SaveChanges">{{i18n('admin-portal-messages.views-qaManagementView-save')}}
+	</button>
 </div>

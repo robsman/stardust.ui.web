@@ -901,7 +901,7 @@
 		
 			rowItem.contentLoaded = true;
 			self.processPopover.data = rowItem;
-			self.documentPopoverHandle.show($event);
+			self.documentPopoverHandle.show($event,151);
 		});
 	};
 	

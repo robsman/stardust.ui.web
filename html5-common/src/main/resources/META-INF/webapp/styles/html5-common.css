@@ -45,7 +45,7 @@
 }
 
 .view-panel-toolbar {
-	border-bottom: 1px solid #CCCCCC;
+	x-border-bottom: 1px solid #CCCCCC;
 	margin-bottom: 10px;
 	padding-bottom: 2px;
 }
@@ -81,8 +81,24 @@
 }
 
 .heading {
-	color: #708090;
-	font-weight: bold;
+	color: #A69A88;
+	font-size:1.27em;
+	font-weight: normal;
+	height: 20px;
+	line-height: 20px;
+	background: none;
+	white-space: nowrap;
+	text-transform:uppercase;
+	clear: both;
+	margin: 5px 0;
+}
+
+span.heading{
+	display:inline-block;
+}
+.heading.section{
+	padding-left:0px;
+	padding-right:0px;
 }
 
 /************** popup dialog *****************/
