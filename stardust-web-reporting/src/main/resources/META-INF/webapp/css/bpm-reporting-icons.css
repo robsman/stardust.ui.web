@@ -10,5 +10,5 @@
  *******************************************************************************/
  .report-definition:before{
 	font-family: "FontAwesome";
-	content: "\f15b";
+	content:"\f0ce"; /* fa-table */
 }

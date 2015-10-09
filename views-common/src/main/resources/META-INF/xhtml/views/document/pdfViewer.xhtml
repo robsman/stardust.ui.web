@@ -21,14 +21,14 @@
 						actionListener="#{contentHandler.pdfDocumentHandler.goToFirstPage}"
 						partialSubmit="false">
 						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarFirst" standAlone="false"/>
-						<ice:outputText styleClass="pi pi-step-back pi-lg"
+						<ice:outputText styleClass="pi pi-fast-rewind pi-lg"
 							alt="First"
 							title="#{views_common_msgPropsBean['common.tooltip.first']}" width="15" height="15" />
 					</ice:commandLink>
 					<ice:commandLink styleClass="toolbarControl firstToolControl-disabled"
 						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState == null or ( (contentHandler.pdfDocumentHandler.currentDocumentState != null) and (contentHandler.pdfDocumentHandler.firstPage))}"
 						partialSubmit="false">
-						<ice:outputText styleClass="pi pi-step-back pi-lg"
+						<ice:outputText styleClass="pi pi-fast-rewind pi-lg"
 							alt="First"
 							title="#{views_common_msgPropsBean['common.tooltip.first']}" width="15" height="15" />
 					</ice:commandLink>
@@ -41,13 +41,13 @@
 						actionListener="#{contentHandler.pdfDocumentHandler.previousPage}"
 						partialSubmit="false">
 						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarPrevious" standAlone="false"/>
-						<ice:outputText styleClass="pi pi-step-back-one pi-rotate-180 pi-lg"
+						<ice:outputText styleClass="pi pi-prev-page pi-lg"
 							alt="Previous" title="#{views_common_msgPropsBean['common.tooltip.previous']}" width="15" height="15" />
 					</ice:commandLink>
 					<ice:commandLink styleClass="toolbarControl previousToolControl-disabled"
 						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState == null or ( (contentHandler.pdfDocumentHandler.currentDocumentState != null) and (contentHandler.pdfDocumentHandler.firstPage))}"
 						partialSubmit="false">
-						<ice:outputText styleClass="pi pi-step-back-one pi-rotate-180 pi-lg"
+						<ice:outputText styleClass="pi pi-prev-page pi-lg"
 							alt="Previous" title="#{views_common_msgPropsBean['common.tooltip.previous']}" width="15" height="15" />
 					</ice:commandLink>
 				</ice:panelGroup>
@@ -76,14 +76,14 @@
 						actionListener="#{contentHandler.pdfDocumentHandler.nextPage}"
 						partialSubmit="false">
 						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarForward" standAlone="false"/>
-						<ice:outputText styleClass="pi pi-step-forward-one"
+						<ice:outputText styleClass="pi pi-next-page"
 							alt="Next"
 							title="#{views_common_msgPropsBean['common.tooltip.next']}" width="15" height="15" />
 					</ice:commandLink>
 					<ice:commandLink styleClass="toolbarControl forwardToolControl-disabled"
 						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState == null or ( (contentHandler.pdfDocumentHandler.currentDocumentState != null) and (contentHandler.pdfDocumentHandler.lastPage))}"
 						partialSubmit="false">
-						<ice:outputText styleClass="pi pi-step-forward-one"
+						<ice:outputText styleClass="pi pi-next-page"
 							alt="Next"
 							title="#{views_common_msgPropsBean['common.tooltip.next']}" width="15" height="15" />
 					</ice:commandLink>
@@ -95,14 +95,14 @@
 						actionListener="#{contentHandler.pdfDocumentHandler.goToLastPage}"
 						partialSubmit="false">
 						<pc:automationTag value="auto-COM-DocView-PdfView-ToolbarLast" standAlone="false"/>
-						<ice:outputText styleClass="pi pi-step-forward pi-lg"
+						<ice:outputText styleClass="pi pi-fast-forward pi-lg"
 							alt="Last"
 							title="#{views_common_msgPropsBean['common.tooltip.last']}" width="15" height="15" />
 					</ice:commandLink>
 					<ice:commandLink styleClass="toolbarControl lastToolControl-disabled"
 						rendered="#{contentHandler.pdfDocumentHandler.currentDocumentState == null or ( (contentHandler.pdfDocumentHandler.currentDocumentState != null) and (contentHandler.pdfDocumentHandler.lastPage))}"
 						partialSubmit="false">
-						<ice:outputText styleClass="pi pi-step-forward pi-lg"
+						<ice:outputText styleClass="pi pi-fast-forward pi-lg"
 							alt="Last"
 							title="#{views_common_msgPropsBean['common.tooltip.last']}" width="15" height="15" />
 					</ice:commandLink>

@@ -399,7 +399,6 @@ Icon implementations
     content:'\F0E7'; /* fa-bolt */
 }
 
-.pi-reset:before,
 .pi-refresh:before{
 	font-family:FontAwesome;
 	content: "\f021"; /* fa-refresh */
@@ -537,8 +536,6 @@ Icon implementations
 .pi-parameters:before,
 .pi-activity:before,
 .pi-activity-overview:before,
-.pi-manual-activity:before,
-.pi-non-interactive-activity:before,
 .pi-cog:before{
 	font-family:FontAwesome;
 	content:"\f013"; /* fa-cog */
@@ -691,6 +688,7 @@ span.pi-case:before{
 }
 
 .pi-undo:before,
+.pi-reset:before,
 .pi-rotate-left:before{
 	font-family: "FontAwesome";
 	content: "\f0e2"; /* fa-undo */
@@ -842,7 +840,7 @@ span.pi-case:before{
 
 .pi-role:before{
 	font-family:FontAwesome;
-	content:"\f263"; /* fa-odnoklassnik */
+	content:"\f0c0"; /* fa-users */
 }
 
 .pi-department:before{
@@ -852,7 +850,7 @@ span.pi-case:before{
 
 .pi-scope-role:before{
 	font-family:FontAwesome;
-	content:"\f264"; /* fa-odnoklassniki-square */
+	content:"\f0c0"; /* fa-users */
 }
 
 .pi-process-manager:before{
@@ -1237,12 +1235,12 @@ span.pi-case:before{
 
 .pi-activity-state:before{
 	font-family:"FontAwesome";
-	content:"\f013"; /* fa-cog */
+	content: "\f0e7"; /* fa-bolt */
 }
 
 .pi-activity-auxiliary:before{
-	font-family:"FontAwesome";
-	content:'\f0a3'; /* fa-certificate */
+	font-family:"starclipse";
+	content:'\F05F'; /* sc-gear-close */
 }
 
 .pi-font:before{
@@ -1441,4 +1439,24 @@ span.pi-abort-menu-open:before {
 span.pi-case-menu-open:after {
 	font-family:"FontAwesome";
 	content: '\f078'; /* arrow-circle-down */
+}
+
+.pi-provider-model:before{
+	font-family:"starclipse";
+	content:'\F0A1';/* sc-hand */
+}
+
+.pi-consumer-model:before{
+	font-family:"starclipse";
+	content:'\F09E'; /* sc-spiral */
+}
+
+.pi-non-interactive-activity:before{
+	font-family:"starclipse";
+	content:'\F05B'; /* sc-gear-ban */
+}
+
+.pi-manual-activity:before{
+	font-family:"starclipse";
+	content:'\F05D'; /* sc-gear-user */
 }

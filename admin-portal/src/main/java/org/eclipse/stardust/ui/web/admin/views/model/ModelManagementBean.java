@@ -435,13 +435,13 @@ public class ModelManagementBean extends UIComponentBean implements ViewEventHan
       FilterToolbarItem consumerTool = new FilterToolbarItem(
             ModelManagementTreeItem.Type.MODEL_VERSION_PROVIDER.name(),
             ModelManagementTreeItem.Type.MODEL_VERSION_PROVIDER.name(), "provider",
-            "pi pi-step-forward-one pi-lg");
+            "pi pi-provider-model pi-lg");
       filterToolbarItems.add(consumerTool);
 
       FilterToolbarItem providerTool = new FilterToolbarItem(
             ModelManagementTreeItem.Type.MODEL_VERSION_CONSUMER.name(),
             ModelManagementTreeItem.Type.MODEL_VERSION_CONSUMER.name(), "consumer",
-            "pi pi-step-back-one pi-rotate-180 pi-lg");
+            "pi pi-consumer-model pi-lg");
       filterToolbarItems.add(providerTool);
 
       FilterToolbarItem primaryInterfaceTool = new FilterToolbarItem(

@@ -845,10 +845,10 @@
 			dtOptions.iDisplayLength = pageSize;
 			dtOptions.oLanguage = {
 					oPaginate: {
-						sFirst: '<i class="pi pi-step-back dataTables_paginate_icon"></i>',
-						sPrevious: '<i class="pi pi-step-back-one pi-rotate-180 dataTables_paginate_icon"></i>',
-						sNext: '<i class="pi pi-step-forward-one dataTables_paginate_icon"></i>',
-						sLast: '<i class="pi pi-step-forward dataTables_paginate_icon"></i>'
+						sFirst: '<i class="pi pi-fast-rewind dataTables_paginate_icon"></i>',
+						sPrevious: '<i class="pi pi-prev-page dataTables_paginate_icon"></i>',
+						sNext: '<i class="pi pi-next-page dataTables_paginate_icon"></i>',
+						sLast: '<i class="pi pi-fast-forward dataTables_paginate_icon"></i>'
 					},
  					sEmptyTable: sgI18nService.translate('portal-common-messages.common-genericDataTable-noRecordsFoundLabel')
 			};

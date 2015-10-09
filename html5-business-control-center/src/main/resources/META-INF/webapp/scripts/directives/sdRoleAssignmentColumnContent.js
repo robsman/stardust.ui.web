@@ -26,7 +26,7 @@
 				value : '=sdaValue'
 			},
 
-			template : '<div><i ng-if="ctrl.value == true" class="pi pi-lg pi-check pi-success"><\/i>'
+			template : '<div><i ng-if="ctrl.value == true" class="pi pi-lg pi-check"><\/i>'
 					+ '<i ng-if="ctrl.value == false" class="pi p-lg pi-close pi-danger"><\/i>'
 					+ '<\/div>',
 			controller : [ '$scope', '$parse', '$attrs', RoleAssignmentColumnContentCtrl ]

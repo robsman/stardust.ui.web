@@ -68,21 +68,21 @@
 				<tbody>
 					<tr>
 						<td sda-data-type="string">
-							<i class=" spacing-right pi pi-model pi-lg"> </i>
+							<!-- <i class=" spacing-right pi pi-model pi-lg"> </i> -->
 							<span ng-bind="rowData.modelName"></span>
 						</td>
 						<td sda-data-type="string">
-							<i class="pi pi-process-details spacing-right pi-lg"> </i>
+							<!-- <i class="pi pi-process-details spacing-right pi-lg"> </i> -->
 							<span ng-bind="rowData.processName"></span>
 						</td>
 						<td sda-data-type="string">
-						<i class="pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top">
+						<!-- <i class="pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top">
 							<i class="pi pi-badge-icon pi-badge-icon-arrow-r"></i>
-						</i>
+						</i> -->
 						<span ng-bind="rowData.activityName"></span></td>
 						<td sda-data-type="string">
 							<!-- Icons for various Participant types -->
-							<span ng-if="rowData.performerType == 'ROLE'"  class="spacing-right"> <span class="pi-lg" style="color:#A2B5CD">(</span> <i
+							<!-- <span ng-if="rowData.performerType == 'ROLE'"  class="spacing-right"> <span class="pi-lg" style="color:#A2B5CD">(</span> <i
 								class="pi pi-lg pi-user" style="color:#A2B5CD;"></i> <span class="pi-lg" style="color:#A2B5CD">)</span>
 						   </span> 
 						   <span ng-if="rowData.performerType == 'SCOPED_ROLE'"  class="spacing-right"> <span class="pi-lg"  style="color:'#000'">(</span> <i
@@ -99,7 +99,7 @@
 						    </span>
 						     <span ng-if="rowData.performerType == 'USERGROUP'"  class="spacing-right"> 
 						    	<i class="pi pi-groups pi-lg "></i>
-						    </span>
+						    </span> -->
 						 <span ng-bind="rowData.defaultPerformer"></span>
 						</td>
 						<td sda-data-type="string">
