@@ -54,23 +54,22 @@ public class PriorityOverviewUserObject extends NodeUserObject
    {
       super(treeTable, node, treeBeanPointer, componenttype);
       this.prioOverviewEntry = prioOverviewEntry;
-      String imagePath = "/plugins/views-common/images/icons/page_white.png";
+      String image = "pi-page-white";
       String tooltip = null;
       if (prioOverviewEntry instanceof ModelWithPrio)
       {
-         imagePath = "/plugins/views-common/images/icons/model.gif";
+         image = "pi pi-model";
          tooltip = ((ModelWithPrio) prioOverviewEntry).getDescription();
       }
       else if (prioOverviewEntry instanceof ProcessDefinitionWithPrio)
       {
          if (isAuxiliaryProcess())
          {
-            String processType = "AuxiliaryProcess";
-            imagePath = ActivityInstanceUtils.getIconPath(processType);
+            image = "pi-process-auxiliary";
          }
          else
          {
-            imagePath = "/plugins/views-common/images/icons/process.png";
+            image = "pi-process";
          }
          ProcessDefinition pd = ((ProcessDefinitionWithPrio) prioOverviewEntry).getProcessDefinition();
          tooltip = I18nUtils.getDescriptionAsHtml(pd, pd.getDescription());
@@ -78,13 +77,13 @@ public class PriorityOverviewUserObject extends NodeUserObject
       else if (prioOverviewEntry instanceof ActivityDefinitionWithPrio)
       {
          Activity ai = ((ActivityDefinitionWithPrio) prioOverviewEntry).getActivity();
-         imagePath = ActivityInstanceUtils.getIconPath(ActivityInstanceUtils.getActivityType(ai, false));
+         image = ActivityInstanceUtils.getFont(ActivityInstanceUtils.getActivityType(ai, false));
          tooltip = I18nUtils.getDescriptionAsHtml(ai, ai.getDescription());
       }
       setTooltip(tooltip);
-      setLeafIcon(imagePath);
-      setBranchContractedIcon(imagePath);
-      setBranchExpandedIcon(imagePath);
+      setLeafIcon(image);
+      setBranchContractedIcon(image);
+      setBranchExpandedIcon(image);
       setExpanded(false);
    }
 

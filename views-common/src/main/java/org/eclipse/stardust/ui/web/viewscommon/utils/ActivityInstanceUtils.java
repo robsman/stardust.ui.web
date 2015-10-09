@@ -81,6 +81,7 @@ public class ActivityInstanceUtils
    private static final String STATUS_PREFIX = "views.activityTable.statusFilter.";
    public static final String IMAGE_BASE_PATH = "/plugins/views-common/images/icons/process-history/";
    private static final Map<String, String> iconMap;
+   private static final Map<String, String> fontMap;
    
    static
    {
@@ -102,6 +103,27 @@ public class ActivityInstanceUtils
       iconMap.put("activityQAPassed", Constants.ACTIVITY_QA_PASSED_IMAGE);
       iconMap.put("activityQAAwait", Constants.ACTIVITY_QA_AWAIT_IMAGE);
       iconMap.put("Note", "/plugins/views-common/images/icons/mime-types/notes-filled.png");
+      
+      // TODO - review icons
+      fontMap = new LinkedHashMap<String, String>();
+      fontMap.put("ApplicationActivity", "pi-non-interactive-activity");
+      fontMap.put("ManualActivity", "pi-manual-activity");
+      fontMap.put("Auxiliary", "pi-activity-auxiliary");
+      fontMap.put("Delegate", "pi-activity-delegate");
+      fontMap.put("Exception", "pi-activity");
+      fontMap.put("EventException", "pi-activity");
+      fontMap.put("EventTimer", "pi-activity");
+      fontMap.put("ActivityCompleted", "pi-activity");
+      fontMap.put("StateChange", "pi-activity");
+      fontMap.put("ProcessInstance", "pi-process");
+      fontMap.put("SubProcess", "pi-activity");
+      fontMap.put("AuxiliaryProcess", "pi-process-auxiliary");
+      fontMap.put("CaseInstance", "pi-case");
+      fontMap.put("activityQAFailed", "pi-activity");
+      fontMap.put("activityQAPassed", "pi-activity");
+      fontMap.put("activityQAAwait", "pi-activity");
+      fontMap.put("Note", "pi-notes");
+      
    }
    
    /**
@@ -895,6 +917,11 @@ public class ActivityInstanceUtils
       return fileName;
    }
    
+   public static String getFont(String formatType)
+   {
+      return getFontMap().get(formatType);
+   }
+   
    /**
     * @param type
     * @param strict
@@ -951,6 +978,11 @@ public class ActivityInstanceUtils
    public static Map<String, String> getIconMap()
    {
       return iconMap;
+   }
+
+   public static Map<String, String> getFontMap()
+   {
+      return fontMap;
    }
    
    

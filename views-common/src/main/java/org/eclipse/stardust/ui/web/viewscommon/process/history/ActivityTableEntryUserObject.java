@@ -109,7 +109,7 @@ public class ActivityTableEntryUserObject extends NodeUserObject
       }
       
       //set icons
-      String icon = (formatType != null) ? (ActivityInstanceUtils.getIconPath(formatType)) : null;
+      String icon = (formatType != null) ? (ActivityInstanceUtils.getFont(formatType)) : null;
       setLeafIcon(icon);
       setBranchContractedIcon(icon);
       setBranchExpandedIcon(icon);

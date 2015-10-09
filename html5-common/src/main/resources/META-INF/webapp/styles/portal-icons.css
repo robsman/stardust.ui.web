@@ -1087,6 +1087,11 @@ span.pi-case:before{
 	font-family:"FontAwesome";
 	content:'\f249'; /* fa-sticky-note */
 }
+.pi-page-white:before{
+	font-family:"FontAwesome";
+	content:'\f249'; /* fa-sticky-note */
+}
+
 .pi-add-column:before,
 .pi-process-diagram:before{
 	font-family:"FontAwesome";
