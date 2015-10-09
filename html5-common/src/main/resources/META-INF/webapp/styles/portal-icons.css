@@ -1205,12 +1205,12 @@ span.pi-case:before{
 	content: "\f044"; /* fa-pencil-square-o */
 }
 
-.pi-font{
+.pi-font:before{
 	font-family: FontAwesome;
 	content: "\f031"; /* fa-font */
 }
 
-.pi-replace{
+.pi-replace:before{
 	font-family: FontAwesome;
 	content: "\f0ea"; /* fa-clipboard */
 }
