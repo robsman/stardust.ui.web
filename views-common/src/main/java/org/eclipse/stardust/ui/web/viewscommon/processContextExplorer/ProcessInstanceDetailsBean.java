@@ -851,7 +851,10 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
       ColumnPreference timeStampCol = new ColumnPreference("TimeStamp", "timestamp", ColumnDataType.DATE, this.getMessages().getString("descriptors.history.timeStamp"),
             true, true);
       timeStampCol.setNoWrap(true);
-
+      
+      ColumnPreference pathIdCol = new ColumnPreference("PathId", "pathId", ColumnDataType.STRING, this.getMessages().getString("descriptors.history.pathId"), true, false);
+      pathIdCol.setNoWrap(true);
+      
       ColumnPreference eventCol = new ColumnPreference("EventType", "eventType", ColumnDataType.STRING, this.getMessages().getString("descriptors.history.event"), true, false);
       eventCol.setNoWrap(true);
 
@@ -864,6 +867,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
 
       List<ColumnPreference> cols = new ArrayList<ColumnPreference>();
       cols.add(timeStampCol);
+      cols.add(pathIdCol);
       cols.add(eventCol);
       cols.add(userCol);
       cols.add(detailsCol);
@@ -927,11 +931,23 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
                         descriptorDetails = MessagesViewsCommonBean.getInstance().getParamString(
                               "views.processInstanceDetailsView.descriptors.history.descriptorDetails", dataId,
                               processInstanceOID, dataPathId);
-                        DescriptorHistoryTableEntry entry = new DescriptorHistoryTableEntry(event.getEventTime(), null, event
+                        DescriptorHistoryTableEntry entry = new DescriptorHistoryTableEntry(event.getEventTime(), dataPathId, event
                               .getEventType().getName(), I18nUtils.getUserLabel(event.getUser()), descriptorDetails);
                         descriptorsHistory.add(entry);
                         outDataPathHistoryMap.put(dataPathId, entry);
                      }
+                     else
+                     {
+                        DescriptorHistoryTableEntry entry = new DescriptorHistoryTableEntry(event.getEventTime(), null, event
+                              .getEventType().getName(), I18nUtils.getUserLabel(event.getUser()), descriptorDetails);
+                        descriptorsHistory.add(entry);
+                     }
+                  }
+                  else
+                  {
+                     DescriptorHistoryTableEntry entry = new DescriptorHistoryTableEntry(event.getEventTime(), null, event
+                           .getEventType().getName(), I18nUtils.getUserLabel(event.getUser()), descriptorDetails);
+                     descriptorsHistory.add(entry);
                   }
                }
             }
