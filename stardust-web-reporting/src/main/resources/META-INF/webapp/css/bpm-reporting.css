@@ -230,6 +230,11 @@ div.ui-dialog {
    border-radius: 0px;
 }
 
+.minimalTabs .ui-tabs-anchor > table{
+	position:relative;
+	top:-1px; /*Fix to address clipped triangle point on bg-image*/
+}
+
 .minimalTabs .ui-tabs-nav .ui-state-default {
    background: transparent;
    border: none;
