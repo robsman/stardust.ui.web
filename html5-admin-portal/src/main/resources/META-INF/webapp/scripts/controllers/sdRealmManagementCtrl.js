@@ -89,7 +89,7 @@
 		RealmManagementController.prototype.createRealm = function() {
 			var deferred = $q.defer();
 			var self = this;
-
+            self.submitted = true;
 			var payload = {};
 			payload = angular.extend({}, self.realmToCreate);
 
@@ -167,6 +167,7 @@
 		 * 
 		 */
 		RealmManagementController.prototype.openCreateRealmDlg = function() {
+			this.submitted = false;
 			this.showCreateDlg = true;
 		};
 
