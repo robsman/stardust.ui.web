@@ -45,7 +45,8 @@
 				standAlone="false" />
 			<ice:outputText
 				title="#{views_common_msgPropsBean['views.genericRepositoryView.treeMenuItem.newVersion']}"
-				styleClass="#{documentHandlerBean.documentContentInfo.supportsVersioning ? '' : '-dis'} pi pi-upload pi-lg"/>
+				styleClass="#{documentHandlerBean.documentContentInfo.supportsVersioning ? '' : '-dis'} pi pi-upload pi-lg"
+				style="padding-bottom: 3px;"/>
 		</ice:commandLink>
 
 		<ice:panelGroup rendered="#{not empty documentHandlerBean.fileOutputResource}" 
@@ -54,7 +55,8 @@
 				image="/plugins/views-common/images/icons/page_white_put.png"
 				resource="#{documentHandlerBean.fileOutputResource}"
 				label="#{documentHandlerBean.messages['download.label']}"
-				fileName="#{documentHandlerBean.documentContentInfo.name}" type="link">
+				fileName="#{documentHandlerBean.documentContentInfo.name}" type="link"
+				styleClass="pi pi-cmdLnk">
 				<pc:automationTag value="auto-COM-DocView-ToolbarDownload"
 					standAlone="false" />
 			</ice:outputResource>	
