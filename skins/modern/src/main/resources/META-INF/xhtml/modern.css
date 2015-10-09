@@ -12925,7 +12925,7 @@ img[src *='rename.png'].nodeMenuIcon {
 }
 
 .viewIconBase.role {
-	background:url('./images/flat-icons/role.png') !important;
+	background:none;
 }
 
 .viewIconBase.application-c-ext-web {
