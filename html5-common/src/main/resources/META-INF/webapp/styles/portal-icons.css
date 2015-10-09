@@ -591,6 +591,11 @@ Icon implementations
 	content: "\f0c7"; /* fa-floppy-o */
 }
 
+.pi-exit-edit-mode:before{
+	font-family: 'FontAwesome';
+	content: "\f00c"; /* fa-check */
+}
+
 .pi-process:before,
 .pi-root-process:before,
 .pi-spawn-process:before,
