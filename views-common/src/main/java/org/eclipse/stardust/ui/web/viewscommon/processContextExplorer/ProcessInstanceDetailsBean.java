@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.viewscommon.processContextExplorer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -81,6 +82,7 @@ import org.eclipse.stardust.ui.web.common.table.SortCriterion;
 import org.eclipse.stardust.ui.web.common.table.SortableTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataMapping;
 import org.eclipse.stardust.ui.web.viewscommon.common.Localizer;
 import org.eclipse.stardust.ui.web.viewscommon.common.LocalizerKey;
@@ -129,7 +131,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
    private static final Logger trace = LogManager.getLogger(ProcessInstanceDetailsBean.class);
    private static final String STATE_PREFIX = "views.processTable.statusFilter.";
    private static final String VIEW_ID = "processInstanceDetailsView";
-   private final static String COL_DESC_DETAILS = "DescDetails";   
+   private final static String COL_DESC_DETAILS = "DescDetails";
 
    private ProcessInstance processInstance;
    private Long processInstanceOID;
@@ -728,17 +730,18 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
                userObject = (DescriptorItemTableEntry) event.getComponent().getAttributes().get("row");
                String type = userObject.getType();
                Class dataClass = userObject.getMappedType();
-               inDataPath = inDataPathsMap.get(userObject.getId());
-               outDataPath = fetchOutDataPath(inDataPath);
+               outDataPath = outDataPathsMap.get(userObject.getId());
                if (null != outDataPath)
                {
                   newValue = DescriptorFilterUtils.convertDataPathValue(dataClass, newDescriptorValue);
                   ServiceFactoryUtils.getWorkflowService().setOutDataPath(processInstance.getOID(),
                         outDataPath.getId(), newValue);
-
+                  userObject.setLastModified(new Date());
+                  userObject.setModifiedBy(I18nUtils.getUserLabel(SessionContext.findSessionContext().getUser()));
                   userObject.setHasError(false);
+                  
                   validationMessageBean.addInfoMessage(
-                        this.getMessages().getString("descriptor.save", inDataPath.getName()), "descriptorViewMsg");
+                        this.getMessages().getString("descriptor.save", outDataPath.getName()), "descriptorViewMsg");
                }
             }
          }
@@ -855,7 +858,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
       ColumnPreference userCol = new ColumnPreference("User", "user", ColumnDataType.STRING, this.getMessages().getString("descriptors.history.user"), true, false);
       userCol.setNoWrap(true);
 
-      ColumnPreference detailsCol = new ColumnPreference("DescDetails", "descDetails", ColumnDataType.STRING,
+      ColumnPreference detailsCol = new ColumnPreference(COL_DESC_DETAILS, "descDetails", ColumnDataType.STRING,
             this.getMessages().getString("descriptors.history.details"), new TableDataFilterPopup(new TableDataFilterSearch()), true, false);
       detailsCol.setNoWrap(true);
 
