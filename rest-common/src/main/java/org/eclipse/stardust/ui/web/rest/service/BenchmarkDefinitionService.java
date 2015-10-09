@@ -171,7 +171,7 @@ public class BenchmarkDefinitionService
    {
       try
       {
-         Set<BenchmarkCategoryDTO> categoriesSet = CollectionUtils.newHashSet();
+         Set<BenchmarkCategoryDTO> categoriesSet = CollectionUtils.newTreeSet();
          boolean noMatchingCategory = false;
          if (StringUtils.isNotEmpty(benchmarkOids))
          {
