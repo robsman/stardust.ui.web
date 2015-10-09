@@ -306,7 +306,7 @@ div#loginBox .buttonContainer input{
 
 .perspective-active-font, .perspective-active-img {
 	height: 100%;
-	background-color : lightgray;
+	background-color : #EEE2CF;
 }
 
 .perspective-inactive-font, .perspective-inactive-img {
