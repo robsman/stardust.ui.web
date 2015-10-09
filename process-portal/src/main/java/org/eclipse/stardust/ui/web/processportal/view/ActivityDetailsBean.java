@@ -1659,7 +1659,7 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       String advanceArgs =
          "{anchorId:'ippSaveActivityAnchor', width:100, height:30, maxWidth:500, maxHeight:550, " +
-         "openOnRight:false, anchorXAdjustment:10, anchorYAdjustment:5, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+         "openOnRight:false, anchorXAdjustment:10, anchorYAdjustment:5, zIndex:200, border:'1px solid #DDDDDD', noUnloadWarning: 'true'}";
       return advanceArgs;
    }
 
@@ -1768,7 +1768,7 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       String advanceArgs =
          "{anchorId:'ippSuspendAnchor', width:100, height:30, maxWidth:500, maxHeight:550, " +
-         "openOnRight:false, anchorXAdjustment:10, anchorYAdjustment:5, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+         "openOnRight:false, anchorXAdjustment:10, anchorYAdjustment:5, zIndex:200, border:'1px solid #DDDDDD', noUnloadWarning: 'true'}";
       return advanceArgs;
    }
 
@@ -2609,7 +2609,7 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       String advanceArgs =
          "{anchorId:'ippProcessAttachmentsAnchor', width:100, height:30, maxWidth:500, maxHeight:550, " +
-         "openOnRight:false, anchorXAdjustment:30, anchorYAdjustment:2, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+         "openOnRight:false, anchorXAdjustment:30, anchorYAdjustment:2, zIndex:200, border:'1px solid #DDDDDD', noUnloadWarning: 'true'}";
       return advanceArgs;
    }
 
@@ -2737,7 +2737,7 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       String advanceArgs =
          "{anchorId:'ippNotesAnchor', width:100, height:30, maxWidth:500, maxHeight:550, " +
-         "openOnRight:false, anchorXAdjustment:30, anchorYAdjustment:2, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+         "openOnRight:false, anchorXAdjustment:30, anchorYAdjustment:2, zIndex:200, border:'1px solid #DDDDDD', noUnloadWarning: 'true'}";
       return advanceArgs;
    }
 
@@ -2864,7 +2864,7 @@ public class ActivityDetailsBean extends UIComponentBean
    public String getLinkedProcessIframePopupArgs()
    {
       String advanceArgs = "{anchorId:'ippLinkedProcessAnchor', width:100, height:30, maxWidth:500, maxHeight:550, "
-            + "openOnRight:false, anchorXAdjustment:15, anchorYAdjustment:2, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+            + "openOnRight:false, anchorXAdjustment:15, anchorYAdjustment:2, zIndex:200, border:'1px solid #DDDDDD', noUnloadWarning: 'true'}";
       return advanceArgs;
    }
 
@@ -3019,7 +3019,7 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       String advanceArgs =
          "{anchorId:'ippSwitchAnchor', width:100, height:30, maxWidth:500, maxHeight:550, " +
-         "openOnRight:false, anchorXAdjustment:10, anchorYAdjustment:5, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+         "openOnRight:false, anchorXAdjustment:10, anchorYAdjustment:5, zIndex:200, border:'1px solid #DDDDDD', noUnloadWarning: 'true'}";
       return advanceArgs;
    }
    
@@ -3132,7 +3132,7 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       String advanceArgs =
          "{anchorId:'ippCaseAnchor', width:100, height:30, maxWidth:500, maxHeight:550, " +
-         "openOnRight:false, anchorXAdjustment:13, anchorYAdjustment:5, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+         "openOnRight:false, anchorXAdjustment:13, anchorYAdjustment:5, zIndex:200, border:'1px solid #DDDDDD', noUnloadWarning: 'true'}";
       return advanceArgs;
    }
    

@@ -58,7 +58,7 @@
 	</head>
 	<body style="width: 100%; height:100%; background-color: #F7F7F7;" onLoad="if(windowLoaded){windowLoaded()}">
 		<ice:form>
-			<ice:panelGroup rendered="#{ippActivityPanelController.supportsProcessAttachments}" style="background-color: #EAEAEA;">
+			<ice:panelGroup rendered="#{ippActivityPanelController.supportsProcessAttachments}" styleClass="iframePopover">
 				<ice:panelGrid columns="1" > <!-- Added to give same spacing -->
 					<ice:commandLink styleClass="action-link"
 						action="#{ippActivityPanelController.uploadProcessAttachment}" immediate="true" onclick="closeIframe();">
