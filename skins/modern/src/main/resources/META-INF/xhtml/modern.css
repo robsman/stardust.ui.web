@@ -293,8 +293,8 @@ div#loginBox .buttonContainer input{
 }
 
 .topMenu{
-	height: 23px;
-	line-height:23px;
+	height: 30px;
+	line-height:30px;
 	background:#666666;
 	border-top:1px solid #666666;
 	border-bottom:1px solid #666666;
@@ -305,6 +305,7 @@ div#loginBox .buttonContainer input{
 	border-left:none !important;
 	white-space: nowrap;
 	vertical-align: top;
+	margin-top: 5px;
 }
 
 .topMenuBar{ /* Overrides .iceMnuBar, .iceMnuBarVrt only for Top Menu */

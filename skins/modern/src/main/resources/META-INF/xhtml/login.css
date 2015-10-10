@@ -50,6 +50,8 @@ div#loginBox .loginContent input{
 	border:solid 1px #ddd;
 	color: #333333;
 	outline-style:none;
+	padding-left: 5px;
+	padding-right: 5px;
 }
 
 
