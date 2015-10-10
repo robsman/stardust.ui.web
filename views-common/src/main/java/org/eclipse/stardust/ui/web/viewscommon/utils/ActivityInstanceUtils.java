@@ -110,18 +110,18 @@ public class ActivityInstanceUtils
       fontMap.put("ManualActivity", "pi-manual-activity");
       fontMap.put("Auxiliary", "pi-activity-auxiliary");
       fontMap.put("Delegate", "pi-activity-delegate");
-      fontMap.put("Exception", "pi-activity");
-      fontMap.put("EventException", "pi-activity");
-      fontMap.put("EventTimer", "pi-activity");
-      fontMap.put("ActivityCompleted", "pi-activity");
-      fontMap.put("StateChange", "pi-activity");
+      fontMap.put("Exception", "pi-exception-circle");
+      fontMap.put("EventException", "pi-exception-circle");
+      fontMap.put("EventTimer", "pi-clock");
+      fontMap.put("ActivityCompleted", "pi-activity-complete");
+      fontMap.put("StateChange", "pi-activity-state");
       fontMap.put("ProcessInstance", "pi-process");
-      fontMap.put("SubProcess", "pi-activity");
+      fontMap.put("SubProcess", "pi-process");
       fontMap.put("AuxiliaryProcess", "pi-process-auxiliary");
       fontMap.put("CaseInstance", "pi-case");
-      fontMap.put("activityQAFailed", "pi-activity");
-      fontMap.put("activityQAPassed", "pi-activity");
-      fontMap.put("activityQAAwait", "pi-activity");
+      fontMap.put("activityQAFailed", "pi-qa-failed");
+      fontMap.put("activityQAPassed", "pi-qa-passed");
+      fontMap.put("activityQAAwait", "pi-qa-waiting");
       fontMap.put("Note", "pi-notes");
       
    }
