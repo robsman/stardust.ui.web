@@ -93,7 +93,13 @@ table.wrapperTable {
         width: 80%;
         height: 100%;
         margin-bottom: 10px;
-    }
+ }
+ 
+.panelIcon {
+	float: left;
+    padding-top: 3px;
+    padding-right: 5px;
+}
 </style>
 </head>
 <body>
@@ -110,16 +116,14 @@ table.wrapperTable {
 		</table>
 		<div id="hideGeneralProperties">
 				<div class="clplPanelHeading">
-				<img src="./plugins/common/images/panelHeader-triggerExpand.png"
-					title="Show General Properties" styleClass="headerImg"></img> 
+					<i class="pi pi-trigger-collapse panelIcon" title="Show General Properties"></i> 
 					<label id="decHideGeneralPropertiesTitle">General Properties</label>
 			</div>
 		</div>
 		<div id="showAllProperties">
 			<div id="showGeneralProperties">
 				<div class="clplPanelHeading">
-					<img src="./plugins/common/images/panelHeader-triggerCollapse.png"
-						title="Hide General Properties" styleClass="headerImg"></img>
+					   	<i class="pi pi-trigger-expand panelIcon" title="Hide General Properties"></i>
 						<label id="decShowGeneralPropertiesTitle">General Properties</label>	
 				</div>
 			</div>
@@ -178,7 +182,7 @@ table.wrapperTable {
 			<div id="hotTableTab">
 			<div class="camino-panel">
 				<div id="alertPanel" class="alert-caution view-hide">
-					<img src="plugins/rules-manager/images/icons/error.png"/>
+				   <i class="pi pi-information pi-danger" style ="padding-left: 2px"> </i>
 					<span id="alertPanelMsg"></span>
 				</div>
 				<div class="toolBar" style="margin-bottom:2px;">

@@ -81,6 +81,12 @@ table.layoutTable td {
 	border: none;
 	background: none;
 }
+
+.panelIcon {
+	float: left;
+    padding-top: 3px;
+    padding-right: 5px;
+}
 </style>
 </head>
 <body>
@@ -98,16 +104,14 @@ table.layoutTable td {
 		</table>
 		<div id="hideGeneralProperties">
 				<div class="clplPanelHeading">
-				<img src="./plugins/common/images/panelHeader-triggerExpand.png"
-					title="Show General Properties" styleClass="headerImg"></img> 
+					<i class="pi pi-trigger-collapse panelIcon" title="Show General Properties"></i> 
 					<label id="decHideGeneralPropertiesTitle">General Properties</label>
 			</div>
 		</div>
 		<div id="showAllProperties">
 			<div id="showGeneralProperties">
 				<div class="clplPanelHeading">
-					<img src="./plugins/common/images/panelHeader-triggerCollapse.png"
-						title="Hide General Properties" styleClass="headerImg"></img>
+						<i class="pi pi-trigger-expand panelIcon" title="Hide General Properties"></i>
 						<label id="decShowGeneralPropertiesTitle">General Properties</label>	
 				</div>
 			</div>
