@@ -57,24 +57,35 @@
 .renameVrtItem a img,
 .renameVrtItem-dis span img,
 .uploadVrtItem a img,
+.uploadVrtItem-dis span img,
 .exportMnuItemVrtItem a img,
+.exportMnuItemVrtItem-dis span img,
 .refreshVrtItem a img,
+.refreshVrtItem-dis span img,
 .versionHistoryVrtItem a img,
 .deleteFileVrtItem a img,
+.deleteFileVrtItem-dis span img,
 .createFileVrtItem a img,
+.createFileVrtItem-dis span img,
 .dropDownMnuItemItem a img,
 .settingsMnuItemVrtItem a img,
+.settingsMnuItemVrtItem-dis span img,
 .createFolderVrtItem a img,
+.createFolderVrtItem-dis span img,
 .deleteFolderVrtItem a img,
 .deleteFolderVrtItem-dis span img,
 .createNoteVrtItem a img,
+.createNoteVrtItem-dis span img,
 .defaultRepoVrtItem a img,
 .defaultRepoVrtItem-dis span img,
 .bindRepoVrtItem a img,
+.bindRepoVrtItem-dis span img,
 .unbindRepoVrtItem a img,
 .unbindRepoVrtItem-dis span img,
 .propertiesVrtItem a img,
+.propertiesVrtItem-dis span img,
 .detachFileVrtItem a img,
+.detachFileVrtItem-dis span img,
 .cutVrtItem a img,
 .cutVrtItem span img,
 .pasteVrtItem a img,
@@ -150,19 +161,22 @@
     content: "\f044";
 }
 
-.uploadVrtItem a:before{
+.uploadVrtItem a:before,
+.uploadVrtItem-dis > span:before{
     font-family: FontAwesome;
     font-size: 16px;
     content: "\f093";
 }
 
-.exportMnuItemVrtItem a:before{
+.exportMnuItemVrtItem a:before,
+.exportMnuItemVrtItem-dis > span:before{
     font-family: FontAwesome;
     font-size: 16px;
     content: "\f019";
 }
 
-.refreshVrtItem a:before{
+.refreshVrtItem a:before,
+.refreshVrtItem-dis > span:before{
     font-family: FontAwesome;
     font-size: 16px;
     content: "\f021";
@@ -174,13 +188,15 @@
     content: "\f02d";
 }
 
-.deleteFileVrtItem a:before{
+.deleteFileVrtItem a:before,
+.deleteFileVrtItem-dis > span:before{
     font-family: FontAwesome;
     font-size: 16px;
     content: "\f056";
 }
 
-.createFileVrtItem a:before{
+.createFileVrtItem a:before,
+.createFileVrtItem-dis > span:before{	
     font-family: FontAwesome;
     font-size: 16px;
     content: "\f055";
@@ -192,13 +208,15 @@
     content: "\f078";
 }
 
-.settingsMnuItemVrtItem a:before{
+.settingsMnuItemVrtItem a:before,
+.settingsMnuItemVrtItem-dis > span:before{
     font-family: FontAwesome;
     font-size: 16px;
     content: "\f0ad";
 }
 
-.createFolderVrtItem a:before{
+.createFolderVrtItem a:before,
+.createFolderVrtItem-dis > span:before{
     font-family: FontAwesome;
     font-size: 16px;
     content: "\f0fe";
@@ -216,49 +234,43 @@
     content: "\f146";
 }
 
-.createNoteVrtItem a:before{
+.createNoteVrtItem a:before,
+.createNoteVrtItem-dis > span:before{
     font-family: FontAwesome;
     font-size: 16px;
     content: "\f055";
 }
 
-.defaultRepoVrtItem a:before{
-    font-family: FontAwesome;
-    font-size: 16px;
-    content: "\f0fe";
-}
-
+.defaultRepoVrtItem a:before,
 .defaultRepoVrtItem-dis > span:before{
     font-family: FontAwesome;
     font-size: 16px;
     content: "\f0fe";
 }
 
-.bindRepoVrtItem a:before{
+.bindRepoVrtItem a:before,
+.bindRepoVrtItem-dis > span:before{
     font-family: FontAwesome;
     font-size: 16px;
     content: "\f055";
 }
 
-.unbindRepoVrtItem a:before{
-    font-family: FontAwesome;
-    font-size: 16px;
-    content: "\f056";
-}
-
+.unbindRepoVrtItem a:before,
 .unbindRepoVrtItem-dis > span:before{
     font-family: FontAwesome;
     font-size: 16px;
     content: "\f056";
 }
 
-.propertiesVrtItem a:before{
+.propertiesVrtItem a:before,
+.propertiesVrtItem-dis > span:before{
     font-family: FontAwesome;
     font-size: 16px;
     content: "\f1e8";
 }
 
-.detachFileVrtItem a:before{
+.detachFileVrtItem a:before,
+.detachFileVrtItem-dis > span:before{
     font-family: FontAwesome;
     font-size: 16px;
     content: "\f180";

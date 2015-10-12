@@ -11,9 +11,8 @@
 				disabled="#{ippBCCDiagramBean.rootProcess}">
 				<pc:automationTag value="auto-BCC-ProcDiagram-MoveProcUp"
 					standAlone="false" />
-				<h:graphicImage
-					value="#{ippBCCDiagramBean.rootProcess ? '/plugins/views-common/images/icons/diagram/upLight.gif' : '/plugins/views-common/images/icons/diagram/upGrey.gif'}"
-					style="border: none;"
+				<ice:outputText
+					styleClass="#{ippBCCDiagramBean.rootProcess ? 'pi pi-move-sub-process-up-light pi-lg' : 'pi pi-move-sub-process-up-grey pi-lg'}"
 					title="#{ippBCCDiagramBean.messages['moveProcessUp.title']}" />
 			</ice:commandLink>
 			<ice:commandLink
@@ -21,9 +20,8 @@
 				disabled="#{ippBCCDiagramBean.noSubProcessAvailable}">
 				<pc:automationTag value="auto-BCC-ProcDiagram-MoveProcDown"
 					standAlone="false" />
-				<h:graphicImage
-					value="#{ippBCCDiagramBean.noSubProcessAvailable ? '/plugins/views-common/images/icons/diagram/downLight.gif' : '/plugins/views-common/images/icons/diagram/downGrey.gif'}"
-					style="border: none;"
+				<ice:outputText
+					styleClass="#{ippBCCDiagramBean.noSubProcessAvailable ? 'pi pi-move-sub-process-down-light pi-lg' : 'pi pi-move-sub-process-down-grey pi-lg'}"
 					title="#{ippBCCDiagramBean.messages['moveProcessDown.title']}" />
 			</ice:commandLink>
 		</ice:panelGrid>

@@ -1484,3 +1484,23 @@ span.pi-case-menu-open:after {
 .pi-user-status-offline:before{
 	color:grey;
 }
+
+.pi-move-sub-process-up-light:before{
+	font-family:"FontAwesome";
+	content:'\f106';/*  fa-angle-up */
+}
+
+.pi-move-sub-process-down-light:before{
+	font-family:"FontAwesome";
+	content:'\f107';/* fa-angle-down */
+}
+
+.pi-move-sub-process-up-grey:before{
+	font-family:"FontAwesome";
+	content:'\f077';/*  fa-chevron-up */
+}
+
+.pi-move-sub-process-down-grey:before{
+	font-family:"FontAwesome";
+	content:'\f078';/* fa-chevron-downn */
+}
