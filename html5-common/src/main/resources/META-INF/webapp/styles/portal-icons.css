@@ -1504,3 +1504,8 @@ span.pi-case-menu-open:after {
 	font-family:"FontAwesome";
 	content:'\f078';/* fa-chevron-downn */
 }
+
+.pi-bell:before{
+	font-family:FontAwesome;
+	content:"\f0f3"; /* fa-bell */
+}

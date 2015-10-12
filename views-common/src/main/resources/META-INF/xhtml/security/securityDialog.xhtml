@@ -37,12 +37,10 @@
 								<ice:commandLink
 									action="#{securityDialog.toggleExpandCollpase}">
 									<ice:panelGrid columns="2">
-										<ice:graphicImage rendered="#{!securityDialog.expanded}"
-											value="/plugins/views-common/images/icons/thumbnailsPanel-triggerExpand.png"
-											style="border: none" />
-										<ice:graphicImage rendered="#{securityDialog.expanded}"
-											value="/plugins/views-common/images/icons/panelHeader-triggerCollapse.png"
-											style="border: none" />
+										<ice:outputText rendered="#{!securityDialog.expanded}"
+											styleClass="pi pi-trigger-expand" />
+										<ice:outputText rendered="#{securityDialog.expanded}"
+											styleClass="pi pi-trigger-collapse" />
 										<ice:outputText styleClass="panelHeaderTitle"
 											value="#{securityDialog.messages['securityDialog.inheritedTable.title']}  #{securityDialog.resourceName}" />
 									</ice:panelGrid>
