@@ -527,8 +527,8 @@
 						'<span class="tbl-tree-controls">' +
 							'<span ng-repeat="treeLevel in rowData.$$treeInfo.levels" class="tbl-tree-indent"></span>' +
 							'<button class="button-link tbl-tree-action" ng-click="$dtApi.toggleTreeNode($index)" ng-disabled="rowData.$leaf" ng-style="{\'visibility\': rowData.$leaf ? \'hidden\' : \'visible\'}">' +
-								'<span ng-show="rowData.$expanded" class="glyphicon glyphicon-minus"></span>' +
-								'<span ng-show="!rowData.$expanded" class="glyphicon glyphicon-plus"></span>' +
+								'<span ng-show="rowData.$expanded" class="pi pi-tree-collapse"></span>' +
+								'<span ng-show="!rowData.$expanded" class="pi pi-tree-expand"></span>' +
 							'</button>' +
 						'</span>';
 					colDef.contents = treeContents + colDef.contents;
