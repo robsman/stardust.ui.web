@@ -430,7 +430,7 @@ public class ChatRoom implements Serializable
 
    private String italicizeString(String str)
    {
-      return "<i>" + str + "</i>";
+      return "<i style='font-weight: 400'>" + str + "</i>";
    }
 
    /**
