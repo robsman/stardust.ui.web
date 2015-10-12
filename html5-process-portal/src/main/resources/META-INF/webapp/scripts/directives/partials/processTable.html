@@ -120,16 +120,13 @@
 					<span class="spacing-right">
 							<span title="{{i18n('business-control-center-messages.common-tooltip-process')}}"
 								ng-if="!rowData.caseInstance && rowData.oid == rowData.processInstanceRootOID" >
-								<i class="pi pi-badge-portrait pi-lg pi-activity pi-right">
-		                   			 <i style="color:blue" class="pi pi-badge-bg pi-badge-bg-circle "></i>
-		               			 </i>
+								<i class="pi pi-lg pi-root-process"></i>
 							</span>
 							<span src="plugins/views-common/images/icons/process.png"
 								style="border: none;"
 								title="{{i18n('business-control-center-messages.common-tooltip-subProcess')}}"
 								ng-if="!rowData.caseInstance && rowData.oid != rowData.processInstanceRootOID" >
-									<i class="pi pi-badge-portrait pi-lg pi-activity">
-		               				 </i>
+									<i class="pi pi-lg pi-process"></i>
 							</span>
 							<span src="plugins/views-common/images/icons/envelope.png"
 								style="border: none;"
