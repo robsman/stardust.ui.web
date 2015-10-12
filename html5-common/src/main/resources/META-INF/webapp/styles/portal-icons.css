@@ -304,14 +304,6 @@ Utility classes for portal icons
 	color:red;
 }
 
-.pi-color-green:before{
-	color:green;
-}
-
-.pi-color-red:before{
-	color:red;
-}
-
 /* Perspective Icons */
 .perspective-icon {
 	font-size: 18px !important; /* Using fixed size in px and not em purposefully */

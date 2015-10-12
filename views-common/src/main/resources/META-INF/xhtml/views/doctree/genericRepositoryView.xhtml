@@ -355,12 +355,12 @@
 							<ice:inputText value="#{item.userObject.name}"
 								partialSubmit="true" />
 							<ice:commandLink id="image_button__rename_accept"
-								styleClass="pi pi-check pi-color-green icon-lg"
+								styleClass="pi pi-check pi-success icon-lg"
 								action="#{item.userObject.renameAccept}"
 								style="border: 0px;width: 15px;height:15px;" />
 							<ice:commandLink id="image_button_rename_decline"
 								immediate="true"
-								styleClass="pi pi-close pi-color-red icon-lg"
+								styleClass="pi pi-close pi-danger icon-lg"
 								action="#{item.userObject.renameDecline}"
 								rendered="#{not item.userObject.newNodeCreated}"
 								style="border: 0px;width: 15px;height:15px" />
