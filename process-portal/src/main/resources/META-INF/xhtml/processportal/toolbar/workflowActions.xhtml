@@ -118,7 +118,7 @@
 				<ice:outputText
 					styleClass="#{!activityDetailsBean.delegable ? 'iceCmdBtn-dis' : ''} pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top"
 					title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.delegate']}">
-					<h:outputText styleClass="pi pi-badge-icon pi-badge-icon-arrow-r" title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.delegate']}" />	
+					<ice:outputText style="margin-top: 2px; margin-left: 2px" styleClass="pi pi-badge-icon pi-badge-icon-arrow-r" title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.delegate']}" />	
 				</ice:outputText>
 			</ice:commandLink>
 
@@ -155,10 +155,8 @@
 					immediate="true"
 					title="#{views_common_msgPropsBean['views.case.tooltip.menu']}" style="margin-left: 5px;">
 					<pc:automationTag value="auto-PP-ActivityPnl-ToolbarCase" standAlone="false"/>
-					<ice:outputText
-						styleClass="pi pi-case pi-lg">
-						<ice:outputText styleClass="pi pi-menu-dropdown pi-sm" />
-					</ice:outputText>
+					<ice:outputText styleClass="pi pi-case pi-lg" />
+					<ice:outputText styleClass="pi pi-menu-dropdown pi-sm" />
 				</ice:commandLink>
 				<div id="ippCaseAnchor" style="width: 1px; height: 1px;"></div>
 			</ice:panelGroup>
