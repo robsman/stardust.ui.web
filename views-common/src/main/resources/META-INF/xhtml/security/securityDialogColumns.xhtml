@@ -28,20 +28,20 @@
 			rendered="#{col.columnName == 'Create'}">
 			<ice:panelGroup rendered="#{!row.edit}">
 				<ice:panelGrid columns="2" rendered="#{row.create == 'Inherit'}">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/status-offline.png" />
+					<ice:outputText
+						styleClass="pi pi-user-status pi-lg pi-user-status-offline" />	
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.inherit']}" />
 				</ice:panelGrid>
 				<ice:panelGrid columns="2" rendered="#{row.create =='Allow'}">
 					<ice:outputText 
-						styleClass="pi pi-user-status pi-lg" />
+						styleClass="pi pi-user-status pi-lg pi-success" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.allow']}" />
 				</ice:panelGrid>
 				<ice:panelGrid columns="2" rendered="#{row.create =='Deny'}">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/status-busy.png" />
+					<ice:outputText
+						styleClass="pi pi-user-status pi-lg pi-danger" />	
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.deny']}" />
 				</ice:panelGrid>
@@ -63,20 +63,20 @@
 		<ice:panelGroup rendered="#{col.columnName == 'Read'}">
 			<ice:panelGroup rendered="#{!row.edit}">
 				<ice:panelGrid columns="2" rendered="#{row.read == 'Inherit'}">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/status-offline.png" />
+					<ice:outputText
+						styleClass="pi pi-user-status pi-lg pi-user-status-offline" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.inherit']}" />
 				</ice:panelGrid>
 				<ice:panelGrid columns="2" rendered="#{row.read == 'Allow'}">
 					<ice:outputText
-						styleClass="pi pi-user-status pi-lg" />
+						styleClass="pi pi-user-status pi-lg pi-success" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.allow']}" />
 				</ice:panelGrid>
 				<ice:panelGrid columns="2" rendered="#{row.read == 'Deny'}">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/status-busy.png" />
+					<ice:outputText
+						styleClass="pi pi-user-status pi-lg pi-danger" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.deny']}" />
 				</ice:panelGrid>
@@ -97,20 +97,20 @@
 		<ice:panelGroup rendered="#{col.columnName == 'Modify'}">
 			<ice:panelGroup rendered="#{!row.edit}">
 				<ice:panelGrid columns="2" rendered="#{row.modify == 'Inherit'}">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/status-offline.png" />
+					<ice:outputText
+						styleClass="pi pi-user-status pi-lg pi-user-status-offline" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.inherit']}" />
 				</ice:panelGrid>
 				<ice:panelGrid columns="2" rendered="#{row.modify == 'Allow'}">
 					<ice:outputText
-						styleClass="pi pi-user-status pi-lg" />
+						styleClass="pi pi-user-status pi-lg pi-success" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.allow']}" />
 				</ice:panelGrid>
 				<ice:panelGrid columns="2" rendered="#{row.modify == 'Deny'}">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/status-busy.png" />
+					<ice:outputText
+						styleClass="pi pi-user-status pi-lg pi-danger" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.deny']}" />
 				</ice:panelGrid>
@@ -132,20 +132,20 @@
 		<ice:panelGroup rendered="#{col.columnName == 'Delete'}">
 			<ice:panelGroup rendered="#{!row.edit}">
 				<ice:panelGrid columns="2" rendered="#{row.delete == 'Inherit'}">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/status-offline.png" />
+					<ice:outputText
+						styleClass="pi pi-user-status pi-lg pi-user-status-offline" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.inherit']}" />
 				</ice:panelGrid>
 				<ice:panelGrid columns="2" rendered="#{row.delete == 'Allow'}">
 					<ice:outputText
-						styleClass="pi pi-user-status pi-lg" />
+						styleClass="pi pi-user-status pi-lg pi-success" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.allow']}" />
 				</ice:panelGrid>
 				<ice:panelGrid columns="2" rendered="#{row.delete == 'Deny'}">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/status-busy.png" />
+					<ice:outputText
+						styleClass="pi pi-user-status pi-lg pi-danger" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.deny']}" />
 				</ice:panelGrid>
@@ -167,20 +167,20 @@
 		<ice:panelGroup rendered="#{col.columnName == 'ReadACL'}">
 			<ice:panelGroup rendered="#{!row.edit}">
 				<ice:panelGrid columns="2" rendered="#{row.readAcl == 'Inherit'}">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/status-offline.png" />
+					<ice:outputText
+						styleClass="pi pi-user-status pi-lg pi-user-status-offline" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.inherit']}" />
 				</ice:panelGrid>
 				<ice:panelGrid columns="2" rendered="#{row.readAcl =='Allow'}">
 					<ice:outputText
-						styleClass="pi pi-user-status pi-lg" />
+						styleClass="pi pi-user-status pi-lg pi-success" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.allow']}" />
 				</ice:panelGrid>
 				<ice:panelGrid columns="2" rendered="#{row.readAcl =='Deny'}">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/status-busy.png" />
+					<ice:outputText
+						styleClass="pi pi-user-status pi-lg pi-danger" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.deny']}" />
 				</ice:panelGrid>
@@ -202,8 +202,8 @@
 		<ice:panelGroup rendered="#{col.columnName == 'ModifyACL'}">
 			<ice:panelGroup rendered="#{!row.edit}">
 				<ice:panelGrid columns="2" rendered="#{row.modifyAcl == 'Inherit'}">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/status-offline.png" />
+					<ice:outputText
+						styleClass="pi pi-user-status pi-lg pi-user-status-offline" />
 					
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.inherit']}" />
@@ -211,13 +211,13 @@
 				</ice:panelGrid>
 				<ice:panelGrid columns="2" rendered="#{row.modifyAcl =='Allow'}">
 					<ice:outputText
-						styleClass="pi pi-user-status pi-lg" />
+						styleClass="pi pi-user-status pi-lg pi-success" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.allow']}" />
 				</ice:panelGrid>
 				<ice:panelGrid columns="2" rendered="#{row.modifyAcl =='Deny'}">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/status-busy.png" />
+					<ice:outputText
+						styleClass="pi pi-user-status pi-lg pi-danger" />
 					<ice:outputText
 						value="#{securityDialog.messages['securityDialog.columnValue.deny']}" />
 				</ice:panelGrid>

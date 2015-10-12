@@ -1477,3 +1477,10 @@ span.pi-case-menu-open:after {
 	content:'\f067'; /* fa-plus */
 }
 
+.pi-user-status-away:before{
+	color:orange;
+}
+
+.pi-user-status-offline:before{
+	color:grey;
+}
