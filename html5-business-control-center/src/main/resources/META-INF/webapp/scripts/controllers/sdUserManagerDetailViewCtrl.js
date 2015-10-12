@@ -115,9 +115,6 @@
 			totalCount : self.userManagerDetails.assignedRoleList.length
 		}
 
-		result.list = _sdDataTableHelperService.columnSort(options, result.list);
-		result.list = _sdDataTableHelperService.paginate(options, result.list);
-
 		deferred.resolve(result);
 		return deferred.promise;
 	};
@@ -132,9 +129,6 @@
 			list : self.userManagerDetails.assignableRoleList,
 			totalCount : self.userManagerDetails.assignableRoleList.length
 		}
-
-		result.list = _sdDataTableHelperService.columnSort(options, result.list);
-		result.list = _sdDataTableHelperService.paginate(options, result.list);
 
 		deferred.resolve(result);
 		return deferred.promise;
