@@ -66,6 +66,8 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.XPathCacheManager;
 public class DescriptorFilterUtils
 {
    private static final Logger trace = LogManager.getLogger(DescriptorFilterUtils.class);
+   // Scan Client Date Format
+   public static final String DATE_FORMAT = "dd-MMM-yyyy";
 
    /**
     * @author Yogesh.Manware
@@ -1093,5 +1095,4 @@ public class DescriptorFilterUtils
       return localValue;
    }
 
-   public static final String DATE_FORMAT = "MM/dd/yy";
 }
