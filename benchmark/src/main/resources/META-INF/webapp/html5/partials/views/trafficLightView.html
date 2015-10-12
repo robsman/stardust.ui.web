@@ -1,7 +1,7 @@
 <div class="view-panel"
 	ng-controller="sdTrafficLightViewController as ctrl">
 	<div class="view-panel-toolbar" ng-click="ctrl.setShowTLVCriteria()"
-		aid="COM-benchmark-ShowHideCriteria">
+		aid="COM-benchmark-tlv-ShowHideCriteria">
 		<i ng-show="ctrl.showTLVCriteria" class="pi pi-arrow-d pi-lg"></i> <i
 			ng-show="!ctrl.showTLVCriteria" class="pi pi-arrow-r pi-lg"></i> <span
 			style="color: #2F6871; font-weight: bold; font-size: 11px;">{{i18n('benchmark-messages.views-trafficLightView-label')}}</span>
@@ -16,13 +16,15 @@
 				<select size="5"
 					style="white-space: nowrap; margin: 5px; padding: 0;"
 					multiple="multiple" ng-model="ctrl.selectedProcesses"
-					ng-options="opt as opt.name for opt in ctrl.processes">
+					ng-options="opt as opt.name for opt in ctrl.processes"
+					aid="COM-benchmark-tlv-selectProcesses">
 				</select>
 				<label style="vertical-align: top; display: inline; margin-left: 10px" class="form-lable">{{i18n('benchmark-messages.views-trafficLightView-benchmarks-label')}}</label>
 				<select size="5"
 					style="white-space: nowrap; margin: 5px; padding: 0;"
 					multiple="multiple" ng-model="ctrl.selectedBenchmarks"
-					ng-options="opt.oid as opt.name for opt in ctrl.benchmarkDefinitions">
+					ng-options="opt.oid as opt.name for opt in ctrl.benchmarkDefinitions"
+					aid="COM-benchmark-tlv-selectBenchmarks">
 				</select>
 			</div>
 			<div>
@@ -30,7 +32,8 @@
 				<select size="1"
 					style="white-space: nowrap; margin: 5px; padding: 0;"
 					ng-model="ctrl.selectedDrillDown"
-					ng-change="ctrl.drillDownChange()">
+					ng-change="ctrl.drillDownChange()"
+					aid="COM-benchmark-tlv-selectDrilDown">
 					<option value="PROCESS_WORKITEM">{{i18n('benchmark-messages.views-trafficLightView-processOrWorkItem-label')}}</option>
 					<option value="BUSINESS_OBJECT">{{i18n('benchmark-messages.views-trafficLightView-businessObject-label')}}</option>
 				</select>
@@ -41,7 +44,8 @@
 			       <td><label style="display: inline;" class="form-lable">{{i18n('benchmark-messages.views-trafficLightView-businessObject-label')}}</label>
 					   <select ng-model="ctrl.selectedBusinessObject"
 							ng-options="businessObject as businessObject.label for businessObject in ctrl.businessObjects"
-							ng-change="ctrl.getBusinessObjectInstances()"></select>
+							ng-change="ctrl.getBusinessObjectInstances()"
+							aid="COM-benchmark-tlv-selectBusinessObject"></select>
 			       </td>
 			       <td>
 			         <div sd-auto-complete sda-matches="ctrl.businessObjectInstancesData" sda-match-str="ctrl.matchVal"
@@ -52,7 +56,8 @@
 						sda-selected-matches="ctrl.selectedBusinessObjectInstances"
 						sda-allow-duplicates="false"
                     	sda-allow-multiple="true"
-                    	sda-clear-on-select="true"></div>
+                    	sda-clear-on-select="true"
+                    	sda-aid-prefix="COM-benchmark-tlv-businessObjectInstances"></div>
 			       </td>
 			     </tr>
 			   </table>
@@ -63,7 +68,8 @@
 			          <label style="display: inline;" class="form-lable">{{i18n('benchmark-messages.views-trafficLightView-groupBy-label')}}</label>
 				       <select ng-model="ctrl.selectedRelatedBusinessObject"
 						ng-options="businessObject as businessObject.label for businessObject in ctrl.relatedBusinessObjects"
-						ng-change="ctrl.getRelatedBOInstances()"></select>
+						ng-change="ctrl.getRelatedBOInstances()"
+						aid="COM-benchmark-tlv-selectRelatedBusinessObject"></select>
 			     	 </td>
 			     	 <td>
 			     	   <div sd-auto-complete sda-matches="ctrl.relatedBusinessObjectInstancesData" sda-match-str="ctrl.relatedMatchVal"
@@ -74,7 +80,8 @@
 						sda-selected-matches="ctrl.selectedRelatedBusinessObjectInstances"
 						sda-allow-duplicates="false"
                     	sda-allow-multiple="true"
-                    	sda-clear-on-select="true"></div>
+                    	sda-clear-on-select="true"
+                    	sda-aid-prefix="COM-benchmark-tlv-relatedBusinessObjectInstances"></div>
 			     	 </td>
 			      </tr>
 			    </table>
@@ -83,16 +90,20 @@
 				<label style="display: inline;" class="form-lable">{{i18n('benchmark-messages.views-trafficLightView-date-label')}}</label>
 				<select size="1"
 					style="white-space: nowrap; margin: 5px; padding: 0;"
-					ng-model="ctrl.selectedDateType">
+					ng-model="ctrl.selectedDateType"
+					aid="COM-benchmark-tlv-selectDateType">
 					<option value="BUSINESS_DATE">{{i18n('benchmark-messages.views-trafficLightView-businessDate-label')}}</option>
 					<option value="STARTTIME_DATE">{{i18n('benchmark-messages.views-trafficLightView-startTimeDate-label')}}</option>
-				</select> <label style="display: inline;" class="form-lable">{{i18n('benchmark-messages.views-trafficLightView-offset-label')}}</label>
-				<input ng-model="ctrl.dayOffset" type="number"><label class="form-lable" style="margin-left: 3px; display: inline;">{{i18n('benchmark-messages.views-trafficLightView-day-label')}}</label>
+				</select> 
+				<label style="display: inline;" class="form-lable">{{i18n('benchmark-messages.views-trafficLightView-offset-label')}}</label>
+				<input ng-model="ctrl.dayOffset" type="number" aid="COM-benchmark-tlv-dayOffset">
+				<label class="form-lable" style="margin-left: 3px; display: inline;">{{i18n('benchmark-messages.views-trafficLightView-day-label')}}</label>
 				<div ng-if="ctrl.showBusinessObjects" style="margin-left: 10px;display: inline;">
 					<label style="display: inline;" class="form-lable">{{i18n('benchmark-messages.views-trafficLightView-show-label')}}</label>
 					<select size="1"
 						style="white-space: nowrap; margin: 5px; padding: 0;"
-						ng-model="ctrl.selectedBOType">
+						ng-model="ctrl.selectedBOType"
+						aid="COM-benchmark-tlv-selectBOType">
 						<option value="PROCESSES">{{i18n('benchmark-messages.views-trafficLightView-processes-label')}}</option>
 						<option value="ACTIVITIES">{{i18n('benchmark-messages.views-trafficLightView-activities-label')}}</option>
 					</select>
@@ -102,7 +113,8 @@
 		<div>
 			<input class="button" type="submit"
 				value="{{i18n('benchmark-messages.views-trafficLightView-update-label')}}"
-				ng-click="ctrl.showTrafficLightView()">
+				ng-click="ctrl.showTrafficLightView()"
+				aid="COM-benchmark-tlv-updateButton">
 		</div>
 	</div>
 	<div ng-if="ctrl.showTLVStatastics"

@@ -28,7 +28,8 @@
 					ng-style="{'color':rowData.benchmarkCategoryCountMap[colData.title].color,'font-size': ctrl.getfontSize(rowData.benchmarkCategoryCountMap[colData.title].count)}"></i>
 					<a href="#"
 						ng-if="rowData.benchmarkCategoryCountMap[colData.title].count > 0"
-						ng-click="ctrl.setDataForBOProcessActivityTable(rowData.benchmarkCategoryCountMap[colData.title].instanceOids)">
+						ng-click="ctrl.setDataForBOProcessActivityTable(rowData.benchmarkCategoryCountMap[colData.title].instanceOids)"
+						aid="COM-benchmark-tlvByBO-categoryCount">
 						<span ng-bind="rowData.benchmarkCategoryCountMap[colData.title].count"></span>
 				    </a> 
 				    <span ng-if="rowData.benchmarkCategoryCountMap[colData.title].count == 0" ng-bind="rowData.benchmarkCategoryCountMap[colData.title].count"></span>
@@ -36,21 +37,24 @@
 				<td style="text-align: center;">
 				  <a href="#"
 					ng-if="rowData.completedCount > 0"
-					ng-click="ctrl.setDataForBOProcessActivityTable(rowData.completedInstanceOids)">
+					ng-click="ctrl.setDataForBOProcessActivityTable(rowData.completedInstanceOids)"
+					aid="COM-benchmark-tlvByBO-completedCount">
 						<span ng-bind="rowData.completedCount"></span>
 				  </a> 
 				  <span ng-if="rowData.completedCount == 0" ng-bind="rowData.completedCount"></span>
 				</td>
 				<td style="text-align: center;"><a href="#"
 					ng-if="rowData.abortedCount > 0"
-					ng-click="ctrl.setDataForBOProcessActivityTable(rowData.abortedInstanceOids)">
+					ng-click="ctrl.setDataForBOProcessActivityTable(rowData.abortedInstanceOids)"
+					aid="COM-benchmark-tlvByBO-abortedCount">
 						<span ng-bind="rowData.abortedCount"></span>
 				</a> <span ng-if="rowData.abortedCount == 0"
 					ng-bind="rowData.abortedCount"></span></td>
 				<td style="text-align: center;">
 				  <a href="#"
 					 ng-if="rowData.totalCount > 0"
-					 ng-click="ctrl.setDataForBOProcessActivityTable(rowData.totalInstanceOids)">
+					 ng-click="ctrl.setDataForBOProcessActivityTable(rowData.totalInstanceOids)"
+					 aid="COM-benchmark-tlvByBO-totalCount">
 					<span ng-bind="rowData.totalCount"></span>
 				  </a> 
 				 <span ng-if="rowData.totalCount == 0" ng-bind="rowData.totalCount"></span>

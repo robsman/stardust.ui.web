@@ -28,7 +28,8 @@
 					ng-style="{'color':rowData.benchmarkCategoryCountMap[colData.title].color,'font-size': ctrl.getfontSize(rowData.benchmarkCategoryCountMap[colData.title].count)}"></i>
 					<a href="#"
 						ng-if="rowData.benchmarkCategoryCountMap[colData.title].count > 0"
-						ng-click="ctrl.setDataForProcessTable(rowData.id,i18n('views-common-messages.views-processTable-statusFilter-active'),rowData.isActivity,rowData.parentId,rowData.benchmarkCategoryCountMap[colData.title].index)">
+						ng-click="ctrl.setDataForProcessTable(rowData.id,i18n('views-common-messages.views-processTable-statusFilter-active'),rowData.isActivity,rowData.parentId,rowData.benchmarkCategoryCountMap[colData.title].index)"
+						aid="COM-benchmark-tlv-categoryCount">
 						<span ng-bind="rowData.benchmarkCategoryCountMap[colData.title].count"></span>
 				    </a> 
 				    <span ng-if="rowData.benchmarkCategoryCountMap[colData.title].count == 0" ng-bind="rowData.benchmarkCategoryCountMap[colData.title].count"></span>
@@ -36,21 +37,24 @@
 				<td style="text-align: center;">
 				  <a href="#"
 					ng-if="rowData.completedCount > 0"
-					ng-click="ctrl.setDataForProcessTable(rowData.id,i18n('views-common-messages.views-processTable-statusFilter-completed'),rowData.isActivity,rowData.parentId)">
+					ng-click="ctrl.setDataForProcessTable(rowData.id,i18n('views-common-messages.views-processTable-statusFilter-completed'),rowData.isActivity,rowData.parentId)"
+					aid="COM-benchmark-tlv-completedCount">
 						<span ng-bind="rowData.completedCount"></span>
 				  </a> 
 				  <span ng-if="rowData.completedCount == 0" ng-bind="rowData.completedCount"></span>
 				</td>
 				<td style="text-align: center;"><a href="#"
 					ng-if="rowData.abortedCount > 0"
-					ng-click="ctrl.setDataForProcessTable(rowData.id,i18n('views-common-messages.views-processTable-statusFilter-aborted'),rowData.isActivity,rowData.parentId)">
+					ng-click="ctrl.setDataForProcessTable(rowData.id,i18n('views-common-messages.views-processTable-statusFilter-aborted'),rowData.isActivity,rowData.parentId)"
+					aid="COM-benchmark-tlv-abortedCount">
 						<span ng-bind="rowData.abortedCount"></span>
 				</a> <span ng-if="rowData.abortedCount == 0"
 					ng-bind="rowData.abortedCount"></span></td>
 				<td style="text-align: center;">
 				  <a href="#"
 					 ng-if="rowData.totalCount > 0"
-					 ng-click="ctrl.setDataForProcessTable(rowData.id,'ALL',rowData.isActivity,rowData.parentId)">
+					 ng-click="ctrl.setDataForProcessTable(rowData.id,'ALL',rowData.isActivity,rowData.parentId)"
+					 aid="COM-benchmark-tlv-totalCount">
 					<span ng-bind="rowData.totalCount"></span>
 				  </a> 
 				 <span ng-if="rowData.totalCount == 0" ng-bind="rowData.totalCount"></span>
