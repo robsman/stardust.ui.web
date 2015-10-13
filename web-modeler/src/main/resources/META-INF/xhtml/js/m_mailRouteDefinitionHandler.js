@@ -349,6 +349,7 @@ define(
                   route += "} else {\n";
                   route += "var bcc= eval(bcc);\n";
                   route += "}\n";
+                  route += "\nvar response=' ';\n";
                   if (attributes["stardust:emailOverlay::templateSource"] == "data")
                   {
                      route += "if(mailContentAP){\n";
@@ -364,7 +365,7 @@ define(
                                        new RegExp("}}", 'g'), " + '") + "';\n";
                   }
                   route += "]]>";
-                  route += "\n      setOutHeader('response', response);\n";
+                 route += "\nsetOutHeader('response', response);\n";
                   if (attributes["stardust:emailOverlay::includeUniqueIdentifierInSubject"] != null
                            && attributes["stardust:emailOverlay::includeUniqueIdentifierInSubject"]==true)
                   {
