@@ -777,7 +777,6 @@
         var permissions = result.permissions;
         v.item.ref['allow'] = permissions[0].allow;
         v.item.ref['deny'] = permissions[0].deny;
-        self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
       }, function(error) {
         trace.error(error);
         self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.save.error"));
