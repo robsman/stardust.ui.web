@@ -208,8 +208,18 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			</ippui:preferences>
 		</ippui:view>
 		<ippui:view name="roleManagerDetailView"
-				include="/plugins/html5-business-control-center/partials/views/roleManagerDetailView.html" />
+				include="/plugins/html5-business-control-center/partials/views/roleManagerDetailView.html">
+			<ippui:preferences>
+				<ippui:preferencePage name="icon"
+					include="/does-not-exist/pi-role.png" />
+			</ippui:preferences>
+		</ippui:view>
 		<ippui:view name="userManagerDetailView"
-				include="/plugins/html5-business-control-center/partials/views/userManagerDetailView.html" />
+				include="/plugins/html5-business-control-center/partials/views/userManagerDetailView.html">
+			<ippui:preferences>
+				<ippui:preferencePage name="icon"
+					include="/does-not-exist/pi-user.png" />
+			</ippui:preferences>
+		</ippui:view>
    </ippui:perspective>
 </beans>

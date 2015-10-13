@@ -118,9 +118,9 @@
 	<!-- Departments -->
 	<div ng-if="qaManagementCtrl.departments.totalCount > 0">
 		<div class="heading">
-			<i class="pi pi-trigger-expand pi-lg" ng-show="qaManagementCtrl.isDepartmentsPanelExpanded"ng-click="qaManagementCtrl.expandDepartmentsPanel(false);"> 
+			<i class="pi pi-trigger-expanded pi-lg" ng-show="qaManagementCtrl.isDepartmentsPanelExpanded"ng-click="qaManagementCtrl.expandDepartmentsPanel(false);"> 
 			</i> 
-			<i class="pi pi-trigger-collapse pi-lg" ng-show="!qaManagementCtrl.isDepartmentsPanelExpanded" ng-click="qaManagementCtrl.expandDepartmentsPanel(true);"> 
+			<i class="pi pi-trigger-collapsed pi-lg" ng-show="!qaManagementCtrl.isDepartmentsPanelExpanded" ng-click="qaManagementCtrl.expandDepartmentsPanel(true);"> 
 			</i> 
 			<span ng-bind="i18n('admin-portal-messages.views-qaManagementView-departments-label')"></span>
 		</div>

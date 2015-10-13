@@ -1136,7 +1136,7 @@ span.pi-case:before{
 	content: "\f071"; /* fa-exclamation-triangle */
 }
 
-.pi-trigger-expand {
+.pi-trigger-expanded {
 	/* fa-rotate-90 */
 	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
 	-webkit-transform: rotate(90deg);
@@ -1144,12 +1144,12 @@ span.pi-case:before{
 	transform: rotate(90deg);
 }
 
-.pi-trigger-expand:before {
+.pi-trigger-expanded:before {
 	font-family: "FontAwesome";
 	content: "\f04b"; /* fa-play */
 }
 
-.pi-trigger-collapse:before {
+.pi-trigger-collapsed:before {
 	font-family: "FontAwesome";
 	content: "\f04b"; /* fa-play */
 }
@@ -1508,4 +1508,9 @@ span.pi-case-menu-open:after {
 .pi-bell:before{
 	font-family:FontAwesome;
 	content:"\f0f3"; /* fa-bell */
+}
+
+.pi-rocket:before{
+	font-family:FontAwesome;
+	content:"\f135"; /* fa-rocket */
 }
