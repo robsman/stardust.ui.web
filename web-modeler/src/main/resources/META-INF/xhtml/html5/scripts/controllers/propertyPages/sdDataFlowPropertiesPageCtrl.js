@@ -110,26 +110,9 @@
       this.inputAccessPoints.push(defaultVal);
       for ( var i in this.modelElement.activity.getContexts()) {
         var context = this.modelElement.activity.getContexts()[i];
-        var count = 0;
 
         trace.debug("i = " + i);
         trace.debug(context);
-
-        for (var m = 0; m < context.accessPoints.length; ++m) {
-          var accessPoint = context.accessPoints[m];
-
-          trace.debug("m = " + m);
-          trace.debug(accessPoint);
-
-          if (accessPoint.direction == constants.IN_ACCESS_POINT
-                  || accessPoint.direction == constants.IN_OUT_ACCESS_POINT) {
-            count++;
-          }
-        }
-
-        if (count == 0) {
-          continue;
-        }
 
         var group = i18n("modeler.dataFlow.propertiesPanel.outputAccessPointSelectInput.group."
                 + i)
@@ -140,7 +123,12 @@
           if (accessPoint.direction == constants.OUT_ACCESS_POINT) {
             continue;
           }
-
+          
+          // Filter out accesspoints where for decorator application where default value is set
+          if (accessPoint.attributes && accessPoint.attributes['carnot:engine:defaultValue']) {
+        	  continue;
+          }
+          
           var label;
           if (accessPoint.isUsedAsList) {
             label = accessPoint.name
@@ -210,20 +198,6 @@
 
       for ( var i in this.modelElement.activity.getContexts()) {
         var context = this.modelElement.activity.getContexts()[i];
-        var count = 0;
-
-        for (var m = 0; m < context.accessPoints.length; ++m) {
-          var accessPoint = context.accessPoints[m];
-
-          if (accessPoint.direction == constants.OUT_ACCESS_POINT
-                  || accessPoint.direction == constants.IN_OUT_ACCESS_POINT) {
-            count++;
-          }
-        }
-
-        if (count == 0) {
-          continue;
-        }
 
         var group = i18n("modeler.dataFlow.propertiesPanel.outputAccessPointSelectInput.group."
                 + i);
