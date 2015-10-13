@@ -295,7 +295,7 @@
 
 .document-image:before {
 	font-family:"FontAwesome";
-	content:"\f1c5";
+	content:"\f1c5"; /* fa-file-picture-o, fa-file-image-o */
 }
 
 .images:before{

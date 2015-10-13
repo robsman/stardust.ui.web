@@ -867,7 +867,7 @@ span.pi-case:before{
 
 .pi-image:before{
 	font-family:FontAwesome;
-	content:"\f03e"; /* fa-picture-o */
+	content:"\f1c5"; /* fa-file-picture-o, fa-file-image-o */
 }
 
 .pi-text:before{
