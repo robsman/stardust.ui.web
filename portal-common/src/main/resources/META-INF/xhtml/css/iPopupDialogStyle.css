@@ -124,3 +124,9 @@
 	font-size: 1em;
 	margin: 5px 0;	
 }
+
+.iPopupDialogCloseButton {
+	float: right;
+	padding: 5px 10px;
+	cursor: pointer;
+}
