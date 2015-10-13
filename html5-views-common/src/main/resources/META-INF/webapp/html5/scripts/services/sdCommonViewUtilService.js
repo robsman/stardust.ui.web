@@ -113,7 +113,7 @@
 		 * 
 		 */
 		CommonViewUtilService.prototype.openActivityView = function(activityOID, nested) {
-			sdViewUtilService.openView("activityPanel", "OID=" + activityOID, {
+			sdViewUtilService.openView("activityPanel", "oid=" + activityOID, {
 				"oid" : "" + activityOID
 			}, nested);
 		};
