@@ -120,7 +120,6 @@
 	  switch (item.type){
 	  	  case undefined:
 		  case "USER":
-		  case "ROLE_SCOPED":
 		  case "ORGANIZATON_SCOPED_IMPLICIT":
 		  case "ORGANIZATON_SCOPED_EXPLICIT":
 		  case "ORGANIZATION_SCOPED_IMPLICIT":
