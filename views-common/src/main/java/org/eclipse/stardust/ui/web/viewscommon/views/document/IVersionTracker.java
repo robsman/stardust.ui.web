@@ -29,4 +29,7 @@ public interface IVersionTracker
    IDocumentContentInfo shiftToNextVersion();
    
    IDocumentContentInfo getLatestVersion();
+   
+   IDocumentContentInfo shiftToVersion(int version);
+   
 }
