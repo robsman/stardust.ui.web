@@ -120,6 +120,8 @@
 	  switch (item.type){
 	  	  case undefined:
 		  case "USER":
+		  case "DEPARTMENT" :
+		  case "DEPARTMENT DEFAULT" :
 		  case "ROLE_SCOPED":
 		  case "ORGANIZATON_SCOPED_IMPLICIT":
 		  case "ORGANIZATON_SCOPED_EXPLICIT":
@@ -458,10 +460,11 @@
   ParticipantManagementCtrl.prototype.menuCallback = function(menuData) {
     var item = menuData.item;
 
-    // model node
+    // model node guard logic
     if (!item.type) menuData.deferred.reject();
+    
     var menu = [];
-
+    
     var adminMessages = _sdI18nService.getInstance('admin-portal-messages').translate;
 
     if (item.type === 'ORGANIZATON_SCOPED_EXPLICIT') {

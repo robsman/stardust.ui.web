@@ -113,7 +113,9 @@
 						<ul>
 							<li sd-tree-node ng-repeat="item in item.children"
 								sda-droppable-expr="ctrl.isDroppable(item)"
-								sda-node-id="item.uuid" sda-is-leaf="!item.children || item.children.length == 0"
+								sda-menu-items="(,)"
+								sda-node-id="item.uuid" 
+								sda-is-leaf="!item.children || item.children.length == 0"
 								sda-label="item.name" >
 								<ul>
 									<li sd-tree-curse-fx></li>
