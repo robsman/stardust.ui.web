@@ -118,12 +118,18 @@ public class StartableProcessBean extends AbstractLaunchPanel implements Initial
                   ModelParticipant modelparticipant = (ModelParticipant) currentModel.getParticipant(s);
                   if (isDepartmentScoped(modelparticipant))
                   {
+                     Model scopedModel = currentModel;
                      for (Grant grant : user.getAllGrants())
                      {
-                        if (PredefinedConstants.ADMINISTRATOR_ROLE.equals(grant.getQualifiedId())
-                              || CompareHelper.areEqual(grant.getNamespace(), currentModel.getId()))
+                        if (!PredefinedConstants.ADMINISTRATOR_ROLE.equals(grant.getQualifiedId())
+                              && !CompareHelper.areEqual(grant.getNamespace(), currentModel.getId()))
                         {
-                           ModelParticipant modelparticipant1 = (ModelParticipant) currentModel.getParticipant(grant
+                           scopedModel = ModelCache.findModelCache().getActiveModel(grant);
+                        }
+                        if (PredefinedConstants.ADMINISTRATOR_ROLE.equals(grant.getQualifiedId())
+                              || CompareHelper.areEqual(grant.getNamespace(), scopedModel.getId()))
+                        {
+                           ModelParticipant modelparticipant1 = (ModelParticipant) scopedModel.getParticipant(grant
                                  .getId());
                            if (isAuthorized(modelparticipant, modelparticipant1))
                            {
