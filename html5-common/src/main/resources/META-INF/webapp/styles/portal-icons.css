@@ -1531,7 +1531,9 @@ span.pi-case-menu-open:after {
 	font-family:FontAwesome;
 	content:"\f135"; /* fa-rocket */
 }
-<!-- These classes are copied from html5-process-portal.css for the purpose of getting load in ice-faces views-->
+
+/* These classes are copied from html5-process-portal.css for the purpose of getting load in ice-faces views */
+
 .criticality-flag-RED{
   color :#F75339 !important;
 }
@@ -1572,7 +1574,7 @@ span.pi-case-menu-open:after {
   color:#CFCFCF !important;
 }
 
-<!-- End criticality Classes-->
+/* End criticality Classes */
 
 .pi-user-avatar:before{
 	font-family: "FontAwesome";
