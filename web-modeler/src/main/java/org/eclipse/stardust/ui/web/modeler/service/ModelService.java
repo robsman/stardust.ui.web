@@ -211,13 +211,15 @@ public class ModelService
    {
       try
       {
-         Map<String, ModelType> models = getModelManagementStrategy().getModels();
-         if (reload || models.isEmpty())
+         if (reload)
          {
             TypeDeclarationUtils.clearExternalSchemaCache();
-            // reload upon request or if never loaded before
-            // TODO Review
-            getModelManagementStrategy().getModels(true);
+         }
+         Map<String, ModelType> models = getModelManagementStrategy().getModels(reload);
+         if (!reload && models.isEmpty())
+         {
+            TypeDeclarationUtils.clearExternalSchemaCache();
+            models = getModelManagementStrategy().getModels(true);
          }
 
          JsonObject modelsJson = new JsonObject();
@@ -285,8 +287,8 @@ public class ModelService
    }
 
    /**
-	 *
-	 */
+   *
+   */
    public void saveAllModels()
    {
       ModelRepository modelRepository = currentSession().modelRepository();
