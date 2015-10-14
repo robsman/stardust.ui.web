@@ -60,6 +60,7 @@ import org.eclipse.stardust.engine.core.repository.DocumentRepositoryFolderNames
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.DocumentAnnotations;
+import org.eclipse.stardust.engine.runtime.utils.TimestampProviderUtils;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
@@ -899,7 +900,7 @@ public class DocumentMgmtUtility
     */
    public static String getTimeStampString()
    {
-      return DMSUtils.replaceAllSpecialChars(DateUtils.format(new Date(System.currentTimeMillis()), DATE_TIME_SECONDS));
+      return DMSUtils.replaceAllSpecialChars(DateUtils.format(new Date(TimestampProviderUtils.getTimeStampValue()), DATE_TIME_SECONDS));
    }
 
    /**
@@ -933,7 +934,7 @@ public class DocumentMgmtUtility
    {
       DateFormat format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, getLocale());
       return MessagesViewsCommonBean.getInstance().getString("views.genericRepositoryView.newFolder.name")
-            + DMSUtils.replaceAllSpecialChars(format.format(new Date(System.currentTimeMillis())));
+            + DMSUtils.replaceAllSpecialChars(format.format(new Date(TimestampProviderUtils.getTimeStampValue())));
    }
 
    /**
@@ -943,7 +944,7 @@ public class DocumentMgmtUtility
    {
       StringBuffer reportNameB = new StringBuffer(org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils
             .substringBeforeLast(reportName, "."));
-      return reportNameB.append("_").append(DateUtils.format(new Date(System.currentTimeMillis()), YYYYMMDD_FORMAT)).append(".pdf")
+      return reportNameB.append("_").append(DateUtils.format(new Date(TimestampProviderUtils.getTimeStampValue()), YYYYMMDD_FORMAT)).append(".pdf")
             .toString();
    }
 

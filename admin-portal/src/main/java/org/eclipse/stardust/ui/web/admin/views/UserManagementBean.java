@@ -39,6 +39,7 @@ import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserService;
+import org.eclipse.stardust.engine.runtime.utils.TimestampProviderUtils;
 import org.eclipse.stardust.ui.web.admin.AdminportalConstants;
 import org.eclipse.stardust.ui.web.admin.ResourcePaths;
 import org.eclipse.stardust.ui.web.admin.WorkflowFacade;
@@ -530,7 +531,7 @@ public class UserManagementBean extends PopupUIComponentBean
          {
             if (!filter.isActive())
             {
-               query.getFilter().addOrTerm().or(UserQuery.VALID_TO.greaterThan(System.currentTimeMillis()))
+               query.getFilter().addOrTerm().or(UserQuery.VALID_TO.greaterThan(TimestampProviderUtils.getTimeStampValue()))
                      .or(UserQuery.VALID_TO.isEqual(0));
             }
          }

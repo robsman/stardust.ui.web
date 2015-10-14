@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.eclipse.stardust.engine.runtime.utils.TimestampProviderUtils;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
@@ -193,7 +194,7 @@ public class DateUtils
    {
       MessagePropertiesBean msgProps = MessagePropertiesBean.getInstance();
 
-      long diffTime = System.currentTimeMillis() - timeStamp.getTime();
+      long diffTime = TimestampProviderUtils.getTimeStampValue() - timeStamp.getTime();
       diffTime = diffTime / 1000; // Now diffTime is in Sec
 
       StringBuffer str = new StringBuffer("");

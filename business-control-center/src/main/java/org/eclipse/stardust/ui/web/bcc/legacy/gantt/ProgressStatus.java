@@ -21,6 +21,7 @@ import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.common.reflect.Reflect;
 import org.eclipse.stardust.engine.api.dto.ProcessInstanceDetails;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.runtime.utils.TimestampProviderUtils;
 import org.eclipse.stardust.ui.web.bcc.legacy.ITimeProvider;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
@@ -92,7 +93,7 @@ public class ProgressStatus
 
    private String completeText = null;
 
-   private long now = System.currentTimeMillis();
+   private long now = TimestampProviderUtils.getTimeStampValue();
 
    private boolean progressCalculated = false;
 

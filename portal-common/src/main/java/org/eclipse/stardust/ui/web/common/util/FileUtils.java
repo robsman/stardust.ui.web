@@ -23,6 +23,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.eclipse.stardust.engine.runtime.utils.TimestampProviderUtils;
+
 /**
  * @author Shrikant.Gangal
  * 
@@ -315,7 +317,7 @@ public class FileUtils
             ZipEntry zipEntry = new ZipEntry(fileName);
 
             zipEntry.setSize(content.length());
-            zipEntry.setTime(System.currentTimeMillis());
+            zipEntry.setTime(TimestampProviderUtils.getTimeStampValue());
             zipEntry.setComment(MIME_TEXT_XML);
             out.putNextEntry(zipEntry);
             out.write(content.getBytes());

@@ -25,6 +25,7 @@ import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
+import org.eclipse.stardust.engine.runtime.utils.TimestampProviderUtils;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 
@@ -220,7 +221,7 @@ public class TerminationTimeBasedCalculator implements ActivityTrafficLightCalcu
          }
          return NORMAL;
       }
-      if (deadline > System.currentTimeMillis())
+      if (deadline > TimestampProviderUtils.getTimeStampValue())
       {
          return WARN;
       }

@@ -20,6 +20,7 @@ import org.eclipse.stardust.engine.api.query.Users;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.engine.runtime.utils.TimestampProviderUtils;
 import org.eclipse.stardust.ui.web.bcc.ResourcePaths;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
@@ -118,7 +119,7 @@ public class StrandedActivitiesBean extends UIViewComponentBean
          
          // Retrieve invalidated users
          UserQuery userQuery = UserQuery.findAll();
-         userQuery.getFilter().addAndTerm().add(UserQuery.VALID_TO.lessThan(System.currentTimeMillis()))
+         userQuery.getFilter().addAndTerm().add(UserQuery.VALID_TO.lessThan(TimestampProviderUtils.getTimeStampValue()))
             .add(UserQuery.VALID_TO.notEqual(0));
 
          Users users = queryService.getAllUsers(userQuery);

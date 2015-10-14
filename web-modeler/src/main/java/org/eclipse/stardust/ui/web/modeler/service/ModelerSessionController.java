@@ -22,6 +22,7 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.engine.runtime.utils.TimestampProviderUtils;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
@@ -76,7 +77,7 @@ public class ModelerSessionController
       ChangeJto jto = new ChangeJto();
 
       jto.id= change.getId();
-      jto.timestamp = System.currentTimeMillis();
+      jto.timestamp = TimestampProviderUtils.getTimeStampValue();
 
       if (change.getMetadata().containsKey("commandId"))
       {
@@ -146,7 +147,7 @@ public class ModelerSessionController
       ChangeJto jto = new ChangeJto();
 
       jto.id= changes.getId();
-      jto.timestamp = System.currentTimeMillis();
+      jto.timestamp = TimestampProviderUtils.getTimeStampValue();
 
       jto.commandId = command.commandId;
       jto.modelId= command.modelId;
