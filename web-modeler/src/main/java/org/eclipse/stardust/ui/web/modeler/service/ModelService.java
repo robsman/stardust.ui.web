@@ -212,13 +212,15 @@ public class ModelService
    {
       try
       {
-         Map<String, ModelType> models = getModelManagementStrategy().getModels();
-         if (reload || models.isEmpty())
+         if (reload)
          {
             TypeDeclarationUtils.clearExternalSchemaCache();
-            // reload upon request or if never loaded before
-            // TODO Review
-            getModelManagementStrategy().getModels(true);
+         }
+         Map<String, ModelType> models = getModelManagementStrategy().getModels(reload);
+         if (!reload && models.isEmpty())
+         {
+            TypeDeclarationUtils.clearExternalSchemaCache();
+            models = getModelManagementStrategy().getModels(true);
          }
 
          JsonObject modelsJson = new JsonObject();
@@ -286,8 +288,8 @@ public class ModelService
    }
 
    /**
-	 *
-	 */
+   *
+   */
    public void saveAllModels()
    {
       ModelRepository modelRepository = currentSession().modelRepository();
@@ -328,7 +330,7 @@ public class ModelService
 
    /**
    *
-   */   
+   */
    public void upgradeModel(String modelId)
    {
       ModelType model = findModel(modelId);
@@ -338,7 +340,7 @@ public class ModelService
          throw new MissingWritePermissionException(
                "Failed to (re-)validate edit lock on model " + modelId);
       }
-            
+
       ModelUpgrader modelUpgrader = new ModelUpgrader(model);
       if(modelUpgrader.upgradeNeeded())
       {
@@ -349,26 +351,26 @@ public class ModelService
 
    /**
    *
-   */   
+   */
    public void upgradeAllModels()
    {
       Map<String, ModelType> models = getModelManagementStrategy().getModels();
-      
+
       for (ModelType xpdlModel : models.values())
       {
          if (!currentSession().canSaveModel(xpdlModel.getId()))
          {
             throw new MissingWritePermissionException(
                   "Failed to (re-)validate edit lock on model " + xpdlModel.getId());
-         }         
-      }      
-            
+         }
+      }
+
       for (ModelType xpdlModel : models.values())
       {
          upgradeModel(xpdlModel.getId());
-      }      
+      }
    }
-         
+
    /**
     *
     * @param id
