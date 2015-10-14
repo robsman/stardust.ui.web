@@ -14,6 +14,7 @@ import java.util.Date;
 
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
 import org.eclipse.stardust.ui.web.viewscommon.common.NoteTip;
+import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 
 
 /**
@@ -129,7 +130,7 @@ public class NotesTableEntry extends DefaultRowModel
             notesBean.setPrevNoteValue(this.note);
             notesBean.setLastValidNote(notesBean.getNotes().get(noteNumber-1));
             notesBean.setNotesTitle(Integer.valueOf(this.noteNumber));
-            notesBean.setCurrentUserImageURL(NoteTip.getUserIcon(this.noteInfo.getUserImageURL()));
+            notesBean.setCurrentUserImageURL(MyPicturePreferenceUtils.getUsersImageURI(notesBean.getNotes().get(noteNumber-1).getUser()));
          }
       }
    }
