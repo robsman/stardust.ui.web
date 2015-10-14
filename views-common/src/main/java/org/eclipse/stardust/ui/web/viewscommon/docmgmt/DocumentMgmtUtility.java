@@ -97,7 +97,7 @@ public class DocumentMgmtUtility
    public static final String DOCUMENTS = "/documents";
    public static final String PROCESS_ATTACHMENTS = "/process-attachments";
    public static final String SPECIFIC_DOCUMENTS = "/specific-documents";
-   public static final String CORRESPONDENCE = "/Correspondence";
+   public static final String CORRESPONDENCE = "/correspondence";
    public static final String CORRESPONDENCE_OUT = "/correspondence-out-";
    
    
