@@ -1160,22 +1160,14 @@ span.pi-case:before{
 	content: "\f071"; /* fa-exclamation-triangle */
 }
 
-.pi-trigger-expanded {
-	/* fa-rotate-90 */
-	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=1);
-	-webkit-transform: rotate(90deg);
-	-ms-transform: rotate(90deg);
-	transform: rotate(90deg);
-}
-
 .pi-trigger-expanded:before {
 	font-family: "FontAwesome";
-	content: "\f04b"; /* fa-play */
+	content: "\f0d7"; /* fa-caret-down */
 }
 
 .pi-trigger-collapsed:before {
 	font-family: "FontAwesome";
-	content: "\f04b"; /* fa-play */
+	content: "\f0da"; /* fa-caret-right */
 }
 
 .pi-folder:before,
