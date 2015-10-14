@@ -1524,3 +1524,46 @@ span.pi-case-menu-open:after {
 	font-family:FontAwesome;
 	content:"\f135"; /* fa-rocket */
 }
+<!-- These classes are copied from html5-process-portal.css for the purpose of getting load in ice-faces views-->
+.criticality-flag-RED{
+  color :#F75339 !important;
+}
+
+.criticality-flag-YELLOW{
+  color :#EDCB47 !important;
+}
+
+.criticality-flag-BLUE{
+  color :#43B1FF !important;
+}
+
+.criticality-flag-GREEN{
+  color:#6CC14F !important;
+}
+
+.criticality-flag-PURPLE{
+  color:#C748F2 !important;
+}
+
+.criticality-flag-ORANGE{
+  color:#FFAE3E !important;
+}
+
+.criticality-flag-PINK{
+  color:#FF59E5 !important;
+}
+
+.criticality-flag-WHITE-WARNING{
+  color:black !important;
+}
+
+.criticality-flag-WHITE{
+  color:black !important;
+}
+
+.criticality-flag-NO-COLOR{
+  color:#CFCFCF !important;
+}
+
+<!-- End criticality Classes-->
+

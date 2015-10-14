@@ -57,15 +57,15 @@ public class CriticalityConfigurationUtil
    
    private static final Map<ICON_COLOR, String> CRITICALITY_COLOR_FLAG_MAP = new HashMap<ICON_COLOR, String>();
    static {
-      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.WHITE, "/plugins/views-common/images/icons/criticality/flag_white.png");
-      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.RED, "/plugins/views-common/images/icons/criticality/flag_red.png");
-      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.GREEN, "/plugins/views-common/images/icons/criticality/flag_green.png");
-      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.BLUE, "/plugins/views-common/images/icons/criticality/flag_blue.png");
-      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.PURPLE, "/plugins/views-common/images/icons/criticality/flag_purple.png");
-      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.ORANGE, "/plugins/views-common/images/icons/criticality/flag_orange.png");
-      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.PINK, "/plugins/views-common/images/icons/criticality/flag_pink.png");
-      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.YELLOW, "/plugins/views-common/images/icons/criticality/flag_yellow.png");
-      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.WHITE_WARNING, "/plugins/views-common/images/icons/criticality/flag_white_warning.png");
+      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.WHITE, "pi pi-criticalty-flag criticality-flag-WHITE");
+      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.RED, "pi pi-criticalty-flag criticality-flag-RED");
+      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.GREEN, "pi pi-criticalty-flag criticality-flag-GREEN");
+      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.BLUE, "pi pi-flag pi-lg criticality-flag-BLUE");
+      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.PURPLE, "pi pi-criticalty-flag criticality-flag-PURPLE");
+      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.ORANGE, "pi pi-criticalty-flag criticality-flag-ORANGE");
+      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.PINK, "pi pi-criticalty-flag criticality-flag-PINK");
+      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.YELLOW, "pi pi-criticalty-flag criticality-flag-YELLOW");
+      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.WHITE_WARNING, "pi pi-criticalty-flag criticality-flag-WHITE-WARNING");
    }
    
    public static String getIcon(ICON_COLOR color)
