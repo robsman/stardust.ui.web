@@ -228,7 +228,7 @@ public class PermissionsDetails
     */
    public boolean hasAllGrant2(String permissionId)
    {
-      if (UiPermissionUtils.isGeneralPermissionId(permissionId))
+      if (UiPermissionUtils.isGeneralPermissionId(permissionId) || UiPermissionUtils.isModelPermissionId(permissionId))
       {
          return generalPermission.hasAllGrant(permissionId);
       }

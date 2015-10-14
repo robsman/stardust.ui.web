@@ -29,6 +29,7 @@ import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.RuntimePermissions;
+import org.eclipse.stardust.engine.core.runtime.utils.Authorization2;
 import org.eclipse.stardust.engine.core.runtime.utils.ParticipantInfoUtil;
 import org.eclipse.stardust.ui.web.common.IPerspectiveDefinition;
 import org.eclipse.stardust.ui.web.common.LaunchPanel;
@@ -741,7 +742,15 @@ public class AuthorizationManagerService
          }
          else
          {
-            label = I18nUtils.getParticipantName(ModelCache.findModelCache().getParticipant(info.getId()));
+            if (Authorization2.OWNER.equals(info.getQualifiedId()))
+            {
+               label = MessagesViewsCommonBean.getInstance().getString(
+                     "views.authorizationManagerView.permission.model.participant.owner");
+            }
+            else
+            {
+               label = I18nUtils.getParticipantName(ModelCache.findModelCache().getParticipant(info.getId()));
+            }
             participant = new ParticipantDTO(info.getId(), label);
          }
 

@@ -76,7 +76,6 @@ public class UiPermissionUtils
     * Constants for Administrator role as used by engine permissions. Can be changed to a
     * portal related constant.
     */
-   private final static String ADMINISTRATOR = PredefinedConstants.ADMINISTRATOR_ROLE;
    public final static String AUDITOR = "Auditor";
    private static final String PREFIX = "portal.ui.";
    public static final String SUFFIX_ALLOW = ".allow";
