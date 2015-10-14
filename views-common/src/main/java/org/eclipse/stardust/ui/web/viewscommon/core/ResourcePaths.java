@@ -52,7 +52,7 @@ public interface ResourcePaths
 
    static final String I_FOLDER_CORRESPONDANCE = "pi pi-folder pi-lg";
    
-   static final String I_EMAIL_GO = "/plugins/views-common/images/icons/email_go.png";
+   static final String I_EMAIL_GO = "pi pi-other pi-lg";
 
    static final String I_FOLDER_PERSONAL = "pi pi-folder pi-lg";
 
@@ -64,7 +64,7 @@ public interface ResourcePaths
 
    static final String I_PROCESS = "pi pi-process pi-lg";
    
-   static final String I_CASE = "/plugins/views-common/images/icons/envelope.png";
+   static final String I_CASE = "pi pi-case pi-lg";
 
    static final String I_PROCESS_ATTACHMENT = "pi pi-process-attachments pi-lg";
    
@@ -76,14 +76,14 @@ public interface ResourcePaths
    
    static final String I_NOTES = "pi pi-document-repository pi-lg";
 
-   static final String I_NOTES_FILE = "/plugins/views-common/images/icons/mime-types/notes-filled.png";
+   static final String I_NOTES_FILE = "pi pi-notes pi-lg";
    static final String MIME_TYPE_PATH = "/plugins/views-common/images/icons/mime-types/";
 
    static final String V_NOTES_TOOLTIP = "/plugins/views-common/views/doctree/toolTip.xhtml";
    
-   static final String I_REPOSITORY_ROOT = "/plugins/views-common/images/icons/folder_database.png";
+   static final String I_REPOSITORY_ROOT = "pi pi-database pi-lg";
    static final String I_REPOSITORY = "pi pi-database pi-lg";
-   static final String I_REPOSITORY_DEFAULT  = "/plugins/views-common/images/icons/repositry-default.png";
+   static final String I_REPOSITORY_DEFAULT  = "pi pi-database pi-lg";
    
    static final String V_AUTOCOMPLETE_MULTI_USER_SELECTOR = "/plugins/views-common/user/userAutocompleteMultiSelector.xhtml";
    static final String V_AUTOCOMPLETE_SINGLE_USER_SELECTOR = "/plugins/views-common/user/userAutocompleteSingleSelector.xhtml";
@@ -109,13 +109,13 @@ public interface ResourcePaths
    static final String V_AUTOCOMPLETE_PRIORITY_MULTIPLE_SELECTOR = "/plugins/views-common/common/priorityAutocompleteMultiSelector.xhtml";
    static final String V_AUTOCOMPLETE_PRIORITY_SELECTOR_TABLE = "/plugins/views-common/common/priorityMultiSelectorTable.xhtml";
    
-   static final String I_USER_ONLINE = "/plugins/views-common/images/icons/user_green.png";
-   static final String I_USER_OFFLINE = "/plugins/views-common/images/icons/user_gray.png";
+   static final String I_USER_ONLINE = "pi pi-user-status pi-lg pi-success";
+   static final String I_USER_OFFLINE = "pi pi-user-status pi-lg pi-user-status-offline";
 
-   static final String I_USER_CHAT_INITIATOR = "/plugins/views-common/images/icons/user_red.png";
+   static final String I_USER_CHAT_INITIATOR = "pi pi-user-status pi-lg pi-danger";
    static final String VIEW_DOCUMENT_SEARCH_COLUMN = "/plugins/views-common/views/documentsearch/documentSearchColumns.xhtml";
    static final String I_EMPTY_CORE_DOCUMENT = "/plugins/views-common/images/icons/page_white_error.png";
-   static final String I_CORE_DOCUMENTS = "/plugins/views-common/images/icons/page_white_gear.png";
+   static final String I_CORE_DOCUMENTS = "pi pi-process-attachments pi-lg";
    static final String I_REPORT = "pi pi-report pi-lg";
    
    static final String V_EXTRACT_PAGES_TABLE_COLUMNS = "/plugins/views-common/views/document/extractPageTableColumns.xhtml";

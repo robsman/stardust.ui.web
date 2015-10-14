@@ -751,6 +751,16 @@ span.pi-case:before{
 	content: "\f101"; /* fa-angle-double-right */
 }
 
+.pi-first-page:before{
+	font-family: "FontAwesome";
+	content: "\f048"; /* fa-step-backward */
+}
+
+.pi-last-page:before{
+	font-family: "FontAwesome";
+	content: "\f051"; /* fa-step-forward */
+}
+
 .pi-deputy:before,
 .pi-deputy-management:before{
 	font-family: "FontAwesome";

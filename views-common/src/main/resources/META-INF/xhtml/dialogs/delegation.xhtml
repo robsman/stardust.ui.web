@@ -113,14 +113,14 @@
 										paginatorMaxPages="5" for="searchResult#{delegationBean.id}">
 										<f:param name="fastStep" value="8" />
 										<f:facet name="first">
-											<ice:graphicImage id="firstpage"
-												url="/plugins/views-common/images/icons/arrow-first.gif"
-												style="border:none;" title="#{views_common_msgPropsBean['common.tooltip.firstPage']}" />
+											<ice:outputText id="firstpage"
+												styleClass="pi pi-first-page pi-lg"
+												title="#{views_common_msgPropsBean['common.tooltip.firstPage']}" />
 										</f:facet>
 										<f:facet name="last">
-											<ice:graphicImage id="lastpage"
-												url="/plugins/views-common/images/icons/arrow-last.gif"
-												style="border:none;" title="#{views_common_msgPropsBean['common.tooltip.lastPage']}" />
+											<ice:outputText id="lastpage"
+												styleClass="pi pi-last-page pi-lg"
+												title="#{views_common_msgPropsBean['common.tooltip.lastPage']}" />
 										</f:facet>
 										<f:facet name="previous">
 											<ice:graphicImage id="previouspage"

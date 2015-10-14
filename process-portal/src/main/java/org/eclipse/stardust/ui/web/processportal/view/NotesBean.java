@@ -272,7 +272,7 @@ public class NotesBean extends UIComponentBean implements IUserObjectBuilder<Not
          {
             attributes = fetchAttributes(scopeProcessInstance);
             lastValidNote = attributes.addNote(editText, ContextKind.ProcessInstance, processInstance.getOID());
-            currentUserImageURL = MyPicturePreferenceUtils.getUsersImageURI(lastValidNote.getUser());
+            currentUserImageURL = NoteTip.getUserIcon(MyPicturePreferenceUtils.getUsersImageURI(lastValidNote.getUser()));
             ServiceFactoryUtils.getWorkflowService()
                   .setProcessInstanceAttributes(attributes);
             thisView.getViewParams().remove("noteTimestamp");
@@ -482,7 +482,7 @@ public class NotesBean extends UIComponentBean implements IUserObjectBuilder<Not
    {
       lastValidNote = getSelctedNote(noteTimestamp);
       editText = new String(lastValidNote.getText());
-      currentUserImageURL = MyPicturePreferenceUtils.getUsersImageURI(lastValidNote.getUser());
+      currentUserImageURL = NoteTip.getUserIcon(MyPicturePreferenceUtils.getUsersImageURI(lastValidNote.getUser()));
    }
 
    private Note getSelctedNote(Date noteTimestamp)

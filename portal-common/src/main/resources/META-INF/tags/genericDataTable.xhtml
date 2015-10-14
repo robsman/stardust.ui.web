@@ -460,15 +460,13 @@
 			            
 			            <c:if test="#{table.totalCountSuported}">
 							<f:facet name="first">
-				            	<ice:graphicImage id="#{id}firstpage"
-										url="/plugins/common/images/icons/arrow-first.gif"
-				                        style="border:none;"
+				            	<ice:outputText id="#{id}firstpage"
+				                        styleClass="pi pi-first-page pi-lg"
 				                        title="#{common_msgPropsBean['common.genericDataTable.paginator.first.title']}" />
 							</f:facet>
 				            <f:facet name="last">
-				            	<ice:graphicImage id="#{id}lastpage"
-										url="/plugins/common/images/icons/arrow-last.gif"
-										style="border:none;"
+				            	<ice:outputText id="#{id}lastpage"
+										styleClass="pi pi-last-page pi-lg"
 										title="#{common_msgPropsBean['common.genericDataTable.paginator.last.title']}" />
 							</f:facet>
 							<c:if test="#{table.paginatorFastStep > 0}">

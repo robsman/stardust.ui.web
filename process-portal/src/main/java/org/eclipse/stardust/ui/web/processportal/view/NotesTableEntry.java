@@ -129,7 +129,7 @@ public class NotesTableEntry extends DefaultRowModel
             notesBean.setPrevNoteValue(this.note);
             notesBean.setLastValidNote(notesBean.getNotes().get(noteNumber-1));
             notesBean.setNotesTitle(Integer.valueOf(this.noteNumber));
-            notesBean.setCurrentUserImageURL(this.noteInfo.getUserImageURL());
+            notesBean.setCurrentUserImageURL(NoteTip.getUserIcon(this.noteInfo.getUserImageURL()));
          }
       }
    }

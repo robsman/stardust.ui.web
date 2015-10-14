@@ -31,7 +31,10 @@
 		<ice:panelGroup rendered="#{col.columnName == 'CreatorName'}">
 			<ice:panelGrid columns="2">
 				<ice:graphicImage value="#{row.noteInfo.userImageURL}" width="16px"
-					height="16px" />
+					height="16px" rendered="#{pc:contains(row.noteInfo.userImageURL, '/')}"/>
+				<ice:outputText
+					styleClass="#{row.noteInfo.userImageURL}"
+					rendered="#{!pc:contains(row.noteInfo.userImageURL, '/')}"></ice:outputText>
 				<ice:outputText value="#{row.creatorName}" />
 			</ice:panelGrid>
 		</ice:panelGroup>

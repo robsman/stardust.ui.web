@@ -46,7 +46,7 @@ public class NoteUserObject extends RepositoryResourceUserObject
          ProcessInstance processInstance)
    {
       super(defaultMutableTreeNode);
-      setLeafIcon(MyPicturePreferenceUtils.getUsersImageURI(note.getUser()));
+      setLeafIcon(NoteTip.getUserIcon(MyPicturePreferenceUtils.getUsersImageURI(note.getUser())));
       this.noteTip = new NoteTip(note, processInstance.getOID());
       this.setLeaf(true);
       defaultMutableTreeNode.setAllowsChildren(false);

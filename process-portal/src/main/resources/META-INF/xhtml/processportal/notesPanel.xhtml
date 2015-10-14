@@ -24,7 +24,10 @@
 		<ice:panelGrid columns="2">
 			<ice:graphicImage
 				value="#{processportal_NotesBean.currentUserImageURL}" width="16px"
-				height="16px" />
+				height="16px" rendered="#{pc:contains(processportal_NotesBean.currentUserImageURL, '/')}"/>
+			<ice:outputText
+				styleClass="#{processportal_NotesBean.currentUserImageURL}"
+				rendered="#{!pc:contains(processportal_NotesBean.currentUserImageURL, '/')}"></ice:outputText>
 			<ice:panelGroup style="vertical-align:center;">
 				<ice:commandLink value="#{processportal_NotesBean.userLabel}"
 					disabled="#{processportal_NotesBean.lastValidNote.user == null}"
