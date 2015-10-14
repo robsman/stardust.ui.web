@@ -11,6 +11,7 @@ import org.eclipse.stardust.common.Functor;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.TransformingIterator;
 import org.eclipse.stardust.common.config.Parameters;
+import org.eclipse.stardust.engine.runtime.utils.TimestampProviderUtils;
 
 public class MashupControllerUtils
 {
@@ -44,8 +45,7 @@ public class MashupControllerUtils
             credentials));
       long contextExpiresIn = Math
             .max(-1, //
-                  (contextManager.getContextExpiry(contextId) - System
-                        .currentTimeMillis()) / 1000L);
+                  (contextManager.getContextExpiry(contextId) - TimestampProviderUtils.getTimeStampValue()) / 1000L);
 
       String authProxyUri = deriveAuthProxyUri(mashupUri);
 
