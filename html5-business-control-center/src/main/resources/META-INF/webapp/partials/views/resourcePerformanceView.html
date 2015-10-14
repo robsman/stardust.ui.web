@@ -1,5 +1,6 @@
-<div class="view-panel ng-hide" ng-show="true"
-	ng-controller="sdResourcePerformanceCtrl as ctrl" sg-stretch-to-bottom>
+<div sg-stretch-to-bottom class="view-panel">
+<div class="ng-hide" ng-show="true"
+	ng-controller="sdResourcePerformanceCtrl as ctrl" >
 	<div class="toolbar-buttons">
 		<div class="view-toolbar-section">
 			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
@@ -89,4 +90,5 @@
 		sda-on-confirm="ctrl.onConfirmFromAddColumn(res)"
 		sda-width="450px">
 	</div>
+</div>
 </div>

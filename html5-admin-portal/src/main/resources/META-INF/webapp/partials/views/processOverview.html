@@ -1,5 +1,4 @@
-<div class="view-panel ng-hide" ng-show="true" ng-controller="sdProcessOverviewCtrl as ctrl"
-	sg-stretch-to-bottom>
+<div class="view-panel" ng-controller="sdProcessOverviewCtrl as ctrl" sg-stretch-to-bottom>
 
 	<span class="view-panel-toolbar heading" 
 		  ng-bind="i18n('admin-portal-messages.views-common-processes-label')">
@@ -9,7 +8,7 @@
 	        class="pi pi-1x pi-refresh right">
 	</button>
 	
-	<div>
+	<div class="ng-hide" ng-show="true">
 		<table>
 			<tr>
 				<td><span class="label-item" style="font-weight:bold" ng-bind="i18n('admin-portal-messages.views-common-total-label')+i18n('admin-portal-messages.common-colon')">

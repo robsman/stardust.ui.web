@@ -7,7 +7,8 @@ table.formTable td {
 </style>
 </head>
 <body>
-	<div class="view-panel ng-hide" ng-show="true"
+<div sg-stretch-to-bottom class="view-panel">
+	<div class="ng-hide" ng-show="true"
 		ng-controller="sdDocumentSearchViewCtrl as docSearchViewCtrl"
 		sg-stretch-to-bottom>
 		<div class="heading"
@@ -252,5 +253,6 @@ table.formTable td {
 			ng-include="'plugins/html5-views-common/html5/partials/views/documentSearchResult.html'">
 		</div>
 	</div>
+</div>	
 </body>
 <html>
