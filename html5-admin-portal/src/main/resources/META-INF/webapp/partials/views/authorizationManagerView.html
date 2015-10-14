@@ -60,6 +60,7 @@
 						<tr>
 							<td sda-field="name" sda-exporter="rowData.name">
 								<a href=""
+								   ng-attr-title="{{rowData.qualifiedId}}"
 								   ng-class="{'selected-custom' : ctrl.selectedRoles.indexOf(role) >=0}"
 								   sd-data-drag ng-model="rowData"
 								   sda-dragstart="ctrl.roleDragStart($data, $event)"> 
@@ -143,6 +144,7 @@
 			
 			<!-- Permission Tree related code -->
 			<div class="permission-tree">
+			
 				<ul id="authTree{{ctrl.scopeId}}" class="sd-tree">
 					<!--General Permissions Start-->
 					<li ng-repeat="labelItem in ctrl.treeLabels.gp"
@@ -213,9 +215,9 @@
                                                'role' : item,
                                                'target' : 'allow'}]"
 														sda-menu-callback='ctrl.removeParticipant(menuItem,e)'
-														title="" class="tree-node" aid="{{item.name}}"> <i
+														ng-attr-title="{{item.participantQualifiedId}}" class="tree-node" aid="{{item.name}}"> <i
 															class="js-icon pi pi-user pi-lg"></i> <span
-															class="js-filterable">{{item.name}}</span>
+															class="js-filterable">{{item.name}}asdf</span>
 													</a></li>
 												</ul>
 											</li>
@@ -257,7 +259,7 @@
                                                'role' : item,
                                                'target' : 'deny'}]"
 														sda-menu-callback='ctrl.removeParticipant(menuItem,e)'
-														title="" class="tree-node" aid="{{labelItem.id}}"> <i
+														ng-attr-title="{{item.participantQualifiedId}}" class="tree-node" aid="{{labelItem.id}}"> <i
 															class="js-icon pi pi-user pi-lg"></i> <span
 															class="js-filterable">{{item.name}}</span>
 													</a></li>
@@ -364,7 +366,7 @@
                                                'ref': genItem,
                                                'role' : item,
                                                'target' : 'allow'}]"
-																title="" class="tree-node"
+																ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
 																sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
 																	<i class="js-icon pi pi-user pi-lg"></i> <span
 																	class="js-filterable">{{item.name}}</span>
@@ -408,7 +410,7 @@
                                                'ref': genItem,
                                                'role' : item,
                                                'target' : 'deny'}]"
-																title="" class="tree-node"
+																ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
 																sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
 																	<i class="js-icon pi pi-user pi-lg"></i> <span>{{item.name}}</span>
 															</a></li>
@@ -501,7 +503,7 @@
                                                'ref': genItem,
                                                'role' : item,
                                                'target' : 'allow'}]"
-																title="" class="tree-node"
+																ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
 																sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
 																	<i class="js-icon pi pi-user pi-lg"></i> <span
 																	class="js-filterable">{{item.name}}</span>
@@ -546,7 +548,7 @@
                                                'ref': genItem,
                                                'role' : item,
                                                'target' : 'deny'}]"
-																title="" class="tree-node"
+																ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
 																sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
 																	<i class="js-icon pi pi-user pi-lg"></i> <span
 																	class="js-filterable">{{item.name}}</span>
@@ -639,7 +641,7 @@
                                                'ref': genItem,
                                                'role' : item,
                                                'target' : 'allow'}]"
-																title="" class="tree-node"
+																ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
 																sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
 																	<i class="js-icon pi pi-user pi-lg"></i> <span
 																	class="js-filterable">{{item.name}}</span>
@@ -684,7 +686,7 @@
                                                'ref': genItem,
                                                'role' : item,
                                                'target' : 'deny'}]"
-																title="" class="tree-node"
+																ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
 																sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
 																	<i class="js-icon pi pi-user pi-lg"></i> <span
 																	class="js-filterable">{{item.name}}</span>
@@ -705,8 +707,8 @@
 					</li>
 					<!--Model Permissions End-->
 
-					<!--Perspective Permissions Start-->
-					<li ng-repeat="labelItem in ctrl.treeLabels.persp"
+					<!--UI Permissions Start -->
+					<li ng-repeat="labelItem in ctrl.treeLabels.perm"
 						ng-init="isVisible=false">
 
 						<div class="title-section">
@@ -719,8 +721,8 @@
 								class="js-icon pi pi-folder"></i> <span>{{labelItem.name}}</span>
 							</a>
 						</div>
-
-
+						
+						<!-- Perspective Permissions Start -->
 						<ul ng-show="isVisible">
 
 							<li ng-repeat="genItem in ctrl.data.perspectives"
@@ -742,7 +744,9 @@
 											<span class="js-filterable">{{genItem.name}}</span>
 										</a>
 									</div>
-								</div> <!--Top level permissions-->
+								</div> 
+								
+								<!--Top level permissions-->
 								<ul ng-show="isVisible">
 
 									<li ng-repeat="labelItem in ctrl.treeLabels.allow"
@@ -778,7 +782,7 @@
                                                'ref': genItem,
                                                'role' : item,
                                                'target' : 'allow'}]"
-														title="" class="tree-node"
+														ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
 														sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
 															<i class="js-icon pi pi-user pi-lg"></i> <span
 															class="js-filterable">{{item.name}}</span>
@@ -822,7 +826,7 @@
                                                'ref': genItem,
                                                'role' : item,
                                                'target' : 'deny'}]"
-														title="" class="tree-node"
+														ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
 														sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
 															<i class="js-icon pi pi-user pi-lg"></i> <span
 															class="js-filterable">{{item.name}}</span>
@@ -902,7 +906,7 @@
                                                    'ref': genItem,
                                                    'role' : item,
                                                    'target' : 'allow'}]"
-																		title="" class="tree-node"
+																		ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
 																		sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
 																			<i class="js-icon pi pi-user pi-lg"></i> <span
 																			class="js-filterable">{{item.name}}</span>
@@ -945,7 +949,7 @@
                                                    'ref': genItem,
                                                    'role' : item,
                                                    'target' : 'deny'}]"
-																		title="" class="tree-node"
+																		ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
 																		sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
 																			<i class="js-icon pi pi-user pi-lg"></i> <span
 																			class="js-filterable">{{item.name}}</span>
@@ -1034,7 +1038,7 @@
                                                  'ref': genItem,
                                                  'role' : item,
                                                  'target' : 'allow'}]"
-																		title="" class="tree-node"
+																		ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
 																		sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
 																			<i class="js-icon pi pi-user pi-lg"></i> <span
 																			class="js-filterable">{{item.name}}</span>
@@ -1078,7 +1082,7 @@
                                                  'ref': genItem,
                                                  'role' : item,
                                                  'target' : 'deny'}]"
-																		title="" class="tree-node"
+																		ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
 																		sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
 																			<i class="js-icon pi pi-user pi-lg"></i> <span>{{item.name}}</span>
 																	</a></li>
@@ -1099,27 +1103,10 @@
 							</li>
 
 						</ul>
-
-					</li>
-					<!--Perspective Permissions End-->
-
-					<!--GLobal Extensions Start-->
-					<li ng-repeat="labelItem in ctrl.treeLabels.gx"
-						ng-init="isVisible=false">
-
-						<div class="title-section">
-							<div class="expand-section" ng-show="true">
-								<i ng-click="isVisible=!isVisible"
-									ng-class="{'pi-arrow-r':!isVisible ,'pi-arrow-d':isVisible }"
-									class="pi"></i>
-							</div>
-							<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
-								class="js-icon pi pi-folder"></i> <span>{{labelItem.name}}</span>
-							</a>
-						</div>
-
-
-						<ul ng-show="isVisible">
+						<!-- Perspective Permissions End -->
+						
+						<!-- Global Extensions Start -->
+												<ul ng-show="isVisible">
 
 							<li ng-repeat="genItem in ctrl.data.globalExtensions"
 								ng-init="isVisible=false">
@@ -1175,7 +1162,7 @@
                                                'ref': genItem,
                                                'role' : item,
                                                'target' : 'allow'}]"
-														title="" class="tree-node"
+														ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
 														sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
 															<i class="js-icon pi pi-user pi-lg"></i> <span
 															class="js-filterable">{{item.name}}</span>
@@ -1219,7 +1206,7 @@
                                                'ref': genItem,
                                                'role' : item,
                                                'target' : 'deny'}]"
-														title="" class="tree-node"
+														ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
 														sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
 															<i class="js-icon pi pi-user pi-lg"></i> <span
 															class="js-filterable">{{item.name}}</span>
@@ -1299,7 +1286,7 @@
                                                    'ref': genItem,
                                                    'role' : item,
                                                    'target' : 'allow'}]"
-																		title="" class="tree-node"
+																		ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
 																		sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
 																			<i class="js-icon pi pi-user pi-lg"></i> <span
 																			class="js-filterable">{{item.name}}</span>
@@ -1344,7 +1331,7 @@
                                                    'ref': genItem,
                                                    'role' : item,
                                                    'target' : 'deny'}]"
-																		title="" class="tree-node"
+																		ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
 																		sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
 																			<i class="js-icon pi pi-user pi-lg"></i> <span
 																			class="js-filterable">{{item.name}}</span>
@@ -1433,7 +1420,7 @@
                                                  'ref': genItem,
                                                  'role' : item,
                                                  'target' : 'allow'}]"
-																		title="" class="tree-node"
+																		ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
 																		sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
 																			<i class="js-icon pi pi-user pi-lg"></i> <span
 																			class="js-filterable">{{item.name}}</span>
@@ -1477,7 +1464,7 @@
                                                  'ref': genItem,
                                                  'role' : item,
                                                  'target' : 'deny'}]"
-																		title="" class="tree-node"
+																		ng-attr-title="{{item.participantQualifiedId}}" class="tree-node"
 																		sda-menu-callback='ctrl.removeParticipant(menuItem,e)' aid="{{item.name}}">
 																			<i class="js-icon pi pi-user pi-lg"></i> <span>{{item.name}}</span>
 																	</a></li>
@@ -1498,9 +1485,10 @@
 							</li>
 
 						</ul>
-
+						<!-- Global Extensions End -->
+						
 					</li>
-					<!--GLobal Extensions End-->
+					<!--UI Permissions End -->
 				</ul>
 			</div>
 			<!--Tree Ends-->

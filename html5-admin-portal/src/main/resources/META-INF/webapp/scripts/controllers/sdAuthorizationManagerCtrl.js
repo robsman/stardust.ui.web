@@ -334,7 +334,12 @@
         name: 'Global Extensions',
         id: 'GLOBAL_EXTENSIONS',
         nodeType: "label"
-      }]
+      }],
+      perm: [{
+          name: 'UI Permissions',
+          id: 'UI_PERMISSIONS',
+          nodeType: "label"
+        }]
     };
 
   }
