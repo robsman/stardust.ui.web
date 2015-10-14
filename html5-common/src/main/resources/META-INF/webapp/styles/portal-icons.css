@@ -370,6 +370,7 @@ Utility classes for portal icons
 	margin-top: -8px !important;
 }
 
+.pi-perspective-rules-manager-alt:before,
 .pi-perspective-rules-manager:after {
 	font-family: "starclipse";
 	content: "\F0A6"; /* sc-scroll-custom */
@@ -590,6 +591,11 @@ Icon implementations
 .pi-exit-edit-mode:before{
 	font-family: 'FontAwesome';
 	content: "\f00c"; /* fa-check */
+}
+
+.pi-permission:before{
+	font-family:'FontAwesome';
+	content: "\f084"; /* fa-key */
 }
 
 .pi-process:before,
@@ -1114,6 +1120,7 @@ span.pi-case:before{
 	content:'\f039'; /* fa-align-justify */
 }
 
+.pi-data:before,
 .pi-database:before {
 	font-family: "FontAwesome";
 	content: "\f1c0"; /* fa-database */

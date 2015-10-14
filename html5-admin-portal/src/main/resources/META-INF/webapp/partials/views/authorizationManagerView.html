@@ -156,7 +156,7 @@
 									class="pi"></i>
 							</div>
 							<a title="" class="tree-node" aid="{{labelItem.id}}"> 
-								<i class="pi pi-activity"></i> <span>{{labelItem.name}}</span>
+								<i class="pi pi-folder"></i> <span>{{labelItem.name}}</span>
 							</a>
 						</div> <!--Permission in General Permissions loop...-->
 						<ul ng-show="isVisible">
@@ -175,7 +175,7 @@
                                                'ref': genItem}]"
 										sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
 										<a title="" class="tree-node" aid="{{genItem.id}}"> <i
-											class="js-icon pi pi-process-details"></i> <span
+											class="js-icon pi pi-permission"></i> <span
 											class="js-filterable">{{genItem.name}}</span>
 										</a>
 									</div>
@@ -248,7 +248,7 @@
 											</div>
 										</div>
 
-										<ul ng-show="isVisible">
+										<ul ng-show="isVisible" ng-init="isVisible=false">
 											<li ng-repeat="item in genItem.deny">
 												<ul>
 													<li><a sd-context-menu
@@ -287,7 +287,7 @@
 									class="pi"></i>
 							</div>
 							<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
-								class="js-icon pi pi-process-details"></i> <span>{{labelItem.name}}</span>
+								class="js-icon pi pi-folder"></i> <span>{{labelItem.name}}</span>
 							</a>
 						</div> <!--Process Definitions Start-->
 						<ul ng-show="isVisible">
@@ -303,7 +303,7 @@
 											class="pi"></i>
 									</div>
 									<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
-										class="js-icon pi pi-process-details"></i> <span>{{labelItem.name}}</span>
+										class="js-icon pi pi-process"></i> <span>{{labelItem.name}}</span>
 									</a>
 								</div>
 
@@ -324,7 +324,7 @@
                                                'ref': genItem}]"
 												sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
 												<a title="" class="tree-node" aid="{{genItem.name}}"> <i
-													class="js-icon pi pi-process-details"></i> <span
+													class="js-icon pi pi-permission"></i> <span
 													class="js-filterable">{{genItem.name}}</span>
 												</a>
 											</div>
@@ -424,7 +424,9 @@
 							</li>
 
 
-						</ul> <!--Process Definitions End--> <!---Activities Start-->
+						</ul> <!--Process Definitions End--> 
+						
+						<!---Activities Start-->
 						<ul ng-show="isVisible">
 
 							<li ng-repeat="labelItem in ctrl.treeLabels.ac"
@@ -438,7 +440,7 @@
 											class="pi"></i>
 									</div>
 									<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
-										class="js-icon pi pi-process-details"></i> <span>{{labelItem.name}}</span>
+										class="js-icon pi pi-activity"></i> <span>{{labelItem.name}}</span>
 									</a>
 								</div>
 
@@ -459,7 +461,7 @@
                                                'ref': genItem}]"
 												sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
 												<a title="" class="tree-node" aid="{{genItem.name}}"> <i
-													class="js-icon pi pi-process-details"></i> <span
+													class="js-icon pi pi-permission"></i> <span
 													class="js-filterable">{{genItem.name}}</span>
 												</a>
 											</div>
@@ -561,7 +563,9 @@
 							</li>
 
 
-						</ul> <!--Activities end--> <!---Data Start-->
+						</ul> <!--Activities end--> 
+						
+						<!---Data Start-->
 						<ul ng-show="isVisible">
 
 							<li ng-repeat="labelItem in ctrl.treeLabels.data"
@@ -574,7 +578,7 @@
 											class="pi"></i>
 									</div>
 									<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
-										class="js-icon pi pi-process-details"></i> <span>{{labelItem.name}}</span>
+										class="js-icon pi pi-data"></i> <span>{{labelItem.name}}</span>
 									</a>
 								</div>
 
@@ -595,7 +599,7 @@
                                                'ref': genItem}]"
 												sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
 												<a title="" class="tree-node" aid="{{genItem.name}}"> <i
-													class="js-icon pi pi-process-details"></i> <span
+													class="js-icon pi pi-permission"></i> <span
 													class="js-filterable">{{genItem.name}}</span>
 												</a>
 											</div>
@@ -649,7 +653,7 @@
 
 										<ul ng-show="isVisible">
 
-											<li ng-repeat="labelItem in ctrl.treeLabels.deny">
+											<li ng-init="isVisible=false" ng-repeat="labelItem in ctrl.treeLabels.deny">
 
 												<div class="title-section">
 													<div class="expand-section"
@@ -712,7 +716,7 @@
 									class="pi"></i>
 							</div>
 							<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
-								class="js-icon pi pi-process-details"></i> <span>{{labelItem.name}}</span>
+								class="js-icon pi pi-folder"></i> <span>{{labelItem.name}}</span>
 							</a>
 						</div>
 
@@ -732,9 +736,10 @@
 										sda-menu-items="[{'value' :ctrl.labels.restore,
                                                'ref': genItem}]"
 										sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
-										<a title="" class="tree-node" aid="{{genItem.name}}"> <i
-											class="js-icon pi pi-process-details"></i> <span
-											class="js-filterable">{{genItem.name}}</span>
+										<a title="" class="tree-node" aid="{{genItem.name}}"> 
+										<i ng-class="ctrl.getPerspectiveIcon(genItem)" 
+										   class="js-icon pi"></i> 
+											<span class="js-filterable">{{genItem.name}}</span>
 										</a>
 									</div>
 								</div> <!--Top level permissions-->
@@ -841,7 +846,7 @@
 													class="pi"></i>
 											</div>
 											<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
-												class="js-icon pi pi-process-details"></i> <span>{{labelItem.name}}</span>
+												class="js-icon pi pi-folder"></i> <span>{{labelItem.name}}</span>
 											</a>
 										</div>
 
@@ -861,7 +866,7 @@
                                                'ref': genItem}]"
 														sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
 														<a title="" class="tree-node" aid="{{genItem.name}}"> <i
-															class="js-icon pi pi-process-details"></i> <span
+															class="js-icon pi pi-permission"></i> <span
 															class="js-filterable">{{genItem.name}}</span>
 														</a>
 													</div>
@@ -972,7 +977,7 @@
 													class="pi"></i>
 											</div>
 											<a title="" class="tree-node" aid="{{labelItem.name}}"> <i
-												class="js-icon pi pi-process-details"></i> <span>{{labelItem.name}}</span>
+												class="js-icon pi pi-folder"></i> <span>{{labelItem.name}}</span>
 											</a>
 										</div>
 
@@ -992,7 +997,7 @@
                                                'ref': genItem}]"
 														sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
 														<a title="" class="tree-node" aid="{{genItem.name}}"> <i
-															class="js-icon pi pi-process-details"></i> <span
+															class="js-icon pi pi-permission"></i> <span
 															class="js-filterable">{{genItem.name}}</span>
 														</a>
 													</div>
@@ -1109,7 +1114,7 @@
 									class="pi"></i>
 							</div>
 							<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
-								class="js-icon pi pi-process-details"></i> <span>{{labelItem.name}}</span>
+								class="js-icon pi pi-folder"></i> <span>{{labelItem.name}}</span>
 							</a>
 						</div>
 
@@ -1130,7 +1135,7 @@
                                                'ref': genItem}]"
 										sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
 										<a title="" class="tree-node" aid="{{genItem.name}}"> <i
-											class="js-icon pi pi-process-details"></i> <span
+											class="js-icon pi pi-permission"></i> <span
 											class="js-filterable">{{genItem.name}}</span>
 										</a>
 									</div>
@@ -1238,7 +1243,7 @@
 													class="pi"></i>
 											</div>
 											<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
-												class="js-icon pi pi-process-details"></i> <span>{{labelItem.name}}</span>
+												class="js-icon pi pi-folder"></i> <span>{{labelItem.name}}</span>
 											</a>
 										</div>
 
@@ -1258,7 +1263,7 @@
                                                'ref': genItem}]"
 														sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
 														<a title="" class="tree-node" aid="{{genItem.name}}"> <i
-															class="js-icon pi pi-process-details"></i> <span
+															class="js-icon pi pi-permission"></i> <span
 															class="js-filterable">{{genItem.name}}</span>
 														</a>
 													</div>
@@ -1304,7 +1309,9 @@
 														</ul>
 
 													</li>
-												</ul> <!--Allow END--> <!--Deny-->
+												</ul> <!--Allow END--> 
+												
+												<!--Deny-->
 												<ul ng-show="isVisible">
 													<li ng-repeat="labelItem in ctrl.treeLabels.deny"
 														ng-init="isVisible=false">
@@ -1369,7 +1376,7 @@
 													class="pi"></i>
 											</div>
 											<a title="" class="tree-node" aid="{{labelItem.id}}"> <i
-												class="js-icon pi pi-process-details"></i> <span>{{labelItem.name}}</span>
+												class="js-icon pi pi-folder"></i> <span>{{labelItem.name}}</span>
 											</a>
 										</div>
 
@@ -1389,7 +1396,7 @@
                                                'ref': genItem}]"
 														sda-menu-callback='ctrl.restorePermission(menuItem, e)'>
 														<a title="" class="tree-node" aid="{{genItem.name}}"> <i
-															class="js-icon pi pi-process-details"></i> <span
+															class="js-icon pi pi-permission"></i> <span
 															class="js-filterable">{{genItem.name}}</span>
 														</a>
 													</div>

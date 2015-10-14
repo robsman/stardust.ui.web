@@ -93,6 +93,40 @@
     }
   }
 
+  
+  AMCtrl.prototype.getPerspectiveIcon = function(item){
+	var iconClass = "pi-permission"; //default
+	
+	switch(item.id){
+	case "portal.ui.ippBpmModeler":
+		iconClass = "pi-model";
+		break;
+	case "portal.ui.stardustRulesManager":
+		iconClass = "pi-perspective-rules-manager-alt";
+		break;
+	case "portal.ui.businessCalendar":
+		iconClass = "pi-calendar";
+		break;
+	case "portal.ui.checklistManagement": /*Model & Go*/
+		iconClass = "pi-model";
+		break;
+	case "portal.ui.bpmReporting":
+		iconClass = "pi-perspective-reporting";
+		break;
+	case "portal.ui.WorkflowExecution":
+		iconClass = "pi-perspective-workflow";
+		break;
+	case "portal.ui.ippHtml5PortalTestPerspective":
+		iconClass = "pi-html";
+		break;
+	case "portal.ui.ippBccPerspective":
+		iconClass = "pi-perspective-control-center";
+		break;
+	}
+	
+	return iconClass;
+	  
+  };
   /**
    * 
    */
@@ -304,7 +338,16 @@
     };
 
   }
-
+  
+  /**
+   * Resets the data structures which keep track of the DENY and ALLOW nodes
+   * selected from our authorization tree.
+   */
+  AMCtrl.prototype.resetSelectedAllowDenyItems = function(){
+	  this.selectedAllow=[];
+	  this.selectedDeny=[];
+  };
+  
   // Handle select and multi selects of our permissions.
   AMCtrl.prototype.addSelectedPermission = function(permission, e, target) {
 
@@ -381,9 +424,15 @@
   AMCtrl.prototype.applyFlashlightFilter = function(selectedParticipants){
 	var filterFx;
 	
+	//Filter only applies if user has selected one or more participants
+	//from the participant table.
 	if(!selectedParticipants.length || selectedParticipants.length ==0){
 		return;
 	}
+	
+	//reset our allow/deny nodes as we don't want the user performing drop operations
+	//on nodes hidden by the filter.
+	this.resetSelectedAllowDenyItems();
 	
 	filterFx = function(nodeItem){
 		
@@ -411,6 +460,10 @@
 		  this.resetFilter();
 		  return;
 	  }
+	  
+	  //reset our allow/deny nodes as we don't want the user performing drop operations
+	  //on nodes hidden by the filter.
+	  this.resetSelectedAllowDenyItems();
 	  
 	  filterFx = function(nodeItem){
 		if(!nodeItem.name){
@@ -859,6 +912,10 @@
   AMCtrl.prototype.refreshPermissions = function(init) {
     var self = this;
     this.resetMessages();
+    
+    //reset our allow/deny nodes
+	this.resetSelectedAllowDenyItems();
+	
     _sdAuthorizationManagerService.getPermissions().then(function(permissions) {
       self.initializePermissionTree(permissions);
       if (!init) {
