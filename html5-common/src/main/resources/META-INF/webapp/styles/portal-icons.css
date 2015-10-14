@@ -528,7 +528,7 @@ Icon implementations
 .pi-parameters:before,
 .pi-activity:before,
 .pi-activity-overview:before,
-.pi-cog:before{
+.pi-process-interface:before{
 	font-family:FontAwesome;
 	content:"\f013"; /* fa-cog */
 }

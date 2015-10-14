@@ -38,19 +38,19 @@ import org.eclipse.stardust.ui.web.admin.views.model.dialog.ModelExportDialogBea
 import org.eclipse.stardust.ui.web.admin.views.model.dialog.ModelImplementationDialogBean;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
-import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
-import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
+import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
+import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.columnSelector.TableColumnSelectorPopup;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog;
-import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogActionType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogContentType;
 import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialog.DialogStyle;
+import org.eclipse.stardust.ui.web.common.dialogs.ConfirmationDialogHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
-import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
+import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
 import org.eclipse.stardust.ui.web.common.filter.ITableDataFilterOnOff;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilterOnOff;
 import org.eclipse.stardust.ui.web.common.filter.TableDataFilters;
@@ -64,8 +64,6 @@ import org.eclipse.stardust.ui.web.common.treetable.TreeTableBean;
 import org.eclipse.stardust.ui.web.common.treetable.TreeTableNode;
 import org.eclipse.stardust.ui.web.common.treetable.TreeTableUserObject;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
@@ -447,7 +445,7 @@ public class ModelManagementBean extends UIComponentBean implements ViewEventHan
       FilterToolbarItem primaryInterfaceTool = new FilterToolbarItem(
             ModelManagementTreeItem.Type.PRIMARY_INTERFACE.name(),
             ModelManagementTreeItem.Type.PRIMARY_INTERFACE.name(), "primaryinterface",
-            "pi pi-cog pi-lg");
+ "pi pi-process-interface pi-lg");
       filterToolbarItems.add(primaryInterfaceTool);
 
       Collections.unmodifiableCollection(filterToolbarItems);

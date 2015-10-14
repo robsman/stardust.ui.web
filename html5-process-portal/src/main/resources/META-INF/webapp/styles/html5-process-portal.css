@@ -111,16 +111,6 @@ padding : 5px;;
   color :#3D66E0 !important;
 }
 
-/* ********** Process Activity Filter ********** */
-
- .auxillaryGearDisabled{
-   color : gray ;
- }
-
- .auxillary-gear{
-  font-size: 1.64em;
- }
-
 /* ********** Priority and criticality Filter ********** */
 
 .priority-criticality-filter-ac-container{
