@@ -12,7 +12,6 @@ package org.eclipse.stardust.ui.web.viewscommon.descriptors;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -21,8 +20,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.TimeZone;
-
-import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
@@ -67,7 +64,6 @@ public class DescriptorFilterUtils
 {
    private static final Logger trace = LogManager.getLogger(DescriptorFilterUtils.class);
    // Scan Client Date Format
-   public static final String DATE_FORMAT = "dd-MMM-yyyy";
 
    /**
     * @author Yogesh.Manware
@@ -1018,7 +1014,7 @@ public class DescriptorFilterUtils
                Date dateValue = DateUtils.parseDateTime(dataPathValue.toString());
                if (null == dateValue)
                {
-                  dateValue = DateUtils.parseDateTime(dataPathValue.toString(), DATE_FORMAT, Locale.getDefault(),
+                  dateValue = DateUtils.parseDateTime(dataPathValue.toString(), DateUtils.getDateFormat(), Locale.getDefault(),
                         TimeZone.getDefault());
                }
                value = getDateValue(dateValue, dataClass);
