@@ -709,9 +709,10 @@
     	return participant.type === "SCOPED_ROLE" || participant.type == "SCOPED_ORGANIZATION";
     });
     
-    //Second test, are all allow nodes only in the model root?
+    //Second test, are all allow nodes only in the model root or UI permissions?
     allow.forEach(function(item){
     	isAllowModelOnly = isAllowModelOnly && (
+    		item.id.indexOf("portal.ui.") === 0 ||
 			item.id.indexOf("processDefinition.") === 0 ||
 	       	item.id.indexOf("activity.") === 0 ||
 	       	item.id.indexOf("data.") === 0)
