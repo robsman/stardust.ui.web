@@ -18,7 +18,10 @@
 
 		<ice:panelGroup rendered="#{col.columnName == 'Deputy' or col.columnName == 'User' or col.columnName == 'Participant'}">
 			<ice:panelGrid columns="2">
-				<ice:graphicImage value="#{row.avatarImageURI}" width="24px" height="24px" />
+				<ice:graphicImage value="#{row.avatarImageURI}" width="24px" height="24px" 
+								rendered="#{pc:contains(row.avatarImageURI, '/')}"/>
+				<ice:outputText styleClass="#{row.avatarImageURI} pi-1-5x"
+								rendered="#{!pc:contains(row.avatarImageURI, '/')}"></ice:outputText>
 				<ice:outputText value="#{row.userDisplayName}" />
 			</ice:panelGrid>
 		</ice:panelGroup>

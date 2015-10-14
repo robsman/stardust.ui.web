@@ -52,8 +52,10 @@
 			<ice:panelGroup rendered="#{fn:length(originalComment) &gt; 0}" panelTooltip="noteToolTip">
 				<ice:panelGrid columns="2">
 					<ice:column>
-						<ice:graphicImage value="#{row.noteInfo.userImageURL}" width="16px"
-							height="16px" />
+						<ice:outputText value="#{row.noteInfo.userImageURL}" width="16px"
+							height="16px" rendered="#{pc:contains(row.noteInfo.userImageURL, '/')}"/>
+						<ice:outputText styleClass="#{row.noteInfo.userImageURL} pi-1-5x"
+							rendered="#{!pc:contains(row.noteInfo.userImageURL, '/')}"></ice:outputText>
 					</ice:column>
 					<ice:column>
 						<ice:outputText value="#{originalComment}" />

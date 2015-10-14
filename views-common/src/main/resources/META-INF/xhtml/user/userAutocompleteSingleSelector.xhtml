@@ -21,7 +21,10 @@
 					<ice:panelGrid columns="2">
 						<ice:panelGroup>
 						 	<ice:graphicImage value="#{user.imageURL}" width="24px" height="24px" style="padding-right: 10px;" 
-						 		styleClass="#{(component.showOnlineIndicator and !user.online) ? 'iceCmdBtn-dis' : ''}" />
+						 		styleClass="#{(component.showOnlineIndicator and !user.online) ? 'iceCmdBtn-dis' : ''}" 
+						 		rendered="#{pc:contains(user.imageURL, '/')}"/>
+							<ice:outputText styleClass="#{user.imageURL} pi-1x"
+								rendered="#{!pc:contains(user.imageURL, '/')}"></ice:outputText>
 						</ice:panelGroup>
 						<ice:outputText value="#{user.displayLabel}" escape="false" style="white-space:normal;" />
 					</ice:panelGrid>

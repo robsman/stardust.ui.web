@@ -76,7 +76,7 @@
 				if (scope.userOID != undefined){
 					sdUserService.getUserDetails(scope.userOID).then(function(data) {
 						self.userDetails = data;
-						self.userDetails.userImageURI = sdUtilService.getRootUrl() + data.userImageURI;
+						self.userDetails.userImageURI = (data.userImageURI.indexOf("/") > -1) ? sdUtilService.getRootUrl() + data.userImageURI : data.userImageURI; 
 						self.showUserDetails = true;
 					}, function(error) {
 						trace.log(error);

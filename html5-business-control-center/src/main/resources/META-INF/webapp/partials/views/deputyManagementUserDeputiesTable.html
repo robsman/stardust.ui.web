@@ -28,7 +28,11 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td><img alt="" ng-src="{{ctrl.getUserImageURL(rowData.avatarImageURI)}}" width="24px" height="24px" class="spacing-right">{{rowData.userDisplayName}}</td>
+				<td><img alt="" ng-show="{{ctrl.getUserImageURL(rowData.avatarImageURI).indexOf('/') > -1}}" 
+					 ng-src="{{ctrl.getUserImageURL(rowData.avatarImageURI)}}" width="24px" height="24px" class="spacing-right">
+					<i class="{{ctrl.getUserImageURL(rowData.avatarImageURI)}} pi-1-5x" 
+					 ng-show="{{!(ctrl.getUserImageURL(rowData.avatarImageURI).indexOf('/') > -1)}}"  style="margin-right: 5px;"></i>
+					 {{rowData.userDisplayName}}</td>
 				<td sda-data-type="dateTime"></td>
 				<td sda-data-type="dateTime"></td>
 				<td><div style="text-align: left; white-space: nowrap;">

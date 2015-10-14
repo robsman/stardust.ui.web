@@ -87,6 +87,13 @@ Supported fonts we wrap for our portal icon (pi-) classes
 	font-size: 5em;
 }
 
+.pi-10x {
+	font-size: 10em;
+}
+
+.pi-12x {
+	font-size: 12em;
+}
 
 /*
 portal icon badging stem, duped from starclipse
@@ -1567,3 +1574,17 @@ span.pi-case-menu-open:after {
 
 <!-- End criticality Classes-->
 
+.pi-user-avatar:before{
+	font-family: "FontAwesome";
+	content: "\f007"; /* fa-user */
+}
+
+.pi-row-selected:before{
+	font-family: "FontAwesome";
+	content: "\f192"; /* fa-dot-circle-o */
+}
+
+.pi-row-unselected:before{
+	font-family: "FontAwesome";
+	content: "\f10c;"; /* fa-circle-o */
+}

@@ -50,19 +50,20 @@
 									<ice:outputText value="" />
 								</f:facet>
 								<ice:graphicImage value="#{chatMember.imageURL}" width="24px"
-									height="24px" />
+									height="24px" rendered="#{pc:contains(chatMember.imageURL, '/')}" />
+								<ice:outputText styleClass="#{chatMember.imageURL} pi-1x" rendered="#{!pc:contains(chatMember.imageURL, '/')}"></ice:outputText>
 							</h:column>
 							<h:column>
 								<f:facet name="header">
 									<ice:outputText value="#{chatViewBean.messages['userName']}" />
 								</f:facet>
-								<ice:outputText value="#{chatMember.fullName}" />
+								<ice:outputText value="Test#{chatMember.fullName}" />
 							</h:column>
 							<h:column>
 								<f:facet name="header">
 									<ice:outputText value="" />
 								</f:facet>
-								<ice:outputText styleClass="pi pi-dialog-close pi-lg" />
+								<ice:outputText styleClass="pi pi-dialog-close1 pi-lg" />
 							</h:column>
 						</ice:dataTable>
 					</ice:panelGroup>

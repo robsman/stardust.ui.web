@@ -114,7 +114,7 @@ public interface ResourcePaths
 
    static final String I_USER_CHAT_INITIATOR = "pi pi-user-status pi-lg pi-danger";
    static final String VIEW_DOCUMENT_SEARCH_COLUMN = "/plugins/views-common/views/documentsearch/documentSearchColumns.xhtml";
-   static final String I_EMPTY_CORE_DOCUMENT = "/plugins/views-common/images/icons/page_white_error.png";
+   static final String I_EMPTY_CORE_DOCUMENT = "pi pi-error pi-lg";
    static final String I_CORE_DOCUMENTS = "pi pi-process-attachments pi-lg";
    static final String I_REPORT = "pi pi-report pi-lg";
    

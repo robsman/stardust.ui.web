@@ -98,7 +98,7 @@
 	 * @returns
 	 */
 	DeputyManagementCtrl.prototype.getUserImageURL = function(userImageURI) {
-		return rootURL + userImageURI;
+		return (userImageURI.indexOf("/") > -1) ? rootURL + userImageURI : userImageURI;
 	};
 
 	/**

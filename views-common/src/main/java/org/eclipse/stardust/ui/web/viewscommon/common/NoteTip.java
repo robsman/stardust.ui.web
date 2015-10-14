@@ -51,7 +51,7 @@ public class NoteTip implements ToolTip, Serializable
    {
       super();
       user = FormatterUtils.getUserLabel(note.getUser());
-      userImageURL = getUserIcon(MyPicturePreferenceUtils.getUsersImageURI(note.getUser()));
+      userImageURL = MyPicturePreferenceUtils.getUsersImageURI(note.getUser());
       if (note.getTimestamp() != null)
       {
          timeStamp = DateUtils.formatDateTime(note.getTimestamp());
@@ -134,14 +134,4 @@ public class NoteTip implements ToolTip, Serializable
       }
       return scopeType;
    }
-   
-   public static String getUserIcon(String icon)
-   {
-      if (icon.endsWith("user-default.png"))
-      {
-         icon = "pi pi-user pi-lg";
-      }
-      return icon;
-   }
-   
 }

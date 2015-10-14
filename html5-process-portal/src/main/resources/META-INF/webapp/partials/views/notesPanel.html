@@ -35,9 +35,12 @@
 			<tr>
 				<td sda-data-type="int"></td>
 				<td sda-exporter="rowData.creatorName" style="text-align: center;">
-					<img alt=""
-					ng-src="{{ctrl.getUserImageURL(rowData.avatarImageURI)}}"
-					width="24px" height="24px" style="padding-right: 5px;">{{rowData.creatorName}}
+					<img alt="" ng-show="{{ctrl.getUserImageURL(rowData.avatarImageURI).indexOf('/') > -1}}"
+						ng-src="{{ctrl.getUserImageURL(rowData.avatarImageURI)}}"
+						width="24px" height="24px" style="padding-right: 5px;">
+					<i class="{{ctrl.getUserImageURL(rowData.avatarImageURI)}} pi-1-5x" 
+						ng-show="{{!(ctrl.getUserImageURL(rowData.avatarImageURI).indexOf('/') > -1)}}"  style="margin-right: 5px;"></i>
+						{{rowData.creatorName}}
 				</td>
 				<td sda-data-type="dateTime"></td>
 				<td><table>

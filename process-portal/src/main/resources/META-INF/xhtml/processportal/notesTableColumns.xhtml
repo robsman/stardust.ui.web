@@ -33,7 +33,7 @@
 				<ice:graphicImage value="#{row.noteInfo.userImageURL}" width="16px"
 					height="16px" rendered="#{pc:contains(row.noteInfo.userImageURL, '/')}"/>
 				<ice:outputText
-					styleClass="#{row.noteInfo.userImageURL}"
+					styleClass="#{row.noteInfo.userImageURL} pi-lg"
 					rendered="#{!pc:contains(row.noteInfo.userImageURL, '/')}"></ice:outputText>
 				<ice:outputText value="#{row.creatorName}" />
 			</ice:panelGrid>
