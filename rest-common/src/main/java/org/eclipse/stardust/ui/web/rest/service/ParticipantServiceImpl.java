@@ -578,8 +578,7 @@ public class ParticipantServiceImpl implements ParticipantService
             qualifiedOrganizationInfo.getDepartment(), qualifiedOrganizationInfo);
 
       // Add Default Department
-      ParticipantDTO participant = getParticipant(qualifiedOrganizationInfo, participantDTOs, parentDepartment, true);
-      participant.type = ParticipantType.DEPARTMENT_DEFAULT.name();
+      participantDTOs.add(getParticipant(qualifiedOrganizationInfo, parentDepartment, true));
 
       // Add all Departments
       for (Department department : deptList)
@@ -625,10 +624,9 @@ public class ParticipantServiceImpl implements ParticipantService
             UserDetailsLevel.Full)).getAllSubOrganizations();
       for (Organization subOrganization : subOrganizations)
       {
-         ParticipantDTO participant = getParticipant(
+         participantDTOs.add(getParticipant(
                (QualifiedOrganizationInfo) ParticipantUtils.getScopedParticipant(subOrganization, department),
-               participantDTOs, department, true);
-         participant.type = ParticipantType.DEPARTMENT_DEFAULT.name();
+               department, true));
       }
 
       // Add all sub-Roles
@@ -671,8 +669,8 @@ public class ParticipantServiceImpl implements ParticipantService
       List<Organization> subOrganizations = organization.getAllSubOrganizations();
       for (Organization subOrganization : subOrganizations)
       {
-         getParticipant(ParticipantUtils.getScopedParticipant(subOrganization, department), participantDTOs,
-               department, false);
+         participantDTOs.add(getParticipant(ParticipantUtils.getScopedParticipant(subOrganization, department),
+               department, false));
       }
    }
 
@@ -691,7 +689,8 @@ public class ParticipantServiceImpl implements ParticipantService
       List<Role> subRoles = organization.getAllSubRoles();
       for (Role subRole : subRoles)
       {
-         getParticipant(ParticipantUtils.getScopedParticipant(subRole, department), participantDTOs, department, false);
+         participantDTOs.add(getParticipant(ParticipantUtils.getScopedParticipant(subRole, department), department,
+               false));
       }
    }
 
@@ -727,12 +726,11 @@ public class ParticipantServiceImpl implements ParticipantService
     * @return
     */
    private ParticipantDTO getParticipant(QualifiedModelParticipantInfo qualifiedParticipantInfo,
-         List<ParticipantDTO> participantDTOs, Department parentDepartment, boolean defaultDepartment)
+         Department parentDepartment, boolean defaultDepartment)
    {
       Participant participant = ParticipantUtils.getParticipant(qualifiedParticipantInfo);
       ParticipantDTO participantDTO = new ParticipantDTO(participant);
       participantDTO.type = ParticipantManagementUtils.getParticipantType(qualifiedParticipantInfo).name();
-      participantDTOs.add(participantDTO);
       participantDTO.uiQualifiedId = "";
       if (parentDepartment != null)
       {
@@ -743,6 +741,9 @@ public class ParticipantServiceImpl implements ParticipantService
       if (defaultDepartment)
       {
          participantDTO.uiQualifiedId += qualifiedParticipantInfo.getQualifiedId() + "[]";
+         participantDTO.type = ParticipantType.DEPARTMENT_DEFAULT.name();
+         participantDTO.name = participantDTO.name + " "
+               + MessagesViewsCommonBean.getInstance().getString("views.participantTree.default"); 
       }
       else
       {
