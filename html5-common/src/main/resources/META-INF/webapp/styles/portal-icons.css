@@ -1587,5 +1587,5 @@ span.pi-case-menu-open:after {
 
 .pi-row-unselected:before{
 	font-family: "FontAwesome";
-	content: "\f10c;"; /* fa-circle-o */
+	content: "\f10c"; /* fa-circle-o */
 }
