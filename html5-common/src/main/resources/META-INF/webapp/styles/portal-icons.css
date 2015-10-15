@@ -1531,8 +1531,17 @@ span.pi-case-menu-open:after {
 	content:"\f135"; /* fa-rocket */
 }
 
-/* These classes are copied from html5-process-portal.css for the purpose of getting load in ice-faces views */
+.pi-resultset-previous:before{
+	font-family:FontAwesome;
+	content:"\f191"; /* fa-toggle-left */
+}
 
+.pi-resultset-next:before{
+	font-family:FontAwesome;
+	content: "\f152"; /* fa-toggle-right */
+}
+
+<!-- These classes are copied from html5-process-portal.css for the purpose of getting load in ice-faces views-->
 .criticality-flag-RED{
   color :#F75339 !important;
 }
@@ -1573,7 +1582,7 @@ span.pi-case-menu-open:after {
   color:#CFCFCF !important;
 }
 
-/* End criticality Classes */
+<!-- End criticality Classes-->
 
 .pi-user-avatar:before{
 	font-family: "FontAwesome";

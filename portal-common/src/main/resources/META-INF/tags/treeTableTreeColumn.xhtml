@@ -82,12 +82,10 @@
 							<img src="#{treeLineStyleMiddleImg}" />
 						</c:otherwise>
 					</c:choose>
-					<div style="display: inline;" rendered="#{!pc:contains(row.icon, '.')}">
-						<ice:commandLink action="#{row.toggleRow}" disabled="#{row.leaf}" styleClass="pi-cmdLnk">
-							<h:outputText  
-								styleClass="pi pi-lg #{row.icon}" style="display: inline; vertical-align: super;" />
-						</ice:commandLink>
-					</div>
+					<ice:commandLink action="#{row.toggleRow}" disabled="#{row.leaf}" styleClass="pi-cmdLnk" style="display: inline;" rendered="#{!pc:contains(row.icon, '.')}">
+						<h:outputText  
+							styleClass="pi pi-lg #{row.icon}" style="display: inline; vertical-align: super;" />
+					</ice:commandLink>
 					<ice:commandButton disabled="#{row.leaf}" image="#{row.icon}" action="#{row.toggleRow}" rendered="#{pc:contains(row.icon, '.')}"
 						style="#{row.leaf ? 'cursor: default; opacity: 1' : ''}; padding-left:3px; background:transparent;" />
 					<ice:outputText value=" " escape="false" style="vertical-align: super;display:inline;padding:0px;margin:0px;" />

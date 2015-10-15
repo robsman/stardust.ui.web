@@ -20,11 +20,11 @@ import org.eclipse.stardust.engine.api.runtime.DeployedModelDescription;
 public class ModelManagementTreeItem
 {
 
-   private static final String MODEL_IMAGE_PATH = "/plugins/views-common/images/icons/model.gif";
-   private static final String MODEL_VERSION_IMAGE_PATH = "/plugins/views-common/images/icons/book_open.png";
-   private static final String MODEL_VERSION_CONSUMER_IMAGE_PATH = "/plugins/views-common/images/icons/resultset_previous.png";
-   private static final String MODEL_VERSION_PROVIDER_IMAGE_PATH = "/plugins/views-common/images/icons/resultset_next.png";
-   private static final String PRIMARY_INTERFACE_IMAGE_PATH = "/plugins/views-common/images/icons/cog.png";
+   private static final String MODEL_IMAGE_PATH = "pi pi-lg pi-model";
+   private static final String MODEL_VERSION_IMAGE_PATH = "pi pi-lg pi-version";
+   private static final String MODEL_VERSION_CONSUMER_IMAGE_PATH = "pi pi-lg pi-resultset-previous";
+   private static final String MODEL_VERSION_PROVIDER_IMAGE_PATH = "pi pi-lg pi-resultset-next";
+   private static final String PRIMARY_INTERFACE_IMAGE_PATH = "pi pi-lg pi-process-interface";
    private static final String BLANK_IMAGE_PATH = "/plugins/views-common/images/spacer.png";
 
    private List<ModelManagementTreeItem> children = new ArrayList<ModelManagementTreeItem>();
