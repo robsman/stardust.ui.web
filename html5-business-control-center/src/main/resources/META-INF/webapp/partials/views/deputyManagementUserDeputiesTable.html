@@ -28,7 +28,7 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td><img alt="" ng-show="{{ctrl.getUserImageURL(rowData.avatarImageURI).indexOf('/') > -1}}" 
+				<td><img alt="" ng-if="ctrl.getUserImageURL(rowData.avatarImageURI).indexOf('/') > -1" ng-show="{{ctrl.getUserImageURL(rowData.avatarImageURI).indexOf('/') > -1}}" 
 					 ng-src="{{ctrl.getUserImageURL(rowData.avatarImageURI)}}" width="24px" height="24px" class="spacing-right">
 					<i class="{{ctrl.getUserImageURL(rowData.avatarImageURI)}} pi-1-5x" 
 					 ng-show="{{!(ctrl.getUserImageURL(rowData.avatarImageURI).indexOf('/') > -1)}}"  style="margin-right: 5px;"></i>

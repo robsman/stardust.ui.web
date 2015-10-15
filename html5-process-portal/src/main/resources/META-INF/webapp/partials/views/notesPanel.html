@@ -35,7 +35,8 @@
 			<tr>
 				<td sda-data-type="int"></td>
 				<td sda-exporter="rowData.creatorName" style="text-align: center;">
-					<img alt="" ng-show="{{ctrl.getUserImageURL(rowData.avatarImageURI).indexOf('/') > -1}}"
+					<img alt="" ng-if="ctrl.getUserImageURL(rowData.avatarImageURI).indexOf('/') > -1"
+						ng-show="{{ctrl.getUserImageURL(rowData.avatarImageURI).indexOf('/') > -1}}"
 						ng-src="{{ctrl.getUserImageURL(rowData.avatarImageURI)}}"
 						width="24px" height="24px" style="padding-right: 5px;">
 					<i class="{{ctrl.getUserImageURL(rowData.avatarImageURI)}} pi-1-5x" 
@@ -63,7 +64,7 @@
 			ng-if="!ctrl.isAddMode && ctrl.rowSelectionNotesTable">
 			<table>
 				<tr>
-					<td><img alt=""
+					<td><img alt="" ng-if="ctrl.getUserImageURL(ctrl.rowSelectionNotesTable.avatarImageURI)"
 						ng-src="{{ctrl.getUserImageURL(ctrl.rowSelectionNotesTable.avatarImageURI)}}"
 						width="24px" height="24px" style="padding-right: 5px;"></td>
 					<td><sd-user-details

@@ -8,8 +8,8 @@
 			<tr>
 				<td colspan="1"><div
 						style="width: 128px; height: 128px; border: 1px solid #CCCCCC; margin-top: 5px;">
-						<img alt="" ng-show="{{userDetailsCtrl.userDetails.userImageURI.indexOf('/') > -1}}" style="height:128px; width :128px ; padding:0 !important" 
-							src="{{userDetailsCtrl.userDetails.userImageURI}}">
+						<img alt="" ng-if="userDetailsCtrl.userDetails.userImageURI.indexOf('/') > -1" ng-show="{{userDetailsCtrl.userDetails.userImageURI.indexOf('/') > -1}}" style="height:128px; width :128px ; padding:0 !important" 
+							ng-src="{{userDetailsCtrl.userDetails.userImageURI}}">
 						<i class="{{userDetailsCtrl.userDetails.userImageURI}} pi-12x" ng-show="{{!(userDetailsCtrl.userDetails.userImageURI.indexOf('/') > -1)}}"
 							style="padding-left: 10px;">
 					</div></td>

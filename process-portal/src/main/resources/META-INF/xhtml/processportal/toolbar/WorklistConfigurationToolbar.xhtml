@@ -44,14 +44,14 @@
 					title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.add']}" />
 			</ice:commandLink>
 
-			<ice:commandLink action="#{bean.delete}"
+			<ice:commandLink action="#{bean.delete}" style="padding-left: 5px;"
 				disabled="#{bean.deleteDisabled}">
 				<pc:automationTag
 					value="auto-PP-WorklistPnlConf-worklistTable-toolbar-delete"
 					standAlone="false" />
 				<ice:outputText
 					title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.delete']}"
-					styleClass="#{bean.deleteDisabled ? 'toolbar-button-dis' : 'toolbar-button'} pi pi-delete pi-lg" />
+					styleClass="#{bean.deleteDisabled ? '-dis' : ''} pi pi-delete pi-lg" />
 			</ice:commandLink>
 		</ice:panelGroup>
 	</ice:panelGrid>

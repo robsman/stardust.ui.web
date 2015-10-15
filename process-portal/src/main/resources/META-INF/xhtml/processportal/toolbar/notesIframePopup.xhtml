@@ -21,6 +21,8 @@
 		<ice:outputStyle href="/plugins/common/css/nirvanaRime-override.css" />
 		<ice:outputStyle href="/plugins/common/css/nirvanaPortal.css" />
 		<ice:outputStyle href="/plugins/common/css/portalComponentStyle.css" />
+		<link rel="stylesheet" type="text/css" href="../../html5-common/styles/3rd-party/font-awesome/4.4.0/css/font-awesome.min.css"></link>
+		<link rel="stylesheet" type="text/css" href="../../html5-common/styles/portal-icons.css" > </link>
 	
 		<c:forEach items="#{ippPortalApp.skinFiles}" var="skinFile">
 			<ice:outputStyle href="#{skinFile}" />
@@ -101,7 +103,7 @@
 							<ice:graphicImage value="#{note.userImageURL}" width="16px"
 								height="16px" rendered="#{pc:contains(note.userImageURL, '/')}" />
 							<ice:outputText
-								styleClass="#{note.userImageURL}"
+								styleClass="#{note.userImageURL} pi-lg"
 								rendered="#{!pc:contains(note.userImageURL, '/')}"></ice:outputText>
 							<ice:outputText value="#{note.title}" style="white-space: nowrap;" />
 							</ice:panelGrid>
