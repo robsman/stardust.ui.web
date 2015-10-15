@@ -370,25 +370,13 @@ Utility classes for portal icons
 	margin-top: -8px !important;
 }
 
-.pi-perspective-rules-manager-alt:before,
-.pi-perspective-rules-manager:after {
-	font-family: "starclipse";
-	content: "\F0A6"; /* sc-scroll-custom */
+
+.pi-perspective-rules-manager:after{
+	font-family:"starclipse";
+	font-size:18px;
+	content:"\F0AF"; /*sc-scroll-cog*/
 }
 
-.pi-perspective-rules-manager:before {
-	font-family: "starclipse";
-	content: "\F08F"; /* sc-badge-cog-custom */
-    font-size: 2.0em;
-    position: relative;
-    left: 80%;
-}
-
-.pi-perspective-rules-manager {
-	margin-left: -12px;
-	margin-right: 6px;
-	margin-top: -15px !important;
-}
 
 /*
 Icon implementations
@@ -765,13 +753,19 @@ span.pi-case:before{
 }
 
 .pi-first-page:before{
-	font-family: "FontAwesome";
-	content: "\f048"; /* fa-step-backward */
+	font-family: "starclipse";
+	content: "\f0AD"; /* fa-step-backward */
+	font-size: 11px;  /*Following rules are required to match up with ice-faces icons*/
+    position: relative;
+    top: 1px;
 }
 
 .pi-last-page:before{
-	font-family: "FontAwesome";
-	content: "\f051"; /* fa-step-forward */
+	font-family: "starclipse";
+	content: "\f0AE"; /* fa-step-forward */
+	font-size: 11px; /*Following rules are required to match up with ice-faces icons*/
+    position: relative;
+    top: 1px;
 }
 
 .pi-deputy:before,
@@ -854,8 +848,8 @@ span.pi-case:before{
 }
 
 .pi-role:before{
-	font-family:FontAwesome;
-	content:"\f0c0"; /* fa-users */
+	font-family:starclipse;
+	content:"\f0AA"; /* fa-users */
 }
 
 .pi-department:before{
@@ -1097,7 +1091,7 @@ span.pi-case:before{
 
 .pi-process-auxiliary:before{
 	font-family:"starclipse";
-	content:'\F02D'; /* sc-cogs */
+	content:'\F0AC'; /*.sc-cogs-border*/
 }
 
 .pi-gantt-chart:before{
@@ -1255,7 +1249,7 @@ span.pi-case:before{
 
 .pi-activity-state:before{
 	font-family:"FontAwesome";
-	content: "\f0e7"; /* fa-bolt */
+	content: "\f0AB"; /* sc-cog-border */
 }
 
 .pi-activity-auxiliary:before{

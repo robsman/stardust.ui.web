@@ -2,7 +2,9 @@
     
     <head>
         <link rel="stylesheet" href="starclipse.css" type="text/css" />
-
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+        <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
         <style>
             h2,h3,h4,h5{
                 font-family: sans-serif;
@@ -61,6 +63,17 @@
                   1px 1px 0 #333;
             }
             
+            .sc-cog-after:after{
+                content:'\F09E';font-size:2em;
+                color:#fff;
+            }
+            .sc-lightning-before:before{
+                content:'\F098';
+                font-size:2em;
+                position:relative;
+                color:gold;
+                left:85%;
+            }
         </style>
     </head>
     
@@ -670,7 +683,7 @@
             </div>
             
             <div class="sc-badge">
-                <i class="sc sc-badge-portrait sc-fw sc-5x sc-cog sc-left sc-top">
+                <i class="sc sc-badge-portrait sc-fw fa-5x sc-5x sc-cog sc-left sc-top">
                     <i class="sc sc-badge-bg sc-badge-bg-circle go"></i>
                     <i class="sc sc-badge-icon sc-badge-icon-arrow-l"></i>
                 </i>
@@ -684,11 +697,126 @@
                 <div class="sub-title">role scoped</div>
             </div>
             
+            <h3>Mixing Badges With FontAwesome</h3>
+            <h4>sc-use-fontawesome</h4>
+            <div class="sc-badge">
+                <i class="sc sc-use-fontawesome sc-badge-portrait sc-fw sc-5x fa-heartbeat sc-left sc-top">
+                    <i class="sc sc-badge-bg sc-badge-bg-circle go"></i>
+                    <i class="sc sc-badge-icon sc-badge-icon-arrow-l"></i>
+                </i>
+                <div class="sub-title">fa-heartbeat</div>
+            </div>
+            
+            <div class="sc-badge">
+                <i class="sc sc-use-fontawesome sc-badge-portrait sc-fw sc-5x fa-dollar sc-left">
+                    <i class="sc sc-badge-bg sc-badge-bg-circle go"></i>
+                    <i class="sc sc-badge-icon sc-badge-icon-arrow-l"></i>
+                </i>
+                <div class="sub-title">fa-dollar</div>
+            </div>
+            
+            <div class="sc-badge">
+                <i class="sc sc-use-fontawesome sc-badge-portrait sc-fw sc-5x fa-rocket sc-right">
+                    <i class="sc sc-badge-bg sc-badge-bg-circle go"></i>
+                    <i class="sc sc-badge-icon sc-badge-icon-arrow-l"></i>
+                </i>
+                <div class="sub-title">fa-rocket</div>
+            </div>
+            
+            <div class="sc-badge">
+                <i class="sc sc-use-fontawesome sc-badge-portrait sc-fw sc-5x fa-archive sc-right sc-top">
+                    <i class="sc sc-badge-bg sc-badge-bg-circle go"></i>
+                    <i class="sc sc-badge-icon sc-badge-icon-arrow-l"></i>
+                </i>
+                <div class="sub-title">fa-archive</div>
+            </div>
+            
+            <h3>Mixing Badges With Glyphicons</h3>
+            <h4>sc-use-glyphicons</h4>
+            
+            <div class="sc-badge">
+                <i class="sc sc-use-glyphicons sc-badge-portrait sc-fw sc-5x glyphicon-cog sc-left sc-top">
+                    <i class="sc sc-badge-bg sc-badge-bg-circle go"></i>
+                    <i class="sc sc-badge-icon sc-badge-icon-arrow-l"></i>
+                </i>
+                <div class="sub-title">glyphicon-cog</div>
+            </div>
+            
+            <div class="sc-badge">
+                <i class="sc sc-use-glyphicons sc-badge-portrait sc-fw sc-5x glyphicon-comment sc-right sc-top">
+                    <i class="sc sc-badge-bg sc-badge-bg-circle go"></i>
+                    <i class="sc sc-badge-icon sc-badge-icon-plus"></i>
+                </i>
+                <div class="sub-title">glyphicon-comment</div>
+            </div>
+            
+            <div class="sc-badge">
+                <i class="sc sc-use-glyphicons sc-badge-portrait sc-fw sc-5x glyphicon-heart sc-right">
+                    <i class="sc sc-badge-bg sc-badge-bg-circle go"></i>
+                    <i class="sc sc-badge-icon sc-badge-icon-hand"></i>
+                </i>
+                <div class="sub-title">glyphicon-heart</div>
+            </div>
+            
+            <div class="sc-badge">
+                <i class="sc sc-use-glyphicons sc-badge-portrait sc-fw sc-5x glyphicon-road sc-right sc-top">
+                    <i class="sc sc-badge-bg sc-badge-bg-circle go"></i>
+                    <i class="sc sc-badge-icon sc-badge-icon-plus"></i>
+                </i>
+                <div class="sub-title">glyphicon-road</div>
+            </div>
+            
+            <div>
+                <a class="sc sc-2x sc-cog-after sc-lightning-before"></a>
+            </div>
+            
+             <h3>Portal Icons</h3>
+             
+            <div class="icon-container">
+                <i class="sc sc-fw sc-5x sc-user-check"></i>
+                <div class="sub-title">sc-user-check</div>
+            </div>
+            
+            <div class="icon-container">
+                <i class="sc sc-fw sc-5x sc-cog-border"></i>
+                <div class="sub-title">sc-cog-border</div>
+            </div>
+            
+            <div class="icon-container">
+                <i class="sc sc-fw sc-5x sc-cogs-border"></i>
+                <div class="sub-title">sc-cogs-border</div>
+            </div>
+            
+            <div class="icon-container">
+                <i class="sc sc-fw sc-5x sc-forward-all"></i>
+                <div class="sub-title">sc-forward-all</div>
+            </div>
+            
+            <div class="icon-container">
+                <i class="sc sc-fw sc-5x sc-backward-all"></i>
+                <div class="sub-title">sc-backward-all</div>
+            </div>
+            
+            <div class="icon-container">
+                <i class="sc sc-fw sc-5x sc-scroll-cog"></i>
+                <div class="sub-title">sc-scroll-cog</div>
+            </div>
+            
+            <div class="icon-container">
+                <i class="sc sc-fw sc-5x sc-cog-arrow"></i>
+                <div class="sub-title">sc-cog-arrow</div>
+            </div>
+            
+            <div class="icon-container">
+                <i class="sc sc-fw sc-5x sc-cog-arrow-alt"></i>
+                <div class="sub-title">sc-cog-arrow-alt</div>
+            </div>
+            
             
         </p>
-        
+        font-family: 'Glyphicons Halflings'
         <br>
-
+        <script type="text/javascript" src="app.js"></script>
     </body>
 </html>
 

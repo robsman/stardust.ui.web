@@ -8,29 +8,16 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-
+ 
 @font-face{
         font-family: starclipse;
         src: url(fonts/starclipse.woff);
 }
 
-/*sc primary meta colors*/
-.sc.sc-success:before{
-	color:green;
-}
-
-.sc.sc-warning:before{
-	color:orange;
-}
-
-.sc.sc-invalid:before{
-	color:red;
-}
-
 .sc-fw:before{
     width:1.3em;
     text-align:center;
-    x-display:inline-block;
+    display:inline-block;
 }
 
 .sc{
@@ -58,18 +45,18 @@
 .sc-badge-portrait{
     position:relative;
     display:inline-table;
-    z-index:1;
+    z-index:997;
 }
 
 .sc-badge-bg{
     position:absolute;
-    z-index:2;
+    z-index:998;
     top:0px;
 }
 
 .sc-badge-icon{
     position:absolute;
-    z-index:3;
+    z-index:999;
     top:0;
 }
 
@@ -104,6 +91,13 @@
     transform: matrix(-1, 0, 0, 1, 0, 0);
 }
 
+.sc-use-glyphicons:before{
+    font-family:'Glyphicons Halflings' !important;
+}
+
+.sc-use-fontawesome:before{
+    font-family:'fontAwesome' !important;
+}
 
 @-moz-keyframes spin {
   0% {
@@ -194,12 +188,6 @@
 .sc-1x{
     font-size:16px;
 }
-
-.sc-lg {
-  font-size: 16px;
-  line-height: 0.75em;
-}
-
 .sc-1-5x{
     font-size:24px;
 }
@@ -437,7 +425,7 @@
     content:'\F046';
 }
 .sc-close-circle:before{
-    content:'\F047';
+    content:'\F047'; 
 }
 .sc-search:before{
     content:'\F048';
@@ -736,35 +724,26 @@
 .sc-badge-icon-radio-true:before{
     content:'\F0A9';
 }
-
-/* Custom Icons - Starts */
-.sc-spiral-custom:after{
-    content:'\F09E';
+.sc-user-check:before{
+    content: '\F0AA';
 }
-.sc-arrow-r-custom:before{
-    content:'\F08E';
-    font-size:1.5em;
-    position:relative;
-    left:80%;
+.sc-cog-border:before{
+    content: '\F0AB';
 }
-.sc-spiral-custom.sc-arrow-r-custom {
-	margin-left: -12px;
-	margin-right: 2px;
-	margin-top: -3px;
+.sc-cogs-border:before{
+    content: '\F0AC';
 }
-
-.sc-scroll-custom:after{
-    content:'\F0A6';
+.sc-forward-all:before{
+    content: '\F0AD';
 }
-.sc-badge-cog-custom:before{
-    content:'\F08F';
-    font-size:2.0em;
-    position:relative;
-    left:80%;
+.sc-backward-all:before{
+    content: '\F0AE';
 }
-.sc-scroll-custom.sc-badge-cog-custom {
-	margin-left: -12px;
-	margin-right: 6px;
-	margin-top: -5px;
+.sc-scroll-cog:before{
+    content: '\F0AF';
+}.sc-cog-arrow:before{
+    content: '\F0B0';
 }
-/* Custom Icons - Ends */
+.sc-cog-arrow-alt:before{
+    content: '\F0B1';
+}
