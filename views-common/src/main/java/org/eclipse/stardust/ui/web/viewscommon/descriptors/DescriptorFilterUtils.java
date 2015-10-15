@@ -990,6 +990,9 @@ public class DescriptorFilterUtils
 
    public static Object convertDataPathValue(Class dataClass, Object dataPathValue) throws Exception
    {
+      trace.info(" ## Inside Convert DataPath Values");
+      trace.info(" ## Mapped Class for DataPath --> "+ dataClass);
+      trace.info(" ## Value for DataPath --> "+ dataPathValue);
       Object value = null;
       try
       {
@@ -1020,9 +1023,13 @@ public class DescriptorFilterUtils
                value = getDateValue(dateValue, dataClass);
             }
          }
-         else
+         else if(dataClass == String.class)
          {
             value = dataPathValue.toString();
+         }
+         else
+         {
+            value = dataPathValue;
          }
       }
       catch (Exception e)
