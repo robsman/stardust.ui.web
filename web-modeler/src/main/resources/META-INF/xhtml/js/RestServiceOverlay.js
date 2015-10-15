@@ -741,9 +741,15 @@ define(
                /**
                 * 
                 */
-               RestServiceOverlay.prototype.getQueryString = function()
+               RestServiceOverlay.prototype.getQueryString = function(attributes)
                {
+                  var httpHeadersJson = attributes["stardust:restServiceOverlay::httpHeaders"];
                   var queryString = "";
+                  if (!httpHeadersJson)
+                  {
+                     httpHeadersJson = "[]";
+                  }
+                  httpHeaders = JSON.parse(httpHeadersJson);
 
                   for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n)
                   {
@@ -755,6 +761,8 @@ define(
                      {
                         continue;
                      }
+                     if(this.skipHttpHeader(httpHeaders, accessPoint))
+                        continue;
 
                      if (n > 0)
                      {
@@ -848,12 +856,12 @@ define(
                   return this.view.getModelElement().model;
                };
                
-               RestServiceOverlay.prototype.getHttpHeaderByName=function(key, httpHeaders){
+               RestServiceOverlay.prototype.getHttpHeaderByName=function(field, key, httpHeaders){
                   var response;
                   for (var i = 0; i < httpHeaders.length; i++)
                   {
                      var httpHeader = httpHeaders[i];
-                     if(httpHeader.headerName==key){
+                     if(httpHeader[field]==key){
                         response=httpHeader;
                         break;
                      }
@@ -872,6 +880,18 @@ define(
                   }
                   return response;
                };
+               RestServiceOverlay.prototype.skipHttpHeader = function(httpHeaders, accessPoint){
+                  var httpHeader=this.getHttpHeaderByName("headerName",accessPoint.id,httpHeaders);
+                  if(httpHeader && httpHeader.headerSource=="data")
+                     return true;
+                  
+                  httpHeader=this.getHttpHeaderByName("headerValue",accessPoint.id,httpHeaders);
+                  if(httpHeader && httpHeader.headerSource=="data")
+                     return true;
+                  
+                  return false;
+               }
+               
                
                /**
                 * 
@@ -920,8 +940,7 @@ define(
                         continue;
                      }
                      
-                     var httpHeader=this.getHttpHeaderByName(accessPoint.id,httpHeaders);
-                     if(httpHeader && httpHeader.headerSource=="data")
+                     if(this.skipHttpHeader(httpHeaders, accessPoint))
                         continue;
                      
                      if (this.uriInput.val().indexOf("{" + accessPoint.id + "}") >= 0)
@@ -1221,7 +1240,7 @@ define(
                   this.uriInput
                            .val(this.getApplication().attributes["stardust:restServiceOverlay::uri"]);
                   this.queryStringLabel.empty();
-                  this.queryStringLabel.append(this.getQueryString());
+                  this.queryStringLabel.append(this.getQueryString(this.getApplication().attributes));
                   this.commandSelect
                            .val(this.getApplication().attributes["stardust:restServiceOverlay::command"]);
                   this.requestTypeSelect
