@@ -364,9 +364,9 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
       return uri;
    }
 
-   public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario)
+   public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario, Object parameters)
    {
-      if ((ClosePanelScenario.COMPLETE == scenario) || (ClosePanelScenario.SUSPEND_AND_SAVE == scenario))
+      if (ActivityInteractionControllerUtils.isExternalWebAppInterventionRequired(scenario))
       {
          trace.info("Triggering asynchronous close of activity panel ...");
 
@@ -475,7 +475,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
    @Override
    public void handleScenario(ActivityInstance ai, ClosePanelScenario scenario)
    {
-      if (ClosePanelScenario.COMPLETE == scenario || ClosePanelScenario.SUSPEND_AND_SAVE == scenario)
+      if (ActivityInteractionControllerUtils.isExternalWebAppInterventionRequired(scenario))
       {
          InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils
                .getManagedBean(InteractionRegistry.BEAN_ID);

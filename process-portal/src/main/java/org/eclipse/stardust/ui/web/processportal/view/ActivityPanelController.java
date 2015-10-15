@@ -195,11 +195,11 @@ public class ActivityPanelController extends UIComponentBean
             }
             else if (ClosePanelScenario.QA_PASS == scenario)
             {
-               activityDetailsBean.completeQualityAssurancePass();
+               activityDetailsBean.continueQualityAssurancePass();
             }
             else if (ClosePanelScenario.QA_FAIL == scenario)
             {
-               activityDetailsBean.completeQualityAssuranceFail();
+               activityDetailsBean.continueQualityAssuranceFail();
             }
             else if (ClosePanelScenario.SUSPEND_AND_SAVE == scenario)
             {

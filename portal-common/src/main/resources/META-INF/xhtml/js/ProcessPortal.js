@@ -13,14 +13,14 @@ if (!window["InfinityBpm.ProcessPortal"]) {
 		/*
 		 * 
 		 */
-		function sendIppAiClosePanelCommand(contentId, commandId, fallback) {
+		function sendIppAiClosePanelCommand(contentId, commandId, fallback, params) {
 	    	BridgeUtils.FrameManager.doWithContentFrame(contentId, function(contentFrame) {
 	    		try {
 		    		var wndEmbeddedWebApp = contentFrame.contentWindow;
 			        if (wndEmbeddedWebApp) {
 			        	if (wndEmbeddedWebApp.performIppAiClosePanelCommand) {
 			        		// function is present, so proceed synchronously
-			        		invokeIppAiClosePanelCommand(wndEmbeddedWebApp, commandId);
+			        		invokeIppAiClosePanelCommand(wndEmbeddedWebApp, commandId, params);
 			        	} else if ( !wndEmbeddedWebApp.document || ('loading' == wndEmbeddedWebApp.document.readyState)) {
 			        		// if function is not present, this typically means the iFrame content is currently being loaded, ..
 			        		try {
@@ -32,7 +32,7 @@ if (!window["InfinityBpm.ProcessPortal"]) {
 			        				event.target.onload = undefined;
 					                var wndEmbeddedWebApp = event.target.contentWindow;
 					                if (wndEmbeddedWebApp.performIppAiClosePanelCommand) {
-					                	invokeIppAiClosePanelCommand(wndEmbeddedWebApp, commandId);
+					                	invokeIppAiClosePanelCommand(wndEmbeddedWebApp, commandId, params);
 					                } else {
 					                	if (fallback) {
 					                		window.setTimeout(function() {
@@ -115,10 +115,10 @@ if (!window["InfinityBpm.ProcessPortal"]) {
 	    /*
 	     * Private
 	     */
-	    function invokeIppAiClosePanelCommand(wndEmbeddedWebApp, commandId) {
+	    function invokeIppAiClosePanelCommand(wndEmbeddedWebApp, commandId, params) {
 	        try {
 	          //alert("Found embedded AI panel notification function: " + wndEmbeddedWebApp.performIppAiClosePanelCommand);
-	        	wndEmbeddedWebApp.performIppAiClosePanelCommand(commandId);
+	        	wndEmbeddedWebApp.performIppAiClosePanelCommand(commandId, params);
 	        	return;
 	        } catch (x) {
 	          // probably forbidden to access location, assuming other page
@@ -134,9 +134,9 @@ if (!window["InfinityBpm.ProcessPortal"]) {
 	    }
 
 		return {
-	        sendCloseCommandToExternalWebApp: function(contentId, commandId, fallback) {
+	        sendCloseCommandToExternalWebApp: function(contentId, commandId, fallback, params) {
 	            try {
-	            	sendIppAiClosePanelCommand(contentId, commandId, fallback);
+	            	sendIppAiClosePanelCommand(contentId, commandId, fallback, params);
 	            } catch (e) {
 	            	alert('Failed notifying external Web App: ' + e.message);
 	            }

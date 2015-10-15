@@ -34,6 +34,7 @@ import org.eclipse.stardust.ui.web.common.event.ViewDataEventHandler;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent.ViewEventType;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.processportal.interaction.Interaction;
 import org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry;
 import org.eclipse.stardust.ui.web.processportal.interaction.iframe.ManualActivityDocumentController.DOCUMENT;
@@ -45,6 +46,7 @@ import org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityUi;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
 import org.eclipse.stardust.ui.web.viewscommon.common.PanelIntegrationStrategy;
+import org.eclipse.stardust.ui.web.viewscommon.common.controller.ActivityInteractionControllerUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.RemoteControlActivityStateChangeHandler;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
@@ -130,11 +132,11 @@ public class ManualActivityIframeInteractionController implements IActivityInter
     * @see org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController#closePanel(org.eclipse.stardust.engine.api.runtime.ActivityInstance, org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario)
     */
    @SuppressWarnings({"rawtypes", "unchecked"})
-   public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario)
+   public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario, Object parameters)
    {
       FacesContext facesContext = FacesContext.getCurrentInstance();
 
-      if ((ClosePanelScenario.COMPLETE == scenario) || (ClosePanelScenario.SUSPEND_AND_SAVE == scenario))
+      if (ActivityInteractionControllerUtils.isExternalWebAppInterventionRequired(scenario))
       {
          trace.info("Triggering asynchronous close of activity panel ...");
 
@@ -179,9 +181,15 @@ public class ManualActivityIframeInteractionController implements IActivityInter
             }
          }
 
+         String paramsJson = "";
+         if (null != parameters)
+         {
+            paramsJson = ", " + GsonUtils.stringify(parameters);
+         }
+         
          PortalApplication.getInstance().addEventScript(
                "parent.InfinityBpm.ProcessPortal.sendCloseCommandToExternalWebApp('" + getContentFrameId(ai) + "', '"
-                     + scenario.getId() + "');");
+                     + scenario.getId() + "', false" + paramsJson + ");");
 
          // close panel asynchronously after iFrame page responds via JavaScript
          return false;
@@ -388,7 +396,7 @@ public class ManualActivityIframeInteractionController implements IActivityInter
     */
    public void handleScenario(ActivityInstance ai, ClosePanelScenario scenario)
    {
-      if (ClosePanelScenario.COMPLETE == scenario || ClosePanelScenario.SUSPEND_AND_SAVE == scenario)
+      if (ActivityInteractionControllerUtils.isExternalWebAppInterventionRequired(scenario))
       {
          org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry registry = 
             (org.eclipse.stardust.ui.web.processportal.interaction.InteractionRegistry) ManagedBeanUtils

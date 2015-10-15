@@ -247,6 +247,8 @@ public class ActivityDetailsBean extends UIComponentBean
    // Kind of constant, loaded from  properties
    // Temporary to support both modes for some time
    private static boolean HTML_BASED;
+   
+   private QualityAssuranceActivityBean qaBean;
 
    public static IActivityInteractionController getInteractionController(Activity activity)
    {
@@ -1402,7 +1404,7 @@ public class ActivityDetailsBean extends UIComponentBean
                .getActivity());
          if (null != interactionController)
          {
-            if (interactionController.closePanel(ai, ClosePanelScenario.SUSPEND))
+            if (interactionController.closePanel(ai, ClosePanelScenario.SUSPEND, null))
             {
                // close synchronously
                if (keepOwnership)
@@ -1459,7 +1461,7 @@ public class ActivityDetailsBean extends UIComponentBean
                .getActivity());
          if (null != interactionController)
          {
-            if (interactionController.closePanel(ai, ClosePanelScenario.SUSPEND_AND_SAVE))
+            if (interactionController.closePanel(ai, ClosePanelScenario.SUSPEND_AND_SAVE, null))
             {
                // close synchronously
                retrieveOutDataMapping(interactionController, true, new ParametricCallbackHandler()
@@ -1532,42 +1534,50 @@ public class ActivityDetailsBean extends UIComponentBean
       }
    }
 
+   /*
+    * Called from user direct action from toolbar
+    */
    public void completeQualityAssurancePass()
    {
-      completeQualityAssuranceActivity(QAAction.PASS);
+      completeQualityAssuranceActivity(QAAction.PASS, true);
    }
 
+   /*
+    * Called from user direct action from toolbar
+    */
    public void completeQualityAssuranceFail()
    {
-      completeQualityAssuranceActivity(QAAction.FAIL);
+      completeQualityAssuranceActivity(QAAction.FAIL, true);
    }
 
-   private void completeQualityAssuranceActivity(final QAAction action)
+   /*
+    * Called asynchronously when activity needs to be continued
+    */
+   public void continueQualityAssurancePass()
    {
-      ActivityInstance ai = activityInstance;
-      IActivityInteractionController interactionController = getInteractionController(ai
-            .getActivity());
+      completeQualityAssuranceActivity(QAAction.PASS, false);
+   }
 
-      if (null != interactionController)
+   /*
+    * Called asynchronously when activity needs to be continued
+    */
+   public void continueQualityAssuranceFail()
+   {
+      completeQualityAssuranceActivity(QAAction.FAIL, false);
+   }
+
+   /**
+    * @param action
+    * @param reInitiate
+    */
+   private void completeQualityAssuranceActivity(final QAAction action, boolean reInitiate)
+   {
+      if (null == qaBean)
       {
-         qualityAssuranceActionInProgress = true;
-         qualityAssuranceAction = action;
-         if (interactionController.closePanel(ai, ClosePanelScenario.COMPLETE))
-         {
-            qualityAssuranceActionInProgress = false;
-            qualityAssuranceAction = null;
-            retrieveOutDataMapping(interactionController, false, new ParametricCallbackHandler()
-            {
-               public void handleEvent(EventType eventType)
-               {
-                  if (EventType.APPLY == eventType)
-                  {
-                     QualityAssuranceActivityBean.openDialog(action, getActivityInstance(), thisView, getParameters());
-                  }
-               }
-            });
-         }
+         qaBean = QualityAssuranceActivityBean.getInstance();
       }
+      
+      qaBean.process(reInitiate, action, getActivityInstance(), thisView, this);
    }
    
    public boolean isSaveActivityPopupOpened()
@@ -1849,7 +1859,7 @@ public class ActivityDetailsBean extends UIComponentBean
                .getActivity());
          if (null != interactionController)
          {
-            if (interactionController.closePanel(ai, ClosePanelScenario.COMPLETE))
+            if (interactionController.closePanel(ai, ClosePanelScenario.COMPLETE, null))
             {
                // close synchronously
                retrieveOutDataMapping(interactionController, false, new ParametricCallbackHandler()
@@ -1859,16 +1869,7 @@ public class ActivityDetailsBean extends UIComponentBean
                   {
                      if (EventType.APPLY == eventType)
                      {
-                        if (qualityAssuranceActionInProgress)
-                        {
-                           qualityAssuranceActionInProgress = false;
-                           QualityAssuranceActivityBean.openDialog(qualityAssuranceAction, getActivityInstance(), thisView, getParameters());
-                           qualityAssuranceAction = null;
-                        }
-                        else
-                        {
-                           completeCurrentActivityContinue((Map)getParameters());
-                        }
+                        completeCurrentActivityContinue((Map)getParameters());
                      }
                   }
                });
@@ -2108,7 +2109,7 @@ public class ActivityDetailsBean extends UIComponentBean
     * @param mainCallback
     */
    @SuppressWarnings({"unchecked", "rawtypes"})
-   private void retrieveOutDataMapping(IActivityInteractionController interactionController,
+   public void retrieveOutDataMapping(IActivityInteractionController interactionController,
          final boolean releaseInteraction, final ParametricCallbackHandler mainCallback)
    {
       boolean dataAvailable = true;

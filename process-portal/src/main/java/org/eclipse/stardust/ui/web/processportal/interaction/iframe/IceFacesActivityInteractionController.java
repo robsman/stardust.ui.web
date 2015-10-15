@@ -33,6 +33,7 @@ import org.eclipse.stardust.ui.web.processportal.view.ViewEventAwareInteractionC
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
 import org.eclipse.stardust.ui.web.viewscommon.common.PanelIntegrationStrategy;
+import org.eclipse.stardust.ui.web.viewscommon.common.controller.ActivityInteractionControllerUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
@@ -172,12 +173,11 @@ public class IceFacesActivityInteractionController implements IActivityInteracti
       // TODO emit java script to load page into panel?
    }
 
-   public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario)
+   public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario, Object parameters)
    {
       FacesContext facesContext = FacesContext.getCurrentInstance();
 
-      if ((ClosePanelScenario.COMPLETE == scenario)
-            || (ClosePanelScenario.SUSPEND_AND_SAVE == scenario))
+      if (ActivityInteractionControllerUtils.isExternalWebAppInterventionRequired(scenario))
       {
          trace.info("Triggering asynchronous close of activity panel ...");
 

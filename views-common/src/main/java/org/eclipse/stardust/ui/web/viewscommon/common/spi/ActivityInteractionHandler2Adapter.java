@@ -37,7 +37,7 @@ public class ActivityInteractionHandler2Adapter implements IActivityInteractionC
       return PredefinedConstants.JSF_CONTEXT;
    }
 
-   public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario)
+   public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario, Object parameters)
    {
       return aih2.closePanel(ai, scenario);
    }
