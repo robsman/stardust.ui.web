@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.stardust.engine.runtime.utils.TimestampProviderUtils;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.util.PortalTimestampProvider;
 import org.eclipse.stardust.ui.web.plugin.support.resources.CachingResourceLoader;
 import org.eclipse.stardust.ui.web.plugin.support.resources.ResourceLoader;
 import org.eclipse.stardust.ui.web.plugin.support.resources.ServletContextResourceLoader;
@@ -336,7 +336,7 @@ public abstract class AbstractPortalResourcesServlet extends HttpServlet
          response.setHeader("Cache-Control", "Public");
 
          // Set Expires to current time + one year.
-         long currentTime = TimestampProviderUtils.getTimeStampValue();
+         long currentTime = PortalTimestampProvider.getTimeStampValue();
 
          response.setDateHeader("Expires", currentTime + ONE_YEAR_MILLIS);
       }

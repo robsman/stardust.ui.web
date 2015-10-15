@@ -66,6 +66,16 @@
          <type>pom</type>
       </dependency>
       <dependency>
+         <groupId>org.apache.geronimo.specs</groupId>
+         <artifactId>geronimo-jms_1.1_spec</artifactId>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.apache.geronimo.specs</groupId>
+         <artifactId>geronimo-j2ee-connector_1.5_spec</artifactId>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
          <groupId>javax.ws.rs</groupId>
          <artifactId>javax.ws.rs-api</artifactId>
          <scope>compile</scope>

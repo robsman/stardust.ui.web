@@ -8,14 +8,26 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.stardust.ui.web.bcc.legacy;
+package org.eclipse.stardust.ui.web.common.util;
 
-import org.eclipse.stardust.ui.web.common.util.PortalTimestampProvider;
+import java.util.Date;
 
-public class DefaultTimeProvider implements ITimeProvider{
+import org.eclipse.stardust.engine.runtime.utils.TimestampProviderUtils;
 
-	public long getCurrentTime() {
-		return PortalTimestampProvider.getTimeStampValue();
-	}
-
+/**
+ * 
+ * @author Sidharth.Singh
+ * @version $Revision: $
+ */
+public class PortalTimestampProvider
+{
+   public static Date getTimeStamp()
+   {
+      return TimestampProviderUtils.getTimeStamp();
+   }
+   
+   public static long getTimeStampValue()
+   {
+      return TimestampProviderUtils.getTimeStampValue();
+   }
 }

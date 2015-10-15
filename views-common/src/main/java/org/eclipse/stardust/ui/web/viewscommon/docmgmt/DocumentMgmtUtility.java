@@ -60,12 +60,12 @@ import org.eclipse.stardust.engine.core.repository.DocumentRepositoryFolderNames
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.engine.extensions.dms.data.annotations.printdocument.DocumentAnnotations;
-import org.eclipse.stardust.engine.runtime.utils.TimestampProviderUtils;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.common.util.PortalTimestampProvider;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
@@ -900,7 +900,7 @@ public class DocumentMgmtUtility
     */
    public static String getTimeStampString()
    {
-      return DMSUtils.replaceAllSpecialChars(DateUtils.format(new Date(TimestampProviderUtils.getTimeStampValue()), DATE_TIME_SECONDS));
+      return DMSUtils.replaceAllSpecialChars(DateUtils.format(new Date(PortalTimestampProvider.getTimeStampValue()), DATE_TIME_SECONDS));
    }
 
    /**
@@ -934,7 +934,7 @@ public class DocumentMgmtUtility
    {
       DateFormat format = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.MEDIUM, getLocale());
       return MessagesViewsCommonBean.getInstance().getString("views.genericRepositoryView.newFolder.name")
-            + DMSUtils.replaceAllSpecialChars(format.format(new Date(TimestampProviderUtils.getTimeStampValue())));
+            + DMSUtils.replaceAllSpecialChars(format.format(new Date(PortalTimestampProvider.getTimeStampValue())));
    }
 
    /**
@@ -944,7 +944,7 @@ public class DocumentMgmtUtility
    {
       StringBuffer reportNameB = new StringBuffer(org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils
             .substringBeforeLast(reportName, "."));
-      return reportNameB.append("_").append(DateUtils.format(new Date(TimestampProviderUtils.getTimeStampValue()), YYYYMMDD_FORMAT)).append(".pdf")
+      return reportNameB.append("_").append(DateUtils.format(new Date(PortalTimestampProvider.getTimeStampValue()), YYYYMMDD_FORMAT)).append(".pdf")
             .toString();
    }
 

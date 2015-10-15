@@ -23,7 +23,7 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserService;
-import org.eclipse.stardust.engine.runtime.utils.TimestampProviderUtils;
+import org.eclipse.stardust.ui.web.common.util.PortalTimestampProvider;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSessionManager;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
@@ -51,7 +51,7 @@ public class CollaborationService
       JsonObject allInvitedUsers = new JsonObject();
       allInvitedUsers.addProperty(TYPE_PROPERTY, "UPDATE_INVITED_USERS_COMMAND");
       allInvitedUsers.addProperty("account", account);
-      allInvitedUsers.addProperty("timestamp", TimestampProviderUtils.getTimeStampValue());
+      allInvitedUsers.addProperty("timestamp", PortalTimestampProvider.getTimeStampValue());
       allInvitedUsers.addProperty("path", "users");
       allInvitedUsers.addProperty("operation", "updateCollaborators");
 
@@ -102,7 +102,7 @@ public class CollaborationService
       JsonObject allProspectUsers = new JsonObject();
       allProspectUsers.addProperty(TYPE_PROPERTY, "UPDATE_INVITED_USERS_COMMAND");
       allProspectUsers.addProperty("account", account);
-      allProspectUsers.addProperty("timestamp", TimestampProviderUtils.getTimeStampValue());
+      allProspectUsers.addProperty("timestamp", PortalTimestampProvider.getTimeStampValue());
       allProspectUsers.addProperty("path", "users");
       allProspectUsers.addProperty("operation", "updateProspects");
 

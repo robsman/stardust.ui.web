@@ -28,7 +28,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import org.eclipse.stardust.engine.runtime.utils.TimestampProviderUtils;
+import org.eclipse.stardust.ui.web.common.util.PortalTimestampProvider;
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.UriEncodingUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.MashupContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.MashupContextConfigManager;
@@ -54,7 +54,7 @@ public class MashupContextConfigRestController
             credentials));
       long contextExpiresIn = Math
             .max(-1, //
-                  (contextManager.getContextExpiry(contextId) - TimestampProviderUtils.getTimeStampValue()) / 1000L);
+                  (contextManager.getContextExpiry(contextId) - PortalTimestampProvider.getTimeStampValue()) / 1000L);
 
       String authProxyUri = deriveAuthProxyUri(URI.create(mashupUri));
 

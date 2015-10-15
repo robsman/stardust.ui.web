@@ -63,7 +63,7 @@ import org.eclipse.stardust.engine.api.runtime.UserService;
 import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.engine.core.preferences.Preferences;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
-import org.eclipse.stardust.engine.runtime.utils.TimestampProviderUtils;
+import org.eclipse.stardust.ui.web.common.util.PortalTimestampProvider;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.exception.ExceptionHelper;
@@ -86,7 +86,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.QueryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.eclipse.stardust.ui.web.viewscommon.views.authorization.UiPermissionUtils;
-
 import org.springframework.stereotype.Component;
 
 @Component
@@ -205,7 +204,7 @@ public class ParticipantManagementUtils
    {
       if (hideInvalidatedUsers)
       {
-         query.getFilter().addOrTerm().or(UserQuery.VALID_TO.greaterThan(TimestampProviderUtils.getTimeStampValue()))
+         query.getFilter().addOrTerm().or(UserQuery.VALID_TO.greaterThan(PortalTimestampProvider.getTimeStampValue()))
                .or(UserQuery.VALID_TO.isEqual(0));
       }
    }

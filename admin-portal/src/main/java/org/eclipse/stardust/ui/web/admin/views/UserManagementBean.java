@@ -39,7 +39,6 @@ import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserService;
-import org.eclipse.stardust.engine.runtime.utils.TimestampProviderUtils;
 import org.eclipse.stardust.ui.web.admin.AdminportalConstants;
 import org.eclipse.stardust.ui.web.admin.ResourcePaths;
 import org.eclipse.stardust.ui.web.admin.WorkflowFacade;
@@ -71,6 +70,7 @@ import org.eclipse.stardust.ui.web.common.table.SortCriterion;
 import org.eclipse.stardust.ui.web.common.table.export.DataTableExportHandler;
 import org.eclipse.stardust.ui.web.common.table.export.ExportType;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.common.util.PortalTimestampProvider;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.FilterToolbarItem;
@@ -531,7 +531,7 @@ public class UserManagementBean extends PopupUIComponentBean
          {
             if (!filter.isActive())
             {
-               query.getFilter().addOrTerm().or(UserQuery.VALID_TO.greaterThan(TimestampProviderUtils.getTimeStampValue()))
+               query.getFilter().addOrTerm().or(UserQuery.VALID_TO.greaterThan(PortalTimestampProvider.getTimeStampValue()))
                      .or(UserQuery.VALID_TO.isEqual(0));
             }
          }

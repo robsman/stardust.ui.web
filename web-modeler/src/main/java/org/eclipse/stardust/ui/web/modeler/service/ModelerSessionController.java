@@ -22,11 +22,11 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.runtime.utils.TimestampProviderUtils;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.ui.web.common.util.PortalTimestampProvider;
 import org.eclipse.stardust.ui.web.modeler.common.BadRequestException;
 import org.eclipse.stardust.ui.web.modeler.common.ConflictingRequestException;
 import org.eclipse.stardust.ui.web.modeler.common.ItemNotFoundException;
@@ -77,7 +77,7 @@ public class ModelerSessionController
       ChangeJto jto = new ChangeJto();
 
       jto.id= change.getId();
-      jto.timestamp = TimestampProviderUtils.getTimeStampValue();
+      jto.timestamp = PortalTimestampProvider.getTimeStampValue();
 
       if (change.getMetadata().containsKey("commandId"))
       {
@@ -147,7 +147,7 @@ public class ModelerSessionController
       ChangeJto jto = new ChangeJto();
 
       jto.id= changes.getId();
-      jto.timestamp = TimestampProviderUtils.getTimeStampValue();
+      jto.timestamp = PortalTimestampProvider.getTimeStampValue();
 
       jto.commandId = command.commandId;
       jto.modelId= command.modelId;
