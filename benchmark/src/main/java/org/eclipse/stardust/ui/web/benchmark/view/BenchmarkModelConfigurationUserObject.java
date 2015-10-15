@@ -22,8 +22,8 @@ import org.eclipse.stardust.ui.web.common.util.StringUtils;
  */
 public class BenchmarkModelConfigurationUserObject extends NodeUserObject
 {
-   private static final String MODEL_IMAGE_PATH = "/plugins/views-common/images/icons/model.gif";
-   private static final String PROCESS_IMAGE_PATH = "/plugins/views-common/images/icons/process.png";
+   private static final String MODEL_IMAGE_PATH = "pi pi-model pi-lg";
+   private static final String PROCESS_IMAGE_PATH = "pi pi-process-interface pi-lg";
    private static final long serialVersionUID = 1L;
    private BenchmarkModelConfigurationTreeItem treeItem = null;
 
