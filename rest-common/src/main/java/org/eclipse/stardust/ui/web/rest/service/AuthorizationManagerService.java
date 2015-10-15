@@ -92,7 +92,7 @@ public class AuthorizationManagerService
    public Set<PermissionDTO> updatePermissions(Set<String> allow, Set<String> deny, Set<String> selectedParticipants,
          boolean overwrite)
    {
-      PermissionsDetails permissions = getPermissionDetails(false);
+      PermissionsDetails permissions = getPermissionDetails(true);
       Set<String> permissionsToBeUpdated = new HashSet<String>();
       if (allow != null)
       {

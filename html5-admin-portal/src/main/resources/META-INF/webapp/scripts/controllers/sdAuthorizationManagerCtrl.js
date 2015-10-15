@@ -753,9 +753,7 @@
     
     _sdAuthorizationManagerService.savePermissions(self.selectedParticipants, allow, deny).then(function(result) {
       var permissions = result.permissions;
-      
 
-     
       // update all selected nodes
       for (var i = 0; i < permissions.length; i++) {
         for (var j = 0; j < allow.length; j++) {
@@ -771,7 +769,7 @@
           }
         }
       }
-      
+      self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
     }, function(error) {
       trace.error(error);
       self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.save.error"));
@@ -835,6 +833,7 @@
         var permissions = result.permissions;
         v.item.ref['allow'] = permissions[0].allow;
         v.item.ref['deny'] = permissions[0].deny;
+        self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
       }, function(error) {
         trace.error(error);
         self.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.save.error"));
@@ -845,6 +844,7 @@
 
   // Remove All Participants
   AMCtrl.prototype.removeAllParticipants = function(v, e) {
+    this.resetMessages();
     var self = this;
     var scope = angular.element(e.target || e.srcElement).scope();
     var permission = scope.$parent.$parent.genItem;
