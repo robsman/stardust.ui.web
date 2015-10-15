@@ -74,7 +74,7 @@ public class IppThemeProvider implements ThemeProvider
     */
    public void loadTheme(String themeId)
    {
-      this.themeId = StringUtils.isNotEmpty(themeId) ? themeId : DefaultPreferenceProviderUtils.getDefaultSkinPreference();
+
       availableThemes = new ArrayList<Theme>();
       themeStyleSheets = new ArrayList<String>();
       availableThemes.add(new IppTheme("", MessagePropertiesBean.getInstance().getString(
@@ -87,10 +87,22 @@ public class IppThemeProvider implements ThemeProvider
       
       availableThemes.addAll(availableThemesSet);
       
+      boolean themeFound = false;
+      for (Theme theme : availableThemesSet)
+      {
+         if (theme.getThemeId().equals(themeId))
+         {
+            themeFound = true;
+         }
+      }
+      
+      this.themeId = themeFound ? themeId : DefaultPreferenceProviderUtils
+            .getDefaultSkinPreference();
+
       loginStyleSheet = Parameters.instance().getString(LoginDialogBean.LOGIN_SKIN_CSS_PARAM,
             LoginDialogBean.DEFAULT_LOGIN_SKIN_CSS_NAME);
       loginStyleSheet = loginStyleSheet.toLowerCase();
-      
+
       loadThemeStyleSheets();
       loadPluginThemeStyleSheets();
    }
@@ -265,21 +277,21 @@ public class IppThemeProvider implements ThemeProvider
 
       try
       {
-    	  if (sessionCtx.isSessionInitialized())
-    	  {
-    		  if ((sessionCtx.getUser().isAdministrator() || !DMSHelper.isSecurityEnabled()) && !isArchiveAuditTrail)
-    		  {
-    			  return repoManager.getContentFolder(RepositorySpaceKey.SKINS, true);
+         if (sessionCtx.isSessionInitialized())
+         {
+            if ((sessionCtx.getUser().isAdministrator() || !DMSHelper.isSecurityEnabled()) && !isArchiveAuditTrail)
+            {
+               return repoManager.getContentFolder(RepositorySpaceKey.SKINS, true);
               }
               else
               {
-            	  return repoManager.getContentFolder(RepositorySpaceKey.SKINS, false);
+               return repoManager.getContentFolder(RepositorySpaceKey.SKINS, false);
               }
-    	  }
+         }
       }
       catch (DocumentManagementServiceException dmse)
       {
-    	  trace.error("Error occured in reading skins" + dmse.getLocalizedMessage());
+         trace.error("Error occured in reading skins" + dmse.getLocalizedMessage());
       }
       return null;
    }
