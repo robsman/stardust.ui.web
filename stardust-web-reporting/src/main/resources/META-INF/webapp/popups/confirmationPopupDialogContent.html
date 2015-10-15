@@ -1,12 +1,6 @@
 <!doctype html>
 <html ng-app="confirmDialogApp">
 <head>
-<link rel="stylesheet" type="text/css"
-	href="../../html5-common/styles/3rd-party/font-awesome/4.4.0/css/font-awesome.min.css"></link>
-<link  rel="stylesheet"
-	href="../../html5-common/styles/portal-icons.css" > </link>
-	 <link rel="stylesheet" type="text/css" href="../../modern-skin/modern.css"></link>
-  <link rel="stylesheet" type="text/css"  href="../../modern-skin/modern.font.icons.css"></link>	
 <script src="../../../portal-shell/js/libs/angular/1.2.11/angular.js"></script>
 <script>
 	//default to English
@@ -44,6 +38,10 @@
 	} ]);
 </script>
 <link type="text/css" rel="stylesheet" href="../../common/css/iPopupDialogStyle.css">
+<link  rel="stylesheet"
+	href="../../html5-common/styles/portal-icons.css" > </link>
+	 <link rel="stylesheet" type="text/css" href="../../modern-skin/modern.css"></link>
+ <link rel="stylesheet" type="text/css"  href="../../modern-skin/modern.font.icons.css"></link>	
 </head>
 
 <body ng-controller="confirmDialogController"
@@ -51,8 +49,7 @@
 
 	<div id="titleBar" class="iPopupDialogTitleBar">
 		<span id="titleText" class="iPopupDialogTitleText">{{language.title}}</span>
-		<input ng-click="cancel()" id="dialogCloseIcon" type="button"
-			title="{{language.close}}" class="iPopupDialogCloseControl" />
+		<span id="dialogCloseIcon" ng-click="cancel()"  class="iPopupDialogCloseButton"><i class="pi pi-dialog-close pi-lg"  title="{{language.close}}" ></i></span>	
 	</div>
 
 	<form name="confirmDialogForm">
