@@ -49,9 +49,10 @@
     _$q = $q;
     _sdUtilService = sdUtilService;
     _sdMessageService = sdMessageService;
-
+    
+    var x=sdI18nService.getInstance('html5-admin-portal');
     i18n = $scope.sdI18nHtml5Admin = sdI18nService.getInstance('html5-admin-portal').translate;
-
+    
     All = {
       name: sdI18nService.getInstance('views-common-messages').translate("views.common.all"),
       id: 'all',
@@ -281,62 +282,62 @@
     // we just leverage normal nodes here?
     this.treeLabels = {
       allow: [{
-        name: 'Allow',
+        name: i18n("views.authorizationManagerViewHtml5.permissionTree.label.allow", "xAllow"),
         id: 'LABEL_ALLOW',
         nodeType: "label"
       }],
       deny: [{
-        name: 'Deny',
+        name: i18n("views.authorizationManagerViewHtml5.permissionTree.label.deny", "xDeny"),
         id: 'LABEL_DENY',
         nodeType: "label"
       }],
       models: [{
-        name: 'Models',
+        name: i18n("views.authorizationManagerViewHtml5.permissionTree.label.models", "xModels"),
         id: 'ROOT_MD',
         nodeType: "label"
       }],
       gp: [{
-        name: 'General Permissions',
+        name: i18n("views.authorizationManagerViewHtml5.permissionTree.label.generalPermissions", "xGeneral Permissions"),
         id: 'ROOT_GP',
         nodeType: "label"
       }],
       pd: [{
-        name: 'Process Definitions',
+        name: i18n("views.authorizationManagerViewHtml5.permissionTree.label.processDefinitions", "xProcess Definitions"),
         id: 'ROOT_PD',
         nodeType: "label"
       }],
       ac: [{
-        name: 'Activities',
+        name: i18n("views.authorizationManagerViewHtml5.permissionTree.label.activities", "xActivities"),
         id: 'ROOT_ACT',
         nodeType: "label"
       }],
       data: [{
-        name: 'Data',
+        name: i18n("views.authorizationManagerViewHtml5.permissionTree.label.data", "xData"),
         id: 'ROOT_DATA',
         nodeType: "label"
       }],
       persp: [{
-        name: 'Perspectives',
+        name: i18n("views.authorizationManagerViewHtml5.permissionTree.label.perspectives", "xPerspectives"),
         id: 'ROOT_PERSPECTIVES',
         nodeType: "label"
       }],
       lp: [{
-        name: 'Launch Panels',
+        name: i18n("views.authorizationManagerViewHtml5.permissionTree.label.launchPanels", "xLaunch Panels"),
         id: 'ROOT_LAUNCHPANELS',
         nodeType: "label"
       }],
       vw: [{
-        name: 'Views',
+        name: i18n("views.authorizationManagerViewHtml5.permissionTree.label.views", "xViews"),
         id: 'ROOT_VIEWS',
         nodeType: "label"
       }],
       gx: [{
-        name: 'Global Extensions',
+        name: i18n("views.authorizationManagerViewHtml5.permissionTree.label.globalExtensions", "xGlobal Extensions"),
         id: 'GLOBAL_EXTENSIONS',
         nodeType: "label"
       }],
       perm: [{
-          name: 'UI Permissions',
+          name: i18n("views.authorizationManagerViewHtml5.permissionTree.label.uiPermissions", "xUI Permissions"),
           id: 'UI_PERMISSIONS',
           nodeType: "label"
         }]
