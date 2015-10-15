@@ -1616,7 +1616,7 @@
 				if (pScope == 'USER' && !columnSelectorAdmin) {
 					var parentPrefValue = preferenceDelegate.store.getValue(preferenceDelegate.name, true);
 					parentPrefValue = marshalPreferenceValue(parentPrefValue);
-					if (parentPrefValue && parentPrefValue.lock) {
+					if (parentPrefValue && toBoolean(parentPrefValue.lock)) {
 						prefValue = parentPrefValue;
 					}
 				}
@@ -2508,7 +2508,7 @@
 
 			function init() {
 				self.columns = [];
-				self.enableSelectColumns = enableColumnSelector && (columnSelectorAdmin || !columnSelectorPreference.lock);
+				self.enableSelectColumns = enableColumnSelector && (columnSelectorAdmin || ! toBoolean(columnSelectorPreference.lock) );
 				self.columnSelectorAdmin = columnSelectorAdmin;
 				self.showSelectColumns = false;
 				self.applyTo = 'USER';
@@ -2846,4 +2846,12 @@
 			}
 		};
 	};
+	
+	
+	function toBoolean(value){
+		if(value == true || value =="true" || value == "TRUE" ){
+			return true;
+		}
+		return false;
+	}
 })();

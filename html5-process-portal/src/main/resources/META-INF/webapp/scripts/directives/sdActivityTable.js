@@ -603,11 +603,11 @@
 			if (this.query.processQId) {
 				this.preferenceName = this.query.processQId;
 				this.preferenceId = 'worklist-process-columns';
-			} else if (this.query.userId) {
-				this.preferenceName = this.query.userId;
-				this.preferenceId = 'worklist-participant-columns';
 			} else if (this.query.participantQId) {
 				this.preferenceName = "{ipp-participant}" + this.query.participantQId;
+				this.preferenceId = 'worklist-participant-columns';
+			} else if (this.query.userId) {
+				this.preferenceName = this.query.userId;
 				this.preferenceId = 'worklist-participant-columns';
 			} else {
 				this.preferenceName = sdLoggedInUserService.getUserInfo().id;
