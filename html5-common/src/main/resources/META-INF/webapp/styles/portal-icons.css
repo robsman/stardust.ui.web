@@ -1481,6 +1481,11 @@ span.pi-case-menu-open:after {
 	content:'\F05D'; /* sc-gear-user */
 }
 
+.pi-modify-implementation:before{
+	font-family:"starclipse";
+	content:'\F05E'; /* sc-gear-minus */
+}
+
 .pi-tree-collapse:before,
 .pi-minus:before{
 	font-family:"FontAwesome";
