@@ -620,9 +620,10 @@ public class ParticipantManagementUtils
             {
                userToModify.setValidTo(null);
             }
-
-            userToModify.setQualityAssuranceProbability(userDTO.qaOverride);
          }
+         
+         userToModify.setQualityAssuranceProbability(userDTO.qaOverride);
+         
          modifiedUser = userService.modifyUser(userToModify);
          if (modifiedUser != null && modifiedUser.equals(loggedInUser))
          {
