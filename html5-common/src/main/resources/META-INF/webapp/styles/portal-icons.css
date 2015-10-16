@@ -958,6 +958,7 @@ span.pi-case:before{
 	content:"\f1c8"; /* fa-file-video-o */
 }
 
+.pi-page-white:before,
 .pi-other:before{
 	font-family:FontAwesome;
 	content:"\f016"; /* fa-file-o */
