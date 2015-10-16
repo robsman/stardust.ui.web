@@ -578,27 +578,8 @@ public class ProcessInstanceService
     */
    public ProcessInstanceDTO getCorrespondenceProcessInstanceDTO(Long oid)
    {
-      ProcessInstance process = processInstanceUtilsREST.getProcessInstance(oid, false, true);
-      // Identify if the correspondence process is spawned
-      if (process.getParentProcessInstanceOid() != -1)
-      {
-         if (process.getScopeProcessInstanceOID() != process.getRootProcessInstanceOID())
-         {
-            // it is spawned process, return its parent process, TODO: this is not accurate, need to be revisited!
-            process = processInstanceUtilsREST.getProcessInstance(process.getParentProcessInstanceOid(), false, false);
-         }
-         else
-         {
-            // it is subprocess, return the process and not parent process
-         }
-      }
-      else
-      {
-         // return current process
-      }
-       
-      ProcessInstanceDTO dto = processInstanceUtilsREST.buildProcessInstanceDTO(process);
-      return dto;
+      ProcessInstance processInstance = ProcessInstanceUtils.getCorrespondenceProcessInstance(oid);
+      return processInstanceUtilsREST.buildProcessInstanceDTO(processInstance);   
    }
    /**
     * 

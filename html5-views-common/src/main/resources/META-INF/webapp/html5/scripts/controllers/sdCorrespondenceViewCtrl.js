@@ -88,6 +88,10 @@
   }
 
   function populateCorrespondenceMetaData(metaData, documents) {
+    if (!metaData) {
+      metaData = {};
+    }
+    
     var type = "print";
     if (isEmail(metaData)) {
       type = "email"

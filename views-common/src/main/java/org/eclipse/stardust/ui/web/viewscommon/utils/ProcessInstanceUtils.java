@@ -39,7 +39,6 @@ import org.eclipse.stardust.engine.api.query.ProcessInstanceDetailsPolicy;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceFilter;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ProcessInstances;
-import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.HistoricalEvent;
@@ -336,6 +335,28 @@ public class ProcessInstanceUtils
       }
 
       return processInstances;
+   }
+   
+   /**
+    * @param oid
+    * @return
+    */
+   public static ProcessInstance getProcessInstanceWithHierarchy(long oid)
+   {
+      ProcessInstance pi = null;
+      ProcessInstanceQuery query = ProcessInstanceQuery.findAll();
+      query.where(ProcessInstanceQuery.OID.isEqual(oid));
+      ProcessInstanceDetailsPolicy processInstanceDetailsPolicy = new ProcessInstanceDetailsPolicy(
+            ProcessInstanceDetailsLevel.Default);
+      processInstanceDetailsPolicy.getOptions().add(ProcessInstanceDetailsOptions.WITH_HIERARCHY_INFO);
+      query.setPolicy(processInstanceDetailsPolicy);
+      ProcessInstances pis = ServiceFactoryUtils.getQueryService().getAllProcessInstances(query);
+      
+      if (!pis.isEmpty())
+      {
+         pi = pis.get(0);
+      }
+      return pi;
    }
    
    
@@ -1218,5 +1239,34 @@ public class ProcessInstanceUtils
          }
       }
       return value;
+   }
+   
+   /**
+    * @param oid
+    * @return
+    */
+   public static ProcessInstance getCorrespondenceProcessInstance(Long oid)
+   {
+      ProcessInstance process = getProcessInstanceWithHierarchy(oid);
+      
+      // Identify if the correspondence process is spawned
+      if (process.getParentProcessInstanceOid() != -1)
+      {
+         // make sure it is not subprocess
+         if (process.getScopeProcessInstanceOID() != process.getRootProcessInstanceOID())
+         {
+            // it is spawned process, return its parent process, TODO: this is not accurate, need to be revisited!
+            process = getProcessInstance(process.getParentProcessInstanceOid(), false, false);
+         }
+         else
+         {
+            // it is subprocess, return the process and not parent process
+         }
+      }
+      else
+      {
+         // return current process
+      }
+      return process;
    }
 }

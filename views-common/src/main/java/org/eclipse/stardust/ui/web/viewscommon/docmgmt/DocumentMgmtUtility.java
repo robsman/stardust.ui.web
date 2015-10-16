@@ -990,7 +990,7 @@ public class DocumentMgmtUtility
    {
       try
       {
-         DocumentMgmtUtility.getDocument(documentId);
+         getDocument(documentId);
          if (StringUtils.isNotEmpty(message) || null != e)
          {
             ExceptionHandler.handleException(e, message);
@@ -1017,7 +1017,7 @@ public class DocumentMgmtUtility
    {
       try
       {
-         DocumentMgmtUtility.getFolderById(folderId);
+         getFolderById(folderId);
          if (StringUtils.isNotEmpty(message) || null != t)
          {
             trace.error("Error in verifyExistanceOfFolderAndShowMessage()", t);
@@ -1063,10 +1063,7 @@ public class DocumentMgmtUtility
     */
    public static String getCorrespondenceFolderPath(ProcessInstance processInstance)
    {
-      if (processInstance.getOID() != processInstance.getScopeProcessInstanceOID())
-      {
-         processInstance = ProcessInstanceUtils.getProcessInstance(processInstance.getScopeProcessInstanceOID());
-      }
+      processInstance = ProcessInstanceUtils.getCorrespondenceProcessInstance(processInstance.getOID());
       return DmsUtils.composeDefaultPath(processInstance.getOID(), processInstance.getStartTime()) + CORRESPONDENCE;
    }
 
@@ -1180,7 +1177,7 @@ public class DocumentMgmtUtility
     */
    public static String getMyDocumentsPath()
    {
-      User user = DocumentMgmtUtility.getUser();
+      User user = getUser();
       return (new StringBuffer("/").append(REALMS_FOLDER).append(user.getRealm().getId()).append("/").append(
             DocumentRepositoryFolderNames.USERS_FOLDER).append(user.getAccount()).append(DOCUMENTS)).toString();
    }
@@ -1239,15 +1236,15 @@ public class DocumentMgmtUtility
       {
          msgKey = "views.common.name.error";
       }
-      else if (!DocumentMgmtUtility.validateFileName(fileName))
+      else if (!validateFileName(fileName))
       {
          msgKey = "views.common.invalidCharater.error";
       }
-      if (DocumentMgmtUtility.isFolderPresent(parentFolderPath, fileName))
+      if (isFolderPresent(parentFolderPath, fileName))
       {
          msgKey = "views.genericRepositoryView.folderExist.error";
       }
-      if (null != DocumentMgmtUtility.getDocument(parentFolderPath, fileName))
+      if (null != getDocument(parentFolderPath, fileName))
       {
          msgKey = "views.genericRepositoryView.fileExist.error";
       }
@@ -1407,7 +1404,7 @@ public class DocumentMgmtUtility
     */
    public static List<Grant> getRoleOrgReportDefinitionsGrants()
    {
-      User user = DocumentMgmtUtility.getUser();
+      User user = getUser();
       List<Grant> allGrants = user.getAllGrants();
       return allGrants; 
    }
