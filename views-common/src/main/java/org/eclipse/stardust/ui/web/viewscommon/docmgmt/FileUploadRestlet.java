@@ -113,7 +113,7 @@ public class FileUploadRestlet
                   "ippMimeTypesHelper", servletContext);
             MIMEType mType = mimeTypesHelper.detectMimeTypeI(fileInfo.name, fileInfo.contentType);
 
-            String docIcon = DOC_PATH + "mime-types/" + mType.getIconPath();
+            String docIcon = mType.getIcon();
 
             response = new JsonObject();
             response.add("uuid", new JsonPrimitive(uuid));

@@ -1597,3 +1597,18 @@ span.pi-case-menu-open:after {
 	font-family: "FontAwesome";
 	content: "\f10c"; /* fa-circle-o */
 }
+
+.pi-document-error:before {
+	font-family: "FontAwesome";
+	content: "\f071"; /* fa-exclamation-triangle */
+}
+
+.pi-document-add:before{
+	font-family: "FontAwesome";
+	content: "\f055"; /* fa-plus-circle */
+}
+
+.pi-document-delete:before{
+	font-family: "FontAwesome";
+	content: "\f056"; /* fa-minus-circle */
+}

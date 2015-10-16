@@ -165,9 +165,9 @@ public class NotesBean extends UIComponentBean implements IUserObjectBuilder<Not
       List<Note> noteList = attributes.getNotes();
       setNotes(noteList);
       if (noteList != null && noteList.size() > 0)
-         thisView.setIcon("/plugins/views-common/images/icons/mime-types/notes-filled.png");
+         thisView.setIcon("/does-not-exist/notes-filled.png");
        else
-          thisView.setIcon("/plugins/views-common/images/icons/notes-blank.png");
+          thisView.setIcon("/does-not-exist/notes-blank.png");
       
       // FOR PANAMA
       PortalApplication.getInstance().updateViewIconClass(thisView);

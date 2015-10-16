@@ -98,7 +98,7 @@ public class TypedDocumentUserObject extends RepositoryResourceUserObject
             setDeletable(false);
          }
          this.mType = MimeTypesHelper.detectMimeType(document.getName(), document.getContentType());
-         setLeafIcon(this.mType.getCompleteIconPath());
+         setLeafIcon(this.mType.getIcon());
          supportsToolTip = true;
          documentToolTip = new DocumentToolTip(typedDocument.getDocumentType(), document);
       }
