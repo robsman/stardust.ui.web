@@ -12,8 +12,8 @@
 			disabled="#{trafficLightViewManagerBean.notPassedActivityHelper.selectedItemCount eq 0 ? true : false}"
 			panelConfirmation="delegateToDefaultPerformer">
 				<pc:automationTag value="auto-BCC-TrafficLgt-PendActTbl-ToolbarDefDelegate" standAlone="false"/>
-				<h:graphicImage value="/plugins/views-common/images/icons/user-silhouette.png"
-					style="border: none;" styleClass="#{trafficLightViewManagerBean.notPassedActivityHelper.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''}"
+				<h:outputText 
+					style="border: none;" styleClass="#{trafficLightViewManagerBean.notPassedActivityHelper.selectedItemCount eq 0 ? 'iceCmdBtn-dis' : ''} pi pi-fw pi-activity-delegate pi-lg pi-left pi-top"
 					title="#{views_common_msgPropsBean['common.toolTip.delegateToDefaultPerformer']}"/>
 		</ice:commandLink>
 		<ice:commandLink actionListener="#{trafficLightViewManagerBean.notPassedActivityHelper.openDelegateDialog}" disabled="#{trafficLightViewManagerBean.notPassedActivityHelper.selectedItemCount eq 0 ? true : false}">
@@ -34,8 +34,7 @@
 		<!-- Rendered when no row is selected -->
 		<ice:panelGroup
 			rendered="#{(trafficLightViewManagerBean.notPassedActivityHelper.selectedItemCount eq 0 ? true : false)}">
-			<ice:graphicImage styleClass="iceCmdBtn-dis"
-				value="/plugins/views-common/images/icons/arrow.png" />
+			<h:outputText styleClass="iceCmdBtn-dis pi pi-lg pi-trigger-expanded"/>
 		</ice:panelGroup>
 		<!-- Rendered when some row is selected -->
 		<ice:panelGroup

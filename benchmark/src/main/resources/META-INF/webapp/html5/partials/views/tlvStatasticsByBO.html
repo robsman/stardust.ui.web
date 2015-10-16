@@ -24,7 +24,7 @@
 				  <span ng-bind="rowData.name"></span>
 				</td>
 				<td ng-repeat="cat in ctrl.categories" style="text-align: center;">
-					<i class="sc sc-fw sc-1x sc-circle"
+					<i class="pi pi-fw pi-1x pi-tlv-status-circle"
 					ng-style="{'color':rowData.benchmarkCategoryCountMap[colData.title].color,'font-size': ctrl.getfontSize(rowData.benchmarkCategoryCountMap[colData.title].count)}"></i>
 					<a href="#"
 						ng-if="rowData.benchmarkCategoryCountMap[colData.title].count > 0"

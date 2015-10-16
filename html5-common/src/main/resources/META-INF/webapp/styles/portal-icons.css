@@ -356,6 +356,27 @@ Utility classes for portal icons
 	content: "\F09E"; /* sc-spiral-custom */
 }
 
+.pi-tlv-status-circle:before {
+	font-family: "starclipse";
+    content: '\F050'; /* sc-circle*/
+}
+
+/** The will be removed when new traffic light view replace old TLV */
+.pi-tlv-color-green{
+	color: green;
+}
+
+.pi-tlv-color-red{
+	color: red;
+}
+
+.pi-tlv-color-amber{
+	color: #FFBF00;
+}
+
+/** End of color classes for old tlv */
+
+
 .pi-perspective-simple-modeler:before {
 	font-family: "starclipse";
 	content: "\F08E"; /* sc-arrow-r-custom */
