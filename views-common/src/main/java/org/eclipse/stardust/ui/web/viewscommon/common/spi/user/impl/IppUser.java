@@ -105,11 +105,7 @@ public class IppUser implements User
             for (Iterator< ? > grantIter = ippUser.getAllGrants().iterator(); grantIter.hasNext();)
             {
                Grant grant = (Grant) grantIter.next();
-               if (UiPermissionUtils.AUDITOR.equals(role) && UiPermissionUtils.AUDITOR.equals(grant.getId()))
-               {
-                  return true;
-               }
-               else if ((namespace == null || CompareHelper.areEqual(namespace, grant.getNamespace()))
+               if ((namespace == null || CompareHelper.areEqual(namespace, grant.getNamespace()))
                      && CompareHelper.areEqual(grant.getId(), role))
                {
                   return true;

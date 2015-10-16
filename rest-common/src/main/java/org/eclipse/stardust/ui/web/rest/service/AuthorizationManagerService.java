@@ -737,7 +737,16 @@ public class AuthorizationManagerService
             QualifiedModelParticipantInfo qualifiedParticipantInfo = (QualifiedModelParticipantInfo) info;
             String modelId = ModelUtils.extractModelId(qualifiedParticipantInfo.getQualifiedId());
             Model model = ModelCache.findModelCache().getActiveModel(modelId);
-            label = I18nUtils.getParticipantName(model.getParticipant(info.getId()));
+            // predefined model may not be available
+            if (model != null)
+            {
+               label = I18nUtils.getParticipantName(model.getParticipant(info.getId()));
+            }
+            else
+            {
+               label = info.getName();
+            }
+            
             participant = new ParticipantDTO(info.getQualifiedId(), label);
          }
          else

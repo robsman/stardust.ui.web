@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.rest.service.dto.response;
 
 import java.util.Set;
 
+import org.eclipse.stardust.engine.core.runtime.utils.Authorization2;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 
@@ -46,8 +47,8 @@ public class PermissionDTO extends AbstractDTO
     */
    public static class ParticipantDTO
    {
-      public static ParticipantDTO ALL = new ParticipantDTO("all", MessagesViewsCommonBean.getInstance().getString(
-            "views.common.all"));
+      public static ParticipantDTO ALL = new ParticipantDTO(Authorization2.ALL, MessagesViewsCommonBean.getInstance()
+            .getString("views.common.all"));
       public String participantQualifiedId;
       public Set<String> allow;
       public Set<String> deny;

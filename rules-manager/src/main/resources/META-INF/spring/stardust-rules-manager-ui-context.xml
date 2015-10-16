@@ -7,7 +7,7 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
 	<ippui:perspective id="stardustRulesManager"
 	messageBundles="rules-manager-messages" controller="rulesManagerLaunchPanel"
-	requiredRoles="Administrator" excludeRoles="Auditor">
+	requiredRoles="Administrator" excludeRoles="{PredefinedModel}Auditor">
       
       <!-- Help link to link to Rules Management main chapter in Portal Documentation -->
       <ippui:preferences>

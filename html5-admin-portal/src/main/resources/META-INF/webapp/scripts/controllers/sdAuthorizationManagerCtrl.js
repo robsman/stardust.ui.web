@@ -55,9 +55,9 @@
     
     All = {
       name: sdI18nService.getInstance('views-common-messages').translate("views.common.all"),
-      id: 'all',
-      participantQualifiedId: 'all',
-      qualifiedId: 'all'
+      id: '__carnot_internal_all_permissions__',
+      participantQualifiedId: '__carnot_internal_all_permissions__',
+      qualifiedId: '__carnot_internal_all_permissions__'
     };
 
     _sdAuthorizationManagerService = sdAuthorizationManagerService;

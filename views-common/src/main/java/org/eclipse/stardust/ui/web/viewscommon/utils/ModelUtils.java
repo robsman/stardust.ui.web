@@ -209,6 +209,19 @@ public class ModelUtils
    }
 
 
+   /**
+    * Auditor is available if at least one model is deployed
+    * @return
+    */
+   public static Participant getAuditorRole()
+   {
+      DeployedModel pdModel = ModelUtils.getModel(PredefinedConstants.PREDEFINED_MODEL_ID);
+      if (pdModel != null)
+      {
+         return pdModel.getParticipant(PredefinedConstants.AUDITOR_ROLE);
+      }
+      return null;
+   }
 
    /**
     * method returns Map of DataPath from all active models (exclude PredefinedModel)

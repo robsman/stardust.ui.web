@@ -910,7 +910,7 @@ public class ParticipantManagementUtils
     */
    public static String parseParticipantQId(String input)   
    {
-      if (PredefinedConstants.ADMINISTRATOR_ROLE.equals(input) || UiPermissionUtils.AUDITOR.equals(input))
+      if (PredefinedConstants.ADMINISTRATOR_ROLE.equals(input))
       {
          return input;
       }

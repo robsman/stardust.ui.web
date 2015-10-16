@@ -23,7 +23,6 @@ import javax.xml.namespace.QName;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.ModelParticipantInfo;
-import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.Department;
@@ -76,7 +75,6 @@ public class UiPermissionUtils
     * Constants for Administrator role as used by engine permissions. Can be changed to a
     * portal related constant.
     */
-   public final static String AUDITOR = "Auditor";
    private static final String PREFIX = "portal.ui.";
    public static final String SUFFIX_ALLOW = ".allow";
    public static final String SUFFIX_DENY = ".deny";
