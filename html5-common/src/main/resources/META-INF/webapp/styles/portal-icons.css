@@ -11,7 +11,7 @@ Supported fonts we wrap for our portal icon (pi-) classes
 */
 @font-face{
 	font-family: starclipse;
-	src: url(./starclipse/fonts/starclipse.woff)  format('woff');
+	src: url(./starclipse/fonts/starclipse.woff?x=1)  format('woff');
 }
 
 @font-face{
@@ -351,17 +351,23 @@ Utility classes for portal icons
 	content: "\f013"; /* fa-cog */
 }
 
-.pi-perspective-simple-modeler:after {
+.pi-perspective-simple-modeler:before {
 	font-family: "starclipse";
-	content: "\F09E"; /* sc-spiral-custom */
+	content: "\F0B3"; /* sc-spiral-arrow-alt */
 }
 
+.pi-perspective-rules-manager:before{
+	font-family:"starclipse";
+	font-size:18px;
+	content: '\F0B5'; /*sc-scroll-cog-o*/
+}
+
+/** The will be removed when new traffic light view replace old TLV */
 .pi-tlv-status-circle:before {
 	font-family: "starclipse";
     content: '\F050'; /* sc-circle*/
 }
 
-/** The will be removed when new traffic light view replace old TLV */
 .pi-tlv-color-green{
 	color: green;
 }
@@ -376,27 +382,6 @@ Utility classes for portal icons
 
 /** End of color classes for old tlv */
 
-
-.pi-perspective-simple-modeler:before {
-	font-family: "starclipse";
-	content: "\F08E"; /* sc-arrow-r-custom */
-    font-size: 1.5em;
-    position: relative;
-    left: 80%;
-}
-
-.pi-perspective-simple-modeler {
-	margin-left: -12px;
-	margin-right: 2px;
-	margin-top: -8px !important;
-}
-
-
-.pi-perspective-rules-manager:after{
-	font-family:"starclipse";
-	font-size:18px;
-	content:"\F0AF"; /*sc-scroll-cog*/
-}
 
 
 /*
