@@ -335,7 +335,8 @@ public class PPUtils
    public static ActivityInstances getActivityInstances_Resubmission()
    {
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(ActivityInstanceState.Hibernated);
-      query.getFilter().add(PerformingUserFilter.CURRENT_USER);
+      // new PerformingUserFilter(0) : For activities created in non-interactive context (such as activity threads started by daemons)
+      query.getFilter().addOrTerm().or(PerformingUserFilter.CURRENT_USER).or(new PerformingUserFilter(0));
 
       List<ModelResubmissionActivity> resubmissionActivities = CollectionUtils.newList();
       ResubmissionUtils.fillListWithResubmissionActivities(resubmissionActivities);
