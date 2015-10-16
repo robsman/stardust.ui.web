@@ -583,22 +583,6 @@ table.iceSelInpDate tbody tr td table{
 }
 
 /*
------------ commandSortHeader classes
-*/
-.iceCmdSrtHdrAsc, .iceCmdSrtHdrDesc{
-    background-repeat: no-repeat;
-    background-position: center;
-    width:10px;
-    height:10px;
-}
-.iceCmdSrtHdrAsc{
-    background-image: url('./css-images/column_sort_asc.gif');
-}
-.iceCmdSrtHdrDesc{
-    background-image: url('./css-images/column_sort_desc.gif');
-}
-
-/*
 ----------- Tabbed Pane Component classes
 */
 

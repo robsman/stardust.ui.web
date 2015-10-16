@@ -88,41 +88,55 @@
 	color: #999999;
 }
 
-.genericTableSortColHdr
-{
-	background: transparent url("./css-images/colHeader-Sort.png") no-repeat scroll right center;
+/*  iceCmd sort classes will be here only and removed duplicate from modern.css and nirvanaRime.css
+*/
+.genericTableSortColHdr:before{
+	font-family: FontAwesome !important;
+    content: "\f0dc";
+    font-size: 1.33333333em !important;
 	height: 16px;
 	width: 10px;
 	padding-left: 4px;
+	color: #A69A88;
 }
 
 .genericTableHdr{
     text-align: center;
-    font: 11px tahoma;
-    color: #484848;
+    font-size: 1em;
+    color: #333333;
     padding: 0px;
     font-weight: bold;
-    background: #FFF url( './css-images/table_col_header.gif' ) repeat-x bottom left;
-    border: 1px solid #d9d9d9;
+    background: #FFF;
+    border: none;
+    border-bottom:solid 1px #708090;
     vertical-align:top;
 }
 
 /* Overrides the ICEfaces Default Styles in connection with above style */
-.iceCmdSrtHdrAsc 
-{
-	background: transparent url("./css-images/colHeader-Sort-Acending.png") no-repeat scroll right center;
+
+.iceCmdSrtHdrAsc:before{
+	font-family: "FontAwesome";
+	content: "\f0d8"; /* fa-caret-up */
+	font-size: 1.33333333em !important;
 	height: 16px;
 	width: 10px;
 	padding-left: 4px;
+	color: #A69A88;
 }
 
-.iceCmdSrtHdrDesc
-{
-	background: transparent url("./css-images/colHeader-Sort-Decending.png") no-repeat scroll right center;
+.iceCmdSrtHdrDesc:before{
+	font-family: "FontAwesome";
+	content: "\f0d7"; /* fa-caret-down */
+	font-size: 1.33333333em !important;
 	height: 16px;
 	width: 10px;
 	padding-left: 4px;
+	color: #A69A88;
 }
+
+/*
+iceCmd sort classes
+*/
 
 .dataFilterSummaryText
 {

@@ -2819,22 +2819,6 @@ table.iceSelInpDate tbody tr td table{
 }
 
 /*
------------ commandSortHeader classes
-*/
-.iceCmdSrtHdrAsc, .iceCmdSrtHdrDesc{
-    background-repeat: no-repeat;
-    background-position: center;
-    width:10px;
-    height:10px;
-}
-.iceCmdSrtHdrAsc{
-    background-image: url('./css-images/column_sort_asc.gif');
-}
-.iceCmdSrtHdrDesc{
-    background-image: url('./css-images/column_sort_desc.gif');
-}
-
-/*
 ----------- Tabbed Pane Component classes
 */
 
@@ -6112,43 +6096,6 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 {
 	font-size: .82em;
 	color: #999999;
-}
-
-.genericTableSortColHdr
-{
-	background: transparent url("./images/arrows-ud-10X16.png") no-repeat scroll right center;
-	height: 16px;
-	width: 10px;
-	padding-left: 4px;
-}
-
-.genericTableHdr{
-    text-align: center;
-    font-size: 1em;
-    color: #333333;
-    padding: 0px;
-    font-weight: bold;
-    background: #FFF;
-    border: none;
-    border-bottom:solid 1px #708090;
-    vertical-align:top;
-}
-
-/* Overrides the ICEfaces Default Styles in connection with above style */
-.iceCmdSrtHdrAsc 
-{
-	background: transparent url("./images/arrows-ud-d10X16.png") no-repeat scroll right center;
-	height: 16px;
-	width: 10px;
-	padding-left: 4px;
-}
-
-.iceCmdSrtHdrDesc
-{
-	background: transparent url("./images/arrows-ud-u10X16.png") no-repeat scroll right center;
-	height: 16px;
-	width: 10px;
-	padding-left: 4px;
 }
 
 .dataFilterSummaryText
