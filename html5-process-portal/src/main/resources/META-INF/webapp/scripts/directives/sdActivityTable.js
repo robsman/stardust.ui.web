@@ -281,17 +281,25 @@
 	     * 
 	     */
 	    this.preferenceDelegate = function(prefInfo) {
+	    	trace.log('Fetching column preference for scope :',prefInfo.scope);
+	      	trace.log('preferenceModule :',self.preferenceId);
+	    	trace.log('preferenceName : ',self.preferenceName);
+	      	
 	    	var preferenceStore = sdPreferenceService.getStore(prefInfo.scope, self.preferenceModule,
 	    			self.preferenceId);
 	    	preferenceStore.super_getValue = preferenceStore.getValue;
 	    	// Override
 	    	preferenceStore.getValue = function(name, fromParent) {
 	    		var value = this.super_getValue(name, fromParent);
+	    		trace.debug("Before migrating column names ",value);
 	    		value = self.getColumnNamesByMode(value);
+	    		trace.debug("Returned Columns",value);
 	    		return value;
 	    	};
 	    	// Override
 	    	preferenceStore.marshalName = function(scope, name) {
+	    		trace.debug("marshalName - scope",scope);
+	    		trace.debug("marshalName - name",name);
 	    		var name = self.preferenceName;
 	    		if (scope == 'PARTITION') {
 	    			if (self.isWorklistMode() && this.parentStore && !this.parentStore[name]) {
@@ -300,6 +308,7 @@
 	    				name = 'Default';
 	    			}
 	    		}
+	    	  	trace.log('Returned Name :',name);
 	    		return name;
 	    	}
 	    	return preferenceStore;

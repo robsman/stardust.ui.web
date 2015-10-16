@@ -668,5 +668,19 @@
 			}
 		};
 		
+		/**
+		 *  Checks for falsy value 
+		 *  no/ false/ "false" / "FALSE" /0 / "0"  = false
+		 *  Rest all true
+		 */
+	 	UtilService.prototype.toBoolean = function (value) {
+			   if (value && value.length !== 0) {
+			    var v = angular.lowercase("" + value);
+			    value = !(v == '0' || v == 'false' || v == 'no');
+			  } else {
+			    value = false;
+			  }
+			  return value;
+			}
 	};
 })();
