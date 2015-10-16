@@ -20,6 +20,18 @@
 						{{i18n('views-common-messages.views-deputyManagementView-dialog-error-noAuthsSelected')}}
 					</td>
 				</tr>
+				<tr>
+					<td class="msg-error"
+						ng-show="ctrl.addEditDeputyForm.$error.invalidFromDate">
+						{{i18n('views-common-messages.views-deputyManagementView-dialog-error-invalidFromDate')}}
+					</td>
+				</tr>
+				<tr>
+					<td class="msg-error"
+						ng-show="ctrl.addEditDeputyForm.$error.invalidToDate">
+						{{i18n('views-common-messages.views-deputyManagementView-dialog-error-invalidEndDate')}}
+					</td>
+				</tr>
 			</tbody>
 		</table>
 		<table>

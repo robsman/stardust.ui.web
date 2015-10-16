@@ -337,6 +337,7 @@
 	DeputyManagementCtrl.prototype.validateData = function() {
 		var self = this;
 		var error = false;
+		var now = new Date();
 		// Validate Deputy User
 		if (self.deputy.mode == "ADD" && _sdUtilService.isEmpty(self.deputy.participantDataSelected)) {
 			error = true;
@@ -344,9 +345,14 @@
 		} else {
 			self.addEditDeputyForm.$error.invalidDeputy = false;
 		}
-
-		// Validate Dates
-		if (!_sdUtilService.validateDateRange(self.deputy.validFrom, self.deputy.validTo)) {
+		
+		if(self.deputy.validFrom == undefined){
+			error = true;
+			self.addEditDeputyForm.$error.invalidFromDate = true;			
+		}else if (self.deputy.validTo != undefined && self.deputy.validTo < now){
+			error = true;
+			self.addEditDeputyForm.$error.invalidToDate = true;	
+		}else if (!_sdUtilService.validateDateRange(self.deputy.validFrom, self.deputy.validTo)) { // Validate Dates
 			error = true;
 			self.addEditDeputyForm.$error.invalidDateRange = true;
 		} else {
