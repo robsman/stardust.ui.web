@@ -37,7 +37,7 @@
 }
 
 .selected_address {
-	padding: 0px 4px 0px 4px;
+	padding: 4px;
 	border: solid 1px #ccd5e4;
 	background-color: #eff2f7;
 	border-radius: 4px;

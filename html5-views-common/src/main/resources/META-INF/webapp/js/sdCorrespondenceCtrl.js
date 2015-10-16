@@ -785,14 +785,14 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		var html = '<div style="padding-bottom:10px;">'+ 
 						'<span ng-repeat = "opt in ctrl.dialog.selectedAddresses" class="spacing-right "> '+
 							'<span class="selected_address" ng-click="ctrl.removeDialogAddress(opt)">'+
-								'<i class="glyphicon glyphicon-envelope spacing-right"></i> {{opt.name}}'+
-								'<i class="pi pi-close pi-lg"></i>'+
+								'<i class="pi pi-email spacing-right pi-lg"></i> <span class="spacing-right"> {{opt.name}}</span>'+
+								'<i class="pi pi-close"></i>'+
 							'</span>'+
 						'</span >'+
 						'</div>'+
 						'<i class="pi pi-search pi-lg"> </i>	<input type="text"  class="spacing-right"  ng-model="ctrl.dialog.filter.address.value" ng-change="ctrl.addressTable.refresh();"/>'+
 						'<input class="correspondence_addressBook_fax_control" type="checkbox" ng-model="ctrl.dialog.filter.address.showFax" ng-change="ctrl.addressTable.refresh();"/>'+
-						'<span class="iceOutLbl">Fax </span>'+
+						'<span class="iceOutLbl">{{ctrl.i18n("views-common-messages.views-correspondence-panel-fax-title")}} </span>'+
 						'<div class="correspondence_addressBook_conatiner">'+
 						'<table sd-data-table="ctrl.addressTable" sda-selection="ctrl.selectedAddresses" '+
 						' sd-data="ctrl.getAvailableAddresses();" sda-mode="local" '+
