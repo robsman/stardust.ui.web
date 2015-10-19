@@ -18,14 +18,14 @@
 				<tr valign="center">
 					<th><a href="#" class="iconLink"
 						ng-click="ctrl.expandCamelContextTable = !ctrl.expandCamelContextTable;">
-							<i class="fa fa-chevron-down" title="Expand"
+							<i class="pi pi-expand-camel-context" title="Expand"
 								ng-if="!ctrl.expandCamelContextTable">
 							</i>
 						</a> 
 						<a href="#"
 							class="iconLink"
 							ng-click="ctrl.expandCamelContextTable = !ctrl.expandCamelContextTable;">
-							<i	class="fa fa-chevron-up" title="Collapse"
+							<i	class="pi pi-collapse-camel-context" title="Collapse"
 								ng-if="ctrl.expandCamelContextTable">
 							</i>
 						</a>
@@ -43,7 +43,7 @@
 						
 							<td class="view-toolbar-item">
 								<a href="#" ng-click="ctrl.refresh()" title="Refresh" class="view-tool-link">
-									<i class="glyphicon glyphicon-refresh"></i>
+									<i class="pi pi-refresh pi-lg"></i>
 								</a>
 							</td>
 						</tr>
@@ -80,11 +80,11 @@
 							<td align="center">
 								<a href="#"	ng-click="ctrl.stopEvent($event);  ctrl.startAllRoutes(rowData.contextId);"
 									class="view-tool-link" title="Start All Routes"> 
-										<img ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
+										<i class="pi pi-start-camel-routes pi-lg"></i>
 								</a> 
 								<a href="#"	ng-click="ctrl.stopEvent($event);  ctrl.stopAllRoutes(rowData.contextId);"
 									class="view-tool-link" title="Stop All Routes"> 
-										<img ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
+										<i class="pi pi-stop-camel-routes pi-lg"></i>
 								</a>
 							</td>
 						</tr>
@@ -102,10 +102,10 @@
 			<table>
 				<tr valign="center">
 					<th><a href="#" class="iconLink" ng-click="ctrl.expandRoutesTable = !ctrl.expandRoutesTable;">
-							<i class="fa fa-chevron-down" title="Expand" ng-if="!ctrl.expandRoutesTable"></i>
+							<i class="pi pi-expand-camel-context" title="Expand" ng-if="!ctrl.expandRoutesTable"></i>
 						</a> 
 						<a href="#" class="iconLink" ng-click="ctrl.expandRoutesTable = !ctrl.expandRoutesTable;">
-							<i class="fa fa-chevron-up" title="Collapse" ng-if="ctrl.expandRoutesTable"></i>
+							<i class="pi pi-collapse-camel-context" title="Collapse" ng-if="ctrl.expandRoutesTable"></i>
 						</a>
 					</th>
 					<!-- <th><h2>Camel Routes</h2></th> -->
@@ -134,7 +134,7 @@
 									<td style="width: 100%"></td>
 									<td class="view-toolbar-item">
 										<a href="#" ng-click="ctrl.refreshProducers()" title="Refresh" class="view-tool-link"> 
-											<i class="glyphicon glyphicon-refresh"></i>
+											<i class="pi pi-refresh pi-lg"></i>
 									</a></td>
 								</tr>
 							</table>
@@ -206,11 +206,11 @@
 									<td sda-field="lastExchangeFailureExchangeId"></td>
 									<td><a href="#"	ng-click="ctrl.stopEvent($event); ctrl.startOrStopRoute(ctrl.selectionCamelContext.contextId,rowData.id,rowData.status)"
 											class="expandCollapseLink" title="Start" ng-hide="rowData.status === 'Started'">
-											<img ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
+											<i class="pi pi-start-camel-routes pi-lg"></i>
 										</a> 
 										<a href="#"	ng-click="ctrl.stopEvent($event); ctrl.startOrStopRoute(ctrl.selectionCamelContext.contextId,rowData.id,rowData.status)"
 											class="expandCollapseLink" title="Stop" ng-show="rowData.status === 'Started'">
-											<img ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
+											<i class="pi pi-stop-camel-routes pi-lg"></i>
 									</a></td>
 								</tr>
 							</tbody>
@@ -223,7 +223,7 @@
 									<td style="width: 100%"></td>
 									<td class="view-toolbar-item">
 										<a href="#"	ng-click="ctrl.refreshConsumers()" title="Refresh"	class="view-tool-link"> 
-											<i class="glyphicon glyphicon-refresh"></i></i>
+											<i class="pi pi-refresh pi-lg"></i></i>
 										</a>
 									</td>
 								</tr>
@@ -296,11 +296,11 @@
 									<td sda-field="lastExchangeFailureExchangeId"></td>
 									<td><a href="#" ng-click="ctrl.stopEvent($event); ctrl.startOrStopRoute(ctrl.selectionCamelContext.contextId,rowData.id,rowData.status)"
 											class="expandCollapseLink" title="Start" ng-hide="rowData.status === 'Started'">
-												<img ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
+												<i class="pi pi-start-camel-routes pi-lg"></i>
 										</a> 
 										<a href="#"	ng-click="ctrl.stopEvent($event); ctrl.startOrStopRoute(ctrl.selectionCamelContext.contextId,rowData.id,rowData.status)"
 											class="expandCollapseLink" title="Stop"	ng-show="rowData.status === 'Started'">
-												<img ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
+												<i class="pi pi-stop-camel-routes pi-lg"></i>
 										</a>
 									</td>
 								</tr>
@@ -313,7 +313,7 @@
 								<tr>
 									<td style="width: 100%"></td>
 									<td class="view-toolbar-item">
-										<a href="#"	ng-click="ctrl.refreshOthers();" title="Refresh" class="view-tool-link"> <i class="glyphicon glyphicon-refresh"></i></i></a>
+										<a href="#"	ng-click="ctrl.refreshOthers();" title="Refresh" class="view-tool-link"> <i class="pi pi-refresh pi-lg"></i></i></a>
 									</td>
 								</tr>
 							</table>
@@ -386,11 +386,11 @@
 									
 									<td><a href="#"	ng-click="ctrl.stopEvent($event); ctrl.startOrStopRoute(ctrl.selectionCamelContext.contextId,rowData.id,rowData.status)"
 											class="expandCollapseLink" title="Start" ng-hide="rowData.status === 'Started'">
-												<img ng-src="plugins/stardust-web-camel/css/images/control_play.png" />
+												<i class="pi pi-start-camel-routes pi-lg"></i>
 										</a> 
 										<a href="#"	ng-click="ctrl.stopEvent($event); ctrl.startOrStopRoute(ctrl.selectionCamelContext.contextId,rowData.id,rowData.status)"
 											class="expandCollapseLink" title="Stop"	ng-show="rowData.status === 'Started'">
-												<img ng-src="plugins/stardust-web-camel/css/images/control_stop.png" />
+												<i class="pi pi-stop-camel-routes pi-lg"></i>
 										</a>
 									</td>
 								</tr>

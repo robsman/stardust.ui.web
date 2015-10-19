@@ -1619,3 +1619,23 @@ span.pi-case-menu-open:after {
 	font-family: "FontAwesome";
 	content: "\f056"; /* fa-minus-circle */
 }
+
+.pi-collapse-camel-context:before{
+	font-family:"FontAwesome";
+	content:'\f077';/*  fa-chevron-up */
+}
+
+.pi-expand-camel-context:before{
+	font-family:"FontAwesome";
+	content:'\f078';/* fa-chevron-downn */
+}
+
+.pi-start-camel-routes:before{
+	font-family:"FontAwesome";
+	content:'\f04b'; /* fa-play */
+}
+
+.pi-stop-camel-routes:before{
+	font-family:"FontAwesome";
+	content:'\f04d'; /* fa-stop */
+}
