@@ -2,16 +2,15 @@
 <div class="ng-hide" ng-show="true"
 	ng-controller="sdAuthorizationManagerCtrl as ctrl">
 	<div style="clear: both" class="authorizationManager">
+
 		<section style="clear: both; float: left; width: 60%">
+		
 			<header>
 				<div class="heading"
 					ng-bind="sdI18nHtml5Admin('views.authorizationManagerViewHtml5.participant.label')"></div>
 			</header>
 			<div ng-show="ctrl.showMessage" sd-message></div>
 			
-            
-
-
 			<!-- Data table -->
 			<div class="participantTable">
 			
@@ -62,7 +61,9 @@
 								<a href=""
 								   ng-attr-title="{{rowData.qualifiedId}}"
 								   ng-class="{'selected-custom' : ctrl.selectedRoles.indexOf(role) >=0}"
-								   sd-data-drag ng-model="rowData"
+								   sd-data-drag 
+								   ng-model="rowData"
+								   sda-drag-elem-fx="ctrl.getDragElement(item)"
 								   sda-dragstart="ctrl.roleDragStart($data, $event)"> 
 								   <i class="pi" 
 									   ng-class="{'pi-role' : rowData.type.indexOf('ROLE') > -1,

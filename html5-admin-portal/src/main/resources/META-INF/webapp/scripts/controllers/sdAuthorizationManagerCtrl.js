@@ -128,6 +128,22 @@
 	return iconClass;
 	  
   };
+  
+  
+  
+  AMCtrl.prototype.getDragElement = function(item){
+	  var dragString ="<ol>";
+	  dragString += "<li>" + item.name + "</li>";
+	  this.selectedParticipants.forEach(function(participant){
+		  if(participant.qualifiedId != item.qualifiedId){
+			  dragString += "<li>" + participant.name + "</li>";
+		  }
+	  });
+	  dragString += "</ol>";
+	  
+	  return dragString;
+  }
+  
   /**
    * 
    */
@@ -398,15 +414,21 @@
 
   // Handle the drag start event from our role objects
   AMCtrl.prototype.roleDragStart = function(data, e) {
-    var that = this;
-    if (this.selectedParticipants.indexOf(data) === -1) {
-      that.$timeout(function() {
-        while (that.selectedParticipants.pop()) {
-        }
-        that.selectedParticipants.push(data);
-
-      }, 0);
+    var that = this,
+    	selectedTblRows;
+    
+    selectedTblRows = this.dataTable.getSelection();
+    
+    if (this.selectedParticipants.indexOf(data) === -1){
+    	while(this.selectedParticipants.pop()){/*clear all*/}
+    	this.selectedParticipants.push(data);
+    	selectedTblRows = [];
+    	selectedTblRows.push({"qualifiedId" : data.qualifiedId});
     }
+    
+    that.dataTable.setSelection(selectedTblRows);
+
+    
   };
 
   // Helper function for constructing nodes we register on our allNodes array.

@@ -72,6 +72,25 @@
 	return (height - 225) + "px";
 	
   }
+  
+  /**
+   * Handle the dragDrop directive's callback for building a DOM element to attach
+   * to the drag operation. We will build a simple ordered list containing all the
+   * currently selected users from our all-users-table.
+   * @param item
+   * @returns
+   */
+  ParticipantManagementCtrl.prototype.getDragElement = function(item){
+	  var dragString ="<ol>";
+	  
+	  this.rowSelectionForAllUsersTable.forEach(function(user){
+		  dragString += "<li>" + user.displayName + "</li>";
+	  });
+	  dragString += "</ol>";
+	  
+	  return dragString;
+  }
+  
   /**
    * @returns
    */
@@ -847,11 +866,27 @@
   // add user to selectedUsers list
   ParticipantManagementCtrl.prototype.userDragStart = function(data) {
     var that = this;
+    /*
     if (this.rowSelectionForAllUsersTable.indexOf(data) === -1) {
       while (that.rowSelectionForAllUsersTable.pop()) {
       }
       that.rowSelectionForAllUsersTable.push(data);
-    }
+    }*/
+    
+    var that = this,
+	selectedTblRows;
+
+	selectedTblRows = this.allUsersTable.getSelection();
+	
+	if (this.rowSelectionForAllUsersTable.indexOf(data) === -1){
+		while(this.rowSelectionForAllUsersTable.pop()){/*clear all*/}
+		this.rowSelectionForAllUsersTable.push(data);
+		selectedTblRows = [];
+		selectedTblRows.push({"qualifiedId" : data.qualifiedId});
+	}
+	
+	that.allUsersTable.setSelection(selectedTblRows);
+
   }
 
   // check if it is a leaf node
