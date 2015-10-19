@@ -9,7 +9,7 @@
 		
 		<div> 
 			<select ng-model="ctrl.selected.legend" ng-change="ctrl.onLegendChange();"  ng-if ="ctrl.legendCategories.length > 1"
-					ng-options="opt.id as opt.label for opt in ctrl.legendCategories" >
+					ng-options="opt.id as opt.label for opt in ctrl.legendCategories" aid="BCC-GanttChart-ChangeLegend">
 			</select>
 			<span class="iceOutLbl" ng-if ="ctrl.legendCategories.length < 2">{{ctrl.legendCategories[0].label}}: </span>
 		<span ng-repeat=" opt in ctrl.legends" class="gantt-chart-legend-option">
@@ -29,7 +29,8 @@
 				<tr>
 					<th sda-label="">  
 						<div class="gantt-chart-time-frame-picker">
-							<select ng-model="ctrl.selected.timeFrame" ng-change="ctrl.onTimeFrameChange();" ng-options="opt.id as opt.label for opt in ctrl.timeFrames"> </select> 
+							<select ng-model="ctrl.selected.timeFrame" ng-change="ctrl.onTimeFrameChange();" aid="BCC-GanttChart-ChangeTimeFrame"
+							 ng-options="opt.id as opt.label for opt in ctrl.timeFrames"> </select> 
 						</div>
 						<div class="gantt-chart-tool-bar">	
 							<button class="button-link tbl-toolbar-item tbl-tool-link" 
