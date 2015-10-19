@@ -6993,7 +6993,7 @@ img.toolbar-button:hover{
 }
 
 /*Opacity setting for all disabled link and cmd buttons*/
-.iceCmdBtn-dis , .iceCmdLnk-dis{
+.iceCmdBtn-dis , .iceCmdLnk-dis, .iceCmdLnk-dis .pi {
 	opacity:0.5 !important;
 }
 
