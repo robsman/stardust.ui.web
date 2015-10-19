@@ -18,19 +18,20 @@
 	angular.module('workflow-ui').controller(
 			'sdProcessSearchViewCtrl',
 			[ '$scope', 'sdUtilService', 'sdViewUtilService',
-					'sdProcessSearchService', '$q', '$filter',
+					'sdProcessSearchService', '$q', '$filter','sdLoggerService',
 					ProcessSearchViewCtrl ]);
 
 	var _sdViewUtilService;
 	var _sdProcessSearchService;
 	var _q;
 	var _filter;
+	var trace;
 
 	/*
 	 * 
 	 */
 	function ProcessSearchViewCtrl($scope, sdUtilService, sdViewUtilService,
-			sdProcessSearchService, $q, $filter) {
+			sdProcessSearchService, $q, $filter, sdLoggerService) {
 		// Register for View Events
 		sdViewUtilService.registerForViewEvents($scope, this.handleViewEvents,
 				this);
@@ -40,9 +41,10 @@
 		_sdProcessSearchService = sdProcessSearchService;
 		_q = $q;
 		_filter = $filter;
+		trace = sdLoggerService.getLogger('bpm-processportal.ProcessSearchViewCtrl');
 
 		this.initialize();
-
+		
 		/*
 		 * This needs to be defined here as it requires access to $scope
 		 */
@@ -189,7 +191,7 @@
 							self.searchOptions = searchFor;
 							self.query.processSearchCriteria.filterObject = self.searchOptions[0].value;
 						}, function(error) {
-							console.log(error);
+							trace.log(error);
 						});
 
 		_sdProcessSearchService

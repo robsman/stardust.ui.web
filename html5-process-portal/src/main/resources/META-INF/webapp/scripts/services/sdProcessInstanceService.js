@@ -16,9 +16,9 @@
 	'use strict';
 
 	angular.module('workflow-ui.services').provider('sdProcessInstanceService', function () {
-		this.$get = ['$rootScope', '$resource', '$http', '$filter', 'sdUtilService','sdDataTableHelperService','$q',
-		             function ($rootScope, $resource, $http, $filter, sdUtilService, sdDataTableHelperService, $q) {
-			var service = new ProcessInstanceService($rootScope, $resource, $http, $filter, sdUtilService, sdDataTableHelperService, $q);
+		this.$get = ['$rootScope', '$resource', '$http', '$filter', 'sdUtilService','sdDataTableHelperService','$q','sdLoggerService',
+		             function ($rootScope, $resource, $http, $filter, sdUtilService, sdDataTableHelperService, $q, sdLoggerService) {
+			var service = new ProcessInstanceService($rootScope, $resource, $http, $filter, sdUtilService, sdDataTableHelperService, $q, sdLoggerService);
 			return service;
 		}];
 	});
@@ -26,10 +26,10 @@
 	/*
 	 *
 	 */
-	function ProcessInstanceService($rootScope, $resource, $http, $filter, sdUtilService, sdDataTableHelperService, $q) {
+	function ProcessInstanceService($rootScope, $resource, $http, $filter, sdUtilService, sdDataTableHelperService, $q, sdLoggerService) {
 		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/process-instances/";
 		
-		
+		var trace = sdLoggerService.getLogger("bpm-common.sdProcessInstanceService")
 		/**
 		 * 
 		 */
@@ -226,9 +226,6 @@
 		 * 
 		 */
 		ProcessInstanceService.prototype.attachToCase = function(payload) {
-			console.log("Attaching to case for:");
-			console.log(payload);
-			
 			var restUrl = REST_BASE_URL + 'attachToCase';
 			
 			var res = $resource(restUrl, {}, {
@@ -251,9 +248,6 @@
 		 * 
 		 */
 		ProcessInstanceService.prototype.createCase = function(payload) {
-			console.log("Creating case for:");
-			console.log(payload);
-			
 			var restUrl = REST_BASE_URL + 'createCase';
 			
 			var res = $resource(restUrl, {}, {
@@ -269,7 +263,7 @@
 		 * Get Spawnable Processes for switchspwan
 		 */
 		ProcessInstanceService.prototype.getSpawnableProcesses = function() {
-			console.log("Getting spawnable process");
+			trace.log("Getting spawnable processes");
 			var restUrl = REST_BASE_URL + ':type';
 			var urlTemplateParams = {};
 			urlTemplateParams.type = "spawnableProcesses";
@@ -285,8 +279,7 @@
 		 * 
 		 */
 		ProcessInstanceService.prototype.switchProcess = function(payload) {
-			console.log("Aborting & spawning new process for:");
-			console.log(payload);
+			trace.log("Aborting & spawning new process for:",payload);
 			
 			var restUrl = REST_BASE_URL + 'switchProcess';
 			var res = $resource(restUrl, {}, {
@@ -305,10 +298,7 @@
 		 * activityProInstanceOids : activity process instance id
 		 */
 		ProcessInstanceService.prototype.checkIfProcessesAbortable = function(activityProInstanceOids, abortType) {
-			console.log("Calling checkIfProcessesAbortable for:");
-			console.log(activityProInstanceOids);
-			console.log(" and abort type:");
-			console.log(abortType);
+			trace.debug("Calling checkIfProcessesAbortable for: ",activityProInstanceOids," and abort type:", abortType);
 			
 			var restUrl = REST_BASE_URL + 'checkIfProcessesAbortable?type=' + abortType;
 			var res = $resource(restUrl, {}, {
@@ -324,8 +314,7 @@
 		 * 
 		 */
 		ProcessInstanceService.prototype.getRelatedProcesses = function(proInstanceOids, matchAny, searchCases) {
-			console.log("Calling getRelatedProcesses for:");
-			console.log(proInstanceOids);
+			trace.log("Calling getRelatedProcesses for: ", proInstanceOids);
 			
 			var restUrl = REST_BASE_URL + 'getRelatedProcesses?';
 			
@@ -359,13 +348,10 @@
 		 * 
 		 */
 		ProcessInstanceService.prototype.abortAndJoinProcess = function(payload) {
-			console.log("Aborting & joining new process for:");
-			console.log(payload);
+			trace.log("Aborting & joining new process for: ", payload);
 			
 			var restUrl = REST_BASE_URL + 'abortAndJoinProcess';
-			
 			var res = $resource(restUrl);
-			
 			return res.save({}, payload).$promise;
 		};
 		

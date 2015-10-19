@@ -116,7 +116,7 @@
 			self.columns = result.columns;
 			self.columnsDefinition = result.columnsDefinition;
 		    self.ready = true;
-			console.log(self.resourcePerformance)
+		    trace.log(self.resourcePerformance)
 		}).then(function(failure) {
 			trace.log('Failed to retrive Resource Performance Data.');
 

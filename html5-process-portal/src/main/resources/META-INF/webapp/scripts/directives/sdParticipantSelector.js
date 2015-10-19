@@ -103,7 +103,6 @@
 			
 			function tagPreMapper(item, index) {
 				var tagClass = '';
-				console.log(item.type);
 				switch (item.type) {
 				case 'USER':
 					tagClass = 'pi pi-1x pi-user';

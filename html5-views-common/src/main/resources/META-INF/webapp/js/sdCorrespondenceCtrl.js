@@ -175,7 +175,6 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 
 		_sdCorrespondenceService.getProcessOidForActivity(ctrl.selected.aiOid).then(function(result){
 			ctrl.selected.piOid = result.piOid;
-			console.log(ctrl.selected.piOid);
 			piOid = ctrl.selected.piOid;
 			ctrl.loadAddressBook();
 
@@ -524,7 +523,6 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 				showBcc : metaData.bcc ? metaData.bcc.length > 0 : false,
 						showCc :   metaData.cc ? metaData.cc.length > 0 : false
 		}
-		console.log(uiData)
 		return uiData;
 	}
 
@@ -610,7 +608,6 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		FileDragHover(e);
 		var files = e.target.files || e.dataTransfer.files;
 		CorrespondenceCtrl.prototype.addFilesToUploadQ(files);
-		console.log(files)
 	}
 
 
@@ -621,7 +618,6 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		// cancel event and hover styling
 		FileDragHover(e);
 		var files = e.target.files || e.dataTransfer.files;
-		console.log(files);
 		CorrespondenceCtrl.prototype.addFilesToUploadQ(files);
 	}
 

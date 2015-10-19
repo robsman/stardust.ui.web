@@ -56,9 +56,8 @@
 		var self = this;
 		var deferred = _q.defer();
 		_sdResourceLoginService.getResourceLoginTimeInfo().then(function(result) {
-			trace.log('Resource Login Time info retreived successfully.');
+			trace.log('Resource Login Time info retreived successfully.Result :',result);
 			deferred.resolve(result);
-			console.log(result)
 		}).then(function(failure) {
 			trace.log('Failed to retrive Resource Login Time info.');
 			deferred.reject(failure);

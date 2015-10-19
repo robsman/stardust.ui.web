@@ -12,10 +12,12 @@
  */
 define([],function(){
 
+	
 	/*
 	 * 
 	 */
-	function CorrespondenceService($resource, $q, $http, sdUtilService) {
+	function CorrespondenceService($resource, $q, $http, sdUtilService,sdLoggerService) {
+		var trace = sdLoggerService.getLogger('bpm-common.sdCorrespondenceService');
 		/**
 		 * 
 		 */
@@ -49,21 +51,17 @@ define([],function(){
 					template :   content
 			};
 
-			console.log(templateConfig)
-
 			var postPromise = $http.post(url, templateConfig, {
 				headers : {
 					'Content-type' : 'application/json'
 				}
 			});
 			postPromise.success(function(data) {
-				console.log("Success in templating ")
-				console.log("Success")
+				trace.log("Success in Resolving Message Content.")
 				deferred.resolve(data);
 			});
 			postPromise.error(function(response, status) {
-				console.log("The request failed with response " + response
-						+ " and status code " + status);
+				trace.error("The request failed with response :-",response," and status code:-", status);
 			});
 			return deferred.promise;
 		};
@@ -88,12 +86,12 @@ define([],function(){
 				}
 			});
 			postPromise.success(function(data) {
-				console.log("Success in templating ")
+				trace.log("Success in Resolving Message template.");
 				deferred.resolve(data);
 			});
 			postPromise.error(function(response, status) {
-				console.log("The request failed with response " + response
-						+ " and status code " + status);
+				trace.error("The request failed with response ", response
+						, " and status code ", status);
 			});
 			return deferred.promise;
 		};
@@ -128,7 +126,7 @@ define([],function(){
 				}
 			});
 			postPromise.success(function(result) {
-				console.log("Success in templating ")
+				trace.log("Success in resolving attachment Template.");
 				deferred.resolve({
 					documentId : outputFolder + "/"+fileName,
 					templateDocumentId : item.path,
@@ -138,8 +136,7 @@ define([],function(){
 			});
 
 			postPromise.error(function(response, status) {
-				console.log("The request failed with response " + response
-						+ " and status code " + status);
+				trace.error("The request failed with response :- ",response," and status code :- ",status);
 			});
 			return deferred.promise;
 		};
@@ -208,7 +205,7 @@ define([],function(){
 					deferred.resolve(data);
 				},
 				error: function(xhr, textStatus){
-					console.log("Failure in uploading files");
+					trace.log("Failure in uploading files");
 					deferred.reject(xhr);
 				},
 				// Form data
@@ -238,7 +235,7 @@ define([],function(){
 	}
 
 	//Dependency injection array for our controller.
-	CorrespondenceService.$inject = ['$resource','$q','$http','sdUtilService'];
+	CorrespondenceService.$inject = ['$resource','$q','$http','sdUtilService','sdLoggerService'];
 
 	//Require capable return object to allow our angular code to be initialized
 	//from a require-js injection system.

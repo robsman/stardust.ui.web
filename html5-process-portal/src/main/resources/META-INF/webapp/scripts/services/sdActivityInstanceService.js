@@ -162,8 +162,6 @@
 		 * options = { options: an object with url params, data: query payload }
 		 */
 		ActivityInstanceService.prototype.getParticipants = function(query) {
-			console.log("Getting participants for:");
-			console.log(query);
 
 			var options = "";
 			if (query.options) {
@@ -220,8 +218,6 @@
 		 *	}
 		 */
 		ActivityInstanceService.prototype.delegateActivities = function(data) {
-			console.log("Delegating activities...");
-
 			var participantType = data.participant.type;
 			var participantData = data.participant.OID;
 			switch (participantType) {

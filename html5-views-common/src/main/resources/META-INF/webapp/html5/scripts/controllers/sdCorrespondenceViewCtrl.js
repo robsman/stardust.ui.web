@@ -15,19 +15,22 @@
   'use strict';
 
   angular.module("viewscommon-ui").controller('sdCorrespondenceViewCtrl',
-          ['$scope', 'sdUtilService', 'sdFolderService', 'sdI18nService', '$parse', Controller]);
+          ['$scope', 'sdUtilService', 'sdFolderService', 'sdI18nService', '$parse','sdLoggerService', Controller]);
 
   var _sdFolderService = null;
   var _sdI18nService = null;
   var _parse = null;
+  var trace = null;
   /*
    * 
    */
-  function Controller($scope, sdUtilService, sdFolderService, sdI18nService, $parse) {
+  function Controller($scope, sdUtilService, sdFolderService, sdI18nService, $parse, sdLoggerService) {
     this.readOnly = true;
     _sdI18nService = sdI18nService;
     _sdFolderService = sdFolderService;
     _parse = $parse;
+    trace = sdLoggerService.getLogger('bpm-common.sdCorrespondenceViewCtrl');
+    
     this.correspondenceTypes = [{
       label: this.i18n("views-common-messages.views.correspondenceView.details.type.email"),
       id: 'email'
@@ -52,10 +55,9 @@
 
     if (params && params.folderId) {
       ctrl.folderId = params.folderId;
-      console.log(ctrl.folderId);
       ctrl.getExistingFolderInformation(ctrl.folderId);
     } else {
-      console.error("Couldnt Retrive Folder ID");
+      trace.error("Couldnt Retrive Folder ID");
     }
   };
 
@@ -74,8 +76,7 @@
   Controller.prototype.getExistingFolderInformation = function(folderId) {
     var ctrl = this;
     _sdFolderService.getFolderInformationByFolderId(folderId).then(function(data) {
-      console.log("Return from getExistingFolderInformation using folder id - " + folderId)
-      console.log(data);
+      trace.log("Return from getExistingFolderInformation using folder id - " + folderId, "Data : ",data)
       ctrl.selected = populateCorrespondenceMetaData(data.correspondenceMetaDataDTO, data.documents)
     });
   }
@@ -110,8 +111,6 @@
       showBcc: metaData.BCC ? metaData.BCC.length > 0 : false,
       showCc: metaData.CC ? metaData.CC.length > 0 : false
     }
-    console.log("Populated object")
-    console.log(uiData)
     return uiData;
   }
 
