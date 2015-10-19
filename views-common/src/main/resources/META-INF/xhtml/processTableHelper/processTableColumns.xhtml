@@ -93,7 +93,7 @@
 					<ui:repeat value="#{row.processDescriptorsList}" var="info">
 						<tr>
 							<td style="text-align: left; white-space: nowrap; padding-right: 5px; width: 10%;"><ice:outputText value="#{info.key}#{messages_bcc['common.colon']}"/></td>
-							<td style="text-align: left; white-space: nowrap; width: 90%;"><ice:outputText value="#{info.value}" escape="false"/></td>
+							<td style="text-align: left; white-space: normal; width: 90%;"><ice:outputText value="#{info.value}" escape="false"/></td>
 						</tr>
 					</ui:repeat>
 				</table>

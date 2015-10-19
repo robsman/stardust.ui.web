@@ -1049,6 +1049,11 @@ public class DocumentMgmtUtility
    public static boolean isProcessAttachmentAllowed(DeployedModel model, String processDefinationId)
    {
       ProcessDefinition pd = model.getProcessDefinition(processDefinationId);
+      if (pd == null)
+      {
+         trace.error("No Process found with processDefinationId: " + processDefinationId);
+         return false;
+      }
       List<DataPath> dataPaths = pd.getAllDataPaths();
       for (DataPath dataPath : dataPaths)
       {

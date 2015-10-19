@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
+import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
@@ -23,6 +24,7 @@ import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
@@ -112,6 +114,10 @@ public class MessageProcessor implements MessageTypeConstants
    
             PortalApplication.getInstance().openViewById(viewId, viewKey, params, null, nested);
          }
+         else if (T_CLEAN_ALL_VIEWS.equalsIgnoreCase(message.getType()))
+         {
+            PortalApplication.getInstance().cleanAllViews();
+         }
          else if (T_CHANGE_PERSPECTIVE.equalsIgnoreCase(message.getType()))
          {
             String perspectiveId = GsonUtils.extractString(message.getData(), D_PERSPECTIVE_ID);
@@ -130,6 +136,29 @@ public class MessageProcessor implements MessageTypeConstants
       {
          throw new MessageProcessingException(e);
       }
+   }
+
+   /**
+    * 
+    */
+   public static String prependMessage(String jsonMessage, String newMessage)
+   {
+      JsonArray fullMessage = new JsonArray();
+
+      JsonElement newElem = GsonUtils.readJsonElement(newMessage);
+      fullMessage.add(newElem);
+
+      JsonElement jsonElem = GsonUtils.readJsonElement(jsonMessage);
+      if (jsonElem.isJsonObject())
+      {
+         fullMessage.add(jsonElem);
+      }
+      else
+      {
+         fullMessage.addAll((JsonArray)jsonElem);
+      }
+
+      return fullMessage.toString();
    }
 
    /**

@@ -49,6 +49,7 @@ import org.eclipse.stardust.ui.web.bcc.ProcessSearchProvider.FilterAttributes;
 import org.eclipse.stardust.ui.web.bcc.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.bcc.jsf.BusinessControlCenterLocalizerKey;
 import org.eclipse.stardust.ui.web.common.UIComponentBean;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.event.ViewEvent;
 import org.eclipse.stardust.ui.web.common.event.ViewEventHandler;
@@ -76,6 +77,9 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.IceComponentUtil;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
+
+import com.google.gson.Gson;
+import com.icesoft.faces.context.effects.JavascriptContext;
 
 
 
@@ -280,7 +284,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
             filterAttributes.setOid(Long.parseLong((String)params.get(OID)));
          
          if (StringUtils.isNotEmpty((String)params.get(HIERARCHY)))
-            setHierarchyValue((String)params.get(HIERARCHY));
+            doHierarchyTypeChange((String)params.get(HIERARCHY));
 
          if (StringUtils.isNotEmpty((String)params.get(CASE_OWNER)))
             ownerSelector.searchAndPreSelect((String)params.get(CASE_OWNER));
@@ -361,7 +365,12 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
             procs.add(proc);
          }
       }
-      selectedProcesses = procs.toArray(new String[1]);
+      selectedProcesses = procs.size() > 0 ? procs.toArray(new String[1]) : null;
+      if (null == selectedProcesses)
+      {
+         selectedProcesses = new String[1];
+         selectedProcesses[0] = "ALL";
+      }
       processesSelectionChanged();
    }
 
@@ -378,7 +387,13 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
             acts.add(act);
          }
       }
-      selectedActivities = acts.toArray(new String[1]);
+
+      selectedActivities = acts.size() > 0 ? acts.toArray(new String[1]) : null;
+      if (null == selectedActivities)
+      {
+         selectedActivities = new String[1];
+         selectedActivities[0] = "ALL";
+      }
    }
 
    /**
@@ -402,6 +417,24 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
    }
 
    /**
+    * @param descriptors
+    */
+   private Map<String, Object> getSelectedDescriptors()
+   {
+      Map<String, Object> descriptors = new HashMap<String, Object>();
+
+      for (DataMappingWrapper dmWrapper : descriptorItems)
+      {
+         if (null != dmWrapper.getValue())
+         {
+            descriptors.put(dmWrapper.getDataMapping().getId(), dmWrapper.getValue());
+         }
+      }
+
+      return descriptors;
+   }
+
+   /**
     * @param list
     * @param search
     * @return
@@ -415,6 +448,26 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
          if (search.equals(pair.getFirst()))
          {
             return pair.getSecond();
+         }
+      }
+      
+      return defaultVal;
+   }
+
+   /**
+    * @param list
+    * @param search
+    * @return
+    */
+   private String findReverseMatch(List<Pair<String, Integer>> list, int value)
+   {
+      String defaultVal = list.get(0).getFirst();
+
+      for (Pair<String, Integer> pair : list)
+      {
+         if (value == pair.getSecond())
+         {
+            return pair.getFirst();
          }
       }
       
@@ -445,12 +498,7 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
          selectedSearchOption = SEARCH_OPTION.PROCESSES;
       }
       // Will reset the hierarchy filter on change from Activity to Process
-      setHierarchyValue(HIERARCHY_PROCESS);
-      filterProcessDefinitionList();
-      // This is just to remove/add case related descriptors
-      // TODO: Review following code - separate filter can be used show/hide case
-      // descriptors
-      refreshDescriptorTable(getSelectedProcessDefs());
+      doHierarchyTypeChange(HIERARCHY_PROCESS);
    }
 
    /**
@@ -569,6 +617,139 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       }
    
       expandSearchCriteria = false;
+   }
+
+   /*
+    * 
+    */
+   public void performArchiveSearch()
+   {
+      String criteria = buildSrarchCriteria();
+      String script = "openArchiveSearch('" + getArchiveAuditTrailURL() + "', '" + criteria + "');";
+      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), script);
+   }
+
+   /**
+    * @return
+    */
+   private String buildSrarchCriteria()
+   {
+      Map<String, Object> criteria = new HashMap<String, Object>();
+    
+      try
+      {
+         if (selectedSearchOption == SEARCH_OPTION.PROCESSES)
+         {
+            criteria.put(SEARCH_OPT, SEARCH_OPT_PROCESS);
+            buildProcessSrarchCriteria(criteria);
+         }
+         else if (selectedSearchOption == SEARCH_OPTION.ACTIVITIES)
+         {
+            criteria.put(SEARCH_OPT, SEARCH_OPT_ACTIVITY);
+            buildActivitySrarchCriteria(criteria);
+         }
+      }
+      catch(Exception e)
+      {
+         trace.error("Error in buildinhg Search Criteria", e);
+      }
+      
+      Gson gson = new Gson();
+      return gson.toJson(criteria);
+   }
+   
+   /**
+    * @return
+    */
+   private void buildProcessSrarchCriteria(Map<String, Object> criteria)
+   {
+      FilterAttributes filterAttributes = getFilterAttributes();
+
+      if (null != filterAttributes.getStartedFrom())
+         criteria.put(STARTED_FROM, formatDateTime(filterAttributes.getStartedFrom()));
+
+      if (null != filterAttributes.getStartedTo())
+         criteria.put(STARTED_TO, formatDateTime(filterAttributes.getStartedTo()));
+
+      if (null != filterAttributes.getEndTimeFrom())
+         criteria.put(END_TIME_FROM, formatDateTime(filterAttributes.getEndTimeFrom()));
+
+      if (null != filterAttributes.getEndTimeTo())
+         criteria.put(END_TIME_TO, formatDateTime(filterAttributes.getEndTimeTo()));
+           
+      criteria.put(STATE, findReverseMatch(PROC_STATES, filterAttributes.getState()));
+
+      criteria.put(PRIORITY, findReverseMatch(PRIORITY_LIST, filterAttributes.getPriority()));
+      
+      if (null != filterAttributes.getRootOid())
+         criteria.put(ROOT_OID, String.valueOf(filterAttributes.getRootOid()));
+
+      if (null != filterAttributes.getOid())
+         criteria.put(OID, String.valueOf(filterAttributes.getOid()));      
+
+      if (null != getSelectedHierarchy())
+         criteria.put(HIERARCHY, getSelectedHierarchy());
+
+      if (null != ownerSelector.getSelectedValue() && null != ownerSelector.getSelectedValue().getUser())
+         criteria.put(CASE_OWNER, ownerSelector.getSelectedValue().getUser().getId());
+
+      if (null != getSelectedProcesses() && getSelectedProcesses().length > 0)
+         criteria.put(PROCESSES, getSelectedProcesses());
+      
+      Map<String, Object> descriptors = getSelectedDescriptors();
+      if (CollectionUtils.isNotEmpty(descriptors))
+         criteria.put(DESCRIPTORS, descriptors);
+   }
+
+   /**
+    * @return
+    */
+   private void buildActivitySrarchCriteria(Map<String, Object> criteria)
+   {
+      ActivityFilterAttributes filterAttributes = getActivityFilterAttributes();
+
+      if (null != filterAttributes.getStartedFrom())
+         criteria.put(STARTED_FROM, formatDateTime(filterAttributes.getStartedFrom()));
+
+      if (null != filterAttributes.getStartedTo())
+         criteria.put(STARTED_TO, formatDateTime(filterAttributes.getStartedTo()));
+
+      if (null != filterAttributes.getModifyTimeFrom())
+         criteria.put(MODIFY_TIME_FROM, formatDateTime(filterAttributes.getModifyTimeFrom()));
+
+      if (null != filterAttributes.getModifyTimeTo())
+         criteria.put(MODIFY_TIME_TO, formatDateTime(filterAttributes.getModifyTimeTo()));
+
+      criteria.put(STATE, findReverseMatch(ACT_STATES, filterAttributes.getState()));
+
+      criteria.put(PRIORITY, findReverseMatch(PRIORITY_LIST, filterAttributes.getPriority()));
+
+      if (null != filterAttributes.getCriticality())
+         criteria.put(CRITICALITY, filterAttributes.getCriticality());
+
+      if (null != filterAttributes.getActivityOID())
+         criteria.put(OID, String.valueOf(filterAttributes.getActivityOID()));
+
+      if (null != performerSelector.getSelectedValue() && null != performerSelector.getSelectedValue().getUser())
+         criteria.put(PERFORMER, performerSelector.getSelectedValue().getUser().getId());
+
+      if (null != getSelectedProcesses() && getSelectedProcesses().length > 0)
+         criteria.put(PROCESSES, getSelectedProcesses());
+
+      if (null != getSelectedActivities() && getSelectedActivities().length > 0)
+         criteria.put(ACTIVITIES, getSelectedActivities());
+
+      Map<String, Object> descriptors = getSelectedDescriptors();
+      if (CollectionUtils.isNotEmpty(descriptors))
+         criteria.put(DESCRIPTORS, descriptors);
+   }
+
+   /**
+    * 
+    */
+   public String getArchiveAuditTrailURL()
+   {
+      return ProcessSearchConfigurationBean.getArchiveAuditTrailURL();
    }
 
    /**
@@ -981,14 +1162,22 @@ public class ProcessSearchBean extends UIComponentBean implements ViewEventHandl
       else
       {
          String selectedOption = event.getNewValue().toString();
-         setHierarchyValue(selectedOption);
-         filterProcessDefinitionList();
-         // TODO: Review following code - separate filter can be used show/hide case
-         // descriptors
-         refreshDescriptorTable(getSelectedProcessDefs());
+         doHierarchyTypeChange(selectedOption);
       }
    }
-   
+
+   /**
+    * @param hierarchy
+    */
+   private void doHierarchyTypeChange(String hierarchy)
+   {
+      setHierarchyValue(hierarchy);
+      filterProcessDefinitionList();
+      // TODO: Review following code - separate filter can be used show/hide case
+      // descriptors
+      refreshDescriptorTable(getSelectedProcessDefs());
+   }
+
    /**
     * @param filterToolbarItems
     * @param ae

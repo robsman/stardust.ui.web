@@ -368,6 +368,7 @@ define(
 
 									if (ui.newPanel.selector === "#previewTab") {
 										self.resetParamFilters();
+										self.renderingController.showRetrieveAll = false;
 										self.renderingController.refreshPreview(self, self.report, self.parameters).done(
 												function(){
 													//self.resetParamFilters();
@@ -426,6 +427,14 @@ define(
 									   if (angular.equals(newValue.delivery, oldValue.delivery)) {
 									      self.getNextExecutionDate();                                 
                               } 
+									}, true);
+								});
+								
+								self.runInAngularContext(function (scope) {
+									scope.$watch("report.layout.table.selectedCumulants", function (newValue, oldValue) {
+									   if (!(angular.equals(newValue, oldValue))) {
+									      self.processFactPolicies();
+									   } 
 									}, true);
 								});
 			
@@ -499,7 +508,12 @@ define(
 				 */
 				ReportDefinitionController.prototype.reloadTable = function(previewRetrieveAll) {
 					var self = this;
-					this.reportingService.previewRetrieveAll = previewRetrieveAll;
+
+					this.renderingController.previewRetrieveAll = previewRetrieveAll;
+
+					if (previewRetrieveAll) {
+						self.renderingController.showRetrieveAll = true;
+					}
 					this.renderingController.refreshPreview(this, this.report, this.parameters).done(function(){
 						self.updateView();	
 					});
@@ -616,7 +630,8 @@ define(
 									firstDimensionCumulationIntervalCount : 1,
 									firstDimensionCumulationIntervalUnit : "d",
 									firstDimensionDurationUnit: "s",
-									filters: getDefaultFilterFor("processInstanceStartTimestamp")
+									filters: getDefaultFilterFor("processInstanceStartTimestamp"),
+									factPolicies : []
 								},
 								parameters : {},
 								layout : {
@@ -1910,7 +1925,26 @@ define(
                for ( var dimension in dimensions)
                {
                   var group = this.primaryObjectEnumGroup(dimensions[dimension].id);
-                  dimensions[dimension].order = this.reportHelper.getDimensionsDisplayOrder(dimensions[dimension].id, this.report); 
+                  dimensions[dimension].order = this.reportHelper.getDimensionsDisplayOrder(dimensions[dimension].id, this.report);
+
+                  var id = dimensions[dimension].id;
+                  
+                  var index = id.indexOf("#average");
+                  if (index != -1) {
+                	  dimensions[dimension].subOrder = 10;
+                  }
+                  
+                  var index1 = id.indexOf("#sum");
+                  if(index1 != -1) {
+                	  dimensions[dimension].subOrder = 11;
+                  }
+                  
+                  if (index == -1 && index1 == -1 && (id.indexOf("#") != -1)) {
+                	  dimensions[dimension].subOrder = 12;
+                  }
+                  if (!dimensions[dimension].inOrder) {
+                	  dimensions[dimension].inOrder = 0;
+                  }
                }
                return dimensions;
             };
@@ -2078,10 +2112,13 @@ define(
         ReportDefinitionController.prototype.createAggegateDimensions = function(dimension, enumerators) {
            var aggregations = this.reportingService.metadata.recordSetAggregationFunctions;
            
+           var inOrder = enumerators.length + 1;
+                      
            for ( var n in aggregations ) {
               var obj = this  .cloneReportDefinition(dimension);
               obj.id = obj.id + "#" + aggregations[n].id;
               obj.name = obj.name + " (" + aggregations[n].name + ")";
+              obj.inOrder = inOrder;
               enumerators.push(obj);
            }
         };
@@ -2316,6 +2353,24 @@ define(
            this.report.layout.chart.options.cursor.showTooltip = (this.report.layout.chart.options.cursor.show == false) ? false : 
               this.report.layout.chart.options.cursor.showTooltip;
               
+        };
+        
+        /**
+         * 
+         */
+        ReportDefinitionController.prototype.processFactPolicies = function() {
+        	var self = this;
+        	if (self.report.layout.table.selectedCumulants.indexOf(self.reportingService.metadata.cumulants.sum.id) != -1) {
+        		var index = self.report.dataSet.factPolicies.indexOf(self.reportingService.metadata.cumulants.sum.id);
+        		if (index == -1) {
+        			self.report.dataSet.factPolicies.push(self.reportingService.metadata.cumulants.sum.id);
+        		}
+        	} else {
+        		var index = self.report.dataSet.factPolicies.indexOf(self.reportingService.metadata.cumulants.sum.id);
+        		if (index > -1) {
+        			self.report.dataSet.factPolicies.splice(index, 1);
+        		}
+        	}
         };
         
 		}

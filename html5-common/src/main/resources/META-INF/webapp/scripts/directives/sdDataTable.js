@@ -2088,13 +2088,29 @@
 		 * 
 		 */
 		function downloadDataAsFile(fileName, dataUrl) {
-			exportAnchor.download = fileName;
-			exportAnchor.href = dataUrl;
-			exportAnchor.target = '_blank';
-
-			var mouseEvent = document.createEvent("MouseEvents");
-			mouseEvent.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-			exportAnchor.dispatchEvent(mouseEvent);
+			try {
+				if (exportAnchor.download != undefined) {
+					exportAnchor.download = fileName;
+					exportAnchor.href = dataUrl;
+					exportAnchor.target = '_blank';
+	
+					var mouseEvent = document.createEvent("MouseEvents");
+					mouseEvent.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+					exportAnchor.dispatchEvent(mouseEvent);
+				} else if (navigator.msSaveBlob) {
+					var index = dataUrl.indexOf(',');
+					var contentType = dataUrl.substr(0, index);
+					var data = dataUrl.substr(index + 1);
+					data = decodeURIComponent(data);
+	
+					var blob = new Blob([data], {type : contentType});
+					navigator.msSaveBlob(blob, fileName);
+				} else {
+					trace.error(theTableId + ': Browser does not support download feature');
+				}
+			} catch (e) {
+				trace.error(theTableId + ': Failed to download as file', e);
+			}
 		}
 
 		/*

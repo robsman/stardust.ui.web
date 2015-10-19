@@ -17,11 +17,12 @@ define(
 				"bpm-modeler/js/m_model", "bpm-modeler/js/m_dataTypeSelector",
 				"bpm-modeler/js/m_parameterDefinitionsPanel",
 				"bpm-modeler/js/m_codeEditorAce", "bpm-modeler/js/m_i18nUtils",
-				"bpm-modeler/js/m_markupGenerator" ],
+				"bpm-modeler/js/m_markupGenerator", 
+				"bpm-modeler/js/m_angularContextUtils", "bpm-modeler/js/m_extensionManager" ],
 		function(m_utils, m_constants, m_urlUtils, m_session, m_command,
 				m_commandsController, m_dialog, m_modelElementView, m_model,
 				m_dataTypeSelector, m_parameterDefinitionsPanel,
-				m_codeEditorAce, m_i18nUtils, m_markupGenerator) {
+				m_codeEditorAce, m_i18nUtils, m_markupGenerator, m_angularContextUtils, m_extensionManager) {
 			return {
 				initialize : function(fullId) {
 					m_utils.initializeWaitCursor(m_utils.jQuerySelect("html"));
@@ -325,6 +326,7 @@ define(
 										event.data.view
 												.submitExternalWebAppContextAttributesChange({
 													"carnot:engine:ui:externalWebApp:embedded" : false,
+													"carnot:engine:ui:externalWebApp:generatorId" : null,
 													"carnot:engine:ui:externalWebApp:uri" : event.data.view.urlInput
 															.val()
 												});
@@ -368,6 +370,7 @@ define(
 										event.data.view
 												.submitExternalWebAppContextAttributesChange({
 													"carnot:engine:ui:externalWebApp:embedded" : false,
+													"carnot:engine:ui:externalWebApp:generatorId" : null,
 													"carnot:engine:ui:externalWebApp:uri" : event.data.view.urlInput
 															.val(),
 													"carnot:engine:ui:externalWebApp:markup" : null
@@ -417,8 +420,12 @@ define(
 					 * ensures that data is set when one switches to the configuration tab.
 					 */
 					m_utils.jQuerySelect("#configuration").click(function() {
-						CKEDITOR.instances[self.editorTextArea.id]
-							.setData(self.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
+						var embeded = self.getContext().attributes["carnot:engine:ui:externalWebApp:embedded"];
+						var generatorId = self.getContext().attributes["carnot:engine:ui:externalWebApp:generatorId"];
+						if (embeded && !generatorId) {
+							CKEDITOR.instances[self.editorTextArea.id]
+								.setData(self.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
+						}
 					});
 
 					this.initializeModelElementView(application);
@@ -426,14 +433,35 @@ define(
 					this.view.css("visibility", "visible");
 				};
 
+				/**
+				 * 
+				 */
 				UiMashupApplicationView.prototype.submitEmbeddedModeChanges = function() {
 					this
 							.submitExternalWebAppContextAttributesChange({
 								"carnot:engine:ui:externalWebApp:embedded" : true,
+								"carnot:engine:ui:externalWebApp:generatorId" : null,
 								"carnot:engine:ui:externalWebApp:uri" : null,
 								"carnot:engine:ui:externalWebApp:markup" : CKEDITOR.instances[this.editorTextArea.id].getData()
 
 							});
+				};
+
+				/**
+				 * 
+				 */
+				UiMashupApplicationView.prototype.submitCustomEmbeddedModeChanges = function(id, markup) {
+					if (markup == undefined) {
+						var provider = this.uiMashupGeneratorProviders[id];
+						markup = provider && provider.getMarkup ? provider.getMarkup() : null;
+					}
+
+					this.submitExternalWebAppContextAttributesChange({
+						"carnot:engine:ui:externalWebApp:embedded" : true,
+						"carnot:engine:ui:externalWebApp:generatorId" : id,
+						"carnot:engine:ui:externalWebApp:uri" : null,
+						"carnot:engine:ui:externalWebApp:markup" : markup
+					});
 				};
 
 				/**
@@ -448,6 +476,15 @@ define(
 									+ this.getContext().attributes["carnot:engine:ui:externalWebApp:embedded"] == "true");
 
 					return this.getContext().attributes["carnot:engine:ui:externalWebApp:embedded"];
+				};
+
+				/**
+				 *
+				 */
+				UiMashupApplicationView.prototype.isCustomEmbeddedConfiguration = function() {
+					var embeded = this.getContext().attributes["carnot:engine:ui:externalWebApp:embedded"];
+					var generatorId = this.getContext().attributes["carnot:engine:ui:externalWebApp:generatorId"];
+					return embeded && generatorId;
 				};
 
 				/**
@@ -474,6 +511,7 @@ define(
 
 					m_dialog.makeVisible(this.viaUriRow);
 					m_dialog.makeInvisible(this.embeddedRow);
+					this.unsetUiMashupGeneratorExtensions();
 				};
 
 				/**
@@ -485,6 +523,44 @@ define(
 
 					m_dialog.makeInvisible(this.viaUriRow);
 					m_dialog.makeVisible(this.embeddedRow);
+					this.unsetUiMashupGeneratorExtensions();
+				};
+
+				/**
+				 *
+				 */
+				UiMashupApplicationView.prototype.unsetDefaultOptions = function() {
+					this.embeddedInput.prop("checked", false);
+					this.viaUriInput.prop("checked", false);
+
+					m_dialog.makeInvisible(this.embeddedRow);
+					m_dialog.makeInvisible(this.viaUriRow);
+				};
+
+				/**
+				 *
+				 */
+				UiMashupApplicationView.prototype.setUiMashupGeneratorExtension = function(id) {
+					this.unsetDefaultOptions();
+					this.unsetUiMashupGeneratorExtensions();
+
+					m_angularContextUtils.runInActiveViewContext(function($scope){
+						$scope.uiMashupGenerator.visibility[id] = true;
+					});
+				};
+
+				/**
+				 * 
+				 */
+				UiMashupApplicationView.prototype.unsetUiMashupGeneratorExtensions = function() {
+					m_angularContextUtils.runInActiveViewContext(function($scope){
+						if ($scope.uiMashupGenerator && $scope.uiMashupGenerator.extensions) {
+							for (var i in $scope.uiMashupGenerator.extensions) {
+								var generator = $scope.uiMashupGenerator.extensions[i];
+								$scope.uiMashupGenerator.visibility[generator.id] = false;
+							}
+						}
+					});
 				};
 
 				/**
@@ -530,8 +606,67 @@ define(
 							}
 						};
 					}
+					
+					// **********************************************************
+					// For Custom / Extension Generators
+					// **********************************************************
+					if (this.uiMashupGeneratorProviders == undefined) {
+						this.uiMashupGeneratorProviders = {};
+						var self = this;
+						this.uiMashupGenerator = {
+							extensions : m_extensionManager.findExtensions("uiMashupGenerator"),
+							visibility : {},
+							onload : function(ext) {
+								if (ext.provider && ext.provider.create) {
+									var api = new UiMashupGeneratorAPI(ext.id, self);
+									try {
+										var provider = ext.provider.create(api, ext.id, self);
+										self.uiMashupGeneratorProviders[ext.id] = provider;
 
-					if (this.isEmbeddedConfiguration()) {
+										var genId = self.getContext().attributes["carnot:engine:ui:externalWebApp:generatorId"];
+										if (genId == ext.id) {
+											var markup = self.getContext().attributes["carnot:engine:ui:externalWebApp:markup"];
+											if (provider && provider.setMarkup) {
+												provider.setMarkup(markup);
+											}
+										}
+									} catch (e) {
+										m_utils.debug("Error in creating UI Mashup Generator Provider");
+										m_utils.debug(e);
+									}
+								} else {
+									m_utils.debug("Ui Mashup generator Extension does not implement provider or provider.create()");
+								}
+							}, 
+							onfail : function(ext) {
+								m_utils.debug("Error in creating UI Mashup Generator Provider for -");
+								m_utils.debug(ext);
+							}
+						};
+
+						m_utils.debug("UiMashupGeneratorExtensions", this.uiMashupGenerator.extensions);
+						
+						// Expose on scope.. by reference
+						m_angularContextUtils.runInActiveViewContext(function($scope){
+							$scope.uiMashupGenerator  = self.uiMashupGenerator;
+
+							/**
+							 * 
+							 */
+							$scope.showUiMashupGeneratorExtension = function(generator) {
+								self.unsetDefaultOptions();
+								self.unsetUiMashupGeneratorExtensions();
+								$scope.uiMashupGenerator.visibility[generator.id] = true;
+
+								self.submitCustomEmbeddedModeChanges(generator.id);
+							}
+						});
+					}
+
+					if (this.isCustomEmbeddedConfiguration()) {
+						var generatorId = this.getContext().attributes["carnot:engine:ui:externalWebApp:generatorId"];
+						this.setUiMashupGeneratorExtension(generatorId);
+					} else if (this.isEmbeddedConfiguration()) {
 						this.setEmbedded();
 						var self = this;
 						CKEDITOR.instances[self.editorTextArea.id].setData(self.getContext().attributes["carnot:engine:ui:externalWebApp:markup"]);
@@ -702,4 +837,50 @@ define(
 							.generateMarkup(this.getContext().accessPoints);
 				};
 			}
+
+			/**
+			 * 
+			 */
+			function UiMashupGeneratorAPI(id, view) {
+				this.id = id;
+				this.view = view;
+
+				/**
+				 * 
+				 */
+				UiMashupGeneratorAPI.prototype.getDataMappings = function() {
+					if (validateGenerator(this.view, this.id)) {
+						var generator = m_markupGenerator.create();
+						return generator.generateJsonDefinitions(this.view.getContext().accessPoints);
+					} else {
+						return [];
+					}
+				}
+
+				/**
+				 * 
+				 */
+				UiMashupGeneratorAPI.prototype.getMarkup = function() {
+					if (validateGenerator(this.view, this.id)) {
+						return this.view.getContext().attributes["carnot:engine:ui:externalWebApp:markup"];
+					}
+				}
+
+				/**
+				 * 
+				 */
+				UiMashupGeneratorAPI.prototype.setMarkup = function(markup) {
+					if (validateGenerator(this.view, this.id)) {
+						this.view.submitCustomEmbeddedModeChanges(this.id, markup);
+					}
+				}
+
+				/**
+				 * 
+				 */
+				function validateGenerator(view, myId) {
+					var genId = view.getContext().attributes["carnot:engine:ui:externalWebApp:generatorId"];
+					return genId == myId;
+				}
+			};
 		});

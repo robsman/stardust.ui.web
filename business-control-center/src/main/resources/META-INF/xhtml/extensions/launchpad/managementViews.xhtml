@@ -18,7 +18,8 @@
 	
 	<ice:panelGrid columns="1" rendered="#{managementViews.expanded}">
 
-		<ice:commandLink action="#{ippPortalApp.openView}">
+		<ice:commandLink action="#{ippPortalApp.openView}"
+			rendered="#{pc:isViewAvailable(ippPortalApp, 'categoryTree')}">
 			<pc:automationTag value="auto-BCC-LP-AllMgmtView" standAlone="false"/>
 			<f:param name="viewId" value="categoryTree" />
 			<ice:outputText value="#{messages_bcc['launchPanels.managementViews.allManagement.title']} &amp;raquo;"

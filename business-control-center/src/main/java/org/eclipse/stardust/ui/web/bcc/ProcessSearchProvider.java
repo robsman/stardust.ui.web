@@ -262,10 +262,13 @@ public class ProcessSearchProvider implements Serializable
 
          if (!includeCaseSearch)
          {
-            FilterTerm orFilter = filter.addOrTerm();
             ProcessDefinition caseProcessDefination = ModelCache.findModelCache().getCaseProcessDefination();
-            orFilter.add(ProcessInstanceQuery.PROCESS_DEFINITION_OID.notEqual(caseProcessDefination
-                  .getRuntimeElementOID()));
+            if(caseProcessDefination != null)
+            {
+               FilterTerm orFilter = filter.addOrTerm();
+               orFilter.add(ProcessInstanceQuery.PROCESS_DEFINITION_OID.notEqual(caseProcessDefination
+                     .getRuntimeElementOID()));
+            }
          }
          
          if (includeRootProcess)

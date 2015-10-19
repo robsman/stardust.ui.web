@@ -189,11 +189,16 @@ public class ResubmissionBean extends PopupUIViewComponentBean
                {
                   trace.debug("Adding Resubmission Note for OID " + activityInstance.getOID());
                }
+
                ProcessInstance processInstance = ProcessInstanceUtils.getProcessInstance(activityInstance);
-               ProcessInstanceAttributes attributes = processInstance.getAttributes();
-               attributes.addNote(note, ContextKind.ProcessInstance, processInstance.getOID());
-               ServiceFactoryUtils.getWorkflowService()
-                     .setProcessInstanceAttributes(attributes);
+               if (processInstance.getOID() != processInstance.getScopeProcessInstanceOID())
+               {
+                  ProcessInstance scopeProcessInstance = ProcessInstanceUtils.getProcessInstance(processInstance
+                        .getScopeProcessInstanceOID());
+                  ProcessInstanceAttributes attributes = scopeProcessInstance.getAttributes();
+                  attributes.addNote(note, ContextKind.ProcessInstance, processInstance.getOID());
+                  ServiceFactoryUtils.getWorkflowService().setProcessInstanceAttributes(attributes);
+               }
             }
             catch (Exception pe)
             {

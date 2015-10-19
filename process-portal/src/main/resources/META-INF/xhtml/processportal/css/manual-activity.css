@@ -112,6 +112,10 @@ body, table {
    border: 1px solid #D9D9D9;
 }
 
+.panel-list-tbl-cell a {
+	cursor: pointer;
+}
+
 .panel-list-toolbar-tbl-cell {
 	padding-right: 5px;
 }

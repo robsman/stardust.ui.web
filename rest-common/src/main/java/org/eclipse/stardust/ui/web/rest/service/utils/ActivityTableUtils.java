@@ -11,11 +11,11 @@
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getAssignedToLabel;
+import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getCaseName;
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getLastPerformer;
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isAbortable;
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isActivatable;
 import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isDelegable;
-import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getCaseName;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -47,9 +47,11 @@ import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ActivityFilter;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityStateFilter;
+import org.eclipse.stardust.engine.api.query.DataOrder;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
+import org.eclipse.stardust.engine.api.query.HistoricalStatesPolicy;
 import org.eclipse.stardust.engine.api.query.ProcessDefinitionFilter;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
@@ -92,10 +94,10 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils.ParticipantType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDocumentDescriptor;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.stereotype.Component;
 
@@ -457,7 +459,26 @@ public class ActivityTableUtils
    {
       boolean worklistQuery = query instanceof WorklistQuery;
 
-      if (COL_ACTIVITY_NAME.equals(options.orderBy))
+      if (options.visibleDescriptorColumns.contains(options.orderBy))
+      {
+         Map<String, DataPath> allDescriptors = ProcessDefinitionUtils.getAllDescriptors(false);
+         String descriptorName = options.orderBy;
+         if (allDescriptors.containsKey(descriptorName))
+         {
+            DescriptorUtils.applyDescriptorPolicy(query, options);
+            String columnName = DescriptorUtils.getDescriptorColumnName(descriptorName, allDescriptors);
+            if (CommonDescriptorUtils.isStructuredData(allDescriptors.get(descriptorName)))
+            {
+               query.orderBy(new DataOrder(columnName,
+                     DescriptorUtils.getXpathName(descriptorName, allDescriptors), options.asc));
+            }
+            else
+            {
+               query.orderBy(new DataOrder(columnName, options.asc));
+            }
+         }
+      }
+      else if (COL_ACTIVITY_NAME.equals(options.orderBy))
       {
          query.orderBy(ActivityInstanceQuery.ACTIVITY_NAME.ascendig(options.asc));
       }
@@ -491,7 +512,6 @@ public class ActivityTableUtils
                ? WorklistQuery.ACTIVITY_INSTANCE_CRITICALITY
                      : ActivityInstanceQuery.CRITICALITY, options.asc);
       }
-
       else if (COL_PROCESS_OID.equals(options.orderBy))
       {
          query.orderBy(worklistQuery
@@ -546,11 +566,11 @@ public class ActivityTableUtils
       }
 
 
-      JsonArray visbleColumns = postJSON.getAsJsonObject("descriptors").get("visbleColumns").getAsJsonArray();
+      JsonArray visbleColumns = postJSON.getAsJsonObject("descriptors").get("visibleColumns").getAsJsonArray();
       List<String> columnsList = new ArrayList<String>();
       for (JsonElement jsonElement : visbleColumns)
       {
-         columnsList.add(StringUtils.substringAfter(jsonElement.getAsString(), "descriptorValues."));
+         columnsList.add(jsonElement.getAsString());
       }
       options.visibleDescriptorColumns = columnsList;
       options.allDescriptorsVisible = postJSON.getAsJsonObject("descriptors").get("fetchAll").getAsBoolean();
@@ -574,7 +594,7 @@ public class ActivityTableUtils
       for (DescriptorColumnDTO descriptorColumnDTO : descriptorColumns)
       {
          Object filterDTO = null;
-         String id = StringUtils.substringAfterLast(descriptorColumnDTO.id, "descriptorValues.");
+         String id = descriptorColumnDTO.id;
          
          if (null != descriptorColumnsFilterJson.get(id))
          {
@@ -615,7 +635,6 @@ public class ActivityTableUtils
    public static QueryResultDTO buildTableResult(QueryResult< ? > queryResult, MODE mode)
    {
       List<ActivityInstanceDTO> list = new ArrayList<ActivityInstanceDTO>();
-
       List<CriticalityCategory> criticalityConfigurations = CriticalityUtils.getCriticalityConfiguration();
 
       ModelCache modelCache = ModelCache.findModelCache();
@@ -773,6 +792,7 @@ public class ActivityTableUtils
       addFilterCriteria(query, options);
       SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip,
             true);
+      query.setPolicy(HistoricalStatesPolicy.WITH_LAST_USER_PERFORMER);
       query.setPolicy(subsetPolicy);
    }
 
