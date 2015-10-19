@@ -1,17 +1,25 @@
 <div class="sd-abort-noti-dlg">
 <div class="modal-body">
-	<div id="infoSign" ng-if="switchProcessController.switchProcess.switchCompleted">
-		<i style="color: grey;" class="pi pi-information-circle pi-lg"></i>
+
+<table>
+ <tr>
+	<td style="vertical-align: top;">
+	 <div>
+			<div id="infoSign" ng-if="switchProcessController.switchProcess.switchCompleted">
+				<i style="color: grey;" class="pi pi-information-circle pi-2x"></i>
+			</div>
+			<div id="infoSign" ng-if="!switchProcessController.switchProcess.switchCompleted">
+				<i ng-show="switchProcessController.abortNotification.totalCount === switchProcessController.processInstances.length" 
+					 class="pi pi-deny pi-2x pi-danger"></i>
+				<i ng-show="switchProcessController.abortNotification.totalCount < switchProcessController.processInstances.length" 
+					 class="pi pi-information-circle pi-2x"></i>
+			</div>
+			<div id="infoSign" ng-if="switchProcessController.abortNotification.list == undefined">
+				<i  class="pi pi-deny pi-2x pi-danger"></i>
+			</div>
 	</div>
-	<div id="infoSign" ng-if="!switchProcessController.switchProcess.switchCompleted">
-		<i ng-show="switchProcessController.abortNotification.totalCount === switchProcessController.processInstances.length" 
-			 class="pi pi-deny pi-lg pi-danger"></i>
-		<i ng-show="switchProcessController.abortNotification.totalCount < switchProcessController.processInstances.length" 
-			 class="pi pi-information-circle pi-lg"></i>
-	</div>
-	<div id="infoSign" ng-if="switchProcessController.abortNotification.list == undefined">
-		<i  class="pi pi-deny pi-lg pi-danger"></i>
-	</div>
+	</td>	
+	<td>
 	<div id="notificationBody" class="notification-body">
 		<div>
 			<div ng-if="switchProcessController.switchProcess.switchCompleted">
@@ -74,6 +82,9 @@
 			<span id="switchCompleted" ng-if="switchProcessController.switchProcess.switchCompleted">{{i18n('views-common-messages.views-switchProcessDialog-viewSwitchedActivities')}}</span>
 		</div>
 	</div>
+	</td>
+   </tr>
+</table>
 </div>
 <div class="modal-footer">
 	<div class="button-pane cf" >
