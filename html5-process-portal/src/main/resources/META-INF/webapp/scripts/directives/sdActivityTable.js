@@ -277,13 +277,12 @@
 	    	});
 	    }
 
+	    //Additional logging added below to debug CRNT-38715 in production env.
 	    /**
 	     * 
 	     */
 	    this.preferenceDelegate = function(prefInfo) {
-	    	trace.log('Fetching column preference for scope :',prefInfo.scope);
-	      	trace.log('preferenceModule :',self.preferenceId);
-	    	trace.log('preferenceName : ',self.preferenceName);
+	    	trace.log('Fetching column preference for scope :',prefInfo.scope ,",preferenceId :",self.preferenceId,", preferenceName:",self.preferenceName);
 	      	
 	    	var preferenceStore = sdPreferenceService.getStore(prefInfo.scope, self.preferenceModule,
 	    			self.preferenceId);
@@ -293,13 +292,12 @@
 	    		var value = this.super_getValue(name, fromParent);
 	    		trace.debug("Before migrating column names ",value);
 	    		value = self.getColumnNamesByMode(value);
-	    		trace.debug("Returned Columns",value);
+	    		trace.debug("After migrating column names",value);
 	    		return value;
 	    	};
 	    	// Override
 	    	preferenceStore.marshalName = function(scope, name) {
-	    		trace.debug("marshalName - scope",scope);
-	    		trace.debug("marshalName - name",name);
+	    		trace.debug("marshalName - scope:",scope,", name :", name);
 	    		var name = self.preferenceName;
 	    		if (scope == 'PARTITION') {
 	    			if (self.isWorklistMode() && this.parentStore && !this.parentStore[name]) {
@@ -308,7 +306,7 @@
 	    				name = 'Default';
 	    			}
 	    		}
-	    	  	trace.log('Returned Name :',name);
+	    	  	trace.log('Preference Name to be used for prference :',name);
 	    		return name;
 	    	}
 	    	return preferenceStore;
@@ -358,7 +356,6 @@
 	     */
 	    ActivityTableCompiler.prototype.changeFormStatus = function(rowId) {
 	    	var self = this;
-	    	trace.debug("Marking row as dirty.");
 	    	if (this.dirtyDataForms.indexOf(rowId) == -1) {
 	    		this.dirtyDataForms.push(rowId);
 	    	}
@@ -390,7 +387,7 @@
 	     */
 	    this.showResubmissionConfirmation = function(rowItem) {
 	    	var self = this;
-	    	trace.log('Worklist Item submitted for resubmission : '+rowItem.activityOID);
+	    	trace.log('Worklist Item submitted for resubmission :',rowItem.activityOID);
 	    	
 	    	var title = sgI18nService.translate('views-common-messages.common-confirm', 'Confirm');
 	    	
@@ -414,14 +411,13 @@
 		sdActivityInstanceService.activate(rowItem.activityOID).then(
 			function(result) {
 			    if (result.failure.length > 0) {
-				trace.error("Error in activating worklist item : "+rowItem.activityOID+".Error : " + result.failure[0].message);
+				trace.error("Error in activating worklist item : ",rowItem.activityOID,".Error : ",  result.failure[0].message);
 				var options = { 
 						title : sgI18nService.translate('views-common-messages.common-error', 'Error')
 						};
 				var message = result.failure[0].message;
 				sdDialogService.error(scope, message, options)
 			    } else {
-				trace.debug("Activation successfull : ",rowItem.activityOID);
 				sdCommonViewUtilService.openActivityView(rowItem.activityOID);
 				self.refresh();
 			    }
@@ -526,7 +522,6 @@
 	 * 
 	 */
 	ActivityTableCompiler.prototype.initializeWorklistMode = function(attr, scope) {
-		trace.debug("Table intialized in worklist mode.");
 		this.priorityEditable = false;
 		this.visibleColumns = DEFAULT_VALUES.WORKLIST.VISIBLE_COLUMNS;
 		this.preferenceModule = DEFAULT_VALUES.WORKLIST.PREFERENCE_MODULE;
@@ -545,7 +540,7 @@
 	    sdActivityInstanceService.reactivate(rowItem.activityOID).then(
 		    function(result) {
 			if (result.failure.length > 0) {
-			    trace.error("Error in reactivating worklist item : "+rowItem.activityOID+".Error : " + result.failure[0].message);
+			    trace.error("Error in reactivating worklist item : ",rowItem.activityOID,".Error : ", result.failure[0].message);
 			    var options = { 
 			    		title : sgI18nService.translate('views-common-messages.common-error', 'Error')
 			    		};
@@ -554,7 +549,6 @@
 				    [ rowItem.activityOID ]);
 			    sdDialogService.error(scope, message, options)
 			} else {
-			    trace.debug("Rebusmission successfull for activity : ",rowItem.activityOID);
 			    sdCommonViewUtilService.openActivityView(rowItem.activityOID);
 			    methodScope.refresh();
 			}
@@ -565,7 +559,6 @@
 	 * 
 	 */
 	ActivityTableCompiler.prototype.initializeActivityInstanceMode = function(attr, scope) {
-		trace.debug("Table intialized in activity table  mode.");
 		this.priorityEditable = true;
 		this.originalPriorities = {};
 		this.changedPriorities = {};
@@ -623,7 +616,6 @@
 				this.preferenceId = 'worklist-participant-columns';
 			}
 			if(this.query.name) {
-				trace.debug("Worklist Name :"+this.query.name);
 				this.exportFileName = this.exportFileName + " (" + this.query.name +")";
 			}
 		}
@@ -652,7 +644,6 @@
 		if (attr.sdaVisibleColumns) {
 			var visibleColumnGetter = $parse(attr.sdaVisibleColumns);
 			this.visibleColumns = visibleColumnGetter(scopeToUse);
-			trace.debug("Visible columns - ",this.visibleColumns);
 		}
 	};
 
@@ -878,7 +869,7 @@
 		sdActivityInstanceService.relocate(rowItem.activityOID, rowItem.selectedTarget).then(function() {
 			self.refresh();
 		}, function(errorMessage) {
-			trace.error("Error in relocating worklist item : " + rowItem.activityOID + ".Error : " + errorMessage);
+			trace.error("Error in relocating worklist item : " , rowItem.activityOID , ".Error : " , errorMessage);
 			var options = { 
 					title : sgI18nService.translate('views-common-messages.common-error', 'Error')
 					};
@@ -1088,7 +1079,7 @@
 				}
 
 				if (activitiesData.length > 0) {
-					trace.debug("Complete activity called for "+activitiesData.length+ " activities.");
+					trace.debug("Complete activity called for ",activitiesData.length ," activities.");
 					sdActivityInstanceService
 					.completeAll(activitiesData)
 					.then(
@@ -1222,7 +1213,6 @@
 		if (Array.isArray(value)) {
 			var selectedItems = value;
 			if (selectedItems.length < 1) {
-				trace.log("No Rows selected");
 				return;
 			}
 			angular.forEach(selectedItems, function(item) {
@@ -1435,7 +1425,7 @@
 			}
 			self.refresh();
 		}, function(error) {
-			trace.error("Error in performing default delegate :  " + error);
+			trace.error("Error in performing default delegate :",error);
 		});
 	};
 
