@@ -180,13 +180,15 @@
 					<ice:outputText
 						styleClass="#{row.abortActivity ? '' : 'iceCmdBtn-dis'} pi pi-activity-abort pi-lg" 
 	                    title="#{messages_bcc['common.tooltip.abort']}"/>
-	                   <!-- Rendered when process termination is not allowed -->
-						<ice:outputText rendered="#{!row.abortProcess or row.caseInstance }">
-								<ice:outputText styleClass="iceCmdBtn-dis pi pi-menu-dropdown pi-sm" />
-						</ice:outputText>
 	                 <f:attribute name="activityInstance" value="#{row.activityInstance}" />
 				</ice:commandLink>
-				
+
+				<!-- Rendered when process termination is not allowed -->
+				<ice:panelGroup rendered="#{!row.abortProcess or row.caseInstance }">
+					<ice:outputText
+						styleClass="iceCmdBtn-dis pi pi-menu-dropdown pi-sm" />
+				</ice:panelGroup>
+
 				<!-- Rendered when process termination is allowed -->
 				<ice:panelGroup rendered="#{row.abortProcess and !row.caseInstance}">
 					<c:set var="activityInstance" value="#{row.activityInstance}" />
