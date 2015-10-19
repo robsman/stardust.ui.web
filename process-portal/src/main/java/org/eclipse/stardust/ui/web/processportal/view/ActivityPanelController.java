@@ -13,6 +13,8 @@ package org.eclipse.stardust.ui.web.processportal.view;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 import static org.eclipse.stardust.ui.web.viewscommon.common.AbstractProcessExecutionPortal.GENERIC_PANEL;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +52,6 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.AbstractDocumentUploadHelper.DocumentUploadCallbackHandler.DocumentUploadEventType;
@@ -65,6 +66,8 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.TypedDocumentsUtil;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDialog.FileUploadDialogAttributes;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
+
+import com.icesoft.util.encoding.Base64;
 
 /**
  * @author Robert.Sauer
@@ -327,6 +330,11 @@ public class ActivityPanelController extends UIComponentBean
       return activityDetailsBean.getDisplayProcessDocuments();
    }
 
+   public List<DocumentInfo> getCorrespondenceFolders()
+   {
+      return activityDetailsBean.getCorrespondenceFolders();
+   }
+   
    /**
     * timeout
     */
@@ -349,6 +357,33 @@ public class ActivityPanelController extends UIComponentBean
          uploadTypedDocument();
       }
    }
+   
+   /**
+    * @param event
+    */
+   public void openCorrespondenceView(ActionEvent event)
+   {
+      DocumentInfo docInfo = (DocumentInfo) event.getComponent().getAttributes().get("documentInfo");
+
+      Map<String, Object> params = CollectionUtils.newMap();
+      params.put("folderId", docInfo.getId());
+      params.put("folderName", docInfo.getName());
+
+      String viewKey;
+      try
+      {
+         viewKey = "folderId=" + URLEncoder.encode(docInfo.getId(), "UTF-8");
+      }
+      catch (UnsupportedEncodingException e)
+      {
+         viewKey = "folderId=" + docInfo.getId();
+      }
+      viewKey = Base64.encode(viewKey);
+
+      PortalApplication.getInstance().openViewById("correspondencePanel", viewKey, params, null, true);
+   }
+   
+   
    
    /**
     * 
@@ -638,6 +673,15 @@ public class ActivityPanelController extends UIComponentBean
    public void toggleProcessAttachmentsIframePopup()
    {
       activityDetailsBean.toggleProcessAttachmentsIframePopup();
+   }
+   
+   /**
+    * 
+    * @return
+    */
+   public boolean isHasCorrespondenceOutFolders()
+   {
+      return activityDetailsBean.hasCorrespondenceOutFolders();
    }
    
    /**

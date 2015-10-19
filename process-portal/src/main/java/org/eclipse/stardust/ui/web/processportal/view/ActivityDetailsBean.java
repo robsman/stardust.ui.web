@@ -42,6 +42,7 @@ import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.QualityAssuranceUtils.QualityAssuranceState;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
@@ -133,7 +134,6 @@ import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.DocumentHandlerBean;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentContentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
-
 import org.springframework.beans.factory.DisposableBean;
 
 import com.icesoft.faces.context.effects.JavascriptContext;
@@ -200,8 +200,12 @@ public class ActivityDetailsBean extends UIComponentBean
    private List<DocumentInfo> displayProcessAttachments;
 
    private List<DocumentInfo> displayProcessDocuments;
+   
+   private List<DocumentInfo> displayCorrespondenceFolders;
 
    private String processAttachmentsFolderPath;
+   
+   private String correspondenceFolderPath;
    
    private boolean autoOperationsPerformed;
    
@@ -249,6 +253,8 @@ public class ActivityDetailsBean extends UIComponentBean
    private static boolean HTML_BASED;
    
    private QualityAssuranceActivityBean qaBean;
+
+   private boolean hasCorrespondenceFolder = false;
 
    public static IActivityInteractionController getInteractionController(Activity activity)
    {
@@ -2467,6 +2473,7 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       fetchProcessAttachments();
       fetchProcessDocuments();
+      fetchCorrespondenceFolders();
    }
 
    /**
@@ -2487,6 +2494,33 @@ public class ActivityDetailsBean extends UIComponentBean
       }
    }
 
+   /**
+    * 
+    */
+   public void fetchCorrespondenceFolders()
+   {
+      if (activityInstance != null)
+      {
+         if (correspondenceFolderPath == null)
+         {
+            correspondenceFolderPath = DocumentMgmtUtility.getCorrespondenceFolderPath(processInstance.getOID());
+         }
+         Folder folder = DocumentMgmtUtility.getFolder(correspondenceFolderPath);
+         if (folder != null)
+         {
+            displayCorrespondenceFolders = new ArrayList<DocumentInfo>();
+            folder = DocumentMgmtUtility.getDocumentManagementService().getFolder(folder.getId(), 2);
+            
+            List<Folder> folders = folder.getFolders();
+            for (Folder folder2 : folders)
+            {
+               displayCorrespondenceFolders.add(new DocumentInfo(ResourcePaths.I_EMAIL_GO, folder2));
+            }
+            hasCorrespondenceFolder = true;
+         }
+      }
+   }
+   
    /**
     * @param attachments
     */
@@ -3488,6 +3522,11 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       return supportsProcessAttachments;
    }
+   
+   public boolean hasCorrespondenceOutFolders()
+   {
+      return hasCorrespondenceFolder;
+   }
 
    public List<NoteTip> getDisplayNotes()
    {
@@ -3509,6 +3548,11 @@ public class ActivityDetailsBean extends UIComponentBean
       return displayProcessDocuments;
    }
 
+   public List<DocumentInfo> getCorrespondenceFolders()
+   {
+      return displayCorrespondenceFolders;
+   }
+   
    public boolean isAssemblyLineActivity()
    {
       return assemblyLineActivity;

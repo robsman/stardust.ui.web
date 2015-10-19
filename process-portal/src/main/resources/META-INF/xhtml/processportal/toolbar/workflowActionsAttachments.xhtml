@@ -25,7 +25,8 @@
 			</ice:commandLink>
 			<div id="ippNotesAnchor" style="width: 1px; height: 1px;"></div>
 		</ice:panelGroup>
-		<ice:panelGroup rendered="#{ippActivityPanelController.supportsProcessAttachments or ippActivityPanelController.supportsProcessDocuments}" style="margin-left: 8px;">			
+		<ice:panelGroup rendered="#{ippActivityPanelController.supportsProcessAttachments or ippActivityPanelController.supportsProcessDocuments
+		or ippActivityPanelController.hasCorrespondenceOutFolders}" style="margin-left: 8px;">			
 			<ice:commandLink immediate="true"
 				action="#{ippActivityPanelController.toggleProcessAttachmentsIframePopup}"
 				title="#{processportal_msgPropsBean['toolbars.workflowActions.tooltip.processDocuments']}">

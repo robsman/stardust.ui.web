@@ -132,6 +132,20 @@
 						</ice:commandLink>
 					</ice:panelGrid>
 				</ice:panelSeries>
+				<ice:panelSeries rendered="#{ippActivityPanelController.hasCorrespondenceOutFolders}"
+					value="#{ippActivityPanelController.correspondenceFolders}" var="correspondenceFolder">
+					<ice:panelGrid columns="2"> <!-- Added to give same spacing -->
+						<ice:commandLink styleClass="action-link"
+							actionListener="#{ippActivityPanelController.openCorrespondenceView}" immediate="true" onclick="closeIframe();">
+							<pc:automationTag value="auto-PP-ProcAttachDlg-ToolbarOpenCorrespondence" />
+							<f:attribute name="documentInfo" value="#{correspondenceFolder}" />
+							<ice:panelGrid columns="2">
+								<i class="#{correspondenceFolder.documentIcon}"></i>
+								<ice:outputText value="#{correspondenceFolder.name}" style="white-space: nowrap;" />
+							</ice:panelGrid>
+						</ice:commandLink>
+					</ice:panelGrid>
+				</ice:panelSeries>
 			</ice:panelGroup>
 		</ice:form>
 	</body>
