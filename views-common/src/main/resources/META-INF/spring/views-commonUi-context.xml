@@ -78,8 +78,8 @@
 				include="/plugins/views-common/views/document/documentView.xhtml"
 				controller="documentHandlerBean" />
 
-			<ippui:view name="correspondenceView"
-				include="/plugins/views-common/views/correspondence/correspondenceView.xhtml" />
+			<!-- 			<ippui:view name="correspondenceView"
+				include="/plugins/views-common/views/correspondence/correspondenceView.xhtml" />			 -->
 			<ippui:view name="chatView"
 				include="/plugins/views-common/views/chat/chatView.xhtml"
 				controller="chatViewBean">				<ippui:preferences>					<ippui:preferencePage name="icon" include="/does-not-exist/chat-view.png" />				</ippui:preferences>			</ippui:view>
