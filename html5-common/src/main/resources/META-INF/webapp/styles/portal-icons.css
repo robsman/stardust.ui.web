@@ -1642,10 +1642,10 @@ span.pi-case-menu-open:after {
 /** The actual font based icon will be replaced once available*/
 .pi-attach-process-to-case:before {
 	font-family:"FontAwesome";
-    content: "\f0e0"; /* fa-envelope */
+    content: "\f055"; /* fa-plus-circle */
 }
 
 .pi-detach-process-from-case:before {
 	font-family:"FontAwesome";
-    content: "\f003"; /* fa-envelope-o */
+    content: "\f056"; /* fa-minus-circle */
 }
