@@ -1,16 +1,5 @@
-<html>
-<head>
-<style type="text/css">
-table.formTable td {
-	padding: 3px;
-}
-</style>
-</head>
-<body>
 <div sg-stretch-to-bottom class="view-panel">
-	<div class="ng-hide" ng-show="true"
-		ng-controller="sdDocumentSearchViewCtrl as docSearchViewCtrl"
-		sg-stretch-to-bottom>
+	<div class="ng-hide" ng-show="true" ng-controller="sdDocumentSearchViewCtrl as docSearchViewCtrl">
 		<div class="heading"
 			ng-click="docSearchViewCtrl.setShowDocumentSearchCriteria()"
 			aid="COM-SrchDoc-ShowHideCriteria">
@@ -22,7 +11,7 @@ table.formTable td {
 		</div>
 		<div ng-show="docSearchViewCtrl.showDocumentSearchCriteria">
 			<form name="docSearchViewCtrl.searchCriteriaForm">
-				<table class="formTable">
+				<table class="searchTableLayout">
 					<tr>
 						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-createDate-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
@@ -225,7 +214,7 @@ table.formTable td {
 					</tr>
 				</table>
 			</form>
-			<table class="formTable">
+			<table class="searchTableLayout">
 				<tbody>
 					<tr>
 						<td><input class="button" type="submit"
@@ -254,5 +243,3 @@ table.formTable td {
 		</div>
 	</div>
 </div>	
-</body>
-<html>

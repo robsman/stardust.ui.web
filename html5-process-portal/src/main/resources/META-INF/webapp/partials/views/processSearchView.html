@@ -1,15 +1,9 @@
-<style type="text/css">
-table.layoutTable td {
-	padding: 3px;
-}
-</style>
 <div sg-stretch-to-bottom class="view-panel">
-	<div class="ng-hide" ng-show="true" style="width: 100%; height: 100%"
-		ng-controller="sdProcessSearchViewCtrl as procSearchViewCtrl">
+	<div class="ng-hide" ng-show="true" ng-controller="sdProcessSearchViewCtrl as procSearchViewCtrl">
 		<div style="margin-top: 20px;" class="view-panel-toolbar">
 			<a href="#" ng-show="procSearchViewCtrl.showSearchCriteria"
 				ng-click="procSearchViewCtrl.showSearchCriteria = false" aid="BCC-ProcSrch-HideCriteria">
-				<table cellpadding="0" cellspacing="0" class="layoutTable">
+				<table cellpadding="0" cellspacing="0" class="searchTableLayout">
 					<tr>
 						<td style="padding-right: 5px;"><i
 							class=" pi pi-trigger-expanded pi-lg"></i></td>
@@ -18,7 +12,7 @@ table.layoutTable td {
 				</table>
 			</a> <a href="#" ng-show="!procSearchViewCtrl.showSearchCriteria"
 				ng-click="procSearchViewCtrl.showSearchCriteria = true" aid="BCC-ProcSrch-ShowCriteria">
-				<table cellpadding="0" cellspacing="0" class="layoutTable">
+				<table cellpadding="0" cellspacing="0" class="searchTableLayout">
 					<tr>
 						<td style="padding-right: 5px;"><i
 							class=" pi pi-trigger-collapsed pi-lg"></i></td>
@@ -51,7 +45,7 @@ table.layoutTable td {
 				</tr>
 				<tr>
 					<td>
-						<table class="layoutTable">
+						<table class="searchTableLayout">
 							<tr>
 								<td colspan="3">
 									<div class="heading view-panel-toolbar">
@@ -198,7 +192,7 @@ table.layoutTable td {
 						</table>
 					</td>
 					<td style="vertical-align: top;">
-						<table class="layoutTable"
+						<table class="searchTableLayout"
 							ng-show="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1">
 							<tr>
 								<td colspan="3">
@@ -351,7 +345,7 @@ table.layoutTable td {
 					</td>
 					<td style="vertical-align: top;"
 						ng-show="procSearchViewCtrl.descritorCols.length > 0">
-						<table class="layoutTable">
+						<table class="searchTableLayout">
 							<tr>
 								<td colspan="3">
 									<div class="heading view-panel-toolbar">

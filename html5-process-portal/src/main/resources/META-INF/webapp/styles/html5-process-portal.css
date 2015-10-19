@@ -254,5 +254,7 @@ padding : 5px;;
 	height: 20px;
 }
 
-/* ********** Benchmark flag ********** */
+.searchTableLayout td {
+	padding: 3px;
+}
 
