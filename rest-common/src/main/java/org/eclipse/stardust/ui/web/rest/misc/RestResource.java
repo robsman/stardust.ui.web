@@ -119,12 +119,6 @@ public class RestResource
 
    private String getBasePath()
    {
-      /*
-       * System.out.println(httpRequest.getContextPath());
-       * System.out.println(httpRequest.getPathInfo());
-       * System.out.println(httpRequest.getRequestURI());
-       * System.out.println(httpRequest.getRequestURL());
-       */
       return httpRequest.getRequestURI().substring(httpRequest.getContextPath().length() + 1);
    }
 

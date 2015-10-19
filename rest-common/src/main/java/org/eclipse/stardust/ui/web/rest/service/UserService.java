@@ -137,8 +137,6 @@ public class UserService
       IppUser ippUser = (IppUser) loggedInUser;
       for (String permission : allPermissionIds)
       {
-         System.out.println(permission);
-         System.out.println(ippUser.hasPermission(permission));
          if (ippUser.hasPermission(permission))
          {
             availablePermissions.add(permission);
