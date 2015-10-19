@@ -49,11 +49,11 @@
 		
 		<ice:panelGroup rendered="#{col.columnName == 'Criticality'}">
 			<ice:panelGroup panelTooltip="criticalityTootip">
- 				<ice:graphicImage value="#{row.criticality.icon}" rendered="#{1 le row.criticality.iconCount}" />
- 				<ice:graphicImage value="#{row.criticality.icon}" rendered="#{2 le row.criticality.iconCount}" />
-				<ice:graphicImage value="#{row.criticality.icon}" rendered="#{3 le row.criticality.iconCount}" />
-				<ice:graphicImage value="#{row.criticality.icon}" rendered="#{4 le row.criticality.iconCount}" />
-				<ice:graphicImage value="#{row.criticality.icon}" rendered="#{5 le row.criticality.iconCount}" />
+ 				<ice:outputText styleClass="#{row.criticality.icon}" rendered="#{1 le row.criticality.iconCount}" />
+ 				<ice:outputText styleClass="#{row.criticality.icon}" rendered="#{2 le row.criticality.iconCount}" />
+				<ice:outputText styleClass="#{row.criticality.icon}" rendered="#{3 le row.criticality.iconCount}" />
+				<ice:outputText styleClass="#{row.criticality.icon}" rendered="#{4 le row.criticality.iconCount}" />
+				<ice:outputText styleClass="#{row.criticality.icon}" rendered="#{5 le row.criticality.iconCount}" />
 			</ice:panelGroup>
 			<ice:panelTooltip id="criticalityTootip"
 				style="background: #FFFFFF; background-color: #F0F0F2; border: 2px solid black;">

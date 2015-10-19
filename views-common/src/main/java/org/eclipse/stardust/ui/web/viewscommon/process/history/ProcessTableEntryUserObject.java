@@ -62,7 +62,7 @@ public class ProcessTableEntryUserObject extends NodeUserObject
       this.processTreeTable = processTreeTable;
 
       String formatType = tableEntry.getRuntimeObjectType();
-      String icon = (formatType != null) ? (ActivityInstanceUtils.getIconPath(formatType)) : null;
+      String icon = (formatType != null) ? (ActivityInstanceUtils.getFont(formatType)) : null;
       setLeafIcon(icon);
       setBranchContractedIcon(icon);
       setBranchExpandedIcon(icon);

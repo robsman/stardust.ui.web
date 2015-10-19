@@ -122,14 +122,12 @@
 								ng-if="!rowData.caseInstance && rowData.oid == rowData.processInstanceRootOID" >
 								<i class="pi pi-lg pi-root-process"></i>
 							</span>
-							<span src="plugins/views-common/images/icons/process.png"
-								style="border: none;"
+							<span style="border: none;"
 								title="{{i18n('business-control-center-messages.common-tooltip-subProcess')}}"
 								ng-if="!rowData.caseInstance && rowData.oid != rowData.processInstanceRootOID" >
 									<i class="pi pi-lg pi-process"></i>
 							</span>
-							<span src="plugins/views-common/images/icons/envelope.png"
-								style="border: none;"
+							<span style="border: none;"
 								title="{{i18n('business-control-center-messages.common-tooltip-case')}}"
 								ng-if="rowData.caseInstance" >
 									<i class="pi pi-case pi-lg"></i>

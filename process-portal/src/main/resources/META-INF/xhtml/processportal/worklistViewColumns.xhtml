@@ -101,19 +101,19 @@
 
 	<ice:panelGroup rendered="#{col.columnName == 'Criticality'}">
 		<ice:panelGroup panelTooltip="criticalityTootip">
-			<ice:graphicImage value="#{row.criticality.icon}"
+			<ice:outputText styleClass="#{row.criticality.icon}"
 				rendered="#{1 le row.criticality.iconCount}"
 				styleClass="portal-std-icon" />
-			<ice:graphicImage value="#{row.criticality.icon}"
+			<ice:outputText styleClass="#{row.criticality.icon}"
 				rendered="#{2 le row.criticality.iconCount}"
 				styleClass="portal-std-icon" />
-			<ice:graphicImage value="#{row.criticality.icon}"
+			<ice:outputText styleClass="#{row.criticality.icon}"
 				rendered="#{3 le row.criticality.iconCount}"
 				styleClass="portal-std-icon" />
-			<ice:graphicImage value="#{row.criticality.icon}"
+			<ice:outputText styleClass="#{row.criticality.icon}"
 				rendered="#{4 le row.criticality.iconCount}"
 				styleClass="portal-std-icon" />
-			<ice:graphicImage value="#{row.criticality.icon}"
+			<ice:outputText styleClass="#{row.criticality.icon}"
 				rendered="#{5 le row.criticality.iconCount}"
 				styleClass="portal-std-icon" />
 		</ice:panelGroup>
