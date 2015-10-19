@@ -710,7 +710,6 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
       }
       else
       {
-         validationMessageBean.reset();
          DescriptorItemTableEntry userObject = null;
          DataPathDetails inDataPath = null, outDataPath = null;
          try
@@ -727,6 +726,7 @@ public class ProcessInstanceDetailsBean extends PopupUIComponentBean
                {
                   return;
                }
+               validationMessageBean.reset();
                userObject = (DescriptorItemTableEntry) event.getComponent().getAttributes().get("row");
                String type = userObject.getType();
                Class dataClass = userObject.getMappedType();
