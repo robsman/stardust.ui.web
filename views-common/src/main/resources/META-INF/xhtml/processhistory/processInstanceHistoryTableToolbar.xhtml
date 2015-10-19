@@ -13,11 +13,10 @@
 			style="vertical-align: middle;" rendered="#{processHistoryTable.enableCase and caseDetailsBean.canManageCase }"
 			disabled="#{caseDetailsBean.inactiveCase}">	
 			<pc:automationTag value="auto-COM-PCEHistoryTable-ToolbarDetachPI" standAlone="false"/>
-			<ice:graphicImage
-				url="/plugins/views-common/images/icons/envelope--minus.png"
+			<ice:outputText
 				style="border:none;padding-right: 5px;"
 				title="#{views_common_msgPropsBean['views.case.detachPI']}" 
-				styleClass="#{!caseDetailsBean.inactiveCase? '' : 'iceCmdBtn-dis'}" />
+				styleClass="#{!caseDetailsBean.inactiveCase? '' : 'iceCmdBtn-dis'} pi pi-lg pi-detach-process-from-case" />
 			<f:attribute name="processInstance" value="#{processHistoryTable.selectedRow.processInstance}" />
 		</ice:commandLink>
 		

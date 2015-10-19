@@ -40,10 +40,9 @@
 		<ice:commandLink actionListener="#{caseDetailsBean.attachToCase}"
 			rendered="#{caseDetailsBean.canManageCase}"
 			disabled="#{caseDetailsBean.inactiveCase}" >	
-			<ice:graphicImage
-				url="/plugins/views-common/images/icons/envelope--plus.png"
+			<ice:outputText
 				title="#{views_common_msgPropsBean['views.case.attachPI']}" 
-				styleClass="#{!caseDetailsBean.inactiveCase? '' : 'iceCmdBtn-dis'}" />
+				styleClass="#{!caseDetailsBean.inactiveCase? '' : 'iceCmdBtn-dis'} pi pi-lg pi-attach-process-to-case" />
 		</ice:commandLink>
 					
 		<ice:graphicImage value="/plugins/views-common/images/icons/toolbar-separator.png"/>	

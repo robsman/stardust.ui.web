@@ -126,10 +126,9 @@
 				actionListener="#{caseDetailsBean.detachFromCase}" rendered="#{processHistoryTable.enableCase and row.enableDetach}" 
 				disabled="#{caseDetailsBean.inactiveCase}">	
 				<pc:automationTag value="auto-COM-PCEHistoryTable-ActionsDetachCase" standAlone="false"/>		
-				<ice:graphicImage
-					value="/plugins/views-common/images/icons/envelope--minus.png"
+				<ice:outputText
 					title="#{views_common_msgPropsBean['views.case.detachPI']}" 
-					styleClass="#{!caseDetailsBean.inactiveCase? '' : 'iceCmdBtn-dis'}" />
+					styleClass="#{!caseDetailsBean.inactiveCase? '' : 'iceCmdBtn-dis'} pi pi-lg pi-detach-process-from-case" />
 				<f:attribute name="processInstance" value="#{row.processInstance}" />
 			</ice:commandLink>	
 			<ice:commandLink

@@ -1639,3 +1639,13 @@ span.pi-case-menu-open:after {
 	font-family:"FontAwesome";
 	content:'\f04d'; /* fa-stop */
 }
+/** The actual font based icon will be replaced once available*/
+.pi-attach-process-to-case:before {
+	font-family:"FontAwesome";
+    content: "\f0e0"; /* fa-envelope */
+}
+
+.pi-detach-process-from-case:before {
+	font-family:"FontAwesome";
+    content: "\f003"; /* fa-envelope-o */
+}
