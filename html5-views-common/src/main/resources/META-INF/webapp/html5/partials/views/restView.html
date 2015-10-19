@@ -204,7 +204,7 @@ h1, h2, h3, h4, .moduleName, .tablesorter-header-inner {
 								</span></td>
 								<td class="confluenceTd path"><span
 									id="{{endpoint.method}}">&nbsp;{{endpoint.path}}</span> <br>
-									<span class="endpointUrl"><a href="{{endpoint.uri}}">{{endpoint.uri}}</a></span></td>
+									<span class="endpointUrl"><a target="_blank" href="{{endpoint.relativePath}}">{{endpoint.uri}}</a></span></td>
 								<td class="confluenceTd"><ul>
 										<li ng-repeat="(paramName, paramValue) in endpoint.pathParams">
 											<span>{{paramName}}: </span> <span>

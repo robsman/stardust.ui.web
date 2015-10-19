@@ -32,6 +32,8 @@ public class EndPointDTO
    public String description;
    public String requestDescription;
    public String responseDescription;
+   
+   public String relativePath = "";
 
    public Map<String, ParameterDTO> queryParams = new HashMap<String, ParameterDTO>();
    public Map<String, ParameterDTO> pathParams = new HashMap<String, ParameterDTO>();

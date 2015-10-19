@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *	SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *  SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.misc;
 
@@ -17,6 +17,7 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -36,9 +37,19 @@ import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.model.wadl.Description;
 import org.eclipse.stardust.ui.web.rest.misc.EndPointDTO.ParameterDTO;
+import org.eclipse.stardust.ui.web.rest.service.UserService;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.core.type.classreading.CachingMetadataReaderFactory;
+import org.springframework.core.type.classreading.MetadataReader;
+import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.SystemPropertyUtils;
 
 /**
  * @author Yogesh.Manware
@@ -53,18 +64,29 @@ public class RestResource
    @Context
    private HttpServletRequest httpRequest;
 
+   @Autowired
+   private UserService userService;
+   
    @GET
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("")
    public Response getAllRestEndpoints()
    {
+      //make sure user is logged in
+      userService.getLoggedInUser();
+      
       Map<String, Map<String, ResourceDTO>> endpointsContainerDTOs = new TreeMap<String, Map<String, ResourceDTO>>();
 
       try
       {
-         endpointsContainerDTOs.put("rest-common", this.searchAllEndPoints(REST_COMMON_PACKAGE));
+
+         endpointsContainerDTOs.put("bpm-reporting",
+               this.searchAllEndPoints("org.eclipse.stardust.ui.web.reporting.beans.rest"));
          endpointsContainerDTOs.put("simple-modeler",
                this.searchAllEndPoints("com.infinity.bpm.ui.web.simple_modeler.service.rest"));
+
+         endpointsContainerDTOs.put("rest-common", this.searchAllEndPoints(REST_COMMON_PACKAGE));
+
          endpointsContainerDTOs.put("benchmark", this.searchAllEndPoints("org.eclipse.stardust.ui.web.benchmark.rest"));
          endpointsContainerDTOs.put("process-portal",
                this.searchAllEndPoints("org.eclipse.stardust.ui.web.processportal.service.rest"));
@@ -88,15 +110,12 @@ public class RestResource
          endpointsContainerDTOs.put("business-object-management",
                this.searchAllEndPoints("org.eclipse.stardust.ui.web.business_object_management.rest"));
 
-         endpointsContainerDTOs.put("bpm-reporting",
-               this.searchAllEndPoints("org.eclipse.stardust.ui.web.reporting.beans.rest"));
-
          endpointsContainerDTOs.put("views-common",
                this.searchAllEndPoints("org.eclipse.stardust.ui.web.viewscommon.views.document"));
          endpointsContainerDTOs.get("views-common").putAll(
                this.searchAllEndPoints("org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.service"));
          endpointsContainerDTOs.get("views-common").putAll(
-               this.searchAllEndPoints("\"org.eclipse.stardust.ui.web.viewscommon.docmgmt\""));
+               this.searchAllEndPoints("org.eclipse.stardust.ui.web.viewscommon.docmgmt"));
       }
       catch (IOException e)
       {
@@ -112,6 +131,12 @@ public class RestResource
 
    private String getBaseURL()
    {
+       System.out.println(httpRequest.getContextPath());
+       System.out.println(httpRequest.getPathInfo());
+       System.out.println(httpRequest.getRequestURI());
+       System.out.println(httpRequest.getRequestURL());
+      
+      
       String path = httpRequest.getRequestURL().toString();
       int e = path.indexOf("portal-rest");
       return path.substring(0, e);
@@ -119,25 +144,52 @@ public class RestResource
 
    private String getBasePath()
    {
+      /*
+       * System.out.println(httpRequest.getContextPath());
+       * System.out.println(httpRequest.getPathInfo());
+       * System.out.println(httpRequest.getRequestURI());
+       * System.out.println(httpRequest.getRequestURL());
+       */
       return httpRequest.getRequestURI().substring(httpRequest.getContextPath().length() + 1);
    }
 
-   @SuppressWarnings("rawtypes")
+   /**
+    * @param basePkg
+    * @return
+    * @throws IOException
+    * @throws ClassNotFoundException
+    */
    private Map<String, ResourceDTO> searchAllEndPoints(String basePkg) throws IOException, ClassNotFoundException
    {
       Map<String, ResourceDTO> containerDTOs = new TreeMap<String, ResourceDTO>();
-
-      List<Class> resources = getAllClassesFromBasePackage(basePkg);
-
       String basePath = getBaseURL();
 
-      for (Class< ? > resource : resources)
+      // Map<String, Class> jrebelResources = getAllClassesFromBasePackageJrebel(basePkg);
+      // containerDTOs = searchAllEndPoints(jrebelResources, basePath, containerDTOs);
+      containerDTOs.putAll(searchAllEndPoints(getAllClassesFromBasePackage(basePkg), basePath));
+
+      return containerDTOs;
+   }
+
+   /**
+    * @param resources
+    * @param basePath
+    * @return
+    */
+   @SuppressWarnings("rawtypes")
+   private Map<String, ResourceDTO> searchAllEndPoints(Map<String, Class> resources, String basePath)
+   {
+      Map<String, ResourceDTO> containerDTOs = new TreeMap<String, ResourceDTO>();
+
+      for (Class< ? > resource : resources.values())
       {
          Path pathAnnoation = resource.getAnnotation(Path.class);
          if (pathAnnoation != null) // it is valid resource
          {
             ResourceDTO containerDTO = new ResourceDTO();
-            containerDTOs.put(StringUtils.substringAfterLast(resource.getName(), "."), containerDTO);
+
+            String name = StringUtils.substringAfterLast(resource.getName(), ".");
+            containerDTOs.put(name, containerDTO);
 
             containerDTO.qualifiedName = resource.getName();
             if (resource.getAnnotation(Description.class) != null)
@@ -176,32 +228,103 @@ public class RestResource
       }
 
       return containerDTOs;
+
    }
 
    /**
-    * Returns all of the classes in the specified package (including sub-packages).
+    * This method works only when Jrebel is enabled
     */
    @SuppressWarnings("rawtypes")
-   private List<Class> getAllClassesFromBasePackage(String basePkg) throws IOException, ClassNotFoundException
+   private Map<String, Class> getAllClassesFromBasePackageJrebel(String basePkg) throws IOException,
+         ClassNotFoundException
    {
       ClassLoader classloader = Thread.currentThread().getContextClassLoader();
       String basePath = basePkg.replace('.', '/');
       Enumeration<URL> resources = classloader.getResources(basePath);
       List<File> dirs = new ArrayList<File>();
 
-      int count = 0;
       while (resources.hasMoreElements())
       {
          URL resource = resources.nextElement();
          dirs.add(new File(resource.getFile()));
       }
 
-      ArrayList<Class> classes = new ArrayList<Class>();
+      Map<String, Class> classes = new HashMap<String, Class>();
       for (File directory : dirs)
       {
-         classes.addAll(getClasses(directory, basePkg));
+         classes.putAll(getClasses(directory, basePkg));
       }
       return classes;
+   }
+
+   /**
+    * Returns all of the classes in the specified package (including sub-packages).
+    * 
+    * @param basePackage
+    * @return
+    * @throws IOException
+    * @throws ClassNotFoundException
+    */
+   private Map<String, Class> getAllClassesFromBasePackage(String basePackage) throws IOException,
+         ClassNotFoundException
+   {
+      ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
+      MetadataReaderFactory metadataReaderFactory = new CachingMetadataReaderFactory(resourcePatternResolver);
+
+      String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX + resolveBasePackage(basePackage)
+            + "/" + "**/*.class";
+      Resource[] resources = resourcePatternResolver.getResources(packageSearchPath);
+
+      Map<String, Class> classes = new HashMap<String, Class>();
+      for (Resource resource : resources)
+      {
+         if (resource.isReadable())
+         {
+            MetadataReader metadataReader = metadataReaderFactory.getMetadataReader(resource);
+            if (isResource(metadataReader))
+            {
+               classes.put(metadataReader.getClassMetadata().getClassName(),
+                     Class.forName(metadataReader.getClassMetadata().getClassName()));
+            }
+         }
+      }
+      return classes;
+   }
+
+   private String resolveBasePackage(String basePackage)
+   {
+      return ClassUtils.convertClassNameToResourcePath(SystemPropertyUtils.resolvePlaceholders(basePackage));
+   }
+
+   private boolean isResource(MetadataReader metadataReader) throws ClassNotFoundException
+   {
+      try
+      {
+         Class c = Class.forName(metadataReader.getClassMetadata().getClassName());
+         if (c.getAnnotation(Path.class) != null)
+         {
+            return true;
+         }
+      }
+      catch (Throwable e)
+      {
+      }
+      return false;
+   }
+
+   private boolean isResource(Class< ? > resource) throws ClassNotFoundException
+   {
+      try
+      {
+         if (resource.getAnnotation(Path.class) != null)
+         {
+            return true;
+         }
+      }
+      catch (Throwable e)
+      {
+      }
+      return false;
    }
 
    /**
@@ -209,9 +332,9 @@ public class RestResource
     * itself recursively until no more directories are found.
     */
    @SuppressWarnings("rawtypes")
-   private List<Class> getClasses(File dir, String pkg) throws ClassNotFoundException
+   private Map<String, Class> getClasses(File dir, String pkg) throws ClassNotFoundException
    {
-      List<Class> classes = new ArrayList<Class>();
+      Map<String, Class> classes = new HashMap<String, Class>();
       if (!dir.exists())
       {
          return classes;
@@ -221,11 +344,16 @@ public class RestResource
       {
          if (file.isDirectory())
          {
-            classes.addAll(getClasses(file, pkg + "." + file.getName()));
+            classes.putAll(getClasses(file, pkg + "." + file.getName()));
          }
          else if (file.getName().endsWith(".class"))
          {
-            classes.add(Class.forName(pkg + '.' + StringUtils.substringBeforeLast(file.getName(), ".")));
+            String resName = pkg + '.' + StringUtils.substringBeforeLast(file.getName(), ".");
+            Class< ? > resource = Class.forName(resName);
+            if (isResource(resource))
+            {
+               classes.put(resName, resource);
+            }
          }
       }
       return classes;
@@ -253,7 +381,9 @@ public class RestResource
       }
 
       newEndpoint.uri = newEndpoint.uri.replace("//", "/");
-      newEndpoint.uri = newEndpoint.uri.replace("//", "/");
+      String contextPath = httpRequest.getContextPath();
+      int i = newEndpoint.uri.indexOf(contextPath);
+      newEndpoint.relativePath = newEndpoint.uri.substring(i, newEndpoint.uri.length());
 
       Description description = javaMethod.getAnnotation(Description.class);
       if (description != null)
