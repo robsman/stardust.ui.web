@@ -1056,14 +1056,14 @@ public class DocumentMgmtUtility
    {
       return DmsUtils.composeDefaultPath(pi.getOID(), pi.getStartTime()) + SPECIFIC_DOCUMENTS;
    }
-   
+
    /**
-    * @param processInstance
+    * @param processOid
     * @return
     */
-   public static String getCorrespondenceFolderPath(ProcessInstance processInstance)
+   public static String getCorrespondenceFolderPath(Long processOid)
    {
-      processInstance = ProcessInstanceUtils.getCorrespondenceProcessInstance(processInstance.getOID());
+      ProcessInstance processInstance = ProcessInstanceUtils.getCorrespondenceProcessInstance(processOid);
       return DmsUtils.composeDefaultPath(processInstance.getOID(), processInstance.getStartTime()) + CORRESPONDENCE;
    }
 
@@ -1073,7 +1073,7 @@ public class DocumentMgmtUtility
     */
    public static String getCorrespondenceOutFolderPath(ActivityInstance ai)
    {
-      return getCorrespondenceFolderPath(ai.getProcessInstance()) + CORRESPONDENCE_OUT + ai.getOID();
+      return getCorrespondenceFolderPath(ai.getProcessInstance().getOID()) + CORRESPONDENCE_OUT + ai.getOID();
    }
    
    /**

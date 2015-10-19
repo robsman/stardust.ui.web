@@ -38,6 +38,7 @@ import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
+import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.ws.DocumentInfoXto;
 import org.eclipse.stardust.engine.api.ws.DocumentTypeXto;
@@ -72,9 +73,11 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SwitchProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.FolderDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.AddressBookDataPathValueDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.DataPathValueDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.rest.service.helpers.AddressBookDataPathValueFilter;
 import org.eclipse.stardust.ui.web.rest.service.helpers.DefaultDataPathValueFilter;
 import org.eclipse.stardust.ui.web.rest.service.helpers.IDataPathValueFilter;
@@ -581,6 +584,18 @@ public class ProcessInstanceService
       ProcessInstance processInstance = ProcessInstanceUtils.getCorrespondenceProcessInstance(oid);
       return processInstanceUtilsREST.buildProcessInstanceDTO(processInstance);   
    }
+   
+   /**
+    * @param oid
+    * @return
+    */
+   public FolderDTO getCorrespondenceFolderDTO(Long oid)
+   {
+      ProcessInstance processInstance = ProcessInstanceUtils.getProcessInstance(oid);
+      String correspondenceFolderPath = DocumentMgmtUtility.getCorrespondenceFolderPath(processInstance.getOID());
+      return repositoryService.getFolder(correspondenceFolderPath, 2, false);
+   }
+
    /**
     * 
     */

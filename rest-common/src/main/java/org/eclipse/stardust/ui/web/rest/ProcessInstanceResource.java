@@ -44,6 +44,7 @@ import org.eclipse.stardust.engine.core.query.statistics.api.BenchmarkProcessSta
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
+import org.eclipse.stardust.ui.web.rest.service.MapAdapter;
 import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.service.ProcessInstanceService;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
@@ -51,12 +52,14 @@ import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.DataPathValueDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.TrafficLightViewUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -125,6 +128,26 @@ public class ProcessInstanceResource
          trace.error(e, e);
          return Response.serverError().build();
       }
+   }
+   
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{oid}/correspondence")
+   public Response getCorrespondenceFolder(@PathParam("oid") Long processOid)
+   {
+      FolderDTO folderDto = null;
+      try
+      {
+         folderDto = getProcessInstanceService().getCorrespondenceFolderDTO(processOid);
+      }
+      catch (Exception e)
+      {
+         folderDto = new FolderDTO();
+         // do nothing - correspondence folder does not exist
+      }
+      // TODO move jsonHelper and MapAdapter to Portal-Common and then modify GsonUtils
+      Gson gson = new GsonBuilder().registerTypeAdapter(Map.class, new MapAdapter()).disableHtmlEscaping().create();
+      return Response.ok(gson.toJson(folderDto, FolderDTO.class), MediaType.APPLICATION_JSON).build();
    }
 
    @GET

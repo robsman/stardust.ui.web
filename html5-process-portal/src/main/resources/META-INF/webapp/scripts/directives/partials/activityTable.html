@@ -405,12 +405,25 @@
 					</div>
 				</div>
 				<div
-					ng-if="activityTableCtrl.processPopover.data.processAttachments.documents.length > 0 || activityTableCtrl.processPopover.data.specificDocuments.documents.length > 0">
+					ng-if="activityTableCtrl.processPopover.data.correspondences.length > 0">
+					<div class="popoverHeading">
+						<b>{{sdI18n('processportal.toolbars.workflowActions.processDocuments.correspondence')}}</b>
+					</div>
+					<div
+						ng-repeat="folder in activityTableCtrl.processPopover.data.correspondences">
+						<a href="#"
+							ng-click="activityTableCtrl.openCorrespondenceView(folder)">{{folder.name}}</a>
+					</div>
+				</div>
+				<div
+					ng-if="activityTableCtrl.processPopover.data.processAttachments.documents.length > 0 || activityTableCtrl.processPopover.data.specificDocuments.documents.length > 0
+					|| activityTableCtrl.processPopover.data.correspondences.length > 0">
 					<a href=""
 						ng-click="activityTableCtrl.openAllProcessDocumentViews(activityTableCtrl.processPopover.data);"><B>{{i18n('processportal.toolbars-workflowActions-processDocuments-openAllDocuments')}}</B></a>
 				</div>
 				<div
-					ng-if="!activityTableCtrl.processPopover.data.supportsProcessAttachments && activityTableCtrl.processPopover.data.specificDocuments.length == 0">
+					ng-if="!activityTableCtrl.processPopover.data.supportsProcessAttachments && activityTableCtrl.processPopover.data.specificDocuments.length == 0
+					&& activityTableCtrl.processPopover.data.correspondences.length == 0">
 					{{i18n('processportal.toolbars-workflowActions-processDocuments-noProcessDocuments')}}
 				</div>
 			</div>

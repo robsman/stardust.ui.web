@@ -1462,7 +1462,8 @@ public class RepositoryUtility
     */
    private static DefaultMutableTreeNode createCorrespondenceFolderNode(ProcessInstance processInstance)
    {
-      Folder folder = DocumentMgmtUtility.getFolder(DocumentMgmtUtility.getCorrespondenceFolderPath(processInstance));
+      Folder folder = DocumentMgmtUtility.getFolder(DocumentMgmtUtility.getCorrespondenceFolderPath(processInstance
+            .getOID()));
       if (folder == null)
       {
          return null;
@@ -1528,7 +1529,7 @@ public class RepositoryUtility
     */
    public static Folder getOrCreateCorrespondenceFolder(ProcessInstance pi)
    {
-      String correspondenceFolderPath = DocumentMgmtUtility.getCorrespondenceFolderPath(pi);
+      String correspondenceFolderPath = DocumentMgmtUtility.getCorrespondenceFolderPath(pi.getOID());
       // check if folder is null
       Folder correspondenceFolder = DocumentMgmtUtility.getFolder(correspondenceFolderPath);
       if (correspondenceFolder == null)

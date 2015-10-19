@@ -883,27 +883,38 @@
 	 * 
 	 */
 	ActivityTableCompiler.prototype.openProcessDocumentsPopover = function(rowItem, $event) {
-		var self = this;
-		self.processPopover = {
-				data  : rowItem
-		}
-		rowItem.contentLoaded = false;
-		sdProcessInstanceService.getProcessInstanceDocuments(rowItem.processInstance.oid).then(function (dataPathValues) {
-			rowItem.supportsProcessAttachments = rowItem.processInstance.supportsProcessAttachments;
-			rowItem.specificDocuments = [];
-			jQuery.each(dataPathValues, function(_, dataPathValue) {
-				if (dataPathValue.dataPath.id === 'PROCESS_ATTACHMENTS') {
-					rowItem.processAttachments = dataPathValue;
-				} else {
-					rowItem.specificDocuments.push(dataPathValue);
-				}
-			});
-		
-			rowItem.contentLoaded = true;
-			self.processPopover.data = rowItem;
-			self.documentPopoverHandle.show($event,151);
-		});
-	};
+	  var self = this;
+	  self.processPopover = {
+	    data: rowItem
+	  }
+	  rowItem.contentLoaded = false;
+
+	  var promise1 = sdProcessInstanceService.getProcessInstanceDocuments(rowItem.processInstance.oid).then(
+	          function(dataPathValues) {
+	            rowItem.supportsProcessAttachments = rowItem.processInstance.supportsProcessAttachments;
+	            rowItem.specificDocuments = [];
+	            jQuery.each(dataPathValues, function(_, dataPathValue) {
+	              if (dataPathValue.dataPath.id === 'PROCESS_ATTACHMENTS') {
+	                rowItem.processAttachments = dataPathValue;
+	              } else {
+	                rowItem.specificDocuments.push(dataPathValue);
+	              }
+	            });
+	          });
+
+	  var promise2 = sdProcessInstanceService.getCorrespondenceFolder(rowItem.processInstance.oid).then(
+	          function(correspondenceFolder) {
+	            rowItem.correspondences = correspondenceFolder.folders;
+	          }, function(correspondenceFolder){
+	            rowItem.correspondences = [];
+	          });
+
+	  $q.all([promise1, promise2]).finally(function() {
+	    rowItem.contentLoaded = true;
+	    self.processPopover.data = rowItem;
+	    self.documentPopoverHandle.show($event, 151);
+	  });
+	}
 	
 	/*
 	 * 
@@ -912,6 +923,13 @@
 	   sdCommonViewUtilService.openDocumentView(docId);
 	};
 
+	/**
+	 * 
+	 */
+	ActivityTableCompiler.prototype.openCorrespondenceView = function(folder) {
+    sdCommonViewUtilService.openCorrespondenceView(folder);
+  };
+	
 	/*
 	 * 
 	 */
@@ -929,6 +947,11 @@
 				});
 			});
 		}
+	  if (rowItem.correspondences) {
+      jQuery.each(rowItem.correspondences, function(_, folder) {
+        sdCommonViewUtilService.openCorrespondenceView(folder);
+      });
+    }
 	};
 
 	/*

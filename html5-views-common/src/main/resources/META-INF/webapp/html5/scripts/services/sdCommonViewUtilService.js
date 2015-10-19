@@ -137,6 +137,21 @@
 			}, nested);
 		};
 
+		/**
+		 *  open correspondence folder view
+		 */
+    CommonViewUtilService.prototype.openCorrespondenceView = function(folder) {
+      var viewKey = 'folderId=' + encodeURIComponent(folder.path);
+      viewKey = window.btoa(viewKey);
+  
+      var parameters = {
+        "folderId": folder.path,
+        "folderName": folder.name
+      }
+  
+      sdViewUtilService.openView('correspondencePanel', viewKey, parameters);
+    };
+  	
 	}
 	;
 })();

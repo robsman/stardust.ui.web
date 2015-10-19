@@ -379,5 +379,13 @@
 			return processes.query().$promise;
 		};
 		
+		/**
+		 * get correspondence folder - containing correspondence out folders 
+		 */
+    ProcessInstanceService.prototype.getCorrespondenceFolder = function(processOid) {
+      var url = REST_BASE_URL + processOid + "/correspondence";
+      return $resource(url).get().$promise;
+    };
+		
 	};
 })();
