@@ -418,10 +418,9 @@ Icon implementations
 	content: "\f1f8"; /* fa-trash */
 }
 
-.pi-flag:before,
 .pi-criticalty-flag:before{
-	font-family: starclipse;
-    content:'\F060'; /* sc-flag */
+	font-family:"FontAwesome";
+	content:'\f024'; /* fa-flag */
 }
 
 .pi-exclamation-triangle:before{
