@@ -83,10 +83,14 @@ if (!window["BridgeUtils"]) {
 		function runInAngularContext(func) {
 			// TODO document.body?
 			var scope = angular.element(document.body).scope();
-			if (!scope.$$phase) {
-				scope.$apply(func);
+			if (scope) {
+				if (!scope.$$phase) {
+					scope.$apply(func);
+				} else {
+					func(scope);
+				}
 			} else {
-				func(scope);
+				BridgeUtils.log("scope is not available, probably angular is not yet initialized, ignoring...", "w");
 			}
 		}
 
