@@ -15,7 +15,6 @@
 	<table sd-data-table="ctrl.notesTable"
 		sd-data="ctrl.getNotesData(params)" sda-mode="local"
 		sda-ready="ctrl.showNotesTable" sda-selectable="row"
-		sda-selection="ctrl.rowSelectionNotesTable"
 		sda-initial-selection="[{noteNumber: ctrl.notes.totalCount}]"
 		sda-on-select="ctrl.onSelect(info)"
 		sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
@@ -60,18 +59,18 @@
 
 	<div>
 		<div style="padding-bottom: 5px;"
-			ng-if="!ctrl.isAddMode && ctrl.rowSelectionNotesTable">
+			ng-if="!ctrl.isAddMode && ctrl.notesTable.getSelection()">
 			<table>
 				<tr>
-					<td><img alt="" ng-if="ctrl.getUserImageURL(ctrl.rowSelectionNotesTable.avatarImageURI)"
-						ng-src="{{ctrl.getUserImageURL(ctrl.rowSelectionNotesTable.avatarImageURI)}}"
+					<td><img alt="" ng-if="ctrl.getUserImageURL(ctrl.notesTable.getSelection().avatarImageURI)"
+						ng-src="{{ctrl.getUserImageURL(ctrl.notesTable.getSelection().avatarImageURI)}}"
 						width="24px" height="24px" style="padding-right: 5px;"></td>
 					<td><sd-user-details
-							sda-user-oid="ctrl.rowSelectionNotesTable.userOID"
-							sda-account="ctrl.rowSelectionNotesTable.creatorName"
+							sda-user-oid="ctrl.notesTable.getSelection().userOID"
+							sda-account="ctrl.notesTable.getSelection().creatorName"
 							sda-aid-prefix="PP-NotesView-UserDetails"></sd-user-details></td>
-					<td>added note #{{ctrl.rowSelectionNotesTable.noteNumber}} -
-						{{ctrl.rowSelectionNotesTable.created | sdDateTimeFilter}}</td>
+					<td>added note #{{ctrl.notesTable.getSelection().noteNumber}} -
+						{{ctrl.notesTable.getSelection().created | sdDateTimeFilter}}</td>
 				</tr>
 			</table>
 		</div>

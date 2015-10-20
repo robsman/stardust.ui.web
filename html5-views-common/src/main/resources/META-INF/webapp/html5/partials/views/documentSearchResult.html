@@ -2,8 +2,8 @@
     <div class="view-panel-toolbar tbl-title" style="color: #708090;font-size:11px">{{i18n('views-common-messages.views-documentSearchView-documents-title')}}</div>
 	<div sda-toolbar>
 		<div class="tbl-toolbar-section">
-			<button ng-disabled="docSearchViewCtrl.rowSelection.length == 0"
-				ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openAttachToProcessDialog(docSearchViewCtrl.rowSelection);"
+			<button ng-disabled="docSearchViewCtrl.docSrchRsltTable.getSelection().length == 0"
+				ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openAttachToProcessDialog();"
 				title="{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-attachToProcess')}}"
 				class="button-link tbl-toolbar-item tbl-tool-link" aid="COM-SrchDoc-DocSrchTbl-AtchToProcess">
 				<i class="pi pi-attach-document pi-lg"></i>
@@ -15,7 +15,6 @@
 		sd-data="docSearchViewCtrl.performSearch(params)" sda-mode="remote"
 		sda-selectable="mutiple"
 		sda-preference-delegate="docSearchViewCtrl.preferenceDelegate(prefInfo)"
-		sda-selection="docSearchViewCtrl.rowSelection"
 		sda-column-selector="{{docSearchViewCtrl.columnSelector}}"
 		sda-sortable="true"
 		sda-sort-by="{name : 'documentName', dir : 'desc'}" sda-exports="true"

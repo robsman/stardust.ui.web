@@ -94,6 +94,11 @@ public class DocumentSearchResultDTO extends AbstractDTO
 
    }
 
+   public DocumentSearchResultDTO()
+   {
+      // TODO Auto-generated constructor stub
+   }
+
    /**
     * method returns folder path from full document path.
     * 

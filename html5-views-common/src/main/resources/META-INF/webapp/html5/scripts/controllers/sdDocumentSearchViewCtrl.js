@@ -53,7 +53,6 @@
 		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
 		this.docVersionsdataTable = null;
 		this.exportFileNameForDocumentSearchResult = "DocumentSearchResult";
-		this.rowSelection = null;
 		this.showDocumentSearchCriteria = true;
 
 		this.initialize();
@@ -340,16 +339,15 @@
 
 	/**
 	 * 
-	 * @param rowSelection
 	 */
-	DocumentSearchViewCtrl.prototype.openAttachToProcessDialog = function(rowSelection) {
+	DocumentSearchViewCtrl.prototype.openAttachToProcessDialog = function() {
 		var self = this;
 		self.processDefns = {};
 		self.showAttachToProcessDialog = true;
-		if (angular.isArray(rowSelection)) {
-			self.documentIds = self.getSelectedRoleIds(rowSelection);
+		if (angular.isArray(self.docSrchRsltTable.getSelection())) {
+			self.documentIds = self.getSelectedRoleIds(self.docSrchRsltTable.getSelection());
 		} else {
-			self.documentIds = [rowSelection.documentId];
+			self.documentIds = [self.docSrchRsltTable.getSelection().documentId];
 		}
 		_sdDocumentSearchService.getAvailableProcessDefns().then(function(data) {
 			self.processDefns.list = data.list;

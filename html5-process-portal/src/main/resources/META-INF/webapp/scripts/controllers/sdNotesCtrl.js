@@ -40,7 +40,6 @@
 
 		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
 		this.notesTable = null;
-		this.rowSelectionNotesTable = null;
 
 		this.initialize();
 

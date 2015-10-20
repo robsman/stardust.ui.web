@@ -89,7 +89,15 @@ public class DocumentSearchService
 
       for (Document doc : docs)
       {
-         DocumentSearchResultDTO docSearchResultDTO = new DocumentSearchResultDTO(doc);
+         DocumentSearchResultDTO docSearchResultDTO = null;
+         try{
+             docSearchResultDTO = new DocumentSearchResultDTO(doc);
+         }catch(Exception e){
+            trace.error(e);
+            docSearchResultDTO = new DocumentSearchResultDTO();
+         }
+         
+         
          list.add(docSearchResultDTO);
       }
 

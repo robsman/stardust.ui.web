@@ -23,13 +23,13 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td><a href="#" ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openDocumentView(rowData.revisionId);docSearchViewCtrl.documentHistory.close();"
+				<td sda-data-type="int"><a href="#" ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openDocumentView(rowData.revisionId);docSearchViewCtrl.documentHistory.close();"
 				       aid="COM-DocVersionDlg-DocVersionTbl-VersionNo">{{rowData.versionNo}}</a></td>
-				<td></td>
-				<td><sd-user-details sda-user-oid="rowData.userOID" sda-account="rowData.author" sda-aid-prefix="COM-DocVersionDlg-DocVersionTbl-Author"></sd-user-details>
+				<td sda-data-type="string"></td>
+				<td sda-data-type="string"><sd-user-details sda-user-oid="rowData.userOID" sda-account="rowData.author" sda-aid-prefix="COM-DocVersionDlg-DocVersionTbl-Author"></sd-user-details>
 				</td>
-				<td></td>
-				<td></td>
+				<td sda-data-type="string"></td>
+				<td sda-data-type="string"></td>
 			</tr>
 		</tbody>
 	</table>
