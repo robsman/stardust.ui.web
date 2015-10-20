@@ -8,7 +8,7 @@
  * Contributors:
  *     SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-var IntegrationManagementCtrl = function($scope, $http, $q, $timeout,$parse, sdUtilService, sdViewUtilService, eventBus) {
+var IntegrationManagementCtrl = function($scope, $http, $q, $timeout,$parse, sdUtilService, sdViewUtilService, eventBus, sdI18nService) {
 	this.camelContextDataTable = null;
 	this.selectionCamelContext;
 
@@ -24,6 +24,8 @@ var IntegrationManagementCtrl = function($scope, $http, $q, $timeout,$parse, sdU
 	
 	this.camelContextsPageSize = 4;
 	this.routesPageSize = 5;
+	
+	$scope.sdI18nHtml5Admin = sdI18nService.getInstance('stardust-web-camel').translate;
 
 	$scope.sortOn = function(data, params) {
 		return data.sort(
@@ -317,4 +319,4 @@ var IntegrationManagementCtrl = function($scope, $http, $q, $timeout,$parse, sdU
 	};
 
 }
-IntegrationManagementCtrl.$inject = [ '$scope', '$http', '$q', '$timeout','$parse', 'sdUtilService',  'sdViewUtilService', 'eventBus' ];
+IntegrationManagementCtrl.$inject = [ '$scope', '$http', '$q', '$timeout','$parse', 'sdUtilService',  'sdViewUtilService', 'eventBus', 'sdI18nService'];
