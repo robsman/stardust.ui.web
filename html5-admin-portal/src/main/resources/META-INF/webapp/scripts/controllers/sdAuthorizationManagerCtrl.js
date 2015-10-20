@@ -103,7 +103,7 @@
 		iconClass = "pi-model";
 		break;
 	case "portal.ui.stardustRulesManager":
-		iconClass = "pi-perspective-rules-manager-alt";
+		iconClass = "pi-perspective-rules-manager";
 		break;
 	case "portal.ui.businessCalendar":
 		iconClass = "pi-calendar";
