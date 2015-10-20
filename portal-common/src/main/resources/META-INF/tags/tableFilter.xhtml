@@ -41,10 +41,10 @@
 	   			<ice:commandLink rendered="#{filterPopup.dataFilters.filtersSet}"
 	   				action="#{filterPopup.resetAndApply}" disabled="#{disabled}">
 	   				<pc:automationTag value="auto-DT-ColFilterReset" standAlone="false" />
-		   			<ice:graphicImage value="/plugins/common/images/icons/filter-reset.png"
+		   			<ice:outputText
 		   				title="#{filterPopup.resetTitle}"
 						style="vertical-align:top; border:none;"
-						styleClass="#{disabled ? 'iceCmdBtn-dis' : ''}" />
+						styleClass="#{disabled ? 'iceCmdBtn-dis' : ''} pi pi-filter" />
 				</ice:commandLink>
 	   			<ice:commandLink rendered="#{not filterPopup.dataFilters.filtersSet}"
 	   				action="#{filterPopup.openPopup}" disabled="#{disabled}">
