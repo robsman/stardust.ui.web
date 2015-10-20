@@ -29,6 +29,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserPermissionsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.user.impl.IppUser;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
@@ -57,7 +58,7 @@ public class UserService
     */
    public UserDTO getLoggedInUser()
    {
-      User loggedInUser = serviceFactoryUtils.getUserService().getUser();
+      User loggedInUser = SessionContext.findSessionContext().getUser();
       UserDTO userDTO = DTOBuilder.build(loggedInUser, UserDTO.class);
       userDTO.displayName = UserUtils.getUserDisplayLabel(loggedInUser);
       return userDTO;
