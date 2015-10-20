@@ -723,6 +723,7 @@ span.pi-case:before{
 }
 
 .pi-add-row:before,
+.pi-add:before,
 .pi-create:before,
 .pi-spawn-process:before,
 .pi-create-user:before,
@@ -1653,3 +1654,76 @@ span.pi-case-menu-open:after {
 	font-family:"FontAwesome";
     content: "\f056"; /* fa-minus-circle */
 }
+
+/** Simple modeler icons **/
+
+a span.pi:hover {
+	color: #906C37 !important;
+}
+
+.pi-import-model:before {
+	font-family:"FontAwesome";
+	content: "\f176"; /* fa-long-arrow-up */
+}
+
+.pi-simple-modeler-process:before {
+	font-family: "FontAwesome";
+	content: "\f013"; /* fa-cog */
+}
+
+.pi-expand-south:before{
+	font-family:"FontAwesome";
+	content:'\f077';/*  fa-chevron-up */
+}
+
+.pi-collapse-north:before{
+	font-family:"FontAwesome";
+	content:'\f078';/* fa-chevron-downn */
+}
+
+.pi-user-task:before {
+	font-family: "FontAwesome";
+	content: "\f007"; /* fa-user */
+}
+
+.pi-service-task:before {
+	font-family: "FontAwesome";
+	content: "\f013"; /* fa-gear */
+}
+
+.pi-event-task:before {
+	font-family: "FontAwesome";
+	content: "\f0e7"; /* fa-bolt */
+}
+
+.pi-activity-group:before {
+	font-family: "FontAwesome";
+	content: "\f085"; /* fa-gears */
+}
+
+.pi-error-task:before {
+	font-family: "FontAwesome";
+	content: "\f12a"; /* fa fa-exclamation */
+}
+
+.pi-delete-task-bin:before{
+	font-family: FontAwesome;
+	content: "\f014"; /* fa-trash-o */
+}
+
+.pi-collapse-west:before {
+	font-family:"FontAwesome";
+	content: "\f053"; /* fa-chevron-left */
+}
+
+.pi-expand-east:before {
+	font-family:"FontAwesome";
+	content: "\f054"; /* fa-chevron-right */
+}
+
+.pi-add-attachments:before{
+	font-family:"FontAwesome";
+	content:'\f067'; /* fa-plus */
+}
+
+/** Simple modeler icons End **/
