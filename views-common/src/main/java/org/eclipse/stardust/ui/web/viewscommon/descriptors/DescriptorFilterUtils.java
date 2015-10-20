@@ -1017,9 +1017,25 @@ public class DescriptorFilterUtils
                Date dateValue = DateUtils.parseDateTime(dataPathValue.toString());
                if (null == dateValue)
                {
-                  dateValue = DateUtils.parseDateTime(dataPathValue.toString(), DateUtils.getDateFormat(), Locale.getDefault(),
-                        TimeZone.getDefault());
+                  try
+                  {
+                     Long dateLongValue = Long.valueOf(dataPathValue.toString());
+                     dateValue = new Date(dateLongValue);
+                  }
+                  catch(NumberFormatException e)
+                  {
+                     trace.info("Date not in Long format :: ",e);
+                     dateValue = DateUtils.parseDateTime(dataPathValue.toString(), DateUtils.getDateFormat(), Locale.getDefault(),
+                           TimeZone.getDefault());
+                  }
+                  
                }
+               value = getDateValue(dateValue, dataClass);
+            }
+            else if (dataPathValue instanceof Long)
+            {
+               Long longValue = (Long) dataPathValue;
+               Date dateValue = new Date(longValue);
                value = getDateValue(dateValue, dataClass);
             }
          }
