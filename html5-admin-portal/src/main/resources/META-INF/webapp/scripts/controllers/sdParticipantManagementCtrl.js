@@ -861,22 +861,55 @@
   ParticipantManagementCtrl.prototype.loadModels = function() {
     var that = this;
     _sdParticipantManagementService.getModelParticipants(lazyLoad).then(function(data) {
+      that.sortModels(data);
       that.models = data;
     });
   };
 
+  /**
+   * Sort models recursively by name;
+   * @param models
+   */
+  ParticipantManagementCtrl.prototype.sortModels = function(models){
+	  var that = this;
+	  
+	  var sortFx = function(a,b){
+		  if(a.type==b.type){
+			  if(a.name < b.name){
+				  return -1;
+			  }
+			  else if(a.name == b.name){
+				  return 0;
+			  }
+			  else{
+				  return 1;
+			  }
+		  }
+		  else{
+			  if(a.type < b.type){
+				  return 1;
+			  }
+			  else if(a.type == b.type){
+				  return 0;
+			  }
+			  else{
+				  return -1;
+			  }
+		  }
+	  }
+	  
+	  models.sort(sortFx);
+	  models.forEach(function(model){
+		  if(model.children && model.children.length > 1){
+			  that.sortModels(model.children);
+		  }
+	  });
+  }
+  
   // add user to selectedUsers list
   ParticipantManagementCtrl.prototype.userDragStart = function(data) {
-    var that = this;
-    /*
-    if (this.rowSelectionForAllUsersTable.indexOf(data) === -1) {
-      while (that.rowSelectionForAllUsersTable.pop()) {
-      }
-      that.rowSelectionForAllUsersTable.push(data);
-    }*/
-    
     var that = this,
-	selectedTblRows;
+		selectedTblRows;
 
 	selectedTblRows = this.allUsersTable.getSelection();
 	
