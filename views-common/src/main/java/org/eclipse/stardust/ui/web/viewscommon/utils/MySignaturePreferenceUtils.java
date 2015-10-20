@@ -35,7 +35,6 @@ import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferen
  */
 public class MySignaturePreferenceUtils
 {
-   private static final String DEFAULT_USER_IMAGE = "/plugins/views-common/images/icons/user-default.png";
    private static final String DMS_CONTENT_SERVLET_NAME = "/dms-content/";
    private static final String GENERIC_COMPONENT_SELECTION_KEY = "?.#."; // moduleId.viewId.<featureId>
    private static final String REFERENCE_ID = "preference";
@@ -76,7 +75,7 @@ public class MySignaturePreferenceUtils
     */
    public static String getLoggedInUserSignatureURI()
    {
-      String imageURI = DEFAULT_USER_IMAGE;
+      String imageURI = "";
       SessionContext context = SessionContext.findSessionContext();
       User user = (context != null) ? context.getUser() : null;
       
@@ -110,7 +109,7 @@ public class MySignaturePreferenceUtils
     */
    public static String getUsersSignatureURI(final User user)
    {
-      String imageURI = DEFAULT_USER_IMAGE;
+      String imageURI = "";
 
       if (user != null)
       {

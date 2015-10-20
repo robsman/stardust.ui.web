@@ -42,9 +42,8 @@
 								<ice:outputText
 									value="#{message}" />
 								<ice:panelGrid columns="2" style="padding: 0px;text-align: left;">							
-										<h:graphicImage
-											value="/plugins/views-common/images/icons/error.png"
-											styleClass="toolbar-button" style="padding: 0px;text-align: left;"
+										<ice:outputText
+											styleClass="pi pi-error pi-lg" style="padding: 0px;text-align: left;"
 											title="#{modelManagementBean.messages['save']}" />
 										<ice:outputText 
 											value="#{warning}" />
