@@ -954,7 +954,7 @@ span.pi-case:before{
 }
 
 .pi-groups:before,
-.pi-user-group,
+.pi-user-group:before,
 .pi-user-group-manager:before{
 	font-family:FontAwesome;
 	content:"\f0c0"; /* fa-users */

@@ -37,13 +37,16 @@ import org.eclipse.stardust.engine.api.model.QualifiedOrganizationInfo;
 import org.eclipse.stardust.engine.api.model.Role;
 import org.eclipse.stardust.engine.api.query.ParticipantAssociationFilter;
 import org.eclipse.stardust.engine.api.query.UserDetailsPolicy;
+import org.eclipse.stardust.engine.api.query.UserGroups;
 import org.eclipse.stardust.engine.api.query.UserQuery;
 import org.eclipse.stardust.engine.api.query.Users;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.engine.api.runtime.UserGroup;
 import org.eclipse.stardust.engine.api.runtime.UserService;
+import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
 import org.eclipse.stardust.ui.web.rest.service.dto.ModelDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DepartmentDTO;
@@ -51,6 +54,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ParticipantManagementUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ParticipantManagementUtils.ParticipantType;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.rest.service.utils.UserGroupUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
@@ -81,19 +85,27 @@ public class ParticipantServiceImpl implements ParticipantService
    @Autowired
    private ModelServiceBean modelService;
    
+   @Resource
+   private UserGroupUtils userGroupUtils;
+   
    /**
     * @param participantQidIn
     * @return
     * @throws Exception 
     */
-   public List<ModelDTO> getParticipantTree(boolean lazyLoad)
+   public List<ParticipantDTO> getParticipantTree(boolean lazyLoad)
    {
       // get Active Models along with top level Participants
       List<ModelDTO> models = modelService.getModelParticipants();
+      List<ParticipantDTO> allParticipantDTOs = new ArrayList<ParticipantDTO>();
 
       for (ModelDTO modelDTO : models)
       {
-         Iterator<ParticipantDTO> participantIterator = modelDTO.children.iterator();
+         // convert to ParticipantDTO to keep the response uniform
+         ParticipantDTO modelParticipantDTO = new ParticipantDTO(modelDTO);
+         allParticipantDTOs.add(modelParticipantDTO);
+
+         Iterator<ParticipantDTO> participantIterator = modelParticipantDTO.children.iterator();
          while (participantIterator.hasNext())
          {
             ParticipantDTO participantDTO = participantIterator.next();
@@ -115,8 +127,38 @@ public class ParticipantServiceImpl implements ParticipantService
             }
          }
       }
-      return models;
+      
+      //get User Groups
+      allParticipantDTOs.add(getUserGroupDTOs());
+      
+      return allParticipantDTOs;
    }
+   
+   /**
+    * @return
+    */
+   private ParticipantDTO getUserGroupDTOs()
+   {
+      UserGroups userGroups = userGroupUtils.getAllUserGroups(new Options());
+      ParticipantDTO userGroupDTOs = new ParticipantDTO();
+      userGroupDTOs.id = "_internal_user_groups_";
+      userGroupDTOs.name = MessagesViewsCommonBean.getInstance().get("views.participantTree.userGroup.label");
+      userGroupDTOs.children = new ArrayList<ParticipantDTO>();
+      userGroupDTOs.type = "USERGROUPS";
+      for (UserGroup userGroup : userGroups)
+      {
+         ParticipantDTO userGroupDTO = new ParticipantDTO(userGroup);
+         userGroupDTO.uiQualifiedId = userGroupDTO.id;
+         userGroupDTOs.children.add(userGroupDTO);
+
+         List<ParticipantDTO> userDTOs = new ArrayList<ParticipantDTO>();
+         getUsers(userGroup, userDTOs);
+
+         userGroupDTO.children = userDTOs;
+      }
+      return userGroupDTOs;
+   }
+   
    
    /**
     * @param participantDTO
@@ -277,6 +319,10 @@ public class ParticipantServiceImpl implements ParticipantService
                   user.addGrant(participantContainer.department
                         .getScopedParticipant((ModelParticipant) participantContainer.modelparticipant));
                }
+               else if (participantContainer.participantType.equals(ParticipantType.USERGROUP.name()))
+               {
+                  user.joinGroup(participantContainer.dynamicParticipantInfoId);
+               }
                else
                {
                   user.addGrant(participantContainer.modelparticipant);
@@ -293,6 +339,10 @@ public class ParticipantServiceImpl implements ParticipantService
                {
                   user.removeGrant(participantContainer.department
                         .getScopedParticipant((ModelParticipant) participantContainer.modelparticipant));
+               }
+               else if (participantContainer.participantType.equals(ParticipantType.USERGROUP.name()))
+               {
+                  user.leaveGroup(participantContainer.dynamicParticipantInfoId);
                }
                else
                {
@@ -379,6 +429,15 @@ public class ParticipantServiceImpl implements ParticipantService
       String departmentId = ParticipantManagementUtils.parseDepartmentId(participantQidIn);
       String parentDepartmentId = ParticipantManagementUtils.parseParentDepartmentId(participantQidIn);
       String participantQid = ParticipantManagementUtils.parseParticipantQId(participantQidIn);
+
+      // assumed it is UserGroup (dynamic participant)
+      if (StringUtils.isEmpty(participantQid))
+      {
+         ParticipantContainer participantContainer = new ParticipantContainer();
+         participantContainer.dynamicParticipantInfoId = participantQidIn;
+         participantContainer.participantType = ParticipantManagementUtils.ParticipantType.USERGROUP.name();
+         return participantContainer;
+      }
       return getParticipantContainer(participantQid, parentDepartmentId, departmentId);
    }
 
@@ -534,6 +593,10 @@ public class ParticipantServiceImpl implements ParticipantService
          getSubParticipantsForDepartment(department, participantDTOs);
          break;
 
+      case USERGROUP:
+         getUsers(userGroupUtils.getUserGroup(participantContainer.dynamicParticipantInfoId), participantDTOs);
+         break;   
+         
       case DEPARTMENT_DEFAULT:
          getSubParticipantsForDefaultDepartment((QualifiedOrganizationInfo) modelparticipant, participantDTOs);
          break;
@@ -788,6 +851,7 @@ public class ParticipantServiceImpl implements ParticipantService
    static class ParticipantContainer
    {
       QualifiedModelParticipantInfo modelparticipant;
+      String dynamicParticipantInfoId;
       Department department;
       String participantType;
    }

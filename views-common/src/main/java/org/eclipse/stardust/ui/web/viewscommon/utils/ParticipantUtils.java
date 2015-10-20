@@ -877,6 +877,10 @@ public class ParticipantUtils
          {
             return ((Organization) participant).getRuntimeElementOID();
          }
+         else if (participant instanceof DynamicParticipantInfo)
+         {
+            return ((DynamicParticipantInfo) participant).getOID();
+         }
          else
          {
             return -1l;
@@ -901,14 +905,7 @@ public class ParticipantUtils
             User user = (User) participant;
             return I18nUtils.getUserLabel(user);
          }
-         if (participant instanceof Role)
-         {
-            return I18nUtils.getParticipantName(participant);
-         }
-         if (participant instanceof Organization)
-         {
-            return I18nUtils.getParticipantName(participant);
-         }
+         return I18nUtils.getParticipantName(participant);
       }
       return "";
    }

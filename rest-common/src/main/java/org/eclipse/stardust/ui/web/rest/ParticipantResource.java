@@ -101,7 +101,7 @@ public class ParticipantResource
    public Response getParticipantTree(@QueryParam("lazyLoad") @DefaultValue("false") Boolean lazyLoad)
          throws UnsupportedEncodingException
    {
-      List<ModelDTO> modelParticipants = participantService.getParticipantTree(lazyLoad);
+      List<ParticipantDTO> modelParticipants = participantService.getParticipantTree(lazyLoad);
       return Response.ok(AbstractDTO.toJson(modelParticipants), MediaType.APPLICATION_JSON).build();
    }
    

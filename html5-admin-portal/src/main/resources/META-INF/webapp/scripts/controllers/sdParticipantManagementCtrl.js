@@ -459,13 +459,16 @@
         break;
       case "USERGROUP": styleClass += "pi-user-group ";
         break;
+      case "USERGROUPS": styleClass += "pi-department ";
+        break;
       case "USER": styleClass += "pi-user ";
         break;
       case "DEPARTMENT": styleClass += "pi-department ";
         break;
       case "DEPARTMENT_DEFAULT": styleClass += "pi-department ";
         break;
-      default: styleClass += "pi-department ";
+        
+      default: styleClass += "pi-other ";
         break;
     }
     styleClass += isSelected;
@@ -621,8 +624,8 @@
     } else if (data.treeEvent === "node-dragend" || data.treeEvent === "node-drop") {
       this.handleUserDropAction(data, this.rowSelectionForAllUsersTable);
     } else if (data.treeEvent.indexOf("menu-") == 0 || (data.treeEvent === "node-delete")) {
-      this.handleMenuClick(data, e);
       data.deferred.resolve();
+      this.handleMenuClick(data, e);
     } else if (data.treeEvent === "node-click") {
       this.addToSelectedNodes(data, e.ctrlKey);
       data.deferred.resolve();

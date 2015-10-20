@@ -19,6 +19,7 @@ import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ModelDTO;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 
 /**
@@ -89,6 +90,16 @@ public class ParticipantDTO extends AbstractDTO
          this.organization = ParticipantUtils.getParticipantLabel(dep.getOrganization());
       }
 
+   }
+   
+   public ParticipantDTO(ModelDTO modelDto)
+   {
+      this.id = modelDto.id;
+      this.qualifiedId = modelDto.id;
+      this.OID = modelDto.oid;
+      this.name = modelDto.name;
+      this.description = modelDto.description;
+      this.children = modelDto.children;
    }
 
    /**
