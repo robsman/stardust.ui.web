@@ -26,6 +26,18 @@
     cursor: pointer;
 }
 
+img[src *='dummy.png']{
+	background-image:none !important;
+	width:16px;
+	padding: 16px 0 0 0 !important;
+	height:0px;
+	background-repeat: no-repeat !important;
+	opacity: 0.7;
+}
+img[src *='dummy.png']:hover{
+	opacity:1.0;
+}
+
 /** Icefaces DataExporter tag   **/
 .export a,
 .exportAsExcel a,
