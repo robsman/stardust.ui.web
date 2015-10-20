@@ -27,7 +27,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 
 	var filesToUpload = [];
 	var VALID_TEMPLATE_FORMATS = ['text/plain' , 'text/html'];
-	var TEPMPLATING_SUPPORTED_FILE_FORMATS = ["doc","docx","html","htm","txt"]
+	var TEPMPLATING_SUPPORTED_FILE_FORMATS = ["doc","docx","html","htm","txt","xml"]
 	var buttons = {
 			confirm : '',
 			cancel :''	

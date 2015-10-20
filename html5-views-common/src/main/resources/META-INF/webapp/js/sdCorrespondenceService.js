@@ -231,6 +231,9 @@ define([],function(){
 		}else if(['docx','DOCX'].indexOf(extension) > -1){
 			format = "docx";
 		}
+		else if(['xml','XML'].indexOf(extension) > -1){
+			format = "xml";
+		}
 		return format;
 	}
 
