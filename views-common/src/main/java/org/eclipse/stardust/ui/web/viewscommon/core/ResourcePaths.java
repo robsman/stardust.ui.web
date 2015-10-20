@@ -52,7 +52,7 @@ public interface ResourcePaths
 
    static final String I_FOLDER_CORRESPONDANCE = "pi pi-folder pi-lg";
    
-   static final String I_EMAIL_GO = "pi pi-other pi-lg";
+   static final String I_CORRESPONDENCE_EMAIL = "pi pi-correspondence-email pi-lg";
 
    static final String I_FOLDER_PERSONAL = "pi pi-folder pi-lg";
 

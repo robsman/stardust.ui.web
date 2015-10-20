@@ -322,3 +322,8 @@
 	font-family: "FontAwesome";
 	content: '\f13c'; /* fa-css3   */
 }
+
+.correspondence-email:before { 
+	font-family:FontAwesome;
+	content:"\f003"; /*  fa-envelope-o */
+}

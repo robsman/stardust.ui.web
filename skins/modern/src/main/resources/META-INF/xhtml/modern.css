@@ -9600,17 +9600,6 @@ img[src *='email_attach.png']{
      opacity: 0.7;
 }
 
-img[src *='email_go.png'],
-input[src *='email_go.png']{
-     background-image:url('./images/flat-icons/email_go.png') !important;
-     width:16px;
-     background-size: 16px 16px;
-     padding: 16px 0 0 0 !important;
-     height:0px;
-     background-repeat: no-repeat !important;
-     opacity: 0.7;
-}
-
 img[src *='end-event-toolbar.png'],
 input[src *='end-event-toolbar.png']{
      background-image:url('./images/flat-icons/end-event-toolbar.png') !important;

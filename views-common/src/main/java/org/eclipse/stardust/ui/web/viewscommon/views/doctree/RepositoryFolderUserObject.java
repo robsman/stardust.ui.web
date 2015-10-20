@@ -115,7 +115,7 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
                if (uiProperties.get(RepositoryUtility.UIProperties.type.name()).toString()
                      .equals(RepositoryUtility.ResourceType.correspondenceOut.name()))
                {
-                  setIcon(ResourcePaths.I_EMAIL_GO); // TODO: change icon
+                  setIcon(ResourcePaths.I_CORRESPONDENCE_EMAIL); // TODO: change icon
                }
             }
          }

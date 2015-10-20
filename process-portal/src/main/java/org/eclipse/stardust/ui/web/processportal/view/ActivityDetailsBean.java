@@ -2514,7 +2514,7 @@ public class ActivityDetailsBean extends UIComponentBean
             List<Folder> folders = folder.getFolders();
             for (Folder folder2 : folders)
             {
-               displayCorrespondenceFolders.add(new DocumentInfo(ResourcePaths.I_EMAIL_GO, folder2));
+               displayCorrespondenceFolders.add(new DocumentInfo(ResourcePaths.I_CORRESPONDENCE_EMAIL, folder2));
             }
             hasCorrespondenceFolder = true;
          }

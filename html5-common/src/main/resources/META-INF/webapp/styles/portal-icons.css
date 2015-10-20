@@ -1016,6 +1016,11 @@ span.pi-case:before{
 	content:'\F04C'; /* sc-documents-o */
 }
 
+.pi-correspondence-email:before{
+	font-family:FontAwesome;
+	content:"\f003"; /*fa-envelope-o */
+}
+
 .pi-favorite:before{
 	font-family:"FontAwesome";
 	content:"\f005"; /* fa-star */
