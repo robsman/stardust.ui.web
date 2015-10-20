@@ -555,7 +555,7 @@ public class ModelElementMarshaller implements ModelMarshaller
             {
                type = AttributeUtil.getAttributeValue(data, "carnot:engine:type");
                // For Enum's return Data fullId
-               if (type.equalsIgnoreCase(ModelerConstants.ENUM_PRIMITIVE_DATA_TYPE))
+               if (type != null && type.equalsIgnoreCase(ModelerConstants.ENUM_PRIMITIVE_DATA_TYPE))
                {
                   String typeDeclarationId = AttributeUtil.getAttributeValue(data,
                         StructuredDataConstants.TYPE_DECLARATION_ATT);
