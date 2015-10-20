@@ -8,8 +8,8 @@
 	<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-common-assignableUsers-title')}}</div>
 	<div sda-toolbar>
 		<div class="tbl-toolbar-section">
-			<button ng-disabled="!(ctrl.rowSelectionAssignableUsersTable.length > 0 && ctrl.roleManagerDetails.roleModifiable)"
-				ng-click="bpmCommon.stopEvent($event); ctrl.addUserToRole(ctrl.rowSelectionAssignableUsersTable);"
+			<button ng-disabled="!(ctrl.assignableUsersTable.getSelection().length > 0 && ctrl.roleManagerDetails.roleModifiable)"
+				ng-click="bpmCommon.stopEvent($event); ctrl.addUserToRole();"
 				title="{{i18n('business-control-center-messages.views-common-button-addUserToRole')}}"
 				class="button-link tbl-toolbar-item tbl-tool-link"
 				aid="BCC-RoleMgrDet-AssignableUserTbl-AddUserToRole">
@@ -21,7 +21,6 @@
 		sd-data="ctrl.getAssignableUsers(params)" sda-mode="local" sda-ready="ctrl.table2"
 		sda-selectable="multiple"
 		sda-preference-delegate="ctrl.preferenceForAssignableUserTable(prefInfo)"
-		sda-selection="ctrl.rowSelectionAssignableUsersTable"
 		sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
 		sda-sort-by="{name : 'name', dir : 'desc'}" sda-exports="true"
 		sda-exports-file-name="{{ctrl.exportFileNameForAssignableUsers}}">
@@ -45,11 +44,11 @@
 		<tbody>
 			<tr>
 				<td sda-data-type="string"></td>
-				<td style="text-align: center;"></td>
-				<td style="text-align: center;"></td>
-				<td style="text-align: center;"></td>
-				<td style="text-align: center;"></td>
-				<td style="text-align: center;"></td>
+				<td style="text-align: center;" sda-data-type="string"></td>
+				<td style="text-align: center;" sda-data-type="string"></td>
+				<td style="text-align: center;" sda-data-type="string"></td>
+				<td style="text-align: center;" sda-data-type="string"></td>
+				<td style="text-align: center;" sda-data-type="string"></td>
 			</tr>
 		</tbody>
 	</table>

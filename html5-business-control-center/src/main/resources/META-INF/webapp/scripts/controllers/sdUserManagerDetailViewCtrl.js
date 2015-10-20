@@ -50,8 +50,6 @@
 		this.assignedRolesTable = null;
 		this.assignableRolesTable = null;
 		this.activityTable = null;
-		this.rowSelectionAssignedRolesTable = null;
-		this.rowSelectionAssignableRolesTable = null;
 		this.showActivityListTab = false;
 		this.activeTab = 1;
 
@@ -156,11 +154,10 @@
 
 	/**
 	 * 
-	 * @param rowSelectionAssignedRolesTable
 	 */
-	UserManagerDetailViewCtrl.prototype.removeRoleFromUser = function(rowSelectionAssignedRolesTable) {
+	UserManagerDetailViewCtrl.prototype.removeRoleFromUser = function() {
 		var self = this;
-		var roleIds = self.getSelectedRoleIds(rowSelectionAssignedRolesTable);
+		var roleIds = self.getSelectedRoleIds(self.assignedRolesTable.getSelection());
 		_sdUserManagerDetailService.removeRoleFromUser(roleIds, self.viewParams.userOid).then(function(data) {
 			self.userAuthorizationMsg = data.userAuthorization;
 			self.refresh();
@@ -171,11 +168,10 @@
 
 	/**
 	 * 
-	 * @param rowSelectionAssignableRolesTable
 	 */
-	UserManagerDetailViewCtrl.prototype.addRoleToUser = function(rowSelectionAssignableRolesTable) {
+	UserManagerDetailViewCtrl.prototype.addRoleToUser = function() {
 		var self = this;
-		var roleIds = self.getSelectedRoleIds(rowSelectionAssignableRolesTable);
+		var roleIds = self.getSelectedRoleIds(self.assignableRolesTable.getSelection());
 
 		_sdUserManagerDetailService.addRoleToUser(roleIds, self.viewParams.userOid).then(function(data) {
 			self.userAuthorizationMsg = data.userAuthorization;

@@ -39,7 +39,6 @@
 		this.userDeputiesTable = null;
 		this.showUserDeputiesTable = true
 		this.deputies = [];
-		this.rowSelectionForUsers = null;
 		this.showHideNonDepParticipant = true;
 		this.searchMode = "SIMILAR_USERS";
 		this.getUsers();
@@ -151,7 +150,7 @@
 		var self = this;
 		var deferred = _q.defer();
 		if (angular.isDefined(searchValue) && searchValue.length > 0) {
-			_sdDeputyManagementService.getDeputyUsersData(self.rowSelectionForUsers.userOID, searchValue,
+			_sdDeputyManagementService.getDeputyUsersData(self.usersTable.getSelection().userOID, searchValue,
 					self.searchMode).then(function(data) {
 				deferred.resolve(data.list);
 			}, function(result) {
@@ -173,7 +172,7 @@
 		var self = this;
 		self.deputy = {};
 		self.deputy.mode = mode;
-		_sdDeputyManagementService.getAuthorizations(self.rowSelectionForUsers.userOID).then(function(data) {
+		_sdDeputyManagementService.getAuthorizations(self.usersTable.getSelection().userOID).then(function(data) {
 			self.deputy.sourceParticipants = data.list;
 			self.deputy.targetParticipants = [];
 			if (self.deputy.mode == "EDIT") {
@@ -184,10 +183,10 @@
 				self.deputy.deputyDisplayName = rowData.userDisplayName;
 				self.deputy.deputyOID = rowData.userOID;
 				self.deputy.title = 'views-common-messages.views-deputyManagementView-dialog-modify-title';
-				self.deputy.titleParams = self.rowSelectionForUsers.userDisplayName;
+				self.deputy.titleParams = self.usersTable.getSelection().userDisplayName;
 			} else {
 				self.deputy.title = 'views-common-messages.views-deputyManagementView-dialog-create-title';
-				self.deputy.titleParams = self.rowSelectionForUsers.userDisplayName;
+				self.deputy.titleParams = self.usersTable.getSelection().userDisplayName;
 			}
 
 			self.showCreateOrModifyDeputyDialog = true;
@@ -288,7 +287,7 @@
 			if (error) {
 				return false;
 			} else {
-				var userOID = self.rowSelectionForUsers.userOID;
+				var userOID = self.usersTable.getSelection().userOID;
 				if (self.deputy.mode == "EDIT") {
 					var deputyOID = self.deputy.deputyOID;
 				} else {
@@ -305,7 +304,7 @@
 				var mode = self.deputy.mode;
 
 				var userRow = {
-					userOID : self.rowSelectionForUsers.userOID
+					userOID : self.usersTable.getSelection().userOID
 				};
 
 				delete self.deputy;
@@ -378,9 +377,9 @@
 	DeputyManagementCtrl.prototype.removeUserDeputy = function(deputyOID) {
 		var self = this;
 		var userRow = {
-			userOID : self.rowSelectionForUsers.userOID
+			userOID : self.usersTable.getSelection().userOID
 		};
-		_sdDeputyManagementService.removeUserDeputy(self.rowSelectionForUsers.userOID, deputyOID).then(function(data) {
+		_sdDeputyManagementService.removeUserDeputy(self.usersTable.getSelection().userOID, deputyOID).then(function(data) {
 			self.getUsers().then(function(data) {
 				setTimeout(function() {
 					self.usersTable.setSelection(userRow);

@@ -3,8 +3,8 @@
 	<div sda-toolbar>
 		<div class="tbl-toolbar-section">
 			<button
-				ng-disabled="!(ctrl.rowSelectionAssignableRolesTable.length > 0 && ctrl.userManagerDetails.manageAuthorization)"
-				ng-click="bpmCommon.stopEvent($event); ctrl.addRoleToUser(ctrl.rowSelectionAssignableRolesTable);"
+				ng-disabled="!(ctrl.assignableRolesTable.getSelection().length > 0 && ctrl.userManagerDetails.manageAuthorization)"
+				ng-click="bpmCommon.stopEvent($event); ctrl.addRoleToUser();"
 				title="{{i18n('business-control-center-messages.views-common-button-addRoleToUser')}}"
 				class="button-link tbl-toolbar-item tbl-tool-link"
 				aid="BCC-UserMgrDet-RoleAssignableTbl-AddRoleToUser">
@@ -16,7 +16,6 @@
 		sd-data="ctrl.getAssignableRoles(params)" sda-mode="local" sda-ready="ctrl.showAssignableRolesTable"
 		sda-selectable="multiple"
 		sda-preference-delegate="ctrl.preferenceForAssignableRoleTable(prefInfo)"
-		sda-selection="ctrl.rowSelectionAssignableRolesTable"
 		sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
 		sda-sort-by="{name : 'name', dir : 'desc'}" sda-exports="true"
 		sda-exports-file-name="{{ctrl.exportFileNameForAssignableRoles}}">
@@ -34,10 +33,10 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td></td>
-				<td style="text-align: center;"></td>
-				<td style="text-align: center;"></td>
-				<td style="text-align: center;"></td>
+				<td sda-data-type="string"></td>
+				<td style="text-align: center;" sda-data-type="string"></td>
+				<td style="text-align: center;" sda-data-type="string"></td>
+				<td style="text-align: center;" sda-data-type="string"></td>
 			</tr>
 		</tbody>
 	</table>

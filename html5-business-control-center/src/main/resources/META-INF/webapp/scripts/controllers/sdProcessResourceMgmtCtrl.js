@@ -51,8 +51,6 @@
 		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
 		this.exportFileNameForRolesAndOrg = "RolesAndOrgnizations"
 		this.exportFileNameForUsers = "Users"
-		this.rowSelectionForRoles = null;
-		this.rowSelectionForUsers = null;
 
 		this.getProcessResourceRolesData();
 
@@ -97,48 +95,6 @@
 		deferred.resolve(result);
 		return deferred.promise;
 	};
-
-	/**
-	 * 
-	 * @param list
-	 * @param textSearch
-	 * @returns
-	 */
-	ProcessResourceMgmtCtrl.prototype.filterRolesArray = function(list, textSearch) {
-		var rows = _filter('filter')(list, function(item, index) {
-			var newTextSearch = textSearch.replaceAll("*", ".*");
-			return item.name.match(new RegExp('^' + newTextSearch, "i"));
-		}, true);
-
-		return rows;
-
-	};
-
-	/**
-	 * 
-	 * @param list
-	 * @param textSearch
-	 * @returns
-	 */
-	ProcessResourceMgmtCtrl.prototype.filterUsersArray = function(list, textSearch) {
-		var rows = _filter('filter')(list, function(item, index) {
-			var newTextSearch = textSearch.replaceAll("*", ".*");
-			return item.userName.match(new RegExp('^' + newTextSearch, "i"));
-		}, true);
-
-		return rows;
-
-	};
-
-	/**
-	 * 
-	 */
-	String.prototype.replaceAll = function(str1, str2, ignore) {
-		return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g, "\\$&"), (ignore
-				? "gi"
-				: "g")), (typeof (str2) == "string") ? str2.replace(/\$/g, "$$$$") : str2);
-	}
-
 
 
 	/**

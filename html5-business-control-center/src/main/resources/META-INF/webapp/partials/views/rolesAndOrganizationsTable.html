@@ -4,7 +4,6 @@
 		sd-data="ctrl.getProcessResourceRoles(params)" sda-mode="local"
 		sda-preference-delegate="ctrl.preferenceDelegateForRolesTable(prefInfo)"
 		sda-ready="ctrl.showRolesTable" sda-selectable="row"
-		sda-selection="ctrl.rowSelectionForRoles"
 		sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
 		sda-sort-by="{name : 'name', dir : 'desc'}" sda-exports="true"
 		sda-exports-file-name="{{ctrl.exportFileNameForRolesAndOrg}}">
@@ -29,9 +28,9 @@
 					title="{{i18n('business-control-center-messages.views-roleManagerDetailView-title')}}"
 					class="tbl-tool-link"
 					aid="BCC-ResAvailability-RolesOrgTbl-Name">{{rowData.name}}</a></td>
-				<td style="text-align: center;"></td>
-				<td style="text-align: center;"></td>
-				<td style="text-align: center;"></td>
+				<td style="text-align: center;" sda-data-type="int"></td>
+				<td style="text-align: center;" sda-data-type="string"></td>
+				<td style="text-align: center;" sda-data-type="int"></td>
 			</tr>
 		</tbody>
 	</table>

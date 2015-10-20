@@ -1,7 +1,7 @@
 <div class="deputy-management-wrapper">
 <div sda-toolbar>
 		<div class="tbl-toolbar-section">
-			<button	ng-disabled="ctrl.rowSelectionForUsers == null" ng-click="ctrl.openCreateOrModifyDeputyDialog('','ADD');"
+			<button	ng-disabled="ctrl.usersTable.getSelection() == null" ng-click="ctrl.openCreateOrModifyDeputyDialog('','ADD');"
 				title="{{i18n('business-control-center-messages.views-deputyTeamMemberView-addDeputy-title')}}"
 				class="button-link tbl-toolbar-item tbl-tool-link"
 				aid="BCC-DeputyMgmt-MyDeputiesTbl-AddDeputy">
@@ -22,13 +22,13 @@
 					sda-label-key="deputy"
 					sda-sortable="true">
 				</th>
-				<th sda-name="validFrom" sda-label-key="validFrom"></th>
-				<th sda-name="validTo" sda-label-key="validTo"></th>
+				<th sda-name="validFrom"></th>
+				<th sda-name="validTo"></th>
 				<th sda-name="actions" sda-label="{{i18n('business-control-center-messages.views-common-column-actions')}}" ></th>
 		</thead>
 		<tbody>
 			<tr>
-				<td><img alt="" ng-if="ctrl.getUserImageURL(rowData.avatarImageURI).indexOf('/') > -1" 
+				<td sda-data-type="string"><img alt="" ng-if="ctrl.getUserImageURL(rowData.avatarImageURI).indexOf('/') > -1" 
 					 ng-src="{{ctrl.getUserImageURL(rowData.avatarImageURI)}}" width="24px" height="24px" class="spacing-right">
 					<i class="{{ctrl.getUserImageURL(rowData.avatarImageURI)}} pi-1-5x" 
 					 ng-if="!(ctrl.getUserImageURL(rowData.avatarImageURI).indexOf('/') > -1)"  style="margin-right: 5px;"></i>

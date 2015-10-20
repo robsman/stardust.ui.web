@@ -34,7 +34,6 @@
 		Controller.prototype.initialize = function() {
 			this.resetValues();
 			this.dataTable = null; // This will be set to underline data
-			this.selection = null;
 			this.fetchCriticalityConfig();
 			
 			this.exportAnchor = document.createElement("a");

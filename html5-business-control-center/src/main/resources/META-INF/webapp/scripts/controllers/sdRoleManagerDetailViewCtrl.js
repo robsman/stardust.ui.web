@@ -53,8 +53,6 @@
 		this.assignedUsersTable = null;
 		this.assignableUsersTable = null;
 		this.activityTable = null;
-		this.rowSelectionAssignedUsersTable = null;
-		this.rowSelectionAssignableUsersTable = null;
 		this.showActivityListTab = false;
 		this.activeTab = 1;
 
@@ -200,9 +198,9 @@
 	/**
 	 * 
 	 */
-	RoleManagerDetailViewCtrl.prototype.removeUserFromRole = function(rowSelectionAssignedUsersTable) {
+	RoleManagerDetailViewCtrl.prototype.removeUserFromRole = function() {
 		var self = this;
-		var userIds = this.getSelectedUserIds(rowSelectionAssignedUsersTable);
+		var userIds = this.getSelectedUserIds(self.assignedUsersTable.getSelection());
 		_sdRoleManagerDetailService.removeUserFromRole(userIds, self.viewParams.roleId, self.viewParams.departmentOid)
 				.then(function(data) {
 					self.userAuthorizationMsg = data.userAuthorization;
@@ -216,9 +214,9 @@
 	/**
 	 * 
 	 */
-	RoleManagerDetailViewCtrl.prototype.addUserToRole = function(rowSelectionAssignableUsersTable) {
+	RoleManagerDetailViewCtrl.prototype.addUserToRole = function() {
 		var self = this;
-		var userIds = this.getSelectedUserIds(rowSelectionAssignableUsersTable);
+		var userIds = this.getSelectedUserIds(self.assignableUsersTable.getSelection());
 		_sdRoleManagerDetailService.addUserToRole(userIds, self.viewParams.roleId, self.viewParams.departmentOid).then(
 				function(data) {
 					self.userAuthorizationMsg = data.userAuthorization;

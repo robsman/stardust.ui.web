@@ -238,7 +238,7 @@
    */
   AMCtrl.prototype.cloneParticipant = function() {
     this.resetMessages();
-    if (!this.selection || this.selection.length < 1) {
+    if (!this.dataTable.getSelection() || this.dataTable.getSelection().length < 1) {
       this.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.selectedParticipant.clone.warning"));
     } else {
       this.showCloneParticipantDialog = true;
@@ -257,8 +257,8 @@
     }
 
     var sourceParticipantsIds = [];
-    for (var i = 0; i < this.selection.length; i++) {
-      sourceParticipantsIds.push(this.selection[i].qualifiedId);
+    for (var i = 0; i < this.dataTable.getSelection().length; i++) {
+      sourceParticipantsIds.push(this.dataTable.getSelection()[i].qualifiedId);
     }
 
     var targetParticipantsIds = [];
