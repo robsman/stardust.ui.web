@@ -204,7 +204,6 @@
 								<ice:menuPopup id="thumbnailsMenu" rendered="#{contentHandler.tiffDocumentHolder.editable}">
 									<ice:menuItem styleClass="cut"
 										value="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.cut']}"
-										icon="/plugins/views-common/images/icons/cut.png"
 										actionListener="#{contentHandler.tiffDocumentHolder.copyPage}">
 										<pc:automationTag
 											value="auto-COM-DocView-TiffDocView-ThumbNailMnu-Copy"
@@ -213,7 +212,6 @@
 									</ice:menuItem>
 									<ice:menuItem styleClass="paste"
 										value="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.paste']}"
-										icon="/plugins/views-common/images/icons/paste_plain.png"
 										actionListener="#{contentHandler.tiffDocumentHolder.pastePage}"
 										disabled="#{!contentHandler.tiffDocumentHolder.insertEnabled}">
 										<pc:automationTag
@@ -223,7 +221,6 @@
 									</ice:menuItem>
 									<ice:menuItem styleClass="pageUp"
 										value="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.movePageUp']}"
-										icon="/plugins/views-common/images/icons/arrow-skip-090.png"
 										actionListener="#{contentHandler.tiffDocumentHolder.movePageUp}"
 										disabled="#{!(page.currentPageIndex gt contentHandler.tiffDocumentHolder.minPageIndex)}">
 										<pc:automationTag
@@ -233,7 +230,6 @@
 									</ice:menuItem>
 									<ice:menuItem styleClass="pageDown"
 										value="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.movePageDown']}"
-										icon="/plugins/views-common/images/icons/arrow-skip-270.png"
 										actionListener="#{contentHandler.tiffDocumentHolder.movePageDown}"
 										disabled="#{!(page.currentPageIndex lt contentHandler.tiffDocumentHolder.maxPageIndex)}">
 										<pc:automationTag
@@ -243,7 +239,6 @@
 									</ice:menuItem>
 									<ice:menuItem styleClass="reversePage"
 										value="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.reversePageOrder']}"
-										icon="/plugins/views-common/images/icons/blue-document-convert.png"
 										actionListener="#{contentHandler.tiffDocumentHolder.reversePageOrder}">
 										<pc:automationTag
 											value="auto-COM-DocView-TiffDocView-ThumbNailMnu-Reverse"
@@ -251,7 +246,6 @@
 									</ice:menuItem>
 									<ice:menuItem styleClass="addBookmark"
 										value="#{views_common_msgPropsBean['views.tiffViewer.thumbnails.addBookmark']}"
-										icon="/plugins/views-common/images/icons/bookmark--plus.png"
 										actionListener="#{contentHandler.tiffDocumentHolder.addBookmark}">
 										<pc:automationTag
 											value="auto-COM-DocView-TiffDocView-ThumbNailMnu-AddBookmark"
