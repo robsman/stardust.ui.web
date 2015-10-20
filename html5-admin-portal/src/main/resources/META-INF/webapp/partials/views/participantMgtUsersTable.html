@@ -13,7 +13,7 @@
 					</button>
 					
 					<button
-						ng-disabled="!(ctrl.rowSelectionForAllUsersTable.length > 0)"
+						ng-disabled="!(ctrl.allUsersTable.getSelection().length > 0)"
 						ng-click="bpmCommon.stopEvent($event); ctrl.invalidateUsers();"
 						title="{{i18n('admin-portal-messages.views-participantMgmt-invalidateUser-title')}}"
 						class="button-link tbl-toolbar-item tbl-tool-link"
@@ -22,8 +22,8 @@
 					</button>
 					
 					<button
-						ng-disabled="!(ctrl.rowSelectionForAllUsersTable.length == 1)"
-						ng-click="bpmCommon.stopEvent($event); ctrl.openCreateCopyModifyUser('COPY_USER',ctrl.rowSelectionForAllUsersTable[0].oid);"
+						ng-disabled="!(ctrl.allUsersTable.getSelection().length == 1)"
+						ng-click="bpmCommon.stopEvent($event); ctrl.openCreateCopyModifyUser('COPY_USER',ctrl.allUsersTable.getSelection()[0].oid);"
 						title="{{i18n('admin-portal-messages.common-copy')}}"
 						class="button-link tbl-toolbar-item tbl-tool-link"
 						aid="ADM-PartMgmt-ToolbarCopyUser">
@@ -60,7 +60,6 @@
 			<table sd-data-table="ctrl.allUsersTable"
 				sd-data="ctrl.getAllUsers(params)" sda-mode="remote"
 				sda-selectable="multiple" sda-page-size="{{ctrl.pageSize}}"
-				sda-selection="ctrl.rowSelectionForAllUsersTable"
 				sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
 				sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
 				sda-sort-by="{name : 'oid', dir : 'desc'}" sda-exports="true"

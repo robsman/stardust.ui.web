@@ -48,7 +48,6 @@
 		this.allLogEntriesTable = null;
 		this.showAllLogEntriesTable = true;
 		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
-		this.rowSelectionForAllLogEntriesTable = null;
 		this.exportFileNameForAllLogEntries = "AllLogEntries";
 
 		this.getAllProcessInstanceCounts();

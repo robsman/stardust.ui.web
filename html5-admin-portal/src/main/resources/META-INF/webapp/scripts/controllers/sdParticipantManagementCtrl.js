@@ -52,7 +52,6 @@
     this.allUsersTable = null;
     this.hideInvalidatedUsers = false;
     this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
-    this.rowSelectionForAllUsersTable = null;
     this.exportFileNameForAllUsers = "AllUsers";
     
     var pageSizePreference = sdPortalConfigurationService.getPageSize();
@@ -82,8 +81,8 @@
    */
   ParticipantManagementCtrl.prototype.getDragElement = function(item){
 	  var dragString ="<ol>";
-	  
-	  this.rowSelectionForAllUsersTable.forEach(function(user){
+
+	  this.allUsersTable.getSelection().forEach(function(user){
 		  dragString += "<li>" + user.displayName + "</li>";
 	  });
 	  dragString += "</ol>";
@@ -192,7 +191,7 @@
         self.titleParams = '';
       } else if (mode == 'COPY_USER') {
         self.title = 'views-common-messages.views-copyUser-title';
-        self.titleParams = self.rowSelectionForAllUsersTable[0].displayName;
+        self.titleParams = self.allUsersTable.getSelection()[0].displayName;
         self.user.oid = oid;
       } else if (mode == 'MODIFY_USER') {
         self.title = 'views-common-messages.views-modifyUser-title';
@@ -336,7 +335,7 @@
    */
   ParticipantManagementCtrl.prototype.invalidateUsers = function() {
     var self = this;
-    var oids = this.getSelectedUserOids(self.rowSelectionForAllUsersTable);
+    var oids = this.getSelectedUserOids(self.allUsersTable.getSelection());
     _sdParticipantManagementService.invalidateUsers(oids).then(function(data) {
       self.activityInstances = data.activityInstances;
       self.notificationMap = data.notificationMap;
@@ -556,7 +555,7 @@
 	  var comparatorFx, //filterFX for the filterTree invocation.
 	  	  that = this;
 	  
-	  if(this.rowSelectionForAllUsersTable.length ===0){
+	  if(this.allUsersTable.getSelection().length ===0){
 		  return;
 	  }
 	  
@@ -564,7 +563,7 @@
 	  this.selectedTreeNodes = [];
 	  
 	  comparatorFx= function(nodeItem){
-		  return that.rowSelectionForAllUsersTable.some(function(v){
+		  return that.allUsersTable.getSelection().some(function(v){
 			  return v.oid === nodeItem.OID && nodeItem.type==="USER";
 		  });
 	  };
@@ -622,7 +621,7 @@
         }
       }
     } else if (data.treeEvent === "node-dragend" || data.treeEvent === "node-drop") {
-      this.handleUserDropAction(data, this.rowSelectionForAllUsersTable);
+      this.handleUserDropAction(data, this.allUsersTable.getSelection());
     } else if (data.treeEvent.indexOf("menu-") == 0 || (data.treeEvent === "node-delete")) {
       data.deferred.resolve();
       this.handleMenuClick(data, e);
@@ -726,7 +725,7 @@
     if (getIndexOfParticipant(this.selectedTreeNodes, dropTarget) == -1) {
       this.addToSelectedNodes(data, true);
     }
-    this.saveParticipants(data, this.selectedTreeNodes, this.rowSelectionForAllUsersTable);
+    this.saveParticipants(data, this.selectedTreeNodes, this.allUsersTable.getSelection());
   }
 
   // save the participant
@@ -881,9 +880,9 @@
 
 	selectedTblRows = this.allUsersTable.getSelection();
 	
-	if (this.rowSelectionForAllUsersTable.indexOf(data) === -1){
-		while(this.rowSelectionForAllUsersTable.pop()){/*clear all*/}
-		this.rowSelectionForAllUsersTable.push(data);
+	if (this.allUsersTable.getSelection().indexOf(data) === -1){
+		while(this.allUsersTable.getSelection().pop()){/*clear all*/}
+		this.allUsersTable.getSelection().push(data);
 		selectedTblRows = [];
 		selectedTblRows.push({"qualifiedId" : data.qualifiedId});
 	}
