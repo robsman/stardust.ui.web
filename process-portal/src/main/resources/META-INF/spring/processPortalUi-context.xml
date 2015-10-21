@@ -82,14 +82,6 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 				include="/plugins/html5-process-portal/partials/views/notesPanel.html">
 			</ippui:view> -->
 		
-		<ippui:view name="correspondencePanel"
-			include="/plugins/html5-views-common/html5/partials/views/correspondenceView.html">
-			<ippui:preferences>
-				<ippui:preferencePage name="icon"
-					include="/does-not-exist/correspondence-email.png" />
-			</ippui:preferences>
-		</ippui:view>
-
 	</ippui:perspective>
 
 </beans>
