@@ -288,6 +288,7 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
       dataPathId = (String) thisView.getViewParams().get("dataPathId");
       dataId = (String) thisView.getViewParams().get("dataId");
       baseFormBinding = (String) thisView.getViewParams().get("baseFormBinding");
+      Integer versionId = (Integer) thisView.getViewParams().get("versionId");
       if (StringUtils.isEmpty(baseFormBinding))
       {
          baseFormBinding = BEAN_NAME;
@@ -310,6 +311,10 @@ public class DocumentHandlerBean extends UIComponentBean implements ViewEventHan
                if (documentContentInfo == null)
                {
                   documentContentInfo = new JCRDocument(DocumentMgmtUtility.getDocument(documentId));
+                  if(null != versionId)
+                  {
+                     documentContentInfo = documentContentInfo.getVersionTracker().shiftToVersion(versionId);
+                  }
                }
                
                thisView.getViewParams().put("documentInfo", documentContentInfo);

@@ -196,8 +196,15 @@
 	 * 
 	 * @param documentId
 	 */
-	DocumentSearchViewCtrl.prototype.openDocumentView = function(documentId) {
-		_sdCommonViewUtilService.openDocumentView(documentId, true);
+	DocumentSearchViewCtrl.prototype.openDocumentView = function(documentId, versionId) {
+		if (versionId) {
+			var params = {
+				"versionId" : versionId
+			}
+			_sdCommonViewUtilService.openDocumentView(documentId, true, params);
+		} else {
+			_sdCommonViewUtilService.openDocumentView(documentId, true);
+		}
 	}
 
 	/**
