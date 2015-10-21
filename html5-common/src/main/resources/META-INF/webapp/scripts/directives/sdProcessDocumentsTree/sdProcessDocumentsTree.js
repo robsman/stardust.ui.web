@@ -110,10 +110,10 @@
    */
   processDocumentController.prototype.iconCallback = function(item){
    
-    var classes = "fa";
+    var classes = "pi";
     
     if(item.itemType==="document"){
-    	classes += " fa-file";
+    	classes += " pi-other";
   		if(this.selectedNodes.some(function(v){return v.valueItem.uuid === item.uuid;})){
   		    classes +=" selected";
   		}
@@ -121,7 +121,7 @@
     
     //can't select root folders, only documents
     if(item.itemType.indexOf('Root')>-1){
-      classes +=" fa-folder";
+      classes +=" pi-folder";
     }
   
     return classes;
