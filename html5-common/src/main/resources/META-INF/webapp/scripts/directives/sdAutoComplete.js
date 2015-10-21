@@ -79,7 +79,6 @@ angular.module('bpm-common.directives')
             result=$attrs[attr];
           }
         }
-        console.log(result);
         return result;
     }
     

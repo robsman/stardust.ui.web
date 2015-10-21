@@ -98,7 +98,6 @@
 			} else {
 				self.getResourcePerformance(null);
 			}
-			trace.log('Columns retrieved :' + self.roles);
 		}).then(function(failure) {
 			trace.log(failure);
 		});
@@ -107,18 +106,15 @@
 	 * 
 	 */
 	ResourcePerformanceCtrl.prototype.getResourcePerformance = function(roleId) {
-		trace.log('Fetching Resource Performance Data.');
 		var self = this;
 		_sdResourcePerformanceService.getResourcePerformanceData(roleId).then(function(result) {
-			trace.log('Resource Performance Data retreived successfully.');
 			self.resourcePerformance.list = result.list;
 			self.resourcePerformance.totalCount = result.totalCount;
 			self.columns = result.columns;
 			self.columnsDefinition = result.columnsDefinition;
 		    self.ready = true;
-		    trace.log(self.resourcePerformance)
 		}).then(function(failure) {
-			trace.log('Failed to retrive Resource Performance Data.');
+			trace.log('Failed to retrive Resource Performance Data.', failure);
 
 		});
 	};

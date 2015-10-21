@@ -61,7 +61,7 @@
 			   deferred.resolve(data);
 		   }, function(result) {
 			   // Error occurred
-			   trace.log('An error occurred while fetching participants.\n Caused by: ' + result);
+			   trace.log('An error occurred while fetching participants.\n Caused by: ' , result);
 			   deferred.reject(result);
 		   });
 

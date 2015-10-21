@@ -70,7 +70,6 @@
 		_sdProcessInstanceService.getProcessColumns().then(function(result){
 			self.columns = result;
 			self.ready = true;
-			trace.log('Columns retrieved :' + self.columns);
 		});
 	};
 	/**
@@ -79,7 +78,6 @@
 	Controller.prototype.fetchStatistics = function( ) {
 		var self = this;
 		_sdActivityInstanceService.getCompletedActivityStatsByTeamLead( ).then(function( result ){
-			trace.log('Completed activities retreived successfully.');
 			self.statistics.list = result;
 			self.statistics.totalCount = result.length;
 			if(self.dataTable)

@@ -76,7 +76,7 @@
   Controller.prototype.getExistingFolderInformation = function(folderId) {
     var ctrl = this;
     _sdFolderService.getFolderInformationByFolderId(folderId).then(function(data) {
-      trace.log("Return from getExistingFolderInformation using folder id - " + folderId, "Data : ",data)
+      trace.log("Return from getExistingFolderInformation using folder id - " , folderId, "Data : ",data)
       ctrl.selected = populateCorrespondenceMetaData(data.correspondenceMetaDataDTO, data.documents)
     });
   }

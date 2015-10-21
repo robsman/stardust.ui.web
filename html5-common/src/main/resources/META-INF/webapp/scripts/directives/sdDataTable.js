@@ -1563,7 +1563,7 @@
 		 * 
 		 */
 		function refresh(retainPageIndex) {
-			trace.log('Refreshing table with retainPageIndex = ' + retainPageIndex);
+			trace.log('Refreshing table with retainPageIndex = ' , retainPageIndex);
 
 			if (tableInLocalMode) {
 				localModeRefreshInitiated = true;
@@ -1842,7 +1842,7 @@
 		 * 
 		 */
 		function logCompilationTime() {
-			trace.log('Angular Compilation Total Time: ' + compileTime);
+			trace.log('Angular Compilation Total Time: ' , compileTime);
 			compileTime = 0;
 		}
 
@@ -2389,7 +2389,7 @@
 		 */
 		function fetchAllInBatches(deferred, params, data) {
 			var batchNo = (params.skip / params.pageSize) + 1;
-			trace.log('Fetching data for export, batch ' + batchNo);
+			trace.log('Fetching data for export, batch ' , batchNo);
 
 			fetchData(params).then(function(result) {
 				try {
@@ -2421,7 +2421,7 @@
 
 			compileTime += (end - start);
 
-			trace.log('Angular Compilation For: ' + id + ', Time: ' + (end - start));
+			trace.log('Angular Compilation For: ' , id , ', Time: ' + (end - start));
 		}
 		
 		/*
@@ -2841,7 +2841,6 @@
 				scope.$even = !(scope.$odd = (index & 1) === 0);
 
 				scope.$on('$destroy', function() {
-					// trace.log('Row Scope ' + scope.$id + ' destroyed for parent ' + scope.$parent.$id);
 				});
 			}
 		};

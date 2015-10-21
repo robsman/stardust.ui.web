@@ -303,7 +303,7 @@
 					self.safeApply();
 				}, function(result) {
 					// Error occurred
-					trace.log('An error occurred while fetching participants.\n Caused by: ' + result);
+					trace.log('An error occurred while fetching participants.\n Caused by: ' , result);
 					self.showErrorMessage('views-common-messages.delegation-error-fetch', 'An error occurred while fetching participants.');
 
 					deferred.reject(result);
@@ -322,7 +322,7 @@
 					deferred.resolve(data);
 				}, function(result) {
 					// Error occurred
-					trace.log('An error occurred while performing delegation.\n Caused by: ' + result);
+					trace.log('An error occurred while performing delegation.\n Caused by: ' , result);
 					deferred.reject(result);
 				});
 

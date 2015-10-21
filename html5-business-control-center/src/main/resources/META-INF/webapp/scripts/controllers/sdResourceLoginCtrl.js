@@ -52,14 +52,12 @@
      * @returns
      */
 	ResourceLoginCtrl.prototype.getResourceLoginTimeInfo = function(options) {
-		trace.log('Fetching completed activities.');
 		var self = this;
 		var deferred = _q.defer();
 		_sdResourceLoginService.getResourceLoginTimeInfo().then(function(result) {
-			trace.log('Resource Login Time info retreived successfully.Result :',result);
 			deferred.resolve(result);
 		}).then(function(failure) {
-			trace.log('Failed to retrive Resource Login Time info.');
+			trace.log('Failed to retrive Resource Login Time info.', failure);
 			deferred.reject(failure);
 		});
 		return deferred.promise;

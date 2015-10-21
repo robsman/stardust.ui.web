@@ -920,22 +920,6 @@
 		this.benchmarkDataRows=[];
 	}
 	
-	
-	/**
-	 * Given an id and a nodeType find the corresponding item within the currently selected
-	 * benchmark and set it as our selected benchmark instance.
-	 * @param idChain - Based on the nodeIds of our model data as transformed by the treeify function.
-	 * 		  nodeType model    = modelId
-	 * 		  nodeType process  = {modelId}processId
-	 *        nodeType activity = {modelId}processId:activityId
-	 * @param nodeType - meta data for a node in our tree [model|process|activity]
-	 */
-	benchmarkController.prototype.generateSelectedCategories = function(idChain, nodeType){
-		console.log(id + ":" + nodeType);
-		//based on the node type use the idChain to extract the correct benchmark instance
-		//from our selected benchmark.
-	};
-	
 	/**
 	 * Callback function tied to our model tree through which we will
 	 * receive the trees API.

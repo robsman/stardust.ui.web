@@ -249,7 +249,7 @@
 	   * Note that it is only Availability trigger!
 	   */
 		UtilService.prototype.watch = function($scope, watchforElement, callback, unregister) {
-	    console.log("watching scope for: " + watchforElement);
+		trace.log("watching scope for: " , watchforElement);
 	    if ($parse(watchforElement)($scope)) {
 	      callback();
 	    } else {
@@ -258,10 +258,9 @@
 					return $parse(watchforElement)($scope) ? "GotIt" : "";
 	      };
 
-	      console.log("Registering Watch for Element: " + watchforElement);
+	      trace.log("Registering Watch for Element: " , watchforElement);
 	      var unregister = $scope.$watch("watchForIt()", function(newVal, oldVal) {
 	        if (newVal !== oldVal) {
-	          console.log("Element is available now!");
 	          if(unregister){
 	            unregister();  
 	          }

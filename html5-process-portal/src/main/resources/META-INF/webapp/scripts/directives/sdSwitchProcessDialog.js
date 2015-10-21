@@ -253,7 +253,7 @@
 
 				}, function(result) {
 					// Error occurred
-					trace.log('An error occurred while performing abort & start.\n Caused by: ' + result);
+					trace.log('An error occurred while performing abort & start.\n Caused by: ' , result);
 					deferred.reject(result);
 				});
 
@@ -367,7 +367,7 @@
 					self.safeApply();
 				}, function(result) {
 					// Error occurred
-					trace.log('An error occurred while fetching Spawnable Processes.\n Caused by: ' + result);
+					trace.log('An error occurred while fetching Spawnable Processes.\n Caused by: ' , result);
 
 					deferred.reject(result);
 				});

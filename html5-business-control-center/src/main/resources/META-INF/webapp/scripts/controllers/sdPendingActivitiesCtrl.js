@@ -72,14 +72,12 @@
 		var self = this;
 		_sdActivityInstanceService.getRoleColumns().then(function(result) {
 			self.columns = result;
-			trace.log('Columns retrieved :' + self.columns);
 		});
 	};
 	/**
 	 * 
 	 */
 	PendingActivitiesCtrl.prototype.getPendingActivities = function(options) {
-		trace.log('Fetching Pending activities.');
 		var self = this;
 		var result = {
 				list : self.pendingActivities.list,
@@ -90,10 +88,8 @@
 	};
 	
 	PendingActivitiesCtrl.prototype.getPendingActivitiesData = function() {
-		trace.log('Fetching Pending activities.');
 		var self = this;
 		_sdActivityInstanceService.getPendingActivities().then(function(result) {
-			trace.log('Pending activities retreived successfully.');
 			self.pendingActivities.list = result;
 			self.pendingActivities.totalCount = result.length;
 			if(self.dataTable != undefined){
@@ -103,7 +99,7 @@
 			}
 			
 		}).then(function(error) {
-			trace.log('Failed to retrive Pending activities.');
+			trace.log('Failed to retrive Pending activities.', error);
 		});
 	};
 	
@@ -166,6 +162,7 @@
 				self.activities.totalCount = data.totalCount;
 				deferred.resolve(self.activities);
 			}, function(error) {
+				trace.log(error);
 				deferred.reject(error);
 			});
 

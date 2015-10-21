@@ -375,7 +375,7 @@
 				var userPromise = true;
 				if (angular.isDefined(self.onConfirmFn) && angular.isFunction(self.onConfirmFn)) {
 					userPromise = self.onConfirmFn(self.dialogScope, {res: true});
-					trace.log('Promise returned by the onConfirm: ' + userPromise);
+					trace.log('Promise returned by the onConfirm: ' , userPromise);
 					if (userPromise === undefined) {
 						userPromise = true;
 					}
@@ -387,7 +387,6 @@
 						self.deferred.resolve();
 					}
 				} else if (userPromise.then) {
-					trace.log('Waiting for user to resolve the promise returned by onConfirm...');
 					userPromise.then(function() {
 						hideDialog();
 						if (self.deferred) {

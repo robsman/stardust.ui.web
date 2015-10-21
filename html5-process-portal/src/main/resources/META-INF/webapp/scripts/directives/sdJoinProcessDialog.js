@@ -263,7 +263,7 @@
 
 				}, function(result) {
 					// Error occurred
-					trace.log('An error occurred while performing abort & join.\n Caused by: ' + result);
+					trace.log('An error occurred while performing abort & join.\n Caused by: ' , result);
 					deferred.reject(result);
 				});
 
@@ -416,7 +416,7 @@
 					deferred.resolve(data);
 				}, function(result) {
 					// Error occurred
-					trace.log('An error occurred while performing "Get Related Processes".\n Caused by: ' + result);
+					trace.log('An error occurred while performing "Get Related Processes".\n Caused by: ' , result);
 					deferred.reject(result);
 				});
 

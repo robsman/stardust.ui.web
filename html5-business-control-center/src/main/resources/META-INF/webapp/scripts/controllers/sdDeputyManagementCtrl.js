@@ -70,7 +70,7 @@
 			deferred.resolve(data.list);
 		}, function(error) {
 			trace.log(error);
-			// deferred.reject(error);
+			deferred.reject(error);
 		});
 
 		return deferred.promise;
@@ -155,7 +155,7 @@
 				deferred.resolve(data.list);
 			}, function(result) {
 				// Error occurred
-				trace.log('An error occurred while fetching participants.\n Caused by: ' + result);
+				trace.log('An error occurred while fetching participants.\n Caused by: ', result);
 				deferred.reject(result);
 			});
 		} else {
@@ -193,7 +193,7 @@
 			self.loadCreateOrModifyDeputyDialog = true;
 		}, function(result) {
 			// Error occurred
-			trace.log('An error occurred while fetching authorization.\n Caused by: ' + result);
+			trace.log('An error occurred while fetching authorization.\n Caused by: ', result);
 		});
 
 	};
@@ -319,7 +319,7 @@
 					});
 				}, function(result) {
 					// Error occurred
-					trace.log('An error occurred while adding deputy.\n Caused by: ' + result);
+					trace.log('An error occurred while adding deputy.\n Caused by: ', result);
 				});
 
 			}
@@ -387,7 +387,7 @@
 			});
 		}, function(result) {
 			// Error occurred
-			trace.log('An error occurred while removing user deputy.\n Caused by: ' + result);
+			trace.log('An error occurred while removing user deputy.\n Caused by: ', result);
 		});
 	};
 })();

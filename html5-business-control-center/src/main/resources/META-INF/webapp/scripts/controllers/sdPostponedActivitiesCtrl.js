@@ -86,7 +86,6 @@
 	PostponedActivitiesCtrl.prototype.fetchStatistics = function( ) {
 		var self = this;
 		_sdActivityInstanceService.getStatsForPostponedActivities( ).then(function( result ){
-			trace.log('Postponed activities retreived successfully.');
 			self.statistics.list = result;
 			self.statistics.totalCount = result.length;
 			if(self.dataTable)
@@ -105,14 +104,6 @@
 			list : self.statistics.list,
 			totalCount : self.statistics.totalCount
 		}
-		//Filter
-		/*if(options.filters && options.filters.TeamMember && options.filters.TeamMember.textSearch !=''){
-			trace.log("Applying filter with team member : ",options.filters.TeamMember.textSearch );
-			result.list = _filter('filter')(self.statistics.list, {'teamMember' : {'displayName': options.filters.TeamMember.textSearch }},false)
-		}else{
-			result.list = self.statistics.list;
-		}*/
-		
 		deferred.resolve(result);
 		return deferred.promise;
 	};
@@ -121,7 +112,6 @@
 	 * 
 	 */
 	PostponedActivitiesCtrl.prototype.openUserManagerDetails = function(user) {
-		trace.log('Opening user management details view.');
 		_sdCommonViewUtilService.openUserManagerDetailView( user.oid, user.id, true);
 	};
 	

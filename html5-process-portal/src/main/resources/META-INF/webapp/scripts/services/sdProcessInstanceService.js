@@ -263,7 +263,6 @@
 		 * Get Spawnable Processes for switchspwan
 		 */
 		ProcessInstanceService.prototype.getSpawnableProcesses = function() {
-			trace.log("Getting spawnable processes");
 			var restUrl = REST_BASE_URL + ':type';
 			var urlTemplateParams = {};
 			urlTemplateParams.type = "spawnableProcesses";
@@ -279,7 +278,7 @@
 		 * 
 		 */
 		ProcessInstanceService.prototype.switchProcess = function(payload) {
-			trace.log("Aborting & spawning new process for:",payload);
+			trace.log("Aborting & spawning new process for:", payload);
 			
 			var restUrl = REST_BASE_URL + 'switchProcess';
 			var res = $resource(restUrl, {}, {
@@ -314,7 +313,6 @@
 		 * 
 		 */
 		ProcessInstanceService.prototype.getRelatedProcesses = function(proInstanceOids, matchAny, searchCases) {
-			trace.log("Calling getRelatedProcesses for: ", proInstanceOids);
 			
 			var restUrl = REST_BASE_URL + 'getRelatedProcesses?';
 			

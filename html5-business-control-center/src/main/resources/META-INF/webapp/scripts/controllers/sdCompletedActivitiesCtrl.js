@@ -70,7 +70,6 @@
 		_sdProcessInstanceService.getProcessColumns().then(function(result){
 			self.columns = result;
 			self.ready = true;
-			trace.log('Columns retrieved :' + self.columns);
 		});
 	};
 	
@@ -81,7 +80,6 @@
 	CompletedActivitiesCtrl.prototype.getStatsForCompletedActivities = function( ) {
 		var self = this;
 		_sdActivityInstanceService.getStatsForCompletedActivities( ).then(function( result ){
-			trace.log('Completed activities retreived successfully.');
 			self.completedActivities.list = result;
 			self.completedActivities.totalCount = result.length;
 			if(self.dataTable)
@@ -109,7 +107,6 @@
 	 * 
 	 */
 	CompletedActivitiesCtrl.prototype.openUserManagerDetails = function(user) {
-		trace.log('Opening user management details view.');
 		_sdCommonViewUtilService.openUserManagerDetailView( user.oid, user.id, true);
 	};
 	
@@ -126,7 +123,6 @@
 	 * 
 	 */
 	CompletedActivitiesCtrl.prototype.refresh = function( ) {
-		trace.log('Refreshing view.');
 		this.getStatsForCompletedActivities();
 	};
 	
