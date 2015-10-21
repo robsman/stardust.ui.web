@@ -5553,10 +5553,10 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 
 .icePnlClpsblHdr:hover{
     /* background-image: url('./images/flat-icons/panelHeader-triggerCollapse-light_16x22.png') !important; */
-    font-family: "FontAwesome";
-    content: "\f0da";
+    /*font-family: "FontAwesome";
+    content: "\f0da";*/
     color: #7B7163;
-    background-position: -4px 5px;
+    /*background-position: -4px 5px;*/
 }
 
 .icePnlClpsblHdr-dis:before{
@@ -5568,10 +5568,10 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 }
 .icePnlClpsblHdr-dis:hover {
     /* background: url('./images/flat-icons/panelHeader-triggerCollapse.png' ) no-repeat; */
-    font-family: "FontAwesome";
-    content: "\f0da";
+    /*font-family: "FontAwesome";
+    content: "\f0da";*/
     color: #7B7163;
-    background-position: -4px 7px;  
+    /*background-position: -4px 7px;*/  
 }
 
 .icePnlClpsblColpsdHdr:before{
@@ -5583,10 +5583,10 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 }
 .icePnlClpsblColpsdHdr:hover {
     /* background: url('./images/flat-icons/panelHeader-triggerExpand.png')  no-repeat; */
-    font-family: "FontAwesome";
-    content: "\f0d7";
+    /*font-family: "FontAwesome";
+    content: "\f0d7";*/
     color: #7B7163;
-    background-position: -4px 7px;     
+    /*background-position: -4px 7px;*/     
 }
 
 .icePnlClpsblColpsdHdr-dis:before{
@@ -5598,10 +5598,10 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 }
 .icePnlClpsblColpsdHdr-dis:hover {
    /*  background: url('./images/flat-icons/panelHeader-triggerExpand.png')  no-repeat; */
-    font-family: "FontAwesome";
-    content: "\f0d7";
+    /*font-family: "FontAwesome";
+    content: "\f0d7";*/
     color: #7B7163;
-    background-position: -4px 7px;    
+    /*background-position: -4px 7px;*/    
 }
 .icePnlClpsblCnt, .icePnlClpsblCnt-dis {
 	background-color: transparent;
