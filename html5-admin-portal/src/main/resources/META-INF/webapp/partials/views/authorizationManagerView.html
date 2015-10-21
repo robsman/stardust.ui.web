@@ -165,7 +165,7 @@
 						<ul ng-show="isVisible">
 
 							<li ng-init="isVisible=false"
-								ng-repeat="genItem in ctrl.data.general | orderBy:'name'">
+								ng-repeat="genItem in ctrl.data.general">
 
 								<div class="title-section">
 									<div class="expand-section" ng-show="true">
@@ -208,7 +208,7 @@
 										</div>
 
 										<ul ng-show="isVisible" ng-init="isVisible=false">
-											<li ng-repeat="item in genItem.allow | orderBy:'name' ">
+											<li ng-repeat="item in genItem.allow ">
 												<ul>
 													<li><a sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
@@ -252,7 +252,7 @@
 										</div>
 
 										<ul ng-show="isVisible" ng-init="isVisible=false">
-											<li ng-repeat="item in genItem.deny  | orderBy:'name'">
+											<li ng-repeat="item in genItem.deny ">
 												<ul>
 													<li><a sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
@@ -313,7 +313,7 @@
 
 								<ul ng-show="isVisible">
 
-									<li ng-repeat="genItem in ctrl.data.processDefinitions  | orderBy:'name'"
+									<li ng-repeat="genItem in ctrl.data.processDefinitions "
 										ng-init="isVisible=false">
 
 										<div class="title-section">
@@ -360,7 +360,7 @@
 												</div>
 
 												<ul ng-show="isVisible">
-													<li ng-repeat="item in genItem.allow  | orderBy:'name'">
+													<li ng-repeat="item in genItem.allow ">
 														<ul>
 															<li><a sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
@@ -404,7 +404,7 @@
 												</div>
 
 												<ul ng-show="isVisible">
-													<li ng-repeat="item in genItem.deny  | orderBy:'name'">
+													<li ng-repeat="item in genItem.deny ">
 														<ul>
 															<li><a sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
@@ -450,7 +450,7 @@
 
 								<ul ng-show="isVisible">
 
-									<li ng-repeat="genItem in ctrl.data.activities  | orderBy:'name'" 
+									<li ng-repeat="genItem in ctrl.data.activities " 
 										ng-init="isVisible=false">
 
 										<div class="title-section">
@@ -497,7 +497,7 @@
 												</div>
 
 												<ul ng-show="isVisible">
-													<li ng-repeat="item in genItem.allow  | orderBy:'name'">
+													<li ng-repeat="item in genItem.allow ">
 														<ul>
 															<li><a sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
@@ -542,7 +542,7 @@
 												</div>
 
 												<ul ng-show="isVisible">
-													<li ng-repeat="item in genItem.deny  | orderBy:'name'">
+													<li ng-repeat="item in genItem.deny ">
 														<ul>
 															<li><a sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
@@ -588,7 +588,7 @@
 
 								<ul ng-show="isVisible">
 
-									<li ng-repeat="genItem in ctrl.data.data  | orderBy:'name'"
+									<li ng-repeat="genItem in ctrl.data.data "
 										ng-init="isVisible=false">
 
 										<div class="title-section">
@@ -635,7 +635,7 @@
 												</div>
 
 												<ul ng-show="isVisible">
-													<li ng-repeat="item in genItem.allow  | orderBy:'name'">
+													<li ng-repeat="item in genItem.allow ">
 														<ul>
 															<li><a sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
@@ -680,7 +680,7 @@
 												</div>
 
 												<ul ng-show="isVisible">
-													<li ng-repeat="item in genItem.deny  | orderBy:'name'">
+													<li ng-repeat="item in genItem.deny ">
 														<ul>
 															<li><a sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
@@ -726,7 +726,7 @@
 						<!-- Perspective Permissions Start -->
 						<ul ng-show="isVisible">
 
-							<li ng-repeat="genItem in ctrl.data.perspectives  | orderBy:'name'"
+							<li ng-repeat="genItem in ctrl.data.perspectives "
 								ng-init="isVisible=false">
 
 								<div class="title-section">
@@ -776,7 +776,7 @@
 
 
 										<ul ng-show="isVisible">
-											<li ng-repeat="item in genItem.allow  | orderBy:'name'">
+											<li ng-repeat="item in genItem.allow ">
 												<ul>
 													<li><a sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
@@ -820,7 +820,7 @@
 
 
 										<ul ng-show="isVisible">
-											<li ng-repeat="item in genItem.deny  | orderBy:'name'">
+											<li ng-repeat="item in genItem.deny ">
 												<ul>
 													<li><a sd-context-menu
 														sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
@@ -857,7 +857,7 @@
 
 										<ul ng-show="isVisible">
 
-											<li ng-repeat="genItem in genItem.views  | orderBy:'name'"
+											<li ng-repeat="genItem in genItem.views "
 												ng-init="isVisible=false">
 
 												<div class="title-section">
@@ -900,7 +900,7 @@
 														</div>
 
 														<ul ng-show="isVisible">
-															<li ng-repeat="item in genItem.allow  | orderBy:'name'">
+															<li ng-repeat="item in genItem.allow ">
 																<ul>
 																	<li><a sd-context-menu
 																		sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
@@ -943,7 +943,7 @@
 														</div>
 
 														<ul ng-show="isVisible">
-															<li ng-repeat="item in genItem.deny  | orderBy:'name'">
+															<li ng-repeat="item in genItem.deny ">
 																<ul>
 																	<li><a sd-context-menu
 																		sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
@@ -988,7 +988,7 @@
 
 										<ul ng-show="isVisible">
 
-											<li ng-repeat="genItem in genItem.launchPanels  | orderBy:'name'"
+											<li ng-repeat="genItem in genItem.launchPanels "
 												ng-init="isVisible=false">
 
 												<div class="title-section">
@@ -1032,7 +1032,7 @@
 														</div>
 
 														<ul ng-show="isVisible">
-															<li ng-repeat="item in genItem.allow  | orderBy:'name'">
+															<li ng-repeat="item in genItem.allow ">
 																<ul>
 																	<li><a sd-context-menu
 																		sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
@@ -1076,7 +1076,7 @@
 														</div>
 
 														<ul ng-show="isVisible">
-															<li ng-repeat="item in genItem.deny  | orderBy:'name'">
+															<li ng-repeat="item in genItem.deny ">
 																<ul>
 																	<li><a sd-context-menu
 																		sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
@@ -1123,7 +1123,7 @@
 								<!-- Global Extension Data Start -->
 								<ul ng-show="isVisible">
 		
-									<li ng-repeat="genItem in ctrl.data.globalExtensions   | orderBy:'name'"
+									<li ng-repeat="genItem in ctrl.data.globalExtensions  "
 										ng-init="isVisible=false">
 		
 										<div class="title-section">
@@ -1170,7 +1170,7 @@
 		
 		
 												<ul ng-show="isVisible">
-													<li ng-repeat="item in genItem.allow   | orderBy:'name'">
+													<li ng-repeat="item in genItem.allow  ">
 														<ul>
 															<li><a sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
@@ -1214,7 +1214,7 @@
 		
 		
 												<ul ng-show="isVisible">
-													<li ng-repeat="item in genItem.deny   | orderBy:'name'">
+													<li ng-repeat="item in genItem.deny  ">
 														<ul>
 															<li><a sd-context-menu
 																sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
@@ -1251,7 +1251,7 @@
 		
 												<ul ng-show="isVisible">
 		
-													<li ng-repeat="genItem in genItem.views   | orderBy:'name'"
+													<li ng-repeat="genItem in genItem.views  "
 														ng-init="isVisible=false">
 		
 														<div class="title-section">
@@ -1294,7 +1294,7 @@
 																</div>
 		
 																<ul ng-show="isVisible">
-																	<li ng-repeat="item in genItem.allow   | orderBy:'name'">
+																	<li ng-repeat="item in genItem.allow  ">
 																		<ul>
 																			<li><a sd-context-menu
 																				sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
@@ -1339,7 +1339,7 @@
 																</div>
 		
 																<ul ng-show="isVisible">
-																	<li ng-repeat="item in genItem.deny  | orderBy:'name'">
+																	<li ng-repeat="item in genItem.deny ">
 																		<ul>
 																			<li><a sd-context-menu
 																				sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
@@ -1384,7 +1384,7 @@
 		
 												<ul ng-show="isVisible">
 		
-													<li ng-repeat="genItem in genItem.launchPanels  | orderBy:'name'"
+													<li ng-repeat="genItem in genItem.launchPanels "
 														ng-init="isVisible=false">
 		
 														<div class="title-section">
@@ -1428,7 +1428,7 @@
 																</div>
 		
 																<ul ng-show="isVisible">
-																	<li ng-repeat="item in genItem.allow  | orderBy:'name'">
+																	<li ng-repeat="item in genItem.allow ">
 																		<ul>
 																			<li><a sd-context-menu
 																				sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
@@ -1472,7 +1472,7 @@
 																</div>
 		
 																<ul ng-show="isVisible">
-																	<li ng-repeat="item in genItem.deny  | orderBy:'name'">
+																	<li ng-repeat="item in genItem.deny ">
 																		<ul>
 																			<li><a sd-context-menu
 																				sda-menu-items="[{'value' :ctrl.labels.removeParticipant,
