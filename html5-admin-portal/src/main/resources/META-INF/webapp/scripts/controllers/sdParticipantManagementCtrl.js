@@ -458,7 +458,7 @@
         break;
       case "USERGROUP": styleClass += "pi-user-group ";
         break;
-      case "USERGROUPS": styleClass += "pi-department ";
+      case "USERGROUPS": styleClass += "pi-user-group ";
         break;
       case "USER": styleClass += "pi-user ";
         break;
