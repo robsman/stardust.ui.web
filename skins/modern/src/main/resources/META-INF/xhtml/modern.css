@@ -951,7 +951,7 @@ body, table {
 }
 
 .panelHeader {
-	height: 20px;
+	height: 20px; 
 	line-height: 20px;
 	border-bottom: 1px solid #CCCCCC;
 	white-space: nowrap;
@@ -7168,7 +7168,6 @@ i.viewIconBase.bell:before{
 .propertiesPage td,
 .toolbar-section-footer
 {
-	color: #5C6E87 !important;
 	font-weight: 600 !important;
 }
 
@@ -7179,21 +7178,21 @@ i.viewIconBase.bell:before{
 }
 
 div.propertiesPanel{
-	border: solid 1px #E8E8E8;
+	border: solid 1px #E8E8E8 !important;
 	border-radius:5px;
 	box-shadow: #DDDDDD 5px 5px 20px;
 }
 
 .propertiesPanelTitle{
-	background: none;
-	color: #a69a88;
-	font-size: 1.27em;
-	font-weight: 600;
-	text-transform: uppercase;
+	background: none !important;
+	color: #a69a88 !important;
+	font-size: 1.27em !important;
+	font-weight: 600 !important;
+	text-transform: uppercase !important;
 }
 
 div.panelBorder{
-	border:none;
+	border:none !important;
 }
 
 div.toolBar{
@@ -12658,8 +12657,8 @@ input[src *='zoom_out.png']:hover{
 }
 
 .camino-panel{
-	background: #FFF;
-	border:none;
+	background: #FFF !important;
+	border:none !important;
 }
 
 div.toolBar{

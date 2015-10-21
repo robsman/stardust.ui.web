@@ -90,8 +90,6 @@
 .lightdust input[type=image] {
 	font-size: 1em;
 	/*height: 21px;*/
-	color: #4d4d4d;
-	background-color: #f2f2f2;
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#ffffff),
 		to(#f2f2f2) );
 	background-image: -webkit-linear-gradient(top, #ffffff, #f2f2f2);
@@ -130,41 +128,41 @@
 	cursor: pointer;
 }
 
-.lightdust .panel {
+.panel {
 	width: 800px;
 	margin: 10px;
 }
 
 /* Error Messages */
-.lightdust .error {
+.error {
 	border: 1px solid #b1252c !important;
 }
 
-.lightdust .errorMessagesPanel {
+.errorMessagesPanel {
 	margin-left: 0px;
 	background: #ffcc33;
 }
 
-.lightdust .errorMessagesPanel li {
+.errorMessagesPanel li {
 	color: #b25900;
 }
 
-.lightdust .errorMessage {
+.errorMessage {
 	color: #b25900;
 }
 
 /* Warning Messages */
-.lightdust .warningMessagesPanel {
+.warningMessagesPanel {
 	margin-left: 0px;
 	background: #81DAF5;
 }
 
-.lightdust .warningMessagesPanel li {
+.warningMessagesPanel li {
 	color: #b25900;
 }
 
 /* General Dialog */
-.lightdust .invisible {
+.invisible {
 	display: none;
 	height: 0px;
 	width: 0px;
@@ -178,7 +176,7 @@
 	margin-bottom: 10px;
 }
 
-.lightdust .clplPanelHeading {
+.clplPanelHeading {
 	font-size: 1em;
 	font-color: #4D4D4D;
 	border-bottom: 1px solid #E7E7E7;
@@ -187,11 +185,11 @@
 	cursor :pointer
 }
 
-.lightdust .clplPanelHeading img{
+.clplPanelHeading img{
 	padding : 5px 5px 4px 2px;
 }
 
-.lightdust .clplPanelHeading label{
+.clplPanelHeading label{
 	color: #2F6871;
 	font-size: 1em;
 	font-weight:bold;
@@ -201,24 +199,24 @@
 	height:13px;
 }
 
-.lightdust .output {
+.output {
 	font-style: Helvetica, Arial, sans-serif;
 	font-size: 1em;
 }
 
 /* Layout Table */
-.lightdust table.layoutTable {
+table.layoutTable {
 	border: 0px;
 	border-spacing: 0px;
 	border: none;
 }
 
-.lightdust table.layoutTable tr {
+table.layoutTable tr {
 	padding: 0px;
 	margin: 0px;
 }
 
-.lightdust table.layoutTable td {
+table.layoutTable td {
 	margin: 0px;
 	vertical-align: top;
 }
@@ -227,19 +225,19 @@
 .lightdust .fieldSetTable {
 }
 
-.lightdust table.fieldSetTable {
+table.fieldSetTable {
 	font-size: 1em;
 	margin: 0px;
 	padding: 0px;
 	border: 0px;
 }
 
-.lightdust table.fieldSetTable tr {
+table.fieldSetTable tr {
 	padding: 0px;
 	margin: 0px;
 }
 
-.lightdust table.fieldSetTable td {
+table.fieldSetTable td {
 	padding-top: 3px;
 	padding-bottom: 3px;
 	vertical-align: top;
@@ -255,8 +253,7 @@
 }
 
  div.toolBar {
-	background: #F2F2F2;
-	padding: 5px;
+	background: #FFF;
 }
 
 .lightdust .dataTable thead tr {
@@ -289,7 +286,7 @@
 	border-bottom: 1px solid #f2f2f;
 }
 
-.lightdust .dataTable tr.selected,.dataTable tr.accept {
+.lightdust .dataTable tr.selected,.lightdust .dataTable tr.accept {
 	border-top: 1px solid #afd7ed;
 	border-bottom: 1px solid #afd7ed;
 	background: #ccedff;
@@ -317,12 +314,12 @@
 	border-color: gray;
 }
 
-.lightdust .treeTable tr td.expander {
+.treeTable tr td.expander {
 	cursor: pointer;
 	zoom: 1; /* IE7 Hack */
 }
 
-.lightdust .treeTable tr td {
+.treeTable tr td {
 	background-position: left center;
 	background-repeat: no-repeat;
 	color: #000;
@@ -334,54 +331,54 @@
 	margin-left: 10px;
 }
 
-.lightdust .treeTable tr.collapsed td a.expander {
+.treeTable tr.collapsed td a.expander {
 	background-image: url(../../css/thirdparty/jquery/images/toggle-expand-dark.png);
 }
 
-.lightdust .treeTable tr.expanded td a.expander {
+.treeTable tr.expanded td a.expander {
 	background-image: url(../../css/thirdparty/jquery/images/toggle-collapse-dark.png);
 }
 
-.lightdust .treeTable span.data-element {
+.treeTable span.data-element {
 	padding-left: 5px;
 }
 
-.lightdust .treeTable span.data-element.highlighted {
+.treeTable span.data-element.highlighted {
 	font-weight: bold;
 	color: #24596A;
 }
 
-.lightdust .treeTable tr.selected,.treeTable tr.accept {
+.treeTable tr.selected,.treeTable tr.accept {
 	border-top: 1px solid #afd7ed;
 	border-bottom: 1px solid #afd7ed;
 	background: #ccedff;
 }
 
-.lightdust .treeTable tr.selected a.expander,.treeTable tr.accept a.expander {
+.treeTable tr.selected a.expander,.treeTable tr.accept a.expander {
 	color: #fff;
 }
 
-.lightdust .treeTable tr.collapsed.selected td a.expander,.treeTable tr.collapsed.accept td a.expander
+.treeTable tr.collapsed.selected td a.expander,.treeTable tr.collapsed.accept td a.expander
 	{
 	background-image: url(../../css/thirdparty/jquery/images/toggle-expand-dark.png);
 }
 
-.lightdust .treeTable tr.expanded.selected td a.expander,.treeTable tr.expanded.accept td a.expander
+.treeTable tr.expanded.selected td a.expander,.treeTable tr.expanded.accept td a.expander
 	{
 	background-image: url(../../css/thirdparty/jquery/images/toggle-collapse-dark.png);
 }
 
-.lightdust .treeTable .ui-draggable-dragging {
+.treeTable .ui-draggable-dragging {
 	color: #000;
 	z-index: 1;
 }
 
 /* Layout helper taken from jQuery UI. */
-.lightdust .ui-helper-hidden {
+.ui-helper-hidden {
 	display: none;
 }
 
-.lightdust a.configLink {
+a.configLink {
 	color: #00629A !important;
 	cursor: pointer;
 	font-size: 1em;
@@ -394,30 +391,29 @@
 	color: #397d9f;
 }
 
-.lightdust .selected-tool {
+.selected-tool {
 	background: url(../images/icons/toolbarIconSelectHover.png) center repeat-x
 		#ffd700 ! important;
 	border: 1px solid #6699ff !important;
 }
 
-input.toolbarButton {
+.lightdust treeTableinput.toolbarButton {
 	background: none;
 	border: none;
 	padding: 2px;
 }
 
-input.toolbarButton .disabled {
+.lightdust input.toolbarButton .disabled {
 	background: none;
 	cursor: default;
 }
 
 .lightdust input.toolbarButton:hover {
-	background: url(../images/icons/toolbarIconSelectHover.png) center repeat-x
-		#ffd700;
+	background: url(../images/icons/toolbarIconSelectHover.png) center repeat-x;
 	cursor: pointer;
 }
 
-.lightdust .ui-widget {
+.ui-widget {
 	font-size: 1em !important;
 }
 
@@ -431,22 +427,22 @@ div#toolbar {
 	border: 1px solid #cccccc;
 }
 
-.lightdust .toolbar-section {
-	height: 50px;
+.toolbar-section {
+	height: 25px;
 	padding: 3px;
 	border-right: 1px solid #cccccc;
 }
 
-.lightdust .toolbar-section-content {
+.toolbar-section-content {
 	height: 35px;
 	text-align: center;
 }
 
-.lightdust .toolbar-section-content select {
+.toolbar-section-content select {
 	font-size: 1em;
 }
 
-.lightdust .toolbar-section-footer {
+.toolbar-section-footer {
 	height: 15px;
 	font-size: 1em;
 	text-align: center;
@@ -499,15 +495,8 @@ div#canvas {
 	margin-top: 15px;
 }
 
-.lightdust .label-form {
-	color: #708090;
-	font-weight: normal;
-	padding: 3px 5px 3px 0;
-	white-space: nowrap;
-}
-
 /* Tabs */
-.lightdust .tabLabel {
+.tabLabel {
 	padding-left: 4px;
 	vertical-align: center;
 }
@@ -546,30 +535,30 @@ div#propertiesPageList {
 	margin-bottom: 15px;
 }
 
-.lightdust .propertiesPageListItem {
+.propertiesPageListItem {
 	padding-left: 25px;
 	padding-right: 10px;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	min-width: 180px;
 	height: 20px;
-	background-image: url("../images/icons/page_white.png");
+	background-image: url("../../images/icons/page_white.png");
 	background-repeat: no-repeat;
 }
 
-.lightdust .propertiesPageListItem:hover {
+.propertiesPageListItem:hover {
 	cursor: pointer;
 	border-top: 1px solid #afd7ed;
 	background-color: #ccedff;
 	border-bottom: 1px solid #afd7ed;
 }
 
-.lightdust .propertiesButtonPanel {
+.propertiesButtonPanel {
 	margin-left: 10px;
 	margin-bottom: 10px;
 }
 
-.lightdust .propertiesPage {
+.propertiesPage {
 	padding-left: 10px;
 	padding-bottom: 10px;
 	padding-right: 10px;
@@ -585,126 +574,126 @@ div#propertiesPageList {
 	cursor: pointer;
 }
 
-.lightdust div.panelWrapperBorder {
+div.panelWrapperBorder {
 	/*border: 1px solid #e8e8e8;*/
 }
 
-.lightdust td.dataPathTableCell {
+td.dataPathTableCell {
 	padding-right: 5px;
 }
 
-.lightdust td.inDataPathListItem {
-	background: url("../images/icons/datapath-in.png") no-repeat;
+ td.inDataPathListItem {
+	background: url("../../images/icons/datapath-in.png") no-repeat;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 20px;
 }
 
-.lightdust td.inoutDataPathListItem {
-	background: url("../images/icons/datapath-in-out.png") no-repeat;
+ td.inoutDataPathListItem {
+	background: url("../../images/icons/datapath-in-out.png") no-repeat;
 	padding-left: 20px;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 20px;
 }
 
-.lightdust td.outDataPathListItem {
-	background: url("../images/icons/datapath-out.png") no-repeat;
+ td.outDataPathListItem {
+	background: url("../../images/icons/datapath-out.png") no-repeat;
 	padding-left: 20px;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 20px;
 }
 
-.lightdust td.descriptorDataPathListItem {
-	background: url("../images/icons/descriptor.png") no-repeat;
+td.descriptorDataPathListItem {
+	background: url("../../images/icons/descriptor.png") no-repeat;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 20px;
 }
 
-.lightdust td.keyDescriptorDataPathListItem {
-	background: url("../images/icons/descriptor.png") no-repeat;
+td.keyDescriptorDataPathListItem {
+	background: url("../../images/icons/descriptor.png") no-repeat;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 20px;
 }
 
 #selectModeButton {
-	background: url("../images/icons/cursor.png") no-repeat center center;
+	background: url("../../images/icons/cursor.png") no-repeat center center;
 }
 
-.lightdust td.infoSeverityIssueItem {
-	background: url("../images/icons/information.png") no-repeat center;
+td.infoSeverityIssueItem {
+	background: url("../../images/icons/information.png") no-repeat center;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 50px;
 }
 
-.lightdust td.warningSeverityIssueItem {
-	background: url("../images/icons/error.png") no-repeat center;
+td.warningSeverityIssueItem {
+	background: url("../../images/icons/error.png") no-repeat center;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 50px;
 }
 
-.lightdust td.errorSeverityIssueItem {
-	background: url("../images/icons/error.png") no-repeat center;
+td.errorSeverityIssueItem {
+	background: url("../../images/icons/error.png") no-repeat center;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 50px;
 }
 
-.lightdust .modelProblemSeverityIssueItem {
+ .modelProblemSeverityIssueItem {
 	width: 50px;
 }
 
-.lightdust .modelProblemElement {
+.modelProblemElement {
 	width: 500px;
 }
 
-.lightdust .modelProblemDescription {
+.modelProblemDescription {
 	width: 500px;
 }
 
 /* Message Transformation Application */
-.lightdust td.mapping {
+ td.mapping {
 	font-style: italic;
 }
 
 /* Overwrites for jQuery UI */
-.lightdust .ui-widget input,.ui-widget select,.ui-widget textarea,.ui-widget button {
+.ui-widget input,.ui-widget select,.ui-widget textarea,.ui-widget button {
 	font-size: 1em;
 }
 
 /* Ace code editor style overrides and additional styles */
-.lightdust .ace_active-line {
+.ace_active-line {
     background: none repeat scroll 0 0 #E8F2FF !important;
 }
 
-.lightdust .editorDivDefault {
+ .editorDivDefault {
 	position: relative !important;
 	height: 250px;
 	border: 1px solid #BBBBBB !important;
 }
 
 /* Structured type view */
-.lightdust tr.locked {
+ tr.locked {
 	background-color: #F2F2F2 !important;
 }
 
 /* Overlays */
 
-.lightdust .overlaysDefaultTextArea {
+.overlaysDefaultTextArea {
 	width: 400px;
 	height: 200px;
 }
 
 /* Modeler Tooltip */
-.lightdust .modelerTooltip {
+ .modelerTooltip {
 	visibility: hidden;
 	position: absolute;
-	background: url("../images/tooltip-background.png") top
+	background: url("../../images/tooltip-background.png") top
 		repeat-x #ffffe0;;
 	min-width: 250px;
 	min-height: 100px;
@@ -713,7 +702,7 @@ div#propertiesPageList {
 	z-index: 10000
 }
 
-.lightdust .modelerTooltipHeader {
+ .modelerTooltipHeader {
 	font-size: 1.1em;
 	min-height: 15px;
 	padding-left: 5px;
@@ -722,7 +711,7 @@ div#propertiesPageList {
 	color: black;
 }
 
-.lightdust .modelerTooltipBody {
+.modelerTooltipBody {
 	padding-top: 5px;
 	border-top: 1px dotted #FFCC00;
 	margin-left: 5px;
@@ -736,22 +725,22 @@ div#propertiesPageList {
     box-shadow: 0 0 1px #719ECE;
 }
 
-.lightdust .waiting, .waiting * {
+.waiting, .waiting * {
 	cursor: wait !important;
 }
 
-.lightdust .imgLink {
+.imgLink {
 	opacity : 1;
 	cursor : pointer;
 }
 
-.lightdust .imgLinkDisabled {
+.imgLinkDisabled {
 	opacity : 0.5 !important;
 	cursor : default !important;
 }
 
 /*Ovveride for the ACE code editor*/
-.lightdust .ace_autocomplete {
+.ace_autocomplete {
     width: 300px; !important;
     z-index: 200000;
     background: #f8f8f8;
@@ -759,24 +748,25 @@ div#propertiesPageList {
     position: fixed;
     box-shadow: 2px 3px 5px rgba(0,0,0,.2);
 }
-.lightdust .lightdust .app {
+.app {
 	overflow-y: hidden !important;
 }
 
-.lightdust .excludeUser {
-	background: url("../images/icons/user-invalidated.png") no-repeat;
+.excludeUser {
+	background: url("../../images/icons/user-invalidated.png") no-repeat;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 20px;
 }
 
-.lightdust .dataPathInput {
+
+.dataPathInput {
 	position: relative;
 }
 
 
 /* <-- autocomplete style */
-.lightdust .sd-ac-container{
+.sd-ac-container{
   width:200px;
 }
 
@@ -808,24 +798,24 @@ div#propertiesPageList {
  */
 /* autocomplete style --> */
 
-.lightdust .viewApplicationLink {
+ .viewApplicationLink {
 	opacity : 1;
 	cursor : pointer;
 	padding-left: 5px;
 }
 
-.lightdust .modelIdDialogContent {
+.modelIdDialogContent {
 	padding-bottom: 10px;
 	padding-left: 10px
 }
 
-.lightdust .sd-dialog .modal-dialog .modal-content .button-alignment {
+.sd-dialog .modal-dialog .modal-content .button-alignment {
 	float: left;
 	margin-left: 15px;
 	
 }
 
-.lightdust .sd-dialog .modal-dialog .modal-content .button-alignment button {
+.sd-dialog .modal-dialog .modal-content .button-alignment button {
 	margin-right: 10px;
 }
 
@@ -838,6 +828,6 @@ div#outlineMsgDiv img {
 	vertical-align: middle;
 } 
 
-tr.rowEven {
+.lightdust tr.rowEven {
 	background-color: #F3F3F3;
 }
