@@ -8,10 +8,6 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-body, table, input, button, select, textarea {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
-}
 
 .nativeHtmlViewPanel {
 	width: 100%;
@@ -19,7 +15,7 @@ body, table, input, button, select, textarea {
 	margin-left: 10px;
 }
 
-label {
+.lightdust label {
 	color: #708090;
 	margin-right: 10px;
 	font-size: 1em;
@@ -27,15 +23,7 @@ label {
 	font-weight: normal;
 }
 
-th {
-	font-size: 1em;
-}
-
-td {
-	font-size: 1em;
-}
-
-select {
+.lightdust select {
 	font-size: 1em;
 	min-width: 100px;
 	height: 21px;
@@ -52,38 +40,38 @@ select {
 	-moz-border-radius: 2px;
 }
 
-input {
+.lightdust input {
 	font-size: 1em;
 	color: #4d4d4d;
 }
 
-input[type="text"] {
+.lightdust input[type="text"] {
 	font-size: 1em;
 	height: 18px;
 	padding-left: 5px;
 	min-width: 100px;
 }
 
-input.cke_dialog_ui_input_text{
+.lightdust input.cke_dialog_ui_input_text{
 	height: 20px !important;
 }
 
-input[type="text"]:focus {
+.lightdust input[type="text"]:focus {
 	border: 1px solid #6699ff;
 }
 
-input[type="text"][disabled] {
+.lightdust input[type="text"][disabled] {
 	background-color: #f0f0f0;
 }
 
-input[type="password"] {
+.lightdust input[type="password"] {
 	font-size: 1em;
 	height: 18px;
 	padding-left: 5px;
 	min-width: 100px;
 }
 
-input[type=button] {
+.lightdust input[type=button] {
 	font-size: 1em;
 	height: 21px;
 	color: #4d4d4d;
@@ -99,7 +87,7 @@ input[type=button] {
 	-moz-border-radius: 2px;
 }
 
-input[type=image] {
+.lightdust input[type=image] {
 	font-size: 1em;
 	/*height: 21px;*/
 	color: #4d4d4d;
@@ -114,81 +102,75 @@ input[type=image] {
 	margin: 0 5px 0 0
 }
 
-input[type=image]:focus {
 
-}
-
-input[type=text].rightAligned {
+.lightdust input[type=text].rightAligned {
 	text-align: right;
 	padding-right: 3px;
 }
 
-input[type=text].layoutInputConverterOption {
+.lightdust input[type=text].layoutInputConverterOption {
 	width: 15px;
 	min-width: 0px;
 }
 
-input[type="checkbox"] {
+.lightdust input[type="checkbox"] {
 	margin: 0 5px 2px 0 !important;
 }
 
-input[type="radio"] {
+.lightdust input[type="radio"] {
 	margin: 0 5px 3px 0 !important;
 }
 
-textarea {
-	font-size: 1em;
-}
 
-a {
+.lightdust a {
 	color: #17375e;
 }
 
-a:hover {
+.lightdust a:hover {
 	cursor: pointer;
 }
 
-.panel {
+.lightdust .panel {
 	width: 800px;
 	margin: 10px;
 }
 
 /* Error Messages */
-.error {
+.lightdust .error {
 	border: 1px solid #b1252c !important;
 }
 
-.errorMessagesPanel {
+.lightdust .errorMessagesPanel {
 	margin-left: 0px;
 	background: #ffcc33;
 }
 
-.errorMessagesPanel li {
+.lightdust .errorMessagesPanel li {
 	color: #b25900;
 }
 
-.errorMessage {
+.lightdust .errorMessage {
 	color: #b25900;
 }
 
 /* Warning Messages */
-.warningMessagesPanel {
+.lightdust .warningMessagesPanel {
 	margin-left: 0px;
 	background: #81DAF5;
 }
 
-.warningMessagesPanel li {
+.lightdust .warningMessagesPanel li {
 	color: #b25900;
 }
 
 /* General Dialog */
-.invisible {
+.lightdust .invisible {
 	display: none;
 	height: 0px;
 	width: 0px;
 }
 
-.heading {
+.lightdust .heading {
 	font-size: 1em;
 	font-color: #4D4D4D;
 	border-bottom: 1px solid #E7E7E7;
@@ -196,7 +178,7 @@ a:hover {
 	margin-bottom: 10px;
 }
 
-.clplPanelHeading {
+.lightdust .clplPanelHeading {
 	font-size: 1em;
 	font-color: #4D4D4D;
 	border-bottom: 1px solid #E7E7E7;
@@ -205,13 +187,11 @@ a:hover {
 	cursor :pointer
 }
 
-.clplPanelHeading img{
+.lightdust .clplPanelHeading img{
 	padding : 5px 5px 4px 2px;
-	float:left;
-	height:7px;
 }
 
-.clplPanelHeading label{
+.lightdust .clplPanelHeading label{
 	color: #2F6871;
 	font-size: 1em;
 	font-weight:bold;
@@ -221,45 +201,45 @@ a:hover {
 	height:13px;
 }
 
-.output {
+.lightdust .output {
 	font-style: Helvetica, Arial, sans-serif;
 	font-size: 1em;
 }
 
 /* Layout Table */
-table.layoutTable {
+.lightdust table.layoutTable {
 	border: 0px;
 	border-spacing: 0px;
 	border: none;
 }
 
-table.layoutTable tr {
+.lightdust table.layoutTable tr {
 	padding: 0px;
 	margin: 0px;
 }
 
-table.layoutTable td {
+.lightdust table.layoutTable td {
 	margin: 0px;
 	vertical-align: top;
 }
 
 /* Field Set Table */
-.fieldSetTable {
+.lightdust .fieldSetTable {
 }
 
-table.fieldSetTable {
+.lightdust table.fieldSetTable {
 	font-size: 1em;
 	margin: 0px;
 	padding: 0px;
 	border: 0px;
 }
 
-table.fieldSetTable tr {
+.lightdust table.fieldSetTable tr {
 	padding: 0px;
 	margin: 0px;
 }
 
-table.fieldSetTable td {
+.lightdust table.fieldSetTable td {
 	padding-top: 3px;
 	padding-bottom: 3px;
 	vertical-align: top;
@@ -270,16 +250,16 @@ table.fieldSetTable td {
 }
 
 /* Data Table */
-div.panelBorder {
+ div.panelBorder {
 	border: 4px solid #e8e8e8;
 }
 
-div.toolBar {
+ div.toolBar {
 	background: #F2F2F2;
 	padding: 5px;
 }
 
-.dataTable thead tr {
+.lightdust .dataTable thead tr {
 	height: 30px;
 	margin-top: 11px;
 	margin-bottom: 10px;
@@ -292,7 +272,7 @@ div.toolBar {
 	background-image: -o-linear-gradient(top, #ffffff, #f2f2f2);
 }
 
-.dataTable thead th {
+.lightdust .dataTable thead th {
 	border-right: 1px solid #6d6a61;
 	border-bottom: 1px Solid #999999;
 	font-weight: normal;
@@ -301,48 +281,48 @@ div.toolBar {
 	text-align: left;
 }
 
-.dataTable thead th.last {
+.lightdust .dataTable thead th.last {
 	border-right: 0px;
 }
 
-.dataTable tbody tr {
+.lightdust .dataTable tbody tr {
 	border-bottom: 1px solid #f2f2f;
 }
 
-.dataTable tr.selected,.dataTable tr.accept {
+.lightdust .dataTable tr.selected,.dataTable tr.accept {
 	border-top: 1px solid #afd7ed;
 	border-bottom: 1px solid #afd7ed;
 	background: #ccedff;
 }
 
-tr.selected, td.selected, label.selected {
+.lightdust tr.selected, td.selected, label.selected {
 	background: #ccedff;
 }
 
-.dataTable tbody tr td {
+.lightdust .dataTable tbody tr td {
 	padding-top: 2px;
 	padding-bottom: 2px;
 	padding-left: 10px;
 }
 
-.dataTable input {
+.lightdust .dataTable input {
 	border-width: 1;
 }
 
-.dataTable input:hover {
+.lightdust .dataTable input:hover {
 	border-color: #9b9b9b;
 }
 
-.dataTable input:focus {
+.lightdust .dataTable input:focus {
 	border-color: gray;
 }
 
-.treeTable tr td.expander {
+.lightdust .treeTable tr td.expander {
 	cursor: pointer;
 	zoom: 1; /* IE7 Hack */
 }
 
-.treeTable tr td {
+.lightdust .treeTable tr td {
 	background-position: left center;
 	background-repeat: no-repeat;
 	color: #000;
@@ -354,54 +334,54 @@ tr.selected, td.selected, label.selected {
 	margin-left: 10px;
 }
 
-.treeTable tr.collapsed td a.expander {
-	background-image: url(thirdparty/jquery/images/toggle-expand-dark.png);
+.lightdust .treeTable tr.collapsed td a.expander {
+	background-image: url(../../css/thirdparty/jquery/images/toggle-expand-dark.png);
 }
 
-.treeTable tr.expanded td a.expander {
-	background-image: url(thirdparty/jquery/images/toggle-collapse-dark.png);
+.lightdust .treeTable tr.expanded td a.expander {
+	background-image: url(../../css/thirdparty/jquery/images/toggle-collapse-dark.png);
 }
 
-.treeTable span.data-element {
+.lightdust .treeTable span.data-element {
 	padding-left: 5px;
 }
 
-.treeTable span.data-element.highlighted {
+.lightdust .treeTable span.data-element.highlighted {
 	font-weight: bold;
 	color: #24596A;
 }
 
-.treeTable tr.selected,.treeTable tr.accept {
+.lightdust .treeTable tr.selected,.treeTable tr.accept {
 	border-top: 1px solid #afd7ed;
 	border-bottom: 1px solid #afd7ed;
 	background: #ccedff;
 }
 
-.treeTable tr.selected a.expander,.treeTable tr.accept a.expander {
+.lightdust .treeTable tr.selected a.expander,.treeTable tr.accept a.expander {
 	color: #fff;
 }
 
-.treeTable tr.collapsed.selected td a.expander,.treeTable tr.collapsed.accept td a.expander
+.lightdust .treeTable tr.collapsed.selected td a.expander,.treeTable tr.collapsed.accept td a.expander
 	{
-	background-image: url(thirdparty/jquery/images/toggle-expand-dark.png);
+	background-image: url(../../css/thirdparty/jquery/images/toggle-expand-dark.png);
 }
 
-.treeTable tr.expanded.selected td a.expander,.treeTable tr.expanded.accept td a.expander
+.lightdust .treeTable tr.expanded.selected td a.expander,.treeTable tr.expanded.accept td a.expander
 	{
-	background-image: url(thirdparty/jquery/images/toggle-collapse-dark.png);
+	background-image: url(../../css/thirdparty/jquery/images/toggle-collapse-dark.png);
 }
 
-.treeTable .ui-draggable-dragging {
+.lightdust .treeTable .ui-draggable-dragging {
 	color: #000;
 	z-index: 1;
 }
 
 /* Layout helper taken from jQuery UI. */
-.ui-helper-hidden {
+.lightdust .ui-helper-hidden {
 	display: none;
 }
 
-a.configLink {
+.lightdust a.configLink {
 	color: #00629A !important;
 	cursor: pointer;
 	font-size: 1em;
@@ -414,7 +394,7 @@ a.configLink {
 	color: #397d9f;
 }
 
-.selected-tool {
+.lightdust .selected-tool {
 	background: url(../images/icons/toolbarIconSelectHover.png) center repeat-x
 		#ffd700 ! important;
 	border: 1px solid #6699ff !important;
@@ -431,13 +411,13 @@ input.toolbarButton .disabled {
 	cursor: default;
 }
 
-input.toolbarButton:hover {
+.lightdust input.toolbarButton:hover {
 	background: url(../images/icons/toolbarIconSelectHover.png) center repeat-x
 		#ffd700;
 	cursor: pointer;
 }
 
-.ui-widget {
+.lightdust .ui-widget {
 	font-size: 1em !important;
 }
 
@@ -451,22 +431,22 @@ div#toolbar {
 	border: 1px solid #cccccc;
 }
 
-.toolbar-section {
+.lightdust .toolbar-section {
 	height: 50px;
 	padding: 3px;
 	border-right: 1px solid #cccccc;
 }
 
-.toolbar-section-content {
+.lightdust .toolbar-section-content {
 	height: 35px;
 	text-align: center;
 }
 
-.toolbar-section-content select {
+.lightdust .toolbar-section-content select {
 	font-size: 1em;
 }
 
-.toolbar-section-footer {
+.lightdust .toolbar-section-footer {
 	height: 15px;
 	font-size: 1em;
 	text-align: center;
@@ -479,7 +459,7 @@ div#canvas {
 	background: white;
 }
 
-div#scrollpane {
+ div#scrollpane {
 	background: white;
 	height: 450px;
 	overflow: auto;
@@ -487,39 +467,39 @@ div#scrollpane {
 	z-index: 10;
 }
 
-div#messagePanel {
+ div#messagePanel {
 	vertical-align: middle;
 	font-size: 1em;
 	height: 20px;
 }
 
-div#messagePanel table {
+ div#messagePanel table {
 	padding-top:5px;
 }
 
-div.messagePanelHighlight {
+ div.messagePanelHighlight {
 	background-color: #FFD966;
 }
 
-div#lastSaveDateDisplay {
+ div#lastSaveDateDisplay {
 	min-width: 100px;
 	margin-left: 5px;
 	color: grey
 }
 
-div#modificationStatusDisplay {
+ div#modificationStatusDisplay {
 	min-width: 60px;
 	margin-left: 5px;
 	font-style: italic;
 }
 
-fieldset {
+.lightdust fieldset {
 	padding: 0;
 	border: 0;
 	margin-top: 15px;
 }
 
-.label-form {
+.lightdust .label-form {
 	color: #708090;
 	font-weight: normal;
 	padding: 3px 5px 3px 0;
@@ -527,7 +507,7 @@ fieldset {
 }
 
 /* Tabs */
-.tabLabel {
+.lightdust .tabLabel {
 	padding-left: 4px;
 	vertical-align: center;
 }
@@ -566,7 +546,7 @@ div#propertiesPageList {
 	margin-bottom: 15px;
 }
 
-.propertiesPageListItem {
+.lightdust .propertiesPageListItem {
 	padding-left: 25px;
 	padding-right: 10px;
 	padding-top: 2px;
@@ -577,19 +557,19 @@ div#propertiesPageList {
 	background-repeat: no-repeat;
 }
 
-.propertiesPageListItem:hover {
+.lightdust .propertiesPageListItem:hover {
 	cursor: pointer;
 	border-top: 1px solid #afd7ed;
 	background-color: #ccedff;
 	border-bottom: 1px solid #afd7ed;
 }
 
-.propertiesButtonPanel {
+.lightdust .propertiesButtonPanel {
 	margin-left: 10px;
 	margin-bottom: 10px;
 }
 
-.propertiesPage {
+.lightdust .propertiesPage {
 	padding-left: 10px;
 	padding-bottom: 10px;
 	padding-right: 10px;
@@ -605,22 +585,22 @@ div#propertiesPageList {
 	cursor: pointer;
 }
 
-div.panelWrapperBorder {
+.lightdust div.panelWrapperBorder {
 	/*border: 1px solid #e8e8e8;*/
 }
 
-td.dataPathTableCell {
+.lightdust td.dataPathTableCell {
 	padding-right: 5px;
 }
 
-td.inDataPathListItem {
+.lightdust td.inDataPathListItem {
 	background: url("../images/icons/datapath-in.png") no-repeat;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 20px;
 }
 
-td.inoutDataPathListItem {
+.lightdust td.inoutDataPathListItem {
 	background: url("../images/icons/datapath-in-out.png") no-repeat;
 	padding-left: 20px;
 	padding-top: 2px;
@@ -628,7 +608,7 @@ td.inoutDataPathListItem {
 	width: 20px;
 }
 
-td.outDataPathListItem {
+.lightdust td.outDataPathListItem {
 	background: url("../images/icons/datapath-out.png") no-repeat;
 	padding-left: 20px;
 	padding-top: 2px;
@@ -636,14 +616,14 @@ td.outDataPathListItem {
 	width: 20px;
 }
 
-td.descriptorDataPathListItem {
+.lightdust td.descriptorDataPathListItem {
 	background: url("../images/icons/descriptor.png") no-repeat;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 20px;
 }
 
-td.keyDescriptorDataPathListItem {
+.lightdust td.keyDescriptorDataPathListItem {
 	background: url("../images/icons/descriptor.png") no-repeat;
 	padding-top: 2px;
 	padding-bottom: 2px;
@@ -654,74 +634,74 @@ td.keyDescriptorDataPathListItem {
 	background: url("../images/icons/cursor.png") no-repeat center center;
 }
 
-td.infoSeverityIssueItem {
+.lightdust td.infoSeverityIssueItem {
 	background: url("../images/icons/information.png") no-repeat center;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 50px;
 }
 
-td.warningSeverityIssueItem {
+.lightdust td.warningSeverityIssueItem {
 	background: url("../images/icons/error.png") no-repeat center;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 50px;
 }
 
-td.errorSeverityIssueItem {
+.lightdust td.errorSeverityIssueItem {
 	background: url("../images/icons/error.png") no-repeat center;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 50px;
 }
 
-.modelProblemSeverityIssueItem {
+.lightdust .modelProblemSeverityIssueItem {
 	width: 50px;
 }
 
-.modelProblemElement {
+.lightdust .modelProblemElement {
 	width: 500px;
 }
 
-.modelProblemDescription {
+.lightdust .modelProblemDescription {
 	width: 500px;
 }
 
 /* Message Transformation Application */
-td.mapping {
+.lightdust td.mapping {
 	font-style: italic;
 }
 
 /* Overwrites for jQuery UI */
-.ui-widget input,.ui-widget select,.ui-widget textarea,.ui-widget button {
+.lightdust .ui-widget input,.ui-widget select,.ui-widget textarea,.ui-widget button {
 	font-size: 1em;
 }
 
 /* Ace code editor style overrides and additional styles */
-.ace_active-line {
+.lightdust .ace_active-line {
     background: none repeat scroll 0 0 #E8F2FF !important;
 }
 
-.editorDivDefault {
+.lightdust .editorDivDefault {
 	position: relative !important;
 	height: 250px;
 	border: 1px solid #BBBBBB !important;
 }
 
 /* Structured type view */
-tr.locked {
+.lightdust tr.locked {
 	background-color: #F2F2F2 !important;
 }
 
 /* Overlays */
 
-.overlaysDefaultTextArea {
+.lightdust .overlaysDefaultTextArea {
 	width: 400px;
 	height: 200px;
 }
 
 /* Modeler Tooltip */
-.modelerTooltip {
+.lightdust .modelerTooltip {
 	visibility: hidden;
 	position: absolute;
 	background: url("../images/tooltip-background.png") top
@@ -733,7 +713,7 @@ tr.locked {
 	z-index: 10000
 }
 
-.modelerTooltipHeader {
+.lightdust .modelerTooltipHeader {
 	font-size: 1.1em;
 	min-height: 15px;
 	padding-left: 5px;
@@ -742,7 +722,7 @@ tr.locked {
 	color: black;
 }
 
-.modelerTooltipBody {
+.lightdust .modelerTooltipBody {
 	padding-top: 5px;
 	border-top: 1px dotted #FFCC00;
 	margin-left: 5px;
@@ -750,28 +730,28 @@ tr.locked {
 	color: #CC6600 !important
 }
 
-textarea:focus {
+.lightdust textarea:focus {
     outline: none !important;
     border:1px solid #5996ff;
     box-shadow: 0 0 1px #719ECE;
 }
 
-.waiting, .waiting * {
+.lightdust .waiting, .waiting * {
 	cursor: wait !important;
 }
 
-.imgLink {
+.lightdust .imgLink {
 	opacity : 1;
 	cursor : pointer;
 }
 
-.imgLinkDisabled {
+.lightdust .imgLinkDisabled {
 	opacity : 0.5 !important;
 	cursor : default !important;
 }
 
 /*Ovveride for the ACE code editor*/
-.ace_autocomplete {
+.lightdust .ace_autocomplete {
     width: 300px; !important;
     z-index: 200000;
     background: #f8f8f8;
@@ -779,43 +759,43 @@ textarea:focus {
     position: fixed;
     box-shadow: 2px 3px 5px rgba(0,0,0,.2);
 }
-.app {
+.lightdust .lightdust .app {
 	overflow-y: hidden !important;
 }
 
-.excludeUser {
+.lightdust .excludeUser {
 	background: url("../images/icons/user-invalidated.png") no-repeat;
 	padding-top: 2px;
 	padding-bottom: 2px;
 	width: 20px;
 }
 
-.dataPathInput {
+.lightdust .dataPathInput {
 	position: relative;
 }
 
 
 /* <-- autocomplete style */
-.sd-ac-container{
+.lightdust .sd-ac-container{
   width:200px;
 }
 
-.sd-ac-container div[name='sd-ac-tag']{
+.lightdust .sd-ac-container div[name='sd-ac-tag']{
   font-size: 1em;
   border: none;
   background-color: #f0f0f0;
 }
 
-.sd-ac-container div[name='sd-ac-tag']:after{
+.lightdust .sd-ac-container div[name='sd-ac-tag']:after{
   font-size: 1em;
 }
 
-.sd-ac-container div[name='sd-ac-selectList']{
+.lightdust .sd-ac-container div[name='sd-ac-selectList']{
   border:none;
   background-color:#fff;
 }
 
-.sd-ac-container [name='sd-ac-selectList'] div{
+.lightdust .sd-ac-container [name='sd-ac-selectList'] div{
   cursor:pointer;
   font-size: 1em;
   background-color:white;
@@ -828,24 +808,24 @@ textarea:focus {
  */
 /* autocomplete style --> */
 
-.viewApplicationLink {
+.lightdust .viewApplicationLink {
 	opacity : 1;
 	cursor : pointer;
 	padding-left: 5px;
 }
 
-.modelIdDialogContent {
+.lightdust .modelIdDialogContent {
 	padding-bottom: 10px;
 	padding-left: 10px
 }
 
-.sd-dialog .modal-dialog .modal-content .button-alignment {
+.lightdust .sd-dialog .modal-dialog .modal-content .button-alignment {
 	float: left;
 	margin-left: 15px;
 	
 }
 
-.sd-dialog .modal-dialog .modal-content .button-alignment button {
+.lightdust .sd-dialog .modal-dialog .modal-content .button-alignment button {
 	margin-right: 10px;
 }
 
@@ -861,5 +841,3 @@ div#outlineMsgDiv img {
 tr.rowEven {
 	background-color: #F3F3F3;
 }
-
-@import ('/plugins/modern/public/skins/modern/modern.css')
