@@ -125,9 +125,9 @@ public class BenchmarkConfigurationBean
       benchmarkConfirmationDialog = new ConfirmationDialog(DialogContentType.WARNING, DialogActionType.YES_NO,
             DialogType.NORMAL, DialogStyle.COMPACT, this);
       Messages propsBean = Messages.getInstance();
-      benchmarkConfirmationDialog.setTitle(propsBean.getString("views.benchmarkPanel.confirmResetTitle"));
-      benchmarkConfirmationDialog.setMessage(propsBean.getParamString("views.benchmarkPanel.confirmReset",
-            propsBean.getParamString("views.benchmarkPanel.confirmResetBenchmarkView.label")));
+      benchmarkConfirmationDialog.setTitle(propsBean.getString("views.benchmarkPanelConfiguration.confirmResetTitle"));
+      benchmarkConfirmationDialog.setMessage(propsBean.getParamString("views.benchmarkPanelConfiguration.confirmReset",
+            propsBean.getParamString("views.benchmarkPanelConfiguration.confirmResetBenchmarkView.label")));
       benchmarkConfirmationDialog.openPopup();
    }
 

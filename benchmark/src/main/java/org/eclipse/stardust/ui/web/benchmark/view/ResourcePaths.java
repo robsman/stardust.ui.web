@@ -16,6 +16,6 @@ package org.eclipse.stardust.ui.web.benchmark.view;
  */
 public interface ResourcePaths
 {
-   public static final String V_benchmarkPanelView = "benchmarkPanelView";
+   public static final String V_benchmarkPanelView = "benchmarkViewHtml5";
    public static final String V_BENCHMARK_CONFIGURATION_PANEL_COLUMNS = "/plugins/benchmark/views/benchmarkPanelConfigurationsColumns.xhtml"; 
 }

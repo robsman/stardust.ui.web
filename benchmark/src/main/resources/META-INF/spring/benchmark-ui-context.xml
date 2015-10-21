@@ -16,7 +16,14 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 				include="/plugins/benchmark/views/benchmarkViewFrameAdapter.xhtml"
 				controller="benchmarkView" /> -->
 			<ippui:view name="benchmarkViewHtml5"
-                include="/plugins/benchmark/html5/partials/views/benchmarkDefinitionView.html" />
+                include="/plugins/benchmark/html5/partials/views/benchmarkDefinitionView.html">
+				<ippui:preferences>
+					<ippui:preferencePage name="icon"
+						include="/plugins/views-common/images/icons/clipboard-task.png" />
+					<ippui:preferencePage name="configuration"
+						include="/plugins/benchmark/views/benchmarkPanelConfiguration.xhtml" />
+				</ippui:preferences>
+            </ippui:view>
 			<!-- <ippui:view name="trafficLightViewNew"
 				include="/plugins/benchmark/views/trafficLightViewFrameAdapter.xhtml"
 				controller="trafficLightViewNew" /> -->
@@ -27,18 +34,6 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			<!-- <ippui:view name="ganttChartViewNew"
 				include="/plugins/benchmark/views/ganttChartViewFrameAdapter.xhtml"
 				controller="ganttChartViewNew" /> -->
-				
-	 		<ippui:view name="benchmarkPanelView"
-				include="/plugins/benchmark/views/benchmarkPanel.xhtml" 
-				controller="benchmarkConfigurationBean">	
-				<ippui:preferences>
-					<ippui:preferencePage name="icon"
-						include="/plugins/views-common/images/icons/clipboard-task.png" />
-					<ippui:preferencePage name="configuration"
-						include="/plugins/benchmark/views/benchmarkPanelConfiguration.xhtml" />
-				</ippui:preferences>
-			</ippui:view> 
-		
 		</ippui:viewsExtension>
 	</ippui:perspectiveExtension>
 </beans>

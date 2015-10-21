@@ -83,7 +83,7 @@ public class BenchmarkConfigurationTableBean extends UIComponentBean implements 
     */
    public BenchmarkConfigurationTableBean()
    {
-      super(ResourcePaths.V_BENCHMARK_CONFIGURATION_PANEL_COLUMNS);
+      super(ResourcePaths.V_benchmarkPanelView);
 
       initializeColumnModel();
       initialize();
