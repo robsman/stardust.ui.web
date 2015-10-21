@@ -48,6 +48,7 @@
     this.$http = $http;
     this.$q = $q;
     this.rootUrl = sdUtilService.getBaseUrl();
+
   }
  
   /**
@@ -81,13 +82,14 @@
   /**
    * Controller function we will use within our directive.
    */
-  function processDocumentController(processDocumentService,$scope){
+  function processDocumentController(processDocumentService,$scope, sgI18nService){
     var that = this;
     
     this.processDocService = processDocumentService;
     this.loadProcessDocuments($scope.oid);
     this.$scope = $scope;
     this.selectedNodes = [];
+    this.sgI18nService = sgI18nService;
     
      //Setup multiselect property based on scope attribute
     $scope.allowMultiselect = $scope.allowMultiselect || "";
@@ -252,8 +254,11 @@
       procRoot, //root item for process attachments
       i,j;      //iterators
       
-	  procRoot = {itemType:'attachmentsRoot',name:'Process Attachments',items:[]};
-	  specRoot = {itemType:'specificRoot',name:'Specific Documents',items:[]};  
+	  var processDocLabel = this.sgI18nService.translate('views-common-messages.views-processInstanceDetailsView-processDocumentTree-processAttachment');
+	  var specificDocLabel = this.sgI18nService.translate('views-common-messages.views-processInstanceDetailsView-processDocumentTree-coreDocuments');
+	  
+	  procRoot = {itemType:'attachmentsRoot',name:processDocLabel,items:[]};
+	  specRoot = {itemType:'specificRoot',name:specificDocLabel,items:[]};  
 	  
 	  //PROCESS ATTACHMENT PROCESSING
 	  for(i=0;i<data.length;i++){
@@ -337,7 +342,7 @@
     return res;
     
   };
-  processDocumentController.$inject=["processDocumentService","$scope"];
+  processDocumentController.$inject=["processDocumentService","$scope","sgI18nService"];
   
   mod.controller("processDocumentController",processDocumentController);
   
