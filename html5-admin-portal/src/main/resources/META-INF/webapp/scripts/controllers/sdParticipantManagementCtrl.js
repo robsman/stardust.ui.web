@@ -861,7 +861,7 @@
   ParticipantManagementCtrl.prototype.loadModels = function() {
     var that = this;
     _sdParticipantManagementService.getModelParticipants(lazyLoad).then(function(data) {
-      that.sortModels(data);
+      //that.sortModels(data);
       that.models = data;
     });
   };
@@ -914,8 +914,6 @@
 	selectedTblRows = this.allUsersTable.getSelection();
 	
 	if (this.allUsersTable.getSelection().indexOf(data) === -1){
-		while(this.allUsersTable.getSelection().pop()){/*clear all*/}
-		this.allUsersTable.getSelection().push(data);
 		selectedTblRows = [];
 		selectedTblRows.push({"qualifiedId" : data.qualifiedId});
 	}
