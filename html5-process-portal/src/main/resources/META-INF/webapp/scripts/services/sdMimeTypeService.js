@@ -53,7 +53,7 @@
 		'text/csv' : 'pi pi-csv-excel',
 		'text/css' : 'pi pi-css',
 		'application/octet-stream' : 'pi pi-other',
-		'text/xml' : 'pi pi-text'
+		'text/xml' : 'pi pi-xml-json'
 	};
 	/**
 	 * 

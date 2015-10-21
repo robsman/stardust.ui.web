@@ -377,8 +377,9 @@
 						ng-show="activityTableCtrl.processPopover.data.processAttachments.documents.length > 0">
 						<div
 							ng-repeat="doc in activityTableCtrl.processPopover.data.processAttachments.documents">
-							<a href="#"
-								ng-click="activityTableCtrl.openDocumentsView(doc.uuid)">{{doc.name}}</a>
+							<div sd-open-document-link sda-name="doc.name"
+								sda-mime-type="doc.contentType" sda-document-id="doc.uuid">
+							</div>
 						</div>
 					</div>
 					<div
@@ -394,9 +395,10 @@
 					<div
 						ng-repeat="map in activityTableCtrl.processPopover.data.specificDocuments">
 
-						<div ng-if="map.documents.length > 0">
-							<a ng-repeat="doc in map.documents" href=""
-								ng-click="activityTableCtrl.openDocumentsView(doc.uuid)">{{map.dataPath.name}}</a>
+						<div ng-if="map.documents.length > 0" ng-repeat="doc in map.documents">
+								<div sd-open-document-link sda-name="map.dataPath.name"
+									sda-mime-type="doc.contentType" sda-document-id="doc.uuid">
+								</div>
 						</div>
 
 						<div ng-if="map.documents.length < 1">
