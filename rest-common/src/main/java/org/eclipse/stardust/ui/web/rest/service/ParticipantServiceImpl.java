@@ -9,6 +9,7 @@
 package org.eclipse.stardust.ui.web.rest.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -130,6 +131,7 @@ public class ParticipantServiceImpl implements ParticipantService
       
       //get User Groups
       allParticipantDTOs.add(getUserGroupDTOs());
+      Collections.sort(allParticipantDTOs);
       
       return allParticipantDTOs;
    }
@@ -153,9 +155,10 @@ public class ParticipantServiceImpl implements ParticipantService
 
          List<ParticipantDTO> userDTOs = new ArrayList<ParticipantDTO>();
          getUsers(userGroup, userDTOs);
-
          userGroupDTO.children = userDTOs;
+         Collections.sort(userGroupDTO.children);
       }
+      Collections.sort(userGroupDTOs.children);
       return userGroupDTOs;
    }
    
@@ -608,7 +611,7 @@ public class ParticipantServiceImpl implements ParticipantService
          }
          break;
       }
-
+      Collections.sort(participantDTOs);
       return participantDTOs;
    }
 

@@ -21,7 +21,7 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
  * @author Yogesh.Manware
  * @version $Revision: $
  */
-public class PermissionDTO extends AbstractDTO
+public class PermissionDTO extends AbstractDTO implements Comparable<PermissionDTO>
 {
    public String name = MessagesViewsCommonBean.getInstance().getString("common.unknown");
    public String id = null;
@@ -45,7 +45,7 @@ public class PermissionDTO extends AbstractDTO
     * @author Yogesh.Manware
     * @version $Revision: $
     */
-   public static class ParticipantDTO
+   public static class ParticipantDTO implements Comparable<ParticipantDTO>
    {
       public static ParticipantDTO ALL = new ParticipantDTO(Authorization2.ALL, MessagesViewsCommonBean.getInstance()
             .getString("views.common.all"));
@@ -90,6 +90,12 @@ public class PermissionDTO extends AbstractDTO
             return false;
          return true;
       }
+
+      @Override
+      public int compareTo(ParticipantDTO o)
+      {
+         return this.name.compareToIgnoreCase(o.name);
+      }
    }
 
    @Override
@@ -119,5 +125,11 @@ public class PermissionDTO extends AbstractDTO
       else if (!id.equals(other.id))
          return false;
       return true;
+   }
+
+   @Override
+   public int compareTo(PermissionDTO otherPermissionDTO)
+   {
+      return this.name.compareToIgnoreCase(otherPermissionDTO.name);
    }
 }

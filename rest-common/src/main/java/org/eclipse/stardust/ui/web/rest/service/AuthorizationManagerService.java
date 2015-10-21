@@ -15,11 +15,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.annotation.Resource;
 
@@ -78,7 +79,7 @@ public class AuthorizationManagerService
    public Map<String, Set<PermissionDTO>> fetchPermissions()
    {
       PermissionsDetails permissions = getPermissionDetails(true);
-      Map<String, Set<PermissionDTO>> allPermissions = new HashMap<String, Set<PermissionDTO>>();
+      Map<String, Set<PermissionDTO>> allPermissions = new TreeMap<String, Set<PermissionDTO>>();
       allPermissions.putAll(buildGeneralAndModelPermissions(permissions));
       allPermissions.putAll(buildUiPermissions(permissions));
       return allPermissions;
@@ -109,7 +110,7 @@ public class AuthorizationManagerService
 
       // return flat permissionDTO
       permissions = getPermissionDetails(true);
-      Set<PermissionDTO> updatedPermissions = new HashSet<PermissionDTO>();
+      Set<PermissionDTO> updatedPermissions = new TreeSet<PermissionDTO>();
 
       for (String permissionId : permissionsToBeUpdated)
       {
@@ -225,7 +226,7 @@ public class AuthorizationManagerService
    private Collection<ParticipantDTO> fetchPermissionsForParticipants(Set<String> participantQualifiedIds,
          PermissionsDetails permissions)
    {
-      Map<String, ParticipantDTO> participantMap = new HashMap<String, PermissionDTO.ParticipantDTO>();
+      Map<String, ParticipantDTO> participantMap = new TreeMap<String, PermissionDTO.ParticipantDTO>();
 
       if (CollectionUtils.isEmpty(participantQualifiedIds))
       {
@@ -507,20 +508,20 @@ public class AuthorizationManagerService
     */
    private Map<String, Set<PermissionDTO>> buildGeneralAndModelPermissions(PermissionsDetails permissions)
    {
-      Map<String, Set<PermissionDTO>> GeneralAndModelPermissions = new HashMap<String, Set<PermissionDTO>>();
+      Map<String, Set<PermissionDTO>> GeneralAndModelPermissions = new TreeMap<String, Set<PermissionDTO>>();
 
       RuntimePermissions runtimePermissions = permissions.getGeneralPermission();
 
-      Set<PermissionDTO> generalPermissions = new HashSet<PermissionDTO>();
+      Set<PermissionDTO> generalPermissions = new TreeSet<PermissionDTO>();
       GeneralAndModelPermissions.put(PermissionType.general.name(), generalPermissions);
 
-      Set<PermissionDTO> processes = new HashSet<PermissionDTO>();
+      Set<PermissionDTO> processes = new TreeSet<PermissionDTO>();
       GeneralAndModelPermissions.put(PermissionType.processDefinitions.name(), processes);
 
-      Set<PermissionDTO> activities = new HashSet<PermissionDTO>();
+      Set<PermissionDTO> activities = new TreeSet<PermissionDTO>();
       GeneralAndModelPermissions.put(PermissionType.activities.name(), activities);
 
-      Set<PermissionDTO> datas = new HashSet<PermissionDTO>();
+      Set<PermissionDTO> datas = new TreeSet<PermissionDTO>();
       GeneralAndModelPermissions.put(PermissionType.data.name(), datas);
 
       List<String> permissionIds = new ArrayList<String>(runtimePermissions.getAllPermissionIds());
@@ -586,14 +587,14 @@ public class AuthorizationManagerService
          }
       });
 
-      Map<String, Set<PermissionDTO>> uiPermissions = new HashMap<String, Set<PermissionDTO>>();
+      Map<String, Set<PermissionDTO>> uiPermissions = new TreeMap<String, Set<PermissionDTO>>();
 
-      Map<String, PermissionDTO> globalElements = new HashMap<String, PermissionDTO>();
+      Map<String, PermissionDTO> globalElements = new TreeMap<String, PermissionDTO>();
 
-      Set<PermissionDTO> perspectivePermissions = new HashSet<PermissionDTO>();
+      Set<PermissionDTO> perspectivePermissions = new TreeSet<PermissionDTO>();
       uiPermissions.put(PermissionType.perspectives.name(), perspectivePermissions);
 
-      Set<PermissionDTO> globalExtnPermissions = new HashSet<PermissionDTO>();
+      Set<PermissionDTO> globalExtnPermissions = new TreeSet<PermissionDTO>();
       uiPermissions.put(PermissionType.globalExtensions.name(), globalExtnPermissions);
 
       for (IPerspectiveDefinition perspective : allPerspectives)
@@ -605,7 +606,7 @@ public class AuthorizationManagerService
          populateGrants(perspectiveDTO, permissions);
 
          // add launch panels
-         perspectiveDTO.launchPanels = new HashSet<PermissionDTO>();
+         perspectiveDTO.launchPanels = new TreeSet<PermissionDTO>();
          List<LaunchPanel> launchPanels = perspective.getLaunchPanels();
          for (LaunchPanel launchPanel : launchPanels)
          {
@@ -621,7 +622,7 @@ public class AuthorizationManagerService
 
                if (globalElements.get(launchPanel.getDefinedIn()).launchPanels == null)
                {
-                  globalElements.get(launchPanel.getDefinedIn()).launchPanels = new HashSet<PermissionDTO>();
+                  globalElements.get(launchPanel.getDefinedIn()).launchPanels = new TreeSet<PermissionDTO>();
                }
 
                PermissionDTO lPanelDto = new PermissionDTO(UiPermissionUtils.getPermissionId(launchPanel.getName()),
@@ -639,7 +640,7 @@ public class AuthorizationManagerService
          }
 
          // add view definitions
-         perspectiveDTO.views = new HashSet<PermissionDTO>();
+         perspectiveDTO.views = new TreeSet<PermissionDTO>();
          List<ViewDefinition> viewDefinitions = perspective.getViews();
 
          for (ViewDefinition viewDefinition : viewDefinitions)
@@ -658,7 +659,7 @@ public class AuthorizationManagerService
 
                if (globalElements.get(viewDefinition.getDefinedIn()).views == null)
                {
-                  globalElements.get(viewDefinition.getDefinedIn()).views = new HashSet<PermissionDTO>();
+                  globalElements.get(viewDefinition.getDefinedIn()).views = new TreeSet<PermissionDTO>();
                }
 
                PermissionDTO viewDto = new PermissionDTO(UiPermissionUtils.getPermissionId(viewDefinition.getName()),
@@ -687,8 +688,8 @@ public class AuthorizationManagerService
     */
    private void populateGrants(PermissionDTO p, PermissionsDetails permissions)
    {
-      p.allow = new HashSet<ParticipantDTO>();
-      p.deny = new HashSet<ParticipantDTO>();
+      p.allow = new TreeSet<ParticipantDTO>();
+      p.deny = new TreeSet<ParticipantDTO>();
 
       if (permissions.hasAllGrant2(p.id))
       {
@@ -719,9 +720,9 @@ public class AuthorizationManagerService
     * @param prefs
     * @return
     */
-   private ArrayList<ParticipantDTO> transformGrantsToDTO(Set<ModelParticipantInfo> grants)
+   private List<ParticipantDTO> transformGrantsToDTO(Set<ModelParticipantInfo> grants)
    {
-      ArrayList<ParticipantDTO> pList = new ArrayList<ParticipantDTO>();
+      List<ParticipantDTO> pList = new ArrayList<ParticipantDTO>();
       List<ModelParticipantInfo> grantList = new ArrayList<ModelParticipantInfo>(grants);
       Collections.sort(grantList, MODEL_PARTICIPANT_COMPARATOR);
 
@@ -765,7 +766,8 @@ public class AuthorizationManagerService
 
          pList.add(participant);
       }
-
+      
+      Collections.sort(pList);
       return pList;
    }
 }

@@ -26,7 +26,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
  * @author Yogesh.Manware
  *
  */
-public class ParticipantDTO extends AbstractDTO
+public class ParticipantDTO extends AbstractDTO implements Comparable<ParticipantDTO>
 {
    // exposed properties
    public String id;
@@ -109,5 +109,11 @@ public class ParticipantDTO extends AbstractDTO
    {
       this(participant);
       this.onlineStatus = online;
+   }
+
+   @Override
+   public int compareTo(ParticipantDTO otherParticipant)
+   {
+      return this.name.compareToIgnoreCase(otherParticipant.name);
    }
 }
