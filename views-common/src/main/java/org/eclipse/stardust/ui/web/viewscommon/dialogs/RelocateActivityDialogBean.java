@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.common.error.AccessForbiddenException;
@@ -122,7 +123,6 @@ public class RelocateActivityDialogBean extends PopupUIComponentBean
     */
    public boolean accept()
    {
-      relocateActivity();
       return true;
    }
 
@@ -137,7 +137,7 @@ public class RelocateActivityDialogBean extends PopupUIComponentBean
    /**
     * 
     */
-   public void relocateActivity()
+   public void relocateActivity(ActionEvent event)
    {
       if (null != selectedTarget)
       {
@@ -159,7 +159,8 @@ public class RelocateActivityDialogBean extends PopupUIComponentBean
                IppUser loggedInUser = new IppUser();
                
                // Activate the activity if it's interactive and can be activated by current user
-               if (null != target
+               if (isActivateOnRelocation(event)
+                     && null != target
                      && target.getActivity().isInteractive()
                      && loggedInUser.isInRole(target.getActivity()
                            .getDefaultPerformer()
@@ -265,5 +266,23 @@ public class RelocateActivityDialogBean extends PopupUIComponentBean
    public MessagesViewsCommonBean getCOMMON_MESSAGE_BEAN()
    {
       return COMMON_MESSAGE_BEAN;
+   }
+   
+   /**
+    * 
+    * @param event
+    * @return
+    */
+   private boolean isActivateOnRelocation(ActionEvent event)
+   {
+      boolean activateOnRelocation = false;
+      if (null != event.getComponent().getAttributes().get("activateOnRelocation"))
+      {
+         activateOnRelocation = Boolean.parseBoolean((String) event.getComponent()
+               .getAttributes()
+               .get("activateOnRelocation"));
+      }
+
+      return activateOnRelocation;
    }
 }

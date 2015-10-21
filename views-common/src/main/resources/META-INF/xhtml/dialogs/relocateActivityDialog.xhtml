@@ -4,6 +4,13 @@
 	xmlns:ice="http://www.icesoft.com/icefaces/component"
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+	
+	<!-- ***** Documentation for Custom Tag *****
+	# Attributes ('*' indicates mandatory attributes)
+		activateOnRelocation = true / false /* Indicates if the activityShould be activated on relocation
+											 	provided the activity is activatable by the current user*/ 
+	-->
+
 	<ui:composition>
 		<ice:panelPopup id="#{relocateActivityDialogBean.beanId}" modal="true"
 			rendered="#{relocateActivityDialogBean.visible}" draggable="true"
@@ -47,9 +54,11 @@
 								<pc:automationTag value="auto-relocation-dialog-relocateAction" />
 								<ice:commandButton
 									value="#{views_common_msgPropsBean['activity.relocation.dialog.actionButton.text']}"
-									action="#{relocateActivityDialogBean.relocateActivity}"
+									actionListener="#{relocateActivityDialogBean.relocateActivity}"
 									disabled="#{!relocateActivityDialogBean.relocationEligible}"
-									styleClass="button" />
+									styleClass="button">
+									<f:attribute name="activateOnRelocation" value="#{activateOnRelocation}" />
+								</ice:commandButton>
 								<ice:commandButton
 									value="#{views_common_msgPropsBean['common.cancel']}"
 									action="#{relocateActivityDialogBean.closePopup}"
