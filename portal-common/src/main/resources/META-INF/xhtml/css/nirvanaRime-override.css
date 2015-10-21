@@ -109,7 +109,7 @@
 
 /* Styles for ice:panelCollapsible */
 
-.icePnlClpsbl, .icePnlClpsbl-dis {
+/* .icePnlClpsbl, .icePnlClpsbl-dis {
     border: none;
 }
 
@@ -178,7 +178,7 @@
 
 .icePnlClpsblColpsdHdr .iceOutTxt:hover, .icePnlClpsblHdr .iceOutTxt:hover {
 	color: #B0232B;
-} 
+}  */
 
 /* Styles for ice:tree */
 

@@ -2839,7 +2839,7 @@ Disabled classes for the calendar controls
 ----------- Panel Collapsible --------
 */
 
-.icePnlClpsbl, .icePnlClpsbl-dis {
+/* .icePnlClpsbl, .icePnlClpsbl-dis {
     border: 1px solid #d9d9d9;
 }
 
@@ -3001,7 +3001,7 @@ Disabled classes for the calendar controls
 
 .icePnlClpsblHdr img, .icePnlClpsblColpsdHdr img {
     border: 0;
-}
+} */
 /*
 ----------- Google Maps --------
 */

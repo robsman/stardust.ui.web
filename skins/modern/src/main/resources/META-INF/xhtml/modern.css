@@ -5197,7 +5197,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
     height: 21px;
 }
 
-.icePnlClpsblHdr div {
+/* .icePnlClpsblHdr div {
     background: url( './css-images/PnlHdr_down.gif' ) no-repeat top left;
     padding: 5px 0 0 5px;
     margin: -2px 0 0 -2px;
@@ -5223,7 +5223,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
     padding: 5px 0 0 5px;
     margin: -2px 0 0 -2px;
     background-position: 3px 2px;    
-}
+} */
 
 .icePnlClpsbl-dis, .icePnlClpsblHdr-dis, .icePnlClpsblCnt-dis,
 .icePnlClpsblColpsd-dis, .icePnlClpsblColpsdHdr-dis, .icePnlClpsblColpsdCnt-dis{
@@ -5524,6 +5524,10 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	clear: both;
 	margin: 5px 0;
 	border:none;
+	display: -webkit-box;
+	color: #A69A88;
+	/* font-size: 1.33333333em !important; */
+	
 }
 
 .icePnlClpsblColpsdHdr {
@@ -5534,42 +5538,69 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	clear: both;
 	margin: 5px 0;
 	font-weight:500;
+	display: -webkit-box;
+	color: #A69A88;
+	/* font-size: 1.33333333em !important; */
 }
 
-.icePnlClpsblHdr div {
-    background-image: url('./images/flat-icons/panelHeader-triggerCollapse-light_16x22.png') !important;
+.icePnlClpsblHdr:before{
+    /* background-image: url('./images/flat-icons/panelHeader-triggerCollapse-light_16x22.png') !important; */
+    font-family: "FontAwesome";
+    content: "\f0da";
+    font-size: 1.33333333em !important;
     background-position: -4px 5px;   
 }
-.icePnlClpsblHdr div {
-    background-image: url('./images/flat-icons/panelHeader-triggerCollapse.png') !important;
-    background-position: -4px 7px;   
+
+.icePnlClpsblHdr:hover{
+    /* background-image: url('./images/flat-icons/panelHeader-triggerCollapse-light_16x22.png') !important; */
+    font-family: "FontAwesome";
+    content: "\f0da";
+    color: #7B7163;
+    background-position: -4px 5px;
 }
 
-
-.icePnlClpsblHdr-dis div {
-    background: url('./images/flat-icons/panelHeader-triggerCollapse-light_16x22.png' ) no-repeat;
+.icePnlClpsblHdr-dis:before{
+   /*  background: url('./images/flat-icons/panelHeader-triggerCollapse-light_16x22.png' ) no-repeat; */
+   	font-family: "FontAwesome";
+    content: "\f0da";
+    font-size: 1.33333333em !important;
     background-position: -4px 5px;  
 }
-.icePnlClpsblHdr-dis div:hover {
-    background: url('./images/flat-icons/panelHeader-triggerCollapse.png' ) no-repeat;
+.icePnlClpsblHdr-dis:hover {
+    /* background: url('./images/flat-icons/panelHeader-triggerCollapse.png' ) no-repeat; */
+    font-family: "FontAwesome";
+    content: "\f0da";
+    color: #7B7163;
     background-position: -4px 7px;  
 }
 
-.icePnlClpsblColpsdHdr div {
-    background: url('./images/flat-icons/panelHeader-triggerExpand-light_16x22.png')  no-repeat;
+.icePnlClpsblColpsdHdr:before{
+    /* background: url('./images/flat-icons/panelHeader-triggerExpand-light_16x22.png')  no-repeat; */
+    font-family: "FontAwesome";
+    content: "\f0d7";
+    font-size: 1.33333333em !important;
     background-position: -4px 5px;     
 }
-.icePnlClpsblColpsdHdr div:hover {
-    background: url('./images/flat-icons/panelHeader-triggerExpand.png')  no-repeat;
+.icePnlClpsblColpsdHdr:hover {
+    /* background: url('./images/flat-icons/panelHeader-triggerExpand.png')  no-repeat; */
+    font-family: "FontAwesome";
+    content: "\f0d7";
+    color: #7B7163;
     background-position: -4px 7px;     
 }
 
-.icePnlClpsblColpsdHdr-dis div {
-    background: url('./images/flat-icons/panelHeader-triggerExpand-light_16x22.png')  no-repeat;
+.icePnlClpsblColpsdHdr-dis:before{
+    /* background: url('./images/flat-icons/panelHeader-triggerExpand-light_16x22.png')  no-repeat; */
+    font-family: "FontAwesome";
+    content: "\f0d7";
+    font-size: 1.33333333em !important;
     background-position: -4px 5px;    
 }
-.icePnlClpsblColpsdHdr-dis div:hover {
-    background: url('./images/flat-icons/panelHeader-triggerExpand.png')  no-repeat;
+.icePnlClpsblColpsdHdr-dis:hover {
+   /*  background: url('./images/flat-icons/panelHeader-triggerExpand.png')  no-repeat; */
+    font-family: "FontAwesome";
+    content: "\f0d7";
+    color: #7B7163;
     background-position: -4px 7px;    
 }
 .icePnlClpsblCnt, .icePnlClpsblCnt-dis {
