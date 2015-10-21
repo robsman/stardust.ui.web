@@ -37,9 +37,11 @@ import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.common.uielement.AbstractLaunchPanel;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.springframework.beans.factory.InitializingBean;
+
 
 
 import com.icesoft.faces.context.effects.Effect;
@@ -335,7 +337,7 @@ public class StartableProcessBean extends AbstractLaunchPanel implements Initial
       {
          return false;
       }
-      if (modelparticipant == modelparticipant1)
+      if (ParticipantUtils.areEqual(modelparticipant, modelparticipant1))
       {
          return true;
       }
