@@ -855,7 +855,7 @@ span.pi-case:before{
 
 .pi-role:before{
 	font-family:starclipse;
-	content:"\f0AA"; /* fa-users */
+	content:"\f0AA"; /* sc-user-check */
 }
 
 .pi-department:before{
@@ -864,8 +864,8 @@ span.pi-case:before{
 }
 
 .pi-scope-role:before{
-	font-family:FontAwesome;
-	content:"\f0c0"; /* fa-users */
+	font-family:starclipse;
+	content:"\f0AA"; /* sc-user-check */
 }
 
 .pi-process-manager:before{
