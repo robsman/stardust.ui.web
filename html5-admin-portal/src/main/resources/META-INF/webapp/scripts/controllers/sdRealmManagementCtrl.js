@@ -34,7 +34,6 @@
 		RealmManagementController.prototype.initialize = function() {
 			this.resetValues();
 			this.dataTable = null; // This will be set to underline data
-			this.selection = null;
 
 			this.realmPrefModule = 'ipp-administration-perspective';
 			this.realmPrefId = 'preference';

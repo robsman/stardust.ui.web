@@ -29,7 +29,7 @@
 					aid="ADM-UserGrpMgmt-DataTable-CreateUserGrp">
 					<i class="pi pi-create pi-lg" />
 				</button>
-				<button ng-disabled="ctrl.selectionExpr == null"
+				<button ng-disabled="ctrl.userGroupDataTable.getSelection() == null"
 					ng-click="ctrl.invalidateUserGroup()"
 					title="{{i18n('admin-portal-messages.views-userGroupMgmt-invalidateUserGroup-tooltip-title')}}"
 					class="button-link tbl-toolbar-item tbl-tool-link"
@@ -43,7 +43,7 @@
 			sd-data="ctrl.fetchUserGroups(params)" sda-mode="remote"
 			sda-ready="{{ctrl.isReady}}"
 			sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
-			sda-selectable="row" sda-selection="ctrl.selectionExpr"
+			sda-selectable="row"
 			sda-preference-module="ipp-administration-perspective" sda-preference-id="preference"
 			sda-preference-name="ipp-administration-perspective.userGroupMgmt.selectedColumns"
 			sda-exports="true" sda-exports-file-name="userGroupList">

@@ -40,7 +40,6 @@
 		// table instance automatically
 
 		this.data = {};
-		this.selectionExpr = null;
 		this.showCreateUserGroup = false;
 		this.showModifyUserGroup = false;
 		this.columnSelector = sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
@@ -92,8 +91,8 @@
 	 */
 	controller.prototype.invalidateUserGroup = function() {
 		var self = this;
-		if (self.selectionExpr.validTo == null || self.selectionExpr.validTo >= new Date()) {
-			_sdUserGroupService.invalidateUserGroup(self.selectionExpr.id).then(
+		if (self.userGroupDataTable.getSelection().validTo == null || self.userGroupDataTable.getSelection().validTo >= new Date()) {
+			_sdUserGroupService.invalidateUserGroup(self.userGroupDataTable.getSelection().id).then(
 					function(data) {
 						self.showNotificationUserGroup = true;
 						self.notificationStatus = "admin-portal-messages.views-userGroupMgmt-notifySuccessMsg";

@@ -48,7 +48,6 @@
 		this.roleAssignmentTable = null;
 		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
 		this.exportFileNameForRoleAssignment = "RoleAssignment"
-		this.rowSelectionForRoleAssignment = null;
 		this.getRoleAssignments();
 	}
 
@@ -87,30 +86,6 @@
 		return result;
 	};
 
-	/**
-	 * 
-	 * @param list
-	 * @param textSearch
-	 * @returns
-	 */
-	RoleAssignmentCtrl.prototype.filterRoleAssignments = function(list, textSearch) {
-		var rows = _filter('filter')(list, function(item, index) {
-			var newTextSearch = textSearch.replaceAll("*", ".*");
-			return item.teamMember.match(new RegExp('^' + newTextSearch, "i"));
-		}, true);
-
-		return rows;
-
-	};
-
-	/**
-	 * 
-	 */
-	String.prototype.replaceAll = function(str1, str2, ignore) {
-		return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g, "\\$&"), (ignore
-				? "gi"
-				: "g")), (typeof (str2) == "string") ? str2.replace(/\$/g, "$$$$") : str2);
-	}
 
 	/**
 	 * 
