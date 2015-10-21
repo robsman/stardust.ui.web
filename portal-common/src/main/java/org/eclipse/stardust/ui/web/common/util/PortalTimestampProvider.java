@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.common.util;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import org.eclipse.stardust.engine.runtime.utils.TimestampProviderUtils;
@@ -29,5 +30,15 @@ public class PortalTimestampProvider
    public static long getTimeStampValue()
    {
       return TimestampProviderUtils.getTimeStampValue();
+   }
+   
+   public static Calendar getCalendar()
+   {
+      return TimestampProviderUtils.getCalendar();
+   }
+   
+   public static Calendar getCalendar(Date date)
+   {
+      return TimestampProviderUtils.getCalendar(date);
    }
 }

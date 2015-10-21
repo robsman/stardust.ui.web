@@ -26,6 +26,7 @@ import javax.faces.event.ActionEvent;
 import javax.faces.model.SelectItem;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.Period;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.common.error.ConcurrencyException;
@@ -61,6 +62,7 @@ import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
+import org.eclipse.stardust.ui.web.common.util.PortalTimestampProvider;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
@@ -415,9 +417,21 @@ public class ActivityInstanceUtils
          // Target timestamp is available as ActivityInstanceProperty
          ActivityInstanceProperty targetTimeProperty = (ActivityInstanceProperty) binding
                .getAttribute(PredefinedConstants.TARGET_TIMESTAMP_ATT);
-
-         Calendar dateTime = Calendar.getInstance();
-         dateTime.setTimeInMillis(targetTimeProperty.getLongValue());
+         Calendar dateTime = PortalTimestampProvider.getCalendar();
+         if(null != targetTimeProperty)
+         {
+            dateTime.setTimeInMillis(targetTimeProperty.getLongValue());
+         }
+         else
+         {
+            Period period = (Period) binding.getAttribute(PredefinedConstants.TIMER_PERIOD_ATT);
+            if (period != null)
+            {
+               dateTime = null != ai.getStartTime() ? PortalTimestampProvider.getCalendar(ai.getStartTime()) : dateTime;
+               dateTime = period.add(dateTime);
+            }
+         }
+         
          return dateTime.getTime();
       }
       catch (Exception e) {
