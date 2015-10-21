@@ -788,7 +788,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 						'</div>'+
 						'<i class="pi pi-search pi-lg"> </i>	<input type="text"  class="spacing-right"  ng-model="ctrl.dialog.filter.address.value" ng-change="ctrl.addressTable.refresh();"/>'+
 						'<input class="correspondence_addressBook_fax_control" type="checkbox" ng-model="ctrl.dialog.filter.address.showFax" ng-change="ctrl.addressTable.refresh();"/>'+
-						'<span class="iceOutLbl">{{ctrl.i18n("views-common-messages.views-correspondence-panel-fax-title")}} </span>'+
+						'<span class="iceOutLbl" style="margin: 5px;">{{ctrl.i18n("views-common-messages.views-correspondence-panel-fax-title")}} </span>'+
 						'<div class="correspondence_addressBook_conatiner">'+
 						'<table sd-data-table="ctrl.addressTable" sda-selection="ctrl.selectedAddresses" '+
 						' sd-data="ctrl.getAvailableAddresses();" sda-mode="local" '+

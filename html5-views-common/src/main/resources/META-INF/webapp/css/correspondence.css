@@ -227,3 +227,7 @@ ul.sd-tree {
 	border: 0 !important;
 	padding: 2px 2px 2px 10px !important;
 }
+
+.dialog_link {
+	text-decoration: none;
+}
