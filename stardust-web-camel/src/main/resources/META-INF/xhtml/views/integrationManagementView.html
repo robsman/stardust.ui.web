@@ -79,11 +79,11 @@
 							<td sda-field="version"></td>
 							<td align="center">
 								<a href="#"	ng-click="ctrl.stopEvent($event);  ctrl.startAllRoutes(rowData.contextId);"
-									class="view-tool-link" title="Start All Routes"> 
+									class="view-tool-link" title="{{sdI18nHtml5Admin('views.integration.management.start.all.routes')}}"> 
 										<i class="pi pi-start-camel-routes pi-lg"></i>
 								</a> 
 								<a href="#"	ng-click="ctrl.stopEvent($event);  ctrl.stopAllRoutes(rowData.contextId);"
-									class="view-tool-link" title="Stop All Routes"> 
+									class="view-tool-link" title="{{sdI18nHtml5Admin('views.integration.management.stop.all.routes')}}"> 
 										<i class="pi pi-stop-camel-routes pi-lg"></i>
 								</a>
 							</td>
@@ -205,11 +205,11 @@
 									<td sda-field="lastExchangeFailureTimestamp | date:'yyyy-MM-dd HH:mm:ss'"></td>
 									<td sda-field="lastExchangeFailureExchangeId"></td>
 									<td><a href="#"	ng-click="ctrl.stopEvent($event); ctrl.startOrStopRoute(ctrl.selectionCamelContext.contextId,rowData.id,rowData.status)"
-											class="expandCollapseLink" title="Start" ng-hide="rowData.status === 'Started'">
+											class="expandCollapseLink" title="{{sdI18nHtml5Admin('views.integration.management.start')}}" ng-hide="rowData.status === 'Started'">
 											<i class="pi pi-start-camel-routes pi-lg"></i>
 										</a> 
 										<a href="#"	ng-click="ctrl.stopEvent($event); ctrl.startOrStopRoute(ctrl.selectionCamelContext.contextId,rowData.id,rowData.status)"
-											class="expandCollapseLink" title="Stop" ng-show="rowData.status === 'Started'">
+											class="expandCollapseLink" title="{{sdI18nHtml5Admin('views.integration.management.stop')}}" ng-show="rowData.status === 'Started'">
 											<i class="pi pi-stop-camel-routes pi-lg"></i>
 									</a></td>
 								</tr>
@@ -295,11 +295,11 @@
 									<td sda-field="lastExchangeFailureTimestamp | date:'yyyy-MM-dd HH:mm:ss'"></td>
 									<td sda-field="lastExchangeFailureExchangeId"></td>
 									<td><a href="#" ng-click="ctrl.stopEvent($event); ctrl.startOrStopRoute(ctrl.selectionCamelContext.contextId,rowData.id,rowData.status)"
-											class="expandCollapseLink" title="Start" ng-hide="rowData.status === 'Started'">
+											class="expandCollapseLink" title="{{sdI18nHtml5Admin('views.integration.management.start')}}" ng-hide="rowData.status === 'Started'">
 												<i class="pi pi-start-camel-routes pi-lg"></i>
 										</a> 
 										<a href="#"	ng-click="ctrl.stopEvent($event); ctrl.startOrStopRoute(ctrl.selectionCamelContext.contextId,rowData.id,rowData.status)"
-											class="expandCollapseLink" title="Stop"	ng-show="rowData.status === 'Started'">
+											class="expandCollapseLink" title="{{sdI18nHtml5Admin('views.integration.management.Stop')}}"	ng-show="rowData.status === 'Started'">
 												<i class="pi pi-stop-camel-routes pi-lg"></i>
 										</a>
 									</td>
@@ -385,11 +385,11 @@
 									<td sda-field="lastExchangeFailureExchangeId"></td>
 									
 									<td><a href="#"	ng-click="ctrl.stopEvent($event); ctrl.startOrStopRoute(ctrl.selectionCamelContext.contextId,rowData.id,rowData.status)"
-											class="expandCollapseLink" title="Start" ng-hide="rowData.status === 'Started'">
+											class="expandCollapseLink" title="{{sdI18nHtml5Admin('views.integration.management.start')}}" ng-hide="rowData.status === 'Started'">
 												<i class="pi pi-start-camel-routes pi-lg"></i>
 										</a> 
 										<a href="#"	ng-click="ctrl.stopEvent($event); ctrl.startOrStopRoute(ctrl.selectionCamelContext.contextId,rowData.id,rowData.status)"
-											class="expandCollapseLink" title="Stop"	ng-show="rowData.status === 'Started'">
+											class="expandCollapseLink" title="{{sdI18nHtml5Admin('views.integration.management.stop')}}"	ng-show="rowData.status === 'Started'">
 												<i class="pi pi-stop-camel-routes pi-lg"></i>
 										</a>
 									</td>
