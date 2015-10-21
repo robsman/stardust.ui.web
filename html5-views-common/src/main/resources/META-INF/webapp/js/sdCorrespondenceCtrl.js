@@ -954,7 +954,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		var ctrl = this;
 		var processApi = ctrl.dialog.attachmentSelector.api;
 		var messageTemplateApi = ctrl.dialog.templateSelector.api;
-		if(!processApi && !messageTemplateApi ){
+		if(!processApi || !messageTemplateApi ){
 			return true;
 		}
 
