@@ -315,6 +315,7 @@ div#loginBox .buttonContainer input{
 
 .perspective-active-font, .perspective-inactive-font {
 	padding-top: 4px;
+	padding-bottom: 3px;
 }
 
 .perspective-icon {
