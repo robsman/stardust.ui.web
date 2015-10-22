@@ -139,7 +139,7 @@
                               <th>Predefined Values</th>
                            </tr>
                            <tr ng-form="subForm"
-                              ng-repeat="ap in overlayPanel.getApplication().contexts.application.accessPoints | filter : {direction:'IN'}">
+                              ng-repeat="ap in overlayPanel.accessPoints | filter : {direction:'IN'}">
                               <td style="width: 50%;">{{ ap.name }}</td>
                               <td style="width: 50%;"
                                  ng-show="ap.dataType =='struct'? true : false"><select
@@ -153,9 +153,10 @@
                               </select>
                               </td>
                               <td ng-show="ap.dataType == 'primitive'? true : false">
-                                 <div
+                                  <div
                                     ng-show="ap.primitiveDataType =='boolean'? true : false">
                                     <input type="checkbox"
+                                       ng-init="ap.attributes = ap.attributes || {};"
                                        ng-model="ap.attributes['carnot:engine:defaultValue']"
                                        ng-change="overlayPanel.valueChanged(ap)" />
                                  </div>
@@ -163,6 +164,7 @@
                                     <input name="intField" class="rightAligned"
                                        type="text" sd-validate="integer" ng-model-onblur
                                        ng-pattern="/^(\+|-)?([\d]{0,9})$/"
+                                       ng-init="ap.attributes = ap.attributes || {};"
                                        ng-model="ap.attributes['carnot:engine:defaultValue']"
                                        ng-change="overlayPanel.valueChanged(ap)"
                                        maxlength="10" />
@@ -175,6 +177,7 @@
                                     ng-show="ap.primitiveDataType =='double'? true : false">
                                     <input name="doubleField" class="rightAligned"
                                        type="text" ng-model-onblur
+                                       ng-init="ap.attributes = ap.attributes || {};"
                                        ng-model="ap.attributes['carnot:engine:defaultValue']"
                                        maxlength="620"
                                        ng-pattern="/^[-+]?\d{0,308}(\.\d{1,309})?%?$/"
@@ -188,6 +191,7 @@
                                     ng-show=" ap.primitiveDataType =='long'? true : false">
                                     <input name="longField" class="rightAligned"
                                        type="text" sd-validate="long" ng-model-onblur
+                                       ng-init="ap.attributes = ap.attributes || {};"
                                        ng-model="ap.attributes['carnot:engine:defaultValue']"
                                        maxlength="19"
                                        ng-change="overlayPanel.valueChanged(ap)" />
@@ -199,12 +203,14 @@
                                  <div
                                     ng-show="ap.primitiveDataType =='String'? true : false">
                                     <input type="text" ng-model-onblur
+                                       ng-init="ap.attributes = ap.attributes || {};"
                                        ng-model="ap.attributes['carnot:engine:defaultValue']"
                                        ng-change="overlayPanel.valueChanged(ap)" />
                                  </div>
                                  <div
                                     ng-show="ap.primitiveDataType =='Timestamp'? true : false">
                                     <input type="text" name="dateField" sd-date-picker
+                                       ng-init="ap.attributes = ap.attributes || {};"
                                        ng-model="ap.attributes['carnot:engine:defaultValue']"
                                        ng-change="overlayPanel.valueChanged(ap)" />
                                  </div>

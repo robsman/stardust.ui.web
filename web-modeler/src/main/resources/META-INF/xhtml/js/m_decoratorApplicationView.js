@@ -148,6 +148,7 @@ define(
                {
                   this.id = "decoratorApplicationView";
                   this.application = application;
+                  this.accessPoints= angular.copy(this.getApplication().contexts.application.accessPoints);
                   this.view = m_utils.jQuerySelect("#" + this.id);
                   this.initializeModelElementView(application);
                   this.overlayAnchor = m_utils.jQuerySelect("#overlayAnchor");
@@ -299,12 +300,14 @@ define(
                            }
                         };
                   this.submitChanges(submitElements, true);
+                  this.accessPoints= angular.copy(this.getApplication().contexts.application.accessPoints);
                   this.resetViewElements();
                   
                }
                this.modelId;
                this.eltId;
                this.elementType;
+               
                /**
                 * 
                 */
@@ -362,6 +365,7 @@ define(
                };
                var selectedApplication;
                var selectedProcessDefinition;
+               this.accessPoints;
                /**
                 * 
                 */
@@ -386,7 +390,7 @@ define(
                         attributes["stardust:application::decorator::elementType"] = this.elementType;
                         submitElements.contexts = {
                            application : {
-                              accessPoints : accessPoints
+                              accessPoints : this.accessPoints
                            }
                         };
                      }
@@ -425,6 +429,7 @@ define(
                   }
                   submitElements.attributes = attributes;
                   this.submitChanges(submitElements, true);
+                  this.accessPoints= angular.copy(submitElements.contexts.application.accessPoints);
                };
 
                /**
@@ -436,29 +441,15 @@ define(
                   if (ap.attributes["carnot:engine:defaultValue"])
                      m_utils.debug("Default value "
                               + ap.attributes["carnot:engine:defaultValue"]);
-
-                  var accessPoints = this.getApplication().contexts.application.accessPoints;
-                  for ( var i in accessPoints)
-                  {
-                     var elt = accessPoints[i];
-                     if (elt.id == ap.id)
-                     {
-
-                        elt.attributes["carnot:engine:visibility"] = false;
-                        elt.attributes["carnot:engine:defaultValue"] = ap.attributes["carnot:engine:defaultValue"];
-
-                     }
-                  }
-                  var submitElements = {};
-                  var attributes = this.getApplication().attributes;
-                  submitElements.attributes = attributes;
-                  submitElements.contexts = {
-                     application : {
-                        accessPoints : accessPoints
-                     }
-                  };
-
-                  this.submitChanges(submitElements, true);
+                     var submitElements = {};
+                     var attributes = this.getApplication().attributes;
+                     submitElements.attributes = attributes;
+                     submitElements.contexts = {
+                        application : {
+                           accessPoints : this.accessPoints
+                        }
+                     };
+                     this.submitChanges(submitElements, true);
                }
                /**
                 * Returns a list of available structured types in all Models
@@ -500,7 +491,6 @@ define(
                /**
                 * 
                 */
-
                DecoratorApplicationView.prototype.findSelectedApplicationById = function(
                         applicationId)
                {
