@@ -93,13 +93,12 @@
                   <div id="configurationTab">
                      <table>
                         <tr>
-                           <td><label for="availableModelsInput">Model</label></td>
+                           <td style="width: 50%;"><label for="availableModelsInput">Model</label></td>
                            <td><select id="availableModelsInput"
                               ng-model="overlayPanel.modelId"
-                              ng-change="overlayPanel.modelIdChanged()"
-                              ng-options="model.id as model.name for model in overlayPanel.getAvailableModels()">
-                                 <option value=null
-                                    ng-selected="(overlayPanel.modelId=='' || overlayPanel.modelId==null)?true:false">{{overlayPanel.i18nLabels('none.title')}}</option>
+                              ng-change="overlayPanel.modelIdChanged()">
+                                 <option value=null ng-selected="(overlayPanel.modelId=='' || overlayPanel.modelId==null)?true:false">{{overlayPanel.i18nLabels('none.title')}}</option>
+                                 <option ng-repeat="model in overlayPanel.getAvailableModels()" value="{{model.id}}">{{model.name}}</option>
                            </select></td>
                         </tr>
                         <tr ng-show="overlayPanel.modelId != null ? true : false">
@@ -205,7 +204,8 @@
                                     <input type="text" ng-model-onblur
                                        ng-init="ap.attributes = ap.attributes || {};"
                                        ng-model="ap.attributes['carnot:engine:defaultValue']"
-                                       ng-change="overlayPanel.valueChanged(ap)" />
+                                       ng-change="overlayPanel.valueChanged(ap)" 
+                                      />
                                  </div>
                                  <div
                                     ng-show="ap.primitiveDataType =='Timestamp'? true : false">
