@@ -1727,3 +1727,8 @@ a span.pi:hover {
 }
 
 /** Simple modeler icons End **/
+
+.pi-traffic-light:before{
+	font-family: starclipse;
+	content: '\f0B6';
+}

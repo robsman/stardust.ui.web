@@ -748,3 +748,6 @@
 .sc-scroll-cog-o:before{
     content: '\F0B5';
 }
+.sc-traffic-light:before{
+    content: '\F0B6';
+}
