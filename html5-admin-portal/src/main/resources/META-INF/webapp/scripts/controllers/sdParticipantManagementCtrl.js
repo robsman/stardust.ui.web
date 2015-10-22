@@ -543,6 +543,10 @@
 		  //the tree is dirty to avoid needless overhead.
 		  //TODO: maintain proper dirty state of tree.
 		  matches = this.treeApi.filterTree(comparatorFx,true);
+		  if(matches.length===0){
+	    	this.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.filter.noMatches"),"warn");
+	    	return;
+		  }
 	  }
 	  
   };
@@ -751,6 +755,8 @@
         self.selectedTreeNodes.forEach(function(node){
         	self.treeApi.childNodes[node.uuid].isVisible=true;
         });
+        
+        self.showParticipantMessage(i18n("views.authorizationManagerViewHtml5.success"), "ok");
       }
       data.deferred.resolve();
     }, function(response) {

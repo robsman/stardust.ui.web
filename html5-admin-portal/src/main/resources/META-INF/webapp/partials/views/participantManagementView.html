@@ -13,7 +13,8 @@
 		<section style="clear: both; float: left; width: 60%; overflow: auto">
 			<header>
 				<div class="view-panel-toolbar heading">
-					{{i18n('admin-portal-messages.views-common-users-label')}}</div>
+					{{i18n('admin-portal-messages.views-common-users-label')}}
+				</div>
 			</header>
 			<div ng-show="ctrl.showMessage" sd-message></div>
 
@@ -70,7 +71,11 @@
 					ng-bind="sdI18n('admin-portal-messages.views.participantMgmt.participantTree.title')">
 				</div>
 			</header>
-			<div ng-show="ctrl.showMessage2" sd-message></div>
+			
+			<div style="min-height:22px;">
+				<div  ng-show="ctrl.showMessage2" sd-message></div>
+			</div>
+			
 			<div sda-toolbar>
 				<div>
 					<input  type="text"  

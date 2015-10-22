@@ -24,6 +24,14 @@
 	padding-left: 2px;
 }
 
+a.no-link:link,
+a.no-link:visited,
+a.no-link:hover,
+a.no-link:active
+{
+	text-decoration:none;
+}
+
 /************** Font Icons *****************/
 .sc, .glyphicon {
 	color: #A69A88;

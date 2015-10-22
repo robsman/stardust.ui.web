@@ -60,6 +60,7 @@
 							<td sda-field="name" sda-exporter="rowData.name">
 								<a href=""
 								   ng-attr-title="{{rowData.qualifiedId}}"
+								   class="no-link"
 								   ng-class="{'selected-custom' : ctrl.selectedRoles.indexOf(role) >=0}"
 								   sd-data-drag 
 								   ng-model="rowData"
@@ -131,7 +132,7 @@
 					        aid="COM-AuthMgr-ApplyFilter"></button>
 					<button class="pi pi-clear pi-1x" 
 							title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.permissionTree.toolbar.reserFilter.title')}}"
-					        ng-click="ctrl.resetFilter()"></button>
+					        ng-click="ctrl.resetFilter();myFilter=''"></button>
 					<button class="pi pi-torch pi-1x" 
 							ng-disabled="ctrl.selectedParticipants.length==0"
 					        title="{{sdI18nHtml5Admin('views.authorizationManagerViewHtml5.permissionTree.toolbar.flashlight.title')}}"

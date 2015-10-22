@@ -625,7 +625,7 @@
     
     //If no matches bail out.
     if(matches.length===0){
-    	this.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.filter.noMatches"));
+    	this.showPermissionMessage(i18n("views.authorizationManagerViewHtml5.permissionTree.filter.noMatches"),"warn");
     	return;
     }else
     {

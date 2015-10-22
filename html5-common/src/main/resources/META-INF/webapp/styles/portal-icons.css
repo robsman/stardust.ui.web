@@ -1279,7 +1279,7 @@ span.pi-case:before{
 	content:'\f04b'; /* fa-play */
 }
 
-.pi-stop,
+.pi-stop:before,
 .pi-stop-daemon:before{
 	font-family:"FontAwesome";
 	content:'\f04d'; /* fa-stop */

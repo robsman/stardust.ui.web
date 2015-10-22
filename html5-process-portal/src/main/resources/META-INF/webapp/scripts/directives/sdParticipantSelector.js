@@ -34,6 +34,7 @@
 				},
 				transclude: true,
 				template: '<div sd-auto-complete class="sd-participant-selector"'
+						  + ' sda-clear-on-select="true"'
 						  + ' sda-matches="participantSelectorCtlr.data"' 
 				          + ' sda-match-str="participantSelectorCtlr.matchVal"' 
 				          + ' sda-change="participantSelectorCtlr.getMatches(matchVal)"' 
