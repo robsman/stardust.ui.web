@@ -84,7 +84,7 @@
 					        ng-click="ctrl.filterTree(myFilter)"></button>
 					<button class="pi pi-clear pi-1x" 
 							title="{{i18n('admin-portal-messages.views-participantManagementViewHtml5-participantTree-toolbar-reserFilter-title')}}"
-					        ng-click="ctrl.resetFilter()"></button>
+					        ng-click="ctrl.resetFilter();myFilter=''"></button>
 					<button class="pi pi-ban pi-1x" 
 							title="{{i18n('admin-portal-messages.views-participantManagementViewHtml5-participantTree-toolbar-emptyNode-title')}}"
 					        ng-click="ctrl.filterForEmptyUsers()"></button>
