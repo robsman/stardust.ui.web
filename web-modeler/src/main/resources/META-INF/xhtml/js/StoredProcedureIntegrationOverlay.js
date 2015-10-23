@@ -1295,19 +1295,7 @@ define(
 						   }
 
 						}else{
-							this.dbCatalogInput.removeClass("error");
-							this.dbSchemaInput.removeClass("error");
 							this.spNameInput.removeClass("error");
-							if(m_utils.isEmptyString(this.dbCatalogInput.val())){
-								 this.view.errorMessages.push("No Catalog provided."); 
-								 this.dbCatalogInput.addClass("error"); 
-								 valid = false;
-							}
-							if(m_utils.isEmptyString(this.dbSchemaInput.val())){
-								 this.view.errorMessages.push("No Schema provided."); 
-								 this.dbSchemaInput.addClass("error"); 
-								 valid = false;
-							}
 							if(m_utils.isEmptyString(this.spNameInput.val())){
 								 this.view.errorMessages.push("No Name provided."); 
 								 this.spNameInput.addClass("error"); 
