@@ -296,7 +296,15 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 			uiData.subject = data.Subject ? data.Subject.__text :	uiData.subject ;
 		}
 
-		uiData.content =  data.MessageBody?  data.MessageBody.__text :	uiData.content;
+    uiData.content =  data.MessageBody?  data.MessageBody.__text :  uiData.content;
+	
+	  //Reason for using join -
+    //xml2JS.js google library is used to converts xml received from server to json in interaction.js
+    //this conversion yields MessageBody.__text as an array instead of a string in case of Firefox browser.  
+    if (angular.isArray(uiData.content)) {
+      uiData.content = uiData.content.join("");
+    }
+		
 		uiData.attachments =data.Attachments_asArray ? formatInDataAttachments(data.Attachments_asArray): uiData.attachments;
 
 		if(uiData.bcc ){
