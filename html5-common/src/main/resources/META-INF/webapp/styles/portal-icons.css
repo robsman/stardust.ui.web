@@ -1321,6 +1321,7 @@ span.pi-case:before{
 	content:'\f074'; /* fa-reverse */
 }
 
+.pi-deploy-failure:before
 .pi-dialog-error:before{
 	font-family:"FontAwesome";
 	content:'\f057'; /* fa-times-circle */
@@ -1731,4 +1732,9 @@ a span.pi:hover {
 .pi-traffic-light:before{
 	font-family: starclipse;
 	content: '\f0B6';
+}
+
+.pi-deploy-success:before{
+	font-family:"FontAwesome";
+	content:'\f058'; /*  fa-check-circle */
 }
