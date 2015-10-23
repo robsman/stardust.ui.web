@@ -92,12 +92,11 @@ public class TestGeneralModeling extends RecordingTestcase
       String command = "{\"commandId\":\"data.delete\",\"modelId\":\"ProviderModel\",\"changeDescriptions\":[{\"oid\":\"ProviderModel\",\"changes\":{\"id\":\"ProvidedPrimitive\"}}]}";
       replaySimple(command, "testDeleteData (Primitive)", null, false);
 
-      command = "{\"commandId\":\"data.delete\",\"modelId\":\"ProviderModel\",\"changeDescriptions\":[{\"oid\":\"ProviderModel\",\"changes\":{\"id\":\"ProvidedStruct\"}}]}";
+      command = "{\"commandId\":\"data.delete\",\"modelId\":\"ProviderModel\",\"changeDescriptions\":[{\"oid\":\"ProviderModel\",\"changes\":{\"id\":\"ProvidedStructData\"}}]}";
       replaySimple(command, "testDeleteData (Struct)", null, false);
 
       GenericModelingAssertions.assertDataDoesNotExist(providerModel, "ProvidedPrimitive");
-      GenericModelingAssertions.assertDataDoesNotExist(providerModel, "ProvidedStruct");
-      GenericModelingAssertions.assertStructData(providerModel, "ProvidedStructData", "ProvidedStructData", "ProvidedTypeDeclaration");
+      GenericModelingAssertions.assertDataDoesNotExist(providerModel, "ProvidedStructData");      
       GenericModelingAssertions.assertDocumentData(providerModel, "ProvidedDocument", "ProvidedDocument", "ProvidedTypeDeclaration");
       ProcessDefinitionType process = GenericModelingAssertions.assertProcess(providerModel, "ProvidedProcess", "ProvidedProcess");
       GenericModelingAssertions.assertProcessInterface(providerModel, "ProvidedProcess", "ProvidedProcess", 2);
