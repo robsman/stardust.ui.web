@@ -16,7 +16,7 @@
 	/**
 	 * Controller function for our directive
 	 */
-	function fileUploadController($scope,sdUtilService,$q,$timeout){
+	function fileUploadController($scope,sdUtilService,$q,$timeout,sdLoggerService){
 		var that = this;
 		this.files = [];
 		this.currentFile = {};
@@ -26,7 +26,7 @@
 		this.nonFileData = {};//data to send with the file upload, key->values
 		this.fileDefer = {};
 		this.id = "sdFileUploadDialog_" + $scope.$id;
-		
+		this.trace = sdLoggerService.getLogger('bpm-common.directives.sdFileUploadController');
 		//Function has to be on scope so we can call it
 		//from non angular environment as ng-change does not
 		//work for file input types (see fileUpload.Html template script).
@@ -98,8 +98,7 @@
 		}
 		
 		xhr.upload.addEventListener("progress", function(e){
-			console.log("Progress...");
-			console.log(e);
+			that.trace.log("Progress: ",e);
 			that.$timeout(function(){that.state="progress"},0);
 		}, false);
 		xhr.addEventListener("load", function(e){
@@ -127,7 +126,7 @@
 
 	};
 	
-	fileUploadController.$inject = ["$scope","sdUtilService","$q","$timeout"];
+	fileUploadController.$inject = ["$scope","sdUtilService","$q","$timeout","sdLoggerService"];
 	
 	angular.module("bpm-common.directives").controller("sdFileUploadController",fileUploadController);
 	

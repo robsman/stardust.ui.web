@@ -136,8 +136,6 @@
 			model.processDefinitions.forEach(function(procDef){
 				procDef.categoryConditions.forEach(function(catCond){
 					if(catCond.type==="dataExpression" && catCond.details.condition.rhs.type==='data'){
-						console.log("CATCOND");
-						console.log(catCond);
 						//if we don't find a matching rhs id in our model data then push
 						//an entries onto our invalidData collection
 						if(!that.modelData[catCond.details.condition.rhs.id]){

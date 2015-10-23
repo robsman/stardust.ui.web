@@ -226,8 +226,7 @@ define(
 					}
 
 					this.benchmark.categories = this.categories;
-					console.log("Send content to server");
-					console.log(this.benchmark);
+					console.log("Send content to server: " , this.benchmark);
 				}
 
 				/**

@@ -25,7 +25,8 @@
 	function benchmarkController(benchmarkService, benchmarkBuilderService, 
 								 sdLoggedInUserService, $scope, $timeout, 
 								 sdDialogService,$interval,sdI18nService,
-								 sdUtilService, benchmarkValidationService){
+								 sdUtilService, benchmarkValidationService,
+								 sdLoggerService){
 		
 		
 		var that = this;   //Self reference
@@ -40,6 +41,7 @@
 		this.i18N = sdI18nService.getInstance('benchmark-messages').translate;
 		this.sdUtilService = sdUtilService;
 		this.benchmarkValidationService = benchmarkValidationService;
+		this.trace = sdLoggerService.getLogger('benchmark-app.benchmarkCtrl');
 		
 		//Function level properties
 		this.textMap = {};
@@ -284,7 +286,7 @@
 	 * @param bmDataRow
 	 */
 	benchmarkController.prototype.handleTreeSelection = function(node,e,bmDataRow){
-		console.log(e.ctrlKey);
+		this.trace.log(e.ctrlKey);
 		
 		var bmDataRowIndex=-1,
 			temp,
@@ -960,7 +962,7 @@
 		}
 		
 		d.deferred.resolve();
-		console.log(d);
+		this.trace.log(d);
 	}
 	
 	/**
@@ -1411,7 +1413,8 @@
 	                               "$interval",
 	                               "sdI18nService",
 	                               "sdUtilService",
-	                               "benchmarkValidationService"];
+	                               "benchmarkValidationService",
+	                               "sdLoggerService"];
 	
 	//add controller to our app
 	angular.module("benchmark-app")

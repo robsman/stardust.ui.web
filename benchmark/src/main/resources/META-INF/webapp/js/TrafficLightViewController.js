@@ -29,8 +29,7 @@ define(
 				TrafficLightViewController.prototype.initialize = function() {
 					this.queryParameters = Utils.getQueryParameters();
 
-					console.log("Query Parameters");
-					console.log(this.queryParameters);
+					console.log("Query Parameters: " , this.queryParameters);
 
 					this.messages = [];
 					this.trafficLightSelectionDialog = {};
@@ -84,11 +83,7 @@ define(
 																businessObjectModels) {
 															self.businessObjectModels = businessObjectModels;
 
-															console
-																	.log(self.businessObjectModels);
-
-															self
-																	.refreshBusinessObjects();
+															self.refreshBusinessObjects();
 
 															if (self.queryParameters.benchmark
 																	&& self.queryParameters.drilldown) {
@@ -660,9 +655,7 @@ define(
 							.getBusinessObjectInstances(this.businessObject)
 							.done(
 									function(businessObjectInstances) {
-										console.log("Result");
-										console.log(businessObjectInstances);
-
+										console.log("Result: ", businessObjectInstances);
 										self.businessObjectInstances = businessObjectInstances;
 
 										self.trafficLights = [];
@@ -711,18 +704,15 @@ define(
 
 						this.addPrimaryKeyField(this.groupByBusinessObject);
 
-						console.log("Group By Field");
-						console.log(this.groupByBusinessObject);
-
+						console.log("Group By Field: " , this.groupByBusinessObject);
+						
 						BusinessObjectManagementService
 								.instance()
 								.getBusinessObjectInstances(
 										this.groupByBusinessObject)
 								.done(
 										function(businessObjectInstances) {
-											console.log("Result");
-											console
-													.log(businessObjectInstances);
+											console.log("Result: " + businessObjectInstances);
 
 											self.groupByBusinessObjectInstances = businessObjectInstances;
 

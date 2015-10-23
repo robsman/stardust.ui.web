@@ -139,9 +139,7 @@ define(
 						type : "GET",
 						contentType : "application/json"
 					}).done(function(result) {
-						console.log("=======> Models");
-						console.log(result.models);
-
+						console.log("Models: " , result.models);
 						deferred.resolve(result.models);
 					}).fail(function(data) {
 						deferred.reject(data);
@@ -167,9 +165,7 @@ define(
 										type : "GET",
 										contentType : "application/json"
 									}).done(function(result) {
-								console.log("=======> Activity");
-								console.log(result.activityInstances);
-
+								console.log("Activity: " , result.activityInstances);
 								deferred.resolve(result.activityInstances);
 							}).fail(function(data) {
 								deferred.reject(data);
@@ -196,9 +192,7 @@ define(
 										type : "GET",
 										contentType : "application/json"
 									}).done(function(result) {
-								console.log("=======> Process Instance");
-								console.log(result);
-
+								console.log("Process Instance: " , result);
 								deferred.resolve(result);
 							}).fail(function(data) {
 								deferred.reject(data);
@@ -335,8 +329,7 @@ define(
 						}
 					}
 
-					console.log("Filter String");
-					console.log(queryString);
+					console.log("Filter String : " , queryString);
 
 					var deferred = jQuery.Deferred();
 					var rootUrl = location.href.substring(0, location.href
@@ -366,11 +359,10 @@ define(
 				BenchmarkService.prototype.createBusinessObjectInstance = function(
 						modelOid, businessObjectId, primaryKey,
 						businessObjectInstance) {
-					console.log("Model OID: " + modelOid);
-					console.log("Business Object ID: " + businessObjectId);
-					console.log("Primary Key: " + primaryKey);
-					console.log("Business Object Instance:");
-					console.log(businessObjectInstance);
+					console.log("Model OID: " , modelOid);
+					console.log("Business Object ID: " , businessObjectId);
+					console.log("Primary Key: " , primaryKey);
+					console.log("Business Object Instance: " , businessObjectInstance);
 
 					var deferred = jQuery.Deferred();
 					var rootUrl = location.href.substring(0, location.href
@@ -457,8 +449,7 @@ define(
 								+ businessObjectValue;
 					}
 
-					console.log("Query-String");
-					console.log(queryString);
+					console.log("Query-String: " , queryString);
 
 					jQuery
 							.ajax(
@@ -495,8 +486,7 @@ define(
 							+ businessObjectInstance[businessObject.primaryKeyField.id]
 							+ "/" + "processInstances.json";
 
-					console.log("URL");
-					console.log(url);
+					console.log("URL: " , url);
 
 					jQuery.ajax({
 						url : url,

@@ -20,8 +20,7 @@ define(
 				GanttChartViewController.prototype.initialize = function() {
 					this.queryParameters = Utils.getQueryParameters();
 
-					console.log("Query Parameters");
-					console.log(this.queryParameters);
+					console.log("Query Parameters: ", this.queryParameters);
 
 					this.expandedCumulantsInStatusTable = {};
 
@@ -87,8 +86,7 @@ define(
 							.getProcessInstance(oid)
 							.done(
 									function(processInstance) {
-										console.log("===> Process Instance");
-										console.log(processInstance);
+										console.log("Process Instance: " , processInstance);
 
 										self.processInstance = processInstance;
 										self.flatActivityInstanceList = [];
@@ -370,8 +368,7 @@ define(
 						};
 					}
 
-					console.log("Units:");
-					console.log(units);
+					console.log("Units: " , units);
 
 					jQuery("#timeAxisDivision").empty();
 
@@ -382,18 +379,11 @@ define(
 					var tickTime = startTickTime.clone();
 
 					while (!tickTime.isAfter(endTime)) {
-						console.log(tickTime.format("M/D/YYYY h:mm a"));
-
 						var tick = jQuery("<table class='tickTable layoutTable'><tr><td colspan='2'>"
 								+ tickTime.format(units.format)
 								+ "</td></tr><tr><td class='tickCell' style='width: 50%;'></td><td style='width: 50%;'></td></tr></table>");
 
 						jQuery("#timeAxisDivision").append(tick);
-
-						console.log(tickTime.diff(startTickTime)
-								/ this.millisPerHour);
-						console.log(tickTime.diff(startTickTime)
-								/ this.duration);
 
 						tick.css({
 							left : jQuery("#timeAxisDivision").position().left
