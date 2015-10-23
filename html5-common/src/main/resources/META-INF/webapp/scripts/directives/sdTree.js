@@ -1094,7 +1094,7 @@
 	  //Our HTML we will append to our element.
 	  var temp="<div ng-show='isVisible' class='menu'>" +
 	           "<ul>" +
-	           "<li ng-repeat='item in menuItems'><a ng-href='#' ng-click='invokeCallback(item,$event)' " +
+	           "<li ng-repeat='item in menuItems'><a ng-click='invokeCallback(item,$event)' " +
 	           ">" +
 	           "{{item.text}}" +
 	           "</a></li>" +
@@ -1164,12 +1164,6 @@
 	    		 return true;
 	          };
 	          
-	          //Check for a valid lastMenu and remove it
-	          if(lastMenu && lastMenu.remove){
-	            lastMenu.remove();
-	            lastMenu = null;
-          	  }
-	          
 	          var treeNode = elem.scope(),
 	              treeItem,
 	              deferred,
@@ -1198,12 +1192,32 @@
 	            }
 	            if(scope.menuItems.length >1){
 		            scope.isVisible=true;
+		            scope.watchForMouseOut = false;
 		            compHtml=$compile(temp)(scope);
+		            
+		            //Check for a valid lastMenu and remove it
+		            if(lastMenu && lastMenu.remove){
+			            lastMenu.remove();
+			            lastMenu = null;
+		          	}
+		            
 		            lastMenu = compHtml;//Assign current menu as lastMenu
-		            compHtml.on("click",function(e2){
-		              scope.invokeCallback(null,e2);
-		              compHtml.remove();
+		            
+		            compHtml.on("mouseover",function(){
+		            	scope.watchForMouseOut = true;
 		            });
+		            
+		            compHtml.on("mouseleave",function(){
+		            	if(scope.watchForMouseOut == true){
+		            		compHtml.remove();
+		            	}
+		            });
+		            
+		            compHtml.on("click",function(e2){
+		              compHtml.remove();
+		              scope.invokeCallback(null,e2);
+		            });
+
 		            elem.append(compHtml);
 	            }
 	          });
