@@ -1203,14 +1203,8 @@
 		            
 		            lastMenu = compHtml;//Assign current menu as lastMenu
 		            
-		            compHtml.on("mouseover",function(){
-		            	scope.watchForMouseOut = true;
-		            });
-		            
 		            compHtml.on("mouseleave",function(){
-		            	if(scope.watchForMouseOut == true){
-		            		compHtml.remove();
-		            	}
+	            		compHtml.remove();
 		            });
 		            
 		            compHtml.on("click",function(e2){
