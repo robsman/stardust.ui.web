@@ -94,7 +94,7 @@ public class PermissionDTO extends AbstractDTO implements Comparable<PermissionD
       @Override
       public int compareTo(ParticipantDTO o)
       {
-         return this.name.compareToIgnoreCase(o.name);
+         return this.name.compareTo(o.name);
       }
    }
 
@@ -130,6 +130,6 @@ public class PermissionDTO extends AbstractDTO implements Comparable<PermissionD
    @Override
    public int compareTo(PermissionDTO otherPermissionDTO)
    {
-      return this.name.compareToIgnoreCase(otherPermissionDTO.name);
+      return this.name.compareTo(otherPermissionDTO.name);
    }
 }

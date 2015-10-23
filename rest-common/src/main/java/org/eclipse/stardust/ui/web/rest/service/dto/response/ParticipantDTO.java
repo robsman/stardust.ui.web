@@ -20,6 +20,7 @@ import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ModelDTO;
+import org.eclipse.stardust.ui.web.rest.service.utils.ParticipantManagementUtils.ParticipantType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 
 /**
@@ -114,6 +115,18 @@ public class ParticipantDTO extends AbstractDTO implements Comparable<Participan
    @Override
    public int compareTo(ParticipantDTO otherParticipant)
    {
-      return this.name.compareToIgnoreCase(otherParticipant.name);
+      if (org.eclipse.stardust.common.StringUtils.isNotEmpty(this.type) && !this.type.equals(otherParticipant.type))
+      {
+         return Integer.valueOf(ParticipantType.getOrder(this.type)).compareTo(
+               Integer.valueOf(ParticipantType.getOrder(otherParticipant.type)));
+      }
+      else if (org.eclipse.stardust.common.StringUtils.isNotEmpty(otherParticipant.type)
+            && !otherParticipant.type.equals(this.type))
+      {
+         return Integer.valueOf(ParticipantType.getOrder(this.type)).compareTo(
+               Integer.valueOf(ParticipantType.getOrder(otherParticipant.type)));
+      }
+
+      return this.name.compareTo(otherParticipant.name);
    }
 }

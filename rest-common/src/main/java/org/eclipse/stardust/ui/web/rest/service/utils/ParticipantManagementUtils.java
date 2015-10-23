@@ -85,7 +85,6 @@ import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.QueryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
-import org.eclipse.stardust.ui.web.viewscommon.views.authorization.UiPermissionUtils;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -96,8 +95,37 @@ public class ParticipantManagementUtils
    private static final String PREFERENCE_ID = "preference";
 
    public static enum ParticipantType {
-      ORGANIZATON_SCOPED_EXPLICIT, ORGANIZATON_SCOPED_IMPLICIT, ROLE_SCOPED, ORGANIZATION_UNSCOPED, ROLE_UNSCOPED, 
-      USERGROUP, USER, DEPARTMENT, DEPARTMENT_DEFAULT;
+
+      USER(1), ORGANIZATON_SCOPED_EXPLICIT(2), ORGANIZATON_SCOPED_IMPLICIT(3), ORGANIZATION_UNSCOPED(4), ROLE_SCOPED(5), ROLE_UNSCOPED(
+            6), DEPARTMENT_DEFAULT(7), DEPARTMENT(8), USERGROUP(9);
+
+      private int order = 0;
+
+      ParticipantType(int order)
+      {
+         this.order = order;
+      }
+
+      public int getOrder()
+      {
+         return order;
+      }
+      
+      /**
+       * @param name
+       * @return
+       */
+      public static int getOrder(String name)
+      {
+         for (ParticipantType participantType : values())
+         {
+            if (participantType.name().equals(name))
+            {
+               return participantType.order;
+            }
+         }
+         return 0;
+      }
    }
 
    @Resource
