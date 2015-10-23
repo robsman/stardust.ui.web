@@ -457,9 +457,7 @@ define(
 					this.reportingService
 							.loadReportDefinitionsFolderStructure()
 							.done(function() {
-								console.log("Folder Structure");
-								console.log(self.reportingService.rootFolder);
-
+								console.log("Folder Structure : ", self.reportingService.rootFolder);
 								self.refreshTree();
 
 								document.body.style.cursor = "default";
@@ -492,19 +490,16 @@ define(
 					var link = jQuery("a[id $= 'view_management_link']",
 							portalWinDoc.doc);
 
-					console.debug("Link");
-					console.debug(link);
+					console.debug("Link: ", link);
 
 					var linkId = link.attr('id');
 					var form = link.parents('form:first');
 
-					console.debug("Form");
-					console.debug(form);
+					console.debug("Form: ", form);
 					
 					var formId = form.attr('id');
 
-					console.debug("Form ID");
-					console.debug(formId);
+					console.debug("Form ID: ", formId);
 
 					link = portalWinDoc.doc
 							.getElementById(linkId);
@@ -512,8 +507,7 @@ define(
 					var linkForm = portalWinDoc.win
 							.formOf(link);
 
-					console.debug("Link Form");
-					console.debug(linkForm);
+					console.debug("Link Form: ", linkForm);
 
 					linkForm[formId + ':_idcl'].value = linkId;
 					linkForm['viewParams'].value = viewParams;

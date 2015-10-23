@@ -151,7 +151,7 @@ if (!window.bpm.portal.GenericController) {
 			// Copy data from Interaction object
 
 			for (x in this.interaction.transfer) {
-				console.log("Copying " + x);
+				console.log("Copying " , x);
 				console.log(this.interaction.transfer[x]);
 
 				this[x] = this.interaction.transfer[x];
@@ -245,7 +245,7 @@ if (!window.bpm.portal.GenericController) {
 
 			for ( var n = 0; n < path.length - 1; ++n) {
 				if (object[path[n]] == null) {
-					console.log("Creating " + path[n]);
+					console.log("Creating " , path[n]);
 
 					object[path[n]] = {};
 
@@ -605,8 +605,7 @@ if (!window.bpm.portal.GenericController) {
 
 			jQuery.extend(scope, this);
 
-			console.log("Scope (without methods)");
-			console.log(scope);
+			console.log("Scope (without methods): ", scope);
 
 			this.inheritMethods(scope, this);
 		};
@@ -677,7 +676,7 @@ if (!window.bpm.portal.GenericController) {
 				array.push({});
 			}
 
-			console.log("Array path " + path);
+			console.log("Array path " , path);
 
 			this.postSingle(path.split(".")[0]);
 		};
@@ -693,7 +692,7 @@ if (!window.bpm.portal.GenericController) {
 				array.splice(index, 1);
 			}
 
-			console.log("Array path " + path);
+			console.log("Array path " , path);
 
 			this.postSingle(path.split(".")[0]);
 		};
@@ -773,7 +772,7 @@ if (!window.bpm.portal.GenericController) {
 		 *
 		 */
 		GenericController.prototype.postSingle = function(key) {
-			console.log("Posting element " + key);
+			console.log("Posting element " , key);
 			console.log(this[key]);
 
 			this.interaction.transfer = {};

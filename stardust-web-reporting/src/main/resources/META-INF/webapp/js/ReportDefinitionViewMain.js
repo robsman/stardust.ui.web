@@ -28,12 +28,10 @@ require(
 				TableTools, CkEditor, ace, autocomplete) {
 			jQuery(document).ready(
 					function() {
-						console.log("===> URL" + window.location);
-						console.log("===> Name"
-								+ jQuery.url(window.location.search).param(
+						console.log("URL", window.location);
+						console.log("Name", jQuery.url(window.location.search).param(
 										"name"));
-						console.log("===> Path"
-								+ jQuery.url(window.location.search).param(
+						console.log("Path", jQuery.url(window.location.search).param(
 										"path"));
 
 						 //initialize Options

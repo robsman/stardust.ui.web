@@ -716,7 +716,7 @@ define(
 							}
 						}
 					}else {
-						console.error("qualifier not supported yet: " + path);
+						console.error("qualifier not supported yet: " , path);
 					}
 					
 					return enumerators;
@@ -1075,8 +1075,7 @@ define(
 							}else{
 								var self = this;
 	
-								console.debug("Report Definition");
-								console.debug(report);
+								console.debug("Report Definition: " , report);
 								
 								//convert parameters
 								var parametersString = convertToParametersString(parameters);
@@ -1118,8 +1117,6 @@ define(
 					var deferred = jQuery.Deferred();
 
 					var self = this;
-
-					console.debug("Report Definition");
 					
 					//convert parameters
  					var parametersString = convertToParametersString(parameters);
@@ -1503,8 +1500,7 @@ define(
 								}		
 								self.loadedReportDefinitions[path] = response;
 
-								console.debug("Loaded Report Definitions ");
-								console.debug(self.loadedReportDefinitions);
+								console.debug("Loaded Report Definitions " , self.loadedReportDefinitions);
 
 								deferred.resolve(response);
 							}).fail(function(response) {
@@ -1534,8 +1530,7 @@ define(
 						url : encodeURI(uri),
 						contentType : "application/json"
 					}).done(function(response) {
-						console.debug("Retrieved external data");
-						console.debug(response);
+						console.debug("Retrieved external data: " ,response);
 
 						// Use heuristics to obtain records - first
 						// element is

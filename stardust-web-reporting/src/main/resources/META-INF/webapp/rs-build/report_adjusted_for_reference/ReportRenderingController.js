@@ -603,26 +603,8 @@ define(
 											seriesIds.push(prop);
 										}
 										
-										console.log("Report Data before preprocessing");
-										console.log(data);
-
-//										var chartOptions ={
-//											    title: 'Concern vs. Occurrance',
-//											    //series:[{renderer:$.jqplot.BarRenderer}],
-//											    axesDefaults: {
-//											        tickRenderer: $.jqplot.CanvasAxisTickRenderer ,
-//											        tickOptions: {
-//											          angle: -30,
-//											          fontSize: '10pt'
-//											        }
-//											    },
-//											    axes: {
-//											      xaxis: {
-//											        renderer: $.jqplot.CategoryAxisRenderer
-//											      }
-//											    }
-//										};
-										var chartOptions = self
+										console.log("Report Data before preprocessing: ", data);
+									    var chartOptions = self
 												.createChartOptions(seriesIds, data);
 										// Clean Canvas
 										if (self.chart) {
@@ -636,14 +618,8 @@ define(
 										window
 												.setTimeout(
 														function() {
-															console
-																	.debug("Chart Data");
-															console
-																	.debug(data.seriesGroup);
-															console
-																	.debug("Chart Options");
-															console
-																	.debug(chartOptions);
+															console.debug("Chart Data: ", data.seriesGroup);
+															console.debug("Chart Options: ", chartOptions);
 
 															if (data.seriesGroup.length) {
 																self.chart = jQuery
@@ -748,9 +724,7 @@ define(
 							.done(
 									function(data) {
 										var rows = data.recordSet;
-										console.log("Record Set");
-										console.log(rows);
-
+										console.log("Record Set: ", rows);
 										dataTableBody.empty();
 
 										for ( var n = 0; n < rows.length; ++n) {
@@ -917,7 +891,7 @@ define(
 													deferred.resolve();
 												}).fail(function(err) {
 											self.renderingFailed = self.getI18N("reporting.definitionView.retrievalFailed");		
-											console.log("Failed getting Preview Date: showing dummy data" + err);
+											console.log("Failed getting Preview Date: showing dummy data" , err);
 											deferred.reject();
 										});	
 										
@@ -952,8 +926,7 @@ define(
 			    
 			    self.getReportData(self.report, self.parameters)
 			        .done(function(data) {
-			        console.log("Data for Document");
-			        console.log(data);
+			        console.log("Data for Document: ", data);
 			        
 				    //show preview
 				    self.hideReportPreview = false;
@@ -1411,7 +1384,7 @@ define(
      		}).fail(function(err) {
      			self.renderingFailed = self.getI18N("reporting.definitionView.retrievalFailed");
      			scopeController.updateView();
-     			console.log("Failed getting Preview Date: " + err);
+     			console.log("Failed getting Preview Date: " , err);
      		});   
          };
 		

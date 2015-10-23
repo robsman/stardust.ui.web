@@ -36,7 +36,7 @@ require(
 										.create(angularjs);
 								var path = jQuery.url().param('path');
 
-								console.log("Path: " + path);
+								console.log("Path: " , path);
 
 								var reportingService = ReportingService
 										.instance();
