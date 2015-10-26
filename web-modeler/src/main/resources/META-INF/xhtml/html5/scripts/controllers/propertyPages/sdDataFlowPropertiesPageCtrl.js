@@ -125,8 +125,10 @@
           }
           
           // Filter out accesspoints where for decorator application where default value is set
-          if (accessPoint.attributes && accessPoint.attributes['carnot:engine:defaultValue']) {
-        	  continue;
+          // The decorator application sets the visible attribute to false for IN access points with default value. 
+          if (accessPoint.attributes && accessPoint.attributes['carnot:engine:visibility'] === false
+                  && accessPoint.attributes['carnot:engine:defaultValue']) {
+            continue;
           }
           
           var label;
