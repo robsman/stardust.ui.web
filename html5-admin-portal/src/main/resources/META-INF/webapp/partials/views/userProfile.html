@@ -103,9 +103,8 @@
 			</tr>
 			<tr>
 				<td></td>
-				<td class="msg-error"
-					ng-show="ctrl.userProfileForm.$error.passwordValidationMsg">
-					{{ctrl.passwordValidationMsg}}</td>
+				<td ng-show="ctrl.userProfileForm.$error.passwordValidationMsg">
+					<span class="msg-error"  ng-bind-html="ctrl.passwordValidationMsg"></span></td>
 			</tr>
 			<tr>
 				<td><label class="label-item">{{i18n('admin-portal-messages.views-createUser-basicPanel-realm-label')
