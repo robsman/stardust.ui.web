@@ -11,7 +11,7 @@
 
 		<table>
 			<tr>
-				<td><span class="label-form">
+				<td><span class="label-item">
 						{{i18n('business-control-center-messages.common-process')}} :</span></td>
 				<td><select ng-model="ctrl.selected.process"
 					ng-options="process.value as process.label for process in ctrl.processes"
@@ -19,7 +19,7 @@
 				</select></td>
 			</tr>
 			<tr>
-				<td><span class="label-form">{{i18n('business-control-center-messages.views-trafficLightView-column-chooseCategory')}}
+				<td><span class="label-item">{{i18n('business-control-center-messages.views-trafficLightView-column-chooseCategory')}}
 						:</span></td>
 				<td><select ng-model="ctrl.selected.category"
 					ng-options="category.value as category.label for category in ctrl.categories"></select></td>

@@ -85,6 +85,13 @@ a.no-link:active
 	color: #708090;
 	padding: 3px 5px 3px 0;
 	white-space: nowrap;
+	font-weight: bold;
+}
+
+.value-item {
+	color: #708090;
+	padding: 3px 10px 3px 0px;
+	white-space: nowrap;
 	font-weight: normal;
 }
 

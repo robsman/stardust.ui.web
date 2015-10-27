@@ -11,29 +11,29 @@
 	<div class="ng-hide" ng-show="true">
 		<table>
 			<tr>
-				<td><span class="label-item" style="font-weight:bold" ng-bind="i18n('admin-portal-messages.views-common-total-label')+i18n('admin-portal-messages.common-colon')">
+				<td><span class="label-item" ng-bind="i18n('admin-portal-messages.views-common-total-label')+i18n('admin-portal-messages.common-colon')">
 				</span></td>
-				<td><span class="overview-report-field-value" ng-bind="ctrl.count.total" aid="ADM-ProcView-TotalProcCnt">
-				</span></td>
-
-				<td><span class="label-item" style="font-weight:bold" ng-bind="i18n('admin-portal-messages.views-common-active-label')+i18n('admin-portal-messages.common-colon')">
-				</span></td>
-				<td><span class="overview-report-field-value" ng-bind="ctrl.count.active" aid="ADM-ProcView--ActiveProcCnt">
+				<td><span class="value-item" ng-bind="ctrl.count.total" aid="ADM-ProcView-TotalProcCnt">
 				</span></td>
 
-				<td><span class="label-item" style="font-weight:bold" ng-bind="i18n('admin-portal-messages.views-common-interrupted-label')+i18n('admin-portal-messages.common-colon')">
+				<td><span class="label-item" ng-bind="i18n('admin-portal-messages.views-common-active-label')+i18n('admin-portal-messages.common-colon')">
 				</span></td>
-				<td><span class="overview-report-field-value" ng-bind="ctrl.count.interrupted" aid="ADM-ProcView-IntProcCnt">
+				<td><span class="value-item" ng-bind="ctrl.count.active" aid="ADM-ProcView--ActiveProcCnt">
 				</span></td>
 
-				<td><span class="label-item" style="font-weight:bold" ng-bind="i18n('admin-portal-messages.views-common-completed-label')+i18n('admin-portal-messages.common-colon')">
+				<td><span class="label-item" ng-bind="i18n('admin-portal-messages.views-common-interrupted-label')+i18n('admin-portal-messages.common-colon')">
 				</span></td>
-				<td><span class="overview-report-field-value" ng-bind="ctrl.count.completed" aid="ADM-ProcView-CompProcCnt">
+				<td><span class="value-item" ng-bind="ctrl.count.interrupted" aid="ADM-ProcView-IntProcCnt">
+				</span></td>
+
+				<td><span class="label-item" ng-bind="i18n('admin-portal-messages.views-common-completed-label')+i18n('admin-portal-messages.common-colon')">
+				</span></td>
+				<td><span class="value-item" ng-bind="ctrl.count.completed" aid="ADM-ProcView-CompProcCnt">
 				</span></td>
 				
-				<td><span class="label-item" style="font-weight:bold" ng-bind="i18n('admin-portal-messages.views-common-aborted-label')+i18n('admin-portal-messages.common-colon')">
+				<td><span class="label-item" ng-bind="i18n('admin-portal-messages.views-common-aborted-label')+i18n('admin-portal-messages.common-colon')">
 				</span></td>
-				<td><span class="overview-report-field-value" ng-bind="ctrl.count.aborted" aid="ADM-ProcView-AbortProcCnt">
+				<td><span class="value-item" ng-bind="ctrl.count.aborted" aid="ADM-ProcView-AbortProcCnt">
 				</span></td>
 
 			</tr>

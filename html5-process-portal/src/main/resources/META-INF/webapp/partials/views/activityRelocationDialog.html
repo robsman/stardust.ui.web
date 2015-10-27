@@ -3,7 +3,7 @@
 		<div ng-if="rowData.relocationTargets.length > 0">			
 			<table>
 				<tr>
-					<td><label class="label-form">{{i18n('processportal.toolbars-workflowActions-relocation-dialog-newActivity')}}</label></td>
+					<td><label class="label-item">{{i18n('processportal.toolbars-workflowActions-relocation-dialog-newActivity')}}</label></td>
 					<td><select ng-model="rowData.selectedTarget"
 						ng-options="target.id as target.name for target in rowData.relocationTargets">
 						</select>
@@ -12,7 +12,7 @@
 			</table>
 		</div>
 		<div ng-if="rowData.relocationTargets.length == 0">
-			<label class="label-form">{{i18n('processportal.toolbars-workflowActions-relocation-dialog-noTargetsFound')}}</label>
+			<label class="label-item">{{i18n('processportal.toolbars-workflowActions-relocation-dialog-noTargetsFound')}}</label>
 		</div>
 	</div>
 </div>

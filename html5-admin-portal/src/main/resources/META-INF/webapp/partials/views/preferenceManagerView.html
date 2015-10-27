@@ -38,9 +38,9 @@
 		ng-bind="i18n('admin-portal-messages.views-prefManagerBean-search-filter')"></span><span ng-bind="i18n('admin-portal-messages.common-colon')"></span> 
 		<input style="width: 350px" type="text" name="filterCriteria" ng-model="ctrl.searchText"  aid="ADM-PrefMngrView-Filter"></input>
 		
-	 <br/>
-	<div style="padding-top: 15px;">
-		<button class="button primary"  aid="ADM-PrefMngrView-SearchBtn" ng-click="ctrl.search();">{{i18n('admin-portal-messages.views-prefManagerBean-searchPrefStore-label')}}
+	<div class="clearing"> </div>
+	<div>
+		<button class="button primary" aid="ADM-PrefMngrView-SearchBtn" ng-click="ctrl.search();">{{i18n('admin-portal-messages.views-prefManagerBean-searchPrefStore-label')}}
 		</button>
 	</div>
 	<br />

@@ -2,7 +2,7 @@
 <form name="ctrl.addColumnForm">
 	<table>
 		<tr>
-			<td><span class="form-lable"
+			<td><span class="label-item"
 				style="margin-left: 10px; margin-right: 10px;">{{i18n('business-control-center-messages.views-customColumn-columnName')}}</span></td>
 			<td><input style="width: 105px" type="text" name="columnName"
 				ng-model="ctrl.columnDefinition.columnTitle"
@@ -12,7 +12,7 @@
 	<div ng-if="!ctrl.columnDefinition.showDatePicker">
 		<table>
 			<tr>
-				<td><span class="form-lable"
+				<td><span class="label-item"
 					style="margin-left: 10px; margin-right: 10px;">{{i18n('business-control-center-messages.views-customColumn-startDate')}}</span></td>
 				<td><select size="1"
 					style="white-space: nowrap; margin: 3px; width: auto;"
@@ -25,7 +25,7 @@
 					ng-options="opt.value as opt.label for opt in ctrl.dateTypes"></td>
 			</tr>
 			<tr>
-				<td><span class="form-lable"
+				<td><span class="label-item"
 					style="margin-left: 10px; margin-right: 10px;">{{i18n('business-control-center-messages.views-customColumn-duration')}}</span></td>
 				<td><select size="1"
 					style="white-space: nowrap; margin: 3px; width: auto;"
@@ -42,7 +42,7 @@
 			<tr>
 				<td><a href="#"
 					ng-click="ctrl.columnDefinition.showDatePicker = true"> <span
-						class="form-lable" style="margin-left: 10px; margin-right: 10px;">
+						class="label-item" style="margin-left: 10px; margin-right: 10px;">
 							{{i18n('business-control-center-messages.views-customColumnFilter-switchToDatePicker')}}&raquo;</span>
 				</a></td>
 			</tr>
@@ -51,7 +51,7 @@
 	<div ng-if="ctrl.columnDefinition.showDatePicker">
 		<table>
 			<tr>
-				<td><span class="form-lable"
+				<td><span class="label-item"
 					style="margin-left: 10px; margin-right: 10px;">{{i18n('business-control-center-messages.views-customColumn-startDate')}}</span></td>
 				<td><div sd-date-time-picker ng-model-onblur name="startDate"
 						ng-model="ctrl.columnDefinition.startDate"></div>
@@ -60,7 +60,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td><span class="form-lable"
+				<td><span class="label-item"
 					style="margin-left: 10px; margin-right: 10px;">{{i18n('business-control-center-messages.views-customColumn-endDate')}}</span></td>
 				<td><div sd-date-time-picker ng-model-onblur name="endDate"
 						ng-model="ctrl.columnDefinition.endDate"></div>
@@ -73,7 +73,7 @@
 			<tr>
 				<td><a href="#"
 					ng-click="ctrl.columnDefinition.showDatePicker = false"> <span
-						class="form-lable" style="margin-left: 10px; margin-right: 10px;">
+						class="label-item" style="margin-left: 10px; margin-right: 10px;">
 							{{i18n('business-control-center-messages.views-customColumnFilter-switchToDateRange')}}&raquo;</span>
 				</a></td>
 			</tr>
