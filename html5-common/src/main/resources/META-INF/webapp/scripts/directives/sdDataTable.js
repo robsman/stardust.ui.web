@@ -129,7 +129,7 @@
 				'<div class="popup-dlg-cnt tbl-col-selector">\n' +
 							'<div>\n' +
 								'<span class="ui-section" ng-if="$dtApi.columnSelectorAdmin">\n' +
-									'<span class="label-form">{{i18n(\'portal-common-messages.common-preferenceScope-label\')}}</span>\n' +
+									'<span class="label-item">{{i18n(\'portal-common-messages.common-preferenceScope-label\')}}</span>\n' +
 									'<select class="inp-sel-one" ng-model="$dtApi.applyTo" ng-change="$dtApi.applyToChanged()">\n' +
 										'<option value="USER">{{i18n(\'portal-common-messages.common-preferenceScope-options-user\')}}</option>\n' +
 										'<option value="PARTITION">{{i18n(\'portal-common-messages.common-preferenceScope-options-partition\')}}</option>\n' +

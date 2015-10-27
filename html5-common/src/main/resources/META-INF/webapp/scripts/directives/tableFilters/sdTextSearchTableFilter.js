@@ -30,7 +30,7 @@
 				'<form name="filterForm">' +
 					'<table cellspacing="2" cellpadding="2" style="white-space: nowrap;">' +
 						'<tr>' +
-							'<td><label class="label-form">{{i18n(\'portal-common-messages.common-filterPopup-searchFilter-like\')}}</label></td>' +
+							'<td><label class="label-item">{{i18n(\'portal-common-messages.common-filterPopup-searchFilter-like\')}}</label></td>' +
 							'<td>' +
 								'<input type="text" id="textSearch" name="textSearch" ng-required="true" ng-model="filterData.textSearch" ng-model-onblur />' +
 								'<div class="msg-error" ng-show="filterForm[\'textSearch\'].$error.required">{{i18n(\'portal-common-messages.common-filterPopup-searchFilter-message-required\')}}</div>' +

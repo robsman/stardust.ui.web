@@ -9,18 +9,19 @@
  *     SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 /************** General *****************/
+
 .msg-error {
-	color: red;
+	color: red !important;
 	padding-left: 2px;
 }
 
-.msg-info {
-	color: green;
+.msg-success {
+	color: green !important;
 	padding-left: 2px;
 }
 
 .msg-warn {
-	color: #D7AD01;
+	color: #D7AD01 !important;
 	padding-left: 2px;
 }
 

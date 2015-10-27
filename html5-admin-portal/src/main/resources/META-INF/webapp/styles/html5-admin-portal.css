@@ -23,29 +23,6 @@ input.search {
 	height: 10px;
 }
 
-.msgFatal
-{
-	color: red;
-}
-
-.msgError
-{
-	color: red !important;
-	font-weight: normal;
-}
-
-.msgWarning
-{
-	color: orange !important;
-	font-weight: normal;
-}	
-
-.msgInfo
-{
-	color: blue !important;
-	font-weight: normal;
-}
-
 .cloneParticipantSelector .sd-participant-selector .sd-ac-container {
 	width:400px;
 }
