@@ -38,7 +38,7 @@ define(function() {
 
 			var interactionEndpoint = urlPrefix + REST_END_POINT;
 
-			console.log("Interaction Rest End Point: " + interactionEndpoint);
+			console.log("Interaction Rest End Point: " , interactionEndpoint);
 
 			InfinityBPMI18N.initPluginProps({
 				pluginName : "fileUploadBundle",

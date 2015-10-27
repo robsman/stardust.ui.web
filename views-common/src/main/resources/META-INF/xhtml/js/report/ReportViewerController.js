@@ -138,9 +138,7 @@ define(
 
 											self.initFilters();
 
-											console
-													.log("Loaded report definition:");
-											console.log(self.report);
+											console.log("Loaded report definition: ", self.report);
 											deferred.resolve();
 										}).fail(function() {
 									deferred.reject();
@@ -346,8 +344,7 @@ define(
 																		})
 																.fail(
 																		function() {
-																			console
-																					.debug("Error occurred while fetching user from server");
+																			console.debug("Error occurred while fetching user from server");
 																		});
 													}, 500);
 										};
@@ -414,7 +411,7 @@ define(
 							head.appendChild(link);
 						}
 					}).fail(function(err){
-						console.debug("Failed in loading custom theme");
+						console.debug("Failed in loading custom theme: ", err);
 					});
 				};
 

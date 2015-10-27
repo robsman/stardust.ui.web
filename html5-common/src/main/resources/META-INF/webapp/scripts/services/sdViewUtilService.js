@@ -52,12 +52,12 @@
 
 			if (currentViewPath !== beforeViewPath) {
 				if (beforeViewPath && viewHandlers[beforeViewPath]) {
-					trace.log('Calling DEACTIVATE event on view ' + beforeViewPath);
+					trace.log('Calling DEACTIVATE event on view ' , beforeViewPath);
 					callHandlerFunction(viewHandlers[beforeViewPath], "DEACTIVATED");
 				}
 
 				if (viewHandlers[currentViewPath]) {
-					trace.log('Calling ACTIVATE event on view ' + currentViewPath);
+					trace.log('Calling ACTIVATE event on view ' , currentViewPath);
 					callHandlerFunction(viewHandlers[currentViewPath], "ACTIVATED");
 				}
 			}
