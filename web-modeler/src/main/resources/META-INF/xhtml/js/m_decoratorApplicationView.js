@@ -385,12 +385,12 @@ define(
                               .findSelectedApplicationById(this.eltId);
                      if (this.selectedApplication)
                      {
-                        var accessPoints = this.selectedApplication.contexts.application.accessPoints;
+                      //  var accessPoints = this.selectedApplication.contexts.application.accessPoints;
                         attributes["stardust:application::decorator::elementId"] = this.eltId;
                         attributes["stardust:application::decorator::elementType"] = this.elementType;
                         submitElements.contexts = {
                            application : {
-                              accessPoints : this.accessPoints
+                              accessPoints : this.selectedApplication.contexts.application.accessPoints
                            }
                         };
                      }
