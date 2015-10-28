@@ -11,7 +11,7 @@
 		<title>#{externalDocumentViewerBean.portalHeader}</title>
 		<ui:include src="/plugins/common/portalHead.xhtml" />
 		<script type="text/javascript">
-			window.onbeforeunload = onWindowUnload;
+			window.onbeforeunload = parent.DocumentUtils.onWindowUnload;
 		</script>
 	</head>
 	<body>
