@@ -158,7 +158,7 @@
 									items="#{documentHandlersRegistryBean.registeredMimeTypes}"
 									varStatus="loop" var="mimeType">
 									<ice:menuItem actionListener="#{genericRepositoryTreeViewBean.createTextDocument}"
-										icon="#{mimeType.completeIconPath}"
+										styleClass="#{mimeType.fontClass}"
 										value="#{mimeType.userFriendlyName}">
 										<pc:automationTag
 											value="auto-COM-RepoTree-MenuDlg-CreateFile-FileTypeLnk"

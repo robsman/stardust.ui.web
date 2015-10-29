@@ -11,6 +11,8 @@
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
 import java.io.Serializable;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 
@@ -27,6 +29,18 @@ public final class MIMEType implements Serializable
    private String type;
    private String userFriendlyName;
    private String icon;
+   private static final Map<String, String> iconMap;
+   
+   static
+   {
+      iconMap = new LinkedHashMap<String, String>();
+      iconMap.put("pi-lg pi pi-csv-excel", "documentExcel");
+      iconMap.put("pi-lg pi pi-css", "documentCSS");
+      iconMap.put("pi-lg pi pi-text", "documentText");
+      iconMap.put("pi-lg pi pi-xml-json", "documentXML");
+      iconMap.put("pi-lg pi pi-html", "documentHTML");
+   }
+   
 
    public MIMEType(String type, String[] fileExtension, String iconPath, String piIcon, String userFriendlyName)
    {
@@ -138,5 +152,15 @@ public final class MIMEType implements Serializable
          return true;
       }
       return false;
+   }
+   
+   public String getFontClass()
+   {
+      String fontClass = iconMap.get(icon);
+      if (fontClass == null)
+      {
+         return icon;
+      }
+      return fontClass;
    }
 }

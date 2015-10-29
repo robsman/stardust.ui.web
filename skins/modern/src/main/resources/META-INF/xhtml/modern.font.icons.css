@@ -110,7 +110,12 @@ img[src *='dummy.png']:hover{
 .reversePageVrtItem-dis span img,
 .addBookmarkVrtItem a img,
 .addBookmarkVrtItem-dis span img,
-.modelSettingsMnuItemItem a img {
+.modelSettingsMnuItemItem a img,
+.documentExcel a img,
+.documentCSS a img,
+.documentText a img,
+.documentXML a img,
+.documentHTML a img {
     background-image: none !important;
     position: absolute;
     margin-left: -15px;
@@ -366,3 +371,27 @@ img[src *='dummy.png']:hover{
     content: "\f0ad"; /* fa-wrench */
 }
 
+.documentExcel a:before {
+    font-family: "FontAwesome";
+	content: "\f1c3"; /* fa-file-excel-o */
+}
+
+.documentCSS a:before {
+    font-family:FontAwesome;
+	content:"\f13c"; /* fa-css3 */
+}
+
+.documentText a:before {
+    font-family:FontAwesome;
+	content:"\f0f6"; /* fa-file-text-o */
+}
+
+.documentXML a:before {
+    font-family:FontAwesome;
+	content:"\f1c9"; /* fa-file-code-o */
+}
+
+.documentHTML a:before {
+    font-family:FontAwesome;
+	content:"\f13b"; /* fa-html5 */
+}
