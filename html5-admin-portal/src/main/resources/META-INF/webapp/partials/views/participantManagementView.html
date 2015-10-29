@@ -80,6 +80,7 @@
 				<div>
 					<input  type="text"  
 					        ng-keypress="($event.which === 13)?ctrl.filterTree(myFilter):0" 
+					        required="required"
 					        ng-model="myFilter" 
 					        class="search"
 					        aid="COM-PartMgr-ApplyFilter" />
@@ -121,7 +122,7 @@
 								sda-menu-items="(,)"
 								sda-node-id="item.uuid" 
 								sda-is-leaf="!item.children || item.children.length == 0"
-								sda-label="item.name" >
+								sda-label="item.name + item.type" >
 								<ul>
 									<li sd-tree-curse-fx></li>
 								</ul>

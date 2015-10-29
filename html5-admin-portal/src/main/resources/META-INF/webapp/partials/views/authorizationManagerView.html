@@ -123,6 +123,7 @@
 				<div>
 					<input class="search" 
 					       type="text" 
+					       required="required"
 					       ng-keypress="($event.which === 13)?ctrl.applyTextFilter(myFilter):0"
 					       ng-model="myFilter" />
 					<button class="pi pi-filter pi-1x" 

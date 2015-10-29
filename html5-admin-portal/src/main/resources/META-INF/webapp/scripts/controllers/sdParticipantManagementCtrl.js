@@ -138,10 +138,9 @@
 	  switch (item.type){
 	  	  case undefined:
 		  case "USER":
-		  case "ORGANIZATON_SCOPED_IMPLICIT":
+		  case "ROLE_SCOPED":
 		  case "ORGANIZATON_SCOPED_EXPLICIT":
 		  case "ORGANIZATION_SCOPED_IMPLICIT":
-		  case "ORGANIZATION_SCOPED_EXPLICIT":
 			  result = false;
 			  break;
 	  }
@@ -162,7 +161,7 @@
 	  template ='<li sd-tree-node ng-repeat="item in item.children" \
 					 sda-droppable-expr="ctrl.isDroppable(item)" sda-menu-items="(,)" \
 					 sda-node-id="item.uuid" sda-is-leaf="!item.children || item.children.length == 0" \
-					 sda-label="item.name"> \
+					 sda-label="item.name + item.type"> \
 					<ul> \
 						<li sd-tree-curse-fx></li> \
 					</ul> \
@@ -485,10 +484,12 @@
     
     var adminMessages = _sdI18nService.getInstance('admin-portal-messages').translate;
 
-    if (item.type === 'ORGANIZATON_SCOPED_EXPLICIT') {
+    if (item.type === 'ORGANIZATON_SCOPED_EXPLICIT' || item.type === 'ORGANIZATON_SCOPED_IMPLICIT') {
       menu.push("(createDepartment, LABEL)".replace('LABEL',
               adminMessages('views.participantMgmt.participantTree.contextMenu.createDepartment')));
-    } else if (item.type === "DEPARTMENT") {
+    } 
+    
+    else if (item.type === "DEPARTMENT") {
       menu.push("(delete, LABEL)".replace('LABEL',
               adminMessages('views.participantMgmt.participantTree.contextMenu.deleteDepartment')));
       menu.push("(modifyDepartment, LABEL)".replace('LABEL',
@@ -497,10 +498,14 @@
               adminMessages('views.participantMgmt.participantTree.contextMenu.createUser')));
       menu.push("(removeAllUsers, LABEL)".replace('LABEL',
               adminMessages('views.participantMgmt.participantTree.contextMenu.removeAllUsers')));
-    } else if (item.type === "USER") {
+      
+    } 
+    else if (item.type === "USER") {
       menu.push("(delete, LABEL)".replace('LABEL',
               adminMessages('views.participantMgmt.participantTree.contextMenu.removeUserGrant')));
-    } else {
+      
+    } 
+    else {
       menu.push("(createUser, LABEL)".replace('LABEL',
               adminMessages('views.participantMgmt.participantTree.contextMenu.createUser')));
       menu.push("(removeAllUsers, LABEL)".replace('LABEL',
