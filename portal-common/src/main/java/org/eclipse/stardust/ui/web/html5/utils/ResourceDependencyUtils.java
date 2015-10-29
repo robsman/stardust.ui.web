@@ -76,7 +76,7 @@ public class ResourceDependencyUtils
                else
                {
                   discoverAndReplaceWithLocalPath(resolver, resDep.getLibs(), rInfo);
-                  prefixResourceWebUri(resDep.getLibs(), rInfo.getResourceBaseWebUri());
+                  prefixResourceWebUri(resDep.getLibs(), rInfo.getResourceBaseWebUri() + PLUGIN_DEPENDENCY_LIBS);
                }
       
                if(CollectionUtils.isEmpty(resDep.getScripts()))
@@ -86,7 +86,7 @@ public class ResourceDependencyUtils
                }
                else
                {
-                  prefixResourceWebUri(resDep.getScripts(), rInfo.getResourceBaseWebUri());
+                  prefixResourceWebUri(resDep.getScripts(), rInfo.getResourceBaseWebUri() + PLUGIN_DEPENDENCY_SCRIPTS);
                }
       
                if(CollectionUtils.isEmpty(resDep.getStyles()))
@@ -96,7 +96,7 @@ public class ResourceDependencyUtils
                }
                else
                {
-                  prefixResourceWebUri(resDep.getStyles(), rInfo.getResourceBaseWebUri());
+                  prefixResourceWebUri(resDep.getStyles(), rInfo.getResourceBaseWebUri() + PLUGIN_DEPENDENCY_STYLES);
                }
       
                resourceDependencies.add(resDep);
@@ -300,6 +300,11 @@ public class ResourceDependencyUtils
     */
    private static void prefixResourceWebUri(List<WebResource> list, String prefix)
    {
+      if (!prefix.endsWith("/"))
+      {
+         prefix += "/";
+      }
+
       for(int i = 0; i < list.size(); i++)
       {
          WebResource webResource = list.get(i);
