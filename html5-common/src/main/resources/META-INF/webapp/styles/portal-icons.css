@@ -188,7 +188,7 @@ portal icon badging stem, duped from starclipse
 }
 
 /*Elements (other than i) designed to incorporate pi*/
-button.pi{
+button.pi, .pi a{
 	background:transparent;
 	border:none;
 	cursor:pointer;
@@ -196,11 +196,11 @@ button.pi{
 	padding:3px;
 }
 
-button.pi:hover, button .pi:hover{
+button.pi:hover, button .pi:hover, .pi a{
 	color:#906C37;
 }
 
-button.pi[disabled='disabled']:hover, button[disabled='disabled'] .pi:hover{
+button.pi[disabled='disabled']:hover, button[disabled='disabled'] .pi:hover, .pi a{
 	color:#A69A88;
 }
 
