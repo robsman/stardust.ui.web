@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.stardust.ui.web.plugin.utils.WebResource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -162,13 +163,14 @@ public class DumpDependencies
  * @param versionInfo
  * @return
  */
-   private String getDependencies(List<String> resourceDependencyEntries, String pluginId, String jarLocation, boolean versionInfo)
+   private String getDependencies(List<WebResource> resourceDependencyEntries, String pluginId, String jarLocation, boolean versionInfo)
    {
       StringBuilder dependencies = new StringBuilder();
       for (int i = 0; i < resourceDependencyEntries.size(); i++)
       {
          StringBuilder tempDep = new StringBuilder();
-         String reseDepEntry = resourceDependencyEntries.get(i);
+         WebResource webResource = resourceDependencyEntries.get(i);
+         String reseDepEntry = webResource.webUri;
          
          tempDep.append(SEPERATOR);
 

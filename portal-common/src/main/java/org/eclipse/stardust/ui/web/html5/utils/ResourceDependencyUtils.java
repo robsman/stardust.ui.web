@@ -24,6 +24,7 @@ import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.plugin.utils.PluginUtils;
 import org.eclipse.stardust.ui.web.plugin.utils.ResourceInfo;
+import org.eclipse.stardust.ui.web.plugin.utils.WebResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
@@ -41,7 +42,7 @@ public class ResourceDependencyUtils
    private static final String PLUGIN_DEPENDENCY_SCRIPTS = "scripts";
    private static final String PLUGIN_DEPENDENCY_STYLES = "styles";
    private static final String PLUGIN_DEPENDENCY_SKIP = "skip";
-
+  
    /**
     * @param resolver
     * @return
@@ -60,9 +61,11 @@ public class ResourceDependencyUtils
             Map<String, Object> deps = readJsonContents(rInfo);
             if (null != deps)
             {
-               ResourceDependency resDep = new ResourceDependency(rInfo.getPluginId(), rInfo.getPluginLocation(),
-                     (List<String>) deps.get(PLUGIN_DEPENDENCY_PLUGINS), (List<String>) deps.get(PLUGIN_DEPENDENCY_LIBS),
-                     (List<String>)deps.get(PLUGIN_DEPENDENCY_SCRIPTS), (List<String>)deps.get(PLUGIN_DEPENDENCY_STYLES),
+               ResourceDependency resDep = new ResourceDependency(rInfo.getPluginId(), rInfo.getPluginLocation(), rInfo.getResource(),
+                     (List<String>) deps.get(PLUGIN_DEPENDENCY_PLUGINS),
+                     getWebResourceList(rInfo, (List<String>) deps.get(PLUGIN_DEPENDENCY_LIBS)),
+                     getWebResourceList(rInfo, (List<String>)deps.get(PLUGIN_DEPENDENCY_SCRIPTS)),
+                     getWebResourceList(rInfo, (List<String>)deps.get(PLUGIN_DEPENDENCY_STYLES)),
                      (Map<String, List<String>>)deps.get(PLUGIN_DEPENDENCY_SKIP));
       
                if(CollectionUtils.isEmpty(resDep.getLibs()))
@@ -146,6 +149,30 @@ public class ResourceDependencyUtils
       });
       
       return resourceDependencies;
+   }
+
+   /**
+    * @param rInfo
+    * @param list
+    * @return
+    */
+   private static List<WebResource> getWebResourceList(ResourceInfo rInfo, List<String> list)
+   {
+      List<WebResource> webResourceList = new ArrayList<WebResource>();
+
+      for (String str : list)
+      {
+         try
+         {
+            webResourceList.add(new WebResource(str, rInfo.getResource().createRelative(str)));
+         }
+         catch(Exception e)
+         {
+            trace.error("Could not resolve " + str, e);
+         }
+      }
+
+      return webResourceList;
    }
 
    /**
@@ -244,7 +271,7 @@ public class ResourceDependencyUtils
     * @param skip
     * @return
     */
-   private static List<String> discoverPluginResources(ResourcePatternResolver resolver, ResourceInfo rInfo,
+   private static List<WebResource> discoverPluginResources(ResourcePatternResolver resolver, ResourceInfo rInfo,
          String type, String pattern, boolean asc, List<String> skip)
    {
       try
@@ -253,7 +280,7 @@ public class ResourceDependencyUtils
          String webUriBase = baseUri.substring(rInfo.getPluginBaseUri().length());
 
          // Get All Resources i.e. Resources including sub folders
-         List<String> allResources = PluginUtils.findWebResources(resolver, rInfo.getPluginId(), webUriBase, baseUri, "**/" + pattern, skip);
+         List<WebResource> allResources = PluginUtils.findWebResources(resolver, rInfo.getPluginId(), webUriBase, baseUri, "**/" + pattern, skip);
          
          // Sort
          sortByFolderHierarchy(allResources, asc);
@@ -263,7 +290,7 @@ public class ResourceDependencyUtils
       catch (Exception e)
       {
          trace.error("Could not discover plugin resources of type '" + type + "' for '" + rInfo.getPluginId() + "'", e);
-         return new ArrayList<String>();
+         return new ArrayList<WebResource>();
       }
    }
 
@@ -271,14 +298,14 @@ public class ResourceDependencyUtils
     * @param list
     * @param prefix
     */
-   private static void prefixResourceWebUri(List<String> list, String prefix)
+   private static void prefixResourceWebUri(List<WebResource> list, String prefix)
    {
       for(int i = 0; i < list.size(); i++)
       {
-         String uri = list.get(i);
-         if(null != uri && !isCdnUri(uri))
+         WebResource webResource = list.get(i);
+         if(null != webResource.webUri && !isCdnUri(webResource.webUri))
          {
-            list.set(i, prefix + uri);
+            webResource.webUri = prefix + webResource.webUri;
          }
       }
    }
@@ -288,15 +315,15 @@ public class ResourceDependencyUtils
     * @param list
     * @param rInfo
     */
-   private static void discoverAndReplaceWithLocalPath(ResourcePatternResolver resolver, List<String> list, ResourceInfo rInfo)
+   private static void discoverAndReplaceWithLocalPath(ResourcePatternResolver resolver, List<WebResource> list, ResourceInfo rInfo)
    {
       for(int i = 0; i < list.size(); i++)
       {
-         String uri = list.get(i);
-         if(null != uri && isCdnUri(uri))
+         WebResource webResource = list.get(i);
+         if(null != webResource.webUri && isCdnUri(webResource.webUri))
          {
             // URI format = //web/path/libname/version/library.js
-            List<String> uriParts = StringUtils.splitAndKeepOrder(uri, "/");
+            List<String> uriParts = StringUtils.splitAndKeepOrder(webResource.webUri, "/");
             if (uriParts.size() > 3)
             {
                String location = rInfo.getResourceBaseUri() + "libs/";
@@ -309,12 +336,12 @@ public class ResourceDependencyUtils
                   if (resource.exists())
                   {
                      String localUri = resource.getURI().toString().substring(rInfo.getResourceBaseUri().length());
-                     list.set(i, localUri);
+                     webResource.webUri = localUri;
                   }
                }
                catch (Exception e)
                {
-                  trace.warn("Unexpected error in replacing javascript with local Path for: '" + uri
+                  trace.warn("Unexpected error in replacing javascript with local Path for: '" + webResource.webUri
                         + "' under plugin: " + rInfo.getPluginId(), e);
                }
             }
@@ -335,15 +362,15 @@ public class ResourceDependencyUtils
     * @param list
     * @param asc
     */
-   private static void sortByFolderHierarchy(List<String> list, boolean asc)
+   private static void sortByFolderHierarchy(List<WebResource> list, boolean asc)
    {
-      Collections.sort(list, new Comparator<String>()
+      Collections.sort(list, new Comparator<WebResource>()
       {
          @Override
-         public int compare(String str1, String str2)
+         public int compare(WebResource wr1, WebResource wr2)
          {
-            String[] folders1 = str1.substring(0, str1.lastIndexOf("/")).split("/");
-            String[] folders2 = str2.substring(0, str2.lastIndexOf("/")).split("/");
+            String[] folders1 = wr1.webUri.substring(0, wr1.webUri.lastIndexOf("/")).split("/");
+            String[] folders2 = wr2.webUri.substring(0, wr2.webUri.lastIndexOf("/")).split("/");
 
             // Compare folders
             int length = folders1.length < folders2.length ? folders1.length : folders2.length;
@@ -360,10 +387,10 @@ public class ResourceDependencyUtils
             if (folders1.length == folders2.length)
             {
                // Compare file name without extension
-               String name1 = str1.substring(str1.lastIndexOf("/") + 1);
+               String name1 = wr1.webUri.substring(wr1.webUri.lastIndexOf("/") + 1);
                name1 = name1.substring(0, name1.lastIndexOf("."));
 
-               String name2 = str2.substring(str2.lastIndexOf("/") + 1);
+               String name2 = wr2.webUri.substring(wr2.webUri.lastIndexOf("/") + 1);
                name2 = name2.substring(0, name2.lastIndexOf("."));
                
                return name1.compareTo(name2);
@@ -392,7 +419,7 @@ public class ResourceDependencyUtils
       {
 
          ResourceDependency resDep = new ResourceDependency(rInfo.getPluginId(), rInfo.getPluginLocation(),
-               new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>(), new ArrayList<String>(), null);
+               rInfo.getResource(), null, null, null, null, null);
 
          if (CollectionUtils.isEmpty(resDep.getLibs()))
          {

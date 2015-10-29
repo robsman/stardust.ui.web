@@ -15,6 +15,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.stardust.ui.web.plugin.utils.WebResource;
+import org.springframework.core.io.Resource;
+
 /**
  * @author Subodh.Godbole
  *
@@ -23,10 +26,12 @@ public class ResourceDependency
 {
    private String pluginId;
    private String pluginLocation;
+   private Resource descriptorResource;
+   
    private List<String> portalPlugins = new ArrayList<String>();
-   private List<String> libs = new ArrayList<String>();
-   private List<String> scripts = new ArrayList<String>();
-   private List<String> styles = new ArrayList<String>();
+   private List<WebResource> libs = new ArrayList<WebResource>();
+   private List<WebResource> scripts = new ArrayList<WebResource>();
+   private List<WebResource> styles = new ArrayList<WebResource>();
    private Map<String, List<String>> skip = new HashMap<String, List<String>>();
 
    /**
@@ -46,11 +51,12 @@ public class ResourceDependency
     * @param styles
     * @param skip
     */
-   public ResourceDependency(String pluginId, String pluginLocation, List<String> portalPlugins, List<String> libs,
-         List<String> scripts, List<String> styles, Map<String, List<String>> skip)
+   public ResourceDependency(String pluginId, String pluginLocation, Resource descriptorResource, List<String> portalPlugins, List<WebResource> libs,
+         List<WebResource> scripts, List<WebResource> styles, Map<String, List<String>> skip)
    {
       this.pluginId = pluginId;
       this.pluginLocation = pluginLocation;
+      this.descriptorResource = descriptorResource;
       this.portalPlugins = portalPlugins;
       this.libs = libs;
       this.scripts = scripts;
@@ -59,17 +65,17 @@ public class ResourceDependency
 
       if (null == this.libs)
       {
-         this.libs = new ArrayList<String>();
+         this.libs = new ArrayList<WebResource>();
       }
       
       if (null == this.scripts)
       {
-         this.scripts = new ArrayList<String>();
+         this.scripts = new ArrayList<WebResource>();
       }
       
       if (null == this.styles)
       {
-         this.styles = new ArrayList<String>();
+         this.styles = new ArrayList<WebResource>();
       }
 
       if (null == this.skip)
@@ -77,7 +83,7 @@ public class ResourceDependency
          this.skip = new HashMap<String, List<String>>();
       }
    }
-
+   
    public String getPluginId()
    {
       return pluginId;
@@ -88,6 +94,11 @@ public class ResourceDependency
       return pluginLocation;
    }
 
+   public Resource getDescriptorResource()
+   {
+      return descriptorResource;
+   }
+   
    public List<String> getPortalPlugins()
    {
       return portalPlugins;
@@ -98,32 +109,32 @@ public class ResourceDependency
       this.portalPlugins = portalPlugins;
    }
 
-   public List<String> getLibs()
+   public List<WebResource> getLibs()
    {
       return libs;
    }
 
-   public void setLibs(List<String> libs)
+   public void setLibs(List<WebResource> libs)
    {
       this.libs = libs;
    }
 
-   public List<String> getScripts()
+   public List<WebResource> getScripts()
    {
       return scripts;
    }
 
-   public void setScripts(List<String> scripts)
+   public void setScripts(List<WebResource> scripts)
    {
       this.scripts = scripts;
    }
 
-   public List<String> getStyles()
+   public List<WebResource> getStyles()
    {
       return styles;
    }
 
-   public void setStyles(List<String> styles)
+   public void setStyles(List<WebResource> styles)
    {
       this.styles = styles;
    }
