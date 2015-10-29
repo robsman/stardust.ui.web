@@ -571,7 +571,8 @@ Icon implementations
 /*Process Overview Table*/
 .pi-process-abort:before,
 .pi-abort:before,
-.pi-close:before{
+.pi-close:before,
+.pi-decline:before{
 	font-family: 'FontAwesome';
 	content: "\f00d"; /* fa-times */
 }
@@ -1296,7 +1297,8 @@ span.pi-case:before{
 	content: "\f1ac"; /* fa-fax */
 }
 
-.pi-check:before{
+.pi-check:before,
+.pi-accept:before{
 	font-family:"FontAwesome";
 	content:'\f00c'; /* fa-check */
 }

@@ -74,15 +74,13 @@
 
 									<ice:commandLink
 										action="#{caseDetailsBean.updateProcessName}">
-										<h:graphicImage
-											value="/plugins/views-common/images/icons/button_bid_accept.gif"
-											style="border: none;" />
+										<ice:outputText
+											styleClass="pi pi-accept pi-lg" />
 									</ice:commandLink>
 									<ice:commandLink
 										action="#{caseDetailsBean.cancelEditProcessName}">
-										<h:graphicImage
-											value="/plugins/views-common/images/icons/button_bid_decline.gif"
-											style="border: none;" />
+										<ice:outputText
+											styleClass="pi pi-decline pi-lg" />
 									</ice:commandLink>
 
 								</ice:panelGroup>
@@ -155,15 +153,13 @@
 								<ice:panelGroup rendered="#{caseDetailsBean.editDescription}">
 									<pc:automationTag value="auto-COM-CaseDetView-EditDescriptionBtnsBar"/>
 									<ice:commandLink action="#{caseDetailsBean.updateDescription}">
-										<h:graphicImage
-											value="/plugins/views-common/images/icons/button_bid_accept.gif"
-											style="border: none;" />
+										<ice:outputText
+											styleClass="pi pi-accept pi-lg" />
 									</ice:commandLink>
 									<ice:commandLink
 										action="#{caseDetailsBean.cancelEditDescription}">
-										<h:graphicImage
-											value="/plugins/views-common/images/icons/button_bid_decline.gif"
-											style="border: none;" />
+										<ice:outputText
+											styleClass="pi pi-decline pi-lg" />
 									</ice:commandLink>
 
 								</ice:panelGroup>
