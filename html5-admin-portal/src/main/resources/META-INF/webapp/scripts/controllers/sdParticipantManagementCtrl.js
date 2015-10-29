@@ -479,7 +479,7 @@
     var item = menuData.item;
 
     // model node guard logic
-    if (!item.type) menuData.deferred.reject();
+    if (!item.type || (item.type === "USERGROUPS")) menuData.deferred.reject();
     
     var menu = [];
     
