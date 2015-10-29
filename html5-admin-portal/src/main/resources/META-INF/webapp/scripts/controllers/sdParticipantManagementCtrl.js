@@ -161,7 +161,7 @@
 	  template ='<li sd-tree-node ng-repeat="item in item.children" \
 					 sda-droppable-expr="ctrl.isDroppable(item)" sda-menu-items="(,)" \
 					 sda-node-id="item.uuid" sda-is-leaf="!item.children || item.children.length == 0" \
-					 sda-label="item.name + item.type"> \
+					 sda-label="item.name"> \
 					<ul> \
 						<li sd-tree-curse-fx></li> \
 					</ul> \
@@ -483,29 +483,30 @@
     var menu = [];
     
     var adminMessages = _sdI18nService.getInstance('admin-portal-messages').translate;
-
+    
+    //Remove
+    if (item.type === "USER") {
+        menu.push("(delete, LABEL)".replace('LABEL',
+                adminMessages('views.participantMgmt.participantTree.contextMenu.removeUserGrant')));
+    }
+    
+    //Create Department
     if (item.type === 'ORGANIZATON_SCOPED_EXPLICIT' || item.type === 'ORGANIZATON_SCOPED_IMPLICIT') {
       menu.push("(createDepartment, LABEL)".replace('LABEL',
               adminMessages('views.participantMgmt.participantTree.contextMenu.createDepartment')));
     } 
     
-    else if (item.type === "DEPARTMENT") {
+    //Delete Department , Modify Department
+    if (item.type === "DEPARTMENT") {
       menu.push("(delete, LABEL)".replace('LABEL',
               adminMessages('views.participantMgmt.participantTree.contextMenu.deleteDepartment')));
       menu.push("(modifyDepartment, LABEL)".replace('LABEL',
               adminMessages('views.participantMgmt.participantTree.contextMenu.modifyDepartment')));
-      menu.push("(createUser, LABEL)".replace('LABEL',
-              adminMessages('views.participantMgmt.participantTree.contextMenu.createUser')));
-      menu.push("(removeAllUsers, LABEL)".replace('LABEL',
-              adminMessages('views.participantMgmt.participantTree.contextMenu.removeAllUsers')));
-      
     } 
-    else if (item.type === "USER") {
-      menu.push("(delete, LABEL)".replace('LABEL',
-              adminMessages('views.participantMgmt.participantTree.contextMenu.removeUserGrant')));
-      
-    } 
-    else {
+
+    //Create User, Remove all users
+    if (item.type==="DEPARTMENT" || item.type === "DEPARTMENT_DEFAULT" || item.type==="ROLE_SCOPED" || 
+    	item.type==="ROLE_UNSCOPED" || item.type==="ORGANIZATION_UNSCOPED"){
       menu.push("(createUser, LABEL)".replace('LABEL',
               adminMessages('views.participantMgmt.participantTree.contextMenu.createUser')));
       menu.push("(removeAllUsers, LABEL)".replace('LABEL',
