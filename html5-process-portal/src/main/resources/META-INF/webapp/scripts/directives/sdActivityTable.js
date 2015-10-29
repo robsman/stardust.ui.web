@@ -439,7 +439,7 @@
 	     */
 	    self.openAbortPopover = function(event, rowItem) {
 	    	var selectedItems = [];
-	    	if (angular.isDefined(rowItem) && rowItem !=null) {
+	    	if (angular.isDefined(rowItem)) {
 	    		selectedItems = [ rowItem ];
 	    	} else {
 	    		selectedItems = self.dataTable.getSelection();

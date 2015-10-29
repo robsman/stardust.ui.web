@@ -182,6 +182,14 @@ span.heading{
 	color: #333 !important;
 }
 
+.popup-error-icon {
+	color: red;
+	font-size: 2.27em;
+}
+
+.popup-info-icon {
+	font-size: 2.27em;
+}
 
 .popup-warning-icon {
 	font-size: 2.27em;
@@ -512,11 +520,7 @@ button.close {
     white-space: normal !important;
 }
 
+
 .spacing-right {
 	margin-right: 5px;
-}
-
-.clearing {
-	clear: both;
-	height: 10px;
 }

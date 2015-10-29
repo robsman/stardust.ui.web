@@ -134,7 +134,7 @@
 			    }
 			    var html = '<table style="width : 100%">'+
 			    '<tr>'+
-			    '<td style="width : 15% ; align:center"><i  class="pi pi-dialog-error msg-error pi-2x" ></i> </td>'+
+			    '<td style="width : 15% ; align:center"><i  class="glyphicon glyphicon-remove-sign popup-error-icon" ></i> </td>'+
 			    '<td style="width : 85%">'+message +'</td>'+
 			    '</tr>'+
 			    '</table>';
@@ -149,7 +149,7 @@
 
 			    var html = '<table style="width : 100%">'+
 			    '<tr>'+
-			    '<td style="width : 15% ; align:center"><i  class="pi pi-dialog-info pi-2x" ></i> </td>'+
+			    '<td style="width : 15% ; align:center"><i  class="sc sc-info-circle popup-info-icon pi-lg" ></i> </td>'+
 			    '<td style="width : 85%">'+message +'</td>'+
 			    '</tr>'+
 			    '</table>' 

@@ -215,6 +215,7 @@
 
 .dataTables_info {
    font-size: .82em;
+   color: #999999 !important
 }
 
 .paging_full_numbers a.paginate_button, .paging_full_numbers a.paginate_active {
