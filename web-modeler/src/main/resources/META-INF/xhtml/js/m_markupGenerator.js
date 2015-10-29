@@ -237,6 +237,8 @@ define(
 					writeTag("injectJS(head, baseUrl + '/plugins/views-common/js/libs/require/2.1.15/require.min.js');");
 					writeTag("injectJS(head, baseUrl + '/plugins/processportal/js/manualActivityServerSupport.js');");
 					writeTag("injectCSS(head, baseUrl + '/plugins/views-common/css/thirdparty/jquery/jquery-ui-1.10.2.custom.css');");
+					writeTag("injectCSS(head, baseUrl + '/plugins/html5-common/styles/3rd-party/font-awesome/4.4.0/css/font-awesome.min.css');");
+					writeTag("injectCSS(head, baseUrl + '/plugins/html5-common/styles/portal-icons.css');");
 					writeTag("injectCSS(head, baseUrl + '/plugins/processportal/css/bpm-form.css');");
 
 					writeTag("         if (isMobile) {");
