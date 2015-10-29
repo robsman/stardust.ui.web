@@ -433,13 +433,17 @@ public class ActivityInstanceUtils
                if (null != dataId)
                {
                   Map<String, Serializable> data = null;
+                  // Primitive IN dataMapping, dataPath not required
                   if (null == dataPathId)
                   {
-                     data = workflowService.getInDataPaths(ai.getProcessInstanceOID(), null);
+                     Object value = workflowService.getInDataValue(ai.getOID(), PredefinedConstants.DEFAULT_CONTEXT,
+                           dataId);
+                     return getTimestampValue(value, ai);
 
                   }
                   else
                   {
+                     // Structured IN dataMapping
                      data = (Map<String, Serializable>) workflowService.getInDataValue(ai.getOID(),
                            PredefinedConstants.DEFAULT_CONTEXT, dataId);
                   }
@@ -448,24 +452,10 @@ public class ActivityInstanceUtils
                      for (Entry<String, Serializable> dataMap : data.entrySet())
                      {
                         String key = dataMap.getKey();
-                        if (key.equals(dataPathId) || key.equals(dataId))
+                        if (key.equals(dataPathId))
                         {
                            Object value = dataMap.getValue();
-                           Date targetTimeStamp = null;
-                           if (value instanceof Date)
-                           {
-                              targetTimeStamp = ((Date) value);
-                           }
-                           else if (value instanceof Long)
-                           {
-                              targetTimeStamp = new Date((Long) value);
-                           }
-                           else if (value instanceof Period)
-                           {
-                              dateTime = PortalTimestampProvider.getCalendar(ai.getStartTime());
-                              targetTimeStamp = ((Period) value).add(dateTime).getTime();
-                           }
-                           return targetTimeStamp;
+                           return getTimestampValue(value, ai);
                         }
                      }
                   }
@@ -1103,5 +1093,30 @@ public class ActivityInstanceUtils
          }
       }
       return value;
+   }
+   
+   /**
+    * 
+    * @param value
+    * @param ai
+    * @return
+    */
+   private static Date getTimestampValue(Object value, ActivityInstance ai)
+   {
+      Date targetTimeStamp = null;
+      if (value instanceof Date)
+      {
+         targetTimeStamp = ((Date) value);
+      }
+      else if (value instanceof Long)
+      {
+         targetTimeStamp = new Date((Long) value);
+      }
+      else if (value instanceof Period)
+      {
+         Calendar dateTime = PortalTimestampProvider.getCalendar(ai.getStartTime());
+         targetTimeStamp = ((Period) value).add(dateTime).getTime();
+      }
+      return targetTimeStamp;
    }
 }
