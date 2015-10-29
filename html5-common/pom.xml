@@ -15,6 +15,31 @@
       <relativePath>../../product/product-parent/pom.xml</relativePath>
    </parent>
 
-   <dependencies />
+   <properties>
+      <skip.web.file.concatenation>false</skip.web.file.concatenation>
+   </properties>
+
+   <dependencies>
+      <dependency>
+         <groupId>org.eclipse.stardust.ui.web</groupId>
+         <artifactId>ipp-portal-common</artifactId>
+         <version>${project.version}</version>
+         <scope>runtime</scope>
+      </dependency>
+   </dependencies>
+
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>concatenate-web-files</id>
+               </execution>
+            </executions>
+         </plugin>
+      </plugins>
+   </build>
 
 </project>

@@ -42,7 +42,19 @@ public class ConcatDependencies
     */
    public static void main(String[] args) throws Exception
    {
-      ConcatDependencies deps = new ConcatDependencies(args[0], args[1]);
+      String resourceDir;
+      String targetDir;
+      
+      if(args.length == 1)
+      {
+         resourceDir = targetDir = args[0];
+      }
+      else
+      {
+         resourceDir = args[0];
+         targetDir = args[1];
+      }
+      ConcatDependencies deps = new ConcatDependencies(resourceDir, targetDir);
       deps.discover();
    }
 
@@ -50,13 +62,11 @@ public class ConcatDependencies
     * @param relativeResourceDir
     * @param relativeTargetDir
     */
-   private ConcatDependencies(String relativeResourceDir, String relativeTargetDir)
+   private ConcatDependencies(String resourceDir, String targetDir)
    {
-      String currentDir = System.getProperty("user.dir");
-
-      fileSeparator = System.getProperty("file.separator");
-      resourceDir = currentDir + fileSeparator + relativeResourceDir;
-      targetDir = currentDir + fileSeparator + relativeTargetDir;
+      this.fileSeparator = System.getProperty("file.separator");
+      this.resourceDir = resourceDir;
+      this.targetDir = targetDir;
 
       System.out.println("Resource Directory = " + resourceDir);
       System.out.println("Target Directory = " + targetDir);
@@ -74,70 +84,63 @@ public class ConcatDependencies
       // This will have 2 entries, one portal-common and one from current folder
       List<ResourceDependency> pluginDeps = ResourceDependencyUtils.discoverDependencies(context);
 
-      // Remove portal-common from here, first occurrence
-      if (pluginDeps.size() > 0 && pluginDeps.size() <= 2)
+      Iterator<ResourceDependency> it = pluginDeps.iterator();
+      while (it.hasNext())
       {
-         if (pluginDeps.size() == 2)
+         ResourceDependency dep = it.next();
+         if(dep.getDescriptorResource().getURL().getProtocol().equals("jar"))
          {
-            Iterator<ResourceDependency> it = pluginDeps.iterator();
-            while (it.hasNext())
-            {
-               if ("common".equals(it.next().getPluginId()))
-               {
-                  it.remove();
-                  break;
-               }
-            }
+            // we're not interested in plugins which resides in JARs
+            it.remove();
+         }
+      }
+      if (pluginDeps.size() == 1)
+      {
+         ResourceDependency resDep = pluginDeps.get(0);
+
+         String descriptorFileDirPath = resDep.getDescriptorResource().getFile().getParentFile().getAbsolutePath();
+         System.out.println("descriptorFileDirPath = " + descriptorFileDirPath);
+         descriptorFileDirPath = descriptorFileDirPath.replace(resourceDir, targetDir);
+         System.out.println("descriptorFileDirPath = " + descriptorFileDirPath);
+
+         if (resDep.getLibs().size() > 0)
+         {
+            System.out.println("Concatinating libs...");
+            File libDir = new File(descriptorFileDirPath + fileSeparator + "libs");
+            libDir.mkdirs();
+            File libFile = new File(libDir, "all-resources.js");
+            PluginUtils.writeResource(libFile, concatAllResources(resDep.getLibs()));
          }
 
-         if (pluginDeps.size() == 1)
+         if (resDep.getScripts().size() > 0)
          {
-            ResourceDependency resDep = pluginDeps.get(0);
-
-            String descriptorFileDirPath = resDep.getDescriptorResource().getFile().getParentFile().getAbsolutePath();
-            System.out.println("descriptorFileDirPath = " + descriptorFileDirPath);
-            descriptorFileDirPath = descriptorFileDirPath.replace(resourceDir, targetDir);
-            System.out.println("descriptorFileDirPath = " + descriptorFileDirPath);
-
-            if (resDep.getLibs().size() > 0)
-            {
-               System.out.println("Concatinating libs...");
-               File libDir = new File(descriptorFileDirPath + fileSeparator + "libs");
-               libDir.mkdirs();
-               File libFile = new File(libDir, "all-resources.js");
-               PluginUtils.writeResource(libFile, concatAllResources(resDep.getLibs()));
-            }
-   
-            if (resDep.getScripts().size() > 0)
-            {
-               System.out.println("Concatinating scripts...");
-               File scriptDir = new File(descriptorFileDirPath + fileSeparator + "scripts");
-               scriptDir.mkdirs();
-               File scriptFile = new File(scriptDir, "all-resources.js");
-               PluginUtils.writeResource(scriptFile, concatAllResources(resDep.getScripts()));
-            }
-   
-            if (resDep.getStyles().size() > 0)
-            {
-               System.out.println("Concatinating styles...");
-               File styleDir = new File(descriptorFileDirPath + fileSeparator + "styles");
-               styleDir.mkdirs();
-               File styleFile = new File(styleDir, "all-resources.css");
-               PluginUtils.writeResource(styleFile, concatAllResources(resDep.getStyles()));
-            }
-            
-            String jsonDescriptor = PluginUtils.readResource(resDep.getDescriptorResource());
-            File orgDescriptorFile = new File(descriptorFileDirPath, "portal-plugin-dependencies-org.json");
-            PluginUtils.writeResource(orgDescriptorFile, jsonDescriptor);
-   
-            JsonObject descriptor = GsonUtils.readJsonObject(jsonDescriptor);
-            defaultDescriptor.add("portal-plugins", descriptor.get("portal-plugins"));
-            File descriptorFile = new File(descriptorFileDirPath, "portal-plugin-dependencies.json");
-            PluginUtils.writeResource(descriptorFile, defaultDescriptor.toString());
-   
-            System.out.println("Concatination Completed...");
-            success = true;
+            System.out.println("Concatinating scripts...");
+            File scriptDir = new File(descriptorFileDirPath + fileSeparator + "scripts");
+            scriptDir.mkdirs();
+            File scriptFile = new File(scriptDir, "all-resources.js");
+            PluginUtils.writeResource(scriptFile, concatAllResources(resDep.getScripts()));
          }
+
+         if (resDep.getStyles().size() > 0)
+         {
+            System.out.println("Concatinating styles...");
+            File styleDir = new File(descriptorFileDirPath + fileSeparator + "styles");
+            styleDir.mkdirs();
+            File styleFile = new File(styleDir, "all-resources.css");
+            PluginUtils.writeResource(styleFile, concatAllResources(resDep.getStyles()));
+         }
+         
+         String jsonDescriptor = PluginUtils.readResource(resDep.getDescriptorResource());
+         File orgDescriptorFile = new File(descriptorFileDirPath, "portal-plugin-dependencies-org.json");
+         PluginUtils.writeResource(orgDescriptorFile, jsonDescriptor);
+
+         JsonObject descriptor = GsonUtils.readJsonObject(jsonDescriptor);
+         defaultDescriptor.add("portal-plugins", descriptor.get("portal-plugins"));
+         File descriptorFile = new File(descriptorFileDirPath, "portal-plugin-dependencies.json");
+         PluginUtils.writeResource(descriptorFile, defaultDescriptor.toString());
+
+         System.out.println("Concatination Completed...");
+         success = true;
       }
       else
       {
