@@ -15,19 +15,27 @@
   'use strict';
 
   angular.module("viewscommon-ui").controller('sdCorrespondenceViewCtrl',
-          ['$scope', 'sdUtilService', 'sdFolderService', 'sdI18nService', '$parse','sdLoggerService', Controller]);
+          ['$scope', 'sdUtilService', 'sdFolderService', 'sdI18nService', '$parse','sdLoggerService', 'sdPreferenceService', Controller]);
 
   var _sdFolderService = null;
   var _sdI18nService = null;
   var _parse = null;
   var trace = null;
+  var  FAX_FORMAT_NUMBER = null;
+  var config = null;
+  var _sdPreferenceService = null;
+  var _sdUtilService = null;
+  
+  
   /*
    * 
    */
-  function Controller($scope, sdUtilService, sdFolderService, sdI18nService, $parse, sdLoggerService) {
+  function Controller($scope, sdUtilService, sdFolderService, sdI18nService, $parse, sdLoggerService, sdPreferenceService) {
     this.readOnly = true;
     _sdI18nService = sdI18nService;
     _sdFolderService = sdFolderService;
+    _sdPreferenceService = sdPreferenceService;
+    _sdUtilService = sdUtilService;
     _parse = $parse;
     trace = sdLoggerService.getLogger('bpm-common.sdCorrespondenceViewCtrl');
     
@@ -40,6 +48,9 @@
     }];
 
     this.selected = {};
+    
+    this.fetchPreference();
+    FAX_FORMAT_NUMBER = this.geFaxNumberFormat();
 
     this.documentParams = {
       disableSaveAction: true
@@ -48,6 +59,9 @@
     this.populateCorrespondenceData($scope);
   }
 
+  /**
+   * 
+   */
   Controller.prototype.populateCorrespondenceData = function($scope) {
     var ctrl = this;
     var queryGetter = _parse("panel.params.custom");
@@ -60,7 +74,33 @@
       trace.error("Couldnt Retrive Folder ID");
     }
   };
+  
+  /**
+   * 
+   */
+  Controller.prototype.fetchPreference = function (){
+	  var moduleId = 'ipp-views-common';
+	  var preferenceId = 'preference';
+	  var scope = 'PARTITION';
+	  config =  _sdPreferenceService.getStore(scope, moduleId, preferenceId);
+	  config.fetch();
+  }
 
+
+  /**
+   * 
+   */
+  Controller.prototype.geFaxNumberFormat = function (){
+	  var fromParent = false;
+	  var format = config.getValue('ipp-views-common.correspondencePanel.prefs.correspondence.numberFormat', fromParent);
+	  if(format){
+		  FAX_NUMBER_FORMAT =  new RegExp(format);
+	  }
+  }
+
+  /**
+   * 
+   */
   Controller.prototype.addressIconMapper = function(item, index) {
     var tagClass = "pi pi-email"
 
@@ -128,7 +168,7 @@
 			var add = {
 				name : data.DataPath,
 				value : data.Address,
-				type  : "email"  //Method required to Determine type
+				type  : _sdUtilService.isFaxNumber(data.Address,FAX_FORMAT_NUMBER) ? "fax" :"email" 
 			}
 			
 			if(data.Channel == "EMAIL_TO") {
@@ -167,7 +207,7 @@
 	 * 
 	 */
   function isEmail(uiData) {
-    if (uiData && (uiData.to.length > 0  || uiData.bcc.length > 0  || uiData.cc.length > 0 )) { return true }
+    if (uiData && (uiData.to.length > 0  || uiData.bcc.length > 0  || uiData.cc.length > 0 || uiData.subject.trim().length > 0 )) { return true }
     return false;
   }
 

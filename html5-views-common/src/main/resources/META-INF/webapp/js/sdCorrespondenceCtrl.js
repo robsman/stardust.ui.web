@@ -24,6 +24,8 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	var _parse = null;
 	var _sdViewUtilService = null;
 	var trace = null;
+	var config = null;
+	var FAX_NUMBER_FORMAT =  "";
 
 	var filesToUpload = [];
 	var VALID_TEMPLATE_FORMATS = ['text/plain' , 'text/html'];
@@ -107,16 +109,9 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 				convertToPdf : false
 		};
 		
-		var preferedCorrespondenceType = this.getDefaultCorrespondenceType();
-		
-
-		if (preferedCorrespondenceType) {
-			if (preferedCorrespondenceType == 'Print') {
-				this.selected.type = 'print'
-			} else {
-				this.selected.type = 'email';
-			}
-		}
+		this.fetchPreference();
+		this.selected.type  = this.getDefaultCorrespondenceType();
+		this.geFaxNumberFormat();
 
 		this.dialog ={
 				selectedAddresses : [],
@@ -204,16 +199,42 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	/**
 	 * 
 	 */
-	CorrespondenceCtrl.prototype.getDefaultCorrespondenceType = function (){
+	CorrespondenceCtrl.prototype.fetchPreference = function (){
 		    var moduleId = 'ipp-views-common';
 		    var preferenceId = 'preference';
 		    var scope = 'PARTITION';
-		    var config =  _sdPreferenceService.getStore(scope, moduleId, preferenceId);
+		    config =  _sdPreferenceService.getStore(scope, moduleId, preferenceId);
 		    config.fetch();
-		    var fromParent = false;
-		    var type = config.getValue('ipp-views-common.correspondencePanel.prefs.correspondence.defaultType', fromParent);
-		    return type;
-	}
+	};
+	
+	/**
+	 * 
+	 */
+	CorrespondenceCtrl.prototype.getDefaultCorrespondenceType = function (){
+		   var fromParent = false;
+		   var type = config.getValue('ipp-views-common.correspondencePanel.prefs.correspondence.defaultType', fromParent);
+		  
+		   if (type) {
+				if (type == 'Print') {
+					return 'print'
+				} else {
+					return 'email';
+				}
+			}
+		   return this.selected.type;
+	};
+	
+	/**
+	 * 
+	 */
+	CorrespondenceCtrl.prototype.geFaxNumberFormat = function (){
+		   var fromParent = false;
+		   var format = config.getValue('ipp-views-common.correspondencePanel.prefs.correspondence.numberFormat', fromParent);
+		   if(format){
+			   FAX_NUMBER_FORMAT =  new RegExp(format);
+		   }
+		   trace.log("Fax number format : ",FAX_NUMBER_FORMAT);
+	};
 	/**
 	 * 
 	 */
@@ -346,8 +367,9 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		return outAttachments;
 	}
 
-	
-	//TODO determine if a address is email or fax ? 
+	/**
+	 * 
+	 */
 	function formatInDataAddress(uiData, addresses){
 		uiData.to = []
 		uiData.bcc = [];
@@ -357,7 +379,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 			var add = {
 				name : data.DataPath,
 				value : data.Address,
-				type  : "email"
+				type  : _sdCorrespondenceService.determineAddressType(data.Address, FAX_NUMBER_FORMAT)
 			}
 			
 			if(data.Channel == "EMAIL_TO") {
@@ -674,7 +696,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		var newEntry = {
 				name : val,
 				value : val,
-				type : "email"
+				type : _sdCorrespondenceService.determineAddressType(val, FAX_NUMBER_FORMAT)
 		};
 
 		return newEntry;
@@ -1086,6 +1108,5 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 			.controller("sdCorrespondenceCtrl", CorrespondenceCtrl);
 		}
 	};
-
 
 });
