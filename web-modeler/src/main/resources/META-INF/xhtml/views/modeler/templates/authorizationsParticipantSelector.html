@@ -8,6 +8,10 @@
 			value="{{ctrl.i18n('authorization.participants.addAll')}}"
 			ng-click="ctrl.addAllParticipantsToPermissions()" /> <input
 			type="button"
+			ng-if="ctrl.supportsOwner"
+			value="{{ctrl.i18n('authorization.participants.addOwner')}}"
+			ng-click="ctrl.addOwnerToPermissions()" /> <input
+			type="button"
 			value="{{ctrl.i18n('authorization.participants.restoreDefaults')}}"
 			ng-click="ctrl.restorePermissionDefaults()" />
 	</div>
