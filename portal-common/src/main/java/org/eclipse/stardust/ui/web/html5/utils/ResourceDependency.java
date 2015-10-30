@@ -63,6 +63,11 @@ public class ResourceDependency
       this.styles = styles;
       this.skip = skip;
 
+      if (null == this.portalPlugins)
+      {
+         this.portalPlugins = new ArrayList<String>();
+      }
+
       if (null == this.libs)
       {
          this.libs = new ArrayList<WebResource>();
