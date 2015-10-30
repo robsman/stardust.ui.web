@@ -193,8 +193,9 @@
 			if(data.Name && data.Name.length > 1) {
 				outAttachments.push({
 					documentId :  data.OutgoingDocumentID,
-					templateDocumentId : data.TemplateID,
 					name : data.Name,
+					path: data.OutgoingDocumentID,
+					uuid: data.OutgoingDocumentID,
 					convertToPdf:data.ConvertToPDF
 				});
 			}
