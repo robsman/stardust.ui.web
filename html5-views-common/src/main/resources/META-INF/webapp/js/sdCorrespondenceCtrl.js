@@ -290,7 +290,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		
 		trace.log("Data from structured data",data);
 		
-		uiData.type =  data.Recipients_asArray ? (data.Recipients_asArray.length > 0 ? "email" : "print") : "print";
+		uiData.type =  data.Recipients_asArray ? (data.Recipients_asArray.length > 0 ? "email" : uiData.type) : uiData.type;
 		
 		if(uiData.type == 'email'){
 			uiData = formatInDataAddress(uiData, data.Recipients_asArray)
