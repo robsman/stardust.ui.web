@@ -247,36 +247,38 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	 */
 	function preparePostData(uiData) {
 
-
 		var postData = {
 				"CORRESPONDENCE_REQUEST" : {
-					"Type" : _filter('uppercase')(uiData.type),
-					"ProcessInstanceOID" : uiData.piOid,
 					"Subject" :uiData.subject,
-					"MessageBody" : uiData.content
+					"MessageBody" : uiData.content,
+					"MessageBodyFormat" : "HTML"
 				}
 		};
+			
 
 		if(uiData.type == 'email') {
-			var to = formatOutDataAddress(uiData.to);
+			
+			postData.CORRESPONDENCE_REQUEST.Recipients = [];
+			
+			var to = formatOutDataAddress(uiData.to, "EMAIL_TO");
 			if(to && to.length > 0) {
-				postData.CORRESPONDENCE_REQUEST.To = to
+				postData.CORRESPONDENCE_REQUEST.Recipients = postData.CORRESPONDENCE_REQUEST.Recipients.concat(to);
 			}
 
-			var bcc = formatOutDataAddress(uiData.bcc);
+			var bcc = formatOutDataAddress(uiData.bcc, "EMAIL_BCC");
 			if(bcc && bcc.length > 0) {
-				postData.CORRESPONDENCE_REQUEST.BCC = bcc
+				postData.CORRESPONDENCE_REQUEST.Recipients = postData.CORRESPONDENCE_REQUEST.Recipients.concat(bcc);
 			}
 
-			var cc = formatOutDataAddress(uiData.cc);
+			var cc = formatOutDataAddress(uiData.cc, "EMAIL_CC");
 			if(cc && cc.length > 0) {
-				postData.CORRESPONDENCE_REQUEST.CC = cc
+				postData.CORRESPONDENCE_REQUEST.Recipients = postData.CORRESPONDENCE_REQUEST.Recipients.concat(cc);
 			}
 		}
 		
 		if(uiData.attachments && uiData.attachments.length > 0){
 			var formated_attachments = formatOutDataAttachments(uiData.attachments);
-			postData.CORRESPONDENCE_REQUEST.Attachments = formated_attachments
+			postData.CORRESPONDENCE_REQUEST.Documents = formated_attachments
 		}
 		return postData;
 	}
@@ -288,37 +290,36 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		
 		trace.log("Data from structured data",data);
 		
-		uiData.type = data.Type ? angular.lowercase(data.Type.__text) : uiData.type ;
+		uiData.type =  data.Recipients_asArray ? (data.Recipients_asArray.length > 0 ? "email" : "print") : "print";
+		
 		if(uiData.type == 'email'){
-			uiData.to = data.To ? formatInDataAddress(data.To_asArray) : uiData.to ;
-			uiData.bcc = data.BCC_asArray ? formatInDataAddress(data.BCC_asArray) :uiData.bcc ;
-			uiData.cc =  data.CC_asArray ?formatInDataAddress(data.CC_asArray) : uiData.cc;
+			uiData = formatInDataAddress(uiData, data.Recipients_asArray)
 			uiData.subject = data.Subject ? data.Subject.__text :	uiData.subject ;
 		}
 
-    uiData.content =  data.MessageBody?  data.MessageBody.__text :  uiData.content;
+		uiData.content =  data.MessageBody ?  data.MessageBody.__text :  uiData.content;
 	
 	  //Reason for using join -
     //xml2JS.js google library is used to converts xml received from server to json in interaction.js
     //this conversion yields MessageBody.__text as an array instead of a string in case of Firefox browser.  
-    if (angular.isArray(uiData.content)) {
-      uiData.content = uiData.content.join("");
-    }
-		
-		uiData.attachments =data.Attachments_asArray ? formatInDataAttachments(data.Attachments_asArray): uiData.attachments;
-
-		if(uiData.bcc ){
-			uiData.showBcc = uiData.bcc.length > 0
-		}
-
-		if(uiData.cc ){
-			uiData.showCc =uiData.cc.length > 0
-		}
-
-   	uiData.fieldMetaData = {
-      "fields": data.FieldMetaData_asArray ? formatInDataFieldsMetaData(data.FieldMetaData_asArray) : []
-    };
-		
+	    if (angular.isArray(uiData.content)) {
+	      uiData.content = uiData.content.join("");
+	    }
+			
+			uiData.attachments = data.Documents_asArray ? formatInDataAttachments(data.Documents_asArray): uiData.attachments;
+	
+			if(uiData.bcc ){
+				uiData.showBcc = uiData.bcc.length > 0
+			}
+	
+			if(uiData.cc ){
+				uiData.showCc =uiData.cc.length > 0
+			}
+	
+	   	uiData.fieldMetaData = {
+	      "fields": data.FieldMetaData_asArray ? formatInDataFieldsMetaData(data.FieldMetaData_asArray) : []
+	    };
+			
 		trace.log("Data after conversion to ui format",uiData);
 		return uiData;
 	}
@@ -329,48 +330,60 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	function formatOutDataAttachments( attachments ){
 		var outAttachments = []; 
 		angular.forEach(attachments,function(data){
-			var templateDocumentId = data.templateDocumentId ?  data.templateDocumentId : data.documentId;
+			var templateDocumentId = data.templateDocumentId ?  data.templateDocumentId : "";
 			outAttachments.push({
-				DocumentId : data.documentId,
-				TemplateDocumentId :templateDocumentId,
+			    OutgoingDocumentID : data.documentId,
+				TemplateID :templateDocumentId,
 				Name : data.name,
-				ConvertToPdf :data.convertToPdf ? true : false 
+				ConvertToPDF :data.convertToPdf ? true : false,
+				IsAttachment : true,
+				Required :false,
+				Accepted :false,
+				RequestedDate : new Date()
+				
 			});
 		});
 		return outAttachments;
 	}
 
-	/**
-	 * 
-	 */
-	function formatInDataAddress(addresses){
-		var outAddresses = []; 
+	
+	//TODO determine if a address is email or fax ? 
+	function formatInDataAddress(uiData, addresses){
+		uiData.to = []
+		uiData.bcc = [];
+		uiData.cc = [];
 		angular.forEach(addresses,function(data){
-			if(data.Address && data.Address.length > 1) {
-				var type = "email";
-				if(data.IsFax == "true") {
-					type = "fax";
-				}
-				outAddresses.push( {
-					name : data.DataPath,
-					value : data.Address,
-					type  : type
-				});
+			
+			var add = {
+				name : data.DataPath,
+				value : data.Address,
+				type  : "email"
 			}
+			
+			if(data.Channel == "EMAIL_TO") {
+				uiData.to.push(add);
+			}
+			else if(data.Channel == "EMAIL_CC") {
+				uiData.cc.push(add);
+			}
+			else if(data.Channel == "EMAIL_BCC") {
+				uiData.bcc.push(add);
+			}
+			
 		});
-		return outAddresses;
+		return uiData;
 	}
 
 	/**
 	 * 
 	 */
-	function formatOutDataAddress(addresses){
+	function formatOutDataAddress(addresses, channel){
 		var outAddresses = []; 
 		angular.forEach(addresses,function(data){
 			outAddresses.push( {
-				DataPath : data.name,
 				Address : data.value,
-				IsFax  : data.type != 'email'
+				DataPath : data.name,
+				Channel : channel
 			})
 		});
 
@@ -385,33 +398,16 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		angular.forEach(attachments,function(data){
 			if(data.Name && data.Name.length > 1) {
 				outAttachments.push({
-					documentId : data.DocumentId,
-					documentId :  data.DocumentId,
-					templateDocumentId : data.TemplateDocumentId,
-					name : data.Name ? data.Name : "sample",
-							convertToPdf:data.ConvertToPdf
-				})
+					documentId :  data.OutgoingDocumentID,
+					templateDocumentId : data.TemplateID,
+					name : data.Name,
+					convertToPdf:data.ConvertToPDF
+				});
 			}
 		});
 		return outAttachments;
 	}
 	
-	 /**
-   * 
-   */
-  function formatOutDataAddress(addresses){
-    var outAddresses = []; 
-    angular.forEach(addresses,function(data){
-      outAddresses.push( {
-        DataPath : data.name,
-        Address : data.value,
-        IsFax  : data.type != 'email'
-      })
-    });
-
-    return outAddresses;
-  }
-
 	/**
 	 * 
 	 */
