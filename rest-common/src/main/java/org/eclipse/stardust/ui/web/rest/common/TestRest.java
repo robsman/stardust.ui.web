@@ -23,13 +23,20 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils;
 
 import com.google.gson.JsonObject;
 
+/**
+ * @author Yogesh.Manware
+ * @version $Revision: $
+ */
 public class TestRest
 {
    public static void main(String[] args)
    {
       try
       {
+         // login and jsession id
          String jSessionId = login();
+
+         // get folders
          getFolders(jSessionId);
       }
       catch (MalformedURLException e)
@@ -42,6 +49,10 @@ public class TestRest
       }
    }
 
+   /**
+    * @param jSessionId
+    * @throws IOException
+    */
    private static void getFolders(String jSessionId) throws IOException
    {
       URL url = new URL("http://localhost:8080/idemo/services/rest/portal/folders/");
@@ -69,6 +80,10 @@ public class TestRest
       System.out.println(sb);
    }
 
+   /**
+    * @return
+    * @throws IOException
+    */
    private static String login() throws IOException
    {
       URL url = new URL("http://localhost:8080/idemo/services/rest/portal/user/login");
