@@ -269,7 +269,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	function preparePostData(uiData) {
 
 		var postData = {
-				"CORRESPONDENCE_REQUEST" : {
+				"CORRESPONDENCE" : {
 					"MessageBody" : uiData.content,
 					"MessageBodyFormat" : "HTML"
 				}
@@ -277,28 +277,28 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 			
 
 		if(uiData.type == 'email') {
-			postData.CORRESPONDENCE_REQUEST.Subject = uiData.subject;
-			postData.CORRESPONDENCE_REQUEST.Recipients = [];
+			postData.CORRESPONDENCE.Subject = uiData.subject;
+			postData.CORRESPONDENCE.Recipients = [];
 			
 			var to = formatOutDataAddress(uiData.to, "EMAIL_TO");
 			if(to && to.length > 0) {
-				postData.CORRESPONDENCE_REQUEST.Recipients = postData.CORRESPONDENCE_REQUEST.Recipients.concat(to);
+				postData.CORRESPONDENCE.Recipients = postData.CORRESPONDENCE.Recipients.concat(to);
 			}
 
 			var bcc = formatOutDataAddress(uiData.bcc, "EMAIL_BCC");
 			if(bcc && bcc.length > 0) {
-				postData.CORRESPONDENCE_REQUEST.Recipients = postData.CORRESPONDENCE_REQUEST.Recipients.concat(bcc);
+				postData.CORRESPONDENCE.Recipients = postData.CORRESPONDENCE.Recipients.concat(bcc);
 			}
 
 			var cc = formatOutDataAddress(uiData.cc, "EMAIL_CC");
 			if(cc && cc.length > 0) {
-				postData.CORRESPONDENCE_REQUEST.Recipients = postData.CORRESPONDENCE_REQUEST.Recipients.concat(cc);
+				postData.CORRESPONDENCE.Recipients = postData.CORRESPONDENCE.Recipients.concat(cc);
 			}
 		}
 		
 		if(uiData.attachments && uiData.attachments.length > 0){
 			var formated_attachments = formatOutDataAttachments(uiData.attachments);
-			postData.CORRESPONDENCE_REQUEST.Documents = formated_attachments
+			postData.CORRESPONDENCE.Documents = formated_attachments
 		}
 		return postData;
 	}
@@ -520,9 +520,9 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	 */
 	CorrespondenceCtrl.prototype.loadExistingState = function( uiData ){
 		trace.log("Loading existing structured data.");
-		var inData =   this.interactionProvider.fetchData( "CORRESPONDENCE_REQUEST");
-		if(inData && inData.CORRESPONDENCE_REQUEST) {
-			uiData = prepareUiData(inData.CORRESPONDENCE_REQUEST, uiData);
+		var inData =   this.interactionProvider.fetchData( "CORRESPONDENCE");
+		if(inData && inData.CORRESPONDENCE) {
+			uiData = prepareUiData(inData.CORRESPONDENCE, uiData);
 		}
 		return uiData;
 	};
