@@ -111,6 +111,10 @@ public class ConcatDependencies
             File libFile = new File(libDir, "all-resources.js");
             PluginUtils.writeResource(libFile, concatAllResources(resDep.getLibs()));
          }
+         else
+         {
+            defaultDescriptor.remove("libs");
+         }
 
          if (resDep.getScripts().size() > 0)
          {
@@ -120,6 +124,10 @@ public class ConcatDependencies
             File scriptFile = new File(scriptDir, "all-resources.js");
             PluginUtils.writeResource(scriptFile, concatAllResources(resDep.getScripts()));
          }
+         else
+         {
+            defaultDescriptor.remove("scripts");
+         }
 
          if (resDep.getStyles().size() > 0)
          {
@@ -128,6 +136,10 @@ public class ConcatDependencies
             styleDir.mkdirs();
             File styleFile = new File(styleDir, "all-resources.css");
             PluginUtils.writeResource(styleFile, concatAllResources(resDep.getStyles()));
+         }
+         else
+         {
+            defaultDescriptor.remove("styles");
          }
          
          String jsonDescriptor = PluginUtils.readResource(resDep.getDescriptorResource());
@@ -151,6 +163,10 @@ public class ConcatDependencies
       if (!success)
       {
          System.err.println("Incorrect number of dependencies found: " + pluginDeps.size());
+         for (ResourceDependency resDep : pluginDeps)
+         {
+            System.out.println("\t" + resDep.getPluginLocation());
+         }
          System.exit(1);
       }
    }

@@ -67,38 +67,47 @@ public class ResourceDependencyUtils
                      getWebResourceList(rInfo, (List<String>)deps.get(PLUGIN_DEPENDENCY_SCRIPTS)),
                      getWebResourceList(rInfo, (List<String>)deps.get(PLUGIN_DEPENDENCY_STYLES)),
                      (Map<String, List<String>>)deps.get(PLUGIN_DEPENDENCY_SKIP));
-      
-               if(CollectionUtils.isEmpty(resDep.getLibs()))
+
+               if (null != (List<String>) deps.get(PLUGIN_DEPENDENCY_LIBS))
                {
-                  resDep.setLibs(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_LIBS, "*.js", true, resDep
-                        .getSkip().get(PLUGIN_DEPENDENCY_LIBS)));
-               }
-               else
-               {
-                  discoverAndReplaceWithLocalPath(resolver, resDep.getLibs(), rInfo);
-                  prefixResourceWebUri(resDep.getLibs(), rInfo.getResourceBaseWebUri() + PLUGIN_DEPENDENCY_LIBS);
-               }
-      
-               if(CollectionUtils.isEmpty(resDep.getScripts()))
-               {
-                  resDep.setScripts(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_SCRIPTS, "*.js", true,
-                        resDep.getSkip().get(PLUGIN_DEPENDENCY_SCRIPTS)));
-               }
-               else
-               {
-                  prefixResourceWebUri(resDep.getScripts(), rInfo.getResourceBaseWebUri() + PLUGIN_DEPENDENCY_SCRIPTS);
+                  if(CollectionUtils.isEmpty(resDep.getLibs()))
+                  {
+                     resDep.setLibs(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_LIBS, "*.js", true, resDep
+                           .getSkip().get(PLUGIN_DEPENDENCY_LIBS)));
+                  }
+                  else
+                  {
+                     discoverAndReplaceWithLocalPath(resolver, resDep.getLibs(), rInfo);
+                     prefixResourceWebUri(resDep.getLibs(), rInfo.getResourceBaseWebUri() + PLUGIN_DEPENDENCY_LIBS);
+                  }
                }
       
-               if(CollectionUtils.isEmpty(resDep.getStyles()))
+               if (null != (List<String>) deps.get(PLUGIN_DEPENDENCY_SCRIPTS))
                {
-                  resDep.setStyles(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_STYLES, "*.css", false,
-                        resDep.getSkip().get(PLUGIN_DEPENDENCY_STYLES)));
+                  if(CollectionUtils.isEmpty(resDep.getScripts()))
+                  {
+                     resDep.setScripts(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_SCRIPTS, "*.js", true,
+                           resDep.getSkip().get(PLUGIN_DEPENDENCY_SCRIPTS)));
+                  }
+                  else
+                  {
+                     prefixResourceWebUri(resDep.getScripts(), rInfo.getResourceBaseWebUri() + PLUGIN_DEPENDENCY_SCRIPTS);
+                  }
                }
-               else
+
+               if (null != (List<String>) deps.get(PLUGIN_DEPENDENCY_STYLES))
                {
-                  prefixResourceWebUri(resDep.getStyles(), rInfo.getResourceBaseWebUri() + PLUGIN_DEPENDENCY_STYLES);
+                  if(CollectionUtils.isEmpty(resDep.getStyles()))
+                  {
+                     resDep.setStyles(discoverPluginResources(resolver, rInfo, PLUGIN_DEPENDENCY_STYLES, "*.css", false,
+                           resDep.getSkip().get(PLUGIN_DEPENDENCY_STYLES)));
+                  }
+                  else
+                  {
+                     prefixResourceWebUri(resDep.getStyles(), rInfo.getResourceBaseWebUri() + PLUGIN_DEPENDENCY_STYLES);
+                  }
                }
-      
+
                resourceDependencies.add(resDep);
             }
             else
@@ -160,15 +169,18 @@ public class ResourceDependencyUtils
    {
       List<WebResource> webResourceList = new ArrayList<WebResource>();
 
-      for (String str : list)
+      if (null != list)
       {
-         try
+         for (String str : list)
          {
-            webResourceList.add(new WebResource(str, rInfo.getResource().createRelative(str)));
-         }
-         catch(Exception e)
-         {
-            trace.error("Could not resolve " + str, e);
+            try
+            {
+               webResourceList.add(new WebResource(str, rInfo.getResource().createRelative(str)));
+            }
+            catch(Exception e)
+            {
+               trace.error("Could not resolve " + str, e);
+            }
          }
       }
 
