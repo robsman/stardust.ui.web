@@ -7,7 +7,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternUtils;
 
-public class ExtensionsDiscoveryTest
+public class TestExtensionsDiscovery
 {
 
    @Test

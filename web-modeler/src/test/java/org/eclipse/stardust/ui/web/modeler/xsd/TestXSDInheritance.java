@@ -28,7 +28,7 @@ import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 import org.eclipse.stardust.ui.web.modeler.service.XsdSupport;
 
-public class XSDInheritanceTest
+public class TestXSDInheritance
 {
 
    @Test

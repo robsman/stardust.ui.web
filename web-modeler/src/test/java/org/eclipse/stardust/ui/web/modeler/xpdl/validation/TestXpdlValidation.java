@@ -15,7 +15,7 @@ import org.eclipse.stardust.modeling.validation.ValidatorRegistry;
 import org.eclipse.stardust.modeling.validation.impl.ProcessInterfaceValidator;
 import org.junit.Test;
 
-public class XpdlValidationTest
+public class TestXpdlValidation
 {
    @Test
    public void validationExtensionRegistryCanBeResolved()

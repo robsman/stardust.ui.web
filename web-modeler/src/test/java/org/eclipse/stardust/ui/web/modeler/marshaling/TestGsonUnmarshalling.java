@@ -12,7 +12,7 @@ import org.junit.Test;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-public class GsonUnmarshallingTest
+public class TestGsonUnmarshalling
 {
    private final String testData = "{a: '1', b: {c:2, d:'3'}, d: [{d1_id: 'd1'}, {d1_id: 'd2'}]}";
 

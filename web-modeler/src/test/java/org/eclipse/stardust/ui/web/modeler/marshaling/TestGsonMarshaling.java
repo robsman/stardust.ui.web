@@ -12,7 +12,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-public class GsonMarshalingTest
+public class TestGsonMarshaling
 {
    private final String testData = "{a: '1', b: {b1:2, b2:'3'}, c: null, d:{d1:{d11:true}, d2:{d22:false} }, e: [{e_id: 'e1', e_tags: ['e1a']}, {e_id: 'e2', e_tags: ['e2a', 'e2b']}] }";
 

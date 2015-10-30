@@ -5,7 +5,7 @@ package org.eclipse.stardust.ui.web.modeler.marshaling;
 
 import org.junit.Test;
 
-public class IdFromNameGenerationTest
+public class TestIdFromNameGeneration
 {
 
    @Test

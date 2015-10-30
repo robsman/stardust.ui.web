@@ -204,8 +204,12 @@
          <plugin>
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
+               <includes>
+                  <include>**/*Suite.java</include>
+               </includes>
                <excludes>
                   <exclude>**/TestModelConversion.java</exclude>
+                  <exclude>**/Test*.java</exclude>
                </excludes>
             </configuration>
          </plugin>

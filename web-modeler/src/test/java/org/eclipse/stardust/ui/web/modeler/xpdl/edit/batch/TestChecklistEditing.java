@@ -2,11 +2,7 @@ package org.eclipse.stardust.ui.web.modeler.xpdl.edit.batch;
 
 import static java.util.Collections.EMPTY_LIST;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.hamcrest.CoreMatchers.nullValue;
-import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
@@ -34,12 +30,7 @@ import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserService;
-import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
-import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
-import org.eclipse.stardust.model.xpdl.carnot.TriggerType;
+import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.batch.BatchChangesJto;
 import org.eclipse.stardust.ui.web.modeler.edit.batch.BatchStepJto;
