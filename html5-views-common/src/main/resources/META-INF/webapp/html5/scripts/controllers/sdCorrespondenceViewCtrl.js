@@ -21,11 +21,10 @@
   var _sdI18nService = null;
   var _parse = null;
   var trace = null;
-  var  FAX_FORMAT_NUMBER = null;
   var config = null;
   var _sdPreferenceService = null;
   var _sdUtilService = null;
-  
+  var FAX_NUMBER_FORMAT = null;
   
   /*
    * 
@@ -50,7 +49,7 @@
     this.selected = {};
     
     this.fetchPreference();
-    FAX_FORMAT_NUMBER = this.geFaxNumberFormat();
+    FAX_NUMBER_FORMAT =  this.geFaxNumberFormat();
 
     this.documentParams = {
       disableSaveAction: true
@@ -96,6 +95,7 @@
 	  if(format){
 		  FAX_NUMBER_FORMAT =  new RegExp(format);
 	  }
+	  return FAX_NUMBER_FORMAT;
   }
 
   /**
@@ -138,7 +138,7 @@
     
     var uiData = {
     		content: metaData.MessageBody,
-    		subject: metaData.Subject,
+    		subject: metaData.Subject ? metaData.Subject : "",
     		templateId: '',
     		attachments: formatInDataAttachments(metaData.Documents),
     		aiOid: ""
@@ -168,7 +168,7 @@
 			var add = {
 				name : data.DataPath,
 				value : data.Address,
-				type  : _sdUtilService.isFaxNumber(data.Address,FAX_FORMAT_NUMBER) ? "fax" :"email" 
+				type  : _sdUtilService.isFaxNumber(data.Address,FAX_NUMBER_FORMAT) ? "fax" :"email" 
 			}
 			
 			if(data.Channel == "EMAIL_TO") {

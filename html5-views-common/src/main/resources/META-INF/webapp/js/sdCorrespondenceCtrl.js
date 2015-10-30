@@ -270,7 +270,6 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 
 		var postData = {
 				"CORRESPONDENCE_REQUEST" : {
-					"Subject" :uiData.subject,
 					"MessageBody" : uiData.content,
 					"MessageBodyFormat" : "HTML"
 				}
@@ -278,7 +277,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 			
 
 		if(uiData.type == 'email') {
-			
+			postData.CORRESPONDENCE_REQUEST.Subject = uiData.subject;
 			postData.CORRESPONDENCE_REQUEST.Recipients = [];
 			
 			var to = formatOutDataAddress(uiData.to, "EMAIL_TO");
