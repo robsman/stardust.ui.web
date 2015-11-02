@@ -81,7 +81,6 @@ public class ConcatDependencies
     */
    private void discover() throws Exception
    {
-      boolean success = false;
       String[] configLocations = {};
       ApplicationContext context = new ClassPathXmlApplicationContext(configLocations);
 
@@ -175,15 +174,12 @@ public class ConcatDependencies
          PluginUtils.writeResource(descriptorFile, defaultDescriptor.toString());
 
          System.out.println("Concatination Completed...");
-         success = true;
       }
-      else
+      else if (pluginDeps.size() == 0)
       {
          System.out.println("No dependencies found...");
-         success = (pluginDeps.size() == 0);
       }
-           
-      if (!success)
+      else
       {
          System.err.println("Incorrect number of dependencies found: " + pluginDeps.size());
          for (ResourceDependency resDep : pluginDeps)
