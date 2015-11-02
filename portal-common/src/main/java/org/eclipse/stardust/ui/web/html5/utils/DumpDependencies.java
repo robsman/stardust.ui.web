@@ -62,7 +62,7 @@ public class DumpDependencies
 
       ApplicationContext context = new ClassPathXmlApplicationContext(configLocations);
 
-      List<ResourceDependency> htmlResourceDependencies = ResourceDependencyUtils.discoverDependencies(context);
+      List<ResourceDependency> htmlResourceDependencies = ResourceDependencyUtils.discoverDependenciesAfterConcatenation(context);
 
       dependencies.append("Dependency Type");
       dependencies.append(SEPERATOR);

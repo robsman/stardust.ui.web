@@ -37,23 +37,42 @@ public class ResourceDependencyUtils
    private static final Logger trace = LogManager.getLogger(ResourceDependencyUtils.class);
    
    private static final String PLUGIN_DEPENDENCY_DESCRIPTOR = "**/portal-plugin-dependencies.json";
+   private static final String PLUGIN_DEPENDENCY_DESCRIPTOR_AFTER_CONCAT = "**/portal-plugin-dependencies-org.json";
    private static final String PLUGIN_DEPENDENCY_PLUGINS = "portal-plugins";
    private static final String PLUGIN_DEPENDENCY_LIBS = "libs";
    private static final String PLUGIN_DEPENDENCY_SCRIPTS = "scripts";
    private static final String PLUGIN_DEPENDENCY_STYLES = "styles";
    private static final String PLUGIN_DEPENDENCY_SKIP = "skip";
    private static final String PLUGIN_DEPENDENCY_CONCAT_SKIP = "concat-skip";
-  
+
+   /**
+    * @param resolver
+    * @return
+    */
+   public static List<ResourceDependency> discoverDependencies(ResourcePatternResolver resolver)
+   {
+      return _discoverDependencies(resolver, PLUGIN_DEPENDENCY_DESCRIPTOR);
+   }
+
+   /**
+    * @param resolver
+    * @return
+    */
+   public static List<ResourceDependency> discoverDependenciesAfterConcatenation(ResourcePatternResolver resolver)
+   {
+      return _discoverDependencies(resolver, PLUGIN_DEPENDENCY_DESCRIPTOR_AFTER_CONCAT);
+   }
+
    /**
     * @param resolver
     * @return
     */
    @SuppressWarnings("unchecked")
-   public static List<ResourceDependency> discoverDependencies(ResourcePatternResolver resolver)
+   private static List<ResourceDependency> _discoverDependencies(ResourcePatternResolver resolver, String pattern)
    {
       List<ResourceDependency> resourceDependencies = new ArrayList<ResourceDependency>();
 
-      List<ResourceInfo> allResources = PluginUtils.findPluginResources(resolver, PLUGIN_DEPENDENCY_DESCRIPTOR, true);
+      List<ResourceInfo> allResources = PluginUtils.findPluginResources(resolver, pattern, true);
 
       for (ResourceInfo rInfo: allResources)
       {
