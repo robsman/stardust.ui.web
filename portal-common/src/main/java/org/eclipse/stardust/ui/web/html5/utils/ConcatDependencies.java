@@ -135,12 +135,12 @@ public class ConcatDependencies
             System.out.println("Concatinating libs...");
             File libDir = new File(descriptorFileDirPath + fileSeparator + "libs");
             libDir.mkdirs();
-            File libFile = new File(libDir, "all-resources.js");
+            File libFile = new File(libDir, resDep.getPluginId() + "-resources.js");
             PluginUtils.writeResource(libFile, concatAllResources(resDep.getLibs(), 
                   resDep.getConcatSkip().get("libs-before"), resDep.getConcatSkip().get("libs")));
 
             addToDescriptor(defaultDescriptor.getAsJsonArray("libs"), resDep.getConcatSkip().get("libs-before"),
-                  resDep.getConcatSkip().get("libs"), "all-resources.js");
+                  resDep.getConcatSkip().get("libs"), resDep.getPluginId() + "-resources.js");
          }
          else
          {
@@ -152,12 +152,12 @@ public class ConcatDependencies
             System.out.println("Concatinating scripts...");
             File scriptDir = new File(descriptorFileDirPath + fileSeparator + "scripts");
             scriptDir.mkdirs();
-            File scriptFile = new File(scriptDir, "all-resources.js");
+            File scriptFile = new File(scriptDir, resDep.getPluginId() + "-resources.js");
             PluginUtils.writeResource(scriptFile, concatAllResources(resDep.getScripts(),
                   resDep.getConcatSkip().get("scripts-before"), resDep.getConcatSkip().get("scripts")));
 
             addToDescriptor(defaultDescriptor.getAsJsonArray("scripts"), resDep.getConcatSkip().get("scripts-before"),
-                  resDep.getConcatSkip().get("scripts"), "all-resources.js");
+                  resDep.getConcatSkip().get("scripts"), resDep.getPluginId() + "-resources.js");
          }
          else
          {
@@ -169,12 +169,12 @@ public class ConcatDependencies
             System.out.println("Concatinating styles...");
             File styleDir = new File(descriptorFileDirPath + fileSeparator + "styles");
             styleDir.mkdirs();
-            File styleFile = new File(styleDir, "all-resources.css");
+            File styleFile = new File(styleDir, resDep.getPluginId() + "-resources.css");
             PluginUtils.writeResource(styleFile, concatAllResources(resDep.getStyles(),
                   resDep.getConcatSkip().get("styles-before"), resDep.getConcatSkip().get("styles")));
             
             addToDescriptor(defaultDescriptor.getAsJsonArray("styles"), resDep.getConcatSkip().get("styles-before"),
-                  resDep.getConcatSkip().get("styles"), "all-resources.css");
+                  resDep.getConcatSkip().get("styles"), resDep.getPluginId() + "-resources.css");
          }
          else
          {
