@@ -42,6 +42,7 @@ public class ResourceDependencyUtils
    private static final String PLUGIN_DEPENDENCY_SCRIPTS = "scripts";
    private static final String PLUGIN_DEPENDENCY_STYLES = "styles";
    private static final String PLUGIN_DEPENDENCY_SKIP = "skip";
+   private static final String PLUGIN_DEPENDENCY_CONCAT_SKIP = "concat-skip";
   
    /**
     * @param resolver
@@ -66,7 +67,8 @@ public class ResourceDependencyUtils
                      getWebResourceList(rInfo, (List<String>) deps.get(PLUGIN_DEPENDENCY_LIBS)),
                      getWebResourceList(rInfo, (List<String>)deps.get(PLUGIN_DEPENDENCY_SCRIPTS)),
                      getWebResourceList(rInfo, (List<String>)deps.get(PLUGIN_DEPENDENCY_STYLES)),
-                     (Map<String, List<String>>)deps.get(PLUGIN_DEPENDENCY_SKIP));
+                     (Map<String, List<String>>)deps.get(PLUGIN_DEPENDENCY_SKIP),
+                     (Map<String, List<String>>)deps.get(PLUGIN_DEPENDENCY_CONCAT_SKIP));
 
                if (null != (List<String>) deps.get(PLUGIN_DEPENDENCY_LIBS))
                {
@@ -201,7 +203,8 @@ public class ResourceDependencyUtils
                && isListOfStrings(deps.get(PLUGIN_DEPENDENCY_LIBS))
                && isListOfStrings(deps.get(PLUGIN_DEPENDENCY_SCRIPTS))
                && isListOfStrings(deps.get(PLUGIN_DEPENDENCY_STYLES))
-               && isMapOfStringWithListStrings(deps.get(PLUGIN_DEPENDENCY_SKIP)))
+               && isMapOfStringWithListStrings(deps.get(PLUGIN_DEPENDENCY_SKIP))
+               && isMapOfStringWithListStrings(deps.get(PLUGIN_DEPENDENCY_CONCAT_SKIP)))
          {
             return deps;
          }
@@ -436,7 +439,7 @@ public class ResourceDependencyUtils
       {
 
          ResourceDependency resDep = new ResourceDependency(rInfo.getPluginId(), rInfo.getPluginLocation(),
-               rInfo.getResource(), null, null, null, null, null);
+               rInfo.getResource(), null, null, null, null, null, null);
 
          if (CollectionUtils.isEmpty(resDep.getLibs()))
          {

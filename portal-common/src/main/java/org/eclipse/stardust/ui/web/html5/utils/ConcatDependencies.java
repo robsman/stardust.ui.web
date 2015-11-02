@@ -13,16 +13,20 @@ package org.eclipse.stardust.ui.web.html5.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.plugin.utils.PluginUtils;
 import org.eclipse.stardust.ui.web.plugin.utils.WebResource;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 
 /**
  * @author Subodh.Godbole
@@ -35,7 +39,7 @@ public class ConcatDependencies
    private String fileSeparator;
 
    private JsonObject defaultDescriptor = GsonUtils.readJsonObject(
-         "{\"portal-plugins\" : [], \"libs\" : [\"all-resources.js\"], \"scripts\" : [\"all-resources.js\"], \"styles\" : [\"all-resources.css\"]\n}");
+         "{\"portal-plugins\" : [], \"libs\" : [], \"scripts\" : [], \"styles\" : []\n}");
 
    /**
     * @param args
@@ -84,6 +88,7 @@ public class ConcatDependencies
       // This will have 2 entries, one portal-common and one from current folder
       List<ResourceDependency> pluginDeps = ResourceDependencyUtils.discoverDependencies(context);
 
+      System.out.println("Discovered Dependencies:");
       Iterator<ResourceDependency> it = pluginDeps.iterator();
       while (it.hasNext())
       {
@@ -93,10 +98,16 @@ public class ConcatDependencies
             // we're not interested in plugins which resides in JARs
             it.remove();
          }
+         else
+         {
+            System.out.println("\tDiscovered Dependency: " + dep.getPluginLocation());
+         }
       }
+
       if (pluginDeps.size() == 1)
       {
          ResourceDependency resDep = pluginDeps.get(0);
+         System.out.println("\nProcessing Dependency: " + resDep.getPluginLocation());
 
          String descriptorFileDirPath = resDep.getDescriptorResource().getFile().getParentFile().getAbsolutePath();
          System.out.println("descriptorFileDirPath = " + descriptorFileDirPath);
@@ -109,7 +120,11 @@ public class ConcatDependencies
             File libDir = new File(descriptorFileDirPath + fileSeparator + "libs");
             libDir.mkdirs();
             File libFile = new File(libDir, "all-resources.js");
-            PluginUtils.writeResource(libFile, concatAllResources(resDep.getLibs()));
+            PluginUtils.writeResource(libFile, concatAllResources(resDep.getLibs(), 
+                  resDep.getConcatSkip().get("libs-before"), resDep.getConcatSkip().get("libs")));
+
+            addToDescriptor(defaultDescriptor.getAsJsonArray("libs"), resDep.getConcatSkip().get("libs-before"),
+                  resDep.getConcatSkip().get("libs"), "all-resources.js");
          }
          else
          {
@@ -122,7 +137,11 @@ public class ConcatDependencies
             File scriptDir = new File(descriptorFileDirPath + fileSeparator + "scripts");
             scriptDir.mkdirs();
             File scriptFile = new File(scriptDir, "all-resources.js");
-            PluginUtils.writeResource(scriptFile, concatAllResources(resDep.getScripts()));
+            PluginUtils.writeResource(scriptFile, concatAllResources(resDep.getScripts(),
+                  resDep.getConcatSkip().get("scripts-before"), resDep.getConcatSkip().get("scripts")));
+
+            addToDescriptor(defaultDescriptor.getAsJsonArray("scripts"), resDep.getConcatSkip().get("scripts-before"),
+                  resDep.getConcatSkip().get("scripts"), "all-resources.js");
          }
          else
          {
@@ -135,7 +154,11 @@ public class ConcatDependencies
             File styleDir = new File(descriptorFileDirPath + fileSeparator + "styles");
             styleDir.mkdirs();
             File styleFile = new File(styleDir, "all-resources.css");
-            PluginUtils.writeResource(styleFile, concatAllResources(resDep.getStyles()));
+            PluginUtils.writeResource(styleFile, concatAllResources(resDep.getStyles(),
+                  resDep.getConcatSkip().get("styles-before"), resDep.getConcatSkip().get("styles")));
+            
+            addToDescriptor(defaultDescriptor.getAsJsonArray("styles"), resDep.getConcatSkip().get("styles-before"),
+                  resDep.getConcatSkip().get("styles"), "all-resources.css");
          }
          else
          {
@@ -173,18 +196,34 @@ public class ConcatDependencies
 
    /**
     * @param list
+    * @param skipConcatBefore
+    * @param skipConcatAfter
     * @return
     */
-   private String concatAllResources(List<WebResource> list)
+   private String concatAllResources(List<WebResource> list, List<String> skipConcatBefore, List<String> skipConcatAfter)
    {
+      List<String> skipConcat = new ArrayList<String>();
+      if (null != skipConcatBefore)
+      {
+         skipConcat.addAll(skipConcatBefore);
+      }
+      if (null != skipConcatAfter)
+      {
+         skipConcat.addAll(skipConcatAfter);
+      }
+
       StringBuffer sb = new StringBuffer();
+
       for (WebResource webResource : list)
       {
          try
          {
-            sb.append("/** START " + webResource.webUri + " **/\n\n");
-            sb.append(PluginUtils.readResource(webResource.resource).trim());
-            sb.append("\n\n/** END " + webResource.webUri + " **/\n\n\n");
+            if (!contains(webResource.webUri, skipConcat))
+            {
+               sb.append("/** START " + webResource.webUri + " **/\n\n");
+               sb.append(PluginUtils.readResource(webResource.resource).trim());
+               sb.append("\n\n/** END " + webResource.webUri + " **/\n\n\n");
+            }
          }
          catch (IOException e)
          {
@@ -193,5 +232,53 @@ public class ConcatDependencies
       }
 
       return sb.toString().trim();
+   }
+
+   /**
+    * @param str
+    * @param skipConcat
+    * @return
+    */
+   private static boolean contains(String str, List<String> skipConcat)
+   {
+      if (CollectionUtils.isNotEmpty(skipConcat))
+      {
+         for(String file : skipConcat)
+         {
+            if (str.endsWith(file)) // TODO: Better matching rule?
+            {
+               return true;
+            }
+         }
+      }
+
+      return false;
+   }
+
+   /**
+    * @param entry
+    * @param before
+    * @param after
+    * @param current
+    */
+   private void addToDescriptor(JsonArray entry, List<String> before, List<String> after, String current)
+   {
+      if (null != before)
+      {
+         for (String file : before)
+         {
+            entry.add(new JsonPrimitive(file));
+         }
+      }
+
+      entry.add(new JsonPrimitive(current));
+
+      if (null != after)
+      {
+         for (String file : after)
+         {
+            entry.add(new JsonPrimitive(file));
+         }
+      }      
    }
 }

@@ -33,6 +33,7 @@ public class ResourceDependency
    private List<WebResource> scripts = new ArrayList<WebResource>();
    private List<WebResource> styles = new ArrayList<WebResource>();
    private Map<String, List<String>> skip = new HashMap<String, List<String>>();
+   private Map<String, List<String>> concatSkip = new HashMap<String, List<String>>();
 
    /**
     * 
@@ -50,9 +51,10 @@ public class ResourceDependency
     * @param scripts
     * @param styles
     * @param skip
+    * @param concatSkip
     */
    public ResourceDependency(String pluginId, String pluginLocation, Resource descriptorResource, List<String> portalPlugins, List<WebResource> libs,
-         List<WebResource> scripts, List<WebResource> styles, Map<String, List<String>> skip)
+         List<WebResource> scripts, List<WebResource> styles, Map<String, List<String>> skip, Map<String, List<String>> concatSkip)
    {
       this.pluginId = pluginId;
       this.pluginLocation = pluginLocation;
@@ -62,6 +64,7 @@ public class ResourceDependency
       this.scripts = scripts;
       this.styles = styles;
       this.skip = skip;
+      this.concatSkip = concatSkip;
 
       if (null == this.portalPlugins)
       {
@@ -86,6 +89,11 @@ public class ResourceDependency
       if (null == this.skip)
       {
          this.skip = new HashMap<String, List<String>>();
+      }
+
+      if (null == this.concatSkip)
+      {
+         this.concatSkip = new HashMap<String, List<String>>();
       }
    }
    
@@ -147,5 +155,10 @@ public class ResourceDependency
    public Map<String, List<String>> getSkip()
    {
       return skip;
+   }
+
+   public Map<String, List<String>> getConcatSkip()
+   {
+      return concatSkip;
    }
 }
