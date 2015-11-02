@@ -554,7 +554,6 @@
 	    	return;
 		  }
 	  }
-	  
   };
   
   /**
@@ -595,6 +594,7 @@
   
   // Handle our tree callbacks inclduing lazy load on node expand
   ParticipantManagementCtrl.prototype.eventCallback = function(data, e) {
+	  
     this.resetMessages();
     this.selectedItem = data.valueItem;
 
@@ -630,12 +630,19 @@
           });
         }
       }
-    } else if (data.treeEvent === "node-dragend" || data.treeEvent === "node-drop") {
+      
+    } 
+    
+    else if (data.treeEvent === "node-dragend" || data.treeEvent === "node-drop") {
       this.handleUserDropAction(data, this.allUsersTable.getSelection());
-    } else if (data.treeEvent.indexOf("menu-") == 0 || (data.treeEvent === "node-delete")) {
+    } 
+    
+    else if (data.treeEvent.indexOf("menu-") == 0 || (data.treeEvent === "node-delete")) {
       data.deferred.resolve();
       this.handleMenuClick(data, e);
-    } else if (data.treeEvent === "node-click") {
+    } 
+    
+    else if (data.treeEvent === "node-click") {
       this.addToSelectedNodes(data, e.ctrlKey);
       data.deferred.resolve();
     }
@@ -722,10 +729,14 @@
       this.modifyParticipantPostUsrCr = false;
 
       if (getIndexOfParticipant(this.selectedTreeNodes, this.contextParticipantNode.valueItem) == -1) {
-        this.selectedTreeNodes.push(this.contextParticipantNode.valueItem);
+        //this.selectedTreeNodes.push(this.contextParticipantNode.valueItem);
+    	this.saveParticipants(this.contextParticipantNode, [this.contextParticipantNode.valueItem], [user]);
+      }
+      else{
+    	  this.saveParticipants(this.contextParticipantNode, this.selectedTreeNodes, [user]);
       }
 
-      this.saveParticipants(this.contextParticipantNode, this.selectedTreeNodes, [user]);
+      
     }
   }
 
@@ -733,17 +744,22 @@
   ParticipantManagementCtrl.prototype.handleUserDropAction = function(data) {
     var dropTarget = data.srcScope.nodeItem;
     if (getIndexOfParticipant(this.selectedTreeNodes, dropTarget) == -1) {
-      this.addToSelectedNodes(data, true);
+    	this.saveParticipants(data, [data.valueItem], this.allUsersTable.getSelection());
     }
-    this.saveParticipants(data, this.selectedTreeNodes, this.allUsersTable.getSelection());
+    else{
+    	this.saveParticipants(data, this.selectedTreeNodes, this.allUsersTable.getSelection());
+    }
+    
   }
 
   // save the participant
   ParticipantManagementCtrl.prototype.saveParticipants = function(data, participants, addUsers, removeUsers) {
     var self = this;
     _sdParticipantManagementService.saveParticipants(participants, addUsers, removeUsers).then(function(result) {
+    	
       // update the tree with server response
       for (var i = 0; i < participants.length; i++) {
+    	  
         //remove all users
         var nonUserParticipants = [];
         if (participants[i].children) {
@@ -757,8 +773,7 @@
         // update users received from server
         participants[i].children = result[getParticipatQId(participants[i])].concat(nonUserParticipants);
         
-        //expand all selected nodes to show newly added users
-        self.selectedTreeNodes.forEach(function(node){
+        participants.forEach(function(node){
         	self.treeApi.childNodes[node.uuid].isVisible=true;
         });
         
