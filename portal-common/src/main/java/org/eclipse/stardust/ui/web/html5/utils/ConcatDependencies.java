@@ -103,6 +103,23 @@ public class ConcatDependencies
          }
       }
 
+      // When running this in DEV workspace, 2 deps will be detected.
+      // One of them will be portal-common and it will not be from JAR, so get rid of it.
+      if (pluginDeps.size() == 2)
+      {
+         it = pluginDeps.iterator();
+         while (it.hasNext())
+         {
+            ResourceDependency dep = it.next();
+            if(dep.getPluginId().equals("common"))
+            {
+               System.out.println("Ignoring Dependency: " + dep.getPluginLocation());
+               it.remove();
+               break;
+            }
+         }
+      }
+
       if (pluginDeps.size() == 1)
       {
          ResourceDependency resDep = pluginDeps.get(0);
