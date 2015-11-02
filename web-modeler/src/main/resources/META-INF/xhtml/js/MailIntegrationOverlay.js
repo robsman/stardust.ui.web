@@ -1057,8 +1057,8 @@ define(
                   }
                   attributes["stardust:emailOverlay::templateSource"] = this.templateSourceSelect.val();
                   attributes["carnot:engine:camel::routeEntries"] = this.getRoute(attributes, aps);
-				  attributes["stardust:emailOverlay::templateConfigurations"]=angular.toJson(this.templateConfigurations);
-					 
+              attributes["stardust:emailOverlay::templateConfigurations"]=angular.toJson(this.templateConfigurations);
+                
                   this.view.submitChanges({
                      attributes : attributes,
                      contexts : {
@@ -1776,7 +1776,7 @@ define(
                      // add Document Request AP
                      var documentRequestAp = m_routeDefinitionUtils.findAccessPoint(
                               filteredAccessPoints, "DOCUMENT_REQUEST");
-                     var documentRequestType=m_model.findTypeDeclaration(this.getScopeModel().id + ":"+ "DOCUMENT_REQUEST");
+                     var documentRequestType=m_model.findTypeDeclaration("PredefinedModel:CORRESPONDENCE");
                      if(!documentRequestType){
                         this.view
                         .submitChanges(
@@ -1798,8 +1798,7 @@ define(
                            name : "Document Request",
                            dataType : "struct",
                            direction : "IN",
-                           structuredDataTypeFullId : this.getScopeModel().id + ":"
-                                    + "DOCUMENT_REQUEST",
+                           structuredDataTypeFullId : "PredefinedModel:CORRESPONDENCE",
                            attributes : {
                               "stardust:predefined" : true
                            }
