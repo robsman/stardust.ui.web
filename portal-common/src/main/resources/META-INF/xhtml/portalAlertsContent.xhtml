@@ -10,7 +10,8 @@
 			<c:forEach items="#{ippAlertManager.alerts}" var="alert">
 				<tr>
 					<td class="portalAlertEntryImage">
-						<ice:graphicImage value="#{alert.iconUrl}" height="32" width="32" />
+						<ice:graphicImage value="#{alert.iconUrl}" height="32" width="32" rendered="#{pc:contains(alert.iconUrl, '/')}"/>
+						<ice:outputText styleClass="#{alert.iconUrl} pi-1-5x" rendered="#{!pc:contains(alert.iconUrl, '/')}"></ice:outputText>
 					</td>
 					<td class="portalAlertEntryData">
 						<ice:panelGroup>
