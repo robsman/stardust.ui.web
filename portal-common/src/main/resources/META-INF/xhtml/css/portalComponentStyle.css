@@ -168,11 +168,10 @@ iceCmd sort classes
 	font-weight: normal;
 }	
 
-.iceMsgImageInfo {
-	padding-left: 16px !important;
-	padding-bottom: 1px;
-	margin-left: 5px;
-	background: url('../images/icons/information.png') no-repeat 0; 
+.iceMsgImageInfo:before {
+	font-family: "FontAwesome";
+    content: "\f05a"; /* fa-info-circle */
+    font-size: 16px;  
 }
 
 .breadCrumbTitle

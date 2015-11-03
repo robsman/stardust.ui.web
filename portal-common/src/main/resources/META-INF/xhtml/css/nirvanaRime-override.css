@@ -408,19 +408,16 @@
 
 /* messages */
  
-.iceMsgImageError {
-	background: url('../images/icons/exclamation.png') no-repeat 0;
-	padding-left: 16px !important;
-	padding-bottom: 1px; 
-	margin-left: 5px;
-	background-size: 100%;
+.iceMsgImageError:before {
+	font-family: "FontAwesome";
+    content: '\f06a';
+    font-size: 16px;
 }
 
-.iceMsgImageInfo {
-	padding-left: 16px !important;
-	padding-bottom: 1px;
-	margin-left: 5px;
-	background: url('../images/icons/exclamation.png') no-repeat 0; 
+.iceMsgImageInfo:before {
+	font-family: "FontAwesome";
+    content: "\f05a"; /* fa-info-circle */
+    font-size: 16px;  
 }
 
 .iceMsgError {

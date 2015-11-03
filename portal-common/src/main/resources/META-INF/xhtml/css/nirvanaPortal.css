@@ -1581,7 +1581,6 @@ select.icon-menu option {
  	background-repeat: no-repeat;
 	padding: 2px 0 5px 20px;
 	vertical-align: middle;
-	background-image:url(../images/icons/key.png);
 }
 
 /* ********* Session Control - Start ********** */
@@ -1818,7 +1817,7 @@ table.autoCompTable, table.autoCompTable > tbody > tr, table.autoCompTable > tbo
 	border-bottom: 1px solid #999;
 	border-left: 1px solid #999;
 	max-width: 350px;
-	background: url('./css-images/notes-background.png') top repeat-x #FFFFE0;
+	background: top repeat-x #FFFFE0;
 }
 
 /* max-width of tooltip2body must be 30px lesser than tooltip2 (popup) */
@@ -2091,7 +2090,6 @@ table.autoCompTable, table.autoCompTable > tbody > tr, table.autoCompTable > tbo
 }
 
 .form-panel-summary-bar .windowClose {
-	background: url(../images/icons/dialog-windowbttn-close.png) no-repeat scroll 0 transparent;
 	border: none;
 	float: right;
 	padding-top: 5px;
