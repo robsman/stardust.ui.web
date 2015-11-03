@@ -76,6 +76,7 @@ public class Constants
    public static final String TECH_USER_PARAM_PASSWORD = "Security.ResetPassword.TechnicalUser.Password";
    public static final String TECH_USER_PARAM_REALM = "Security.ResetPassword.TechnicalUser.Realm";
    public static final String RESUBMISSION_TIME ="resubmissionTime";
+   public static final String INPUT_PREFERENCES_NUMBER_GROUP_KEY_LABEL = "NumericInputPreferences_showGroupingSeparator";
    
    public ActivityInstanceStates getActivityInstanceState()
    {
