@@ -1602,6 +1602,16 @@ public class PortalApplication
       }
    }
 
+   /**
+    * 
+    * @return
+    */
+   public TimeZone getSystemTimeZone()
+   {
+     
+         return java.util.TimeZone.getDefault();
+   }
+   
    public boolean isClientTimeZoneSet()
    {
       //Following fix was added as part of CRNT-20962 but later on with the new Icefaces jars the issue got resolved

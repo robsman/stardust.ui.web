@@ -760,7 +760,7 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
          {
             if (dateType.equalsIgnoreCase(ProcessPortalConstants.DATE_TYPE))
             {
-               value = DateUtils.formatDate(dateValue);
+               value = DateUtils.formatDate((Date) valueObj, java.util.TimeZone.getDefault());
             }
             else if (dateType.equalsIgnoreCase(ProcessPortalConstants.TIMESTAMP_TYPE))
             {
