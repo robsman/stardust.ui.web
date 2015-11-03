@@ -1637,10 +1637,13 @@ define(
                }, {
                   value : "data",
                   title : "Data"
-               }, {
-                  value : "DOCUMENT_REQUEST",
-                  title : "Document Request"
-               } ];
+               }
+//TODO: DOCUMENT_REQUEST should be enabled once Correspondance structure will be part of the the Predefined model.
+//               , {
+//                  value : "DOCUMENT_REQUEST",
+//                  title : "Document Request"
+//               }
+               ];
                MailIntegrationOverlay.prototype.getSourceOptions = function(item){
                    var sourceOptions = [ {
                           value : "repository",
@@ -1768,48 +1771,52 @@ define(
                      m_utils.jQuerySelect("#templateConfigurationTab").show();
                      m_utils.jQuerySelect("#attachmentsTemplateSourceTypeTab").hide();
                   }
-                  else
-                  {
-                     // filter Mail Attachments AP
-                     filteredAccessPoints = m_routeDefinitionUtils.filterAccessPoint(
-                              accessPoints, "mailAttachmentsAP");
-                     // add Document Request AP
-                     var documentRequestAp = m_routeDefinitionUtils.findAccessPoint(
-                              filteredAccessPoints, "DOCUMENT_REQUEST");
-                     var documentRequestType=m_model.findTypeDeclaration("PredefinedModel:CORRESPONDENCE");
-                     if(!documentRequestType){
-                        this.view
-                        .submitChanges(
-                                 {
-                                    attributes :{
-                                       "stardust:emailOverlay::attachmentsTemplateSource" :  "embedded"
-                                       }
-                                 }, true);
-                        
-                        this.view.errorMessages
-                        .push("DOCUMENT_REQUEST structure is not available in the current model, please create it.");
-                        this.view.showErrorMessages();
-                        return;
-                     }
-                     if (!documentRequestAp)
-                     {
-                        filteredAccessPoints.push({
-                           id : "DOCUMENT_REQUEST",
-                           name : "Document Request",
-                           dataType : "struct",
-                           direction : "IN",
-                           structuredDataTypeFullId : "PredefinedModel:CORRESPONDENCE",
-                           attributes : {
-                              "stardust:predefined" : true
-                           }
-                        });
-                     }
-                     specificAttributes["stardust:emailOverlay::attachmentsTemplateSource"] = "DOCUMENT_REQUEST";
-                     specificAttributes["stardust:emailOverlay::attachmentsTemplateSourceType"] = null;
-                     specificAttributes["stardust:emailOverlay::templateConfigurations"] = null;
-                     m_utils.jQuerySelect("#attachmentsTemplateSourceTypeTab").hide();
-                     m_utils.jQuerySelect("#templateConfigurationTab").hide();
-                  }
+//                  else
+//                  {
+//                     // filter Mail Attachments AP
+//                     filteredAccessPoints = m_routeDefinitionUtils.filterAccessPoint(
+//                              accessPoints, "mailAttachmentsAP");
+//                     // add Document Request AP
+//                     var documentRequestAp = m_routeDefinitionUtils.findAccessPoint(
+//                              filteredAccessPoints, "DOCUMENT_REQUEST");
+//                     //var documentRequestType=m_model.findTypeDeclaration(this.getScopeModel().id + ":"+ "DOCUMENT_REQUEST");
+//                     var documentRequestType=m_model.findTypeDeclaration("PredefinedModel:CORRESPONDENCE");
+//                     
+//                     if(!documentRequestType){
+//                        this.view
+//                        .submitChanges(
+//                                 {
+//                                    attributes :{
+//                                       "stardust:emailOverlay::attachmentsTemplateSource" :  "embedded"
+//                                       }
+//                                 }, true);
+//                        
+//                        this.view.errorMessages
+//                        .push("DOCUMENT_REQUEST structure is not available in the current model, please create it.");
+//                        this.view.showErrorMessages();
+//                        return;
+//                     }
+//                     if (!documentRequestAp)
+//                     {//TODO: this feature is disabled with 9.0.
+//                        filteredAccessPoints.push({
+//                           id : "DOCUMENT_REQUEST",
+//                           name : "Document Request",
+//                           dataType : "struct",
+//                           direction : "IN",
+//                           structuredDataTypeFullId : "PredefinedModel:CORRESPONDENCE",
+////                              this.getScopeModel().id + ":"
+////                                    + "DOCUMENT_REQUEST",
+//                           attributes : {
+//                              "stardust:predefined" : true
+//                           }
+//                        });
+//                     }
+//                     specificAttributes["stardust:emailOverlay::attachmentsTemplateSource"] = "DOCUMENT_REQUEST";
+//                     specificAttributes["stardust:emailOverlay::attachmentsTemplateSourceType"] = null;
+//                     specificAttributes["stardust:emailOverlay::templateConfigurations"] = null;
+//                     m_utils.jQuerySelect("#attachmentsTemplateSourceTypeTab").hide();
+//                     m_utils.jQuerySelect("#templateConfigurationTab").hide();
+//                  }
                   submitElements.attributes = specificAttributes;
                   submitElements.attributes["carnot:engine:camel::routeEntries"] = this.getRoute(submitElements.attributes,filteredAccessPoints);
                   submitElements.contexts = {
