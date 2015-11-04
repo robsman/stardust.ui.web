@@ -462,7 +462,8 @@ html, body {
 }
 
 .breadCrumbsToolbarWrapper {
-	x-background:url(./skin-images/toolbar-BG-border-bottom.png) center repeat-x;
+	/* x-background:url(./skin-images/toolbar-BG-border-bottom.png) center repeat-x; */
+	/* Commented above line as below line sets background to none so background image has no effect */ 
 	background:none !important;
 	width: 100%;
 }
@@ -484,11 +485,15 @@ html, body {
 
 .breadcrumbs a{
 	display:inline;
-	background:url(./skin-images/icons/breadcrumb-arrow.png) right no-repeat;
-	padding-right:10px;
+	padding-right:7px;
 	text-decoration:none;
-	margin:0 5px 0 0;
 	color:#00629A;
+}
+
+.breadcrumbs a:after{
+	font-family: "FontAwesome";
+	content: "\f101"; /* fa-angle-double-right */
+	margin-left: 5px;
 }
 
 .breadcrumbs a:hover{
@@ -5195,34 +5200,6 @@ iceRowSelSelectedMouseOver .iceOutTxt{
     height: 21px;
 }
 
-/* .icePnlClpsblHdr div {
-    background: url( './css-images/PnlHdr_down.gif' ) no-repeat top left;
-    padding: 5px 0 0 5px;
-    margin: -2px 0 0 -2px;
-    background-position: 3px 2px;   
-}
-
-.icePnlClpsblHdr-dis div {
-    background: url( './css-images/PnlHdr_down_dis.gif' ) no-repeat top left;
-    padding: 5px 0 0 5px;
-    margin: -2px 0 0 -2px;
-    background-position: 3px 2px;     
-}
-
-.icePnlClpsblColpsdHdr div {
-    background: url( './css-images/PnlHdr_collapsed.gif' ) no-repeat top left;
-    padding: 5px 0 0 5px;
-    margin: -2px 0 0 -2px;
-    background-position: 3px 2px;     
-}
-
-.icePnlClpsblColpsdHdr-dis div {
-    background: url( './css-images/PnlHdr_collapsed_dis.gif' ) no-repeat top left;
-    padding: 5px 0 0 5px;
-    margin: -2px 0 0 -2px;
-    background-position: 3px 2px;    
-} */
-
 .icePnlClpsbl-dis, .icePnlClpsblHdr-dis, .icePnlClpsblCnt-dis,
 .icePnlClpsblColpsd-dis, .icePnlClpsblColpsdHdr-dis, .icePnlClpsblColpsdCnt-dis{
     color: #999;
@@ -5542,64 +5519,44 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 }
 
 .icePnlClpsblHdr:before{
-    /* background-image: url('./images/flat-icons/panelHeader-triggerCollapse-light_16x22.png') !important; */
-    font-family: "FontAwesome";
+	font-family: "FontAwesome";
     content: "\f0da";
-    font-size: 1.33333333em !important;
+	font-size: 1.33333333em !important;
     background-position: -4px 5px;   
 }
 
 .icePnlClpsblHdr:hover{
-    /* background-image: url('./images/flat-icons/panelHeader-triggerCollapse-light_16x22.png') !important; */
-    /*font-family: "FontAwesome";
-    content: "\f0da";*/
     color: #7B7163;
-    /*background-position: -4px 5px;*/
 }
 
 .icePnlClpsblHdr-dis:before{
-   /*  background: url('./images/flat-icons/panelHeader-triggerCollapse-light_16x22.png' ) no-repeat; */
-   	font-family: "FontAwesome";
+	font-family: "FontAwesome";
     content: "\f0da";
-    font-size: 1.33333333em !important;
+	font-size: 1.33333333em !important;
     background-position: -4px 5px;  
 }
 .icePnlClpsblHdr-dis:hover {
-    /* background: url('./images/flat-icons/panelHeader-triggerCollapse.png' ) no-repeat; */
-    /*font-family: "FontAwesome";
-    content: "\f0da";*/
     color: #7B7163;
-    /*background-position: -4px 7px;*/  
 }
 
 .icePnlClpsblColpsdHdr:before{
-    /* background: url('./images/flat-icons/panelHeader-triggerExpand-light_16x22.png')  no-repeat; */
     font-family: "FontAwesome";
     content: "\f0d7";
     font-size: 1.33333333em !important;
     background-position: -4px 5px;     
 }
 .icePnlClpsblColpsdHdr:hover {
-    /* background: url('./images/flat-icons/panelHeader-triggerExpand.png')  no-repeat; */
-    /*font-family: "FontAwesome";
-    content: "\f0d7";*/
     color: #7B7163;
-    /*background-position: -4px 7px;*/     
 }
 
 .icePnlClpsblColpsdHdr-dis:before{
-    /* background: url('./images/flat-icons/panelHeader-triggerExpand-light_16x22.png')  no-repeat; */
     font-family: "FontAwesome";
     content: "\f0d7";
     font-size: 1.33333333em !important;
     background-position: -4px 5px;    
 }
 .icePnlClpsblColpsdHdr-dis:hover {
-   /*  background: url('./images/flat-icons/panelHeader-triggerExpand.png')  no-repeat; */
-    /*font-family: "FontAwesome";
-    content: "\f0d7";*/
     color: #7B7163;
-    /*background-position: -4px 7px;*/    
 }
 .icePnlClpsblCnt, .icePnlClpsblCnt-dis {
 	background-color: transparent;
