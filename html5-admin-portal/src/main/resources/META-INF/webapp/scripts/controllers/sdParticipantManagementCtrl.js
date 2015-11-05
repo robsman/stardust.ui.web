@@ -18,10 +18,11 @@
           'sdParticipantManagementCtrl',
           ['$q', 'sdParticipantManagementService', 'sdLoggerService', 'sdUtilService', 'sdUserService',
               'sdLoggedInUserService', 'sdPreferenceService', 'sdI18nService', '$scope', 'sdMessageService',
-              'sdPortalConfigurationService',
+              'sdPortalConfigurationService', '$timeout',
               ParticipantManagementCtrl]);
 
   var _q;
+  var _timeout;
   var _sdParticipantManagementService
   var trace;
   var _sdUtilService;
@@ -30,6 +31,7 @@
   var _sdLoggedInUserService;
   var _sdPreferenceService, _sdMessageService;
   var  lazyLoad = false;
+  var _scope;
   
   var DEFAULT_PAGE_SIZE = 30;
 
@@ -37,7 +39,7 @@
    * 
    */
   function ParticipantManagementCtrl($q, sdParticipantManagementService, sdLoggerService, sdUtilService, sdUserService,
-          sdLoggedInUserService, sdPreferenceService, sdI18nService, $scope, sdMessageService, sdPortalConfigurationService) {
+          sdLoggedInUserService, sdPreferenceService, sdI18nService, $scope, sdMessageService, sdPortalConfigurationService,$timeout) {
     trace = sdLoggerService.getLogger('admin-ui.sdParticipantManagementCtrl');
     _q = $q;
     _sdParticipantManagementService = sdParticipantManagementService;
@@ -47,6 +49,8 @@
     _sdPreferenceService = sdPreferenceService;
     _sdMessageService = sdMessageService;
     _sdI18nService = sdI18nService;
+    _timeout = $timeout;
+    _scope = $scope;
     i18n = $scope.sdI18nHtml5Admin = sdI18nService.getInstance('html5-admin-portal').translate;
 
     this.allUsersTable = null;
@@ -148,6 +152,71 @@
 	  return result;
   }
   
+  //Test our paths against a comparator function and,
+  //remove all path segments beneath a terminal match
+  //and then return only those paths remaining with a
+  //length greater than zero.
+  ParticipantManagementCtrl.prototype.filterPaths = function(paths,comparator){
+    
+    paths.forEach(function(path){
+      
+      var matched = false,
+          length = path.length,
+          i;
+      
+      for(i=path.length-1; i >= 0 && !matched;i--){
+        if(comparator(path[i],"D")){
+            matched=true;
+        }
+        else{
+          //remove non matching leaf
+          path.splice(i,1);
+        }
+      }
+      
+    });//forEach end
+    
+    return paths.filter(function(path){
+      return path.length > 0;
+    });
+    
+  };
+  
+  /**
+   * Compute all complete paths in our model data (paths to leaf nodes).
+   */
+  ParticipantManagementCtrl.prototype.getAllPaths = function(items){
+    
+    //Array which all calls will push their completed path arrays onto.
+    var master = []; 
+    
+    //Recursive call to travese every path in our data.
+    var rFXi = function(item,itemArray){
+      
+      itemArray.push(item);//always push current item
+      
+      //If we still have children process them recursively
+      if(item.children && item.children.length > 0){
+        item.children.forEach(function(child){
+          rFXi(child,itemArray.slice());
+        });
+      }
+      
+      //else we are at a leaf node so push complete path array onto master.
+      else{
+        master.push(itemArray);
+      }
+      
+    };
+    
+    //boot up our recursive calls
+    items.forEach(function(child){
+      rFXi(child,[]);
+    });
+
+    return master;
+  };
+  
   /**
    * Returns a DOM string representing the sdTreeNode template we want the 
    * the sdTreeCurseFx directive to leverage in producing a treeNode for
@@ -159,8 +228,11 @@
 	  var template;
 	  
 	  template ='<li sd-tree-node ng-repeat="item in item.children" \
-					 sda-droppable-expr="ctrl.isDroppable(item)" sda-menu-items="(,)" \
-					 sda-node-id="item.uuid" sda-is-leaf="!item.children || item.children.length == 0" \
+					 sda-droppable-expr="ctrl.isDroppable(item)" \
+		             sda-menu-items="(,)" \
+					 sda-node-id="item.uuid" \
+		   			 sda-lazy-compile="true" \
+		             sda-is-leaf="!item.children || item.children.length == 0" \
 					 sda-label="item.name"> \
 					<ul> \
 						<li sd-tree-curse-fx></li> \
@@ -521,18 +593,50 @@
   };
   
   /**
+   * Given a filter function to test against a node, exand paths in our participant tree
+   * to nodes which test true.
+   * @param comparatorFx
+   */
+  ParticipantManagementCtrl.prototype.expandParticipantNodes = function(comparatorFx){
+	  
+	  var allPaths = this.getAllPaths(this.models);
+	  var filteredPaths = this.filterPaths(allPaths,comparatorFx);
+	  var that = this;
+		 
+	  filteredPaths.forEach(function(path){
+		  path.forEach(function(node){
+			  var treeNode = that.treeApi.childNodes[node.uuid]
+			  console.log(treeNode.nodeItem.type);
+			  if(treeNode && treeNode.nodeItem.type != "USER"){
+					  treeNode.isVisible = true;
+					  try{_scope.$apply();}
+					  catch(ex){}
+			  }
+		  });
+	  });
+  };
+
+  
+  /**
    * Wrapper for our TreeApi's filter function.
    * @param filter - string to match upon, in the case when no
    * 				 filter is passed then the tree will be 
    * 				 reset to its unfiltered state.
    */
   ParticipantManagementCtrl.prototype.filterTree = function(filter){
+	  
 	  var comparatorFx, //filterFX for the filterTree invocation.
 	  	  matches; //match array returned from our filter function;
 	  
+	  //Simple string comparison
 	  comparatorFx= function(nodeItem){
 		  return nodeItem.name.indexOf(filter) > -1;
 	  }
+	  
+	  //as our tree-nodes are set to lazy compile we need to 
+	  //expand all our matched nodes before we can leverage the
+	  //treeApi against them (they dont exist unless expanded).
+	  this.expandParticipantNodes(comparatorFx);
 	  
 	  //deselect all currently selected nodes
 	  this.selectedTreeNodes = [];
@@ -577,18 +681,26 @@
 		  });
 	  };
 	  
+	  //as our tree-nodes are set to lazy compile we need to 
+	  //expand all our matched nodes before we can leverage the
+	  //treeApi against them (they dont exist unless expanded).
+	  this.expandParticipantNodes(comparatorFx);
+	  
 	  this.treeApi.filterTree(comparatorFx,true);
   }
   
   ParticipantManagementCtrl.prototype.filterForEmptyUsers = function(){
-	  var comparatorFx; //filterFX for the filterTree invocation.
-	  
+	  var comparatorFx, //filterFX for the filterTree invocation.
+	  	  that = this;
 	  //deselect all currently selected nodes
 	  this.selectedTreeNodes = [];
 	  
 	  comparatorFx= function(nodeItem){
-		  return nodeItem.type !== "USER" && nodeItem.children.length===0;
+		  return that.isDroppable(nodeItem) && 
+		         nodeItem.children && 
+		         nodeItem.children.length ===0;
 	  }
+	  this.expandParticipantNodes(comparatorFx);
 	  this.treeApi.filterTree(comparatorFx,true);
   };
   
