@@ -17,14 +17,14 @@ var html5Deps = function() {
 				"html5-common/styles/3rd-party/glyphicons/3.3.2/glyphicons.css",
 				"html5-common/styles/portal-icons.css",
 				"html5-common/styles/3rd-party/datatables/1.9.4/jquery.dataTables.css",
-				"html5-common/styles/3rd-party/bootstrap/3.3.2/css/bootstrap-theme.css",
+				"html5-common/styles/3rd-party/bootstrap/3.3.2/css/bootstrap-theme.min.css",
 				"html5-common/styles/3rd-party/bootstrap/3.3.2/css/bootstrap-modal.css",
 				"html5-common/styles/sd-data-table.css",
 				"html5-common/styles/sd-autoComplete.css",
 				"html5-common/styles/html5-common.css",
 				"html5-common/styles/sdTree.css",
 				"html5-process-portal/styles/html5-process-portal.css",
-				"html5-common/styles/3rd-party/font-awesome/4.4.0/css/font-awesome.css"
+				"html5-common/styles/3rd-party/font-awesome/4.4.0/css/font-awesome.min.css"
 				];
 		
 
