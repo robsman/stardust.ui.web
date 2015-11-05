@@ -441,11 +441,4 @@
 	<div sd-switch-process-dialog sda-show-dialog="activityTableCtrl.showSwitchProcessDialog" sda-on-confirm="activityTableCtrl.switchCompleted"
 	     sda-process-instances="activityTableCtrl.processesToAbort" >
 	</div>
-	
-		<button ng-if="activityTableCtrl.isActivityTableMode();" aid="PP-ActivityTable-AbortPopover" ng-click="activityTableCtrl.openAbortPopover($event,null,141)" ng-disabled="activityTableCtrl.dataTable.getSelection() < 1" 
-					class="button-link tbl-toolbar-item tbl-tool-link" 
-					style="position:relative;"
-			        title ="{{i18n('views-common-messages.views-abortProcess-menu-tooltip')}}">
-				<i class="pi pi-menu-dropdown"></i>
-			</button>
 </div>
