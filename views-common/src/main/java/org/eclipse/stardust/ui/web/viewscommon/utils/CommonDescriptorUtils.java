@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
+import java.math.BigDecimal;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -42,16 +44,22 @@ import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
+import org.eclipse.stardust.engine.core.struct.ClientXPathMap;
+import org.eclipse.stardust.engine.core.struct.IXPathMap;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
+import org.eclipse.stardust.engine.core.struct.StructuredDataXPathUtils;
 import org.eclipse.stardust.engine.core.struct.TypedXPath;
+import org.eclipse.stardust.engine.core.struct.XPathAnnotations;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.plugin.support.ServiceLoaderUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataMapping;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
@@ -324,6 +332,44 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
                }
                else
                {
+               // Format numeric descriptor values with thousand's seperator if supported by
+                  // underlying data
+                  if (dataPathDetails.isDescriptor())
+                  {
+                     if (!isEmpty(descriptorValue))
+                     {
+                        if (null != dataDetails && StructuredDataConstants.STRUCTURED_DATA.equals(dataDetails.getTypeId()))
+                        {
+                           Class dataClass = dataPathDetails.getMappedType();
+                           IXPathMap xPathMap = ClientXPathMap.getXpathMap(model, dataDetails);
+                           String xPath = StructuredDataXPathUtils.getXPathWithoutIndexes(dataPathDetails.getAccessPath());
+                           TypedXPath typedXPath = xPathMap.getXPath(xPath);
+                           if(null != typedXPath)
+                           {
+                              Number value = getNumericValue(dataClass, descriptorValue);
+                              if(value == null && "decimal".equals(typedXPath.getXsdTypeName()))
+                              {
+                                 value = new BigDecimal(descriptorValue.toString());
+                              }
+                              if(value !=null)
+                              {
+                                 XPathAnnotations annotation = typedXPath.getAnnotations();
+                                 if (annotation != null)
+                                 {
+                                    String descriptorLabelValue = annotation.getElementValue(
+                                          XPathAnnotations.IPP_ANNOTATIONS_NAMESPACE, new String[] {
+                                                "ui", Constants.INPUT_PREFERENCES_NUMBER_GROUP_KEY_LABEL});
+                                    if (null != descriptorLabelValue && Boolean.valueOf(descriptorLabelValue))
+                                    {
+                                       String numberValue = formatNumberInLocale(value);
+                                       descriptors.put(entry.getKey(), numberValue);
+                                    }
+                                 }
+                              }
+                           }
+                        }
+                     }
+                  }
                   GenericDataMapping mapping = new GenericDataMapping(dataPathDetails);
                   DataMappingWrapper dmWrapper = new DataMappingWrapper(mapping, null, false);
 
@@ -651,6 +697,49 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
          }
       }
       return isEnum;
+   }
+   
+   public static Number getNumericValue(Class type, Object obj)
+   {
+      Number val = null;
+      String value = obj.toString();
+      if (type == Integer.class)
+      {
+         val = Integer.valueOf(value);
+      }
+      else if (type == Long.class)
+      {
+         val = Long.valueOf(value);
+      }
+      else if (type == Short.class)
+      {
+         val = Short.valueOf(value);
+      }
+      else if (type == Byte.class)
+      {
+         val = Byte.valueOf(value);
+      }
+      else if (type == Float.class)
+      {
+         val = Float.valueOf(value);
+      }
+      else if (type == Double.class)
+      {
+         val = Double.valueOf(value);
+      }
+      else if (type == BigDecimal.class)
+      {
+         double doubleValue= Double.valueOf(value.toString());
+         val = BigDecimal.valueOf(doubleValue);
+      }
+      return val;
+   }
+   
+   public static String formatNumberInLocale(Number number)
+   {
+      NumberFormat numberFormatter;
+      numberFormatter = NumberFormat.getNumberInstance(FacesUtils.getLocaleFromRequest());
+      return numberFormatter.format(number);
    }
    
    /**
