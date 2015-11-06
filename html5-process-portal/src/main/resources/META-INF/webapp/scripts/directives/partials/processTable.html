@@ -223,9 +223,17 @@
 	</table>
 	
 	<!--Dialog for abort process  -->
-	<div sd-abort-process-dialog sda-show-dialog="processTableCtrl.showAbortProcessDialog" sda-on-abort-complete="processTableCtrl.abortCompleted()"
+	<div sd-abort-process-dialog sda-show-dialog="processTableCtrl.showAbortProcessDialog" sda-on-abort-complete="processTableCtrl.showNotificationAndRefresh(notification)"
 	     sda-processes-to-abort="processTableCtrl.processesToAbort" >
 	</div>
+	
+	<!--Dialog for abort process Notification -->	
+   <div style="float: left;" sd-dialog sda-show="processTableCtrl.showNotificationDialog"
+	    sda-title="{{i18n('views-common-messages.common-notification-title')}}" 
+	    sda-type="custom" 
+	    sda-scope="this" 
+	    sda-template="plugins/html5-process-portal/scripts/directives/partials/abortProcessNotification.html">
+   </div>
 	
 	<span sd-popover="processTableCtrl.popoverDirective" id="abortMenu">
 		<div class="popover-body">

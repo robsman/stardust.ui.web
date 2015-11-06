@@ -310,7 +310,7 @@
 								sda-width="400px" sda-height="70px"
 								sda-aid-prefix="RelocationDialog-confirm"></div>
 						</button>
-						<button ng-click="bpmCommon.stopEvent($event);activityTableCtrl.openProcessDocumentsPopover(rowData, $event);" aid="PP-ActivityTable-OpenProcessDocuments"
+						<button ng-click="activityTableCtrl.openProcessDocumentsPopover(rowData, $event);" aid="PP-ActivityTable-OpenProcessDocuments"
 						    ng-disabled="rowData.defaultCaseActivity ||rowData.isCaseInstance"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-processDocuments')}}" class="button-link tbl-tool-link">
 								<i class="pi pi-process-documents pi-lg"></i>
@@ -344,12 +344,19 @@
 		sda-on-confirm="activityTableCtrl.refresh()">
 	</span>
 	<!--Dialog for abort Activity  -->
-	<div sd-abort-activity-dialog sda-show-dialog="activityTableCtrl.showAbortActivityDialog" sda-on-abort-complete="activityTableCtrl.refresh()" 
+	<div sd-abort-activity-dialog sda-show-dialog="activityTableCtrl.showAbortActivityDialog" sda-on-abort-complete="activityTableCtrl.showNotificationAndRefresh(notification)" 
 	     sda-activities-to-abort="activityTableCtrl.activitiesToAbort" >
 	</div>
+	<!--Dialog for abort Activity Notification -->	
+   <div style="float: left;" sd-dialog sda-show="activityTableCtrl.showNotificationDialog"
+	    sda-title="{{i18n('views-common-messages.common-notification-title')}}" 
+	    sda-type="custom" 
+	    sda-scope="this" 
+	    sda-template="plugins/html5-process-portal/scripts/directives/partials/abortActivityNotification.html">
+   </div>
 
 	<span sd-popover="activityTableCtrl.popoverDirective" id="abortMenu">
-		<div class="popover-body" >
+		<div class="popover-body">
 			<div>
 				<button ng-disabled="activityTableCtrl.processesToAbort.length < 1" ng-click="activityTableCtrl.openSwitchDialog()" 
 					class="button-link tbl-toolbar-item tbl-tool-link" style="margin-right: 0px;">

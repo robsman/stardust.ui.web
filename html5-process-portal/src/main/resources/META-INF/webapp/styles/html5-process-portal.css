@@ -46,6 +46,7 @@
 /* ********** Abort Activity Dialog ********** */
 .abort-activity-form-content{
 padding-bottom : 10px;
+margin-left : 10px;
 }
 
 .abort-activity-notication-message{

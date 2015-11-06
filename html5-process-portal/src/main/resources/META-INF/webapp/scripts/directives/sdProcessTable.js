@@ -229,6 +229,16 @@
 			ProcessTableCompiler.prototype.refresh = function() {
 				self.dataTable.refresh(true);
 			};
+			
+			
+			ProcessTableCompiler.prototype.showNotificationAndRefresh = function(notifications){
+				this.notification = notifications;
+				this.showNotificationDialog = true;
+				if(!sdUtilService.isEmpty(this.notification.result)){
+					this.dataTable.refresh(true);
+				}
+				
+			}
 
 			/**
 			 * 

@@ -24,3 +24,14 @@
 		ng-bind="abortProcessCtrl.i18n('views-common-messages.views-common-process-abortProcess-headerMsg-root')"></div>
 </div>
 
+<div class="modal-footer">
+	<div class="button-pane cf" >
+		<div class="button-alignment" >
+			<div class="right">
+			  	<button class="button" ng-click="abortProcessCtrl.confirm(this)">{{abortProcessCtrl.abortProcess.isPromptRequired ?  abortProcessCtrl.i18n('views-common-messages.common-ok') : abortProcessCtrl.i18n('views-common-messages.common-yes')}}</button>
+			    <button class="button" ng-click="abortProcessCtrl.closeThisDialog(this)">{{abortProcessCtrl.abortProcess.isPromptRequired ?  abortProcessCtrl.i18n('views-common-messages.common-close') : abortProcessCtrl.i18n('views-common-messages.common-no')}}</button>
+			</div>
+	    </div>
+    </div>
+</div>
+
