@@ -314,10 +314,10 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		
 		if(uiData.type == 'email'){
 			uiData = formatInDataAddress(uiData, data.Recipients_asArray)
-			uiData.subject = data.Subject ? data.Subject.__text :	uiData.subject ;
+      uiData.subject = data.Subject ? data.Subject.__text ? data.Subject.__text : data.Subject : uiData.subject;	
 		}
 
-		uiData.content =  data.MessageBody ?  data.MessageBody.__text :  uiData.content;
+   uiData.content = data.MessageBody ? data.MessageBody.__text ? data.MessageBody.__text : data.MessageBody : uiData.content;
 	
 	  //Reason for using join -
     //xml2JS.js google library is used to converts xml received from server to json in interaction.js
