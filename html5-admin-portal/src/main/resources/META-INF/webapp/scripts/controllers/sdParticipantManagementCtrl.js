@@ -577,7 +577,7 @@
 
     //Create User, Remove all users
     if (item.type==="DEPARTMENT" || item.type === "DEPARTMENT_DEFAULT" || item.type==="ROLE_SCOPED" || 
-    	item.type==="ROLE_UNSCOPED" || item.type==="ORGANIZATION_UNSCOPED"){
+    	item.type==="ROLE_UNSCOPED" || item.type==="ORGANIZATION_UNSCOPED" || item.type==="USERGROUP"){
       menu.push("(createUser, LABEL)".replace('LABEL',
               adminMessages('views.participantMgmt.participantTree.contextMenu.createUser')));
       menu.push("(removeAllUsers, LABEL)".replace('LABEL',
