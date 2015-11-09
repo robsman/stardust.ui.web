@@ -278,13 +278,13 @@
 
 		return [{
 			id : "minutes",
-			label :_filter("uppercase")( _sgI18nService.translate('portal-common-messages.portalFramework-humanDate-MINUTES',"Minutes"))
+			label : _sgI18nService.translate('portal-common-messages.portalFramework-humanDate-MINUTES',"Minutes")
 		}, {
 			id : "hours",
-			label : _filter("uppercase")(_sgI18nService.translate('portal-common-messages.portalFramework-humanDate-HOURS',"Hours"))
+			label :_sgI18nService.translate('portal-common-messages.portalFramework-humanDate-HOURS',"Hours")
 		}, {
 			id : "days",
-			label :_filter("uppercase")( _sgI18nService.translate('portal-common-messages.portalFramework-humanDate-DAYS',"Days"))
+			label : _sgI18nService.translate('portal-common-messages.portalFramework-humanDate-DAYS',"Days")
 		}];
 	}
 

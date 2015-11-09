@@ -27,7 +27,7 @@
 }
 
 .gantt-chart-legend-option {
-	margin-left: 25px;
+	margin-left: 15px;
 }
 
 .gantt-chart-legend-symbol {
@@ -42,11 +42,9 @@
 }
 
 .majorTimeLine {
-	background-color: #7081FF;
 	text-align: center;
 	border-right: 1px solid;
 	border-bottom: 2px solid white;
-	color: white;
 	display: inline-block;
 	font-weight: bold;
 	white-space: nowrap;
@@ -54,15 +52,17 @@
     text-overflow: ellipsis;  
     -o-text-overflow: ellipsis; 
      z-index: 3;
+     background: #A69A88;
+	color: #FFF;
 }
 
 .minorTimeLine {
-	background-color: #7081FF;
 	text-align: center;
-	color: white;
 	border-right: 1px solid;
 	display: inline-block;
 	z-index: 3;
+	background: #A69A88;
+	color: #FFF;
 }
 
 .timeline {
@@ -101,18 +101,26 @@
 	display: none;
 }
 
-#gantt_chart_container .tbl-hdr-col
-{
+#gantt_chart_container .tbl-hdr-col {
 	padding: 0px;
 	text-align: left;
 	white-space:nowrap;
 }
 
-.gantt-chart-time-frame-picker{
+.gantt-chart-time-frame-picker {
 	margin: 5px 5px 5px 0;
+	min-width: 180px;
 }
 
 .gantt-chart-tool-bar {
 	margin: 0 5px 2px 5px;
 }
 
+.gantt-chart-activate-button {
+	float: right;
+}
+
+.gantt-chart-select-box {
+	min-width: 100px;
+    width: auto;
+}

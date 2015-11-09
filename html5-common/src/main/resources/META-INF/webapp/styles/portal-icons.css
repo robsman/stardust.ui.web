@@ -787,11 +787,13 @@ span.pi-case:before{
 	content: "\f05a"; /* fa-info-circle */
 }
 
+.pi-tree-expand:before,
 .pi-expand-all:before{
 	font-family: "FontAwesome";
 	content: "\f196"; /* fa-plus-square-o */
 }
 
+.pi-tree-collapse:before,
 .pi-collapse-all:before{
 	font-family: "FontAwesome";
 	content: "\f147"; /* fa-minus-square-o */
@@ -1495,13 +1497,11 @@ span.pi-case-menu-open:after {
 	content:'\F05E'; /* sc-gear-minus */
 }
 
-.pi-tree-collapse:before,
 .pi-minus:before{
 	font-family:"FontAwesome";
 	content:'\f068'; /* fa-minus */
 }
 
-.pi-tree-expand:before,
 .pi-plus:before{
 	font-family:"FontAwesome";
 	content:'\f067'; /* fa-plus */

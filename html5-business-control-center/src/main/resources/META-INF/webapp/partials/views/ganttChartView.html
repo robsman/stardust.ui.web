@@ -2,24 +2,18 @@
 <div class="ng-hide" ng-show="true" ng-controller="sdGanttChartCtrl as ctrl">
 	<!-- ng-show="ctrl.columnData.length > 0" -->
 	<div >	
-		<div class="iceOutLbl" style="font-size:1.5em"> {{ctrl.process.processName}} (#{{ctrl.process.oid}})</div>
+		<div class="heading"  > {{ctrl.process.processName}} (#{{ctrl.process.oid}})</div>
 		<div> <span class="iceOutLbl spacing-right">{{i18n('business-control-center-messages.views-customColumn-startDate')}}</span> <span> {{ctrl.process.startTime | date: ctrl.timeFormat}} </span> </div>
-		
-		</br>
-		
 		<div> 
-			<select ng-model="ctrl.selected.legend" ng-change="ctrl.onLegendChange();"  ng-if ="ctrl.legendCategories.length > 1"
+			<select class="gantt-chart-select-box" ng-model="ctrl.selected.legend" ng-change="ctrl.onLegendChange();"  ng-if ="ctrl.legendCategories.length > 1"
 					ng-options="opt.id as opt.label for opt in ctrl.legendCategories" aid="BCC-GanttChart-ChangeLegend">
 			</select>
 			<span class="iceOutLbl" ng-if ="ctrl.legendCategories.length < 2">{{ctrl.legendCategories[0].label}}: </span>
-		<span ng-repeat=" opt in ctrl.legends" class="gantt-chart-legend-option">
-			<span ng-bind="opt.label"> </span>
-			<i class="pi pi-legend pi-lg gantt-chart-legend-symbol" ng-attr-style="color:{{opt.color}}; background-color :{{opt.color}}"></i>
-		</span>
-		
+			<span ng-repeat=" opt in ctrl.legends" class="gantt-chart-legend-option">
+				<span ng-bind="opt.label"> </span>
+				<i class="pi pi-legend pi-lg gantt-chart-legend-symbol" ng-attr-style="color:{{opt.color}}; background-color :{{opt.color}}"></i>
+			</span>
 		</div>
-	
-	<br/>
 	
 <div id="gantt_chart_container">
 		
@@ -29,7 +23,7 @@
 				<tr>
 					<th sda-label="">  
 						<div class="gantt-chart-time-frame-picker">
-							<select ng-model="ctrl.selected.timeFrame" ng-change="ctrl.onTimeFrameChange();" aid="BCC-GanttChart-ChangeTimeFrame"
+							<select class="gantt-chart-select-box" ng-model="ctrl.selected.timeFrame" ng-change="ctrl.onTimeFrameChange();" aid="BCC-GanttChart-ChangeTimeFrame"
 							 ng-options="opt.id as opt.label for opt in ctrl.timeFrames"> </select> 
 						</div>
 						<div class="gantt-chart-tool-bar">	
@@ -78,18 +72,19 @@
 			<tbody>
 				<tr>
 					<td sda-tree-column >
+					<div style="white-space: nowrap;">
 						<span class="identifierIcon spacing-right"  ng-switch on="rowData.type"> 
 							<span ng-switch-default>  <i class="pi pi-activity pi-lg"> </i></span>
 							<span ng-switch-when="process"> <i class="pi pi-process pi-lg"></i></span>
 							<span ng-switch-when="Subprocess"><i class="pi pi-process  pi-lg"></i></span>
 						</span>
-						
 						<span ng-bind="rowData.name" class="spacing-right"> </span> 
-						<span ng-show="rowData.activatable">
+						<span ng-show="rowData.activatable"  class="gantt-chart-activate-button">
 							<button ng-click="ctrl.activate(rowData);" class="button-link tbl-tool-link" title="{{i18n('business-control-center-messages.common-tooltip-activate')}}">
 								 <span ><i class="pi pi-activate pi-lg"></i> </span>
 							</button>
 						</span> 
+					</div>
 					</td>
 					<td style="padding-left: 0px;"> 
 						<span ng-mouseleave="rowData.toolTip = false"> <span
