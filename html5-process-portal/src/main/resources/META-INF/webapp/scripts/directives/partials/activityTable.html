@@ -143,12 +143,21 @@
 			<tr>
 				<td sda-exporter="rowData.activity.name" style="white-space: nowrap;">
 					<div ng-if="activityTableCtrl.isWorklistMode();"> 
-						<a ng-if="rowData.activatable || rowData.showResubmitLink" href="#" aid="PP-ActivityTable-activate"
-						  ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$activateItem(rowData);"
-							title="{{i18n('processportal.views-worklistPanel-tooltip-openActivity')}}" class="button-link tbl-tool-link"> 
-							{{rowData.activity.name}}
-						</a>
-						 <span ng-if="!rowData.activatable && !rowData.showResubmitLink" ng-bind="rowData.activity.name"> </span> 
+						<span ng-if="!rowData.isCaseInstance">
+							<a ng-if="rowData.activatable || rowData.showResubmitLink" href="#" aid="PP-ActivityTable-activate"
+							  ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$activateItem(rowData);"
+								title="{{i18n('processportal.views-worklistPanel-tooltip-openActivity')}}" class="button-link tbl-tool-link"> 
+								{{rowData.activity.name}}
+							</a>
+							 <span ng-if="!rowData.activatable && !rowData.showResubmitLink" ng-bind="rowData.activity.name"> </span> 
+						 </span>
+						 <span ng-if="rowData.isCaseInstance">
+							 <a  href="#" aid="PP-ActivityTable-activate"
+								  ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openProcessDetails(rowData);"
+									title="{{i18n('processportal.views-worklistPanel-tooltip-openActivity')}}" class="button-link tbl-tool-link"> 
+								{{rowData.activity.name}}
+							</a>
+						 </span>
 						<span ng-if="rowData.qualityAssuranceState"> 
 							<span ng-if="rowData.qualityAssuranceState ==='IS_REVISED'"> 
 								 <i class="pi pi-revised" style="margin-left: 2px;"></i>
@@ -161,7 +170,8 @@
 					
 					<div ng-if="activityTableCtrl.isActivityTableMode();">
 						<a href="#" ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openProcessDetails(rowData);" aid="PP-ActivityTable-OpenProcessDetails"
-							title="{{i18n('processportal.toolbars-workflowActions-tooltip-processContextExplorer')}}" class="button-link tbl-tool-link"> {{rowData.activity.name}}
+							title="{{i18n('processportal.toolbars-workflowActions-tooltip-processContextExplorer')}}" class="button-link tbl-tool-link"> 
+							{{rowData.activity.name}}
 						</a>
 					</div>
 				</td>
@@ -248,8 +258,8 @@
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-processContextExplorer')}}" class="button-link tbl-tool-link">
 							<i class="pi pi-process pi-lg"></i>
 						</button>
-						<button ng-if="activityTableCtrl.isActivityTableMode();" 	ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$activateItem(rowData);" aid="PP-ActivityTable-ActivateAction"
-							    ng-disabled="!rowData.activatable"	title="{{i18n('processportal.views-worklistPanel-tooltip-openActivity')}}" class="button-link tbl-tool-link">
+						<button ng-if="activityTableCtrl.isActivityTableMode();" ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$activateItem(rowData);" aid="PP-ActivityTable-ActivateAction"
+							    ng-disabled="!rowData.activatable || rowData.isCaseInstance"	title="{{i18n('processportal.views-worklistPanel-tooltip-openActivity')}}" class="button-link tbl-tool-link">
 							<i class="pi pi-activate pi-lg"></i>
 						</button>
 						<button ng-if="activityTableCtrl.defaultDelegateEnabled"  aid="PP-ActivityTable-DefaultDelegateAction"

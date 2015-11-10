@@ -754,25 +754,25 @@ public class ActivityTableUtils
                {
                   dto.completedBy = ActivityInstanceUtils.getPerformedByName(ai);
                   dto.participantPerformer = getParticipantPerformer(ai);
-                  dto.isCaseInstance = ai.getProcessInstance().isCaseProcessInstance();
                   dto.abortActivity = !dto.isCaseInstance && isAbortable(ai);
                   dto.delegable = isDelegable(ai);
                   dto.abortProcess = ProcessInstanceUtils.isAbortable(ai.getProcessInstance());
+                  
                }
                else
                {
                   dto.lastPerformer = getLastPerformer(ai, UserUtils.getDefaultUserNameDisplayFormat());
-                  dto.defaultCaseActivity = ActivityInstanceUtils.isDefaultCaseActivity(ai);
                   if (!dto.defaultCaseActivity)
                   {
                      dto.abortActivity = isAbortable(ai);
                      dto.delegable = isDelegable(ai);
                   }
-                  else
-                  {
-                     dto.processInstance.processName = getCaseName(ai);
-                  }
-
+               }
+               dto.defaultCaseActivity = ActivityInstanceUtils.isDefaultCaseActivity(ai);
+               dto.isCaseInstance = ai.getProcessInstance().isCaseProcessInstance();
+               if(dto.defaultCaseActivity)
+               {
+                  dto.activity.name = getCaseName(ai);
                }
                list.add(dto);
             }
