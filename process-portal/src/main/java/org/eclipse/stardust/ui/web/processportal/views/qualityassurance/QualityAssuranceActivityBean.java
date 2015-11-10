@@ -18,36 +18,38 @@ import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.dto.ActivityInstanceAttributes;
 import org.eclipse.stardust.engine.api.dto.ActivityInstanceAttributesImpl;
 import org.eclipse.stardust.engine.api.dto.QualityAssuranceResult;
-import org.eclipse.stardust.engine.api.dto.QualityAssuranceResultImpl;
 import org.eclipse.stardust.engine.api.dto.QualityAssuranceResult.ResultState;
+import org.eclipse.stardust.engine.api.dto.QualityAssuranceResultImpl;
 import org.eclipse.stardust.engine.api.model.ContextData;
 import org.eclipse.stardust.engine.api.model.QualityAssuranceCode;
+import org.eclipse.stardust.engine.api.runtime.ActivityCompletionLog;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.core.runtime.command.impl.QualityAssuranceCompleteCommand;
 import org.eclipse.stardust.ui.web.common.PopupUIComponentBean;
-import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
-import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
-import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
+import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
+import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.table.DataTableRowSelector;
 import org.eclipse.stardust.ui.web.common.table.SortableTable;
 import org.eclipse.stardust.ui.web.common.table.SortableTableComparator;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
 import org.eclipse.stardust.ui.web.processportal.common.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.processportal.common.UserPreferencesEntries;
+import org.eclipse.stardust.ui.web.processportal.common.WorkflowActivityCompletionLog;
 import org.eclipse.stardust.ui.web.processportal.view.ActivityDetailsBean;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
 import org.eclipse.stardust.ui.web.viewscommon.common.ValidationMessageBean;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
-import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ParametricCallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 
@@ -63,6 +65,7 @@ public class QualityAssuranceActivityBean extends PopupUIComponentBean
 {
 
    private static final long serialVersionUID = 4429473712364906234L;
+   private static final Logger trace = LogManager.getLogger(QualityAssuranceActivityBean.class);
 
    public static enum QAAction {
       PASS, FAIL
@@ -100,6 +103,7 @@ public class QualityAssuranceActivityBean extends PopupUIComponentBean
    {
       if (!reInitiate && qualityAssuranceActionInProgress)
       {
+         setActivityDetailsBean(activityDetailsBean);
          completeAction();
       }
       else
@@ -188,7 +192,7 @@ public class QualityAssuranceActivityBean extends PopupUIComponentBean
    /**
     * 
     */
-   public void continueCompleteAction(Map<String, Object> outData)
+   private void continueCompleteAction(Map<String, Object> outData)
    {
       // Create Quality Assurance result
       QualityAssuranceResult result = new QualityAssuranceResultImpl();
@@ -208,15 +212,32 @@ public class QualityAssuranceActivityBean extends PopupUIComponentBean
 
       QualityAssuranceCompleteCommand qualityAssuranceCompleteCommand = new QualityAssuranceCompleteCommand(
             activityInstanceAttributes, context);
-      qualityAssuranceCompleteCommand.execute(getServiceFactory());
-
-      // Close activity panel
-      if (null != parentView)
+      
+      ActivityCompletionLog acl = null;
+      try
       {
-         PortalApplication.getInstance().closeView(parentView, true);
+         acl = (ActivityCompletionLog) qualityAssuranceCompleteCommand.execute(getServiceFactory());
       }
+      catch (Exception e)
+      {
+         trace.error("Exception occured while completing quality assured activity", e);
+      }      
 
       closePopup();
+      
+      WorkflowActivityCompletionLog activityCompletionLog = null;
+
+      if (acl != null)
+      {
+         activityCompletionLog = new WorkflowActivityCompletionLog(acl.getCompletedActivity(), acl.getNextForUser(),
+               true, true, false);
+      }
+      else
+      {
+         activityCompletionLog = new WorkflowActivityCompletionLog(null, null, false, true, false);
+      }
+      // following call takes care of closing activity panel of current activity
+      activityDetailsBean.ContinueWithNextActivity(activityCompletionLog);
    }
 
    /**
