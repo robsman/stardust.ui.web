@@ -435,22 +435,32 @@ define(
                /**
                 * 
                 */
-               DecoratorApplicationView.prototype.valueChanged = function(ap)
-               {
-                  m_utils.debug("===>Value changed for " + ap.id);
-                  if (ap.attributes["carnot:engine:defaultValue"])
-                     m_utils.debug("Default value "
-                              + ap.attributes["carnot:engine:defaultValue"]);
-                     var submitElements = {};
-                     var attributes = this.getApplication().attributes;
-                     submitElements.attributes = attributes;
-                     submitElements.contexts = {
-                        application : {
-                           accessPoints : this.accessPoints
-                        }
-                     };
-                     this.submitChanges(submitElements, true);
-               }
+
+				DecoratorApplicationView.prototype.valueChanged = function(ap)
+				{
+					m_utils.debug("===>Value changed for " + ap.id);
+					if (ap.attributes["carnot:engine:defaultValue"]){
+						m_utils.debug("Default value "
+								  + ap.attributes["carnot:engine:defaultValue"]);
+
+						if (ap.primitiveDataType=="Timestamp"){
+							var date=jQuery.datepicker.parseDate("yy/mm/dd",  ap.attributes["carnot:engine:defaultValue"]);
+							if(date){
+								ap.attributes["carnot:engine:defaultValue"]=jQuery.datepicker.formatDate("yy/mm/dd",date )+" 00:00:00:000";
+							}
+						}
+					}
+					var submitElements = {};
+					var attributes = this.getApplication().attributes;
+					submitElements.attributes = attributes;
+					submitElements.contexts = {
+						application : {
+							accessPoints : this.accessPoints
+						}
+					};
+					this.submitChanges(submitElements, true); 
+				};
+
                /**
                 * Returns a list of available structured types in all Models
                 */
