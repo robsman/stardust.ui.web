@@ -1256,17 +1256,20 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          //TODO: hasNotJsonNull required here?
          if ( !hasNotJsonNull(processDefinitionJson, ModelerConstants.FORMAL_PARAMETERS_PROPERTY))
          {
+            processDefinition.setFormalParameterMappings(null);
+            processDefinition.setExternalRef(null);
+
             if (processDefinition.getFormalParameters() == null)
             {
                processDefinition.setFormalParameters(XpdlFactory.eINSTANCE.createFormalParametersType());
+               processDefinition.setFormalParameterMappings(ExtensionsFactory.eINSTANCE.createFormalParameterMappingsType());
             }
 
             if (processDefinition.getFormalParameters().getFormalParameter() != null)
             {
                processDefinition.getFormalParameters().getFormalParameter().clear();
             }
-            processDefinition.setFormalParameterMappings(null);
-            processDefinition.setExternalRef(null);
+
          }
       }
    }
