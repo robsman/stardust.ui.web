@@ -67,7 +67,10 @@ public class ExternalElementChangeTracker implements ChangePostprocessor
       }
       for (EObject candidate : change.getModifiedElements())
       {
-         trackModification(candidate, false, change);
+         if (!(candidate instanceof INodeSymbol)) 
+         {
+            trackModification(candidate, false, change);   
+         }         
       }
 
    }
