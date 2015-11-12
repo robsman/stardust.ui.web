@@ -620,6 +620,7 @@ Icon implementations
 	content: "\f0c1"; /* fa-link */
 }
 
+i.pi-case:before,
 .pi-email:before,
 span.pi-case:before{
 	font-family: "FontAwesome";
