@@ -185,6 +185,9 @@ padding : 5px;;
 	width : 100px;
 }
 
+.notification-icon {
+ 	float:left;
+ }
 
 .sd-abort-noti-dlg .notification-body {
 	padding: 0 25px 25px 25px;
