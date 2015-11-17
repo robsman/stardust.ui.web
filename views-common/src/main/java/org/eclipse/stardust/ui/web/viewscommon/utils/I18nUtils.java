@@ -194,7 +194,7 @@ public class I18nUtils
    {
       String label = null;
       LocalizerKey key = new LocalizerKey(ModelElementUtils.getBundleName(modelOID), QUALITY_ASSURANCE_CODE
-            + qaCode.getCode() + QUALITY_ASSURANCE_CODE_DESC);
+            + qaCode.getCode() + QUALITY_ASSURANCE_CODE_DESC, false);
       if (trace.isDebugEnabled())
       {
          trace.debug("use '" + key.getBundleName() + "' for label receivement");
@@ -225,7 +225,7 @@ public class I18nUtils
    {
       String label = null;
       LocalizerKey key = new LocalizerKey(ModelElementUtils.getBundleName(modelOID), QUALITY_ASSURANCE_CODE
-            + qaCode.getCode() + QUALITY_ASSURANCE_CODE_NAME);
+            + qaCode.getCode() + QUALITY_ASSURANCE_CODE_NAME, false);
       if (trace.isDebugEnabled())
       {
          trace.debug("use '" + key.getBundleName() + "' for label receivement");
