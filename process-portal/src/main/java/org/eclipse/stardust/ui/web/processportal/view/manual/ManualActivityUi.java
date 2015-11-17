@@ -118,15 +118,15 @@ public class ManualActivityUi
          {
             path = createDMSDataMapping(dataMapping, allInMappings, manualActivityPath);
          }
-         else if (ModelUtils.isEnumerationType(getModel(), dataMapping))
-         {
-            path = createStructureDataMapping(dataMapping, manualActivityPath);
-         }
          else if (ModelUtils.isPrimitiveType(getModel(), dataMapping))
          {
             path = createPrimitiveDataMapping(dataMapping, manualActivityPath);
          }
          else if (ModelUtils.isStructuredType(getModel(), dataMapping))
+         {
+            path = createStructureDataMapping(dataMapping, manualActivityPath);
+         }
+         else if (ModelUtils.isEnumerationType(getModel(), dataMapping))
          {
             path = createStructureDataMapping(dataMapping, manualActivityPath);
          }
