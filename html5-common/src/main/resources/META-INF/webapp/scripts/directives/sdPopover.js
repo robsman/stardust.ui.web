@@ -43,7 +43,7 @@
 				scope: true,
 				transclude: true,
 				template: ' <button ng-disabled="popoverDisabled" class="popover-btn button-link" ng-class="clazz"></button>'
-						+ ' <div ng-show="showPopover" class="popover-body-container popup-dlg" style="cursor:auto; position:fixed;"></div>',
+						+ ' <div ng-show="showPopover" class="popover-body-container popup-dlg" style="cursor:auto;"></div>',
 				compile: PopoverCompilerFn
 			};
 		
@@ -105,19 +105,33 @@
 									$(document).unbind('click', popoverCloseEvent);
 								} else if (scope.showPopover === true) {
 									popoverBodyContainer.css({'visibility': 'hidden'});
-									minWidth = minWidth || popoverBodyContainer.outerWidth();
+								
 									$timeout(function() {
-										var xPos = clkEvent.pageX - 5;
-										var yPos = clkEvent.pageY + 5;
-										var maxAllowedXPos = jQuery(window).width() - ( minWidth);
-										var maxAllowedYPos = jQuery(window).height() - popoverBodyContainer.outerHeight();
+									
+										var panelPosition = {};
+										//Finding the active panel.
+										$('.view-panel').each(function(i, obj) {
+											if($(obj).position().left > 0) {
+												panelPosition = $(obj).position();
+											}
+										});
+										
+										var xPos = clkEvent.pageX - 5 - panelPosition.left;
+										var yPos = clkEvent.pageY + 5 - panelPosition.top;
+										var maxAllowedXPos = jQuery(window).width() -  popoverBodyContainer.width() - panelPosition.left;
+										var maxAllowedYPos = jQuery(window).height() - popoverBodyContainer.outerHeight() - panelPosition.top;
 										
 										if (xPos > maxAllowedXPos) {
-											xPos = maxAllowedXPos;
+											xPos = maxAllowedXPos - (popoverBodyContainer.width()/2);
 										}
 										if (yPos > maxAllowedYPos) {
-											yPos = maxAllowedYPos;
+											yPos = maxAllowedYPos - (popoverBodyContainer.outerHeight()/2);
 										}
+										
+										//To Account for scroll
+										xPos = xPos + popoverBtn.scrollParent().last().scrollLeft();
+										yPos = yPos + popoverBtn.scrollParent().last().scrollTop();
+										
 										popoverBodyContainer.css({left: xPos + 'px', top: yPos + 'px'});
 										popoverBodyContainer.css({'visibility': 'visible'});
 									});

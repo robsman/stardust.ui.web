@@ -72,7 +72,6 @@
 			ProcessTableCompiler.prototype.initialize = function(attr, scope) {
 				var scopeToUse = scope.$parent;
 
-				trace.log("scopr tp use ",scopeToUse);
 				// Define data
 				self.processList = {};
 				self.dataTable = null; // Handle to data table instance, to be set later
@@ -529,7 +528,6 @@
 			 *
 			 */
 			ProcessTableCompiler.prototype.openAbortDialog = function(value) {
-				var self = this;
 				self.processesToAbort = [];
 
 				if (Array.isArray(value)) {
@@ -554,7 +552,6 @@
 			 *
 			 */
 			ProcessTableCompiler.prototype.abortCompleted = function() {
-				var self = this;
 				self.refresh();
 				sdViewUtilService.syncLaunchPanels();
 				self.processesToAbort = [];
@@ -679,7 +676,6 @@
 			 * 
 			 */
 			ProcessTableCompiler.prototype.openAbortPopover = function(event, rowItem) {
-				var self = this;
 				if (angular.isDefined(rowItem)) {
 					self.processesToAbort = [ rowItem ];
 				} else {
