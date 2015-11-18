@@ -14,8 +14,8 @@
 		<tr class="correspondence_section" ng-if="ctrl.selected.type == 'email' ">
 			<td class="correspondence_left_section"> 
 				<a class="iceOutLbl dialog_link" href="#" ng-click="ctrl.openAddressSelector('TO');" ng-if="!ctrl.readOnly"  aid="COM-Correspondence-ToAddSelector">
-					 {{ctrl.i18n('views-common-messages.views-correspondenceView-details-to')}} : </a>
-				<span class="iceOutLbl" ng-if="ctrl.readOnly">{{ ctrl.i18n('views-common-messages.views-correspondenceView-details-to')}} : </span>
+					 {{ctrl.i18n('views-common-messages.views-correspondenceView-details-to')}}: </a>
+				<span class="iceOutLbl" ng-if="ctrl.readOnly">{{ ctrl.i18n('views-common-messages.views-correspondenceView-details-to')}}: </span>
 			</td>
 			<td class="correspondence_right_section">	
 				<div class="address-book-ac-container">
@@ -45,8 +45,8 @@
 		<tr class="correspondence_section" ng-if="ctrl.selected.type == 'email'&& ctrl.selected.showCc">
 			<td class="correspondence_left_section"> 
 				<a class="iceOutLbl dialog_link" href="#" ng-click="ctrl.openAddressSelector('CC');"  ng-if="!ctrl.readOnly"  aid="COM-Correspondence-CCAddSelector">
-					{{ctrl.i18n('views-common-messages.views-correspondenceView-details-cc')}} : </a>
-				<span class="iceOutLbl" ng-if="ctrl.readOnly"> {{ctrl.i18n('views-common-messages.views-correspondenceView-details-cc')}} :  </span>
+					{{ctrl.i18n('views-common-messages.views-correspondenceView-details-cc')}}: </a>
+				<span class="iceOutLbl" ng-if="ctrl.readOnly"> {{ctrl.i18n('views-common-messages.views-correspondenceView-details-cc')}}:  </span>
 			</td>
 			<td class="correspondence_right_section">	
 				<div class="address-book-field-container">	
@@ -73,8 +73,8 @@
 	    <tr class="correspondence_section" ng-if="ctrl.selected.type == 'email' && ctrl.selected.showBcc">
 			<td class="correspondence_left_section"> 
 				<a class="iceOutLbl dialog_link" href="#" ng-click="ctrl.openAddressSelector('BCC');" ng-if="!ctrl.readOnly"  aid="COM-Correspondence-BCCAddSelector">
-					{{ctrl.i18n('views-common-messages.views-correspondenceView-details-bcc')}} :  </a>
-				<span class="iceOutLbl" ng-if="ctrl.readOnly">{{ctrl.i18n('views-common-messages.views-correspondenceView-details-bcc')}} : </span>
+					{{ctrl.i18n('views-common-messages.views-correspondenceView-details-bcc')}}:  </a>
+				<span class="iceOutLbl" ng-if="ctrl.readOnly">{{ctrl.i18n('views-common-messages.views-correspondenceView-details-bcc')}}: </span>
 			</td>
 			<td class="correspondence_right_section">	
 				<div class="address-book-field-container">
@@ -100,7 +100,7 @@
 		
 		<tr class="correspondence_section" ng-if="ctrl.selected.type == 'email'">
 			<td class="correspondence_left_section"> 
-				<span class="iceOutLbl">{{ctrl.i18n('views-common-messages.views.correspondenceView-details-subject')}} :  </span>
+				<span class="iceOutLbl">{{ctrl.i18n('views-common-messages.views.correspondenceView-details-subject')}}:  </span>
 			</td>
 			<td class="correspondence_right_section">	
 				<input class="correspondence_subject" ng-model="ctrl.selected.subject" type="text" ng-disabled="ctrl.readOnly"/>
@@ -109,8 +109,8 @@
 		<tr class="correspondence_section">
 			<td class="correspondence_left_section"> 
 				<a class="iceOutLbl dialog_link" href="#" ng-click="ctrl.openMessageTemplateSelector();"  ng-if="!ctrl.readOnly"  aid="COM-Correspondence-SelectTemplate">
-				{{ctrl.i18n('views-common-messages.views.correspondenceView-details-message')}} : </a>
-				<span class="iceOutLbl" ng-if="ctrl.readOnly">{{ctrl.i18n('views-common-messages.views.correspondenceView-details-message')}} : </span>
+				{{ctrl.i18n('views-common-messages.views.correspondenceView-details-message')}}: </a>
+				<span class="iceOutLbl" ng-if="ctrl.readOnly">{{ctrl.i18n('views-common-messages.views.correspondenceView-details-message')}}: </span>
 			</td>
 			<td class="correspondence_right_section">	
 				<textarea id="messageEditor" data-ng-model="ctrl.selected.content"
