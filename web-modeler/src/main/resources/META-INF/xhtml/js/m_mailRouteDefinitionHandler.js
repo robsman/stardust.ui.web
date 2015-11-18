@@ -453,7 +453,7 @@ define(
                   if(correspondenceAp)
                      return true;
                   if(!attributes["stardust:emailOverlay::templateConfigurations"])
-                     attributes["stardust:emailOverlay::templateConfigurations"]=[];
+                     attributes["stardust:emailOverlay::templateConfigurations"]="[]";
                   
                  if ((attributes["stardust:emailOverlay::attachmentsTemplateSource"]== "embedded" || 
                           attributes["stardust:emailOverlay::attachmentsTemplateSource"] == undefined)
