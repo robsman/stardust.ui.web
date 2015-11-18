@@ -1073,6 +1073,12 @@ public class DocumentMgmtUtility
     */
    public static String getCorrespondenceOutFolderPath(ActivityInstance ai)
    {
+	  // check if the current activity instance is part of Quality Assurance cycle
+	  // if yes, return correspondence folder path of monitored Activity Instance
+	  if (ai.getQualityAssuranceInfo() != null && ai.getQualityAssuranceInfo().getMonitoredInstance() != null)
+	  {
+		 ai = ai.getQualityAssuranceInfo().getMonitoredInstance(); 
+	  }
       return getCorrespondenceFolderPath(ai.getProcessInstance().getOID()) + CORRESPONDENCE_OUT + ai.getOID();
    }
    
