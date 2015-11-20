@@ -1019,7 +1019,7 @@ define(
                 */
                MailIntegrationOverlay.prototype.handleTemplateSourceChangeEvent = function()
                {
-                  var attributes = {};
+                  var attributes = this.getApplication().attributes;
                   var aps;
                   var accessPoints = this.getApplication().contexts.application.accessPoints;
                   if (this.templateSourceSelect.val() != "data")
