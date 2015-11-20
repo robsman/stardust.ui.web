@@ -2982,7 +2982,7 @@ public class ModelElementMarshaller implements ModelMarshaller
 
          for (DataMappingType dataMapping : activity.getDataMapping())
          {
-            if (dataMapping.getData().getId().equals(data.getId()))
+            if (dataMapping.getData() != null && dataMapping.getData().getId().equals(data.getId()))
             {
                if (!hasNotJsonNull(dataFlowJson, ModelerConstants.ID_PROPERTY))
                {
