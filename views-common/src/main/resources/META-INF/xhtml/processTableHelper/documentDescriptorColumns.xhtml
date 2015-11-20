@@ -19,7 +19,7 @@
 				<f:attribute name="processInstance"
 					value="#{row.activityInstance.processInstance}" />
 				<ice:panelGrid columns="2">
-					<ice:graphicImage value="#{processAttachment.documentIcon}" />
+					<i class="#{processAttachment.documentIcon}"></i>
 					<ice:outputText value="#{processAttachment.name}"
 						style="white-space: nowrap;" />
 				</ice:panelGrid>
@@ -42,7 +42,7 @@
 				<f:attribute name="processInstance"
 					value="#{row.activityInstance.processInstance}" />
 				<ice:panelGrid columns="2">
-					<ice:graphicImage value="#{document.documentIcon}" />
+					<i class="#{document.documentIcon}"></i>
 					<ice:outputText value="#{document.name}"
 						style="white-space: nowrap;" />
 				</ice:panelGrid>
