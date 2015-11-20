@@ -21,7 +21,10 @@
 		<tbody>
 			<tr>
 				<td sda-tree-column>
-				  <span ng-bind="rowData.name"></span>
+				   <span ng-if="rowData.name=='Total Process' && !rowData.isActivity" style="margin-left:-20px;">{{rowData.name}}</span>
+				   <span ng-if="rowData.name=='Total Activity' && rowData.isActivity" style="margin-left:-20px;">{{rowData.name}}</span>
+				   <span ng-if="rowData.name!='Total Activity' && rowData.isActivity"><i class="pi pi-lg pi-activity" style="margin-right:5px;"></i>{{rowData.name}}</span>
+				   <span ng-if="rowData.name!='Total Process' && !rowData.isActivity"><i class="pi pi-lg pi-root-process" style="margin-right:5px;"></i>{{rowData.name}}</span>
 				</td>
 				<td ng-repeat="cat in ctrl.categories" style="text-align: center;">
 					<i class="pi pi-fw pi-1x pi-tlv-status-circle"
