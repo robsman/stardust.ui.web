@@ -118,7 +118,7 @@ public class ClientSideDataFlowUtils
    {
       Set<TypedXPath> xPaths = ModelUtils.getXPaths(model, activity, accessPointDefinition);
 
-      final IXPathMap xPathMap = new ClientXPathMap(xPaths);
+      final IXPathMap xPathMap = new ClientXPathMap(xPaths, model);
 
       StructuredDataConverter converter = new StructuredDataConverter(xPathMap);
       Document document;
@@ -170,7 +170,7 @@ public class ClientSideDataFlowUtils
    {
       Set<TypedXPath> xPaths = ModelUtils.getXPaths(model, activity, accessPointDefinition);
 
-      final IXPathMap xPathMap = new ClientXPathMap(xPaths);
+      final IXPathMap xPathMap = new ClientXPathMap(xPaths, model);
 
       // always operate with namespaceAware=true
       final boolean namespaceAware = true;

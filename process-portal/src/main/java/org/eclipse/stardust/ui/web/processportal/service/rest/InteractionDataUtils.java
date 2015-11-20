@@ -52,10 +52,10 @@ import org.eclipse.stardust.engine.core.struct.sxml.Text;
 public class InteractionDataUtils
 {
    private static final Logger trace = LogManager.getLogger(InteractionDataUtils.class);
-   
+
 
    /**
-    * 
+    *
     * @param interaction
     * @param inData
     * @param servletContext
@@ -68,7 +68,7 @@ public class InteractionDataUtils
    {
       Model model = interaction.getModel();
       ApplicationContext context =  interaction.getDefinition();
-      
+
       JsonObject root = new JsonObject();
       JsonHelper jsonHelper = new JsonHelper();
       List<DataMapping> dataMappings = context.getAllInDataMappings();
@@ -80,7 +80,7 @@ public class InteractionDataUtils
             if (entry.getKey().equals(dm.getId()))
             {
                JsonObject elemDM = new JsonObject();
-               
+
                if (ModelUtils.isDocumentType(model, dm))
                {
                   jsonHelper.toJsonDocument(entry.getValue(), dm, elemDM, model,
@@ -101,7 +101,7 @@ public class InteractionDataUtils
 
    /**
     * Converts Data back as per the Data Types
-    * 
+    *
     * @param model
     * @param context
     * @param elem
@@ -133,14 +133,14 @@ public class InteractionDataUtils
                   {
                      trace.debug("DM: " + entry.getKey());
                   }
-   
+
                   Object value = evaluateClientSideOutMapping(model, entry.getValue(), dm, interaction, servletContext);
-   
+
                   if (trace.isDebugEnabled())
                   {
                      trace.debug(", Value: " + value);
                   }
-   
+
                   if (value instanceof Serializable || value == null)
                   {
                      ret.put(entry.getKey(), (Serializable) value);
@@ -166,7 +166,7 @@ public class InteractionDataUtils
       {
          throw new DataException(errors);
       }
-         
+
       return ret;
    }
 
@@ -174,7 +174,7 @@ public class InteractionDataUtils
     * @param model
     * @param value
     * @param outMapping
-    * @param interaction 
+    * @param interaction
     * @return
     */
    public static Object evaluateClientSideOutMapping(Model model, Object value,
@@ -242,7 +242,7 @@ public class InteractionDataUtils
 
       return result;
    }
-   
+
    /**
     * This code was copied from
     *   org.eclipse.stardust.ui.web.viewscommon.utils.ClientSideDataFlowUtils#evaluateStructOutMapping(...)
@@ -253,7 +253,7 @@ public class InteractionDataUtils
    {
       Set<TypedXPath> xPaths = ModelUtils.getXPaths(model, mapping);
 
-      final IXPathMap xPathMap = new ClientXPathMap(xPaths);
+      final IXPathMap xPathMap = new ClientXPathMap(xPaths, model);
 
       StructuredDataConverter converter = new StructuredDataConverter(xPathMap);
       Document document;
@@ -262,7 +262,7 @@ public class InteractionDataUtils
       Assert.condition(nodes.length == 1);
 
       Object returnValue = null;
-      
+
       if (nodes[0] instanceof Element)
       {
          document = new Document((Element) nodes[0]);
