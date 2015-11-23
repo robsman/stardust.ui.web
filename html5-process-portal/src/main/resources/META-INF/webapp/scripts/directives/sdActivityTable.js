@@ -527,7 +527,7 @@
 		this.preferenceModule = DEFAULT_VALUES.WORKLIST.PREFERENCE_MODULE;
 		this.exportFileName = "Worklist";
 		this.initialSort = {
-				name : 'activityOID',
+				name : 'startTime',
 				dir : 'desc'
 		};
 	};
@@ -564,7 +564,7 @@
 		this.changedPriorities = {};
 		this.defaultDelegateEnabled = false;
 		this.initialSort = {
-				name : 'activityOID',
+				name : 'startTime',
 				dir : 'desc'
 		};
 		this.updatePriorityNotification = {
