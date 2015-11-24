@@ -132,6 +132,13 @@
 					</div>
 				</th>
 				
+				<th sda-name="rootProcessName"  ng-if ="activityTableCtrl.isWorklistMode();" sda-label="{{i18n('views-common-messages.views-activityTable-column-rootProcess')}}"
+				    sda-filterable="true" sda-visible="{{activityTableCtrl.isColumnVisible('rootProcessName')}}">
+				    <div sda-filter-template>
+						<div sd-process-activity-table-filter sda-filter-type='process' sda-processes="activityTableCtrl.fetchAllProcesses()"></div>
+					</div>
+				</th>
+				
 				<th sda-name="data" sda-column="TRIVIAL_DATA" sda-sortable="false" sda-exportable="false" sda-filterable="false" sda-visible="{{activityTableCtrl.isColumnVisible('data')}}">
 				</th>
 				
@@ -234,6 +241,9 @@
 					<div sd-descriptor-content sda-value="rowData.descriptorValues[colData.field]" sda-data-type ="colData.dataType"> </div>
 				</td>
 				
+				<td sda-field="rootProcessName" ng-if ="activityTableCtrl.isWorklistMode();">
+				</td>
+			
 				<td sda-column="TRIVIAL_DATA">
 					<div ng-if="rowData.dataMappings">
 						<div sd-trivial-manual-activity-data sda-data-mappings="rowData.dataMappings"

@@ -85,6 +85,8 @@ public class ActivityInstanceDTO extends AbstractDTO
    public boolean auxillary;
    
    public Long resubmissionTime;
+   
+   public String rootProcessName;
 
    public void setQualityAssuranceState(QualityAssuranceState state)
    {

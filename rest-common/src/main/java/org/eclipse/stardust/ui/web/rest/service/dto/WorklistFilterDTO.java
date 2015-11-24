@@ -28,6 +28,8 @@ public class WorklistFilterDTO implements FilterDTO
    public ProcessActivityDTO processName;
 
    public ProcessActivityDTO activityName;
+   
+   public ProcessActivityDTO rootProcessName;
 
    public RangeDTO activityOID;
 
