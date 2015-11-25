@@ -115,6 +115,14 @@
 					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}">\n' +
 					'<i class="pi pi-export pi-lg"></i>\n' +
 				'</button>\n' +
+				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if=" $dtApi.enableSaveState && $dtApi.saveColumnAttributes" ng-click="$dtApi.toggleSavedState();"' +
+						' title="Disable Save for Column Filters and Sort Order">\n' +
+						'<i class="pi pi-favorite pi-lg"></i>\n' +
+				'</button>\n'+
+				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSaveState && !$dtApi.saveColumnAttributes" ng-click="$dtApi.toggleSavedState();"' +
+						' title="Save Column Filters and Sort Order ">\n' +
+						'<i class="pi pi-favorite-not pi-lg"></i>\n' +
+				'</button>\n'+
 				'<button class="button-link tbl-toolbar-item  tbl-tool-joined-link tbl-tool-link" ng-if="$dtApi.enableExportCSV" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})"' +
 					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}">\n' +
 					'<i class="pi pi-export pi-lg"></i>\n' +
@@ -177,7 +185,7 @@
 		var sdData = ctrl[0];
 
 		var treeTable = false, treeTableData, treeData;
-		var tableInLocalMode, initialized, firstInitiaizingDraw = true;
+		var tableInLocalMode, initialized, firstLoad, firstInitiaizingDraw = true;
 		var columns = [], dtColumns = [];
 		var theTable, theTableId, theDataTable, theToolbar, theColReorder;
 		var selectedRowIndexes = {}, rowSelectionMode = false, selectionBinding;
@@ -191,6 +199,9 @@
 		var localModeData, localModeMasterData, localModeRefreshInitiated, localModeRebuildData;
 		var localModeGlobalFilter = {}, localModeSortingCols = [];
 		var compileTime = 0;
+		var tableStateValue = false;
+		var enableStateSave  = false;
+		var stateSuffixForPreference = ".columnFilterAndSortOrder"
 
 		// Setup component instance
 		setup();
@@ -400,6 +411,10 @@
 			if (tableInLocalMode && enableFiltering && attr.sdaFilterHandler) {
 				localModeGlobalFilter = parseFunction(attr.sdaFilterHandler, 'sda-filter-handler');
 			}
+			
+			if (attr.sdaSaveState) {
+				enableStateSave = sdUtilService.toBoolean(attr.sdaSaveState);
+			} 
 		}
 
 		/*
@@ -947,9 +962,7 @@
 				ret.iTotalRecords = 0;
 				ret.iTotalDisplayRecords = 0;
 				ret.aaData = [];
-
 				callback(ret);
-
 				return;
 			}
 
@@ -1212,7 +1225,7 @@
 				ret.aaData = [];
 
 				callback(ret);
-
+				firstLoad = true;
 				return;
 			}
 
@@ -1238,6 +1251,12 @@
 					params.filters[colName] = angular.copy(filterScope.$$filterData);
 				}
 			}
+			
+			if(firstLoad) { 
+				loadSavedState(params);
+				firstLoad = false;
+			}
+				
 			if (jQuery.isEmptyObject(params.filters)) {
 				delete params.filters;	
 			}
@@ -1272,6 +1291,91 @@
 			}, function(error) {
 				showErrorOnUI(error);
 			});
+		}
+		
+		/**
+		 * 
+		 */
+		function getSavedTableState () {
+			if(tableStateValue === false) {
+				tableStateValue = undefined;
+				var pScope = 'USER' ;	
+				var preferenceDelegate = getPreferenceDelegate(pScope);				
+				
+				if(preferenceDelegate.store ) {
+					var preferenceName = preferenceDelegate.store.marshalName(pScope, preferenceDelegate.name) + stateSuffixForPreference;
+					var filterAndSortOrder = preferenceDelegate.store.getValue(preferenceName)
+					if(filterAndSortOrder) { 
+						tableStateValue = JSON.parse(filterAndSortOrder);
+					}
+				}
+			}
+			return tableStateValue;
+		}
+		
+		/**
+		 * 
+		 */
+		function isColumnAttributesSaved(){
+			// !! ensures a falsy value for undefined
+			return  !!getSavedTableState();
+		}
+		
+		/**
+		 * 
+		 */
+		function loadSavedState(params){ 
+			var filterAndSortOrder = getSavedTableState();
+			if(filterAndSortOrder) {
+				loadSavedColumnFilters( params, filterAndSortOrder.filters);
+				loadSavedSortOrder(params, filterAndSortOrder.order);
+			}
+		}
+
+		/**
+		 * 
+		 */
+		function loadSavedSortOrder( params , savedOrder) {
+			params.order = angular.copy(savedOrder);
+			
+			var dtOrder = [];
+
+			if (savedOrder) {
+				var orderBy = savedOrder;
+				if (orderBy) {
+					if (!angular.isArray(orderBy)) {
+						orderBy = [orderBy];
+					}
+
+					for (var i in orderBy) {
+						var columnInfo = columnsInfoByDisplayOrder[orderBy[i].name];
+						if (columnInfo) {
+							dtOrder.push([columnInfo.index, orderBy[i].dir == 'asc' ? 'asc' : 'desc']);
+						}
+					}
+				}
+			}
+
+			if (dtOrder.length == 0) {
+				dtOrder.push([0, 'asc']);
+			}
+
+			theDataTable.fnSettings().aaSorting = dtOrder;
+		}
+		
+		/**
+		 * 
+		 */
+
+		function loadSavedColumnFilters(params, savedFilters){
+			for (var colName in savedFilters) { 
+				var filter = angular.copy(savedFilters[colName]);
+				columnFilters[colName].filter.scope().$$filterTitle = angular.copy(filter.title);
+				
+				delete filter.title;
+				columnFilters[colName].filter.scope().$$filterData = filter ;
+				params.filters[colName] = filter;
+			}
 		}
 
 		/*
@@ -1352,6 +1456,10 @@
 	
 					invokeScopeFunction(onSorting, sortingInfo);
 				}, 0, true);
+			}
+			
+			if(self.saveColumnAttributes && self.applyTo == "USER" ) {
+				storeTableState();
 			}
 		}
 
@@ -1671,6 +1779,73 @@
 			} else {
 				localPrefStore[pScope] = value;
 			}
+		}
+		
+		
+		/**
+		*
+		*/
+		function setStateInPreferences( value ) {
+			var pScope = 'USER' ;
+			
+			tableStateValue = value;
+			var preferenceDelegate = getPreferenceDelegate(pScope);
+			if (preferenceDelegate.store) {
+				var preferenceName = preferenceDelegate.store.marshalName(pScope, preferenceDelegate.name) + stateSuffixForPreference;
+				preferenceDelegate.store.setValue(preferenceName, tableStateValue);
+				preferenceDelegate.store.save();
+			} 
+		}
+		
+		/*
+		 * 
+		 */
+		function storeTableState( ) {
+			var value = {
+					filters : getAppliedColumnFilters(),
+					order : getSortingInfo()
+			}
+			setStateInPreferences(value);
+		}
+		
+		/**
+		 * 
+		 */
+		function removeStateFromPreferences() {
+			setStateInPreferences(null);
+		}
+		
+		/**
+		 * 
+		 */
+		function getAppliedColumnFilters() {
+			var filters = {};
+			
+			for (var colName in columnFilters) {
+				var filterScope = columnFilters[colName].filter.scope();
+				if (filterScope.$$filterData != undefined && !jQuery.isEmptyObject(filterScope.$$filterData)) {
+					filters[colName] = angular.copy(filterScope.$$filterData);
+					filters[colName].title = filterScope.$$filterTitle;
+				}
+			}
+			return filters;
+		}
+		
+		/**
+		 * 
+		 */
+		function getAppliedColumnFilters() {
+			var filters = {};
+			
+			for (var colName in columnFilters) {
+				var filterScope = columnFilters[colName].filter.scope();
+				if (filterScope.$$filterData != undefined && !jQuery.isEmptyObject(filterScope.$$filterData)) {
+					filters[colName] = angular.copy(filterScope.$$filterData);
+					filters[colName].title = filterScope.$$filterTitle;
+				}
+			}
+			
+			return filters;
 		}
 
 		/*
@@ -2515,6 +2690,8 @@
 				self.enableExportExcel = false; // exportConfig.EXCEL; // TODO: Support Excel download
 				self.enableExportCSV = exportConfig.CSV;
 				self.exportPopoverHandle = null;
+				self.saveColumnAttributes= isColumnAttributesSaved();
+				self.enableSaveState = enableStateSave;
 
 				self.showColumnFilters = {};
 			}
@@ -2528,6 +2705,23 @@
 				self.lock = columnSelectorPreference.lock;
 				self.applyTo = columnSelectorPreference.scope;
 				self.columns = getSelectableColumns(columnsByDisplayOrder);
+			}
+			
+			/*
+			 * 
+			 */
+			this.toggleSavedState = function() {
+				this.saveColumnAttributes = !this.saveColumnAttributes;
+				var param = {
+						filters : {},
+						order : []
+				}
+				
+				if(self.saveColumnAttributes) {
+					storeTableState();
+				}else {
+					removeStateFromPreferences( );
+				}
 			}
 
 			/*
@@ -2668,6 +2862,10 @@
 				} else {
 					refresh();
 				}
+				
+				if(self.saveColumnAttributes) {
+					storeTableState();
+				}
 			}
 
 			/*
@@ -2688,6 +2886,10 @@
 					refreshUi(true);
 				} else {
 					refresh();
+				}
+				
+				if(self.saveColumnAttributes) {
+					storeTableState();
 				}
 			}
 

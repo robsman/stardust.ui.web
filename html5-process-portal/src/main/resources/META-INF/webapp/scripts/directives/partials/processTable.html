@@ -58,9 +58,12 @@
 	<table sd-data-table="{{processTableCtrl.tableHandleExpr}}" sd-data="processTableCtrl.fetchPage(params)" sda-ready="processTableCtrl.ready" 
 		sda-page-size="{{processTableCtrl.sdaPageSize}}" sda-mode="remote"  aid="PP-ProcessTable-DataTable"
 		sda-selectable="multiple" sda-initial-selection="{{processTableCtrl.initialSelection}}" sda-selection="{{processTableCtrl.selectionExpr}}"
-		sda-column-selector="{{processTableCtrl.columnSelector}}" sda-preference-delegate="processTableCtrl.preferenceDelegate(prefInfo)"
-		sda-sortable="true" sda-sort-by="processTableCtrl.initialSort"
-		sda-exports="true" sda-exports-file-name="processTable-{{processTableCtrl.exportFileName}}">
+		sda-column-selector="{{processTableCtrl.columnSelector}}"
+		sda-sortable="true" sda-sort-by="processTableCtrl.initialSort" sda-save-state="true"
+		sda-exports="true" sda-exports-file-name="processTable-{{processTableCtrl.exportFileName}}"
+		sda-preference-module="{{processTableCtrl.processTablePrefModule}}" sda-preference-id="{{processTableCtrl.processTablePrefId}}" sda-preference-name="{{processTableCtrl.processTablePrefName}}"
+		
+		>
 		<thead sda-i18n-scope="views-common-messages.views-processTable-column">
 			<tr>
 				<th sda-name="processName" sda-sortable="true" sda-visible="{{processTableCtrl.isColumnVisible('processName')}}">

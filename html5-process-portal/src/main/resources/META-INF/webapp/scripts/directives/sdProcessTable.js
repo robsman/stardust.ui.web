@@ -230,9 +230,9 @@
 				self.dataTable.refresh(true);
 			};
 
-			/**
+		/*	*//**
 			 * 
-			 */
+			 *//*
 			ProcessTableCompiler.prototype.preferenceDelegate = function(prefInfo) {
 				var preferenceStore = sdPreferenceService.getStore(prefInfo.scope, self.processTablePrefModule,
 						self.processTablePrefId);
@@ -246,7 +246,7 @@
 				}
 
 				return preferenceStore;
-			}
+			}*/
 
 			/**
 			 * 

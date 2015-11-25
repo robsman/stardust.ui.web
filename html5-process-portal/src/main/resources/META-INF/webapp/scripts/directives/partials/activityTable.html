@@ -46,8 +46,8 @@
 		sda-page-size="{{activityTableCtrl.sdaPageSize}}" sda-mode="remote" 
 		sda-selectable="multiple" sda-initial-selection="{{activityTableCtrl.initialSelection}}" sda-selection="{{activityTableCtrl.selectionExpr}}"
 		sda-column-selector="{{activityTableCtrl.columnSelector}}" sda-preference-delegate="activityTableCtrl.preferenceDelegate(prefInfo)"
-		sda-sortable="true" sda-sort-by="activityTableCtrl.initialSort"
-		sda-exports="true" sda-exports-file-name="{{activityTableCtrl.exportFileName}}">
+		sda-sortable="true" sda-sort-by="activityTableCtrl.initialSort" 
+		sda-exports="true" sda-exports-file-name="{{activityTableCtrl.exportFileName}}"  sda-save-state="true">
 		<thead sda-i18n-scope="processportal.views-worklistPanel-column">
 			<tr>
 				<th sda-name="activityName" sda-label-key="overview" sda-sortable="true" sda-visible="{{activityTableCtrl.isColumnVisible('activityName')}}">

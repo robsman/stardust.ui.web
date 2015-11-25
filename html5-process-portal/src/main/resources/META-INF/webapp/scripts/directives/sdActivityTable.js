@@ -298,6 +298,11 @@
 	    	// Override
 	    	preferenceStore.marshalName = function(scope, name) {
 	    		trace.debug("marshalName - scope:",scope,", name :", name);
+	    		
+	    		if(name) {
+	    			return name;
+	    		}
+	    		
 	    		var name = self.preferenceName;
 	    		if (scope == 'PARTITION') {
 	    			if (self.isWorklistMode() && this.parentStore && !this.parentStore[name]) {
