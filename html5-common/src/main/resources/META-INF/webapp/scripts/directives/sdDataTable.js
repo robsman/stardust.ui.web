@@ -116,11 +116,11 @@
 					'<i class="pi pi-export pi-lg"></i>\n' +
 				'</button>\n' +
 				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if=" $dtApi.enableSaveState && $dtApi.saveColumnAttributes" ng-click="$dtApi.toggleSavedState();"' +
-						' title="Disable Save for Column Filters and Sort Order">\n' +
+						' title="{{i18n(\'portal-common-messages.common-filterPopup-saveState\')}}">\n' +
 						'<i class="pi pi-favorite pi-lg"></i>\n' +
 				'</button>\n'+
 				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSaveState && !$dtApi.saveColumnAttributes" ng-click="$dtApi.toggleSavedState();"' +
-						' title="Save Column Filters and Sort Order ">\n' +
+						' title="{{i18n(\'portal-common-messages.common-filterPopup-saveState-not\')}}">\n' +
 						'<i class="pi pi-favorite-not pi-lg"></i>\n' +
 				'</button>\n'+
 				'<button class="button-link tbl-toolbar-item  tbl-tool-joined-link tbl-tool-link" ng-if="$dtApi.enableExportCSV" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})"' +
