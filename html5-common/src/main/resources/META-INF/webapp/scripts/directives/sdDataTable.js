@@ -115,7 +115,7 @@
 					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}">\n' +
 					'<i class="pi pi-export pi-lg"></i>\n' +
 				'</button>\n' +
-				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if=" $dtApi.enableSaveState && $dtApi.saveColumnAttributes" ng-click="$dtApi.toggleSavedState();"' +
+				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSaveState && $dtApi.saveColumnAttributes" ng-click="$dtApi.toggleSavedState();"' +
 						' title="{{i18n(\'portal-common-messages.common-filterPopup-saveState\')}}">\n' +
 						'<i class="pi pi-favorite pi-lg"></i>\n' +
 				'</button>\n'+
@@ -202,6 +202,7 @@
 		var tableStateValue = false;
 		var enableStateSave  = false;
 		var stateSuffixForPreference = ".columnFilterAndSortOrder"
+		var saveColumnAttributes = false;
 
 		// Setup component instance
 		setup();
@@ -1318,7 +1319,8 @@
 		 */
 		function isColumnAttributesSaved(){
 			// !! ensures a falsy value for undefined
-			return  !!getSavedTableState();
+			saveColumnAttributes = !!getSavedTableState()
+			return saveColumnAttributes;
 		}
 		
 		/**
@@ -1327,18 +1329,24 @@
 		function loadSavedState(params){ 
 			var filterAndSortOrder = getSavedTableState();
 			if(filterAndSortOrder) {
-				loadSavedColumnFilters( params, filterAndSortOrder.filters);
-				loadSavedSortOrder(params, filterAndSortOrder.order);
+				var updateFilters = loadSavedColumnFilters( params, filterAndSortOrder.filters);
+				var updateSortOrder =  loadSavedSortOrder(params, filterAndSortOrder.order);
+				
+				//Update the stored state in case the columns are missing.
+				if(updateFilters || updateSortOrder) {
+					storeTableState();
+				}
 			}
+			
 		}
 
 		/**
 		 * 
 		 */
 		function loadSavedSortOrder( params , savedOrder) {
-			params.order = angular.copy(savedOrder);
-			
 			var dtOrder = [];
+			
+			var updateStateRequired = false;
 
 			if (savedOrder) {
 				var orderBy = savedOrder;
@@ -1347,10 +1355,12 @@
 						orderBy = [orderBy];
 					}
 
-					for (var i in orderBy) {
+					for ( var i in orderBy) {
 						var columnInfo = columnsInfoByDisplayOrder[orderBy[i].name];
 						if (columnInfo) {
 							dtOrder.push([columnInfo.index, orderBy[i].dir == 'asc' ? 'asc' : 'desc']);
+						} else {
+							updateStateRequired = true;
 						}
 					}
 				}
@@ -1359,23 +1369,34 @@
 			if (dtOrder.length == 0) {
 				dtOrder.push([0, 'asc']);
 			}
-
-			theDataTable.fnSettings().aaSorting = dtOrder;
+			
+			if(!updateStateRequired) {
+				params.order = angular.copy(savedOrder);
+				theDataTable.fnSettings().aaSorting = dtOrder;
+			}
+			return updateStateRequired;
 		}
 		
 		/**
 		 * 
 		 */
 
-		function loadSavedColumnFilters(params, savedFilters){
+		function loadSavedColumnFilters(params, savedFilters) {
+			var updateStateRequired = false;
+			
 			for (var colName in savedFilters) { 
 				var filter = angular.copy(savedFilters[colName]);
-				columnFilters[colName].filter.scope().$$filterTitle = angular.copy(filter.title);
-				
-				delete filter.title;
-				columnFilters[colName].filter.scope().$$filterData = filter ;
-				params.filters[colName] = filter;
+				if(columnFilters[colName]) {
+					columnFilters[colName].filter.scope().$$filterTitle = angular.copy(filter.title);
+					delete filter.title;
+					columnFilters[colName].filter.scope().$$filterData = filter ;
+					params.filters[colName] = filter;
+				} else {
+					updateStateRequired = true;
+				}
 			}
+			
+			return updateStateRequired;
 		}
 
 		/*
@@ -1458,7 +1479,7 @@
 				}, 0, true);
 			}
 			
-			if(self.saveColumnAttributes && self.applyTo == "USER" ) {
+			if(saveColumnAttributes) {
 				storeTableState();
 			}
 		}
@@ -2712,12 +2733,13 @@
 			 */
 			this.toggleSavedState = function() {
 				this.saveColumnAttributes = !this.saveColumnAttributes;
+				saveColumnAttributes = this.saveColumnAttributes;
 				var param = {
 						filters : {},
 						order : []
 				}
 				
-				if(self.saveColumnAttributes) {
+				if(saveColumnAttributes) {
 					storeTableState();
 				}else {
 					removeStateFromPreferences( );
