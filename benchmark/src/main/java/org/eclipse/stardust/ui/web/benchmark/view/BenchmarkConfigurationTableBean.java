@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.benchmark.view;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -211,7 +212,7 @@ public class BenchmarkConfigurationTableBean extends UIComponentBean implements 
       availableBenchmarkDefs = new ArrayList<SelectItem>();
       benchmarkDefsForModel = new ArrayList<SelectItem>();
 
-      Map<String, String> benchmarkDefinitionsInfo = null;
+      Map<String, String> benchmarkDefinitionsInfo = new HashMap<String, String>();
       try
       {
          benchmarkDefinitionsInfo = BenchmarkUtils.getRuntimeBenchmarkDefinitionsInfo();
