@@ -8,6 +8,17 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
+
+/** Taken from facesSupport.js - start **/  
+
+if (!console.debug) {
+  console.debug = function(a) {
+    console.log(a);
+  };
+}
+
+/** Taken from facesSupport.js - end **/
+
 function performIppAiClosePanelCommand()
 {
   //alert("Executing performIppAiClosePanelCommand()");
