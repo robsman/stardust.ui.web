@@ -38,6 +38,9 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
             
 	  <ippui:launchPanel name="myReportsViewPanel"
             include="/plugins/business-control-center/extensions/launchpad/myReportsPanel.xhtml" />
+            
+      <ippui:launchPanel name="myFavorites"
+			include="/plugins/business-control-center/extensions/launchpad/myFavorites.xhtml" />
 	<!--  TOOLBARS -->
       <ippui:toolbarSection name="ganttChartViewToolbar"
 			include="/plugins/business-control-center/extensions/toolbar/ganttChartViewToolbar.xhtml"

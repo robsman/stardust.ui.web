@@ -6,6 +6,9 @@
 		<i ng-show="!ctrl.showTLVCriteria" class="pi pi-trigger-collapsed pi-lg"></i> 
 		<span>{{i18n('benchmark-messages.views-trafficLightView-label')}}</span>
 	</div>
+	<div> 
+	  <button ng-click="ctrl.showSaveDashboardPopup=!ctrl.showSaveDashboardPopup" title="Save" aid="COM-benchmark-tlv-saveTLV" class="button-link"> <i class="pi pi-save pi-lg pi-lg"></i></button>
+	</div>
 	<div ng-show="ctrl.showTLVCriteria">
 		<form name="ctrl.tlvCriteriaForm">
 			<table>
@@ -123,7 +126,7 @@
 	</div>
 
      <div ng-if="ctrl.showTLVStatasticsByBO"
-		ng-include="'plugins/benchmark/html5/partials/views/tlvStatasticsByBO.html'">
+		  ng-include="'plugins/benchmark/html5/partials/views/tlvStatasticsByBO.html'">
 	</div>
 	<div class="view-panel-content" ng-if="ctrl.showProcessTable">
 		<div class="view-panel-toolbar heading"
@@ -144,4 +147,27 @@
 			sda-preference-id="preference"
 			sda-preference-name="ipp-views-common.activityWithPrio.selectedColumns"></div>
 	</div>
+	
+	<div sd-dialog sd-show-overlay="true"
+		sda-show="ctrl.showSaveDashboardPopup"
+		sda-type="confirm"
+		sda-title="{{i18n('benchmark-messages.views-trafficLightView-saveFavorite-label')}}"
+		sda-scope="this"
+		sda-template="plugins/benchmark/html5/partials/views/saveFavouritePopup.html"
+		sda-on-confirm="ctrl.addFavorite(res)"
+		sda-confirm-action-label="{{i18n('admin-portal-messages.common-button-save')}}"
+	    sda-cancel-action-label="{{i18n('html5-common.common-cancel')}}"
+		sda-width="500px" sda-aid-prefix="COM-benchmark-tlv-saveFavouritePopup"></div>
+	
+	<div sd-dialog sd-show-overlay="true"
+		sda-show="ctrl.showFavoriteOverriteMsg"
+		sda-type="confirm"
+		sda-title="{{i18n('benchmark-messages.views-trafficLightView-saveFavorite-warning')}}"
+		sda-scope="this"
+		sda-on-confirm="ctrl.updateFavorite(res)"
+		sda-confirm-action-label="{{i18n('admin-portal-messages.common-yes')}}"
+	    sda-cancel-action-label="{{i18n('admin-portal-messages.common-no')}}"
+		sda-width="500px" sda-aid-prefix="COM-benchmark-tlv-saveFavouriteWarningPopup">
+		<div><i class="pi pi-warning pi-information-circle pi-lg"></i>{{ctrl.errorMsg}}</div>
+		</div>
 </div>

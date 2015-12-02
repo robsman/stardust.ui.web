@@ -133,7 +133,7 @@
 
    <bean name="categoryTreeMessageBean" class="org.eclipse.stardust.ui.web.bcc.CategoryTreeMessageBean"
         scope="session">
-   </bean>	<bean name="deputyTeamMemberBean" class="org.eclipse.stardust.ui.web.bcc.views.DeputyTeamMemberBean"        scope="portalTab">   </bean>      <!-- **************************************************
+   </bean>	<bean name="deputyTeamMemberBean" class="org.eclipse.stardust.ui.web.bcc.views.DeputyTeamMemberBean"        scope="portalTab">   </bean>      	<bean name="myFavoritesPanel"		class="org.eclipse.stardust.ui.web.bcc.launchpad.MyFavoritesPanelBean"		scope="session">	</bean>      <!-- **************************************************
    		********** REPORTING BEANS ********** 
    	************************************************** -->
 
@@ -141,7 +141,6 @@
 		class="org.eclipse.stardust.ui.web.bcc.views.report.MyReportsPanelBean"
 		scope="session">
 	</bean>
-	
    <bean name="activityCriticalityManagerBean" class="org.eclipse.stardust.ui.web.bcc.views.criticalityManager.ActivityCriticalityManagerBean"
         scope="session">
    </bean>

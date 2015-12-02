@@ -108,7 +108,7 @@ public class PreferenceService
     * @param prefs
     * @return
     */
-   private List<PreferenceDTO> buildPreferenceList(List<Preferences> prefs)
+   public List<PreferenceDTO> buildPreferenceList(List<Preferences> prefs)
    {
       List<PreferenceDTO> prefList = new ArrayList<PreferenceDTO>();
       Map<String, ConfigurationVariables> ConfigVariables = getConfigurationVariables();

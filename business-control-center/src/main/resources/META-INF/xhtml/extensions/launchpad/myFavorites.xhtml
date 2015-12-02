@@ -1,0 +1,39 @@
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+		<ui:include src="/plugins/common/templates/launchPanelTemplate.xhtml">
+			<ui:param name="bean" value="#{myFavoritesPanel}" />
+			<ui:param name="title"
+				value="#{myFavoritesPanel.messages['title']}" />
+			<ui:param name="collapsible" value="true" />
+			<ui:param name="showRefreshLink" value="true" />
+			<ui:param name="automationTag" value="auto-PP-LP-MyProcesses-ColPnl" />
+		</ui:include>
+	</ice:panelGroup>
+	<ice:panelGroup rendered="#{myFavoritesPanel.expanded}">
+		<ice:panelGroup rendered="#{not empty myFavoritesPanel.items}">
+			<pc:automationTag value="auto-PP-LP-MyProcesses-MyProcTbl" standAlone="false"/>
+			<ice:panelSeries var="item" value="#{myFavoritesPanel.items}">
+				<ice:panelGrid columns="3">
+					<ice:commandLink styleClass="action-link" action="#{item.selectHTML5}" >
+                         <ice:outputText value="#{item.name}" />
+					</ice:commandLink>
+				</ice:panelGrid>
+				<ui:include src="/plugins/views-common/common/genericPanelToolTip.xhtml">
+					<ui:param name="tooltip" value="#{item.name}" />
+					<ui:param name="id" value="myProcTooltip" />
+				</ui:include>
+			</ice:panelSeries>
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{empty myFavoritesPanel.items}">
+			<ice:outputText value="#{myFavoritesPanel.messages['noneItems.message']}"/>
+		</ice:panelGroup>
+	</ice:panelGroup>
+
+</f:view>

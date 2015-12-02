@@ -17,8 +17,9 @@
 
 	angular.module("benchmark-app").controller(
 			'sdTrafficLightViewController',
-			[ '$q', 'benchmarkService', 'sdProcessDefinitionService', 'sdTrafficLightViewService',
-					'sdProcessInstanceService', 'sdActivityInstanceService', 'sdLoggerService', '$injector', 'sdUtilService', TrafficLightViewController ]);
+			[ '$scope', '$q', 'benchmarkService', 'sdProcessDefinitionService', 'sdTrafficLightViewService',
+					'sdProcessInstanceService', 'sdActivityInstanceService', 'sdLoggerService', '$injector',
+					'sdUtilService', 'sdFavoriteViewService', '$parse', TrafficLightViewController ]);
 
 	var _q;
 	var trace;
@@ -29,12 +30,16 @@
 	var _sdBusinessObjectManagementService;
 	var _sdActivityInstanceService;
 	var _sdUtilService;
+	var _sdFavoriteViewService;
+
+	var _parse;
 
 	/**
 	 * 
 	 */
-	function TrafficLightViewController($q, benchmarkService, sdProcessDefinitionService, sdTrafficLightViewService,
-			sdProcessInstanceService, sdActivityInstanceService, sdLoggerService, $injector, sdUtilService) {
+	function TrafficLightViewController($scope, $q, benchmarkService, sdProcessDefinitionService,
+			sdTrafficLightViewService, sdProcessInstanceService, sdActivityInstanceService, sdLoggerService, $injector,
+			sdUtilService, sdFavoriteViewService, $parse) {
 		trace = sdLoggerService.getLogger('benchmark-app.sdTrafficLightViewController');
 		_q = $q;
 		_benchmarkService = benchmarkService;
@@ -43,9 +48,16 @@
 		_sdProcessInstanceService = sdProcessInstanceService;
 		_sdActivityInstanceService = sdActivityInstanceService;
 		_sdUtilService = sdUtilService;
+		_sdFavoriteViewService = sdFavoriteViewService;
+		_parse = $parse;
 		// dynamically injecting the sdBusinessObjectManagementService from
 		// ipp-business-object-management
 		_sdBusinessObjectManagementService = $injector.get('sdBusinessObjectManagementService');
+
+		// Getting the custom view params if view is getting opened from
+		// favorite instance
+		var queryGetter = _parse("panel.params.custom");
+		var params = queryGetter($scope);
 
 		this.processes = [ {
 			'id' : 'ALL_PROCESSES',
@@ -59,7 +71,9 @@
 		} ];
 		this.selectedBenchmarks = [ this.benchmarkDefinitions[0].oid ];
 		this.getRuntimeBenchmarkDefinitions();
-		this.getAllProcesses();
+		// passing custom view params here to call REST API for getting
+		// favorite.
+		this.getAllProcesses(params, $scope);
 
 		this.dataTable = null;
 		this.dataTableForBO = null;
@@ -75,10 +89,15 @@
 		this.bOInstanceMap = {};
 		this.bOPrimaryKeyMap = {};
 		this.bOPrimaryKeyTypeMap = {};
-		
+
 		this.relatedBOMap = {};
 		this.selectedBusinessObjectInstances = [];
 		this.selectedRelatedBusinessObjectInstances = [];
+
+		// Saving the name of the favorite for future update.
+		if (params.preferenceName != undefined) {
+			this.tlvReportName = params.preferenceName;
+		}
 	}
 
 	/**
@@ -101,10 +120,11 @@
 			trace.log(error);
 		});
 	};
+
 	/**
 	 * 
 	 */
-	TrafficLightViewController.prototype.getAllProcesses = function() {
+	TrafficLightViewController.prototype.getAllProcesses = function(params, $scope) {
 		var self = this;
 		_sdProcessDefinitionService.getAllUniqueProcesses(true).then(function(data) {
 			angular.forEach(data, function(processDef) {
@@ -114,10 +134,15 @@
 				};
 				self.processes.push(processDefintion);
 			});
+			if (params.preferenceId != undefined && params.preferenceName != undefined) {
+				self.getFavoriteByName(params, $scope);
+			}
+
 		}, function(error) {
 			trace.log(error);
 		});
 	};
+
 	/**
 	 * 
 	 */
@@ -170,99 +195,107 @@
 			});
 		}
 
-		_sdTrafficLightViewService.getRuntimeBenchmarkCategories(bOids).then(function(data) {
-			self.categories = data;
-			queryData.processes = processes;
-			queryData.bOids = bOids;
-			queryData.dateType = self.selectedDateType;
-			queryData.dayOffset = self.dayOffset;
-			queryData.categories = self.categories;
-			queryData.processActivityMap = self.createProcessActivityArray(queryData.bOids,queryData.processes);
-			self.queryData = queryData;
-			self.tlvCriteriaForm.$error.benchmarksNotIdentical = false;
-			if(self.selectedDrillDown == "PROCESS_WORKITEM"){
-				_sdTrafficLightViewService.getTLVStatastic(queryData).then(function(data) {
-					self.tlvStatsData = {};
-					self.tlvStatsData.list = data.benchmarkTLVProcessStas;
-					self.tlvStatsData.totalCount = data.benchmarkTLVProcessStas.length;
-					self.bATLVStatsMap = data.bATLVStatsMap;
-					self.showTLVStatastics = true;														
-				}, function(error) {
-					trace.log(error);
-				});	
-			}else if(self.selectedDrillDown == "BUSINESS_OBJECT" && self.selectedBusinessObject != undefined){
-				 queryData.businessObjectQualifiedId  = self.selectedBusinessObject.businessObjectQualifiedId;
-				 queryData.businessObjectType = self.bOPrimaryKeyTypeMap[self.selectedBusinessObject.businessObjectQualifiedId];
-				if(!_sdUtilService.isEmpty(self.selectedBusinessObjectInstances)){
-					var boInstances = [];
-					angular.forEach(self.selectedBusinessObjectInstances,function(boInstance){
-						boInstances.push(boInstance[self.primaryKeyForBO]);
-					});
-					
-				  queryData.selectedBusinessObjectInstances = boInstances;	
-				}
-				
-				if(self.selectedRelatedBusinessObject.businessObjectQualifiedId != undefined){
-				  queryData.groupBybusinessQualifiedId = self.selectedRelatedBusinessObject.businessObjectQualifiedId;
-				  queryData.groupBybusinessObjectType = self.bOPrimaryKeyTypeMap[self.selectedRelatedBusinessObject.businessObjectQualifiedId];
-				  if(!_sdUtilService.isEmpty(self.selectedRelatedBusinessObjectInstances)){
-						var groupbyBOInstances = [];
-						angular.forEach(self.selectedRelatedBusinessObjectInstances,function(groupbyBOInstance){
-							groupbyBOInstances.push(groupbyBOInstance[self.selectedRelatedBusinessObject.otherForeignKeyField]);
+		_sdTrafficLightViewService
+				.getRuntimeBenchmarkCategories(bOids)
+				.then(
+						function(data) {
+							self.categories = data;
+							queryData.processes = processes;
+							queryData.bOids = bOids;
+							queryData.dateType = self.selectedDateType;
+							queryData.dayOffset = self.dayOffset;
+							queryData.categories = self.categories;
+							queryData.processActivityMap = self.createProcessActivityArray(queryData.bOids,
+									queryData.processes);
+							self.queryData = queryData;
+							self.tlvCriteriaForm.$error.benchmarksNotIdentical = false;
+							if (self.selectedDrillDown == "PROCESS_WORKITEM") {
+								_sdTrafficLightViewService.getTLVStatastic(queryData).then(function(data) {
+									self.tlvStatsData = {};
+									self.tlvStatsData.list = data.benchmarkTLVProcessStas;
+									self.tlvStatsData.totalCount = data.benchmarkTLVProcessStas.length;
+									self.bATLVStatsMap = data.bATLVStatsMap;
+									self.showTLVStatastics = true;
+								}, function(error) {
+									trace.log(error);
+								});
+							} else if (self.selectedDrillDown == "BUSINESS_OBJECT"
+									&& self.selectedBusinessObject != undefined) {
+								queryData.businessObjectQualifiedId = self.selectedBusinessObject.businessObjectQualifiedId;
+								queryData.businessObjectType = self.bOPrimaryKeyTypeMap[self.selectedBusinessObject.businessObjectQualifiedId];
+								if (!_sdUtilService.isEmpty(self.selectedBusinessObjectInstances)) {
+									var boInstances = [];
+									angular.forEach(self.selectedBusinessObjectInstances, function(boInstance) {
+										boInstances.push(boInstance[self.primaryKeyForBO]);
+									});
+
+									queryData.selectedBusinessObjectInstances = boInstances;
+								}
+
+								if (self.selectedRelatedBusinessObject.businessObjectQualifiedId != undefined) {
+									queryData.groupBybusinessQualifiedId = self.selectedRelatedBusinessObject.businessObjectQualifiedId;
+									queryData.groupBybusinessObjectType = self.bOPrimaryKeyTypeMap[self.selectedRelatedBusinessObject.businessObjectQualifiedId];
+									if (!_sdUtilService.isEmpty(self.selectedRelatedBusinessObjectInstances)) {
+										var groupbyBOInstances = [];
+										angular
+												.forEach(
+														self.selectedRelatedBusinessObjectInstances,
+														function(groupbyBOInstance) {
+															groupbyBOInstances
+																	.push(groupbyBOInstance[self.selectedRelatedBusinessObject.otherForeignKeyField]);
+														});
+
+										queryData.selectedRelatedBusinessObjectInstances = groupbyBOInstances;
+									}
+								}
+								queryData.selectedBOType = self.selectedBOType;
+								self.queryData = queryData;
+
+								_sdTrafficLightViewService.getTLVStatasticByBusinessObject(queryData).then(
+										function(data) {
+											self.tlvBOStatsTotal = {};
+											self.tlvBOStatsData = {};
+											self.tlvBOStatsDrillDownData = {};
+											self.tlvBOStatsTotal.list = [ data.totalBusinessObjectStatistic ];
+											self.tlvBOStatsTotal.totalCount = self.tlvBOStatsTotal.list.length;
+											self.tlvBOStatsData.list = data.businessObjectsResultList;
+											self.tlvBOStatsData.totalCount = data.businessObjectsResultList.length;
+											if (data.businessObjectsForGroupByMap != undefined) {
+												self.tlvBOStatsDrillDownData = data.businessObjectsForGroupByMap;
+											}
+											self.showTLVStatasticsByBO = true;
+										}, function(error) {
+											trace.log(error);
+										});
+							}
+
+						}, function(error) {
+							self.errorMsg = error.data.message;
+							self.tlvCriteriaForm.$error.benchmarksNotIdentical = true;
+							trace.log(error);
 						});
-						
-						queryData.selectedRelatedBusinessObjectInstances = groupbyBOInstances;
-					}
-				}
-				queryData.selectedBOType = self.selectedBOType;
-				self.queryData = queryData;
-				
-				_sdTrafficLightViewService.getTLVStatasticByBusinessObject(queryData).then(function(data) {
-					self.tlvBOStatsTotal = {};
-					self.tlvBOStatsData = {};
-					self.tlvBOStatsDrillDownData = {};
-					self.tlvBOStatsTotal.list = [data.totalBusinessObjectStatistic];
-					self.tlvBOStatsTotal.totalCount = self.tlvBOStatsTotal.list.length;
-					self.tlvBOStatsData.list = data.businessObjectsResultList;
-					self.tlvBOStatsData.totalCount = data.businessObjectsResultList.length;
-					if(data.businessObjectsForGroupByMap != undefined){
-						self.tlvBOStatsDrillDownData = data.businessObjectsForGroupByMap;
-					}
-					self.showTLVStatasticsByBO = true;
-				}, function(error) {
-					trace.log(error);
-				});	
-			}
-			
-		}, function(error) {
-			self.errorMsg = error.data.message;
-			self.tlvCriteriaForm.$error.benchmarksNotIdentical = true;
-			trace.log(error);
-		});
 
 	};
-	
-	
-	
+
 	/**
 	 * 
 	 */
-	TrafficLightViewController.prototype.createProcessActivityArray = function(bOids,processes){
-		var benchmarkProcessActivityMap= {};
+	TrafficLightViewController.prototype.createProcessActivityArray = function(bOids, processes) {
+		var benchmarkProcessActivityMap = {};
 		var self = this;
-		processes.forEach(function(process){
-			bOids.forEach(function(bOid){
-				self.benchmarkDefinitions.forEach(function(benchmarkDefinition){
-					if(bOid == benchmarkDefinition.oid){
-						benchmarkDefinition.models.forEach(function(model){
-							model.processDefinitions.forEach(function(procDef){
-								if(procDef.id == process.id){
+		processes.forEach(function(process) {
+			bOids.forEach(function(bOid) {
+				self.benchmarkDefinitions.forEach(function(benchmarkDefinition) {
+					if (bOid == benchmarkDefinition.oid) {
+						benchmarkDefinition.models.forEach(function(model) {
+							model.processDefinitions.forEach(function(procDef) {
+								if (procDef.id == process.id) {
 									var benchmarkProcessActivityArray = [];
-									procDef.activities.forEach(function(activity){										
-										if(activity.enableBenchmark){
-											var qualifiedActivityId = '{'+ model.id +'}' + activity.id;
-											benchmarkProcessActivityArray.push(qualifiedActivityId);	
-										}										
+									procDef.activities.forEach(function(activity) {
+										if (activity.enableBenchmark) {
+											var qualifiedActivityId = '{' + model.id + '}' + activity.id;
+											benchmarkProcessActivityArray.push(qualifiedActivityId);
+										}
 									});
 									benchmarkProcessActivityMap[process.id] = benchmarkProcessActivityArray;
 								}
@@ -271,42 +304,42 @@
 					}
 				});
 			});
-			
+
 		});
-		
+
 		return benchmarkProcessActivityMap;
 	};
-	
+
 	/**
 	 * 
 	 */
-	
-	TrafficLightViewController.prototype.getTlvStatsData = function(params){
+
+	TrafficLightViewController.prototype.getTlvStatsData = function(params) {
 		var self = this;
 		var deferred = _q.defer();
 		var tlvData = {};
-		if(!params) {
+		if (!params) {
 			tlvData.list = self.tlvStatsData.list;
 			tlvData.totalCount = self.tlvStatsData.totalCount;
-			angular.forEach(tlvData.list, function(object){
-				if(!(object.name == "Total Process" || object.name == "Total Activity")){
-			    	object.$leaf = false;
-				}				
+			angular.forEach(tlvData.list, function(object) {
+				if (!(object.name == "Total Process" || object.name == "Total Activity")) {
+					object.$leaf = false;
+				}
 			});
 			deferred.resolve(tlvData);
-		}else{
+		} else {
 			var activityList = self.bATLVStatsMap[params.parent.id];
-			    if(activityList != undefined){
-			    	tlvData.list = activityList;
-					tlvData.totalCount = activityList.length;
-			    }else{
-			    	tlvData.list = [];
-			    	tlvData.totalCount = 0;
-			    }
-				
-				deferred.resolve(tlvData);			
+			if (activityList != undefined) {
+				tlvData.list = activityList;
+				tlvData.totalCount = activityList.length;
+			} else {
+				tlvData.list = [];
+				tlvData.totalCount = 0;
+			}
+
+			deferred.resolve(tlvData);
 		}
-		
+
 		return deferred.promise;
 	}
 	/**
@@ -314,45 +347,45 @@
 	 * @param params
 	 * @returns
 	 */
-	TrafficLightViewController.prototype.getTlvStatsDataByBO = function(params){
+	TrafficLightViewController.prototype.getTlvStatsDataByBO = function(params) {
 		var self = this;
 		var deferred = _q.defer();
 		var tlvData = {};
-		if(!params) {
+		if (!params) {
 			tlvData.list = self.tlvBOStatsTotal.list;
 			tlvData.totalCount = self.tlvBOStatsTotal.totalCount;
-			angular.forEach(tlvData.list, function(object){				
-					object.$leaf = false;				
+			angular.forEach(tlvData.list, function(object) {
+				object.$leaf = false;
 			});
-			
+
 			deferred.resolve(tlvData);
-		}else{
-			if(params.parent.name == "Total"){
+		} else {
+			if (params.parent.name == "Total") {
 				tlvData.list = self.tlvBOStatsData.list;
 				tlvData.totalCount = self.tlvBOStatsData.totalCount;
-				angular.forEach(tlvData.list, function(object){
-					if(object.isGroup){
+				angular.forEach(tlvData.list, function(object) {
+					if (object.isGroup) {
 						object.$leaf = false;
 					}
-					
+
 				});
-			}else {
+			} else {
 				var drillDownList = self.tlvBOStatsDrillDownData[params.parent.name];
-                if(drillDownList != undefined){
-                	tlvData.list = drillDownList;
-    				tlvData.totalCount = drillDownList.length;
-                }else{
-                	tlvData.list = [];
-			    	tlvData.totalCount = 0;
-                }
+				if (drillDownList != undefined) {
+					tlvData.list = drillDownList;
+					tlvData.totalCount = drillDownList.length;
+				} else {
+					tlvData.list = [];
+					tlvData.totalCount = 0;
+				}
 			}
-							
-				deferred.resolve(tlvData);			
+
+			deferred.resolve(tlvData);
 		}
-		
+
 		return deferred.promise;
 	}
-	
+
 	/**
 	 * 
 	 */
@@ -367,18 +400,19 @@
 	 * @param state
 	 * @param benchmarkIndex
 	 */
-	TrafficLightViewController.prototype.setDataForProcessTable = function(id, state, isActivity, parentId, benchmarkIndex) {
+	TrafficLightViewController.prototype.setDataForProcessTable = function(id, state, isActivity, parentId,
+			benchmarkIndex) {
 		var self = this;
 		self.selectedBenchmarkCategory = benchmarkIndex;
 		self.state = state;
-		
-		if(isActivity){
+
+		if (isActivity) {
 			self.processDataTable = null;
-			self.processActivitiesMap={};
-			
-			if(id != undefined){
-				 self.processActivitiesMap[parentId] = [id];
-			}else{
+			self.processActivitiesMap = {};
+
+			if (id != undefined) {
+				self.processActivitiesMap[parentId] = [ id ];
+			} else {
 				self.processActivitiesMap = self.queryData.processActivityMap;
 			}
 			if (self.activityDataTable != undefined) {
@@ -386,15 +420,15 @@
 			} else {
 				self.showActivityTable = true;
 				self.showProcessTable = false;
-				
+
 			}
-		}else{
+		} else {
 			self.activityDataTable = null;
 			self.selectedProcessIds = [];
-			if(id != undefined){
-		     self.selectedProcessIds.push(id);	
-			}else{
-				self.queryData.processes.forEach(function(process){
+			if (id != undefined) {
+				self.selectedProcessIds.push(id);
+			} else {
+				self.queryData.processes.forEach(function(process) {
 					self.selectedProcessIds.push(process.id)
 				});
 			}
@@ -406,29 +440,30 @@
 				self.showActivityTable = false;
 			}
 		}
-		
+
 	};
 	/**
-	 * This methos will be used for showing process or activity table for business objects.
+	 * This methos will be used for showing process or activity table for
+	 * business objects.
 	 */
-	TrafficLightViewController.prototype.setDataForBOProcessActivityTable = function(instanceOids){
+	TrafficLightViewController.prototype.setDataForBOProcessActivityTable = function(instanceOids) {
 		var self = this;
 		self.instanceOids = instanceOids;
-		if(self.selectedBOType == "ACTIVITIES"){
+		if (self.selectedBOType == "ACTIVITIES") {
 			if (self.activityDataTable != undefined) {
 				self.activityDataTable.refresh();
 			} else {
 				self.showActivityTable = true;
 				self.showProcessTable = false;
-				
+
 			}
-		}else{
+		} else {
 			if (self.processDataTable != undefined) {
 				self.processDataTable.refresh();
 			} else {
 				self.showProcessTable = true;
 				self.showActivityTable = false;
-			}			
+			}
 		}
 	}
 
@@ -440,25 +475,24 @@
 	TrafficLightViewController.prototype.getProcesslistForTLV = function(params) {
 		var self = this;
 		var query = {};
-		if(self.selectedDrillDown == "PROCESS_WORKITEM"){
+		if (self.selectedDrillDown == "PROCESS_WORKITEM") {
 			query = {
-					'options' : params.options,
-					'bOids' : self.queryData.bOids,
-					'dateType' : self.queryData.dateType,
-					'dayOffset' : self.queryData.dayOffset,
-					'benchmarkCategory' : self.selectedBenchmarkCategory,
-					'processIds' : self.selectedProcessIds,
-					'state' : self.state,
-					'drillDownType' : self.selectedDrillDown
-				};
-		}else{
-			 query = {
-					'options' : params.options,
-					'oids' : self.instanceOids,
-					'drillDownType' : self.selectedDrillDown
-				};
+				'options' : params.options,
+				'bOids' : self.queryData.bOids,
+				'dateType' : self.queryData.dateType,
+				'dayOffset' : self.queryData.dayOffset,
+				'benchmarkCategory' : self.selectedBenchmarkCategory,
+				'processIds' : self.selectedProcessIds,
+				'state' : self.state,
+				'drillDownType' : self.selectedDrillDown
+			};
+		} else {
+			query = {
+				'options' : params.options,
+				'oids' : self.instanceOids,
+				'drillDownType' : self.selectedDrillDown
+			};
 		}
-		
 
 		var deferred = _q.defer();
 		self.processList = {};
@@ -481,25 +515,25 @@
 	TrafficLightViewController.prototype.getActivityListForTLV = function(params) {
 		var self = this;
 		var query = {};
-		if(self.selectedDrillDown == "PROCESS_WORKITEM"){
-		   query = {
-			'options' : params.options,
-			'bOids' : self.queryData.bOids,
-			'dateType' : self.queryData.dateType,
-			'dayOffset' : self.queryData.dayOffset,
-			'benchmarkCategory' : self.selectedBenchmarkCategory,
-			'processActivitiesMap' : self.processActivitiesMap,
-			'state' : self.state,
-			'drillDownType' : self.selectedDrillDown
-		};
-		}else{
-			 query = {
-						'options' : params.options,
-						'oids' : self.instanceOids,
-						'drillDownType' : self.selectedDrillDown
-					};
+		if (self.selectedDrillDown == "PROCESS_WORKITEM") {
+			query = {
+				'options' : params.options,
+				'bOids' : self.queryData.bOids,
+				'dateType' : self.queryData.dateType,
+				'dayOffset' : self.queryData.dayOffset,
+				'benchmarkCategory' : self.selectedBenchmarkCategory,
+				'processActivitiesMap' : self.processActivitiesMap,
+				'state' : self.state,
+				'drillDownType' : self.selectedDrillDown
+			};
+		} else {
+			query = {
+				'options' : params.options,
+				'oids' : self.instanceOids,
+				'drillDownType' : self.selectedDrillDown
+			};
 		}
-		
+
 		var deferred = _q.defer();
 		self.processList = {};
 		_sdActivityInstanceService.getActivitylistForTLV(query).then(function(data) {
@@ -513,19 +547,41 @@
 
 		return deferred.promise;
 	};
-    /**
-     * 
-     */
-	TrafficLightViewController.prototype.drillDownChange = function() {
+	/**
+	 * 
+	 */
+	TrafficLightViewController.prototype.drillDownChange = function(favSelectedBusinessObject,
+			favSelectedBusinessObjectInstances, favSelectedRelatedBusinessObject,
+			favSelectedRelatedBusinessObjectInstances) {
 		var self = this;
 		if (self.selectedDrillDown == 'BUSINESS_OBJECT') {
-			_sdBusinessObjectManagementService.getBusinessObjects().then(function(data) {
-				self.businessObjectModels = data.models;
-				self.refreshBusinessObjects();
-				self.showBusinessObjects = true;
-			}, function(error) {
-				trace.log(error);
-			});
+			_sdBusinessObjectManagementService.getBusinessObjects().then(
+					function(data) {
+						self.businessObjectModels = data.models;
+						self.refreshBusinessObjects();
+						self.showBusinessObjects = true;
+
+						// Setting the selectedBusinessObject from
+						// favSelectedBusinessObject
+						if (favSelectedBusinessObject != undefined) {
+							angular.forEach(self.businessObjects, function(businessObject) {
+								if (favSelectedBusinessObject.id == businessObject.id) {
+									self.selectedBusinessObject = businessObject;
+								}
+
+							});
+						}
+
+						// calling method getBusinessObjectInstances to
+						// synchronize view with favorite instance
+						if (self.selectedBusinessObject != undefined) {
+							self.getBusinessObjectInstances(favSelectedBusinessObjectInstances,
+									favSelectedRelatedBusinessObject, favSelectedRelatedBusinessObjectInstances);
+						}
+
+					}, function(error) {
+						trace.log(error);
+					});
 		} else {
 			self.showBusinessObjects = false;
 			self.showGroupByObjects = false;
@@ -535,24 +591,34 @@
 	/**
 	 * 
 	 */
-	TrafficLightViewController.prototype.getBusinessObjectInstances = function() {
+	TrafficLightViewController.prototype.getBusinessObjectInstances = function(favSelectedBusinessObjectInstances,
+			favSelectedRelatedBusinessObject, favSelectedRelatedBusinessObjectInstances) {
 		var self = this;
 		self.selectedBusinessObjectInstances = [];
 		self.selectedRelatedBusinessObject = {};
 		self.selectedRelatedBusinessObjectInstances = [];
+		// check if the pre-existing boInstance map has data for selected
+		// business object
 		if (self.bOInstanceMap[self.selectedBusinessObject.businessObjectQualifiedId] == undefined) {
+			// calling the service to get the business object instances for
+			// selected BO.
 			_sdBusinessObjectManagementService
 					.getBusinessObjectInstances(self.selectedBusinessObject)
 					.then(
 							function(data) {
+
 								angular.forEach(self.selectedBusinessObject.fields, function(field) {
 									if (field.primaryKey) {
 										self.primaryKeyForBO = field.id;
 									}
 								});
+								// creating map of businessObjectQualifiedId and primarykey of Business Object
 								self.bOPrimaryKeyMap[self.selectedBusinessObject.businessObjectQualifiedId] = self.primaryKeyForBO;
+								// Creating map for Business Object instances.
 								self.bOInstanceMap[self.selectedBusinessObject.businessObjectQualifiedId] = data;
+								// Checking for related BO map using the selected BO qualified id.
 								if (self.relatedBOMap[self.selectedBusinessObject.businessObjectQualifiedId] == undefined) {
+									// getting related Business Objects for selected BO
 									_sdBusinessObjectManagementService
 											.getRelatedBusinessObject(self.selectedBusinessObject)
 											.then(
@@ -560,13 +626,45 @@
 														self.refreshRelatedBusinessObjects(data);
 														self.relatedBOMap[self.selectedBusinessObject.businessObjectQualifiedId] = self.relatedBusinessObjects;
 														self.showGroupByObjects = true;
+                                                        //Setting the selected related BO from favSelectedRelatedBusinessObject
+														if (favSelectedRelatedBusinessObject != undefined) {
+															angular.forEach(self.relatedBusinessObjects,function(relatedBusinessObject) {
+																if (favSelectedRelatedBusinessObject.businessObjectQualifiedId == relatedBusinessObject.businessObjectQualifiedId) {
+																	self.selectedRelatedBusinessObject = relatedBusinessObject;
+																	//Setting the selected related BO instances from favorite SelectedRelatedBusinessObjectInstances
+																    if (favSelectedRelatedBusinessObjectInstances != undefined) {
+																	     self.getRelatedBOInstances(favSelectedRelatedBusinessObjectInstances);
+																	}
+																}
+
+															});
+
+														}
 													}, function(error) {
 														trace.log(error);
 													});
 								} else {
 									self.relatedBusinessObjects = self.relatedBOMap[self.selectedBusinessObject.businessObjectQualifiedId];
 									self.showGroupByObjects = true;
+
+									if (favSelectedRelatedBusinessObject != undefined) {
+										angular.forEach(self.relatedBusinessObjects,function(relatedBusinessObject) {
+											if (favSelectedRelatedBusinessObject.businessObjectQualifiedId == relatedBusinessObject.businessObjectQualifiedId) {
+												self.selectedRelatedBusinessObject = relatedBusinessObject;
+												if (favSelectedRelatedBusinessObjectInstances != undefined) {
+													self.getRelatedBOInstances(favSelectedRelatedBusinessObjectInstances);
+												}
+											}
+
+										});
+
+									}
 								}
+
+								if (favSelectedBusinessObjectInstances != undefined) {
+									self.selectedBusinessObjectInstances = favSelectedBusinessObjectInstances;
+								}
+
 							}, function(error) {
 								trace.log(error);
 							});
@@ -574,6 +672,23 @@
 			self.primaryKeyForBO = self.bOPrimaryKeyMap[self.selectedBusinessObject.businessObjectQualifiedId];
 			self.relatedBusinessObjects = self.relatedBOMap[self.selectedBusinessObject.businessObjectQualifiedId];
 			self.showGroupByObjects = true;
+
+			if (favSelectedRelatedBusinessObject != undefined) {
+				angular.forEach(self.relatedBusinessObjects,function(relatedBusinessObject) {
+					if (favSelectedRelatedBusinessObject.businessObjectQualifiedId == relatedBusinessObject.businessObjectQualifiedId) {
+					   self.selectedRelatedBusinessObject = relatedBusinessObject;
+					}
+				});
+
+			}
+
+			if (favSelectedBusinessObjectInstances != undefined) {
+				self.selectedBusinessObjectInstances = favSelectedBusinessObjectInstances;
+			}
+
+			if (favSelectedRelatedBusinessObjectInstances != undefined) {
+				self.getRelatedBOInstances(favSelectedRelatedBusinessObjectInstances);
+			}
 		}
 	};
 
@@ -590,11 +705,14 @@
 					self.businessObjectModels[n].businessObjects[m].types = {};
 				}
 				// creating map of businessObjectQualifiedId and PrimaryKeyType
-				angular.forEach(self.businessObjectModels[n].businessObjects[m].fields,function(object){
-					if(object.primaryKey){
-						self.bOPrimaryKeyTypeMap[self.businessObjectModels[n].businessObjects[m].businessObjectQualifiedId]	= object.type;
-					}
-				});
+				angular
+						.forEach(
+								self.businessObjectModels[n].businessObjects[m].fields,
+								function(object) {
+									if (object.primaryKey) {
+										self.bOPrimaryKeyTypeMap[self.businessObjectModels[n].businessObjects[m].businessObjectQualifiedId] = object.type;
+									}
+								});
 
 				self.businessObjectModels[n].businessObjects[m].modelOid = self.businessObjectModels[n].oid;
 				self.businessObjectModels[n].businessObjects[m].label = self.businessObjectModels[n].name + "/"
@@ -641,21 +759,25 @@
 	/**
 	 * 
 	 */
-	TrafficLightViewController.prototype.getRelatedBOInstances = function() {
+	TrafficLightViewController.prototype.getRelatedBOInstances = function(favSelectedRelatedBusinessObjectInstances) {
 		var self = this;
 		self.selectedRelatedBusinessObjectInstances = [];
 		var primaryKeys = [];
 		angular.forEach(self.selectedBusinessObjectInstances, function(selBOInstance) {
-			angular.forEach(selBOInstance[self.selectedRelatedBusinessObject.otherForeignKeyField],function(id){
-				if(id !=null){
+			angular.forEach(selBOInstance[self.selectedRelatedBusinessObject.otherForeignKeyField], function(id) {
+				if (id != null) {
 					primaryKeys.push(id);
 				}
-				
-			});	
+
+			});
 		});
 		_sdBusinessObjectManagementService.getRelatedBusinessObjectInstances(
 				self.selectedRelatedBusinessObject.businessObjectQualifiedId, primaryKeys).then(function(data) {
 			self.realatedBusinessObjectInstances = data;
+			if (favSelectedRelatedBusinessObjectInstances != undefined) {
+				self.selectedRelatedBusinessObjectInstances = favSelectedRelatedBusinessObjectInstances;
+			}
+
 		}, function(error) {
 			trace.log(error);
 		});
@@ -664,7 +786,7 @@
 	 * 
 	 * @param relatedMatchVal
 	 */
-	TrafficLightViewController.prototype.getRelatedBOInstanceMatches = function(relatedMatchVal){
+	TrafficLightViewController.prototype.getRelatedBOInstanceMatches = function(relatedMatchVal) {
 		var self = this;
 		var results = [];
 		var boInstancedata = self.realatedBusinessObjectInstances;
@@ -680,11 +802,118 @@
 	/**
 	 * 
 	 */
-    TrafficLightViewController.prototype.getfontSize = function(count){
-    	var fontSize = 10;
-    	if(count != 0){
-    		fontSize = fontSize + count + 2;
-    	}
-    	return fontSize;
-    };
+	TrafficLightViewController.prototype.getfontSize = function(count) {
+		var fontSize = 10;
+		if (count != 0) {
+			fontSize = fontSize + count + 2;
+		}
+		return fontSize;
+	};
+
+	TrafficLightViewController.prototype.addFavorite = function(res) {
+		var favoriteData = {};
+		var self = this;
+		favoriteData.selectedProcesses = self.selectedProcesses;
+		favoriteData.selectedBenchmarks = self.selectedBenchmarks;
+		favoriteData.selectedDrillDown = self.selectedDrillDown;
+		favoriteData.showBusinessObjects = self.showBusinessObjects;
+		favoriteData.showGroupByObjects = self.showGroupByObjects;
+		if (self.showBusinessObjects) {
+			favoriteData.selectedBusinessObject = self.selectedBusinessObject;
+			favoriteData.selectedBusinessObjectInstances = self.selectedBusinessObjectInstances;
+			favoriteData.selectedBOType = self.selectedBOType;
+		}
+
+		if (self.showGroupByObjects) {
+			favoriteData.selectedRelatedBusinessObject = self.selectedRelatedBusinessObject;
+			favoriteData.selectedRelatedBusinessObjectInstances = self.selectedRelatedBusinessObjectInstances;
+		}
+
+		favoriteData.selectedDateType = self.selectedDateType;
+		favoriteData.dayOffset = self.dayOffset;
+
+		_sdFavoriteViewService.addFavorite("trafficLightViewNew", self.tlvReportName, favoriteData).then(
+				function(data) {
+					if (!data.success) {
+						self.showFavoriteOverriteMsg = true;
+						self.errorMsg = data.errorMsg;
+					}
+					trace.log(data);
+				}, function(error) {
+					trace.log(error);
+				});
+	};
+
+	TrafficLightViewController.prototype.updateFavorite = function(res) {
+		var favoriteData = {};
+		var self = this;
+		favoriteData.selectedProcesses = self.selectedProcesses;
+		favoriteData.selectedBenchmarks = self.selectedBenchmarks;
+		favoriteData.selectedDrillDown = self.selectedDrillDown;
+		favoriteData.showBusinessObjects = self.showBusinessObjects;
+		favoriteData.showGroupByObjects = self.showGroupByObjects;
+		if (self.showBusinessObjects) {
+			favoriteData.selectedBusinessObject = self.selectedBusinessObject;
+			favoriteData.selectedBusinessObjectInstances = self.selectedBusinessObjectInstances;
+			favoriteData.selectedBOType = self.selectedBOType;
+		}
+
+		if (self.showGroupByObjects) {
+			favoriteData.selectedRelatedBusinessObject = self.selectedRelatedBusinessObject;
+			favoriteData.selectedRelatedBusinessObjectInstances = self.selectedRelatedBusinessObjectInstances;
+		}
+
+		favoriteData.selectedDateType = self.selectedDateType;
+		favoriteData.dayOffset = self.dayOffset;
+
+		_sdFavoriteViewService.updateFavorite("trafficLightViewNew", self.tlvReportName, favoriteData).then(
+				function(data) {
+					trace.log(data);
+				}, function(error) {
+					trace.log(error);
+				});
+	};
+
+	/**
+	 * 
+	 * @param params
+	 * @param $scope
+	 */
+	TrafficLightViewController.prototype.getFavoriteByName = function(params, $scope) {
+
+		var self = this;
+		// Calling REST service to get the favorite by name.
+		_sdFavoriteViewService.getFavoriteByName(params.preferenceId, params.preferenceName).then(
+				function(data) {
+					trace.log(data);
+					var values = _parse(data.preferenceValue);
+					var favoriteData = values($scope);
+                    trace.log("FavoriteData:-", favoriteData);
+					self.selectedProcesses = [];
+					// Setting selected processes from favorite
+					angular.forEach(favoriteData.selectedProcesses, function(favProcess) {
+						angular.forEach(self.processes, function(process) {
+							if (favProcess.id == process.id) {
+								self.selectedProcesses.push(process);
+							}
+
+						});
+					});
+
+					// setting all TLV criteria from favorite
+					self.selectedBenchmarks = favoriteData.selectedBenchmarks;
+					self.selectedDrillDown = favoriteData.selectedDrillDown;
+					self.drillDownChange(favoriteData.selectedBusinessObject,
+							favoriteData.selectedBusinessObjectInstances, favoriteData.selectedRelatedBusinessObject,
+							favoriteData.selectedRelatedBusinessObjectInstances);
+					self.showBusinessObjects = favoriteData.showBusinessObjects;
+					self.showGroupByObjects = favoriteData.showGroupByObjects;
+					self.selectedBOType = favoriteData.selectedBOType;
+
+					self.selectedDateType = favoriteData.selectedDateType;
+					self.dayOffset = favoriteData.dayOffset;
+				}, function(error) {
+					trace.log(error);
+				});
+	};
 })();
