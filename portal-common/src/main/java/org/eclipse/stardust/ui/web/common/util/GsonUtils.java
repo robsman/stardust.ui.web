@@ -74,14 +74,14 @@ public class GsonUtils
     * @param jsonText
     * @return
     */
-   public static JsonObject readJsonArray(String jsonText)
+   public static JsonArray readJsonArray(String jsonText)
    {
       try
       {
          JsonElement parsedJson = jsonParser.parse(jsonText);
-         if ((null != parsedJson) && parsedJson.isJsonObject())
+         if ((null != parsedJson) && parsedJson.isJsonArray())
          {
-            return parsedJson.getAsJsonObject();
+            return parsedJson.getAsJsonArray();
          }
          else
          {
