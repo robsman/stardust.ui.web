@@ -115,18 +115,18 @@
 					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}">\n' +
 					'<i class="pi pi-export pi-lg"></i>\n' +
 				'</button>\n' +
-				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSaveState && $dtApi.saveColumnAttributes" ng-click="$dtApi.toggleSavedState();"' +
-						' title="{{i18n(\'portal-common-messages.common-filterPopup-saveState\')}}">\n' +
-						'<i class="pi pi-favorite pi-lg"></i>\n' +
-				'</button>\n'+
-				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSaveState && !$dtApi.saveColumnAttributes" ng-click="$dtApi.toggleSavedState();"' +
-						' title="{{i18n(\'portal-common-messages.common-filterPopup-saveState-not\')}}">\n' +
-						'<i class="pi pi-favorite-not pi-lg"></i>\n' +
-				'</button>\n'+
 				'<button class="button-link tbl-toolbar-item  tbl-tool-joined-link tbl-tool-link" ng-if="$dtApi.enableExportCSV" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})"' +
 					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}">\n' +
 					'<i class="pi pi-export pi-lg"></i>\n' +
 				'</button>\n' +
+				'<button class="button-link tbl-toolbar-item tbl-tool-link right" ng-if="$dtApi.enableSaveState && $dtApi.saveColumnAttributes" ng-click="$dtApi.toggleSavedState();"' +
+					' title="{{i18n(\'portal-common-messages.common-filterPopup-saveState-not\')}}">\n' +
+					'<i class="pi pi-favorite pi-lg"></i>\n' +
+				'</button>\n'+
+				'<button class="button-link tbl-toolbar-item tbl-tool-link right" ng-if="$dtApi.enableSaveState && !$dtApi.saveColumnAttributes" ng-click="$dtApi.toggleSavedState();"' +
+					' title="{{i18n(\'portal-common-messages.common-filterPopup-saveState\')}}">\n' +
+					'<i class="pi pi-favorite-not pi-lg"></i>\n' +
+				'</button>\n'+
 				'<div ng-if="$dtApi.showSelectColumns" class="popup-dlg">\n' +
 				'<div class="popup-dlg-hdr">\n' +
 					'<span class="popup-dlg-hdr-txt">{{i18n("portal-common-messages.common-filterPopup-selectColumnsLabel")}}</span>\n' + 
