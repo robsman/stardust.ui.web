@@ -34,7 +34,9 @@ if (!window.bpm.portal.GenericController) {
 		this.i18nLabelProvider = null;
 		this.interaction = null;
 		this.markupProvider = null;
-		
+		this.clientTimeZoneOffet = - (new Date().getTimezoneOffset() * 60000);
+		this.serverTimeZoneOffset = null;
+								
 		/*
 		 * 
 		 */
@@ -44,7 +46,9 @@ if (!window.bpm.portal.GenericController) {
 			this.i18nLabelProvider = i18nProvider;
 			this.interaction = interaction;
 			this.markupProvider = markupProvider;
-
+			
+			this.serverTimeZoneOffset = this.fetchServerTimeZone();
+			
 			this.interaction.fetchData(null, {
 				success: function(data) {
 					jQuery.extend(bindings, data);
@@ -61,6 +65,29 @@ if (!window.bpm.portal.GenericController) {
 
 			this.loadCustomTheme();
 		};
+		
+		/**
+		 * 
+		 */
+		GenericController.prototype.fetchServerTimeZone = function() { 
+			var serverTimeZoneOffset = null;
+			var urlPrefix = "../..";
+			if (this.getContextRootUrl) {
+				urlPrefix = this.getContextRootUrl();	
+			}
+			jQuery.ajax({
+				type : 'GET',
+				url : urlPrefix + "/services/rest/portal/localization/serverTimeZone",
+				async : false
+			}).done(function(data){
+				serverTimeZoneOffset = data;
+			}).fail(function(err){
+				this.log("Failed loading server time zone.");
+			});
+			this.log("Server Time Zone Offset : "+serverTimeZoneOffset);
+			return serverTimeZoneOffset;
+		}
+
 
 		/*
 		 * 
@@ -104,6 +131,19 @@ if (!window.bpm.portal.GenericController) {
 			}
 			return value;
 		};
+		
+		/**
+		 * 
+		 */
+		GenericController.prototype.parseDate = function (datePart, timePart, format) {
+			var date = jQuery.datepicker.parseDate(format, datePart);
+			if (timePart) {
+				timePart = timePart.split(":");
+				date.setHours(timePart[0]);
+				date.setMinutes(timePart[1]);
+			}
+			return date;
+		}
 
 		/*
 		 * 
@@ -198,12 +238,52 @@ if (!window.bpm.portal.GenericController) {
 					}
 				}
 
+				if (datePart && timePart && this.serverTimeZoneOffset) {
+					var dateTime = this.adjustForClientTimeZone(datePart, timePart);
+					datePart = dateTime.date;
+					timePart = dateTime.time;
+				}
+				
 				binding[lastPart] = datePart;
 				if (haveTime) {
 					binding[lastPart + "_timePart"] = timePart;
 				}
 			}
 		};
+		
+		/**
+		 * 
+		 */
+		GenericController.prototype.adjustForClientTimeZone = function (datePart, timePart) {
+			return this.adjustForTimeZoneDifference(datePart, timePart, this.clientTimeZoneOffet,
+					this.serverTimeZoneOffset, this.clientDateFormat)
+		}
+
+		/**
+		 * 
+		 */
+		GenericController.prototype.adjustForServerTimeZone = function (datePart, timePart) {
+			return this.adjustForTimeZoneDifference(datePart, timePart, this.serverTimeZoneOffset,
+					this.clientTimeZoneOffet, this.clientDateFormat)
+		}
+		
+		/**
+		 * 
+		 */
+		GenericController.prototype.adjustForTimeZoneDifference = function (datePart, timePart, toZoneOffset, fromZoneOffset, format) {
+
+			var date = this.parseDate(datePart, timePart, format);
+
+			date = new Date(date.getTime() + toZoneOffset - fromZoneOffset);
+			var hours = date.getHours() > 9 ? date.getHours() : "0" + date.getHours();
+			var minutes = date.getMinutes() > 9 ? date.getMinutes() : "0" + date.getMinutes();
+
+			var dateTime = {
+				date : jQuery.datepicker.formatDate(format, date),
+				time : hours + ":" + minutes
+			}
+			return dateTime;
+		}
 
 		/*
 		 * 
@@ -289,7 +369,13 @@ if (!window.bpm.portal.GenericController) {
 			if (binding) {
 				var dateValue = binding[lastPart];
 				var timeValue = binding[lastPart + "_timePart"];
-				
+
+				if (dateValue && timeValue && this.serverTimeZoneOffset) {
+					var dateTime = this.adjustForServerTimeZone(dateValue, timeValue);
+					dateValue = dateTime.date;
+					timeValue = dateTime.time;
+				}
+
 				var value = "";
 				if (dateValue) {
 					value = this.formatDate(dateValue, this.clientDateFormat, this.SERVER_DATE_FORMAT);
