@@ -195,6 +195,50 @@ public class ParticipantServiceImpl implements ParticipantService
    }
 
    /**
+    * @param participantQidIn
+    * @return
+    */
+   public ParticipantDTO getParticipantDTOFromQualifiedId(String participantQidIn)
+   {
+      ParticipantContainer participantContainer = getParticipantContainerFromQialifiedId(participantQidIn);
+      QualifiedModelParticipantInfo modelparticipant = participantContainer.modelparticipant;
+      Department department = participantContainer.department;
+      String pTypeStr = participantContainer.participantType;
+
+      ParticipantType pType = ParticipantType.valueOf(pTypeStr);
+
+      ParticipantDTO participantDTO = null;
+
+      switch (pType)
+      {
+      case ORGANIZATION_UNSCOPED:
+      case ORGANIZATON_SCOPED_IMPLICIT:
+      case ORGANIZATON_SCOPED_EXPLICIT:
+      case ROLE_SCOPED:
+      case ROLE_UNSCOPED:
+         participantDTO = getParticipant(modelparticipant, department, false);
+         break;
+
+      case DEPARTMENT:
+      case DEPARTMENT_DEFAULT:
+         participantDTO = getParticipant(department);
+         break;
+
+      case USERGROUP:
+         participantDTO = new ParticipantDTO(userGroupUtils.getUserGroup(participantContainer.dynamicParticipantInfoId));
+         break;
+
+      default:
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("Not supported to expand: " + pTypeStr);
+         }
+         break;
+      }
+      return participantDTO;
+   }
+   
+   /**
     * @param participantContainer
     * @param lazyLoad
     * @return
@@ -427,7 +471,7 @@ public class ParticipantServiceImpl implements ParticipantService
     * @param participantQidIn
     * @return
     */
-   private ParticipantContainer getParticipantContainerFromQialifiedId(String participantQidIn)
+   public ParticipantContainer getParticipantContainerFromQialifiedId(String participantQidIn)
    {
       String departmentId = ParticipantManagementUtils.parseDepartmentId(participantQidIn);
       String parentDepartmentId = ParticipantManagementUtils.parseParentDepartmentId(participantQidIn);
@@ -851,10 +895,10 @@ public class ParticipantServiceImpl implements ParticipantService
       return department;
    }
 
-   static class ParticipantContainer
+   public static class ParticipantContainer
    {
       QualifiedModelParticipantInfo modelparticipant;
-      String dynamicParticipantInfoId;
+      String dynamicParticipantInfoId; //used only for userGroups
       Department department;
       String participantType;
    }

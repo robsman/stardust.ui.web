@@ -10,11 +10,15 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest;
 
+import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Resource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -22,8 +26,12 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.service.MapAdapter;
 import org.eclipse.stardust.ui.web.rest.service.RepositoryService;
+import org.eclipse.stardust.ui.web.rest.service.ResourcePolicyService;
+import org.eclipse.stardust.ui.web.rest.service.dto.ResourcePolicyDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +39,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * @author Yogesh.Manware
@@ -42,6 +51,12 @@ public class FolderResource
 {
    @Autowired
    private RepositoryService repositoryService;
+
+   @Resource
+   private RestCommonClientMessages restCommonClientMessages;
+
+   @Autowired
+   private ResourcePolicyService resourcePolicyService;
 
    @GET
    @Consumes(MediaType.APPLICATION_JSON)
@@ -57,4 +72,46 @@ public class FolderResource
       Gson gson = new GsonBuilder().registerTypeAdapter(Map.class, new MapAdapter()).disableHtmlEscaping().create();
       return Response.ok(gson.toJson(folderContents, FolderDTO.class), MediaType.APPLICATION_JSON).build();
    }
+
+   /**
+    * @author Yogesh.Manware
+    * @param folderId
+    * @return
+    * @throws Exception
+    */
+   @GET
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/policy/{folderId: .*}")
+   public Response getFolderPolicies(@PathParam("folderId") String folderId) throws Exception
+   {
+      folderId = DocumentMgmtUtility.checkAndGetCorrectResourceId(folderId);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(resourcePolicyService.getPolicy(folderId, true))).build();
+   }
+
+   /**
+    * @author Yogesh.Manware
+    * @param folderId
+    * @param postedData
+    * @return
+    * @throws Exception
+    */
+   @PUT
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/policy/{folderId: .*}")
+   public Response updateFolderPolicies(@PathParam("folderId") String folderId, String postedData) throws Exception
+   {
+      Type type = new TypeToken<List<ResourcePolicyDTO>>()
+      {
+      }.getType();
+
+      List<ResourcePolicyDTO> resourcePolicies = (List<ResourcePolicyDTO>) GsonUtils.extractList(
+            GsonUtils.readJsonArray(postedData), type);
+
+      resourcePolicyService.savePolicy(folderId, resourcePolicies, true);
+
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(restCommonClientMessages.get("success.message"))).build();
+   }
+
 }

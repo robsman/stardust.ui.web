@@ -77,6 +77,8 @@ public class RepositoryUtility
    public static final String DOCUMENT_DISPLAY_MODE_NEWBROWSER = "NEWBROWSER";
    public static final String UI_PROPERTIES = "ui-properties";
    public static final String CORRESPONDENCE_REQUEST = "CORRESPONDENCE_REQUEST";
+   public static final String ALLOW = "Allow";
+   public static final String DENY = "Deny";
    
    
    public enum UIProperties{

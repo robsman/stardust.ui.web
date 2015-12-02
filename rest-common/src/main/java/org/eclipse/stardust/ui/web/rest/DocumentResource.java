@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.rest;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -20,14 +21,12 @@ import java.util.MissingResourceException;
 import javax.annotation.Resource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -38,15 +37,16 @@ import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
-import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
 import org.eclipse.stardust.ui.web.rest.exception.PortalErrorClass;
 import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
 import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.service.DocumentService;
 import org.eclipse.stardust.ui.web.rest.service.RepositoryService;
+import org.eclipse.stardust.ui.web.rest.service.ResourcePolicyService;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ResourcePolicyDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.FileUploadUtils;
@@ -56,10 +56,11 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * @author Anoop.Nair
- * @author Abhay.Thappan
+ * @author Abhay.Thappan    
  * @version $Revision: $
  */
 @Component
@@ -74,6 +75,9 @@ public class DocumentResource
 
    @Autowired
    private RepositoryService repositoryService;
+   
+   @Autowired
+   private ResourcePolicyService resourcePolicyService; 
    
    @Resource
    private RestCommonClientMessages restCommonClientMessages;
@@ -275,7 +279,48 @@ public class DocumentResource
       return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
    }
    
-   
+   /**
+    * @author Yogesh.Manware
+    * @param documentId
+    * @return
+    * @throws Exception
+    */
+   @GET
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/policy/{documentId: .*}")
+   public Response getDocumentPolicies(@PathParam("documentId") String documentId) throws Exception
+   {
+      documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(resourcePolicyService.getPolicy(documentId, false))).build();
+   }
+
+   /**
+    * @author Yogesh.Manware
+    * @param documentId
+    * @param postedData
+    * @return
+    * @throws Exception
+    */
+   @PUT
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/policy/{documentId: .*}")
+   public Response updateDocumentPolicies(@PathParam("documentId") String documentId, String postedData)
+         throws Exception
+   {
+      Type type = new TypeToken<List<ResourcePolicyDTO>>()
+      {
+      }.getType();
+
+      List<ResourcePolicyDTO> resourcePolicies = (List<ResourcePolicyDTO>) GsonUtils.extractList(
+            GsonUtils.readJsonArray(postedData), type);
+
+      resourcePolicyService.savePolicy(documentId, resourcePolicies, false);
+
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(restCommonClientMessages.get("success.message"))).build();
+   }
+
    /**
     * @return
     */
