@@ -107,77 +107,81 @@
 			scope, element, attr, ctrl, sdPortalConfigurationService, sdDialogService) {
 		var TOOLBAR_TEMPLATE =
 			'<div class="tbl-toolbar-section">\n' +
-				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSelectColumns" ng-click="$dtApi.toggleColumnSelector()"' + 
-					' title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}">\n' +
-					'<i class="pi pi-column-selector pi-lg"></i>\n' +
-				'</button>\n' +
-				'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableExportExcel" ng-click=""' +
-					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}">\n' +
-					'<i class="pi pi-export pi-lg"></i>\n' +
-				'</button>\n' +
-				'<button class="button-link tbl-toolbar-item  tbl-tool-joined-link tbl-tool-link" ng-if="$dtApi.enableExportCSV" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})"' +
-					' title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}">\n' +
-					'<i class="pi pi-export pi-lg"></i>\n' +
-				'</button>\n' +
-				'<button class="button-link tbl-toolbar-item tbl-tool-link right" ng-if="$dtApi.enableSaveState && $dtApi.saveColumnAttributes" ng-click="$dtApi.toggleSavedState();"' +
-					' title="{{i18n(\'portal-common-messages.common-filterPopup-saveState-not\')}}">\n' +
-					'<i class="pi pi-favorite pi-lg"></i>\n' +
-				'</button>\n'+
-				'<button class="button-link tbl-toolbar-item tbl-tool-link right" ng-if="$dtApi.enableSaveState && !$dtApi.saveColumnAttributes" ng-click="$dtApi.toggleSavedState();"' +
-					' title="{{i18n(\'portal-common-messages.common-filterPopup-saveState\')}}">\n' +
-					'<i class="pi pi-favorite-not pi-lg"></i>\n' +
-				'</button>\n'+
-				'<div ng-if="$dtApi.showSelectColumns" class="popup-dlg">\n' +
-				'<div class="popup-dlg-hdr">\n' +
-					'<span class="popup-dlg-hdr-txt">{{i18n("portal-common-messages.common-filterPopup-selectColumnsLabel")}}</span>\n' + 
-					'<button class="button-link popup-dlg-cls" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()">\n' +
-						'<i class="pi pi-close pi-lg" />\n' +
+				'<div class="right">' +
+					'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSaveState && $dtApi.saveColumnAttributes" ng-click="$dtApi.toggleSavedState();"' +
+						' title="{{i18n(\'portal-common-messages.common-filterPopup-saveState-not\')}}">\n' +
+						'<i class="pi pi-favorite pi-lg"></i>\n' +
+					'</button>\n'+
+					'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSaveState && !$dtApi.saveColumnAttributes" ng-click="$dtApi.toggleSavedState();"' +
+						' title="{{i18n(\'portal-common-messages.common-filterPopup-saveState\')}}">\n' +
+						'<i class="pi pi-favorite-not pi-lg"></i>\n' +
+					'</button>\n'+
+				'</div>\n'+
+				'<div class="tbl-toolbar-section">\n' +
+					'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSelectColumns" ng-click="$dtApi.toggleColumnSelector()"' + 
+						' title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}">\n' +
+						'<i class="pi pi-column-selector pi-lg"></i>\n' +
 					'</button>\n' +
-				'</div>\n' +
-				'<div class="popup-dlg-cnt tbl-col-selector">\n' +
-							'<div>\n' +
-								'<span class="ui-section" ng-if="$dtApi.columnSelectorAdmin">\n' +
-									'<span class="label-form">{{i18n(\'portal-common-messages.common-preferenceScope-label\')}}</span>\n' +
-									'<select class="inp-sel-one" ng-model="$dtApi.applyTo" ng-change="$dtApi.applyToChanged()">\n' +
-										'<option value="USER">{{i18n(\'portal-common-messages.common-preferenceScope-options-user\')}}</option>\n' +
-										'<option value="PARTITION">{{i18n(\'portal-common-messages.common-preferenceScope-options-partition\')}}</option>\n' +
-									'</select>\n' +
-								'</span>\n' +
-								'<button class="button-link tbl-col-sel-link" ng-if="$dtApi.columnSelectorAdmin" ng-click="$dtApi.toggleColumnSelectorLock()" ng-disabled="$dtApi.isColumnSelectorLockDisabled()">\n' +
-									'<span class="pi pi-lg pi-lock" ng-show="$dtApi.lock" title="{{i18n(\'portal-common-messages.common-filterPopup-unlock\')}}"></span>\n' + 
-									'<span class="pi pi-lg pi-unlock" ng-show="!$dtApi.lock" title="{{i18n(\'portal-common-messages.common-filterPopup-lock\')}}"></span>\n' +
-								'</button>\n' +
-								'<button class="button-link tbl-col-sel-link pi pi-reset pi-lg" ng-click="$dtApi.resetColumnSelector()" title ="{{i18n(\'portal-common-messages.common-reset\')}}" style="cursor: pointer;"></button>\n' +
-							'</div>\n' +
-							'<div class="tbl-col-sel-list">\n' +
-								'<div ng-repeat="col in $dtApi.columns" class="tbl-col-sel-row" ng-model="$index" sd-data-drag sd-data-drop sda-drop="$dtApi.moveColumns($data, $index, $event)">\n' +
-									'<input type="checkbox" class="tbl-col-sel-input" ng-model="col.visible"></span>\n' +
-									'<span class="tbl-col-sel-label">{{col.title}}</span>\n' +
+					'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableExportExcel" ng-click=""' +
+						' title="{{i18n(\'portal-common-messages.common-genericDataTable-asExcel\')}}">\n' +
+						'<i class="pi pi-export pi-lg"></i>\n' +
+					'</button>\n' +
+					'<button class="button-link tbl-toolbar-item  tbl-tool-joined-link tbl-tool-link" ng-if="$dtApi.enableExportCSV" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})"' +
+						' title="{{i18n(\'portal-common-messages.common-genericDataTable-asCSV\')}}">\n' +
+						'<i class="pi pi-export pi-lg"></i>\n' +
+					'</button>\n' +
+					'<div ng-if="$dtApi.showSelectColumns" class="popup-dlg">\n' +
+					'<div class="popup-dlg-hdr">\n' +
+						'<span class="popup-dlg-hdr-txt">{{i18n("portal-common-messages.common-filterPopup-selectColumnsLabel")}}</span>\n' + 
+						'<button class="button-link popup-dlg-cls" title="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()">\n' +
+							'<i class="pi pi-close pi-lg" />\n' +
+						'</button>\n' +
+					'</div>\n' +
+					'<div class="popup-dlg-cnt tbl-col-selector">\n' +
+								'<div>\n' +
+									'<span class="ui-section" ng-if="$dtApi.columnSelectorAdmin">\n' +
+										'<span class="label-form">{{i18n(\'portal-common-messages.common-preferenceScope-label\')}}</span>\n' +
+										'<select class="inp-sel-one" ng-model="$dtApi.applyTo" ng-change="$dtApi.applyToChanged()">\n' +
+											'<option value="USER">{{i18n(\'portal-common-messages.common-preferenceScope-options-user\')}}</option>\n' +
+											'<option value="PARTITION">{{i18n(\'portal-common-messages.common-preferenceScope-options-partition\')}}</option>\n' +
+										'</select>\n' +
+									'</span>\n' +
+									'<button class="button-link tbl-col-sel-link" ng-if="$dtApi.columnSelectorAdmin" ng-click="$dtApi.toggleColumnSelectorLock()" ng-disabled="$dtApi.isColumnSelectorLockDisabled()">\n' +
+										'<span class="pi pi-lg pi-lock" ng-show="$dtApi.lock" title="{{i18n(\'portal-common-messages.common-filterPopup-unlock\')}}"></span>\n' + 
+										'<span class="pi pi-lg pi-unlock" ng-show="!$dtApi.lock" title="{{i18n(\'portal-common-messages.common-filterPopup-lock\')}}"></span>\n' +
+									'</button>\n' +
+									'<button class="button-link tbl-col-sel-link pi pi-reset pi-lg" ng-click="$dtApi.resetColumnSelector()" title ="{{i18n(\'portal-common-messages.common-reset\')}}" style="cursor: pointer;"></button>\n' +
+								'</div>\n' +
+								'<div class="tbl-col-sel-list">\n' +
+									'<div ng-repeat="col in $dtApi.columns" class="tbl-col-sel-row" ng-model="$index" sd-data-drag sd-data-drop sda-drop="$dtApi.moveColumns($data, $index, $event)">\n' +
+										'<input type="checkbox" class="tbl-col-sel-input" ng-model="col.visible"></span>\n' +
+										'<span class="tbl-col-sel-label">{{col.title}}</span>\n' +
+									'</div>\n' +
 								'</div>\n' +
 							'</div>\n' +
-						'</div>\n' +
-						'<div class="popup-dlg-footer">\n' +
-							'<input type="submit" class="button primary" value="{{i18n(\'portal-common-messages.common-apply\')}}" ng-click="$dtApi.applyColumnSelector()" />' +
-							'<input type="submit" class="button secondary" value="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()" />' +
-						'</div>\n' +
-				'</div>\n' +
-				'<span ng-if="$dtApi.enableExportCSV" sd-popover="$dtApi.exportPopoverHandle" sda-class="tbl-tool-link">' +
-					'<i class="pi pi-menu-dropdown"></i>\n' +
-					'<div class="popover-body">\n' +
-						'<div><a href="" ng-hide="!$dtApi.enableSelectColumns" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})">' + 
-							'{{i18n(\'html5-common.export-options-current-page-current-fields\')}}\n' +
-						'</a></div>\n' +
-						'<div><a href="" ng-click="$dtApi.exportCSV({allRows: false, allCols: true})">' + 
-							'{{i18n(\'html5-common.export-options-current-page-all-fields\')}}\n' +
-						'</a></div>\n' +
-						'<div><a href="" ng-hide="!$dtApi.enableSelectColumns" ng-click="$dtApi.exportCSV({allRows: true, allCols: false})">' + 
-							'{{i18n(\'html5-common.export-options-all-pages-current-fields\')}}\n' +
-						'</a></div>\n' +
-						'<div><a href="" ng-click="$dtApi.exportCSV({allRows: true, allCols: true})">' + 
-							'{{i18n(\'html5-common.export-options-all-pages-all-fields\')}}\n' +
-						'</a></div>\n' +
-					'</div>\n';
-				'</span>'+
+							'<div class="popup-dlg-footer">\n' +
+								'<input type="submit" class="button primary" value="{{i18n(\'portal-common-messages.common-apply\')}}" ng-click="$dtApi.applyColumnSelector()" />' +
+								'<input type="submit" class="button secondary" value="{{i18n(\'portal-common-messages.common-filterPopup-close\')}}" ng-click="$dtApi.toggleColumnSelector()" />' +
+							'</div>\n' +
+					'</div>\n' +
+					'<span ng-if="$dtApi.enableExportCSV" sd-popover="$dtApi.exportPopoverHandle" sda-class="tbl-tool-link">' +
+						'<i class="pi pi-menu-dropdown"></i>\n' +
+						'<div class="popover-body">\n' +
+							'<div><a href="" ng-hide="!$dtApi.enableSelectColumns" ng-click="$dtApi.exportCSV({allRows: false, allCols: false})">' + 
+								'{{i18n(\'html5-common.export-options-current-page-current-fields\')}}\n' +
+							'</a></div>\n' +
+							'<div><a href="" ng-click="$dtApi.exportCSV({allRows: false, allCols: true})">' + 
+								'{{i18n(\'html5-common.export-options-current-page-all-fields\')}}\n' +
+							'</a></div>\n' +
+							'<div><a href="" ng-hide="!$dtApi.enableSelectColumns" ng-click="$dtApi.exportCSV({allRows: true, allCols: false})">' + 
+								'{{i18n(\'html5-common.export-options-all-pages-current-fields\')}}\n' +
+							'</a></div>\n' +
+							'<div><a href="" ng-click="$dtApi.exportCSV({allRows: true, allCols: true})">' + 
+								'{{i18n(\'html5-common.export-options-all-pages-all-fields\')}}\n' +
+							'</a></div>\n' +
+						'</div>\n';
+					'</span>'+
+				'</div>\n';
 			'</div>\n';
 
 		var elemScope = scope.$parent;
