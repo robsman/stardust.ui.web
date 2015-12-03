@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.rest.misc;
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.PathParam;
@@ -38,6 +39,8 @@ public class EndPointDTO
    public Map<String, ParameterDTO> queryParams = new HashMap<String, ParameterDTO>();
    public Map<String, ParameterDTO> pathParams = new HashMap<String, ParameterDTO>();
    public Map<String, ParameterDTO> defaultParams = new HashMap<String, ParameterDTO>();
+   
+   public String uuid = UUID.randomUUID().toString();
 
    public static class ParameterDTO
    {

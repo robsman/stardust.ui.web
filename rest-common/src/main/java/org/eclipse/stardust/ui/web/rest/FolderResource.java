@@ -28,6 +28,8 @@ import javax.ws.rs.core.Response;
 
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
+import org.eclipse.stardust.ui.web.rest.misc.RequestDescription;
+import org.eclipse.stardust.ui.web.rest.misc.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.service.MapAdapter;
 import org.eclipse.stardust.ui.web.rest.service.RepositoryService;
 import org.eclipse.stardust.ui.web.rest.service.ResourcePolicyService;
@@ -83,6 +85,43 @@ public class FolderResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/policy/{folderId: .*}")
+   @ResponseDescription("#### Sample Response:\r\n" + 
+         "```\r\n" + 
+         "{\r\n" + 
+         "    \"own\" : [{\r\n" + 
+         "            \"participant\" : {\r\n" + 
+         "                \"name\" : \"Checker\",\r\n" + 
+         "                \"qualifiedId\" : \"{ipp-participant}{Model63}Checker\"\r\n" + 
+         "            },\r\n" + 
+         "            \"read\" : \"Allow\",\r\n" + 
+         "            \"modify\" : \"Allow\",\r\n" + 
+         "            \"create\" : \"Allow\",\r\n" + 
+         "            \"delete\" : \"Allow\",\r\n" + 
+         "            \"readAcl\" : \"Allow\",\r\n" + 
+         "            \"modifyAcl\" : \"Allow\"\r\n" + 
+         "        }\r\n" + 
+         "    ],\r\n" + 
+         "    \"ineherited\" : [{\r\n" + 
+         "            \"participant\" : {\r\n" + 
+         "                \"name\" : \"Administrators\",\r\n" + 
+         "                \"qualifiedId\" : \"administrators\"\r\n" + 
+         "            },\r\n" + 
+         "            \"read\" : \"Allow\",\r\n" + 
+         "            \"modify\" : \"Allow\",\r\n" + 
+         "            \"create\" : \"Allow\",\r\n" + 
+         "            \"delete\" : \"Allow\",\r\n" + 
+         "            \"readAcl\" : \"Allow\",\r\n" + 
+         "            \"modifyAcl\" : \"Allow\"\r\n" + 
+         "        }, {\r\n" + 
+         "            \"participant\" : {\r\n" + 
+         "                \"name\" : \"Everyone\",\r\n" + 
+         "                \"qualifiedId\" : \"everyone\"\r\n" + 
+         "            },\r\n" + 
+         "            \"read\" : \"Allow\"\r\n" + 
+         "        }\r\n" + 
+         "    ]\r\n" + 
+         "}\r\n" + 
+         "```")
    public Response getFolderPolicies(@PathParam("folderId") String folderId) throws Exception
    {
       folderId = DocumentMgmtUtility.checkAndGetCorrectResourceId(folderId);
@@ -100,6 +139,27 @@ public class FolderResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/policy/{folderId: .*}")
+   @RequestDescription("Complete set of policy is necessary during modifications\r\n" + 
+         "\r\n" + 
+         "#### Sample Request:\r\n" +
+         "```\r\n" + 
+         "[{\r\n" + 
+         "        \"participant\" : {\r\n" + 
+         "            \"name\" : \"Checker\",\r\n" + 
+         "            \"qualifiedId\" : \"{ipp-participant}{Model63}Checker\"\r\n" + 
+         "        },\r\n" + 
+         "        \"read\" : \"Allow\",\r\n" + 
+         "        \"modify\" : \"Allow\",\r\n" + 
+         "        \"create\" : \"Allow\",\r\n" + 
+         "        \"delete\" : \"Allow\",\r\n" + 
+         "        \"readAcl\" : \"Allow\",\r\n" + 
+         "        \"modifyAcl\" : \"Allow\"\r\n" + 
+         "    }\r\n" + 
+         "]\r\n" + 
+         "```\r\n" + 
+         "\r\n" + 
+         "**Note:** *Participant object can be replaced with simple key value pair of  \"participantQualifiedId\"* ")
+   @ResponseDescription("Operation completed successfully.")
    public Response updateFolderPolicies(@PathParam("folderId") String folderId, String postedData) throws Exception
    {
       Type type = new TypeToken<List<ResourcePolicyDTO>>()

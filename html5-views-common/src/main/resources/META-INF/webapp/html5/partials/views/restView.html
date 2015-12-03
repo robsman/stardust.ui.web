@@ -4,6 +4,15 @@
 <title>PORTAL REST</title>
 
 <style>
+body {
+	font-family: "georgia";
+	font-size: "12px";
+}
+
+.editable:hover {
+	cursor: pointer;
+}
+
 .confluenceTh {
 	font-weight: bold;
 	background-color: #f0f0f0
@@ -16,7 +25,7 @@
 
 .moduleName {
 	color: #b14040;
-	font-size: 20px;
+	font-size: 18px;
 }
 
 h1, h2, h3, h4, .moduleName, .tablesorter-header-inner {
@@ -24,8 +33,9 @@ h1, h2, h3, h4, .moduleName, .tablesorter-header-inner {
 }
 
 .endpointUrl {
-	font-size: 12px;
+	font-size: 16px;
 	text-decoration: underline;
+	font-family: "monospace";
 }
 
 .formattedData {
@@ -57,12 +67,23 @@ h1, h2, h3, h4, .moduleName, .tablesorter-header-inner {
 	vertical-align: top;
 	text-align: left;
 }
+
+table {
+	border-collapse: collapse;
+}
+
+td, th {
+	display: table-cell;
+}
 </style>
 
 <script
 	src="../../../../../portal-shell/js/libs/angular/1.2.11/angular.js"></script>
 <script
 	src="../../../../../portal-shell/js/libs/angular/1.2.11/angular-resource.min.js"></script>
+
+<script src="../../../../../portal-shell/js/libs/angular-md/showdown.js"></script>
+
 <script type="text/javascript">
   (function() {
 
@@ -79,11 +100,30 @@ h1, h2, h3, h4, .moduleName, .tablesorter-header-inner {
 
     var app = angular.module('restViewApp', ['ngResource']);
 
+    //directive to support markdown rendering
+    app.directive('markdown', function() {
+      var converter = new Showdown.converter();
+      return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+          function renderMarkdown() {
+            var htmlText = converter.makeHtml(scope.$eval(attrs.markdown) || '');
+            element.html(htmlText);
+          }
+          scope.$watch(attrs.markdown, renderMarkdown);
+          renderMarkdown();
+        }
+      };
+    });
+
     app.controller('Controller', ['$scope', '$resource', function($scope, $resource) {
       var REST_BASE_URL = getBaseUrl() + "services/rest/portal/portal-rest";
       var restResource = $resource(REST_BASE_URL);
 
       restResource.get().$promise.then(function(responseData) {
+
+        $scope.test = '#foo\r- bar\r- baz';
+
         //initialize expand-collapse feature
         $scope.modules = {};
         $scope.modulesPanel = {};
@@ -113,6 +153,17 @@ h1, h2, h3, h4, .moduleName, .tablesorter-header-inner {
           $scope.resourcesPanel[resourceName] = false;
         }
       }
+
+      $scope.edit = function(element, columnName) {
+        $scope.editingUuid = element.uuid;
+        $scope.editingColumnName = columnName;
+        $scope.selectedData = element[columnName];
+      }
+
+      $scope.editing = function(element, columnName) {
+        return ($scope.editingUuid == element.uuid && $scope.editingColumnName === columnName);
+      }
+
     }]);
 
   })();
@@ -123,7 +174,8 @@ h1, h2, h3, h4, .moduleName, .tablesorter-header-inner {
 <body ng-app="restViewApp">
 	<div class="wiki-content" ng-controller="Controller"
 		id="resources_container">
-		<h1>List of All Endpoints</h1>
+
+		<h1>Portal Rest Endpoints</h1>
 		<ul>
 			<li ng-repeat="(moduleName, moduleValue) in modules"><span
 				ng-click="modulesPanel[moduleName] = !modulesPanel[moduleName]">
@@ -153,16 +205,22 @@ h1, h2, h3, h4, .moduleName, .tablesorter-header-inner {
 
 		<div ng-repeat="(moduleName, moduleValue) in modules">
 			<div ng-repeat="(resourceName, resourceValue) in moduleValue">
-				<h2 id="">
-					<strong>{{resourceValue.basePath}} </strong>
-				</h2>
+				<br> <br>
+				<h3 style="display: inline">
+					<strong>Base Path:</strong>
+				</h3>
+				<div style="display: inline;" class="path">{{resourceValue.basePath}}</div>
+
 				<div ng-show="resourceValue.description">
 					<strong>Description:</strong> <span>{{resourceValue.description}}</span>
 				</div>
-				<p>
-					<strong>Package:</strong>
-					<code>{{resourceValue.qualifiedName}}</code>
-				</p>
+				<br>
+				<h3 style="display: inline;">
+					<strong>Resource Path:</strong>
+				</h3>
+
+				<div style="display: inline;" class="path">{{resourceValue.qualifiedName}}</div>
+
 				<div>
 					<table>
 						<thead>
@@ -204,7 +262,8 @@ h1, h2, h3, h4, .moduleName, .tablesorter-header-inner {
 								</span></td>
 								<td class="confluenceTd path"><span
 									id="{{endpoint.method}}">&nbsp;{{endpoint.path}}</span> <br>
-									<span class="endpointUrl"><a target="_blank" href="{{endpoint.relativePath}}">{{endpoint.uri}}</a></span></td>
+									<span class="endpointUrl"><a target="_blank"
+										href="{{endpoint.relativePath}}">{{endpoint.uri}}</a></span></td>
 								<td class="confluenceTd"><ul>
 										<li ng-repeat="(paramName, paramValue) in endpoint.pathParams">
 											<span>{{paramName}}: </span> <span>
@@ -218,11 +277,36 @@ h1, h2, h3, h4, .moduleName, .tablesorter-header-inner {
 												{{paramValue.javaType}}</span>
 										</li>
 									</ul></td>
-								<td class="confluenceTd"><pre class="formattedData">{{endpoint.requestDescription}}</pre>
-								</td>
-								<td class="confluenceTd"><pre class="formattedData">{{endpoint.responseDescription}}</pre>
-								</td>
-								<td class="confluenceTd"><pre class="formattedData">{{endpoint.description}}</pre></td>
+
+								<td class="confluenceTd editable" title="Double-click to edit"
+									ng-show="!editing(endpoint, 'requestDescription')"
+									ng-dblclick="edit(endpoint, 'requestDescription')"><div
+										markdown=endpoint.requestDescription></div></td>
+								<td class="confluenceTd"
+									title="Remember to copy to Java class post editing"
+									ng-show="editing(endpoint, 'requestDescription')"><textarea
+										rows="15" cols="50" ng-model="endpoint.requestDescription"> </textarea>
+									<div markdown="endpoint[editingColumnName]"></div></td>
+
+								<td class="confluenceTd editable" title="Double-click to edit"
+									ng-show="!editing(endpoint, 'responseDescription')"
+									ng-dblclick="edit(endpoint, 'responseDescription')"><div
+										markdown=endpoint.responseDescription></div></td>
+								<td class="confluenceTd editing"
+									title="Remember to copy to Java class post editing"
+									ng-show="editing(endpoint, 'responseDescription')"><textarea
+										rows="15" cols="50" ng-model="endpoint.responseDescription"> </textarea>
+									<div markdown="endpoint[editingColumnName]"></div></td>
+
+								<td class="confluenceTd editable" title="Double-click to edit"
+									ng-show="!editing(endpoint, 'description')"
+									ng-dblclick="edit(endpoint, 'description')"><div
+										markdown=endpoint.description></div></td>
+								<td class="confluenceTd"
+									title="Remember to copy to Java class post editing"
+									ng-show="editing(endpoint, 'description')"><textarea
+										rows="15" cols="50" ng-model="endpoint.description"> </textarea>
+									<div markdown="endpoint[editingColumnName]"></div></td>
 							</tr>
 
 						</tbody>
@@ -231,7 +315,6 @@ h1, h2, h3, h4, .moduleName, .tablesorter-header-inner {
 				</div>
 			</div>
 		</div>
-
 	</div>
 
 </body>
