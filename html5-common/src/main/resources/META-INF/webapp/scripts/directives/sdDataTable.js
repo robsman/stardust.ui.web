@@ -107,17 +107,17 @@
 			scope, element, attr, ctrl, sdPortalConfigurationService, sdDialogService) {
 		var TOOLBAR_TEMPLATE =
 			'<div class="tbl-toolbar-section">\n' +
-				'<div class="right">' +
-					'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSaveState && $dtApi.saveColumnAttributes" ng-click="$dtApi.toggleSavedState();"' +
+				'<div class="right" ng-if="$dtApi.enableSaveState">' +
+					'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.saveColumnAttributes" ng-click="$dtApi.toggleSavedState();"' +
 						' title="{{i18n(\'portal-common-messages.common-filterPopup-saveState-not\')}}">\n' +
 						'<i class="pi pi-favorite pi-lg"></i>\n' +
 					'</button>\n'+
-					'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSaveState && !$dtApi.saveColumnAttributes" ng-click="$dtApi.toggleSavedState();"' +
+					'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="!$dtApi.saveColumnAttributes" ng-click="$dtApi.toggleSavedState();"' +
 						' title="{{i18n(\'portal-common-messages.common-filterPopup-saveState\')}}">\n' +
 						'<i class="pi pi-favorite-not pi-lg"></i>\n' +
 					'</button>\n'+
 				'</div>\n'+
-				'<div class="tbl-toolbar-section">\n' +
+				'<div ng-class="$dtApi.enableSaveState ? \'tbl-toolbar-section\' : \'\'">\n' +
 					'<button class="button-link tbl-toolbar-item tbl-tool-link" ng-if="$dtApi.enableSelectColumns" ng-click="$dtApi.toggleColumnSelector()"' + 
 						' title="{{i18n(\'portal-common-messages.common-filterPopup-selectColumnsLabel\')}}">\n' +
 						'<i class="pi pi-column-selector pi-lg"></i>\n' +
