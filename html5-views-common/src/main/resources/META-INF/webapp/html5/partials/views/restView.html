@@ -120,26 +120,31 @@ td, th {
       var REST_BASE_URL = getBaseUrl() + "services/rest/portal/portal-rest";
       var restResource = $resource(REST_BASE_URL);
 
-      restResource.get().$promise.then(function(responseData) {
+      $scope.refresh = function() {
+        document.body.style.cursor = "wait";
+        restResource.get().$promise.then(function(responseData) {
 
-        $scope.test = '#foo\r- bar\r- baz';
-
-        //initialize expand-collapse feature
-        $scope.modules = {};
-        $scope.modulesPanel = {};
-        $scope.resourcesPanel = {};
-        for ( var moduleName in responseData) {
-          if (moduleName.indexOf('$') != 0) {
-            $scope.modules[moduleName] = responseData[moduleName];
-            $scope.modulesPanel[moduleName] = false;
-            for ( var resourceName in responseData[moduleName]) {
-              $scope.resourcesPanel[resourceName] = false;
+          //initialize expand-collapse feature
+          $scope.modules = {};
+          $scope.modulesPanel = {};
+          $scope.resourcesPanel = {};
+          for ( var moduleName in responseData) {
+            if (moduleName.indexOf('$') != 0) {
+              $scope.modules[moduleName] = responseData[moduleName];
+              $scope.modulesPanel[moduleName] = false;
+              for ( var resourceName in responseData[moduleName]) {
+                $scope.resourcesPanel[resourceName] = false;
+              }
             }
           }
-        }
-      }, function(error) {
-        alert("something went wrong");
-      })
+
+          document.body.style.cursor = "default";
+          $scope.loading = false;
+
+        }, function(error) {
+          alert("something went wrong, have you logged in?");
+        })
+      }
 
       $scope.expandAll = function(moduleName) {
         $scope.modulesPanel[moduleName] = true;
@@ -164,6 +169,8 @@ td, th {
         return ($scope.editingUuid == element.uuid && $scope.editingColumnName === columnName);
       }
 
+      $scope.refresh();
+
     }]);
 
   })();
@@ -174,144 +181,151 @@ td, th {
 <body ng-app="restViewApp">
 	<div class="wiki-content" ng-controller="Controller"
 		id="resources_container">
+		<h1 style="display: inline">Portal Rest Endpoints</h1>
+		<button style="margin-left: 30px" type="button"
+			ng-click="loading=true; refresh()">Refresh</button>
+		<div ng-hide="loading">
+			<ul>
+				<li ng-repeat="(moduleName, moduleValue) in modules"><span
+					ng-click="modulesPanel[moduleName] = !modulesPanel[moduleName]">
+						<a href="#{{moduleName}}" class="moduleName">{{moduleName}}</a>
+				</span>
+					<button ng-show="modulesPanel[moduleName]" type="button"
+						ng-click="expandAll(moduleName)">Expand All</button>
+					<button ng-show="modulesPanel[moduleName]" type="button"
+						ng-click="collapseAll(moduleName)">Collapse All</button>
+					<ul ng-show="modulesPanel[moduleName]">
+						<li ng-repeat="(resourceName, resourceValue) in moduleValue"
+							ng-click="resourcesPanel[resourceName] = !resourcesPanel[resourceName]"><span>
+								<a href="#{{resourceName}}">{{resourceName}}
+									({{resourceValue.basePath}})</a>
+						</span>
+							<ul ng-show="resourcesPanel[resourceName]">
+								<li ng-repeat="endpoint in resourceValue.endpoints"><span>
+										<a href="#{{endpoint.uuid}}"><span
+											ng-class="endpoint.httpMethod | lowercase"
+											style="font-size: 10px">{{endpoint.httpMethod}} </span>
+											{{endpoint.path}}</a>
+								</span></li>
+							</ul></li>
+					</ul></li>
+			</ul>
 
-		<h1>Portal Rest Endpoints</h1>
-		<ul>
-			<li ng-repeat="(moduleName, moduleValue) in modules"><span
-				ng-click="modulesPanel[moduleName] = !modulesPanel[moduleName]">
-					<a href="#{{moduleName}}" class="moduleName">{{moduleName}}</a>
-			</span>
-				<button ng-show="modulesPanel[moduleName]" type="button"
-					ng-click="expandAll(moduleName)">Expand All</button>
-				<button ng-show="modulesPanel[moduleName]" type="button"
-					ng-click="collapseAll(moduleName)">Collapse All</button>
-				<ul ng-show="modulesPanel[moduleName]">
-					<li ng-repeat="(resourceName, resourceValue) in moduleValue"
-						ng-click="resourcesPanel[resourceName] = !resourcesPanel[resourceName]"><span>
-							<a href="#{{resourceName}}">{{resourceName}}
-								({{resourceValue.basePath}})</a>
-					</span>
-						<ul ng-show="resourcesPanel[resourceName]">
-							<li ng-repeat="endpoint in resourceValue.endpoints"><span>
-									<a href="#{{endpoint.method}}"><span
-										ng-class="endpoint.httpMethod | lowercase"
-										style="font-size: 10px">{{endpoint.httpMethod}} </span>
-										{{endpoint.path}}</a>
-							</span></li>
-						</ul></li>
-				</ul></li>
-		</ul>
 
+			<div ng-repeat="(moduleName, moduleValue) in modules">
+				<div ng-repeat="(resourceName, resourceValue) in moduleValue">
+					<br> <br>
+					<h3 style="display: inline">
+						<strong>Base Path:</strong>
+					</h3>
+					<div style="display: inline;" class="path">{{resourceValue.basePath}}</div>
 
-		<div ng-repeat="(moduleName, moduleValue) in modules">
-			<div ng-repeat="(resourceName, resourceValue) in moduleValue">
-				<br> <br>
-				<h3 style="display: inline">
-					<strong>Base Path:</strong>
-				</h3>
-				<div style="display: inline;" class="path">{{resourceValue.basePath}}</div>
+					<div ng-show="resourceValue.description">
+						<strong>Description:</strong> <span>{{resourceValue.description}}</span>
+					</div>
+					<br>
+					<h3 style="display: inline;">
+						<strong>Resource Path:</strong>
+					</h3>
 
-				<div ng-show="resourceValue.description">
-					<strong>Description:</strong> <span>{{resourceValue.description}}</span>
-				</div>
-				<br>
-				<h3 style="display: inline;">
-					<strong>Resource Path:</strong>
-				</h3>
+					<div style="display: inline;" class="path">{{resourceValue.qualifiedName}}</div>
 
-				<div style="display: inline;" class="path">{{resourceValue.qualifiedName}}</div>
+					<div>
+						<table>
+							<thead>
+								<tr class="tablesorter-headerRow">
+									<th class="confluenceTh sortableHeader" data-column="1"
+										tabindex="0" unselectable="on"
+										style="min-width: 0px; max-width: none;"><div
+											class="tablesorter-header-inner">HTTP Method</div></th>
+									<th class="confluenceTh sortableHeader" data-column="0"
+										tabindex="0" unselectable="on"
+										style="min-width: 0px; max-width: none;"><div
+											class="tablesorter-header-inner">Path</div></th>
+									<th class="confluenceTh sortableHeader" data-column="2"
+										tabindex="0" unselectable="on"
+										style="min-width: 0px; max-width: none;"><div
+											class="tablesorter-header-inner">Path Params</div></th>
+									<th class="confluenceTh sortableHeader" data-column="3"
+										tabindex="0" unselectable="on"
+										style="min-width: 0px; max-width: none;"><div
+											class="tablesorter-header-inner">Query Params</div></th>
+									<th class="confluenceTh sortableHeader" data-column="4"
+										tabindex="0" unselectable="on"
+										style="min-width: 0px; max-width: none;"><div
+											class="tablesorter-header-inner">Request Description</div></th>
+									<th class="confluenceTh sortableHeader" data-column="5"
+										tabindex="0" unselectable="on"
+										style="min-width: 0px; max-width: none;"><div
+											class="tablesorter-header-inner">Response Description</div></th>
+									<th class="confluenceTh sortableHeader" data-column="6"
+										tabindex="0" unselectable="on"
+										style="min-width: 0px; max-width: none;"><div
+											class="tablesorter-header-inner">Description</div></th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr ng-repeat="endpoint in resourceValue.endpoints">
+									<td class="confluenceTd"><span
+										ng-class="endpoint.httpMethod | lowercase">{{endpoint.httpMethod}}
+									</span></td>
+									<td class="confluenceTd path"><span id="{{endpoint.uuid}}">&nbsp;{{endpoint.path}}</span>
+										<br> <span class="endpointUrl"><a target="_blank"
+											href="{{endpoint.relativePath}}">{{endpoint.uri}}</a></span><br>
+									</td>
+									<td class="confluenceTd"><ul>
+											<li
+												ng-repeat="(paramName, paramValue) in endpoint.pathParams">
+												<span>{{paramName}}: </span> <span>
+													{{paramValue.javaType}}</span>
+											</li>
+										</ul></td>
+									<td class="confluenceTd"><ul>
+											<li
+												ng-repeat="(paramName, paramValue) in endpoint.queryParams">
+												<span>{{paramName}}: </span> <span>
+													{{paramValue.javaType}}</span>
+											</li>
+										</ul></td>
 
-				<div>
-					<table>
-						<thead>
-							<tr class="tablesorter-headerRow">
-								<th class="confluenceTh sortableHeader" data-column="1"
-									tabindex="0" unselectable="on"
-									style="min-width: 0px; max-width: none;"><div
-										class="tablesorter-header-inner">HTTP Method</div></th>
-								<th class="confluenceTh sortableHeader" data-column="0"
-									tabindex="0" unselectable="on"
-									style="min-width: 0px; max-width: none;"><div
-										class="tablesorter-header-inner">Path</div></th>
-								<th class="confluenceTh sortableHeader" data-column="2"
-									tabindex="0" unselectable="on"
-									style="min-width: 0px; max-width: none;"><div
-										class="tablesorter-header-inner">Path Params</div></th>
-								<th class="confluenceTh sortableHeader" data-column="3"
-									tabindex="0" unselectable="on"
-									style="min-width: 0px; max-width: none;"><div
-										class="tablesorter-header-inner">Query Params</div></th>
-								<th class="confluenceTh sortableHeader" data-column="4"
-									tabindex="0" unselectable="on"
-									style="min-width: 0px; max-width: none;"><div
-										class="tablesorter-header-inner">Request Description</div></th>
-								<th class="confluenceTh sortableHeader" data-column="5"
-									tabindex="0" unselectable="on"
-									style="min-width: 0px; max-width: none;"><div
-										class="tablesorter-header-inner">Response Description</div></th>
-								<th class="confluenceTh sortableHeader" data-column="6"
-									tabindex="0" unselectable="on"
-									style="min-width: 0px; max-width: none;"><div
-										class="tablesorter-header-inner">Description</div></th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr ng-repeat="endpoint in resourceValue.endpoints">
-								<td class="confluenceTd"><span
-									ng-class="endpoint.httpMethod | lowercase">{{endpoint.httpMethod}}
-								</span></td>
-								<td class="confluenceTd path"><span
-									id="{{endpoint.method}}">&nbsp;{{endpoint.path}}</span> <br>
-									<span class="endpointUrl"><a target="_blank"
-										href="{{endpoint.relativePath}}">{{endpoint.uri}}</a></span></td>
-								<td class="confluenceTd"><ul>
-										<li ng-repeat="(paramName, paramValue) in endpoint.pathParams">
-											<span>{{paramName}}: </span> <span>
-												{{paramValue.javaType}}</span>
-										</li>
-									</ul></td>
-								<td class="confluenceTd"><ul>
-										<li
-											ng-repeat="(paramName, paramValue) in endpoint.queryParams">
-											<span>{{paramName}}: </span> <span>
-												{{paramValue.javaType}}</span>
-										</li>
-									</ul></td>
+									<td class="confluenceTd editable" title="Double-click to edit"
+										ng-show="!editing(endpoint, 'requestDescription')"
+										ng-dblclick="edit(endpoint, 'requestDescription')"><div
+											markdown=endpoint.requestDescription></div></td>
+									<td class="confluenceTd"
+										title="Remember to copy to Java class post editing"
+										ng-show="editing(endpoint, 'requestDescription')"><textarea
+											rows="15" cols="50" ng-model="endpoint.requestDescription"> </textarea>
+										<h4>Preview:</h4>
+										<div markdown="endpoint[editingColumnName]"></div></td>
 
-								<td class="confluenceTd editable" title="Double-click to edit"
-									ng-show="!editing(endpoint, 'requestDescription')"
-									ng-dblclick="edit(endpoint, 'requestDescription')"><div
-										markdown=endpoint.requestDescription></div></td>
-								<td class="confluenceTd"
-									title="Remember to copy to Java class post editing"
-									ng-show="editing(endpoint, 'requestDescription')"><textarea
-										rows="15" cols="50" ng-model="endpoint.requestDescription"> </textarea>
-									<div markdown="endpoint[editingColumnName]"></div></td>
+									<td class="confluenceTd editable" title="Double-click to edit"
+										ng-show="!editing(endpoint, 'responseDescription')"
+										ng-dblclick="edit(endpoint, 'responseDescription')"><div
+											markdown=endpoint.responseDescription></div></td>
+									<td class="confluenceTd editing"
+										title="Remember to copy to Java class post editing"
+										ng-show="editing(endpoint, 'responseDescription')"><textarea
+											rows="15" cols="50" ng-model="endpoint.responseDescription"> </textarea>
+										<h4>Preview:</h4>
+										<div markdown="endpoint[editingColumnName]"></div></td>
 
-								<td class="confluenceTd editable" title="Double-click to edit"
-									ng-show="!editing(endpoint, 'responseDescription')"
-									ng-dblclick="edit(endpoint, 'responseDescription')"><div
-										markdown=endpoint.responseDescription></div></td>
-								<td class="confluenceTd editing"
-									title="Remember to copy to Java class post editing"
-									ng-show="editing(endpoint, 'responseDescription')"><textarea
-										rows="15" cols="50" ng-model="endpoint.responseDescription"> </textarea>
-									<div markdown="endpoint[editingColumnName]"></div></td>
+									<td class="confluenceTd editable" title="Double-click to edit"
+										ng-show="!editing(endpoint, 'description')"
+										ng-dblclick="edit(endpoint, 'description')"><span>{{endpoint.method}}()</span>
+										<div markdown=endpoint.description></div></td>
+									<td class="confluenceTd"
+										title="Remember to copy to Java class post editing"
+										ng-show="editing(endpoint, 'description')"><textarea
+											rows="15" cols="50" ng-model="endpoint.description"> </textarea>
+										<h4>Preview:</h4> <span>{{endpoint.method}}()</span>
+										<div markdown="endpoint[editingColumnName]"></div></td>
+								</tr>
 
-								<td class="confluenceTd editable" title="Double-click to edit"
-									ng-show="!editing(endpoint, 'description')"
-									ng-dblclick="edit(endpoint, 'description')"><div
-										markdown=endpoint.description></div></td>
-								<td class="confluenceTd"
-									title="Remember to copy to Java class post editing"
-									ng-show="editing(endpoint, 'description')"><textarea
-										rows="15" cols="50" ng-model="endpoint.description"> </textarea>
-									<div markdown="endpoint[editingColumnName]"></div></td>
-							</tr>
+							</tbody>
+						</table>
 
-						</tbody>
-					</table>
-
+					</div>
 				</div>
 			</div>
 		</div>
