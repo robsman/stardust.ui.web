@@ -11,4 +11,4 @@
  
 @import url('modern-main.css');
 
-/***************** Further Overrides *****************/
+@import url('../../shell/fis-skin/fis.css');
