@@ -39,6 +39,7 @@ import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.FilterTerm;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
@@ -1405,7 +1406,7 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
             ActivityInstance ai = (ActivityInstance) resultRow;
             row = new ActivityInstanceWithPrio(ai);
             
-            if (showResubmissionTime)
+            if (showResubmissionTime && ActivityInstanceState.Hibernated.equals(ai.getState()))
             {
                Date resubmissionTime = ActivityInstanceUtils.getResubmissionDate(ai);
                row.setResubmissionTime(resubmissionTime);

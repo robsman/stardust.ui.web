@@ -417,6 +417,7 @@ public class ActivityInstanceUtils
          // Target timestamp is available as ActivityInstanceProperty
          ActivityInstanceProperty targetTimeProperty = (ActivityInstanceProperty) binding
                .getAttribute(PredefinedConstants.TARGET_TIMESTAMP_ATT);
+         
          Calendar dateTime = PortalTimestampProvider.getCalendar();
          if(null != targetTimeProperty)
          {
@@ -424,15 +425,23 @@ public class ActivityInstanceUtils
          }
          else
          {
-            Period period = (Period) binding.getAttribute(PredefinedConstants.TIMER_PERIOD_ATT);
-            if (period != null)
+            // For auto-resubmission use Constant
+            if (binding.isBound())
             {
-               dateTime = null != ai.getStartTime() ? PortalTimestampProvider.getCalendar(ai.getStartTime()) : dateTime;
-               dateTime = period.add(dateTime);
+               Period period = (Period) binding.getAttribute(PredefinedConstants.TIMER_PERIOD_ATT);
+               if (period != null)
+               {
+                  if (isTimePeriodAvailable(period))
+                  {
+                     dateTime = null != ai.getStartTime()
+                           ? PortalTimestampProvider.getCalendar(ai.getStartTime())
+                           : dateTime;
+                     dateTime = period.add(dateTime);
+                     return dateTime.getTime();
+                  }
+               }
             }
          }
-         
-         return dateTime.getTime();
       }
       catch (Exception e) {
          trace.error("Resubmission Date not available for : " + ai != null ? ai.getOID() : "");
@@ -441,6 +450,15 @@ public class ActivityInstanceUtils
       return null;
    }
    
+   private static boolean isTimePeriodAvailable(Period period)
+   {
+      if (period.get(Period.SECONDS) > 0 || period.get(Period.MINUTES) > 0 || period.get(Period.HOURS) > 0
+            || period.get(Period.DAYS) > 0 || period.get(Period.MONTHS) > 0 || period.get(Period.YEARS) > 0)
+      {
+         return true;
+      }
+      return false;
+   }
    /**
     * 
     * @param ais

@@ -752,11 +752,14 @@ public class ActivityTableUtils
                
                if (CollectionUtils.isNotEmpty(extraColumns) && extraColumns.contains(Constants.RESUBMISSION_TIME))
                {
-                  Date resubmissionDate = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils
-                        .getResubmissionDate(ai);
-                  if (null != resubmissionDate)
+                  if (ActivityInstanceState.Hibernated.equals(ai.getState()))
                   {
-                     dto.resubmissionTime = resubmissionDate.getTime();
+                     Date resubmissionDate = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils
+                           .getResubmissionDate(ai);
+                     if (null != resubmissionDate)
+                     {
+                        dto.resubmissionTime = resubmissionDate.getTime();
+                     }
                   }
                }
                ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(
