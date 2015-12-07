@@ -17,7 +17,10 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
+import javax.faces.event.ActionEvent;
+
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.engine.core.preferences.Preferences;
 import org.eclipse.stardust.ui.web.common.uielement.AbstractLaunchPanel;
@@ -62,6 +65,24 @@ public class MyFavoritesPanelBean extends AbstractLaunchPanel implements Initial
    {
       initialized = true;
       buildList();
+   }
+
+   /**
+    * remove from favorite
+    */
+   public void removeFromFavorite(ActionEvent ae)
+   {
+      String preferenceName = (String) ae.getComponent().getAttributes().get("preferenceName");
+      Preferences preferences = ServiceFactoryUtils.getQueryService().getPreferences(PreferenceScope.USER, moduleId,
+            preferenceId);
+      AdministrationService adminService = ServiceFactoryUtils.getAdministrationService();
+      Map<String, Serializable> prefMap = preferences.getPreferences();
+      if (CollectionUtils.isNotEmpty(prefMap))
+      {
+         prefMap.remove(preferenceName);
+         Preferences newPreferences = new Preferences(PreferenceScope.USER, moduleId, preferenceId, prefMap);
+         adminService.savePreferences(newPreferences);
+      }
    }
 
    /**
