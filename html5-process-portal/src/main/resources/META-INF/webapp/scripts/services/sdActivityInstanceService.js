@@ -226,8 +226,10 @@
 				participantData = data.participant.OID;
 				break;
 			case 'ROLE':
+			case 'SCOPED_ROLE':
 			case 'ORGANIZATION':
-				participantData = data.participant.id;
+			case 'SCOPED_ORGANIZATION':
+				participantData = data.participant.qualifiedId;
 				break;
 			}
 
