@@ -173,7 +173,7 @@ public class DelegationHandlerBean implements IDelegationHandler
          catch (AccessForbiddenException e)
          {
             trace.error("User does not have the permission to Delegate the Activity", e);
-            String msg = restCommonClientMessages.getString("activity.delegation.notAuthorizedonDelegate.error");
+            String msg = restCommonClientMessages.getString("activity.delegation.notAuthorized.error");
             notificationMap
                   .addFailure(new NotificationDTO(ai.getOID(), activityInstanceUtils.getActivityLabel(ai), msg));
          }
