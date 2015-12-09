@@ -353,7 +353,7 @@ span.heading{
 /********Animations and transitions**************/
 @
 -webkit-keyframes slideLeft {from { margin-left:0;
-	
+
 }
 
 to {
@@ -363,7 +363,7 @@ to {
 }
 @
 -moz-keyframes slideLeft {from { margin-left:0;
-	
+
 }
 
 to {
@@ -373,7 +373,7 @@ to {
 }
 @
 keyframes slideLeft {from { margin-left:0;
-	
+
 }
 
 to {
@@ -512,7 +512,17 @@ button.close {
     white-space: normal !important;
 }
 
-
 .spacing-right {
 	margin-right: 5px;
 }
+
+.date-time-picker-meridian {
+	width : 60px;
+	min-width : 60px
+}
+
+.date-time-picker-time {
+	width : 55px;
+	min-width : 55px
+}
+

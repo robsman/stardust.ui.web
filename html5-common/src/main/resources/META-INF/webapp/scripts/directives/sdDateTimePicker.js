@@ -58,19 +58,19 @@
 				}
 			},
 			controller : ['$scope', 'sdLocalizationService', 'sgI18nService', Controller],
-			template : '<span id="date">'
-					+ '<input  type="text" sd-date-picker ng-model-onblur sda-milliseconds="true" style="width:100px"'
-					+ ' id="selectDate" name="selectDate" ng-change="ctrl.onChange()" ng-model="ctrl.selectedDate.date" aid="{{ctrl.aidDate}}" / >'
-					+ '<span>'
-					+ '<span id="time">'
-					+ ' <select  ng-change="ctrl.onChange()" style = "width : 55px;min-width : 55px;"  ng-model="ctrl.selectedDate.hours" '
-					+ ' ng-options="option as option for option in ctrl.hoursOptions" aid="{{ctrl.aidHours}}"></select> : '
-					+ '<select  ng-change="ctrl.onChange()"  style = "width : 55px;min-width : 55px"  ng-model="ctrl.selectedDate.mins" '
-					+ ' ng-options="option as option for option in ctrl.minsOptions" aid="{{ctrl.aidMins}}"></select>'
-					+ ' <select ng-show ="!ctrl.is24HourClock" ng-change="ctrl.onChange()"  style = "width : 60px;min-width : 60px"'
-					+ ' ng-model="ctrl.selectedDate.meridian" '
-					+ ' ng-options="option as option for option in ctrl.meridianOptions" aid="{{ctrl.aidMeridian}}"></select>'
-					+ '<span>'
+			template : '<span id="date">'+
+										 '<input  type="text" sd-date-picker ng-model-onblur sda-milliseconds="true" style="width:100px"'+
+										 ' id="selectDate" name="selectDate" ng-change="ctrl.onChange()" ng-model="ctrl.selectedDate.date" aid="{{ctrl.aidDate}}" / >'+
+								 '</span>'+
+								 '<span id="time">'+
+										 ' <select  ng-change="ctrl.onChange()" class="date-time-picker-time" ng-model="ctrl.selectedDate.hours" '+
+										 ' ng-options="option as option for option in ctrl.hoursOptions" aid="{{ctrl.aidHours}}"></select> : '+
+										 '<select  ng-change="ctrl.onChange()" class="date-time-picker-time" ng-model="ctrl.selectedDate.mins" '+
+										 ' ng-options="option as option for option in ctrl.minsOptions" aid="{{ctrl.aidMins}}"></select>'+
+										 ' <select ng-show ="!ctrl.is24HourClock" ng-change="ctrl.onChange()" class="date-time-picker-meridian" '+
+										 ' ng-model="ctrl.selectedDate.meridian" '+
+										 ' ng-options="option as option for option in ctrl.meridianOptions" aid="{{ctrl.aidMeridian}}"></select>'+
+								 '</span>'
 		}
 	}
 
@@ -87,7 +87,7 @@
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	function Controller($scope, sdLocalizationService, sgI18nService) {
 
@@ -123,7 +123,7 @@
 				} else {
 					self.selectedDate = getDateTimeObj(currentDate, false, self.is24HourClock);
 				}
-				
+
 				self.onChange();
 			}
 		});
@@ -138,13 +138,23 @@
 		$scope.ctrl = this;
 	}
 
+   /**
+    *
+   */
+	function parseString(number){
+		if(number < 10) {
+			return "0"+number;
+		}
+		return ""+number;
+	}
+
 	/**
-	 * 
+	 *
 	 */
 	function getDateTimeObj(date, isDateSelected, is24HourClock) {
 
 		var dateTime = {
-			mins : date.getMinutes()
+			mins : parseString(date.getMinutes())
 		}
 
 		if (is24HourClock) {
@@ -165,6 +175,7 @@
 				dateTime.meridian = OPTIONS.AM;
 			}
 		}
+    dateTime.hours = parseString(dateTime.hours);
 
 		if (isDateSelected) {
 			dateTime.date = date.getTime();
@@ -175,36 +186,39 @@
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	function getArrayWithNumber(from, to) {
 		var array = [];
 		for (var i = from; i <= to; i++) {
-			array.push(i);
+			array.push(parseString(i));
 		}
 		return array;
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	function getDate(input, is24HourClock) {
 		if (!input) {
 			return undefined;
 		}
-		var date = new Date(input.date);
-		date.setMinutes(input.mins);
-		if (!is24HourClock) {
-			if (input.meridian == OPTIONS.PM && input.hours < 12) {
-				date.setHours(input.hours + 12);
-			} else if (input.meridian == OPTIONS.AM && input.hours == 12) {
-				date.setHours(input.hours - 12);
-			} else {
-				date.setHours(input.hours);
-			}
 
+		var mins = parseInt(input.mins);
+		var hours = parseInt(input.hours);
+
+		var date = new Date(input.date);
+		date.setMinutes(mins);
+		if (!is24HourClock) {
+			if (input.meridian == OPTIONS.PM && parseInt(input.hours) < 12) {
+				date.setHours(hours + 12);
+			} else if (input.meridian == OPTIONS.AM && hours == 12) {
+				date.setHours(hours);
+			} else {
+				date.setHours(hours);
+			}
 		} else {
-			date.setHours(input.hours);
+			date.setHours(hours);
 		}
 		return date.getTime();
 	}

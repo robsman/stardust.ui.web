@@ -463,7 +463,7 @@ html, body {
 
 .breadCrumbsToolbarWrapper {
 	/* x-background:url(./skin-images/toolbar-BG-border-bottom.png) center repeat-x; */
-	/* Commented above line as below line sets background to none so background image has no effect */ 
+	/* Commented above line as below line sets background to none so background image has no effect */
 	background:none !important;
 	width: 100%;
 }
@@ -956,7 +956,7 @@ body, table {
 }
 
 .panelHeader {
-	height: 20px; 
+	height: 20px;
 	line-height: 20px;
 	border-bottom: 1px solid #CCCCCC;
 	white-space: nowrap;
@@ -1605,7 +1605,7 @@ x-.heading
 	background-color: white;
 	background-image: none;
 	text-align: left;
-	
+
 }
 
 /* select option with icon */
@@ -1778,8 +1778,8 @@ select.icon-menu option {
 	width: 100%;
 }
 
-table.autoCompTable, 
-table.autoCompTable > tbody > tr, 
+table.autoCompTable,
+table.autoCompTable > tbody > tr,
 table.autoCompTable > tbody > tr > td
 {
 	border: none;
@@ -2328,8 +2328,8 @@ div#ui-datepicker-div {
 }
 
 
-div#ui-datepicker-div .ui-state-default, 
-div#ui-datepicker-div .ui-widget-content .ui-state-default, 
+div#ui-datepicker-div .ui-state-default,
+div#ui-datepicker-div .ui-widget-content .ui-state-default,
 div#ui-datepicker-div .ui-widget-header .ui-state-default{
 	background:none;
 	border:none;
@@ -2370,6 +2370,10 @@ div#ui-datepicker-div .ui-widget-header {
   border-right: none;
   border-bottom: none;
   border-radius:3px;
+}
+
+.ui-datepicker  .ui-state-highlight {
+    border: 1px solid #D8BD18  !important;
 }
 
 .ui-datepicker th
@@ -2652,12 +2656,12 @@ table.iceSelInpDate tbody tr td table{
 }
 
 .iceDatTblResHdlr {
-    margin:0px;; 
+    margin:0px;;
     padding:0px;
     border-width: 0px;
     width:2px;
     background-color:transparent;
- 
+
 }
 
 .iceDatTblResHdlr:hover{
@@ -2665,18 +2669,18 @@ table.iceSelInpDate tbody tr td table{
 }
 
 .iceDatTblResBor {
-    margin:0px;; 
+    margin:0px;;
     padding:0px;
     background-color: #d9d9d9;
     background-position: bottom;
     background-repeat: repeat-x;
-    width:2px;   
-    border-top: 1px solid #CCCCCC; 
+    width:2px;
+    border-top: 1px solid #CCCCCC;
 }
 
 .iceDatTblBlkTd {
-    border-bottom: 1px solid #CCCCCC;   
-    background-color: #d9d9d9;   
+    border-bottom: 1px solid #CCCCCC;
+    background-color: #d9d9d9;
 }
 /* data tables are rendered with alternating row colors */
 
@@ -2711,22 +2715,22 @@ table.iceSelInpDate tbody tr td table{
 /*was iceTblHeader */
 .iceDatTblFtr {
 	background: none;
-    border-top: 1px solid #d9d9d9; 	
+    border-top: 1px solid #d9d9d9;
 }
 
-.iceDatTblScrlSpr{ 
-    background: #FFF; 
-    border-top: 1px solid #d9d9d9; 
+.iceDatTblScrlSpr{
+    background: #FFF;
+    border-top: 1px solid #d9d9d9;
     border-right: 1px solid #d9d9d9;
 }
 
-.iceDatTblScrlSprFtr{ 
+.iceDatTblScrlSprFtr{
     border-bottom: 1px solid #d9d9d9;
-    border-right: 1px solid #d9d9d9;        
+    border-right: 1px solid #d9d9d9;
 }
 
-.iceDatTblScrlSprFtr .iceDatTblFtr{ 
-    border-bottom: none;     
+.iceDatTblScrlSprFtr .iceDatTblFtr{
+    border-bottom: none;
 }
 
 .iceDatTblScrlSpr .iceDatTblColHdr1, .iceDatTblScrlSpr .iceDatTblColHdr2 {
@@ -2891,7 +2895,7 @@ table.iceSelInpDate tbody tr td table{
 }
 
 .icePnlTbOn .MidMid div.ptfd {
-    padding: 0px 8px 2px 0px;	
+    padding: 0px 8px 2px 0px;
 }
 
 .icePnlTbOn .RtMid {
@@ -3111,7 +3115,7 @@ table.iceSelInpDate tbody tr td table{
 }
 
 .icePnlTbOver .MidMid  div.ptfd {
-    padding: 0px 8px 2px 0px;	
+    padding: 0px 8px 2px 0px;
 }
 
 .icePnlTbOver .MidMid a:hover {
@@ -3252,7 +3256,7 @@ table.iceSelInpDate tbody tr td table{
 
 .icePnlTbOnBtm .MidMid div.ptfd {
     padding: 0px 0px 0px 28px;
-}	
+}
 
 
 .icePnlTbOnBtm .RtMid {
@@ -3360,7 +3364,7 @@ table.iceSelInpDate tbody tr td table{
 
 .icePnlTbOffBtm .MidMid div.ptfd{
     padding: 0px 0px 0px 28px;
-}		
+}
 
 .icePnlTbOffBtm .MidMid a:hover, .icePnlTbOffBtm .MidMid>td:hover {
     font-weight: bold;
@@ -3461,7 +3465,7 @@ table.iceSelInpDate tbody tr td table{
 .icePnlTbOverBtm .MidMid a, .icePnlTbOverBtm .MidMid div.ptfd {
     /* background: url( './css-images/Tab_MidMid_bullet_over.gif' ) no-repeat top left; */
     border: none;
-    /* padding: 3px 8px 2px 28px; */    
+    /* padding: 3px 8px 2px 28px; */
     margin: 3px;
     font-weight: bold;
     text-decoration: none;
@@ -3535,7 +3539,7 @@ table.iceSelInpDate tbody tr td table{
     background-color: #FFFFFF;
 }
 
-.icePnlTbOn .MidMid div.ptfd a , 
+.icePnlTbOn .MidMid div.ptfd a ,
 .icePnlTbOff .MidMid div.ptfd a ,
 .icePnlTbOver .MidMid div.ptfd a ,
 .icePnlTbOnBtm .MidMid div.ptfd a ,
@@ -5177,7 +5181,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
     background: #FFF url( './css-images/table_col_header_dis.gif' ) repeat-x top left;
 }
 
-.icePnlClpsblColpsdHdr .iceOutTxt, .icePnlClpsblHdr .iceOutTxt, 
+.icePnlClpsblColpsdHdr .iceOutTxt, .icePnlClpsblHdr .iceOutTxt,
 .icePnlClpsblColpsdHdr-dis .iceOutTxt, .icePnlClpsblHdr-dis .iceOutTxt {
     padding-left: 21px;
 }
@@ -5357,7 +5361,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 }
 
 .iceHdnLnk img{
-    border: 0;	
+    border: 0;
     width:0px;
 }
 
@@ -5502,7 +5506,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	display: -webkit-box;
 	color: #A69A88;
 	/* font-size: 1.33333333em !important; */
-	
+
 }
 
 .icePnlClpsblColpsdHdr {
@@ -5522,7 +5526,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	font-family: "FontAwesome";
     content: "\f0da";
 	font-size: 1.33333333em !important;
-    background-position: -4px 5px;   
+    background-position: -4px 5px;
 }
 
 .icePnlClpsblHdr:hover{
@@ -5533,7 +5537,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	font-family: "FontAwesome";
     content: "\f0da";
 	font-size: 1.33333333em !important;
-    background-position: -4px 5px;  
+    background-position: -4px 5px;
 }
 .icePnlClpsblHdr-dis:hover {
     color: #7B7163;
@@ -5543,7 +5547,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
     font-family: "FontAwesome";
     content: "\f0d7";
     font-size: 1.33333333em !important;
-    background-position: -4px 5px;     
+    background-position: -4px 5px;
 }
 .icePnlClpsblColpsdHdr:hover {
     color: #7B7163;
@@ -5553,7 +5557,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
     font-family: "FontAwesome";
     content: "\f0d7";
     font-size: 1.33333333em !important;
-    background-position: -4px 5px;    
+    background-position: -4px 5px;
 }
 .icePnlClpsblColpsdHdr-dis:hover {
     color: #7B7163;
@@ -5583,7 +5587,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	color: #A69A88;
 	font-size: 1.27em;
 	font-weight:500;
-} 
+}
 .icePnlClpsblHdr .iceOutTxt:hover {
 	color: #A69A88;
 }
@@ -5600,12 +5604,12 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 .iceTreeRow a .iceOutTxt:hover {
 	color: #906C37 ;
 	text-decoration: none;
-}	
+}
 
 .iceTreeRow a:hover:before{
 	color: #906C37 !important;
 	text-decoration: none;
-}	
+}
 
 /* Styles for ice:commandButton */
 
@@ -5656,7 +5660,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 
 .iceMnuPopVrtItemLabel {
 	padding-left: 7px;
-	color: #00629A;	
+	color: #00629A;
 }
 
 /* Sub Menu Styles START */
@@ -5687,7 +5691,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	color: #B0232B;
 	text-decoration: underline;
 }
-  
+
 .iceMnuPopVrtItem a:hover .iceMnuItmLabel, a:hover .iceMnuPopVrtItemLabel{
 	background-color: #DDEAF0;
 	color: #B0232B;
@@ -5695,7 +5699,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 }
 
 .iceMnuPopVrtItem-dis .iceMnuItmLabel-dis{
-	padding-left: 7px;	
+	padding-left: 7px;
 }
 
 .iceMnuPopVrtTopSubMenu .iceMnuPopVrtItem a:hover .iceMnuPopVrtItemLabel {
@@ -5817,13 +5821,13 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	background: #FFFFFF;
 	border:1px solid #CCCCCC;
 	border-bottom:1px solid #999999;
-	border-right:1px solid #999999;		
+	border-right:1px solid #999999;
 	/* min-width: 60px; */
 	cursor: pointer;
 }
 
 /* messages */
- 
+
 .iceMsgImageError:before {
 	font-family: "FontAwesome";
     content:'\f06a'; /* fa-exclamation-circle */
@@ -5833,7 +5837,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 .iceMsgImageInfo:before {
 	font-family: "FontAwesome";
     content: "\f05a"; /* fa-info-circle */
-    font-size: 16px; 
+    font-size: 16px;
 }
 
 .iceMsgError {
@@ -5935,8 +5939,8 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 }
 .menuPopupMedVrtItem-dis .iceCmdLnk-dis{
    padding: 0px 3px 3px 10px;
-   display: block;  
-  
+   display: block;
+
 }
 .menuPopupMedVrtItem-dis .iceMnuItmLabel-dis {
     font-weight: normal;
@@ -5998,7 +6002,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	spacing: 0px;
 }
 
-.genericTableTitle /* Depricated: Used as heading class in portal.css */ 
+.genericTableTitle /* Depricated: Used as heading class in portal.css */
 {
 }
 
@@ -6035,7 +6039,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	padding-bottom: 2px;
 	padding-right: 5px;
 	background: transparent url(./skin-images/icons/toolbar-separator.png) no-repeat scroll right center;
-}	
+}
 
 .genericTableUserToolbar
 {
@@ -6072,7 +6076,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 
 .genericTableGroupHeader
 {
-	
+
 }
 
 .genericTablePaginatorInfo
@@ -6088,7 +6092,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	white-space: nowrap !important;
 	text-transform: none !important;
 }
-	
+
 .msgFatal
 {
 	color: red;
@@ -6104,18 +6108,18 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 {
 	color: orange !important;
 	font-weight: normal;
-}	
+}
 
 .msgInfo
 {
 	color: blue !important;
 	font-weight: normal;
-}	
+}
 
 .iceMsgImageInfo:before {
 	font-family: "FontAwesome";
     content: "\f05a"; /* fa-info-circle */
-    font-size: 16px;  
+    font-size: 16px;
 }
 
 .breadCrumbTitle
@@ -6128,7 +6132,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 {
 	font-size: .73em;
 	color: #5c5b5b;
-	text-decoration:underline; 
+	text-decoration:underline;
 }
 
 .breadCrumbImage
@@ -6330,7 +6334,7 @@ iceRowSelSelectedMouseOver .iceOutTxt{
 	background: #FFFFFF url( "./css-images/button-background.png" ) bottom repeat-x;
 	border: 1px solid #CCCCCC;
 	border-bottom: 1px solid #999999;
-	border-right: 1px solid #999999;		
+	border-right: 1px solid #999999;
 	min-width: 60px;
 	cursor: pointer;
 	margin: 5px;
@@ -6432,10 +6436,10 @@ div.columnsListBox {
 /* Common Menu Start */
 .commonMenuLnk {
 	font-size: 1.45em;
-	font-weight: bold; 
-	position: absolute; 
-	top:25px; 
-	left: 10px; 
+	font-weight: bold;
+	position: absolute;
+	top:25px;
+	left: 10px;
 	color: transparent !important;
 }
 .commonMenuLnk:hover {
@@ -6489,7 +6493,7 @@ div.columnsListBox {
 	background: -ms-linear-gradient(top, #3c3c3c 0%, #101010 100%); /* IE10+ */
 	background: linear-gradient(top, #3c3c3c 0%, #101010 100%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#3c3c3c', endColorstr='#101010', GradientType=0); /* IE6-9 */
-	
+
 	white-space: nowrap;
 	border: none;
 	border-bottom: 1px solid #303030;
@@ -6534,7 +6538,7 @@ img[src *='panelHeader-triggerExpand.png']:hover{
 }
 
 img[src *='panelHeader-triggerCollapse.png']{
-	
+
 	background: url("./images/flat-icons/panelHeader-triggerCollapse.png") no-repeat !important;
 	width:18px;
 	padding: 18px 0 0 0 !important;
@@ -6777,7 +6781,7 @@ input.secondary{
 }
 
 .iceRowSel:hover{
-	x-background:#AFADCD !important;	
+	x-background:#AFADCD !important;
 	color:#FFF;
 }
 
