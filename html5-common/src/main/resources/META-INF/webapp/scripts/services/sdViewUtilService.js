@@ -104,6 +104,20 @@
 		/*
 		 * 
 		 */
+		ViewUtilService.prototype.closeView = function(viewId, viewKey) {
+			var message = {
+				"type" : "CloseView",
+				"data" : {
+					"viewId" : viewId,
+					"viewKey" : viewKey
+				}
+			};
+
+			window.postMessage(JSON.stringify(message), "*");
+		};
+		/*
+		 * 
+		 */
 		ViewUtilService.prototype.changePerspective = function(perspectiveId, params) {
 			var message = {
 				"type" : "ChangePerspective",

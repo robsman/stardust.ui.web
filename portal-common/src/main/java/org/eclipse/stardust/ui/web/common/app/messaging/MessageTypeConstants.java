@@ -17,6 +17,7 @@ package org.eclipse.stardust.ui.web.common.app.messaging;
 public interface MessageTypeConstants
 {
    String T_OPEN_VIEW = "OpenView";
+   String T_CLOSE_VIEW = "CloseView";
    String D_VIEW_ID = "viewId";
    String D_VIEW_KEY = "viewKey";
    String D_VIEW_PARAMS = "params";

@@ -19,7 +19,7 @@
 			'sdTrafficLightViewController',
 			[ '$scope', '$q', 'benchmarkService', 'sdProcessDefinitionService', 'sdTrafficLightViewService',
 					'sdProcessInstanceService', 'sdActivityInstanceService', 'sdLoggerService', '$injector',
-					'sdUtilService', 'sdFavoriteViewService', '$parse', TrafficLightViewController ]);
+					'sdUtilService', 'sdFavoriteViewService', '$parse','sdViewUtilService', TrafficLightViewController ]);
 
 	var _q;
 	var trace;
@@ -31,6 +31,7 @@
 	var _sdActivityInstanceService;
 	var _sdUtilService;
 	var _sdFavoriteViewService;
+	var _sdViewUtilService;
 
 	var _parse;
 
@@ -39,7 +40,7 @@
 	 */
 	function TrafficLightViewController($scope, $q, benchmarkService, sdProcessDefinitionService,
 			sdTrafficLightViewService, sdProcessInstanceService, sdActivityInstanceService, sdLoggerService, $injector,
-			sdUtilService, sdFavoriteViewService, $parse) {
+			sdUtilService, sdFavoriteViewService, $parse, sdViewUtilService) {
 		trace = sdLoggerService.getLogger('benchmark-app.sdTrafficLightViewController');
 		_q = $q;
 		_benchmarkService = benchmarkService;
@@ -50,6 +51,7 @@
 		_sdUtilService = sdUtilService;
 		_sdFavoriteViewService = sdFavoriteViewService;
 		_parse = $parse;
+		_sdViewUtilService = sdViewUtilService;
 		// dynamically injecting the sdBusinessObjectManagementService from
 		// ipp-business-object-management
 		_sdBusinessObjectManagementService = $injector.get('sdBusinessObjectManagementService');
@@ -97,6 +99,8 @@
 		// Saving the name of the favorite for future update.
 		if (params.preferenceName != undefined) {
 			this.tlvReportName = params.preferenceName;
+		}else{
+			this.tlvReportName = '';
 		}
 	}
 
@@ -868,7 +872,9 @@
 
 		_sdFavoriteViewService.updateFavorite("trafficLightViewNew", self.tlvReportName, favoriteData).then(
 				function(data) {
+					self.favoriteName = self.tlvReportName;
 					trace.log(data);
+					self.showDeleteButton = true;
 				}, function(error) {
 					trace.log(error);
 				});
@@ -885,6 +891,8 @@
 		// Calling REST service to get the favorite by name.
 		_sdFavoriteViewService.getFavoriteByName(params.preferenceId, params.preferenceName).then(
 				function(data) {
+					self.showDeleteButton = true;
+					self.favoriteName = params.preferenceName;
 					trace.log(data);
 					var values = _parse(data.preferenceValue);
 					var favoriteData = values($scope);
@@ -912,6 +920,26 @@
 
 					self.selectedDateType = favoriteData.selectedDateType;
 					self.dayOffset = favoriteData.dayOffset;
+				}, function(error) {
+					trace.log(error);
+				});
+	};
+	
+	
+	/**
+	 * 
+	 * @param params
+	 * @param $scope
+	 */
+	TrafficLightViewController.prototype.deleteFavorite = function() {
+
+		var self = this;
+		// Calling REST service to get the favorite by name.
+		_sdFavoriteViewService.deleteFavorite("trafficLightViewNew", self.favoriteName).then(
+				function(data) {
+					_sdViewUtilService.closeView("trafficLightViewNew", 'id='+ self.favoriteName);
+					self.showDeleteButton = false;
+					trace.log(data);
 				}, function(error) {
 					trace.log(error);
 				});

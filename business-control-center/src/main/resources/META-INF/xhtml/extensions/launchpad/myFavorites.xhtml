@@ -20,14 +20,7 @@
 		<ice:panelGroup rendered="#{not empty myFavoritesPanel.items}">
 			<pc:automationTag value="auto-BCC-TLV-MyFavorites-MyFavTbl" standAlone="false"/>
 			<ice:panelSeries var="item" value="#{myFavoritesPanel.items}">
-				<ice:panelGrid columns="3" >
-				  	<ice:commandLink actionListener="#{myFavoritesPanel.removeFromFavorite}">
-				  	    <pc:automationTag value="auto-BCC-TLV-RemFavReportView" standAlone="false"/>
-                         <ice:outputText
-							styleClass="pi pi-favorite-not pi-lg"
-							title="#{views_common_msgPropsBean['views.myReportsView.removeFromFavorite.title']}" />
-							<f:attribute name="preferenceName" value="#{item.name}" />
-					</ice:commandLink>					
+				<ice:panelGrid columns="3" >				
 					<ice:commandLink action="#{item.selectHTML5}">
 					     <pc:automationTag value="auto-BCC-TLV-OpenFavoriteView" standAlone="false"/>
                          <ice:outputText value="#{item.name}" />

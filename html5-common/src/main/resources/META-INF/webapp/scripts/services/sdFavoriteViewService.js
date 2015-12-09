@@ -151,28 +151,6 @@
 
 		};
 		
-		/**
-		 * 
-		 */
-		FavoriteViewService.prototype.getFavoriteByName = function(preferenceId, preferenceName) {
-			// Prepare URL
-			var restUrl = REST_BASE_URL + '/:preferenceId/:preferenceName';
-
-			var tlvStats = $resource(restUrl, {
-				preferenceId : '@preferenceId',
-				preferenceName : '@preferenceName'
-			}, {
-				getFavoriteByName : {
-					method : 'GET'
-				}
-			});
-			
-			var urlTemplateParams = {};
-			urlTemplateParams.preferenceId = preferenceId;
-			urlTemplateParams.preferenceName = preferenceName;
-			return tlvStats.getFavoriteByName(urlTemplateParams).$promise;
-
-		};
 		
 		/**
 		 * 

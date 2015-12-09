@@ -1,7 +1,21 @@
-<div style="display: -webkit-inline-box;">
-  <label class="label-item">{{i18n('benchmark-messages.views-trafficLightView-saveFavorite-reportName')}}</label>
-  <input type="text" ng-model-onblur
-		 ng-model="ctrl.tlvReportName"
-		 value="{{ctrl.tlvReportName}}"
-		 aid="COM-benchmark-tlv-saveFavouritePopup-" />
+<div style="display: -webkit-inline-box;margin-left: 10px;margin-top: 10px;">
+	<label class="label-item">{{i18n('benchmark-messages.views-trafficLightView-saveFavorite-reportName')}}</label>
+	<input type="text" ng-model-onblur ng-model="ctrl.tlvReportName"
+		value="{{ctrl.tlvReportName}}"
+		aid="COM-benchmark-tlv-saveFavouritePopup-" />
+</div>
+<div class="modal-footer">
+	<div class="confirmation-buttonpane">
+		<div class="button-pane cf">
+			<div class="button-alignment">
+				<button ng-disabled="ctrl.tlvReportName.length == 0" class="button" ng-click="ctrl.updateFavorite();ctrl.SaveFavoritePopup.close();">{{i18n('admin-portal-messages.common-button-save')}}
+				</button>
+				<button ng-show="ctrl.showDeleteButton" class="button" ng-click="ctrl.deleteFavorite();ctrl.SaveFavoritePopup.close();close($event, $scope.item.view.path)">{{i18n('admin-portal-messages.common-delete')}}
+				</button>
+				<button class="button"
+					ng-click="ctrl.SaveFavoritePopup.close();">
+					{{i18n('html5-common.common-cancel')}}</button>
+			</div>
+		</div>
+	</div>
 </div>

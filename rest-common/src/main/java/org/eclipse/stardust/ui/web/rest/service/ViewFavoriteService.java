@@ -98,13 +98,14 @@ public class ViewFavoriteService
       AdministrationService adminService = serviceFactoryUtils.getAdministrationService();
       Preferences preferences = adminService.getPreferences(PreferenceScope.USER, FAVORITE, preferenceId);
       Map<String, Serializable> prefMap = preferences.getPreferences();
-      if (CollectionUtils.isNotEmpty(prefMap))
+     /* if (CollectionUtils.isNotEmpty(prefMap))
       {
          prefMap.remove(preferenceName);
-         prefMap.put(preferenceName, values);
-         Preferences newPreferences = new Preferences(PreferenceScope.USER, FAVORITE, preferenceId, prefMap);
-         adminService.savePreferences(newPreferences);
-      }
+        
+      }     */ 
+      prefMap.put(preferenceName, values);
+      Preferences newPreferences = new Preferences(PreferenceScope.USER, FAVORITE, preferenceId, prefMap);
+      adminService.savePreferences(newPreferences);
    }
 
    public void deleteFavorite(String preferenceId, String preferenceName)

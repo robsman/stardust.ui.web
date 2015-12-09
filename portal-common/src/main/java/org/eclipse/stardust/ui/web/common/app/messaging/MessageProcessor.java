@@ -113,6 +113,17 @@ public class MessageProcessor implements MessageTypeConstants
             Boolean nested = GsonUtils.extractBoolean(message.getData(), D_NESTED, false);
    
             PortalApplication.getInstance().openViewById(viewId, viewKey, params, null, nested);
+         }else if(T_CLOSE_VIEW.equalsIgnoreCase(message.getType()))
+         {
+            String viewId = GsonUtils.extractString(message.getData(), D_VIEW_ID);
+            String viewKey = GsonUtils.extractString(message.getData(), D_VIEW_KEY);
+            
+            if(PortalApplication.getInstance().getViewById(viewId, viewKey) != null){
+               PortalApplication.getInstance().closeView(PortalApplication.getInstance().getViewById(viewId, viewKey));
+            }else{
+               PortalApplication.getInstance().closeView(PortalApplication.getInstance().getViewById(viewId, ""));
+            }
+            
          }
          else if (T_CLEAN_ALL_VIEWS.equalsIgnoreCase(message.getType()))
          {
