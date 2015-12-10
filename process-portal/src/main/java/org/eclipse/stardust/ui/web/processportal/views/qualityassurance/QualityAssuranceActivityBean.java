@@ -143,6 +143,9 @@ public class QualityAssuranceActivityBean extends PopupUIComponentBean
          return;
       }
 
+      // Close Popup in advance
+      closePopup();
+
       ActivityInstance ai = activityInstance;
       IActivityInteractionController interactionController = ActivityDetailsBean.getInteractionController(ai
             .getActivity());
@@ -223,8 +226,6 @@ public class QualityAssuranceActivityBean extends PopupUIComponentBean
          trace.error("Exception occured while completing quality assured activity", e);
       }      
 
-      closePopup();
-      
       WorkflowActivityCompletionLog activityCompletionLog = null;
 
       if (acl != null)
@@ -281,17 +282,16 @@ public class QualityAssuranceActivityBean extends PopupUIComponentBean
       }
    }
 
-   /*
-    * Cleanup activities (non-Javadoc)
-    * 
-    * @see org.eclipse.stardust.ui.web.common.PopupUIComponentBean#closePopup()
+   /* (non-Javadoc)
+    * @see org.eclipse.stardust.ui.web.common.PopupUIComponentBean#openPopup()
     */
-   public void closePopup()
+   public void openPopup()
    {
       selectQACodesMode = SelectQACodesMode.AUTO_COMPLETE;
       assignToLastPerformer = true;
       correctionMadeOption = "false";
-      super.closePopup();
+
+      super.openPopup();
    }
 
    @Override
