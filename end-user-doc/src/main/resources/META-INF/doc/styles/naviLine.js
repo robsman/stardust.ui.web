@@ -97,11 +97,11 @@ function line() {
       startarray=2;
 
 	for (var i = startarray; i < linkNumber; i=i+2) {
-  		document.write('<a href=',linkArray[i],' class="header">',linkArray[i+1],'</a> &gt; ');
+  		document.write('<a href=',linkArray[i],' class="header"><nobr>',linkArray[i+1],'</nobr></a> &gt; ');
 	}
-	document.write(document.title,'</td>');
+	document.write('<nobr>',document.title,'</nobr></td>');
 	if ((prevLink.length != 0) || (nextLink.length != 0)) {
-		document.write('<td class="header" align="right">');
+		document.write('<td class="header" align="right" width="155px">');
 		if (prevLink.length > 0) {
 			document.write('<input type=button class="navibuttons" value="< Previous" onClick="window.location=\'',prevLink,'\'">');
 		}

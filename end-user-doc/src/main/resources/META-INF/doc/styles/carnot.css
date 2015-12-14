@@ -11,7 +11,7 @@
  
 body, h1, h2, h3, h4, h5, p, table, th, td, ul, li, ol, dl, dd, dt {
 	font-family: Geneva, Arial, Helvetica, sans-serif;
-	color: #000000
+   color: #000000;
 }
 
 pre, tt, code {
@@ -31,7 +31,6 @@ h1 {
 	font-weight: bold;
 	padding-top: 60px;
 	padding-bottom: 0px;
-	padding-right: 232px;
 	line-height: 30px;
 	background-image: url("images/logo.png");
 	background-repeat: no-repeat;
@@ -150,49 +149,28 @@ table.autoWidth {
 }
 
 th {
-	padding-top: 3px;
-	padding-right: 3px;
-	padding-bottom: 3px;
-	padding-left: 3px;
+   padding: 3px;
 	white-space: nowrap;
 	border: 1px solid #000000;
 	background-color: #d2d2d2;
 	color: #7036be;
 	text-align: left;
+   white-space: normal;
 }
 
 th ul {
 	color: #7036be;
 }
 
-/* use for note sections */
-th.note {
-	padding-top: 1px;
-	padding-right: 10px;
-	padding-left: 25px;
-	white-space: nowrap;
-	background-color: white;
-	text-align: left;
-	line-height: 17px;
-	vertical-align: top;
-	width: auto;
-}
-
 tr {
-	valign: top;
 	align: left;
 	color: black;
 	font-size: 100%;
 	font-weight: normal;
 }
 
-tr.center {
-	text-align: center;
-}
-
 td {
 	padding: 3px;
-	valign: top;
 	border: 1px solid #000000;
 	rowspan: 1;
 	colspan: 1;
@@ -205,7 +183,7 @@ td.center {
 td.header {
 	padding: 3px;
 	font-size: 100%;
-	valign: top;
+   vertical-align: top;
 	border: none;
 }
 
@@ -239,6 +217,7 @@ ul {
 ol {
 	font-size: 100%;
 	padding-top: 4px;
+   list-style-image: none;
 }
 
 dl {
@@ -268,14 +247,6 @@ li.ipp {
 }
 
 li.stardust {
-	
-}
-
-tr.ipp {
-	display: none;
-}
-
-tr.stardust {
 	
 }
 
