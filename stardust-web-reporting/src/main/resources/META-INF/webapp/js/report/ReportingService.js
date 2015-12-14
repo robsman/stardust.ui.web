@@ -2421,13 +2421,15 @@ define(
 						}else{
 							//TODO: remove this when filter and parameter format is same for DATE
 							//special parameter, in case of date, there are multiple fields so change the format here
-							if(parameters[itemInd].value && parameters[itemInd].value.from){
-								var pValue = ["from", "to", "duration", "durationUnit"];
+							if(parameters[itemInd].value && (parameters[itemInd].value.from || parameters[itemInd].value.to)){
+								var pValue = (parameters[0].metadata.fromTo) ? ["from", "to"] : ["from", "duration", "durationUnit"];
 								var actualValue = parameters[itemInd].value; //complex object startDate = {from : "", to : ""};
 								var formattedValue = ""; 
 								for (var int = 0; int < pValue.length; int++) {
-									if(actualValue[pValue[int]]){
-										formattedValue += actualValue[pValue[int]] + ",";	
+									if(actualValue[pValue[int]]) {
+										formattedValue += actualValue[pValue[int]] + ",";		
+									} else if (pValue[int] == "from" || pValue[int] == "to") {
+										formattedValue += "null,";	
 									}
 								}
 								parametersString += formattedValue.slice(0,-1);
