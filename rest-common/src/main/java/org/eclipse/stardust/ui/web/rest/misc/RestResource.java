@@ -66,15 +66,15 @@ public class RestResource
 
    @Autowired
    private UserService userService;
-   
+
    @GET
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("")
    public Response getAllRestEndpoints()
    {
-      //make sure user is logged in
+      // make sure user is logged in
       userService.getLoggedInUser();
-      
+
       Map<String, Map<String, ResourceDTO>> endpointsContainerDTOs = new TreeMap<String, Map<String, ResourceDTO>>();
 
       try
@@ -131,12 +131,12 @@ public class RestResource
 
    private String getBaseURL()
    {
-       System.out.println(httpRequest.getContextPath());
-       System.out.println(httpRequest.getPathInfo());
-       System.out.println(httpRequest.getRequestURI());
-       System.out.println(httpRequest.getRequestURL());
-      
-      
+      /*
+       * System.out.println(httpRequest.getContextPath());
+       * System.out.println(httpRequest.getPathInfo());
+       * System.out.println(httpRequest.getRequestURI());
+       * System.out.println(httpRequest.getRequestURL());
+       */
       String path = httpRequest.getRequestURL().toString();
       int e = path.indexOf("portal-rest");
       return path.substring(0, e);
@@ -144,12 +144,6 @@ public class RestResource
 
    private String getBasePath()
    {
-      /*
-       * System.out.println(httpRequest.getContextPath());
-       * System.out.println(httpRequest.getPathInfo());
-       * System.out.println(httpRequest.getRequestURI());
-       * System.out.println(httpRequest.getRequestURL());
-       */
       return httpRequest.getRequestURI().substring(httpRequest.getContextPath().length() + 1);
    }
 
