@@ -85,7 +85,18 @@
 									<ice:outputLabel value="#{views_common_msgPropsBean['views.spawnProcessDialog.activateWorkItems']}"
 										styleClass="label-form" />
 								</ice:panelGroup>
-
+								<ice:panelGroup>
+									<ice:selectBooleanCheckbox
+										value="#{spawnProcessDialogBean.pauseParentProcess}"
+										partialSubmit="true">
+										<pc:automationTag
+											value="auto-COM-SpawnProcDlg-PauseParentProcess"
+											standAlone="false" />
+									</ice:selectBooleanCheckbox>
+									<ice:outputLabel
+										value="#{views_common_msgPropsBean['views.spawnProcessDialog.pauseParentProcess']}"
+										styleClass="label-form" />
+								</ice:panelGroup>
 							</ice:panelGroup>
 
 							<!-- 	<ice:panelGroup expanded="true"

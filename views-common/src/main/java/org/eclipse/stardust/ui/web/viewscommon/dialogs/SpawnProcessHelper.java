@@ -68,6 +68,19 @@ public class SpawnProcessHelper
       spawnedProcessTable.initialize();
 
    }
+   
+   public ProcessInstance spawnPeerProcessInstances(long rootProcessInstanceOid,
+         List<SubprocessSpawnInfo> subprocessSpawnInfo)
+   {
+      ProcessInstance pi = ServiceFactoryUtils.getWorkflowService().spawnPeerProcessInstance(rootProcessInstanceOid,
+            subprocessSpawnInfo.get(0).getProcessId(), true, null, false, null);
+      if(CollectionUtils.isEmpty(subprocessInstances))
+      {
+         subprocessInstances = CollectionUtils.newArrayList();
+      }
+      subprocessInstances.add(pi);
+      return pi;
+   }
 
    /**
     * 
