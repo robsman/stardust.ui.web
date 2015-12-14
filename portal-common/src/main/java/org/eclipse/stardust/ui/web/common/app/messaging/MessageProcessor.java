@@ -36,6 +36,7 @@ public class MessageProcessor implements MessageTypeConstants
 {
    private static final Logger trace = LogManager.getLogger(MessageProcessor.class);
 
+   public static final String VIEW_ICON_PARAM_KEY = "viewIcon";
    /**
     * @param jsonMessage
     * @throws MessageProcessingException
@@ -113,17 +114,39 @@ public class MessageProcessor implements MessageTypeConstants
             Boolean nested = GsonUtils.extractBoolean(message.getData(), D_NESTED, false);
    
             PortalApplication.getInstance().openViewById(viewId, viewKey, params, null, nested);
-         }else if(T_CLOSE_VIEW.equalsIgnoreCase(message.getType()))
+         }
+         else if (T_CLOSE_VIEW.equalsIgnoreCase(message.getType()))
          {
             String viewId = GsonUtils.extractString(message.getData(), D_VIEW_ID);
             String viewKey = GsonUtils.extractString(message.getData(), D_VIEW_KEY);
-            
-            if(PortalApplication.getInstance().getViewById(viewId, viewKey) != null){
-               PortalApplication.getInstance().closeView(PortalApplication.getInstance().getViewById(viewId, viewKey));
-            }else{
-               PortalApplication.getInstance().closeView(PortalApplication.getInstance().getViewById(viewId, ""));
+            View view = PortalApplication.getInstance().getViewById(viewId, viewKey);
+            if (view != null)
+            {
+               PortalApplication.getInstance().closeView(view);
             }
+            else
+            {
+               View defaultView = PortalApplication.getInstance().getViewById(viewId, "");
+               if(defaultView != null){
+                  PortalApplication.getInstance().closeView(defaultView);
+               }
+               
+            }
+
+         }
+         else if (T_UPDATE_VIEW_INFO.equalsIgnoreCase(message.getType()))
+         {
+            String viewId = GsonUtils.extractString(message.getData(), D_VIEW_ID);
+            String viewKey = GsonUtils.extractString(message.getData(), D_VIEW_KEY);
+            View view = PortalApplication.getInstance().getViewById(viewId, viewKey);
+            Map<String, Object> params = GsonUtils.extractMap(message.getData(), D_VIEW_PARAMS);
+            view.getViewParams().putAll(params);
             
+            view.setIcon((String) params.get(VIEW_ICON_PARAM_KEY));
+
+            view.resolveLabelAndDescription();
+            PortalApplication.getInstance().updateViewTitle(view);
+            PortalApplication.getInstance().updateViewIconClass(view);
          }
          else if (T_CLEAN_ALL_VIEWS.equalsIgnoreCase(message.getType()))
          {

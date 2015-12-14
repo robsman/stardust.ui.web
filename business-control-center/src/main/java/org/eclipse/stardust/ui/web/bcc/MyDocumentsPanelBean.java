@@ -19,6 +19,15 @@ import org.eclipse.stardust.ui.web.common.uielement.AbstractLaunchPanel;
  */
 public class MyDocumentsPanelBean extends AbstractLaunchPanel
 {
+   private String preferenceName = "New TLV";
+
+   /**
+    * @return the preferenceName
+    */
+   public String getPreferenceName()
+   {
+      return preferenceName;
+   }
 
    public MyDocumentsPanelBean()
    {

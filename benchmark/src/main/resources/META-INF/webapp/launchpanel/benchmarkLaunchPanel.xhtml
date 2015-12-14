@@ -28,6 +28,7 @@
         </ice:commandLink>
 		<ice:commandLink action="#{ippPortalApp.openView}">
 			<f:param name="viewId" value="trafficLightViewNew" />
+			<f:param name="viewParams" value="preferenceName=#{myDocumentsPanelBean.preferenceName}" />
 			<ice:outputText value="Traffic Light View &amp;raquo;" styleClass="action-link"
 				escape="false" />
 		</ice:commandLink>

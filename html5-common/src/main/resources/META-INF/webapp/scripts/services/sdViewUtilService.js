@@ -100,6 +100,24 @@
 
 			window.postMessage(JSON.stringify(message), "*");
 		};
+		
+		
+		/*
+		 * 
+		 */
+		ViewUtilService.prototype.updateViewInfo = function(viewId, viewKey, params) {
+			var message = {
+				"type" : "UpdateViewInfo",
+				"data" : {
+					"viewId" : viewId,
+					"viewKey" : viewKey,
+					"params" : params
+				}
+			};
+
+			window.postMessage(JSON.stringify(message), "*");
+		};
+
 
 		/*
 		 * 

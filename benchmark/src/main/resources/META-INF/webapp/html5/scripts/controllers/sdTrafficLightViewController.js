@@ -99,8 +99,10 @@
 		// Saving the name of the favorite for future update.
 		if (params.preferenceName != undefined) {
 			this.tlvReportName = params.preferenceName;
+			this.favoriteName = params.preferenceName;
 		}else{
-			this.tlvReportName = '';
+			this.tlvReportName = 'New TLV';
+			this.favoriteName = 'New TLV';
 		}
 	}
 
@@ -848,6 +850,10 @@
 				});
 	};
 
+	/**
+	 * 
+	 * @param res
+	 */
 	TrafficLightViewController.prototype.updateFavorite = function(res) {
 		var favoriteData = {};
 		var self = this;
@@ -872,7 +878,13 @@
 
 		_sdFavoriteViewService.updateFavorite("trafficLightViewNew", self.tlvReportName, favoriteData).then(
 				function(data) {
-					self.favoriteName = self.tlvReportName;
+
+					if (self.favoriteName == "New TLV") {
+						self.favoriteName = self.tlvReportName;
+						_sdViewUtilService.updateViewInfo("trafficLightViewNew", "", {
+							"preferenceName" : self.favoriteName
+						});
+					}
 					trace.log(data);
 					self.showDeleteButton = true;
 				}, function(error) {
