@@ -25,6 +25,8 @@ import javax.ws.rs.core.Response;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.misc.RequestDescription;
+import org.eclipse.stardust.ui.web.rest.misc.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.service.ViewFavoriteService;
 import org.eclipse.stardust.ui.web.rest.service.dto.PreferenceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SaveFavoriteStatusDTO;
@@ -90,6 +92,52 @@ public class ViewFavoriteResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{preferenceId}")
+   @ResponseDescription("#### Sample Response:\r\n" + 
+         "\r\n" + 
+         "    [  \r\n" + 
+         "      {\r\n" + 
+         "        \"scope\":\"USER\",\r\n" + 
+         "        \"moduleId\":\"FAVORITE\",\r\n" + 
+         "        \"preferenceId\":\"trafficLightViewNew\",\r\n" + 
+         "        \"preferenceName\":\"TLV1\",\r\n" + 
+         "        \"preferenceValue\":\"{\r\n" + 
+         "                    \"selectedProcesses\":[\r\n" + 
+         "                      {\r\n" + 
+         "                        \"id\":\"{CustomerManagement}CustomerOnboarding\",\r\n" + 
+         "                        \"name\":\"Customer Onboarding\"\r\n" + 
+         "                       }\r\n" + 
+         "                       ],\r\n" + 
+         "                    \"selectedBenchmarks\":[1],\r\n" + 
+         "                    \"selectedDrillDown\":\"PROCESS_WORKITEM\",\r\n" + 
+         "                    \"selectedDateType\":\"BUSINESS_DATE\",\r\n" + 
+         "                    \"dayOffset\":-8\r\n" + 
+         "                    }\",\r\n" + 
+         "       \"isPasswordType\":false,\r\n" + 
+         "       \"partitionId\":\"default\"\r\n" + 
+         "       },\r\n" + 
+         "       {\r\n" + 
+         "        \"scope\":\"USER\",\r\n" + 
+         "        \"moduleId\":\"FAVORITE\",\r\n" + 
+         "        \"preferenceId\":\"trafficLightViewNew\",\r\n" + 
+         "        \"preferenceName\":\"TLV2\",\r\n" + 
+         "        \"preferenceValue\":\"{\r\n" + 
+         "                      \"selectedProcesses\":[\r\n" + 
+         "                      {\r\n" + 
+         "                      \"id\":\"{Model12}ConsumerPepperProcess\",\r\n" + 
+         "                      \"name\":\"ConsumerPepperProcess\"\r\n" + 
+         "                      },\r\n" + 
+         "                      {\"id\":\"{CustomerManagement}CustomerOnboarding\",\r\n" + 
+         "                      \"name\":\"Customer Onboarding\"\r\n" + 
+         "                      } ],\r\n" + 
+         "                      \"selectedBenchmarks\":[1],\r\n" + 
+         "                      \"selectedDrillDown\":\"PROCESS_WORKITEM\",\r\n" + 
+         "                      \"selectedDateType\":\"BUSINESS_DATE\",\r\n" + 
+         "                      \"dayOffset\":-8\r\n" + 
+         "                      }\",\r\n" + 
+         "        \"isPasswordType\":false,\r\n" + 
+         "        \"partitionId\":\"default\"\r\n" + 
+         "        }\r\n" + 
+         "    ]")
    public Response getFavoriteByType(@PathParam("preferenceId") String preferenceId)
    {
       try
@@ -107,6 +155,23 @@ public class ViewFavoriteResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{preferenceId}/{preferenceName}")
+   @ResponseDescription("#### Sample Response:\r\n" + 
+         "    { \r\n" + 
+         "     \"scope\":\"USER\",    \r\n" + 
+         "     \"moduleId\":\"FAVORITE\",  \r\n" + 
+         "     \"preferenceId\":\"trafficLightViewNew\",  \r\n" + 
+         "     \"preferenceName\":\"TLV1\",   \r\n" + 
+         "     \"preferenceValue\":\"{ \r\n" + 
+         "                        \"selectedProcesses\": [{\"id\":\"ALL_PROCESSES\",  \r\n" + 
+         "                        \"name\":\"AllProcesses\"}],  \r\n" + 
+         "                        \"selectedBenchmarks\":[\"ALL_BENCHMARKS\"],\r\n" + 
+         "                        \"selectedDrillDown\":\"PROCESS_WORKITEM\",  \r\n" + 
+         "                        \"selectedDateType\":\"BUSINESS_DATE\",  \r\n" + 
+         "                        \"dayOffset\":0\r\n" + 
+         "                       }\",\r\n" + 
+         "    \"isPasswordType\":false,  \r\n" + 
+         "    \"partitionId\":\"default\"\r\n" + 
+         "    }")
    public Response getFavoriteByName(@PathParam("preferenceId") String preferenceId,
          @PathParam("preferenceName") String preferenceName)
    {
@@ -134,6 +199,20 @@ public class ViewFavoriteResource
    @PUT
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{preferenceId}/{preferenceName}")
+   @RequestDescription("#### Sample Request:\r\n" + 
+         "    { \r\n" + 
+         "       \"dayOffset\": -7,\r\n" + 
+         "       \"selectedBenchmarks\": [1],\r\n" + 
+         "       \"selectedDateType\": \"BUSINESS_DATE\",\r\n" + 
+         "       \"selectedDrillDown\": \"PROCESS_WORKITEM\",\r\n" + 
+         "       \"selectedProcesses\": [\r\n" + 
+         "                             { \"id\": \"{CustomerManagement}CustomerOnboarding\", \r\n" + 
+         "                               \"name\": \"Customer Onboarding\"\r\n" + 
+         "                             }\r\n" + 
+         "                            ],\r\n" + 
+         "        \"showBusinessObjects\": false,\r\n" + 
+         "        \"showGroupByObjects\": false\r\n" + 
+         "    }")
    public Response updateFavorite(@PathParam("preferenceId") String preferenceId,
          @PathParam("preferenceName") String preferenceName, String postedData)
    {
