@@ -36,12 +36,12 @@ public class ModelUpgrader
    {
       this.model = model;
       jobs = modelJobs;
-      
-      version = new Version(model.getCarnotVersion());      
+
+      version = Version.createModelVersion(model.getCarnotVersion(), model.getVendor());
    }
-   
+
    public boolean upgradeNeeded()
-   {      
+   {
       for(UpgradeJob job : jobs)
       {
          if(job.matches(version))
@@ -49,7 +49,7 @@ public class ModelUpgrader
             return true;
          }
       }
-      
+
       return false;
    }
 
@@ -67,7 +67,7 @@ public class ModelUpgrader
             model = job.upgradeVersion(model);
          }
       }
-      
+
       return model;
    }
 }
