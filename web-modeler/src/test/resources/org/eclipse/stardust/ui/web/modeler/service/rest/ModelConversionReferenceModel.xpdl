@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><Package xmlns:carnot="http://www.carnot.ag/xpdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.wfmc.org/2008/XPDL2.1" xsi:schemaLocation="http://www.wfmc.org/2008/XPDL2.1 http://www.wfmc.org/standards/docs/bpmnxpdl_31.xsd" Id="ModelConversionReferenceModel" Name="Model Conversion Reference Model">
    <PackageHeader>
       <XPDLVersion>2.1</XPDLVersion>
-      <Vendor>SunGard CSA LLC</Vendor>
+      <Vendor>Eclipse.org, Eclipse Process Manager</Vendor>
       <Created>Fri Sep 27 08:49:38 CEST 2013</Created>
    </PackageHeader>
    <RedefinableHeader PublicationStatus="UNDER_REVISION">
@@ -606,7 +606,7 @@
    </WorkflowProcesses>
    <ExtendedAttributes>
       <ExtendedAttribute Name="CarnotExt">
-         <carnot:Package Oid="0" CarnotVersion="7.1.3" ModelOid="0">
+         <carnot:Package Oid="0" CarnotVersion="1.0.1" ModelOid="0">
             <carnot:MetaTypes>
                <carnot:DataTypes>
                   <carnot:DataType Oid="2" Id="primitive" Name="Primitive Data" IsPredefined="true">
