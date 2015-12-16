@@ -49,22 +49,6 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
        <ippui:toolbarSection name="priorityOverviewToolbar"
             include="/plugins/business-control-center/extensions/toolbar/priorityOverviewToolbar.xhtml"
             requiredView="processOverviewView" />
-            
-       <ippui:toolbarSection name="completedActivitiesToolbar"
-            include="/plugins/business-control-center/extensions/toolbar/completedActivitiesToolbar.xhtml"
-            requiredView="completedActivities" />
-     
-       <ippui:toolbarSection name="pendingActivitiesToolbar"
-            include="/plugins/business-control-center/extensions/toolbar/pendingActivitiesToolbar.xhtml"
-            requiredView="pendingActivities" />
-      
-       <ippui:toolbarSection name="postponedActivitiesToolbar"
-            include="/plugins/business-control-center/extensions/toolbar/postponedActivitiesToolbar.xhtml"
-            requiredView="postponedActivities" />
-       
-       <ippui:toolbarSection name="resourceLoginViewToolbar"
-            include="/plugins/business-control-center/extensions/toolbar/resourceLoginViewToolbar.xhtml"
-            requiredView="resourceLoginView" />
      
        <ippui:toolbarSection name="resourcePerformanceViewToolbar"
             include="/plugins/business-control-center/extensions/toolbar/resourcePerformanceViewToolbar.xhtml"
@@ -105,19 +89,19 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			</ippui:preferences>
 	    </ippui:view>
 	   	
-		<ippui:view name="pendingActivities" include="/plugins/business-control-center/views/pendingActivities.xhtml" controller="openActivitiesBean">
+		<ippui:view name="pendingActivities" include="/plugins/html5-business-control-center/partials/views/pendingActivitiesView.html">
 	   		<ippui:preferences>
 				<ippui:preferencePage name="icon"
 					include="/plugins/views-common/images/icons/pending_activities.png" />
 			</ippui:preferences>
 	   	</ippui:view>
-		<ippui:view name="completedActivities" include="/plugins/business-control-center/views/completedActivities.xhtml" controller="completedActivitiesBean">
+		<ippui:view name="completedActivities" include="/plugins/html5-business-control-center/partials/views/completedActivitiesView.html">
 	   		<ippui:preferences>
 				<ippui:preferencePage name="icon"
 					include="/plugins/views-common/images/icons/process-history/activity_completed.png" />
 			</ippui:preferences>
 	   	</ippui:view>
-		<ippui:view name="postponedActivities" include="/plugins/business-control-center/views/postponedActivities.xhtml" controller="postponedActivities">
+		<ippui:view name="postponedActivities" include="/plugins/html5-business-control-center/partials/views/postponedActivitiesView.html">
 	   		<ippui:preferences>
 				<ippui:preferencePage name="icon"
 					include="/plugins/views-common/images/icons/activity_postponed.png" />
@@ -142,7 +126,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 					include="/plugins/views-common/images/icons/role.png" />
 			</ippui:preferences>
 	   	</ippui:view>
-		<ippui:view name="resourceLoginView" include="/plugins/business-control-center/views/resourceLoginView.xhtml" controller="resourceLogin">
+		<ippui:view name="resourceLoginView" include="/plugins/html5-business-control-center/partials/views/resourceLoginView.html">
 	   		<ippui:preferences>
 				<ippui:preferencePage name="icon"
 					include="/plugins/views-common/images/icons/group_key.png" />
