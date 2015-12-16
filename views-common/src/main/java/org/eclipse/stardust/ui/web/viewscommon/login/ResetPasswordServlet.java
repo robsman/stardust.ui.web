@@ -40,7 +40,6 @@ public class ResetPasswordServlet extends HttpServlet
 
    private final static String DEFAULT_LOGIN_PAGE = "plugins/views-common/login.iface";
 
-   private ServiceFactory serviceFactory;
    private String user;
    private String password;
 
@@ -77,7 +76,7 @@ public class ResetPasswordServlet extends HttpServlet
          {
             properties.put(SecurityProperties.PARTITION, partition);
          }
-         serviceFactory = ServiceFactoryLocator.get(user, password, properties);
+         ServiceFactory  serviceFactory = ServiceFactoryLocator.get(user, password, properties);
          User user = serviceFactory.getUserService().getUser(new Integer(oid));
          properties = getLoginProperties(partition, realm);
          serviceFactory.getUserService().resetPassword(user.getAccount(), properties, token);
