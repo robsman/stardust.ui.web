@@ -53,10 +53,6 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
        <ippui:toolbarSection name="resourcePerformanceViewToolbar"
             include="/plugins/business-control-center/extensions/toolbar/resourcePerformanceViewToolbar.xhtml"
             requiredView="resourcePerformance" />
-            
-       <ippui:toolbarSection name="performanceTeamleaderToolbar"
-            include="/plugins/business-control-center/extensions/toolbar/performanceTeamleaderToolbar.xhtml"
-            requiredView="performanceTeamleader" />
 
        <ippui:toolbarSection name="costsandControllingToolbar"
             include="/plugins/business-control-center/extensions/toolbar/costsandControllingToolbar.xhtml"
@@ -140,7 +136,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			</ippui:preferences>
 	   	</ippui:view>
 	   	
-		<ippui:view name="performanceTeamleader" include="/plugins/business-control-center/views/performanceTeamleader.xhtml" controller="performanceTeamleader" >
+		<ippui:view name="performanceTeamleader" include="/plugins/html5-business-control-center/partials/views/performanceTeamLeaderView.html">
 	   		<ippui:preferences>
 				<ippui:preferencePage name="icon"
 					include="/plugins/views-common/images/icons/chart-up-color.png" />
