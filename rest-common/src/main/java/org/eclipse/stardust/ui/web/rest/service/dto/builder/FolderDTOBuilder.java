@@ -11,6 +11,8 @@
 package org.eclipse.stardust.ui.web.rest.service.dto.builder;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -95,6 +97,14 @@ public class FolderDTOBuilder extends AbstractDTO
          folderDTOs.add(build(folder));
       }
 
+      Collections.sort(folderDTOs, new Comparator<FolderDTO>()
+      {
+         @Override
+         public int compare(FolderDTO folderDTO1, FolderDTO folderDTO2)
+         {
+            return folderDTO1.name.compareTo(folderDTO2.name);
+         }
+      });
       return folderDTOs;
    }
 

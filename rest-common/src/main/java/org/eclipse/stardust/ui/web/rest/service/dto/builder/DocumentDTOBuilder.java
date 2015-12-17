@@ -10,12 +10,15 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto.builder;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 
 /**
  * @author Anoop.Nair
@@ -53,14 +56,24 @@ public class DocumentDTOBuilder
     */
    public static List<DocumentDTO> build(List<Document> documents)
    {
-      List<DocumentDTO> documentsDTO = CollectionUtils.newArrayList();
+      List<DocumentDTO> documentDTOs = CollectionUtils.newArrayList();
 
       for (Document document : documents)
       {
-         documentsDTO.add(build(document));
+         documentDTOs.add(build(document));
       }
 
-      return documentsDTO;
+      Collections.sort(documentDTOs, new Comparator<DocumentDTO>()
+      {
+         @Override
+         public int compare(DocumentDTO documentDTO1, DocumentDTO documentDTO2)
+         {
+            return documentDTO1.name.compareTo(documentDTO2.name);
+         }
+      });
+
+      
+      return documentDTOs;
    }
 
    /**
