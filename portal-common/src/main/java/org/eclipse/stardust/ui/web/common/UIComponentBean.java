@@ -11,7 +11,6 @@
 package org.eclipse.stardust.ui.web.common;
 
 import java.io.Serializable;
-import java.util.Random;
 
 import org.eclipse.stardust.ui.web.common.message.UiElementMessage;
 import org.eclipse.stardust.ui.web.common.uielement.DefaultViewDefinition;
@@ -72,8 +71,7 @@ public abstract class UIComponentBean implements Serializable
    {
       if(StringUtils.isEmpty(id))
       {
-         Random o = new Random();
-         id = "UIC" + o.nextInt(10000);
+         id = "UIC" + this.hashCode();
       }
       return id;
    }

@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Random;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -878,8 +878,7 @@ public class DocumentMgmtUtility
     */
    public static String generateUniqueId(String anyString)
    {
-      Random o = new Random();
-      return anyString + o.nextInt(10000);
+	   return anyString+ UUID.randomUUID().toString();
    }
 
    /**

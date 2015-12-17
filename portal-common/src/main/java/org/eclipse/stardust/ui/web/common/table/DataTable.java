@@ -13,7 +13,6 @@ package org.eclipse.stardust.ui.web.common.table;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 import javax.faces.component.UIData;
 import javax.faces.component.html.HtmlDataTable;
@@ -382,10 +381,8 @@ public class DataTable<T extends IRowModel> implements IDataTable<T>, ITableData
    {
       if(StringUtils.isEmpty(id))
       {
-         Random o = new Random();
-         id = "DT" + o.nextInt(10000);
+         id = "DT" + this.hashCode();
       }
-
       return id;
    }
 
