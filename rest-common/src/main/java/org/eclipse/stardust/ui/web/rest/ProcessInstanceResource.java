@@ -591,7 +591,7 @@ public class ProcessInstanceResource
    @Consumes(MediaType.MULTIPART_FORM_DATA)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{oid}/documents{dataPathId:.*}")
-   public Response addDocument(List<Attachment> attachments, @PathParam("oid") Long processOid,
+   public Response uploadDocument(List<Attachment> attachments, @PathParam("oid") Long processOid,
          @PathParam("dataPathId") String dataPathId) throws Exception
    {
       if (StringUtils.isEmpty(dataPathId))

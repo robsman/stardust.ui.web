@@ -26,13 +26,22 @@ public class DocumentInfoDTO
    public String description;
    public byte[] content;
    public String contentType;
-   
+
    public String parentFolderPath;
-   
+
    public DocumentType documentType; // evaluated on server side considering modelId and
                                      // typedDocumentId
-   
+
    public Map<String, Serializable> properties; // used to store documentType values
-   
+
    public String dataPathId;
+
+   public boolean createVersion = true; // to indicate user wants to create a version if
+                                        // the document already exist with the same name and when he/she
+                                        // actually intends to create a document
+   public boolean createNewRevision = true;// to indicate user want create revision on
+                                        // document update, in case of just rename user
+                                        // may not want to create revision so it is
+                                        // recommended to make it false
+
 }

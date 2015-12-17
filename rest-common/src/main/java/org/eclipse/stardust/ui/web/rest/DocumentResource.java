@@ -13,7 +13,6 @@ package org.eclipse.stardust.ui.web.rest;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -49,6 +48,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ResourcePolicyDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.FileUploadUtils;
@@ -195,44 +195,75 @@ public class DocumentResource
 
    /**
     * @author Yogesh.Manware
-    * @param processOid
+    * @param attachments
     * @return
-    * @throws Exception 
+    * @throws Exception
+    */
+   @POST
+   @Consumes(MediaType.MULTIPART_FORM_DATA)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/upload")
+   public Response uploadDocuments(List<Attachment> attachments) throws Exception
+   {
+      // parse attachments
+      List<DocumentInfoDTO> uploadedDocuments = FileUploadUtils.parseAttachments(attachments);
+      Map<String, Object> result = repositoryService.createDocuments(uploadedDocuments, null, false);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(result)).build();
+   }
+   
+   /**
+    * @author Yogesh.Manware
+    * @param attachments
+    * @return
+    * @throws Exception
     */
    @POST
    @Consumes(MediaType.MULTIPART_FORM_DATA)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("")
-   public Response addDocument(List<Attachment> attachments) throws Exception
+   @RequestDescription("Request must contain json representation of\r\n"
+         + "`org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO`")
+   public Response createDocument(String postedData) throws Exception
    {
-      // parse attachments
-      List<DocumentInfoDTO> uploadedDocuments = FileUploadUtils.parseAttachments(attachments);
-
-      List<DocumentDTO> documents = new ArrayList<DocumentDTO>();
-      for (DocumentInfoDTO documentInfoDTO : uploadedDocuments)
-      {
-         documents.add(repositoryService.createDocument(documentInfoDTO, null));
-      }
-
-      return Response.ok(GsonUtils.toJsonHTMLSafeString(documents)).build();
+      DocumentInfoDTO documentInfoDTO = DTOBuilder.buildFromJSON(postedData, DocumentInfoDTO.class);
+      Map<String, Object> result = repositoryService.createDocument(documentInfoDTO, null, false);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(result)).build();
    }
-
-
+  
    /**
-    * @author Yogesh.Manware
-    * @param processOid
+    *  @author Yogesh.Manware
+    * @param documentId
+    * @param postedData
     * @return
     * @throws Exception 
     */
-   @DELETE
-   @Consumes(MediaType.MULTIPART_FORM_DATA)
+   @PUT
+   @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{documentId: .*}")
+   @RequestDescription("Request must contain DocumentInfoDTO like json")
+   @ResponseDescription("if the document is updated successfully, it returns *Operation completed successfully*.")
+   public Response updateDocument(@PathParam("documentId") String documentId, String postedData)
+         throws Exception
+   {
+      DocumentInfoDTO documentInfoDTO = DTOBuilder.buildFromJSON(postedData, DocumentInfoDTO.class);
+      repositoryService.updateDocument(documentId, documentInfoDTO);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(restCommonClientMessages.get("success.message"))).build();
+   }
+   
+   /**
+    *  @author Yogesh.Manware
+    * @param documentId
+    * @return
+    * @throws Exception
+    */
+   @DELETE
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{documentId: .*}")
+   @ResponseDescription("if the document deleted succussfully *Operation completed successfully* is sent back.")
    public Response deleteDocument(@PathParam("documentId") String documentId) throws Exception
    {
-      documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
-      DocumentMgmtUtility.deleteDocumentWithVersions(DocumentMgmtUtility.getDocument(documentId));
-
+      repositoryService.deleteDocument(documentId);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(restCommonClientMessages.get("success.message"))).build();
    }
    
@@ -291,51 +322,7 @@ public class DocumentResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/policy/{documentId: .*}")
-   @ResponseDescription("#### Sample Response:\r\n" + 
-         "```\r\n" + 
-         "{\r\n" + 
-         "    \"own\" : [{\r\n" + 
-         "            \"participant\" : {\r\n" + 
-         "                \"name\" : \"E_Scoped Lead L31[America]\",\r\n" + 
-         "                \"qualifiedId\" : \"{ipp-participant}{SamsaMultiScope}E_ScopedLeadL31[USA]\"\r\n" + 
-         "            },\r\n" + 
-         "            \"read\" : \"Allow\",\r\n" + 
-         "            \"modify\" : \"Deny\",\r\n" + 
-         "            \"delete\" : \"Deny\",\r\n" + 
-         "            \"readAcl\" : \"Allow\",\r\n" + 
-         "            \"modifyAcl\" : \"Allow\"\r\n" + 
-         "        }, {\r\n" + 
-         "            \"participant\" : {\r\n" + 
-         "                \"name\" : \"E_Scoped Role L31[Maharashtra]\",\r\n" + 
-         "                \"qualifiedId\" : \"{ipp-participant}{SamsaMultiScope}E_ScopedRoleL31[MH]\"\r\n" + 
-         "            },\r\n" + 
-         "            \"read\" : \"Deny\",\r\n" + 
-         "            \"modify\" : \"Allow\",\r\n" + 
-         "            \"delete\" : \"Allow\",\r\n" + 
-         "            \"readAcl\" : \"Allow\",\r\n" + 
-         "            \"modifyAcl\" : \"Allow\"\r\n" + 
-         "        } \r\n" + 
-         "    ],\r\n" + 
-         "    \"ineherited\" : [{\r\n" + 
-         "            \"participant\" : {\r\n" + 
-         "                \"name\" : \"Administrators\",\r\n" + 
-         "                \"qualifiedId\" : \"administrators\"\r\n" + 
-         "            },\r\n" + 
-         "            \"read\" : \"Allow\",\r\n" + 
-         "            \"modify\" : \"Allow\",\r\n" + 
-         "            \"delete\" : \"Allow\",\r\n" + 
-         "            \"readAcl\" : \"Allow\",\r\n" + 
-         "            \"modifyAcl\" : \"Allow\"\r\n" + 
-         "        }, {\r\n" + 
-         "            \"participant\" : {\r\n" + 
-         "                \"name\" : \"Everyone\",\r\n" + 
-         "                \"qualifiedId\" : \"everyone\"\r\n" + 
-         "            },\r\n" + 
-         "            \"read\" : \"Allow\"\r\n" + 
-         "        }\r\n" + 
-         "    ]\r\n" + 
-         "}\r\n" + 
-         "```")
+   @ResponseDescription("Returns ResourcePolicyContainerDTO containing losts of own and inherited policies in the form of ResourcePolicyDTO")
    public Response getDocumentPolicies(@PathParam("documentId") String documentId) throws Exception
    {
       documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
@@ -353,37 +340,9 @@ public class DocumentResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/policy/{documentId: .*}")
-   @RequestDescription("Complete set of policy is necessary during modifications\r\n" + 
-         "\r\n" + 
-         "#### Sample Request:\r\n" + 
-         "```\r\n" + 
-         "[{\r\n" + 
-         "        \"participant\" : {\r\n" + 
-         "            \"name\" : \"E_Scoped Lead L31[America]\",\r\n" + 
-         "            \"qualifiedId\" : \"{ipp-participant}{SamsaMultiScope}E_ScopedLeadL31[USA]\"\r\n" + 
-         "        },\r\n" + 
-         "        \"read\" : \"Allow\",\r\n" + 
-         "        \"modify\" : \"Deny\",\r\n" + 
-         "        \"delete\" : \"Deny\",\r\n" + 
-         "        \"readAcl\" : \"Allow\",\r\n" + 
-         "        \"modifyAcl\" : \"Allow\"\r\n" + 
-         "    }, {\r\n" + 
-         "        \"participant\" : {\r\n" + 
-         "            \"name\" : \"E_Scoped Role L31[Maharashtra]\",\r\n" + 
-         "            \"qualifiedId\" : \"{ipp-participant}{SamsaMultiScope}E_ScopedRoleL31[MH]\"\r\n" + 
-         "        },\r\n" + 
-         "        \"read\" : \"Deny\",\r\n" + 
-         "        \"modify\" : \"Allow\",\r\n" + 
-         "        \"delete\" : \"Allow\",\r\n" + 
-         "        \"readAcl\" : \"Allow\",\r\n" + 
-         "        \"modifyAcl\" : \"Allow\"\r\n" + 
-         "    }\r\n" + 
-         "]" + 
-         "\r\n" + 
-         "```\r\n" + 
-         "\r\n" + 
-         "**Note:** *Participant object can be replaced with simple key value pair of  \"participantQualifiedId\"* ")
-   @ResponseDescription("Operation completed successfully.")
+   @RequestDescription("accepts list of ResourcePolicyDTO"
+         + "**Note:** *Participant object can be replaced with simple key value pair of  \"participantQualifiedId\"* ")
+   @ResponseDescription("if the document policies are updated successfully, *Operation completed successfully.*")
    public Response updateDocumentPolicies(@PathParam("documentId") String documentId, String postedData)
          throws Exception
    {

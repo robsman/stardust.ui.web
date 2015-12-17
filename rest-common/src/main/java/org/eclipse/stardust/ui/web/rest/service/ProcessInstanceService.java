@@ -38,7 +38,6 @@ import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
-import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.ws.DocumentInfoXto;
 import org.eclipse.stardust.engine.api.ws.DocumentTypeXto;
@@ -73,7 +72,6 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SwitchProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
-import org.eclipse.stardust.ui.web.rest.service.dto.builder.FolderDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.AddressBookDataPathValueDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.DataPathValueDTO;
@@ -244,7 +242,7 @@ public class ProcessInstanceService
 
       if (DmsConstants.PATH_ID_ATTACHMENTS.equals(dataPathId))
       {
-         result = repositoryService.createProcessAttachments(uploadedDocuments, processInstance);
+         result = repositoryService.createDocuments(uploadedDocuments, processInstance, true);
       }
       else
       {
@@ -284,12 +282,6 @@ public class ProcessInstanceService
          DocumentType documentType = org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils
                .getDocumentTypeFromData(model, dataDetails);
 
-         result = new HashMap<String, Object>();
-         List<NotificationDTO> failures = new ArrayList<NotificationDTO>();
-         result.put("failures", failures);
-         List<DocumentDTO> documentDTOs = new ArrayList<DocumentDTO>();
-         result.put("documents", documentDTOs);
-
          for (DocumentInfoDTO documentInfoDTO : uploadedDocuments)
          {
             if (documentType != null)
@@ -297,16 +289,9 @@ public class ProcessInstanceService
                documentInfoDTO.documentType = documentType;
             }
             documentInfoDTO.parentFolderPath = DocumentMgmtUtility.getTypedDocumentsFolderPath(processInstance);
-            try
-            {
-               documentInfoDTO.dataPathId = dataPathId;
-               documentDTOs.add(repositoryService.createDocument(documentInfoDTO, processInstance));
-            }
-            catch (I18NException e)
-            {
-               failures.add(new NotificationDTO(null, documentInfoDTO.name, e.getMessage()));
-            }
+            documentInfoDTO.dataPathId = dataPathId;
          }
+         result = repositoryService.createDocuments(uploadedDocuments, processInstance, false);
       }
       return result;
    }

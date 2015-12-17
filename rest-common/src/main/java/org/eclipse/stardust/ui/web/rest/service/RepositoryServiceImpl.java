@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,8 +21,10 @@ import javax.annotation.Resource;
 import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
+import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
@@ -30,9 +33,12 @@ import org.eclipse.stardust.ui.web.rest.service.dto.builder.FolderDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
+import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
@@ -53,6 +59,7 @@ public class RepositoryServiceImpl implements RepositoryService
    @Resource
    private RestCommonClientMessages restCommonClientMessages;
 
+   // Folder Specific
    /**
     *
     */
@@ -63,7 +70,7 @@ public class RepositoryServiceImpl implements RepositoryService
       {
          folderId = folderId.substring(0, folderId.length() - 1);
       }
-      
+
       // fetching of children information may be time consuming, may need to be
       // parameterized later
       Folder folder = getDMS().getFolder(folderId, levelOfDetail);
@@ -77,7 +84,7 @@ public class RepositoryServiceImpl implements RepositoryService
       {
          folder = DocumentMgmtUtility.createFolderIfNotExists(folderId);
       }
-      
+
       FolderDTO folderDTO = FolderDTOBuilder.build(folder);
       folderDTO.folders = new ArrayList<FolderDTO>();
       folderDTO.documents = new ArrayList<DocumentDTO>();
@@ -91,46 +98,73 @@ public class RepositoryServiceImpl implements RepositoryService
       return folderDTO;
    }
 
-   private DocumentManagementService getDMS()
+   /**
+    *
+    */
+   @Override
+   public FolderDTO createFolder(String folderId, Map<String, Object> folderDataMap)
    {
-      return serviceFactoryUtils.getDocumentManagementService();
+      Folder folder = null;
+
+      if (!StringUtils.isEmpty(folderId))
+      {
+         folderId = DocumentMgmtUtility.checkAndGetCorrectResourceId(folderId);
+         folder = DocumentMgmtUtility.createFolderIfNotExists(folderId);
+      }
+      else
+      {
+         String parentFolderPath = (String) folderDataMap.get("parentFolderId");
+         folder = DocumentMgmtUtility.createFolderIfNotExists(parentFolderPath);
+         String folderName = (String) folderDataMap.get("folderName");
+         folder = DocumentMgmtUtility.createFolderIfNotExists(folder.getPath() + "/" + folderName);
+      }
+      return FolderDTOBuilder.build(folder);
    }
 
+   /**
+    *
+    */
    @Override
-   public DocumentDTO createDocument(DocumentInfoDTO documentInfoDTO, ProcessInstance processInstance)
+   public void updateFolder(String folderId, Map<String, Object> documentDataMap)
    {
-      if (documentInfoDTO.parentFolderPath == null)
+      folderId = DocumentMgmtUtility.checkAndGetCorrectResourceId(folderId);
+
+      Folder folder = getDMS().getFolder(folderId);
+
+      String newName = String.valueOf(documentDataMap.get("name"));
+
+      String parentPath = org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils.substringBeforeLast(
+            folder.getPath(), "/");
+
+      if (DocumentMgmtUtility.isFolderPresent(parentPath, newName))
       {
-         throw new I18NException(restCommonClientMessages.getParamString("folder.notFound", "unknown"));
+         throw new I18NException(MessagesViewsCommonBean.getInstance().get(
+               "views.genericRepositoryView.folderAlreadyPresent"));
       }
 
-      Folder parentFolder = DocumentMgmtUtility.createFolderIfNotExists(documentInfoDTO.parentFolderPath);
-
-      Document document = DocumentMgmtUtility.getDocument(parentFolder.getPath(), documentInfoDTO.name);
-      if (document != null)
-      {
-         throw new I18NException(restCommonClientMessages.getParamString("document.existError", documentInfoDTO.name));
-      }
-
-      // create document
-      document = DocumentMgmtUtility.createDocument(parentFolder.getId(), documentInfoDTO.name,
-            documentInfoDTO.content, documentInfoDTO.documentType, documentInfoDTO.contentType,
-            documentInfoDTO.description, documentInfoDTO.comments, null, null);
-
-      // update datapath
-      if (processInstance != null)
-      {
-         Map<String, Document> documentDataPathMap = new HashMap<String, Document>();
-         documentDataPathMap.put(documentInfoDTO.dataPathId, document);
-         addSpecificDocuments(processInstance.getOID(), documentDataPathMap);
-      }
-
-      return DocumentDTOBuilder.build(document);
+      folder.setName(newName);
+      getDMS().updateFolder(folder);
    }
 
-   // To support multiple process attachments upload
+   // Document specific
+   /**
+    *
+    */
    @Override
-   public Map<String, Object> createProcessAttachments(List<DocumentInfoDTO> documentInfoDTOs, ProcessInstance processInstance)
+   public Map<String, Object> createDocument(DocumentInfoDTO documentInfoDTO, ProcessInstance processInstance,
+         boolean processAttachments)
+   {
+      List<DocumentInfoDTO> documentInfoDTOs = new ArrayList<DocumentInfoDTO>();
+      documentInfoDTOs.add(documentInfoDTO);
+      return createDocuments(documentInfoDTOs, processInstance, processAttachments);
+   }
+
+   /**
+    *
+    */
+   @Override
+   public Map<String, Object> createDocuments(List<DocumentInfoDTO> documentInfoDTOs, ProcessInstance processInstance,
+         boolean processAttachments)
    {
       Map<String, Object> result = new HashMap<String, Object>();
       List<NotificationDTO> failures = new ArrayList<NotificationDTO>();
@@ -138,25 +172,58 @@ public class RepositoryServiceImpl implements RepositoryService
       List<DocumentDTO> documentDTOs = new ArrayList<DocumentDTO>();
       result.put("documents", documentDTOs);
 
-      String parentFolderPath = DocumentMgmtUtility.getProcessAttachmentsFolderPath(processInstance);
-      Folder parentFolder = DocumentMgmtUtility.createFolderIfNotExists(parentFolderPath);
+      String processAttachmentFolderPath = null;
+      Folder parentFolder = null;
+      if (processAttachments)
+      {
+         processAttachmentFolderPath = DocumentMgmtUtility.getProcessAttachmentsFolderPath(processInstance);
+         parentFolder = DocumentMgmtUtility.createFolderIfNotExists(processAttachmentFolderPath);
+      }
 
       List<Document> documents = new ArrayList<Document>();
 
       for (DocumentInfoDTO documentInfoDTO : documentInfoDTOs)
       {
+         if (!DocumentMgmtUtility.validateFileName(documentInfoDTO.name))
+         {
+            failures.add(new NotificationDTO(null, documentInfoDTO.name, MessagesViewsCommonBean.getInstance().get(
+                  "views.common.invalidCharater.message")));
+            continue;
+         }
+
+         if (!processAttachments)
+         {
+            parentFolder = DocumentMgmtUtility.createFolderIfNotExists(documentInfoDTO.parentFolderPath);
+         }
+
          Document document = DocumentMgmtUtility.getDocument(parentFolder.getPath(), documentInfoDTO.name);
-         if (document != null)
+
+         if (!documentInfoDTO.createVersion && document != null)
          {
             failures.add(new NotificationDTO(null, documentInfoDTO.name, restCommonClientMessages.getParamString(
                   "document.existError", documentInfoDTO.name)));
             continue;
          }
 
-         // create document
-         document = DocumentMgmtUtility.createDocument(parentFolder.getId(), documentInfoDTO.name,
-               documentInfoDTO.content, documentInfoDTO.documentType, documentInfoDTO.contentType,
-               documentInfoDTO.description, documentInfoDTO.comments, null, null);
+         if (document == null)
+         {
+            // create document
+            document = DocumentMgmtUtility.createDocument(parentFolder.getId(), documentInfoDTO.name,
+                  documentInfoDTO.content, documentInfoDTO.documentType, documentInfoDTO.contentType,
+                  documentInfoDTO.description, documentInfoDTO.comments, null, null);
+            if (processInstance != null)
+            {
+               if (!CommonProperties.PROCESS_ATTACHMENTS.equals(documentInfoDTO.dataPathId))
+               {
+                  serviceFactoryUtils.getWorkflowService().setOutDataPath(processInstance.getOID(),
+                        documentInfoDTO.dataPathId, document);
+               }
+            }
+         }
+         else
+         {
+            updateDocument(document, documentInfoDTO);
+         }
 
          documents.add(document);
          documentDTOs.add(DocumentDTOBuilder.build(document));
@@ -169,6 +236,9 @@ public class RepositoryServiceImpl implements RepositoryService
       return result;
    }
 
+   /**
+    *
+    */
    @Override
    public void detachProcessAttachments(List<String> documentIds, ProcessInstance processInstance)
          throws ResourceNotFoundException
@@ -181,13 +251,85 @@ public class RepositoryServiceImpl implements RepositoryService
       }
       DMSHelper.detachProcessAttachments(processInstance, documentsToBeDetached);
    }
-   
+
    /**
-    * @param processInstanceOid
-    * @param documentDataPathMap
+    *
     */
-   private void addSpecificDocuments(long processInstanceOid, Map<String, Document> documentDataPathMap)
+   @Override
+   public void deleteFolder(String folderId)
    {
-      serviceFactoryUtils.getWorkflowService().setOutDataPaths(processInstanceOid, documentDataPathMap);
+      folderId = DocumentMgmtUtility.checkAndGetCorrectResourceId(folderId);
+      getDMS().removeFolder(folderId, true);
+   }
+
+   /**
+    *
+    */
+   @Override
+   public void deleteDocument(String documentId) throws DocumentManagementServiceException, ResourceNotFoundException
+   {
+      documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
+      // note that if the deleted document is process attachment or typed document, it is
+      // also updated as per CRNT-34022, special treatment is not required.
+      DocumentMgmtUtility.deleteDocumentWithVersions(getDMS().getDocument(documentId));
+   }
+
+   /**
+    *
+    */
+   @Override
+   public void updateDocument(String documentId, DocumentInfoDTO documentInfoDTO)
+         throws DocumentManagementServiceException, UnsupportedEncodingException
+   {
+      documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
+      Document document = getDMS().getDocument(documentId);
+
+      // check if name is changed
+      if (!document.getName().equals(documentInfoDTO.name))
+      {
+         if (!DocumentMgmtUtility.validateFileName(documentInfoDTO.name))
+         {
+            throw new I18NException(MessagesViewsCommonBean.getInstance().get("views.common.invalidCharater.message"));
+         }
+      }
+
+      updateDocument(document, documentInfoDTO);
+   }
+
+   /**
+    * @param document
+    * @param documentInfoDTO
+    */
+   private void updateDocument(Document document, DocumentInfoDTO documentInfoDTO)
+   {
+      document.setName(documentInfoDTO.name);
+      document.setDescription(documentInfoDTO.description);
+
+      // TODO: updated the current user as owner??
+      document.setOwner(SessionContext.findSessionContext().getUser().getAccount());
+
+      // TODO: is versioning really required?
+      if (documentInfoDTO.createNewRevision && DocumentMgmtUtility.isDocumentVersioned(document))
+      {
+         getDMS().versionDocument(document.getId(), "", null);
+      }
+
+      if (documentInfoDTO.content == null)
+      {
+         // rename or just change in description and addition of comment
+         document = getDMS().updateDocument(document, documentInfoDTO.createNewRevision, documentInfoDTO.comments, "",
+               false);
+      }
+      else
+      {
+         // content changed
+         document = getDMS().updateDocument(document, documentInfoDTO.content, "", documentInfoDTO.createNewRevision,
+               documentInfoDTO.comments, "", false);
+      }
+   }
+
+   private DocumentManagementService getDMS()
+   {
+      return serviceFactoryUtils.getDocumentManagementService();
    }
 }

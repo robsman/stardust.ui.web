@@ -10,14 +10,17 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -26,13 +29,16 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.misc.RequestDescription;
 import org.eclipse.stardust.ui.web.rest.misc.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.service.MapAdapter;
 import org.eclipse.stardust.ui.web.rest.service.RepositoryService;
 import org.eclipse.stardust.ui.web.rest.service.ResourcePolicyService;
+import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ResourcePolicyDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
@@ -76,7 +82,6 @@ public class FolderResource
    }
 
    /**
-    * @author Yogesh.Manware
     * @param folderId
     * @return
     * @throws Exception
@@ -85,43 +90,7 @@ public class FolderResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/policy/{folderId: .*}")
-   @ResponseDescription("#### Sample Response:\r\n" + 
-         "```\r\n" + 
-         "{\r\n" + 
-         "    \"own\" : [{\r\n" + 
-         "            \"participant\" : {\r\n" + 
-         "                \"name\" : \"Checker\",\r\n" + 
-         "                \"qualifiedId\" : \"{ipp-participant}{Model63}Checker\"\r\n" + 
-         "            },\r\n" + 
-         "            \"read\" : \"Allow\",\r\n" + 
-         "            \"modify\" : \"Allow\",\r\n" + 
-         "            \"create\" : \"Allow\",\r\n" + 
-         "            \"delete\" : \"Allow\",\r\n" + 
-         "            \"readAcl\" : \"Allow\",\r\n" + 
-         "            \"modifyAcl\" : \"Allow\"\r\n" + 
-         "        }\r\n" + 
-         "    ],\r\n" + 
-         "    \"ineherited\" : [{\r\n" + 
-         "            \"participant\" : {\r\n" + 
-         "                \"name\" : \"Administrators\",\r\n" + 
-         "                \"qualifiedId\" : \"administrators\"\r\n" + 
-         "            },\r\n" + 
-         "            \"read\" : \"Allow\",\r\n" + 
-         "            \"modify\" : \"Allow\",\r\n" + 
-         "            \"create\" : \"Allow\",\r\n" + 
-         "            \"delete\" : \"Allow\",\r\n" + 
-         "            \"readAcl\" : \"Allow\",\r\n" + 
-         "            \"modifyAcl\" : \"Allow\"\r\n" + 
-         "        }, {\r\n" + 
-         "            \"participant\" : {\r\n" + 
-         "                \"name\" : \"Everyone\",\r\n" + 
-         "                \"qualifiedId\" : \"everyone\"\r\n" + 
-         "            },\r\n" + 
-         "            \"read\" : \"Allow\"\r\n" + 
-         "        }\r\n" + 
-         "    ]\r\n" + 
-         "}\r\n" + 
-         "```")
+   @ResponseDescription("Returns ResourcePolicyContainerDTO containing losts of own and inherited policies in the form of ResourcePolicyDTO")
    public Response getFolderPolicies(@PathParam("folderId") String folderId) throws Exception
    {
       folderId = DocumentMgmtUtility.checkAndGetCorrectResourceId(folderId);
@@ -129,7 +98,6 @@ public class FolderResource
    }
 
    /**
-    * @author Yogesh.Manware
     * @param folderId
     * @param postedData
     * @return
@@ -139,27 +107,9 @@ public class FolderResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/policy/{folderId: .*}")
-   @RequestDescription("Complete set of policy is necessary during modifications\r\n" + 
-         "\r\n" + 
-         "#### Sample Request:\r\n" +
-         "```\r\n" + 
-         "[{\r\n" + 
-         "        \"participant\" : {\r\n" + 
-         "            \"name\" : \"Checker\",\r\n" + 
-         "            \"qualifiedId\" : \"{ipp-participant}{Model63}Checker\"\r\n" + 
-         "        },\r\n" + 
-         "        \"read\" : \"Allow\",\r\n" + 
-         "        \"modify\" : \"Allow\",\r\n" + 
-         "        \"create\" : \"Allow\",\r\n" + 
-         "        \"delete\" : \"Allow\",\r\n" + 
-         "        \"readAcl\" : \"Allow\",\r\n" + 
-         "        \"modifyAcl\" : \"Allow\"\r\n" + 
-         "    }\r\n" + 
-         "]\r\n" + 
-         "```\r\n" + 
-         "\r\n" + 
-         "**Note:** *Participant object can be replaced with simple key value pair of  \"participantQualifiedId\"* ")
-   @ResponseDescription("Operation completed successfully.")
+   @RequestDescription("accepts list of ResourcePolicyDTO"
+         + "**Note:** *Participant object can be replaced with simple key value pair of  \"participantQualifiedId\"* ")
+   @ResponseDescription("if the folder policies are updated successfully, Operation completed successfully.")
    public Response updateFolderPolicies(@PathParam("folderId") String folderId, String postedData) throws Exception
    {
       Type type = new TypeToken<List<ResourcePolicyDTO>>()
@@ -174,4 +124,61 @@ public class FolderResource
       return Response.ok(GsonUtils.toJsonHTMLSafeString(restCommonClientMessages.get("success.message"))).build();
    }
 
+   /**
+    * @param folderId
+    * @param postedData
+    * @return
+    * @throws DocumentManagementServiceException
+    * @throws UnsupportedEncodingException
+    */
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{folderId: .*}")
+   @RequestDescription("Either url should contain complete path or message body must contain *parentFolderId* and *folderName* to be created")
+   @ResponseDescription("On success, FolderDTO would be sent back to client")
+   public Response createFolder(@PathParam("folderId") String folderId, String postedData)
+         throws DocumentManagementServiceException, UnsupportedEncodingException
+   {
+      // convert json to simple map
+      Map<String, Object> folderDataMap = null;
+      if (!StringUtils.isEmpty(postedData))
+      {
+         folderDataMap = JsonDTO.getAsMap(postedData);
+      }
+
+      FolderDTO folderDto = repositoryService.createFolder(folderId, folderDataMap);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(folderDto)).build();
+   }
+   
+   @PUT
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{folderId: .*}")
+   @RequestDescription("Request must contain the attributes (key, value pair) of folder to be updated namely name")
+   @ResponseDescription("if the folder is updated successfully, 'Operation completed successfully.' is sent back.")
+   public Response updateFolder(@PathParam("folderId") String folderId, String postedData)
+         throws DocumentManagementServiceException, UnsupportedEncodingException
+   {
+      // convert json to simple map
+      Map<String, Object> folderDataMap = JsonDTO.getAsMap(postedData);
+      repositoryService.updateFolder(folderId, folderDataMap);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(restCommonClientMessages.get("success.message"))).build();
+   }
+   
+   
+   /**
+    * @param folderId
+    * @return
+    * @throws Exception
+    */
+   @DELETE
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{folderId: .*}")
+   @ResponseDescription("if the folder deleted succussfully 'Operation completed successfully' is sent back.")
+   public Response deleteFolder(@PathParam("folderId") String folderId) throws Exception
+   {
+      repositoryService.deleteFolder(folderId);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(restCommonClientMessages.get("success.message"))).build();
+   }
 }

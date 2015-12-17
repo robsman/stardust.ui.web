@@ -10,11 +10,12 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
-import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
@@ -27,6 +28,7 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException
 public interface RepositoryService
 {
 
+   // Folder specific
    /**
     * @param folderId
     * @param levelOfDetail
@@ -36,18 +38,46 @@ public interface RepositoryService
    FolderDTO getFolder(String folderId, int levelOfDetail, boolean createIfDoesNotExist);
 
    /**
-    * @param documentInfoDTO
-    * @param processInstance
-    * @return
+    * @param folderId
+    * @param folderDataMap
     */
-   DocumentDTO createDocument(DocumentInfoDTO documentInfoDTO, ProcessInstance processInstance);
+   FolderDTO createFolder(String folderId, Map<String, Object> folderDataMap);
 
    /**
+    * @param folderId
+    * @param folderDataMap
+    */
+   void updateFolder(String folderId, Map<String, Object> folderDataMap);
+
+   /**
+    * @param folderId
+    */
+   void deleteFolder(String folderId);
+
+   // Document specific
+   /**
+    * This method support multiple documents upload By default creates new version of the
+    * document if one exist with the same name If you don't want to create new version use
+    * 'createVersion=false' to overwrite existing document user flag
+    * 'createNewRevision=false', by new revision is created.
+    * 
     * @param documentInfoDTO
     * @param processInstance
     * @return
     */
-   Map<String, Object> createProcessAttachments(List<DocumentInfoDTO> documentInfoDTO, ProcessInstance processInstance);
+   Map<String, Object> createDocuments(List<DocumentInfoDTO> documentInfoDTO, ProcessInstance processInstance,
+         boolean processAttachments);
+
+   /**
+    * internally calls createDocuments
+    * 
+    * @param documentInfoDTO
+    * @param processInstance
+    * @param processAttachments
+    * @return
+    */
+   Map<String, Object> createDocument(DocumentInfoDTO documentInfoDTO, ProcessInstance processInstance,
+         boolean processAttachments);
 
    /**
     * @param documentIds
@@ -58,26 +88,19 @@ public interface RepositoryService
    void detachProcessAttachments(List<String> documentIds, ProcessInstance processInstance)
          throws ResourceNotFoundException;
 
-   /*
-    * public DocumentDTO renameFolder(String participantQidIn);
-    *//**
-    * return parent folder
-    * 
-    * @param participantQidIn
-    * @return
+   /**
+    * @param documentId
+    * @throws ResourceNotFoundException
+    * @throws DocumentManagementServiceException
     */
-   /*
-    * public Map<String, List<DocumentDTO>> deleteFolder(String participantQidIn);
-    * 
-    * public DocumentDTO getDocument(String documentId);
-    * 
-    * 
-    * 
-    * public DocumentDTO deleteDocument(String participantQidIn);
-    * 
-    * public DocumentDTO updateDocument(String participantQidIn);
-    * 
-    * public DocumentDTO renameDocument(String participantQidIn);
-    */
+   void deleteDocument(String documentId) throws DocumentManagementServiceException, ResourceNotFoundException;
 
+   /**
+    * @param documentId
+    * @param documentInfoDTO
+    * @throws DocumentManagementServiceException
+    * @throws UnsupportedEncodingException
+    */
+   void updateDocument(String documentId, DocumentInfoDTO documentInfoDTO) throws DocumentManagementServiceException,
+         UnsupportedEncodingException;
 }
