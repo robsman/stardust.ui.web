@@ -745,7 +745,7 @@ public class ParticipantManagementUtils
       {
 
          User user = service.getUser(oid);
-         if (user != null && !user.getAccount().equals("motu") && user.getValidTo() == null)
+         if (user != null && user.getValidTo() == null)
          {
             User u = service.invalidateUser(user.getRealm().getId(), user.getAccount());
             invalidatedUsers.add(u);
@@ -817,20 +817,13 @@ public class ParticipantManagementUtils
 
       if (skippedUsers != null && !skippedUsers.isEmpty())
       {
-         for (Iterator<User> iterator = skippedUsers.iterator(); iterator.hasNext();)
-         {
-            User user = (User) iterator.next();
-            if (user.getAccount().equals("motu"))
-            {
-               notificationMap.addFailure(new NotificationDTO(user.getOID(), user.getAccount(),
-                     restCommonClientMessages.getString("views.participantMgmt.notifyMotuNotValidateMsg")));
-            }
-            else
-            {
-               notificationMap.addFailure(new NotificationDTO(user.getOID(), user.getAccount(),
-                     restCommonClientMessages.getString("views.participantMgmt.notifyUserCannotBeInvalidatedMsg")));
-            }
-         }
+    	  for (Iterator<User> iterator = skippedUsers.iterator(); iterator.hasNext();)
+    	  {
+    		  User user = (User) iterator.next();
+
+    		  notificationMap.addFailure(new NotificationDTO(user.getOID(), user.getAccount(),
+    				  restCommonClientMessages.getString("views.participantMgmt.notifyUserCannotBeInvalidatedMsg")));
+    	  }
       }
       return notificationMap;
    }
