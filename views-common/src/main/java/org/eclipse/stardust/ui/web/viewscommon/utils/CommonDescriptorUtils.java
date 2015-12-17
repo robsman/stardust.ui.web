@@ -40,6 +40,7 @@ import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.model.Reference;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
@@ -1072,5 +1073,25 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
          datas.put(path.getId(), path);
       }
       return datas;
+   }
+   
+   /**
+    * @param model
+    * @param data
+    * @return
+    */
+   public static Model getReferenceModel(Model model, Data data)
+   {
+      Model refModel = model;
+
+      Reference ref = data.getReference();
+
+      if (ref != null)
+      {
+         int modelOid = ref.getModelOid();
+         refModel = ModelCache.findModelCache().getModel(modelOid);
+      }
+
+      return refModel;
    }
 }

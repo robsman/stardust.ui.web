@@ -141,7 +141,13 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
             Model model = ModelCache.findModelCache().getModel(getDataDetails().getModelOID());
             // for structured data, there are "date", "dateTime" and "time"
             // for "time", a textfield should be displayed
-            IXPathMap xPathMap = ClientXPathMap.getXpathMap(model, model.getData(dataMapping.getDataId()));
+            
+            // The ClientXPathMap requires data and model to be properly resolved,
+            // so find the correct model if data is referenced from another model.
+            Data data = model.getData(dataMapping.getDataId());
+            model = CommonDescriptorUtils.getReferenceModel(model, data);
+                        
+            IXPathMap xPathMap = ClientXPathMap.getXpathMap(model, data);
             String xPath = StructuredDataXPathUtils.getXPathWithoutIndexes(dataMapping.getDataPath());
             if (xPathMap.getXPath(xPath).getXsdTypeName().equals(ProcessPortalConstants.XSD_TIME_TYPE_NAME))
             {
