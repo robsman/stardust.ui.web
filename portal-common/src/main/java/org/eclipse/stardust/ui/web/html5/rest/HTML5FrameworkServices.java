@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 import java.util.Random;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
@@ -383,8 +384,7 @@ public class HTML5FrameworkServices
     */
    private String getRandomValue()
    {
-      Random random = new Random();
-      return String.valueOf(random.nextInt(10000));
+      return UUID.randomUUID().toString();
    }
    
    /**
