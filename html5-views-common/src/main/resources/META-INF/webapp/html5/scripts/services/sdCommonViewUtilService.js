@@ -104,7 +104,7 @@
 		};
 
 		CommonViewUtilService.prototype.openNotesViewHTML5 = function(processInstanceOid, processName, nested) {
-			sdViewUtilService.openView("notesPanelHtml5", "oid=" + processInstanceOid, {
+			sdViewUtilService.openView("notesPanel", "oid=" + processInstanceOid, {
 				"oid" : "" + processInstanceOid,
 				"processName" : processName
 			}, nested);

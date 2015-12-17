@@ -62,9 +62,12 @@
 			ng-if="!ctrl.isAddMode && ctrl.notesTable.getSelection()">
 			<table>
 				<tr>
-					<td><img alt="" ng-if="ctrl.getUserImageURL(ctrl.notesTable.getSelection().avatarImageURI)"
+					<td><img alt="" ng-if="ctrl.getUserImageURL(ctrl.notesTable.getSelection().avatarImageURI).indexOf('/') > -1"
 						ng-src="{{ctrl.getUserImageURL(ctrl.notesTable.getSelection().avatarImageURI)}}"
-						width="24px" height="24px" style="padding-right: 5px;"></td>
+						width="24px" height="24px" style="padding-right: 5px;">
+					    <i class="{{ctrl.getUserImageURL(ctrl.notesTable.getSelection().avatarImageURI)}} pi-1-5x" 
+						ng-if="!(ctrl.getUserImageURL(ctrl.notesTable.getSelection().avatarImageURI).indexOf('/') > -1)"  style="margin-right: 5px;"></i>
+				    </td>
 					<td><sd-user-details
 							sda-user-oid="ctrl.notesTable.getSelection().userOID"
 							sda-account="ctrl.notesTable.getSelection().creatorName"
