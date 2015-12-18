@@ -17,12 +17,14 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
+import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 import org.springframework.util.StringUtils;
@@ -153,6 +155,43 @@ public class DTOBuilder
       return buildFromJSON(json, toClass, customTokens);
    }
 
+   
+   /**
+    *  accounts class hierarchy of DTO class 
+    * @param json
+    * @param toClass
+    * @param customTokens
+    * @return
+    * @throws Exception
+    */
+   public static <DTO, T> DTO buildFromJSON2(String postedData, Class<DTO> toClass, Map<String, Type> customTokens)
+         throws Exception
+   {
+      JsonMarshaller jsonIo = new JsonMarshaller();
+      JsonObject json = jsonIo.readJsonObject(postedData);
+      
+      DTO toInstance = null;
+      toInstance = toClass.newInstance();
+
+      Class< ? > iteratorClass1 = toClass;
+
+      Stack<Object> classStack = new Stack<Object>();
+      while (iteratorClass1 != AbstractDTO.class)
+      {
+         classStack.push(iteratorClass1);
+         iteratorClass1 = iteratorClass1.getSuperclass();
+      }
+      
+      for (Object iteratorClass2 : classStack)
+      {
+         @SuppressWarnings("unchecked")
+         Class<DTO> iteratorClass = (Class<DTO>) iteratorClass2;
+         mapFields(json, iteratorClass, toInstance, customTokens);
+      }
+
+      return toInstance;
+   }
+   
    /**
     * Builds a DTO from a JSON
     * 
@@ -166,9 +205,21 @@ public class DTOBuilder
    public static <DTO, T> DTO buildFromJSON(JsonObject json, Class<DTO> toClass,
          Map<String, Type> customTokens) throws Exception
    {
-      DTO toInstance = null;
-      toInstance = toClass.newInstance();
+      DTO toInstance = toClass.newInstance();
+      mapFields(json, toClass, toInstance, customTokens);
+      return toInstance;
+   }
 
+   /**
+    * @param json
+    * @param toClass
+    * @param toInstance
+    * @param customTokens
+    * @throws Exception
+    */
+   public static <DTO, T> void mapFields(JsonObject json, Class<DTO> toClass, DTO toInstance,
+         Map<String, Type> customTokens) throws Exception
+   {
       for (Field field : toClass.getDeclaredFields())
       {
          if (json.get(field.getName()) != null && !json.get(field.getName()).isJsonNull())
@@ -231,9 +282,8 @@ public class DTOBuilder
             }
          }
       }
-      return toInstance;
    }
-
+   
    /**
     * @param instance
     * @param fieldName

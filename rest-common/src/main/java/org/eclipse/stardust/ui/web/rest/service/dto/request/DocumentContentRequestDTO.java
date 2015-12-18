@@ -25,6 +25,8 @@ public class DocumentContentRequestDTO extends DocumentDTO
    
    public byte[] content;
    
+   public String contentString = "";
+   public String contentBase64;
    public boolean createVersion = true; // to indicate user wants to create a version if
                                         // the document already exist with the same name
                                         // and when he/she actually intends to create a
@@ -33,4 +35,5 @@ public class DocumentContentRequestDTO extends DocumentDTO
                                             // document update, in case of just rename
                                             // user may not want to create revision so it
                                             // is recommended to make it false
+   
 }

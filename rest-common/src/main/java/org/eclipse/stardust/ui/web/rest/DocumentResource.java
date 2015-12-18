@@ -218,15 +218,18 @@ public class DocumentResource
     * @throws Exception
     */
    @POST
-   @Consumes(MediaType.MULTIPART_FORM_DATA)
+   @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("")
    @RequestDescription("Request must contain json representation of\r\n"
-         + "`org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO`")
+         + "`org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentContentRequestDTO`")
    public Response createDocument(String postedData) throws Exception
    {
-      DocumentContentRequestDTO documentInfoDTO = DTOBuilder.buildFromJSON(postedData, DocumentContentRequestDTO.class);
+      DocumentContentRequestDTO documentInfoDTO = DTOBuilder
+            .buildFromJSON2(postedData, DocumentContentRequestDTO.class, null);
+      
       Map<String, Object> result = repositoryService.createDocument(documentInfoDTO, null, false);
+      
       return Response.ok(GsonUtils.toJsonHTMLSafeString(result)).build();
    }
   
@@ -241,7 +244,7 @@ public class DocumentResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{documentId: .*}")
-   @RequestDescription("Request must contain DocumentInfoDTO like json")
+   @RequestDescription("Request must contain DocumentContentRequestDTO like json")
    @ResponseDescription("if the document is updated successfully, it returns *Operation completed successfully*.")
    public Response updateDocument(@PathParam("documentId") String documentId, String postedData)
          throws Exception

@@ -67,7 +67,7 @@ public interface RepositoryService
     * @param documentId
     * @return
     */
-   byte[] getDocumentContent(String documentId);
+   String getDocumentContent(String documentId);
    
    
    /**

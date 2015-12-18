@@ -36,7 +36,7 @@ public class DocumentDTO extends AbstractDTO
    public long size;
    
    @DTOAttribute("revisionComment")
-   public String comments;
+   public String comment;
    
    @DTOAttribute("description")
    public String description;

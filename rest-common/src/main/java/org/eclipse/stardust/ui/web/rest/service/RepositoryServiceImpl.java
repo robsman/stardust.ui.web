@@ -20,6 +20,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.eclipse.stardust.common.Base64;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
@@ -171,9 +172,9 @@ public class RepositoryServiceImpl implements RepositoryService
     *
     */
    @Override
-   public byte[] getDocumentContent(String documentId)
+   public String getDocumentContent(String documentId)
    {
-      return getDMS().retrieveDocumentContent(documentId);
+      return new String(getDMS().retrieveDocumentContent(documentId));
    }
 
    /**
@@ -184,7 +185,7 @@ public class RepositoryServiceImpl implements RepositoryService
    {
       Document document = getDMS().getDocument(documentId);
       List<Document> docVersionList = null;
-      
+
       if (DocumentMgmtUtility.isDocumentVersioned(document))
       {
          docVersionList = getDMS().getDocumentVersions(document.getId());
@@ -193,7 +194,7 @@ public class RepositoryServiceImpl implements RepositoryService
       {
          return null;
       }
-      
+
       Collections.sort(docVersionList, new Comparator<Document>()
       {
          @Override
@@ -202,9 +203,9 @@ public class RepositoryServiceImpl implements RepositoryService
             return doc2.getDateLastModified().compareTo(doc1.getDateLastModified());
          }
       });
-     
+
       List<DocumentDTO> previousVersions = DocumentDTOBuilder.build(docVersionList, null);
-      
+
       return previousVersions;
    }
 
@@ -245,6 +246,8 @@ public class RepositoryServiceImpl implements RepositoryService
 
       for (DocumentContentRequestDTO documentInfoDTO : documentInfoDTOs)
       {
+         evaluateContent(documentInfoDTO);
+         
          if (!DocumentMgmtUtility.validateFileName(documentInfoDTO.name))
          {
             failures.add(new NotificationDTO(null, documentInfoDTO.name, MessagesViewsCommonBean.getInstance().get(
@@ -271,7 +274,7 @@ public class RepositoryServiceImpl implements RepositoryService
             // create document
             document = DocumentMgmtUtility.createDocument(parentFolder.getId(), documentInfoDTO.name,
                   documentInfoDTO.content, documentInfoDTO.documentType, documentInfoDTO.contentType,
-                  documentInfoDTO.description, documentInfoDTO.comments, null, null);
+                  documentInfoDTO.description, documentInfoDTO.comment, null, null);
             if (processInstance != null)
             {
                if (!CommonProperties.PROCESS_ATTACHMENTS.equals(documentInfoDTO.dataPathId))
@@ -295,6 +298,24 @@ public class RepositoryServiceImpl implements RepositoryService
          DMSHelper.addAndSaveProcessAttachments(processInstance, documents);
       }
       return result;
+   }
+
+   /**
+    * @param documentInfoDTO
+    * @return
+    */
+   private void evaluateContent(DocumentContentRequestDTO documentInfoDTO)
+   {
+      if (documentInfoDTO.content == null && documentInfoDTO.contentBase64 != null)
+      {
+         String decripted = new String(Base64.decode(documentInfoDTO.contentBase64.getBytes()));
+
+         documentInfoDTO.content = decripted.getBytes();
+      }
+      else if (documentInfoDTO.content == null && documentInfoDTO.contentString != null)
+      {
+         documentInfoDTO.content = documentInfoDTO.contentString.getBytes();
+      }
    }
 
    /**
@@ -366,11 +387,11 @@ public class RepositoryServiceImpl implements RepositoryService
       document.setName(documentInfoDTO.name);
       document.setDescription(documentInfoDTO.description);
 
-      // TODO: updated the current user as owner??
+      // TODO: updated the current user as owner?
       document.setOwner(SessionContext.findSessionContext().getUser().getAccount());
 
       // TODO: is versioning really required?
-      if (documentInfoDTO.createNewRevision && DocumentMgmtUtility.isDocumentVersioned(document))
+      if (documentInfoDTO.createNewRevision && !DocumentMgmtUtility.isDocumentVersioned(document))
       {
          getDMS().versionDocument(document.getId(), "", null);
       }
@@ -378,14 +399,14 @@ public class RepositoryServiceImpl implements RepositoryService
       if (documentInfoDTO.content == null)
       {
          // rename or just change in description and addition of comment
-         document = getDMS().updateDocument(document, documentInfoDTO.createNewRevision, documentInfoDTO.comments, "",
+         document = getDMS().updateDocument(document, documentInfoDTO.createNewRevision, documentInfoDTO.comment, "",
                false);
       }
       else
       {
          // content changed
          document = getDMS().updateDocument(document, documentInfoDTO.content, "", documentInfoDTO.createNewRevision,
-               documentInfoDTO.comments, "", false);
+               documentInfoDTO.comment, "", false);
       }
    }
 

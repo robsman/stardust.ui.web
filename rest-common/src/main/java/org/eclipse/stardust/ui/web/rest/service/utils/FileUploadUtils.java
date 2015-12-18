@@ -72,7 +72,7 @@ public class FileUploadUtils
             }
             else if (CommonProperties.COMMENTS.equals(dataHandler.getName()))
             {
-               documentInfoDTO.comments = inputStream.toString();
+               documentInfoDTO.comment = inputStream.toString();
             }
             else if (PARENT_FOLDER_PATH.equals(dataHandler.getName()))
             {
