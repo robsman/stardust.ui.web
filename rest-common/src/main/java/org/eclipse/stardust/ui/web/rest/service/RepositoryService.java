@@ -16,7 +16,8 @@ import java.util.Map;
 
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
-import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentContentRequestDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 
@@ -55,6 +56,25 @@ public interface RepositoryService
    void deleteFolder(String folderId);
 
    // Document specific
+   
+   /**
+    * @param documentId
+    * @return
+    */
+   DocumentDTO getDocument(String documentId);
+
+   /**
+    * @param documentId
+    * @return
+    */
+   byte[] getDocumentContent(String documentId);
+   
+   
+   /**
+    * @return
+    */
+   List<DocumentDTO> getDocumentHistory(String DocumentId);
+   
    /**
     * This method support multiple documents upload By default creates new version of the
     * document if one exist with the same name If you don't want to create new version use
@@ -65,7 +85,7 @@ public interface RepositoryService
     * @param processInstance
     * @return
     */
-   Map<String, Object> createDocuments(List<DocumentInfoDTO> documentInfoDTO, ProcessInstance processInstance,
+   Map<String, Object> createDocuments(List<DocumentContentRequestDTO> documentInfoDTO, ProcessInstance processInstance,
          boolean processAttachments);
 
    /**
@@ -76,7 +96,7 @@ public interface RepositoryService
     * @param processAttachments
     * @return
     */
-   Map<String, Object> createDocument(DocumentInfoDTO documentInfoDTO, ProcessInstance processInstance,
+   Map<String, Object> createDocument(DocumentContentRequestDTO documentInfoDTO, ProcessInstance processInstance,
          boolean processAttachments);
 
    /**
@@ -101,6 +121,6 @@ public interface RepositoryService
     * @throws DocumentManagementServiceException
     * @throws UnsupportedEncodingException
     */
-   void updateDocument(String documentId, DocumentInfoDTO documentInfoDTO) throws DocumentManagementServiceException,
+   void updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO) throws DocumentManagementServiceException,
          UnsupportedEncodingException;
 }

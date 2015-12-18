@@ -50,7 +50,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ResourcePolicyDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
-import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentContentRequestDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.FileUploadUtils;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -206,7 +206,7 @@ public class DocumentResource
    public Response uploadDocuments(List<Attachment> attachments) throws Exception
    {
       // parse attachments
-      List<DocumentInfoDTO> uploadedDocuments = FileUploadUtils.parseAttachments(attachments);
+      List<DocumentContentRequestDTO> uploadedDocuments = FileUploadUtils.parseAttachments(attachments);
       Map<String, Object> result = repositoryService.createDocuments(uploadedDocuments, null, false);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(result)).build();
    }
@@ -225,7 +225,7 @@ public class DocumentResource
          + "`org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO`")
    public Response createDocument(String postedData) throws Exception
    {
-      DocumentInfoDTO documentInfoDTO = DTOBuilder.buildFromJSON(postedData, DocumentInfoDTO.class);
+      DocumentContentRequestDTO documentInfoDTO = DTOBuilder.buildFromJSON(postedData, DocumentContentRequestDTO.class);
       Map<String, Object> result = repositoryService.createDocument(documentInfoDTO, null, false);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(result)).build();
    }
@@ -246,7 +246,7 @@ public class DocumentResource
    public Response updateDocument(@PathParam("documentId") String documentId, String postedData)
          throws Exception
    {
-      DocumentInfoDTO documentInfoDTO = DTOBuilder.buildFromJSON(postedData, DocumentInfoDTO.class);
+      DocumentContentRequestDTO documentInfoDTO = DTOBuilder.buildFromJSON(postedData, DocumentContentRequestDTO.class);
       repositoryService.updateDocument(documentId, documentInfoDTO);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(restCommonClientMessages.get("success.message"))).build();
    }
@@ -305,11 +305,47 @@ public class DocumentResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{documentId: .*}")
+   @ResponseDescription("Returns all basic document information, for content use */content/documentId*")
    public Response getDocument(@PathParam("documentId") String documentId) throws Exception
    {
       documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
       DocumentDTO documentDTO = DocumentDTOBuilder.build(DocumentMgmtUtility.getDocument(documentId));
       return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
+   }
+   
+   /**
+    * 
+    *  @author Yogesh.Manware
+    * @param documentId
+    * @return
+    * @throws Exception
+    */
+   @GET
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/content/{documentId: .*}")
+   @ResponseDescription("Returns document content (bytes)")
+   public Response getDocumentContent(@PathParam("documentId") String documentId) throws Exception
+   {
+      documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(repositoryService.getDocumentContent(documentId))).build();
+   }
+
+   /**
+    *  @author Yogesh.Manware
+    * @param documentId
+    * @return
+    * @throws Exception
+    */
+   @GET
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/history/{documentId: .*}")
+   @ResponseDescription("Returns all previous versions of document")
+   public Response getDocumentVersions(@PathParam("documentId") String documentId) throws Exception
+   {
+      documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(repositoryService.getDocumentHistory(documentId))).build();
    }
    
    /**

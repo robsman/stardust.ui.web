@@ -18,36 +18,24 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 
 /**
  * @author Anoop.Nair
+ * @author Yogesh.Manware
  * @version $Revision: $
  */
 public class DocumentDTOBuilder
 {
    public static DocumentDTO build(Document document)
    {
-      DocumentDTO documentDTO = new DocumentDTO();
-
       if (document != null)
       {
-         documentDTO.uuid  = document.getId();
-         documentDTO.name = document.getName();
-         documentDTO.path = document.getPath();
-         documentDTO.contentType = document.getContentType();
-
-         /*
-          * int numPages = documentUtils.getNumPages(document);
-          * documentDTO.setNumPages(numPages);
-          */
-
-         DocumentTypeDTO documentTypeDTO = DocumentTypeDTOBuilder.build(document
-               .getDocumentType());
-         documentDTO.documentType  = documentTypeDTO;
+         DocumentDTO documentDTO = DTOBuilder.build(document, DocumentDTO.class);
+         DocumentTypeDTO documentTypeDTO = DocumentTypeDTOBuilder.build(document.getDocumentType());
+         documentDTO.documentType = documentTypeDTO;
+         return documentDTO;
       }
-
-      return documentDTO;
+      return null;
    }
 
    /**
@@ -56,14 +44,7 @@ public class DocumentDTOBuilder
     */
    public static List<DocumentDTO> build(List<Document> documents)
    {
-      List<DocumentDTO> documentDTOs = CollectionUtils.newArrayList();
-
-      for (Document document : documents)
-      {
-         documentDTOs.add(build(document));
-      }
-
-      Collections.sort(documentDTOs, new Comparator<DocumentDTO>()
+      return build(documents, new Comparator<DocumentDTO>()
       {
          @Override
          public int compare(DocumentDTO documentDTO1, DocumentDTO documentDTO2)
@@ -71,8 +52,29 @@ public class DocumentDTOBuilder
             return documentDTO1.name.compareTo(documentDTO2.name);
          }
       });
+   }
 
-      
+   /**
+    * to support custom sorting or turn off default sorting which is based on name
+    * 
+    * @param documents
+    * @param comparator
+    * @return
+    */
+   public static List<DocumentDTO> build(List<Document> documents, Comparator<DocumentDTO> comparator)
+   {
+      List<DocumentDTO> documentDTOs = CollectionUtils.newArrayList();
+
+      for (Document document : documents)
+      {
+         documentDTOs.add(build(document));
+      }
+
+      if (comparator != null)
+      {
+         Collections.sort(documentDTOs, comparator);
+      }
+
       return documentDTOs;
    }
 

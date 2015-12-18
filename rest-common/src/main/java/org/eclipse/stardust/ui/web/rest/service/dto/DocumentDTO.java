@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
@@ -18,6 +19,8 @@ import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 
 /**
  * @author Anoop.Nair
+ * @author Yogesh.Manware
+ * 
  * @version $Revision: $
  */
 @DTOClass
@@ -29,11 +32,44 @@ public class DocumentDTO extends AbstractDTO
    @DTOAttribute("name")
    public String name;
 
+   @DTOAttribute("size")
+   public long size;
+   
+   @DTOAttribute("revisionComment")
+   public String comments;
+   
+   @DTOAttribute("description")
+   public String description;
+   
+   @DTOAttribute("contentType")
    public String contentType;
 
+   @DTOAttribute("encoding")
+   public String encoding;
+   
+   @DTOAttribute("revisionId")
+   public String revisionId;
+   
+   @DTOAttribute("revisionName")
+   public String revisionName;
+   
+   @DTOAttribute("versionLabels")
+   public List<String> versionLabels;
+ 
+   @DTOAttribute("owner")
+   public String owner;
+   
+   @DTOAttribute("dateCreated.time")
+   public Long dateCreated;
+   
+   @DTOAttribute("dateLastModified.time")
+   public Long dateLastModified;
+   
+   @DTOAttribute("path")
    public String path;
-
-   public int numPages;
+   
+   @DTOAttribute("repositoryId")
+   public String repositoryId;
 
    @DTOAttribute("getProperties()")
    public Map<String, Serializable> properties;

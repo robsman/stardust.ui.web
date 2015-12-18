@@ -72,7 +72,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.SwitchProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
-import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentContentRequestDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.AddressBookDataPathValueDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.DataPathValueDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
@@ -124,7 +124,7 @@ public class ProcessInstanceService
    {
       String processDefinitionId = null;
       DocumentDataDTO documentDataDTO = null;
-      DocumentInfoDTO documentInfoDTO = null;
+      DocumentContentRequestDTO documentInfoDTO = null;
       InputStream inputStream = null;
       JsonMarshaller jsonIo = new JsonMarshaller();
       ProcessInstance pi = null;
@@ -176,7 +176,7 @@ public class ProcessInstanceService
 
    }
 
-   private InputDocumentsXto createProcessDocuments(DocumentDataDTO documentData, DocumentInfoDTO documentInfo)
+   private InputDocumentsXto createProcessDocuments(DocumentDataDTO documentData, DocumentContentRequestDTO documentInfo)
    {
       final InputDocumentsXto inputDocs = new InputDocumentsXto();
       final InputDocumentXto inputDoc = new InputDocumentXto();
@@ -203,7 +203,7 @@ public class ProcessInstanceService
       return inputDocs;
    }
 
-   private DataHandler createContent(DocumentDataDTO documentData, DocumentInfoDTO documentInfo)
+   private DataHandler createContent(DocumentDataDTO documentData, DocumentContentRequestDTO documentInfo)
    {
       
       final DocumentInfo docInfo = DmsUtils.createDocumentInfo(documentInfo.name);
@@ -238,7 +238,7 @@ public class ProcessInstanceService
 
       ProcessInstance processInstance = processInstanceUtilsREST.getProcessInstance(processOid);
       // parse attachments
-      List<DocumentInfoDTO> uploadedDocuments = FileUploadUtils.parseAttachments(attachments);
+      List<DocumentContentRequestDTO> uploadedDocuments = FileUploadUtils.parseAttachments(attachments);
 
       if (DmsConstants.PATH_ID_ATTACHMENTS.equals(dataPathId))
       {
@@ -282,7 +282,7 @@ public class ProcessInstanceService
          DocumentType documentType = org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils
                .getDocumentTypeFromData(model, dataDetails);
 
-         for (DocumentInfoDTO documentInfoDTO : uploadedDocuments)
+         for (DocumentContentRequestDTO documentInfoDTO : uploadedDocuments)
          {
             if (documentType != null)
             {

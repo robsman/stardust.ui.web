@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.rest.service;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.FolderDTOBuilder;
-import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentContentRequestDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
@@ -43,6 +44,8 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * @author Yogesh.Manware
@@ -147,14 +150,72 @@ public class RepositoryServiceImpl implements RepositoryService
    }
 
    // Document specific
+
    /**
     *
     */
    @Override
-   public Map<String, Object> createDocument(DocumentInfoDTO documentInfoDTO, ProcessInstance processInstance,
-         boolean processAttachments)
+   public DocumentDTO getDocument(String documentId)
    {
-      List<DocumentInfoDTO> documentInfoDTOs = new ArrayList<DocumentInfoDTO>();
+      Document document = getDMS().getDocument(documentId);
+      if (document == null)
+      {
+         throw new I18NException(MessagesViewsCommonBean.getInstance().getString(
+               "views.myDocumentsTreeView.documentNotFound"));
+      }
+
+      return DocumentDTOBuilder.build(document);
+   }
+
+   /**
+    *
+    */
+   @Override
+   public byte[] getDocumentContent(String documentId)
+   {
+      return getDMS().retrieveDocumentContent(documentId);
+   }
+
+   /**
+    *
+    */
+   @Override
+   public List<DocumentDTO> getDocumentHistory(String documentId)
+   {
+      Document document = getDMS().getDocument(documentId);
+      List<Document> docVersionList = null;
+      
+      if (DocumentMgmtUtility.isDocumentVersioned(document))
+      {
+         docVersionList = getDMS().getDocumentVersions(document.getId());
+      }
+      else
+      {
+         return null;
+      }
+      
+      Collections.sort(docVersionList, new Comparator<Document>()
+      {
+         @Override
+         public int compare(Document doc1, Document doc2)
+         {
+            return doc2.getDateLastModified().compareTo(doc1.getDateLastModified());
+         }
+      });
+     
+      List<DocumentDTO> previousVersions = DocumentDTOBuilder.build(docVersionList, null);
+      
+      return previousVersions;
+   }
+
+   /**
+    *
+    */
+   @Override
+   public Map<String, Object> createDocument(DocumentContentRequestDTO documentInfoDTO,
+         ProcessInstance processInstance, boolean processAttachments)
+   {
+      List<DocumentContentRequestDTO> documentInfoDTOs = new ArrayList<DocumentContentRequestDTO>();
       documentInfoDTOs.add(documentInfoDTO);
       return createDocuments(documentInfoDTOs, processInstance, processAttachments);
    }
@@ -163,8 +224,8 @@ public class RepositoryServiceImpl implements RepositoryService
     *
     */
    @Override
-   public Map<String, Object> createDocuments(List<DocumentInfoDTO> documentInfoDTOs, ProcessInstance processInstance,
-         boolean processAttachments)
+   public Map<String, Object> createDocuments(List<DocumentContentRequestDTO> documentInfoDTOs,
+         ProcessInstance processInstance, boolean processAttachments)
    {
       Map<String, Object> result = new HashMap<String, Object>();
       List<NotificationDTO> failures = new ArrayList<NotificationDTO>();
@@ -182,7 +243,7 @@ public class RepositoryServiceImpl implements RepositoryService
 
       List<Document> documents = new ArrayList<Document>();
 
-      for (DocumentInfoDTO documentInfoDTO : documentInfoDTOs)
+      for (DocumentContentRequestDTO documentInfoDTO : documentInfoDTOs)
       {
          if (!DocumentMgmtUtility.validateFileName(documentInfoDTO.name))
          {
@@ -278,7 +339,7 @@ public class RepositoryServiceImpl implements RepositoryService
     *
     */
    @Override
-   public void updateDocument(String documentId, DocumentInfoDTO documentInfoDTO)
+   public void updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO)
          throws DocumentManagementServiceException, UnsupportedEncodingException
    {
       documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
@@ -300,7 +361,7 @@ public class RepositoryServiceImpl implements RepositoryService
     * @param document
     * @param documentInfoDTO
     */
-   private void updateDocument(Document document, DocumentInfoDTO documentInfoDTO)
+   private void updateDocument(Document document, DocumentContentRequestDTO documentInfoDTO)
    {
       document.setName(documentInfoDTO.name);
       document.setDescription(documentInfoDTO.description);
@@ -328,6 +389,9 @@ public class RepositoryServiceImpl implements RepositoryService
       }
    }
 
+   /**
+    * @return
+    */
    private DocumentManagementService getDMS()
    {
       return serviceFactoryUtils.getDocumentManagementService();

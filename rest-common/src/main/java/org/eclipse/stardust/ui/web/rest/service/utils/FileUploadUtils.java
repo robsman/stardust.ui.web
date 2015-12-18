@@ -27,7 +27,7 @@ import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.ui.web.rest.service.dto.FileInfoDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentContentRequestDTO;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 
@@ -46,10 +46,10 @@ public class FileUploadUtils
     * @return
     * @throws Exception
     */
-   public static List<DocumentInfoDTO> parseAttachments(List<Attachment> attachments) throws Exception
+   public static List<DocumentContentRequestDTO> parseAttachments(List<Attachment> attachments) throws Exception
    {
-      List<DocumentInfoDTO> documents = new ArrayList<DocumentInfoDTO>();
-      DocumentInfoDTO documentInfoDTO = null;
+      List<DocumentContentRequestDTO> documents = new ArrayList<DocumentContentRequestDTO>();
+      DocumentContentRequestDTO documentInfoDTO = null;
       String modelId = null;
       for (Attachment attachment : attachments)
       {
@@ -58,7 +58,7 @@ public class FileUploadUtils
 
          if (isFile(attachment.getHeaders()))
          {
-            documentInfoDTO = new DocumentInfoDTO();
+            documentInfoDTO = new DocumentContentRequestDTO();
             documentInfoDTO.name = new String(dataHandler.getName().getBytes("ISO-8859-1"), "UTF-8");
             documentInfoDTO.contentType = dataHandler.getContentType();
             documentInfoDTO.content = readEntryData(inputStream);
