@@ -422,6 +422,7 @@ public class ActivityInstanceUtils
          if(null != targetTimeProperty)
          {
             dateTime.setTimeInMillis(targetTimeProperty.getLongValue());
+            return dateTime.getTime();
          }
          else
          {
