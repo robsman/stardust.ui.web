@@ -96,7 +96,7 @@ public class RepositoryServiceImpl implements RepositoryService
       folderDTO.folders.addAll(FolderDTOBuilder.build(folder.getFolders()));
 
       // add documents
-      folderDTO.documents.addAll(DocumentDTOBuilder.build(folder.getDocuments()));
+      folderDTO.documents.addAll(DocumentDTOBuilder.build(folder.getDocuments(), getDMS()));
 
       return folderDTO;
    }
@@ -164,9 +164,24 @@ public class RepositoryServiceImpl implements RepositoryService
                "views.myDocumentsTreeView.documentNotFound"));
       }
 
-      return DocumentDTOBuilder.build(document);
+      return DocumentDTOBuilder.build(document, getDMS());
    }
 
+   /**
+    *  TODO rename overWrite to createVersion??
+    * @param documentId
+    * @param targetFolderPath
+    * @param overWrite
+    * @return
+    * @throws ResourceNotFoundException
+    */
+   public DocumentDTO copyDocument(String documentId, String targetFolderPath, boolean createVersion)
+         throws ResourceNotFoundException
+   {
+      return DocumentDTOBuilder.build(DocumentMgmtUtility.copyDocumentTo(DocumentMgmtUtility.getDocument(documentId),
+            targetFolderPath, createVersion), getDMS());
+   }
+   
    /**
     *
     */
@@ -289,7 +304,7 @@ public class RepositoryServiceImpl implements RepositoryService
          }
 
          documents.add(document);
-         documentDTOs.add(DocumentDTOBuilder.build(document));
+         documentDTOs.add(DocumentDTOBuilder.build(document, getDMS()));
       }
 
       if (processInstance != null && CollectionUtils.isNotEmpty(documents))
@@ -310,7 +325,7 @@ public class RepositoryServiceImpl implements RepositoryService
          String decryptedContent = new String(Base64.decode(documentInfoDTO.contentBase64.getBytes()));
          documentInfoDTO.contentBytes = decryptedContent.getBytes();
       }
-      else if (documentInfoDTO.content == null && documentInfoDTO.content != null)
+      else if (documentInfoDTO.contentBytes == null && documentInfoDTO.content != null)
       {
          documentInfoDTO.contentBytes = documentInfoDTO.content.getBytes();
       }

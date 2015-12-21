@@ -156,7 +156,7 @@ define([],function(){
 			var restUrl = sdUtilService.getBaseUrl() +"services/rest/portal/documents/"+documentId+"/copy";
 			var requestObj = {
 					"targetFolderPath" : folderPath,
-					"overWrite": true
+					"createVersion": true
 			};
 			var document = $resource(restUrl, {}, {
 				copyToFolder : {

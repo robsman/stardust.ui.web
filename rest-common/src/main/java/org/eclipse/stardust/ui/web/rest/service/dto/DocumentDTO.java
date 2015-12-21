@@ -74,6 +74,8 @@ public class DocumentDTO extends AbstractDTO
    @DTOAttribute("getProperties()")
    public Map<String, Serializable> properties;
 
+   public String downloadToken;
+   
    public DocumentTypeDTO documentType;
 
    public DocumentDTO()

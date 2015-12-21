@@ -421,13 +421,13 @@ public class DocumentMgmtUtility
     * @param overWrite
     * @return
     */
-   public static Document copyDocumentTo(Document srcDoc, String targetFolderPath, boolean overWrite)
+   public static Document copyDocumentTo(Document srcDoc, String targetFolderPath, boolean createVersion)
    {
       Document document = getDocument(targetFolderPath, srcDoc.getName());
-      if (overWrite && document != null)
+      if (createVersion && document != null)
       {
          DocumentManagementService dms = getDocumentManagementService();
-         document = updateDocument(document, dms.retrieveDocumentContent(srcDoc.getId()), null, null, overWrite);
+         document = updateDocument(document, dms.retrieveDocumentContent(srcDoc.getId()), null, null, false);
       }
       else
       {

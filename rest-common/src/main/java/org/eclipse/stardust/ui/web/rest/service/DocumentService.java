@@ -86,7 +86,8 @@ public class DocumentService
       Document updatedDocument = documentUtils.setDocumentType(documentId,
             documentTypeDTO.getDocumentTypeId(), documentTypeDTO.getSchemaLocation());
 
-      DocumentDTO documentDTO = DocumentDTOBuilder.build(updatedDocument);
+      DocumentDTO documentDTO = DocumentDTOBuilder.build(updatedDocument,
+            serviceFactoryUtils.getDocumentManagementService());
 
       return documentDTO;
    }

@@ -65,6 +65,16 @@ public interface RepositoryService
 
    /**
     * @param documentId
+    * @param targetFolderPath
+    * @param createVersion
+    * @return
+    * @throws ResourceNotFoundException
+    */
+   DocumentDTO copyDocument(String documentId, String targetFolderPath, boolean createVersion)
+         throws ResourceNotFoundException;
+   
+   /**
+    * @param documentId
     * @return
     */
    String getDocumentContent(String documentId);

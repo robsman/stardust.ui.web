@@ -70,7 +70,7 @@ public class DefaultDataPathValueFilter implements IDataPathValueFilter
                documents = ((List<Document>) dataValue);
             }
          }
-         dataPathValueDTO.documents = DocumentDTOBuilder.build(documents);
+         dataPathValueDTO.documents = DocumentDTOBuilder.build(documents, null);
       }
       else if(dataValue != null)
       {

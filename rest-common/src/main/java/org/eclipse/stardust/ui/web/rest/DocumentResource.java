@@ -49,7 +49,6 @@ import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ResourcePolicyDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
-import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentContentRequestDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.FileUploadUtils;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
@@ -285,16 +284,13 @@ public class DocumentResource
    {
       Map<String, Object> data = JsonDTO.getAsMap(postedData);
       String targetFolderPath = (String) data.get("targetFolderPath");
-      boolean overWrite = false;
-      if (data.get("overWrite") != null)
+      boolean createVersion = false;
+      if (data.get("createVersion") != null)
       {
-         overWrite = (Boolean) data.get("overWrite");
+         createVersion = (Boolean) data.get("createVersion");
       }
       documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
-
-      DocumentDTO documentDTO = DocumentDTOBuilder.build(DocumentMgmtUtility.copyDocumentTo(
-            DocumentMgmtUtility.getDocument(documentId), targetFolderPath, overWrite));
-
+      DocumentDTO documentDTO = repositoryService.copyDocument(documentId, targetFolderPath, createVersion);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
    }
 
@@ -312,7 +308,7 @@ public class DocumentResource
    public Response getDocument(@PathParam("documentId") String documentId) throws Exception
    {
       documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
-      DocumentDTO documentDTO = DocumentDTOBuilder.build(DocumentMgmtUtility.getDocument(documentId));
+      DocumentDTO documentDTO = repositoryService.getDocument(documentId); 
       return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
    }
    

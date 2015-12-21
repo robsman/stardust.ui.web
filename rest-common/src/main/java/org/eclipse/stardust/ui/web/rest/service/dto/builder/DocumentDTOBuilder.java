@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
 
@@ -26,13 +27,22 @@ import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
  */
 public class DocumentDTOBuilder
 {
-   public static DocumentDTO build(Document document)
+   /**
+    * @param document
+    * @param dms
+    * @return
+    */
+   public static DocumentDTO build(Document document, DocumentManagementService dms)
    {
       if (document != null)
       {
          DocumentDTO documentDTO = DTOBuilder.build(document, DocumentDTO.class);
          DocumentTypeDTO documentTypeDTO = DocumentTypeDTOBuilder.build(document.getDocumentType());
          documentDTO.documentType = documentTypeDTO;
+         if (dms != null)
+         {
+            documentDTO.downloadToken = dms.requestDocumentContentDownload(document.getId());
+         }
          return documentDTO;
       }
       return null;
@@ -40,9 +50,10 @@ public class DocumentDTOBuilder
 
    /**
     * @param documents
+    * @param dms
     * @return
     */
-   public static List<DocumentDTO> build(List<Document> documents)
+   public static List<DocumentDTO> build(List<Document> documents, DocumentManagementService dms)
    {
       return build(documents, new Comparator<DocumentDTO>()
       {
@@ -51,23 +62,24 @@ public class DocumentDTOBuilder
          {
             return documentDTO1.name.compareTo(documentDTO2.name);
          }
-      });
+      }, dms);
    }
 
    /**
     * to support custom sorting or turn off default sorting which is based on name
-    * 
     * @param documents
     * @param comparator
+    * @param dms
     * @return
     */
-   public static List<DocumentDTO> build(List<Document> documents, Comparator<DocumentDTO> comparator)
+   public static List<DocumentDTO> build(List<Document> documents, Comparator<DocumentDTO> comparator,
+         DocumentManagementService dms)
    {
       List<DocumentDTO> documentDTOs = CollectionUtils.newArrayList();
 
       for (Document document : documents)
       {
-         documentDTOs.add(build(document));
+         documentDTOs.add(build(document, dms));
       }
 
       if (comparator != null)
@@ -82,8 +94,5 @@ public class DocumentDTOBuilder
     * Prevent instantiation
     */
    private DocumentDTOBuilder()
-   {
-
-   }
-
+   {}
 }

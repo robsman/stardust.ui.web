@@ -246,7 +246,8 @@ public class ActivityInstanceService
    {
       List<Document> processAttachments = activityInstanceUtils.getProcessAttachments(activityInstanceOid);
 
-      List<DocumentDTO> processAttachmentsDTO = DocumentDTOBuilder.build(processAttachments);
+      List<DocumentDTO> processAttachmentsDTO = DocumentDTOBuilder.build(processAttachments,
+            serviceFactoryUtils.getDocumentManagementService());
 
       return processAttachmentsDTO;
    }
@@ -504,7 +505,8 @@ public class ActivityInstanceService
       ActivityInstance ai = getActivityInstance(activityOid);
       Folder correspondenceOutFolder = RepositoryUtility.getOrCreateCorrespondenceOutFolder(ai);
       FolderDTO folderDTO = FolderDTOBuilder.build(correspondenceOutFolder);
-      folderDTO.documents = DocumentDTOBuilder.build(correspondenceOutFolder.getDocuments());
+      folderDTO.documents = DocumentDTOBuilder.build(correspondenceOutFolder.getDocuments(),
+            serviceFactoryUtils.getDocumentManagementService());
       return folderDTO;
    }
    
