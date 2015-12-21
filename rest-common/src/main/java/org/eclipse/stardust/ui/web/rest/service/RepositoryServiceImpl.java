@@ -272,7 +272,7 @@ public class RepositoryServiceImpl implements RepositoryService
          {
             // create document
             document = DocumentMgmtUtility.createDocument(parentFolder.getId(), documentInfoDTO.name,
-                  documentInfoDTO.content, documentInfoDTO.documentType, documentInfoDTO.contentType,
+                  documentInfoDTO.contentBytes, documentInfoDTO.documentType, documentInfoDTO.contentType,
                   documentInfoDTO.description, documentInfoDTO.comment, null, null);
             if (processInstance != null)
             {
@@ -305,15 +305,14 @@ public class RepositoryServiceImpl implements RepositoryService
     */
    private void evaluateContent(DocumentContentRequestDTO documentInfoDTO)
    {
-      if (documentInfoDTO.content == null && documentInfoDTO.contentBase64 != null)
+      if (documentInfoDTO.contentBytes == null && documentInfoDTO.contentBase64 != null)
       {
-         String decripted = new String(Base64.decode(documentInfoDTO.contentBase64.getBytes()));
-
-         documentInfoDTO.content = decripted.getBytes();
+         String decryptedContent = new String(Base64.decode(documentInfoDTO.contentBase64.getBytes()));
+         documentInfoDTO.contentBytes = decryptedContent.getBytes();
       }
-      else if (documentInfoDTO.content == null && documentInfoDTO.contentString != null)
+      else if (documentInfoDTO.content == null && documentInfoDTO.content != null)
       {
-         documentInfoDTO.content = documentInfoDTO.contentString.getBytes();
+         documentInfoDTO.contentBytes = documentInfoDTO.content.getBytes();
       }
    }
 
@@ -395,7 +394,7 @@ public class RepositoryServiceImpl implements RepositoryService
          getDMS().versionDocument(document.getId(), "", null);
       }
 
-      if (documentInfoDTO.content == null)
+      if (documentInfoDTO.contentBytes == null)
       {
          // rename or just change in description and addition of comment
          document = getDMS().updateDocument(document, documentInfoDTO.createNewRevision, documentInfoDTO.comment, "",
@@ -404,7 +403,7 @@ public class RepositoryServiceImpl implements RepositoryService
       else
       {
          // content changed
-         document = getDMS().updateDocument(document, documentInfoDTO.content, "", documentInfoDTO.createNewRevision,
+         document = getDMS().updateDocument(document, documentInfoDTO.contentBytes, "", documentInfoDTO.createNewRevision,
                documentInfoDTO.comment, "", false);
       }
    }

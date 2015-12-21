@@ -61,7 +61,7 @@ public class FileUploadUtils
             documentInfoDTO = new DocumentContentRequestDTO();
             documentInfoDTO.name = new String(dataHandler.getName().getBytes("ISO-8859-1"), "UTF-8");
             documentInfoDTO.contentType = dataHandler.getContentType();
-            documentInfoDTO.content = readEntryData(inputStream);
+            documentInfoDTO.contentBytes = readEntryData(inputStream);
             documents.add(documentInfoDTO);
          }
          else if (inputStream instanceof ByteArrayInputStream)

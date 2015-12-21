@@ -23,10 +23,11 @@ public class DocumentContentRequestDTO extends DocumentDTO
    public String parentFolderPath;
    public DocumentType documentType;
    
-   public byte[] content;
+   public byte[] contentBytes;
    
-   public String contentString = "";
-   public String contentBase64;
+   public String content;
+   public String contentBase64; // kept as alternate to send data
+   
    public boolean createVersion = true; // to indicate user wants to create a version if
                                         // the document already exist with the same name
                                         // and when he/she actually intends to create a

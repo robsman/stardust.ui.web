@@ -209,7 +209,7 @@ public class ProcessInstanceService
       final DocumentInfo docInfo = DmsUtils.createDocumentInfo(documentInfo.name);
       docInfo.setContentType(documentInfo.contentType);
       docInfo.setOwner(processInstanceUtilsREST.getCurrentUser().getAccount());
-      return new DataHandler(new DocumentContentDataSource(docInfo, documentInfo.content));
+      return new DataHandler(new DocumentContentDataSource(docInfo, documentInfo.contentBytes));
    }
    public List<ProcessInstanceDTO> getPendingProcesses(JsonObject json)
    {
