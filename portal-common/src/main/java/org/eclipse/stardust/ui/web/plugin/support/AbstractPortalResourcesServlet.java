@@ -17,8 +17,8 @@ import java.io.OutputStream;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -96,7 +96,7 @@ public abstract class AbstractPortalResourcesServlet extends HttpServlet
       
       trace.info("Started resource servlet with debug mode set to " + debugMode);
 
-      this.resourceLoaders = new HashMap<String, ResourceLoader>();
+      this.resourceLoaders = new ConcurrentHashMap<String, ResourceLoader>(16, 0.9f, 1);
    }
 
    @Override
