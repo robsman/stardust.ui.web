@@ -585,7 +585,7 @@ public class ActivityInstanceUtils
                .getInstance().getString("views.common.notActivatable")));
          return notification;
       }
-      ai = serviceFactoryUtils.getWorkflowService().activate(activityOID);
+      ai = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.activate(ai);
       notification.addSuccess(new NotificationDTO(activityOID, ai.getActivity().getName(), null));
       return notification;
    }
