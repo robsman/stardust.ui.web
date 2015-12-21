@@ -41,10 +41,11 @@ import org.eclipse.stardust.common.error.LoginFailedException;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+import org.eclipse.stardust.ui.web.common.util.SecurityUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
-import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.beans.ApplicationContext;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.login.dialogs.LoginDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.PluginResourceUtils;
 
@@ -299,7 +300,8 @@ public class LoginFilter implements Filter
                      }
                      url.deleteCharAt(url.length() - 1);
                   }
-                  response.sendRedirect(response.encodeRedirectURL(url.toString()));
+                  
+                  response.sendRedirect(response.encodeRedirectURL(SecurityUtils.sanitizeValue(url.toString())));
                   return;
                }
                else

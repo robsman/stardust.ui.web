@@ -40,14 +40,13 @@ import javax.faces.lifecycle.LifecycleFactory;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.plaf.basic.BasicMenuUI;
 
+import org.eclipse.stardust.ui.web.common.Constants;
 import org.eclipse.stardust.ui.web.common.ToolbarSection;
 import org.eclipse.stardust.ui.web.common.app.PortalApplicationSingleView;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
-import org.eclipse.stardust.ui.web.common.Constants;
 import org.eclipse.stardust.ui.web.html5.ManagedBeanUtils;
 
 /**
@@ -451,6 +450,8 @@ public class FacesUtils implements Constants
    {
       ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
       HttpServletResponse response = (HttpServletResponse) ectx.getResponse();
+      
+      toUrl = SecurityUtils.sanitizeValue(toUrl);
       response.sendRedirect(response.encodeRedirectURL(toUrl));
    }
 
@@ -488,6 +489,8 @@ public class FacesUtils implements Constants
             {
                url = "portalSingleViewMain.iface" + viewParam;
             }
+            
+            url = SecurityUtils.sanitizeValue(url);
             externalContext.redirect(url);
 
          }

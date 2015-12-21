@@ -26,10 +26,11 @@ import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
+import org.eclipse.stardust.ui.web.common.util.SecurityUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
+import org.eclipse.stardust.ui.web.viewscommon.beans.ApplicationContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.ExceptionFilter;
-import org.eclipse.stardust.ui.web.viewscommon.beans.ApplicationContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.FacesUtils;
 
 
@@ -218,7 +219,8 @@ public class InfinityStartup
    {
       String page = getLoginPage();
 
-      response.sendRedirect(response.encodeRedirectURL(request.getContextPath() + page
-            + params));
+      String redirectURL = request.getContextPath() + page+ params;
+      redirectURL = SecurityUtils.sanitizeValue(redirectURL);
+      response.sendRedirect(response.encodeRedirectURL(redirectURL));
    }
 }
