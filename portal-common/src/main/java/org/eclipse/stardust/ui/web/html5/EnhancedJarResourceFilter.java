@@ -22,6 +22,7 @@ import org.apache.commons.io.IOUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.util.SecurityUtils;
 
 /**
  * @author HTML5.TEAM
@@ -112,6 +113,13 @@ public class EnhancedJarResourceFilter implements Filter
                      && (isEmpty(restrictLibs) || compare(restrictLibs, resource.getPath(), CompareType.CONTAINS)))
                {
                   InputStream in = getClass().getClassLoader().getResourceAsStream(path);
+                                  
+                  if(SecurityUtils.containsRestrictedSymbols(path)) 
+                  {
+                     response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                     return;
+                  }
+                
                   if (in != null)
                   {
                      determineContentType(path, response);

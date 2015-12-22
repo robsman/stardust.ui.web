@@ -27,6 +27,8 @@ import java.net.URL;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.eclipse.stardust.ui.web.common.util.SecurityUtils;
+
 /**
  * A resource loader implementation which loads resources
  * from a directory.  The returned resource URL will be null
@@ -99,6 +101,11 @@ public class DirectoryResourceLoader extends ResourceLoader
   {
     if (path.charAt(0) == '/')
       path = path.substring(1);
+    
+    if(SecurityUtils.containsRestrictedSymbols(path)) 
+    {
+       throw new IOException(SecurityUtils.BAD_REQUEST_MESSAGE);
+    }
 
     // construct the relative file under the "root" directory
     File file = new File(_directory, path).getCanonicalFile();

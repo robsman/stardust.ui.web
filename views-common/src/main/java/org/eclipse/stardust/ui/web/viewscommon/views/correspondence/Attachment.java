@@ -17,7 +17,9 @@ import java.io.Serializable;
 
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
+import org.eclipse.stardust.ui.web.common.util.SecurityUtils;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+
 
 
 import com.icesoft.faces.component.inputfile.FileInfo;
@@ -80,6 +82,10 @@ public class Attachment implements Serializable
       }
       else
       {
+         if(SecurityUtils.containsRestrictedSymbols(fileInfo.getPhysicalPath()))
+         {
+            throw new IOException(SecurityUtils.BAD_REQUEST_MESSAGE);
+         }
          return DocumentMgmtUtility.getFileContent(new FileInputStream(fileInfo.getPhysicalPath()));
       }
    }

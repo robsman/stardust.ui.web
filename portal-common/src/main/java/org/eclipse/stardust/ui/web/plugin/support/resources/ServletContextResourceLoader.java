@@ -27,6 +27,8 @@ import java.net.URL;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.eclipse.stardust.ui.web.common.util.SecurityUtils;
+
 /**
  * A resource loader implementation which loads resources
  * using the servlet context.
@@ -64,6 +66,11 @@ public class ServletContextResourceLoader extends ResourceLoader
   protected URL findResource(
     HttpServletRequest request, String path) throws IOException
   {
+	  if(SecurityUtils.containsRestrictedSymbols(path)) 
+	  {
+	     throw new IOException(SecurityUtils.BAD_REQUEST_MESSAGE);
+	  }
+	  
     return _context.getResource(path);
   }
  

@@ -16,36 +16,44 @@ package org.eclipse.stardust.ui.web.common.util;
  * @author Johnson.Quadras
  *
  */
-public class SecurityUtils {
-	
-	private static final String RESTRICTED_URL_SYMBOL = "..";
-	
-	 /**
+public class SecurityUtils
+{
+
+   private static final String RESTRICTED_URL_SYMBOL = "..";
+   
+   public static final String BAD_REQUEST_MESSAGE = "Bad Request.Requested path contains restricted characters.";
+
+   /**
 	   * 
 	   */
-	  public static boolean containsExternalFileControlSymbols(String url) {
-		  if(url.contains(RESTRICTED_URL_SYMBOL)) {
-			  return true;
-		  }
-		  return false;
-	  }
-	  
-	  /**
+   public static boolean containsRestrictedSymbols(String url)
+   {
+      if (url.contains(RESTRICTED_URL_SYMBOL))
+      {
+         return true;
+      }
+      return false;
+   }
+
+   /**
 	   * 
 	   */
-	  public static String sanitizeValue(String value) {
-		  value = stripCRLF(value);
-		  return value;
-	  }
-	  
-	  /**
+   public static String sanitizeValue(String value)
+   {
+      value = stripCRLF(value);
+      return value;
+   }
+
+   /**
 	   * 
 	   */
-	  private static String stripCRLF(String value) {
-		  if (value != null) {
-			  value = value.replaceAll( "\n", "").replaceAll( "\r", "");
-		  }
-		  return value;
-	  }
+   private static String stripCRLF(String value)
+   {
+      if (value != null)
+      {
+         value = value.replaceAll("\n", "").replaceAll("\r", "");
+      }
+      return value;
+   }
 
 }
