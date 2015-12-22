@@ -51,7 +51,6 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ResourcePolicyDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentContentRequestDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.FileUploadUtils;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -289,11 +288,22 @@ public class DocumentResource
       {
          createVersion = (Boolean) data.get("createVersion");
       }
-      documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
       DocumentDTO documentDTO = repositoryService.copyDocument(documentId, targetFolderPath, createVersion);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
    }
 
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/revert{documentId: .*}")
+   public Response revertToPreviousVersion(@PathParam("documentId") String documentId, String postedData) throws Exception
+   {
+      DocumentContentRequestDTO documentInfoDTO = DTOBuilder
+            .buildFromJSON2(postedData, DocumentContentRequestDTO.class, null);
+      DocumentDTO documentDTO = repositoryService.revertDocument(documentId, documentInfoDTO);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
+   }
+   
    /**
     *  @author Yogesh.Manware
     * @param documentId
@@ -307,7 +317,6 @@ public class DocumentResource
    @ResponseDescription("Returns all basic document information, for content use */content/documentId*")
    public Response getDocument(@PathParam("documentId") String documentId) throws Exception
    {
-      documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
       DocumentDTO documentDTO = repositoryService.getDocument(documentId); 
       return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
    }
@@ -326,7 +335,6 @@ public class DocumentResource
    @ResponseDescription("Returns document content (bytes)")
    public Response getDocumentContent(@PathParam("documentId") String documentId) throws Exception
    {
-      documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(repositoryService.getDocumentContent(documentId))).build();
    }
 
@@ -343,7 +351,6 @@ public class DocumentResource
    @ResponseDescription("Returns all previous versions of document")
    public Response getDocumentVersions(@PathParam("documentId") String documentId) throws Exception
    {
-      documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(repositoryService.getDocumentHistory(documentId))).build();
    }
    
@@ -360,7 +367,6 @@ public class DocumentResource
    @ResponseDescription("Returns ResourcePolicyContainerDTO containing losts of own and inherited policies in the form of ResourcePolicyDTO")
    public Response getDocumentPolicies(@PathParam("documentId") String documentId) throws Exception
    {
-      documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(resourcePolicyService.getPolicy(documentId, false))).build();
    }
 

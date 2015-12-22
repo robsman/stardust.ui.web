@@ -19,7 +19,6 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentContentRequestDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 
 /**
  * @author Yogesh.Manware
@@ -68,11 +67,19 @@ public interface RepositoryService
     * @param targetFolderPath
     * @param createVersion
     * @return
-    * @throws ResourceNotFoundException
     */
-   DocumentDTO copyDocument(String documentId, String targetFolderPath, boolean createVersion)
-         throws ResourceNotFoundException;
-   
+   DocumentDTO copyDocument(String documentId, String targetFolderPath, boolean createVersion);
+
+   /**
+    * reverts to provided previous revision - in a process, copies attributes - content
+    * and document type whereas comments and descriptions are provided by client
+    * 
+    * @param documentId
+    * @param documentInfoDTO
+    * @return
+    */
+   DocumentDTO revertDocument(String documentId, DocumentContentRequestDTO documentInfoDTO);
+
    /**
     * @param documentId
     * @return
@@ -113,17 +120,14 @@ public interface RepositoryService
     * @param documentIds
     * @param processInstance
     * @return
-    * @throws ResourceNotFoundException
     */
-   void detachProcessAttachments(List<String> documentIds, ProcessInstance processInstance)
-         throws ResourceNotFoundException;
+   void detachProcessAttachments(List<String> documentIds, ProcessInstance processInstance);
 
    /**
     * @param documentId
-    * @throws ResourceNotFoundException
     * @throws DocumentManagementServiceException
     */
-   void deleteDocument(String documentId) throws DocumentManagementServiceException, ResourceNotFoundException;
+   void deleteDocument(String documentId) throws DocumentManagementServiceException;
 
    /**
     * @param documentId

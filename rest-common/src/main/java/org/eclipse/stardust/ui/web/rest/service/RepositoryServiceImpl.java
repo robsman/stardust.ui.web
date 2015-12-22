@@ -40,7 +40,6 @@ import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.springframework.context.annotation.Scope;
@@ -157,6 +156,7 @@ public class RepositoryServiceImpl implements RepositoryService
    @Override
    public DocumentDTO getDocument(String documentId)
    {
+      documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
       Document document = getDMS().getDocument(documentId);
       if (document == null)
       {
@@ -168,18 +168,31 @@ public class RepositoryServiceImpl implements RepositoryService
    }
 
    /**
-    *  TODO rename overWrite to createVersion??
-    * @param documentId
-    * @param targetFolderPath
-    * @param overWrite
-    * @return
-    * @throws ResourceNotFoundException
+    *
     */
    public DocumentDTO copyDocument(String documentId, String targetFolderPath, boolean createVersion)
-         throws ResourceNotFoundException
    {
-      return DocumentDTOBuilder.build(DocumentMgmtUtility.copyDocumentTo(DocumentMgmtUtility.getDocument(documentId),
-            targetFolderPath, createVersion), getDMS());
+      documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
+      return DocumentDTOBuilder.build(
+            DocumentMgmtUtility.copyDocumentTo(getJCRDocument(documentId), targetFolderPath, createVersion), getDMS());
+   }
+
+   /**
+    * 
+    */
+   public DocumentDTO revertDocument(String documentId, DocumentContentRequestDTO documentContentRequestDTO)
+   {
+      documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
+      Document document = getDMS().getDocument(documentId);
+      Document versionToRevertTo = getDMS().getDocument(documentContentRequestDTO.uuid);
+
+      document.setDocumentType(versionToRevertTo.getDocumentType());
+      document.setDescription(documentContentRequestDTO.description);
+
+      document = getDMS().updateDocument(document, getDMS().retrieveDocumentContent(versionToRevertTo.getRevisionId()),
+            "", documentContentRequestDTO.createNewRevision, documentContentRequestDTO.comment, "", false);
+
+      return DocumentDTOBuilder.build(document, getDMS());
    }
    
    /**
@@ -188,6 +201,11 @@ public class RepositoryServiceImpl implements RepositoryService
    @Override
    public String getDocumentContent(String documentId)
    {
+      documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
+      
+      // check document exist
+      getJCRDocument(documentId);
+      
       return new String(getDMS().retrieveDocumentContent(documentId));
    }
 
@@ -197,7 +215,8 @@ public class RepositoryServiceImpl implements RepositoryService
    @Override
    public List<DocumentDTO> getDocumentHistory(String documentId)
    {
-      Document document = getDMS().getDocument(documentId);
+      documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
+      Document document = getJCRDocument(documentId);
       List<Document> docVersionList = null;
 
       if (DocumentMgmtUtility.isDocumentVersioned(document))
@@ -218,7 +237,7 @@ public class RepositoryServiceImpl implements RepositoryService
          }
       });
 
-      List<DocumentDTO> previousVersions = DocumentDTOBuilder.build(docVersionList, null);
+      List<DocumentDTO> previousVersions = DocumentDTOBuilder.build(docVersionList, null, getDMS());
 
       return previousVersions;
    }
@@ -336,13 +355,12 @@ public class RepositoryServiceImpl implements RepositoryService
     */
    @Override
    public void detachProcessAttachments(List<String> documentIds, ProcessInstance processInstance)
-         throws ResourceNotFoundException
    {
       List<Document> documentsToBeDetached = new ArrayList<Document>();
 
       for (String documentId : documentIds)
       {
-         documentsToBeDetached.add(DocumentMgmtUtility.getDocument(documentId));
+         documentsToBeDetached.add(getJCRDocument(documentId));
       }
       DMSHelper.detachProcessAttachments(processInstance, documentsToBeDetached);
    }
@@ -361,7 +379,7 @@ public class RepositoryServiceImpl implements RepositoryService
     *
     */
    @Override
-   public void deleteDocument(String documentId) throws DocumentManagementServiceException, ResourceNotFoundException
+   public void deleteDocument(String documentId) throws DocumentManagementServiceException
    {
       documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
       // note that if the deleted document is process attachment or typed document, it is
@@ -423,6 +441,22 @@ public class RepositoryServiceImpl implements RepositoryService
       }
    }
 
+   /**
+    *  throws exception in case of absence of document 
+    * @param documentId
+    * @return
+    */
+   private Document getJCRDocument(String documentId)
+   {
+      Document document = getDMS().getDocument(documentId);
+      if (null == document)
+      {
+         throw new I18NException(MessagesViewsCommonBean.getInstance().getString(
+               "views.myDocumentsTreeView.documentNotFound"));
+      }
+      return document;
+   }
+   
    /**
     * @return
     */

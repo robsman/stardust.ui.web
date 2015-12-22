@@ -40,6 +40,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.ResourcePolicyDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ResourcePolicyContainerDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.security.Participant;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
@@ -52,7 +53,7 @@ import org.springframework.stereotype.Component;
  * @author Yogesh.Manware
  * @version $Revision: $
  * 
- *          note that the code from this class is copied from SecurityDialog
+ *          note that most of the code from this class is copied from SecurityDialog
  */
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.INTERFACES)
@@ -68,6 +69,8 @@ public class ResourcePolicyServiceImpl implements ResourcePolicyService
     */
    public ResourcePolicyContainerDTO getPolicy(String resourceId, boolean isFolder)
    {
+      resourceId = DocumentMgmtUtility.checkAndGetCorrectResourceId(resourceId);
+      
       Map<String, QualifiedModelParticipantInfo> allParticipants = getAllParticipant();
 
       List<ResourcePolicyDTO> resourcePolicyDTOs = new ArrayList<ResourcePolicyDTO>();
@@ -107,6 +110,8 @@ public class ResourcePolicyServiceImpl implements ResourcePolicyService
     */
    public void savePolicy(String resourceId, List<ResourcePolicyDTO> resourcePolicies, boolean isFolder)
    {
+      resourceId = DocumentMgmtUtility.checkAndGetCorrectResourceId(resourceId);
+      
       AccessControlPolicy accessControlPolicy = getAccessControlPolicy(resourceId);
       accessControlPolicy.removeAllAccessControlEntries();
 
