@@ -11,6 +11,8 @@
 
 package org.eclipse.stardust.ui.web.common.util;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 /**
  * 
  * @author Johnson.Quadras
@@ -56,4 +58,16 @@ public class SecurityUtils
       return value;
    }
 
+   /**
+    * 
+    */
+   public static String sanitizeForLog(String log)
+   {
+      if (log != null)
+      {
+         log =  stripCRLF(log);
+         log =  StringEscapeUtils.escapeHtml(log);
+      }
+      return log;
+   }
 }

@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.common.log;
 
+import org.eclipse.stardust.ui.web.common.util.SecurityUtils;
+
 /**
  * @author subodh.godbole
  *
@@ -33,12 +35,14 @@ public class DefaultLogger implements Logger
    
    public void debug(Object o)
    {
-      logger.debug(o.toString());
+      String log = SecurityUtils.sanitizeForLog(o.toString());
+      logger.debug(log);
    }
 
    public void debug(Object o, Throwable throwable)
    {
-      logger.debug(o.toString(), throwable);
+      String log = SecurityUtils.sanitizeForLog(o.toString());
+      logger.debug(log, throwable);
    }
 
    public void error(Throwable throwable)
@@ -48,12 +52,14 @@ public class DefaultLogger implements Logger
    
    public void error(Object o)
    {
-      logger.error(o.toString());
+      String log = SecurityUtils.sanitizeForLog(o.toString());
+      logger.error(log);
    }
 
    public void error(Object o, Throwable throwable)
    {
-      logger.error(o.toString(), throwable);
+      String log = SecurityUtils.sanitizeForLog(o.toString());
+      logger.error(log, throwable);
    }
 
    public void fatal(Throwable throwable)
@@ -63,12 +69,14 @@ public class DefaultLogger implements Logger
    
    public void fatal(Object o)
    {
-      logger.trace(o.toString());
+      String log = SecurityUtils.sanitizeForLog(o.toString());
+      logger.trace(log);
    }
 
    public void fatal(Object o, Throwable throwable)
    {
-      logger.trace(o.toString(), throwable);
+      String log = SecurityUtils.sanitizeForLog(o.toString());
+      logger.trace(log, throwable);
    }
 
    public void info(Throwable throwable)
@@ -78,12 +86,14 @@ public class DefaultLogger implements Logger
    
    public void info(Object o)
    {
-      logger.info(o.toString());
+      String log = SecurityUtils.sanitizeForLog(o.toString());
+      logger.info(log);
    }
 
    public void info(Object o, Throwable throwable)
    {
-      logger.info(o.toString(), throwable);
+      String log = SecurityUtils.sanitizeForLog(o.toString());
+      logger.info(log, throwable);
    }
 
    public void warn(Throwable throwable)
@@ -93,12 +103,14 @@ public class DefaultLogger implements Logger
    
    public void warn(Object o)
    {
-      logger.warn(o.toString());
+      String log = SecurityUtils.sanitizeForLog(o.toString());
+      logger.warn(log);
    }
 
    public void warn(Object o, Throwable throwable)
    {
-      logger.warn(o.toString(), throwable);
+      String log = SecurityUtils.sanitizeForLog(o.toString());
+      logger.warn(log, throwable);
    }
 
    public boolean isDebugEnabled()
