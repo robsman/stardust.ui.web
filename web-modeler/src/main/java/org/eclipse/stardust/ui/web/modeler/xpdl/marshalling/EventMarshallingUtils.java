@@ -681,75 +681,12 @@ public class EventMarshallingUtils
    public static void updateResubmissionHandler(EventHandlerType eventHandler,
          JsonObject request)
    {
-      ModelType model = ModelUtils.findContainingModel(eventHandler);
-
-      boolean defaultPerformer = false;
-      String delayValue = null;
-      String delayUnit = null;
-
-      boolean useData = AttributeUtil.getBooleanValue(eventHandler, "carnot:engine:useData");
-
-      String dataFullID = null;
-      if (AttributeUtil.getAttributeValue(eventHandler, "carnot:engine:data") != null)
-      {
-         dataFullID =  model.getId() + ":" + AttributeUtil.getAttributeValue(eventHandler, "carnot:engine:data");
-      }
-
-      String dataPath = AttributeUtil.getAttributeValue(eventHandler, PredefinedConstants.SET_DATA_ACTION_DATA_PATH_ATT);
-
-      String period = AttributeUtil.getAttributeValue(eventHandler,"carnot:engine:period");
-      if (period != null)
-      {
-         delayValue = ModelElementEditingUtils.getDelayUnit(period).split(":")[0];
-         delayUnit = ModelElementEditingUtils.getDelayUnit(period).split(":")[1];
-      }
-
-      //AttributeUtil.setAttribute(eventHandler, "carnot:engine:data", null);
-
       EventActionType delegateAction = getFirstResubmissionDelegateAction(eventHandler);
-
-      if (GsonUtils.hasNotJsonNull(request, ModelerConstants.RS_DELAY_VALUE))
-      {
-         delayValue = request.get(ModelerConstants.RS_DELAY_VALUE).getAsString();
-         setUseConstant(eventHandler, delayValue, delayUnit);
-      }
-
-      if (GsonUtils.hasNotJsonNull(request, ModelerConstants.RS_DELAY_UNIT))
-      {
-         delayUnit = request.get(ModelerConstants.RS_DELAY_UNIT).getAsString();
-         setUseConstant(eventHandler, delayValue, delayUnit);
-      }
-
-      //Change useData / useConstant
-      if (GsonUtils.hasNotJsonNull(request, ModelerConstants.RS_USEDATA))
-      {
-         useData = request.get(ModelerConstants.RS_USEDATA).getAsBoolean();
-         if (!useData)
-         {
-            setUseConstant(eventHandler, delayValue, delayUnit);
-         }
-         else
-         {
-            setUseData(eventHandler, dataFullID, dataPath);
-         }
-      }
-
-      if (GsonUtils.hasNotJsonNull(request, ModelerConstants.DATA_FULL_ID_PROPERTY))
-      {
-         dataFullID = request.get(ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString();
-         setUseData(eventHandler, dataFullID, dataPath);
-      }
-
-      if (GsonUtils.hasNotJsonNull(request, ModelerConstants.DATA_PATH_PROPERTY))
-      {
-         dataPath = request.get(ModelerConstants.DATA_PATH_PROPERTY).getAsString();
-         setUseData(eventHandler, dataFullID, dataPath);
-      }
 
       //Changed delegate to default performer
       if (GsonUtils.hasNotJsonNull(request, ModelerConstants.RS_DELEGATE_TO_DEFAULT_PERFORMER))
       {
-         defaultPerformer = request.get(ModelerConstants.RS_DELEGATE_TO_DEFAULT_PERFORMER).getAsBoolean();
+         boolean defaultPerformer = request.get(ModelerConstants.RS_DELEGATE_TO_DEFAULT_PERFORMER).getAsBoolean();
          if (defaultPerformer)
          {
             if (delegateAction == null)
@@ -768,37 +705,7 @@ public class EventMarshallingUtils
       ModelType model = ModelUtils.findContainingModel(activity);
       EventConditionTypeType conditionType = EventMarshallingUtils.decodeEventHandlerType(PredefinedConstants.TIMER_CONDITION, model);
 
-      boolean useData = false;
       boolean defaultPerformer = false;
-      String dataFullID = null;
-      String dataPath = null;
-      String delayValue = null;
-      String delayUnit = null;
-
-      if (GsonUtils.hasNotJsonNull(request, ModelerConstants.RS_USEDATA))
-      {
-         useData = request.get(ModelerConstants.RS_USEDATA).getAsBoolean();
-      }
-
-      if (GsonUtils.hasNotJsonNull(request, ModelerConstants.DATA_FULL_ID_PROPERTY))
-      {
-         dataFullID = request.get(ModelerConstants.DATA_FULL_ID_PROPERTY).getAsString();
-      }
-
-      if (GsonUtils.hasNotJsonNull(request, ModelerConstants.DATA_PATH_PROPERTY))
-      {
-         dataPath = request.get(ModelerConstants.DATA_PATH_PROPERTY).getAsString();
-      }
-
-      if (GsonUtils.hasNotJsonNull(request, ModelerConstants.RS_DELAY_VALUE))
-      {
-         delayValue = request.get(ModelerConstants.RS_DELAY_VALUE).getAsString();
-      }
-
-      if (GsonUtils.hasNotJsonNull(request, ModelerConstants.RS_DELAY_UNIT))
-      {
-         delayUnit = request.get(ModelerConstants.RS_DELAY_UNIT).getAsString();
-      }
 
       if (GsonUtils.hasNotJsonNull(request, ModelerConstants.RS_DELEGATE_TO_DEFAULT_PERFORMER))
       {
@@ -810,16 +717,9 @@ public class EventMarshallingUtils
       eventHandler.setId(ModelerConstants.RS_RESUBMISSION);
       eventHandler.setName(ModelerConstants.RS_RESUBMISSION);
 
-      AttributeUtil.setBooleanAttribute(eventHandler, "carnot:engine:useData", useData);
+      AttributeUtil.setBooleanAttribute(eventHandler, "carnot:engine:useData", false);
 
-
-      if (!useData)
-      {
-         setUseConstant(eventHandler, delayValue, delayUnit);
-      } else
-      {
-         setUseData(eventHandler, dataFullID, dataPath);
-      }
+      setUseConstant(eventHandler, null, null);
 
       activity.getEventHandler().add(eventHandler);
       uuidMapper.map(eventHandler);
@@ -844,28 +744,6 @@ public class EventMarshallingUtils
       AttributeUtil.setAttribute(eventHandler, "carnot:engine:data", null);
       AttributeUtil.setAttribute(eventHandler, PredefinedConstants.SET_DATA_ACTION_DATA_PATH_ATT, null);
       ModelElementEditingUtils.setPeriodAttribute(eventHandler, delayValue, delayUnit);
-   }
-
-   private static void setUseData(EventHandlerType eventHandler, String dataFullID,
-         String dataPath)
-   {
-      AttributeUtil.setBooleanAttribute(eventHandler, "carnot:engine:useData", true);
-      AttributeUtil.setAttribute(eventHandler, "carnot:engine:period", null);
-      if (dataFullID != null)
-      {
-         String dataID = dataFullID;
-         if (dataFullID.split(":").length > 1)
-         {
-            dataID = dataFullID.split(":")[1];
-            AttributeUtil.setAttribute(eventHandler, "carnot:engine:data", dataID);
-         }
-      }
-      else
-      {
-         AttributeUtil.setAttribute(eventHandler, "carnot:engine:data", null);
-      }
-      AttributeUtil.setAttribute(eventHandler,
-            PredefinedConstants.SET_DATA_ACTION_DATA_PATH_ATT, dataPath);
    }
 
    private static void createDelegateAction(EventHandlerType eventHandler)
@@ -928,8 +806,6 @@ public class EventMarshallingUtils
    public static void addResubmissionToJson(EventHandlerType eventHandler,
          JsonObject rsJson)
    {
-      ModelType model = ModelUtils.findContainingModel(eventHandler);
-
       // Check if everything is in place for Resubmission (additional actions are
       // ignored!)
       BindActionType bindAction = getFirstResubmissionBindAction(eventHandler);
@@ -940,36 +816,6 @@ public class EventMarshallingUtils
       {
          return;
       }
-
-      // Data / Datapath
-      String data = AttributeUtil.getAttributeValue(eventHandler, "carnot:engine:data");
-      if (data != null)
-      {
-         rsJson.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, model.getId() + ":"
-               + data);
-      }
-
-      String dataPath = AttributeUtil.getAttributeValue(eventHandler,
-            PredefinedConstants.SET_DATA_ACTION_DATA_PATH_ATT);
-      if (data != null)
-      {
-         rsJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY, dataPath);
-      }
-
-      // Period
-      String period = AttributeUtil.getAttributeValue(eventHandler,
-            "carnot:engine:period");
-      if (period != null)
-      {
-         rsJson.addProperty(ModelerConstants.RS_DELAY_VALUE, ModelElementEditingUtils
-               .getDelayUnit(period).split(":")[0]);
-         rsJson.addProperty(ModelerConstants.RS_DELAY_UNIT, ModelElementEditingUtils
-               .getDelayUnit(period).split(":")[1]);
-      }
-
-      boolean useData = AttributeUtil.getBooleanValue(eventHandler,
-            "carnot:engine:useData");
-      rsJson.addProperty(ModelerConstants.RS_USEDATA, useData);
 
       rsJson.addProperty(ModelerConstants.RS_DEFAULT_PERFORMER, delegateAction != null);
 
@@ -1020,27 +866,6 @@ public class EventMarshallingUtils
       return null;
    }
 
-   /*private static EventActionType getResubmissionEventHandler(ActivityType activity) {
-      for (Iterator<EventHandlerType> i = activity.get.getEventAction().iterator(); i
-            .hasNext();)
-      {
-         EventActionType eventAction = i.next();
-         String targetState = AttributeUtil.getAttributeValue(eventAction,
-               "carnot:engine:targetState");
-         if (targetState != null && targetState.equalsIgnoreCase("5"))
-         {
-            EventActionTypeType actionType = eventAction.getType();
-            if (actionType != null
-                  && actionType.getId().equalsIgnoreCase(
-                        PredefinedConstants.SCHEDULE_ACTIVITY_ACTION))
-            {
-               return eventAction;
-            }
-         }
-      }
-      return null;
-   }*/
-
    private static EventActionType getFirstResubmissionDelegateAction(EventHandlerType eventHandler) {
       for (Iterator<EventActionType> i = eventHandler.getEventAction().iterator(); i
             .hasNext();)
@@ -1056,8 +881,6 @@ public class EventMarshallingUtils
       }
       return null;
    }
-
-
 
    public static void addExcludeUserActions(EventHandlerType eventHandler,
          JsonObject eventJson, EObjectUUIDMapper uuidMapper)

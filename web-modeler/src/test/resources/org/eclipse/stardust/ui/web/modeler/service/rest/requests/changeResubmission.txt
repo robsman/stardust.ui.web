@@ -3,4 +3,4 @@
 {"commandId":"activitySymbol.create","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"27","changes":{"properties":[],"selected":false,"leftFlyOutMenuItems":[],"state":2,"dragStartX":0,"dragStartY":0,"visible":true,"serverSideCoordinates":{"x":129,"y":129.3333282470703,"width":180,"height":50},"activateEditOnCreation":true,"clientSideAdjX":0,"x":129,"y":129.3333282470703,"width":180,"height":50,"modelElement":{"comments":[],"type":"activity","name":"Activity 1","attributes":{},"activityType":"Task","accessPoints":{},"taskType":"manual"},"type":"activitySymbol","parentSymbolId":"DefaultLane"}}]}
 {"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"32","changes":{"modelElement":{"name":"Activity 1"}}}]}
 {"commandId":"resubmission.enable","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"uuid":"00000000-0000-0000-0000-000000000084","changes":{}}]}
-
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"uuid":"00000000-0000-0000-0000-000000000086","changes":{"defaultPerformer":true}}]}

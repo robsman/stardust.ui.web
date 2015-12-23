@@ -1959,10 +1959,13 @@ public class ModelElementMarshaller implements ModelMarshaller
       }
       else
       {
-         JsonObject setDataJson = new JsonObject();
-         setDataJson.addProperty(ModelerConstants.SD_SET_DATA_ACTION_DATA_ID, "");
-         setDataJson.addProperty(ModelerConstants.SD_SET_DATA_ACTION_DATA_PATH, "");
-         eventJson.add(ModelerConstants.SD_SET_DATA_ACTION, setDataJson);
+         if (!eventHandler.getId().equals(ModelerConstants.RS_RESUBMISSION))
+         {
+            JsonObject setDataJson = new JsonObject();
+            setDataJson.addProperty(ModelerConstants.SD_SET_DATA_ACTION_DATA_ID, "");
+            setDataJson.addProperty(ModelerConstants.SD_SET_DATA_ACTION_DATA_PATH, "");
+            eventJson.add(ModelerConstants.SD_SET_DATA_ACTION, setDataJson);
+         }
       }
 
       if (eventHandler.getType().getId()
