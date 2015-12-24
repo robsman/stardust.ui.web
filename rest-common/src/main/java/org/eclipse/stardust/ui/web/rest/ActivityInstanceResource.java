@@ -39,6 +39,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.apache.commons.lang.StringUtils;
+
+import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -78,6 +80,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.TrafficLightViewUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -349,11 +352,17 @@ public class ActivityInstanceResource
             return Response.notModified().build();
          }
       }
+      catch (AccessForbiddenException e)
+      {
+         trace.error(e, e);
+
+         return Response.status(Status.BAD_REQUEST).entity("processportal.toolbars-workflowActions-relocation-dialog-notAuthorized").build();
+      }
       catch (Exception e)
       {
          trace.error(e, e);
 
-         return Response.serverError().build();
+         return Response.status(Status.INTERNAL_SERVER_ERROR).entity("processportal.toolbars-workflowActions-relocation-dialog-internalServerError").build();
       }
    }
 

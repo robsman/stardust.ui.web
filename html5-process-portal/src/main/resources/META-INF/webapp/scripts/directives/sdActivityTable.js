@@ -878,7 +878,7 @@
 			var options = { 
 					title : sgI18nService.translate('views-common-messages.common-error', 'Error')
 					};
-			var message = sgI18nService.translate('processportal.toolbars-workflowActions-relocation-dialog-notAuthorized');
+			var message = errorMessage ? sgI18nService.translate(errorMessage) : sgI18nService.translate('processportal.toolbars-workflowActions-relocation-dialog-notAuthorized');
 			sdDialogService.error(self.scope, message, options)
 		});
 		rowItem.showRelocationDialog = false;
