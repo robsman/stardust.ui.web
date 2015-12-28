@@ -64,6 +64,11 @@ public class FileUploadUtils
             documentInfoDTO.contentBytes = readEntryData(inputStream);
             documents.add(documentInfoDTO);
          }
+         // following properties can be added from client side as
+         // for (var i in files) {
+         // formData.append("file", files[i]);
+         // formData.append("description", "Description for above file");
+         // }
          else if (inputStream instanceof ByteArrayInputStream)
          {
             if (CommonProperties.DESCRIPTION.equals(dataHandler.getName()))

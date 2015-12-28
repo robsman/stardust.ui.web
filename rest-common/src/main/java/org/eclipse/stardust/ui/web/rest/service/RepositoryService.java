@@ -54,8 +54,22 @@ public interface RepositoryService
     */
    void deleteFolder(String folderId);
 
+   /**
+    * @param resourceId
+    * @return
+    */
+   byte[] exportFolder(String resourceId);
+
+   /**
+    * @param folderId
+    * @param uploadedFolder
+    * @param merge
+    * @throws Exception
+    */
+   void importFolder(String folderId, List<DocumentContentRequestDTO> uploadedFolder, boolean merge) throws Exception;
+
    // Document specific
-   
+
    /**
     * @param documentId
     * @return
@@ -85,13 +99,12 @@ public interface RepositoryService
     * @return
     */
    String getDocumentContent(String documentId);
-   
-   
+
    /**
     * @return
     */
    List<DocumentDTO> getDocumentHistory(String DocumentId);
-   
+
    /**
     * This method support multiple documents upload By default creates new version of the
     * document if one exist with the same name If you don't want to create new version use
@@ -102,8 +115,8 @@ public interface RepositoryService
     * @param processInstance
     * @return
     */
-   Map<String, Object> createDocuments(List<DocumentContentRequestDTO> documentInfoDTO, ProcessInstance processInstance,
-         boolean processAttachments);
+   Map<String, Object> createDocuments(List<DocumentContentRequestDTO> documentInfoDTO,
+         ProcessInstance processInstance, boolean processAttachments);
 
    /**
     * internally calls createDocuments
@@ -135,6 +148,6 @@ public interface RepositoryService
     * @throws DocumentManagementServiceException
     * @throws UnsupportedEncodingException
     */
-   void updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO) throws DocumentManagementServiceException,
-         UnsupportedEncodingException;
+   void updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO)
+         throws DocumentManagementServiceException, UnsupportedEncodingException;
 }

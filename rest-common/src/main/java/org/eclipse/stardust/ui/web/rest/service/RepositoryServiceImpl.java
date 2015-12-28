@@ -42,6 +42,7 @@ import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.DefualtResourceDataProvider;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -148,8 +149,31 @@ public class RepositoryServiceImpl implements RepositoryService
       getDMS().updateFolder(folder);
    }
 
+   /**
+    *
+    */
+   public byte[] exportFolder(String folderId)
+   {
+      folderId = DocumentMgmtUtility.checkAndGetCorrectResourceId(folderId);
+      DefualtResourceDataProvider dataProvider = new DefualtResourceDataProvider("Y.zip", folderId, "", getDMS(), false);
+      return dataProvider.getBytes();
+   };
+   
+   /**
+    * @throws Exception 
+    *
+    */
+   @Override
+   public void importFolder(String folderId, List<DocumentContentRequestDTO> uploadedFolder, boolean merge) throws Exception
+   {
+      folderId = DocumentMgmtUtility.checkAndGetCorrectResourceId(folderId);
+      for (DocumentContentRequestDTO documentContentRequestDTO : uploadedFolder)
+      {
+         DocumentMgmtUtility.importFolderFromZip(folderId, documentContentRequestDTO.contentBytes, merge);
+      }
+   }
+   
    // Document specific
-
    /**
     *
     */
@@ -291,6 +315,10 @@ public class RepositoryServiceImpl implements RepositoryService
          if (!processAttachments)
          {
             parentFolder = DocumentMgmtUtility.createFolderIfNotExists(documentInfoDTO.parentFolderPath);
+         }
+         else
+         {
+            documentInfoDTO.dataPathId = CommonProperties.PROCESS_ATTACHMENTS;
          }
 
          Document document = DocumentMgmtUtility.getDocument(parentFolder.getPath(), documentInfoDTO.name);
