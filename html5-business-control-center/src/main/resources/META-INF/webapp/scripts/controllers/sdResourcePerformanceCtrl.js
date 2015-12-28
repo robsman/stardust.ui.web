@@ -110,8 +110,20 @@
 		_sdResourcePerformanceService.getResourcePerformanceData(roleId).then(function(result) {
 			self.resourcePerformance.list = result.list;
 			self.resourcePerformance.totalCount = result.totalCount;
-			self.columns = result.columns;
 			self.columnsDefinition = result.columnsDefinition;
+			self.colsByUser = [];
+			self.colsByPartition = [];
+			angular.forEach(result.columns,function(col){
+				if("USER" == self.columnsDefinition[col].prefScope || self.columnsDefinition[col].prefScope == 'DEFAULT'){
+					self.colsByUser.push(col);
+				}
+				
+				if("PARTITION" == self.columnsDefinition[col].prefScope || self.columnsDefinition[col].prefScope == 'DEFAULT'){
+					self.colsByPartition.push(col);
+				}
+			});
+			
+			self.columns = self.colsByUser;
 		    self.ready = true;
 		}).then(function(failure) {
 			trace.log('Failed to retrive Resource Performance Data.', failure);
@@ -189,9 +201,24 @@
 		self.startNumOfDaysRange = 31;
 		self.durationNumOfDaysRange = 31;
 		self.columnDefinition = {};
-
-		var preferenceStore = this.getConfig(self.prefScope);
-		var allColumns = preferenceStore.getValue('ipp-business-control-center.ResourcePerformance.allColumns', false);
+		
+		var allColumns = [];
+		var allColumnsUser = [];
+		var allColumnsPartition = [];
+		var preferenceStore = this.getConfig("USER");
+		if(preferenceStore.getValue('ipp-business-control-center.ResourcePerformance.allColumns', false) != undefined){
+			allColumnsUser = JSON.parse(preferenceStore.getValue('ipp-business-control-center.ResourcePerformance.allColumns', false));
+			allColumns.push.apply(allColumns,allColumnsUser);
+		}
+		
+		
+		preferenceStore = this.getConfig("PARTITION");
+		if(preferenceStore.getValue('ipp-business-control-center.ResourcePerformance.allColumns', false) != undefined){
+			allColumnsPartition = JSON.parse(preferenceStore.getValue('ipp-business-control-center.ResourcePerformance.allColumns', false));
+			allColumns.push.apply(allColumns,allColumnsPartition);
+		}
+		
+		
 		var index = 0;
 		if (_sdUtilService.isEmpty(allColumns)) {
 			index++;
@@ -213,7 +240,7 @@
 			allColumns = [];
 		} else {
 
-			try {
+/*			try {
 				allColumns = JSON.parse(allColumns);
 				// Do nothing
 			} catch (e) {
@@ -227,7 +254,7 @@
 						allColumns.push(JSON.parse(customColDef[1]));
 					});
 				}
-			}
+			}*/
 
 			angular.forEach(allColumns, function(customCol) {
 				var columnId = customCol.columnId;
@@ -255,7 +282,11 @@
 			};
 			//allColumns.push(columnDefinition);
 		}
-		self.allColumns = allColumns;
+		if(self.prefScope === "USER"){
+			self.allColumns = allColumnsUser;
+		}else if(self.prefScope === "PARTITION"){
+			self.allColumns = allColumnsPartition;
+		}
 		self.showOpenAddCustomColumnDlg = true;
 	};
 

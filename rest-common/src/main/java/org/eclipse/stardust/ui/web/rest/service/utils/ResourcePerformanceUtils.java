@@ -45,8 +45,9 @@ import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
-import org.eclipse.stardust.ui.web.rest.service.dto.GenericQueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ColumnDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessingTimeDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ResourcePerformanceQueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ResourcePerformanceStatisticsDTO;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
@@ -63,7 +64,7 @@ public class ResourcePerformanceUtils
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
 
-   public GenericQueryResultDTO createUserStatistics(String roleId)
+   public ResourcePerformanceQueryResultDTO createUserStatistics(String roleId)
    {
       List<ResourcePerformanceStatisticsDTO> userStatistics = new ArrayList<ResourcePerformanceStatisticsDTO>();
       List<ProcessingTimePerProcess> tableData = new ArrayList<ProcessingTimePerProcess>();
@@ -72,7 +73,7 @@ public class ResourcePerformanceUtils
       Set<String> participants = new HashSet<String>();
 
       Map<String, DateRange> customColumnDateRange = CollectionUtils.newHashMap();
-      Map<String, Object> columnDefMap = CollectionUtils.newHashMap();
+      Map<String, ColumnDefinitionDTO> columnDefMap = CollectionUtils.newHashMap();
       addCustomColsFromPreference(PreferenceScope.USER, customColumnDateRange, columnDefMap);
       addCustomColsFromPreference(PreferenceScope.PARTITION, customColumnDateRange, columnDefMap);
 
@@ -146,7 +147,7 @@ public class ResourcePerformanceUtils
 
             int thresholdValue = (Integer) customColumns.get(colKey + CustomColumnUtils.CUSTOM_COL_STATUS_SUFFIX);
 
-            statisticsByColumns.put(columnDefMap.get(colKey).toString(), new ProcessingTimeDTO(timeValue, waitTime,
+            statisticsByColumns.put(columnDefMap.get(colKey).columnTitle, new ProcessingTimeDTO(timeValue, waitTime,
                   thresholdValue));
 
          }
@@ -156,9 +157,9 @@ public class ResourcePerformanceUtils
          userStatistics.add(resourcePerformanceStatisticsDTO);
       }
 
-      columnDefMap.put("Today", "Today");
-      columnDefMap.put("Week", "Last Week");
-      columnDefMap.put("Month", "Last Month");
+      columnDefMap.put("Today", new ColumnDefinitionDTO("Today", PreferenceScope.DEFAULT.toString()));
+      columnDefMap.put("Week", new ColumnDefinitionDTO("Last Week", PreferenceScope.DEFAULT.toString()));
+      columnDefMap.put("Month", new ColumnDefinitionDTO("Last Month", PreferenceScope.DEFAULT.toString()));
 
       if (CollectionUtils.isEmpty(userStatistics))
       {
@@ -184,7 +185,7 @@ public class ResourcePerformanceUtils
 
       }
 
-      GenericQueryResultDTO queryResult = new GenericQueryResultDTO();
+      ResourcePerformanceQueryResultDTO queryResult = new ResourcePerformanceQueryResultDTO();
       queryResult.columns = columnDefMap.keySet();
       queryResult.columnsDefinition = columnDefMap;
       queryResult.list = userStatistics;
@@ -233,7 +234,7 @@ public class ResourcePerformanceUtils
    }
 
    private void addCustomColsFromPreference(PreferenceScope prefScope, Map<String, DateRange> customColumnDateRange,
-         Map<String, Object> columnDefMap)
+         Map<String, ColumnDefinitionDTO> columnDefMap)
    {
 
       AdministrationService adminService = serviceFactoryUtils.getAdministrationService();
@@ -246,7 +247,7 @@ public class ResourcePerformanceUtils
          for (int i = 0; i < jsonArray.size(); i++)
          {
             JsonObject columnDefinition = jsonArray.get(i).getAsJsonObject();
-            updateColDefAndcustomColumnDateRange(columnDefinition, customColumnDateRange, columnDefMap);
+            updateColDefAndcustomColumnDateRange(columnDefinition, customColumnDateRange, columnDefMap, prefScope);
          }
       }
       catch (Exception e)
@@ -267,7 +268,7 @@ public class ResourcePerformanceUtils
                {
                   String[] columnDef = col.split("#");
                   JsonObject columnDefinition = GsonUtils.readJsonObject(columnDef[1]);
-                  updateColDefAndcustomColumnDateRange(columnDefinition, customColumnDateRange, columnDefMap);
+                  updateColDefAndcustomColumnDateRange(columnDefinition, customColumnDateRange, columnDefMap, prefScope);
 
                }
             }
@@ -276,11 +277,15 @@ public class ResourcePerformanceUtils
    }
 
    private void updateColDefAndcustomColumnDateRange(JsonObject columnDefinition,
-         Map<String, DateRange> customColumnDateRange, Map<String, Object> columnDefMap)
+         Map<String, DateRange> customColumnDateRange, Map<String, ColumnDefinitionDTO> columnDefMap,
+         PreferenceScope prefScope)
    {
       String columnId = GsonUtils.extractString(columnDefinition, "columnId");
-      String columnTitle = GsonUtils.extractString(columnDefinition, "columnTitle");
-      columnDefMap.put(columnId, columnTitle);
+      // String columnTitle = GsonUtils.extractString(columnDefinition, "columnTitle");
+      ColumnDefinitionDTO columnDefDTO = new ColumnDefinitionDTO();
+      columnDefDTO.columnTitle = GsonUtils.extractString(columnDefinition, "columnTitle");
+      columnDefDTO.prefScope = prefScope.name();
+      columnDefMap.put(columnId, columnDefDTO);
       CustomColumnUtils.updateCustomColumnDateRange(columnDefinition, customColumnDateRange);
    }
 }

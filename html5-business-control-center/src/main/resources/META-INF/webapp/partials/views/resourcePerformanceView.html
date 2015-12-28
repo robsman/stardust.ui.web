@@ -30,7 +30,7 @@
 			sda-sortable="true"
 			sda-ready="ctrl.ready"
 			sda-sort-by="{name : 'processDefinitionId', dir : 'desc'}"
-			sda-mode="remote" sda-sortable="false" sda-exports="true"
+			sda-mode="local" sda-sortable="false" sda-exports="true"
 			sda-exports-file-name="{{ctrl.exportFileName}}"
 			sda-column-selector="{{ctrl.columnSelector}}">
 			<thead>
@@ -40,7 +40,7 @@
 						sda-label="{{i18n('business-control-center-messages.views-resourcePerformance-column-processDefinition')}}">
 					</th>
 					<th ng-repeat="col in ctrl.columns" sda-name="{{col}}"
-						sda-label="{{ctrl.columnsDefinition[col]}}"></th>
+						sda-label="{{ctrl.columnsDefinition[col].columnTitle}}" ng-show="ctrl.prefScope == ctrl.columnsDefinition[col].prefScope || ctrl.columnsDefinition[col].prefScope == 'DEFAULT'"></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -66,15 +66,15 @@
 								: </b> <span
 								ng-if="rowData.statisticsByColumns[colData.title].state == 1"
 								title="{{i18n('business-control-center-messages.views-trafficLightView-critical')}}">
-								<i class="pi pi-user-status pi-2x pi-danger" ></i>
+								<i class="pi pi-user-status pi-1x pi-danger" ></i>
 							</span> <span
 								ng-if="rowData.statisticsByColumns[colData.title].state == 2"
 								title="{{i18n('business-control-center-messages.views-trafficLightView-warning')}}">
-								<i class="pi pi-user-status pi-2x pi-warning" ></i>
+								<i class="pi pi-user-status pi-1x pi-warning" ></i>
 							</span> <span
 								ng-if="rowData.statisticsByColumns[colData.title].state == 3"
 								title="{{i18n('business-control-center-messages.views-trafficLightView-normal')}}">
-								<i class="pi pi-user-status pi-2x pi-success" ></i>
+								<i class="pi pi-user-status pi-1x pi-success" ></i>
 							</span>
 						</div>
 					</td>

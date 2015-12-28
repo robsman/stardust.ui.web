@@ -57,7 +57,7 @@ public class ProcessingTimePerProcess
    public final static int CRITICAL_THRESHOLD_STATE = 2;
    public final static int NORMAL_THRESHOLD_STATE = 3;
 
-   public ProcessingTimePerProcess(ProcessDefinition pd, Map<String, Object> columnDefinitionMap)
+   public ProcessingTimePerProcess(ProcessDefinition pd, Map<String, ?> columnDefinitionMap)
    {
       this.processDefinition = pd;
       totalPICountToday = 0l;
@@ -75,7 +75,7 @@ public class ProcessingTimePerProcess
       if(!CollectionUtils.isEmpty(columnDefinitionMap))
       {
          customColumns = CollectionUtils.newHashMap();
-         for(Entry<String, Object> colDef:columnDefinitionMap.entrySet())
+         for(Entry<String, ?> colDef:columnDefinitionMap.entrySet())
          {
             String key = colDef.getKey();
             

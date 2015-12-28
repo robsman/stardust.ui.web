@@ -16,6 +16,7 @@ package org.eclipse.stardust.ui.web.rest.service;
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.GenericQueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ResourcePerformanceQueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ResourcePerformanceUtils;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +26,7 @@ public class ResourcePerformanceService
    @Resource
    private ResourcePerformanceUtils resourcePerformanceUtils;
 
-   public GenericQueryResultDTO getResourcePerformanceData(String roleId)
+   public ResourcePerformanceQueryResultDTO getResourcePerformanceData(String roleId)
    {
       return resourcePerformanceUtils.createUserStatistics(roleId);
    }
