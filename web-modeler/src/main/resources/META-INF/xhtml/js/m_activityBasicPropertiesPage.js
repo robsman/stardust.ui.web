@@ -592,6 +592,7 @@ define(
 					var submitObj = {
 										modelElement : {
 											activityType : m_constants.SUBPROCESS_ACTIVITY_TYPE,
+											participantFullId: null,
 											subprocessFullId : this.subprocessList
 													.val() == m_constants.TO_BE_DEFINED ? null
 													: this.subprocessList.val(),
