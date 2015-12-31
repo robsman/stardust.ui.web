@@ -755,7 +755,7 @@
 		var boInstancedata = self.bOInstanceMap[self.selectedBusinessObject.businessObjectQualifiedId];
 
 		boInstancedata.forEach(function(v) {
-			if (v[self.primaryKeyForBO] == matchVal) {
+			if (v[self.primaryKeyForBO].toString().indexOf(matchVal) > -1) {
 				results.push(v);
 			}
 		});
@@ -798,7 +798,7 @@
 		var boInstancedata = self.realatedBusinessObjectInstances;
 
 		boInstancedata.forEach(function(v) {
-			if (v[self.selectedRelatedBusinessObject.otherForeignKeyField] == relatedMatchVal) {
+			if (v[self.selectedRelatedBusinessObject.otherForeignKeyField].toString().indexOf(relatedMatchVal) > -1) {
 				results.push(v);
 			}
 		});
