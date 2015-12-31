@@ -570,6 +570,7 @@ public class TrafficLightViewUtils
       if (!(groupByValues.size() == 1 && groupByValues.contains(BenchmarkBusinessObjectStatistics.NO_GROUPBY_VALUE)))
       {
          List<BusinessObjectStatisticDTO> businessObjectsResultList = new ArrayList<BusinessObjectStatisticDTO>();
+         Map<String, List<BusinessObjectStatisticDTO>> businessObjectsForGroupByMap = new HashMap<String, List<BusinessObjectStatisticDTO>>();
          for (String groupByName : groupByValues)
          {
             if (!groupByName.equals(BenchmarkBusinessObjectStatistics.NO_GROUPBY_VALUE))
@@ -599,7 +600,6 @@ public class TrafficLightViewUtils
                Set<String> filterValues = stats.getFilterValues(groupByName);
                if (!filterValues.isEmpty())
                {
-                  Map<String, List<BusinessObjectStatisticDTO>> businessObjectsForGroupByMap = new HashMap<String, List<BusinessObjectStatisticDTO>>();
                   List<BusinessObjectStatisticDTO> boFilterLevelList = new ArrayList<BusinessObjectStatisticDTO>();
                   
                   populateFilterValuesCount(benchmarkCategories, stats, boFilterLevelList, groupByName, filterValues);
