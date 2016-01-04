@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2011, 2015 SunGard CSA LLC and others.
+ * Copyright (c) 2011, 2016 SunGard CSA LLC and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -75,7 +75,7 @@ function footerCopyright() {
 
 function copyright()
 {
-	document.write('<table class="header"><tr><td class="header" align="right">Copyright &#169; 2015 SunGard CSA LLC</td></tr></table>');
+	document.write('<table class="header"><tr><td class="header" align="right">Copyright &#169; 2016 SunGard CSA LLC</td></tr></table>');
 }
 
 function writeContact() {
