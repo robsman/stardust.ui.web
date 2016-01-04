@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.rest.service.dto.builder;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -81,6 +82,15 @@ public class DTOBuilder
                      Object value = getFieldValue(fromInstance, fieldName);
 
                      Class< ? > fieldClass = field.getType();
+                     if (fieldClass == List.class && field.getGenericType() instanceof ParameterizedType)
+                     {
+                        ParameterizedType listType = (ParameterizedType)field.getGenericType();
+                        Class<?> clazz = (Class<?>)listType.getActualTypeArguments()[0];
+                        if (null != clazz && clazz.isAnnotationPresent(DTOClass.class))
+                        {
+                           value = buildList((List<?>)value, clazz);
+                        }
+                     }
                      if (null != value && fieldClass.isAnnotationPresent(DTOClass.class))
                      {
                         value = build(value, fieldClass);
@@ -96,6 +106,19 @@ public class DTOBuilder
             }
 
             iteratorClass = iteratorClass.getSuperclass();
+         }
+
+         // Call InitializingDTO#afterAttributesSet()
+         try
+         {
+            if (toInstance instanceof InitializingDTO)
+            {
+               ((InitializingDTO)toInstance).afterAttributesSet(fromInstance);
+            }
+         }
+         catch(Throwable t)
+         {
+            trace.error("Error in initializing DTO: " + toInstance.getClass().getName(), t);
          }
       }
       catch (Exception e)
