@@ -1,8 +1,31 @@
-<div style="width: 100%; height: 100%;">
-	<iframe
-		id="portalLaunchPanels" name="portalLaunchPanels"
-		frameborder="0" marginwidth="0" marginheight="0"
-		src="plugins/common/portalSingleViewLaunchPanelsOnly.iface"
-		style="width: 100%; height: 300px;"> <!-- Height will be adjusted at runtime -->
-	</iframe>
+<div class="perspective-sidebar-contents">
+	<div class="perspective-series-wrapper">
+		<span class="perspective-series">
+			<span ng-repeat="perspective in perspectives"
+				ng-class="{'perspective-active-font' : perspective.name == activePerspective.name}">
+				<button ng-click="activatePerspective(perspective)"
+					class="button-link perspective-icon {{perspective.iconClass}}" title="{{perspective.label}}">
+				</button>
+			</span>
+		</span>
+		<a class="action-link" href="" style="float: right; margin: 4px;"
+			ng-click="openHelpLink()">{{i18n('portal-common-messages.portalFramework-menu-help')}}	
+		</a>
+	</div>
+	<div class="perspective-launch-panels">
+		<div class="perspective-launch-panels-html5">
+			<div ng-repeat="perspective in perspectives"
+				ng-class="{'ng-show' : perspective.name == activePerspective.name, 'ng-hide' : perspective.name != activePerspective.name}">
+				<div ng-repeat="launchPanel in perspective.launchPanels">
+					<div ng-include="launchPanel.include"></div>
+				</div>
+			</div>
+		</div>
+		<iframe ng-show="activePerspective.iceFacesLaunchPanelCount > 0"
+			id="portalLaunchPanels" name="portalLaunchPanels"
+			frameborder="0" marginwidth="0" marginheight="0"
+			src="plugins/common/portalSingleViewLaunchPanelsOnly.iface"
+			style="width: 100%; height: 300px;"> <!-- Height will be adjusted at runtime -->
+		</iframe>
+	</div>
 </div>

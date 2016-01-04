@@ -7,42 +7,8 @@
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 
 	<ice:panelGroup>
-		<div class="topMenu">
-			<ice:form partialSubmit="true">
-				<div class="topMenuTd perspectives">
-					<ice:panelGroup	styleClass="topMenuIframeBar" style="line-height:0px;">
-						<ice:panelGrid columns="50" styleClass="perspective-series" cellspacing="0" cellpadding="0">
-							<c:forEach items="#{ippPortalUi.perspectiveItems}" var="perspective">
-								<ice:panelGroup styleClass="#{ippPortalUi.perspective.name == perspective.id ? (empty perspective.icon ? 'perspective-active-font' : 'perspective-active-img') : (empty perspective.icon ? 'perspective-inactive-font' : 'perspective-inactive-img')}">
-									<ice:commandLink title="#{perspective.title}"
-										actionListener="#{ippPortalUi.perspectiveChangeAction}">
-										<f:param name="perspectiveId" value="#{perspective.id}" />
-										<c:if test="#{empty perspective.icon}">
-											<span class="perspective-icon #{perspective.value}" />
-										</c:if>
-										<c:if test="#{not empty perspective.icon}">
-											<ice:graphicImage value="#{perspective.icon}" styleClass="perspective-icon #{perspective.value}" />
-										</c:if>
-									</ice:commandLink>
-								</ice:panelGroup>
-							</c:forEach>
-						</ice:panelGrid>
-					</ice:panelGroup>
-				</div>
-
-				<div class="topMenuTd helpLink">
-					<c:if test="#{not empty ippPortalApp.helpDocPreference}">
-						<ice:commandLink styleClass="action-link"
-							value="#{common_msgPropsBean['portalFramework.menu.help']}"
-							onclick="var helpDocWin = window.open('#{facesContext.externalContext.requestContextPath}#{ippPortalApp.helpDocPreference.include}', 'helpDoc', 'scrollbars=1,status=1,toolbar=1,width=1024,height=768'); helpDocWin.focus(); return false;">
-						</ice:commandLink>
-					</c:if>
-				</div>
-			</ice:form>
-		</div>
-
 		<div class="content">
-			<c:forEach items="#{ippPortalUi.perspective.launchPanels}"
+			<c:forEach items="#{ippPortalUi.icefacesLaunchPanels}"
 				var="launchPanel">
 				<ice:form partialSubmit="false">
 					<ice:panelGroup>

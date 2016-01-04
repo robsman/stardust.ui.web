@@ -183,10 +183,12 @@
 		UtilService.prototype.syncAjaxSubmit = function(endpoint, value, type) {
 			var data, failed;
 
-			if (angular.isObject(value) || angular.isArray(value)) {
-				value = angular.toJson(value);
-			} else {
-				value = '' + value;
+			if (value != undefined && value != null) {
+				if (angular.isObject(value) || angular.isArray(value)) {
+					value = angular.toJson(value);
+				} else {
+					value = '' + value;
+				}
 			}
 
 			jQuery.ajax({

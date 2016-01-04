@@ -144,7 +144,25 @@ public class PortalUiController
    {
       return currentPerspective;
    }
-   
+
+   /**
+    * @return
+    */
+   public List<LaunchPanel> getIcefacesLaunchPanels()
+   {
+      List<LaunchPanel> icefacesLaunchPanels = new ArrayList<LaunchPanel>();
+      List<LaunchPanel> launcPanels = getPerspective().getLaunchPanels();
+      for (LaunchPanel launchPanel : launcPanels)
+      {
+         if (!launchPanel.getInclude().endsWith(".html"))
+         {
+            icefacesLaunchPanels.add(launchPanel);
+         }
+      }
+      
+      return icefacesLaunchPanels;
+   }
+
    public IPerspectiveDefinition getPerspective(String perspectiveId)
    {
       return perspectives.get(perspectiveId);
@@ -468,6 +486,11 @@ public class PortalUiController
    public List<MenuItem> getPerspectiveItems()
    {
       return perspectiveItems;
+   }
+
+   public List<IPerspectiveDefinition> getAllPerspectives()
+   {
+      return allPerspectives;
    }
 
    /**

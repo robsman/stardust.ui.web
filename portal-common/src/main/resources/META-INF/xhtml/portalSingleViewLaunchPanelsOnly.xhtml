@@ -20,7 +20,7 @@
 		<ui:param name="type" value="WITHOUT_SKIN" />
 	</ui:include>
 </head>
-<body onload="parent.BridgeUtils.initIframe(window); parent.BridgeUtils.processUrlParams();" style="width: #{ippSingleViewLaunchPanels.launchPanelsWidth};">
+<body onload="parent.BridgeUtils.initIframe(window); parent.BridgeUtils.processUrlParams();" style="width: #{ippSingleViewLaunchPanels.launchPanelsWidth}; height: 99%;">
 	<ui:include src="portalSingleViewLaunchPanels.xhtml" />
 	<ice:panelGroup
 		rendered="#{ippMessageDialog.fromlaunchPanels == 'true'}">

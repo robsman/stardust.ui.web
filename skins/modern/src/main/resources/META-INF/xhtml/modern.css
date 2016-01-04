@@ -9761,3 +9761,49 @@ img[src *='world_go.png'].nodeMenuIcon {
 	background:url('./images/flat-icons/dt_icon.png') !important;
 }
 
+/*************** Sidebar - Start ***************/ 
+.perspective-sidebar-contents {
+	width: 100%;
+	height: 100%;
+}
+
+.perspective-series-wrapper {
+	height: 28px;
+	border-bottom: 1px solid #DDDDDD;
+	border-top: 1px solid #958977;
+}
+
+.perspective-series {
+	height: 20px;
+}
+
+.perspective-launch-panels {
+	margin-top: 5px;
+}
+
+.perspective-launch-panels-html5 {
+	padding: 0 13px; /* This is required to match padding of ICEfaces Launch Panels, class: content */
+}
+
+.perspective-active-font, .perspective-active-img {
+	height: 100%;
+	background-color : #EEE2CF;
+}
+
+.perspective-inactive-font, .perspective-inactive-img {
+	height: 100%;
+}
+
+.perspective-active-font, .perspective-inactive-font {
+	padding-top: 3px;
+	padding-bottom: 8px;
+}
+
+.perspective-icon {
+	color: #A69A88;
+}
+
+.perspective-icon:hover {
+	color: #906C37 !important;
+}
+/*************** Sidebar - End ***************/

@@ -277,8 +277,19 @@ if (!window["BridgeUtils"]) {
 		 * Called from Angular Controller
 		 */
 		function handleResize(shellSizes) {
+			// To avoid flickering effect, hide scroll first
+			var sideBarContent = jQuery(".sg-sidebar-content");
+			if (sideBarContent) {
+				sideBarContent[0].style.overflowY = "hidden";
+			}
+
 			// Because it's called from Angular, wait for digest to get over. TODO: Find better solution
 			window.setTimeout(function() {
+				// To avoid flickering effect, now reset scroll
+				if (sideBarContent) {
+					sideBarContent[0].style.overflowY = "";
+				}
+
 				// Sidebar: Resize Launch Panels iFrame
 	            var elem = document.getElementById("portalLaunchPanels");
 	            if (elem) {
@@ -287,6 +298,9 @@ if (!window["BridgeUtils"]) {
 		            	// Subtracting 16 because sometimes offset returns an incorrect value.
 		            	// Subtracting 20 more.
 		            	var height = shellSizes.windowHeight - pos.y - shellSizes.footerHeight - 16 - 20;
+		            	if (height < 100) {
+		            		height = 90; // Guard height for min as 100px, Additional 10px is required for scroll (if present)
+		            	}
 		            	elem.style.height = height + "px";
 		            }
 	            } else {
