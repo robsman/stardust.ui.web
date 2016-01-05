@@ -10,31 +10,38 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
 
-import java.io.UnsupportedEncodingException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.eclipse.stardust.common.Base64;
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
-import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.core.repository.jcr.JcrVfsRepositoryConfiguration;
+import org.eclipse.stardust.engine.core.spi.dms.IRepositoryConfiguration;
+import org.eclipse.stardust.engine.core.spi.dms.IRepositoryInstanceInfo;
+import org.eclipse.stardust.engine.core.spi.dms.IRepositoryProviderInfo;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap.NotificationDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.builder.FolderDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentContentRequestDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.RepositoryInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.RepositoryProviderDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
@@ -56,13 +63,18 @@ import org.springframework.stereotype.Component;
 @Scope(value = "session", proxyMode = ScopedProxyMode.INTERFACES)
 public class RepositoryServiceImpl implements RepositoryService
 {
+   private static final String PROVIDER_ID = "providerId";
+   private static final String REPOSITORY_ID = "id";
+   
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
 
    @Resource
    private RestCommonClientMessages restCommonClientMessages;
 
-   // Folder Specific
+   // *******************************
+   // Folder specific
+   // *******************************
    /**
     *
     */
@@ -158,13 +170,14 @@ public class RepositoryServiceImpl implements RepositoryService
       DefualtResourceDataProvider dataProvider = new DefualtResourceDataProvider("Y.zip", folderId, "", getDMS(), false);
       return dataProvider.getBytes();
    };
-   
+
    /**
-    * @throws Exception 
+    * @throws Exception
     *
     */
    @Override
-   public void importFolder(String folderId, List<DocumentContentRequestDTO> uploadedFolder, boolean merge) throws Exception
+   public void importFolder(String folderId, List<DocumentContentRequestDTO> uploadedFolder, boolean merge)
+         throws Exception
    {
       folderId = DocumentMgmtUtility.checkAndGetCorrectResourceId(folderId);
       for (DocumentContentRequestDTO documentContentRequestDTO : uploadedFolder)
@@ -172,8 +185,10 @@ public class RepositoryServiceImpl implements RepositoryService
          DocumentMgmtUtility.importFolderFromZip(folderId, documentContentRequestDTO.contentBytes, merge);
       }
    }
-   
+
+   // *******************************
    // Document specific
+   // *******************************
    /**
     *
     */
@@ -218,7 +233,7 @@ public class RepositoryServiceImpl implements RepositoryService
 
       return DocumentDTOBuilder.build(document, getDMS());
    }
-   
+
    /**
     *
     */
@@ -226,10 +241,10 @@ public class RepositoryServiceImpl implements RepositoryService
    public String getDocumentContent(String documentId)
    {
       documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
-      
+
       // check document exist
       getJCRDocument(documentId);
-      
+
       return new String(getDMS().retrieveDocumentContent(documentId));
    }
 
@@ -304,7 +319,7 @@ public class RepositoryServiceImpl implements RepositoryService
       for (DocumentContentRequestDTO documentInfoDTO : documentInfoDTOs)
       {
          evaluateContent(documentInfoDTO);
-         
+
          if (!DocumentMgmtUtility.validateFileName(documentInfoDTO.name))
          {
             failures.add(new NotificationDTO(null, documentInfoDTO.name, MessagesViewsCommonBean.getInstance().get(
@@ -407,7 +422,7 @@ public class RepositoryServiceImpl implements RepositoryService
     *
     */
    @Override
-   public void deleteDocument(String documentId) throws DocumentManagementServiceException
+   public void deleteDocument(String documentId)
    {
       documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
       // note that if the deleted document is process attachment or typed document, it is
@@ -420,7 +435,6 @@ public class RepositoryServiceImpl implements RepositoryService
     */
    @Override
    public void updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO)
-         throws DocumentManagementServiceException, UnsupportedEncodingException
    {
       documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
       Document document = getDMS().getDocument(documentId);
@@ -464,13 +478,14 @@ public class RepositoryServiceImpl implements RepositoryService
       else
       {
          // content changed
-         document = getDMS().updateDocument(document, documentInfoDTO.contentBytes, "", documentInfoDTO.createNewRevision,
-               documentInfoDTO.comment, "", false);
+         document = getDMS().updateDocument(document, documentInfoDTO.contentBytes, "",
+               documentInfoDTO.createNewRevision, documentInfoDTO.comment, "", false);
       }
    }
 
    /**
-    *  throws exception in case of absence of document 
+    * throws exception in case of absence of document
+    * 
     * @param documentId
     * @return
     */
@@ -484,10 +499,151 @@ public class RepositoryServiceImpl implements RepositoryService
       }
       return document;
    }
+
+   // *******************************
+   // Repository level operations
+   // *******************************
+
+   @Override
+   public List<RepositoryProviderDTO> getRepositoryProviders()
+   {
+      List<RepositoryProviderDTO> providers = new ArrayList<RepositoryProviderDTO>();
+      List<IRepositoryProviderInfo> repProviders = getDMS().getRepositoryProviderInfos();
+
+      for (IRepositoryProviderInfo repositoryProviderInfo : repProviders)
+      {
+         RepositoryProviderDTO providerDTO = DTOBuilder.build(repositoryProviderInfo, RepositoryProviderDTO.class);
+         providers.add(providerDTO);
+      }
+
+      Collections.sort(providers, new Comparator<RepositoryProviderDTO>()
+      {
+         @Override
+         public int compare(RepositoryProviderDTO o1, RepositoryProviderDTO o2)
+         {
+            return o1.name.compareTo(o2.name);
+         }
+      });
+      return providers;
+   }
+
+   /**
+    *
+    */
+   @Override
+   public List<RepositoryInstanceDTO> getRepositories()
+   {
+      List<IRepositoryInstanceInfo> repositoryInstanceInfos = DocumentMgmtUtility.getDocumentManagementService()
+            .getRepositoryInstanceInfos();
+
+      List<RepositoryInstanceDTO> repositoryInstances = new ArrayList<RepositoryInstanceDTO>();
+
+      String defaultRepository = DocumentMgmtUtility.getDocumentManagementService().getDefaultRepository();
+      for (IRepositoryInstanceInfo repoInstanceInfo : repositoryInstanceInfos)
+      {
+         RepositoryInstanceDTO repositoryInstanceDTO = DTOBuilder.build(repoInstanceInfo,
+               RepositoryInstanceDTO.class);
+         repositoryInstances.add(repositoryInstanceDTO);
+         if (defaultRepository.equals(repoInstanceInfo.getRepositoryId()))
+         {
+            repositoryInstanceDTO.isDefualt = true;
+         }
+      }
+
+      Collections.sort(repositoryInstances, new Comparator<RepositoryInstanceDTO>()
+      {
+         @Override
+         public int compare(RepositoryInstanceDTO o1, RepositoryInstanceDTO o2)
+         {
+            return o1.name.compareTo(o2.name);
+         }
+      });
+
+      return repositoryInstances;
+   }
+
+   /**
+    *
+    */
+   @Override
+   public void setDefualtRepository(String repositoryId)
+   {
+      validateRepositoryId(repositoryId);
+      DocumentMgmtUtility.getDocumentManagementService().setDefaultRepository(repositoryId);
+   }
+
+   /**
+    *
+    */
+   @Override
+   public void bindRepository(Map<String, Object> repositoryAttributes)
+   {
+      String repositoryId = null;
+      String providerId = null;
+
+      if (repositoryAttributes.get(REPOSITORY_ID) != null)
+      {
+         repositoryId = ((String) repositoryAttributes.get(REPOSITORY_ID)).trim();
+      }
+
+      if (repositoryAttributes.get(PROVIDER_ID) != null)
+      {
+         providerId = ((String) repositoryAttributes.get(PROVIDER_ID)).trim();
+      }
+
+      validateRepositoryId(repositoryId);
+
+      if (StringUtils.isEmpty(providerId))
+      {
+         throw new I18NException(MessagesViewsCommonBean.getInstance().getString(
+               "views.bindRepositoryDialog.providerId.invalid"));
+      }
+
+      Map<String, Serializable> attributes = CollectionUtils.newMap();
+      attributes.put(IRepositoryConfiguration.PROVIDER_ID, providerId);
+      attributes.put(IRepositoryConfiguration.REPOSITORY_ID, repositoryId);
+      for (Map.Entry<String, Object> entry : repositoryAttributes.entrySet())
+      {
+         if (!PROVIDER_ID.equals(entry.getKey()) || !REPOSITORY_ID.equals(entry.getKey()))
+         {
+            attributes.put(entry.getKey(), (Serializable) entry.getValue());
+         }
+      }
+      attributes.put(JcrVfsRepositoryConfiguration.USER_LEVEL_AUTHORIZATION, true);
+      DocumentMgmtUtility.getDocumentManagementService().bindRepository(new JcrVfsRepositoryConfiguration(attributes));
+   }
    
    /**
-    * @return
+    *
     */
+   @Override
+   public void unbindRepository(String repositoryId)
+   {
+      validateRepositoryId(repositoryId);
+      DocumentMgmtUtility.getDocumentManagementService().unbindRepository(repositoryId);
+   }
+
+   // *******************************
+   // General/common methods
+   // *******************************
+   
+   /**
+    * @param repositoryId
+    */
+   private void validateRepositoryId(String repositoryId)
+   {
+      if (StringUtils.isEmpty(repositoryId))
+      {
+         throw new I18NException(MessagesViewsCommonBean.getInstance().getString(
+               "views.bindRepositoryDialog.repoId.empty"));
+      }
+      else if (!Pattern.matches("^(?=.*[a-zA-Z\\d]).+$", repositoryId))
+      {
+         throw new I18NException(MessagesViewsCommonBean.getInstance().getString(
+               "views.bindRepositoryDialog.repoId.invalid"));
+      }
+   }
+   
    private DocumentManagementService getDMS()
    {
       return serviceFactoryUtils.getDocumentManagementService();
