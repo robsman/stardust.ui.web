@@ -42,6 +42,7 @@ import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.model.Reference;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
@@ -335,12 +336,34 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
                   // underlying data
                   if (dataPathDetails.isDescriptor())
                   {
+                     Model refModel = model;
+                     Data data = null;
                      if (!isEmpty(descriptorValue))
                      {
                         if (null != dataDetails && StructuredDataConstants.STRUCTURED_DATA.equals(dataDetails.getTypeId()))
                         {
+                           Reference ref = dataDetails.getReference();
+                           if (null == ref)
+                           {
+                              data = model.getData(dataPathDetails.getData());
+                              ref = data.getReference();
+                           }
+                           if(null != ref)
+                           {
+                              if (ref.getModelOid() != model.getModelOID())
+                              {
+                                 refModel = ModelCache.findModelCache().getModel(ref.getModelOid());
+                              }
+                           }
+                           else
+                           {
+                              if(data.getModelOID() != model.getModelOID())
+                              {
+                                 refModel = ModelCache.findModelCache().getModel(data.getModelOID());
+                              }
+                           }
                            Class dataClass = dataPathDetails.getMappedType();
-                           IXPathMap xPathMap = ClientXPathMap.getXpathMap(model, dataDetails);
+                           IXPathMap xPathMap = ClientXPathMap.getXpathMap(refModel, dataDetails);
                            String xPath = StructuredDataXPathUtils.getXPathWithoutIndexes(dataPathDetails.getAccessPath());
                            TypedXPath typedXPath = xPathMap.getXPath(xPath);
                            if(null != typedXPath)
@@ -738,7 +761,6 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
    {
       NumberFormat numberFormatter;
       numberFormatter = NumberFormat.getNumberInstance(FacesUtils.getLocaleFromRequest());
-      numberFormatter.setMinimumFractionDigits(2);
       return numberFormatter.format(number);
    }
    

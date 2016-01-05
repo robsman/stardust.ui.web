@@ -633,9 +633,9 @@ define(["processportal/js/htmlElement"], function(htmlElement){
 				return "sdFilterDateTime";
 			} else if (path.typeName == "time") {
 				return "sdFilterTime";
-			}else if(path.typeName == "float" || path.typeName == "double" || path.typeName == "long" ||  path.typeName == "decimal" || path.typeName == "integer") {
-				return "number : 2";
-			}
+			}else if(path.typeName == "float" || path.typeName == "double" || path.typeName == "decimal" || path.typeName == "long" ||  path.typeName == "integer") {
+                return "sdFilterNumber";
+            }
 		}
 
 		/*

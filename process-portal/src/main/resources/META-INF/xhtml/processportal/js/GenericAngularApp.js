@@ -280,6 +280,32 @@ if (!window.bpm.portal.GenericAngularApp) {
 				};
 			});
 
+			angularModule.filter('sdFilterNumber',['$filter', function($filter) {
+                return function(value , minFactionSize) {
+                       try {
+                              if(value){
+
+                                     if(Math.floor(value) == value && !minFactionSize) {
+                                            return $filter('number')(value, 0);
+                                     } else if (Math.floor(value) == value) {
+                                            return $filter('number')(value, minFactionSize);
+                                     } else {
+                                            var factionSize = (value.toString().split('.')[1] || []).length;
+                                            if(minFactionSize && (factionSize < minFactionSize) ) {
+                                                  factionSize = minFactionSize;
+                                            }
+                                            return $filter('number')(value, factionSize);
+                                     }
+                              }
+
+                       } catch(e) {
+                              // Ignore
+                       }
+
+                       return value;
+                };
+           }]); 
+
 			angularModule.controller(options.ctrl, function($compile) {
 				angularCompile = $compile;
 			});
