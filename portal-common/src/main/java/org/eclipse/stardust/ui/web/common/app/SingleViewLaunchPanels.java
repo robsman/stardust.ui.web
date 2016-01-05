@@ -37,6 +37,7 @@ public class SingleViewLaunchPanels implements InitializingBean
    public String getEventScripts()
    {
       String scripts = singleViewEventScript.getEventScripts(false);
+      scripts += "\nparent.BridgeUtils.initiateResize();";
 
       if (StringUtils.isNotEmpty(scripts))
       {

@@ -278,21 +278,19 @@ if (!window["BridgeUtils"]) {
 		 */
 		function handleResize(shellSizes) {
 			// To avoid flickering effect, hide scroll first
-			var sideBarContent = jQuery(".sg-sidebar-content");
-			if (sideBarContent) {
-				sideBarContent[0].style.overflowY = "hidden";
+			var elem = document.getElementById("portalLaunchPanels");
+			if (elem) {
+				elem.contentWindow.document.body.style.overflowY = 'hidden';
 			}
-
+			 
 			// Because it's called from Angular, wait for digest to get over. TODO: Find better solution
 			window.setTimeout(function() {
-				// To avoid flickering effect, now reset scroll
-				if (sideBarContent) {
-					sideBarContent[0].style.overflowY = "";
-				}
-
 				// Sidebar: Resize Launch Panels iFrame
 	            var elem = document.getElementById("portalLaunchPanels");
 	            if (elem) {
+					// To avoid flickering effect, now reset scroll
+	            	elem.contentWindow.document.body.style.overflowY = '';
+
 		            if(elem.offsetTop < shellSizes.windowHeight) {
 		            	var pos = BridgeUtils.FrameManager.findPosition(elem);
 		            	// Subtracting 16 because sometimes offset returns an incorrect value.
@@ -301,6 +299,15 @@ if (!window["BridgeUtils"]) {
 		            	if (height < 100) {
 		            		height = 90; // Guard height for min as 100px, Additional 10px is required for scroll (if present)
 		            	}
+
+		            	// Use max of iFrame's content height verses available area for iFrame
+		            	if (elem.contentWindow.document.getElementById('endPortalLP')) {
+		            		var contentHeight = elem.contentWindow.document.getElementById('endPortalLP').offsetTop;
+		            		if (contentHeight > height) {
+			            		height = contentHeight + 5; // Also add some buffer
+			            	}
+		            	}
+
 		            	elem.style.height = height + "px";
 		            }
 	            } else {
@@ -315,6 +322,15 @@ if (!window["BridgeUtils"]) {
 			}, 100);
 		}
 
+		/*
+		 * 
+		 */
+		function initiateResize() {
+			runInAngularContext(function($scope) {
+				handleResize($scope.shell.sizes);
+			});
+		}
+		
 		/*
 		 * 
 		 */
@@ -447,6 +463,7 @@ if (!window["BridgeUtils"]) {
 			substituteParams : substituteParams,
 			showAlert : showAlert,
 			handleResize : handleResize,
+			initiateResize : initiateResize,
 			getContextRoot : getContextRoot,
 			showHideAlertNotifications : showHideAlertNotifications,
 			showAlertNotifications : showAlertNotifications,
