@@ -1,0 +1,17 @@
+<div ng-controller="sdBenchmarkPanelCtrl as ctrl">
+<div class="heading"
+		ng-click="ctrl.showMyFavorite = !ctrl.showMyFavorite">
+		<span>{{i18n('benchmark-messages.launchPanels-benchmarkLaunchPanel-label')}}</span>
+		<i ng-show="ctrl.showMyFavorite"
+			class="pi pi-trigger-expanded pi-lg" style="float: right;"></i> 
+		<i ng-show="!ctrl.showMyFavorite"
+			class="pi pi-trigger-collapsed pi-lg" style="float: right;"></i>
+	</div>
+		<div ng-show="ctrl.showMyFavorite">		
+			<a href="#" ng-click="ctrl.openView('benchmarkViewHtml5');"
+				data-placement="right"><span>Benchmark Management &raquo;</span></a>
+			<br>
+		    <a href="#" ng-click="ctrl.openView('trafficLightViewNew',ctrl.tlvViewParams);"
+				data-placement="right"><span>Traffic Light View &raquo;</span></a>			
+	</div>
+</div>

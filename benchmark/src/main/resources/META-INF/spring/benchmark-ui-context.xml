@@ -9,12 +9,9 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		targetPerspective="ippBccPerspective" id="benchmarkPerspective" messageBundles="benchmark-messages">
 		<ippui:launchpadExtension after="myReportsViewPanel">
 			<ippui:launchPanel name="benchmarkLaunchPanel"
-				include="/plugins/benchmark/launchpanel/benchmarkLaunchPanel.xhtml" />
+				include="/plugins/benchmark/html5/partials/launchpad/benchmarkLaunchPanel.html" />
 		</ippui:launchpadExtension>
 		<ippui:viewsExtension>
-			<!-- <ippui:view name="benchmarkView"
-				include="/plugins/benchmark/views/benchmarkViewFrameAdapter.xhtml"
-				controller="benchmarkView" /> -->
 			<ippui:view name="benchmarkViewHtml5"
                 include="/plugins/benchmark/html5/partials/views/benchmarkDefinitionView.html">
 				<ippui:preferences>
@@ -23,17 +20,9 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 					<ippui:preferencePage name="configuration"
 						include="/plugins/benchmark/views/benchmarkPanelConfiguration.xhtml" />
 				</ippui:preferences>
-            </ippui:view>
-			<!-- <ippui:view name="trafficLightViewNew"
-				include="/plugins/benchmark/views/trafficLightViewFrameAdapter.xhtml"
-				controller="trafficLightViewNew" /> -->
-				
+            </ippui:view>				
 			<ippui:view name="trafficLightViewNew"
 				include="/plugins/benchmark/html5/partials/views/trafficLightView.html"/>
-					
-			<!-- <ippui:view name="ganttChartViewNew"
-				include="/plugins/benchmark/views/ganttChartViewFrameAdapter.xhtml"
-				controller="ganttChartViewNew" /> -->
 		</ippui:viewsExtension>
 	</ippui:perspectiveExtension>
 </beans>

@@ -99,7 +99,8 @@
 			var tlvStats = $resource(restUrl, {
 			}, {
 				getAllFavorite : {
-					method : 'GET'
+					method : 'GET',
+					isArray:true
 				}
 			});
 			return tlvStats.getAllFavorite().$promise;

@@ -1,0 +1,21 @@
+<div ng-controller="sdFavoritesCtrl as ctrl">
+	<div class="heading"
+		ng-click="ctrl.showMyFavorite = !ctrl.showMyFavorite">
+		<span>{{i18n('business-control-center-messages.launchPanels-myFavorites-title')}}</span>
+		<i ng-show="ctrl.showMyFavorite"
+			class="pi pi-trigger-expanded pi-lg" style="float: right;"></i> 
+		<i ng-show="!ctrl.showMyFavorite"
+			class="pi pi-trigger-collapsed pi-lg" style="float: right;"></i>
+	</div>
+	<div ng-show="ctrl.showMyFavorite">
+	    <i ng-click="ctrl.refresh()" class="pi pi-refresh pi-lg" style="float: right;"></i>
+	    <div ng-if="ctrl.favorites.length == 0">
+	        <span>{{i18n('views-common-messages.common-notification-message-title')}}</span>
+	    </div>
+		<div ng-if="ctrl.favorites.length > 0" ng-repeat="favorite in ctrl.favorites">
+			<a href="#"
+				ng-click="ctrl.openView(favorite.preferenceId,favorite.preferenceName);"
+				data-placement="right"> {{favorite.preferenceName}} </a>
+		</div>		
+	</div>
+</div>
