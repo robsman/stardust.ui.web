@@ -289,9 +289,16 @@ if (!window["BridgeUtils"]) {
 	            var elem = document.getElementById("portalLaunchPanels");
 	            if (elem) {
 					// To avoid flickering effect, now reset scroll
-	            	elem.contentWindow.document.body.style.overflowY = '';
+	            	if (elem.contentWindow.document.body) {
+	            		elem.contentWindow.document.body.style.overflowY = '';
+	            	}
 
-		            if(elem.offsetTop < shellSizes.windowHeight) {
+	            	// Reset iframe width, so as to get correct offsets
+	            	if (elem.getAttribute("dialogIsOpen") != "true") {
+	            		elem.style.width = "100%";
+	            	}
+
+		            if(elem.offsetTop < shellSizes.windowHeight && elem.getAttribute("dialogIsOpen") != "true") {
 		            	var pos = BridgeUtils.FrameManager.findPosition(elem);
 		            	// Subtracting 16 because sometimes offset returns an incorrect value.
 		            	// Subtracting 20 more.
@@ -301,11 +308,22 @@ if (!window["BridgeUtils"]) {
 		            	}
 
 		            	// Use max of iFrame's content height verses available area for iFrame
-		            	if (elem.contentWindow.document.getElementById('endPortalLP')) {
-		            		var contentHeight = elem.contentWindow.document.getElementById('endPortalLP').offsetTop;
+		            	var endPortalLP = elem.contentWindow.document.getElementById('endPortalLP');
+		            	if (endPortalLP) {
+		            		var posLPEnd = BridgeUtils.FrameManager.findPosition(endPortalLP);
+
+		            		// Adjust Height
+		            		var contentHeight = posLPEnd.y;
 		            		if (contentHeight > height) {
 			            		height = contentHeight + 5; // Also add some buffer
 			            	}
+
+		            		// Adjust Width
+		            		if (posLPEnd.x <= 350) {
+		            			elem.style.width = "100%";
+		            		} else {
+		            			elem.style.width = posLPEnd.x + "px";
+		            		}
 		            	}
 
 		            	elem.style.height = height + "px";
@@ -1139,7 +1157,8 @@ if (!window["BridgeUtils"].Dialog) {
 				launchPanelIframeOrgData.clazz = launchPanelIframe.getAttribute("class");
 				launchPanelIframeOrgData.width = launchPanelIframe.style.width;
 				launchPanelIframeOrgData.height = launchPanelIframe.style.height;
-				
+
+				launchPanelIframe.setAttribute("dialogIsOpen", "true");
 				launchPanelIframe.setAttribute("class", "gray-out-sidebar-view");
 				launchPanelIframe.style.width = newWidth;
 				launchPanelIframe.style.height = newHeight;
@@ -1181,6 +1200,7 @@ if (!window["BridgeUtils"].Dialog) {
 				var currLaunchPanelIframe = null;
 				// Sidebar And View
 				if (launchPanelIframe) {
+					launchPanelIframe.removeAttribute("dialogIsOpen");
 					launchPanelIframe.setAttribute("class", launchPanelIframeOrgData.clazz);
 					launchPanelIframe.style.width = launchPanelIframeOrgData.width;
 					launchPanelIframe.style.height = launchPanelIframeOrgData.height;
