@@ -15,6 +15,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.ws.rs.Consumes;
@@ -31,6 +32,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.apache.cxf.jaxrs.model.wadl.Description;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
@@ -46,6 +48,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentContentReque
 import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.FileUploadUtils;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.IResourceDataProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -118,7 +121,7 @@ public class FolderResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/policy/{folderId: .*}")
-   @RequestDescription("accepts list of ResourcePolicyDTO"
+   @RequestDescription("accepts list of ResourcePolicyDTO\r\n" + "\r\n"
          + "**Note:** *Participant object can be replaced with simple key value pair of  \"participantQualifiedId\"* ")
    @ResponseDescription("if the folder policies are updated successfully, expect *Operation completed successfully.*")
    public Response updateFolderPolicies(@PathParam("folderId") String folderId, String postedData) throws Exception
@@ -147,7 +150,7 @@ public class FolderResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{folderId: .*}")
    @RequestDescription("Either url should contain complete path or message body must contain *parentFolderId* and *folderName* to be created")
-   @ResponseDescription("On success, expect FolderDTO in response")
+   @ResponseDescription("On success, sents back FolderDTO in response")
    public Response createFolder(@PathParam("folderId") String folderId, String postedData)
          throws DocumentManagementServiceException, UnsupportedEncodingException
    {
@@ -210,18 +213,19 @@ public class FolderResource
    @GET
    @Produces(MediaType.APPLICATION_OCTET_STREAM)
    @Path("/export/{folderId: .*}")
-   @ResponseDescription("return zip of the folder supplied as part of url")
+   @ResponseDescription("returns zip file of the folder supplied as part of url")
    public Response exportFolder(@PathParam("folderId") String folderId) throws DocumentManagementServiceException,
          UnsupportedEncodingException
    {
       // convert json to simple map
-      byte[] folderBytes = repositoryService.exportFolder(folderId);
-      ByteArrayInputStream inputStream = new ByteArrayInputStream(folderBytes);
+      IResourceDataProvider resourceDataProvider = repositoryService.exportFolder(folderId);
+      ByteArrayInputStream inputStream = new ByteArrayInputStream(resourceDataProvider.getBytes());
       return Response.ok(inputStream, MediaType.APPLICATION_OCTET_STREAM)
-            .header("content-disposition", "attachment; filename = myfile.zip").build();
+            .header("content-disposition", "attachment; filename = " + resourceDataProvider.getResourceName()).build();
    }
 
    /**
+    * @param folderId
     * @param attachments
     * @return
     * @throws Exception
@@ -230,17 +234,23 @@ public class FolderResource
    @Consumes(MediaType.MULTIPART_FORM_DATA)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/import/{folderId: .*}")
-   @RequestDescription("Deletes existing folder that is supplied as part of url, Parses the uploaded zip file")
+   @Description("Deletes existing folder that is supplied, creates everything from scratch under the folder given in URL")
+   @RequestDescription("The folder Id supplied as part of url should be a parent folder id where the content would be copied")
+   @ResponseDescription("If the operation is successful, response something like following is sent back \r\n" + "\r\n"
+         + "```javascript\r\n" + "{\r\n"
+         + "    \"added\" : [\"/Y/newlyAddedFile.txt\", \"/Y/existingFileUpdated.txt\"],\r\n"
+         + "    \"updated\" : []\r\n" + "}\r\n" + "```")
    public Response importFolderAndCleanExisting(@PathParam("folderId") String folderId, List<Attachment> attachments)
          throws Exception
    {
       // parse attachments
       List<DocumentContentRequestDTO> uploadedFolder = FileUploadUtils.parseAttachments(attachments);
-      repositoryService.importFolder(folderId, uploadedFolder, false);
-      return Response.ok(GsonUtils.toJsonHTMLSafeString(restCommonClientMessages.get("success.message"))).build();
+      Map<String, Set<String>> result = repositoryService.importFolder(folderId, uploadedFolder, false);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(result)).build();
    }
 
    /**
+    * @param folderId
     * @param attachments
     * @return
     * @throws Exception
@@ -249,13 +259,17 @@ public class FolderResource
    @Consumes(MediaType.MULTIPART_FORM_DATA)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/import/{folderId: .*}")
-   @RequestDescription("Existing folder is retained and new contents are merged, existing files will be revisioned")
+   @Description("Existing folder is retained and new contents are merged under the folder given in URL, existing files are revisioned")
+   @RequestDescription("The folder Id supplied as part of url should be a parent folder id where the content would be copied")
+   @ResponseDescription("If the operation is successful, response something like following is sent back \r\n" + "\r\n"
+         + "```javascript\r\n" + "{\r\n" + "    \"added\" : [\"/Y/newlyAddedFile.txt\"],\r\n"
+         + "    \"updated\" : [\"/Y/existingFileUpdated.txt\"]\r\n" + "}\r\n" + "```")
    public Response importFolderAndMerge(@PathParam("folderId") String folderId, List<Attachment> attachments)
-         throws Exception
+      throws Exception
    {
       // parse attachments
       List<DocumentContentRequestDTO> uploadedFolder = FileUploadUtils.parseAttachments(attachments);
-      repositoryService.importFolder(folderId, uploadedFolder, true);
-      return Response.ok(GsonUtils.toJsonHTMLSafeString(restCommonClientMessages.get("success.message"))).build();
+      Map<String, Set<String>> result = repositoryService.importFolder(folderId, uploadedFolder, true);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(result)).build();
    }
 }

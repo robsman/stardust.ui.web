@@ -17,6 +17,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.annotation.Resource;
@@ -50,6 +51,7 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.DefualtResourceDataProvider;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.IResourceDataProvider;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -164,11 +166,11 @@ public class RepositoryServiceImpl implements RepositoryService
    /**
     *
     */
-   public byte[] exportFolder(String folderId)
+   public IResourceDataProvider exportFolder(String folderId)
    {
       folderId = DocumentMgmtUtility.checkAndGetCorrectResourceId(folderId);
-      DefualtResourceDataProvider dataProvider = new DefualtResourceDataProvider("Y.zip", folderId, "", getDMS(), false);
-      return dataProvider.getBytes();
+      Folder rootFolder = getDMS().getFolder(folderId);
+      return new DefualtResourceDataProvider(rootFolder.getName(), rootFolder.getId(), "", getDMS(), false);
    };
 
    /**
@@ -176,14 +178,15 @@ public class RepositoryServiceImpl implements RepositoryService
     *
     */
    @Override
-   public void importFolder(String folderId, List<DocumentContentRequestDTO> uploadedFolder, boolean merge)
-         throws Exception
+   public Map<String, Set<String>> importFolder(String folderId, List<DocumentContentRequestDTO> uploadedFolder,
+         boolean merge) throws Exception
    {
       folderId = DocumentMgmtUtility.checkAndGetCorrectResourceId(folderId);
       for (DocumentContentRequestDTO documentContentRequestDTO : uploadedFolder)
       {
-         DocumentMgmtUtility.importFolderFromZip(folderId, documentContentRequestDTO.contentBytes, merge);
+         return DocumentMgmtUtility.importFolderFromZip(folderId, documentContentRequestDTO.contentBytes, merge);
       }
+      return null;
    }
 
    // *******************************

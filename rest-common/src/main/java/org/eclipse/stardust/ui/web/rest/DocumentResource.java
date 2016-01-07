@@ -201,6 +201,7 @@ public class DocumentResource
    @Consumes(MediaType.MULTIPART_FORM_DATA)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/upload")
+   @RequestDescription("Multiple documents can uploaded at the same time. File and its attrubutes has to be supplied in sequence. ")
    public Response uploadDocuments(List<Attachment> attachments) throws Exception
    {
       // parse attachments
@@ -279,19 +280,39 @@ public class DocumentResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{documentId: .*}/copy")
+   @RequestDescription("The document (id provided in URL), will be copied to the *targetFolderPath* supplied in body. \r\n"
+         + "\r\n" + "If the document already exist, error message will be returned. \r\n" + "")
+   @ResponseDescription("Returns DocumentDTO json object")
    public Response copy(@PathParam("documentId") String documentId, String postedData) throws Exception
    {
       Map<String, Object> data = JsonDTO.getAsMap(postedData);
       String targetFolderPath = (String) data.get("targetFolderPath");
-      boolean createVersion = false;
-      if (data.get("createVersion") != null)
-      {
-         createVersion = (Boolean) data.get("createVersion");
-      }
-      DocumentDTO documentDTO = repositoryService.copyDocument(documentId, targetFolderPath, createVersion);
+      DocumentDTO documentDTO = repositoryService.copyDocument(documentId, targetFolderPath, false);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
    }
 
+   /**
+    *  @author Yogesh.Manware
+    * @param documentId
+    * @param postedData
+    * @return
+    * @throws Exception
+    */
+   @PUT
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{documentId: .*}/copy")
+   @RequestDescription("The document (id provided in URL), will be copied to the *targetFolderPath* supplied in body. \r\n"
+         + "\r\n" + "If the document already exist, it will be updated with additional version. ")
+   @ResponseDescription("Returns DocumentDTO json object")
+   public Response copyAndUpdate(@PathParam("documentId") String documentId, String postedData) throws Exception
+   {
+      Map<String, Object> data = JsonDTO.getAsMap(postedData);
+      String targetFolderPath = (String) data.get("targetFolderPath");
+      DocumentDTO documentDTO = repositoryService.copyDocument(documentId, targetFolderPath, true);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
+   }
+   
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
@@ -381,8 +402,9 @@ public class DocumentResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/policy/{documentId: .*}")
-   @RequestDescription("accepts list of ResourcePolicyDTO"
-         + "**Note:** *Participant object can be replaced with simple key value pair of  \"participantQualifiedId\"* ")
+   @RequestDescription("Accepts list of ResourcePolicyDTOs\r\n" + 
+         "\r\n" + 
+         "**Note:** *Participant object can be replaced with simple key value pair of  \"participantQualifiedId\"* ")
    @ResponseDescription("if the document policies are updated successfully, *Operation completed successfully.*")
    public Response updateDocumentPolicies(@PathParam("documentId") String documentId, String postedData)
          throws Exception

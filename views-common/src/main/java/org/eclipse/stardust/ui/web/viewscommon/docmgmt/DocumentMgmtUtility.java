@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -817,7 +819,7 @@ public class DocumentMgmtUtility
     * @param merge
     * @throws Exception
     */
-   public static void importFolderFromZip(String partitionFolderPath, byte[] bytes, boolean merge) throws Exception
+   public static Map<String, Set<String>> importFolderFromZip(String partitionFolderPath, byte[] bytes, boolean merge) throws Exception
    {
       // safeguard the root folder
       if (ROOT_FOLDER_PATH.equals(partitionFolderPath))
@@ -825,15 +827,17 @@ public class DocumentMgmtUtility
          throw new I18NException(MessagesViewsCommonBean.getInstance().getString(
                "views.genericRepositoryView.replaceRootFolderWarning"));
       }
+
+      Map<String, Set<String>> result = new HashMap<String, Set<String>>();
+      Set<String> added = new TreeSet<String>();
+      Set<String> updated = new TreeSet<String>();
+      result.put("added", added);
+      result.put("updated", updated);
       
       // open the zip file stream
       ZipInputStream stream = new ZipInputStream(new ByteArrayInputStream(bytes));
       DocumentMgmtUtility.createFolderIfNotExists(partitionFolderPath);
-      if (!merge)
-      {
-         cleanupFolder(getFolder(partitionFolderPath));
-      }
-
+    
       partitionFolderPath = partitionFolderPath + "/";
       
       try
@@ -842,6 +846,7 @@ public class DocumentMgmtUtility
          // entry call will return a ZipEntry for each file in the
          // stream
          ZipEntry entry;
+         boolean cleanedFolder = true; // clean only root folder 
          while ((entry = stream.getNextEntry()) != null)
          {
             // take care of Windows paths
@@ -855,6 +860,11 @@ public class DocumentMgmtUtility
                // this is only an empty folder, create it
                relativeEntryPath = relativeEntryPath.substring(0, relativeEntryPath.length() - 1);
                createFolderIfNotExists(partitionFolderPath + relativeEntryPath);
+               if (!merge && cleanedFolder)
+               {
+                  cleanupFolder(getFolder(partitionFolderPath + relativeEntryPath));
+                  cleanedFolder = false;
+               }
             }
             else
             {
@@ -879,11 +889,13 @@ public class DocumentMgmtUtility
                      docInfo.setContentType(MimeTypesHelper.detectMimeType(documentName, null).getType());
 
                      // use default encoding, should not be a problem
-                     getDocumentManagementService().createDocument(folder.getId(), docInfo, documentContent, null);
+                     document = getDocumentManagementService().createDocument(folder.getId(), docInfo, documentContent, null);
+                     added.add(document.getPath());
                   }
                   else
                   {
-                     getDocumentManagementService().updateDocument(document, documentContent, "", true, "", "", false);
+                     document = getDocumentManagementService().updateDocument(document, documentContent, "", true, "", "", false);
+                     updated.add(document.getPath());
                   }
                }
             }
@@ -894,6 +906,8 @@ public class DocumentMgmtUtility
          // we must always close the zip file.
          stream.close();
       }
+      
+      return result;
    }
    
    /**

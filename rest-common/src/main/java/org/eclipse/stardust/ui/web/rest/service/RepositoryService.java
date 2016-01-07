@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.rest.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
@@ -20,6 +21,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentContentReque
 import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.RepositoryInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.RepositoryProviderDTO;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.IResourceDataProvider;
 
 /**
  * @author Yogesh.Manware
@@ -61,15 +63,16 @@ public interface RepositoryService
     * @param resourceId
     * @return
     */
-   byte[] exportFolder(String resourceId);
+   IResourceDataProvider exportFolder(String resourceId);
 
    /**
     * @param folderId
     * @param uploadedFolder
     * @param merge
+    * @return 
     * @throws Exception
     */
-   void importFolder(String folderId, List<DocumentContentRequestDTO> uploadedFolder, boolean merge) throws Exception;
+   Map<String, Set<String>> importFolder(String folderId, List<DocumentContentRequestDTO> uploadedFolder, boolean merge) throws Exception;
 
    // *******************************
    // Document specific

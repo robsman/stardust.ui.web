@@ -37,10 +37,6 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
  */
 public class FileUploadUtils
 {
-   public static String DOCUMENT_TYPE_ID = "documentTypeId";
-   public static String MODEL_ID = "modelId";
-   public static String PARENT_FOLDER_PATH = "parentFolderPath";
-
    /**
     * @param attachments
     * @return
@@ -79,11 +75,19 @@ public class FileUploadUtils
             {
                documentInfoDTO.comment = inputStream.toString();
             }
-            else if (PARENT_FOLDER_PATH.equals(dataHandler.getName()))
+            else if (CommonProperties.PARENT_FOLDER_PATH.equals(dataHandler.getName()))
             {
                documentInfoDTO.parentFolderPath = inputStream.toString();
             }
-            else if (DOCUMENT_TYPE_ID.equals(dataHandler.getName()))
+            else if (CommonProperties.CREATE_VERSION.equals(dataHandler.getName()))
+            {
+               documentInfoDTO.createVersion = Boolean.valueOf(inputStream.toString());
+            }
+            else if (CommonProperties.CREATE_NEW_REVISION.equals(dataHandler.getName()))
+            {
+               documentInfoDTO.createNewRevision = Boolean.valueOf(inputStream.toString());
+            }
+            else if (CommonProperties.DOCUMENT_TYPE_ID.equals(dataHandler.getName()))
             {
                // TODO how to detect documentType, it should be always followed by
                // modelId ??
@@ -95,7 +99,7 @@ public class FileUploadUtils
                   modelId = null;
                }
             }
-            else if (MODEL_ID.equals(dataHandler.getName()))
+            else if (CommonProperties.MODEL_ID.equals(dataHandler.getName()))
             {
                modelId = inputStream.toString();
             }

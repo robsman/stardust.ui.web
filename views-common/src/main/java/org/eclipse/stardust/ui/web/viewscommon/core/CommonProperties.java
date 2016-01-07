@@ -36,4 +36,10 @@ public class CommonProperties
 
    public static final String ADMINISTRATOR = "Administrator";
 
+   public static final String DOCUMENT_TYPE_ID = "documentTypeId";
+   public static final String MODEL_ID = "modelId";
+   public static final String PARENT_FOLDER_PATH = "parentFolderPath";
+   public static final String CREATE_VERSION = "createVersion";
+   public static final String CREATE_NEW_REVISION = "createNewRevision";
+
 }
