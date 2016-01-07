@@ -1,0 +1,28 @@
+<div ng-controller="sdBCCFavoriteViewsPanelCtrl as ctrl">
+    <div class="heading"
+		ng-click="ctrl.showMyFavorite = !ctrl.showMyFavorite">
+		<span>{{i18n('business-control-center-messages.launchPanels-favoriteManagementViews-title')}}</span>
+		<i ng-show="ctrl.showMyFavorite"
+			class="pi pi-trigger-expanded pi-lg" style="float: right;"></i> 
+		<i ng-show="!ctrl.showMyFavorite"
+			class="pi pi-trigger-collapsed pi-lg" style="float: right;"></i>
+	</div>
+	<div ng-show="ctrl.showMyFavorite">		
+			<div style="line-height: 15px;"><a href="#" ng-click="ctrl.openView('processOverviewView');"
+				data-placement="right"><span>{{i18n('business-control-center-messages.views-processOverviewView-label')}}&nbsp;&raquo;</span></a></div>
+		    <div style="line-height: 15px;"><a href="#" ng-click="ctrl.openView('processSearchView');"
+				data-placement="right"><span>{{i18n('business-control-center-messages.views-processSearchView-label')}}&nbsp;&raquo;</span></a></div>
+		    <div style="line-height: 15px;"><a href="#" ng-click="ctrl.openView('completedActivities');"
+				data-placement="right"><span>{{i18n('business-control-center-messages.views-completedActivities-label')}}&nbsp;&raquo;</span></a></div>
+		    <div style="line-height: 15px;"><a href="#" ng-click="ctrl.openView('resourceAvailabilityView');"
+				data-placement="right"><span>{{i18n('business-control-center-messages.views-resourceAvailabilityView-label')}}&nbsp;&raquo;</span></a></div>
+		    <div style="line-height: 15px;"><a href="#" ng-click="ctrl.openView('roleAssignmentView');"
+				data-placement="right"><span>{{i18n('business-control-center-messages.views-roleAssignmentView-label')}}&nbsp;&raquo;</span></a></div>
+		    <div style="line-height: 15px;"><a href="#" ng-click="ctrl.openView('myReportsView');"
+				data-placement="right"><span>{{i18n('business-control-center-messages.launchPanels-myReportsViewPanel-reportManager-label')}}&nbsp;&raquo;</span></a></div>
+		    <div style="line-height: 15px;"><a href="#" ng-click="ctrl.openView('activityCriticalityManagerView');"
+				data-placement="right"><span>{{i18n('business-control-center-messages.views-activityCriticalityManagerView-label')}}&nbsp;&raquo;</span></a></div>
+		    <div style="line-height: 15px;"><a href="#" ng-click="ctrl.openView('deputyTeamMemberView');"
+				data-placement="right"><span>{{i18n('business-control-center-messages.launchPanels-managementViews-deputyTeamMemberView-title')}}&nbsp;&raquo;</span></a></div>
+	</div>
+</div>

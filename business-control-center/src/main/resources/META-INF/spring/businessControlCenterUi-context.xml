@@ -34,7 +34,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
       <ippui:launchPanel name="managementViews"
             include="/plugins/business-control-center/extensions/launchpad/managementViews.xhtml"  />
       <ippui:launchPanel name="favoriteManagementViews"
-            include="/plugins/business-control-center/extensions/launchpad/favoriteViews.xhtml" />
+            include="/plugins/html5-business-control-center/partials/launchpad/favoriteViews.html" />
             
 	  <ippui:launchPanel name="myReportsViewPanel"
             include="/plugins/business-control-center/extensions/launchpad/myReportsPanel.xhtml" />
