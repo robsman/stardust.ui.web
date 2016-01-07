@@ -146,6 +146,15 @@ public class DocumentHandlersRegistryBean implements InitializingBean
    {
       this.registeredContentHandlers = registeredContentHandlers;
    }
+   
+   
+   /**
+    * @return the registeredContentHandlers
+    */
+   public List<String> getRegisteredContentHandlers()
+   {
+      return registeredContentHandlers;
+   }
 
    /**
     * return the mimetypes for which editors are registered
