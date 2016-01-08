@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.ws.rs.core.MultivaluedMap;
@@ -26,6 +27,9 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.Model;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.service.dto.FileInfoDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentContentRequestDTO;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
@@ -37,6 +41,8 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
  */
 public class FileUploadUtils
 {
+   private static final Logger trace = LogManager.getLogger(FileUploadUtils.class);
+
    /**
     * @param attachments
     * @return
@@ -103,13 +109,18 @@ public class FileUploadUtils
             {
                modelId = inputStream.toString();
             }
-            else
+            else if (CommonProperties.PROPERTIES.equals(dataHandler.getName()))
             {
                if (documentInfoDTO.properties == null)
                {
-                  documentInfoDTO.properties = new HashMap<String, Serializable>();
+                  documentInfoDTO.properties = new HashMap<String, Object>();
                }
-               documentInfoDTO.properties.put(dataHandler.getName(), inputStream.toString());
+               documentInfoDTO.properties.putAll((Map< ? extends String, ? extends Serializable>) GsonUtils
+                     .readJsonMap(inputStream.toString()));
+            }
+            else
+            {
+               trace.warn("Uknown property : " + dataHandler.getName());
             }
          }
       }
@@ -157,7 +168,7 @@ public class FileUploadUtils
     */
    private static boolean isFile(MultivaluedMap<String, String> header)
    {
-      //TODO: is there a better way to check if it is a file?
+      // TODO: is there a better way to check if it is a file?
       String[] contentDisposition = header.getFirst("Content-Disposition").split(";");
       for (String attributeName : contentDisposition)
       {

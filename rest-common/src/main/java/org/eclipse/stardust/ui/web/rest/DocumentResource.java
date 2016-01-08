@@ -13,6 +13,7 @@ package org.eclipse.stardust.ui.web.rest;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
@@ -201,7 +202,27 @@ public class DocumentResource
    @Consumes(MediaType.MULTIPART_FORM_DATA)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/upload")
-   @RequestDescription("Multiple documents can uploaded at the same time. File and its attrubutes has to be supplied in sequence. ")
+   @RequestDescription("Multiple documents can uploaded at the same time. \r\n"
+         + "\r\n"
+         + "File and its attributes has to be supplied in sequence. \r\n"
+         + "\r\n"
+         + "Supported Attributes are \r\n"
+         + "``` javascript\r\n"
+         + "parentFolderPath //where the document will created/updated)\r\n"
+         + "description \r\n"
+         + "comments\r\n"
+         + "createVersion //'true'(default) to indicate user wants to create a version if the document already exist with the same name)\r\n"
+         + "createNewVersion //'true' (default) to indicate user wants to create new version with update, 'false' to overwrite\r\n"
+         + "\r\n" + "modelId //required when documentTypeId is also supplied\r\n"
+         + "documentTypeId //modelId must also be supplied before this attibute) \r\n" + "\r\n" + "```\r\n"
+         + "Note that all other attributes key-values would be assumed to be document *Properties*\r\n" + "\r\n"
+         + "example of how client can provide the file attributes is \r\n"
+         + "formData.append(\"file1\", files[1]);\r\n"
+         + "formData.append(\"description\", \"Description for file1\") \r\n"
+         + "formData.append(\"file2\", files[2]);\r\n"
+         + "formData.append(\"description\", \"Description for file2\") \r\n" + "")
+   @ResponseDescription("Returns the result something like below\r\n" + "\r\n" + "```javascript\r\n" + "{\r\n"
+         + "  \"failures\": [] //NotificationDTOs\r\n" + "  \"documents\": [] ////DocumentDTOs\r\n" + "}\r\n" + "```")
    public Response uploadDocuments(List<Attachment> attachments) throws Exception
    {
       // parse attachments
@@ -221,14 +242,35 @@ public class DocumentResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("")
    @RequestDescription("Request must contain json representation of\r\n"
-         + "`org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentContentRequestDTO`")
+         + "`org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentContentRequestDTO and few attributes from DocumentDTO`")
+   @ResponseDescription("Returns the result something like below\r\n" + "\r\n" + "```javascript\r\n" + "{\r\n"
+         + "  \"failures\": [] //NotificationDTOs\r\n" + "  \"documents\": [] ////DocumentDTOs\r\n" + "}\r\n" + "```")
    public Response createDocument(String postedData) throws Exception
    {
-      DocumentContentRequestDTO documentInfoDTO = DTOBuilder
-            .buildFromJSON2(postedData, DocumentContentRequestDTO.class, null);
+      ////TODO removed post testing - start 
+      ////test with request
+      /*{ name : "t15.txt",
+         content : "Yogesh Manware",
+         description : "Blah",
+         parentFolderPath : "/Y",
+         properties : {id: "1", name: "Yogesh M."}}*/
+      ////TODO removed post testing - end 
+      
+      //custom token approach does not work here!
+      Map<String, Object> data = JsonDTO.getAsMap(postedData);
+      HashMap<String, Object> properties = null; 
+      if (data.get("properties") != null)
+      {
+         properties = (HashMap<String, Object>) data.get("properties");
+      }
+      
+      DocumentContentRequestDTO documentInfoDTO = DTOBuilder.buildFromJSON2(postedData,
+            DocumentContentRequestDTO.class, null);
+
+      documentInfoDTO.properties = properties; 
       
       Map<String, Object> result = repositoryService.createDocument(documentInfoDTO, null, false);
-      
+
       return Response.ok(GsonUtils.toJsonHTMLSafeString(result)).build();
    }
   
@@ -243,14 +285,24 @@ public class DocumentResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{documentId: .*}")
-   @RequestDescription("Request must contain DocumentContentRequestDTO like json")
+   @RequestDescription("Request must contain DocumentContentRequestDTO like json and few attributes from DocumentDTO")
    @ResponseDescription("if the document is updated successfully, it returns *Operation completed successfully*.")
    public Response updateDocument(@PathParam("documentId") String documentId, String postedData)
          throws Exception
    {
-      DocumentContentRequestDTO documentInfoDTO = DTOBuilder.buildFromJSON(postedData, DocumentContentRequestDTO.class);
-      repositoryService.updateDocument(documentId, documentInfoDTO);
-      return Response.ok(GsonUtils.toJsonHTMLSafeString(restCommonClientMessages.get("success.message"))).build();
+      //custom token approach does not work here!
+      Map<String, Object> data = JsonDTO.getAsMap(postedData);
+      HashMap<String, Object> properties = null; 
+      if (data.get("properties") != null)
+      {
+         properties = (HashMap<String, Object>) data.get("properties");
+      }
+
+      DocumentContentRequestDTO documentInfoDTO = DTOBuilder.buildFromJSON2(postedData,
+            DocumentContentRequestDTO.class, null);
+      documentInfoDTO.properties = properties;
+      DocumentDTO documentDTO = repositoryService.updateDocument(documentId, documentInfoDTO);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
    }
    
    /**
@@ -262,7 +314,7 @@ public class DocumentResource
    @DELETE
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{documentId: .*}")
-   @ResponseDescription("if the document deleted succussfully *Operation completed successfully* is sent back.")
+   @ResponseDescription("if the document deleted succussfully, *Operation completed successfully* is sent back.")
    public Response deleteDocument(@PathParam("documentId") String documentId) throws Exception
    {
       repositoryService.deleteDocument(documentId);
@@ -317,7 +369,17 @@ public class DocumentResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/revert{documentId: .*}")
-   public Response revertToPreviousVersion(@PathParam("documentId") String documentId, String postedData) throws Exception
+   @RequestDescription("This endpoint expects the documentId to be reverted in url and in the request body following attributes are supported \r\n"
+         + "\r\n"
+         + "```javascript \r\n"
+         + "uuid //target revision id\r\n"
+         + "description\r\n"
+         + "comment\r\n"
+         + "createNewRevision // true' to indicate user wants to create new version with update, 'false' to overwrite\r\n"
+         + "\r\n" + "```")
+   @ResponseDescription("Returns the modified version of document as DocumentDTO")
+   public Response revertToPreviousVersion(@PathParam("documentId") String documentId, String postedData)
+  throws Exception
    {
       DocumentContentRequestDTO documentInfoDTO = DTOBuilder
             .buildFromJSON2(postedData, DocumentContentRequestDTO.class, null);
@@ -335,7 +397,7 @@ public class DocumentResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{documentId: .*}")
-   @ResponseDescription("Returns all basic document information, for content use */content/documentId*")
+   @ResponseDescription("Returns all basic document information in the form of DocumentDTO, to retrieve content use */content/documentId*")
    public Response getDocument(@PathParam("documentId") String documentId) throws Exception
    {
       DocumentDTO documentDTO = repositoryService.getDocument(documentId); 
@@ -405,7 +467,7 @@ public class DocumentResource
    @RequestDescription("Accepts list of ResourcePolicyDTOs\r\n" + 
          "\r\n" + 
          "**Note:** *Participant object can be replaced with simple key value pair of  \"participantQualifiedId\"* ")
-   @ResponseDescription("if the document policies are updated successfully, *Operation completed successfully.*")
+   @ResponseDescription("If the document policies are updated successfully, returns *Operation completed successfully.*")
    public Response updateDocumentPolicies(@PathParam("documentId") String documentId, String postedData)
          throws Exception
    {

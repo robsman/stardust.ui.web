@@ -12,6 +12,7 @@ package org.eclipse.stardust.ui.web.rest.service.dto.builder;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 import org.eclipse.stardust.common.CollectionUtils;
@@ -43,6 +44,10 @@ public class DocumentDTOBuilder
          {
             documentDTO.downloadToken = dms.requestDocumentContentDownload(document.getId());
          }
+
+         documentDTO.properties = new HashMap<String, Object>();
+         documentDTO.properties.putAll(document.getProperties());
+         
          return documentDTO;
       }
       return null;

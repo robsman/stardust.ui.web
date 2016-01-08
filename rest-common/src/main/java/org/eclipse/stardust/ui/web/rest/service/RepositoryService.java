@@ -153,7 +153,7 @@ public interface RepositoryService
     * @param documentId
     * @param documentInfoDTO
     */
-   void updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO);
+   DocumentDTO updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO);
 
 
    // *******************************

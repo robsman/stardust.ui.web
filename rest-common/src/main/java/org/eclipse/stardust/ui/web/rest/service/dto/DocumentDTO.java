@@ -10,9 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
-import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
@@ -72,7 +71,7 @@ public class DocumentDTO extends AbstractDTO
    public String repositoryId;
 
    @DTOAttribute("getProperties()")
-   public Map<String, Serializable> properties;
+   public HashMap<String, Object> properties;
 
    public String downloadToken;
    

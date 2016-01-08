@@ -378,7 +378,11 @@ public class DocumentMgmtUtility
     */
    public static boolean validateFileName(String fileName)
    {
-      return fileName.trim().matches(VALID_FILENAME_PATTERN);
+      if (fileName != null)
+      {
+         return fileName.trim().matches(VALID_FILENAME_PATTERN);
+      }
+      return false;
    }
 
    /**

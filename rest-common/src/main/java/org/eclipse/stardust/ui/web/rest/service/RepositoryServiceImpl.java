@@ -332,12 +332,21 @@ public class RepositoryServiceImpl implements RepositoryService
 
          if (!processAttachments)
          {
+            if (StringUtils.isEmpty(documentInfoDTO.parentFolderPath))
+            {
+               failures.add(new NotificationDTO(null, documentInfoDTO.name, MessagesViewsCommonBean.getInstance().get(
+                     "views.genericRepositoryView.document.parentFolderError")));
+               continue;
+            }
+            
             parentFolder = DocumentMgmtUtility.createFolderIfNotExists(documentInfoDTO.parentFolderPath);
          }
          else
          {
             documentInfoDTO.dataPathId = CommonProperties.PROCESS_ATTACHMENTS;
          }
+         
+         
 
          Document document = DocumentMgmtUtility.getDocument(parentFolder.getPath(), documentInfoDTO.name);
 
@@ -353,7 +362,7 @@ public class RepositoryServiceImpl implements RepositoryService
             // create document
             document = DocumentMgmtUtility.createDocument(parentFolder.getId(), documentInfoDTO.name,
                   documentInfoDTO.contentBytes, documentInfoDTO.documentType, documentInfoDTO.contentType,
-                  documentInfoDTO.description, documentInfoDTO.comment, null, null);
+                  documentInfoDTO.description, documentInfoDTO.comment, null, (Map)documentInfoDTO.properties);
             if (processInstance != null)
             {
                if (!CommonProperties.PROCESS_ATTACHMENTS.equals(documentInfoDTO.dataPathId))
@@ -365,7 +374,7 @@ public class RepositoryServiceImpl implements RepositoryService
          }
          else
          {
-            updateDocument(document, documentInfoDTO);
+            document = updateDocument(document, documentInfoDTO);
          }
 
          documents.add(document);
@@ -437,13 +446,19 @@ public class RepositoryServiceImpl implements RepositoryService
     *
     */
    @Override
-   public void updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO)
+   public DocumentDTO updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO)
    {
       documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
       Document document = getDMS().getDocument(documentId);
 
+      if (document == null)
+      {
+         throw new I18NException(MessagesViewsCommonBean.getInstance().getString(
+               "views.myDocumentsTreeView.documentNotFound"));
+      }
+
       // check if name is changed
-      if (!document.getName().equals(documentInfoDTO.name))
+      if ((documentInfoDTO.name != null) && !document.getName().equals(documentInfoDTO.name))
       {
          if (!DocumentMgmtUtility.validateFileName(documentInfoDTO.name))
          {
@@ -451,18 +466,19 @@ public class RepositoryServiceImpl implements RepositoryService
          }
       }
 
-      updateDocument(document, documentInfoDTO);
+      return DocumentDTOBuilder.build(updateDocument(document, documentInfoDTO), getDMS());
    }
 
    /**
     * @param document
     * @param documentInfoDTO
+    * @return 
     */
-   private void updateDocument(Document document, DocumentContentRequestDTO documentInfoDTO)
+   private Document updateDocument(Document document, DocumentContentRequestDTO documentInfoDTO)
    {
-      document.setName(documentInfoDTO.name);
       document.setDescription(documentInfoDTO.description);
-
+      document.setProperties(documentInfoDTO.properties);
+      
       // TODO: updated the current user as owner?
       document.setOwner(SessionContext.findSessionContext().getUser().getAccount());
 
@@ -484,6 +500,8 @@ public class RepositoryServiceImpl implements RepositoryService
          document = getDMS().updateDocument(document, documentInfoDTO.contentBytes, "",
                documentInfoDTO.createNewRevision, documentInfoDTO.comment, "", false);
       }
+      
+      return document;
    }
 
    /**
