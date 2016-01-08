@@ -2284,7 +2284,11 @@ public class ModelElementMarshaller implements ModelMarshaller
                if (typeDeclaration == null && data.getExternalReference() != null)
                {
                   ModelType refModel = getModelBuilderFacade().getModelManagementStrategy().getModels().get(data.getExternalReference().getLocation());
-                  typeDeclaration = refModel.getTypeDeclarations().getTypeDeclaration(data.getExternalReference().getXref());
+                  if (refModel != null)
+                  {
+                     typeDeclaration = refModel.getTypeDeclarations()
+                           .getTypeDeclaration(data.getExternalReference().getXref());
+                  }                 
                }
 
                if (typeDeclaration == null && data.eIsProxy())
