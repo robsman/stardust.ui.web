@@ -1,13 +1,12 @@
 <div ng-controller="sdBCCFavoriteViewsPanelCtrl as ctrl">
-    <div class="heading"
-		ng-click="ctrl.showMyFavorite = !ctrl.showMyFavorite">
-		<span>{{i18n('business-control-center-messages.launchPanels-favoriteManagementViews-title')}}</span>
-		<i ng-show="ctrl.showMyFavorite"
+    <a href="#" class="heading" style="cursor: pointer;text-decoration : none;" ng-click="ctrl.showPanelContent = !ctrl.showPanelContent">
+        {{i18n('business-control-center-messages.launchPanels-favoriteManagementViews-title')}}
+		<i ng-show="ctrl.showPanelContent"
 			class="pi pi-trigger-expanded pi-lg" style="float: right;"></i> 
-		<i ng-show="!ctrl.showMyFavorite"
+		<i ng-show="!ctrl.showPanelContent"
 			class="pi pi-trigger-collapsed pi-lg" style="float: right;"></i>
-	</div>
-	<div ng-show="ctrl.showMyFavorite">		
+	</a>
+	<div ng-show="ctrl.showPanelContent">		
 			<div style="line-height: 15px;"><a href="#" ng-click="ctrl.openView('processOverviewView');"
 				data-placement="right"><span>{{i18n('business-control-center-messages.views-processOverviewView-label')}}&nbsp;&raquo;</span></a></div>
 		    <div style="line-height: 15px;"><a href="#" ng-click="ctrl.openView('processSearchView');"

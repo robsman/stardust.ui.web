@@ -29,7 +29,7 @@
 		trace = sdLoggerService.getLogger('benchmark-app.sdBenchmarkPanelCtrl');
 		_q = $q;
 		_sdViewUtilService = sdViewUtilService;
-		this.showMyFavorite = true;
+		this.showPanelContent = true;
 		this.tlvViewParams = {'preferenceName':'New TLV'};
 	}
 	

@@ -93,7 +93,7 @@
 				"data" : {
 					"viewId" : viewId,
 					"viewKey" : viewKey,
-					"params" : params,
+					"params" : (params == null)? undefined : params,
 					"nested" : (nested != undefined && nested === true) ? true : false
 				}
 			};

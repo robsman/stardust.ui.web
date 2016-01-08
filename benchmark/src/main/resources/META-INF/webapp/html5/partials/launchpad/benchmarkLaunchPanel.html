@@ -1,17 +1,16 @@
 <div ng-controller="sdBenchmarkPanelCtrl as ctrl">
-<div class="heading"
-		ng-click="ctrl.showMyFavorite = !ctrl.showMyFavorite">
+   <a href="#" class="heading" style="cursor: pointer;text-decoration : none;"
+		ng-click="ctrl.showPanelContent = !ctrl.showPanelContent">
 		<span>{{i18n('benchmark-messages.launchPanels-benchmarkLaunchPanel-label')}}</span>
-		<i ng-show="ctrl.showMyFavorite"
+		<i ng-show="ctrl.showPanelContent"
 			class="pi pi-trigger-expanded pi-lg" style="float: right;"></i> 
-		<i ng-show="!ctrl.showMyFavorite"
+		<i ng-show="!ctrl.showPanelContent"
 			class="pi pi-trigger-collapsed pi-lg" style="float: right;"></i>
-	</div>
-		<div ng-show="ctrl.showMyFavorite">		
-			<a href="#" ng-click="ctrl.openView('benchmarkViewHtml5');"
-				data-placement="right"><span>Benchmark Management &raquo;</span></a>
-			<br>
-		    <a href="#" ng-click="ctrl.openView('trafficLightViewNew',ctrl.tlvViewParams);"
-				data-placement="right"><span>Traffic Light View &raquo;</span></a>			
+	</a>
+	<div ng-show="ctrl.showPanelContent">		
+			<div style="line-height: 15px;"><a href="#" ng-click="ctrl.openView('benchmarkViewHtml5');"
+				data-placement="right"><span>Benchmark Management &raquo;</span></a></div>
+		    <div style="line-height: 15px;"><a href="#" ng-click="ctrl.openView('trafficLightViewNew',ctrl.tlvViewParams);"
+				data-placement="right"><span>Traffic Light View &raquo;</span></a></div>			
 	</div>
 </div>

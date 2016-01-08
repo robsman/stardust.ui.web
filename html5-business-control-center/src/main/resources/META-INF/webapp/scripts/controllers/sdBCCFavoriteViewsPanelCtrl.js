@@ -27,7 +27,7 @@
 	function BCCFavoriteViewsPanelCtrl(sdLoggerService, sdViewUtilService) {
 		trace = sdLoggerService.getLogger('bcc-ui.sdBCCFavoriteViewsPanelCtrl');
 		_sdViewUtilService = sdViewUtilService;
-		this.showMyFavorite = true;
+		this.showPanelContent = true;
 	}
 	
 	BCCFavoriteViewsPanelCtrl.prototype.openView= function(viewId,params) {		

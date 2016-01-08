@@ -31,7 +31,7 @@
 		_q = $q;
 		_sdFavoriteViewService = sdFavoriteViewService;
 		_sdViewUtilService = sdViewUtilService;
-		this.showMyFavorite = true;
+		this.showPanelContent = true;
 		this.getAllFavorites();
 	}
 

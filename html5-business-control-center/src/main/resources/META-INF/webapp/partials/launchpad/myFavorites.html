@@ -1,13 +1,12 @@
 <div ng-controller="sdFavoritesCtrl as ctrl">
-	<div class="heading"
-		ng-click="ctrl.showMyFavorite = !ctrl.showMyFavorite">
+	 <a href="#" class="heading" style="cursor: pointer;text-decoration : none;" ng-click="ctrl.showPanelContent = !ctrl.showPanelContent">
 		<span>{{i18n('business-control-center-messages.launchPanels-myFavorites-title')}}</span>
-		<i ng-show="ctrl.showMyFavorite"
+		<i ng-show="ctrl.showPanelContent"
 			class="pi pi-trigger-expanded pi-lg" style="float: right;"></i> 
-		<i ng-show="!ctrl.showMyFavorite"
+		<i ng-show="!ctrl.showPanelContent"
 			class="pi pi-trigger-collapsed pi-lg" style="float: right;"></i>
-	</div>
-	<div ng-show="ctrl.showMyFavorite">
+	</a>
+	<div ng-show="ctrl.showPanelContent">
 	    <i ng-click="ctrl.refresh()" class="pi pi-refresh pi-lg" style="float: right;"></i>
 	    <div ng-if="ctrl.favorites.length == 0">
 	        <span>{{i18n('views-common-messages.common-notification-message-title')}}</span>
