@@ -29,6 +29,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -69,6 +70,7 @@ import org.eclipse.stardust.reporting.rt.service.ReportFormat;
 import org.eclipse.stardust.reporting.rt.service.ReportingService;
 import org.eclipse.stardust.reporting.rt.util.CriticalityUtilities;
 import org.eclipse.stardust.reporting.rt.util.JsonMarshaller;
+import org.eclipse.stardust.reporting.rt.util.ReportUtilities;
 import org.eclipse.stardust.ui.web.common.spi.user.User;
 import org.eclipse.stardust.ui.web.common.spi.user.UserProvider;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
@@ -208,169 +210,14 @@ public class ReportingServiceBean
       return userService;
    }
 
+   
    /**
-   *
-   * @return
-   */
-   public JsonObject getModelData()
+    * @param locale
+    * @return
+    */
+   public JsonObject getModelData(Locale locale)
    {
-      try
-      {
-         JsonObject resultJson = new JsonObject();
-         JsonObject processesJson = new JsonObject();
-         JsonObject descriptorsJson = new JsonObject();
-         JsonObject benchmarksJson = new JsonObject();
-
-         resultJson.add("processDefinitions", processesJson);
-         resultJson.add("descriptors", descriptorsJson);
-         resultJson.add("benchmarkDefinitions", benchmarksJson);
-
-         // Ensures uniqueness of descriptor entries across all Process
-         // Definitions
-
-         Map<String, Object> descriptorsMap = new HashMap<String, Object>();
-
-         for (ProcessDefinition processDefinition : modelService.getAllProcessDefinitions(false, null))
-         {
-            JsonObject processJson = new JsonObject();
-
-            DeployedModel model = modelService.getModel(processDefinition.getModelOID());
-
-            processJson.addProperty("id", processDefinition.getQualifiedId());
-            processJson.addProperty("name", I18nUtils.getProcessName(processDefinition)); // I18n
-            processJson.addProperty("auxiliary", ProcessDefinitionUtils.isAuxiliaryProcess(processDefinition));
-            processesJson.add(processDefinition.getQualifiedId(), processJson);
-
-            Map<DataPath, DataPathMetadata> dataPaths = CommonDescriptorUtils.getAllDescriptorsWithMetadata(processDefinition, true); 
-
-            for (Entry<DataPath, DataPathMetadata> dataPathEntry : dataPaths.entrySet())
-            {
-               DataPath dataPath = dataPathEntry.getKey();
-               if (dataPath.isDescriptor())
-               {
-                  Data data = model.getData(dataPath.getData());
-                  String descriptorId = dataPath.getId() + ":" + data.getQualifiedId();
-                  if ( !isEmpty(dataPath.getAccessPath()))
-                  {
-                     descriptorId += ":" + dataPath.getAccessPath();
-                  }
-
-                  if (!descriptorsMap.containsKey(descriptorId))
-                  {
-                     JsonObject descriptorJson = new JsonObject();
-
-                     descriptorsJson.add(descriptorId, descriptorJson);
-
-                     descriptorJson.addProperty("id", descriptorId);
-                     descriptorJson.addProperty("name", I18nUtils.getDataPathName(dataPath));
-                     String dataType = UiHelper.mapDesciptorType(dataPath.getMappedType()).getId();
-                     if (dataType.equals(DataTypes.TIMESTAMP.getId()))
-                     {
-                        dataType = determineDateType(dataPath).getId();
-                     }
-
-                     descriptorJson.addProperty("type", dataType);
-
-                     // metadata for Engine
-                     DataPathMetadata metadata = dataPathEntry.getValue();
-                     JsonObject metadataJson = new JsonObject();
-                     metadataJson.addProperty("isDescriptor", true);
-                     metadataJson.addProperty("isStructuredType", metadata.isStructured());
-                     metadataJson.addProperty("data", data.getQualifiedId());
-                     metadataJson.addProperty("xPath", metadata.getxPath());
-                     metadataJson.addProperty("javaType", dataPath.getMappedType().getName());
-                     
-                     if (metadata.isEnum())
-                     {
-                        descriptorJson.addProperty("type", "enumerationType");
-                        JsonObject enumValues = new JsonObject();
-                        for (String val : metadata.getEnumValues())
-                        {
-                           JsonObject enumVal = new JsonObject();
-                           enumVal.addProperty("id", val);
-                           enumVal.addProperty(
-                                 "name",
-                                 I18nUtils.getLabel(metadata.getTypedXPath(),
-                                       modelService.getModel(dataPath.getModelOID()), val));
-                           enumValues.add(val, enumVal);
-                        }
-                        descriptorJson.add("enumList", enumValues);
-                     }
-
-                     descriptorJson.add("metadata", metadataJson);
-
-                     descriptorsMap.put(dataPath.getId(), dataPath);
-                  }
-               }
-            }
-
-            // add all activities
-            JsonArray activities = new JsonArray();
-
-            for (Object activityObj : processDefinition.getAllActivities())
-            {
-               Activity activity = (Activity) activityObj;
-               JsonObject activityJsonObj = new JsonObject();
-
-               activityJsonObj.addProperty("id", processDefinition.getQualifiedId() + ":" + activity.getQualifiedId());
-               activityJsonObj.addProperty("name", I18nUtils.getActivityName(activity));
-               activityJsonObj.addProperty("auxiliary", ActivityInstanceUtils.isAuxiliaryActivity(activity));
-               activityJsonObj.addProperty("interactive", activity.isInteractive());
-               activities.add(activityJsonObj);
-            }
-            processJson.add("activities", activities);
-         }
-
-         JsonObject participantsJson = new JsonObject();
-
-         resultJson.add("participants", participantsJson);
-
-         List<QualifiedModelParticipantInfo> qParticipantInfoList = modelService.getAllModelParticipants(true);
-         for (QualifiedModelParticipantInfo participant : qParticipantInfoList)
-         {
-            JsonObject participantJson = new JsonObject();
-
-            participantJson.addProperty("id", participant.getQualifiedId());
-            participantJson.addProperty("name",
-                  I18nUtils.getParticipantName(ParticipantUtils.getParticipant(participant)));
-
-            participantsJson.add(participant.getId(), participantJson);
-         }
-         
-         //Runtime Benchmark Definitions
-         Map<String, JsonObject> reportingRuntimeBenchmarkDefinitionsInfo = null;
-         try
-         {
-            reportingRuntimeBenchmarkDefinitionsInfo = BenchmarkUtils.getReportingRuntimeBenchmarkDefinitionsInfo();
-         }
-         catch (Exception e)
-         {
-            e.printStackTrace();
-         }
-         
-         if (reportingRuntimeBenchmarkDefinitionsInfo != null)
-         {
-            Set<Entry<String,JsonObject>> entrySet = reportingRuntimeBenchmarkDefinitionsInfo.entrySet();
-
-            for (Entry<String, JsonObject> entry : entrySet)
-            {
-               JsonObject bmJsonObject = entry.getValue();
-               JsonObject benchmarkJson = new JsonObject();
-               
-               benchmarkJson.addProperty(BENCHMARK_RUNTIME_OID, entry.getKey());
-               benchmarkJson.addProperty(BenchmarkUtils.BENCHMARK_NAME, bmJsonObject.get(BenchmarkUtils.BENCHMARK_NAME).getAsString());
-               
-               JsonArray benchmarkCategories = GsonUtils.extractJsonArray(bmJsonObject, BenchmarkUtils.BENCHMARK_CATEGORIES);
-               benchmarkJson.add(BenchmarkUtils.BENCHMARK_CATEGORIES, benchmarkCategories);
-               
-               benchmarksJson.add(entry.getKey(), benchmarkJson);
-            }
-         }
-         return resultJson;
-      }
-      finally
-      {
-      }
+      return ReportUtilities.getModelData(locale);
    }
 
    /**
