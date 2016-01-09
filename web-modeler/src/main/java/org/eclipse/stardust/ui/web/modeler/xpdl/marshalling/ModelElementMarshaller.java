@@ -3075,7 +3075,7 @@ public class ModelElementMarshaller implements ModelMarshaller
       {
          return null;
       }
-            
+
       if (transitionConnection.getTransition() != null)
       {
          TransitionType transition = transitionConnection.getTransition();

@@ -259,6 +259,10 @@ public class EnhancedJarResourceFilter implements Filter
       {
          response.setContentType("text/css");
       }
+      else if (path.endsWith(".png") || path.endsWith(".jpg") || path.endsWith(".jpeg") || path.endsWith(".gif"))
+      {
+         response.setContentType("image/" + path.substring(path.lastIndexOf(".") + 1));
+      }
       else
       {
          response.setContentType("text/html");

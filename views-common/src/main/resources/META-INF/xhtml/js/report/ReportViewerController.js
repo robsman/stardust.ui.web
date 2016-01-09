@@ -106,9 +106,13 @@ define(
 										//Do not show Retrieve All link.
 										self.renderingController.isPreviewMode = false;
 										// fetch and render report-data
-										self.renderingController.refreshPreview(self, self.report, self.parameters).done(function(){
-											self.updateView();
-										});
+                    if (self.hasParameters() && !self.instance) {
+                      self.updateView();
+                    } else {
+                      self.renderingController.refreshPreview(self, self.report, self.parameters).done(function() {
+                        self.updateView();
+                      });
+                    }
 									});
 
 					jQuery("#reportDefinitionView")
