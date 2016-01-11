@@ -526,3 +526,8 @@ button.close {
 	min-width : 55px
 }
 
+.panel-padding{
+	padding-bottom : 5px;
+	padding-top : 5px;
+}
+
