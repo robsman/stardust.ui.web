@@ -1,0 +1,82 @@
+<div ng-controller="sdBCCMyFavoriteReportsPanelCtrl as ctrl">
+	<div class="panel-padding">
+		<a href="#" class="heading"
+			style="cursor: pointer; text-decoration: none;"
+			ng-click="ctrl.showPanelContent = !ctrl.showPanelContent"> <span>{{i18n('business-control-center-messages.launchPanels-myReportsViewPanel-title')}}</span>
+			<i ng-show="ctrl.showPanelContent"
+			   class="pi pi-trigger-expanded pi-lg" style="float: right;"></i> 
+			<i ng-show="!ctrl.showPanelContent"
+			   class="pi pi-trigger-collapsed pi-lg" style="float: right;"></i>
+		</a>
+	</div>
+	<div ng-show="ctrl.showPanelContent">
+		<i ng-click="ctrl.refresh()" class="pi pi-refresh pi-lg"
+			style="float: right;"></i>
+		<div ng-if="ctrl.favoriteReports.length == 0">
+			<span>{{i18n('views-common-messages.common-notification-message-title')}}</span>
+		</div>
+		<div ng-if="ctrl.favoriteReports.length > 0"
+			ng-repeat="report in ctrl.favoriteReports">
+			
+			<button	ng-click="ctrl.removeFromFavoriteReports(report.documentId);"
+				title="{{i18n('views-common-messages.views-myReportsView-removeFromFavorite-title')}}"
+				class="button-link tbl-toolbar-item tbl-tool-link">
+				<i class=" pi pi-favorite-not pi-lg"></i>
+			</button>			
+			<a href="#"
+				ng-click="ctrl.openView(report.documentId);"
+				data-placement="right"> {{report.documentName}} </a>
+		</div>
+	</div>
+	<div class="clearing"></div>
+</div>
+
+
+<!-- 
+
+
+<f:view xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ice="http://www.icesoft.com/icefaces/component"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:c="http://java.sun.com/jstl/core"
+	xmlns:fn="http://java.sun.com/jsp/jstl/functions"
+	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
+
+	<ice:panelGroup>
+		<ui:include src="/plugins/common/templates/launchPanelTemplate.xhtml">
+				<ui:param name="bean" value="#{myReportsPanelBean}" />
+				<ui:param name="title"
+					value="#{myReportsPanelBean.messages['title']}" />
+				<ui:param name="collapsible" value="true" />
+				<ui:param name="showRefreshLink" value="true" />
+				<ui:param name="automationTag" value="auto-BCC-LP-MyFavReportsPnl" />
+			</ui:include>
+	</ice:panelGroup>
+
+	<ice:panelGroup rendered="#{myReportsPanelBean.expanded}">
+	<ice:outputText value="#{messages_admin['common.notification.message.title']}" rendered="#{empty myReportsPanelBean.favoriteReports}"/>
+		<ice:panelGroup
+			rendered="#{not empty myReportsPanelBean.favoriteReports}">
+			<ice:panelSeries var="report"
+				value="#{myReportsPanelBean.favoriteReports}">
+				<ice:panelGrid columns="2">
+					<ice:commandLink actionListener="#{myReportsPanelBean.removeFromFavorite}">
+						<pc:automationTag value="auto-BCC-LP-RemFavReportView" standAlone="false"/>
+						<ice:outputText
+							styleClass="pi pi-favorite-not pi-lg"
+							title="#{views_common_msgPropsBean['views.myReportsView.removeFromFavorite.title']}" />
+						<f:attribute name="documentId" value="#{report.key}" />
+					</ice:commandLink>
+					<ice:commandLink styleClass="action-link"
+						actionListener="#{myReportsPanelBean.openReport}" value="#{report.value}">
+						<pc:automationTag value="auto-BCC-LP-OpenFavReportView" standAlone="false"/>
+						<f:attribute name="documentId" value="#{report.key}" />
+					</ice:commandLink>
+				</ice:panelGrid>
+			</ice:panelSeries>
+		</ice:panelGroup>
+	</ice:panelGroup>
+
+
+</f:view> -->

@@ -56,6 +56,7 @@
          <bean class="org.eclipse.stardust.ui.web.rest.ViewFavoriteResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.PerspectiveResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.RepositoryResource" />
+         <bean class="org.eclipse.stardust.ui.web.rest.FavoriteReportsResource" />
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>
             <bean class="org.eclipse.stardust.ui.web.rest.exception.PortalRestExceptionMapper"/>
