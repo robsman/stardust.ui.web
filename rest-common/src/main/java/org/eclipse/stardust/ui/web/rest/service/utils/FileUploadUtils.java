@@ -14,12 +14,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.ws.rs.core.MultivaluedMap;
@@ -115,8 +113,7 @@ public class FileUploadUtils
                {
                   documentInfoDTO.properties = new HashMap<String, Object>();
                }
-               documentInfoDTO.properties.putAll((Map< ? extends String, ? extends Serializable>) GsonUtils
-                     .readJsonMap(inputStream.toString()));
+               documentInfoDTO.properties.putAll(GsonUtils.readJsonMap(inputStream.toString()));
             }
             else
             {
