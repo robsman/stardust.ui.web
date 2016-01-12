@@ -1176,7 +1176,10 @@ define(
                {
                   var attributes=this.getApplication().attributes;
                   var specificAttributes={};
-                     
+                  
+                  if (!attributes["synchronous:retry:responsibility"])
+                     specificAttributes["synchronous:retry:responsibility"] = "application";
+                  
                   if(!attributes["carnot:engine:camel::applicationIntegrationOverlay"]){
                      specificAttributes["carnot:engine:camel::applicationIntegrationOverlay"]="restServiceOverlay";
                   }
@@ -1327,6 +1330,7 @@ define(
                   var attributes=this.getApplication().attributes;
                   var accessPoints=this.getApplication().contexts.application.accessPoints;
                   attributes["carnot:engine:camel::applicationIntegrationOverlay"]="restServiceOverlay";
+                  attributes["synchronous:retry:responsibility"]="application";
                   attributes["carnot:engine:camel::camelContextId"]="defaultCamelContext";
                   attributes["stardust:restServiceOverlay::uri"]=this.uriInput.val();
                   attributes["stardust:restServiceOverlay::command"]=this.commandSelect.val();

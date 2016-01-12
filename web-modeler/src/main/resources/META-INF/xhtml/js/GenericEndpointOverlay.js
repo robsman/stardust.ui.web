@@ -627,7 +627,8 @@ define(
                this.view
                      .submitChanges({
                         attributes : {
-                           "carnot:engine:camel::applicationIntegrationOverlay" : "genericEndpointOverlay"//,
+                           "carnot:engine:camel::applicationIntegrationOverlay" : "genericEndpointOverlay",
+                            "synchronous:retry:responsibility": "application"
 //                         "carnot:engine:camel::camelContextId" : "defaultCamelContext"
                         }
                      });
@@ -1058,6 +1059,7 @@ define(
                      .submitChanges({
                         type : applicationTypeChanges,
                         attributes : {
+                           "synchronous:retry:responsibility": "application",
                            "carnot:engine:camel::invocationPattern" : invocationPatternChanges,
                            "carnot:engine:camel::invocationType" : invocationTypeChanges,
                            "carnot:engine:camel::routeEntries" : producerRoute,
@@ -1085,6 +1087,7 @@ define(
                            }
                         },
                         attributes : {
+                           "synchronous:retry:responsibility": "application",
                            "carnot:engine:camel::applicationIntegrationOverlay" : "genericEndpointOverlay"
                         }
                      });

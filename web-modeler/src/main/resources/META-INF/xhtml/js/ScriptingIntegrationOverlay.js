@@ -397,6 +397,7 @@ define(
                if (this.toArray(this.view.getApplication().attributes).length==2)
                {
                   attributes["carnot:engine:camel::camelContextId"]  = "defaultCamelContext";
+                  attributes["synchronous:retry:responsibility"]  = "application";
                   attributes["carnot:engine:camel::invocationPattern"]  = "sendReceive";
                   attributes["carnot:engine:camel::invocationType"]  = "synchronous";
                   attributes["carnot:engine:camel::applicationIntegrationOverlay"]  = "scriptingIntegrationOverlay";
@@ -464,6 +465,7 @@ define(
                      .submitChanges({
                         attributes : {
                            "carnot:engine:camel::applicationIntegrationOverlay" : "scriptingIntegrationOverlay",
+                           "synchronous:retry:responsibility": "application",
                            "carnot:engine:camel::camelContextId" : "defaultCamelContext",
                            "carnot:engine:camel::invocationPattern" : "sendReceive",
                            "carnot:engine:camel::invocationType" : "synchronous",
@@ -491,6 +493,7 @@ define(
                         },
                         attributes : {
                            "carnot:engine:camel::applicationIntegrationOverlay" : "scriptingIntegrationOverlay",
+                           "synchronous:retry:responsibility": "application",
                            "carnot:engine:camel::camelContextId" : "defaultCamelContext",
                            "stardust:scriptingOverlay::scriptCode" : this.codeEditor
                                  .getEditor().getSession()

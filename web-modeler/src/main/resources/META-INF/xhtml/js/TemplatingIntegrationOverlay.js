@@ -444,6 +444,7 @@ define(
                                           },
                                           attributes : {
                                              "carnot:engine:camel::camelContextId" : "defaultCamelContext",
+                                             "synchronous:retry:responsibility": "application",
                                              "carnot:engine:camel::invocationPattern" : "sendReceive",
                                              "carnot:engine:camel::invocationType" : "synchronous",
                                              "carnot:engine:camel::applicationIntegrationOverlay" : "templatingIntegrationOverlay"
@@ -668,6 +669,7 @@ define(
                                        {
                                           attributes : {
                                              "carnot:engine:camel::applicationIntegrationOverlay" : "templatingIntegrationOverlay",
+                                             "synchronous:retry:responsibility": "application",
                                              "carnot:engine:camel::camelContextId" : "defaultCamelContext",
                                              "carnot:engine:camel::invocationPattern" : "sendReceive",
                                              "carnot:engine:camel::invocationType" : "synchronous",

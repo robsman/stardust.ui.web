@@ -686,6 +686,7 @@ define(
 							.submitChanges({
 								attributes : {
 									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
+									"synchronous:retry:responsibility": "application",
 									"carnot:engine:camel::invocationPattern" : "sendReceive",
 									"carnot:engine:camel::invocationType" : "synchronous",
 									"carnot:engine:camel::applicationIntegrationOverlay" : "storedProcedureIntegrationOverlay"
@@ -1141,6 +1142,7 @@ define(
 							.submitChanges({
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "storedProcedureIntegrationOverlay",
+									"synchronous:retry:responsibility": "application",
 									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
 									"carnot:engine:camel::invocationPattern" : "sendReceive",
 									"carnot:engine:camel::invocationType" : "synchronous",
@@ -1196,6 +1198,7 @@ define(
 								},
 								attributes : {
 									"carnot:engine:camel::applicationIntegrationOverlay" : "storedProcedureIntegrationOverlay",
+									"synchronous:retry:responsibility": "application",
 									"carnot:engine:camel::camelContextId" : "defaultCamelContext",
 									"carnot:engine:camel::invocationPattern" : "sendReceive",
 									"carnot:engine:camel::invocationType" : "synchronous",

@@ -125,6 +125,9 @@ define(
                   }
                   var attributes = this.getApplication().attributes;
                   var specificAttributes = {};
+                  if (!attributes["synchronous:retry:responsibility"])
+                     specificAttributes["synchronous:retry:responsibility"] = "application";
+                  
                   if (!attributes["carnot:engine:camel::applicationIntegrationOverlay"])
                      specificAttributes["carnot:engine:camel::applicationIntegrationOverlay"] = "mailIntegrationOverlay";
                   if (!attributes["carnot:engine:camel::camelContextId"])
