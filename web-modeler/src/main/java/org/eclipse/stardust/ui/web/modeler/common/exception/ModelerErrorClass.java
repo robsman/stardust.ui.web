@@ -24,6 +24,7 @@ public class ModelerErrorClass extends ErrorCase
    public final static ModelerErrorClass MODEL_ID_INVALID = new ModelerErrorClass("ModelerError.01003");
    public final static ModelerErrorClass DATA_ID_ALREADY_EXISTS = new ModelerErrorClass("ModelerError.revertLastCommand.01001");
    public final static ModelerErrorClass DATAMAPPING_NAME_EMPTY = new ModelerErrorClass("ModelerError.01004");
+   public final static ModelerErrorClass CIRCULAR_DEPENDENCY = new ModelerErrorClass("ModelerError.revertLastCommand.01002");
 
    // add other errors
 
