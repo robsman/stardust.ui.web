@@ -28,7 +28,7 @@
 
    <properties>
       <maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
-      <build.qualifier>${maven.build.timestamp}</build.qualifier>
+      <build.timestamp>${maven.build.timestamp}</build.timestamp>
       <skip.i18n-bundle-copy>false</skip.i18n-bundle-copy>
    </properties>
 
