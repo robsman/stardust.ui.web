@@ -1,3 +1,4 @@
+
 /*******************************************************************************
  * Copyright (c) 2014 SunGard CSA LLC and others.
  * All rights reserved. This program and the accompanying materials
@@ -27,10 +28,11 @@
 			scope : {
 				name : '=sdaName',
 				mimeType : '=sdaMimeType',
-				documentId : '=sdaDocumentId'
+				documentId : '=sdaDocumentId',
+				params : '=sdaParams'
 			},
 			template : '<a href="#"  ng-click="docLinkCtrl.openDocument($event);">'
-					+ '<i ng-class="docLinkCtrl.mimeIcon" style="font-size:18px;"> </i> <span ng-bind="name"></span>'
+					+ '<i ng-class="docLinkCtrl.mimeIcon" class="pi-lg spacing-right"> </i> <span ng-bind="name"></span>'
 					+ '</a>',
 			controller : [ '$scope', '$parse', '$attrs', 'sdUtilService', 'sdCommonViewUtilService', 'sdMimeTypeService',
 					DocumentLinkController ]
@@ -47,9 +49,9 @@
 		/**
 		 * Declared here for accessing the $scope variable
 		 */
-		this.openDocument = function() {
-			sdUtilService.stopEvent(event);
-			this.openDocumentView($scope.documentId, sdCommonViewUtilService);
+		this.openDocument = function($event) {
+			sdUtilService.stopEvent($event);
+			this.openDocumentView($scope.documentId, sdCommonViewUtilService, $scope.params);
 		};
 
 		$scope.docLinkCtrl = this;
@@ -59,8 +61,8 @@
 	/**
 	 * 
 	 */
-	DocumentLinkController.prototype.openDocumentView = function(documentId, sdCommonViewUtilService) {
-		sdCommonViewUtilService.openDocumentView(documentId, true);
+	DocumentLinkController.prototype.openDocumentView = function(documentId, sdCommonViewUtilService, params) {
+		sdCommonViewUtilService.openDocumentView(documentId, true, params);
 	};
 
 })();

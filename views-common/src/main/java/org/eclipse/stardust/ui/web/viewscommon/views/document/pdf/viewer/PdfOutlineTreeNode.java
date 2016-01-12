@@ -172,9 +172,9 @@ public class PdfOutlineTreeNode extends DefaultMutableTreeNode
          setText(outlineItemTreeNode.getOutlineItem().getTitle());
 
          // setup not state.
-         setLeafIcon("tree_document.gif");
-         setBranchContractedIcon("tree_document.gif");
-         setBranchExpandedIcon("tree_document.gif");
+         setLeafIcon("pi-lg pi pi-other");
+         setBranchContractedIcon("pi-lg pi pi-other");
+         setBranchExpandedIcon("pi-lg pi pi-other");
 
          // is item a node or a leaf.
          if (outlineItemTreeNode.getOutlineItem().getSubItemCount() > 0)

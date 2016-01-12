@@ -16,7 +16,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdSwitchProcessDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'eventBus', 'sdViewUtilService', '$sce',
+	angular.module('bpm-common').directive('sdSwitchProcessDialog', ['$parse', '$q', 'sdUtilService', 'sdProcessInstanceService', 'sdLoggerService', 'sdMessageService', 'sdViewUtilService', '$sce',
 	                                                                    SwitchProcessDialogDirective]);
 
 	var trace;
@@ -24,7 +24,7 @@
 	/*
 	 * Directive class
 	 */
-	function SwitchProcessDialogDirective($parse, $q, sdUtilService, sdProcessInstanceService, sdLoggerService, eventBus, sdViewUtilService, $sce) {
+	function SwitchProcessDialogDirective($parse, $q, sdUtilService, sdProcessInstanceService, sdLoggerService, sdMessageService, sdViewUtilService, $sce) {
 		
 		trace = sdLoggerService.getLogger('bpm-common.sdSwitchProcessDialog');
 		
@@ -49,7 +49,8 @@
 					+ ' sda-type="confirm"'
 					+ ' sda-scope="this"'
 					+ ' sda-on-open="switchProcessController.onOpenDialog(res)"'
-					+ ' sda-template="plugins/html5-process-portal/scripts/directives/partials/switchProcessDialog.html"'
+					+ ' sda-template="'
+					+  sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/switchProcessDialog.html"'
 					+ ' sda-on-confirm="switchProcessController.confirm()"'
 					+ ' sda-confirm-action-label="{{i18n(\'views-common-messages.delegation-applyButton-text\')}}"'
 					+ ' sda-cancel-action-label="{{i18n(\'views-common-messages.common-cancel\')}}"'
@@ -62,7 +63,8 @@
 					+ ' sda-type="custom"'
 					+ ' sda-scope="this"'
 					+ ' sda-on-close="switchProcessController.onCloseNotification()"'
-					+ ' sda-template="plugins/html5-process-portal/scripts/directives/partials/switchProcessNotification.html">'
+					+ ' sda-template="'
+					+  sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/switchProcessNotification.html">'
 					+ '</span>',
 				controller: SwitchProcessDialogController
 			};
@@ -138,17 +140,9 @@
 					}
 				}
 
-				self.resetErrorMessage();
-				eventBus.emitMsg("js.error", msg);
+				sdMessageService.showMessage(msg);
 			}
 
-			/*
-			 * 
-			 */
-			SwitchProcessDialogController.prototype.resetErrorMessage = function() {
-				eventBus.emitMsg("js.error.reset");
-			}
-			
 			/*
 			 * 
 			 */
@@ -259,7 +253,7 @@
 
 				}, function(result) {
 					// Error occurred
-					trace.log('An error occurred while performing abort & start.\n Caused by: ' + result);
+					trace.log('An error occurred while performing abort & start.\n Caused by: ' , result);
 					deferred.reject(result);
 				});
 
@@ -332,7 +326,7 @@
 				fetchSpawnableProcesses().then(function(process) {
 					self.switchProcess.spawnableProcesses = process;
 					self.switchProcessDialog.open();
-				}, function() {
+				}, function(error) {
 					openNotificationDialog(error);
 				});
 			}
@@ -367,13 +361,13 @@
 			function fetchSpawnableProcesses() {
 				var deferred = $q.defer();
 
-				sdProcessInstanceService.getSpawnableProcesses(self.processInstanceOIDs).then(function(data) {
+				sdProcessInstanceService.getSpawnableProcesses().then(function(data) {
 					deferred.resolve(data);
 
 					self.safeApply();
 				}, function(result) {
 					// Error occurred
-					trace.log('An error occurred while fetching Spawnable Processes.\n Caused by: ' + result);
+					trace.log('An error occurred while fetching Spawnable Processes.\n Caused by: ' , result);
 
 					deferred.reject(result);
 				});

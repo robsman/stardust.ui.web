@@ -32,6 +32,8 @@ import org.eclipse.stardust.model.xpdl.carnot.LaneSymbol;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
 import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
+import org.eclipse.stardust.ui.web.modeler.common.exception.ModelerErrorClass;
+import org.eclipse.stardust.ui.web.modeler.common.exception.ModelerException;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
@@ -76,7 +78,15 @@ public class DataCommandHandler
 
          try
          {
-            data = getModelBuilderFacade().importData(model, dataFullID);
+            try
+            {
+               data = getModelBuilderFacade().importData(model, dataFullID);
+            }
+            catch (IllegalArgumentException e)
+            {
+               throw new ModelerException(ModelerErrorClass.DATA_ID_ALREADY_EXISTS);
+            }
+            
             if (null == data)
             {
                data = getModelBuilderFacade().createPrimitiveData(model, dataID,

@@ -1,15 +1,14 @@
-<div class="view-panel" ng-controller="sdQaManagementViewCtrl as qaManagementCtrl" sg-stretch-to-bottom>
+<div sg-stretch-to-bottom class="view-panel">
+<div class="ng-hide" ng-show="true" ng-controller="sdQaManagementViewCtrl as qaManagementCtrl" >
 	<!-- Save Button -->
-	<div class="view-panel-toolbar toolbar-buttons">
+	<!--div class="view-panel-toolbar toolbar-buttons">
 		<div class="view-toolbar-section" >
-			<span sd-save sda-on-save="qaManagementCtrl.saveChanges();"></sapn>
+			<span sd-save sda-on-save="qaManagementCtrl.saveChanges();" aid="ADM-QAMgmt-SaveChanges"></span>
 		</div>
-	</div>
+	</div-->
 	<!-- Activities -->
-	<div class="view-panel-toolbar">
-		<i class="sc sc-arrow-d" ng-show="qaManagementCtrl.isActivitiesPanelExpanded" ng-click="qaManagementCtrl.expandActivitiesPanel(false);"> </i> 
-		<i class="sc sc-arrow-r" ng-show="!qaManagementCtrl.isActivitiesPanelExpanded" ng-click="qaManagementCtrl.expandActivitiesPanel(true);"> </i> 
-		<span ng-bind="i18n('admin-portal-messages.views-qaManagementView-label')" class="heading"> 
+	<div class="heading view-panel-toolbar">
+		<span ng-bind="i18n('admin-portal-messages.views-qaManagementView-activities-label')" > 
 		</span>
 	</div>
 	<!-- Activities Panel-->
@@ -17,47 +16,49 @@
 		<!-- ToolBar -->
 		<div sda-toolbar>
 			<div class="tbl-toolbar-section">
-				<button ng-click="qaManagementCtrl.showHideObsoleteActivities();"
+				<button ng-click="qaManagementCtrl.showHideObsoleteActivities();" aid="ADM-QAMgmt-ShowObsoleteActivities"
 					title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-showHideAbsActivites-title')}}"
 					class="button-link tbl-toolbar-item tbl-tool-link">
 					<!-- 	Replace with pen book icon for show obsolete activities -->
-					<i class="toolbar-icon sc sc-book toolbar-icon" ng-class="{iconDisabled:qaManagementCtrl.showObsoleteActivities }"></i>
+					<i class="pi pi-eye-slash pi-lg" ng-class="{iconDisabled:qaManagementCtrl.showObsoleteActivities }"></i>
 				</button>
 				<button ng-click="qaManagementCtrl.editActivityQa();" ng-disabled="qaManagementCtrl.activityTable.getSelection() < 1"
-					title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-editQA-title')}}"
-					class="button-link tbl-toolbar-item tbl-tool-link">
-					<i class="glyphicon glyphicon-pencil toolbar-icon"></i>
+					title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-editQA-title')}}"  aid="ADM-QAMgmt-EditActivityQA"
+					class="button-link tbl-toolbar-item tbl-tool-link ">
+					<i class="pi pi-edit pi-lg"></i>
 				</button>
 			</div>
+			
 		</div>
 		<!-- Activities Table -->
-		<div>
-			<table sd-data-table="qaManagementCtrl.activityTable" sd-data="qaManagementCtrl.fetchQaActivities(params)" sda-mode="local"
-			  sda-selectable="row" sda-no-pagination="true" sda-sortable="true" sda-on-select="qaManagementCtrl.onSelect(info)">
+		<div ng-if="qaManagementCtrl.activityTableReady">
+			<table sd-data-table="qaManagementCtrl.activityTable" sd-data="qaManagementCtrl.fetchQaActivities(params)"
+			      sda-mode="local"  sda-sort-by="{name : 'modelName' , dir : 'asc'}" 
+			      sda-selectable="row"  sda-sortable="true" sda-on-select="qaManagementCtrl.onSelect(info)" sda-page-size="{{qaManagementCtrl.activities.totalCount}}" >
 				<thead>
 					<tr>
 						<th sda-name="modelName" sda-label="{{i18n('admin-portal-messages.views-qaManagementView-modelName-label')}}"
 							sda-sortable="true" sda-filterable="true">
 							<div sda-filter-template>
-								<div sd-text-search-filter></div>
+								<div sd-text-search-table-filter></div>
 							</div>
 						</th>
 						<th sda-name="processName" sda-label="{{i18n('admin-portal-messages.common-process')}}" sda-sortable="true" 
 						    sda-filterable="true">
 							<div sda-filter-template>
-								<div sd-text-search-filter></div>
+								<div sd-text-search-table-filter></div>
 							</div>
 						</th>
 						<th sda-name="activityName" sda-label="{{i18n('admin-portal-messages.common-activity')}}"
 							sda-sortable="true" sda-filterable="true">
 							<div sda-filter-template>
-								<div sd-text-search-filter></div>
+								<div sd-text-search-table-filter></div>
 							</div>
 						</th>
 						<th sda-name="defaultPerformer" sda-label="{{i18n('admin-portal-messages.views-qaManagementView-defaultPerformer-label')}}"
 							sda-sortable="true" sda-filterable="true">
 							<div sda-filter-template>
-								<div sd-text-search-filter></div>
+								<div sd-text-search-table-filter></div>
 							</div>
 						</th>
 						<th sda-name="qaPercentage" sda-label="{{i18n('admin-portal-messages.views-qaManagementView-qaPercentage-label')}}"
@@ -66,28 +67,45 @@
 				</thead>
 				<tbody>
 					<tr>
-						<!--  TODO  Replace with icon for model -->
-						<td>
-							<i class="sc sc-circle qa-management-table-icon"> </i>
+						<td sda-data-type="string">
+							<!-- <i class=" spacing-right pi pi-model pi-lg"> </i> -->
 							<span ng-bind="rowData.modelName"></span>
 						</td>
-						<td>
-							<i class="glyphicon glyphicon-cog qa-management-table-icon"> </i>
+						<td sda-data-type="string">
+							<!-- <i class="pi pi-process-details spacing-right pi-lg"> </i> -->
 							<span ng-bind="rowData.processName"></span>
 						</td>
-						<!-- TODO Replace with  manual activity Icon -->
-						<td>
-							<i class="sc sc-gear-user qa-management-table-icon"></i>
-							<span ng-bind="rowData.activityName"></span>
+						<td sda-data-type="string">
+						<!-- <i class="pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top">
+							<i class="pi pi-badge-icon pi-badge-icon-arrow-r"></i>
+						</i> -->
+						<span ng-bind="rowData.activityName"></span></td>
+						<td sda-data-type="string">
+							<!-- Icons for various Participant types -->
+							<!-- <span ng-if="rowData.performerType == 'ROLE'"  class="spacing-right"> <span class="pi-lg" style="color:#A2B5CD">(</span> <i
+								class="pi pi-lg pi-user" style="color:#A2B5CD;"></i> <span class="pi-lg" style="color:#A2B5CD">)</span>
+						   </span> 
+						   <span ng-if="rowData.performerType == 'SCOPED_ROLE'"  class="spacing-right"> <span class="pi-lg"  style="color:'#000'">(</span> <i
+								class="pi pi-lg pi-user" style="color:#A2B5CD;"></i> <span class="pi-lg">)</span>
+						   </span>
+						    <span ng-if="rowData.performerType == 'SCOPED_ORGANIZATION'"  class="spacing-right"> 
+						    	<i class="pi pi-organization pi-lg "></i>
+						    </span>
+						      <span ng-if="rowData.performerType == 'ORGANIZATION'"  class="spacing-right"> 
+						    	<i class="pi pi-organization pi-lg "></i>
+						    </span>
+						     <span ng-if="rowData.performerType == 'USER'"  class="spacing-right"> 
+						    	<i class="pi pi-user pi-lg "></i>
+						    </span>
+						     <span ng-if="rowData.performerType == 'USERGROUP'"  class="spacing-right"> 
+						    	<i class="pi pi-groups pi-lg "></i>
+						    </span> -->
+						 <span ng-bind="rowData.defaultPerformer"></span>
 						</td>
-						<td>
-							<i ng-class="rowData.icon"class="qa-management-table-icon"> </i>
-							<span ng-bind="rowData.defaultPerformer"></span>
-						</td>
-						<td>
+						<td sda-data-type="string">
 							<span ng-hide="rowData.isEditMode" ng-bind="rowData.qaPercentage"></span> 
 							<span ng-show="rowData.isEditMode">
-								<input type="text" ng-model="rowData.qaPercentage" style="width: 30px;"/> 
+								<input type="text" ng-model="rowData.qaPercentage" style="width: 30px;" aid="ADM-QAMgmt-ActivityQA"/> 
 								 <span ng-show=" !rowData.qaPercentage || rowData.qaPercentage === ''" 
 								 class="qa-management-emptyCell-warning "> * </span>
 							</span>
@@ -99,34 +117,34 @@
 	</div>
 	<br />
 	<!-- Departments -->
-	<div ng-show="qaManagementCtrl.departments.totalCount > 0">
-		<div class="view-panel-toolbar">
-			<i class="sc sc-arrow-d" ng-show="qaManagementCtrl.isDepartmentsPanelExpanded"ng-click="qaManagementCtrl.expandDepartmentsPanel(false);"> 
+	<div ng-if="qaManagementCtrl.departments.totalCount > 0">
+		<div class="heading">
+			<i class="pi pi-trigger-expanded pi-lg" ng-show="qaManagementCtrl.isDepartmentsPanelExpanded"ng-click="qaManagementCtrl.expandDepartmentsPanel(false);"> 
 			</i> 
-			<i class="sc sc-arrow-r" ng-show="!qaManagementCtrl.isDepartmentsPanelExpanded" ng-click="qaManagementCtrl.expandDepartmentsPanel(true);"> 
+			<i class="pi pi-trigger-collapsed pi-lg" ng-show="!qaManagementCtrl.isDepartmentsPanelExpanded" ng-click="qaManagementCtrl.expandDepartmentsPanel(true);"> 
 			</i> 
-			<span ng-bind="i18n('admin-portal-messages.views-qaManagementView-departments-label')" class="heading"></span>
+			<span ng-bind="i18n('admin-portal-messages.views-qaManagementView-departments-label')"></span>
 		</div>
 		<div ng-show="qaManagementCtrl.isDepartmentsPanelExpanded">
 			<div sda-toolbar>
 				<div class="tbl-toolbar-section">
 					<button ng-click="qaManagementCtrl.editDepartmentQa();" ng-disabled="qaManagementCtrl.departmentTable.getSelection() < 1"
-						title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-editQA-title')}}"
+						title="{{i18n('admin-portal-messages.views-qaManagementView-toolbar-editQA-title')}}" aid="ADM-QAMgmt-EditDepartmentQA"
 						class="button-link tbl-toolbar-item tbl-tool-link">
-						<i class="glyphicon glyphicon-pencil toolbar-icon"></i>
+						<i class="pi pi-edit-qa-probability pi-lg"></i>
 					</button>
 				</div>
 			</div>
 			<!-- Departments Table	 -->
-			<table sd-data-table="qaManagementCtrl.departmentTable" 
-				   sd-data="qaManagementCtrl.fetchQaDepartments(qaManagementCtrl.activityTable.getSelection())"
-				   sda-mode="local" sda-ready="qaManagementCtrl.searchDepartments" sda-selectable="row" sda-no-pagination="true" sda-sortable="true">
+			<table sd-data-table="qaManagementCtrl.departmentTable"  aid="ADM-QAMgmt-DepartmentQATable"
+				   sd-data="qaManagementCtrl.fetchQaDepartments(params)" sda-sort-by="{name : 'name' , dir : 'asc'}" sda-page-size="{{qaManagementCtrl.departments.totalCount}}"
+				   sda-mode="local"  sda-selectable="row" sda-sortable="true">
 				<thead>
 					<tr>
 						<th sda-name="name" sda-label="{{i18n('admin-portal-messages.views-qaManagementView-department-label')}}"
 							sda-sortable="true" sda-filterable="true" >
 							<div sda-filter-template>
-								<div sd-text-search-filter></div>
+								<div sd-text-search-table-filter></div>
 							</div>
 						</th>
 						<th sda-name="qaPercentage" sda-label="{{i18n('admin-portal-messages.views-qaManagementView-qaPercentage-label')}}"
@@ -135,15 +153,17 @@
 				</thead>
 				<tbody>
 					<tr>
-						<!--  TODO replace by group link icons -->
-						<td>
-							<i class="sc sc-users qa-management-table-icon"> </i><span ng-bind="rowData.name"></span>
+						<td sda-data-type="string">
+						<i class="pi pi-badge-portrait pi-fw pi-activity-delegate pi-lg pi-left pi-top">
+							<i class="pi pi-badge-icon pi-badge-icon-arrow-r"></i>
+						</i>
+							<span ng-bind="rowData.name"></span>
 						</td>
-						<td>
+						<td sda-data-type="string">
 							<span ng-hide="rowData.isEditMode" ng-bind="rowData.qaPercentage"></span> 
 							<span ng-show="rowData.isEditMode">
-								<input type="text" ng-model="rowData.qaPercentage" style="width: 30px;"></input> 
-								<span ng-show=" !rowData.qaPercentage || rowData.qaPercentage === ''" style="color: orange; font-size: 25px;"> * </span>
+								<input type="text" ng-model="rowData.qaPercentage" style="width: 30px;"  aid="ADM-QAMgmt-DepartmentQA"></input> 
+								<span ng-show=" !rowData.qaPercentage || rowData.qaPercentage === ''" style="color: orange" class="pi-2x"> * </span>
 							</span>
 						</td>
 					</tr>
@@ -151,4 +171,9 @@
 			</table>
 		</div>
 	</div>
+	<button class="button" 
+	        ng-click="qaManagementCtrl.saveChanges()" 
+	        aid="ADM-QAMgmt-SaveChanges">{{i18n('admin-portal-messages.views-qaManagementView-save')}}
+	</button>
+</div>
 </div>

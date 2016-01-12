@@ -1,0 +1,80 @@
+<div sg-stretch-to-bottom class="view-panel">
+<div class="ng-hide" ng-show="true" ng-controller="sdTrafficLightViewCtrl as ctrl">
+	<div class="toolbar-buttons">
+		<div class="view-toolbar-section">
+			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
+		</div>
+	</div>
+
+
+	<div class="view-panel-content">
+
+		<table>
+			<tr>
+				<td><span class="label-form">
+						{{i18n('business-control-center-messages.common-process')}} :</span></td>
+				<td><select ng-model="ctrl.selected.process"
+					ng-options="process.value as process.label for process in ctrl.processes"
+					ng-change="ctrl.onProcessSelect();">
+				</select></td>
+			</tr>
+			<tr>
+				<td><span class="label-form">{{i18n('business-control-center-messages.views-trafficLightView-column-chooseCategory')}}
+						:</span></td>
+				<td><select ng-model="ctrl.selected.category"
+					ng-options="category.value as category.label for category in ctrl.categories"></select></td>
+			</tr>
+		</table>
+
+
+		<div ng-if="ctrl.createTable">
+			<div class="view-panel-content">
+				<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-trafficLightView-trafficLightView')}}</div>
+
+				<table sd-data-table="ctrl.dataTable" sda-no-pagination="true"
+					sd-data="ctrl.fetchData(params)" sda-ready="ctrl.ready"
+					sda-sortable="true" sda-mode="remote"
+					sda-column-selector="{{ctrl.columnSelector}}">
+					<thead>
+						<tr>
+							<th sda-name="category"
+								sda-label="{{i18n('business-control-center-messages.views-trafficLightView-column-category')}}"></th>
+							<th ng-repeat="col in ctrl.columns" sda-name="p{{$index}}"
+								sda-sortable="false" sda-label="{{col.label}}"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td></td>
+							<td ng-repeat="col in ctrl.columns"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<button ng-click="ctrl.showDetails();">show details</button>
+		<div ng-if="ctrl.detailsTable">
+			<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-trafficLightView-trafficLightViewActivityCompleted')
+				| interpolate : ctrl.detailsView.activityName}}</div>
+
+			<div sd-activity-table="ctrl.completedActivityTable"
+				sda-mode="activityTable"
+				sd-data="ctrl.getCompletedActivitiesByOids(params);"
+				sda-preference-module="ipp-views-common"
+				sda-preference-id="preference"
+				sda-preference-name="ipp-views-common.activityWithPrio.selectedColumns"></div>
+				
+				
+			<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-trafficLightView-trafficLightViewActivityPending')
+				| interpolate : ctrl.detailsView.activityName}}</div>
+				
+			<div sd-activity-table="ctrl.pendingActivityTable"
+				sda-mode="activityTable"
+				sd-data="ctrl.getPendingActivitiesByOids(params);"
+				sda-preference-module="ipp-views-common"
+				sda-preference-id="preference"
+				sda-preference-name="ipp-views-common.activityWithPrio.selectedColumns"></div>
+		</div>
+	</div>
+</div>
+</div>

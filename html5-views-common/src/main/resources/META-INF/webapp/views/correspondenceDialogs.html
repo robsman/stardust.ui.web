@@ -1,0 +1,56 @@
+<!-- Message Template Selector -->
+<div sd-dialog="ctrl.templateSelectorDialog" sda-title="{{ctrl.i18n('views-common-messages.views-correspondenceView-details-template-title')}}"
+	sda-cancel-action-label="OK" sda-type="custom"
+	sda-template="messageSelectorTemplate" sda-scope="this"></div>
+
+<script type="text/ng-template" id="messageSelectorTemplate">
+ 	   <div ng-show="ctrl.dialog.templateSelector.showErorMessage" class="msg-error correspondence_dialog_error"> {{ctrl.i18n('views-common-messages.views-correspondenceView-details-invalidTemplate')}} </div>
+           <div sd-folder-tree
+				sda-on-init="ctrl.templateFolderInit(api)"
+				sda-multiselect="false"
+				sda-root-path="documents/correspondence-templates"
+				sda-create-folder="true"></div>
+		</div>
+	  <div class="modal-footer" >
+        <div class="confirmation-buttonpane">
+			<div class="button-pane cf" >
+				<div class="button-alignment">
+				  	<button class="button" ng-click="ctrl.onTemplateSelection();" ng-disabled="ctrl.isTemplateSelectionInvalid()">{{ctrl.buttons.confirm}} </button>
+				    <button class="button" ng-click="ctrl.templateSelectorDialog.close();"> {{ctrl.buttons.cancel}}</button> 
+				</div>
+		    </div>
+		</div>
+       </div>
+</script>
+
+
+<!-- Attachment  Selector -->
+<div sd-dialog="ctrl.attachmentSelectorDialog" sda-title="{{ctrl.i18n('views-common-messages.views-correspondenceView-details-attachments-title')}}"
+	sda-cancel-action-label="OK" sda-type="custom"
+	sda-template="attachmentSelectorTemplate" sda-scope="this"></div>
+
+<script type="text/ng-template" id="attachmentSelectorTemplate">
+   		 <div sd-process-document-tree
+				sda-on-init="ctrl.onAttachmentFolder(api)"
+				sda-multiselect="true"
+				sda-process-oid="{{ctrl.selected.piOid}}"></div>
+		</div>   
+	 	<div sd-folder-tree
+				sda-on-init="ctrl.templateFolderInit(api)"
+				sda-multiselect="true"
+				sda-root-path="documents/correspondence-templates"
+				sda-create-folder="true"></div>
+		</div>	
+		
+	  <div class="modal-footer" >
+        <div class="confirmation-buttonpane">
+			<div class="button-pane cf" >
+				<div class="button-alignment">
+				  	<button class="button" ng-click="ctrl.onAttachmentSelection();" ng-disabled="ctrl.isAttachmentSelectionInValid();">{{ctrl.buttons.confirm}} </button>
+				    <button class="button" ng-click="ctrl.attachmentSelectorDialog.close();"> {{ctrl.buttons.cancel}}</button> 
+				</div>
+		    </div>
+		</div>
+       </div>
+</script>
+

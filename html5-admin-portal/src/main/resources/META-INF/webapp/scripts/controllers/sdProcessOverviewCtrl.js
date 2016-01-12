@@ -88,7 +88,6 @@
 		};
 
 		this.dataTable = null; // This will be set to underline data
-		this.columnSelector = "admin"; // TODO
 		
 		this.fetchProcessInstanceCounts(sdProcessInstanceService);
 	};

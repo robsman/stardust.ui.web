@@ -52,9 +52,10 @@
 											<ice:outputText value="#{participant.text}" />
 										</td>
 										<td class="autoCompTableRemoveCol">
-											<ice:commandButton
-												action="#{participant.removeParticipant}"
-												image="/plugins/views-common/images/icons/dialog-windowbttn-close.png" />
+											<ice:commandLink
+												action="#{participant.removeParticipant}">
+												<i class="pi pi-dialog-close pi-lg"></i>
+											</ice:commandLink>
 										</td>
 									</tr>
 								</c:forEach>

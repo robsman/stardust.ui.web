@@ -15,11 +15,12 @@
 					<ice:outputText value="#{messages_admin['common.notification.title']}"
 						styleClass="headerText"/>
 					<pc:automationTag value="auto-COM-NotifyDlg-MsgCloseBtn"/>
-					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+					<ice:commandLink title="#{common_msgPropsBean['common.close']}"
 						action="#{notificationBean.closePopup}"
 						immediate="true"
-						styleClass="windowClose">
-					</ice:commandButton>
+						styleClass="windowClose pi-cmdLnk">
+						<ice:outputText styleClass="pi pi-dialog-close pi-lg pi-outTxt" />
+					</ice:commandLink>
 				</ice:panelGroup>
 			</f:facet>
 		

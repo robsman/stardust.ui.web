@@ -3,7 +3,7 @@
  * program and the accompanying materials are made available under the terms of
  * the Eclipse Public License v1.0 which accompanies this distribution, and is
  * available at http://www.eclipse.org/legal/epl-v10.html
- *
+ * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
  * documentation
  ******************************************************************************/
@@ -11,27 +11,34 @@
 /*
  * @author Subodh.Godbole
  */
-(function(){
+(function() {
 	'use strict';
 
-	angular.module('bpm-common.services').provider('sdViewUtilService', function () {
-		this.$get = ['$rootScope', 'sgViewPanelService', 'sgPubSubService', 'sdLoggerService',
-		    function ($rootScope, sgViewPanelService, sgPubSubService, sdLoggerService) {
-		    	var service = new ViewUtilService($rootScope, sgViewPanelService, sgPubSubService, sdLoggerService);
-		    	return service;
-		}];
-	});
+	angular.module('bpm-common.services').provider(
+			'sdViewUtilService',
+			function() {
+				this.$get = [
+						'$rootScope',
+						'sgViewPanelService',
+						'sgPubSubService',
+						'sdLoggerService',
+						function($rootScope, sgViewPanelService, sgPubSubService, sdLoggerService) {
+							var service = new ViewUtilService($rootScope, sgViewPanelService, sgPubSubService,
+									sdLoggerService);
+							return service;
+						} ];
+			});
 
 	/*
 	 * 
 	 */
 	function ViewUtilService($rootScope, sgViewPanelService, sgPubSubService, sdLoggerService) {
 		var trace = sdLoggerService.getLogger('bpm-common.sdViewUtilService');
-		
+
 		var viewHandlers = {};
 
 		var self = this;
-		sgPubSubService.subscribe('sgActiveViewPanelChanged', function(){
+		sgPubSubService.subscribe('sgActiveViewPanelChanged', function() {
 			var args = Array.prototype.slice.call(arguments, 0);
 			self.viewChanged.apply(self, args);
 		});
@@ -78,15 +85,15 @@
 		};
 
 		/*
-		 *
+		 * 
 		 */
 		ViewUtilService.prototype.openView = function(viewId, viewKey, params, nested) {
 			var message = {
-				"type": "OpenView",
-				"data": {
-					"viewId": viewId,
-					"viewKey": viewKey,
-					"params": params,
+				"type" : "OpenView",
+				"data" : {
+					"viewId" : viewId,
+					"viewKey" : viewKey,
+					"params" : params,
 					"nested" : (nested != undefined && nested === true) ? true : false
 				}
 			};
@@ -95,14 +102,14 @@
 		};
 
 		/*
-		 *
+		 * 
 		 */
 		ViewUtilService.prototype.changePerspective = function(perspectiveId, params) {
 			var message = {
-				"type": "ChangePerspective",
-				"data": {
-					"perspectiveId": perspectiveId,
-					"params": params
+				"type" : "ChangePerspective",
+				"data" : {
+					"perspectiveId" : perspectiveId,
+					"params" : params
 				}
 			};
 
@@ -110,7 +117,7 @@
 		};
 
 		/*
-		 *
+		 * 
 		 */
 		ViewUtilService.prototype.registerForViewEvents = function(scope, handlerFunc, ownerObject) {
 			if (angular.isFunction(handlerFunc)) {
@@ -142,16 +149,21 @@
 			try {
 				if (handler.func) {
 					if (handler.owner) {
-						handler.func.call(handler.owner, {type : type});
+						handler.func.call(handler.owner, {
+							type : type
+						});
 					} else {
-						handler.func({type : type});
+						handler.func({
+							type : type
+						});
 					}
 				}
 			} catch (e) {
-				if(console) {
+				if (console) {
 					trace.error(e);
 				}
 			}
 		}
-	};
+	}
+	;
 })();

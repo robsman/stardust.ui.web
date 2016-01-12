@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.viewscommon.helper.processTable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +29,7 @@ import org.eclipse.stardust.common.error.AccessForbiddenException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.CustomOrderCriterion;
 import org.eclipse.stardust.engine.api.query.DataOrder;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
@@ -41,6 +43,7 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceLink;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreferenceComparator;
 import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModelListener;
@@ -511,6 +514,12 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
             ResourcePaths.V_PROCESS_TABLE_COLUMNS, true, true);
       prioCol.setColumnAlignment(ColumnAlignment.CENTER);
       prioCol.setColumnDataFilterPopup(new TableDataFilterPopup(new PriorityAutocompleteTableDataFilter()));
+      
+      ColumnPreference benchmarkCol = new ColumnPreference("Benchmark", "benchmark", propsBean
+            .getString("views.processTable.column.benchmark"),
+            ResourcePaths.V_PROCESS_TABLE_COLUMNS, false, true);
+      benchmarkCol.setColumnAlignment(ColumnAlignment.CENTER);
+
 
       ColumnPreference descriptorsCol = new ColumnPreference(DESCRIPTOR_COL_NAME,
             "processDescriptorsList", propsBean
@@ -591,6 +600,7 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
       procCols.add(processNameCol);
       procCols.add(pOIDCol);
       procCols.add(prioCol);
+      procCols.add(benchmarkCol);
       procCols.add(descriptorsCol);
       procCols.add(userCol);
       procCols.add(startTimeCol);
@@ -620,7 +630,6 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
       // Adding Descriptor Columns
       List<ColumnPreference> descriptorColumns = DescriptorColumnUtils.createDescriptorColumns(processTable, allDescriptors, ResourcePaths.V_DOCUMENT_DESC_COLUMNS);
       procCols.addAll(descriptorColumns);
-
       IColumnModel procInstanceColumnModel = new DefaultColumnModel(procCols, null, processFixedCols2, moduleId,
             viewId, columnModelListener);
       
@@ -1025,6 +1034,10 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
             {
                CustomOrderCriterion o = ProcessInstanceQuery.USER_ACCOUNT.ascendig(sortCriterion.isAscending());
                query.orderBy(o);
+            }
+            else if ("benchmark".equals(sortCriterion.getProperty()))
+            {
+               query.orderBy(ProcessInstanceQuery.BENCHMARK_VALUE, sortCriterion.isAscending());
             }
 
             else

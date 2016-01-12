@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.common.spi.user;
 
+import java.util.Set;
 
 /**
  * @author Yogesh.Manware
@@ -18,6 +19,14 @@ package org.eclipse.stardust.ui.web.common.spi.user;
 public interface IAuthorizationProvider
 {
    Boolean isAuthorized(User user, String permissionId);
+
+   /**
+    * @param permissionId
+    * @param roles
+    * @param allow
+    *           -> true, deny -> false
+    */
+   void addDefaultPermissions(String permissionId, Set<String> roles, boolean allow);
 
    /**
     * @author Yogesh.Manware

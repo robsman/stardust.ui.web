@@ -93,7 +93,7 @@ public class PPUtils
 {
    private static final Logger trace = LogManager.getLogger(PPUtils.class);
    private static final String WORKLIST_VIEW_ID = "worklistPanel";//Note:this can be moved to any util class in process-portal
-
+   private static final String WORKLIST_VIEW_ID_IF = "worklistPanelIceFaces";
    private PPUtils()
    {}
 
@@ -106,6 +106,15 @@ public class PPUtils
     * @param params
     */
    public static void openWorklistView(String viewKey, Map<String, Object> params)
+   {
+      PortalApplication.getInstance().openViewById(WORKLIST_VIEW_ID_IF, viewKey, params, null, false);
+   }
+   
+   /**
+    * @param viewKey
+    * @param params
+    */
+   public static void openWorklistViewHTML5(String viewKey, Map<String, Object> params)
    {
       PortalApplication.getInstance().openViewById(WORKLIST_VIEW_ID, viewKey, params, null, false);
    }
@@ -238,8 +247,8 @@ public class PPUtils
          }
          else
          {
-			// User-Worklist(Deputy Of) is contained in Sub-worklist of
-			// User worklist(Deputy)
+            // User-Worklist(Deputy Of) is contained in Sub-worklist of
+            // User worklist(Deputy)
             Iterator<Worklist> subWorklistIter = worklist.getSubWorklists();
             Worklist subWorklist1;
             while (subWorklistIter.hasNext())
@@ -326,7 +335,8 @@ public class PPUtils
    public static ActivityInstances getActivityInstances_Resubmission()
    {
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(ActivityInstanceState.Hibernated);
-      query.getFilter().add(PerformingUserFilter.CURRENT_USER);
+      // new PerformingUserFilter(0) : For activities created in non-interactive context (such as activity threads started by daemons)
+      query.getFilter().addOrTerm().or(PerformingUserFilter.CURRENT_USER).or(new PerformingUserFilter(0));
 
       List<ModelResubmissionActivity> resubmissionActivities = CollectionUtils.newList();
       ResubmissionUtils.fillListWithResubmissionActivities(resubmissionActivities);
@@ -695,6 +705,7 @@ public class PPUtils
             User user = UserUtils.getUser(userInfo.getId());
             iconPath = MyPicturePreferenceUtils.getUsersImageURI(user);   
          }
+         
          break;
 
       case USERGROUP:

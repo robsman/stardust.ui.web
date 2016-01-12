@@ -56,7 +56,7 @@ body, table {
 
 .app-title {
 	font-weight: bold;
-	font-size: 16px;
+	font-size: 1.45em;
 	padding-left: 15px;
 	visibility: hidden;
 }
@@ -161,7 +161,7 @@ body, table {
    margin-right: 2px;
    margin-top: -30px;
    font-weight: bold;
-   font-size: 12px;
+   font-size: 1.1em;
    color: #696969;
 }
 
@@ -365,7 +365,7 @@ body, table {
 }
 
 .copy-right {
-	font-size: 16px;
+	font-size: 1.45em;
 }
 
 .content-frame {

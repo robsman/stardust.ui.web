@@ -16,13 +16,16 @@
 	'use strict';
 
 	angular.module('admin-ui').controller('sdActivityOverviewCtrl',
-			['$q', '$filter', 'sdActivityInstanceService', Controller]);
+			['$scope', '$q', '$filter', 'sdActivityInstanceService','sdViewUtilService', Controller]);
 
 	/*
 	 * 
 	 */
-	function Controller($q, $filter, sdActivityInstanceService) {
+	function Controller($scope, $q, $filter, sdActivityInstanceService, sdViewUtilService) {
 
+		// Register for View Events
+		sdViewUtilService.registerForViewEvents($scope, this.handleViewEvents, this);
+		
 		this.initialize(sdActivityInstanceService);
 
 		/*
@@ -54,8 +57,29 @@
 		Controller.prototype.refresh = function() {
 			this.dataTable.refresh(true);
 		};
+		
+		this.refreshRequired = false;
 
 	}
+	
+	/**
+	 * 
+	 */
+	Controller.prototype.registerRefreshRequired = function() {
+		this.refreshRequired = true;
+	};
+	
+	/*
+	 * 
+	 */
+	Controller.prototype.handleViewEvents = function(event) {
+		if (event.type == "ACTIVATED") {
+			if(this.refreshRequired) {
+				this.refresh();
+				this.refreshRequired = false;
+			}
+		}
+	};
 
 	/**
 	 * 
@@ -88,7 +112,6 @@
 		};
 
 		this.dataTable = null; // This will be set to underline data
-		this.columnSelector = "admin"; // TODO
 	};
 
 })();

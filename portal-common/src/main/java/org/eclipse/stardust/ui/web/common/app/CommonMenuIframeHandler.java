@@ -90,7 +90,7 @@ public class CommonMenuIframeHandler implements Serializable
    public String getCommonMenuIframePopupArgs()
    {
       String advanceArgs = "{anchorId:'ippCommonMenuAnchor', width:100, height:100, maxWidth:500, maxHeight:550, "
-            + "openOnRight:true, anchorXAdjustment:30, anchorYAdjustment:55, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+            + "openOnRight:true, anchorXAdjustment:30, anchorYAdjustment:55, zIndex:200, border:'1px solid #DDDDDD', noUnloadWarning: 'true'}";
       return advanceArgs;
    }
    

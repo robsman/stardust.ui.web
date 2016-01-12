@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import javax.activation.DataHandler;
@@ -21,6 +20,7 @@ import javax.ws.rs.core.Response;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
 import org.eclipse.stardust.ui.web.rest.service.dto.FileInfoDTO;
+import org.eclipse.stardust.ui.web.rest.service.utils.FileUploadUtils;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileStorage;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;
@@ -59,7 +59,7 @@ public class FileUploadResource
             InputStream inputStream = dataHandler.getInputStream();
             MultivaluedMap<String, String> headers = attachment.getHeaders();
 
-            FileInfoDTO fileInfo = getFileName(headers);
+            FileInfoDTO fileInfo = FileUploadUtils.getFileInfo(headers);
 
             FileStorage fileStorage = (FileStorage) RestControllerUtils
                   .resolveSpringBean("fileStorage", servletContext);
@@ -115,30 +115,5 @@ public class FileUploadResource
       return Response.ok(response.toString()).build();
    }
    
-   /**
-    * @param header
-    * @return
-    * @throws UnsupportedEncodingException 
-    */
-   private FileInfoDTO getFileName(MultivaluedMap<String, String> header) throws UnsupportedEncodingException
-   {
-      String[] contentDisposition = header.getFirst("Content-Disposition").split(";");
 
-      FileInfoDTO fileInfo = new FileInfoDTO();
-      for (String filename : contentDisposition)
-      {
-         if ((filename.trim().startsWith("filename")))
-         {
-            String[] name = filename.split("=");
-            fileInfo.name = name[1].trim().replaceAll("\"", "");
-            
-            //CXF headers are still in ISO-8859-1. So to handle file containing multi-byte characters in its filename, convert it to UTF-8
-            fileInfo.name = new String(fileInfo.name.getBytes("ISO-8859-1"), "UTF-8");
-         }
-      }
-
-      fileInfo.contentType = header.getFirst("Content-Type");
-
-      return fileInfo;
-   }
 }

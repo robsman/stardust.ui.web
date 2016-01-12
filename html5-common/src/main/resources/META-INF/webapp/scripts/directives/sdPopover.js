@@ -42,7 +42,7 @@
 				restrict : 'AE',
 				scope: true,
 				transclude: true,
-				template: ' <button ng-disabled="popoverDisabled" class="popover-btn button-link"></button>'
+				template: ' <button ng-disabled="popoverDisabled" class="popover-btn button-link" ng-class="clazz"></button>'
 						+ ' <div ng-show="showPopover" class="popover-body-container popup-dlg" style="cursor:auto; position:fixed;"></div>',
 				compile: PopoverCompilerFn
 			};
@@ -63,6 +63,7 @@
 				});
 				
 				var onOpenFn = $parse(attrs.sdaOnOpen);
+				scope.clazz =attrs.sdaClass;
 				
 				transcludeFn(scope, function(clone) {
 					var popoverBody = clone.filter('.popover-body');
@@ -73,14 +74,16 @@
 				element.bind('click', function(event) {
 					handlePopoverClick(event);
 				});
-				
-				$timeout(function() {
-					scope.$apply(function() {
-						exposeAPI(attrs.sdPopover, scope);
+
+				if (angular.isDefined(attrs.sdPopover) && attrs.sdPopover != '') {
+					$timeout(function() {
+						scope.$apply(function() {
+							exposeAPI(attrs.sdPopover, scope);
+						});
 					});
-				});
-				
-				function handlePopoverClick(clkEvent, clickElem) {
+				}
+
+				function handlePopoverClick(clkEvent, clickElem , minWidth) {
 					// In case of ng-disabled, make sure the click is not activated
 					if (scope.popoverDisabled != true) {
 						
@@ -95,18 +98,18 @@
 							if (!angular.isDefined(clickElem)) {
 								clickElem = popoverBtn;
 							}
-							if (clkEvent.target === clickElem || clickElem.find(clkEvent.target).length > 0) {
+							if (clkEvent.target === clickElem || clickElem.find(clkEvent.target).length > 0 || clkEvent.target === clickElem[0]) {
 								scope.showPopover = !scope.showPopover;
 								if (scope.showPopover === false) {
 									// this is important since we want this to be called exactly once
 									$(document).unbind('click', popoverCloseEvent);
 								} else if (scope.showPopover === true) {
 									popoverBodyContainer.css({'visibility': 'hidden'});
+									minWidth = minWidth || popoverBodyContainer.outerWidth();
 									$timeout(function() {
 										var xPos = clkEvent.pageX - 5;
 										var yPos = clkEvent.pageY + 5;
-										
-										var maxAllowedXPos = jQuery(window).width() - popoverBodyContainer.outerWidth();
+										var maxAllowedXPos = jQuery(window).width() - ( minWidth);
 										var maxAllowedYPos = jQuery(window).height() - popoverBodyContainer.outerHeight();
 										
 										if (xPos > maxAllowedXPos) {
@@ -136,9 +139,9 @@
 				
 				// API with open & close functions
 				function PopoverApi() {
-					this.show = function(event) {
+					this.show = function(event,minWidth) {
 						$timeout(function() {
-							handlePopoverClick(event, event.target);
+							handlePopoverClick(event, event.target, minWidth);
 						});
 					},
 					this.hide = function() {

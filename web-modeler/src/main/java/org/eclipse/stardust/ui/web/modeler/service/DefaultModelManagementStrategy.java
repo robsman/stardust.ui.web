@@ -1,16 +1,13 @@
 package org.eclipse.stardust.ui.web.modeler.service;
 
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
+import static org.eclipse.stardust.common.CollectionUtils.newMap;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.eclipse.emf.ecore.EObject;
 
@@ -36,7 +33,7 @@ import org.springframework.http.MediaType;
  *
  */
 public class DefaultModelManagementStrategy extends
-		AbstractModelManagementStrategy
+      AbstractModelManagementStrategy
 {
 
    private static final Logger trace = LogManager.getLogger(DefaultModelManagementStrategy.class);
@@ -53,6 +50,8 @@ public class DefaultModelManagementStrategy extends
    private final ServiceFactoryLocator serviceFactoryLocator;
 
    private String partitionId;
+
+   private ThreadLocal<Map<String, Document>> modelsToLoad = new ThreadLocal<Map<String, Document>>();
 
    private final DmsPersistenceUtils persistenceUtils = new DmsPersistenceUtils()
    {
@@ -72,50 +71,62 @@ public class DefaultModelManagementStrategy extends
    @Autowired
    public DefaultModelManagementStrategy(ModelPersistenceService persistenceService, ServiceFactoryLocator serviceFactoryLocator)
    {
-	  this.persistenceService = persistenceService;
+      this.persistenceService = persistenceService;
       this.serviceFactoryLocator = serviceFactoryLocator;
    }
 
    public List<ModelDescriptor> loadModels()
    {
-      List<Document> documents = newArrayList();
-      List<ModelDescriptor> models = newArrayList();
-
-      Folder modelsFolder = getDocumentManagementService().getFolder(MODELS_DIR);
-      for (Document modelDocument : modelsFolder.getDocuments())
+      try
       {
-         documents.add(modelDocument);
-      }
+         List<Document> documents = newArrayList();
+         List<ModelDescriptor> models = newArrayList();
+         Map<String, Document> map = newMap();
 
-      Collections.sort(documents,
+         Folder modelsFolder = getDocumentManagementService().getFolder(MODELS_DIR);
+         for (Document modelDocument : modelsFolder.getDocuments())
+         {
+            documents.add(modelDocument);
+            map.put(modelDocument.getName(), modelDocument);
+         }
+
+         Collections.sort(documents,
             new Comparator<Document>()
             {
                @Override
                public int compare(Document o1, Document o2)
                {
-                  int result = CompareHelper.compare(o1.getDateLastModified(),
+                  return CompareHelper.compare(o1.getDateLastModified(),
                         o2.getDateLastModified());
-                  return result;
                }
             });
 
-      for (Document modelDocument : documents)
-      {
-         try
+         modelsToLoad.set(map);
+         for (Document modelDocument : documents)
          {
-            ModelDescriptor desc = loadModel(modelDocument);
-            if (desc != null)
+            Document doc = map.get(modelDocument.getName());
+            if (doc != null)
             {
-               models.add(desc);
+               try
+               {
+                  ModelDescriptor desc = loadModel(doc);
+                  if (desc != null)
+                  {
+                     models.add(desc);
+                  }
+               }
+               catch (IOException ex)
+               {
+                  trace.warn("Unable to load model from '" + doc.getName() + "'", ex);
+               }
             }
          }
-         catch (IOException ex)
-         {
-            trace.warn("Unable to load model from '" + modelDocument.getName() + "'", ex);
-         }
+         return models;
       }
-
-      return models;
+      finally
+      {
+         modelsToLoad.set(null);
+      }
    }
 
     /**
@@ -123,25 +134,23 @@ public class DefaultModelManagementStrategy extends
      */
     public ModelType loadModel(String id)
     {
-       Folder modelsFolder = getDocumentManagementService().getFolder(MODELS_DIR);
-       for (Document modelDocument : modelsFolder.getDocuments())
+       String documentName = id + ".xpdl";
+       Document modelDocument = modelsToLoad.get().get(documentName);
+       try
        {
-          String documentName = modelDocument.getName();
-          if (documentName.endsWith(".xpdl"))
+          if (modelDocument != null)
           {
-             if (documentName.split("\\.")[0].equals(id))
-             {
-                try
-                {
-                   ModelDescriptor desc = loadModel(modelDocument);
-                   return desc == null ? null : desc.xpdlModel;
-                }
-                catch (IOException ex)
-                {
-                   trace.warn("Unable to load model '" + id + "'", ex);
-                }
-             }
+             ModelDescriptor desc = loadModel(modelDocument);
+             return desc == null ? null : desc.xpdlModel;
           }
+       }
+       catch (IOException ex)
+       {
+          trace.warn("Unable to load model '" + id + "'", ex);
+       }
+       finally
+       {
+          modelsToLoad.get().put(documentName, null);
        }
        return null;
     }
@@ -157,13 +166,15 @@ public class DefaultModelManagementStrategy extends
 
     private ModelDescriptor loadModel(Document modelDocument) throws IOException
     {
+       //System.err.println("--- Loading model from " + modelDocument);
        ModelType internalModel = null;
        EObject model = null;
 
        byte[] modelContent = readModelContext(modelDocument);
        ByteArrayInputStream baos = new ByteArrayInputStream(modelContent);
+       String documentName = modelDocument.getName();
        ModelPersistenceHandler.ModelDescriptor<?> descriptor = persistenceService.loadModel(
-             modelDocument.getName(), baos);
+             documentName, baos);
        if (null != descriptor)
        {
           model = descriptor.model;
@@ -187,9 +198,9 @@ public class DefaultModelManagementStrategy extends
           // TODO - This method needs to move to some place where it will be called only
           // once for
           loadEObjectUUIDMap(internalModel);
-          mapModelFileName(internalModel, modelDocument.getName());
+          mapModelFileName(internalModel, documentName);
 
-          ModelDescriptor desc = new ModelDescriptor(internalModel.getId(), modelDocument.getName(),
+          ModelDescriptor desc = new ModelDescriptor(internalModel.getId(), documentName,
                 model, internalModel);
           trace.debug("Loaded model '" + desc.id + "' from " + desc.fileName);
           registerModel(desc);
@@ -200,11 +211,11 @@ public class DefaultModelManagementStrategy extends
        return null;
     }
 
-	/**
-	 *
-	 */
-	public ModelType attachModel(String id)
-	{
+   /**
+   *
+   */
+   public ModelType attachModel(String id)
+   {
         try
         {
            Document document = getDocumentManagementService().getDocument(MODELS_DIR + id + ".xpdl");
@@ -220,12 +231,12 @@ public class DefaultModelManagementStrategy extends
         {
            trace.warn("Unable to load model '" + id + "'", ex);
         }
-		return null;
-	}
+      return null;
+   }
 
-	/**
-	 *
-	 */
+   /**
+   *
+   */
    public void saveModel(ModelType model)
    {
       if (model != null)
@@ -273,22 +284,22 @@ public class DefaultModelManagementStrategy extends
       }
    }
 
-	/**
-	 *
-	 * @param model
-	 */
-	public void deleteModel(ModelType model) {
+   /**
+   *
+   * @param model
+   */
+   public void deleteModel(ModelType model) {
       Document modelDocument = getDocumentManagementService().getDocument(
             getModelFilePath(model));
 
-		if (modelDocument != null)
-		{
-			getDocumentManagementService().removeDocument(modelDocument.getId());
-		}
+      if (modelDocument != null)
+      {
+         getDocumentManagementService().removeDocument(modelDocument.getId());
+      }
 
       removeModelFileNameMapping(model);
       getModels().remove(model.getId());
-	}
+   }
 
    /**
     * @param fileName
@@ -329,11 +340,11 @@ public class DefaultModelManagementStrategy extends
       }
    }
 
-	/**
-	 *
-	 */
-	public void versionizeModel(ModelType model) {
-	}
+   /**
+   *
+   */
+   public void versionizeModel(ModelType model) {
+   }
 
    /**
     *
@@ -369,38 +380,38 @@ public class DefaultModelManagementStrategy extends
       return partitionId;
    }
 
-	/**
-	 *
-	 * @return
-	 */
-	protected DocumentManagementService getDocumentManagementService() {
-		if (documentManagementService == null) {
-			documentManagementService = getServiceFactory()
-					.getDocumentManagementService();
-		}
+   /**
+   *
+   * @return
+   */
+   protected DocumentManagementService getDocumentManagementService() {
+      if (documentManagementService == null) {
+         documentManagementService = getServiceFactory()
+               .getDocumentManagementService();
+      }
 
-		return documentManagementService;
-	}
+      return documentManagementService;
+   }
 
-	protected ServiceFactory getServiceFactory() {
-		// TODO Replace
+   protected ServiceFactory getServiceFactory() {
+      // TODO Replace
 
-		if (serviceFactory == null) {
+      if (serviceFactory == null) {
          serviceFactory = serviceFactoryLocator.get();
-		}
+      }
 
-		return serviceFactory;
-	}
+      return serviceFactory;
+   }
 
-	/**
-	 *
-	 * @param modelDocument
-	 * @return
-	 */
-	private byte[] readModelContext(Document modelDocument) {
-		return getDocumentManagementService().retrieveDocumentContent(
-				modelDocument.getId());
-	}
+   /**
+   *
+   * @param modelDocument
+   * @return
+   */
+   private byte[] readModelContext(Document modelDocument) {
+      return getDocumentManagementService().retrieveDocumentContent(
+            modelDocument.getId());
+   }
 
    /**
     * @param model

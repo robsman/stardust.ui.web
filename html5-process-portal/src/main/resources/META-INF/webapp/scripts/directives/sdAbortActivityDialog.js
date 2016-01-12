@@ -14,12 +14,12 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive( 'sdAbortActivityDialog', [ 'sdActivityInstanceService', AbortActivity]);
+	angular.module('bpm-common').directive( 'sdAbortActivityDialog', [ 'sdActivityInstanceService','sdLoggerService', 'sdUtilService', 'sdWorkflowPerspectiveConfigService', AbortActivity]);
 
 	/**
-    * 
-    */
-	function AbortActivity(sdActivityInstanceService){
+	 * 
+	 */
+	function AbortActivity(sdActivityInstanceService, sdLoggerService, sdUtilService, sdWorkflowPerspectiveConfigService){
 
 		return {
 			restrict: 'A',
@@ -28,127 +28,150 @@
 							'sda-type="confirm" '+
 							'sda-title="{{abortActivityCtrl.i18n(\'views-common-messages.views-common-activity-abortActivity-label\')}}" '+
 							'sda-scope="this" '+
-							'sda-confirm-action-label="{{abortActivityCtrl.i18n(\'views-common-messages.common-ok\')}}" ' +
-							'sda-cancel-action-label="{{abortActivityCtrl.i18n(\'views-common-messages.common-close\')}}" ' +
+							'sda-confirm-action-label="{{abortActivityCtrl.abortActivity.isPromptRequired ?  abortActivityCtrl.i18n(\'views-common-messages.common-ok\') : abortActivityCtrl.i18n(\'views-common-messages.common-yes\' )}}" ' +
+							'sda-cancel-action-label="{{abortActivityCtrl.abortActivity.isPromptRequired ?  abortActivityCtrl.i18n(\'views-common-messages.common-close\') : abortActivityCtrl.i18n(\'views-common-messages.common-no\' )}}" ' +
 							'sda-on-open="abortActivityCtrl.onConfirm(res)" '+
-							'sda-template="plugins/html5-process-portal/scripts/directives/partials/abortActivityDialogBody.html"> '+
+							'sda-template="' +
+							 sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/abortActivityDialogBody.html"> '+
 					 '<\/div> ' +
 					 '<span style="float: left;" ' +
 					 		'sd-dialog="abortActivityCtrl.abortActivityNotification" ' +
-					 		'sda-title="{{abortActivityCtrl.i18n(\'admin-portal-messages.common-notification-title\')}}" '+
+					 		'sda-title="{{abortActivityCtrl.i18n(\'views-common-messages.common-notification-title\')}}" '+
 					 		'sda-type="custom" ' +
 					 		'sda-scope="this" ' +
-					 		'sda-template="plugins/html5-process-portal/scripts/directives/partials/abortActivityNotification.html"> ' +
+					 		'sda-template="' +
+							 sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/abortActivityNotification.html"> ' +
 					 '</span>',
 			scope :{
 				activitiesToAbort : '=sdaActivitiesToAbort',
 				showDialog : '=sdaShowDialog',
 				abortCompleted: '&sdaOnAbortComplete'
 			},
-			controller: [ '$scope', 'sdActivityInstanceService', AbortActivityController]
+			controller: [ '$scope', 'sdActivityInstanceService', 'sdLoggerService','sdUtilService','sdWorkflowPerspectiveConfigService', AbortActivityController]
 		};
 	};
 
 	/**
-    * 
-    */
-	var AbortActivityController = function( $scope, sdActivityInstanceService){
+	 * 
+	 */
 
-		var self = this;
+	var trace = null;
+	var AbortActivityController = function( $scope, sdActivityInstanceService, sdLoggerService, sdUtilService, sdWorkflowPerspectiveConfigService){
 
-		this.intialize( $scope, sdActivityInstanceService);
-		
-		/**
-		 * 
-		 */
-		AbortActivityController.prototype.abortCompleted = function (){
-			$scope.abortCompleted();
-		};
-		/**
-		 * 
-		 */
-		AbortActivityController.prototype.hideDialog = function (){
-			$scope.showDialog = false;
-		};
-		/**
-		 * 
-		 */
-		AbortActivityController.prototype.openDialog = function (){
-			$scope.showDialog = true;
-		};
-		/**
-		 * 
-		 */
-		AbortActivityController.prototype.getActvities = function (){
-			this.abortActivity.activities = $scope.activitiesToAbort;
-		};
+	    var self = this;
+	    trace = sdLoggerService.getLogger('bpm-common.sdAbortActivityDialog');
+	    this.intialize( $scope, sdActivityInstanceService, sdWorkflowPerspectiveConfigService);
 
-		/**
-         * 
-        */
-		AbortActivityController.prototype.showNotification = function (){
-			self.abortActivityNotification.open();
-		};
+	    /**
+	     * 
+	     */
+	    AbortActivityController.prototype.abortCompleted = function (){
+		$scope.abortCompleted();
+	    };
+	    /**
+	     * 
+	     */
+	    AbortActivityController.prototype.hideDialog = function (){
+		$scope.showDialog = false;
+	    };
+	    /**
+	     * 
+	     */
+	    AbortActivityController.prototype.openDialog = function (){
+		$scope.showDialog = true;
+	    };
+	    /**
+	     * 
+	     */
+	    AbortActivityController.prototype.getActvities = function (){
+		this.abortActivity.activities = $scope.activitiesToAbort;
+	    };
 
-		$scope.abortActivityCtrl = this;
+	    /**
+	     * 
+	     */
+	    AbortActivityController.prototype.showNotification = function (){
+		self.abortActivityNotification.open();
+	    };
+
+	    $scope.abortActivityCtrl = this;
 	}
 
 	/**
-    * 
-    */
-	AbortActivityController.prototype.intialize = function ( $scope, sdActivityInstanceService){
+	 * 
+	 */
+	AbortActivityController.prototype.intialize = function ( $scope, sdActivityInstanceService, sdWorkflowPerspectiveConfigService){
 
-		this.i18n = $scope.$parent.i18n;
-		this.sdActivityInstanceService = sdActivityInstanceService;
-		this.notification = {
-			result : null,
-			error : false
-		};
-		this.abortActivity = {
-			scope : 'activity',
-			activities : []
-		};
+	    this.i18n = $scope.$parent.i18n;
+	    this.sdActivityInstanceService = sdActivityInstanceService;
+	    this.notification = {
+		    result : null,
+		    error : false
+	    };
+	    var abortScope =  sdWorkflowPerspectiveConfigService.getAbortActivityScope();
+	    var isPromptRequired = false;
+	    if(abortScope == ''){
+		isPromptRequired = true;
+		this.configuredScope = 'SubHierarchy'; 
+	    }else{
+		this.configuredScope = abortScope;
+	    } 
+	    
+	    
+	    this.abortActivity = {
+		    scope : abortScope,
+		    activities : [],
+		    isPromptRequired : isPromptRequired
+	    };
+	   
 	};
 
 	/**
-    * 
-    */
+	 * 
+	 */
 	AbortActivityController.prototype.abortActivities = function (){
-		this.getActvities();
-		return this.sdActivityInstanceService.abortActivities( this.abortActivity.scope, this.abortActivity.activities);
+	    this.getActvities();
+	    trace.debug("Aborting activities with following params ",this.abortActivity.scope, this.abortActivity.activities);
+	    return this.sdActivityInstanceService.abortActivities( this.abortActivity.scope, this.abortActivity.activities);
 	};
 	/**
-    * 
-    */
+	 * 
+	 */
 	AbortActivityController.prototype.resetValues = function (){
-		this.abortActivity.scope ='activity';
-		this.notification.result = {};
-		this.notification.error = false;
+	    this.abortActivity.scope = this.configuredScope;
+	    this.notification.result = {};
+	    this.notification.error = false;
 	};
-	
-	/**
-    * 
-    */
-	AbortActivityController.prototype.onConfirm = function(res) {
-		
-		var self = this;
-		var promise = res.promise;
-		
-		this.resetValues();
 
-		promise.then(function(data) {
-			self.abortActivities().then(function(data) {
-				// success
-				self.showNotification();
-				self.abortCompleted();
-				self.notification.result = data;
-			}, function(data) {
-				// Failure
-				self.notification.result = {};
-				self.notification.error = true;
-				self.showNotification();
-			});
-		})
+	/**
+	 * 
+	 */
+	AbortActivityController.prototype.onConfirm = function(res) {
+	    var self = this;
+	    var promise = res.promise;
+
+	    this.resetValues();
+
+	    promise.then(function(data) {
+		self.abortActivities().then(function(data) {
+		    // success
+		    self.showNotification();
+		    self.abortCompleted();
+		    self.notification.result = data;
+		    if (self.notification.result.failure.length > 0) {
+			trace.debug("Failure in aborting activities ", self.notification.result.failure);
+		    } else {
+			trace.debug("Activities aborted sucessfully.");
+		    }
+
+		}, function(data) {
+		    // Failure
+		    self.notification.result = {};
+		    self.notification.error = true;
+		    self.showNotification();
+		    trace.error("Error in aborting activities.");
+		});
+	    })
 	};
-	
+
 })();

@@ -17,10 +17,12 @@
 					styleClass="headerText" />
 				<pc:automationTag value="auto-COM-FileUpdDlg-CloseLink"
 					standAlone="false" />
-				<ice:commandButton
+				<ice:commandLink
 					title="#{common_msgPropsBean['common.close']}"
 					action="#{fileSaveDialog.closePopup}" immediate="true"
-					styleClass="windowClose" />
+					styleClass="windowClose pi-cmdLnk">
+					<ice:outputText styleClass="pi pi-dialog-close pi-lg pi-outTxt" />
+				</ice:commandLink>
 			</ice:panelGroup>
 		</f:facet>
 
@@ -32,8 +34,8 @@
 				<f:facet name="center">
 					<ice:panelGroup>
 						<h:panelGrid columns="2" style="width: 100%; margin-bottom: 5px;">
-							<ice:graphicImage rendered="#{fileSaveDialog.viewWarning}" style="margin-left:2px; margin-right:5px"
-								url="/plugins/views-common/images/icons/dialog-icon-warning.jpg" />
+							<ice:outputText styleClass="pi pi-dialog-warning pi-2x" rendered="#{fileSaveDialog.viewWarning}" 
+							style="margin-left:2px; margin-right:5px"/>
 							<ice:outputText
 								rendered="#{not empty fileSaveDialog.headerMessage}"
 								value="#{fileSaveDialog.headerMessage}" escape="false"
@@ -62,8 +64,7 @@
 									action="#{fileSaveDialog.toggleDescription}">
 									<pc:automationTag value="auto-COM-FileUpdDlg-DescLink"
 										standAlone="false" />
-									<ice:graphicImage
-										value="/plugins/views-common/images/icons/add.png" />
+									<ice:outputText styleClass="pi pi-create pi-lg" />
 								</ice:commandLink>
 								<ice:commandLink
 									action="#{fileSaveDialog.toggleDescription}"
@@ -91,8 +92,7 @@
 								<ice:commandLink action="#{fileSaveDialog.toggleComment}">
 									<pc:automationTag value="auto-COM-FileUpdDlg-VerCmtLink"
 										standAlone="false" />
-									<ice:graphicImage
-										value="/plugins/views-common/images/icons/add.png" />
+									<ice:outputText styleClass="pi pi-create pi-lg" />
 								</ice:commandLink>
 								<ice:commandLink
 									value="#{views_common_msgPropsBean['fileUpload.comment.label']}"

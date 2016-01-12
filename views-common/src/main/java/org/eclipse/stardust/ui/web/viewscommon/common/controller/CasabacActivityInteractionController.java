@@ -72,7 +72,7 @@ public class CasabacActivityInteractionController implements IActivityInteractio
       return null;
    }
 
-   public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario)
+   public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario, Object parameters)
    {
       // TODO any preconditions to check?
       return true;

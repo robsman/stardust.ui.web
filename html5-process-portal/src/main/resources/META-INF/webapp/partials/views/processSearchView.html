@@ -1,0 +1,444 @@
+<div sg-stretch-to-bottom class="view-panel">
+	<div class="ng-hide" ng-show="true" ng-controller="sdProcessSearchViewCtrl as procSearchViewCtrl">
+		<div style="margin-top: 20px;" class="view-panel-toolbar">
+			<a href="#" ng-show="procSearchViewCtrl.showSearchCriteria"
+				ng-click="procSearchViewCtrl.showSearchCriteria = false" aid="BCC-ProcSrch-HideCriteria">
+				<table cellpadding="0" cellspacing="0" class="searchTableLayout">
+					<tr>
+						<td style="padding-right: 5px;"><i
+							class=" pi pi-trigger-expanded pi-lg"></i></td>
+						<td><span class="heading">{{(i18n('business-control-center-messages.views-processSearchView-searchCriteria-label')).toUpperCase()}}</span></td>
+					</tr>
+				</table>
+			</a> <a href="#" ng-show="!procSearchViewCtrl.showSearchCriteria"
+				ng-click="procSearchViewCtrl.showSearchCriteria = true" aid="BCC-ProcSrch-ShowCriteria">
+				<table cellpadding="0" cellspacing="0" class="searchTableLayout">
+					<tr>
+						<td style="padding-right: 5px;"><i
+							class=" pi pi-trigger-collapsed pi-lg"></i></td>
+						<td><span class="heading">{{(i18n('business-control-center-messages.views-processSearchView-searchCriteria-label')).toUpperCase()}}</span></td>
+					</tr>
+				</table>
+			</a>
+		</div>
+		<div ng-show="procSearchViewCtrl.showSearchCriteria">
+			<table style="margin-left: 5px;">
+				<tr>
+					<td>
+						<div>
+							<table>
+								<tr>
+									<td><label>
+											{{i18n('business-control-center-messages.views-processSearchView-searchFor-label')
+											+ i18n('business-control-center-messages.common-colon')}} </label></td>
+									<td><select id="primaryObjectSelect"
+										ng-model="procSearchViewCtrl.query.processSearchCriteria.filterObject"
+										ng-options="option.value as option.label for option in procSearchViewCtrl.searchOptions"
+										ng-change="procSearchViewCtrl.processChange()"
+										style="width: 100px"
+										aid="BCC-ProcSrch-SearchOption"></select></td>
+									<td><i class="pi pi-information pi-lg"></i></td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<table class="searchTableLayout">
+							<tr>
+								<td colspan="3">
+									<div class="heading view-panel-toolbar">
+										<label>{{i18n('business-control-center-messages.views-processSearchView-processCriteria-label')}}</label>
+									</div>
+								</td>
+
+							</tr>
+							<tr>
+								<td><label>{{i18n('business-control-center-messages.views-processSearchView-startedFrom-label')
+										+ i18n('business-control-center-messages.common-colon')}}</label></td>
+								<td><div sd-date-time-picker ng-model-onblur
+									ng-model="procSearchViewCtrl.query.processSearchCriteria.procStartFrom"
+									name="procStartFrom"
+									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1" 
+									sda-aid-prefix="BCC-ProcSrch-ProcStartFrom"/></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><label>{{i18n('business-control-center-messages.views-processSearchView-startedTo-label')
+										+ i18n('business-control-center-messages.common-colon')}}</label></td>
+								<td><div sd-date-time-picker ng-model-onblur
+									ng-model="procSearchViewCtrl.query.processSearchCriteria.procStartTo"
+									name="procStartTo"
+									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"
+									sda-aid-prefix="BCC-ProcSrch-ProcStartTo"/></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><label>{{i18n('business-control-center-messages.views-processSearchView-endTimeFrom-label')
+										+ i18n('business-control-center-messages.common-colon')}}</label></td>
+								<td><div sd-date-time-picker ng-model-onblur
+									ng-model="procSearchViewCtrl.query.processSearchCriteria.procEndFrom"
+									name="procEndFrom"
+									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1" 
+									sda-aid-prefix="BCC-ProcSrch-ProcEndFrom"/></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><label>{{i18n('business-control-center-messages.views-processSearchView-endTimeTo-label')
+										+ i18n('business-control-center-messages.common-colon')}}</label></td>
+								<td><div sd-date-time-picker ng-model-onblur
+									ng-model="procSearchViewCtrl.query.processSearchCriteria.procEndTo"
+									name="procEndTo"
+									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"
+									sda-aid-prefix="BCC-ProcSrch-ProcEndTo"/></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td style="vertical-align: top;"><label>{{i18n('business-control-center-messages.views-processSearchView-processHierarchy-label')
+										+ i18n('business-control-center-messages.common-colon')}}</label></td>
+								<td><select id="hierarchy"
+									ng-model="procSearchViewCtrl.query.processSearchCriteria.procSearchHierarchySelected"
+									ng-options="option.value as option.label for option in procSearchViewCtrl.procSrchHierarchy"
+									ng-change="procSearchViewCtrl.processHierarchyChange()"
+									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"
+									aid="BCC-ProcSrch-Hierarchy"></select></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><label class="section2">{{i18n('business-control-center-messages.views-processOverviewView-processTable-column-processLabel')
+										+ i18n('business-control-center-messages.common-colon')}}</label></td>
+								<td valign="top">
+									<button
+										ng-click="bpmCommon.stopEvent($event); procSearchViewCtrl.toggleAuxiliaryProcess();"
+										ng-attr-title="{{procSearchViewCtrl.query.processSearchCriteria.showAuxiliaryProcess ? 
+											i18n('views-common-messages.processHistory-processTable-hideAuxiliaryProcess') : 
+											i18n('views-common-messages.processHistory-processTable-showAuxiliaryProcess')}}"
+										class="button-link tbl-tool-link"
+										aid="BCC-ProcSrch-ShowHideAuxiliaryProcess">
+										<i ng-class="procSearchViewCtrl.query.processSearchCriteria.showAuxiliaryProcess ? ' pi pi-process-auxiliary pi-lg' : ' pi pi-process-auxiliary pi-lg pi-disabled'"></i>
+									</button>
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td valign="top"><select id="processSelect"
+									multiple="multiple" style="height: 100px; width: 250px;"
+									ng-model="procSearchViewCtrl.procSrchProcessSelected"
+									ng-options="option.name for option in procSearchViewCtrl.procSrchProcess | orderBy: ['order', 'name']"
+									ng-change="procSearchViewCtrl.processChange()"
+									aid="BCC-ProcSrch-Process"></select></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td style="vertical-align: top;"><label>{{i18n('business-control-center-messages.views-processSearchView-processState-label')
+										+ i18n('business-control-center-messages.common-colon')}}</label></td>
+								<td><select id="actStateSelect"
+									ng-model="procSearchViewCtrl.query.processSearchCriteria.procSrchStateSelected"
+									ng-options="option.value as option.label for option in procSearchViewCtrl.procSrchState"
+									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"
+									aid="BCC-ProcSrch-State"></select></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td style="vertical-align: top;"><label>{{i18n('business-control-center-messages.views-processOverviewView-processTable-column-priority')
+										+ i18n('business-control-center-messages.common-colon')}}</label></td>
+								<td><select id="priority" class="activity-table-priority-combo"
+									ng-model="procSearchViewCtrl.query.processSearchCriteria.processSrchPrioritySelected"
+									ng-options="option.value as option.label for option in procSearchViewCtrl.priorities | orderBy: 'order'"
+									aid="BCC-ProcessSrch-Priority">
+								</select></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><label>{{i18n('views-common-messages.overview-CaseOwner')
+										+ i18n('views-common-messages.common-colon')}}</label></td>
+								<td>
+									<div
+										ng-if="procSearchViewCtrl.query.processSearchCriteria.procSearchHierarchySelected != procSearchViewCtrl.HIERARCHY_CASE ||
+										procSearchViewCtrl.query.processSearchCriteria.filterObject == 1">
+										<input type="text" id="caseOwner" ng-disabled="true" aid="BCC-ProcessSrch-CaseOwner">
+									</div>
+									<div
+										ng-if="procSearchViewCtrl.query.processSearchCriteria.procSearchHierarchySelected== procSearchViewCtrl.HIERARCHY_CASE &&
+										procSearchViewCtrl.query.processSearchCriteria.filterObject != 1">
+										<div sd-user-selector
+											sda-selected-data="procSearchViewCtrl.processSrchCaseOwner"
+											sda-active-only="true" sda-multiple="false" sda-max="20"
+											sda-aid-prefix="BCC-ProcessSrch">
+										</div>
+									</div>
+								</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><label>{{i18n('business-control-center-messages.views-processOverviewView-processTable-column-rootPOID')
+										+ i18n('business-control-center-messages.common-colon')}}</label></td>
+								<td><input type="text" id="rootProcessOID"
+									ng-model="procSearchViewCtrl.query.processSearchCriteria.processSrchRootProcessOID"
+									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"
+									aid="BCC-ProcSrch-RootPOID"></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><label>{{i18n('business-control-center-messages.views-processOverviewView-processTable-column-pOID')
+										+ i18n('business-control-center-messages.common-colon')}}</label></td>
+								<td><input type="text" id="processOID"
+									ng-model="procSearchViewCtrl.query.processSearchCriteria.processSrchProcessOID"
+									ng-disabled="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1"
+									aid="BCC-ProcSrch-POID"></td>
+								<td></td>
+							</tr>
+						</table>
+					</td>
+					<td style="vertical-align: top;">
+						<table class="searchTableLayout"
+							ng-show="procSearchViewCtrl.query.processSearchCriteria.filterObject == 1">
+							<tr>
+								<td colspan="3">
+									<div class="heading view-panel-toolbar">
+										<label>{{i18n('business-control-center-messages.views-processSearchView-activityCriteria-label')}}</label>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td><label>{{i18n('business-control-center-messages.views-processSearchView-startedFrom-label')
+										+ i18n('business-control-center-messages.common-colon')}}</label></td>
+								<td><div sd-date-time-picker ng-model-onblur
+									ng-model="procSearchViewCtrl.query.processSearchCriteria.actStartFrom"
+									name="acttartFrom" 
+									aid="BCC-ActivitySrch-StartedFrom"/></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><label>{{i18n('business-control-center-messages.views-processSearchView-startedTo-label')
+										+ i18n('business-control-center-messages.common-colon')}}</label></td>
+								<td><div sd-date-time-picker ng-model-onblur
+									ng-model="procSearchViewCtrl.query.processSearchCriteria.actStartTo"
+									name="actStartTo" 
+									aid="BCC-ActivitySrch-StartedTo"/></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><label>{{i18n('business-control-center-messages.views-processSearchView-modifyTimeFrom-label')
+										+ i18n('business-control-center-messages.common-colon')}}</label></td>
+								<td><div sd-date-time-picker ng-model-onblur
+									ng-model="procSearchViewCtrl.query.processSearchCriteria.actModifyFrom"
+									name="actModifyFrom" 
+									aid="BCC-ActivitySrch-ModifyTimeFrom"/></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><label>{{i18n('business-control-center-messages.views-processSearchView-modifyTimeTo-label')
+										+ i18n('business-control-center-messages.common-colon')}}</label></td>
+								<td><div sd-date-time-picker ng-model-onblur
+									ng-model="procSearchViewCtrl.query.processSearchCriteria.actModifyTo"
+									name="actModifyTo" 
+									aid="BCC-ActivitySrch-ModifyTimeTo"/></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><label class="section2">{{i18n('business-control-center-messages.views-processOverviewView-activityTable-column-activityName')
+										+ i18n('business-control-center-messages.common-colon')}}</label></td>
+								<td>
+									<table>
+										<tr>
+											<td valign="top">
+												<button
+													ng-click="bpmCommon.stopEvent($event); procSearchViewCtrl.toggleNonInteractiveActivities();"
+													ng-attr-title="{{procSearchViewCtrl.query.processSearchCriteria.showNonInteractiveActivities ? 
+															i18n('views-common-messages.processHistory-activityTable-hideApplicationActivity') : 
+															i18n('views-common-messages.processHistory-activityTable-showApplicationActivity')}}"
+													class="button-link tbl-tool-link"
+													aid="BCC-ActivitySrch-SHNonIntActs">
+													<i
+														ng-class="procSearchViewCtrl.query.processSearchCriteria.showNonInteractiveActivities ? 
+															'pi pi-non-interactive-activity pi-lg' : 
+															'pi pi-non-interactive-activity pi-lg pi-disabled'"></i>
+												</button>
+											</td>
+											<td valign="top">
+												<button
+													ng-click="bpmCommon.stopEvent($event); procSearchViewCtrl.toggleInteractiveActivities();"
+													ng-attr-title="{{procSearchViewCtrl.query.processSearchCriteria.showInteractiveActivities ? 
+														i18n('views-common-messages.processHistory-activityTable-hideManualActivity') : 
+														i18n('views-common-messages.processHistory-activityTable-showManualActivity')}}"
+													class="button-link tbl-tool-link"
+													aid="BCC-ActivitySrch-SHIntActs">
+													<i
+														ng-class="procSearchViewCtrl.query.processSearchCriteria.showInteractiveActivities ? 
+														'pi pi-manual-activity pi-lg' : 
+														'pi pi-manual-activity pi-lg  pi-disabled'"></i>
+												</button>
+
+											</td>
+											<td valign="top">
+												<button
+													ng-click="bpmCommon.stopEvent($event); procSearchViewCtrl.toggleAuxiliaryActivities();"
+													ng-attr-title="{{procSearchViewCtrl.query.processSearchCriteria.showAuxiliaryActivities ? 
+														i18n('views-common-messages.processHistory-processTable-hideAuxiliaryActivities') : 
+														i18n('views-common-messages.processHistory-processTable-showAuxiliaryActivities')}}"
+													 class="button-link tbl-tool-link"
+													 aid="BCC-ActivitySrch-SHAuxActs">
+													<i
+														ng-class="procSearchViewCtrl.query.processSearchCriteria.showAuxiliaryActivities ? 
+														'pi pi-activity-auxiliary pi-lg' : 
+														'pi pi-activity-auxiliary pi-lg pi-disabled'"></i>
+												</button>
+
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td valign="top"><select id="activitySelect"
+									ng-model="procSearchViewCtrl.activitySrchSelected"
+									ng-options="option.name for option in procSearchViewCtrl.procSrchActivities | orderBy: ['order', 'name']"
+									multiple="multiple" style="height: 100px; width: 250px;"
+									aid="BCC-ActivitySrch-Activity"></select>
+								</td>
+								<td></td>
+							</tr>
+							<tr>
+								<td style="vertical-align: top;"><label>{{i18n('business-control-center-messages.views-processSearchView-processState-label')
+										+ i18n('business-control-center-messages.common-colon')}}</label></td>
+								<td><select id="actStateSelect"
+									ng-model="procSearchViewCtrl.query.processSearchCriteria.activitySrchStateSelected"
+									ng-options="option.value as option.label for option in procSearchViewCtrl.activitySrchState"
+									aid="BCC-ActivitySrch-State"></select></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td style="vertical-align: top;"><label>{{i18n('business-control-center-messages.views-processOverviewView-activityTable-column-criticality')
+										+ i18n('business-control-center-messages.common-colon')}}</label></td>
+								<td><select id="criticalitySelect"
+									ng-model="procSearchViewCtrl.query.processSearchCriteria.activitySrchCriticalitySelected"
+									ng-options="option.label as option.label for option in procSearchViewCtrl.activitySrchCriticality"
+									aid="BCC-ActivitySrch-Criticality"></select></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><label>{{i18n('business-control-center-messages.views-processOverviewView-activityTable-column-aOID')
+										+ i18n('business-control-center-messages.common-colon')}}</label></td>
+								<td><input type="text" id="activityOID"
+									ng-model="procSearchViewCtrl.query.processSearchCriteria.activitySrchActivityOID"
+									aid="BCC-ActivitySrch-AOID"></td>
+								<td></td>
+							</tr>
+							<tr>
+								<td><label>{{i18n('business-control-center-messages.views-processSearchView-activityCriteria-performer')
+										+ i18n('business-control-center-messages.common-colon')}}</label></td>
+								<td>
+									<div>
+										<div sd-user-selector
+											sda-selected-data="procSearchViewCtrl.activitySrchPerformer"
+											sda-active-only="true" sda-multiple="false" sda-max="20"
+											sda-aid-prefix="BCC-ActivitySrch-ActivitySrchPerformer">
+										</div>
+									</div>
+								</td>
+								<td></td>
+							</tr>
+						</table>
+					</td>
+					<td style="vertical-align: top;"
+						ng-show="procSearchViewCtrl.descritorCols.length > 0">
+						<table class="searchTableLayout">
+							<tr>
+								<td colspan="3">
+									<div class="heading view-panel-toolbar">
+										<label>{{i18n('business-control-center-messages.common-descriptor-title')}}</label>
+									</div>
+								</td>
+							</tr>
+
+							<tr ng-repeat="descCol in procSearchViewCtrl.descritorCols">
+								<td><label>{{descCol.title +
+										i18n('business-control-center-messages.common-colon')}}</label></td>
+
+								<td ng-if="descCol.dataType =='BOOLEAN'">
+									<table>
+										<tr>
+											<td><select
+												ng-model="procSearchViewCtrl.selected[descCol.id]"
+												ng-options="option.value as option.label for option in procSearchViewCtrl.descBoolOptions"
+												aid="BCC-ProcSrch-Descriptors-OnOffFilter"></select></td>
+										</tr>
+									</table>
+								</td>
+								<td
+									ng-if="descCol.dataType =='NUMBER' || descCol.dataType==
+									'STRING'">
+									<input type="text" id="{{descCol.id}}"
+									ng-model="procSearchViewCtrl.selected[descCol.id]" 
+									aid="BCC-ProcSrch-Descriptors-NumberFilter" />
+								</td>
+								<td ng-if="descCol.dataType =='DATE'">
+									<table cellspacing="2" cellpadding="2"
+										style="white-space: nowrap;">
+										<tr>
+											<td><label class="label-form">{{i18n('portal-common-messages.common-filterPopup-betweenFilter-first')}}</label></td>
+											<td><div sd-date-time-picker id="from"
+												name="from"
+												ng-model="procSearchViewCtrl.selected[descCol.id]"
+												ng-model-onblur
+												aid="BCC-ProcSrch-Descriptors-FromDate" />
+												<div class="msg-error"
+													ng-show="filterForm['from'].$error.datePicker">{{i18n('html5-common.converter-number-error')}}</div>
+												<div class="msg-error"
+													ng-show="filterForm['from'].$error.validate">{{i18n('html5-common.date-error')}}</div>
+											</td>
+										</tr>
+										<tr>
+											<td><label class="label-form">{{i18n('portal-common-messages.common-filterPopup-betweenFilter-last')}}</label></td>
+											<td><div sd-date-time-picker id="to"
+												name="to"
+												ng-model="procSearchViewCtrl.selected[descCol.title]"
+												ng-model-onblur
+												aid="BCC-ProcSrch-Descriptors-ToDate" />
+												<div class="msg-error"
+													ng-show="filterForm['to'].$error.datePicker">{{i18n('html5-common.converter-number-error')}}</div>
+												<div class="msg-error"
+													ng-show="filterForm['to'].$error.validate">{{i18n('html5-common.date-error')}}</div>
+											</td>
+										</tr>
+									</table> <!-- <input type="text" sd-date-picker sda-change-year="true"
+									sda-milliseconds="true" ng-model-onblur
+									ng-model="{{procSearchViewCtrl.descriptors.id}}" /> -->
+								</td>
+								<td></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<div>
+							<table>
+								<tr>
+									<td><input class="button" type="submit"
+										value="{{i18n('business-control-center-messages.views-processSearchView-button-searchProcess')}}"
+										ng-click="procSearchViewCtrl.search()"
+										aid="BCC-ProcSrch-Search"></td>
+									<td><input type="submit"
+										ng-click="procSearchViewCtrl.reset()" value="{{i18n('business-control-center-messages.common-button-reset')}}"
+										aid="BCC-ProcSrch-Reset"></td>
+								</tr>
+							</table>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div
+			ng-show="procSearchViewCtrl.showProcSearchResult && procSearchViewCtrl.query.processSearchCriteria.filterObject == '0'"
+			ng-include="'plugins/html5-process-portal/partials/views/processSearchResult.html'">
+		</div>
+		<div
+			ng-show="procSearchViewCtrl.showProcSearchResult && procSearchViewCtrl.query.processSearchCriteria.filterObject == '1'"
+			ng-include="'plugins/html5-process-portal/partials/views/processSearchActivityResult.html'">
+		</div>
+	</div>
+</div>

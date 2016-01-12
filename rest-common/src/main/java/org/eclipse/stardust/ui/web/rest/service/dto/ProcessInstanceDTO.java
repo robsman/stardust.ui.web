@@ -30,7 +30,11 @@ public class ProcessInstanceDTO extends AbstractDTO
    @DTOAttribute("processName")
    public String processName;
 
+   public String qualifiedId;
+
    public long processInstanceRootOID;
+   
+   public long parentProcessInstanceOID; //set only when requested with 'withHierarchyInfo'
 
    public PriorityDTO priority;
 
@@ -51,7 +55,7 @@ public class ProcessInstanceDTO extends AbstractDTO
    public Object enableTerminate;
 
    public Object status;
-
+   
    public boolean enableRecover;
 
    public boolean checkSelection;
@@ -66,4 +70,9 @@ public class ProcessInstanceDTO extends AbstractDTO
 
    public PriorityDTO oldPriority;
    
+   public BenchmarkDTO benchmark;
+
+   public boolean auxillary;
+   
+   public boolean supportsProcessAttachments;
 }

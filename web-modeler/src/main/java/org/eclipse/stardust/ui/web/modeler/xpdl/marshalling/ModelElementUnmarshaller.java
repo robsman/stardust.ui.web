@@ -151,7 +151,11 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
    {
       logger.debug("Unmarshalling: " + element + " " + json);
 
-      if (element instanceof ProcessDefinitionType)
+      if (element instanceof Code)
+      {
+         updateQualityAssuranceCode((Code) element, json.getAsJsonObject("modelElement"));
+      }
+      else if (element instanceof ProcessDefinitionType)
       {
          updateProcessDefinition((ProcessDefinitionType) element, json);
       }
@@ -237,6 +241,10 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          updateDataFlowConnection((DataMappingConnectionType) element, json);
       }
+      else if (element instanceof DataMappingType)
+      {
+         updateDataMapping((DataMappingType) element, json);
+      }
       else if (element instanceof EventHandlerType)
       {
          updateEventHandler((EventHandlerType) element, json);
@@ -249,25 +257,6 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       {
          logger.warn("===> Unsupported Symbol " + element);
       }
-   }
-
-   private Code resolveCode(ActivityType activity, String code)
-   {
-      ModelType model = ModelUtils.findContainingModel(activity);
-
-      if (model.getQualityControl() != null)
-      {
-         for (Iterator<Code> i = model.getQualityControl().getCode().iterator(); i
-               .hasNext();)
-         {
-            Code modelCode = i.next();
-            if (modelCode != null && modelCode.getCode().equals(code))
-            {
-               return modelCode;
-            }
-         }
-      }
-      return null;
    }
 
    /**
@@ -291,14 +280,28 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       storeAttributes(activity, activityJson);
       storeDescription(activity, activityJson);
 
-      AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, null);
-      AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, null);
-      activity.setQualityControlPerformer(null);
-      activity.getValidQualityCodes().clear();
+      if (hasNotJsonNull(activityJson, ModelerConstants.QUALITYASSURANCECODES))
+      {
+         updateQualityControlCodes(activity, activityJson);
+      }
+
       if (activityJson.has(ModelerConstants.QUALITYCONTROL)
             && !(activityJson.get(ModelerConstants.QUALITYCONTROL) instanceof JsonNull))
       {
+         AttributeUtil.setAttribute(activity, PredefinedConstants.ACTIVITY_IS_QUALITY_ASSURANCE_ATT, null);
+         AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, null);
+         AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, null);
+         activity.setQualityControlPerformer(null);
+
          updateQualityControl(activity, activityJson);
+      }
+      else if (activityJson.has(ModelerConstants.QUALITYCONTROL)
+            && (activityJson.get(ModelerConstants.QUALITYCONTROL) instanceof JsonNull))
+      {
+         AttributeUtil.setAttribute(activity, PredefinedConstants.ACTIVITY_IS_QUALITY_ASSURANCE_ATT, null);
+         AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, null);
+         AttributeUtil.setAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, null);
+         activity.setQualityControlPerformer(null);
       }
 
       if (isGateway)
@@ -351,6 +354,8 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          }
       }
    }
+
+
 
    public void updateParticipant(ActivityType activity, JsonElement participantIdJson)
    {
@@ -481,37 +486,47 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       }
    }
 
-   public void updateQualityControl(ActivityType activity, JsonObject activityJson)
+   public void updateQualityControlCodes(ActivityType activity, JsonObject activityJson)
    {
-      JsonObject qcJson = activityJson
-            .getAsJsonObject(ModelerConstants.QUALITYCONTROL);
-      String fullParticipantID = qcJson.get(ModelerConstants.PARTICIPANT_FULL_ID)
-            .getAsString();
-
-      IModelParticipant importParticipant = getModelBuilderFacade().importParticipant(ModelUtils.findContainingModel(activity), fullParticipantID);
-      activity.setQualityControlPerformer(importParticipant);
-
-      if(EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT) != null)
-      {
-         AttributeUtil.setCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, (String) EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT));
-      }
-      if(EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT) != null)
-      {
-         AttributeUtil.setCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, (String) EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT));
-      }
-
-      JsonArray qcCodes = qcJson.getAsJsonArray(ModelerConstants.QC_VALID_CODES);
+      JsonArray qcCodes = activityJson.getAsJsonArray(ModelerConstants.QUALITYASSURANCECODES);
+      activity.getValidQualityCodes().clear();
       for (Iterator<JsonElement> i = qcCodes.iterator(); i.hasNext();)
       {
-         JsonObject qcCode = (JsonObject) i.next();
-         Code code = resolveCode(activity, qcCode.get(ModelerConstants.QC_CODE)
-               .getAsString());
-
+         JsonPrimitive qcCode = (JsonPrimitive) i.next();
+         String uuid = qcCode.toString();
+         uuid = uuid.substring(1, uuid.length() - 1);
+         Code code = (Code) modelService.getModelBuilderFacade().getModelManagementStrategy().uuidMapper().getEObject(uuid);
          if (code != null)
          {
             activity.getValidQualityCodes().add(code);
          }
+      }
+   }
 
+   public void updateQualityControl(ActivityType activity, JsonObject activityJson)
+   {
+      JsonObject qcJson = activityJson.getAsJsonObject(ModelerConstants.QUALITYCONTROL);
+      if(EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.ACTIVITY_IS_QUALITY_ASSURANCE_ATT) != null)
+      {
+         boolean isQualityAssurance = (Boolean) EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.ACTIVITY_IS_QUALITY_ASSURANCE_ATT);
+         if(isQualityAssurance)
+         {
+            AttributeUtil.setBooleanAttribute((IExtensibleElement) activity, PredefinedConstants.ACTIVITY_IS_QUALITY_ASSURANCE_ATT, true);
+
+            String fullParticipantID = qcJson.get(ModelerConstants.PARTICIPANT_FULL_ID).getAsString();
+
+            IModelParticipant importParticipant = getModelBuilderFacade().importParticipant(ModelUtils.findContainingModel(activity), fullParticipantID);
+            activity.setQualityControlPerformer(importParticipant);
+
+            if(EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT) != null)
+            {
+               AttributeUtil.setCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT, (String) EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_FORMULA_ATT));
+            }
+            if(EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT) != null)
+            {
+               AttributeUtil.setCDataAttribute(activity, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT, (String) EventMarshallingUtils.getJsonAttribute(activityJson, PredefinedConstants.QUALITY_ASSURANCE_PROBABILITY_ATT));
+            }
+         }
       }
    }
 
@@ -696,6 +711,118 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       }
    }
 
+   private void updateDataMapping(DataMappingType dataMapping, JsonObject dataMappingJson)
+   {
+      //Todo: Remove this code when client calls are adapted accordingly
+      if (dataMappingJson.has(ModelerConstants.MODEL_ELEMENT_PROPERTY))
+      {
+         dataMappingJson = dataMappingJson
+               .getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+      }
+      ///
+
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.NAME_PROPERTY))
+      {
+
+         String name = dataMappingJson.get(ModelerConstants.NAME_PROPERTY)
+               .getAsString();
+
+         if (StringUtils.isEmpty(name))
+         {
+            throw new ModelerException(ModelerErrorClass.MODEL_ID_INVALID);
+         }
+
+         dataMapping.setName(name);
+
+         ActivityType activity = ModelUtils.findContainingActivity(dataMapping);
+
+         List<DataMappingType> dataMappings = new ArrayList<DataMappingType>();
+         for (Iterator<DataMappingType> i = activity.getDataMapping().iterator(); i
+               .hasNext();)
+         {
+            DataMappingType dm = i.next();
+            if (dm.getData() != null
+                  && dm.getData().getId().equals(dataMapping.getData().getId()))
+            {
+               dataMappings.add(dm);
+            }
+         }
+
+         String id = NameIdUtils.createIdFromName(dataMappings, dataMapping);
+
+         if (activity != null)
+         {
+            DataMappingType foundDM = null;
+            for (Iterator<DataMappingType> i = activity.getDataMapping().iterator(); i
+                  .hasNext();)
+            {
+               DataMappingType dm = i.next();
+               if (dm.getData() != null)
+               {
+                  if (dm.getData().getId() != null)
+                  {
+                     if (dm.getData().getId().equals(dataMapping.getData().getId()))
+                     {
+                        if (!dm.equals(dataMapping) && dm.getId().equals(dataMapping.getId()))
+                        {
+                           foundDM = dm;
+                        }
+                     }
+                  }
+               }
+            }
+            if (foundDM != null)
+            {
+               foundDM.setName(dataMappingJson.get(ModelerConstants.NAME_PROPERTY)
+                     .getAsString());
+               foundDM.setId(id);
+            }
+         }
+
+         dataMapping.setId(id);
+      }
+
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.ACCESS_POINT_ID_PROPERTY))
+      {
+
+         dataMapping.setApplicationAccessPoint(dataMappingJson.get(
+               ModelerConstants.ACCESS_POINT_ID_PROPERTY).getAsString());
+         {
+            dataMapping.setContext(dataMappingJson.get(
+                  ModelerConstants.ACCESS_POINT_CONTEXT_PROPERTY).getAsString());
+         }
+      }
+      if (dataMappingJson.has(ModelerConstants.ACCESS_POINT_PATH_PROPERTY))
+      {
+         if (dataMappingJson.get(ModelerConstants.ACCESS_POINT_PATH_PROPERTY)
+               .isJsonNull())
+         {
+            dataMapping.setApplicationPath(null);
+         }
+         else
+         {
+            dataMapping.setApplicationPath(dataMappingJson.get(
+                  ModelerConstants.ACCESS_POINT_PATH_PROPERTY).getAsString());
+         }
+      }
+
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.DATA_PATH_PROPERTY))
+      {
+         dataMapping.setDataPath(dataMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY)
+               .getAsString());
+      }
+
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.DIRECTION_PROPERTY))
+      {
+         String direction = dataMappingJson.get(ModelerConstants.DIRECTION_PROPERTY)
+               .getAsString();
+         DirectionType directionType = direction.equals(ModelerConstants.DATAMAPPING_IN)
+               ? DirectionType.IN_LITERAL
+               : DirectionType.OUT_LITERAL;
+         dataMapping.setDirection(directionType);
+      }
+   }
+
    /**
     *
     * @param dataFlowConnection
@@ -806,7 +933,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
     * @param name
     * @return
     */
-   private DataMappingType createDataMapping(ActivityType activity, DataType data,
+   public DataMappingType createDataMapping(ActivityType activity, DataType data,
          JsonObject dataFlowJson, DirectionType direction, JsonObject dataMappingJson)
    {
       DataMappingType dataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
@@ -1895,19 +2022,29 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          JsonObject eventHandlerJson)
    {
       if (!eventHandler.getType().getId()
-            .equals(PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION))
+            .equals(PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION)
+            && !eventHandler.getId().equals(ModelerConstants.RS_RESUBMISSION))
       {
          return;
       }
 
-      JsonObject euEventHandlerJson = eventHandlerJson.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
-
-      if (euEventHandlerJson.has(ModelerConstants.LOG_HANDLER_PROPERTY))
+      if (eventHandler.getId().equals(ModelerConstants.RS_RESUBMISSION))
       {
-         boolean logHandler = euEventHandlerJson.get(ModelerConstants.LOG_HANDLER_PROPERTY)
-               .getAsBoolean();
-         eventHandler.setLogHandler(logHandler);
+         EventMarshallingUtils.updateResubmissionHandler(eventHandler, eventHandlerJson);
       }
+      else
+      {
+         JsonObject euEventHandlerJson = eventHandlerJson
+               .getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+
+         if (euEventHandlerJson.has(ModelerConstants.LOG_HANDLER_PROPERTY))
+         {
+            boolean logHandler = euEventHandlerJson.get(
+                  ModelerConstants.LOG_HANDLER_PROPERTY).getAsBoolean();
+            eventHandler.setLogHandler(logHandler);
+         }
+      }
+
    }
 
    private void updateIntermediateEventSymbol(IntermediateEventSymbol eventSymbol,
@@ -2083,7 +2220,7 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
 
          if (null != eventHandler)
          {
-
+            modelService.uuidMapper().map(eventHandler);
             EventMarshallingUtils.updateEventHandler(eventHandler, hostActivity, hostingConfig, eventJson);
 
             storeAttributes(eventHandler, eventJson, "carnot:engine:delayUnit");
@@ -3090,6 +3227,26 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
    }
 
    /**
+    * @param code
+    * @param modelJson
+    */
+   private void updateQualityAssuranceCode(Code code, JsonObject json)
+   {
+      if (json.has(ModelerConstants.ID_PROPERTY))
+      {
+         code.setCode(json.get(ModelerConstants.ID_PROPERTY).getAsString());
+      }
+      if (json.has(ModelerConstants.NAME_PROPERTY))
+      {
+         code.setName(json.get(ModelerConstants.NAME_PROPERTY).getAsString());
+      }
+      if (json.has(ModelerConstants.DESCRIPTION_PROPERTY))
+      {
+         code.setValue(json.get(ModelerConstants.DESCRIPTION_PROPERTY).getAsString());
+      }
+   }
+
+   /**
     * @param model
     * @param modelJson
     */
@@ -3127,27 +3284,44 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          }
       }
 
-      if (modelJson.has(ModelerConstants.QUALITYCONTROL))
+      if (modelJson.has(ModelerConstants.QUALITYASSURANCECODES))
       {
-         QualityControlType qualityControl = CarnotWorkflowModelFactory.eINSTANCE
-               .createQualityControlType();
-         model.setQualityControl(qualityControl);
-         JsonObject qcJson = modelJson.getAsJsonObject(ModelerConstants.QUALITYCONTROL);
-         if (qcJson.has(ModelerConstants.QC_CODES))
+         QualityControlType qualityControl = model.getQualityControl();
+         if(qualityControl == null)
          {
-            JsonArray qcCodes = qcJson.getAsJsonArray(ModelerConstants.QC_CODES);
-            for (Iterator<JsonElement> i = qcCodes.iterator(); i.hasNext();)
+            qualityControl = CarnotWorkflowModelFactory.eINSTANCE.createQualityControlType();
+            model.setQualityControl(qualityControl);
+         }
+
+         Map<String, Code> codes = newHashMap();
+         for(Code theCode : qualityControl.getCode())
+         {
+            codes.put(theCode.getCode(), theCode);
+         }
+         qualityControl.getCode().clear();
+
+         JsonArray qcCodes = modelJson.getAsJsonArray(ModelerConstants.QUALITYASSURANCECODES);
+         for (Iterator<JsonElement> i = qcCodes.iterator(); i.hasNext();)
+         {
+            JsonObject qcCode = (JsonObject) i.next();
+            Code reuseCode = codes.get(qcCode.get(ModelerConstants.ID_PROPERTY).getAsString());
+            if(reuseCode != null)
             {
-               JsonObject qcCode = (JsonObject) i.next();
-               Code code = CarnotWorkflowModelFactory.eINSTANCE.createCode();
-               code.setCode(qcCode.get(ModelerConstants.QC_CODE).getAsString());
-               code.setName(qcCode.get(ModelerConstants.QC_NAME).getAsString());
-               if (qcCode.get(ModelerConstants.QC_VALUE) != null)
-               {
-                  code.setValue(qcCode.get(ModelerConstants.QC_VALUE).getAsString());
-               }
-               qualityControl.getCode().add(code);
+               qualityControl.getCode().add(reuseCode);
             }
+
+            /*
+            Code code = CarnotWorkflowModelFactory.eINSTANCE.createCode();
+            code.setCode(qcCode.get(ModelerConstants.ID_PROPERTY).getAsString());
+            code.setName(qcCode.get(ModelerConstants.NAME_PROPERTY).getAsString());
+            if (qcCode.get(ModelerConstants.DESCRIPTION_PROPERTY) != null)
+            {
+               code.setValue(qcCode.getAsJsonPrimitive(ModelerConstants.DESCRIPTION_PROPERTY).getAsString());
+            }
+            qualityControl.getCode().add(code);
+            EObjectUUIDMapper mapper = modelService.getModelBuilderFacade().getModelManagementStrategy().uuidMapper();
+            mapper.map(code);
+            */
          }
       }
    }

@@ -64,22 +64,29 @@
 					<c:choose>					
 						<c:when test="#{treeLineStyle == 'NONE'}">
 							<ice:panelGroup rendered="#{!row.leaf and !row.expanded}" style="display:inline;">
-								<ice:commandButton image="#{treeLineStyleMiddleImgPlus}" action="#{row.toggleRow}" />
+								<ice:commandLink action="#{row.toggleRow}" style="padding-right: 5px;" styleClass="pi-cmdLnk">
+									<h:outputText styleClass="pi pi-expand-all pi-lg" style="vertical-align: super;" />
+								</ice:commandLink>
 							</ice:panelGroup>
 							<ice:panelGroup rendered="#{row.leaf or row.expanded}" style="display:inline;">
 								<ice:panelGroup rendered="#{row.leaf}" style="display:inline;">
 									<img src="#{spacerImg}" width="15px" />
 								</ice:panelGroup>
-								<ice:commandButton image="#{treeLineStyleMiddleImgMinus}"
-									action="#{row.toggleRow}" rendered="#{not row.leaf}" />
+								<ice:commandLink action="#{row.toggleRow}" style="padding-right: 5px; margin-bottom: 2px;"
+									styleClass="pi-cmdLnk" rendered="#{not row.leaf}">
+									<h:outputText styleClass="pi pi-collapse-all pi-lg" style="vertical-align: super;" />
+								</ice:commandLink>
 							</ice:panelGroup>
 						</c:when>
 						<c:otherwise>
 							<img src="#{treeLineStyleMiddleImg}" />
 						</c:otherwise>
 					</c:choose>
-					
-					<ice:commandButton disabled="#{row.leaf}" image="#{row.icon}" action="#{row.toggleRow}"
+					<ice:commandLink action="#{row.toggleRow}" disabled="#{row.leaf}" styleClass="pi-cmdLnk" style="display: inline;" rendered="#{!pc:contains(row.icon, '.')}">
+						<h:outputText  
+							styleClass="pi pi-lg #{row.icon}" style="display: inline; vertical-align: super;" />
+					</ice:commandLink>
+					<ice:commandButton disabled="#{row.leaf}" image="#{row.icon}" action="#{row.toggleRow}" rendered="#{pc:contains(row.icon, '.')}"
 						style="#{row.leaf ? 'cursor: default; opacity: 1' : ''}; padding-left:3px; background:transparent;" />
 					<ice:outputText value=" " escape="false" style="vertical-align: super;display:inline;padding:0px;margin:0px;" />
 					<c:choose>

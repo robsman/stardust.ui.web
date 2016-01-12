@@ -36,17 +36,17 @@ public class AggregateActivityColumnItem implements IColumnItem
 
    private static final String DEFAULT_STATE_CALCULATOR = "org.eclipse.stardust.ui.web.bcc.legacy.traffic.TerminationTimeBasedCalculator";
 
-   private final static String TRAFFIC_LIGHT_GREEN = "/plugins/views-common/images/icons/status.png";
+   private final static String TRAFFIC_LIGHT_GREEN = "pi pi-fw pi-1x pi-tlv-status-circle pi-tlv-color-green";
 
-   private final static String TRAFFIC_LIGHT_AMBER = "/plugins/views-common/images/icons/status-away.png";
+   private final static String TRAFFIC_LIGHT_AMBER = "pi pi-fw pi-1x pi-tlv-status-circle pi-tlv-color-amber";
 
-   private final static String TRAFFIC_LIGHT_RED = "/plugins/views-common/images/icons/status-busy.png";
+   private final static String TRAFFIC_LIGHT_RED = "pi pi-fw pi-1x pi-tlv-status-circle pi-tlv-color-red";
 
-   private final static String TRAFFIC_LIGHT_GREY = "/plugins/views-common/images/icons/status-offline.png";
+   private final static String TRAFFIC_LIGHT_GREY = "pi pi-fw pi-1x pi-tlv-status-circle";
 
-   private final static String TRAFFIC_LIGHT_COMPLETED = "/plugins/views-common/images/icons/tick.png";
+   private final static String TRAFFIC_LIGHT_COMPLETED = "pi pi-lg pi-check";
 
-   private final static String TRAFFIC_LIGHT_COMPLETED_TRANS = "/plugins/views-common/images/icons/traffic_light_complete_trans.gif";
+   private final static String TRAFFIC_LIGHT_COMPLETED_TRANS = "pi pi-lg pi-traffic_light_complete_trans";
 
    //public final static String PROCESSES_PASSED_AI = "aggregateActivityColumnItem/processesPassedAI";
 

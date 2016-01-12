@@ -296,7 +296,8 @@ define(
 
 					if (this.propertiesPanel.participant != null &&
 							(this.propertiesPanel.element.modelElement.eventClass == m_constants.NONE_EVENT_CLASS ||
-									this.propertiesPanel.element.modelElement.eventClass == m_constants.MESSAGE_EVENT_CLASS)) {
+									this.propertiesPanel.element.modelElement.eventClass == m_constants.MESSAGE_EVENT_CLASS)
+									&& this.propertiesPanel.element.modelElement.implementation !== m_constants.IMPLEMENTATION_NONE) {
 						this.participantOutput.append(m_i18nUtils.getProperty("modeler.eventPropertiesPanel.heading.startEvent.startedBy") +  " <b>"
 								+ this.propertiesPanel.participant.name
 								+ ".</b>");

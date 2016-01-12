@@ -8,10 +8,10 @@ define(
         "bpm-modeler/js/m_accessPoint",
         "bpm-modeler/js/m_typeDeclaration",
         "bpm-modeler/js/m_parameterDefinitionsPanel",
-        "bpm-modeler/js/m_codeEditorAce" ],
+        "bpm-modeler/js/m_codeEditorAce","bpm-modeler/js/m_user" ],
       function(m_utils,m_urlUtils, m_i18nUtils, m_constants, m_commandsController,
             m_command, m_model, m_accessPoint, m_typeDeclaration,
-            m_parameterDefinitionsPanel, m_codeEditorAce) {
+            m_parameterDefinitionsPanel, m_codeEditorAce,m_user) {
          return {
             create : function(view) {
                var overlay = new GenericEndpointOverlay();
@@ -32,20 +32,35 @@ define(
             GenericEndpointOverlay.prototype.initialize = function(view) {
                this.view = view;
                
-               this.view.insertPropertiesTab("genericEndpointOverlay",
-                     "parameters", "Parameters",
-                     "plugins/bpm-modeler/images/icons/database_link.png");
+               this.view.insertPropertiesTab("genericEndpointOverlay","parameters", "Parameters","plugins/bpm-modeler/images/icons/database_link.png");
+               this.view.insertPropertiesTab("genericEndpointOverlay","producerRoute", "Producer Route","plugins/bpm-modeler/images/icons/script_code.png");
+               this.view.insertPropertiesTab("genericEndpointOverlay","consumerRoute", "Consumer Route","plugins/bpm-modeler/images/icons/script_code_red.png");
                
-               this.view.insertPropertiesTab("genericEndpointOverlay",
-                     "producerRoute", "Producer Route",
-                     "plugins/bpm-modeler/images/icons/script_code.png");
-
-               this.view.insertPropertiesTab("genericEndpointOverlay",
-                     "consumerRoute", "Consumer Route",
-                     "plugins/bpm-modeler/images/icons/script_code_red.png");
+               m_utils.jQuerySelect("label[for='camelContextInput']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.camelContext"));
+               m_utils.jQuerySelect("label[for='invocationPatternInput']").text(m_i18nUtils.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.invocationPatternInput"));
+               m_utils.jQuerySelect("label[for='invocationTypeInput']").text(m_i18nUtils.getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.invocationTypeInput"));
+               m_utils.jQuerySelect("label[for='transactedRouteInput']").text(m_i18nUtils.getProperty("modeler.common.camel.transactedRouteInput"));
+               m_utils.jQuerySelect("label[for='autoStartupInput']").text(m_i18nUtils.getProperty("modeler.common.camel.autoStartupInput"));
+               m_utils.jQuerySelect("label[for='additionalBeanSpecificationTextarea']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.additionalBeans"));
                
-                     
-
+               m_utils.jQuerySelect("label[for='paramDef']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.paramDef"));
+               m_utils.jQuerySelect("label[for='inputBodyAccessPointInput']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.inputBodyAccessPointInput"));
+               m_utils.jQuerySelect("label[for='outputBodyAccessPointInput']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.outputBodyAccessPointInput"));
+               
+               m_utils.jQuerySelect("label[for='processContextHeadersInput']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.processContextHeadersInput"));
+               m_utils.jQuerySelect("label[for='producerBpmTypeConverter']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.producerBpmTypeConverter"));
+               m_utils.jQuerySelect("label[for='producerOutboundConversion']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.producerOutboundConversion"));
+               m_utils.jQuerySelect("label[for='producerInboundConversion']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.producerInboundConversion"));
+               
+               m_utils.jQuerySelect("label[for='producerOutboundConverterDelimiterInput']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.DelimiterInput"));
+               m_utils.jQuerySelect("label[for='autogenHeadersInput']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.autogenHeadersInput"));
+               m_utils.jQuerySelect("label[for='producerInboundConverterDelimiterInput']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.DelimiterInput"));
+               
+               m_utils.jQuerySelect("label[for='consumerBpmTypeConverter']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.producerBpmTypeConverter"));
+               m_utils.jQuerySelect("label[for='consumerInboundConversion']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.producerInboundConversion"));
+               m_utils.jQuerySelect("label[for='consumerInboundConverterDelimiterInput']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.DelimiterInput"));
+               
+               
                // configuration tab
                this.camelContextInput = m_utils.jQuerySelect("#genericEndpointOverlay #camelContextInput");
                this.additionalBeanSpecificationTextarea = m_utils.jQuerySelect("#genericEndpointOverlay #additionalBeanSpecificationTextarea");
@@ -53,13 +68,26 @@ define(
                this.invocationPatternInput = m_utils.jQuerySelect("#genericEndpointOverlay #invocationPatternInput");
             // this.invocationPatternInput.append("<option value=\"" + m_constants.TO_BE_DEFINED + "\">" + m_i18nUtils
             //    .getProperty("None") + "</option>");
+               this.invocationPatternInput.empty();
                this.invocationPatternInput.append("<option value=\"send\" selected>" + m_i18nUtils
                   .getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.invocationPattern.send") + "</option>");
                this.invocationPatternInput.append("<option value=\"sendReceive\">" + m_i18nUtils
                   .getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.invocationPattern.sendReceive") + "</option>");
                this.invocationPatternInput.append("<option value=\"receive\">" + m_i18nUtils
                   .getProperty("modeler.model.propertyView.camelRoute.camelConfigurationProperties.invocationPattern.receive") + "</option>");
-                           
+               this.producerOutboundConversion = m_utils.jQuerySelect("#producerRouteTab #producerOutboundConversion");
+               this.producerOutboundConversion.empty();
+               this.producerOutboundConversion.append("<option value=\"" + m_constants.TO_BE_DEFINED + "\">" + m_i18nUtils.getProperty("None") + "</option>");
+               this.producerOutboundConversion.append("<option value=\"toXML\" selected>" + m_i18nUtils.getProperty("modeler.common.conversion.type.xml") + "</option>");
+               this.producerOutboundConversion.append("<option value=\"toJSON\">" + m_i18nUtils.getProperty("modeler.common.conversion.type.json") + "</option>");
+               this.producerOutboundConversion.append("<option value=\"toCSV\">" + m_i18nUtils.getProperty("modeler.common.conversion.type.csv") + "</option>");
+               
+               this.producerInboundConversion = m_utils.jQuerySelect("#producerRouteTab #producerInboundConversion");
+               this.producerInboundConversion.empty();
+               this.producerInboundConversion.append("<option value=\"" + m_constants.TO_BE_DEFINED + "\">" + m_i18nUtils.getProperty("None") + "</option>");
+               this.producerInboundConversion.append("<option value=\"fromXML\" selected>" + m_i18nUtils.getProperty("modeler.common.conversion.type.xml") + "</option>");
+               this.producerInboundConversion.append("<option value=\"fromJSON\">" + m_i18nUtils.getProperty("modeler.common.conversion.type.json") + "</option>");
+               this.producerInboundConversion.append("<option value=\"fromCSV\">" + m_i18nUtils.getProperty("modeler.common.conversion.type.csv") + "</option>");
                   
                this.invocationTypeInput = m_utils.jQuerySelect("#genericEndpointOverlay #invocationTypeInput");
             // this.invocationTypeInput.append("<option value=\"" + m_constants.TO_BE_DEFINED + "\">" + m_i18nUtils
@@ -72,8 +100,8 @@ define(
                // producer route tab
                this.processContextHeadersInput = m_utils.jQuerySelect("#producerRouteTab #processContextHeadersInput");
                this.producerBpmTypeConverter = m_utils.jQuerySelect("#producerRouteTab #producerBpmTypeConverter");
-               this.producerOutboundConversion = m_utils.jQuerySelect("#producerRouteTab #producerOutboundConversion");
-               this.producerInboundConversion = m_utils.jQuerySelect("#producerRouteTab #producerInboundConversion");
+               
+               
                this.producerOutboundConverterOption = m_utils.jQuerySelect("#producerRouteTab #producerOutboundConverterOptionTab");
                this.producerOutboundConverterDelimiterInput = m_utils.jQuerySelect("#producerRouteTab #producerOutboundConverterDelimiterInput");
                this.autogenHeadersInput = m_utils.jQuerySelect("#producerRouteTab #autogenHeadersInput");
@@ -81,12 +109,21 @@ define(
                this.producerInboundConverterDelimiterInput = m_utils.jQuerySelect("#producerRouteTab #producerInboundConverterDelimiterInput");
                this.producerRouteTextarea = m_utils.jQuerySelect("#producerRouteTab #producerRouteTextarea");
                this.consumerBpmTypeConverter = m_utils.jQuerySelect("#consumerRouteTab #consumerBpmTypeConverter");
+               
                this.consumerInboundConversion = m_utils.jQuerySelect("#consumerRouteTab #consumerInboundConversion");
+               this.consumerInboundConversion.empty();
+               this.consumerInboundConversion.append("<option value=\"" + m_constants.TO_BE_DEFINED + "\">" + m_i18nUtils.getProperty("None") + "</option>");
+               this.consumerInboundConversion.append("<option value=\"fromXML\" selected>" + m_i18nUtils.getProperty("modeler.common.conversion.type.xml") + "</option>");
+               this.consumerInboundConversion.append("<option value=\"fromJSON\">" + m_i18nUtils.getProperty("modeler.common.conversion.type.json") + "</option>");
+               this.consumerInboundConversion.append("<option value=\"fromCSV\">" + m_i18nUtils.getProperty("modeler.common.conversion.type.csv") + "</option>");
+               
                this.consumerInboundConverterOption = m_utils.jQuerySelect("#consumerRouteTab #consumerInboundConverterOptionTab");
                this.consumerInboundConverterDelimiterInput = m_utils.jQuerySelect("#consumerRouteTab #consumerInboundConverterDelimiterInput");
                this.consumerRouteTextarea = m_utils.jQuerySelect("#consumerRouteTab #consumerRouteTextarea");
                this.requestDataInput = m_utils.jQuerySelect("#genericEndpointOverlay #requestDataInput");
                this.responseDataInput = m_utils.jQuerySelect("#genericEndpointOverlay #responseDataInput");
+               this.transactedRouteRow = m_utils.jQuerySelect("#genericEndpointOverlay #transactedRouteRow");
+               this.autoStartupRow = m_utils.jQuerySelect("#genericEndpointOverlay #autoStartupRow");
                this.transactedRouteInput = m_utils.jQuerySelect("#genericEndpointOverlay #transactedRouteInput");
                this.autoStartupInput = m_utils.jQuerySelect("#genericEndpointOverlay #autoStartupInput");
                this.inputBodyAccessPointInput = m_utils.jQuerySelect("#parametersTab #inputBodyAccessPointInput");
@@ -603,7 +640,12 @@ define(
                
                this.parameterDefinitionsPanel.setScopeModel(this.getScopeModel());
                this.parameterDefinitionsPanel.setParameterDefinitions(this.getApplication().contexts.application.accessPoints);
-
+               this.autoStartupRow.hide();
+               this.transactedRouteRow.hide();
+               if(this.isIntegrator()){
+                 this.autoStartupRow.show();
+               	this.transactedRouteRow.show();
+               }
                this.inputBodyAccessPointInput.empty();
                this.inputBodyAccessPointInput.append("<option value='"
                      + m_constants.TO_BE_DEFINED + "'>"
@@ -1334,6 +1376,10 @@ define(
                }
                return true;
             };
+            
+            GenericEndpointOverlay.prototype.isIntegrator = function(){
+            	   return m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE;
+            }
 
          }
       });

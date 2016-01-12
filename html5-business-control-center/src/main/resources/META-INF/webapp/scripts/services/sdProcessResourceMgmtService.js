@@ -17,8 +17,8 @@
 	'use strict';
 
 	angular.module('bcc-ui.services').provider('sdProcessResourceMgmtService', function() {
-		this.$get = [ '$rootScope', '$resource', 'sdLoggerService', function($rootScope, $resource, sdLoggerService) {
-			var service = new ProcessResourceMgmtService($rootScope, $resource, sdLoggerService);
+		this.$get = [ '$rootScope', '$resource', 'sdLoggerService', 'sdUtilService', function($rootScope, $resource, sdLoggerService, sdUtilService) {
+			var service = new ProcessResourceMgmtService($rootScope, $resource, sdLoggerService, sdUtilService);
 			return service;
 		} ];
 	});
@@ -26,8 +26,8 @@
 	/*
 	 * 
 	 */
-	function ProcessResourceMgmtService($rootScope, $resource, sdLoggerService) {
-		var REST_BASE_URL = "services/rest/portal/processResourceManagement";
+	function ProcessResourceMgmtService($rootScope, $resource, sdLoggerService, sdUtilService) {
+		var REST_BASE_URL = sdUtilService.getBaseUrl() +"services/rest/portal/processResourceManagement";
 		var trace = sdLoggerService.getLogger('bcc-ui.services.sdProcessResourceMgmtService');
 
 		/**

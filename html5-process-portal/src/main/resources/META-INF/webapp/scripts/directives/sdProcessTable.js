@@ -20,7 +20,7 @@
 			'sdProcessTable',
 			[ '$parse', '$q', '$timeout', '$filter', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService',
 					'sgI18nService', 'sdPreferenceService', 'sdProcessInstanceService', 'sdProcessDefinitionService',
-					'sdStatusService', 'sdPriorityService', 'sdDialogService', 'sdCommonViewUtilService',
+					'sdStatusService', 'sdPriorityService', 'sdDialogService', 'sdCommonViewUtilService','sdLoggedInUserService',
 					ProcessTableDirective ]);
 
 	/*
@@ -28,12 +28,12 @@
 	 */
 	function ProcessTableDirective($parse, $q, $timeout, $filter, sdUtilService, sdViewUtilService, sdLoggerService,
 			sgI18nService, sdPreferenceService, sdProcessInstanceService, sdProcessDefinitionService, sdStatusService,
-			sdPriorityService, sdDialogService, sdCommonViewUtilService) {
+			sdPriorityService, sdDialogService, sdCommonViewUtilService, sdLoggedInUserService) {
 
 		//Defaults
 		var DEFAULT_VALUES = {
-			VISIBLE_COLUMNS : [ 'oid', 'processName', 'priority', 'descriptors', 'startingUser', 'startTime',
-					'duration', 'status', 'processInstanceRootOID', 'endTime' ],
+			VISIBLE_COLUMNS : [ 'processName', 'processOID', 'priority', 'descriptors', 'startingUser', 'startTime',
+					'duration' ],
 			PREFERENCE_MODULE : 'ipp-views-common'
 		};
 
@@ -43,7 +43,7 @@
 			restrict : 'AE',
 			require : '^?sdData',
 			scope : true, // Creates a new sub scope
-			templateUrl : 'plugins/html5-process-portal/scripts/directives/partials/processTable.html',
+			templateUrl : sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/processTable.html',
 			compile : function(elem, attr, transclude) {
 				return {
 					post : function(scope, element, attr, ctrl) {
@@ -80,22 +80,22 @@
 				self.showAbortProcessDialog = false;
 				self.processesToAbort = [];
 				self.processesToJoin = [];
-				self.allAccessibleProcesses = [];
+				self.allAccessibleProcesses = null;
 				self.availableStates = [];
 
 				// Set Default values
 				self.visbleColumns = DEFAULT_VALUES.VISIBLE_COLUMNS;
 				self.processTablePrefModule = DEFAULT_VALUES.PREFERENCE_MODULE;
 				self.exportFileName = "Processes";
-				self.columnSelector = 'admin'; //TODO
+				self.columnSelector = sdLoggedInUserService.getUserInfo().isAdministrator ?  'admin' : true;
 				self.initialSort = {
-					name : 'oid',
+					name : 'startTime',
 					dir : 'desc'
 				};
 
 				// Set custom values
 				self.customizeWithAttributeValues(attr, scope, scopeToUse);
-
+				self.documentPopoverHandle = null;
 				// Process TableHandle and then set data table instance
 				self.tableHandleExpr = 'processTableCtrl.dataTable';
 
@@ -108,6 +108,7 @@
 					result : {}
 				};
 
+				
 				var unregister = scope.$watch(self.tableHandleExpr, function(newVal, oldVal) {
 					if (newVal != undefined && newVal != null && newVal != oldVal) {
 						if (attr.sdProcessTable) {
@@ -161,7 +162,6 @@
 				self.fetchDescriptorCols();
 				self.fetchAvailableStates();
 				self.fetchAvailablePriorities();
-				self.fetchAllProcesses();
 			};
 
 			/**
@@ -215,19 +215,25 @@
 			/**
 			 * 
 			 */
-			self.isColumnVisible = function(columnName) {
+			ProcessTableCompiler.prototype.isColumnVisible = function(columnName) {
 				var found = $filter('filter')(self.visbleColumns, columnName);
 				if (found && found.length === 1) {
 					return true;
 				}
 				return false;
 			};
-
-			self.refresh = function() {
+			
+			/**
+			 * 
+			 */
+			ProcessTableCompiler.prototype.refresh = function() {
 				self.dataTable.refresh(true);
 			};
 
-			self.preferenceDelegate = function(prefInfo) {
+			/**
+			 * 
+			 */
+			ProcessTableCompiler.prototype.preferenceDelegate = function(prefInfo) {
 				var preferenceStore = sdPreferenceService.getStore(prefInfo.scope, self.processTablePrefModule,
 						self.processTablePrefId);
 
@@ -242,7 +248,10 @@
 				return preferenceStore;
 			}
 
-			self.fetchPage = function(options) {
+			/**
+			 * 
+			 */
+			ProcessTableCompiler.prototype.fetchPage = function(options) {
 				var deferred = $q.defer();
 
 				var query = angular.extend({}, self.query);
@@ -279,13 +288,16 @@
 				return deferred.promise;
 			};
 
-			self.fetchDescriptorCols = function() {
+			/**
+			 * 
+			 */
+			ProcessTableCompiler.prototype.fetchDescriptorCols = function() {
 				sdProcessDefinitionService.getDescriptorColumns().then(function(descriptors) {
 					self.descritorCols = [];
 					angular.forEach(descriptors, function(descriptor) {
 						self.descritorCols.push({
 							id : descriptor.id,
-							field : "descriptorValues['" + descriptor.title + "'].value",
+							field : "descriptorValues['" + descriptor.id + "'].value",
 							title : descriptor.title,
 							dataType : descriptor.type,
 							sortable : descriptor.sortable,
@@ -303,13 +315,19 @@
 				});
 			};
 
-			self.fetchAvailableStates = function() {
+			/**
+			 * 
+			 */
+			ProcessTableCompiler.prototype.fetchAvailableStates = function() {
 				sdStatusService.getAllProcessStates().then(function(value) {
 					self.availableStates = value;
 				});
 			};
 
-			self.getDescriptorExportText = function(descriptors) {
+			/**
+			 * 
+			 */
+			ProcessTableCompiler.prototype.getDescriptorExportText = function(descriptors) {
 				var descriptorsToExport = [];
 
 				angular.forEach(descriptors, function(descriptor) {
@@ -319,7 +337,10 @@
 				return descriptorsToExport.join(',');
 			};
 
-			self.getDescriptorValueForExport = function(descriptorData) {
+			/**
+			 * 
+			 */
+			ProcessTableCompiler.prototype.getDescriptorValueForExport = function(descriptorData) {
 				var exportValue;
 				if (angular.isUndefined(descriptorData)) {
 					return;
@@ -340,16 +361,28 @@
 			/*
 			 *
 			 */
-			self.fetchAvailablePriorities = function() {
+			ProcessTableCompiler.prototype.fetchAvailablePriorities = function() {
 				sdPriorityService.getAllPriorities().then(function(data) {
 					self.availablePriorities = data;
 				});
+			};
+			
+			/*
+			 * 
+			 */
+			ProcessTableCompiler.prototype.isPriorityChangedForRow = function(id) {
+			    for (name in self.changedPriorities) {
+				if (name == id) {
+				    return true;
+				}
+			    }
+			    return false;
 			};
 
 			/*
 			 *
 			 */
-			self.registerNewPriority = function(oid, value) {
+			ProcessTableCompiler.prototype.registerNewPriority = function(oid, value) {
 				if (self.originalPriorities[oid] != value) {
 					self.changedPriorities[oid] = value;
 				} else {
@@ -362,7 +395,7 @@
 			/*
 			 *
 			 */
-			self.storePriorities = function(data) {
+			ProcessTableCompiler.prototype.storePriorities = function(data) {
 				if (self.priorityEditable) {
 					self.originalPriorities = {};
 					self.changedPriorities = {};
@@ -375,7 +408,7 @@
 			/*
 			 * 
 			 */
-			self.savePriorityChanges = function() {
+			ProcessTableCompiler.prototype.savePriorityChanges = function() {
 
 				// Process instance oid to Process map for result
 				var processMap = {};
@@ -412,7 +445,7 @@
 			/*
 			 * 
 			 */
-			self.isPriorityChanged = function() {
+			ProcessTableCompiler.prototype.isPriorityChanged = function() {
 				for (name in self.changedPriorities) {
 					return true;
 				}
@@ -422,14 +455,14 @@
 			/*
 			 *
 			 */
-			self.openNotes = function(rowItem) {
+			ProcessTableCompiler.prototype.openNotes = function(rowItem) {
 				sdCommonViewUtilService.openNotesView(rowItem.oid, true);
 			};
 
 			/*
 			 *
 			 */
-			self.openProcessHistory = function(rowItem) {
+			ProcessTableCompiler.prototype.openProcessHistory = function(rowItem) {
 				if (rowItem.caseInstance) {
 					sdCommonViewUtilService.openCaseDetailsView(rowItem.oid,true);
 				}else{
@@ -437,17 +470,17 @@
 				}
 			};
 
-			self.openChart = function(rowItem) {
-				sdViewUtilService.openView('ganttChartView', 'processInstanceOId=' + rowItem.oid, {
-					'oid' : '' + rowItem.oid,
-					'processInstanceOId' : '' + rowItem.oid
-				}, true);
+			/**
+			 * 
+			 */
+			ProcessTableCompiler.prototype.openChart = function(rowItem) {
+				sdCommonViewUtilService.openGanttChartView(rowItem.oid,true);
 			};
-
+			
 			/*
 			 *
 			 */
-			self.recoverProcess = function(scope, value) {
+			ProcessTableCompiler.prototype.recoverProcess = function(scope, value) {
 				var processes = [];
 				if (Array.isArray(value)) {
 					var selectedItems = value;
@@ -466,33 +499,35 @@
 
 				sdProcessInstanceService.recoverProcesses(processes).then(
 						function(result) {
-							var title = '';
+							var options = {};
 							var message = result.message;
 							if (result.success == 'true') {
-								title = sgI18nService.translate('portal-common-messages.common-info', 'Information');
+								options.title = sgI18nService.translate('portal-common-messages.common-info', 'Information');
+								sdDialogService.info(scope, message, options);
 							} else {
-								title = sgI18nService.translate('portal-common-messages.common-error', 'ERROR');
+								options.title = sgI18nService.translate('portal-common-messages.common-error', 'ERROR');
+								sdDialogService.error(scope, message, options);
 							}
-							sdDialogService.alert(scope, message, title);
+						
 						},
 						function() {
-							sdDialogService.alert(scope, sgI18nService.translate(
-									'portal-common-messages.internalServerError', 'Error Occurred'), sgI18nService
-									.translate('portal-common-messages.common-error', 'ERROR'));
+							var options = { title : sgI18nService.translate('portal-common-messages.common-error', 'ERROR') };
+							sdDialogService.error(scope, sgI18nService.translate(
+									'portal-common-messages.internalServerError', 'Error Occurred'), options );
 						});
 			};
 
 			/*
 			 * 
 			 */
-			self.onAbortPopoverConfirm = function() {
+			ProcessTableCompiler.prototype.onAbortPopoverConfirm = function() {
 				self.refresh();
 			};
 
 			/*
 			 *
 			 */
-			self.openAbortDialog = function(value) {
+			ProcessTableCompiler.prototype.openAbortDialog = function(value) {
 				self.processesToAbort = [];
 
 				if (Array.isArray(value)) {
@@ -516,7 +551,7 @@
 			/*
 			 *
 			 */
-			self.abortCompleted = function() {
+			ProcessTableCompiler.prototype.abortCompleted = function() {
 				self.refresh();
 				sdViewUtilService.syncLaunchPanels();
 				self.processesToAbort = [];
@@ -525,45 +560,48 @@
 			/*
 			 *
 			 */
-			self.joinCompleted = function(result) {
+			ProcessTableCompiler.prototype.joinCompleted = function(result) {
 				self.refresh();
 				sdViewUtilService.syncLaunchPanels();
 				if (angular.isDefined(result)) {
-					// TODO pass result as an argument to below view
-					sdViewUtilService.openView('processDefinitionView', true);
+					sdCommonViewUtilService.openProcessInstanceDetailsView(result,true);
 				}
 			};
 
 			/*
 			 *
 			 */
-			self.openJoinDialog = function() {
+			ProcessTableCompiler.prototype.openJoinDialog = function() {
 				self.showJoinProcessDialog = true;
 			}
 
 			/*
 			 *
 			 */
-			self.switchCompleted = function(result) {
+			ProcessTableCompiler.prototype.switchCompleted = function(result) {
 				self.refresh();
 				sdViewUtilService.syncLaunchPanels();
 				if (angular.isDefined(result)) {
-					// TODO pass result as an argument to below view
-					sdViewUtilService.openView('worklistViewHtml5', true);
+					var viewKey = new Date().getTime();
+					var params = {
+							name : sgI18nService.translate('views-common-messages.views-switchProcessDialog-worklist-title', 'Abort and Join Process'),
+							pInstanceOids : result.join(",")
+					};
+					sdViewUtilService.openView('worklistPanel', 'id='+viewKey, params, true);
 				}
 			};
 
 			/*
 			 *
 			 */
-			self.openSwitchDialog = function() {
+			ProcessTableCompiler.prototype.openSwitchDialog = function() {
 				self.showSwitchProcessDialog = true;
 			}
 
 			/*
 			 *
 			 */
-			self.openAttachToCaseDialog = function(value) {
+			ProcessTableCompiler.prototype.openAttachToCaseDialog = function(value) {
 				self.processesToAttachCase = [];
 
 				if (Array.isArray(value)) {
@@ -585,7 +623,7 @@
 			/*
 			 *
 			 */
-			self.attachToCaseCompleted = function(success, result) {
+			ProcessTableCompiler.prototype.attachToCaseCompleted = function(success, result) {
 				if (success) {
 					self.refresh();
 					sdViewUtilService.syncLaunchPanels();
@@ -601,7 +639,7 @@
 			/*
 			 *
 			 */
-			self.openCreateCaseDialog = function(value) {
+			ProcessTableCompiler.prototype.openCreateCaseDialog = function(value) {
 				self.processesToCreateCase = [];
 
 				if (Array.isArray(value)) {
@@ -623,7 +661,7 @@
 			/*
 			 *
 			 */
-			self.createCaseCompleted = function(caseOid, openCaseDetail) {
+			ProcessTableCompiler.prototype.createCaseCompleted = function(caseOid, openCaseDetail) {
 				self.refresh();
 				sdViewUtilService.syncLaunchPanels();
 				if (openCaseDetail && angular.isDefined(caseOid)) {
@@ -633,8 +671,11 @@
 					}, true);
 				}
 			};
-
-			self.openAbortPopover = function(event, rowItem) {
+			
+			/**
+			 * 
+			 */
+			ProcessTableCompiler.prototype.openAbortPopover = function(event, rowItem) {
 				if (angular.isDefined(rowItem)) {
 					self.processesToAbort = [ rowItem ];
 				} else {
@@ -643,41 +684,26 @@
 						self.processesToAbort = selectedItems;
 					}
 				}
-				self.popoverDirective.show(event);
+				self.popoverDirective.show(event,151);
 			}
 
-			self.onSelect = function(info) {
-				// NOP
-			};
-
 			/*
 			 *
 			 */
-			self.onPagination = function(info) {
-				// NOP
-			};
+			ProcessTableCompiler.prototype.fetchAllProcesses = function() {
+				var self = this;
+				var deferred = $q.defer();
 
-			/*
-			 *
-			 */
-			self.onColumnReorder = function(info) {
-				// NOP
-			};
+				if (!self.allAccessibleProcesses) {
+					sdProcessDefinitionService.getAllProcesses(false).then(function(processes) {
+						self.allAccessibleProcesses = processes;
+						deferred.resolve(self.allAccessibleProcesses);
+					});
+				} else {
+					deferred.resolve(self.allAccessibleProcesses);
+				}
 
-			/*
-			 *
-			 */
-			self.onSorting = function(info) {
-				// NOP
-			};
-
-			/*
-			 *
-			 */
-			self.fetchAllProcesses = function() {
-				sdProcessDefinitionService.getAllProcesses(false).then(function(processes) {
-					self.allAccessibleProcesses = processes;
-				});
+				return deferred.promise;
 			};
 
 			self.initialize(attr, scope);
@@ -690,6 +716,60 @@
 			// Expose controller as a whole on to scope
 			scope.processTableCtrl = self;
 		}
+		
+		/**
+		 * TODO - check if duplication in ActivityTableCompiler can be avoided
+		 */
+		ProcessTableCompiler.prototype.openProcessDocumentsPopover = function(rowItem, $event) {
+			var self = this;
+			
+			self.processPopover = {
+					data : rowItem
+			}
+		
+			rowItem.contentLoaded = false;
+			sdProcessInstanceService.getProcessInstanceDocuments(rowItem.oid).then(function (dataPathValues) {
+				rowItem.supportsProcessAttachments = rowItem.supportsProcessAttachments;
+				rowItem.specificDocuments = [];
+				jQuery.each(dataPathValues, function(_, dataPathValue) {
+					if (dataPathValue.dataPath.id === 'PROCESS_ATTACHMENTS') {
+						rowItem.processAttachments = dataPathValue;
+					} else {
+						rowItem.specificDocuments.push(dataPathValue);
+					}
+				});
+				
+				rowItem.contentLoaded = true;
+				self.processPopover.data = rowItem;
+				self.documentPopoverHandle.show($event,151);
+			});
+		};
+		
+		/**
+		 * TODO - check if duplication in ActivityTableCompiler can be avoided
+		 */
+		ProcessTableCompiler.prototype.openDocumentsView = function(docId) {
+		   sdCommonViewUtilService.openDocumentView(docId);
+		};
+
+		/**
+		 * TODO - check if duplication in ActivityTableCompiler can be avoided
+		 */
+		ProcessTableCompiler.prototype.openAllProcessDocumentViews = function(rowItem) {
+			var self = this;
+			if (rowItem.processAttachments) {
+				jQuery.each(rowItem.processAttachments.documents, function(_, doc) {
+					self.openDocumentsView(doc.uuid);
+				});
+			}
+			if (rowItem.specificDocuments) {
+				jQuery.each(rowItem.specificDocuments, function(_, specificDataPath) {
+					jQuery.each(specificDataPath.documents, function(_, doc) {
+						self.openDocumentsView(doc.uuid);
+					});
+				});
+			}
+		};
 
 		return directiveDefObject;
 	}

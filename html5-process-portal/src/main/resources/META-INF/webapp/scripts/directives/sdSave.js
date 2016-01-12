@@ -29,8 +29,8 @@
 	    },
 	    template : 	'<button '+
 		    		' title="{{saveController.i18n(\'admin-portal-messages.views-participantManagement-configuration-saveButton\')}}"'+
-	    			' ng-click="save();" class="button-link">'+
-	    			'<i class="glyphicon glyphicon-floppy-disk"> </i>' + 
+	    			' ng-click="save();" class="button-link" aid="Save">'+
+	    			'<i class="pi pi-save pi-lg"> </i>' + 
 	    		      '</button>',
 	    controller : [ '$scope', SaveController ]
 	};

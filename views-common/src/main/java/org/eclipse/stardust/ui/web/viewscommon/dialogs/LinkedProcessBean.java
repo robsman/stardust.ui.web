@@ -33,6 +33,8 @@ public class LinkedProcessBean
    private String fromProcessName;
    private ProcessInstance joinLinkedProcess;
    private String joinProcessName;
+   private ProcessInstance relatedLinkedProcess;
+   private String relatedProcessName;
 
    /**
     * @return
@@ -83,6 +85,26 @@ public class LinkedProcessBean
    {
       this.joinProcessName = joinProcessName;
    }
+   
+   public ProcessInstance getRelatedLinkedProcess()
+   {
+      return relatedLinkedProcess;
+   }
+
+   public void setRelatedLinkedProcess(ProcessInstance relatedLinkedProcess)
+   {
+      this.relatedLinkedProcess = relatedLinkedProcess;
+   }
+
+   public String getRelatedProcessName()
+   {
+      return relatedProcessName;
+   }
+
+   public void setRelatedProcessName(String relatedProcessName)
+   {
+      this.relatedProcessName = relatedProcessName;
+   }
 
    /**
     * 
@@ -90,10 +112,14 @@ public class LinkedProcessBean
    public void openProcessDetial()
    {
       ProcessInstance pi = null;
-      // Either linkage will be Switch or Join for current process
+      // Either linkage will be Switch or Related or Join for current process
       if (null != getFromLinkedProcess())
       {
          pi = getFromLinkedProcess();
+      }
+      else if(null != getRelatedLinkedProcess())
+      {
+         pi = getRelatedLinkedProcess();
       }
       else
          pi = getJoinLinkedProcess();

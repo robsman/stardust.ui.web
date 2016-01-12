@@ -44,6 +44,12 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
             changes : changes
          } ]);
       },
+      createCloneProcessCommand : function(modelId, oid, changes) {
+        return new ChangeDescriptor("process.clone", modelId, [ {
+           oid : oid,
+           changes : changes
+        } ]);
+     },
       createCreatePrimitiveDataCommand : function(modelId, oid, changes) {
          return new ChangeDescriptor("primitiveData.create", modelId, [ {
             oid : oid,
@@ -136,6 +142,12 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
       },
       createCreateUiMashupAppCommand : function(modelId, oid, changes) {
          return new ChangeDescriptor("uiMashupApplication.create", modelId, [ {
+            oid : oid,
+            changes : changes
+         } ]);
+      },
+      createCreateDecoratorAppCommand : function(modelId, oid, changes) {
+         return new ChangeDescriptor("decoratorApplication.create", modelId, [ {
             oid : oid,
             changes : changes
          } ]);
@@ -247,8 +259,53 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
       
       createDeleteExclusionCommand: function(modelId, uuid, changes) {
         return new ChangeDescriptor("excludeUserAction.delete", modelId, [{uuid: uuid, changes: changes}]);
-      }
+      },
        
+      createCommand : function(commandType, modelId, uuid, changes) {
+        return new ChangeDescriptor(commandType, modelId, [{uuid: uuid, changes: changes}]);
+     },
+     createEnableResubmissionCommand : function(modelId, activityUUID, changes) {
+         return new ChangeDescriptor("resubmission.enable", modelId, [ {
+            uuid : activityUUID,
+            changes : changes
+         } ]);
+     },
+     createDisableResubmissionCommand : function(modelId, activityUUID, changes) {
+         return new ChangeDescriptor("resubmission.disable", modelId, [ {
+            uuid : activityUUID,
+            changes : changes
+         } ]);
+     },
+     createAddPermissionParticipantsCommand : function(modelId, elementUUID, changes) {
+         return new ChangeDescriptor("permission.addParticipants", modelId, [ {
+            uuid : elementUUID,
+            changes : changes
+         } ]);
+     },
+     createRemovePermissionParticipantCommand : function(modelId, elementUUID, changes) {
+         return new ChangeDescriptor("permission.removeParticipant", modelId, [ {
+            uuid : elementUUID,
+            changes : changes
+         } ]);
+     },
+     createPermissionSetAllCommand : function(modelId, elementUUID, changes) {
+         return new ChangeDescriptor("permission.setALL", modelId, [ {
+            uuid : elementUUID,
+            changes : changes
+         } ]);
+     },
+     createPermissionUnsetAllCommand : function(modelId, elementUUID, changes) {
+         return new ChangeDescriptor("permission.unsetALL", modelId, [ {
+            uuid : elementUUID,
+            changes : changes
+         } ]);
+     },
+     createPermissionRestoreDefaultsCommand : function(modelId, elementUUID, changes) {
+         return new ChangeDescriptor("permission.restoreDefaults", modelId, [ {
+            uuid : elementUUID,
+            changes : changes
+         } ]);
+     },
    };
 
    /**

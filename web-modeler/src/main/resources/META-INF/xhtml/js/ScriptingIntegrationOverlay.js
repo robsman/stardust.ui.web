@@ -8,11 +8,11 @@ define(
             "bpm-modeler/js/m_parameterDefinitionsPanel",
             "bpm-modeler/js/m_codeEditorAce",
             "bpm-modeler/js/m_parsingUtils",
-            "bpm-modeler/js/m_autoCompleters"],
+            "bpm-modeler/js/m_autoCompleters","bpm-modeler/js/m_user"],
       function(m_utils, m_i18nUtils, m_constants, m_commandsController,
             m_command, m_model, m_accessPoint, m_typeDeclaration,
             m_parameterDefinitionsPanel, m_codeEditorAce,
-            m_parsingUtils,m_autoCompleters) {
+            m_parsingUtils,m_autoCompleters,m_user) {
          return {
             create : function(view) {
                var overlay = new ScriptingIntegrationOverlay();
@@ -48,10 +48,12 @@ define(
                            m_i18nUtils
                                  .getProperty("modeler.model.applicationOverlay.scripting.test.title"),
                            "plugins/bpm-modeler/images/icons/application-run.png");
-
+               this.testTab = m_utils.jQuerySelect("#test");
                this.scriptCodeHeading = m_utils.jQuerySelect("#scriptingIntegrationOverlay #scriptCodeHeading");
                this.languageSelect = m_utils.jQuerySelect("#scriptingIntegrationOverlay #languageSelect");
+               this.transactedRouteRow = m_utils.jQuerySelect("#scriptingIntegrationOverlay #transactedRouteRow");
                this.transactedRouteInput = m_utils.jQuerySelect("#scriptingIntegrationOverlay #transactedRouteInput");
+               this.autoStartupRow = m_utils.jQuerySelect("#scriptingIntegrationOverlay #autoStartupRow");
                this.autoStartupInput = m_utils.jQuerySelect("#scriptingIntegrationOverlay #autoStartupInput");
                this.editorAnchor = m_utils.jQuerySelect("#codeEditorDiv").get(0);
                this.editorAnchor.id = "codeEditorDiv" + Math.floor((Math.random()*100000) + 1);
@@ -99,12 +101,15 @@ define(
                               .getSession().getValue();
 
                         if (self.languageSelect.val() == "JavaScript") {
+                           self.testTab.parent().parent().show();
                            self.codeEditor = m_codeEditorAce
                                  .getJSCodeEditor(self.editorAnchor.id);
                         } else if (self.languageSelect.val() == "Python") {
+                           self.testTab.parent().parent().hide();
                            self.codeEditor = m_codeEditorAce
                                  .getPythonCodeEditor(self.editorAnchor.id);
                         } else if (self.languageSelect.val() == "Groovy") {
+                           self.testTab.parent().parent().hide();
                            self.codeEditor = m_codeEditorAce
                                  .getGroovyCodeEditor(self.editorAnchor.id);
                         }
@@ -387,19 +392,19 @@ define(
              * 
              */
             ScriptingIntegrationOverlay.prototype.activate = function() {
-             
+             var attributes={};
+             attributes["carnot:engine:camel::routeEntries"]=null;
                if (this.toArray(this.view.getApplication().attributes).length==2)
                {
-               this.view
-                     .submitChanges({
-                        attributes : {
-                           "carnot:engine:camel::camelContextId" : "defaultCamelContext",
-                           "carnot:engine:camel::invocationPattern" : "sendReceive",
-                           "carnot:engine:camel::invocationType" : "synchronous",
-                           "carnot:engine:camel::applicationIntegrationOverlay" : "scriptingIntegrationOverlay"
-                        }
-                     });
+                  attributes["carnot:engine:camel::camelContextId"]  = "defaultCamelContext";
+                  attributes["carnot:engine:camel::invocationPattern"]  = "sendReceive";
+                  attributes["carnot:engine:camel::invocationType"]  = "synchronous";
+                  attributes["carnot:engine:camel::applicationIntegrationOverlay"]  = "scriptingIntegrationOverlay";
                }
+               this.view
+               .submitChanges({
+                  attributes :attributes
+               });
             };
 
             /**
@@ -411,6 +416,12 @@ define(
                      .getScopeModel());
                this.parameterDefinitionsPanel
                      .setParameterDefinitions(this.getApplication().contexts.application.accessPoints);
+               this.autoStartupRow.hide();
+               this.transactedRouteRow.hide();
+               if(this.isIntegrator()){
+                 this.autoStartupRow.show();
+                 this.transactedRouteRow.show();
+               }
                this.languageSelect
                      .val(this.getApplication().attributes["stardust:scriptingOverlay::language"]);         
                this.codeEditor
@@ -436,152 +447,13 @@ define(
                 }
                this.autoStartupInput.prop("checked",
                        this.getApplication().attributes["carnot:engine:camel::autoStartup"]);
-            };
-
-            /**
-             * 
-             */
-            ScriptingIntegrationOverlay.prototype.getRoute = function() {
-               var route = "";
-               if (this.languageSelect.val() === "JavaScript") {
-                  var code = "function setOutHeader(key, output){\nexchange.out.headers.put(key,output);}\n";
-                  code += "function isArray(obj) {\n\tif (Array.isArray) {\n\t\treturn Array.isArray(obj);\n\t} else {\n\treturn Object.prototype.toString.call(obj) === '[object Array]';\n\t}\n}\n";
-                  
-                  code += "function visitMembers(obj, callback) {\n\tvar i = 0, length = obj.length;\n\tif (isArray(obj)) {\n\t\t";
-                  code += "for(; i < length; i++) {\n\t\tobj[i]= callback(i, obj[i]);\n\t\t}\n";
-                  code += "} else {\n\t\tfor (i in obj) {\n\t\tobj[i]=  callback(i, obj[i]);}\n\t}\n\treturn obj;\n}\n";
-                  
-                  code += "function recursiveFunction(key, val) {\n";
-                  code += "\tif (val instanceof Object || isArray(val)) {\n";
-                  code += "\t\treturn visitMembers(val, recursiveFunction);\n";
-                  code += "\t} else {\n";
-                  code += "\t\treturn actualFunction(val, typeof val);\n";
-                  code += "\t}\n";
-                  code += "}\n";
-                  
-                  code += "function actualFunction(value, type) {\n";
-                  code += "\tvar dataAsLong;\n";
-                  code += "\tif (type === 'string') {\n";
-                  code += "\t\tdataAsLong =new RegExp(/\\/Date\\((-?\\d*)\\)\\//).exec(value);\n";
-                  code += "\tif (dataAsLong) {\n";
-                  code += "\t\treturn new java.util.Date(+dataAsLong[1]);\n";
-                  code += "\t}\n";
-                  code += "}\n";
-                  code += "return value;\n";
-                  code += "}\n";
                
-
-               for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
-                  var accessPoint = this.getApplication().contexts.application.accessPoints[n];
-                  if (accessPoint.direction === m_constants.IN_ACCESS_POINT) {
-                     if (accessPoint.dataType == "primitive") {
-                        code += "var " + accessPoint.id + ";\n";
-                        code += "if(request.headers.get('"
-                              + accessPoint.id + "')!=null){\n";
-                              if(accessPoint.primitiveDataType==="long"||accessPoint.primitiveDataType==="int"||accessPoint.primitiveDataType==="double"){
-                                 code += accessPoint.id+ " = new Number( request.headers.get('" + accessPoint.id + "'));\n";        
-                              }else if(accessPoint.primitiveDataType==="boolean"|| accessPoint.primitiveDataType==="Boolean"){
-                                 //In ECMA-262, all nonempty strings convert to true
-                                 code +="\nif(request.headers.get('" + accessPoint.id + "')=='true' ||request.headers.get('" + accessPoint.id + "')=='True' ||request.headers.get('" + accessPoint.id + "')=='y'||request.headers.get('" + accessPoint.id + "')==1){";
-                                 code += accessPoint.id+ " = true;\n";
-                                 code +="\n}else if(request.headers.get('" + accessPoint.id + "')=='false' ||request.headers.get('" + accessPoint.id + "')=='False' ||request.headers.get('" + accessPoint.id + "')=='n'||request.headers.get('" + accessPoint.id + "')==0){\n"+accessPoint.id+ " = false;}";
-                                 code +="else{\n "+accessPoint.id+ " =  request.headers.get('"+ accessPoint.id + "');\n}";
-                              }else{
-                                 code += accessPoint.id+ " =  request.headers.get('"+ accessPoint.id + "');\n";
-                              }
-                        code += "}\n";
-                        if(accessPoint.primitiveDataType==="string" ||accessPoint.primitiveDataType==="String"){
-                        code+="else {\n";
-                        code += accessPoint.id+ " =\"\";\n";
-                        code+="}\n";
-                        }else if(accessPoint.primitiveDataType==="Timestamp" ){
-                           code+="else {\n";
-                           code += accessPoint.id+ " =new java.util.Date();\n";
-                           code+="}\n";
-                        }else if(accessPoint.primitiveDataType==="double"){
-                           code+="else {\n";
-                           code += accessPoint.id+ " = new Number(0);\n";
-                           code+="}\n";
-                        }
-                     } else if (accessPoint.dataType == "struct") {
-                        code += "var " + accessPoint.id + ";\n";
-                        code += "if(request.headers.get('"
-                              + accessPoint.id + "')!=null){\n";
-                        code += accessPoint.id
-                              + " =  eval('(' + request.headers.get('"
-                              + accessPoint.id + "')+ ')');\n";
-                        code +=  accessPoint.id+"=visitMembers("+accessPoint.id+", recursiveFunction);\n";
-                        code += "}\n";
-                     }
-                  }
+               if (this.languageSelect.val() != "JavaScript") {
+                  this.testTab.parent().parent().hide();
+               } else{
+                  this.testTab.parent().parent().show();
                }
-
-               code += this.createParameterObjectString(
-                     m_constants.OUT_ACCESS_POINT, false, true,"var ");
-               code += this.codeEditor.getEditor().getSession()
-                     .getValue();
-
-               for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
-                  var accessPoint = this.getApplication().contexts.application.accessPoints[n];
-
-                  if (accessPoint.direction == m_constants.OUT_ACCESS_POINT) {
-                     code += "\nsetOutHeader('" + accessPoint.id
-                           + "'," + accessPoint.id + ");";
-                  }
-               }
-               code = code.replace(/&/g, "&amp;");
-               code = code.replace(/</g, "&lt;");
-               code = code.replace(/>/g, "&gt;");
-               // Determine language
-
-               route += "<to uri=\"bean:bpmTypeConverter?method=toNativeObject\" /><setHeader headerName=\"CamelLanguageScript\"><constant>"
-                     + code
-                     + "</constant></setHeader><to uri=\"language:rhino-nonjdk\" /><to uri=\"bean:bpmTypeConverter?method=fromNativeObject\" />\n";
-               } else if (this.languageSelect.val() === "Groovy") {
-                  route += "<setHeader headerName=\"CamelLanguageScript\"><constant>"
-                        + code
-                        + "</constant></setHeader><to uri=\"language:groovy\" />\n";
-               } else {
-                  var code = "import json\nimport pprint\n";
-                  for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
-                     var accessPoint = this.getApplication().contexts.application.accessPoints[n];
-                     if (accessPoint.direction === m_constants.IN_ACCESS_POINT) {
-                        if (accessPoint.dataType == "primitive") {
-                           code += accessPoint.id + "= exchange.getIn().getHeader('"+ accessPoint.id + "')\n";
-                        } else if (accessPoint.dataType == "struct") {
-                           code += accessPoint.id + "JSON= exchange.getIn().getHeader('"+ accessPoint.id + "')\n";
-                           code += accessPoint.id + "=json.loads("+accessPoint.id + "JSON)\n";
-                        }
-                     }
-                  }
-
-                  code += this.createParameterObjectString(
-                        m_constants.OUT_ACCESS_POINT, false, true,"");
-                  code += this.codeEditor.getEditor().getSession()
-                        .getValue();
-
-                  for ( var n = 0; n < this.getApplication().contexts.application.accessPoints.length; ++n) {
-                     var accessPoint = this.getApplication().contexts.application.accessPoints[n];
-
-                     if (accessPoint.direction == m_constants.OUT_ACCESS_POINT) {
-                        code += "\nexchange.getOut().setHeader('" + accessPoint.id + "'," + accessPoint.id + ");";
-                     }
-                  }
-                  code = code.replace(/&/g, "&amp;");
-                  code = code.replace(/</g, "&lt;");
-                  code = code.replace(/>/g, "&gt;");
-
-                  
-                  
-                  route += "<to uri=\"bean:bpmTypeConverter?method=toJSON\" /><setHeader headerName=\"CamelLanguageScript\"><constant>"
-                        + code
-                        + "</constant></setHeader><to uri=\"language:python\" />\n";
-               }
-               m_utils.debug(route);
-
-               return route;
             };
-
             
              /**
              * 
@@ -595,8 +467,6 @@ define(
                            "carnot:engine:camel::camelContextId" : "defaultCamelContext",
                            "carnot:engine:camel::invocationPattern" : "sendReceive",
                            "carnot:engine:camel::invocationType" : "synchronous",
-                           "carnot:engine:camel::routeEntries" : this
-                                 .getRoute(),
                            "stardust:scriptingOverlay::language" : this.languageSelect
                                  .val(),
                            "stardust:scriptingOverlay::scriptCode" : this.codeEditor
@@ -622,8 +492,6 @@ define(
                         attributes : {
                            "carnot:engine:camel::applicationIntegrationOverlay" : "scriptingIntegrationOverlay",
                            "carnot:engine:camel::camelContextId" : "defaultCamelContext",
-                           "carnot:engine:camel::routeEntries" : this
-                                 .getRoute(),
                            "stardust:scriptingOverlay::scriptCode" : this.codeEditor
                                  .getEditor().getSession()
                                  .getValue()
@@ -661,27 +529,27 @@ define(
              * 
              */
             ScriptingIntegrationOverlay.prototype.validate = function() {
-            	
+               
                var valid = true;
                this.view.clearErrorMessages();
                m_utils.jQuerySelect("#codeEditorElmt").removeClass("error");
-			   this.parameterDefinitionNameInput.removeClass("error");
-			   var parameterDefinitionNameInputWhithoutSpaces =  this.parameterDefinitionNameInput.val().replace(/ /g, "");
-			   if ((parameterDefinitionNameInputWhithoutSpaces ==  "exchange")|| (parameterDefinitionNameInputWhithoutSpaces ==  "headers")){
-				  this.view.errorMessages.push(this.parameterDefinitionNameInput.val()+" cannot be used as an access point");
-				  this.parameterDefinitionNameInput.addClass("error");
-				  valid = false;
-			   }
-			   for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; n++)
-			   {
-				  var ap = this.getApplication().contexts.application.accessPoints[n];
-				  if ((ap.name.replace(/ /g, "") == "headers")||(ap.name.replace(/ /g, "") == "exchange"))
-				  {
-					  if(this.view.errorMessages.indexOf(ap.name.replace(/ /g, "")+" cannot be used as an access point")<0){
-						  this.view.errorMessages.push(ap.name.replace(/ /g, "")+" cannot be used as an access point");
-					  }
-					this.parameterDefinitionNameInput.addClass("error");
-			 		valid = false;
+            this.parameterDefinitionNameInput.removeClass("error");
+            var parameterDefinitionNameInputWhithoutSpaces =  this.parameterDefinitionNameInput.val().replace(/ /g, "");
+            if ((parameterDefinitionNameInputWhithoutSpaces ==  "exchange")|| (parameterDefinitionNameInputWhithoutSpaces ==  "headers")){
+              this.view.errorMessages.push(this.parameterDefinitionNameInput.val()+" cannot be used as an access point");
+              this.parameterDefinitionNameInput.addClass("error");
+              valid = false;
+            }
+            for (var n = 0; n < this.getApplication().contexts.application.accessPoints.length; n++)
+            {
+              var ap = this.getApplication().contexts.application.accessPoints[n];
+              if ((ap.name.replace(/ /g, "") == "headers")||(ap.name.replace(/ /g, "") == "exchange"))
+              {
+                 if(this.view.errorMessages.indexOf(ap.name.replace(/ /g, "")+" cannot be used as an access point")<0){
+                    this.view.errorMessages.push(ap.name.replace(/ /g, "")+" cannot be used as an access point");
+                 }
+               this.parameterDefinitionNameInput.addClass("error");
+               valid = false;
                    }
                }
              
@@ -700,5 +568,8 @@ define(
                }
                return true;
             };
+            ScriptingIntegrationOverlay.prototype.isIntegrator = function(){
+               return m_user.getCurrentRole() == m_constants.INTEGRATOR_ROLE;
+            }
          }
       });

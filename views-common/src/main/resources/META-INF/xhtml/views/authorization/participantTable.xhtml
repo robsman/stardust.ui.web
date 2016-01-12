@@ -120,9 +120,7 @@
 									</f:facet>
 									<ice:commandLink
 										actionListener="#{authorizationManagerBean.participantHelper.removeRow}">
-										<ice:graphicImage
-											value="/plugins/views-common/images/icons/dialog-windowbttn-close.png"
-											styleClass="iceCmdBtn" />
+										<ice:outputText styleClass="pi pi-dialog-close pi-lg" />
 										<f:attribute name="participant" value="#{participant}" />
 									</ice:commandLink>
 								</h:column>

@@ -50,7 +50,7 @@ public class GanttChartBtnPropertyProvider
 
    protected transient IPreferenceEditor preferencesEditor;
 
-   protected IPreferenceStore preferencesStore;
+   protected transient IPreferenceStore preferencesStore;
 
    protected GanttChartBtnPropertyProvider()
    {

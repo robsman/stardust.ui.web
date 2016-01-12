@@ -143,6 +143,11 @@ define(
                            .getProperty("modeler.element.properties.event.converter"));
                   this.producerBpmTypeConverter = jQuery("#messageEvent #converterSettingsTab #producerBpmTypeConverter");
                   this.producerInboundConversion = jQuery("#messageEvent #converterSettingsTab #producerInboundConversion");
+                  this.producerInboundConversion.empty();
+                  this.producerInboundConversion.append("<option value=\"" + m_constants.TO_BE_DEFINED + "\">" + m_i18nUtils.getProperty("None") + "</option>");
+                  this.producerInboundConversion.append("<option value=\"fromXML\" selected>" + m_i18nUtils.getProperty("modeler.common.conversion.type.xml") + "</option>");
+                  this.producerInboundConversion.append("<option value=\"fromJSON\">" + m_i18nUtils.getProperty("modeler.common.conversion.type.json") + "</option>");
+                  this.producerInboundConversion.append("<option value=\"fromCSV\">" + m_i18nUtils.getProperty("modeler.common.conversion.type.csv") + "</option>");
                   this.producerInboundConverterDelimiterInput = jQuery("#messageEvent #converterSettingsTab #producerInboundConverterDelimiterInput");
 
                   this.fromXmlParameters = jQuery("#messageEvent #converterSettingsTab #fromXmlParameters");

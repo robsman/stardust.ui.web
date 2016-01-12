@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import org.eclipse.stardust.common.criticality.CriticalityUtils;
 import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.engine.core.preferences.Preferences;
@@ -55,15 +57,15 @@ public class CriticalityConfigurationUtil
    
    private static final Map<ICON_COLOR, String> CRITICALITY_COLOR_FLAG_MAP = new HashMap<ICON_COLOR, String>();
    static {
-      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.WHITE, "/plugins/views-common/images/icons/criticality/flag_white.png");
-      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.RED, "/plugins/views-common/images/icons/criticality/flag_red.png");
-      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.GREEN, "/plugins/views-common/images/icons/criticality/flag_green.png");
-      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.BLUE, "/plugins/views-common/images/icons/criticality/flag_blue.png");
-      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.PURPLE, "/plugins/views-common/images/icons/criticality/flag_purple.png");
-      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.ORANGE, "/plugins/views-common/images/icons/criticality/flag_orange.png");
-      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.PINK, "/plugins/views-common/images/icons/criticality/flag_pink.png");
-      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.YELLOW, "/plugins/views-common/images/icons/criticality/flag_yellow.png");
-      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.WHITE_WARNING, "/plugins/views-common/images/icons/criticality/flag_white_warning.png");
+      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.WHITE, "pi pi-lg pi-criticalty-flag criticality-flag-WHITE");
+      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.RED, "pi pi-lg pi-criticalty-flag criticality-flag-RED");
+      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.GREEN, "pi pi-lg pi-criticalty-flag criticality-flag-GREEN");
+      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.BLUE, "pi pi-lg pi-criticalty-flag criticality-flag-BLUE");
+      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.PURPLE, "pi pi-lg pi-criticalty-flag criticality-flag-PURPLE");
+      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.ORANGE, "pi pi-lg pi-criticalty-flag criticality-flag-ORANGE");
+      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.PINK, "pi pi-lg pi-criticalty-flag criticality-flag-PINK");
+      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.YELLOW, "pi pi-lg pi-criticalty-flag criticality-flag-YELLOW");
+      CRITICALITY_COLOR_FLAG_MAP.put(ICON_COLOR.WHITE_WARNING, "pi pi-lg pi-criticalty-flag criticality-flag-WHITE-WARNING");
    }
    
    public static String getIcon(ICON_COLOR color)
@@ -79,34 +81,33 @@ public class CriticalityConfigurationUtil
    
    public static List<CriticalityCategory> getDefaultCriticalityCategoriesList()
    {
-      final int DEFAULT_LOW_MIN = 0;
-      final int DEFAULT_LOW_MAX = 333;
-      final int DEFAULT_MEDIUM_MIN = 334;
-      final int DEFAULT_MEDIUM_MAX = 666;
-      final int DEFAULT_HIGH_MIN = 667;
-      final int DEFAULT_HIGH_MAX = 1000;
       List<CriticalityCategory> defaultCriticalityList = new ArrayList<CriticalityCategory>();
-      CriticalityCategory low = new CriticalityCategory();
-      low.setRangeFrom(DEFAULT_LOW_MIN);
-      low.setRangeTo(DEFAULT_LOW_MAX);
-      low.setIconColor(ICON_COLOR.BLUE);
-      low.setIconCount(1);
-      low.setLabel(MessagesViewsCommonBean.getInstance().getString("views.criticalityConf.criticality.categories.label.default.low"));
-      defaultCriticalityList.add(low);
-      CriticalityCategory medium = new CriticalityCategory();
-      medium.setRangeFrom(DEFAULT_MEDIUM_MIN);
-      medium.setRangeTo(DEFAULT_MEDIUM_MAX);
-      medium.setIconColor(ICON_COLOR.YELLOW);
-      medium.setIconCount(1);
-      medium.setLabel(MessagesViewsCommonBean.getInstance().getString("views.criticalityConf.criticality.categories.label.default.medium"));
-      defaultCriticalityList.add(medium);
-      CriticalityCategory high = new CriticalityCategory();
-      high.setRangeFrom(DEFAULT_HIGH_MIN);
-      high.setRangeTo(DEFAULT_HIGH_MAX);
-      high.setIconColor(ICON_COLOR.RED);
-      high.setIconCount(1);
-      high.setLabel(MessagesViewsCommonBean.getInstance().getString("views.criticalityConf.criticality.categories.label.default.high"));
-      defaultCriticalityList.add(high);
+      
+      String lowLabel = MessagesViewsCommonBean.getInstance().getString("views.criticalityConf.criticality.categories.label.default.low");
+      String mediumLabel = MessagesViewsCommonBean.getInstance().getString("views.criticalityConf.criticality.categories.label.default.medium");
+      String highLabel = MessagesViewsCommonBean.getInstance().getString("views.criticalityConf.criticality.categories.label.default.high");
+      
+      Map<String,ICON_COLOR > defaultIcons = new HashMap<String, ICON_COLOR>();
+      defaultIcons.put(lowLabel, ICON_COLOR.BLUE);
+      defaultIcons.put(mediumLabel, ICON_COLOR.YELLOW);
+      defaultIcons.put(highLabel, ICON_COLOR.RED);
+      
+      
+      Set<org.eclipse.stardust.common.criticality.CriticalityCategory> defaultCategories = CriticalityUtils.getCriticalityDefaultCategories(lowLabel, mediumLabel, highLabel);
+      
+      for (org.eclipse.stardust.common.criticality.CriticalityCategory criticalCategory : defaultCategories)
+      {
+         CriticalityCategory category = new CriticalityCategory();
+         
+         int portalLowerBound = (int) (criticalCategory.lowerBound() * PORTAL_CRITICALITY_MULTIPLICATION_FACTOR);
+         int portalUpperBound = (int) (criticalCategory.upperBound() * PORTAL_CRITICALITY_MULTIPLICATION_FACTOR);
+         category.setRangeFrom(portalLowerBound);
+         category.setRangeTo(portalUpperBound);
+         category.setIconColor(defaultIcons.get(criticalCategory.name()));
+         category.setIconCount(1);
+         category.setLabel(criticalCategory.name());
+         defaultCriticalityList.add(category);
+      }
       
       return defaultCriticalityList;
    }

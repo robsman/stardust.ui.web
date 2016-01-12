@@ -1,8 +1,18 @@
-.report-definition {
+/*******************************************************************************
+ * Copyright (c) 2015 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
+ .report-definition {
    background: url("../../images/icons/report-definition.png") no-repeat;
 }
 
-body {
+body, table, input, textarea {
 	background-color: white;
 	padding: 0px 0px 0px 0px;
 	margin: 0px;
@@ -12,8 +22,6 @@ body {
 }
 
 p,li,label,table {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
 	line-height: 18px;
 	color: #333333;
 	font-weight: normal;
@@ -21,8 +29,7 @@ p,li,label,table {
 
 select {
 	margin-left: 0px;
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	min-width: 100px;
 	height: 21px;
 	color: #4d4d4d;
@@ -38,8 +45,7 @@ select {
 }
 
 input {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	color: #4d4d4d;
 	height: 21px;
 	margin-left: 0px;
@@ -53,8 +59,7 @@ input {
 }
 
 input[type="text"] {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	padding-left: 5px;
 	min-width: 100px;
 }
@@ -72,15 +77,13 @@ input[type="number"] {
 }
 
 input[type="password"] {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	padding-left: 5px;
 	min-width: 100px;
 }
 
 input[type=button] {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	height: 21px;
 	color: #4d4d4d;
 	background-color: #f2f2f2;
@@ -96,8 +99,7 @@ input[type=button] {
 }
 
 input[type=image] {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	/*height: 21px;*/
 	color: #4d4d4d;
 	background-color: #f2f2f2;
@@ -123,8 +125,7 @@ input[type=text].rightAligned {
 }
 
 textarea {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 }
 
 /* General JQuery UI Overrides */
@@ -135,7 +136,7 @@ textarea {
 
 .ui-widget input,.ui-widget select,.ui-widget textarea,.ui-widget button
    {
-   font-size: 12px !important;
+   font-size: 1.1em !important;
    font-weight: normal !important;
    font-family: Helvetica, Arial, sans-serif !important;
 }
@@ -281,24 +282,21 @@ a:hover,a:active {
 }
 
 h1 {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 14px;
+	font-size: 1.27em;
 	font-weight: bold;
 	color: #397d9f;
 	line-height: 20px;
 }
 
 h2 {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 12px;
+	font-size: 1.1em;
 	font-weight: bold;
 	color: #888888;
 	line-height: 20px;
 }
 
 h3 {
-	font-family: Verdana, Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	font-weight: bold;
 	color: #888888;
 	line-height: 20px;
@@ -314,8 +312,7 @@ img {
 }
 
 .heading {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	font-weight: bold;
 	color: #2f6871;
 	line-height: 20px;
@@ -324,8 +321,7 @@ img {
 }
 
 .section2 {
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 	font-weight: bold;
 	color: #2f6871;
 	line-height: 20px;
@@ -358,15 +354,14 @@ div.right {
 }
 
 .section {
-	font-family: Helvetica, Arial, sans-serif;
-	font-size: 12px;
+	font-size: 1.1em;
 	line-height: 18px;
 	color: #666666;
 	font-weight: normal;
 }
 
 .dialog-content form {
-	font-size: 11px !important;
+	font-size: 1em !important;
 }
 
 .borderedImage {
@@ -386,7 +381,6 @@ div.right {
 
 .dataTable {
 	border-bottom: 1px Solid #999999;
-	font-family: Arial;
 	color: #1B545D;
 }
 
@@ -440,7 +434,7 @@ div.right {
 }
 
 .smallLink {
-	font-size: 9px;
+	font-size: .82em;
 	text-decoration: none;
 	color: #AFD7ED;
 }
@@ -448,7 +442,7 @@ div.right {
 /* JQuery UI Overrides */
 .ui-widget input,.ui-widget select,.ui-widget textarea,.ui-widget button
 	{
-	font-size: 11px !important;
+	font-size: 1em !important;
 	font-weight: normal !important;
 	font-family: Helvetica, Arial, sans-serif !important;
 }
@@ -482,7 +476,6 @@ div.right {
 
 
 table.dataTable {
-	font-family: Arial;
 	color: #004169;
 	width: 100%;
 	margin: 0px;
@@ -499,7 +492,7 @@ table.dataTable thead {
 	border-bottom: 1px solid grey;
 	border-right: 1px solid grey;
 	font-weight: bold;
-	font-size: 12px;
+	font-size: 1.1em;
 	color: #111;
 } */
 
@@ -525,7 +518,6 @@ table.dataTable tbody tr.odd {
    float: left;
    margin: 5px;
    color: #999999;
-   font-family: Helvetica, Arial, sans-serif;
 }
 
 .dataTables_filter {
@@ -534,7 +526,6 @@ table.dataTable tbody tr.odd {
    text-align: right;
    margin: 5px;
    color: #999999;
-   font-family: Helvetica, Arial, sans-serif;
 }
 
 .dataTables_info {
@@ -543,7 +534,6 @@ table.dataTable tbody tr.odd {
    clear: both;
    margin-top: 5px;
    color: #999999;
-   font-family: Helvetica, Arial, sans-serif;
 }
 
 .dataTables_paginate {
@@ -551,7 +541,6 @@ table.dataTable tbody tr.odd {
    float: right;
    text-align: right;
    color: #999999;
-   font-family: Helvetica, Arial, sans-serif;
 }
 
 .paging_full_numbers {
@@ -652,7 +641,6 @@ table.dataTable tbody tr.odd {
 
 
 /* table.dataTable {
-   font-family: Arial;
    color: #004169;
    width: 100%;
    margin: 0px;
@@ -667,7 +655,7 @@ table.dataTable thead {
 table.dataTable thead th {
    border-right: 1px dashed lightblue;
    font-weight: bold;
-   font-size: 12px;
+   font-size: 1.1em;
    color: #111;
 }
 

@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.viewscommon.utils;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -130,8 +131,7 @@ public class CommonDescriptorUtils
    
    public static String getDocumentIcon(String fileName, String contentType)
    {
-      return "/plugins/views-common/images/icons/mime-types/"
-            + MimeTypesHelper.detectMimeType(fileName, contentType).getIconPath();
+      return MimeTypesHelper.detectMimeType(fileName, contentType).getIcon();
    }
    
    /**
@@ -663,22 +663,24 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
    public static String formatDescriptorValue(Object valueObj, String dateType)
    {
       String value = "";
-      if (valueObj instanceof Date)
+      if (valueObj instanceof Date || valueObj instanceof Calendar)
       {
+         Date dateValue = valueObj instanceof Calendar ? ((Calendar) valueObj).getTime() : (Date) valueObj;
+
          if (StringUtils.isNotEmpty(dateType))
          {
             if (dateType.equalsIgnoreCase(ProcessPortalConstants.DATE_TYPE))
             {
-               value = DateUtils.formatDate((Date) valueObj);
+               value = DateUtils.formatDate(dateValue);
             }
             else if (dateType.equalsIgnoreCase(ProcessPortalConstants.TIMESTAMP_TYPE))
             {
-               value = DateUtils.formatDateTime((Date) valueObj);
+               value = DateUtils.formatDateTime(dateValue);
             }
          }
          if (StringUtils.isEmpty(value))
          {
-            value = DateUtils.formatDateTime((Date) valueObj);
+            value = DateUtils.formatDateTime(dateValue);
          }
       }
       // Added for I18N of boolean descriptors

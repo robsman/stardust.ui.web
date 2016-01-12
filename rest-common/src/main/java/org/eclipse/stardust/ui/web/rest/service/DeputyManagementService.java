@@ -13,12 +13,15 @@
  */
 package org.eclipse.stardust.ui.web.rest.service;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.ui.web.rest.service.dto.DeputyMemberDetailDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.SelectItemDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.DeputyManagementUtils;
 import org.springframework.stereotype.Component;
 
@@ -42,6 +45,11 @@ public class DeputyManagementService
       return resultDTO;
    }
 
+   /**
+    * 
+    * @param userOID
+    * @return
+    */
    public QueryResultDTO loadDeputiesForUser(long userOID)
    {
       List<DeputyMemberDetailDTO> deputies = deputyManagementUtils.loadDeputiesForUser(userOID);
@@ -50,5 +58,59 @@ public class DeputyManagementService
       resultDTO.list = deputies;
       resultDTO.totalCount = deputies.size();
       return resultDTO;
+   }
+
+   /**
+    * 
+    * @param userOID
+    * @param searchValue
+    * @param searchMode
+    * @return
+    */
+   public QueryResultDTO getDeputyUsersData(long userOID, String searchValue, String searchMode)
+   {
+      List<ParticipantDTO> userWrappers = deputyManagementUtils.getDeputyUsersData(userOID, searchValue,
+            searchMode);
+
+      QueryResultDTO resultDTO = new QueryResultDTO();
+      resultDTO.list = userWrappers;
+      resultDTO.totalCount = userWrappers.size();
+      return resultDTO;
+   }
+   /**
+    * 
+    * @param userOID
+    * @return
+    */
+   public QueryResultDTO getAuthorizations(long userOID)
+   {
+      List<SelectItemDTO> authorozations = deputyManagementUtils.getAuthorizations(userOID);
+
+      QueryResultDTO resultDTO = new QueryResultDTO();
+      resultDTO.list = authorozations;
+      resultDTO.totalCount = authorozations.size();
+      return resultDTO;
+   }
+   /**
+    * 
+    * @param userOID
+    * @param deputyOID
+    * @param validFrom
+    * @param validTo
+    * @param modelParticipantIds
+    * @param mode
+    */
+   public void addOrModifyDeputy(long userOID, long deputyOID, Date validFrom, Date validTo, List<String> modelParticipantIds, String mode)
+   {
+      deputyManagementUtils.addOrModifyDeputy(userOID, deputyOID, validFrom, validTo,
+            modelParticipantIds,mode);     
+   }
+   /**
+    * 
+    * @param userOID
+    * @param deputyOID
+    */
+   public void removeUserDeputy(long userOID, long deputyOID){
+      deputyManagementUtils.removeUserDeputy(userOID, deputyOID);    
    }
 }

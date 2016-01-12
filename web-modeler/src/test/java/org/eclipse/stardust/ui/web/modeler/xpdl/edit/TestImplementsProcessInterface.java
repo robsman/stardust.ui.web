@@ -47,7 +47,4 @@ public class TestImplementsProcessInterface extends RecordingTestcase
 
    }
 
-
-
-
 }

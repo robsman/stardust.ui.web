@@ -46,6 +46,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.PanelIntegrationStrategy;
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.MashupContextConfigManager;
 import org.eclipse.stardust.ui.web.viewscommon.common.controller.mashup.MashupControllerUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IActivityInteractionController;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ClientSideDataFlowUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ManagedBeanUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
@@ -363,9 +364,9 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
       return uri;
    }
 
-   public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario)
+   public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario, Object parameters)
    {
-      if ((ClosePanelScenario.COMPLETE == scenario) || (ClosePanelScenario.SUSPEND_AND_SAVE == scenario))
+      if (ActivityInteractionControllerUtils.isExternalWebAppInterventionRequired(scenario))
       {
          trace.info("Triggering asynchronous close of activity panel ...");
 
@@ -378,6 +379,9 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
          {
             // out data mapping was already performed
             // validate data?
+            Map<String, Serializable> data = (Map<String, Serializable>) getOutDataValues(ai);
+            RepositoryUtility.updateCorrespondenceOutFolder(data, ai);
+                        
             return true;
          }
 
@@ -471,7 +475,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
    @Override
    public void handleScenario(ActivityInstance ai, ClosePanelScenario scenario)
    {
-      if (ClosePanelScenario.COMPLETE == scenario || ClosePanelScenario.SUSPEND_AND_SAVE == scenario)
+      if (ActivityInteractionControllerUtils.isExternalWebAppInterventionRequired(scenario))
       {
          InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils
                .getManagedBean(InteractionRegistry.BEAN_ID);

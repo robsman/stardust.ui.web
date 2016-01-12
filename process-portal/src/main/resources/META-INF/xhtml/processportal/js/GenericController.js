@@ -867,7 +867,7 @@ if (!window.bpm.portal.GenericController) {
 				this.interaction.saveData(lastPart, transferData, {success: function(retData) {
 					currentBindings[lastPart].docId = null;
 					currentBindings[lastPart].docName = null;
-					currentBindings[lastPart].docIcon = "../../plugins/views-common/images/icons/page_white_error.png";
+					currentBindings[lastPart].docIcon = "pi pi-document-error pi-lg";
 				}, failure: function() {
 					success = false;
 					alert(self.i18nLabelProvider.getLabel("panel.save.error", "Failure to save data"));

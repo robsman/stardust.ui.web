@@ -10,6 +10,10 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author Subodh.Godbole
  * @version $Revision: $
@@ -17,4 +21,8 @@ package org.eclipse.stardust.ui.web.rest.service.dto;
 public class TrivialActivityInstanceDTO extends ActivityInstanceDTO
 {
    public Boolean trivial;
+   
+   public List<PathDTO> dataMappings;
+   
+   public Map<String, Serializable> inOutData;
 }

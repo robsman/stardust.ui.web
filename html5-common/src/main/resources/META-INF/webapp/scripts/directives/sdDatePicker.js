@@ -17,7 +17,7 @@ var  jQueryDateFormats = {
 	};
 
 angular.module('bpm-common.directives')
-	.directive('sdDatePicker', [ 'sdLocalizationService', 'sgI18nService',function( sdLocalizationService, sgI18nService) {
+	.directive('sdDatePicker', [ 'sdLocalizationService', 'sgI18nService' ,'$timeout' ,function( sdLocalizationService, sgI18nService, $timeout) {
 	    return {
 	        restrict: 'A',
 	        require: 'ngModel',
@@ -72,7 +72,7 @@ angular.module('bpm-common.directives')
 		            	}
 
 		            	var date = new Date(value);
-                		return  milliseconds ? jQuery.datepicker.formatDate(dateFormat, date):vaue;
+                		return  milliseconds ? jQuery.datepicker.formatDate(dateFormat, date) : value;
 		            });
 
 	                $(element).datepicker({
@@ -92,7 +92,7 @@ angular.module('bpm-common.directives')
 	                showOn : showOn,
 	                defaultDate: defaultDate,
 	                buttonImage : buttonImage,
-	                buttonImageOnly : buttonImageOnly,
+	                buttonImageOnly : false,
 	                yearRange: yearRange,
 	                dayNamesMin : dayNamesMin,
 	                monthNames: monthNames,
@@ -105,6 +105,12 @@ angular.module('bpm-common.directives')
 	                    }
 	                }
 	            });
+	            $timeout(function(){
+	            	$(".ui-datepicker-trigger",document)
+	            	.empty()
+	            	.addClass("pi pi-calendar pi-1x");
+	            },0);
+	                
 	        }
 	    };
 	}]);

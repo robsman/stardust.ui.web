@@ -10,9 +10,8 @@
 				styleClass="#{validationMessageBean.styleClass!=null ? validationMessageBean.styleClass : ''}">
 				<ice:panelSeries var="message"
 					value="#{validationMessageBean.errorMessages}">
-					<ice:graphicImage
-						url="/plugins/views-common/images/icons/process-history/exception.png"
-						styleClass="messagePanelImg"
+					<ice:outputText
+						styleClass="pi pi-exception-circle pi-lg"
 						rendered="#{validationMessageBean.styleClass!=null}" />
 					<h:outputText value="#{message}"
 						styleClass="#{validationMessageBean.styleClass!=null ? 'messagePanelText' : 'validationMsgDlgTxt1'}" />
@@ -26,10 +25,9 @@
 				styleClass="#{validationMessageBean.styleClass!=null ? 'messagePanel' : ''}">
 				<ice:panelSeries var="message"
 					value="#{validationMessageBean.infoMessages}">
-					<ice:graphicImage
-						url="/plugins/views-common/images/icons/information.png"
+					<ice:outputText
 						rendered="#{validationMessageBean.styleClass!=null}"
-						styleClass="messagePanelImg" />
+						styleClass="messagePanelImg pi pi-information pi-lg" />
 					<h:outputText value="#{message}"
 						styleClass="#{validationMessageBean.styleClass!=null ? 'messagePanelText' : 'validationMsgDlgTxt1'}" />
 					<ice:panelGroup styleClass="clearing" />

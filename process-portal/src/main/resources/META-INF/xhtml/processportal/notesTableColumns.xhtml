@@ -22,8 +22,7 @@
 					standAlone="false" />
 				<f:attribute name="noteTimestamp" value="#{row.created}" />
 				<ice:panelGrid columns="2">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/mime-types/notes-filled.png" />
+					<ice:outputText styleClass="pi pi-notes pi-lg" />
 					<ice:outputText value="#{row.notePreview}" />
 				</ice:panelGrid>
 			</ice:commandLink>
@@ -32,7 +31,10 @@
 		<ice:panelGroup rendered="#{col.columnName == 'CreatorName'}">
 			<ice:panelGrid columns="2">
 				<ice:graphicImage value="#{row.noteInfo.userImageURL}" width="16px"
-					height="16px" />
+					height="16px" rendered="#{pc:contains(row.noteInfo.userImageURL, '/')}"/>
+				<ice:outputText
+					styleClass="#{row.noteInfo.userImageURL} pi-lg"
+					rendered="#{!pc:contains(row.noteInfo.userImageURL, '/')}"></ice:outputText>
 				<ice:outputText value="#{row.creatorName}" />
 			</ice:panelGrid>
 		</ice:panelGroup>

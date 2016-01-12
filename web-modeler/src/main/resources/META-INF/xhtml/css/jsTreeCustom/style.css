@@ -78,8 +78,7 @@
 
 #vakata-contextmenu.jstree-custom-context a {
 	color: #00629A !important;
-	font-family: Arial, Helvetica, sans-serif;
-	font-size: 11px;
+	font-size: 1em;
 }
 
 #vakata-contextmenu.jstree-custom-context,#vakata-contextmenu.jstree-custom-context li ul

@@ -17,14 +17,6 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		messageBundles="html5-views-common">
 
 		<ippui:viewsExtension>
-			<ippui:view name="documentSearchViewHtml5"
-				include="/plugins/html5-views-common/partials/views/documentSearchView.html">
-				<ippui:preferences>
-					<ippui:preferencePage name="icon"
-						include="/plugins/views-common/images/icons/page_white_find.png" />
-				</ippui:preferences>
-			</ippui:view>
-		</ippui:viewsExtension>
-
+	   	</ippui:viewsExtension>
 	</ippui:perspectiveExtension>
 </beans>

@@ -35,10 +35,9 @@
 					onclick="Event.stop(event);">
 					<pc:automationTag value="auto-PP-WorklistPnlConf-worklistTable-ConfColumns"
 						standAlone="false" />
-					<ice:graphicImage
-						value="/plugins/common/images/icons/adjust-columns.png"
+					<ice:outputText
 						title="#{processportal_msgPropsBean['views.worklistPanelConfiguration.configureCols']}"
-						styleClass="portal-std-icon" style="margin-right:5px" />
+						styleClass="pi pi-column-selector pi-lg" style="margin-right:5px" />
 				</ice:commandLink>
 			</ice:panelGroup>
 
@@ -46,14 +45,12 @@
 				onclick="Event.stop(event);">
 				<pc:automationTag value="auto-PP-WorklistPnlConf-worklistTable-LockColumns"
 					standAlone="false" />
-				<ice:graphicImage rendered="#{row.lock}"
-					value="/plugins/common/images/icons/lock.png"
+				<ice:outputText rendered="#{row.lock}"
 					title="#{common_msgPropsBean['common.filterPopup.unlock']}"
-					styleClass="portal-std-icon" />
-				<ice:graphicImage rendered="#{!row.lock}"
-					value="/plugins/common/images/icons/lock_open.png"
+					styleClass="pi pi-lock pi-lg" />
+				<ice:outputText rendered="#{!row.lock}"
 					title="#{common_msgPropsBean['common.filterPopup.lock']}"
-					styleClass="portal-std-icon" />
+					styleClass="pi pi-unlock pi-lg" />
 			</ice:commandLink>
 
 		</ice:panelGrid>

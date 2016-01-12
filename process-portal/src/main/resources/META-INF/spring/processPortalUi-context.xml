@@ -19,6 +19,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 	<ippui:perspective id="WorkflowExecution" messageBundles="processportal" default="true" 
 		controller="workflowPerspectiveEventHandler">
 		<ippui:preferences>
+			<ippui:preferencePage name="icon" include="pi pi-perspective-workflow" />
 			<ippui:preferencePage name="helpDocumentation"
 				include="/plugins/doc/portal/execution-clients/carnot-clients.html" />
 			<ippui:preferencePage name="configuration" include="/plugins/processportal/workflowExecutionConfiguration.xhtml" />
@@ -58,14 +59,14 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		<ippui:toolbarSection name="worklistPanelViewToolbar"
 			include="/plugins/processportal/toolbar/worklistPanelViewToolbar.xhtml"
 			requiredView="worklistPanel" />
-			
-		<ippui:view name="worklistPanel" include="/plugins/processportal/worklistPanel.xhtml" controller="worklistTableBean">
-			<ippui:preferences>
+
+		<ippui:view name="worklistPanel" include="/plugins/html5-process-portal/partials/views/worklistView.html">
+				<ippui:preferences>
 				<ippui:preferencePage name="icon" include="/plugins/views-common/images/icons/clipboard-task.png" />
-				<ippui:preferencePage name="configuration"
+					<ippui:preferencePage name="configuration"
 					include="/plugins/processportal/worklistPanelConfiguration.xhtml" />
-			</ippui:preferences>
-		</ippui:view>
+				</ippui:preferences>
+			</ippui:view>
 
 		<ippui:view name="activityPanel" include="/plugins/processportal/activityPanel.xhtml"
             controller="activityDetailsBean">
@@ -75,9 +76,12 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 			</ippui:preferences>
 		</ippui:view>
 
-		<ippui:view name="notesPanel" include="/plugins/processportal/notesPanel.xhtml"  controller="processportal_NotesBean" 
-		/>
-
+		<ippui:view name="notesPanel" include="/plugins/processportal/notesPanel.xhtml"  controller="processportal_NotesBean"/>
+		<!--  Keep the below commented view here only in 9.1 above view def will be replaced by HTML5 view -->
+		<!-- <ippui:view name="notesPanelHtml5"
+				include="/plugins/html5-process-portal/partials/views/notesPanel.html">
+			</ippui:view> -->
+		
 	</ippui:perspective>
 
 </beans>

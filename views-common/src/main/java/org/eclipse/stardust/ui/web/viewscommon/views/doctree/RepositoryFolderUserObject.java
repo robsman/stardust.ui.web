@@ -10,7 +10,11 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.views.doctree;
 
+import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -19,6 +23,7 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.core.spi.dms.RepositoryIdUtils;
+import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.ToolTip;
@@ -32,6 +37,8 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.DocumentDragDropHe
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.upload.DocumentUploadHelper;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
+
+import com.icesoft.util.encoding.Base64;
 
 /**
  * @author Yogesh.Manware
@@ -56,7 +63,7 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
 
       String iconFile;
       propsBean = MessagesViewsCommonBean.getInstance();
-      if (folder.getPath().equals(RepositoryUtility.CORRESPONDENCE_FOLDER))
+      if (folder.getPath().equals(RepositoryUtility.CORRESPONDENCE_TEMPLATE_FOLDER))
       {
          iconFile = ResourcePaths.I_FOLDER_CORRESPONDANCE;
          permissibleMimeTypes.add("text/html");
@@ -73,8 +80,48 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
          this.setEditable(false);
          this.setDeletable(false);
       }
+      
+      handleSystemFolders(folder);
    }
 
+   /**
+    * handle few specific folder in general, anywhere in the application
+    */
+   public void handleSystemFolders(Folder folder)
+   {
+      @SuppressWarnings("unchecked")
+      Map<String, Serializable> properties = folder.getProperties();
+      if (properties.get(RepositoryUtility.UI_PROPERTIES) != null)
+      {
+         Map<String, Serializable> uiProperties = (Map<String, Serializable>) properties
+               .get(RepositoryUtility.UI_PROPERTIES);
+         if (uiProperties.get(RepositoryUtility.UIProperties.readOnly.name()) != null)
+         {
+            // folder is readonly
+            this.setEditable(false);
+            this.setDeletable(false);
+            this.setCanCreateFile(false);
+            this.setCanCreateFolder(false);
+            this.setCanUploadFile(false);
+            this.setFolderContentReadOnly(true);
+
+            if (uiProperties.get(RepositoryUtility.UIProperties.clickable.name()) != null)
+            {
+               this.setClickable(true);
+            }
+
+            if (uiProperties.get(RepositoryUtility.UIProperties.type.name()) != null)
+            {
+               if (uiProperties.get(RepositoryUtility.UIProperties.type.name()).toString()
+                     .equals(RepositoryUtility.ResourceType.correspondenceOut.name()))
+               {
+                  setIcon(ResourcePaths.I_CORRESPONDENCE_EMAIL); // TODO: change icon
+               }
+            }
+         }
+      }
+   }
+   
    /*
     * (non-Javadoc)
     * 
@@ -277,7 +324,7 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
       // after file upload
       if (DocumentUploadEventType.DOCUMENT_CREATED == eventType)
       {
-         DefaultMutableTreeNode subNode = RepositoryUtility.createDocumentNode(document);
+         DefaultMutableTreeNode subNode = RepositoryUtility.createDocumentNode(document, this.wrapper);
          RepositoryDocumentUserObject userObject = (RepositoryDocumentUserObject) subNode.getUserObject();
          userObject.setNewNodeCreated(true);
          this.wrapper.add(subNode);
@@ -308,6 +355,8 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
     */
    public void refresh()
    {
+      System.out.println(getFolder().getId());
+      System.out.println(getFolder().getPath());
       RepositoryUtility.refreshNode(this.wrapper);
    }
    
@@ -380,7 +429,24 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
     */
    public void openDocument()
    {
-   // This method should never get invoked
+      if (this.isClickable())
+      {
+         Map<String, Object> params = CollectionUtils.newMap();
+         params.put("folderId", getFolder().getPath());
+         params.put("folderName", getFolder().getName());
+
+         String viewKey;
+         try
+         {
+            viewKey = "folderId=" + URLEncoder.encode(getFolder().getId(), "UTF-8");
+         }
+         catch (UnsupportedEncodingException e)
+         {
+            viewKey = "folderId=" + getFolder().getId();
+         }
+        viewKey = Base64.encode(viewKey);
+        PortalApplication.getInstance().openViewById("correspondencePanel", viewKey, params, null, true);
+      }
    }
 
    /**
@@ -454,17 +520,6 @@ public class RepositoryFolderUserObject extends RepositoryResourceUserObject
     */
    @Override
    public boolean isCanCreateNote()
-   {
-      return false;
-   }
-
-   /*
-    * (non-Javadoc)
-    * 
-    * @see org.eclipse.stardust.ui.web.viewscommon.views.doctree.RepositoryResourceUserObject#isSendFileAllowed()
-    */
-   @Override
-   public boolean isSendFileAllowed()
    {
       return false;
    }

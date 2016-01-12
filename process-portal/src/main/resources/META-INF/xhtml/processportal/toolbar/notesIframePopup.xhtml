@@ -21,6 +21,8 @@
 		<ice:outputStyle href="/plugins/common/css/nirvanaRime-override.css" />
 		<ice:outputStyle href="/plugins/common/css/nirvanaPortal.css" />
 		<ice:outputStyle href="/plugins/common/css/portalComponentStyle.css" />
+		<link rel="stylesheet" type="text/css" href="../../html5-common/styles/3rd-party/font-awesome/4.4.0/css/font-awesome.min.css"></link>
+		<link rel="stylesheet" type="text/css" href="../../html5-common/styles/portal-icons.css" > </link>
 	
 		<c:forEach items="#{ippPortalApp.skinFiles}" var="skinFile">
 			<ice:outputStyle href="#{skinFile}" />
@@ -74,14 +76,14 @@
 	</head>
 	<body style="width: 100%; height:100%; background-color: #F7F7F7;" onLoad="if(windowLoaded){windowLoaded()}">
 		<ice:form>
-			<ice:panelGroup style="background-color: #EAEAEA;">
+			<ice:panelGroup styleClass="iframePopover">
 				<ice:panelGrid columns="1"> <!-- Added to give same spacing -->
 					<ice:commandLink styleClass="action-link"
 						actionListener="#{activityDetailsBean.openNotes}" immediate="true" onclick="closeNotesIframe();">
 						<pc:automationTag value="auto-PP-NotesView-ActionsNew"/>
 					<f:param name="createNote" value="true" />
 						<ice:panelGrid columns="2">
-							<ice:graphicImage value="/plugins/views-common/images/icons/note_add.png" />
+							<ice:outputText styleClass="pi pi-create pi-lg" />
 							<ice:outputText style="white-space: nowrap;"
 								value="#{processportal_msgPropsBean['toolbars.workflowActions.create.new.note']}" />
 						</ice:panelGrid>
@@ -99,7 +101,10 @@
 							<f:attribute name="noteIndex" value="${noteIndex.index}" />
 							<ice:panelGrid columns="2">
 							<ice:graphicImage value="#{note.userImageURL}" width="16px"
-								height="16px" />
+								height="16px" rendered="#{pc:contains(note.userImageURL, '/')}" />
+							<ice:outputText
+								styleClass="#{note.userImageURL} pi-lg"
+								rendered="#{!pc:contains(note.userImageURL, '/')}"></ice:outputText>
 							<ice:outputText value="#{note.title}" style="white-space: nowrap;" />
 							</ice:panelGrid>
 						</ice:commandLink>

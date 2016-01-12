@@ -58,6 +58,8 @@ public class DaemonsBean extends UIComponentBean implements  ViewEventHandler
    private static final String REPORTING_DAEMON = "reporting.daemon";
    
    private static final String BUSINESS_CALENDAR_DAEMON = "business_calendar.daemon";
+   
+   private static final String BENCHMARK_DAEMON = "benchmark.daemon";
 
    private AdminMessagesPropertiesBean propsBean;
 
@@ -226,9 +228,9 @@ public class DaemonsBean extends UIComponentBean implements  ViewEventHandler
             if (AdministrationService.EVENT_DAEMON.equals(dd.getType()))
                type = propsBean.getString("views.daemons.eventDaemon.label");
             else if (MAIL_TRIGGER.equals(dd.getType()))
-               type = propsBean.getString("views.daemons.mailDaemon.label");
+               type = propsBean.getString("views.daemons.mailTrigger.label");
             else if (TIMER_TRIGGER.equals(dd.getType()))
-               type = propsBean.getString("views.daemons.timeDaemon.label");
+               type = propsBean.getString("views.daemons.timerTrigger.label");
             else if (AdministrationService.SYSTEM_DAEMON.equals(dd.getType()))
                type = propsBean.getString("views.daemons.systemDaemon.label");
             else if (AdministrationService.CRITICALITY_DAEMON.equals(dd.getType()))
@@ -237,6 +239,8 @@ public class DaemonsBean extends UIComponentBean implements  ViewEventHandler
                type = propsBean.getString("views.daemons.reportingDaemon.label");
             else if (BUSINESS_CALENDAR_DAEMON.equals(dd.getType()))
                type = propsBean.getString("views.daemons.businessCalendarDaemon.label");
+            else if (BENCHMARK_DAEMON.equals(dd.getType()))
+               type = propsBean.getString("views.daemons.benchmarkDaemon.label");
             else 
                type = dd.getType();
 

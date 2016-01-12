@@ -16,10 +16,11 @@
 						<ice:outputText
 							value="#{delegationBean.dialogTitle}"
 							styleClass="headerText" />
-						<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+						<ice:commandLink title="#{common_msgPropsBean['common.close']}"
 							action="#{delegationBean.onCancel}" partialSubmit="true"
-							styleClass="windowClose" immediate="true" />
-	
+							styleClass="windowClose pi-cmdLnk" immediate="true">
+							<ice:outputText styleClass="pi pi-dialog-close pi-lg pi-outTxt" />
+						</ice:commandLink>
 					</ice:panelGroup>
 				</ice:panelGroup>
 			</f:facet>
@@ -112,34 +113,34 @@
 										paginatorMaxPages="5" for="searchResult#{delegationBean.id}">
 										<f:param name="fastStep" value="8" />
 										<f:facet name="first">
-											<ice:graphicImage id="firstpage"
-												url="/plugins/views-common/images/icons/arrow-first.gif"
-												style="border:none;" title="#{views_common_msgPropsBean['common.tooltip.firstPage']}" />
+											<ice:outputText id="firstpage"
+												styleClass="pi pi-first-page pi-lg"
+												title="#{views_common_msgPropsBean['common.tooltip.firstPage']}" />
 										</f:facet>
 										<f:facet name="last">
-											<ice:graphicImage id="lastpage"
-												url="/plugins/views-common/images/icons/arrow-last.gif"
-												style="border:none;" title="#{views_common_msgPropsBean['common.tooltip.lastPage']}" />
+											<ice:outputText id="lastpage"
+												styleClass="pi pi-last-page pi-lg"
+												title="#{views_common_msgPropsBean['common.tooltip.lastPage']}" />
 										</f:facet>
 										<f:facet name="previous">
-											<ice:graphicImage id="previouspage"
-												url="/plugins/views-common/images/icons/arrow-previous.gif"
-												style="border:none;" title="#{views_common_msgPropsBean['common.tooltip.previousPage']}" />
+											<ice:outputText id="previouspage"
+												styleClass="pi pi-prev-page pi-lg"
+												title="#{views_common_msgPropsBean['common.tooltip.previousPage']}" />
 										</f:facet>
 										<f:facet name="next">
-											<ice:graphicImage id="nextpage"
-												url="/plugins/views-common/images/icons/arrow-next.gif"
-												style="border:none;" title="#{views_common_msgPropsBean['common.tooltip.nextPage']}" />
+											<ice:outputText id="nextpage"
+												styleClass="pi pi-next-page pi-lg"
+												title="#{views_common_msgPropsBean['common.tooltip.nextPage']}" />
 										</f:facet>
 										<f:facet name="fastforward">
-											<ice:graphicImage id="fastforward"
-												url="/plugins/views-common/images/icons/arrow-ff.gif"
-												style="border:none;" title="#{views_common_msgPropsBean['common.tooltip.fastForward']}" />
+											<ice:outputText id="fastforward"
+												styleClass="pi pi-fast-forward pi-lg"
+												title="#{views_common_msgPropsBean['common.tooltip.fastForward']}" />
 										</f:facet>
 										<f:facet name="fastrewind">
-											<ice:graphicImage id="fastrewind"
-												url="/plugins/views-common/images/icons/arrow-fr.gif"
-												style="border:none;" title="#{views_common_msgPropsBean['common.tooltip.fastRewind']}" />
+											<ice:outputText id="fastrewind"
+												styleClass="pi pi-fast-rewind pi-lg"
+												title="#{views_common_msgPropsBean['common.tooltip.fastRewind']}" />
 										</f:facet>
 									</ice:dataPaginator>
 		

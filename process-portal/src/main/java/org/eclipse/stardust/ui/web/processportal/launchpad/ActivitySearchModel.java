@@ -16,6 +16,7 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.ui.web.processportal.common.PPUtils;
+import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 
 
 
@@ -31,7 +32,10 @@ public class ActivitySearchModel implements IQueryBuilder
    private String name;
 
    private String id;
+   
+   private Map<String,Object> params;
 
+   
    /**
     * @param id
     * @param name
@@ -44,6 +48,19 @@ public class ActivitySearchModel implements IQueryBuilder
       this.name = name;
       this.id = id;
    }
+   /**
+    * @param id
+    * @param name
+    * @param queryBuilder
+    */
+   public ActivitySearchModel(String id, String name, IQueryBuilder queryBuilder, Map<String,Object> params)
+   {
+      super();
+      this.queryBuilder = queryBuilder;
+      this.name = name;
+      this.id = id;
+      this.params = params;
+   }
 
    /**
     * @return
@@ -54,9 +71,23 @@ public class ActivitySearchModel implements IQueryBuilder
       params.put(Query.class.getName(), this.createQuery());
       params.put("id", getId());
       params.put("name", getName());
-
+      if(ProcessPortalConstants.ID_ALL_RESUBMISSION_ACTIVITY_INSTANCES.equals(getId()))
+      {
+         params.put("showResubmitLink", true);
+         params.put("showResubmissionTime", true);
+      }
       PPUtils.openWorklistView("id=" + getId(), params);
 
+      PPUtils.selectWorklist(null);
+      return null;
+   }
+   
+   /**
+    */
+   public String selectHTML5()
+   {
+      Map<String, Object> params = getParams();
+      PPUtils.openWorklistViewHTML5("id=" + getId(), params);
       PPUtils.selectWorklist(null);
       return null;
    }
@@ -106,5 +137,10 @@ public class ActivitySearchModel implements IQueryBuilder
    public String getName()
    {
       return name;
+   }
+   
+   public Map<String, Object> getParams()
+   {
+      return params;
    }
 }

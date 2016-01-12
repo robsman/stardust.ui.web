@@ -13,13 +13,13 @@
 			<ice:panelGroup	styleClass="genericTableUserToolbar" style="padding-top: 1px;padding-left: 3px;">
 				<ui:repeat value="#{modelManagementBean.filterToolbarItems}"
 					var="filterToolbarItem">
-					<ice:commandLink name="#{filterToolbarItem.name}"
+					<ice:commandLink name="#{filterToolbarItem.name}" styleClass="tbl-tool-bar-style"
 						actionListener="#{modelManagementBean.filterTable}"
 						rendered="#{filterToolbarItem.visible}">
 						<pc:automationTag
 							value="auto-ADM-ModelMgmt-ModelTreeTbl-#{filterToolbarItem.name}"
 							standAlone="false" />
-						<ice:graphicImage value="#{filterToolbarItem.image}"
+						<ice:outputText styleClass="#{filterToolbarItem.image}"
 							style="#{filterToolbarItem.style}"
 							title="#{modelManagementBean.messages[filterToolbarItem.messsageKey]}" />
 						<f:attribute name="type" value="#{filterToolbarItem.name}" />
@@ -33,14 +33,14 @@
 			</ice:panelGroup>
 			<ice:panelGroup	styleClass="genericTableUserToolbar" style="padding-top: 1px;padding-left: 3px;">
 
-				<ice:commandLink name="#{modelManagementBean.messages['expandAll']}"
+				<ice:commandLink name="#{modelManagementBean.messages['expandAll']}" styleClass="tbl-tool-bar-style"
 					actionListener="#{modelManagementBean.modelTreeTable.expandAll}"
 					style="vertical-align: middle;">
 					<pc:automationTag
 						value="auto-ADM-ModelMgmt-ModelTreeTbl-ToolbarExpandAll"
 						standAlone="false" />
-					<h:graphicImage value="/plugins/views-common/images/icons/toggle-expand.png"
-						style="border: none;"
+					<h:outputText
+						styleClass="pi pi-expand-all pi-lg"
 						title="#{modelManagementBean.messages['expandAll']}" />
 				</ice:commandLink>
 
@@ -51,9 +51,8 @@
 					<pc:automationTag
 						value="auto-ADM-ModelMgmt-ModelTreeTbl-ToolbarCollapseAll"
 						standAlone="false" />
-					<h:graphicImage
-						value="/plugins/views-common/images/icons/toggle.png"
-						style="border: none;"
+					<h:outputText
+						styleClass="pi pi-collapse-all pi-lg"
 						title="#{modelManagementBean.messages['collapseAll']}" />
 				</ice:commandLink>
 
@@ -84,9 +83,8 @@
 					<pc:automationTag
 						value="auto-ADM-ModelMgmt-ModelTreeTbl-ToolbarDeployRpt"
 						standAlone="false" />
-					<h:graphicImage
-						value="/plugins/views-common/images/icons/server_go.png"
-						style="border: none;"
+					<h:outputText
+						styleClass="pi pi-deploy-model pi-lg"
 						title="#{modelManagementBean.messages['deploymodel']}" />
 				</ice:commandLink>
 

@@ -53,9 +53,12 @@ public class ActivityInstanceWithPrioTableEntry extends DefaultRowModel
    private boolean delegable;
    private boolean activatable;
    private boolean abortActivity;
+   private boolean relocationEligible;
    private String status;
    private boolean abortProcess;
    private CriticalityCategory criticality;
+   private String benchmark;
+   private String benchmarkColor;
    
    private List<ProcessDescriptor> processDescriptorsList = new ArrayList<ProcessDescriptor>();
    private Map<String, Object> descriptorValues = new HashMap<String, Object>();
@@ -91,7 +94,7 @@ public class ActivityInstanceWithPrioTableEntry extends DefaultRowModel
       processId = I18nUtils.getProcessName(ProcessDefinitionUtils.getProcessDefinition(aiWithPrio.getActivityInstance()
             .getModelOID(), aiWithPrio.getProcessId()));
       
-
+      relocationEligible = ActivityInstanceUtils.isRelocationEligible(aiWithPrio.getActivityInstance());
       delegable = ActivityInstanceUtils.isDelegable(aiWithPrio.getActivityInstance());
       activatable = ActivityInstanceUtils.isActivatable(aiWithPrio.getActivityInstance());
       status = ActivityInstanceUtils.getActivityStateLabel(aiWithPrio.getActivityInstance());  
@@ -99,6 +102,8 @@ public class ActivityInstanceWithPrioTableEntry extends DefaultRowModel
       criticality = CriticalityConfigurationHelper.getInstance().getCriticality(getCriticalityValue());
       caseInstance = aiWithPrio.getActivityInstance().getProcessInstance().isCaseProcessInstance();
       abortActivity =!caseInstance && ActivityInstanceUtils.isAbortable(aiWithPrio.getActivityInstance());
+      benchmark = ActivityInstanceUtils.getBenchmarkLabel(aiWithPrio.getActivityInstance());
+      benchmarkColor = ActivityInstanceUtils.getBenchmarkColor(aiWithPrio.getActivityInstance());
     }
 
    
@@ -235,6 +240,11 @@ public class ActivityInstanceWithPrioTableEntry extends DefaultRowModel
       return activatable;
    }
 
+   public boolean isRelocationEligible()
+   {
+      return relocationEligible;
+   }
+
    public String getProcessInstanceName()
    {
       return aiWithPrio.getActivityInstance().getProcessInstance().getProcessName();
@@ -339,5 +349,26 @@ public class ActivityInstanceWithPrioTableEntry extends DefaultRowModel
    {
       return caseInstance;
    }
+   
+   public String getBenchmark()
+   {
+      return benchmark;
+   }
+
+   public void setBenchmark(String benchmark)
+   {
+      this.benchmark = benchmark;
+   }
+   
+   public String getBenchmarkColor()
+   {
+      return benchmarkColor;
+   }
+
+   public void setBenchmarkColor(String benchmarkColor)
+   {
+      this.benchmarkColor = benchmarkColor;
+   }
+
 
 }

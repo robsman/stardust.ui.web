@@ -51,6 +51,7 @@ public class ActivityTableEntryUserObject extends NodeUserObject
    private CriticalityCategory criticality;
    private int criticalityValue;
    private String criticalityLabel;
+   private boolean relocationEligible;
    QualityAssuranceCodesBean qualityAssuranceCodesBean;
 
    /**
@@ -104,10 +105,11 @@ public class ActivityTableEntryUserObject extends NodeUserObject
          {
             formatType = QualityAssuranceUtils.getQAActivityInstanceType(formatType, ai);
          }
+         relocationEligible = ActivityInstanceUtils.isRelocationEligible(ai);
       }
       
       //set icons
-      String icon = (formatType != null) ? (ActivityInstanceUtils.getIconPath(formatType)) : null;
+      String icon = (formatType != null) ? (ActivityInstanceUtils.getFont(formatType)) : null;
       setLeafIcon(icon);
       setBranchContractedIcon(icon);
       setBranchExpandedIcon(icon);
@@ -348,6 +350,11 @@ public class ActivityTableEntryUserObject extends NodeUserObject
    public boolean isActivatable()
    {
       return activatable;
+   }
+
+   public boolean isRelocationEligible()
+   {
+      return relocationEligible;
    }
 
    public boolean isDelegable()

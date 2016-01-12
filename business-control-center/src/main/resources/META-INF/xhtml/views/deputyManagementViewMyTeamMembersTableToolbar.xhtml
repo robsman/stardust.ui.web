@@ -10,10 +10,9 @@
 		<ice:commandLink action="#{deputyTeamMemberBean.toggleShowAllUsers}">
 			<pc:automationTag
 				value="auto-BCC-DeputyMgmt-MyTeamMembersTbl-ToolbarToggleMyTeamMembers" standAlone="false" />
-			<h:graphicImage style="border: none;"
-				value="/plugins/views-common/images/icons/user-silhouette.png"
+			<h:outputText
 				title="#{deputyTeamMemberBean.messages['myTeamMembers.toggle']}"
-				styleClass="#{deputyTeamMemberBean.showAllUsers ? '' : 'iceCmdBtn-dis'}" />
+				styleClass="#{deputyTeamMemberBean.showAllUsers ? 'pi pi-eye-open pi-lg' : 'iceCmdBtn-dis pi pi-eye-close pi-lg'}" />
 		</ice:commandLink>
 	</ice:panelGrid>
 

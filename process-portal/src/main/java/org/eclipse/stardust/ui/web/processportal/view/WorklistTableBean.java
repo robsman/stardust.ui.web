@@ -61,6 +61,7 @@ import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreferenceComparator;
 import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModelListener;
@@ -202,6 +203,8 @@ public class WorklistTableBean extends UIComponentBean
    private String preferenceId;
 
    private Boolean showAllWorklist = false;
+   
+   private boolean showResubmissionTime = false;
    
    public WorklistTableBean()
    {
@@ -522,6 +525,11 @@ public class WorklistTableBean extends UIComponentBean
          }
       }
       
+      Object showResubmitTime = getParamFromView("showResubmissionTime");
+      if (null != showResubmitTime)
+      {
+         showResubmissionTime = (Boolean)showResubmitTime;
+      }
       worklistId = (String) getParamFromView("id");
 
       if (StringUtils.isEmpty(worklistId))
@@ -686,11 +694,21 @@ public class WorklistTableBean extends UIComponentBean
             "processDescriptorsList", this.getMessages().getString("column.descriptors"),
             Resources.VIEW_WORKLIST_COLUMNS, true, false);
 
+      ColumnPreference resubmissionTimeCol = new ColumnPreference(Constants.COL_RESUBMISSION_TIME, "resubmissionTime",
+            ColumnDataType.DATE, this.getMessages().getString("column.resubmissionTime"), null,
+            true, false);
+      resubmissionTimeCol.setNoWrap(true);
+      
       ColumnPreference colPriority = new ColumnPreference(Constants.COL_PRIORITY, "priority", this
             .getMessages().getString("column.priority"), Resources.VIEW_WORKLIST_COLUMNS,
             true, true);
       colPriority.setColumnAlignment(ColumnAlignment.CENTER);
       colPriority.setColumnDataFilterPopup(new TableDataFilterPopup(new PriorityAutocompleteTableDataFilter()));
+      
+      ColumnPreference colBenchmark = new ColumnPreference(Constants.COL_BENCHMARK, "benchmark", this
+            .getMessages().getString("column.benchmark"), Resources.VIEW_WORKLIST_COLUMNS,
+            false, true);
+      colBenchmark.setColumnAlignment(ColumnAlignment.CENTER);
 
       ColumnPreference colStarted = new ColumnPreference(Constants.COL_STARTED, "startDate",
             ColumnDataType.DATE, this.getMessages().getString("column.started"),
@@ -731,9 +749,14 @@ public class WorklistTableBean extends UIComponentBean
       standardColumns.add(activityNameCol);
       standardColumns.add(colOid);
       standardColumns.add(processDefnCol);
-      standardColumns.add(criticalityCol);
+      standardColumns.add(criticalityCol);      
+      standardColumns.add(colBenchmark);
       standardColumns.add(colPriority);
       standardColumns.add(colDescriptors);
+      if(showResubmissionTime)
+      {
+         standardColumns.add(resubmissionTimeCol);
+      }
       standardColumns.add(colStarted);
       standardColumns.add(colLastMod);
       standardColumns.add(durationCol);
@@ -877,7 +900,7 @@ public class WorklistTableBean extends UIComponentBean
                   processDescriptorsList, ActivityInstanceUtils.isActivatable(ai),
                   ActivityInstanceUtils.getLastPerformer(ai), ai.getProcessInstance().getPriority(), ai.getStartTime(),
                   ai.getLastModificationTime(), ai.getOID(), this.getDuration(ai), notesSize, descriptorValues,
-                  ai.getProcessInstanceOID(), ai, currentPerformerOID, showResubmissionLink);
+                  ai.getProcessInstanceOID(), ai, currentPerformerOID, showResubmissionLink, showResubmissionTime);
          }
          catch (Exception e)
          {
@@ -1398,6 +1421,10 @@ public class WorklistTableBean extends UIComponentBean
                CustomOrderCriterion o = ActivityInstanceQuery.ACTIVITY_NAME
                      .ascendig(sortCriterion.isAscending());
                query.orderBy(o);
+            }
+            else if ("benchmark".equals(sortCriterion.getProperty()))
+            {
+               query.orderBy(ActivityInstanceQuery.BENCHMARK_VALUE, sortCriterion.isAscending());
             }
             // Is this a descriptor column?
             else if (sortCriterion.getProperty().startsWith("descriptorValues."))

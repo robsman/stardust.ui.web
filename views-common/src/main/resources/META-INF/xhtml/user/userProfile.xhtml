@@ -45,8 +45,8 @@
 									<ice:panelGroup>
 										<ice:inputText id="id"
 											value="#{userProfileBean.account}"
-											disabled="#{userProfileBean.modifyMode || userProfileBean.modifyProfileConfiguration}"
-											required="#{userProfileBean.createMode || userProfileBean.copyMode}"
+											disabled="#{(userProfileBean.modifyMode and userProfileBean.internalAuthentication)|| userProfileBean.modifyProfileConfiguration}"
+											required="#{userProfileBean.createMode || userProfileBean.copyMode || (userProfileBean.modifyMode and !userProfileBean.internalAuthentication)}"
 											validator="#{fieldsValidator.validateId}">
 											<pc:automationTag value="auto-ADM-PartMgmt-UserPopup-Acct" standAlone="false"/>
 										</ice:inputText>
@@ -61,8 +61,8 @@
 									<ice:panelGroup>
 										<ice:inputText id="name" partialSubmit="true"
 											value="#{userProfileBean.firstName}"
-											disabled="#{not (userProfileBean.userEditable)}"
-											required="#{userProfileBean.userEditable}"
+											disabled="#{not (userProfileBean.userEditable) and userProfileBean.modifyMode}"
+											required="#{userProfileBean.userEditable || userProfileBean.createMode}"
 											validator="#{fieldsValidator.validateName}"
 											valueChangeListener="#{userProfileBean.nameChangeListener}" >
 											<pc:automationTag value="auto-ADM-PartMgmt-UserPopup-FirstName" standAlone="false"/>
@@ -78,8 +78,8 @@
 									<ice:panelGroup>
 										<ice:inputText id="lastName" partialSubmit="true"
 											value="#{userProfileBean.lastName}"
-											disabled="#{not (userProfileBean.userEditable)}"
-											required="#{userProfileBean.userEditable}"
+											disabled="#{not (userProfileBean.userEditable) and userProfileBean.modifyMode}"
+											required="#{userProfileBean.userEditable || userProfileBean.createMode}"
 											valueChangeListener="#{userProfileBean.nameChangeListener}" >
 											<pc:automationTag value="auto-ADM-PartMgmt-UserPopup-LastName" standAlone="false"/>
 										</ice:inputText>
@@ -127,8 +127,8 @@
 									<ice:panelGroup>
 										<ice:inputSecret id="password" maxlength="20" size="20"
 											value="#{userProfileBean.password}" redisplay="true"
-											required="#{userProfileBean.createMode || userProfileBean.copyMode}"
-											disabled="#{(userProfileBean.modifyMode || userProfileBean.modifyProfileConfiguration) &amp;&amp; (!userProfileBean.changePassword)}">
+											required="#{userProfileBean.internalAuthentication and (userProfileBean.createMode || userProfileBean.copyMode)}"
+											disabled="#{!userProfileBean.internalAuthentication || (userProfileBean.modifyMode || userProfileBean.modifyProfileConfiguration) &amp;&amp; (!userProfileBean.changePassword)}">
 											<pc:automationTag value="auto-ADM-PartMgmt-UserPopup-Pwd" standAlone="false"/>
 										</ice:inputSecret>
 										<ice:panelGroup styleClass="msgError">
@@ -143,8 +143,8 @@
 										<ice:inputSecret id="cPWD" maxlength="20" size="20"
 											value="#{userProfileBean.confirmPassword}"
 											redisplay="true"
-											required="#{userProfileBean.createMode || userProfileBean.copyMode}"
-											disabled="#{(userProfileBean.modifyMode || userProfileBean.modifyProfileConfiguration) &amp;&amp; (!userProfileBean.changePassword)}">
+											required="#{userProfileBean.internalAuthentication and (userProfileBean.createMode || userProfileBean.copyMode)}"
+											disabled="#{!userProfileBean.internalAuthentication || (userProfileBean.modifyMode || userProfileBean.modifyProfileConfiguration) &amp;&amp; (!userProfileBean.changePassword)}">
 											<pc:automationTag value="auto-ADM-PartMgmt-UserPopup-PwdConfirm" standAlone="false"/>
 										</ice:inputSecret>
 										<ice:panelGroup styleClass="msgError">
@@ -270,8 +270,8 @@
 											value="#{messages_admin['views.createUser.myPicturePanel.picturePreview']}"
 											styleClass="label-form" />
 										<ice:panelGroup styleClass="clearing" />
-										<ice:graphicImage
-											url="/plugins/views-common/images/icons/user-default.png"
+										<ice:outputText
+											styleClass="pi pi-user-avatar pi-10x"
 											height="128px" width="128px" />
 									</ice:panelGroup>
 									<ice:panelGroup
@@ -340,6 +340,66 @@
 							</ice:panelTab>
 							<!-- My picture tab ends here. -->
 
+
+							<!-- My signature tab. -->
+							<ice:panelTab
+								rendered="#{userProfileBean.modifyProfileConfiguration}"
+								label="#{messages_admin['views.createUser.mySignaturePanel.title']}"
+								title="#{messages_admin['views.createUser.mySignaturePanel.title']}">
+								<ice:panelGroup styleClass="clearing" />
+								<ice:panelGrid columns="1">
+									<ice:selectOneRadio
+										value="#{userProfileBean.mySignaturePreference.currentSignaturePreference}"
+										partialSubmit="true"
+										valueChangeListener="#{userProfileBean.mySignaturePreference.selectionChangeListener}">
+										<f:selectItem itemValue="NoSignature"
+											itemLabel="#{messages_admin['views.createUser.mySignaturePanel.option.noSignature.label']}" />
+										<f:selectItem itemValue="MyComputer"
+											itemLabel="#{messages_admin['views.createUser.mySignaturePanel.option.myComputer.label']}" />
+									</ice:selectOneRadio>
+									
+									<ice:panelGroup
+										rendered="#{userProfileBean.mySignaturePreference.myComputerSelected}">
+										<ice:panelGroup styleClass="clearing" />
+										<ice:inputFile id="imageSignatureUploadComponent"
+											label="#{views_common_msgPropsBean['views.myDocumentsTreeView.fileUploadDialog.upload']}"
+											actionListener="#{userProfileBean.mySignaturePreference.uploadActionListener}" />
+										<ice:panelGroup styleClass="msgError">
+											<ice:message for="imageSignatureUploadComponent" />
+										</ice:panelGroup>
+										<ice:panelGroup styleClass="clearing" />
+
+										<ice:panelGrid columns="2"
+											style="vertical-align: top; white-space: nowrap; text-align:left"
+											headerClass="heading">
+											<ice:outputText
+												styleClass="pi pi-information pi-lg"
+												title="" />
+											<ice:outputText
+												value="#{messages_admin['views.createUser.mySignaturePanel.option.myComputerGuidancetext']}" />
+										</ice:panelGrid>
+										<ice:panelGroup rendered="#{userProfileBean.mySignaturePreference.currentImageNotEmpty}">
+											<ice:panelGroup styleClass="clearing" />
+											<ice:panelGroup styleClass="clearing" />
+											<ice:panelGroup>
+												<ice:outputText
+													value="#{messages_admin['views.createUser.mySignaturePanel.signaturePreview']}"
+													styleClass="label-form" />
+											</ice:panelGroup>
+											<ice:panelGroup styleClass="clearing" />
+											<ice:panelGroup >
+												<ice:graphicImage
+													value="#{userProfileBean.mySignaturePreference.currentImage}"
+													alt="#{messages_admin['views.createUser.myPicturePanel.picturePreview.noImage']}"
+													style="max-height :128px; max-width : 128px;"  />
+											</ice:panelGroup>
+										</ice:panelGroup>
+									</ice:panelGroup>
+									<ice:panelGroup styleClass="clearing" />
+								</ice:panelGrid>
+							</ice:panelTab>
+							<!-- My signature tab ends here. -->
+
 						</ice:panelTabSet>
 					</ice:panelGroup>
 					<ice:panelGroup styleClass="clearing" />
@@ -358,6 +418,11 @@
 						<ice:panelGroup styleClass="msgError">
 							<ice:outputText
 								value="#{userProfileBean.myPicturePreference.validationMsg}"
+								styleClass="msgError" />
+						</ice:panelGroup>
+						<ice:panelGroup styleClass="msgError">
+							<ice:outputText
+								value="#{userProfileBean.mySignaturePreference.validationMsg}"
 								styleClass="msgError" />
 						</ice:panelGroup>
 					</ice:panelGrid>

@@ -1,24 +1,26 @@
-
-<div class="view-panel" ng-controller="sdDaemonCtrl as ctrl"
-	sg-stretch-to-bottom>
-	<!-- View Toolbar -->
-	<div class="view-panel-toolbar toolbar-buttons">
-		<div class="view-toolbar-section">
-			<span sd-refresh sda-on-refresh="ctrl.refresh();"></span>
-		</div>
-	</div>
+<div sg-stretch-to-bottom class="view-panel">
+<div class="ng-hide" ng-show="true" ng-controller="sdDaemonCtrl as ctrl">
 
 	<!-- View Content -->
 	<div class="view-panel-content">
-		<div class="tbl-title">{{i18n('admin-portal-messages.views-daemons-table-title')}}</div>
+	
+		<div class="view-panel-toolbar heading ng-binding">{{i18n('admin-portal-messages.views-daemons-table-title')}}</div>
+		
+		<div sda-toolbar>
+			<span sd-refresh sda-on-refresh="ctrl.refresh();" aid="ADM-Daemon"></span>
+		</div>
+		
 		<table sd-data-table="ctrl.daemonDataTable"
-			sd-data="ctrl.fetchDaemons()" sda-mode="local"
+			sd-data="ctrl.fetchDaemons(params)" sda-mode="local"
+			sda-page-size="{{ctrl.data.totalCount}}" sda-ready="ctrl.showDaemonTable"
 			sda-no-pagination="true"
-			sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="single"
-			sda-exports="Excel,CSV" sda-exports-file-name="daemons">
+			sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true" sda-sort-by="{name : 'type', dir : 'asc'}"
+			sda-preference-module="ipp-administration-perspective" sda-preference-id="preference"
+			sda-preference-name="ipp-administration-perspective.daemons.selectedColumns"
+			sda-exports="true" sda-exports-file-name="daemons">
 			<thead sda-i18n-scope="admin-portal-messages.views-daemons-column">
 				<tr>
-					<th sda-name="type" sda-fixed="true" sda-sortable="true"></th>
+					<th sda-name="type" sda-sortable="true"></th>
 					<th sda-name="startTime" sda-label-key="started"></th>
 					<th sda-name="lastExecutionTime" sda-label-key="lastTime"></th>
 					<th sda-name="running" sda-label-key="status"></th>
@@ -31,25 +33,29 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td sda-exporter="ctrl.getDaemonTypeLabel(rowData.type)">{{ctrl.getDaemonTypeLabel(rowData.type)}}</td>
-					<td sda-data-type="dateTime"
-						style="text-align: center; white-space: nowrap;"></td>
-					<td sda-data-type="dateTime"
-						style="text-align: center; white-space: nowrap;"></td>
+					<td sda-exporter="ctrl.getDaemonTypeLabel(rowData.type)" sda-data-type="string">{{ctrl.getDaemonTypeLabel(rowData.type)}}</td>
+					<td sda-data-type="dateTime"></td>
+					<td sda-data-type="dateTime"></td>
 					<td sda-exporter="ctrl.getDaemonStatus(rowData)">{{ctrl.getDaemonStatus(rowData)}}</td>
 					<td></td>
 					<td></td>
 					<td style="white-space: nowrap; text-align: center;">
-						<button ng-click="bpmCommon.stopEvent($event); ctrl.toggleDaemonAction(rowData);"
-							ng-attr-title="{{rowData.running ? i18n('admin-portal-messages.views-daemons-stopDaemon') : i18n('admin-portal-messages.views-daemons-startDaemon')}}"
-							class="button-link tbl-tool-link">
-							<i
-								ng-class="rowData.running ? 'glyphicon glyphicon-ban-circle' : 'glyphicon glyphicon-play-circle'"></i>
+						<button ng-show="rowData.running" ng-click="bpmCommon.stopEvent($event); ctrl.stopDaemon(rowData);"
+							ng-attr-title="{{i18n('admin-portal-messages.views-daemons-stopDaemon')}}"
+							class="button-link tbl-tool-link"
+							aid="ADM-Daemon-DataTable-ActionStop">
+							<i ng-class="'pi pi-stop-daemon pi-lg'"></i>
 						</button>
-
+						<button ng-show="!rowData.running" ng-click="bpmCommon.stopEvent($event); ctrl.startDaemon(rowData);"
+							ng-attr-title="{{i18n('admin-portal-messages.views-daemons-startDaemon')}}"
+							class="button-link tbl-tool-link"
+							aid="ADM-Daemon-DataTable-ActionStart">
+							<i ng-class="'pi pi-start-daemon pi-lg'"></i>
+						</button>
 					</td>
 				</tr>
 			</tbody>
 		</table>
 	</div>
+</div>
 </div>

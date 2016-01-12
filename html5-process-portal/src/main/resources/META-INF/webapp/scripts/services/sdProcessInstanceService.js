@@ -16,8 +16,9 @@
 	'use strict';
 
 	angular.module('workflow-ui.services').provider('sdProcessInstanceService', function () {
-		this.$get = ['$rootScope', '$resource', '$filter', function ($rootScope, $resource, $filter) {
-			var service = new ProcessInstanceService($rootScope, $resource, $filter);
+		this.$get = ['$rootScope', '$resource', '$http', '$filter', 'sdUtilService','sdDataTableHelperService','$q','sdLoggerService',
+		             function ($rootScope, $resource, $http, $filter, sdUtilService, sdDataTableHelperService, $q, sdLoggerService) {
+			var service = new ProcessInstanceService($rootScope, $resource, $http, $filter, sdUtilService, sdDataTableHelperService, $q, sdLoggerService);
 			return service;
 		}];
 	});
@@ -25,73 +26,137 @@
 	/*
 	 *
 	 */
-	function ProcessInstanceService($rootScope, $resource, $filter) {
-		var REST_BASE_URL = "services/rest/portal/process-instances/";
-
-		/*
-		 *
+	function ProcessInstanceService($rootScope, $resource, $http, $filter, sdUtilService, sdDataTableHelperService, $q, sdLoggerService) {
+		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/process-instances/";
+		
+		var trace = sdLoggerService.getLogger("bpm-common.sdProcessInstanceService")
+		/**
+		 * 
 		 */
-		ProcessInstanceService.prototype.getProcesslist = function(query) {
-			var restUrl = REST_BASE_URL + "search";
+		ProcessInstanceService.prototype.getBenchmarkDetailsProcess = function(bOid,pQId) {
+			var deferred = $q.defer();
 			
-			// Add Query String Params. TODO: Can this be sent as stringified JSON?
-	         var options = "";
-	         if (query.options.skip != undefined) {
-	            options += "&skip=" + query.options.skip;
-	         }
-	         if (query.options.pageSize != undefined) {
-	            options += "&pageSize=" + query.options.pageSize;
-	         }
-	         if (query.options.order != undefined) {
-	            // Supports only single column sort
-	            var index = query.options.order.length - 1;
-	            options += "&orderBy=" + query.options.order[index].name;
-	            options += "&orderByDir=" + query.options.order[index].dir;
-	         }
+			var restUrl = sdUtilService.getBaseUrl() + "services/rest/portal/benchmark-definitions/run-time/"+bOid;
+			
+			var result = {}
+			
+			$resource(restUrl).get().$promise.then(function(data){ 
 
-	         if (options.length > 0) {
-	            restUrl = restUrl + "?" + options.substr(1);
-	         }
-
-	         var postData = {
-	            filters : query.options.filters,
-	            descriptors : {
-	               fetchAll : false,
-	               visbleColumns : []
-	            }
-	         };
-
-	         var found = $filter('filter')(query.options.columns, {
-	            field : 'descriptors'
-	         }, true);
-
-	         if (found && found.length > 0) {
-	            postData.descriptors.fetchAll = true;
-	         }
-
-	         var descriptorColumns = $filter('filter')(query.options.columns, {
-	            name : 'descriptorValues'
-	         });
-
-	         if (descriptorColumns) {
-	            angular.forEach(descriptorColumns, function(column) {
-	               postData.descriptors.visbleColumns.push(column.name);
-	            });
-	         }
-
-			var processList = $resource(restUrl, {
+				result.name  = data.content.name,
+				result.categories = data.content.categories
 				
-			}, {
-				fetch : {
-					method : 'POST'
-				}
-			});
+				var processDefinitions = {};
 
-			return processList.fetch({}, postData).$promise;
-		};
+				angular.forEach(data.content.models,function(model){  
+					processDefinitions = model.processDefinitions;			
+				});
+				result.processDefinitions = processDefinitions;
+			
+				deferred.resolve(result);
+			});
+			return deferred.promise;
+		}
+		
+		/**
+		 * 
+		 */
+		ProcessInstanceService.prototype.getProcessByOid = function(oid, fetchDescriptors) {
+			var restUrl = REST_BASE_URL+ oid;
+			if(fetchDescriptors) {
+				restUrl = sdDataTableHelperService.appendQueryParamsToURL("fetchDescriptors="+fetchDescriptors)
+			}
+			
+			return $resource(restUrl).get().$promise;
+		}
+		
+		/**
+		 * 
+		 */
+		ProcessInstanceService.prototype.getProcessByStartingActivityOid = function(aiOid, sync) {
+			var restUrl = REST_BASE_URL+"startingActivityOID/"+ aiOid;
+
+			if(!sync) {
+				return $resource(restUrl).get().$promise;
+			} else {
+				return sdUtilService.syncAjax(restUrl);
+			}
+		}
+
 		
 		/*
-		 *
+		 * 
+		 */
+		ProcessInstanceService.prototype.getProcesslist = function(query) {
+		    var restUrl = REST_BASE_URL + "search";
+
+		    // Add Query String Params. TODO: Can this be sent as stringified
+		    // JSON?
+		    var queryParams = sdDataTableHelperService.convertToQueryParams(query.options);
+
+		    if (queryParams.length > 0) {
+			var separator = "?";
+			if (/[?]/.test(restUrl)) {
+			    separator = "&";
+			}
+			restUrl = restUrl + separator + queryParams.substr(1);
+		    }
+		    var postData = sdDataTableHelperService.convertToPostParams(query.options);
+
+		    var processList = $resource(restUrl, {
+
+		    }, {
+			fetch : {
+			    method : 'POST'
+			}
+		    });
+
+		    return processList.fetch({}, postData).$promise;
+		};
+		
+		
+		/*
+		 * 
+		 */
+		ProcessInstanceService.prototype.getProcesslistForTLV = function(query) {
+		    var restUrl = REST_BASE_URL + "forTLVByCategory";
+
+		    var queryParams = sdDataTableHelperService.convertToQueryParams(query.options);
+
+		    if (queryParams.length > 0) {
+			var separator = "?";
+			if (/[?]/.test(restUrl)) {
+			    separator = "&";
+			}
+			restUrl = restUrl + separator + queryParams.substr(1);
+		    }
+		    var postData = sdDataTableHelperService.convertToPostParams(query.options);
+		    postData.drillDownType = query.drillDownType;
+            if(query.drillDownType == "PROCESS_WORKITEM"){
+            	postData.bOids = query.bOids;
+    		    postData.dateType = query.dateType;
+    		    postData.dayOffset = query.dayOffset;
+    		    postData.benchmarkCategory = query.benchmarkCategory;
+    		    postData.processIds = query.processIds;
+    		    postData.state = query.state;
+            }else{
+            	postData.oids = query.oids;
+            }
+		    
+		    
+		    var processList = $resource(restUrl, {
+
+		    }, {
+			fetch : {
+			    method : 'POST'
+			}
+		    });
+
+		    return processList.fetch({}, postData).$promise;
+		};
+
+
+		/*
+		 * 
 		 */
 		ProcessInstanceService.prototype.getProcessInstanceCounts = function(query) {
 			var restUrl = REST_BASE_URL + "allCounts";
@@ -134,6 +199,25 @@
 		};
 		
 		/*
+		 * 
+		 */
+		ProcessInstanceService.prototype.getProcessInstanceDocuments = function(oid) {
+			var deferred = $q.defer();
+			
+			var restUrl = REST_BASE_URL + oid + "/documents";
+			
+			$http({method: 'GET', url: restUrl}).
+			  success(function(data, status, headers, config) {
+				  deferred.resolve(data);
+			  }).
+			  error(function(data, status, headers, config) {
+				  // TODO
+			  });
+			
+			return deferred.promise;
+		};
+
+		/*
 		 *
 		 *	{
 		 *	  sourceProcessOIDs: [oid],
@@ -142,9 +226,6 @@
 		 * 
 		 */
 		ProcessInstanceService.prototype.attachToCase = function(payload) {
-			console.log("Attaching to case for:");
-			console.log(payload);
-			
 			var restUrl = REST_BASE_URL + 'attachToCase';
 			
 			var res = $resource(restUrl, {}, {
@@ -167,9 +248,6 @@
 		 * 
 		 */
 		ProcessInstanceService.prototype.createCase = function(payload) {
-			console.log("Creating case for:");
-			console.log(payload);
-			
 			var restUrl = REST_BASE_URL + 'createCase';
 			
 			var res = $resource(restUrl, {}, {
@@ -182,23 +260,13 @@
 		};
 		
 		/*
-		 * Get Spawnable Processes
-		 * 
-		 * id activity id
+		 * Get Spawnable Processes for switchspwan
 		 */
-		ProcessInstanceService.prototype.getSpawnableProcesses = function(activityProInstanceOids) {
-			console.log("Getting spawnable process for:");
-			console.log(activityProInstanceOids);
-			
-			var restUrl = REST_BASE_URL + 'spawnableProcesses';
-			var res = $resource(restUrl, {}, {
-				getSpawnableProcesses : {
-					method : 'POST',
-					isArray: true
-				}
-			});
-			
-			return res.getSpawnableProcesses({}, activityProInstanceOids).$promise;
+		ProcessInstanceService.prototype.getSpawnableProcesses = function() {
+			var restUrl = REST_BASE_URL + ':type';
+			var urlTemplateParams = {};
+			urlTemplateParams.type = "spawnableProcesses";
+			return $resource(restUrl).query(urlTemplateParams).$promise;
 		};
 		
 		/*
@@ -210,8 +278,7 @@
 		 * 
 		 */
 		ProcessInstanceService.prototype.switchProcess = function(payload) {
-			console.log("Aborting & spawning new process for:");
-			console.log(payload);
+			trace.log("Aborting & spawning new process for:", payload);
 			
 			var restUrl = REST_BASE_URL + 'switchProcess';
 			var res = $resource(restUrl, {}, {
@@ -230,10 +297,7 @@
 		 * activityProInstanceOids : activity process instance id
 		 */
 		ProcessInstanceService.prototype.checkIfProcessesAbortable = function(activityProInstanceOids, abortType) {
-			console.log("Calling checkIfProcessesAbortable for:");
-			console.log(activityProInstanceOids);
-			console.log(" and abort type:");
-			console.log(abortType);
+			trace.debug("Calling checkIfProcessesAbortable for: ",activityProInstanceOids," and abort type:", abortType);
 			
 			var restUrl = REST_BASE_URL + 'checkIfProcessesAbortable?type=' + abortType;
 			var res = $resource(restUrl, {}, {
@@ -249,15 +313,13 @@
 		 * 
 		 */
 		ProcessInstanceService.prototype.getRelatedProcesses = function(proInstanceOids, matchAny, searchCases) {
-			console.log("Calling getRelatedProcesses for:");
-			console.log(proInstanceOids);
 			
 			var restUrl = REST_BASE_URL + 'getRelatedProcesses?';
 			
 			if (matchAny != undefined) {
-				restUrl += '?matchAny=' + matchAny;
+				restUrl += 'matchAny=' + matchAny;
 			} else {
-				restUrl += '?matchAny=false';
+				restUrl += 'matchAny=false';
 			}
 			
 			if (searchCases != undefined) {
@@ -284,14 +346,30 @@
 		 * 
 		 */
 		ProcessInstanceService.prototype.abortAndJoinProcess = function(payload) {
-			console.log("Aborting & joining new process for:");
-			console.log(payload);
+			trace.log("Aborting & joining new process for: ", payload);
 			
 			var restUrl = REST_BASE_URL + 'abortAndJoinProcess';
-			
 			var res = $resource(restUrl);
-			
 			return res.save({}, payload).$promise;
 		};
+		
+		
+		/*
+		 * 
+		 */
+		ProcessInstanceService.prototype.getProcessColumns = function() {
+			var restUrl = REST_BASE_URL + "allProcessColumns";
+			var processes = $resource(restUrl);
+			return processes.query().$promise;
+		};
+		
+		/**
+		 * get correspondence folder - containing correspondence out folders 
+		 */
+    ProcessInstanceService.prototype.getCorrespondenceFolder = function(processOid) {
+      var url = REST_BASE_URL + processOid + "/correspondence";
+      return $resource(url).get().$promise;
+    };
+		
 	};
 })();

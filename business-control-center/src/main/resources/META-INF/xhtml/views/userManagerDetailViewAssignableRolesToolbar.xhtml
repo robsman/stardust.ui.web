@@ -11,10 +11,8 @@
 			disabled="#{(userManagerDetail.assignableRolesTableSelectedCount > 0) and (userManagerDetail.manageAuthorization) ? false: true}"
 			action="#{userManagerDetail.addRoleToUser}">
 			<pc:automationTag value="auto-BCC-UserMgrDet-RoleAssignableTbl-ToolbarAdd" standAlone="false"/>
-			<h:graphicImage
-				value="/plugins/views-common/images/icons/group_add.png"
-				style="border: none;"
-				styleClass="#{(userManagerDetail.assignableRolesTableSelectedCount > 0) and (userManagerDetail.manageAuthorization) ? '' : 'iceCmdBtn-dis'}"
+			<h:outputText
+				styleClass="#{(userManagerDetail.assignableRolesTableSelectedCount > 0) and (userManagerDetail.manageAuthorization) ? '' : 'iceCmdBtn-dis'} pi pi-create pi-lg"
 				title="#{userManagerDetail.messages['button.addRoleToUser']}" />
 		</ice:commandLink>
 	</ice:panelGrid>

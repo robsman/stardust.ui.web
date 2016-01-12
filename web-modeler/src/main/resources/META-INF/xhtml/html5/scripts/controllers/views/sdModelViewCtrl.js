@@ -42,7 +42,7 @@
                 $scope.commandError.response);
       }
     }, false);
-
+  
     /**
      * @returns
      */
@@ -55,7 +55,7 @@
       this.deferIdChange = $q.defer();
 
       this.elementView.submitChanges({
-        id: self.modelId
+        id: this.modelId
       });
 
       return this.deferIdChange.promise;

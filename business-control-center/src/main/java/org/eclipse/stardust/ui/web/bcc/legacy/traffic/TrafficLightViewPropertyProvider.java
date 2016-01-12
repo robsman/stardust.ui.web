@@ -75,11 +75,11 @@ public class TrafficLightViewPropertyProvider
 
    private transient IPreferenceEditor preferencesEditor;
 
-   private IPreferenceStore preferencesStore;
+   private transient IPreferenceStore preferencesStore;
 
    private IPreferenceEditor userPreferencesEditor;
 
-   private IPreferenceStore userPreferencesStore;
+   private transient IPreferenceStore userPreferencesStore;
 
    private boolean useRepository;
 

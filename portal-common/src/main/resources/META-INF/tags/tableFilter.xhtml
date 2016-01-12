@@ -41,18 +41,18 @@
 	   			<ice:commandLink rendered="#{filterPopup.dataFilters.filtersSet}"
 	   				action="#{filterPopup.resetAndApply}" disabled="#{disabled}">
 	   				<pc:automationTag value="auto-DT-ColFilterReset" standAlone="false" />
-		   			<ice:graphicImage value="/plugins/common/images/icons/filter-reset.png"
+		   			<ice:outputText
 		   				title="#{filterPopup.resetTitle}"
 						style="vertical-align:top; border:none;"
-						styleClass="#{disabled ? 'iceCmdBtn-dis' : ''}" />
+						styleClass="#{disabled ? 'iceCmdBtn-dis' : ''} pi pi-filter" />
 				</ice:commandLink>
 	   			<ice:commandLink rendered="#{not filterPopup.dataFilters.filtersSet}"
 	   				action="#{filterPopup.openPopup}" disabled="#{disabled}">
 	   				<pc:automationTag value="auto-DT-ColFilterOpen" standAlone="false" />
-		   			<ice:graphicImage value="/plugins/common/images/icons/filter.png"
+		   			<ice:outputText 
 		   				title="#{common_msgPropsBean['common.filterPopup.showFilter.tooltip']}"
-						style="vertical-align:top; border:none;"
-						styleClass="#{disabled ? 'iceCmdBtn-dis' : ''} portal-std-icon" />
+						style="vertical-align:top;"
+						styleClass="#{disabled ? 'iceCmdBtn-dis' : ''} pi pi-filter" />
 				</ice:commandLink>
 
 	   			<ice:commandLink action="#{filterPopup.openPopup}" disabled="#{disabled}">
@@ -103,12 +103,13 @@
 							styleClass="headerText" />
 					</td>
 					<td style="text-align: right">
-						<ice:commandButton
+						<ice:commandLink
 							action="#{filterPopup.closePopup}" immediate="true"
 							title="#{common_msgPropsBean['common.filterPopup.close']}"
-							styleClass="windowClose">
+							styleClass="windowClose pi-cmdLnk">
 							<pc:automationTag value="auto-DT-ColFilterClose" standAlone="false" />
-						</ice:commandButton>	
+							<ice:outputText styleClass="pi pi-dialog-close pi-lg pi-outTxt" />
+						</ice:commandLink>	
 					</td>
 				</tr></table>
 			</f:facet>

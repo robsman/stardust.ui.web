@@ -26,12 +26,13 @@ import javax.ws.rs.core.Response.Status;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.rest.service.UserService;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.UserCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantSearchResponseDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.UserPermissionsDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -62,10 +63,10 @@ public class UserResource
    private String fetchUsers(String searchValue, boolean onlyActive, int maxMatches)
    {
       List<User> users = UserUtils.searchUsers(searchValue, onlyActive, maxMatches);
-      List<ParticipantSearchResponseDTO> userWrappers = new ArrayList<ParticipantSearchResponseDTO>();
+      List<ParticipantDTO> userWrappers = new ArrayList<ParticipantDTO>();
       for (User user : users)
       {
-         userWrappers.add(new ParticipantSearchResponseDTO((Participant) user));
+         userWrappers.add(new ParticipantDTO(user));
       }
 
       QueryResultDTO resultDTO = new QueryResultDTO();
@@ -113,6 +114,7 @@ public class UserResource
 
    /**
     * This method returns the logged In user
+    * 
     * @return
     */
    @GET
@@ -123,6 +125,72 @@ public class UserResource
       {
          UserDTO loggedInUser = userService.getLoggedInUser();
          return Response.ok(loggedInUser.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+
+   }
+
+   /**
+    * This method returns runtime permissions for logged in user.
+    * 
+    * @return
+    */
+   @GET
+   @Path("/whoAmI/runtime-permissions")
+   public Response getPermissionsForLoggedInUser()
+   {
+      try
+      {
+         UserPermissionsDTO permissionsDTO = userService.getPermissionsForLoggedInUser();
+         return Response.ok(permissionsDTO.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+
+   }
+
+   /**
+    * This method returns the logged In user
+    * 
+    * @return
+    */
+   @GET
+   @Path("/allCounts")
+   public Response getAllCounts()
+   {
+      try
+      {
+         UserCountsDTO userCountsDTO = userService.getAllCounts();
+         return Response.ok(userCountsDTO.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+
+   }
+
+   /**
+    * This method returns the logged In user
+    * 
+    * @return
+    */
+   @GET
+   @Path("/loadUserDetails/{userOID}")
+   public Response getUserDetails(@PathParam("userOID") Long userOID)
+   {
+      try
+      {
+         UserDTO userDTO = userService.getUserDetails(userOID);
+         return Response.ok(userDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }
       catch (Exception e)
       {

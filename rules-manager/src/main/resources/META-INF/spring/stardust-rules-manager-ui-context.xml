@@ -5,10 +5,13 @@
 	xsi:schemaLocation="
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
-	<ippui:perspective id="stardustRulesManager" messageBundles="rules-manager-messages" controller="rulesManagerLaunchPanel">
+	<ippui:perspective id="stardustRulesManager"
+	messageBundles="rules-manager-messages" controller="rulesManagerLaunchPanel"
+	requiredRoles="Administrator" excludeRoles="{PredefinedModel}Auditor">
       
       <!-- Help link to link to Rules Management main chapter in Portal Documentation -->
       <ippui:preferences>
+      	 <ippui:preferencePage name="icon" include="pi pi-perspective-rules-manager" />
          <ippui:preferencePage name="helpDocumentation"
             include="/plugins/doc/portal/execution-clients/rules.html" />
       </ippui:preferences>

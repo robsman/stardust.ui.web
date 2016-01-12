@@ -11,10 +11,16 @@
 package org.eclipse.stardust.ui.web.rest;
 
 import java.io.Serializable;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.annotation.Resource;
 import javax.faces.FacesException;
@@ -32,34 +38,55 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.api.model.PredefinedConstants;
+import org.eclipse.stardust.engine.api.query.ActivityFilter;
+import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
+import org.eclipse.stardust.engine.api.query.ActivityStateFilter;
+import org.eclipse.stardust.engine.api.query.DataFilter;
+import org.eclipse.stardust.engine.api.query.FilterOrTerm;
+import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
+import org.eclipse.stardust.engine.core.query.statistics.api.BenchmarkActivityStatisticsQuery;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
 import org.eclipse.stardust.ui.web.rest.service.ActivityInstanceService;
 import org.eclipse.stardust.ui.web.rest.service.DelegationComponent;
+import org.eclipse.stardust.ui.web.rest.service.MapAdapter;
 import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
 import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
+import org.eclipse.stardust.ui.web.rest.service.ProcessInstanceService;
 import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ActivityInstanceOutDataDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.ColumnDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.CompletedActivitiesStatisticsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.NotificationMap;
+import org.eclipse.stardust.ui.web.rest.service.dto.PendingActivitiesStatisticsDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.PostponedActivitiesResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.TrivialManualActivityDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils;
+import org.eclipse.stardust.ui.web.rest.service.utils.TrafficLightViewUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
-import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 /**
  * @author Anoop.Nair
@@ -74,7 +101,7 @@ public class ActivityInstanceResource
 
    @Autowired
    private ActivityInstanceService activityInstanceService;
-   
+
    @Resource
    private ParticipantSearchComponent participantSearchComponent;
 
@@ -86,19 +113,26 @@ public class ActivityInstanceResource
 
    @Autowired
    ProcessDefinitionService processDefService;
-   
+
+   @Autowired
+   private ProcessInstanceService processInstanceService;
+
    private final JsonMarshaller jsonIo = new JsonMarshaller();
+
+   public static final String ACTIVE = "Active";
+
+   public static final String COMPLETED = "Completed";
+
+   public static final String ABORTED = "Aborted";
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{activityInstanceOid: \\d+}")
-   public Response getActivityInstance(@PathParam("activityInstanceOid")
-   long activityInstanceOid)
+   public Response getActivityInstance(@PathParam("activityInstanceOid") long activityInstanceOid)
    {
       try
       {
-         ActivityInstanceDTO aiDTO = getActivityInstanceService().getActivityInstance(
-               activityInstanceOid);
+         ActivityInstanceDTO aiDTO = getActivityInstanceService().getActivityInstance(activityInstanceOid);
 
          return Response.ok(aiDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }
@@ -108,6 +142,22 @@ public class ActivityInstanceResource
 
          return Response.serverError().build();
       }
+   }
+
+   /**
+    * @author Yogesh.Manware
+    * @param activityInstanceOid
+    * @return
+    */
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/{activityInstanceOid: \\d+}/correspondence-process-instance")
+   public Response getCorrespondenceProcessInstance(@PathParam("activityInstanceOid") Long activityInstanceOid)
+   {
+      ProcessInstanceDTO processInstanceDTO = processInstanceService
+            .getCorrespondenceProcessInstanceDTO(getActivityInstanceService().getActivityInstance(activityInstanceOid)
+                  .getProcessInstanceOID());
+      return Response.ok(processInstanceDTO.toJson(), MediaType.APPLICATION_JSON).build();
    }
 
    @POST
@@ -120,20 +170,21 @@ public class ActivityInstanceResource
          Map<String, Map<String, Object>> output = new LinkedHashMap<String, Map<String, Object>>();
 
          List<Long> oids = JsonDTO.getAsList(postedData, Long.class);
-         
+
          if (oids.size() > 0)
          {
             Map<String, TrivialManualActivityDTO> details = getActivityInstanceService()
                   .getTrivialManualActivitiesDetails(oids, "default");
 
-            // gson.toJson(details) is not working, inOutData is not Serialized. hence below workaround
+            // gson.toJson(details) is not working, inOutData is not Serialized. hence
+            // below workaround
             // Workaround. Visit later TODO
             for (Entry<String, TrivialManualActivityDTO> entry : details.entrySet())
             {
                output.put(entry.getKey(), new LinkedHashMap<String, Object>());
                output.get(entry.getKey()).put("dataMappings", entry.getValue().dataMappings);
                output.get(entry.getKey()).put("inOutData", entry.getValue().inOutData);
-            }            
+            }
          }
 
          Gson gson = new Gson();
@@ -176,7 +227,7 @@ public class ActivityInstanceResource
       try
       {
          StringBuffer output = new StringBuffer();
-         
+
          List<Long> oids = JsonDTO.getAsList(postedData, Long.class);
          for (long oid : oids)
          {
@@ -184,7 +235,7 @@ public class ActivityInstanceResource
             {
                output.append(",");
             }
-            
+
             output.append("\"").append(oid).append("\" : ")
                   .append(getActivityInstanceService().getAllDataMappingsAsJson(oid, "default"));
          }
@@ -244,13 +295,59 @@ public class ActivityInstanceResource
          }
 
          /*
-         Gson gson = new Gson();
-         String jsonOutput = gson.toJson(output);
-         */
-         
+          * Gson gson = new Gson(); String jsonOutput = gson.toJson(output);
+          */
+
          String jsonOutput = GsonUtils.stringify(output);
 
          return Response.ok(jsonOutput, MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/{oid: \\d+}/relocationTargets")
+   public Response getRelocationTargets(@PathParam("oid") long oid)
+   {
+      try
+      {
+         return Response.ok(AbstractDTO.toJson(getActivityInstanceService().getAllRelocationTargets(oid)),
+               MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("/{oid: \\d+}/relocate")
+   public Response relocate(@PathParam("oid") long oid, String postedData)
+   {
+      try
+      {
+         JsonObject json = jsonIo.readJsonObject(postedData);
+
+         AbstractDTO dto = getActivityInstanceService().relocateActivity(oid,
+               json.get("targetActivityId").getAsString());
+         if (dto != null)
+         {
+            return Response.ok(dto.toJson(), MediaType.APPLICATION_JSON).build();
+         }
+         else
+         {
+            return Response.notModified().build();
+         }
       }
       catch (Exception e)
       {
@@ -269,7 +366,7 @@ public class ActivityInstanceResource
       {
          List<ActivityInstanceOutDataDTO> activities = ActivityInstanceOutDataDTO.toList(postedData);
 
-         String jsonOutput  = getActivityInstanceService().completeAll(activities, "default");
+         String jsonOutput = getActivityInstanceService().completeAll(activities, "default");
 
          return Response.ok(jsonOutput, MediaType.APPLICATION_JSON).build();
       }
@@ -284,13 +381,12 @@ public class ActivityInstanceResource
    @GET
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/{activityInstanceOid: \\d+}/attachments.json")
-   public Response getProcessesAttachments(@PathParam("activityInstanceOid")
-   long activityInstanceOid)
+   public Response getProcessesAttachments(@PathParam("activityInstanceOid") long activityInstanceOid)
    {
       try
       {
-         List<DocumentDTO> processAttachments = getActivityInstanceService()
-               .getProcessAttachmentsForActivityInstance(activityInstanceOid);
+         List<DocumentDTO> processAttachments = getActivityInstanceService().getProcessAttachmentsForActivityInstance(
+               activityInstanceOid);
 
          Gson gson = new Gson();
          String jsonOutput = gson.toJson(processAttachments);
@@ -316,13 +412,11 @@ public class ActivityInstanceResource
          JsonObject json = jsonIo.readJsonObject(postedData);
 
          Gson gson = new Gson();
-         ActivityInstanceDTO aiDTO = gson.fromJson(json.get("pendingActivityInstance"),
-               ActivityInstanceDTO.class);
-         DocumentDTO documentDTO = gson.fromJson(json.get("document").getAsJsonObject(),
-               DocumentDTO.class);
+         ActivityInstanceDTO aiDTO = gson.fromJson(json.get("pendingActivityInstance"), ActivityInstanceDTO.class);
+         DocumentDTO documentDTO = gson.fromJson(json.get("document").getAsJsonObject(), DocumentDTO.class);
 
-         List<ProcessInstanceDTO> processInstances = getActivityInstanceService()
-               .completeRendezvous(aiDTO.activityOID, documentDTO.uuid);
+         List<ProcessInstanceDTO> processInstances = getActivityInstanceService().completeRendezvous(aiDTO.activityOID,
+               documentDTO.uuid);
 
          String jsonOutput = gson.toJson(processInstances);
 
@@ -336,208 +430,565 @@ public class ActivityInstanceResource
       }
    }
 
-	/**
-	 * @author Yogesh.Manware
-	 * @param postedData
-	 * @return
-	 */
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	@Path("/abort")
+   /**
+    * @author Yogesh.Manware
+    * @param postedData
+    * @return
+    */
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/abort")
    public Response abortActivities(String postedData)
    {
-      //postedData = "{scope: 'activity', activities : [11]}";
       return Response.ok(getActivityInstanceService().abortActivities(postedData), MediaType.APPLICATION_JSON).build();
    }
 
-    /**
-     * @author Yogesh.Manware
-     * @param postedData
-     * @return
-     */
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/searchParticipants")
-   public Response searchParticipant(String postedData)
+   /**
+    * @author Yogesh.Manware
+    * @param postedData
+    * @return
+    */
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/searchParticipants")
+   public Response searchParticipant(String postedData, @QueryParam("skip") @DefaultValue("0") Integer skip,
+         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize)
    {
-      // postedData = "{searchText: '', activities=[8], participantType='All', limitedSearch=false, disableAdministrator=false, excludeUserType=false}";
+      // postedData =
+      // "{searchText: '', activities=[8], participantType='All', limitedSearch=false, disableAdministrator=false, excludeUserType=false}";
       // postedData = "{activities=[8], limitedSearch=false}";
-      return Response.ok(participantSearchComponent.searchParticipants(postedData), MediaType.APPLICATION_JSON).build();
+      return Response.ok(participantSearchComponent.searchParticipants(postedData, skip, pageSize),
+            MediaType.APPLICATION_JSON).build();
    }
-    
-    /**
-     * @author Yogesh.Manware
-     * @param postedData
-     * @return
-     */
-    @GET
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/searchAllParticipants/{searchText}/{maxMatches}")
-   public Response searchAllParticipant(@PathParam("searchText") String searchText ,@PathParam("maxMatches") int maxMatches )
+
+   /**
+    * @author Yogesh.Manware
+    * @param postedData
+    * @return
+    */
+   @GET
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/searchAllParticipants/{searchText}/{maxMatches}")
+   public Response searchAllParticipant(@PathParam("searchText") String searchText,
+         @PathParam("maxMatches") int maxMatches)
    {
-      return Response.ok(participantSearchComponent.searchAllParticipants( searchText, maxMatches), MediaType.APPLICATION_JSON).build();
+      return Response.ok(participantSearchComponent.searchAllParticipants(searchText, maxMatches),
+            MediaType.APPLICATION_JSON).build();
    }
-    
-    /**
-     * @author Yogesh.Manware
-     * @param postedData
-     * @return
-    * @throws PortalRestException 
-    * @throws PortalException 
-    * @throws FacesException 
-     */
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/delegate")
+
+   /**
+    * @author Yogesh.Manware
+    * @param postedData
+    * @return
+    * @throws PortalRestException
+    * @throws PortalException
+    * @throws FacesException
+    */
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/delegate")
    public Response delegateActivity(String postedData) throws PortalRestException, PortalException
    {
-      //postedData = "{activities:[12], participantType:'User', participant:1}"; 
-      //postedData = "{activities:[8], participantType:'User', participant:2, department:false, activityData: {'Country':{'id':'India', 'States':[{ id: 'dd', name:'nameo'}, { id: 'dd2', name:'nameo2'}] } } }"; 
-      //postedData = "{activities:[8], participant:{}, department:false, activityData: {Country:{id:'India',States:[{id:'MAH',cities:[{id:'Pn',Name:'Pune'},{id:'Pn2',Name:'Pune2'}]},{id:'Dl',cities:[{id:'DL1',Name:'Delhi'}]}]}} }";     
-      
+      // postedData = "{activities:[12], participantType:'User', participant:1}";
+      // postedData =
+      // "{activities:[8], participantType:'User', participant:2, department:false, activityData: {'Country':{'id':'India', 'States':[{ id: 'dd', name:'nameo'}, { id: 'dd2', name:'nameo2'}] } } }";
+      // postedData =
+      // "{activities:[8], participant:{}, department:false, activityData: {Country:{id:'India',States:[{id:'MAH',cities:[{id:'Pn',Name:'Pune'},{id:'Pn2',Name:'Pune2'}]},{id:'Dl',cities:[{id:'DL1',Name:'Delhi'}]}]}} }";
+
       return Response.ok(delegationComponent.delegate(postedData), MediaType.APPLICATION_JSON).build();
    }
-    
-    /**
-     * @author Johnson.Quadras
-     * @param postedData
-     * @return
-     * @throws PortalRestException
-     * @throws PortalException
-     */
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/performDefaultDelegate")
+
+   /**
+    * creates folder if it does not exist
+    * 
+    * @author Yogesh.Manware
+    * @param processOid
+    * @return
+    */
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{oid}/correspondence-out")
+   public Response getCorrespondenceOutFolder(@PathParam("oid") Long activityOid)
+   {
+      FolderDTO folderDto = activityInstanceService.getCorrespondenceOutFolder(activityOid);
+      // TODO move jsonHelper and MapAdapter to Portal-Common and then modify GsonUtils
+      Gson gson = new GsonBuilder().registerTypeAdapter(Map.class, new MapAdapter()).disableHtmlEscaping().create();
+      return Response.ok(gson.toJson(folderDto, FolderDTO.class), MediaType.APPLICATION_JSON).build();
+   }
+
+   /**
+    * @author Johnson.Quadras
+    * @param postedData
+    * @return
+    * @throws PortalRestException
+    * @throws PortalException
+    */
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/performDefaultDelegate")
    public Response performDefaultDelegate(String postedData) throws PortalRestException, PortalException
    {
       return Response.ok(delegationComponent.performDefaultDelegate(postedData), MediaType.APPLICATION_JSON).build();
    }
-    
-    /**
-     * @author Johnson.Quadras
-     * @return
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/availableCriticalities")
-    public Response getAvailiableCriticalities()
-    {
-       try
-       {
-          return Response.ok(AbstractDTO.toJson(getActivityInstanceService().getCriticalities()), MediaType.APPLICATION_JSON).build();
-       }
-       catch (Exception e)
-       {
-          trace.error(e, e);
 
-          return Response.serverError().build();
-       }
-    }
-    
-    /**
-     * @author Johnson.Quadras
-     * @return
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/allActivityStates")
-    public Response getAllActivityStates()
-    {
-       try
-       {
-          
-          return Response.ok(AbstractDTO.toJson(getActivityInstanceService().getAllActivityStates()), MediaType.APPLICATION_JSON).build();
-       }
-       catch (Exception e)
-       {
-          trace.error(e, e);
-
-          return Response.serverError().build();
-       }
-    }
-
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @Path("/allCounts")
-    public Response getAllCounts( )
-    {
-       try
-       {
-         InstanceCountsDTO acitivityInstanceCountDTO = getActivityInstanceService().getAllCounts();
-         return Response.ok(GsonUtils.toJsonHTMLSafeString( acitivityInstanceCountDTO ), MediaType.APPLICATION_JSON).build();
-       }
-       catch (Exception e)
-       {
-          trace.error(e, e);
-
-          return Response.serverError().build();
-       }
-    }
-    
-    
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Path("/allActivities")
-    public Response getAllActivities(
-          @QueryParam("skip") @DefaultValue("0") Integer skip,
-          @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
-          @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
-          @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
-    {
-       try
-       {
-          Options options = new Options(pageSize, skip, orderBy,
-                "asc".equalsIgnoreCase(orderByDir));
-          populatePostData(options, postData);
-          QueryResultDTO resultDTO = getActivityInstanceService().getAllInstances(options);
-          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
-       }
-       catch (ObjectNotFoundException onfe)
-       {
-          return Response.status(Status.NOT_FOUND).build();
-       }
-       catch (Exception e)
-       {
-          trace.error("", e);
-          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
-       }
-    }
-	
-	/**
-	 * 
-	 * @param processInstanceOID
-	 * @return
-	 */
-	private ProcessInstance getProcessInstance(long processInstanceOID)
-	{
-	    return ProcessInstanceUtils.getProcessInstance(Long.valueOf(processInstanceOID));
-	}
-    
-   /** 
-    * @author Yogesh.Manware
-    * @param httpRequest
-    * @param paramName
-    * @param defaultValue
+   /**
+    * @author Johnson.Quadras
     * @return
     */
-   private String getParam(HttpServletRequest httpRequest, String paramName, String defaultValue)
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/availableCriticalities")
+   public Response getAvailiableCriticalities()
    {
-      Map<String, String[]> paramMap = httpRequest.getParameterMap();
-      if (paramMap != null && paramMap.get(paramName) != null && paramMap.get(paramName)[0] != null)
+      try
       {
-         System.out.println(paramName + " : " + paramMap.get(paramName)[0]);
-         return paramMap.get(paramName)[0];
+         return Response.ok(AbstractDTO.toJson(getActivityInstanceService().getCriticalities()),
+               MediaType.APPLICATION_JSON).build();
       }
+      catch (Exception e)
+      {
+         trace.error(e, e);
 
-      return defaultValue;
-   }    
-   
+         return Response.serverError().build();
+      }
+   }
+
+   /**
+    * @author Johnson.Quadras
+    * @return
+    */
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/allCounts")
+   public Response getAllCounts()
+   {
+      try
+      {
+         InstanceCountsDTO acitivityInstanceCountDTO = getActivityInstanceService().getAllCounts();
+         return Response.ok(GsonUtils.toJsonHTMLSafeString(acitivityInstanceCountDTO), MediaType.APPLICATION_JSON)
+               .build();
+      }
+      catch (Exception e)
+      {
+         trace.error(e, e);
+
+         return Response.serverError().build();
+      }
+   }
+
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("/allActivities")
+   public Response getAllActivities(@QueryParam("skip") @DefaultValue("0") Integer skip,
+         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
+         @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
+   {
+      try
+      {
+         Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
+         populatePostData(options, postData);
+         QueryResultDTO resultDTO = getActivityInstanceService().getAllInstances(options, null);
+         return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (ObjectNotFoundException onfe)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+   }
+
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("/forTLVByCategory")
+   public Response getActivitiesForTLVByCategory(@QueryParam("skip") @DefaultValue("0") Integer skip,
+         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
+         @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, String postData)
+   {
+      try
+      {
+         Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
+         populatePostData(options, postData);
+
+         JsonMarshaller jsonIo = new JsonMarshaller();
+         JsonObject postJSON = jsonIo.readJsonObject(postData);
+
+         ActivityInstanceQuery query = new ActivityInstanceQuery();
+
+         String drillDownType = postJSON.getAsJsonPrimitive("drillDownType").getAsString();
+         if (drillDownType.equals("PROCESS_WORKITEM"))
+         {
+            JsonArray bOidsArray = postJSON.getAsJsonArray("bOids");
+            Type type = new TypeToken<List<Long>>()
+            {
+            }.getType();
+            List<Long> bOids = new ArrayList<Long>();
+            if (null != bOidsArray)
+            {
+               bOids = new Gson().fromJson(bOidsArray.toString(), type);
+
+            }
+
+            String dateType = postJSON.getAsJsonPrimitive("dateType").getAsString();
+
+            Integer dayOffset = postJSON.getAsJsonPrimitive("dayOffset").getAsInt();
+
+            JsonObject processActivityMap = postJSON.getAsJsonObject("processActivitiesMap");
+            Set<Entry<String, JsonElement>> processActivityMapEntrySet = processActivityMap.entrySet();
+
+            Map<String, List<String>> processActivitiesMap = new HashMap<String, List<String>>();
+            for (Entry<String, JsonElement> entry : processActivityMapEntrySet)
+            {
+               JsonArray processActivityArray = entry.getValue().getAsJsonArray();
+
+               Type processActivityType = new TypeToken<List<String>>()
+               {
+               }.getType();
+               List<String> activities = new ArrayList<String>();
+               if (null != processActivityArray)
+               {
+                  activities = new Gson().fromJson(processActivityArray.toString(), processActivityType);
+
+               }
+               processActivitiesMap.put(entry.getKey(), activities);
+            }
+            String state = postJSON.getAsJsonPrimitive("state").getAsString();
+
+            FilterOrTerm processActivityFilter = query.getFilter().addOrTerm();
+            for (String processId : processActivitiesMap.keySet())
+            {
+               for (String activityId : processActivitiesMap.get(processId))
+               {
+                  processActivityFilter.add(ActivityFilter.forProcess(activityId, processId));
+               }
+
+            }
+
+            FilterOrTerm benchmarkFilter = query.getFilter().addOrTerm();
+
+            for (Long bOid : bOids)
+            {
+               benchmarkFilter.add(BenchmarkActivityStatisticsQuery.BENCHMARK_OID.isEqual(bOid));
+            }
+
+            Calendar startDate = TrafficLightViewUtils.getCurrentDayStart();
+            Calendar endDate = TrafficLightViewUtils.getCurrentDayEnd();
+
+            if (dayOffset > 0)
+            {
+               endDate = TrafficLightViewUtils.getfutureEndDate(dayOffset);
+            }
+            else if (dayOffset < 0)
+            {
+               startDate = TrafficLightViewUtils.getPastStartDate(dayOffset);
+            }
+
+            if (dateType.equals(PredefinedConstants.BUSINESS_DATE))
+            {
+               FilterOrTerm businessDateFilter = query.getFilter().addOrTerm();
+               for (String processId : processActivitiesMap.keySet())
+               {
+                  businessDateFilter.add((DataFilter.between(TrafficLightViewUtils.getModelName(processId)
+                        + PredefinedConstants.BUSINESS_DATE, startDate.getTime(), endDate.getTime())));
+               }
+            }
+            else
+            {
+               query.where(ActivityInstanceQuery.START_TIME.between(startDate.getTimeInMillis(),
+                     endDate.getTimeInMillis()));
+            }
+
+            if (postJSON.getAsJsonPrimitive("benchmarkCategory") != null)
+            {
+               Long benchmarkCategory = postJSON.getAsJsonPrimitive("benchmarkCategory").getAsLong();
+               query.where(ActivityInstanceQuery.BENCHMARK_VALUE.isEqual(benchmarkCategory));
+            }
+            else
+            {
+               query.where(ActivityInstanceQuery.BENCHMARK_VALUE.greaterThan(0l));
+            }
+
+            if (state.equals(ACTIVE))
+            {
+               query.getFilter().add(ActivityStateFilter.ALIVE);
+            }
+            else if (state.equals(COMPLETED))
+            {
+               query.getFilter().add(ActivityInstanceQuery.STATE.isEqual(ActivityInstanceState.COMPLETED));
+            }
+            else if (state.equals(ABORTED))
+            {
+               query.getFilter().add(ActivityInstanceQuery.STATE.isEqual(ActivityInstanceState.ABORTED));
+            }
+
+         }
+         else
+         {
+            // for business object by activities
+
+            JsonArray instanceOids = postJSON.getAsJsonArray("oids");
+
+            Type processType = new TypeToken<List<Long>>()
+            {
+            }.getType();
+            List<Long> oids = new ArrayList<Long>();
+            if (null != instanceOids)
+            {
+               oids = new Gson().fromJson(instanceOids.toString(), processType);
+
+            }
+
+            FilterOrTerm oidsFilter = query.getFilter().addOrTerm();
+            for (Long oid : oids)
+            {
+               oidsFilter.add(ActivityInstanceQuery.OID.isEqual(oid));
+            }
+
+         }
+
+         QueryResultDTO resultDTO = getActivityInstanceService().getAllInstances(options, query);
+         return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (ObjectNotFoundException onfe)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+   }
+
+   /**
+    * @author Johnson.Quadras
+    * @param postedData
+    * @return
+    * @throws PortalRestException
+    * @throws PortalException
+    */
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/reactivate")
+   public Response reactivate(String postedData)
+   {
+      Map<String, Object> data = JsonDTO.getAsMap(postedData);
+      NotificationMap result = activityInstanceService.reactivate(Long.valueOf(data.get("activityOID").toString()));
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(result), MediaType.APPLICATION_JSON).build();
+   }
+
+   /**
+    * @author Johnson.Quadras
+    * @param postedData
+    * @return
+    * @throws PortalRestException
+    * @throws PortalException
+    */
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/activate")
+   public Response activate(String postedData)
+   {
+      Map<String, Object> data = JsonDTO.getAsMap(postedData);
+      NotificationMap result = activityInstanceService.activate(Long.valueOf(data.get("activityOID").toString()));
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(result), MediaType.APPLICATION_JSON).build();
+   }
+
+   /**
+    * Gets the completed activities by process
+    * 
+    * @return
+    */
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/statistics/completedActivities")
+   public Response getStatsForCompletedActivities(String postedData)
+   {
+      try
+      {
+         List<CompletedActivitiesStatisticsDTO> result = activityInstanceService.getStatsForCompletedActivities();
+         return Response.ok(AbstractDTO.toJson(result), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+   }
+
+   /**
+    * Gets the postponed activities by participant
+    * 
+    * @return
+    */
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/statistics/postponedActivities")
+   public Response getStatsByPostponedActivities(String postedData)
+   {
+      try
+      {
+         List<PostponedActivitiesResultDTO> result = activityInstanceService.getStatsByPostponedActivities();
+         return Response.ok(AbstractDTO.toJson(result), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+   }
+
+   /**
+    * Gets the completed activities by process
+    * 
+    * @param postedData
+    * @return
+    */
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/pendingActivities")
+   public Response getPendingActivities()
+   {
+      try
+      {
+         List<PendingActivitiesStatisticsDTO> result = activityInstanceService.getPendingActivities();
+         return Response.ok(AbstractDTO.toJson(result), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/allRoleColumns")
+   public Response getRoleColumns()
+   {
+      return Response.ok(AbstractDTO.toJson(activityInstanceService.getAllRoles()), MediaType.APPLICATION_JSON).build();
+   }
+
+   /**
+     * 
+     */
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/participantColumns")
+   public Response getParticipantColumns()
+   {
+      try
+      {
+         List<ColumnDTO> result = activityInstanceService.getParticipantColumns();
+         return Response.ok(AbstractDTO.toJson(result), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+   }
+
+   /**
+     * 
+     */
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("/oids")
+   public Response getByActivityInstanceOids(@QueryParam("skip") @DefaultValue("0") Integer skip,
+         @QueryParam("pageSize") @DefaultValue("8") Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
+         @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir, @QueryParam("oids") String oids,
+         String postData)
+   {
+      try
+      {
+         if (StringUtils.isEmpty(oids))
+         {
+            throw new IllegalArgumentException("param oids cant be empty");
+         }
+         List<Long> aInstanceOids = new ArrayList<Long>();
+
+         for (String oid : Arrays.asList(oids.split(",")))
+         {
+            aInstanceOids.add(Long.valueOf(oid));
+         }
+         Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
+         populatePostData(options, postData);
+         QueryResultDTO resultDTO = getActivityInstanceService().getInstancesByOids(options, aInstanceOids, null);
+         return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (ObjectNotFoundException onfe)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+   }
+
+   /**
+    * Gets the completed activities by process
+    * 
+    * @param postedData
+    * @return
+    */
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/statistics/completedActivitiesByTeamLead")
+   public Response getPerformanceStatsByTeamLead()
+   {
+      try
+      {
+         List<CompletedActivitiesStatisticsDTO> result = activityInstanceService.getPerformanceStatsByTeamLead();
+         return Response.ok(AbstractDTO.toJson(result), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+   }
+
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/process/oid/{piOid}")
+   public Response getWorklistByProcess(@PathParam("piOid") long piOid)
+   {
+      try
+      {
+         return Response.ok(AbstractDTO.toJson(activityInstanceService.getByProcessOid(piOid)),
+               MediaType.APPLICATION_JSON).build();
+
+      }
+      catch (ObjectNotFoundException onfe)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+   }
+
    /**
     * 
     * @param options
@@ -549,8 +1000,6 @@ public class ActivityInstanceResource
       ActivityTableUtils.populatePostData(options, postData, availableDescriptors);
    }
 
-	
-	
    /**
     * @return the activityInstanceService
     */

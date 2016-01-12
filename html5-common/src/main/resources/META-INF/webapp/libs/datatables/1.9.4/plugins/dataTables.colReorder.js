@@ -109,7 +109,18 @@ function fnDomSwitch( nParent, iFrom, iTo )
  */
 $.fn.dataTableExt.oApi.fnColReorder = function ( oSettings, iFrom, iTo )
 {
-	var v110 = $.fn.dataTable.Api ? true : false;
+	var v110;
+	
+	// Sometimes it's observed that jQuery.fn.dataTable is undefined, so added the check and fallback
+	if ( $.fn.dataTable )
+	{
+		v110 = $.fn.dataTable.Api ? true : false;
+	}
+	else
+	{
+		v110 = oSettings.Api ? true : false;
+	}
+
 	var i, iLen, j, jLen, iCols=oSettings.aoColumns.length, nTrs, oCol;
 
 	/* Sanity check in the input */

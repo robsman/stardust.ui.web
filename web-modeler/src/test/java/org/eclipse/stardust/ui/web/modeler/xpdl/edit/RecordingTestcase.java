@@ -11,6 +11,7 @@ import static org.junit.Assert.assertThat;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -37,6 +38,7 @@ import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.XpdlModelIoUtils;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.ui.web.modeler.common.exception.ModelerException;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto;
 import org.eclipse.stardust.ui.web.modeler.edit.recording.ModelChangeRecorder;
@@ -57,10 +59,11 @@ import org.eclipse.stardust.ui.web.modeler.utils.test.MockServiceFactoryLocator;
 @FixMethodOrder(MethodSorters.JVM)
 public class RecordingTestcase
 {
-   protected static final String PROVIDER_MODEL_ID = "ProviderModel";
-   protected static final String PROVIDER_MODEL_ID2 = "ProviderModel2";
+   protected String PROVIDER_MODEL_ID = "ProviderModel";
+   protected String PROVIDER_MODEL_ID2 = "ProviderModel2";
 
-   protected static final String CONSUMER_MODEL_ID = "ConsumerModel";
+   protected String CONSUMER_MODEL_ID = "ConsumerModel";
+   protected String UPGRADE_MODEL_ID = "UpgradeModel";
 
    protected byte[] consumerModelModelBytes;
 
@@ -95,6 +98,7 @@ public class RecordingTestcase
    protected ModelType providerModel2;
 
    protected ModelType consumerModel;
+   protected ModelType upgradeModel;
 
    protected String modelLocation = "../../service/rest/";
 
@@ -106,16 +110,19 @@ public class RecordingTestcase
 
       private String commandID;
 
+      private String command;
+
       private JsonArray added;
 
       private JsonArray modified;
 
       private JsonArray removed;
 
-      public TestResponse(int count, JsonObject response)
+      public TestResponse(int count, JsonObject response, String command)
       {
          JsonObject changes = response.get("changes").getAsJsonObject();
          commandID = response.get("commandId").getAsString();
+         this.command = command;
          added = changes.get("added").getAsJsonArray();
          modified = changes.get("modified").getAsJsonArray();
          removed = changes.get("removed").getAsJsonArray();
@@ -145,6 +152,11 @@ public class RecordingTestcase
       public int getResponseNumber()
       {
          return responseNumber;
+      }
+
+      public String getCommand()
+      {
+         return command;
       }
 
 
@@ -178,8 +190,45 @@ public class RecordingTestcase
             eObjectUUIDMapper.map(i.next());
          }
       }
+      if (includeUpgradeModel())
+      {
+         eObjectUUIDMapper.map(upgradeModel);
+         for (Iterator<EObject> i = upgradeModel.eAllContents(); i.hasNext();)
+         {
+            eObjectUUIDMapper.map(i.next());
+         }
+      }      
    }
 
+   protected void replaySimple(String command, String testScenarioName, String parameter, boolean performResponseCallback)
+   {
+      if (parameter != null)
+      {
+         //command = MessageFormat.format("Blah {0}", parameter);
+         command = MessageFormat.format(command, "Blah");
+      }
+      System.out.println("Fire single command for '" + this.getClass().getSimpleName()
+            + "." + testScenarioName + "'");
+      System.out.println(" COMMAND : " + command);
+      CommandJto newJto = jsonIo.gson().fromJson(command, CommandJto.class);
+      if (newJto != null)
+      {
+         newJto = jsonIo.gson().fromJson(command, CommandJto.class);
+         JsonObject response = null;
+         try
+         {
+            response = changeApiDriver.performChange(newJto);
+         }
+         catch (ModelerException e)
+         {
+         }
+         if (performResponseCallback && response != null)
+         {
+            manageResponse(testScenarioName, 1, command, response);
+         }
+      }
+      System.out.println("Replay finished.");
+   }
 
    protected String[] replay(InputStreamReader requestStream, String testScenarioName, boolean performResponseCallback) throws IOException
    {
@@ -197,33 +246,48 @@ public class RecordingTestcase
          if (newJto != null)
          {
             newJto = jsonIo.gson().fromJson(command, CommandJto.class);
-            JsonObject response = changeApiDriver.performChange(newJto);
-
-            if (performResponseCallback)
+            JsonObject response = null;
+            try
             {
-               TestResponse testResponse = new TestResponse(++responseNumber, response);
-               Method method = ReflectionUtils.findMethod(this.getClass(),
-                     testScenarioName + "Callback", new Class[] {TestResponse.class});
-               if (method != null)
-               {
-                  try
-                  {
-                     method.invoke(this, new Object[] {testResponse});
-                  }
-                  catch (InvocationTargetException t)
-                  {
-                     System.out.println("Assertion of response " + responseNumber + " failed.");
-                     throw new AssertionError(t.getTargetException());
-                  }
-                  catch (Throwable t)
-                  {
-                  }
-               }
+               response = changeApiDriver.performChange(newJto);
+            }
+            catch (ModelerException e)
+            {
+            }
+
+            if (performResponseCallback && response != null)
+            {
+               manageResponse(testScenarioName, ++responseNumber, command, response);
             }
          }
       }
       System.out.println("Replay finished.");
       return new String[] {responseString, expectedResponse};
+   }
+
+
+   private void manageResponse(String testScenarioName, int responseNumber, String command,
+         JsonObject response) throws AssertionError
+   {
+      TestResponse testResponse = new TestResponse(responseNumber, response, command);
+      Method method = ReflectionUtils.findMethod(this.getClass(),
+            testScenarioName + "Callback", new Class[] {TestResponse.class});
+      if (method != null)
+      {
+         try
+         {
+            method.invoke(this, new Object[] {testResponse});
+         }
+         catch (InvocationTargetException t)
+         {
+            System.out.println("Assertion of response " + responseNumber + " failed.");
+            t.printStackTrace();
+            throw new AssertionError(t.getTargetException());
+         }
+         catch (Throwable t)
+         {
+         }
+      }
    }
 
    protected List<TestResponse> getTestResponses()
@@ -233,7 +297,10 @@ public class RecordingTestcase
 
    public void saveModel()
    {
-      XpdlModelIoUtils.saveModel(providerModel);
+      if (providerModel != null)
+      {      
+         XpdlModelIoUtils.saveModel(providerModel);
+      }
       if (providerModel2 != null)
       {
          XpdlModelIoUtils.saveModel(providerModel2);
@@ -242,6 +309,10 @@ public class RecordingTestcase
       {
          XpdlModelIoUtils.saveModel(consumerModel);
       }
+      if (upgradeModel != null)
+      {
+         XpdlModelIoUtils.saveModel(upgradeModel);
+      }      
    }
 
    protected void saveReplayModel(String filePath)
@@ -296,7 +367,23 @@ public class RecordingTestcase
             e.printStackTrace();
          }
       }
-
+      if (upgradeModel != null)
+      {
+         bytes = XpdlModelIoUtils.saveModel(upgradeModel);
+         xmlString = new String(bytes);
+         try
+         {
+            PrintWriter out = new PrintWriter(filePath + "/" + upgradeModel.getName()
+                  + ".xpdl");
+            out.println(xmlString);
+            out.flush();
+            out.close();
+         }
+         catch (FileNotFoundException e)
+         {
+            e.printStackTrace();
+         }
+      }
    }
 
    @Before
@@ -319,8 +406,8 @@ public class RecordingTestcase
       Mockito.when(userService.getUser()).thenReturn(mockUser);
 
       final Document providerModel = Mockito.mock(Document.class);
-      Mockito.when(providerModel.getId()).thenReturn(PROVIDER_MODEL_ID);
-      Mockito.when(providerModel.getName()).thenReturn(PROVIDER_MODEL_ID + ".xpdl");
+      Mockito.when(providerModel.getId()).thenReturn(this.getProviderModelID());
+      Mockito.when(providerModel.getName()).thenReturn(this.getProviderModelID() + ".xpdl");
 
       final Document providerModel2 = Mockito.mock(Document.class);
       Mockito.when(providerModel2.getId()).thenReturn(PROVIDER_MODEL_ID2);
@@ -330,6 +417,10 @@ public class RecordingTestcase
       Mockito.when(consumerModel.getId()).thenReturn(CONSUMER_MODEL_ID);
       Mockito.when(consumerModel.getName()).thenReturn(CONSUMER_MODEL_ID + ".xpdl");
 
+      final Document upgradeModel = Mockito.mock(Document.class);
+      Mockito.when(upgradeModel.getId()).thenReturn(UPGRADE_MODEL_ID);
+      Mockito.when(upgradeModel.getName()).thenReturn(UPGRADE_MODEL_ID + ".xpdl");
+            
       Folder modelsFolder = Mockito.mock(Folder.class);
 
       if (includeConsumerModel())
@@ -345,12 +436,14 @@ public class RecordingTestcase
                   asList(providerModel, consumerModel));
          }
       }
+      else if (includeUpgradeModel())
+      {
+         Mockito.when(modelsFolder.getDocuments()).thenReturn(asList(upgradeModel));         
+      }
       else
       {
          Mockito.when(modelsFolder.getDocuments()).thenReturn(asList(providerModel));
-
       }
-
 
       DocumentManagementService dmsService = mockServiceFactoryLocator.get()
             .getDocumentManagementService();
@@ -412,6 +505,25 @@ public class RecordingTestcase
                   }
                }
             });
+      
+      Mockito.when(dmsService.retrieveDocumentContent(upgradeModel.getId())).thenAnswer(
+            new Answer<byte[]>()
+            {
+               @Override
+               public byte[] answer(InvocationOnMock invocation) throws Throwable
+               {
+                  InputStream isModel = getClass().getResourceAsStream(
+                        modelLocation + upgradeModel.getName());
+                  try
+                  {
+                     return toByteArray(isModel);
+                  }
+                  finally
+                  {
+                     closeQuietly(isModel);
+                  }
+               }
+            });      
    }
 
    @Before
@@ -446,5 +558,13 @@ public class RecordingTestcase
       return false;
    }
 
-
+   protected boolean includeUpgradeModel()
+   {
+      return false;
+   }
+      
+   protected String getProviderModelID()
+   {
+      return this.PROVIDER_MODEL_ID;
+   }
 }

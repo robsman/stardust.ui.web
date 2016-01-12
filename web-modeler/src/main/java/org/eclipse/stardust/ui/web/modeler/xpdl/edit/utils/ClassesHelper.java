@@ -12,12 +12,16 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
+import org.eclipse.stardust.ui.web.modeler.authorization.AuthorizationExtensionRegistry;
 
 public final class ClassesHelper
 {
+   private static final Logger trace = LogManager.getLogger(ClassesHelper.class);
 
    private static final Map<String, Class<? >> PRIMITIVE_NAME_TYPE_MAP = new HashMap<String, Class<? >>();
 
@@ -154,6 +158,12 @@ public final class ClassesHelper
       accessPointJson.addProperty(ModelerConstants.NAME_PROPERTY, "returnValue");
       accessPointJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
             DirectionType.OUT_LITERAL.toString());
+      
+      if(method == null)
+      {
+         return;
+      }
+            
       accessPointJson.addProperty(ModelerConstants.DATA_TYPE_SIMPLENAME,
             method.getReturnType().getSimpleName());
 
@@ -177,6 +187,11 @@ public final class ClassesHelper
 
    public static void addParameterAccessPoints(JsonArray accessPointsJson, Method method)
    {
+      if(method == null)
+      {
+         return;
+      }
+      
       Annotation[] values = getParameterLabels(method);
       JsonObject accessPointJson;
       for (int n = 0; n < method.getParameterTypes().length; ++n)
@@ -275,7 +290,7 @@ public final class ClassesHelper
    }
 
    public static Method getMethodBySignature(ClassLoader classLoader, String className,
-         String methodSignature)
+         String methodSignature) throws Throwable
    {
       Method method = null;
       try
@@ -295,7 +310,8 @@ public final class ClassesHelper
          if (!StringUtils.isEmpty(signature))
          {
             signature = removeErasures(signature);
-
+            signature = signature.replaceAll("\\s","");
+            
             parameterClassNames = signature.split(",");
 
             parameterClasses = new Class[parameterClassNames.length];
@@ -316,7 +332,8 @@ public final class ClassesHelper
       }
       catch (Throwable t)
       {
-         t.printStackTrace();
+         trace.info("Class '" + className + "' or method '" + methodSignature + "' could not be found.");         
+         throw t;
       }
 
       return method;
@@ -326,12 +343,41 @@ public final class ClassesHelper
    {
       signature = signature.replace("[", "#");
       signature = signature.replace("]", "&");
-      signature = signature.replaceAll("<[^\\<]*\\>", "");
+      signature = removeGenerics(signature);
       signature = signature.replace("&", "]");
       signature = signature.replace("#", "[");
       return signature;
    }
 
+   private static String removeGenerics(String signature)
+   {
+      int cnt = 0;
+      int pos = -1;
+      String newSignature = null;
+      
+      for (int i = 0, n = signature.length(); i < n; i++) 
+      {
+         char c = signature.charAt(i);
+         if(c == '<') 
+         {
+            if(pos == -1)
+               pos = i;
+            cnt++;
+         }
+         if(c == '>') 
+         {
+            cnt--;
+            if(cnt == 0)
+            {
+               newSignature = signature.substring(0, pos) + signature.substring(i + 1, signature.length());
+               return removeGenerics(newSignature);
+            }            
+         }         
+      }      
+            
+      return signature;      
+   }
+   
    public static String getArrayName(String className) throws ClassNotFoundException
    {
       Pattern arrayPattern = Pattern.compile("([\\w\\.]*)\\[\\]");

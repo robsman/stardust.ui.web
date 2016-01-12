@@ -1,0 +1,13 @@
+<div class="view-panel">
+	<div ng-if="docSearchViewCtrl.processDialogData.list.length == 0">
+		{{i18n('views-common-messages.views-documentSearchView-documentSearchTable-nofound')}}
+	</div>
+	<div ng-if="docSearchViewCtrl.processDialogData.list.length > 0"
+		ng-repeat="process in docSearchViewCtrl.processDialogData.list">
+		<a href=""
+			ng-click="bpmCommon.stopEvent($event); docSearchViewCtrl.openProcessHistory(process.oid);"
+			aid="COM-SrchDoc-DocSrchTbl-DocProcDlg-OpenProc"> <i
+			class="pi pi-process-details"></i>{{process.processName}}
+		</a>
+	</div>
+</div>

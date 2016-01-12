@@ -33,11 +33,12 @@
 
 				<ice:panelGroup>
 					<pc:automationTag value="auto-COM-DocView-ExtDocView-ToolbarClose"/>
-					<ice:commandButton style="margin-left:98%;"
-						image="/plugins/views-common/images/icons/external_sw.png"
+					<ice:commandLink style="margin-left:98%;"
 						title="#{views_common_msgPropsBean['views.documentView.popIn.title']}"
 						onclick="window.close();"
-						styleClass="toolbar-button" />
+						styleClass="toolbar-button">
+						<i class="pi pi-pop-out pi-lg" />
+					</ice:commandLink>
 					<ice:panelGroup id="documentContentViewer"
 						hoverclass="dropTargetHover" styleClass="documentviewer-subpanel">
 						<ui:include src="#{externalDocumentViewerBean.contentHandler.contentUrl}">

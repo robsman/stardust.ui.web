@@ -1,7 +1,17 @@
+/*******************************************************************************
+ * Copyright (c) 2015 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
 (function(){
 	'use strict';
 
-	angular.module('bpm-common.directives').directive('sdDialog', ['sdLoggerService', '$compile', '$document', DialogDirectiveFn]);
+	angular.module('bpm-common.directives').directive('sdDialog', ['sdLoggerService', '$compile', '$document', 'sdUtilService', DialogDirectiveFn]);
 	
 	/*
 	 * Directive class
@@ -21,8 +31,9 @@
 	 * 		sda-on-close: (@) Eg: func(res)
 	 * 		sda-on-confirm: (@) Eg: func(res)
 	 * 		sda-modal (String)
+	 *      sda-enable-key-events (@) (boolean)
 	 */
-	function DialogDirectiveFn(sdLoggerService, $compile, $document) {
+	function DialogDirectiveFn(sdLoggerService, $compile, $document, sdUtilService) {
 		var trace = sdLoggerService.getLogger('bpm-common.directives.sdDialog');
 		
 		var SUPPORTED_TYPES = {
@@ -31,18 +42,7 @@
 				CUSTOM: 'custom'       // Customized popup with no action button
 			};
 		
-
-		var templateURL = null;
-		if (location.href.indexOf("plugins") > -1) {
-			templateURL = location.href.substring(0, location.href
-					.indexOf("plugins"))
-					+ 'plugins/html5-common/scripts/directives/dialogs/templates/dialog.html';
-		} else {
-			// When loaded from framework i.e index.html, location.href points
-			// to contextRoot
-			templateURL = 'plugins/html5-common/scripts/directives/dialogs/templates/dialog.html';
-		}
-		
+		var templateURL = sdUtilService.getBaseUrl() + 'plugins/html5-common/scripts/directives/dialogs/templates/dialog.html';
 
 		var directiveDefObject = {
 			restrict : 'A',
@@ -52,7 +52,9 @@
 				confirmActionLabel: '@sdaConfirmActionLabel',
 				cancelActionLabel: '@sdaCancelActionLabel',
 				dialogScope: '=sdaScope',
-				showDialog: '=sdaShow'
+				showDialog: '=sdaShow',
+				autoIdPrefix: '@sdaAidPrefix',
+				enableKeyEvents : '@sdaEnableKeyEvents'
 			},
 			transclude: true,
 			templateUrl: templateURL,
@@ -70,6 +72,10 @@
 			if (attr.sdaModal == 'false') {
 				dialogElem.addClass('no-modal');
 				dialogElem.removeClass('modal');
+			}
+			
+			if(angular.isUndefined(attr.sdaDraggable)){
+				attr.sdaDraggable = 'true';
 			}
 			
 			if (attr.sdaDraggable == 'true') {
@@ -92,27 +98,6 @@
 			// Detach the element from the DOM to hide it from the document.
 			// it will be attached when openDialog is called
 			scope.dialogController.dialogElem.detach();
-			
-			// Dialog block element
-			var dialogContent = scope.dialogController.dialogElem.find('.modal-dialog');
-			
-			// Creating this in the scope to track changes in the height of the dialog content
-			scope.getContentHeight = function () {
-	            return dialogContent.outerHeight();
-	        };
-	        
-	        scope.$watch(scope.getContentHeight, function(height) {
-	        	if (height === 0) {
-	        		return;
-	        	}
-	        	// Now determine and set correct position for the dialog.
-	        	var w = jQuery(window);
-	        	dialogContent.css({
-				    'position':'absolute',
-				    'top':Math.abs(((w.height() - dialogContent.outerHeight()) / 2) + w.scrollTop()),
-				    'left':Math.abs(((w.width() - dialogContent.outerWidth()) / 2) + w.scrollLeft())
-				 });
-	        });
 		}
 		
 		/*
@@ -121,8 +106,10 @@
 		function DialogControllerFn($attrs, $scope, $element, $parse, $transclude, $q, $timeout) {
 			
 			var self = this;
+			var unregisterHandler;
+
 			$scope.dialogController = self;
-			
+
 			initialize();
 			
 			/*
@@ -161,6 +148,11 @@
 				if (!angular.isDefined(self.dialogType)) {
 					self.dialogType = SUPPORTED_TYPES.CUSTOM;
 				}
+				if(angular.isDefined($scope.enableKeyEvents)){
+					self.enableKeyEvents =($scope.enableKeyEvents == 'true') ? true : false ;
+				}else{
+					self.enableKeyEvents = false;
+				}
 				
 				self.onOpenFn = $parse($attrs.sdaOnOpen);
 				self.onCloseFn = $parse($attrs.sdaOnClose);
@@ -170,10 +162,11 @@
 				self.isOpen = false;
 				
 				self.onKeyUp = function(evt){
-					if (angular.equals(evt.keyCode, 13)){
+
+					if (self.enableKeyEvents && angular.equals(evt.keyCode, 13)){
 						self.confirmAction(); 
 					}
-					if (angular.equals(evt.keyCode, 27)){
+					if (self.enableKeyEvents && angular.equals(evt.keyCode, 27)){
 						self.cancelAction(); 
 					}
 				}
@@ -195,6 +188,7 @@
 			
 			// Scope destroy function
 			function onDestroyDialog() {
+				removeBody();
 				self.dialogElem.detach();
 				self.dialogElem.empty();
 				self.dialogElem = null;
@@ -258,7 +252,8 @@
 			function openDialog() {
 				// create a new defer on open
 				self.deferred = $q.defer();
-				
+
+				watchDialogContentHeight();
 				onOpenDialog();
 				
 				// Compiles and adds the body content in the right scope
@@ -279,17 +274,55 @@
 				
 				self.dialogElem.modal('show');
 			}
-			
+
+			/*
+			 * 
+			 */
+			function watchDialogContentHeight() {
+				// Dialog block element
+				var dialogContent = $scope.dialogController.dialogElem.find('.modal-dialog');
+				
+				// Creating this in the scope to track changes in the height of the dialog content
+				if (!$scope.getContentHeight) {
+					$scope.getContentHeight = function () {
+			            return dialogContent.outerHeight();
+			        };
+				}
+		        
+				unregisterHandler = $scope.$watch($scope.getContentHeight, function(height) {
+		        	if (height === 0) {
+		        		return;
+		        	}
+		        	// Now determine and set correct position for the dialog.
+		        	var w = jQuery(window);
+		        	dialogContent.css({
+					    'position':'absolute',
+					    'top':Math.abs(((w.height() - dialogContent.outerHeight()) / 2) + w.scrollTop()),
+					    'left':Math.abs(((w.width() - dialogContent.outerWidth()) / 2) + w.scrollLeft())
+					 });
+		        });
+			}
+
+			/*
+			 * 
+			 */
+			function unwatchDialogContentHeight() {
+				if (unregisterHandler) {
+					unregisterHandler();
+				}
+			}
+
 			function transcludeBody() {
 				// Transclude using 2 options - by use of template and trancluded content
 				// If 'sda-template' is provided, it is the content of the template that gets appended to the popup body
 				// else actual directive body contents will be appended.
-				$transclude(function(clone) {
+				self.cloneScope = self.dialogScope.$new();
+				$transclude(self.cloneScope, function(clone) {
 					var dialogElem = self.dialogElem;
 					var templatePlaceHolder = dialogElem.find('.transclude');
 					var template = '';
 					if (self.useTransclude === false) {
-						template = $compile(angular.element('<div ng-include="\'' + self.template + '\'"></div>'))(self.dialogScope);
+						template = $compile(angular.element('<div ng-include="\'' + self.template + '\'"></div>'))(self.cloneScope);
 					} else if (self.useTransclude === true) {
 						template = clone;
 					}
@@ -303,6 +336,9 @@
 			// Removes the body content since it is no longer needed in the DOM. 
 			// It will be retrieved again when needed ie. Dialog is opened.
 			function removeBody() {
+				if (self.cloneScope) {
+					self.cloneScope.$destroy();
+				}
 				var templatePlaceHolder = self.dialogElem.find('.transclude');
 				templatePlaceHolder.empty();
 				
@@ -317,6 +353,8 @@
 				}
 				
 				hideDialog();
+				unwatchDialogContentHeight()
+
 				if (self.deferred) {
 					self.deferred.reject();
 				}
@@ -337,7 +375,7 @@
 				var userPromise = true;
 				if (angular.isDefined(self.onConfirmFn) && angular.isFunction(self.onConfirmFn)) {
 					userPromise = self.onConfirmFn(self.dialogScope, {res: true});
-					trace.log('Promise returned by the onConfirm: ' + userPromise);
+					trace.log('Promise returned by the onConfirm: ' , userPromise);
 					if (userPromise === undefined) {
 						userPromise = true;
 					}
@@ -349,7 +387,6 @@
 						self.deferred.resolve();
 					}
 				} else if (userPromise.then) {
-					trace.log('Waiting for user to resolve the promise returned by onConfirm...');
 					userPromise.then(function() {
 						hideDialog();
 						if (self.deferred) {

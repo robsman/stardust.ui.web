@@ -9,8 +9,8 @@
  ******************************************************************************/
 
 angular.module('bpm-common.directives')
-  .directive('sdJsError', ['eventBus',
-    function (eventBus) {
+  .directive('sdJsError', ['eventBus', 'sdLoggerService',
+    function (eventBus,sdLoggerService) {
       return {
         scope: {
           title: '@'
@@ -38,15 +38,17 @@ angular.module('bpm-common.directives')
         	  }
           }
           
+          var trace = sdLoggerService.getLogger('bpm-common.directives.sdJsError');
+          
           var initScope = function(e,m){
-            console.log(m);
+        	trace.log(m);
             $scope.errors.push(m);
             $scope.errorModel = $scope.errors[$scope.errors.length-1];
             $scope.showError=true;
           };
           
           var resetScope = function(e,m){
-            console.log(m);
+        	trace.log(m);
             $scope.errors.pop();
       	  	if($scope.errors.length===0){
       		  $scope.showError=false;

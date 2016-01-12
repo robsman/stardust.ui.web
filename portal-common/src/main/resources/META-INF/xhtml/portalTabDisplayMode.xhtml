@@ -62,7 +62,7 @@
 									<ice:commandLink action="#{ippPortalApp.closeView}" immediate="false" onclick="Event.stop(event);"
 										styleClass="toolbar-button viewCloseLink">
 										<f:param name="identityUrl" value="#{tab.identityUrl}" />
-										<ice:graphicImage value="/plugins/common/images/icons/dialog-windowbttn-close.png"
+										<ice:outputText styleClass="pi pi-dialog-close pi-lg"
 											style="border: none; padding-top:4px" 
 											title="#{common_msgPropsBean['portalFramework.view.close']}"/>
 									</ice:commandLink>

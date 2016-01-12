@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.viewscommon.helper.activityTable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,6 +43,7 @@ import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnAlignment;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreferenceComparator;
 import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModelListener;
@@ -84,6 +86,7 @@ import org.eclipse.stardust.ui.web.viewscommon.dialogs.DelegationBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.JoinProcessDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.PanelConfirmation;
+import org.eclipse.stardust.ui.web.viewscommon.dialogs.RelocateActivityDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.SwitchProcessDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentViewUtil;
@@ -244,8 +247,24 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
             delegationBean.setAis(ais);
             delegationBean.setICallbackHandler(callbackHandler);
             delegationBean.openPopup();
-         }
-      }   
+      }
+   }
+
+   /**
+    * Opens relocation dialog
+    * 
+    * @param ae
+    */
+   public void openRelocationDialog(ActionEvent ae)
+   {
+      ActivityInstance ai = (ActivityInstance) ae.getComponent().getAttributes().get(
+            "activityInstance");
+      
+      RelocateActivityDialogBean dialog = (RelocateActivityDialogBean) FacesUtils.getBeanFromContext("relocateActivityDialogBean");
+      dialog.setActivityInstance(ai);
+      dialog.setCallbackHandler(callbackHandler);
+      dialog.openPopup();
+   }
    
    /**
     * 
@@ -445,6 +464,12 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
             ResourcePaths.V_ACTIVITY_TABLE_COLUMNS, true, true);
       criticalityCol.setColumnAlignment(ColumnAlignment.CENTER);
       criticalityCol.setColumnDataFilterPopup(new TableDataFilterPopup(new CriticalityAutocompleteTableDataFilter()));
+      
+      ColumnPreference colBenchmark = new ColumnPreference("Benchmark", "benchmark",
+               propsBean.getString("views.processTable.column.benchmark"), ResourcePaths.V_ACTIVITY_TABLE_COLUMNS,
+            false, true);
+      colBenchmark.setColumnAlignment(ColumnAlignment.CENTER);
+
             
       ColumnPreference descriptorsCol = new ColumnPreference(DESCRIPTOR_COL_NAME,
             "processDescriptorsList", propsBean
@@ -538,6 +563,7 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
       activityCols.add(aOIDCol);
       activityCols.add(prioCol);
       activityCols.add(criticalityCol);
+      activityCols.add(colBenchmark);
       activityCols.add(descriptorsCol);
       if(showResubmissionTime)
       {
@@ -552,11 +578,11 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
       activityCols.add(pIDCol);
       activityCols.add(pOIDCol);
       activityCols.add(participantPerformerCol);
+    
 
       // Adding Descriptor Columns
       List<ColumnPreference> descriptorColumns = DescriptorColumnUtils.createDescriptorColumns(activityTable, allDescriptors, ResourcePaths.V_DOCUMENT_DESC_COLUMNS);
       activityCols.addAll(descriptorColumns);
-
       IColumnModel activityColumnModel = new DefaultColumnModel(activityCols, null, activityFixedCols2, moduleId,
             viewId, columnModelListener);
       TableColumnSelectorPopup activitySelecpopup = new TableColumnSelectorPopup(
@@ -1039,6 +1065,10 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
             {
                query.orderBy(ActivityInstanceQuery.STATE,
                      sortCriterion.isAscending());
+            }
+            else if ("benchmark".equals(sortCriterion.getProperty()))
+            {
+               query.orderBy(ActivityInstanceQuery.BENCHMARK_VALUE, sortCriterion.isAscending());
             }
             else
             {

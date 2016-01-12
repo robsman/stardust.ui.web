@@ -18,8 +18,8 @@
 			<ice:commandLink
 				actionListener="#{trafficLightViewManagerBean.getProcessesAITable}">
 				<pc:automationTag value="auto-BCC-TrafficLgt-TraffLightTbl-Category" standAlone="false"/>
-				<img border="0"
-					src="#{facesContext.externalContext.requestContextPath}#{row.symbolUrl}" style="vertical-align:middle"/>
+				<i border="0"
+					class="#{row.symbolUrl}" style="vertical-align:middle"/>
 				<f:attribute name="categoryValue" value="#{row.categoryValue}" />
 				<f:attribute name="processActivityId" value="#{row.processActivityId}" />
 				<f:attribute name="processActivityQualifiedId" value="#{row.processActivityQualifiedId}" />
@@ -27,15 +27,15 @@
 			<ice:outputLabel value=" " />
 			<ice:outputLabel value="#{row.symbolName}" />
 			<ice:outputLabel value=" " />
-			<img border="0"
-				src="#{facesContext.externalContext.requestContextPath}#{row.completedIcon}" />
+			 <i border="0"
+				class="#{row.completedIcon}" />
 		</ice:panelGroup>
 		<ice:panelGroup rendered="#{!row.activePIs}">
-			<img border="0" src="#{facesContext.externalContext.requestContextPath}#{row.symbolUrl}" style="vertical-align:middle"/>
+			<i border="0" class="#{row.symbolUrl}" style="vertical-align:middle"/>
 			<ice:outputLabel value=" " />
 			<ice:outputLabel value="#{row.symbolName}" />
 			<ice:outputLabel value=" " />
-			<img border="0" src="#{facesContext.externalContext.requestContextPath}#{row.completedIcon}" style="vertical-align:middle"/>
+			<i border="0" class="#{row.completedIcon}" style="vertical-align:middle"/>
 		</ice:panelGroup>
 	</ice:panelGroup>
 </f:view>

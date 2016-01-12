@@ -13,22 +13,21 @@ package org.eclipse.stardust.ui.web.rest.service.utils;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
-import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.query.ActivityFilter;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
 import org.eclipse.stardust.engine.api.query.EvaluateByWorkitemsPolicy;
 import org.eclipse.stardust.engine.api.query.ExcludeUserPolicy;
-import org.eclipse.stardust.engine.api.query.FilterAndNotTerm;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.query.FilterTerm;
-import org.eclipse.stardust.engine.api.query.HistoricalStatesPolicy;
 import org.eclipse.stardust.engine.api.query.PerformedByUserFilter;
 import org.eclipse.stardust.engine.api.query.PerformingParticipantFilter;
 import org.eclipse.stardust.engine.api.query.PerformingUserFilter;
@@ -37,14 +36,19 @@ import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.Worklist;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
-import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.User;
+import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.web.rest.Options;
+import org.eclipse.stardust.ui.web.rest.service.UserService;
+import org.eclipse.stardust.ui.web.rest.service.dto.UserDTO;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ResubmissionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ResubmissionUtils.ModelResubmissionActivity;
+import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
 import org.springframework.stereotype.Component;
 
 /**
@@ -61,56 +65,117 @@ public class WorklistUtils
    @Resource
    private ProcessDefinitionUtils processDefUtils;
 
+   @Resource
+   private UserService userService;
+
    /**
     * @param participantQId
     * @return
     */
-   public QueryResult< ? > getWorklistForParticipant(String participantQId, Options options)
+   public QueryResult< ? > getWorklistForParticipant(String participantQId, String userId, Options options)
    {
-      Participant participant = serviceFactoryUtils.getQueryService().getParticipant(participantQId);
-      if (null != participant)
+      //If the userId is not passed consider the user to be the logged in user.
+      //User id is required to differentiate between the particpants when the deputy logs in 
+      
+      if (StringUtils.isEmpty(userId))
       {
-         WorklistQuery query = org.eclipse.stardust.ui.web.viewscommon.utils.WorklistUtils
-               .createWorklistQuery(participant);
-
-         query.setPolicy(HistoricalStatesPolicy.WITH_LAST_USER_PERFORMER);
-
-         ActivityTableUtils.addCriterias(query, options);
-
-         Worklist worklist = serviceFactoryUtils.getWorkflowService().getWorklist((WorklistQuery) query);
-         QueryResult< ? > queryResult = extractParticipantWorklist(worklist, participant);
-
-         return queryResult;
+         userId = userService.getLoggedInUser().id;
       }
-      return null;
+      ParticipantInfo participantInfo = ParticipantWorklistCacheManager.getInstance().getParticipantInfoFromCache(
+            participantQId);
+      WorklistQuery query = (WorklistQuery) ParticipantWorklistCacheManager.getInstance().getWorklistQuery(
+            participantInfo, userId);
+
+      ActivityTableUtils.addCriterias(query, options);
+      Worklist worklist = serviceFactoryUtils.getWorkflowService().getWorklist((WorklistQuery) query);
+      QueryResult< ? > queryResult = extractParticipantWorklist(worklist, participantInfo);
+
+      if (options.filter == null)
+      {
+         updateParticipantManagerCache(participantInfo, userId, queryResult);
+      }
+
+      return queryResult;
+
    }
 
    /**
     * @param userId
     * @return
     */
-   public QueryResult< ? > getWorklistForUser(String userId, Options options)
+   public QueryResult< ? > getWorklistForUser(String userId, Options options, boolean fetchAllStates)
    {
       User user = serviceFactoryUtils.getUserService().getUser(userId);
 
       if (null != user)
       {
-         // TODO: User WorklistQuery?
-         ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
-               ActivityInstanceState.Application, ActivityInstanceState.Suspended});
-         // TODO - this is used to enhance performace but has a bug
-         // query.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
+         ActivityInstanceQuery query = null;
+         if (fetchAllStates)
+         {
+            query = ActivityInstanceQuery.findAll();
+         }
+         else
+         {
+            query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
+                  ActivityInstanceState.Application, ActivityInstanceState.Suspended});
+         }
 
          FilterOrTerm or = query.getFilter().addOrTerm();
-         or.add(PerformingParticipantFilter.ANY_FOR_USER).add(new PerformingUserFilter(user.getOID()));
+         or.add(ActivityInstanceQuery.CURRENT_USER_PERFORMER_OID.isEqual(user.getOID()));
 
-         // Remove role activities
-         FilterAndNotTerm not = query.getFilter().addAndNotTerm();
-         List<Grant> allGrants = user.getAllGrants();
-         for (Grant grant : allGrants)
+         ActivityTableUtils.addCriterias(query, options);
+
+         ActivityInstances activityInstances = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+
+         ParticipantInfo participantInfo = ParticipantWorklistCacheManager.getInstance().getParticipantInfoFromCache(
+               user.getQualifiedId());
+
+         if (options.filter == null)
          {
-            not.add(PerformingParticipantFilter.forParticipant(serviceFactoryUtils.getQueryService().getParticipant(
-                  grant.getId())));
+            if (fetchAllStates)
+            {
+
+               updateActivitiyQueryCache(options.worklistId, activityInstances);
+            }
+            else
+            {
+
+               updateParticipantManagerCache(participantInfo, userId, activityInstances);
+            }
+
+         }
+
+         return activityInstances;
+      }
+      else
+      {
+         throw new ObjectNotFoundException("UserId not found");
+      }
+   }
+
+   /**
+    * @param userId
+    * @return
+    */
+   public QueryResult< ? > getUnifiedWorklistForUser(String userId, Options options)
+   {
+      User user = serviceFactoryUtils.getUserService().getUser(userId);
+
+      if (null != user)
+      {
+         ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
+               ActivityInstanceState.Application, ActivityInstanceState.Suspended});
+
+         FilterOrTerm or = query.getFilter().addOrTerm();
+         or.add(new PerformingUserFilter(user.getOID()));
+         Set<ParticipantInfo> participants = ParticipantWorklistCacheManager.getInstance().getWorklistParticipants()
+               .get(user.getQualifiedId());
+         for (ParticipantInfo participantInfo : participants)
+         {
+            if (!(participantInfo instanceof UserInfo))
+            {
+               or.add(PerformingParticipantFilter.forParticipant(participantInfo));
+            }
          }
          ActivityTableUtils.addCriterias(query, options);
 
@@ -148,7 +213,14 @@ public class WorklistUtils
 
       ActivityTableUtils.addCriterias(criticalActivitiesQuery, options);
 
-      return serviceFactoryUtils.getQueryService().getAllActivityInstances(criticalActivitiesQuery);
+      QueryResult< ? > result = serviceFactoryUtils.getQueryService().getAllActivityInstances(criticalActivitiesQuery);
+
+      if (null == options.filter)
+      {
+         updateActivitiyQueryCache(options.worklistId, result);
+      }
+      return result;
+
    }
 
    /**
@@ -168,7 +240,13 @@ public class WorklistUtils
 
       ActivityTableUtils.addCriterias(query, options);
 
-      return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+      QueryResult< ? > result = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+
+      if (null == options.filter)
+      {
+         updateActivitiyQueryCache(options.worklistId, result);
+      }
+      return result;
    }
 
    /**
@@ -177,7 +255,7 @@ public class WorklistUtils
     * @param options
     * @return
     */
-   public QueryResult< ? > getItemtWorkingFromDate(String dateId, Options options)
+   public QueryResult< ? > getWorklistItemsFromDate(String dateId, Options options)
    {
       Date fromDate = ActivityTableUtils.determineDate(dateId);
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
@@ -211,7 +289,13 @@ public class WorklistUtils
 
       ActivityTableUtils.addCriterias(query, options);
 
-      return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+      QueryResult< ? > result = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+
+      if (null == options.filter)
+      {
+         updateActivitiyQueryCache(options.worklistId, result);
+      }
+      return result;
    }
 
    /**
@@ -223,7 +307,8 @@ public class WorklistUtils
    {
 
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(ActivityInstanceState.Hibernated);
-      query.getFilter().add(PerformingUserFilter.CURRENT_USER);
+   // new PerformingUserFilter(0) : For activities created in non-interactive context (such as activity threads started by daemons)
+      query.getFilter().addOrTerm().or(PerformingUserFilter.CURRENT_USER).or(new PerformingUserFilter(0));
       List<ModelResubmissionActivity> resubmissionActivities = CollectionUtils.newList();
       ResubmissionUtils.fillListWithResubmissionActivities(resubmissionActivities);
 
@@ -237,16 +322,21 @@ public class WorklistUtils
          for (Iterator<ModelResubmissionActivity> as = resubmissionActivities.iterator(); as.hasNext();)
          {
             ModelResubmissionActivity activity = as.next();
-            or.add(ActivityFilter.forProcess(activity.getActivityId(), activity.getProcessId(),// TODO:check
-                                                                                               // FQID
-                                                                                               // change
+            or.add(ActivityFilter.forProcess(activity.getActivityId(), activity.getProcessId(),
                   activity.getModelOids(), false));
          }
       }
 
       ActivityTableUtils.addCriterias(query, options);
 
-      return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+      QueryResult< ? > result = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+
+      if (null == options.filter)
+      {
+         updateActivitiyQueryCache(options.worklistId, result);
+      }
+
+      return result;
    }
 
    /**
@@ -263,7 +353,19 @@ public class WorklistUtils
 
       ActivityTableUtils.addCriterias(query, options);
 
-      return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+      QueryResult< ? > result = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+
+      UserDTO loggedInUser = userService.getLoggedInUser();
+
+      ParticipantInfo participantInfo = ParticipantWorklistCacheManager.getInstance().getParticipantInfoFromCache(
+            loggedInUser.qualifiedId);
+
+      if (null == options.filter)
+      {
+         updateParticipantManagerCache(participantInfo, loggedInUser.id, result);
+      }
+
+      return result;
    }
 
    /**
@@ -279,7 +381,74 @@ public class WorklistUtils
 
       ActivityTableUtils.addCriterias(query, options);
 
-      return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+      QueryResult< ? > result = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+
+      if (null == options.filter)
+      {
+         updateActivitiyQueryCache(options.worklistId, result);
+      }
+
+      return result;
+   }
+
+   /**
+    * 
+    * @param options
+    * @return
+    */
+   public QueryResult< ? > getWorklistForProcessInstances(Options options, List<String> pInstanceOids)
+   {
+      ActivityInstanceQuery query = ActivityInstanceQuery.findAlive();
+      FilterOrTerm orTerm = query.getFilter().addOrTerm();
+      for (String oid : pInstanceOids)
+      {
+         orTerm.add(ActivityInstanceQuery.PROCESS_INSTANCE_OID.isEqual(Long.valueOf(oid)));
+      }
+
+      ActivityTableUtils.addCriterias(query, options);
+
+      QueryResult< ? > result = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
+
+      return result;
+   }
+
+   /**
+    * 
+    * @param participantInfo
+    * @param userId
+    * @param queryResult
+    */
+   private <T> void updateParticipantManagerCache(ParticipantInfo participantInfo, String userId,
+         QueryResult<T> queryResult)
+   {
+      ParticipantWorklistCacheManager.getInstance().setWorklistCount(participantInfo, userId,
+            queryResult.getTotalCount());
+      ParticipantWorklistCacheManager.getInstance().setWorklistThresholdCount(participantInfo, userId,
+            queryResult.getTotalCountThreshold());
+   }
+
+   /**
+    * 
+    * @param worklistId
+    * @param queryResult
+    */
+   private <T> void updateActivitiyQueryCache(String worklistId, QueryResult<T> queryResult)
+   {
+      if (SpecialWorklistCacheManager.isSpecialWorklist(worklistId))
+      {
+         SpecialWorklistCacheManager.getInstance().setWorklistCount(worklistId, queryResult.getTotalCount());
+         SpecialWorklistCacheManager.getInstance().setWorklistThresholdCount(worklistId,
+               queryResult.getTotalCountThreshold());
+      }
+      else
+      {
+         if (ProcessWorklistCacheManager.isInitialized())
+         {
+            ProcessWorklistCacheManager.getInstance().setWorklistCount(worklistId, queryResult.getTotalCount());
+            ProcessWorklistCacheManager.getInstance().setWorklistThresholdCount(worklistId,
+                  queryResult.getTotalCountThreshold());
+         }
+      }
    }
 
    /**

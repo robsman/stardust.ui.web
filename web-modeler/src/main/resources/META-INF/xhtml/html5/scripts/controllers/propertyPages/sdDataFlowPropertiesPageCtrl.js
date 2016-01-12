@@ -16,32 +16,37 @@
   angular.module('modeler-ui').controller(
           'sdDataFlowPropertiesPageCtrl',
           ['$scope', 'sdModelerConstants', 'sdUtilService', 'sdLoggerService',
-              'sdI18nService', DataFlowPropertiesPageCtrl]);
+              'sdI18nService', 'sdMessageService', DataFlowPropertiesPageCtrl]);
 
   /*
    * 
    */
   function DataFlowPropertiesPageCtrl($scope, constants, sdUtilService,
-          sdLoggerService, sdI18nService) {
+          sdLoggerService, sdI18nService, sdMessageService) {
     var self = this;
+    
+    this.showMessage = false;
+    
     self.initialized = false;
     var trace = sdLoggerService
             .getLogger('modeler-ui.sdDataFlowPropertiesPageCtrl');
     $scope.sdI18nModeler = sdI18nService.getInstance('bpm-modeler-messages').translate;
     var i18n = $scope.sdI18nModeler;
 
-    $scope.$on('REFRESH_PROPERTIES_PANEL', function(event, propertiesPanel, initialize) {
-      if (!self.initialized) {
-        self.dataMappingIndex = 0;
-      }else{
-        if (!initialize && (self.propertiesPanel.diagram.process.uuid != propertiesPanel.diagram.process.uuid)) { 
-          return; 
-        }
-      }
-      self.propertiesPanel = propertiesPanel;
-      self.refresh();
-      self.initialized = true;
-    });
+    $scope
+            .$on(
+                    'REFRESH_PROPERTIES_PANEL',
+                    function(event, propertiesPanel, initialize) {
+                      if (!self.initialized) {
+                        self.dataMappingIndex = 0;
+                      } else {
+                        if (!initialize
+                                && (self.propertiesPanel.diagram.process.uuid != propertiesPanel.diagram.process.uuid)) { return; }
+                      }
+                      self.propertiesPanel = propertiesPanel;
+                      self.refresh();
+                      self.initialized = true;
+                    });
 
     /**
      * 
@@ -49,12 +54,19 @@
     DataFlowPropertiesPageCtrl.prototype.refresh = function() {
       this.element = this.propertiesPanel.element;
       if (!this.element) { return; }
-      
 
       this.modelElement = this.element.modelElement;
       this.unifiedDataMappings = transformDMs(this.modelElement.dataMappings);
       this.unifiedDataMappings = sdUtilService.convertToSortedArray(
               this.unifiedDataMappings, "id", true);
+
+      if (this.unifiedDataMappings.length == 0) { return; }
+
+      // determine previously selected index of data mapping in case id is
+      // modified
+      if (this.dataMappingIndex == undefined) {
+        this.dataMappingIndex = this.determineIndex();
+      }
 
       this.setSelected(this.dataMappingIndex);
 
@@ -98,26 +110,9 @@
       this.inputAccessPoints.push(defaultVal);
       for ( var i in this.modelElement.activity.getContexts()) {
         var context = this.modelElement.activity.getContexts()[i];
-        var count = 0;
 
         trace.debug("i = " + i);
         trace.debug(context);
-
-        for (var m = 0; m < context.accessPoints.length; ++m) {
-          var accessPoint = context.accessPoints[m];
-
-          trace.debug("m = " + m);
-          trace.debug(accessPoint);
-
-          if (accessPoint.direction == constants.IN_ACCESS_POINT
-                  || accessPoint.direction == constants.IN_OUT_ACCESS_POINT) {
-            count++;
-          }
-        }
-
-        if (count == 0) {
-          continue;
-        }
 
         var group = i18n("modeler.dataFlow.propertiesPanel.outputAccessPointSelectInput.group."
                 + i)
@@ -128,7 +123,12 @@
           if (accessPoint.direction == constants.OUT_ACCESS_POINT) {
             continue;
           }
-
+          
+          // Filter out accesspoints where for decorator application where default value is set
+          if (accessPoint.attributes && accessPoint.attributes['carnot:engine:defaultValue']) {
+        	  continue;
+          }
+          
           var label;
           if (accessPoint.isUsedAsList) {
             label = accessPoint.name
@@ -198,20 +198,6 @@
 
       for ( var i in this.modelElement.activity.getContexts()) {
         var context = this.modelElement.activity.getContexts()[i];
-        var count = 0;
-
-        for (var m = 0; m < context.accessPoints.length; ++m) {
-          var accessPoint = context.accessPoints[m];
-
-          if (accessPoint.direction == constants.OUT_ACCESS_POINT
-                  || accessPoint.direction == constants.IN_OUT_ACCESS_POINT) {
-            count++;
-          }
-        }
-
-        if (count == 0) {
-          continue;
-        }
 
         var group = i18n("modeler.dataFlow.propertiesPanel.outputAccessPointSelectInput.group."
                 + i);
@@ -387,21 +373,34 @@
      * 
      */
     DataFlowPropertiesPageCtrl.prototype.nameModified = function() {
-      if (this.selectedDataMapping.outMapping) {
-        var index = searchDataMapping(this.selectedDataMapping.outMapping,
-                this.modelElement.dataMappings)
-        if (index > -1) {
-          this.modelElement.dataMappings[index].name = this.selectedDataMapping.name;
-        }
+      this.resetMessages();
+      this.dataMappingIndex = undefined;
+      
+      if (this.selectedDataMapping.name == "" || !this.selectedDataMapping.name) {
+        var index = this.determineIndex();
+        var dataMapping = this.unifiedDataMappings[index];
+        this.selectedDataMapping.name = dataMapping.name;
+        this.showMessage_(i18n('modeler.dataFlow.propertiesPanel.name.required'), 'error');
+        return;
       }
+
+      this.updateDataMapping(this.getUuid(), {
+        name: this.selectedDataMapping.name
+      });
+    }
+
+    /**
+     * 
+     */
+    DataFlowPropertiesPageCtrl.prototype.getUuid = function() {
+      var uuid = undefined;
       if (this.selectedDataMapping.inMapping) {
-        var index = searchDataMapping(this.selectedDataMapping.inMapping,
-                this.modelElement.dataMappings)
-        if (index > -1) {
-          this.modelElement.dataMappings[index].name = this.selectedDataMapping.name;
-        }
+        uuid = this.selectedDataMapping.inMapping.uuid;
       }
-      this.submitChanges();
+      if (!uuid) {
+        uuid = this.selectedDataMapping.outMapping.uuid;
+      }
+      return uuid;
     }
 
     /**
@@ -409,18 +408,23 @@
      */
     DataFlowPropertiesPageCtrl.prototype.addMapping = function() {
       var index = this.getNextIdIndex();
-      var id = "" + this.modelElement.id + index;
-      var name = "" + this.modelElement.name + index;
+      var id = this.modelElement.id + index;
+      var name = this.modelElement.name + index;
 
-      this.modelElement.dataMappings.push({
+      var changes = {
         id: id,
         name: name,
         direction: "IN"
-      });
+      };
 
-      this.dataMappingIndex = this.unifiedDataMappings.length;
+      // Done in order to make sure correct index is highlighted when adding the
+      // mappings randomly
+      this.dataMappingIndex = undefined;
+      this.selectedDataMapping = {
+        id: id
+      };
 
-      this.submitChanges();
+      this.createDataMapping(changes);
     }
 
     /**
@@ -429,19 +433,22 @@
     DataFlowPropertiesPageCtrl.prototype.deleteMapping = function() {
       if (this.unifiedDataMappings.length == 1) { return; }
 
+      var mappingsTobeDeleted = [];
+
       if (this.selectedDataMapping.outMapping) {
         var index = searchDataMapping(this.selectedDataMapping.outMapping,
                 this.modelElement.dataMappings)
         if (index > -1) {
-          this.modelElement.dataMappings.splice(index, 1);
+          mappingsTobeDeleted.push(this.modelElement.dataMappings[index].uuid);
           this.selectedDataMapping.outMapping = null;
         }
       }
+
       if (this.selectedDataMapping.inMapping) {
         var index = searchDataMapping(this.selectedDataMapping.inMapping,
                 this.modelElement.dataMappings)
         if (index > -1) {
-          this.modelElement.dataMappings.splice(index, 1);
+          mappingsTobeDeleted.push(this.modelElement.dataMappings[index].uuid);
           this.selectedDataMapping.inMapping = null;
         }
       }
@@ -452,7 +459,7 @@
         this.dataMappingIndex = 0;
       }
 
-      this.submitChanges();
+      this.deleteDataMapping(mappingsTobeDeleted);
     }
 
     /**
@@ -480,24 +487,45 @@
     /**
      * 
      */
+    DataFlowPropertiesPageCtrl.prototype.determineIndex = function() {
+      if (!this.selectedDataMapping) { return 0; }
+
+      for (var i = 0; i < this.unifiedDataMappings.length; i++) {
+        var dm = this.unifiedDataMappings[i];
+        if (dm.id == this.selectedDataMapping.id
+                || (this.selectedDataMapping.inMapping && (dm.uuid == this.selectedDataMapping.inMapping.uuid))
+                || (this.selectedDataMapping.outMapping && (dm.uuid == this.selectedDataMapping.outMapping.uuid))) { return i; }
+      }
+      return 0;
+    }
+
+    /**
+     * 
+     */
     DataFlowPropertiesPageCtrl.prototype.setSelected = function(index) {
+      if (this.unifiedDataMappings.length <= index) {
+        index = this.unifiedDataMappings.length - 1;
+      }
+
       this.dataMappingIndex = index;
       var dataMapping = this.unifiedDataMappings[index];
       var self = this;
       self.selectedDataMapping = {};
-      self.selectedDataMapping.uuid = this.element.uuid;
+
       self.modelElement.dataMappings.forEach(function(dm) {
         if (dm.id == dataMapping.id && dm.direction == "IN") {
           self.selectedDataMapping.id = dm.id;
           self.selectedDataMapping.name = dm.name;
           self.selectedDataMapping.inMapping = dm;
           self.selectedDataMapping.inMappingExist = true;
+          self.selectedDataMapping.inMapping.uuid = dm.uuid;
         }
         if (dm.id == dataMapping.id && dm.direction == "OUT") {
           self.selectedDataMapping.id = dm.id;
           self.selectedDataMapping.name = dm.name;
           self.selectedDataMapping.outMapping = dm;
           self.selectedDataMapping.outMappingExist = true;
+          self.selectedDataMapping.outMapping.uuid = dm.uuid;
         }
       });
 
@@ -538,7 +566,6 @@
      * 
      */
     DataFlowPropertiesPageCtrl.prototype.inputCheckboxChanged = function() {
-
       if (!this.selectedDataMapping.inMappingExist
               && !this.selectedDataMapping.outMappingExist) {
         this.selectedDataMapping.inMappingExist = true;
@@ -548,19 +575,18 @@
         var index = searchDataMapping(this.selectedDataMapping.inMapping,
                 this.modelElement.dataMappings);
         if (index > -1) {
-          this.modelElement.dataMappings.splice(index, 1);
+          this.deleteDataMapping([this.modelElement.dataMappings[index].uuid]);
           this.selectedDataMapping.inMapping = undefined;
         }
       } else {
-        // checked, it is assumed that at the moment outmapping exist
-        this.modelElement.dataMappings.push({
+        // checked, it is assumed that at the moment out-mapping exist
+        var changes = {
           id: this.selectedDataMapping.outMapping.id,
           name: this.selectedDataMapping.outMapping.name,
           direction: "IN"
-        });
+        };
+        this.createDataMapping(changes);
       }
-
-      this.submitChanges();
 
       this.dataPathDisabled = this.disableDataPath();
     }
@@ -578,104 +604,139 @@
         var index = searchDataMapping(this.selectedDataMapping.outMapping,
                 this.modelElement.dataMappings);
         if (index > -1) {
-          this.modelElement.dataMappings.splice(index, 1);
+          this.deleteDataMapping([this.modelElement.dataMappings[index].uuid]);
           this.selectedDataMapping.outMapping = undefined;
         }
       } else {
         // checked, it is assumed that at the moment inmapping exist
-        this.modelElement.dataMappings.push({
+        var changes = {
           id: this.selectedDataMapping.inMapping.id,
           name: this.selectedDataMapping.inMapping.name,
           direction: "OUT"
-        });
+        };
+        this.createDataMapping(changes);
       }
-      this.submitChanges();
 
       this.dataPathDisabled = this.disableDataPath();
-    }
-
-    /**
-     * TODO: engine updates [from/to]ModelElementOid and
-     * [from/to]ModelElementType, legacy code, needs to be reviewed later
-     */
-    DataFlowPropertiesPageCtrl.prototype.updateConnection = function() {
-      // TODO: find consolidated inMapping and outMapping
-      if (this.selectedDataMapping.inMappingExist
-              && this.selectedDataMapping.outMappingExist
-              && this.element.fromAnchorPoint.symbol.type !== constants.DATA_SYMBOL) {
-        // convert to Data to Activity connection
-        var tempFromAnchorPoint = this.element.fromAnchorPoint; // activity
-        this.element.fromAnchorPoint = this.element.toAnchorPoint; // data
-        this.element.toAnchorPoint = tempFromAnchorPoint;
-        this.element.fromModelElementOid = this.element.fromAnchorPoint.symbol.oid;
-        this.element.toModelElementOid = this.element.toAnchorPoint.symbol.oid;
-        var tempFromOrientation = this.element.fromAnchorPointOrientation;
-        this.element.fromAnchorPointOrientation = this.element.toAnchorPointOrientation;
-        this.element.toAnchorPointOrientation = tempFromOrientation;
-
-      } else if (!this.selectedDataMapping.inMappingExist
-              && this.selectedDataMapping.outMappingExist
-              && this.element.fromAnchorPoint.symbol.type === constants.DATA_SYMBOL) {
-        // convert to Activity to Data connection
-        var tempFromAnchorPoint = this.element.fromAnchorPoint;
-        this.element.fromAnchorPoint = this.element.toAnchorPoint;
-        this.element.toAnchorPoint = tempFromAnchorPoint;
-        this.element.fromModelElementOid = this.element.fromAnchorPoint.symbol.oid;
-        this.element.toModelElementOid = this.element.toAnchorPoint.symbol.oid;
-        var tempFromOrientation = this.element.fromAnchorPointOrientation;
-        this.element.fromAnchorPointOrientation = this.element.toAnchorPointOrientation;
-        this.element.toAnchorPointOrientation = tempFromOrientation;
-      }
-
-      var connectionChanges = {
-        fromAnchorPointOrientation: this.element.fromAnchorPointOrientation,
-        toAnchorPointOrientation: this.element.toAnchorPointOrientation,
-        toModelElementOid: this.element.toModelElementOid,
-        fromModelElementOid: this.element.fromModelElementOid,
-      }
-
-      return connectionChanges;
     }
 
     /**
      * 
      */
     DataFlowPropertiesPageCtrl.prototype.inputAccessPointChanged = function() {
+      var partialChanges = {};
       if (this.inputAccessPointVal.id == "DEFAULT") {
-        this.selectedDataMapping.inMapping.accessPointId = null;
-        this.selectedDataMapping.inMapping.accessPointContext = null;
+        partialChanges.accessPointId = null;
+        partialChanges.accessPointContext = null;
       } else {
-        this.selectedDataMapping.inMapping.accessPointId = this.inputAccessPointVal.id;
-        this.selectedDataMapping.inMapping.accessPointContext = this.inputAccessPointVal.context;
+        partialChanges.accessPointId = this.inputAccessPointVal.id;
+        partialChanges.accessPointContext = this.inputAccessPointVal.context;
       }
-      this.submitChanges();
+      this.updateDataMapping(this.selectedDataMapping.inMapping.uuid,
+              partialChanges);
     }
 
     /**
      * 
      */
     DataFlowPropertiesPageCtrl.prototype.outputAccessPointChanged = function() {
+      var partialChanges = {};
       if (this.outputAccessPointVal.id == "DEFAULT") {
-        this.selectedDataMapping.outMapping.accessPointId = null;
-        this.selectedDataMapping.outMapping.accessPointContext = null;
+        partialChanges.accessPointId = null;
+        partialChanges.accessPointContext = null;
       } else {
-        this.selectedDataMapping.outMapping.accessPointId = this.outputAccessPointVal.id;
-        this.selectedDataMapping.outMapping.accessPointContext = this.outputAccessPointVal.context;
+        partialChanges.accessPointId = this.outputAccessPointVal.id;
+        partialChanges.accessPointContext = this.outputAccessPointVal.context;
       }
 
-      this.submitChanges();
+      this.updateDataMapping(this.selectedDataMapping.outMapping.uuid,
+              partialChanges);
     }
 
     /**
      * 
      */
-    DataFlowPropertiesPageCtrl.prototype.submitChanges = function() {
-      var self = this;
-      this.propertiesPanel.submitChanges({
-        modelElement: {
-          dataMappings: self.modelElement.dataMappings
-        }
+    DataFlowPropertiesPageCtrl.prototype.inputDataPathChanged = function() {
+      this.updateDataMapping(this.selectedDataMapping.inMapping.uuid, {
+        dataPath: this.selectedDataMapping.inMapping.dataPath
       });
+    }
+
+    /**
+     * 
+     */
+    DataFlowPropertiesPageCtrl.prototype.outputDataPathChanged = function() {
+      this.updateDataMapping(this.selectedDataMapping.outMapping.uuid, {
+        dataPath: this.selectedDataMapping.outMapping.dataPath
+      });
+    }
+
+    /**
+     * 
+     */
+    DataFlowPropertiesPageCtrl.prototype.inputAccessPointPathChanged = function() {
+      this.updateDataMapping(this.selectedDataMapping.inMapping.uuid, {
+        accessPointPath: this.selectedDataMapping.inMapping.accessPointPath
+      });
+    }
+
+    /**
+     * 
+     */
+    DataFlowPropertiesPageCtrl.prototype.outputAccessPointPathChanged = function() {
+      this.updateDataMapping(this.selectedDataMapping.outMapping.uuid, {
+        accessPointPath: this.selectedDataMapping.outMapping.accessPointPath
+      });
+    }
+
+    /**
+     * 
+     */
+    DataFlowPropertiesPageCtrl.prototype.updateDataMapping = function(uuid,
+            partialChanges) {
+      this.propertiesPanel.submitChangesWithUUIDForCommandType(
+              "modelElement.update", uuid, {
+                modelElement: partialChanges
+              });
+    }
+
+    /**
+     * 
+     */
+    DataFlowPropertiesPageCtrl.prototype.createDataMapping = function(changes) {
+      this.propertiesPanel.submitChangesWithUUIDForCommandType(
+              "datamapping.create", this.element.uuid, changes);
+    }
+
+    /**
+     * 
+     */
+    DataFlowPropertiesPageCtrl.prototype.deleteDataMapping = function(uuid) {
+      this.propertiesPanel.submitChangesWithUUIDForCommandType(
+              "datamapping.delete", this.element.uuid, {
+                'uuid': uuid
+              });
+    }
+    
+    //reset message
+    DataFlowPropertiesPageCtrl.prototype.resetMessages = function() {
+      this.showMessage = false;
+      sdMessageService.showMessage({
+        type: "error"
+      });
+    }
+    
+    //show error/confirmation message
+    DataFlowPropertiesPageCtrl.prototype.showMessage_ = function(msg, type) {
+      this.showMessage = true;
+      if (!type) {
+        sdMessageService.showMessage(msg);
+      } else {
+        sdMessageService.showMessage({
+          message: msg,
+          type: type
+        });
+      }
     }
   }
 
@@ -690,11 +751,13 @@
     dataMappings.forEach(function(dm) {
       if (nDataMappingsSet[dm.id]) {
         nDataMappingsSet[dm.id].direction = "INOUT";
+        nDataMappingsSet[dm.id].uuid = dm.uuid;
       } else {
         nDataMappingsSet[dm.id] = {};
         nDataMappingsSet[dm.id].id = dm.id;
         nDataMappingsSet[dm.id].name = dm.name;
         nDataMappingsSet[dm.id].direction = dm.direction;
+        nDataMappingsSet[dm.id].uuid = dm.uuid;
         nDataMappings.push(nDataMappingsSet[dm.id])
       }
     });

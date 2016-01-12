@@ -1,6 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2013 SunGard CSA LLC. All rights reserved.
- ******************************************************************************/
+ * Copyright (c) 2015 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
 
 define(
 		[ "bpm-reporting/js/report/AngularAdapter",
@@ -116,19 +123,9 @@ define(
 										types : {
 											"types" : {
 												folder : {
-													icon : {
-														image : this.reportingService
-																.getRootUrl()
-																+ "/plugins/bpm-reporting/images/icons/folder.png"
-													},
 													valid_children : ["report", "folder"]
 												},
 												report : {
-													icon : {
-														image : this.reportingService
-																.getRootUrl()
-																+ "/plugins/bpm-reporting/css/images/report.png"
-													},
 													valid_children : []
 												}
 											}
@@ -142,8 +139,7 @@ define(
 														create : false,
 														rename : {
 															label : I18NUtils.getProperty('reporting.definitionView.contextmenu.rename.label'), 
-															icon : self.reportingService.getRootUrl()
-                                                         + "/plugins/views-common/images/icons/rename.png",
+															icon : "pi pi-rename pi-lg",
 															action : function(
 																	obj) {
 																jQuery(
@@ -157,8 +153,7 @@ define(
 														},
 														deleteReport : {
 															label : I18NUtils.getProperty('reporting.definitionView.contextmenu.delete.label'), // I18N
-															icon : self.reportingService.getRootUrl()
-                                                         + "/plugins/views-common/images/icons/delete.png",
+															icon : "pi pi-delete pi-lg",
 															action : function(
 																	obj) {
 				                                       self.deleteElementAction(
@@ -191,8 +186,7 @@ define(
 														},
 														download : {
 															label : I18NUtils.getProperty('reporting.definitionView.contextmenu.download.label'), 
-															icon : self.reportingService.getRootUrl()
-                                                         + "/plugins/views-common/images/icons/page_white_put.png",
+															icon : "pi pi-download pi-lg",
 															action : function(
 																	obj) {
 																var path = obj.attr("path")
@@ -201,8 +195,7 @@ define(
 														},
 														clone : {
                                              label : I18NUtils.getProperty('reporting.definitionView.contextmenu.clone.label'),
-                                             icon : self.reportingService.getRootUrl()
-                                                         + "/plugins/bpm-reporting/images/icons/report_add.png",
+                                             icon : "pi pi-clone pi-lg",
                                              action : function(
                                                    obj) {
                                                 self.openView("reportDefinitionView",
@@ -221,8 +214,7 @@ define(
                                           create : false,
                                           upload : {
                                              label : I18NUtils.getProperty('reporting.definitionView.contextmenu.upload.label'),
-                                             icon : self.reportingService.getRootUrl()
-                                                         + "/plugins/views-common/images/icons/page_white_get.png",
+                                             icon : "pi pi-upload pi-lg",
                                              action : function(
                                                    obj) {
                                                 scope = angular.element(document).scope();
@@ -465,9 +457,7 @@ define(
 					this.reportingService
 							.loadReportDefinitionsFolderStructure()
 							.done(function() {
-								console.log("Folder Structure");
-								console.log(self.reportingService.rootFolder);
-
+								console.log("Folder Structure : ", self.reportingService.rootFolder);
 								self.refreshTree();
 
 								document.body.style.cursor = "default";
@@ -500,19 +490,16 @@ define(
 					var link = jQuery("a[id $= 'view_management_link']",
 							portalWinDoc.doc);
 
-					console.debug("Link");
-					console.debug(link);
+					console.debug("Link: ", link);
 
 					var linkId = link.attr('id');
 					var form = link.parents('form:first');
 
-					console.debug("Form");
-					console.debug(form);
+					console.debug("Form: ", form);
 					
 					var formId = form.attr('id');
 
-					console.debug("Form ID");
-					console.debug(formId);
+					console.debug("Form ID: ", formId);
 
 					link = portalWinDoc.doc
 							.getElementById(linkId);
@@ -520,8 +507,7 @@ define(
 					var linkForm = portalWinDoc.win
 							.formOf(link);
 
-					console.debug("Link Form");
-					console.debug(linkForm);
+					console.debug("Link Form: ", linkForm);
 
 					linkForm[formId + ':_idcl'].value = linkId;
 					linkForm['viewParams'].value = viewParams;
@@ -651,7 +637,10 @@ define(
 								rel : "folder",
 								elementId : folder.id
 							},
-							data : folder.name
+							data : {
+								title: folder.name,
+								icon : "pi pi-folder pi-lg pi-img"
+							}
 						}, null, true);
 
 				if (folder.reportDefinitions) {
@@ -683,7 +672,8 @@ define(
 																	"class" : "showTooltip",
 																	title : reportDefinition.description
 																},
-																title : reportDefinition.name
+																title : reportDefinition.name,
+																icon : "pi pi-report pi-lg pi-img"
 															}
 														},
 														null,

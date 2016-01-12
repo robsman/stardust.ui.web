@@ -18,8 +18,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.stardust.engine.api.dto.DataDetails;
 import org.eclipse.stardust.engine.api.model.DataPath;
+import org.eclipse.stardust.engine.api.model.Model;
+import org.eclipse.stardust.engine.api.query.FilterOrTerm;
+import org.eclipse.stardust.engine.api.query.HistoricalEventPolicy;
+import org.eclipse.stardust.engine.api.query.ProcessInstanceFilter;
+import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.HistoricalEvent;
+import org.eclipse.stardust.engine.api.runtime.HistoricalEventType;
+import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.api.runtime.QueryService;
+import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
@@ -35,6 +46,7 @@ import org.eclipse.stardust.ui.web.common.filter.TableDataFilterSearch;
 import org.eclipse.stardust.ui.web.common.table.DataTable;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
 import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataMapping;
 import org.eclipse.stardust.ui.web.viewscommon.common.ProcessAttachmentColumnPreference;
@@ -44,6 +56,7 @@ import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDescriptor;
 import org.springframework.util.CollectionUtils;
 
@@ -93,24 +106,31 @@ public class DescriptorColumnUtils
       {
          String descriptorId = descriptor.getKey();
          DataPath dataPath = descriptor.getValue();
-         Class mappedType = dataPath.getMappedType();
-         ColumnDataType columnType = determineColumnType(dataPath);
          
-         if(contentUrl!=null && determineDocumentTypeColumn(mappedType))
+         Model model = ModelCache.findModelCache().getModel(dataPath.getModelOID());
+         DataDetails dataDetails = model != null ? (DataDetails) model.getData(dataPath.getData()) : null;
+         
+         if ((contentUrl != null)
+               && (null != dataDetails && (DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId()) || DmsConstants.DATA_TYPE_DMS_DOCUMENT_LIST
+                     .equals(dataDetails.getTypeId()))))
          {
-            ColumnPreference descriptorColumn = new ProcessDocumentColumnPreference(descriptorId ,
-                  "descriptorValues." + descriptorId + "",I18nUtils.getDataPathName(dataPath), contentUrl, false, false);
+            ColumnPreference descriptorColumn = new ProcessDocumentColumnPreference(descriptorId, "descriptorValues."
+                  + descriptorId + "", I18nUtils.getDataPathName(dataPath), contentUrl, false, false);
+
             descriptorColumn.setEscape(false);
             descriptorColumns.add(descriptorColumn);
          }
-         else if(contentUrl !=null && DmsConstants.DATA_ID_ATTACHMENTS.equals(dataPath.getData()))
+         else if ((contentUrl != null) && ((DmsConstants.DATA_ID_ATTACHMENTS.equals(dataPath.getData()))))
          {
-            ColumnPreference descriptorColumn = new ProcessAttachmentColumnPreference(descriptorId,
-                  "descriptorValues." + descriptorId + "", I18nUtils.getDataPathName(dataPath), contentUrl, false, false);
+            ColumnPreference descriptorColumn = new ProcessAttachmentColumnPreference(descriptorId, "descriptorValues."
+                  + descriptorId + "", I18nUtils.getDataPathName(dataPath), contentUrl, false, false);
+
             descriptorColumn.setEscape(false);
             descriptorColumns.add(descriptorColumn);
          }
-         else{
+         else
+         {
+            ColumnDataType columnType = determineColumnType(dataPath);
             // double and float are not sortable
             boolean sortable = DescriptorFilterUtils.isDataSortable(dataPath);
             
@@ -432,6 +452,34 @@ public class DescriptorColumnUtils
       {
          return DataType.DOUBLE;
       }
+      return null;
+   }
+
+   /**
+    * 
+    * @param scopeProcessInstance
+    * @return
+    */
+   public static List<HistoricalEvent> getProcessDescriptorsHistory(ProcessInstance scopeProcessInstance)
+   {
+      ProcessInstanceQuery piQuery = ProcessInstanceQuery.findAll();
+      FilterOrTerm orTerm =  piQuery.getFilter().addOrTerm();
+                  
+      piQuery.setPolicy(new HistoricalEventPolicy(
+            new HistoricalEventType[] {HistoricalEventType.DataChange}));
+
+      orTerm.add(new ProcessInstanceFilter(scopeProcessInstance.getOID(), false));
+      
+      ServiceFactory sf = SessionContext.findSessionContext().getServiceFactory();
+      QueryService qs = (sf != null) ? sf.getQueryService() : null;
+   
+      if (qs != null)
+      {
+         ProcessInstance pi = qs.getAllProcessInstances(piQuery).get(0);
+         List<HistoricalEvent> events = pi.getHistoricalEvents();
+         return events;
+      }
+      
       return null;
    }
 }

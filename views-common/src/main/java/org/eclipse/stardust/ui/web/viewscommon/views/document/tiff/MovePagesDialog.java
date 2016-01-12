@@ -56,6 +56,7 @@ public class MovePagesDialog extends PopupUIComponentBean
    public void initialize()
    {
       pageActions = CollectionUtils.newArrayList();
+      pageRange = org.eclipse.stardust.common.CollectionUtils.newTreeSet();
       pageActions.add(new SelectItem(MOVE_PAGE_UP, COMMON_MESSAGE_BEAN.getString("views.movePagesDialog.beforeAction")));
       pageActions.add(new SelectItem(MOVE_PAGE_DOWN, COMMON_MESSAGE_BEAN.getString("views.movePagesDialog.afterAction")));
       targetAction = pageActions.get(0).getValue().toString();

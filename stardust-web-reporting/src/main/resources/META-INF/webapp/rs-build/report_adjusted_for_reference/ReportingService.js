@@ -1,6 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2013 SunGard CSA LLC. All rights reserved.
- ******************************************************************************/
+ * Copyright (c) 2015 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
 
 define(
 		["../report/I18NUtils"],
@@ -622,6 +629,23 @@ define(
 				
 				this.serverDateFormat = "yy/mm/dd";
 				
+				this.datePickerProperties = {
+						closeText: this.getI18N("datepicker.closeText"),
+						prevText: this.getI18N("datepicker.prevText"),
+						nextText: this.getI18N("datepicker.nextText"),
+						currentText: this.getI18N("datepicker.currentText"),
+						monthNames: this.getI18N("datepicker.monthNames"),						
+						monthNamesShort: this.getI18N("datepicker.monthNamesShort"),
+						dayNames: this.getI18N("datepicker.dayNames"),
+						dayNamesShort: this.getI18N("datepicker.dayNamesShort"),
+						dayNamesMin: this.getI18N("datepicker.dayNamesMin"),
+						weekHeader: this.getI18N("datepicker.weekHeader"),
+						firstDay: 1,
+						isRTL: false,
+						showMonthAfterYear: false,
+						yearSuffix: "",
+				}
+				
 				/**
 				 * 
 				 */
@@ -663,8 +687,24 @@ define(
 						for ( var n in this[q[0]][q[1]][q[2]][q[3]]) {
 							enumerators.push(this[q[0]][q[1]][q[2]][q[3]][n]);
 						}	
+					}else if(q.length >= 5) {//Descriptors having Enum values and which might be of structure type. 
+						for ( var n in this[q[0]][q[1]]) {
+							var temp = "";
+							for (var int = 2; int < q.length - 1 ; int++) {
+								temp = temp + q[int] + ":";
+							}
+							temp = temp.slice(0, temp.length-1);
+								
+							var desc = this[q[0]][q[1]][n];
+							if (temp == desc.id) {
+								var posValues = desc[q[q.length-1]];
+								for ( var val in posValues) {
+									enumerators.push(posValues[val]);
+								}
+							}
+						}
 					}else {
-						console.error("qualifier not supported yet: " + path);
+						console.error("qualifier not supported yet: " , path);
 					}
 					
 					return enumerators;
@@ -967,8 +1007,7 @@ define(
 							}else{
 								var self = this;
 	
-								console.debug("Report Definition");
-								console.debug(report);
+								console.debug("Report Definition: ", report);
 								
 								//convert parameters
 								var parametersString = convertToParametersString(parameters);
@@ -1010,8 +1049,6 @@ define(
 					var deferred = jQuery.Deferred();
 
 					var self = this;
-
-					console.debug("Report Definition");
 					
 					//convert parameters
  					var parametersString = convertToParametersString(parameters);
@@ -1395,9 +1432,7 @@ define(
 								}		
 								self.loadedReportDefinitions[path] = response;
 
-								console.debug("Loaded Report Definitions ");
-								console.debug(self.loadedReportDefinitions);
-
+								console.debug("Loaded Report Definitions: ", self.loadedReportDefinitions);
 								deferred.resolve(response);
 							}).fail(function(response) {
 								deferred.reject(response);
@@ -1426,8 +1461,7 @@ define(
 						url : encodeURI(uri),
 						contentType : "application/json"
 					}).done(function(response) {
-						console.debug("Retrieved external data");
-						console.debug(response);
+						console.debug("Retrieved external data: ", response);
 
 						// Use heuristics to obtain records - first
 						// element is
@@ -2243,6 +2277,21 @@ define(
                return deferred.promise();
             };
             
+            
+
+			/**
+			 * 
+			 */
+			ReportingService.prototype.getDatePickerProperties = function() {
+				var datePickerProperties = this.datePickerProperties;
+				datePickerProperties.monthNames = datePickerProperties.monthNames.split(",");
+				datePickerProperties.monthNamesShort = datePickerProperties.monthNamesShort.split(",");
+				datePickerProperties.dayNames = datePickerProperties.dayNames.split(",");
+				datePickerProperties.dayNamesShort = datePickerProperties.dayNamesShort.split(",");
+				datePickerProperties.dayNamesMin = datePickerProperties.dayNamesMin.split(",");
+				};
+				
+				this.getDatePickerProperties();
 			}
 			
 			/**

@@ -22,7 +22,7 @@ import javax.ws.rs.core.Response.Status;
  *
  */
 
-public class PortalRestException extends Exception implements Serializable
+public class PortalRestException extends RuntimeException implements Serializable
 {
    private static final long serialVersionUID = 1L;
 
@@ -49,6 +49,21 @@ public class PortalRestException extends Exception implements Serializable
    {
       super(e);
       this.portalErrorClass = portalErrorClass;
+   }
+
+   /**
+    * @param e
+    */
+   public PortalRestException(Status status, String i18nMessage)
+   {
+      super();
+      this.portalErrorClass = new PortalErrorClass(status, i18nMessage);
+   }
+
+   public PortalRestException(Status status, String i18nMessage, Exception e)
+   {
+      super(e);
+      this.portalErrorClass = new PortalErrorClass(status, i18nMessage);
    }
 
    public String getMessage(Locale locale)

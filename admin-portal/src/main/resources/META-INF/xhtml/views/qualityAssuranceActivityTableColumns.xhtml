@@ -16,11 +16,9 @@
 	<ice:panelGroup style="margin: 0px; padding: 0px;">
 		<ice:panelGroup rendered="#{col.columnName == 'modelName'}" style="display:inline;" panelTooltip="qcPnlTooltip">
 			<ice:outputText style="display: inline;" value="#{row.modelName}">
-				<h:graphicImage rendered="#{row.oldModel}"
-					value="/plugins/views-common/images/icons/model.gif"
+				<h:outputText styleClass="pi pi-model pi-lg"
 					style="vertical-align: middle; margin-right:5px; opacity: 0.3;filter: alpha(opacity=30);  display: inline;" />
-				<h:graphicImage rendered="#{!row.oldModel}"
-					value="/plugins/views-common/images/icons/model.gif"
+				<h:outputText styleClass="pi pi-model pi-lg"
 					style="vertical-align: middle; margin-right:5px;  display: inline;" />
 			</ice:outputText>
 
@@ -51,16 +49,16 @@
 		
 		<ice:panelGroup rendered="#{col.columnName == 'processName'}">
 			<ice:outputText value="#{row.processName}">
-				<h:graphicImage value="/plugins/views-common/images/icons/process.png"
-					style="vertical-align: middle; margin-right:5px" />
+				<h:outputText stylClass="pi pi-process pi-lg" />
 			</ice:outputText>
 		</ice:panelGroup>
 
 		<ice:panelGroup rendered="#{col.columnName == 'activityName'}">
 			<ice:outputText value="#{row.activityName}">
-				<h:graphicImage
-					value="/plugins/views-common/images/icons/process-history/activity_manual.png"
-					style="vertical-align: middle; margin-right:5px" />
+				<h:outputText styleClass="pi pi-manual-activity pi-lg"
+					style="vertical-align: middle; margin-right:5px">
+					<h:outputText styleClass="pi pi-user pi-bottom pi-right pi-sm" />
+				</h:outputText>
 			</ice:outputText>
 		</ice:panelGroup>
 		

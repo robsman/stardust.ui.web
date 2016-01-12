@@ -1,0 +1,93 @@
+<div class="view-panel" ng-controller="sdRealmManagementCtrl as ctrl"
+	sg-stretch-to-bottom>
+	
+	<div>
+		<div class="heading" ng-bind="i18n('admin-portal-messages.views-realmMgmt-userRealmsTable-title')"></div>
+		<div class="clearing"></div>
+		<!-- Categories table -->
+		<div sda-toolbar>
+		
+			<div class="tbl-toolbar-section">
+				<!-- Create -->
+				
+				<div class="tbl-toolbar-section">
+					<button ng-click="ctrl.openCreateRealmDlg()" title="{{i18n('admin-portal-messages.common-create')}}" 
+							class="button-link tbl-toolbar-item tbl-tool-link"
+							aid="ADM-RealmMgmt-DataTable-CreateRlmDlg">
+					   <i class="pi pi-create pi-lg" ></i>
+					</button>
+					
+					<!-- Remove -->
+					<button ng-disabled="ctrl.dataTable.getSelection() < 1" 
+					        ng-click="ctrl.removeRealms()" 
+					        class="button-link tbl-toolbar-item tbl-tool-link"
+						    title="{{i18n('admin-portal-messages.common-delete')}}" class="button-link tbl-toolbar-item tbl-tool-link"
+							aid="ADM-RealmMgmt-DataTable-RemoveRlmDlg">
+					   <i class="pi pi-delete pi-lg" ></i>
+					</button>
+				</div>
+				
+				<!-- Refresh -->
+				<span sd-refresh sda-on-refresh="ctrl.fetchRealms();" aid="ADM-RealmMgmt"></span>
+				
+			</div>
+		</div>
+	
+		<!-- Data table -->
+		<table sd-data-table="ctrl.dataTable" sd-data="ctrl.realms"
+			sda-mode="local" sda-selectable="multiple" sda-no-pagination="true"
+			sda-sortable="true" sda-exports="true" sda-column-selector="{{ctrl.columnSelector}}"
+			sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
+			sda-exports-file-name="{{ctrl.exportFileNameForRealmManagement}}">
+			<thead sda-i18n-scope="admin-portal-messages.views-realmMgmt-userRealmsTable-column">
+				<tr>
+					<th sda-name="name" sda-sortable="true"></th>
+					<th sda-name="id" sda-sortable="false"></th>
+					<th sda-name="descr" sda-sortable="false"></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td sda-field="name"></td>
+					<td sda-field="id"></td>
+					<td sda-field="description"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+	<div sd-dialog sda-show="ctrl.showCreateDlg" sda-type="confirm" sda-confirm-action-label="{{i18n('views-common-messages.common-apply')}}"
+		sda-cancel-action-label="{{i18n('views-common-messages.common-cancel')}}"
+		sda-on-confirm="ctrl.createRealm()" sda-title="{{i18n('admin-portal-messages.views-realmMgmt-createRealm-title')}}"
+		sda-aid-prefix="ADM-RealmMgmt-CreateDlg">
+		<form name="realmForm">
+			<div sd-message></div>
+			<table>
+				<tr>
+					<td>* {{i18n('admin-portal-messages.views-realmMgmt-userRealmsTable-column-id')}} {{i18n('admin-portal-messages.common-colon')}}</td>
+					<td>
+						<input name="id" ng-model="ctrl.realmToCreate.id" required aid="ADM-RealmMgmt-CreateDlg-Id"/>
+						<span class="msg-error" ng-show="realmForm.id.$error.required && ctrl.submitted" ng-bind="i18n('html5-common.required-value')"></span>
+					</td>
+				</tr>
+				<tr>
+					<td>* {{i18n('admin-portal-messages.views-realmMgmt-userRealmsTable-column-name')}} {{i18n('admin-portal-messages.common-colon')}}</td>
+					<td>
+						<input name="name" ng-model="ctrl.realmToCreate.name" required aid="ADM-RealmMgmt-CreateDlg-Name"/>
+						<span class="msg-error" ng-show="realmForm.name.$error.required && ctrl.submitted" ng-bind="i18n('html5-common.required-value')"></span>
+					</td>
+				</tr>
+				<tr>
+					<td>{{i18n('admin-portal-messages.views-realmMgmt-userRealmsTable-column-descr')}} {{i18n('admin-portal-messages.common-colon')}}</td>
+					<td><input ng-model="ctrl.realmToCreate.description" aid="ADM-RealmMgmt-CreateDlg-Description" /></td>
+				</tr>
+			</table>
+		</form>
+	</div>
+	<div sd-dialog sda-show="ctrl.showErrorMsg" sda-type="alert" sda-title="{{i18n('admin-portal-messages.views-common-error-label')}}"
+	     sda-cancel-action-label="{{i18n('views-common-messages.common-close')}}"
+	     sda-aid-prefix="ADM-RealmMgmt-ErrorMsgDlg"
+	     sda-draggable="true">
+	    <div><i class="pi pi-warning pi-information-circle pi-lg"></i>{{ctrl.errorMsg}}</div>
+	</div>
+</div>

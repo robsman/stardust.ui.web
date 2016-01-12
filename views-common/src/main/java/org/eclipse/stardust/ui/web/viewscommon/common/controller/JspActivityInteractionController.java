@@ -79,7 +79,7 @@ public class JspActivityInteractionController
       return (String) applicationContext.getAttribute(PredefinedConstants.HTML_PATH_ATT);
    }
 
-   public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario)
+   public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario, Object parameters)
    {
       try
       {

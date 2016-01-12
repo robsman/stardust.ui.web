@@ -62,6 +62,12 @@ define([], function() {
 			iconUrl : "plugins/bpm-modeler/images/icons/application-c-ext-web.png"
 		},
 		{
+         viewId : "decoratorApplicationView",
+         label : "Decorator Application ${viewParams.applicationName}[20]",
+         viewHtmlUrl : "plugins/bpm-modeler/views/modeler/decoratorApplicationView.html",
+         iconUrl : "plugins/bpm-modeler/images/icons/applications-blue.png"
+      },
+		{
 			viewId : "camelApplicationView",
 			label : "Camel Route ${viewParams.applicationName}[20]",
 			viewHtmlUrl : "plugins/bpm-modeler/views/modeler/camelApplicationView.html",

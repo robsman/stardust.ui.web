@@ -184,6 +184,11 @@ define(
 					}
 				};
 
+		    PropertiesPanel.prototype.getElementUuid2 = function() {
+          if (this.element) {
+            return this.element.uuid;
+          }
+        };
 				/**
 				 *
 				 */
@@ -634,9 +639,10 @@ define(
 				};
 
 				/**
-				 *
+				 * 
 				 */
 				PropertiesPanel.prototype.submitChanges = function(changes) {
+				  //TODO this method does not actually uses UUID!
 					m_utils.debug("Changes to be submitted for UUID "
 							+ this.getElementUuid() + ":");
 					m_utils.debug(changes);
@@ -645,7 +651,61 @@ define(
 									this.getModel().id, this.getElementUuid(),
 									changes));
 				};
+
+				/**
+				 * 
+				 */
+				PropertiesPanel.prototype.submitEnableResubmissionCommand = function(changes) {
+					m_commandsController.submitCommand(m_command
+							.createEnableResubmissionCommand(
+									this.getModel().id, this.element.modelElement.uuid,
+									changes));
+				};
+
+				/**
+				 * 
+				 */
+				PropertiesPanel.prototype.submitDisableResubmissionCommand = function(changes) {
+					m_commandsController.submitCommand(m_command
+							.createDisableResubmissionCommand(
+									this.getModel().id, this.element.modelElement.uuid,
+									changes));
+				};
+
+				/**
+				 * 
+				 */
+				PropertiesPanel.prototype.updateResubmissionHandler = function(changes) {
+					m_commandsController.submitCommand(m_command
+							.createUpdateModelElementCommand(
+									this.getModel().id, this.element.modelElement.resubmissionHandler.oid,
+									changes));
+				};
+
+				/**
+				 * 
+				 */
+				PropertiesPanel.prototype.submitChangesWithUUID = function(changes) {
+          m_utils.debug("Changes to be submitted for UUID "
+              + this.getElementUuid() + ":");
+          m_utils.debug(changes);
+          m_commandsController.submitCommand(m_command
+              .createUpdateModelElementWithUUIDCommand(
+                  this.getModel().id, this.getElementUuid2(),
+                  changes));
+        };
 				
+        /**
+         * 
+         */
+        PropertiesPanel.prototype.submitChangesWithUUIDForCommandType = function(
+                commandType, uuid, changes) {
+          m_utils.debug("Changes to be submitted for UUID "+ uuid + ":");
+          m_utils.debug(changes);
+          m_commandsController.submitCommand(m_command.createCommand(
+                  commandType, this.getModel().id, uuid, changes));
+        };
+        
 				/**
 				 * 
 				 */
@@ -695,6 +755,20 @@ define(
          */
         PropertiesPanel.prototype.getMModel = function(application) {
           return m_model;
+        };
+        
+        /**
+         * 
+         */
+        PropertiesPanel.prototype.getMCommandsController = function(application) {
+          return m_commandsController;
+        };
+        
+        /**
+         * 
+         */
+        PropertiesPanel.prototype.getMCommand = function(application) {
+          return m_command
         };
         
         

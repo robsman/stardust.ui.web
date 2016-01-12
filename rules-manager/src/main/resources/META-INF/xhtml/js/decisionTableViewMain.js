@@ -96,7 +96,14 @@ require([ "require",
 		};
 		
 		BridgeUtils.getTimeoutService()(function(){
-			decisionTblView.initialize(BridgeUtils.View.getActiveViewParams().param("ruleSetUuid"),
-								   BridgeUtils.View.getActiveViewParams().param("uuid"),options);
+			var uuid,
+				ruleSetUuid,
+				mode;
+			
+			uuid = BridgeUtils.View.getActiveViewParams().param("uuid");
+			ruleSetUuid = BridgeUtils.View.getActiveViewParams().param("ruleSetUuid");
+			mode = BridgeUtils.View.getActiveViewParams().param("mode");
+			
+			decisionTblView.initialize(ruleSetUuid,uuid,options,mode);
 		});
 });

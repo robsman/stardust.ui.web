@@ -162,6 +162,8 @@ define(
 							.mapInputId("supportsRelocationInput");
 					this.isRelocationTargetInput = this
 							.mapInputId("isRelocationTargetInput");
+					this.allowBulkCompletion = this
+							.mapInputId("allowBulkCompletion");
 					this.processingTypeSelect = this.mapInputId("processingTypeSelect");
 					this.processingTypeLink = this.mapInputId("processingTypeLink");
 					// I18N
@@ -234,6 +236,10 @@ define(
 							.registerCheckboxInputForModelElementAttributeChangeSubmission(
 									this.isRelocationTargetInput,
 									"carnot:engine:relocate:target");
+					this
+							.registerCheckboxInputForModelElementAttributeChangeSubmission(
+									this.allowBulkCompletion,
+									"stardust:model:trivialManualActivity");
 					this
 							.registerCheckboxInputForModelElementAttributeChangeSubmission(
 									this.copyDataInput,
@@ -508,9 +514,17 @@ define(
 												participantFullId : (this.taskTypeList.val() == m_constants.MANUAL_TASK_TYPE
 														|| this.taskTypeList.val() == m_constants.USER_TASK_TYPE) ? this
 																.getElement().parentSymbol.participantFullId : null,
-												applicationFullId : null				
+												applicationFullId : null
 											}
 										};
+						
+						if (this.taskTypeList.val() !== m_constants.MANUAL_TASK_TYPE
+								&& this.getModelElement().attributes["stardust:model:trivialManualActivity"] == true) {
+							if (!submitObj.modelElement.attributes) {
+								submitObj.modelElement.attributes = {};
+							}
+							submitObj.modelElement.attributes["stardust:model:trivialManualActivity"] = null;
+						}
 
 						// Reset loop (processing type) object if it exists
 						if (this.getModelElement().loop) {
@@ -637,6 +651,16 @@ define(
 							.attr(
 									"checked",
 									this.getModelElement().attributes["carnot:engine:relocate:target"] == true);
+					if (this.getModelElement().taskType === 'manual') {
+						this.allowBulkCompletion.removeAttr("disabled");
+						this.allowBulkCompletion
+								.attr(
+										"checked",
+										this.getModelElement().attributes["stardust:model:trivialManualActivity"] == true);
+					} else {
+						this.allowBulkCompletion.attr("checked", false);
+						this.allowBulkCompletion.attr("disabled", true);
+					}
 
 					if (this.getModelElement().activityType != m_constants.SUBPROCESS_ACTIVITY_TYPE) {
 						this.setTaskType(this.getModelElement().taskType);

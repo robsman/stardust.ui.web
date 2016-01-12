@@ -84,7 +84,7 @@ fieldset {
 .iceInpTxt, .iceInpSecrt, .iceInpTxtArea {
     margin: 2px;
     padding: 3px;
-    font: 11px tahoma;
+    font-size: 1em;
     background: #FFF;
     border: 1px solid #d9d9d9;
 }
@@ -115,7 +115,7 @@ fieldset {
 .iceSelOneMnu, .iceSelMnyLb, .iceSelMnyMnu, .iceSelOneLb {
     margin: 2px;
     padding: 3px;
-    font: 11px tahoma;
+    font-size: 1em;
     background: #FFF;
     border: 1px solid #d9d9d9;
 }
@@ -123,7 +123,7 @@ fieldset {
 .iceInpTxtArea {
     margin: 2px;
     padding: 3px;
-    font: 11px tahoma;
+    font-size: 1em;
     background: #FFF;
     border: 1px solid #d9d9d9;
 }
@@ -135,7 +135,6 @@ fieldset {
 }
 
 .iceOutTxt, .iceOutLbl {
-    font-family: Arial, Helvetica, sans-serif;
     color: #000000;
     padding-left: 0px;
     padding-right: 0px;
@@ -149,7 +148,6 @@ fieldset {
 }
 
 .iceCmdBtn {
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 /*
@@ -415,7 +413,7 @@ table.iceSelInpDate tbody tr td table{
 .iceDatTblColHdr, .iceDatTblColHdr1, .iceDatTblColHdr2, .iceDatTblColGrpHdrCol, .iceDatTblFtr {
 /* was iceTblHeader */
     text-align: center;
-    font: 11px tahoma;
+    font-size: 1em;
     color: #484848;
     padding: 5px;
     font-weight: bold;
@@ -582,22 +580,6 @@ table.iceSelInpDate tbody tr td table{
     border: 1px solid #DBDBDB;
     text-decoration: none;
     padding-bottom: 1px;
-}
-
-/*
------------ commandSortHeader classes
-*/
-.iceCmdSrtHdrAsc, .iceCmdSrtHdrDesc{
-    background-repeat: no-repeat;
-    background-position: center;
-    width:10px;
-    height:10px;
-}
-.iceCmdSrtHdrAsc{
-    background-image: url('./css-images/column_sort_asc.gif');
-}
-.iceCmdSrtHdrDesc{
-    background-image: url('./css-images/column_sort_desc.gif');
 }
 
 /*
@@ -1553,8 +1535,6 @@ table.iceSelInpDate tbody tr td table{
     background-color: #FFFFFF;
     margin: 2px;
     padding: 2px;
-    font-family: Arial, Helvetica, sans-serif;
-
     color: #000000;
 }
 
@@ -1563,8 +1543,6 @@ table.iceSelInpDate tbody tr td table{
     background-color: #FFFFFF;
     margin: 2px;
     padding: 2px;
-    font-family: Arial, Helvetica, sans-serif;
-
     color: #000000;
 }
 
@@ -1853,7 +1831,7 @@ table.iceSelInpDate tbody tr td table{
     background-color: #FCFCFC;
     border: 1px solid #999999;
     position: absolute;
-    font-size: 10px;
+    font-size: .91em;
     height: auto;
     display: block;
 }
@@ -1939,7 +1917,7 @@ table.iceSelInpDate tbody tr td table{
     padding: 4px;
     text-align: center;
     vertical-align: middle;
-    font: 11px tahoma;
+    font-size: 1em;
     color: #484848;
     font-weight: bold;
 }
@@ -2046,12 +2024,11 @@ table.iceSelInpDate tbody tr td table{
     cursor: default;
     margin: 2px;
     padding: 3px;
-    font: 11px tahoma;
+    font-size: 1em;
     border: 1px dotted #CCCCCC;
 }
 
 .iceInpTxtArea-dis {
-    font-family: Arial, Helvetica, sans-serif;
     font-size: .95em;
     color: #ABABAB;
     border: 1px dotted #CCCCCC;
@@ -2070,7 +2047,6 @@ table.iceSelInpDate tbody tr td table{
 }
 
 .iceSelOneMnu-dis, .iceSelMnyLb-dis, .iceSelMnyMnu-dis, .iceSelOneLb-dis {
-    font-family: Arial, Helvetica, sans-serif;
     color: #CCCCCC;
     padding: 2px;
     font-size: .95em;
@@ -2090,7 +2066,6 @@ table.iceSelInpDate tbody tr td table{
     background-color: #FFFFFF;
     margin: 2px;
     padding: 2px;
-    font-family: Arial, Helvetica, sans-serif;
     color: #CCCCCC;
     cursor: default;
 }
@@ -2100,7 +2075,6 @@ table.iceSelInpDate tbody tr td table{
     background-color: #FFFFFF;
     margin: 2px;
     padding: 2px;
-    font-family: Arial, Helvetica, sans-serif;
     color: #CCCCCC;
     cursor: default;
 }
@@ -2865,7 +2839,7 @@ Disabled classes for the calendar controls
 ----------- Panel Collapsible --------
 */
 
-.icePnlClpsbl, .icePnlClpsbl-dis {
+/* .icePnlClpsbl, .icePnlClpsbl-dis {
     border: 1px solid #d9d9d9;
 }
 
@@ -2874,7 +2848,7 @@ Disabled classes for the calendar controls
 }
 
 .icePnlClpsblHdr, .icePnlClpsblHdr-dis {
-    font: 11px tahoma;
+    font-size: 1em;
     color: #484848;
     padding: 3px 0 1px 4px;
     font-weight: bold;
@@ -2896,7 +2870,8 @@ Disabled classes for the calendar controls
 }
 
 .icePnlClpsblCnt, .icePnlClpsblCnt-dis {
-    font: 11px / 17px tahoma;
+	font-size: 1em;
+	line-height: 17px;
     color: #494949;
     background: #f5f5f5;
     padding: 4px 4px 4px 9px;
@@ -2908,7 +2883,7 @@ Disabled classes for the calendar controls
 }
 
 .icePnlClpsblCnt .icePnlClpsblHdr {
-    font: 11px tahoma;
+    font-size: 1em;
     color: #484848;
     padding: 0 0 0 0;
     font-weight: bold;
@@ -2922,7 +2897,7 @@ Disabled classes for the calendar controls
 }
 
 .icePnlClpsblCnt .icePnlClpsblColpsdHdr {
-    font: 11px tahoma;
+    font-size: 1em;
     color: #484848;
     padding: 0 0 0 0;
     font-weight: bold;
@@ -2950,7 +2925,7 @@ Disabled classes for the calendar controls
 }
 
 .icePnlClpsblColpsdHdr, .icePnlClpsblColpsdHdr-dis {
-    font: 11px tahoma;
+    font-size: 1em;
     color: #484848;
     padding: 3px 0 1px 4px;
     font-weight: bold;
@@ -3026,7 +3001,7 @@ Disabled classes for the calendar controls
 
 .icePnlClpsblHdr img, .icePnlClpsblColpsdHdr img {
     border: 0;
-}
+} */
 /*
 ----------- Google Maps --------
 */
@@ -3119,7 +3094,6 @@ Disabled classes for the calendar controls
     padding: 0;
     z-index: 1000;
     color: #666666;
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .icePnlCnfHdr {
@@ -3129,7 +3103,7 @@ Disabled classes for the calendar controls
     padding: 4px;
     text-align: left;
     vertical-align: middle;
-    font: 11px tahoma;
+    font-size: 1em;
     color: #484848;
     font-weight: bold;
 }
@@ -3155,7 +3129,6 @@ Disabled classes for the calendar controls
 ----------- DataExporter ----------
 */
 .iceDatExp input{
-    font-family: Arial, Helvetica, sans-serif;
 }
 
 .icePnlTbLblLnk img {

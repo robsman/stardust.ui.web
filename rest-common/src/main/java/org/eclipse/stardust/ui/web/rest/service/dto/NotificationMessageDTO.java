@@ -9,7 +9,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
  *
  */
 @DTOClass
-public class NotificationMessageDTO
+public class NotificationMessageDTO extends AbstractDTO
 {
    @DTOAttribute("success")
    public Boolean success;

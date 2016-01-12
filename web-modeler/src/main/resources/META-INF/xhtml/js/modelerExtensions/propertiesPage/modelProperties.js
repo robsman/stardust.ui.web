@@ -13,9 +13,11 @@ define(
 				"bpm-modeler/js/m_i18nUtils",
 				'bpm-modeler/js/m_modelConfigurationVariablesPropertiesPage',
 				'bpm-modeler/js/m_modelReadOnlyPropertiesPage',
-				'bpm-modeler/js/m_modelEditLockPropertiesPage'],
+				'bpm-modeler/js/m_modelEditLockPropertiesPage',
+				'bpm-modeler/js/m_propertiesPageProvider'],
 		function(m_modelElementCommentsPropertiesPage, m_i18nUtils,
-				m_modelConfigurationVariablesPropertiesPage, m_modelReadOnlyPropertiesPage, m_modelEditLockPropertiesPage) {
+				m_modelConfigurationVariablesPropertiesPage, m_modelReadOnlyPropertiesPage, m_modelEditLockPropertiesPage,
+				m_propertiesPageProvider) {
 			return {
 				propertiesPage : [
 						{
@@ -38,6 +40,16 @@ define(
 									.getProperty("modeler.propertyView.modelView.configurationVariables.title"),
 							pageIconUrl : "plugins/bpm-modeler/images/icons/table.png"
 						},
+						 {
+						  panelId : "modelView",
+              id: "qualityAssuranceCodePropertiesPage",
+              provider: m_propertiesPageProvider,
+              visibility: "always",
+              pageHtmlUrl: "plugins/bpm-modeler/views/modeler/modelQualityAssuranceCodesPage.html",
+              pageIconUrl: "plugins/bpm-modeler/images/icons/quality-assurance-code.png",
+              pageName: m_i18nUtils.getProperty("modeler.propertyView.modelView.qualityAssuranceCodes.title"),
+              html5: true
+            },
 						{
 							panelId : "modelView",
 							id : "modelReadOnlyPropertiesPage",

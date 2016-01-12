@@ -42,6 +42,7 @@ import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.QualityAssuranceUtils.QualityAssuranceState;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
@@ -107,6 +108,7 @@ import org.eclipse.stardust.ui.web.viewscommon.dialogs.AbortActivityBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.ICallbackHandler.EventType;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.JoinProcessDialogBean;
+import org.eclipse.stardust.ui.web.viewscommon.dialogs.RelocateActivityDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.dialogs.SwitchProcessDialogBean;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
@@ -198,8 +200,12 @@ public class ActivityDetailsBean extends UIComponentBean
    private List<DocumentInfo> displayProcessAttachments;
 
    private List<DocumentInfo> displayProcessDocuments;
+   
+   private List<DocumentInfo> displayCorrespondenceFolders;
 
    private String processAttachmentsFolderPath;
+   
+   private String correspondenceFolderPath;
    
    private boolean autoOperationsPerformed;
    
@@ -245,6 +251,10 @@ public class ActivityDetailsBean extends UIComponentBean
    // Kind of constant, loaded from  properties
    // Temporary to support both modes for some time
    private static boolean HTML_BASED;
+   
+   private QualityAssuranceActivityBean qaBean;
+
+   private boolean hasCorrespondenceFolder = false;
 
    public static IActivityInteractionController getInteractionController(Activity activity)
    {
@@ -1079,7 +1089,7 @@ public class ActivityDetailsBean extends UIComponentBean
     */
    public void handleEvent(NoteEvent event)
    {
-      if (scopeProcessInstance.getOID() == event.getScopeProcessInstanceOid())
+      if (scopeProcessInstance != null && scopeProcessInstance.getOID() == event.getScopeProcessInstanceOid())
       {
          refreshNotes(event.getAllNotes());
       }
@@ -1156,6 +1166,34 @@ public class ActivityDetailsBean extends UIComponentBean
          return ProcessInstanceUtils.openNotes(activityInstance.getProcessInstance(), params);
       }
       return null;
+   }
+
+   /**
+    * 
+    */
+   public void openRelocationDialog()
+   {
+      RelocateActivityDialogBean dialog = (RelocateActivityDialogBean) FacesUtils.getBeanFromContext("relocateActivityDialogBean");
+      dialog.setActivityInstance(getActivityInstance());
+      dialog.setCallbackHandler(new ICallbackHandler()
+      {
+         @Override
+         public void handleEvent(EventType eventType)
+         {
+            if (eventType.equals(EventType.APPLY))
+            {
+               ActivityDetailsBean.this.interaction = null;
+               skipViewEvents = true;
+               PortalApplication.getInstance().closeView(thisView, false);
+               releaseInteraction();
+               
+               // When view close is auto-operation, sync view is required to update focus view
+               PortalApplication.getInstance().addEventScript("parent.BridgeUtils.View.syncActiveView();");
+               skipViewEvents = false;
+            }
+         }
+      });
+      dialog.openPopup();
    }
 
    /**
@@ -1372,7 +1410,7 @@ public class ActivityDetailsBean extends UIComponentBean
                .getActivity());
          if (null != interactionController)
          {
-            if (interactionController.closePanel(ai, ClosePanelScenario.SUSPEND))
+            if (interactionController.closePanel(ai, ClosePanelScenario.SUSPEND, null))
             {
                // close synchronously
                if (keepOwnership)
@@ -1429,7 +1467,7 @@ public class ActivityDetailsBean extends UIComponentBean
                .getActivity());
          if (null != interactionController)
          {
-            if (interactionController.closePanel(ai, ClosePanelScenario.SUSPEND_AND_SAVE))
+            if (interactionController.closePanel(ai, ClosePanelScenario.SUSPEND_AND_SAVE, null))
             {
                // close synchronously
                retrieveOutDataMapping(interactionController, true, new ParametricCallbackHandler()
@@ -1502,42 +1540,50 @@ public class ActivityDetailsBean extends UIComponentBean
       }
    }
 
+   /*
+    * Called from user direct action from toolbar
+    */
    public void completeQualityAssurancePass()
    {
-      completeQualityAssuranceActivity(QAAction.PASS);
+      completeQualityAssuranceActivity(QAAction.PASS, true);
    }
 
+   /*
+    * Called from user direct action from toolbar
+    */
    public void completeQualityAssuranceFail()
    {
-      completeQualityAssuranceActivity(QAAction.FAIL);
+      completeQualityAssuranceActivity(QAAction.FAIL, true);
    }
 
-   private void completeQualityAssuranceActivity(final QAAction action)
+   /*
+    * Called asynchronously when activity needs to be continued
+    */
+   public void continueQualityAssurancePass()
    {
-      ActivityInstance ai = activityInstance;
-      IActivityInteractionController interactionController = getInteractionController(ai
-            .getActivity());
+      completeQualityAssuranceActivity(QAAction.PASS, false);
+   }
 
-      if (null != interactionController)
+   /*
+    * Called asynchronously when activity needs to be continued
+    */
+   public void continueQualityAssuranceFail()
+   {
+      completeQualityAssuranceActivity(QAAction.FAIL, false);
+   }
+
+   /**
+    * @param action
+    * @param reInitiate
+    */
+   private void completeQualityAssuranceActivity(final QAAction action, boolean reInitiate)
+   {
+      if (null == qaBean)
       {
-         qualityAssuranceActionInProgress = true;
-         qualityAssuranceAction = action;
-         if (interactionController.closePanel(ai, ClosePanelScenario.COMPLETE))
-         {
-            qualityAssuranceActionInProgress = false;
-            qualityAssuranceAction = null;
-            retrieveOutDataMapping(interactionController, false, new ParametricCallbackHandler()
-            {
-               public void handleEvent(EventType eventType)
-               {
-                  if (EventType.APPLY == eventType)
-                  {
-                     QualityAssuranceActivityBean.openDialog(action, getActivityInstance(), thisView, getParameters());
-                  }
-               }
-            });
-         }
+         qaBean = QualityAssuranceActivityBean.getInstance();
       }
+      
+      qaBean.process(reInitiate, action, getActivityInstance(), thisView, this);
    }
    
    public boolean isSaveActivityPopupOpened()
@@ -1629,7 +1675,7 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       String advanceArgs =
          "{anchorId:'ippSaveActivityAnchor', width:100, height:30, maxWidth:500, maxHeight:550, " +
-         "openOnRight:false, anchorXAdjustment:10, anchorYAdjustment:5, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+         "openOnRight:false, anchorXAdjustment:10, anchorYAdjustment:5, zIndex:200, border:'1px solid #DDDDDD', noUnloadWarning: 'true'}";
       return advanceArgs;
    }
 
@@ -1738,7 +1784,7 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       String advanceArgs =
          "{anchorId:'ippSuspendAnchor', width:100, height:30, maxWidth:500, maxHeight:550, " +
-         "openOnRight:false, anchorXAdjustment:10, anchorYAdjustment:5, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+         "openOnRight:false, anchorXAdjustment:10, anchorYAdjustment:5, zIndex:200, border:'1px solid #DDDDDD', noUnloadWarning: 'true'}";
       return advanceArgs;
    }
 
@@ -1819,7 +1865,7 @@ public class ActivityDetailsBean extends UIComponentBean
                .getActivity());
          if (null != interactionController)
          {
-            if (interactionController.closePanel(ai, ClosePanelScenario.COMPLETE))
+            if (interactionController.closePanel(ai, ClosePanelScenario.COMPLETE, null))
             {
                // close synchronously
                retrieveOutDataMapping(interactionController, false, new ParametricCallbackHandler()
@@ -1829,16 +1875,7 @@ public class ActivityDetailsBean extends UIComponentBean
                   {
                      if (EventType.APPLY == eventType)
                      {
-                        if (qualityAssuranceActionInProgress)
-                        {
-                           qualityAssuranceActionInProgress = false;
-                           QualityAssuranceActivityBean.openDialog(qualityAssuranceAction, getActivityInstance(), thisView, getParameters());
-                           qualityAssuranceAction = null;
-                        }
-                        else
-                        {
-                           completeCurrentActivityContinue((Map)getParameters());
-                        }
+                        completeCurrentActivityContinue((Map)getParameters());
                      }
                   }
                });
@@ -2078,7 +2115,7 @@ public class ActivityDetailsBean extends UIComponentBean
     * @param mainCallback
     */
    @SuppressWarnings({"unchecked", "rawtypes"})
-   private void retrieveOutDataMapping(IActivityInteractionController interactionController,
+   public void retrieveOutDataMapping(IActivityInteractionController interactionController,
          final boolean releaseInteraction, final ParametricCallbackHandler mainCallback)
    {
       boolean dataAvailable = true;
@@ -2436,6 +2473,7 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       fetchProcessAttachments();
       fetchProcessDocuments();
+      fetchCorrespondenceFolders();
    }
 
    /**
@@ -2456,6 +2494,33 @@ public class ActivityDetailsBean extends UIComponentBean
       }
    }
 
+   /**
+    * 
+    */
+   public void fetchCorrespondenceFolders()
+   {
+      if (activityInstance != null)
+      {
+         if (correspondenceFolderPath == null)
+         {
+            correspondenceFolderPath = DocumentMgmtUtility.getCorrespondenceFolderPath(processInstance.getOID());
+         }
+         Folder folder = DocumentMgmtUtility.getFolder(correspondenceFolderPath);
+         if (folder != null)
+         {
+            displayCorrespondenceFolders = new ArrayList<DocumentInfo>();
+            folder = DocumentMgmtUtility.getDocumentManagementService().getFolder(folder.getId(), 2);
+            
+            List<Folder> folders = folder.getFolders();
+            for (Folder folder2 : folders)
+            {
+               displayCorrespondenceFolders.add(new DocumentInfo(ResourcePaths.I_CORRESPONDENCE_EMAIL, folder2));
+            }
+            hasCorrespondenceFolder = true;
+         }
+      }
+   }
+   
    /**
     * @param attachments
     */
@@ -2579,7 +2644,7 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       String advanceArgs =
          "{anchorId:'ippProcessAttachmentsAnchor', width:100, height:30, maxWidth:500, maxHeight:550, " +
-         "openOnRight:false, anchorXAdjustment:30, anchorYAdjustment:2, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+         "openOnRight:false, anchorXAdjustment:30, anchorYAdjustment:2, zIndex:200, border:'1px solid #DDDDDD', noUnloadWarning: 'true'}";
       return advanceArgs;
    }
 
@@ -2707,7 +2772,7 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       String advanceArgs =
          "{anchorId:'ippNotesAnchor', width:100, height:30, maxWidth:500, maxHeight:550, " +
-         "openOnRight:false, anchorXAdjustment:30, anchorYAdjustment:2, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+         "openOnRight:false, anchorXAdjustment:30, anchorYAdjustment:2, zIndex:200, border:'1px solid #DDDDDD', noUnloadWarning: 'true'}";
       return advanceArgs;
    }
 
@@ -2834,7 +2899,7 @@ public class ActivityDetailsBean extends UIComponentBean
    public String getLinkedProcessIframePopupArgs()
    {
       String advanceArgs = "{anchorId:'ippLinkedProcessAnchor', width:100, height:30, maxWidth:500, maxHeight:550, "
-            + "openOnRight:false, anchorXAdjustment:15, anchorYAdjustment:2, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+            + "openOnRight:false, anchorXAdjustment:15, anchorYAdjustment:2, zIndex:200, border:'1px solid #DDDDDD', noUnloadWarning: 'true'}";
       return advanceArgs;
    }
 
@@ -2989,7 +3054,7 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       String advanceArgs =
          "{anchorId:'ippSwitchAnchor', width:100, height:30, maxWidth:500, maxHeight:550, " +
-         "openOnRight:false, anchorXAdjustment:10, anchorYAdjustment:5, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+         "openOnRight:false, anchorXAdjustment:10, anchorYAdjustment:5, zIndex:200, border:'1px solid #DDDDDD', noUnloadWarning: 'true'}";
       return advanceArgs;
    }
    
@@ -3102,7 +3167,7 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       String advanceArgs =
          "{anchorId:'ippCaseAnchor', width:100, height:30, maxWidth:500, maxHeight:550, " +
-         "openOnRight:false, anchorXAdjustment:13, anchorYAdjustment:5, zIndex:200, border:'1px solid black', noUnloadWarning: 'true'}";
+         "openOnRight:false, anchorXAdjustment:13, anchorYAdjustment:5, zIndex:200, border:'1px solid #DDDDDD', noUnloadWarning: 'true'}";
       return advanceArgs;
    }
    
@@ -3186,6 +3251,16 @@ public class ActivityDetailsBean extends UIComponentBean
       });
    }
    
+   public boolean isQualityAssuranceActivity()
+   {
+      if (QualityAssuranceState.IS_QUALITY_ASSURANCE.equals(activityInstance.getQualityAssuranceState()))
+      {
+         return true;
+      }
+      return false;
+   }
+   
+   
    /**
     * action listener to open Join process dialog
     */
@@ -3242,8 +3317,7 @@ public class ActivityDetailsBean extends UIComponentBean
 
    public static String getDocumentIcon(String fileName, String contentType)
    {
-      return "/plugins/views-common/images/icons/mime-types/"
-            + MimeTypesHelper.detectMimeType(fileName, contentType).getIconPath();
+      return MimeTypesHelper.detectMimeType(fileName, contentType).getIcon();
    }
 
    /* (non-Javadoc)
@@ -3339,6 +3413,12 @@ public class ActivityDetailsBean extends UIComponentBean
          return ActivityInstanceUtils.isDelegable(activityInstance);
       }
       return false;
+   }
+   
+   public boolean isRelocationEligible()
+   {
+
+      return ActivityInstanceUtils.isRelocationEligible(activityInstance);
    }
 
    private void setActivityInstance(ActivityInstance ai)
@@ -3442,6 +3522,11 @@ public class ActivityDetailsBean extends UIComponentBean
    {
       return supportsProcessAttachments;
    }
+   
+   public boolean hasCorrespondenceOutFolders()
+   {
+      return hasCorrespondenceFolder;
+   }
 
    public List<NoteTip> getDisplayNotes()
    {
@@ -3463,6 +3548,11 @@ public class ActivityDetailsBean extends UIComponentBean
       return displayProcessDocuments;
    }
 
+   public List<DocumentInfo> getCorrespondenceFolders()
+   {
+      return displayCorrespondenceFolders;
+   }
+   
    public boolean isAssemblyLineActivity()
    {
       return assemblyLineActivity;

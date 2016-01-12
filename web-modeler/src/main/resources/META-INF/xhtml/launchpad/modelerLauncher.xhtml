@@ -7,7 +7,7 @@
 	xmlns:ice="http://www.icesoft.com/icefaces/component"
 	xmlns:pc="http://www.sungard.de/carnot/web/portal-plugin/portalcommon">
 <head>
-<link href="../bpm-modeler/css/lightdust.css" rel="stylesheet" type="text/css" />
+<link href="../bpm-modeler/html5/styles/lightdust.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript">
 	function changeUserProfile(obj) {
 		window.parent.EventHub.events.publish("CHANGE_PROFILE", obj.options[obj.selectedIndex].value);
@@ -157,6 +157,7 @@
 				<f:param name="allowBrowse" />
 				<f:param name="fileName" />
 				<f:param name="filePath" />
+				<f:param name="modelId" />
 				<f:param name="fromlaunchPanels" />
 				<ice:outputText
 					style="color: #00629A; font-family: Arial,Helvetica,sans-serif;"

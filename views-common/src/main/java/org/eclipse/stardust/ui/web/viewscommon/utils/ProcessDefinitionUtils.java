@@ -248,7 +248,7 @@ public class ProcessDefinitionUtils
    }
 
    /**
-    * Returns all processes from all models or from provided model
+    * Returns all processes from all models
     * 
     * @param doFilterAccess
     * @param filterAuxiliaryProcesses
@@ -498,6 +498,44 @@ public class ProcessDefinitionUtils
          String pd2Name = I18nUtils.getProcessName(pd2);
          return pd1Name.compareTo(pd2Name);
       }
+   }
+   
+   /**
+    * @param doFilterAccess
+    * @param filterAuxiliaryProcesses
+    * @param filterDuplicateProcesses
+    * @param deployedModel
+    * @return Returns all processes from provided model
+    * 
+    */
+   public static List<ProcessDefinition> getProcessDefinitionsForModel(boolean doFilterAccess,
+         boolean filterAuxiliaryProcesses, boolean filterDuplicateProcesses, Model deployedModel)
+   {
+      List<ProcessDefinition> allProcesses = CollectionUtils.newArrayList();
+      List<ProcessDefinition> processes, filteredProcesses;
+      Set<String> processDefinitionQIds = new HashSet<String>();
+
+      if (null != deployedModel)
+      {
+         processes = deployedModel.getAllProcessDefinitions();
+         filteredProcesses = doFilterAccess == true ? filterAccessibleProcesses(
+               ServiceFactoryUtils.getWorkflowService(), processes) : processes;
+         for (ProcessDefinition processDefinition : filteredProcesses)
+         {
+            // check for duplicate process from different versions (active version's
+            // processes will override)
+            if (!(filterDuplicateProcesses && processDefinitionQIds.contains(processDefinition.getQualifiedId())))
+            {
+               // check for Auxiliary Processes
+               if (!(filterAuxiliaryProcesses && ProcessDefinitionUtils.isAuxiliaryProcess(processDefinition)))
+               {
+                  allProcesses.add(processDefinition);
+               }
+            }
+            processDefinitionQIds.add(processDefinition.getQualifiedId());
+         }
+      }
+      return allProcesses;
    }
    
 }

@@ -88,7 +88,7 @@
     * 
     */
    PriorityFilterController.prototype.tagPreMapper = function(item, index) {
-      var tagClass = "glyphicon glyphicon-flag priority-flag-" + item.name;
+      var tagClass = "pi pi-flag priority-flag-" + item.name;
       return tagClass;
    };
 

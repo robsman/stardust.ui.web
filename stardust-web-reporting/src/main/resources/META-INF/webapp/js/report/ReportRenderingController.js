@@ -51,6 +51,7 @@ define(
 			      
 			      this.previewMaxFetchSize = 500;
 			      this.previewRetrieveAll = false;
+			      this.isPreviewMode = true;
 
 				/**
 				 * 
@@ -602,25 +603,8 @@ define(
 											seriesIds.push(prop);
 										}
 										
-										console.log("Report Data before preprocessing");
-										console.log(data);
+										console.log("Report Data before preprocessing:" , data);
 
-//										var chartOptions ={
-//											    title: 'Concern vs. Occurrance',
-//											    //series:[{renderer:$.jqplot.BarRenderer}],
-//											    axesDefaults: {
-//											        tickRenderer: $.jqplot.CanvasAxisTickRenderer ,
-//											        tickOptions: {
-//											          angle: -30,
-//											          fontSize: '10pt'
-//											        }
-//											    },
-//											    axes: {
-//											      xaxis: {
-//											        renderer: $.jqplot.CategoryAxisRenderer
-//											      }
-//											    }
-//										};
 										var chartOptions = self
 												.createChartOptions(seriesIds, data);
 										// Clean Canvas
@@ -635,14 +619,8 @@ define(
 										window
 												.setTimeout(
 														function() {
-															console
-																	.debug("Chart Data");
-															console
-																	.debug(data.seriesGroup);
-															console
-																	.debug("Chart Options");
-															console
-																	.debug(chartOptions);
+															console.debug("Chart Data: ", data.seriesGroup);
+															console.debug("Chart Options: ",chartOptions);
 
 															if (data.seriesGroup.length) {
 																self.chart = jQuery
@@ -747,9 +725,8 @@ define(
 							.done(
 									function(data) {
 										var rows = data.recordSet;
-										console.log("Record Set");
-										console.log(rows);
-
+										console.log("Record Set: " , rows);
+										
 										dataTableBody.empty();
 
 										for ( var n = 0; n < rows.length; ++n) {
@@ -917,7 +894,7 @@ define(
 													deferred.resolve();
 												}).fail(function(err) {
 											self.renderingFailed = self.getI18N("reporting.definitionView.retrievalFailed");		
-											console.log("Failed getting Preview Date: showing dummy data" + err);
+											console.log("Failed getting Preview Date: showing dummy data: " , err);
 											deferred.reject();
 										});	
 										
@@ -952,8 +929,7 @@ define(
 			    
 			    self.getReportData(self.report, self.parameters)
 			        .done(function(data) {
-			        console.log("Data for Document");
-			        console.log(data);
+			        console.log("Data for Document: ", data);
 			        
 				    //show preview
 				    self.hideReportPreview = false;
@@ -1411,7 +1387,7 @@ define(
      		}).fail(function(err) {
      			self.renderingFailed = self.getI18N("reporting.definitionView.retrievalFailed");
      			scopeController.updateView();
-     			console.log("Failed getting Preview Date: " + err);
+     			console.log("Failed getting Preview Date: " , err);
      		});   
          };
 		
@@ -1482,6 +1458,23 @@ ReportRenderingController.prototype.formatPreviewData = function(data, scopeCont
          key = replaceSpecialChars(key);
          var value = record[selColumn];
          b[key] = value;
+         
+         if (selectedColumns[selColumn].metadata && selectedColumns[selColumn].metadata.javaType && 
+        				 selectedColumns[selColumn].metadata.javaType == "java.math.BigDecimal" && 
+        				 selectedColumns[selColumn].metadata.xPath && 
+        				 selectedColumns[selColumn].metadata.xPath == "Price") {
+        	 if (record[selColumn] && !isNaN(record[selColumn])) {
+        		 var decimalPrecision = 2;
+        		 var recordStr = record[selColumn].toString();
+        		 var index = recordStr.indexOf(".");
+        		 if (index != -1 && (recordStr.length - index) >= 4) {
+        			 //Value is having more than 2 decimal precision
+        			 record[selColumn] = recordStr.slice(0, recordStr.indexOf(".") + decimalPrecision + 1);
+        		 } else {
+        			 record[selColumn] = ((record[selColumn] * 100) / 100).toFixed(decimalPrecision);
+        		 }
+        	 }
+         }
       }
       a.push(b);
    }

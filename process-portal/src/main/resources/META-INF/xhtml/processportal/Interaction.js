@@ -1,6 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2013 SunGard CSA LLC. All rights reserved.
- ******************************************************************************/
+ * Copyright (c) 2015 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
 
 if (!window.bpm) {
 	bpm = {};
@@ -29,8 +36,7 @@ if (!window.bpm.portal.Interaction) {
 		 *
 		 */
 		Interaction.prototype.bind = function() {
-			console.log("Options");
-			console.log(this.options);
+			console.log("Options: " , this.options);
 
 			var deferred = jQuery.Deferred();
 
@@ -38,7 +44,7 @@ if (!window.bpm.portal.Interaction) {
 
 			// Extract callback URL
 
-			console.log("Binding Interaction Object from URL: " + this.url);
+			console.log("Binding Interaction Object from URL: " , this.url);
 
 			this.callbackUrl = jQuery.url(window.location.search).param(
 					"ippInteractionUri");
@@ -48,19 +54,18 @@ if (!window.bpm.portal.Interaction) {
 					: this.callbackUrl.substring(0, this.callbackUrl
 							.indexOf("/services"));
 
-			console.log("Callback URL: " + this.callbackUrl);
-			console.log("Base URL: " + this.baseUrl);
+			console.log("Callback URL: " , this.callbackUrl);
+			console.log("Base URL: " , this.baseUrl);
 
 			this.mode = jQuery.url(window.location.search).param("ippMode");
 
 			console.log("Mode: "
-					+ jQuery.url(window.location.search).param("ippMode"));
+					, jQuery.url(window.location.search).param("ippMode"));
 
 			if (!this.mode) {
 				this.portalMainWnd = this.getIppWindow();
 
-				console.log("Portal Main Window");
-				console.log(this.portalMainWnd);
+				console.log("Portal Main Window: " , this.portalMainWnd);
 			}
 
 			// Get metadata
@@ -170,15 +175,13 @@ if (!window.bpm.portal.Interaction) {
 			var data;
 			var contentType;
 
-			console.log("Transfer Object");
-			console.log(this.transfer);
+			console.log("Transfer Object: ", this.transfer);
 
 			if (this.mode === "test") {
 			} else if (this.mode === "modeler") {
 				data = JSON.stringify(this.transfer);
 
-				console.log("Stringified");
-				console.log(this.transfer);
+				console.log("Stringified: ", this.transfer);
 
 				jQuery.ajax({
 					type : "PUT",
@@ -191,13 +194,11 @@ if (!window.bpm.portal.Interaction) {
 					console.log("Fail!");
 				});
 			} else {
-				console.log("Submit");
-				console.log(this.transfer);
-
+				console.log("Submit: ", this.transfer);
 				var converter = new X2JS();
 
 				for ( var name in this.transfer) {
-					console.log("Parameter " + name);
+					console.log("Parameter " , name);
 
 					var data = null;
 
@@ -213,8 +214,8 @@ if (!window.bpm.portal.Interaction) {
 						contentType = "application/xml";
 					}
 
-					console.log("Value to be submitted: " + data);
-					console.log("Content Type: " + contentType);
+					console.log("Value to be submitted: " , data);
+					console.log("Content Type: " , contentType);
 
 					jQuery.ajax({
 						type : "PUT",

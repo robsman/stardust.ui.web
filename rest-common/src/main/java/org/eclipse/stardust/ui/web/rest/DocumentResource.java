@@ -12,27 +12,50 @@ package org.eclipse.stardust.ui.web.rest;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
 
-import javax.ws.rs.*;
+import javax.annotation.Resource;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
+import org.apache.cxf.jaxrs.ext.multipart.Attachment;
+import org.eclipse.stardust.common.log.LogManager;
+import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
+import org.eclipse.stardust.ui.web.rest.exception.PortalErrorClass;
+import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
+import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
+import org.eclipse.stardust.ui.web.rest.service.DocumentService;
+import org.eclipse.stardust.ui.web.rest.service.RepositoryService;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.DocumentDTOBuilder;
+import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
+import org.eclipse.stardust.ui.web.rest.service.utils.FileUploadUtils;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
-import org.eclipse.stardust.common.log.LogManager;
-import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.rest.exception.PortalErrorClass;
-import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
-import org.eclipse.stardust.ui.web.rest.service.DocumentService;
-import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
 
 /**
  * @author Anoop.Nair
@@ -49,6 +72,12 @@ public class DocumentResource
    @Autowired
    private DocumentService documentService;
 
+   @Autowired
+   private RepositoryService repositoryService;
+   
+   @Resource
+   private RestCommonClientMessages restCommonClientMessages;
+   
    private final JsonMarshaller jsonIo = new JsonMarshaller();
 
    @GET
@@ -158,6 +187,95 @@ public class DocumentResource
       }
    }
 
+   /**
+    * @author Yogesh.Manware
+    * @param processOid
+    * @return
+    * @throws Exception 
+    */
+   @POST
+   @Consumes(MediaType.MULTIPART_FORM_DATA)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("")
+   public Response addDocument(List<Attachment> attachments) throws Exception
+   {
+      // parse attachments
+      List<DocumentInfoDTO> uploadedDocuments = FileUploadUtils.parseAttachments(attachments);
+
+      List<DocumentDTO> documents = new ArrayList<DocumentDTO>();
+      for (DocumentInfoDTO documentInfoDTO : uploadedDocuments)
+      {
+         documents.add(repositoryService.createDocument(documentInfoDTO, null));
+      }
+
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(documents)).build();
+   }
+
+
+   /**
+    * @author Yogesh.Manware
+    * @param processOid
+    * @return
+    * @throws Exception 
+    */
+   @DELETE
+   @Consumes(MediaType.MULTIPART_FORM_DATA)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{documentId: .*}")
+   public Response deleteDocument(@PathParam("documentId") String documentId) throws Exception
+   {
+      documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
+      DocumentMgmtUtility.deleteDocumentWithVersions(DocumentMgmtUtility.getDocument(documentId));
+
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(restCommonClientMessages.get("success.message"))).build();
+   }
+   
+   /**
+    *  @author Yogesh.Manware
+    * @param documentId
+    * @param postedData
+    * @return
+    * @throws Exception
+    */
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("{documentId: .*}/copy")
+   public Response copy(@PathParam("documentId") String documentId, String postedData) throws Exception
+   {
+      Map<String, Object> data = JsonDTO.getAsMap(postedData);
+      String targetFolderPath = (String) data.get("targetFolderPath");
+      boolean overWrite = false;
+      if (data.get("overWrite") != null)
+      {
+         overWrite = (Boolean) data.get("overWrite");
+      }
+      documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
+
+      DocumentDTO documentDTO = DocumentDTOBuilder.build(DocumentMgmtUtility.copyDocumentTo(
+            DocumentMgmtUtility.getDocument(documentId), targetFolderPath, overWrite));
+
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
+   }
+
+   /**
+    *  @author Yogesh.Manware
+    * @param documentId
+    * @return
+    * @throws Exception
+    */
+   @GET
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/{documentId: .*}")
+   public Response getDocument(@PathParam("documentId") String documentId) throws Exception
+   {
+      documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
+      DocumentDTO documentDTO = DocumentDTOBuilder.build(DocumentMgmtUtility.getDocument(documentId));
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
+   }
+   
+   
    /**
     * @return
     */

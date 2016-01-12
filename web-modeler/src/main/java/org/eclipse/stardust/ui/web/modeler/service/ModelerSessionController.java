@@ -26,6 +26,7 @@ import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
 import org.eclipse.stardust.model.xpdl.carnot.ModelType;
+import org.eclipse.stardust.ui.web.common.util.PortalTimestampProvider;
 import org.eclipse.stardust.ui.web.modeler.common.BadRequestException;
 import org.eclipse.stardust.ui.web.modeler.common.ConflictingRequestException;
 import org.eclipse.stardust.ui.web.modeler.common.ItemNotFoundException;
@@ -76,7 +77,7 @@ public class ModelerSessionController
       ChangeJto jto = new ChangeJto();
 
       jto.id= change.getId();
-      jto.timestamp = System.currentTimeMillis();
+      jto.timestamp = PortalTimestampProvider.getTimeStampValue();
 
       if (change.getMetadata().containsKey("commandId"))
       {
@@ -146,7 +147,7 @@ public class ModelerSessionController
       ChangeJto jto = new ChangeJto();
 
       jto.id= changes.getId();
-      jto.timestamp = System.currentTimeMillis();
+      jto.timestamp = PortalTimestampProvider.getTimeStampValue();
 
       jto.commandId = command.commandId;
       jto.modelId= command.modelId;
@@ -515,7 +516,7 @@ public class ModelerSessionController
       ModelBinding<EObject> modelBinding = currentSession().modelRepository().getModelBinding(model);
       for (ChangeDescriptionJto changeDescrJto : commandJto.changeDescriptions)
       {
-         EObject targetElement = findTargetElement(model, changeDescrJto);
+         EObject targetElement = findTargetElement(currentSession(), model, changeDescrJto);
 
          changeDescriptors.add(new CommandHandlingMediator.ChangeRequest(model,
                targetElement, changeDescrJto.changes));
@@ -564,15 +565,15 @@ public class ModelerSessionController
       }
    }
 
-   private EObject findTargetElement(EObject model, ChangeDescriptionJto changeDescrJto)
+   public static EObject findTargetElement(ModelingSession currentSession, EObject model, ChangeDescriptionJto changeDescrJto)
    {
       if (model instanceof ModelType)
       {
-         return findTargetElement((ModelType) model, changeDescrJto);
+         return findTargetElement(currentSession, (ModelType) model, changeDescrJto);
       }
       else
       {
-         ModelBinding<EObject> modelBinding = currentSession().modelRepository().getModelBinding(model);
+         ModelBinding<EObject> modelBinding = currentSession.modelRepository().getModelBinding(model);
          ModelNavigator<EObject> modelNavigator = modelBinding.getNavigator();
          if ( !isEmpty(changeDescrJto.uuid))
          {
@@ -596,14 +597,14 @@ public class ModelerSessionController
       }
    }
 
-   private EObject findTargetElement(ModelType model, ChangeDescriptionJto changeDescrJto)
+   private static EObject findTargetElement(ModelingSession currentSession, ModelType model, ChangeDescriptionJto changeDescrJto)
    {
       EObject targetElement = null;
       // existing target, identified by uuid
       if (null != changeDescrJto.uuid)
       {
          String uuid = changeDescrJto.uuid;
-         targetElement = currentSession().uuidMapper().getEObject(uuid);
+         targetElement = currentSession.uuidMapper().getEObject(uuid);
 
          if (null == targetElement)
          {
@@ -702,7 +703,7 @@ public class ModelerSessionController
       };
    }
 
-   private ModelingSession currentSession()
+   public ModelingSession currentSession()
    {
       return sessionLocator.currentModelingSession();
    }

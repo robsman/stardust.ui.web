@@ -1,0 +1,196 @@
+
+ul.sd-tree span{
+  font-size:1em;
+  color:#5c6e87;
+}
+
+ul.sd-tree{
+	border: solid 1px #ddd;
+	padding: 1em;
+}
+
+ul.sd-tree i:before,
+ul.sd-tree i:after{
+	font-style:normal;
+}
+
+ul.sd-tree , 
+.sd-tree ul
+{
+  list-style-type: none;
+}
+
+ul.sd-tree li{
+  margin-top:3px;
+}
+
+ul.sd-tree i {
+  padding-right:0.5em;
+  cursor: pointer;
+  color: #A69A88;
+}
+
+ul.sd-tree i.isDeferred:before{
+	font: normal normal normal 14px/1 FontAwesome !important;
+	content: "\f110" !important;
+	-webkit-animation: fa-spin 2s infinite linear;
+	animation: fa-spin 2s infinite linear;
+}
+
+ul.sd-tree input{
+  border:none;
+}
+
+ul.sd-tree input:disabled{
+  background:white;
+  border:none;
+  color:#000;
+}
+
+.sd-tree-expand{
+  display: inline-block;
+  x-font: normal normal normal 14px/1 FontAwesome;
+  font-family: 'Glyphicons Halflings';
+  text-rendering: auto;
+  webkit-font-smoothing: antialiased;
+  moz-osx-font-smoothing: grayscale;
+}
+.sd-tree-expand:before{
+  x-content: "\f0da"; /*Font Awesome*/
+  content: "\e072";   /*Glyphicons*/
+  font-size:.73em;
+}
+
+.sd-tree-collapse{
+  display: inline-block;
+  x-font: normal normal normal 14px/1 FontAwesome;
+  font-family: 'Glyphicons Halflings';
+  text-rendering: auto;
+  webkit-font-smoothing: antialiased;
+  moz-osx-font-smoothing: grayscale;
+  transform:rotate(90deg);
+  top: 3px;
+  left: -3px;
+}
+
+.sd-tree-collapse:before{
+  x-content: "\f0d7"; /*Font Awesome*/
+  content: "\e072";   /*Glyphicons*/
+  font-size:.73em;
+}
+
+ul.sd-tree .menu{
+  border:solid 1px #aaa;
+  background: #fff;
+  x-box-shadow:5px 5px 20px #ddd;
+  position:absolute;
+  border-radius:1px;
+  padding:5px;
+  padding-top:0px;
+  margin-left:25px;
+  min-width:175px;
+  max-width:250px;
+  z-index:9999;
+  font-size:.91em;
+}
+
+ul.sd-tree .menu a:hover{
+  text-decoration: underline;
+  background:#fff !important;
+  color:#666;
+}
+
+ul.sd-tree .menu li > a {
+	padding-left: 15px;
+}
+
+ul.sd-tree .menu:before {
+	content: 'x';
+	float: right;
+}
+
+ul.sd-tree .menu ul{
+  list-style-type: none;
+  margin:0;
+  padding:0;
+}
+
+ul.sd-tree .menu li:not(:first-child):not(:last-child) {
+  list-style-type: none;
+  border-bottom:solid 1px #ddd !important;
+  margin:0;
+  padding:1px;
+}
+
+/*case where menu elements have no text*/
+ul.sd-tree .menu a:empty {
+  display:flex !important;
+  padding-top:-9px !important;
+  height:0px;
+}
+
+ul.sd-tree .title-section span{
+  padding:4px;
+}
+
+ul.sd-tree .expand-section{
+	display:inline-table;
+	min-width:1.15em;
+}
+
+ul.sd-tree  .is-active {
+  background:#2B7BAD !important;
+  color:#fff;
+  border:solid 1px #ccc;
+  border-radius:5px;
+}
+
+ul.sd-tree a{
+  text-decoration: none;
+  color:#00629A;
+}
+
+ul.sd-tree a > i{
+   color:#A69A88;
+}
+
+ul.sd-tree a i{
+   font-size:16px;
+   padding-right: 0;
+}
+
+ul.sd-tree ul{
+  padding: 0 0 0 20px;
+  margin:0 0 0 0;
+}
+
+ul.sd-tree .title-section a{
+  cursor: pointer;
+  border:solid 1px #fff;
+}
+
+ul.sd-tree a.drop-over span,
+ul.sd-tree a.tree-node:hover span{
+  background:#ffffe0;
+  text-decoration:underline;
+}
+
+.sd-tree .match > div > a > span{
+	background: #f4f4f4;
+	border-radius: 2px;
+}
+
+ul.sd-tree i.selected + span {
+  background: #EEE2CF !important;
+  color: #708090 !important;
+  border-radius: 5px !important;
+}
+
+ul.sd-tree i.invalid:before{
+	color: red !important;
+}
+
+
+.sd-tree .hide {
+	display: none;
+}

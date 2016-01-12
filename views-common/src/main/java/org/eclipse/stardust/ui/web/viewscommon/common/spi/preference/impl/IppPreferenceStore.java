@@ -33,7 +33,7 @@ public class IppPreferenceStore implements PreferenceStore
 
    private static final Logger trace = LogManager.getLogger(IppPreferenceStore.class);
    
-   protected IPreferenceStore preferenceStore;
+   protected transient IPreferenceStore preferenceStore;
    protected PreferenceScope scope;
  
    /**

@@ -11,8 +11,7 @@
 		<pc:automationTag value="auto-COM-CaseDetView-ToolbarTerminate"/>		
 		
 		<ice:panelGroup>
-			<ice:graphicImage styleClass="iceCmdBtn-dis"
-				value="/plugins/views-common/images/icons/abort_process.png" />
+			<ice:outputText styleClass="iceCmdBtn-dis pi-process-abort pi-lg" />
 		</ice:panelGroup>
 
 		<!-- Rendered when process termination is allowed -->
@@ -27,54 +26,44 @@
 		<!-- Rendered when process termination is not allowed -->
 		<ice:panelGroup
 			rendered="#{!caseDetailsBean.canManageCase or caseDetailsBean.inactiveCase}">
-			<ice:graphicImage styleClass="iceCmdBtn-dis"
-				value="/plugins/views-common/images/icons/arrow.png" />
+			<ice:outputText styleClass="iceCmdBtn-dis pi pi-menu-dropdown pi-sm" />
 		</ice:panelGroup>
 
 		<pc:automationTag value="auto-COM-CaseDetView-ToolbarRecover"/>
-		<ice:commandButton
-			image="/plugins/views-common/images/icons/recover_process.png"
+		<ice:commandLink
 			action="#{caseDetailsBean.recoverProcess}"
 			partialSubmit="true"
 			title="#{messages_bcc['common.tooltip.recover']}"
-			styleClass="toolbar-button" />
+			styleClass="pi pi-recover pi-lg" />
 
 		<pc:automationTag value="auto-COM-CaseDetView-ToolbarAttachToCase"/>					
 		<ice:commandLink actionListener="#{caseDetailsBean.attachToCase}"
 			rendered="#{caseDetailsBean.canManageCase}"
 			disabled="#{caseDetailsBean.inactiveCase}" >	
-			<ice:graphicImage
-				url="/plugins/views-common/images/icons/envelope--plus.png"
+			<ice:outputText
 				title="#{views_common_msgPropsBean['views.case.attachPI']}" 
-				styleClass="#{!caseDetailsBean.inactiveCase? '' : 'iceCmdBtn-dis'}" />
+				styleClass="#{!caseDetailsBean.inactiveCase? '' : 'iceCmdBtn-dis'} pi pi-lg pi-attach-process-to-case" />
 		</ice:commandLink>
 					
 		<ice:graphicImage value="/plugins/views-common/images/icons/toolbar-separator.png"/>	
 		
-		<pc:automationTag value="auto-COM-CaseDetView-ToolbarOpenCorrespondence"/>
-		<ice:commandButton
-			image="/plugins/views-common/images/icons/email_add.png"
-			disabled="#{!caseDetailsBean.supportsProcessAttachments}"
-			action="#{caseDetailsBean.openCorrespondence}"
-			partialSubmit="true"
-			title="#{messages_bcc['toolbars.processInstanceDetailsView.tooltip.correspondence']}"
-			styleClass="toolbar-button" />
-			
 		<pc:automationTag value="auto-COM-CaseDetView-ToolbarOpenChat"/>
-		<ice:commandButton
-			image="/plugins/views-common/images/icons/user_comment.png"
+		<ice:commandLink
 			disabled="#{!caseDetailsBean.supportsProcessAttachments}"
 			action="#{caseDetailsBean.openChat}" partialSubmit="true"
 			title="#{messages_bcc['toolbars.processInstanceDetailsView.tooltip.chat']}"
-			styleClass="toolbar-button" />
+			styleClass="toolbar-button">
+			<i class="pi pi-chat pi-lg" />
+		</ice:commandLink>
 		<ice:graphicImage value="/plugins/views-common/images/icons/toolbar-separator.png"/>
 		
 		<pc:automationTag value="auto-COM-CaseDetView-ToolbarRefresh"/>
-		<ice:commandButton
-			image="/plugins/views-common/images/icons/arrow_refresh.png"
+		<ice:commandLink
 			action="#{caseDetailsBean.update}" partialSubmit="true"
 			title="#{messages_bcc['toolbars.common.tooltip.update']}"
-			styleClass="toolbar-button" />
+			styleClass="toolbar-button">
+			<i class="pi pi-refresh pi-lg" />
+		</ice:commandLink>
 	</ice:panelGrid>
 </f:view>	
 	

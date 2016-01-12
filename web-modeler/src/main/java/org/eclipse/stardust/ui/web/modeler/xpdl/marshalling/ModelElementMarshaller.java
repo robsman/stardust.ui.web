@@ -4,6 +4,7 @@ import static org.eclipse.emf.common.util.ECollections.sort;
 import static org.eclipse.stardust.common.CollectionUtils.isEmpty;
 import static org.eclipse.stardust.common.CollectionUtils.newArrayList;
 import static org.eclipse.stardust.common.StringUtils.isEmpty;
+import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingActivity;
 import static org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils.findContainingDiagram;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractInt;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
@@ -47,6 +48,7 @@ import org.eclipse.stardust.model.xpdl.xpdl2.LoopType;
 import org.eclipse.stardust.model.xpdl.xpdl2.extensions.LoopDataRefType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.XpdlUtil;
 import org.eclipse.stardust.modeling.repository.common.descriptors.EObjectDescriptor;
+import org.eclipse.stardust.ui.web.modeler.authorization.AuthorizationUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.LockInfo;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.jto.ChangeDescriptionJto;
@@ -58,6 +60,7 @@ import org.eclipse.stardust.ui.web.modeler.service.RecordingModelManagementStrat
 import org.eclipse.stardust.ui.web.modeler.service.XsdSchemaUtils;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelFormat;
 import org.eclipse.stardust.ui.web.modeler.spi.ModelingSessionScoped;
+import org.eclipse.stardust.ui.web.modeler.upgrade.ModelUpgrader;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.ClassesHelper;
 
 /**
@@ -182,7 +185,7 @@ public class ModelElementMarshaller implements ModelMarshaller
       }
       else if (modelElement instanceof DataMappingType)
       {
-         // Do nothing - handled via DataMappingConnectionType
+         jsResult = toDataMappingJson((DataMappingType) modelElement);
       }
       else if (modelElement instanceof DataType)
       {
@@ -340,6 +343,9 @@ public class ModelElementMarshaller implements ModelMarshaller
 
       JsonObject dataFlowsJson = new JsonObject();
       processJson.add(ModelerConstants.DATA_FLOWS_PROPERTY, dataFlowsJson);
+      
+      JsonArray permissionsJson = AuthorizationUtils.getPermissionsJson(processDefinition);
+      processJson.add("permissions", permissionsJson);
 
       return processJson;
    }
@@ -549,7 +555,7 @@ public class ModelElementMarshaller implements ModelMarshaller
             {
                type = AttributeUtil.getAttributeValue(data, "carnot:engine:type");
                // For Enum's return Data fullId
-               if (type.equalsIgnoreCase(ModelerConstants.ENUM_PRIMITIVE_DATA_TYPE))
+               if (type != null && type.equalsIgnoreCase(ModelerConstants.ENUM_PRIMITIVE_DATA_TYPE))
                {
                   String typeDeclarationId = AttributeUtil.getAttributeValue(data,
                         StructuredDataConstants.TYPE_DECLARATION_ATT);
@@ -863,7 +869,7 @@ public class ModelElementMarshaller implements ModelMarshaller
          for (TransitionConnectionType transitionConnection : poolSymbol.getTransitionConnection())
          {
             JsonObject connectionJson = toTransitionConnectionJson(transitionConnection);
-            if (hasNotJsonNull(connectionJson, ModelerConstants.MODEL_ELEMENT_PROPERTY))
+            if (connectionJson != null && hasNotJsonNull(connectionJson, ModelerConstants.MODEL_ELEMENT_PROPERTY))
             {
                connectionsJson.add(
                      extractString(
@@ -932,7 +938,6 @@ public class ModelElementMarshaller implements ModelMarshaller
          }
          else
          {
-            boolean isSubProcess = false;
             activityJson.addProperty(ModelerConstants.TYPE_PROPERTY,
                   ModelerConstants.ACTIVITY_KEY);
 
@@ -945,7 +950,6 @@ public class ModelElementMarshaller implements ModelMarshaller
             }
             else
             {
-               isSubProcess = true;
                activityJson.addProperty(ModelerConstants.ACTIVITY_TYPE,
                      activity.getImplementation().getLiteral());
             }
@@ -1103,10 +1107,31 @@ public class ModelElementMarshaller implements ModelMarshaller
                      {
                         createJavaAccessPoints(activity.getApplication(),
                               accessPointsJson);
+                     }
+                  }
                }
             }
          }
-      }
+
+         if(activity.getValidQualityCodes() != null)
+         {
+            JsonArray validCodesJson = new JsonArray();
+            for (Iterator<Code> i = activity.getValidQualityCodes().iterator(); i
+                  .hasNext();)
+            {
+               Code code = i.next();
+               Code resolvedCode = resolveCode(activity, code);
+               if (resolvedCode != null)
+               {
+                  String uuid = getModelBuilderFacade().getModelManagementStrategy().uuidMapper().getUUID(resolvedCode);
+                  if(!StringUtils.isEmpty(uuid))
+                  {
+                     JsonPrimitive codeJson = new JsonPrimitive(uuid);
+                     validCodesJson.add(codeJson);
+                  }
+               }
+            }
+            activityJson.add(ModelerConstants.QUALITYASSURANCECODES, validCodesJson);
          }
 
          if (activity.getQualityControlPerformer() != null)
@@ -1117,26 +1142,6 @@ public class ModelElementMarshaller implements ModelMarshaller
                   getModelBuilderFacade().createFullId(
                         ModelUtils.findContainingModel(activity),
                         activity.getQualityControlPerformer()));
-            if(activity.getValidQualityCodes() != null)
-            {
-               JsonArray validCodesJson = new JsonArray();
-               for (Iterator<Code> i = activity.getValidQualityCodes().iterator(); i
-                     .hasNext();)
-               {
-                  Code code = i.next();
-                  Code resolvedCode = resolveCode(activity, code);
-                  if (resolvedCode != null)
-                  {
-                     JsonObject codeJson = new JsonObject();
-                     codeJson.addProperty(ModelerConstants.QC_CODE, resolvedCode.getCode());
-                     codeJson.addProperty(ModelerConstants.QC_NAME, resolvedCode.getName());
-                     codeJson
-                           .addProperty(ModelerConstants.QC_VALUE, resolvedCode.getValue());
-                     validCodesJson.add(codeJson);
-                  }
-               }
-               qcJson.add(ModelerConstants.QC_VALID_CODES, validCodesJson);
-            }
             activityJson.add(ModelerConstants.QUALITYCONTROL, qcJson);
 
             JsonObject attributes;
@@ -1171,6 +1176,16 @@ public class ModelElementMarshaller implements ModelMarshaller
          JsonObject onAssignmentJson = this.toEventJson(eventHandler, new JsonObject());
          activityJson.add("onAssignmentHandler", onAssignmentJson);
       }
+
+      eventHandler = EventMarshallingUtils.findResubmissionEventHandler(activity);
+      if (eventHandler != null)
+      {
+         JsonObject resubmissionJson = this.toEventJson(eventHandler, new JsonObject());
+         activityJson.add("resubmissionHandler", resubmissionJson);
+      }
+      
+      JsonArray permissionsJson = AuthorizationUtils.getPermissionsJson(activity);
+      activityJson.add("permissions", permissionsJson);
 
       return activityJson;
    }
@@ -1376,6 +1391,10 @@ public class ModelElementMarshaller implements ModelMarshaller
                else
                {
                   ApplicationTypeType applicationType = application.getType();
+                  if (applicationType == null) 
+                  {
+                     break;
+                  }
                   String typeId = applicationType.getId();
 
                   // TODO check if it's ok to set task type as service task if none of the
@@ -1814,14 +1833,34 @@ public class ModelElementMarshaller implements ModelMarshaller
       // UUID is being used
       eventSymbolJson.addProperty(ModelerConstants.OID_PROPERTY,
             eventHandler.getElementOid());
+      
+      // Calcuate Lane offset for hostActivitySymbol
+      int laneOffsetX = 0;
+      int laneOffsetY = 0;
+      ISwimlaneSymbol container = (hostActivitySymbol.eContainer() instanceof ISwimlaneSymbol)
+            ? (ISwimlaneSymbol) hostActivitySymbol.eContainer()
+            : null;
+      while (null != container)
+      {
+         laneOffsetX += container.getXPos();
+         laneOffsetY += container.getYPos();
 
+         // recurse
+         container = (container.eContainer() instanceof ISwimlaneSymbol)
+               ? (ISwimlaneSymbol) container.eContainer()
+               : null;
+      }
+      
+      long activitySymbolXPos = hostActivitySymbol.getXPos() + laneOffsetX;
+      long activitySymbolYPos = hostActivitySymbol.getYPos() + laneOffsetY;
+      
       // guess coordinates relative to the hosting activity's symbol
       // TODO handle multiple events per activity, avoid collisions with explicit
       // intermediate event symbols
       eventSymbolJson.addProperty(ModelerConstants.X_PROPERTY,
-            hostActivitySymbol.getXPos() + (hostActivitySymbol.getWidth() - 24));
+            activitySymbolXPos + (hostActivitySymbol.getWidth() - 24));
       eventSymbolJson.addProperty(ModelerConstants.Y_PROPERTY,
-            hostActivitySymbol.getYPos() + (hostActivitySymbol.getHeight() - 12));
+            activitySymbolYPos + (hostActivitySymbol.getHeight() - 12));
       eventSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY, 24);
       eventSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY, 24);
 
@@ -1853,47 +1892,51 @@ public class ModelElementMarshaller implements ModelMarshaller
 
       // TODO This may changes
 
-      loadDescription(eventJson, eventHandler);
-      loadAttributes(eventHandler, eventJson);
 
-      eventJson.addProperty(ModelerConstants.LOG_HANDLER_PROPERTY,
-            eventHandler.isLogHandler());
-      eventJson.addProperty(ModelerConstants.CONSUME_ON_MATCH_PROPERTY,
-            eventHandler.isConsumeOnMatch());
-      eventJson.addProperty(ModelerConstants.EVENT_CLASS_PROPERTY,
-            EventMarshallingUtils.encodeEventHandlerType(eventHandler.getType()));
-      //eventJson.addProperty(ModelerConstants.THROWING_PROPERTY,
-      //      EventMarshallingUtils.encodeIsThrowingEvent(eventHandler.getType()));
-      eventJson.addProperty(ModelerConstants.INTERRUPTING_PROPERTY,
-            EventMarshallingUtils.encodeIsInterruptingEvent(eventHandler));
-
-      JsonArray parameterMappingsJson = new JsonArray();
-
-      eventJson.add(ModelerConstants.PARAMETER_MAPPINGS_PROPERTY, parameterMappingsJson);
-
-      for (AccessPointType accessPoint : eventHandler.getAccessPoint())
+      if (!eventHandler.getId().equals(ModelerConstants.RS_RESUBMISSION))
       {
-         JsonObject parameterMappingJson = new JsonObject();
+         loadDescription(eventJson, eventHandler);
+         loadAttributes(eventHandler, eventJson);
+         eventJson.addProperty(ModelerConstants.LOG_HANDLER_PROPERTY,
+               eventHandler.isLogHandler());
+         eventJson.addProperty(ModelerConstants.CONSUME_ON_MATCH_PROPERTY,
+               eventHandler.isConsumeOnMatch());
+         eventJson.addProperty(ModelerConstants.EVENT_CLASS_PROPERTY,
+               EventMarshallingUtils.encodeEventHandlerType(eventHandler.getType()));
+         //eventJson.addProperty(ModelerConstants.THROWING_PROPERTY,
+         //      EventMarshallingUtils.encodeIsThrowingEvent(eventHandler.getType()));
+         eventJson.addProperty(ModelerConstants.INTERRUPTING_PROPERTY,
+               EventMarshallingUtils.encodeIsInterruptingEvent(eventHandler));
 
-         parameterMappingsJson.add(parameterMappingJson);
-         parameterMappingJson.addProperty(ModelerConstants.ID_PROPERTY,
-               accessPoint.getId());
-         parameterMappingJson.addProperty(ModelerConstants.NAME_PROPERTY,
-               accessPoint.getName());
+         JsonArray parameterMappingsJson = new JsonArray();
 
-         if (accessPoint.getType() != null)
+         eventJson.add(ModelerConstants.PARAMETER_MAPPINGS_PROPERTY, parameterMappingsJson);
+
+         for (AccessPointType accessPoint : eventHandler.getAccessPoint())
          {
-            parameterMappingJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
-                  accessPoint.getType().getId());
+            JsonObject parameterMappingJson = new JsonObject();
+
+            parameterMappingsJson.add(parameterMappingJson);
+            parameterMappingJson.addProperty(ModelerConstants.ID_PROPERTY,
+                  accessPoint.getId());
+            parameterMappingJson.addProperty(ModelerConstants.NAME_PROPERTY,
+                  accessPoint.getName());
+
+            if (accessPoint.getType() != null)
+            {
+               parameterMappingJson.addProperty(ModelerConstants.DATA_TYPE_PROPERTY,
+                     accessPoint.getType().getId());
+            }
+
+            if (accessPoint.getDirection() != null)
+            {
+               parameterMappingJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
+                     accessPoint.getDirection().getLiteral());
+            }
+
+            loadAttributes(accessPoint, parameterMappingJson);
          }
 
-         if (accessPoint.getDirection() != null)
-         {
-            parameterMappingJson.addProperty(ModelerConstants.DIRECTION_PROPERTY,
-                  accessPoint.getDirection().getLiteral());
-         }
-
-         loadAttributes(accessPoint, parameterMappingJson);
       }
 
       EventActionType setDataAction = EventMarshallingUtils
@@ -1936,7 +1979,53 @@ public class ModelElementMarshaller implements ModelMarshaller
          eventJson.add("userExclusions", excludeUserActionsJson);
       }
 
+      if (eventHandler.getId().equals(ModelerConstants.RS_RESUBMISSION)) {
+         EventMarshallingUtils.addResubmissionToJson(eventHandler, eventJson);
+
+      }
+
+      JsonArray dataMappingsJson = toDataMappingsJson(eventHandler);
+      if (null != dataMappingsJson)
+      {
+         eventJson.add(ModelerConstants.DATAMAPPINGS_PROPERTY, dataMappingsJson);
+      }
+
       return eventJson;
+   }
+
+   public JsonArray toDataMappingsJson(EventHandlerType eventHandler)
+   {
+      JsonArray dataMappingsJson = null;
+
+      ActivityType activity = findContainingActivity(eventHandler);
+      if (null != activity)
+      {
+         String eventScope = "event-" + eventHandler.getId();
+
+         for (DataMappingType dataMapping : activity.getDataMapping())
+         {
+            if (eventScope.equals(dataMapping.getContext()))
+            {
+               if (null == dataMappingsJson)
+               {
+                  dataMappingsJson = new JsonArray();
+               }
+
+               JsonObject dataMappingJson = toDataMappingJson(dataMapping);
+               if (null != dataMapping.getData())
+               {
+                  DataType data = dataMapping.getData();
+                  dataMappingJson.addProperty(
+                        ModelerConstants.DATA_FULL_ID_PROPERTY,
+                        getModelBuilderFacade().createFullId(
+                              ModelUtils.findContainingModel(data), data));
+               }
+               dataMappingsJson.add(dataMappingJson);
+            }
+         }
+      }
+
+      return dataMappingsJson;
    }
 
    /**
@@ -2192,6 +2281,12 @@ public class ModelElementMarshaller implements ModelMarshaller
             {
                TypeDeclarationType typeDeclaration = StructuredTypeUtils.getTypeDeclaration(data);
 
+               if (typeDeclaration == null && data.getExternalReference() != null)
+               {
+                  ModelType refModel = getModelBuilderFacade().getModelManagementStrategy().getModels().get(data.getExternalReference().getLocation());
+                  typeDeclaration = refModel.getTypeDeclarations().getTypeDeclaration(data.getExternalReference().getXref());
+               }
+
                if (typeDeclaration == null && data.eIsProxy())
                {
                   typeDeclaration = ExternalReferenceUtils
@@ -2224,11 +2319,27 @@ public class ModelElementMarshaller implements ModelMarshaller
                   IConnectionManager manager = model.getConnectionManager();
                   if (manager != null & uri != null)
                   {
+                     //ToDo: IMO (Rainer) we should try to get rid of those constructions.
+                     //This EObjectDecriptor / Connection stuff should not be necessary in Web modeler world
+                     //This is legacy from eclipse modeler file connection mechanism (St. Laurent)
+                     //See alternative section if eObject is null - it's simpler and should work in Pepper as we have access to all models.
+                     //It seems that that connection manager keeps an initial model copy which is never updated!
+
                      EObject eObject = manager.find(uri);
                      if (eObject instanceof EObjectDescriptor)
                      {
                         eObject = ((EObjectDescriptor) eObject).getEObject();
                      }
+
+                     if (eObject == null)
+                     {
+                        ModelType refModel = getModelBuilderFacade()
+                              .getModelManagementStrategy().getModels()
+                              .get(data.getExternalReference().getLocation());
+                        eObject = refModel.getTypeDeclarations().getTypeDeclaration(
+                              data.getExternalReference().getXref());
+                     }
+
                      ModelType containingModel = ModelUtils.findContainingModel(eObject);
 
                      String fullId = getModelBuilderFacade().createFullId(containingModel,
@@ -2274,6 +2385,9 @@ public class ModelElementMarshaller implements ModelMarshaller
             }
          }
       }
+      
+      JsonArray permissionsJson = AuthorizationUtils.getPermissionsJson(data);
+      dataJson.add("permissions", permissionsJson);
 
       return dataJson;
    }
@@ -2313,6 +2427,10 @@ public class ModelElementMarshaller implements ModelMarshaller
             eObjectUUIDMapper().getUUID(dataSymbol));
       dataSymbolJson.addProperty(ModelerConstants.TYPE_PROPERTY,
             ModelerConstants.DATA_SYMBOL);
+      dataSymbolJson.addProperty(ModelerConstants.WIDTH_PROPERTY,
+            dataSymbol.getWidth());
+      dataSymbolJson.addProperty(ModelerConstants.HEIGHT_PROPERTY,
+            dataSymbol.getHeight());
 
       // Model returned will be null in case of data delete operation
 
@@ -2729,8 +2847,15 @@ public class ModelElementMarshaller implements ModelMarshaller
                         PredefinedConstants.CLASS_NAME_ATT));
          }
 
-         Method method = ClassesHelper.getMethodBySignature(
-            getModelingSession().classLoaderProvider().classLoader(), className, methodName);
+         Method method = null;
+         try
+         {
+            method = ClassesHelper.getMethodBySignature(
+               getModelingSession().classLoaderProvider().classLoader(), className, methodName);
+         }
+         catch (Throwable e)
+         {
+         }
 
          ClassesHelper.addParameterAccessPoints(accessPointsJson, method);
          ClassesHelper.addReturnTypeAccessPoint(accessPointsJson, method);
@@ -2868,6 +2993,7 @@ public class ModelElementMarshaller implements ModelMarshaller
 
                dataMappingsJson.add(toDataMappingJson(dataMapping));
 
+
                if (!hasNotJsonNull(connectionJson, ModelerConstants.FROM_MODEL_ELEMENT_OID))
                {
                   if (dataMapping.getDirection().equals(DirectionType.OUT_LITERAL))
@@ -2941,6 +3067,11 @@ public class ModelElementMarshaller implements ModelMarshaller
 
       IFlowObjectSymbol targetActivitySymbol = transitionConnection.getTargetActivitySymbol();
 
+      if(sourceActivitySymbol == null || targetActivitySymbol == null)
+      {
+         return null;
+      }
+            
       if (transitionConnection.getTransition() != null)
       {
          TransitionType transition = transitionConnection.getTransition();
@@ -3336,6 +3467,12 @@ public class ModelElementMarshaller implements ModelMarshaller
    {
       JsonObject dataMappingJson = new JsonObject();
 
+      String uuid = modelingSession.uuidMapper().getUUID(dataMapping);
+      if (null != uuid)
+      {
+         dataMappingJson.addProperty(ModelerConstants.UUID_PROPERTY, uuid);
+      }
+
       if (dataMapping.getApplicationAccessPoint() != null)
       {
          dataMappingJson.addProperty(ModelerConstants.ACCESS_POINT_ID_PROPERTY,
@@ -3354,7 +3491,6 @@ public class ModelElementMarshaller implements ModelMarshaller
       dataMappingJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, dataMapping.getDirection().getLiteral());
       dataMappingJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY,
             dataMapping.getDataPath());
-
       return dataMappingJson;
    }
 
@@ -3366,7 +3502,12 @@ public class ModelElementMarshaller implements ModelMarshaller
     */
    public JsonObject toModelOnlyJson(ModelType model)
    {
+      ModelUpgrader modelUpgrader = new ModelUpgrader(model);
+      boolean upgradeNeeded = modelUpgrader.upgradeNeeded();
+
       JsonObject modelJson = new JsonObject();
+      modelJson.addProperty(
+            ModelerConstants.IS_UPGRADE_NEEDED, upgradeNeeded);
 
       JsonObject lockInfoJson = new JsonObject();
       LockInfo lockInfo = modelingSession.getEditLockInfo(model);
@@ -3457,20 +3598,20 @@ public class ModelElementMarshaller implements ModelMarshaller
 
       if (model.getQualityControl() != null)
       {
-         JsonObject qcJson = new JsonObject();
          JsonArray codesJson = new JsonArray();
          for (Iterator<Code> i = model.getQualityControl().getCode().iterator(); i
                .hasNext();)
          {
             JsonObject codeJson = new JsonObject();
             Code code = i.next();
-            codeJson.addProperty(ModelerConstants.QC_CODE, code.getCode());
-            codeJson.addProperty(ModelerConstants.QC_NAME, code.getName());
-            codeJson.addProperty(ModelerConstants.QC_VALUE, code.getValue());
+            codeJson.addProperty(ModelerConstants.ID_PROPERTY, code.getCode());
+            codeJson.addProperty(ModelerConstants.NAME_PROPERTY, code.getName());
+            codeJson.addProperty(ModelerConstants.DESCRIPTION_PROPERTY, code.getValue());
+            codeJson.addProperty(ModelerConstants.UUID_PROPERTY,
+                  getModelBuilderFacade().getModelManagementStrategy().uuidMapper().getUUID(code));
             codesJson.add(codeJson);
          }
-         qcJson.add(ModelerConstants.QC_CODES, codesJson);
-         modelJson.add(ModelerConstants.QUALITYCONTROL, qcJson);
+         modelJson.add(ModelerConstants.QUALITYASSURANCECODES, codesJson);
       }
 
       if (!excludeCVs)
@@ -4050,6 +4191,10 @@ public class ModelElementMarshaller implements ModelMarshaller
                   attributes.addProperty(attributeName, attributeValue);
                }
             }
+            else if (attributeName.startsWith("authorization:")) 
+            {
+               //Ignore authorization related attributes, as they are stored separately in a shorter manner.
+            }
             else
             {
                attributes.addProperty(attributeName, attributeValue);
@@ -4165,20 +4310,6 @@ public class ModelElementMarshaller implements ModelMarshaller
          modelBuilderFacade = new ModelBuilderFacade(modelingSession.modelManagementStrategy());
       }
       return modelBuilderFacade;
-   }
-
-   /**
-    * @param data
-    * @param model
-    * @param jsonObj
-    */
-   private void setDataFullID(JsonObject jsonObj, ModelType model, DataType data)
-   {
-      String fullID = getDataFullID(model, data);
-      if (null != fullID)
-      {
-         jsonObj.addProperty(ModelerConstants.DATA_FULL_ID_PROPERTY, fullID);
-      }
    }
 
    /**

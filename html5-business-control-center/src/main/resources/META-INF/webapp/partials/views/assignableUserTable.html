@@ -1,33 +1,33 @@
-<div class="res-availability-wrapper">
+<div class="view-panel-content">
 	<div>
-		<label class="form-lable"
-			style="display: inline-block; margin-bottom: 5px; padding-left: 1px; vertical-align: text-top;">{{i18n('business-control-center-messages.views-common-showLoggedInUser-label')}}</label>
+		<span class="form-lable">{{i18n('business-control-center-messages.views-common-showLoggedInUser-label')}}</span>
 		<input type="checkbox" ng-model="ctrl.showLoggedInAssignableUsers"
-			ng-change="ctrl.refreshLoggedInAssignableUsers()" />
+			ng-change="ctrl.refreshLoggedInAssignableUsers()"
+			aid="BCC-RoleMgrDet-AssignableUserTbl-ShowLoggedInUser" style="margin: 4px"/>
 	</div>
-	<div class="view-panel-toolbar tbl-title"
-		style="color: #708090; font-size: 11px">{{i18n('business-control-center-messages.views-common-assignableUsers-title')}}</div>
+	<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-common-assignableUsers-title')}}</div>
 	<div sda-toolbar>
 		<div class="tbl-toolbar-section">
-			<button ng-disabled="!(ctrl.rowSelectionAssignableUsersTable.length > 0 && ctrl.roleManagerDetails.roleModifiable)"
-				ng-click="bpmCommon.stopEvent($event); ctrl.addUserToRole(ctrl.rowSelectionAssignableUsersTable);"
+			<button ng-disabled="!(ctrl.assignableUsersTable.getSelection().length > 0 && ctrl.roleManagerDetails.roleModifiable)"
+				ng-click="bpmCommon.stopEvent($event); ctrl.addUserToRole();"
 				title="{{i18n('business-control-center-messages.views-common-button-addUserToRole')}}"
-				class="button-link tbl-toolbar-item tbl-tool-link">
-				<i class="sc sc-fw sc-1x sc-users"></i>
+				class="button-link tbl-toolbar-item tbl-tool-link"
+				aid="BCC-RoleMgrDet-AssignableUserTbl-AddUserToRole">
+				<i class="pi pi-create pi-lg" />
 			</button>
 		</div>
 	</div>
 	<table sd-data-table="ctrl.assignableUsersTable"
-		sd-data="ctrl.getAssignableUsers()" sda-mode="local"
-		sda-ready="ctrl.table2" sda-selectable="multiple"
-		sda-selection="ctrl.rowSelectionAssignableUsersTable"
+		sd-data="ctrl.getAssignableUsers(params)" sda-mode="local" sda-ready="ctrl.table2"
+		sda-selectable="multiple"
+		sda-preference-delegate="ctrl.preferenceForAssignableUserTable(prefInfo)"
 		sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
-		sda-sort-by="{name : 'userName', dir : 'desc'}" sda-exports="true"
+		sda-sort-by="{name : 'name', dir : 'desc'}" sda-exports="true"
 		sda-exports-file-name="{{ctrl.exportFileNameForAssignableUsers}}">
 		<thead
 			sda-i18n-scope="business-control-center-messages.views-resourceAvailabilityView-accountTable-column">
 			<tr>
-				<th sda-name="userName"
+				<th sda-name="name"
 					sda-label="{{i18n('business-control-center-messages.views-common-column-name')}}"
 					sda-sortable="true">
 				</th>
@@ -43,12 +43,12 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td></td>
-				<td style="text-align: center;"></td>
-				<td style="text-align: center;"></td>
-				<td style="text-align: center;"></td>
-				<td style="text-align: center;"></td>
-				<td style="text-align: center;"></td>
+				<td sda-data-type="string"></td>
+				<td style="text-align: center;" sda-data-type="string"></td>
+				<td style="text-align: center;" sda-data-type="string"></td>
+				<td style="text-align: center;" sda-data-type="string"></td>
+				<td style="text-align: center;" sda-data-type="string"></td>
+				<td style="text-align: center;" sda-data-type="string"></td>
 			</tr>
 		</tbody>
 	</table>

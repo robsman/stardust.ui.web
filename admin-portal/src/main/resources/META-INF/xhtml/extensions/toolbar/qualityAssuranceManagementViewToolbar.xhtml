@@ -10,8 +10,8 @@
 		<ice:commandLink action="#{qaManagementBean.save}">
 			<pc:automationTag value="auto-ADM-QAMgmt-Toolbar-Save"
 				standAlone="false" />
-			<h:graphicImage value="/plugins/views-common/images/icons/disk.png"
-				styleClass="toolbar-button"
+			<h:outputText
+				styleClass="toolbar-button  pi pi-save pi-lg"
 				title="#{messages_admin['common.button.save']}" />
 		</ice:commandLink>
 	</ice:panelGrid>

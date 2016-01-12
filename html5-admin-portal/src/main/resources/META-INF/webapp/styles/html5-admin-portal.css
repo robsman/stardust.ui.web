@@ -1,12 +1,15 @@
 /* QA MANAGEMENT VIEW*/
-.qa-management-table-icon {
-	font-size: 15px;
-	padding-right: 5px;
-}
 
 .qa-management-emptyCell-warning {
 	color: orange;
-	font-size: 25px;
+	font-size: 2.27em;
+}
+
+input.search {
+	padding-left:20px;
+	background-repeat: no-repeat;
+	background-position-y: 4px;
+	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAASCAYAAABb0P4QAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADbSURBVDhP5ZI9C4MwEIb7//+BEDgICA6C4OQgBJy6dRIEB6EgCNkEJ4e3iT2oHzH9wHbpAwfyJvfkJDnhYH4kHDVKlSAigSAQoCiBKjVGXvaxFXZnxBQYkSlBICII+22K4jM63rbHSthCSdsskVX9Y6KxR5XJSSpVy6GbpbBKp6aw0BzM0ShCe1iKihMXC6EuQtMQwukzPFu3fFd4+C+/cimUNxy6WQkNnmdzL3NYPfDmLVuhZf2wZYz80qDkKX1St3CXAfVMqq4cz3hTaGEpmctxDPmB0M/fCYEbAwZYyVKYcroAAAAASUVORK5CYII=);
 }
 
 /* Password Management */
@@ -42,3 +45,66 @@
 	color: blue !important;
 	font-weight: normal;
 }
+
+.cloneParticipantSelector .sd-participant-selector .sd-ac-container {
+	width:400px;
+}
+
+.permission-tree {
+	overflow: auto;
+    height: 600px;
+}
+
+.permission-tree .sd-tree .expand-section {
+	float: left;
+}  
+
+.permission-tree ul {
+	margin: 0 0 0 0;	
+}
+
+.overview-report-field-value{
+    color: #708090;
+    margin-left: -5px;
+    margin-right: 10px;
+}
+
+.participantTable {
+	overflow: auto;
+    height: 650px;
+}
+
+/*
+Custom match rules for the Authorization Management Tree:
+Auth tree is a hand-stitched implementation of a tree rather
+than an instance of the sdTree directive. It's DOM structure
+deviates from that of sdTree causing several of the styles we
+would like to inherit from sdTree to no longer work with the 
+auth tree implementation. Therefore, we have added
+custom styles below to handle these cases.
+---------------------------------------------------------
+*/
+
+.sd-tree .title-section,
+.sd-tree a
+{
+	position:relative;
+}
+
+.sd-tree li.match-custom > ul > li > a.tree-node > div > div.dd-header  .js-filterable,
+.sd-tree li.match-custom > .title-section > a.tree-node > span,
+.sd-tree li.match-custom > .title-section  > div .js-filterable,
+.sd-tree li.match-custom > ul > li > a.tree-node span
+{
+	background: #f4f4f4;
+	border-radius: 2px;
+	color: #333;
+}
+
+.sd-tree a.selected-custom span{
+	background: #EEE2CF !important;
+  	color: #708090 !important;
+  	border-radius: 5px !important;
+}
+
+

@@ -210,18 +210,20 @@ public class ModelCache implements Resetable, Serializable, ModelResolver
                }
 
             }
-            // 4)clear old modelDescriptions and add newly fetched data
-            if (modelDescriptions.size() > 0)
-            {
-               modelDescriptions.clear();
-               trace.debug("ModelCache.reset ::Model descriptor cleaned ");
-            }
-            modelDescriptions.addAll(models);
 
             if (CollectionUtils.isNotEmpty(updatedModels) || CollectionUtils.isNotEmpty(unusedModels))
             {
-               // 5)remove stale/deleted models and add updated models
                lock.writeLock().lock();// acquire write lock-all read and write thread will wait
+
+               // 4)clear old modelDescriptions and add newly fetched data
+               if (modelDescriptions.size() > 0)
+               {
+                  modelDescriptions.clear();
+                  trace.debug("ModelCache.reset ::Model descriptor cleaned ");
+               }
+               modelDescriptions.addAll(models);
+
+               // 5)remove stale/deleted models and add updated models
                if (CollectionUtils.isNotEmpty(unusedModels))
                {
                   getCache().keySet().removeAll(unusedModels);

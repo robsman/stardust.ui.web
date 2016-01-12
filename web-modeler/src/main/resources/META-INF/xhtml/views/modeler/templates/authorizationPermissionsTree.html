@@ -1,0 +1,67 @@
+<div>
+	<label>{{ctrl.i18n('authorization.permissionsTree.title')}}</label>
+	<div style="height: 200px; width: 100%; overflow: auto;">
+		<div ng-repeat="permission in ctrl.element.permissions"
+			style="margin-left: 5px">
+			<table>
+				<tbody>
+					<tr>
+						<td><a href="#" ng-click="permission.expanded = true"
+							ng-show="!permission.expanded"><img
+								src="plugins/common/images/panelHeader-triggerExpand.png"
+								style="position: inherit;" /></a> <a href="#"
+							ng-click="permission.expanded = false"
+							ng-show="permission.expanded"><img
+								src="plugins/common/images/panelHeader-triggerCollapse.png"
+								style="position: inherit;" /></a></td>
+						<td><img src="plugins/views-common/images/icons/key.png"></td>
+						<td><label
+							class="{{(permission.selected ? 'selected' : '')}}"
+							ng-click="ctrl.togglePermissionSelection(permission)">{{ctrl.i18n(permission.id)}}</label></td>
+					</tr>
+				</tbody>
+			</table>
+			<div ng-show="permission.expanded" style="margin-left: 30px">
+				<div ng-if="permission.isAll">
+					<table>
+						<tbody>
+							<tr>
+								<td><img src="plugins/bpm-modeler/images/icons/role.png"
+									style="position: inherit;" /></td>
+								<td>{{ctrl.i18n('authorization.participants.all')}}</td>
+							</tr>
+						</tbody>
+					</table>
+					<!-- <table>
+					<tbody>
+						<tr>
+							<td><img
+								src="plugins/bpm-modeler/images/icons/role.png" style="position: inherit;" /></td>
+								<td>
+									{{ctrl.i18n('authorization.participants.owner')}}
+								</td>
+						</tr>
+					</tbody>
+				</table> -->
+				</div>
+				<div ng-repeat="participant in permission.participants"
+					style="margin-left: 5px">
+					<table>
+						<tbody>
+							<tr>
+								<td><img src="{{ctrl.getParticipantIcon(participant.participantFullId)}}"
+									style="position: inherit;" /></td>
+								<td>
+									{{ctrl.getParticipantDisplayName(participant.participantFullId)}}
+								</td>
+								<td><a href="#"
+									ng-click="ctrl.removeParticipant(permission.id, participant.participantFullId)"><i
+										class="fa fa-minus-circle"></i></a></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

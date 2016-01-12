@@ -1,12 +1,7 @@
-<html>
-<head>
 <script type="text/javascript" src="../js/commonRequire.js"></script>
 <script type="text/javascript" data-main="../js/reportMain"
-	src="../js/libs/require/2.0.5/require.js"></script>
-<link href="../css/lightdust-report.css" rel="stylesheet"
-	type="text/css" />
-</head>
-<body ng-controller="ProcessReportCtrl" ng-cloak>
+	src="../../views-common/js/libs/require/2.1.15/require.min.js"></script>
+<div ng-controller="ProcessReportCtrl" ng-cloak class="lightdust">
 	<div id="reportHeading" class="title">Process {{name}} [{{processId}}]</div>
 	<div id="processDescription">{{description}}</div>
 	<div class="heading">Annotations</div>
@@ -32,5 +27,5 @@
 			<li>{{activity.name}}</li>
 		</ul>
 	</div>
-</body>
-</html>
+</div>
+

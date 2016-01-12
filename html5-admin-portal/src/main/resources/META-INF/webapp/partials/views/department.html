@@ -1,0 +1,59 @@
+<form name="ctrl.departmentForm">
+	<table
+		style="vertical-align: top; white-space: nowrap; text-align: left">
+		<tbody>
+			<tr>
+				<td class="msg-error"
+					ng-show="ctrl.departmentForm.$error.validationMsg">
+					{{ctrl.validationMsg}}</td>
+				<td></td>
+			</tr>
+			<tr>
+				<td><label class="form-lable">{{sdI18n('admin-portal-messages.views.participantMgmt.modifyDepartment.organization.label')
+						+ sdI18n('admin-portal-messages.common.colon')}}</label></td>
+				<td><div>
+						<span>{{ctrl.department.organization}}<span>
+					</div></td>
+			</tr>
+			<tr>
+				<td><label class="form-lable">{{sdI18n('admin-portal-messages.views.participantMgmt.modifyDepartment.parentDepartment.label')
+						+ sdI18n('admin-portal-messages.common.colon')}}</label></td>
+				<td><div>
+						<span>{{ctrl.department.parentDepartmentName}}</span>
+					</div></td>
+			</tr>
+			<tr>
+				<td><label class="form-lable">*{{sdI18n('admin-portal-messages.views.common.id.label')
+						+ sdI18n('admin-portal-messages.common.colon')}}</label></td>
+				<td><div>
+						<input type="text" name="account" ng-model="ctrl.department.id"
+							ng-disabled="ctrl.department.mode == 'Modify'" required
+							aid="ADM-PartMgmt-DepartmentPopup-Acct">
+						<div class="msg-error"
+							ng-show="ctrl.departmentForm.account.$error.required && ctrl.submitted">
+						    <span ng-bind="i18n('html5-common.required-value')"></span>
+						</div>
+					</div></td>
+			</tr>
+			<tr>
+				<td><label class="form-lable">*{{sdI18n('admin-portal-messages.views.common.name.label')
+						+ sdI18n('admin-portal-messages.common-colon')}}</label></td>
+				<td><div>
+						<input type="text" name="name" ng-model='ctrl.department.name'
+							required aid="ADM-PartMgmt-DepartmentPopup-Name">
+						<div class="msg-error"
+							ng-show="ctrl.departmentForm.name.$error.required && ctrl.submitted">
+						    <span ng-bind="i18n('html5-common.required-value')"></span>
+						</div>
+					</div></td>
+			</tr>
+			<tr>
+				<td><label class="form-lable">{{sdI18n('admin-portal-messages.views-createUser-basicPanel-desc-label')
+						+ sdI18n('admin-portal-messages.common-colon')}}</label></td>
+				<td><textarea cols="20" rows="5"
+						ng-model='ctrl.department.description'
+						aid="ADM-PartMgmt-DepartmentPopup-Desc"></textarea></td>
+			</tr>
+		</tbody>
+	</table>
+</form>

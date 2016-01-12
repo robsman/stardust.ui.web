@@ -424,7 +424,11 @@
     DEFAULT_TEXT_WIDTH: 50,
     DEFAULT_TEXT_HEIGHT: 15,
     ADMIN_ROLE_ID: "Administrator",
-    EXTERNAL_SCHEMA_CLASSIFIER_TOKEN: "ExternalReference"
+    EXTERNAL_SCHEMA_CLASSIFIER_TOKEN: "ExternalReference",
+    
+    // Resubmission prop page
+    RESUBMISSION_TIMER_DATA: 'data',
+    RESUBMISSION_TIMER_CONSTANT: 'constant',
 
   });
 })();

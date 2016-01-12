@@ -17,8 +17,8 @@
 		<ice:panelGroup rendered="#{col.columnName == 'Info'}">
 			<ice:graphicImage value="/plugins/views-common/images/icons/process-history/descriptor.png"
 				title="#{row.progressStatus.descriptorText}" longdesc="#{row.progressStatus.descriptorText}" />
-			<ice:graphicImage value="/plugins/views-common/images/icons/mime-types/notes-filled.png"
-				title="#{row.progressStatus.noteText}" styleClass="#{row.progressStatus.noteIconStatus ? '' : 'iceCmdBtn-dis'}"/>
+			<ice:outputText
+				title="#{row.progressStatus.noteText}" styleClass="#{row.progressStatus.noteIconStatus ? '' : 'iceCmdBtn-dis'} pi pi-notes pi-lg"/>
 			<ice:graphicImage value="/plugins/views-common/images/icons/diagram/complete.gif"
 				title="#{row.progressStatus.completeText}" rendered="#{row.progressStatus.completeIconStatus}"/>
 		</ice:panelGroup>

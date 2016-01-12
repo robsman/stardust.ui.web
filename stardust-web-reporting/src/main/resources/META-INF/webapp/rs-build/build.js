@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2015 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
 ({
 	baseUrl : '../js/libs',
 	paths : {
@@ -19,7 +29,7 @@
 				'ohlcRenderer' :  'jqplot/plugins/jqplot.ohlcRenderer.min' ,
 				'pieRenderer' :  'jqplot/plugins/jqplot.pieRenderer.min' ,
 				'donutRenderer' :  'jqplot/plugins/jqplot.donutRenderer.min' ,
-				'enhancedLegendRenderer' : 'jqplot/plugins/jqplot.enhancedLegendRenderer.min',
+				'enhancedLegendRenderer' : 'jqplot/plugins/jqplot.enhancedLegendRenderer.min',				
 				'pointLabels' :  'jqplot/plugins/jqplot.pointLabels.min' ,
 				'dataTables' :  'datatables/jquery.dataTables.min' ,
 				'I18NUtils' : '../report/I18NUtils'

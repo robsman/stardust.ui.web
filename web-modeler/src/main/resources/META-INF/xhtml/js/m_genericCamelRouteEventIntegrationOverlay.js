@@ -48,21 +48,27 @@ define(
             GenericCamelRouteEventIntegrationOverlay.prototype.initialize = function(
                   page, id) {
                this.initializeEventIntegrationOverlay(page, id);
-               m_utils.jQuerySelect("label[for='camelContextInput']")
-                     .text(
-                           m_i18nUtils
-                                 .getProperty("modeler.element.properties.genericCamelRouteEvent.camelContext"));
-               m_utils.jQuerySelect("label[for='routeTextarea']")
-                     .text(
-                           m_i18nUtils
-                                 .getProperty("modeler.element.properties.genericCamelRouteEvent.routeDefinition"));
-               m_utils.jQuerySelect("label[for='beanTextarea']")
-                     .text(
-                           m_i18nUtils
-                                 .getProperty("modeler.element.properties.genericCamelRouteEvent.additionalBeans"));
-
-               this.camelContextInput = this
-                     .mapInputId("camelContextInput");
+               //i18n labels for configuration tab
+               m_utils.jQuerySelect("label[for='camelContextInput']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.camelContext"));
+               m_utils.jQuerySelect("label[for='transactedRouteInput']").text(m_i18nUtils.getProperty("modeler.common.camel.transactedRouteInput"));
+               m_utils.jQuerySelect("label[for='autoStartupInput']").text(m_i18nUtils.getProperty("modeler.common.camel.autoStartupInput"));
+               m_utils.jQuerySelect("label[for='routeTextarea']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.routeDefinition"));
+               m_utils.jQuerySelect("label[for='beanTextarea']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.additionalBeans"));
+               //i18n labels for configuration tab               
+               m_utils.jQuerySelect("label[for='paramDef']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.paramDef"));
+               m_utils.jQuerySelect("label[for='outputBodyAccessPointInput']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.outputBodyAccessPointInput"));
+               m_utils.jQuerySelect("label[for='parameterDefinitionNameInput']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.parameterDefinitionNameInput"));
+               m_utils.jQuerySelect("label[for='dataTypeSelect']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.dataTypeSelect"));
+               m_utils.jQuerySelect("label[for='primitiveDataTypeSelect']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.primitiveDataTypeSelect"));
+               m_utils.jQuerySelect("label[for='structuredDataTypeSelect']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.structuredDataTypeSelect"));
+               m_utils.jQuerySelect("label[for='documentTypeSelect']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.documentTypeSelect"));
+               m_utils.jQuerySelect("label[for='parameterDefinitionDataSelect']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.parameterDefinitionDataSelect"));
+               
+               //m_utils.jQuerySelect("label[for='labelForproducerBpmTypeConverter']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.producerBpmTypeConverter"));
+               m_utils.jQuerySelect("label[for='producerInboundConversion']").text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.producerInboundConversion"));
+               
+               
+               this.camelContextInput = this.mapInputId("camelContextInput");
                
                this.transactedRouteInput = this.mapInputId("transactedRouteInput");
                this.autoStartupInput = this.mapInputId("autoStartupInput");
@@ -75,7 +81,17 @@ define(
                this.converterSettingsSpan = this.mapInputId("converterSettings");
                this.converterSettingsSpan.text(m_i18nUtils.getProperty("modeler.element.properties.event.converter"));
                this.producerBpmTypeConverter =jQuery("#genericCamelRouteEvent #propertiesTabs #converterSettingsTab #producerBpmTypeConverter");
+               this.labelForproducerBpmTypeConverter =jQuery("#genericCamelRouteEvent #propertiesTabs #converterSettingsTab #labelForproducerBpmTypeConverter");
+               this.labelForproducerBpmTypeConverter.text(m_i18nUtils.getProperty("modeler.element.properties.genericCamelRouteEvent.producerBpmTypeConverter"));
+               
                this.producerInboundConversion = jQuery("#genericCamelRouteEvent #propertiesTabs #converterSettingsTab #producerInboundConversion");
+               this.producerInboundConversion.empty();
+               this.producerInboundConversion.append("<option value=\"" + m_constants.TO_BE_DEFINED + "\">" + m_i18nUtils.getProperty("None") + "</option>");
+               this.producerInboundConversion.append("<option value=\"fromXML\" selected>" + m_i18nUtils.getProperty("modeler.common.conversion.type.xml") + "</option>");
+               this.producerInboundConversion.append("<option value=\"fromJSON\">" + m_i18nUtils.getProperty("modeler.common.conversion.type.json") + "</option>");
+               this.producerInboundConversion.append("<option value=\"fromCSV\">" + m_i18nUtils.getProperty("modeler.common.conversion.type.csv") + "</option>");
+               
+               
                this.producerInboundConverterDelimiterInput = jQuery("#genericCamelRouteEvent #propertiesTabs #converterSettingsTab #producerInboundConverterDelimiterInput");
                
                this.fromXmlParameters=jQuery("#genericCamelRouteEvent #propertiesTabs #converterSettingsTab #fromXmlParameters");

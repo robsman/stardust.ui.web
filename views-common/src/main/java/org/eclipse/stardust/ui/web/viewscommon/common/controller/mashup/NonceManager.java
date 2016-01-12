@@ -10,6 +10,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.eclipse.stardust.ui.web.common.util.PortalTimestampProvider;
+
+
 public class NonceManager
 {
    // every minute
@@ -21,7 +24,7 @@ public class NonceManager
 
    private final ConcurrentHashMap<String, Nonce> nonceRegistry = new ConcurrentHashMap<String, Nonce>();
 
-   private final AtomicLong nextScheduledGc = new AtomicLong(currentTimeMillis()
+   private final AtomicLong nextScheduledGc = new AtomicLong(PortalTimestampProvider.getTimeStampValue()
          + GC_INTERVAL);
 
    private final List<LifecycleListener> lifecycleListeners = new CopyOnWriteArrayList<NonceManager.LifecycleListener>();
@@ -66,7 +69,7 @@ public class NonceManager
          do
          {
             nonce = new Nonce(UUID.randomUUID().toString(), //
-                  currentTimeMillis() + maxValidity);
+                  PortalTimestampProvider.getTimeStampValue() + maxValidity);
          }
          while (null != nonceRegistry.putIfAbsent(nonce.getValue(), nonce));
          return nonce;
@@ -84,7 +87,7 @@ public class NonceManager
          Nonce nonce = nonceRegistry.get(nonceValue);
          if ((null != nonce) && nonce.getValue().equals(nonceValue))
          {
-            return (!nonce.wasUsed() && (nonce.getExpiry() >= currentTimeMillis()));
+            return (!nonce.wasUsed() && (nonce.getExpiry() >= PortalTimestampProvider.getTimeStampValue()));
          }
          return false;
       }
@@ -133,7 +136,7 @@ public class NonceManager
    private void nonceGc()
    {
       long gcSchedule = nextScheduledGc.get();
-      if (gcSchedule < currentTimeMillis())
+      if (gcSchedule < PortalTimestampProvider.getTimeStampValue())
       {
          if (nextScheduledGc.compareAndSet(gcSchedule, gcSchedule + GC_INTERVAL))
          {

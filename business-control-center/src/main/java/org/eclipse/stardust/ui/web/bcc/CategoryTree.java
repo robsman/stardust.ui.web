@@ -57,22 +57,22 @@ public class CategoryTree extends UIViewComponentBean
    static
    {
       iconMap = new LinkedHashMap<String, String>();
-      iconMap.put("processOverviewView", "process_manager.png");
-      iconMap.put("processSearchView", "cog_search.png");
-      iconMap.put("trafficLightView", "traffic_light.png");
-      iconMap.put("activityCriticalityManagerView", "criticality_manager.png");
-      iconMap.put("pendingActivities", "pending_activities.png");
-      iconMap.put("completedActivities", "/plugins/views-common/images/icons/process-history/activity_completed.png");
-      iconMap.put("postponedActivities", "activity_postponed.png");
-      iconMap.put("strandedActivities", "activity_stranded.png");
-      iconMap.put("resourceAvailabilityView", "group.png");
-      iconMap.put("roleAssignmentView", "role.png");
-      iconMap.put("deputyTeamMemberView", "user-silhouette.png");
-      iconMap.put("resourceLoginView", "group_key.png");
-      iconMap.put("resourcePerformance", "chart-up.png");
-      iconMap.put("performanceTeamleader", "chart-up-color.png");
-      iconMap.put("costs", "money-coin.png");
-      iconMap.put("myReportsView", "chart-pie.png");
+      iconMap.put("processOverviewView", "pi pi-process-manager pi-lg");
+      iconMap.put("processSearchView", "pi pi-search pi-lg");
+      iconMap.put("trafficLightView", "pi pi-traffic-light pi-lg");
+      iconMap.put("activityCriticalityManagerView", "pi pi-criticality_manager pi-lg");
+      iconMap.put("pendingActivities", "pi pi-activity-pending pi-lg");
+      iconMap.put("completedActivities", "pi pi-activity-complete pi-lg");
+      iconMap.put("postponedActivities", "pi pi-activity-postponed pi-lg");
+      iconMap.put(ResourcePaths.V_strandedActivitiesView, "pi pi-activity-stranded pi-lg");
+      iconMap.put(ResourcePaths.V_resourceAvailability, "pi pi-resource-availability pi-lg");
+      iconMap.put(ResourcePaths.V_roleAssignment, "pi pi-role-assignment pi-lg");
+      iconMap.put(ResourcePaths.V_deputyTeamMemberView, "pi pi-deputy-management pi-lg");
+      iconMap.put("resourceLoginView", "pi pi-resource-login pi-lg");
+      iconMap.put("resourcePerformance", "pi pi-resource-performance pi-lg");
+      iconMap.put("performanceTeamleader", "pi pi-performance-team-lead pi-lg");
+      iconMap.put("costs", "pi pi-costs pi-lg");
+      iconMap.put("myReportsView", "pi pi-report-management pi-lg");
      
    }
    
@@ -163,21 +163,21 @@ public class CategoryTree extends UIViewComponentBean
          GenericCategory resourcesNode = tree.getRootCategory().addSubCategory("resources",
                messageBean.getString(PRE_NODE + "resources"), "portalConfig");
 
-         if (portalApp.isViewAvailable("resourceAvailabilityView"))
+         if (portalApp.isViewAvailable(ResourcePaths.V_resourceAvailability))
          {
-            resourcesNode.addItem("resourceAvailabilityView", messageBean.getString(PRE_LEAF + "resourceAvailabilityView"
-                  + POST_LEAF), getItem("resourceAvailabilityView", null), getIconPath("resourceAvailabilityView"));
+            resourcesNode.addItem(ResourcePaths.V_resourceAvailability, messageBean.getString(PRE_LEAF + ResourcePaths.V_resourceAvailability
+                  + POST_LEAF), getItem(ResourcePaths.V_resourceAvailability, null), getIconPath(ResourcePaths.V_resourceAvailability));
          }
-         if (portalApp.isViewAvailable("roleAssignmentView"))
+         if (portalApp.isViewAvailable(ResourcePaths.V_roleAssignment))
          {
-            resourcesNode.addItem("roleAssignmentView",
-                  messageBean.getString(PRE_LEAF + "roleAssignmentView" + POST_LEAF), getItem("roleAssignmentView", null),
-                  getIconPath("roleAssignmentView"));
+            resourcesNode.addItem(ResourcePaths.V_roleAssignment,
+                  messageBean.getString(PRE_LEAF + ResourcePaths.V_roleAssignment + POST_LEAF), getItem(ResourcePaths.V_roleAssignment, null),
+                  getIconPath(ResourcePaths.V_roleAssignment));
          }
-         if (portalApp.isViewAvailable("deputyTeamMemberView"))
+         if (portalApp.isViewAvailable(ResourcePaths.V_deputyTeamMemberView))
          {
-            resourcesNode.addItem("deputyTeamMemberView", messageBean.getString(PRE_LEAF + "deputyTeamMemberView" + POST_LEAF),
-                  getItem("deputyTeamMemberView", null), getIconPath("deputyTeamMemberView"));
+            resourcesNode.addItem(ResourcePaths.V_deputyTeamMemberView, messageBean.getString(PRE_LEAF + ResourcePaths.V_deputyTeamMemberView + POST_LEAF),
+                  getItem(ResourcePaths.V_deputyTeamMemberView, null), getIconPath(ResourcePaths.V_deputyTeamMemberView));
          }
          if (portalApp.isViewAvailable("resourceLoginView"))
          {
@@ -308,10 +308,10 @@ public class CategoryTree extends UIViewComponentBean
    public static String getIconPath(String formatType)
    {
       String fileName = getIconMap().get(formatType);
-      if (!fileName.contains("/"))
+      /*if (!fileName.contains("/"))
       {
          return (IMAGE_BASE_PATH + fileName);
-      }
+      }*/
       return fileName;
    }
 

@@ -16,7 +16,7 @@
 (function(){
 	'use strict';
 
-	angular.module('bpm-common').directive('sdDelegateActivityDialog', ['$parse', '$q', 'sdUtilService', 'sdActivityInstanceService', 'sdLoggerService', 'eventBus', 'sdViewUtilService',
+	angular.module('bpm-common').directive('sdDelegateActivityDialog', ['$parse', '$q', 'sdUtilService', 'sdActivityInstanceService', 'sdLoggerService', 'sdMessageService', 'sdViewUtilService',
 	                                                                    DelegateActivityDialogDirective]);
 
 	var trace;
@@ -24,7 +24,7 @@
 	/*
 	 * Directive class
 	 */
-	function DelegateActivityDialogDirective($parse, $q, sdUtilService, sdActivityInstanceService, sdLoggerService, eventBus, sdViewUtilService) {
+	function DelegateActivityDialogDirective($parse, $q, sdUtilService, sdActivityInstanceService, sdLoggerService, sdMessageService, sdViewUtilService) {
 		
 		trace = sdLoggerService.getLogger('bpm-common.sdDelegateActivityDialog');
 		
@@ -37,12 +37,13 @@
 				},
 				transclude: true,
 				template: '<span sd-dialog'
-							+ ' sda-show="showDelegateDialog"'
+							+ ' sda-show="showDelegateDialog" sda-enable-key-events = "false"'
 							+ ' sda-title="{{i18n(\'views-common-messages.delegation-title\')}}"'
 							+ ' sda-type="custom"'
 							+ ' sda-scope="this"'
 							+ ' sda-on-open="delegateActivityController.onOpenDialog(res)"'
-							+ ' sda-template="plugins/html5-process-portal/scripts/directives/partials/delegateActivityDialogBody.html"'
+							+ ' sda-template="'
+							+  sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/delegateActivityDialogBody.html"'
 							+ ' class="view-tool-link">'
 						+ '</span>',
 				controller: DelegateActivityDialogController
@@ -106,7 +107,7 @@
 			    self.confirm = confirm;
 			    self.validate = validate;
 			    
-			    $scope.tempurl = "plugins/html5-process-portal/scripts/directives/partials/delegateActivityDialogBody.html";
+			    $scope.tempurl = sdUtilService.getBaseUrl() + "plugins/html5-process-portal/scripts/directives/partials/delegateActivityDialogBody.html";
 			}
 			
 			/*
@@ -119,24 +120,22 @@
 			/*
 			 * 
 			 */
-			DelegateActivityDialogController.prototype.showErrorMessage = function(key, def) {
+			DelegateActivityDialogController.prototype.showErrorMessage = function(key, def, args) {
 				var msg = key;
-				if (def) {
-					msg = def;
+				if (angular.isObject(key) && key.message) {
+					msg = key.message;
+				} else {
+					if (def) {
+						msg = def;
+					}
+					msg = self.i18n(key, def);
+					
+					if (args) {
+						msg = sdUtilService.format(msg, args);
+					}
 				}
-				var prefix = 'views-common-messages.delegation.error.';
-				key = prefix + key;
-				msg = self.i18n(key, def);
 
-				self.resetErrorMessage();
-				eventBus.emitMsg("js.error", msg);
-			}
-
-			/*
-			 * 
-			 */
-			DelegateActivityDialogController.prototype.resetErrorMessage = function() {
-				eventBus.emitMsg("js.error.reset");
+				sdMessageService.showMessage(msg);
 			}
 
 			/*
@@ -209,6 +208,13 @@
 				};
 				if (self.validate(delegateData)) {
 					performDelegate(delegateData).then(function(data) {
+						if(data.failure && data.failure.length > 0) {
+							// Error occurred
+							self.showErrorMessage(data.failure[0]);
+							
+							return;
+						}
+						
 						sdViewUtilService.syncLaunchPanels();
 
 						if (angular.isDefined(self.onConfirm)) {
@@ -218,7 +224,7 @@
 						self.closeThisDialog(scope);
 					}, function(result) {
 						// Error occurred
-						self.showErrorMessage('save', 'An error occurred while performing delegation.');
+						self.showErrorMessage('views-common-messages.delegation-error-save', 'An error occurred while performing delegation.');
 					});
 				}
 			}
@@ -228,15 +234,15 @@
 			 */
 			function validate(delegateData) {
 				if (!delegateData) {
-					self.showErrorMessage('general', 'An error occurred.');
+					self.showErrorMessage('views-common-messages.delegation-error-general', 'An error occurred.');
 					return false;
 				}
 				if (!angular.isDefined(delegateData.participant) || delegateData.participant == null) {
-					self.showErrorMessage('participant', 'Please select a participant.');
+					self.showErrorMessage('views-common-messages.delegation-noParticipantSelected-message', 'No participant selected.');
 					return false;
 				}
 				if (delegateData.activities.length === 0) {
-					self.showErrorMessage('activities', 'Please select an activity.');
+					self.showErrorMessage('views-common-messages.delegation-error-activities', 'No activity selected.');
 					return false;
 				}
 				return true;
@@ -271,6 +277,8 @@
 				if (self.searchParticipantSectionVisible) {
 					matchVal = options;
 					pType = self.participantType.value;
+				} else {
+					query.options = options;
 				}
 
 				query.data = {
@@ -284,11 +292,10 @@
 
 				sdActivityInstanceService.getParticipants(query).then(function(data) {
 
-					self.participants.list = data;
-					self.participants.totalCount = data.length;
+					self.participants = data;
 
 					if (self.searchParticipantSectionVisible) {
-						deferred.resolve(data);
+						deferred.resolve(self.participants.list);
 					} else {
 						deferred.resolve(self.participants);
 					}
@@ -296,8 +303,8 @@
 					self.safeApply();
 				}, function(result) {
 					// Error occurred
-					trace.log('An error occurred while fetching participants.\n Caused by: ' + result);
-					self.showErrorMessage('fetch', 'An error occurred while fetching participants.');
+					trace.log('An error occurred while fetching participants.\n Caused by: ' , result);
+					self.showErrorMessage('views-common-messages.delegation-error-fetch', 'An error occurred while fetching participants.');
 
 					deferred.reject(result);
 				});
@@ -315,7 +322,7 @@
 					deferred.resolve(data);
 				}, function(result) {
 					// Error occurred
-					trace.log('An error occurred while performing delegation.\n Caused by: ' + result);
+					trace.log('An error occurred while performing delegation.\n Caused by: ' , result);
 					deferred.reject(result);
 				});
 

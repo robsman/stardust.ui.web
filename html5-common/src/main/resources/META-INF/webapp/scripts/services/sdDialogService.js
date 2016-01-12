@@ -8,11 +8,29 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
+/*
+ * options: {
+ * 		show: ...,
+ * 		title: ...,
+ *		confirmActionLabel: ...,
+ *		cancelActionLabel: ...,
+ *		template: ...,
+ *		draggable: ...,
+ *		showClose: ...,
+ *		width: ...,
+ *		height: ...,
+ *		onOpen: ...,
+ *		onClose: ...,
+ *		onConfirm: ...,
+ *		modal: ...,
+ *     dialogActionType:... can be (OK_CANCEL,OK_CLOSE,APPLY_CANCEL,APPLY_CLOSE,YES_NO,SUBMIT_CANCEL,SUBMIT_CLOSE,CONTINUE_CANCEL,CONTINUE_CLOSE)
+ * }
+ */
 
 (function(){
 	'use strict';
 
-	angular.module('bpm-common.services').factory('sdDialogService', ['$compile', '$q', '$timeout', 'sdLoggerService', function ($compile, $q, $timeout, sdLoggerService) {
+	angular.module('bpm-common.services').factory('sdDialogService', ['$compile', '$q', '$timeout', 'sdLoggerService', 'sgI18nService', function ($compile, $q, $timeout, sdLoggerService, sgI18nService) {
 		
 		var trace = sdLoggerService.getLogger('bpm-common.services.sdDialogService');
 		
@@ -29,6 +47,10 @@
 		}
 		
 		function createDialog(scope, options, html) {
+			
+			if (options.width == undefined) {
+				options.width = '300';
+			}			
 			var dialogController = 'dialogControllerUnique_' + (Math.floor(Math.random() * 9000) + 1000);
 			scope[dialogController] = angular.extend({dialog: {}}, options);
 			
@@ -83,21 +105,21 @@
 		    /*
 		     * A simple alert dialog that takes message and title
 		     */
-			alert: function(scope, message, title) {
+			alert: function(scope, message, options) {
 				if (scope === undefined || scope === null) {
 					trace.error('No scope provided. Cannot open Alert dialog.');
 					return;
 				}
 				
-				if (!angular.isDefined(title)) {
-					title = 'Alert';
+				if (!angular.isDefined(options.title)) {
+					options.title = 'Alert';
 				}
 				
-				var options = {
-					title: title,
-					type: 'alert',
-					cancelActionLabel: 'Close'
-				};
+				options.type = 'alert';
+
+				if (options.cancelActionLabel == undefined) {
+					options.cancelActionLabel = 'Close';
+				}
 				
 				var html = '<div>'
 							+ message
@@ -105,10 +127,10 @@
 				
 				this.dialog(scope, options, html);
 			},
-			error: function(scope, message, title) {
+			error: function(scope, message, options) {
 
-			    if (!angular.isDefined(title)) {
-				title = 'Error';
+			    if (!angular.isDefined(options.title)) {
+			    	options.title = 'Error';
 			    }
 			    var html = '<table style="width : 100%">'+
 			    '<tr>'+
@@ -117,23 +139,23 @@
 			    '</tr>'+
 			    '</table>';
 
-			    this.alert(scope,html,title);
+			    this.alert(scope,html,options);
 			},
-			info: function(scope, message, title) {
+			info: function(scope, message, options) {
 
-			    if (!angular.isDefined(title)) {
-				title = 'Information';
+			    if (!angular.isDefined(options.title)) {
+			    	options.title = 'Information';
 			    }
 
 			    var html = '<table style="width : 100%">'+
 			    '<tr>'+
-			    '<td style="width : 15% ; align:center"><i  class="sc sc-info-circle popup-info-icon" ></i> </td>'+
+			    '<td style="width : 15% ; align:center"><i  class="sc sc-info-circle popup-info-icon pi-lg" ></i> </td>'+
 			    '<td style="width : 85%">'+message +'</td>'+
 			    '</tr>'+
 			    '</table>' 
-			    this.alert(scope,html,title);
+			    this.alert(scope,html,options);
 			},
-			confirm: function(scope, message, title) {
+			confirm: function(scope, message, options) {
 				if (scope === undefined || scope === null) {
 					trace.error('No scope provided. Cannot open Confirm dialog.');
 					return;
@@ -141,47 +163,77 @@
 				
 				var deferred = $q.defer();
 				
-				if (!angular.isDefined(title)) {
-					title = 'Confirm';
+				if (!angular.isDefined(options.title)) {
+					options.title = 'Confirm';
 				}
-				
-				var options = {
-					title: title,
-					type: 'confirm',
-					onClose: function() {
-						deferred.reject();
-					},
-					onConfirm: function() {
-						deferred.resolve();
-					}
+
+				options.onClose = function() {
+					deferred.reject();
 				};
-				
-				var html = '<div>'
-					+ message
-				 + '</div>';
-				
+				options.onConfirm = function() {
+					deferred.resolve();
+				};
+				options.type = 'confirm';
+
+				if (options.dialogActionType != undefined) {
+					switch (options.dialogActionType) {
+					case 'OK_CANCEL':
+						options.confirmActionLabel = sgI18nService.translate('html5-common.common-ok');
+						options.cancelActionLabel = sgI18nService.translate('html5-common.common-cancel');
+						break;
+					case 'OK_CLOSE':
+						options.confirmActionLabel = sgI18nService.translate('html5-common.common-ok');
+						options.cancelActionLabel = sgI18nService.translate('html5-common.common-close');
+						break;
+					case 'APPLY_CANCEL':
+						options.confirmActionLabel = sgI18nService.translate('html5-common.common-apply');
+						options.cancelActionLabel = sgI18nService.translate('html5-common.common-cancel');
+						break;
+					case 'APPLY_CLOSE':
+						options.confirmActionLabel = sgI18nService.translate('html5-common.common-apply');
+						options.cancelActionLabel = sgI18nService.translate('html5-common.common-close');
+						break;
+					case 'SUBMIT_CANCEL':
+						options.confirmActionLabel = sgI18nService.translate('html5-common.common-submit');
+						options.cancelActionLabel = sgI18nService.translate('html5-common.common-cancel');
+						break;
+					case 'YES_NO':
+						options.confirmActionLabel = sgI18nService.translate('html5-common.common-yes');
+						options.cancelActionLabel = sgI18nService.translate('html5-common.common-no');
+						break;
+					case 'SUBMIT_CLOSE':
+						options.confirmActionLabel = sgI18nService.translate('html5-common.common-submit');
+						options.cancelActionLabel = sgI18nService.translate('html5-common.common-close');
+						break;
+					case 'CONTINUE_CANCEL':
+						options.confirmActionLabel = sgI18nService.translate('html5-common.common-continue');
+						options.cancelActionLabel = sgI18nService.translate('html5-common.common-cancel');
+						break;
+					case 'CONTINUE_CLOSE':
+						options.confirmActionLabel = sgI18nService.translate('html5-common.common-continue');
+						options.cancelActionLabel = sgI18nService.translate('html5-common.common-close');
+						break;
+					}
+
+				} else {
+					if (options.confirmActionLabel == undefined) {
+
+						options.confirmActionLabel = sgI18nService
+								.translate('html5-common.common-yes');
+					}
+
+					if (options.cancelActionLabel == undefined) {
+						options.cancelActionLabel = sgI18nService
+								.translate('html5-common.common-no');
+					}
+				}
+
+				var html = '<div>' + message + '</div>';
+
 				this.dialog(scope, options, html);
-				
+
 				return deferred.promise;
 			},
-			
-			/*
-			 * options: {
-			 * 		show: ...,
-			 * 		title: ...,
-			 *		confirmActionLabel: ...,
-			 *		cancelActionLabel: ...,
-			 *		template: ...,
-			 *		draggable: ...,
-			 *		showClose: ...,
-			 *		width: ...,
-			 *		height: ...,
-			 *		onOpen: ...,
-			 *		onClose: ...,
-			 *		onConfirm: ...,
-			 *		modal: ...,
-			 * }
-			 */
 			dialog: function(scope, options, html) {
 				if (scope === undefined || scope === null) {
 					trace.error('No scope provided. Cannot open a dialog.');

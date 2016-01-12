@@ -39,5 +39,7 @@ public class ProcessDefinitionDTO extends AbstractDTO
 	public boolean auxillary;
 
 	public List<ActivityDTO> activities;
+	
+	public List<DataPathDTO> dataPaths;
 
  }

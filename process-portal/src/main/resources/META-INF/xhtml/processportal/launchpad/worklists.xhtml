@@ -33,14 +33,15 @@
 				<ice:treeNode>
 					<f:facet name="icon">
 						<ice:panelGroup style="display: inline;">
-							<ice:graphicImage value="#{item.userObject.icon}" width="16px" height="16px"></ice:graphicImage>
+							<ice:graphicImage value="#{item.userObject.icon}" width="16px" height="16px" rendered="#{pc:contains(item.userObject.icon, '/')}"></ice:graphicImage>
+							<ice:outputText styleClass="#{item.userObject.icon} pi-lg" rendered="#{!pc:contains(item.userObject.icon, '/')}"></ice:outputText>
 						</ice:panelGroup>
 					</f:facet>
 					<f:facet name="content">
 						<ice:panelGroup style="display: inline;">
 							<ice:outputText value="#{item.userObject.text}" title="#{item.userObject.tooltip}" />
 							<ice:commandLink styleClass="action-link" 
-								actionListener="#{item.userObject.select}">
+								actionListener="#{item.userObject.selectHTML5}">
 								<pc:automationTag value="auto-PP-LP-MyAssign-ItemsCnt" standAlone="true"/>
 								<ice:outputFormat
 									value="#{worklistsBean.messages['items']}">

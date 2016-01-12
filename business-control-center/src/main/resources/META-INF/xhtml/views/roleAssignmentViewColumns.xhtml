@@ -22,7 +22,7 @@
 						<pc:automationTag
 							value="auto-BCC-RoleAssignment-RoleTbl-TeamMember"
 							standAlone="false" />
-						<f:param name="viewId" value="userManagerDetailView" />
+						<f:param name="viewId" value="userManagerDetailViewIF" />
 						<f:param name="nested" value="true" />
 						<f:param name="viewParams"
 							value="userOid=#{row.userOid}&amp;userId=#{row.userId}" />
@@ -31,12 +31,12 @@
 				</c:when>
 
 				<c:otherwise>
-					<h:graphicImage
-						value="/plugins/views-common/images/icons/tick.png"
-						style="border: none;" rendered="#{row.userInRole}" />
-					<h:graphicImage
-						value="/plugins/views-common/images/icons/cross.png"
-						style="border: none;" rendered="#{not row.userInRole}" />
+					<h:outputText
+						styleClass="pi pi-save pi-lg"
+						rendered="#{row.userInRole}" />
+					<h:outputText
+						rendered="#{not row.userInRole}" 
+						styleClass="pi pi-abort pi-lg" />
 				</c:otherwise>
 			</c:choose>
 		</ice:panelGroup>

@@ -38,7 +38,8 @@
                         self.initialized = true;
                       }
                       self.propertiesPanel = propertiesPanel;
-                      if (self.propertiesPanel.element.modelElement) {
+                      if (self.propertiesPanel.element
+                              && self.propertiesPanel.element.modelElement) {
                         if (self.propertiesPanel.element.modelElement.activityType == sdModelerConstants.SUBPROCESS_ACTIVITY_TYPE) {
                           self.show = true;
                         } else {

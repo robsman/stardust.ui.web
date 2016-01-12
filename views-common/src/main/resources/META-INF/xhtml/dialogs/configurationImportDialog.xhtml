@@ -23,9 +23,11 @@
 					<ice:outputText
 						value="#{title}"
 						styleClass="headerText" />
-					<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+					<ice:commandLink title="#{common_msgPropsBean['common.close']}"
 						action="#{configurationImportDialogBean.closePopup}"
-						immediate="true" styleClass="windowClose" />
+						immediate="true" styleClass="windowClose pi-cmdLnk">
+						<ice:outputText styleClass="pi pi-dialog-close pi-lg pi-outTxt" />
+					</ice:commandLink>
 				</ice:panelGroup>
 			</f:facet>
 			<f:facet name="body">
@@ -40,9 +42,8 @@
 								<ice:outputText
 									value="#{message}" />
 								<ice:panelGrid columns="2" style="padding: 0px;text-align: left;">							
-										<h:graphicImage
-											value="/plugins/views-common/images/icons/error.png"
-											styleClass="toolbar-button" style="padding: 0px;text-align: left;"
+										<ice:outputText
+											styleClass="pi pi-error pi-lg" style="padding: 0px;text-align: left;"
 											title="#{modelManagementBean.messages['save']}" />
 										<ice:outputText 
 											value="#{warning}" />

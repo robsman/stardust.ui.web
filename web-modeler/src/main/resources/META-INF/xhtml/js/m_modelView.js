@@ -341,6 +341,37 @@ define(
 				};
 
 				/**
+         * Overridden
+         */
+        ModelView.prototype.submitChangeswithUUID = function(changes, uuid) {
+          if(!uuid){
+            uuid = this.getModelElement().uuid;
+          }
+          m_commandsController.submitCommand(m_command
+              .createUpdateModelElementWithUUIDCommand(this.getModelElement().id, uuid, changes));
+        };
+        
+        /**
+         * 
+         */
+        ModelView.prototype.submitAddQACode = function(changes) {
+          var uuid = this.getModelElement().uuid;
+          m_commandsController.submitCommand(m_command.createCommand(
+                  "qualityAssuranceCode.create", this.getModelElement().id,
+                  uuid, changes));
+        };
+        
+        /**
+         * 
+         */
+        ModelView.prototype.submitDeleteQACode = function(changes) {
+          var uuid = this.getModelElement().uuid;
+          m_commandsController.submitCommand(m_command.createCommand(
+                  "qualityAssuranceCode.delete", this.getModelElement().id,
+                  uuid, changes));
+        };
+				
+				/**
 				 *
 				 */
 				ModelView.prototype.getModelElement = function() {

@@ -8,15 +8,15 @@
 
 	<!-- ***** Documentation for Generic Abort and Start Menu Bar *****
 		# Attributes ('*' indicates mandatory attributes)
-		bean* = Instance of bean having action methods 
 		processInstance = ProcessInstance Name.
 		activityInstance = ActivityInstance Name (when called from ActivityTable actions column)
+		disabled = true OR false
 		-->
 	<ice:panelGroup style="text-align:center;">
-		<ice:menuBar displayOnClick="true" style="text-align: left;"
-				immediate="false"  styleClass="switchMenuBar"  >
-				<ice:menuItem 
-					icon="/plugins/views-common/images/icons/case-menu.png"
+		<ice:panelGroup rendered="#{!disabled}">
+			<ice:menuBar displayOnClick="true" style="text-align: left;"
+					immediate="false"  styleClass="switchMenuBar" disabled="true" >
+				<ice:menuItem styleClass="pi pi-case pi-case-menu-open pi-md "
 					style="border:none;" value="" title="#{views_common_msgPropsBean['views.case.tooltip.menu']}">
 					<ice:menuItem styleClass="switchMnuItm" 
 						value="#{views_common_msgPropsBean['views.createCase.menubar.attachToCase']}"
@@ -34,5 +34,11 @@
 					</ice:menuItem>					
 				</ice:menuItem>
 			</ice:menuBar>
+		</ice:panelGroup>
+		<ice:panelGroup rendered="#{disabled}">
+			<ice:commandLink disabled="true">
+				<ice:outputText styleClass="pi pi-case pi-case-menu-open pi-md" />
+			</ice:commandLink>
+		</ice:panelGroup>
 	</ice:panelGroup>
 </f:view>

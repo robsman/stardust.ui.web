@@ -17,8 +17,8 @@
 	'use strict';
 
 	angular.module('bcc-ui.services').provider('sdRoleAssignmentService', function() {
-		this.$get = [ '$rootScope', '$resource', 'sdLoggerService', function($rootScope, $resource, sdLoggerService) {
-			var service = new RoleAssignmentService($rootScope, $resource, sdLoggerService);
+		this.$get = [ '$rootScope', '$resource', 'sdLoggerService', 'sdUtilService', function($rootScope, $resource, sdLoggerService, sdUtilService) {
+			var service = new RoleAssignmentService($rootScope, $resource, sdLoggerService, sdUtilService);
 			return service;
 		} ];
 	});
@@ -26,8 +26,8 @@
 	/*
 	 * 
 	 */
-	function RoleAssignmentService($rootScope, $resource, sdLoggerService) {
-		var REST_BASE_URL = "services/rest/portal/roleAssignment";
+	function RoleAssignmentService($rootScope, $resource, sdLoggerService, sdUtilService) {
+		var REST_BASE_URL = sdUtilService.getBaseUrl() +"services/rest/portal/roleAssignment";
 		var trace = sdLoggerService.getLogger('bcc-ui.services.sdRoleAssignmentService');
 
 		/**
@@ -45,5 +45,4 @@
 		};
 
 	}
-	;
 })();

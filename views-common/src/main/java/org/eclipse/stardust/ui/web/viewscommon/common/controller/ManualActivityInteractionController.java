@@ -52,7 +52,7 @@ public class ManualActivityInteractionController implements IActivityInteraction
       return AbstractProcessExecutionPortal.GENERIC_PANEL;
    }
 
-   public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario)
+   public boolean closePanel(ActivityInstance ai, ClosePanelScenario scenario, Object parameters)
    {
       // TODO any preconditions to check?
       return true;

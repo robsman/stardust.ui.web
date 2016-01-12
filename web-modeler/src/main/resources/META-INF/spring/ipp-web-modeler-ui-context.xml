@@ -7,8 +7,9 @@ http://www.springframework.org/schema/beans http://www.springframework.org/schem
 http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
 
 	<ippui:perspective id="ippBpmModeler" messageBundles="bpm-modeler-messages"
-		controller="processesView">
+		controller="processesView" excludeRoles="{PredefinedModel}Auditor">
 		<ippui:preferences>
+			<ippui:preferencePage name="icon" include="pi pi-perspective-modeler" />
 			<ippui:preferencePage name="configuration"
 				include="/plugins/bpm-modeler/preferences/modelingConfigurationPanel.xhtml" />
          <ippui:preferencePage name="helpDocumentation"
@@ -31,6 +32,9 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		<ippui:view name="webServiceApplicationView"
 			include="/plugins/bpm-modeler/views/modeler/webServiceApplicationView.html"
 			controller="webServiceApplicationView" />
+		<ippui:view name="decoratorApplicationView"
+			include="/plugins/bpm-modeler/views/modeler/decoratorApplicationView.html"
+			controller="decoratorApplicationView" />
 		<ippui:view name="xsdStructuredDataTypeView"
 			include="/plugins/bpm-modeler/views/modeler/xsdStructuredDataTypeView.html"
 			controller="xsdStructuredDataTypeView" />

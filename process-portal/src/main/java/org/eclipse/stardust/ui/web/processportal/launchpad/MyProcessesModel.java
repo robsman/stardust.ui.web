@@ -57,6 +57,21 @@ public class MyProcessesModel
       PPUtils.selectWorklist(null);
       return null;
    }
+   
+   /**
+    * @return
+    */
+   public String selectHTML5()
+   {
+      Map<String, Object> params = CollectionUtils.newTreeMap();
+      params.put("id", processDefinition.getQualifiedId());
+      params.put("name", I18nUtils.getProcessName(processDefinition));
+      params.put("processQId", processDefinition.getQualifiedId());
+
+      PPUtils.openWorklistViewHTML5("id=" +processDefinition.getQualifiedId() , params);
+      PPUtils.selectWorklist(null);
+      return null;
+   }
 
    public String getTotalCount()
    {

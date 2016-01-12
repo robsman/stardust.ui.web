@@ -105,6 +105,9 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
    
    private String caseOwner;   
 
+   private String benchmark;
+   
+   private String benchmarkColor;
 
    
    
@@ -153,6 +156,9 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
       }      
     
       oldPriority = priority;
+      
+      this.benchmark = ProcessInstanceUtils.getBenchmarkLabel(processInstance);
+      this.benchmarkColor = ProcessInstanceUtils.getBenchmarkColor(processInstance);
    }
 
 
@@ -442,6 +448,7 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
       String MIGRATE_FROM = MessagesViewsCommonBean.getInstance().getString("view.linkedProcess.label.migrate_from");
       String SPAWN_TO = MessagesViewsCommonBean.getInstance().getString("view.linkedProcess.label.spawn_to");
       String SPAWN_FROM = MessagesViewsCommonBean.getInstance().getString("view.linkedProcess.label.spawn_from");
+      String RELATED = MessagesViewsCommonBean.getInstance().getString("view.linkedProcess.label.related");
 
       long sourceLinkOID = link.getSourceOID();
       long targetLinkOID = link.getTargetOID();
@@ -457,6 +464,10 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
          {
           linkType = SPAWN_FROM;
          }
+         else if (PredefinedProcessInstanceLinkTypes.RELATED.getId().equals(link.getLinkType().getId()))
+         {
+            linkType = RELATED;
+         }
          else
             // If the link type is Join , set the To Process Link Type
             linkType = PredefinedProcessInstanceLinkTypes.JOIN.getId().equals(link.getLinkType().getId()) ? JOIN_FROM : SWITCH_FROM;
@@ -471,6 +482,10 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
          {
            linkType = SPAWN_TO;
          }
+         else if (PredefinedProcessInstanceLinkTypes.RELATED.getId().equals(link.getLinkType().getId()))
+         {
+            linkType = RELATED;
+         }
          else
             linkType = PredefinedProcessInstanceLinkTypes.JOIN.getId().equals(link.getLinkType().getId()) ? JOIN_TO : SWITCH_TO;
       }
@@ -482,6 +497,28 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
       this.oldPriority = priority;
    }
    
+   public String getBenchmark()
+   {
+      return benchmark;
+   }
+
+
+   public void setBenchmark(String benchmark)
+   {
+      this.benchmark = benchmark;
+   }
+
+   public String getBenchmarkColor()
+   {
+      return benchmarkColor;
+   }
+
+
+   public void setBenchmarkColor(String benchmarkColor)
+   {
+      this.benchmarkColor = benchmarkColor;
+   }
+
    /**
     * @author Sidharth.Singh
     * @version $Revision: $

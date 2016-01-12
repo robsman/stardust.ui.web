@@ -34,8 +34,8 @@
         	 '<span>' 
         	 	+ '<span class="iPopupDialogContentText" id="fileUploadFormLabel" ng-bind="title"></span>'
         	 	+ '<form id="fileUploadForm" method="post" enctype="multipart/form-data" style="width: 100%">'
-	        	 	+ '<input id="file" type="file" size="35" name="upload" class="iPopupDialogControlButton" />'
-	        	 	+ '<input id="uploadButton"	ng-disabled="true" type="submit" value="Upload" class="iPopupDialogControlButton button" />'
+	        	 	+ '<input id="file" type="file" size="35" name="upload" class="iPopupDialogControlButton" aid="ChooseFile"/>'
+	        	 	+ '<input id="uploadButton"	ng-disabled="true" type="submit" value="Upload" class="iPopupDialogControlButton button" aid="Upload"/>'
 	        	 	+ '<span  id="confirmationMessage" style="color: green; margin: 10px" class="iPopupDialogContentText"></span>'
 	        	+ '</form>'
 	        	+ '<div id="fileUploadprogress">'
@@ -49,16 +49,16 @@
 			 title: '@sdaTitle',
 			 bindModel: '=ngModel'
 		 },
-         controller : [ '$scope', '$attrs', '$element', 'sgI18nService', 'sdLoggerService', FileUploadController ]
+         controller : [ '$scope', '$attrs', '$element', 'sgI18nService', 'sdLoggerService', 'sdUtilService', FileUploadController ]
       };
 
    }
 
-	function FileUploadController($scope, $attrs, $element, sgI18nService, sdLoggerService) {
+	function FileUploadController($scope, $attrs, $element, sgI18nService, sdLoggerService, sdUtilService) {
 		var trace = sdLoggerService.getLogger('bpm-common.sdFileUpload');
 		
 		var self = this;
-		var REST_END_POINT = "services/rest/portal/file-upload/upload";
+		var REST_END_POINT = sdUtilService.getBaseUrl() + "services/rest/portal/file-upload/upload";
 
 		FileUploadController.prototype.initialise = function() {
 			

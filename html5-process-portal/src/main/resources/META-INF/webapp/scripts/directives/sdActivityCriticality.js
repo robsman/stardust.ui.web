@@ -24,24 +24,23 @@
 
       return {
          restrict : 'A',
-         template : '<span data-ng-repeat="t in criticalityCtrl.getFlagCount(criticalityCtrl.criticality.count) track by $index" '+
-                        'ng-mouseenter="criticalityCtrl.toolTip.show = true" '+
-                         'ng-mouseleave="criticalityCtrl.toolTip.show = false"> '+
-                        '<i ng-show="criticalityCtrl.criticality.color != \'WHITE\' && criticalityCtrl.criticality.color!=\'WHITE_WARNING\'" '+
-                         'class="glyphicon glyphicon-flag criticality-flag" '+
-                         'ng-class="\'criticality-flag-\'+criticalityCtrl.criticality.color"><\/i>  '+
-                        '<i ng-show="criticalityCtrl.criticality.color == \'WHITE\'" '+
-                        'class="glyphicon glyphicon-flag criticality-flag criticality-flag-WHITE"><\/i>  '+
-                         '<i ng-show="criticalityCtrl.criticality.color == \'WHITE_WARNING\'" '+
-                         'class="glyphicon criticality-flag criticality-flag-WHITE-WARNING  glyphicon-exclamation-triangle"><\/i>' +
-                   '<\/span> '+
-                   '<div class="popup-dlg worklist-tooltip" style="color: black" '+
-                      'ng-show="criticalityCtrl.toolTip.show"> '+
-                      '<span class="worklist-tooltip-label" ng-bind="criticalityCtrl.i18n(\'views-common-messages.processHistory-activityTable-criticalityTooltip-criticality\')"><\/span> '+
-                      ': <span ng-bind="criticalityCtrl.criticality.label"><\/span><br> <span class="worklist-tooltip-label"'+
-                      'ng-bind="criticalityCtrl.i18n(\'views-common-messages.processHistory-activityTable-criticalityTooltip-value\')"><\/span> '+
-                      ': <span ng-bind="criticalityCtrl.criticality.value">' +
-                   '<\/div> ',
+         template :
+        	 '<span ng-mouseenter="criticalityCtrl.toolTip.show = true" ng-mouseleave="criticalityCtrl.toolTip.show = false">\n' +
+	        	 '<span data-ng-repeat="t in criticalityCtrl.getFlagCount(criticalityCtrl.criticality.count) track by $index">\n' +
+	    	 		'<i ng-show="criticalityCtrl.criticality.color != \'WHITE\' && criticalityCtrl.criticality.color!=\'WHITE_WARNING\'" ' +
+	                    'class="pi pi-flag pi-lg" ng-class="\'criticality-flag-\'+criticalityCtrl.criticality.color"></i>\n' +
+	                '<i ng-show="criticalityCtrl.criticality.color == \'WHITE\'" '+
+	                    'class="pi pi-flag pi-lg criticality-flag-WHITE"></i>\n'+
+	                '<i ng-show="criticalityCtrl.criticality.color == \'WHITE_WARNING\'" '+
+	                	'class="pi pi-lg criticality-flag-WHITE-WARNING pi-information"></i>\n' +
+	             '</span>\n' +
+	        '</span>\n' +
+         	'<div class="popup-dlg worklist-tooltip" style="color: black" ng-show="criticalityCtrl.toolTip.show">\n' +
+         		'<span class="worklist-tooltip-label" ng-bind="criticalityCtrl.i18n(\'views-common-messages.processHistory-activityTable-criticalityTooltip-criticality\')"></span>: '+
+                '<span ng-bind="criticalityCtrl.criticality.label"></span><br/>\n' + 
+         		'<span class="worklist-tooltip-label" ng-bind="criticalityCtrl.i18n(\'views-common-messages.processHistory-activityTable-criticalityTooltip-value\')"></span>: '+
+                '<span ng-bind="criticalityCtrl.criticality.value">\n' +
+            '</div>',
          controller : [ '$scope', '$attrs', '$parse', CriticalityController ]
       };
 

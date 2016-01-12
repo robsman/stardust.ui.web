@@ -21,10 +21,14 @@
     <style>[ng\:cloak], [ng-cloak], .ng-cloak { display: none; }</style>
 
     <link rel="stylesheet" href="portal-shell/themes/default/styles.css"></link>
-	<link rel="stylesheet" href="plugins/common/css/common-html5-fw-bridge.css">
+	<link rel="stylesheet" href="plugins/common/css/common-html5-fw-bridge.css"></link>
+		
 
     <!-- Dependency Styles from Portal Plugins -->
     <!-- DEPENDENCY_STYLES_TO_BE_INJECTED -->
+    
+    <link rel="stylesheet" href="plugins/modern-skin/modern.css"></link>
+	<link rel="stylesheet" href="plugins/modern-skin/modern.font.icons.css"></link>
 
     <link ng-repeat="css in theme.styleSheets" rel="stylesheet" ng-href="{{css}}"></link>
 
@@ -225,7 +229,7 @@
 
 	<!-- Framework now does not depend on requriejs, but this is kept for backward compatibility for now. -->
 	<!-- Include it at the end, so that loading of dependency scripts is not affected. -->
-	<script src="portal-shell/js/libs/require/2.0.5/require.min.js"></script>
+	<script src="portal-shell/js/libs/require/2.1.15/require.min.js"></script>
 
 	<script>
 		var startApp = function () {

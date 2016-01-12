@@ -8,17 +8,7 @@
                     "label": "PORTAL_LABEL",
                     "id": "portal",
                     "children": [
-                        {
-                            "label": "CONFIGURATION_LABEL",
-                            "title": "CONFIGURATION_LABEL",
-                            "id": "configurationTreeView",
-                            "icon": "viewIconBase tabIcon-generic",
-                            "module": "bpm-ui",
-                            "partial": "plugins/common/html5/partials/externalPage.html",
-                            "controller": "bpm-ui.ExternalPageCtrl",
-                            "target": "tab",
-                            "externalURL": "FULL_PATH/plugins/common/portalSingleViewMain.iface?singleViewId=*::configurationTreeView"
-                        }
+                        CONFIGURATION_VIEW_DEF
                     ]
                 }
             ]

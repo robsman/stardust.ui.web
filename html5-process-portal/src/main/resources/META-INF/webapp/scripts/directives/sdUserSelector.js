@@ -33,13 +33,15 @@
 		var directiveDefObject = {
 				restrict : 'AE',
 				scope: {  // Creates a new sub scope
-					selectedData: '=sdaSelectedData'
+					selectedData: '=sdaSelectedData',
+					autoIdPrefix : '@sdaAidPrefix'
 				},
 				transclude: true,
 				template: '<div sd-participant-selector'
 			      		+ ' sda-selected-data="selectedData"'
 			      		+ ' sda-multiple="userSelectorController.allowMultiple"'
 			      		+ ' sd-data="userSelectorController.fetchUserData(params)"'
+			      		+ ' sda-aid-prefix="{{autoIdPrefix}}">'
 			      		+ '</div>',
 				link: function(scope, element, attrs, ctrl) {
 					new UserSelectorLink(scope, element, attrs, ctrl);

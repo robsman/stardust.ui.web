@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.Resource;
 
@@ -28,6 +29,7 @@ import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.engine.api.query.ProcessDefinitionQuery;
 import org.eclipse.stardust.engine.api.runtime.DeployedModel;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.viewscommon.utils.CommonDescriptorUtils;
@@ -67,6 +69,28 @@ public class ProcessDefinitionUtils
          return emptyList();
       }
    }
+   
+   /**
+    * 
+    * @param triggerType
+    * @return
+    */
+   public List<ProcessDefinition> findStatable(String triggerType)
+   {
+      try
+      {
+         return serviceFactoryUtils.getQueryService().getProcessDefinitions(ProcessDefinitionQuery.findStartable(triggerType));
+      }
+      catch (ObjectNotFoundException onfe)
+      {
+         if (trace.isDebugEnabled())
+         {
+            trace.debug("No startable processes : " + onfe.getMessage());
+         }
+
+         return emptyList();
+      }
+   }
 
    /**
     * return true if the provided Process Definition supports Process Attachments
@@ -74,7 +98,7 @@ public class ProcessDefinitionUtils
     * @param processInstance
     * @return
     */
-   public boolean supportsProcessAttachments(ProcessDefinition pd)
+   public static boolean supportsProcessAttachments(ProcessDefinition pd)
    {
       boolean supportsProcessAttachments = false;
 
@@ -97,7 +121,7 @@ public class ProcessDefinitionUtils
     * @param processId
     * @return
     */
-   public ProcessDefinition getProcessDefinition(String processId)
+   public static ProcessDefinition getProcessDefinition(String processId)
    {
       ProcessDefinition processDefinition = null;
 
@@ -121,7 +145,7 @@ public class ProcessDefinitionUtils
     * @param processId
     * @return
     */
-   public ProcessDefinition getProcessDefinition(long modelOid, String processId)
+   public static ProcessDefinition getProcessDefinition(long modelOid, String processId)
    {
       ModelCache modelCache = ModelCache.findModelCache();
       Model model = modelCache.getModel(modelOid);
@@ -169,6 +193,70 @@ public class ProcessDefinitionUtils
          String pd2Name = I18nUtils.getProcessName(pd2);
          return pd1Name.compareTo(pd2Name);
       }
+   }
+   
+   /**
+    * @param procDefID
+    * @return
+    */
+   public static List<ProcessDefinition> getProcessDefinitions(List<String> procDefIDs)
+   {
+      List<ProcessDefinition> processDefinitions = CollectionUtils.newArrayList();
+
+      if (null != procDefIDs)
+      {
+         for (String processId : procDefIDs)
+         {
+            ProcessDefinition processDefinition = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils
+                  .getProcessDefinition(processId);
+            processDefinitions.add(processDefinition);
+         }
+      }
+
+      return processDefinitions;
+   }
+
+ 
+   /**
+    * @param processes
+    * @param onlyFilterable
+    * @return
+    */
+   public static DataPath[] getCommonDescriptors(List<ProcessDefinition> processes, Boolean onlyFilterable)
+   {
+       DataPath[] commonDescriptorsDataPath = CommonDescriptorUtils.getCommonDescriptors(processes, onlyFilterable);
+       return commonDescriptorsDataPath;
+   }
+   
+ 
+   /**
+    * @param dataPaths
+    * @return
+    */
+   public static Map<String, DataPath> getDataPathMap(DataPath[] dataPaths)
+   {
+      Map<String, DataPath> allDescriptors = new TreeMap<String, DataPath>();
+      for (DataPath dataPath : dataPaths)
+      {
+         if (dataPath.isDescriptor())
+         {
+            if (allDescriptors.containsKey(dataPath.getId()))
+            {
+               DataPath existing = allDescriptors.get(dataPath.getId());
+               if (!existing.getData().equals(dataPath.getData()))
+               {
+                  trace.warn("* Duplicate datapath detected with id: " + dataPath.getNamespace() + "->"
+                        + dataPath.getData() + "->" + dataPath.getId() + "(" + existing.getNamespace() + "->"
+                        + existing.getData() + "->" + existing.getId() + ")");
+               }
+            }
+            else
+            {
+               allDescriptors.put(dataPath.getId(), dataPath);
+            }
+         }
+      }
+      return allDescriptors;
    }
 
 }

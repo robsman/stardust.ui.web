@@ -2,8 +2,8 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button ng-show="dialogController.showClose" type="button" class="close" ng-click="dialogController.cancelAction()" aria-label="Close" title="{{i18n == undefined ? 'Close' : i18n('views-common-messages.common-close')}}">
-        	<span aria-hidden="true">&times;</span>
+        <button ng-show="dialogController.showClose" type="button" class="button-link dlg-close" ng-click="dialogController.cancelAction()" aria-label="Close" title="{{i18n == undefined ? 'Close' : i18n('views-common-messages.common-close')}}" aid="{{autoIdPrefix}}-close">
+        	<span class="pi pi-dialog-close pi-lg"></span>
         </button>
         <div id="modalLabel" class="confirmation-header">
 			<p><span class="header">{{title}}</span></p>
@@ -16,8 +16,8 @@
         <div class="confirmation-buttonpane">
 			<div class="button-pane cf" >
 				<div class="button-alignment">
-				  	<button class="button" ng-click="dialogController.confirmAction()" ng-hide="dialogController.dialogType === TYPE_ALERT">{{confirmActionLabel == undefined ? i18n('views-common-messages.common-ok') : confirmActionLabel}}</button>
-				    <button class="button" ng-click="dialogController.cancelAction()">
+				  	<button class="button" ng-click="dialogController.confirmAction()" ng-hide="dialogController.dialogType === TYPE_ALERT" aid="{{autoIdPrefix}}-ConfirmAction">{{confirmActionLabel == undefined ? i18n('views-common-messages.common-ok') : confirmActionLabel}}</button>
+				    <button class="button" ng-click="dialogController.cancelAction()" aid="{{autoIdPrefix}}-CancelAction">
 				    	{{cancelActionLabel == undefined ? i18n('views-common-messages.common-cancel') : cancelActionLabel}}
 				    </button>
 				</div>

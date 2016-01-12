@@ -27,11 +27,6 @@
          <scope>compile</scope>
       </dependency>
       <dependency>
-         <groupId>wsdl4j</groupId>
-         <artifactId>wsdl4j</artifactId>
-         <scope>compile</scope>
-      </dependency>
-      <dependency>
          <groupId>org.eclipse.stardust.ui.web</groupId>
          <artifactId>ipp-portal-common</artifactId>
          <version>${project.version}</version>

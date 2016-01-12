@@ -34,7 +34,6 @@
 		Controller.prototype.initialize = function() {
 			this.resetValues();
 			this.dataTable = null; // This will be set to underline data
-			this.selection = null;
 			this.fetchCriticalityConfig();
 			
 			this.exportAnchor = document.createElement("a");
@@ -101,17 +100,23 @@
 			if (self.validate(payload.criticalities)) {
 				sdCriticalityConfigService.saveCriticalityConfig(payload).then(function(result) {
 					self.criticalityConfig = result;
+					var options = {
+						title : sgI18nService.translate('portal-common-messages.common-info')
+					};
 					sdDialogService.alert($scope, 
 							sgI18nService.translate('admin-portal-messages.views-criticalityConf-criticality-save-success-dialog'),
-							sgI18nService.translate('portal-common-messages.common-info'));
+							options);
 					self.resetValues();
 					self.fetchCriticalityConfig();
 				}, function(error) {
 					trace.error('Error occured while saving Criticality Configuration : ', error);
+					var options = {
+							title : sgI18nService.translate('portal-common-messages.common-error')
+						};
 					// show error to the user
 					sdDialogService.error($scope, 
 							sgI18nService.translate('admin-portal-messages.views-criticalityConf-criticality-save-failure-dialog'),
-							sgI18nService.translate('portal-common-messages.common-error'));
+							options);
 				});
 			}
 		};
@@ -273,10 +278,11 @@
 			}, function(error) {
 				self.uploadedFiles = undefined;
 				trace.error('Error occured while importing Criticality Configuration : ', error);
+				var options = {
+						title : sgI18nService.translate('portal-common-messages.common-error')
+				};
 				// show error to the user
-				sdDialogService.error($scope, 
-						error.data,
-						sgI18nService.translate('portal-common-messages.common-error'));
+				sdDialogService.error($scope, error.data, options);
 			});
 		};
 		
@@ -329,6 +335,26 @@
 			angular.forEach(this.dataTable.getSelection(), function(selected) {
 				selected.editMode = true;
 			});
+		};
+		
+		/*
+		 * 
+		 */
+		Controller.prototype.isEditable = function() {
+			var self = this;
+			var eidtable = false;
+			
+			if(self.dataTable.getSelection() < 1) {
+				eidtable =  false;
+			}else{
+				angular.forEach(self.dataTable.getSelection() ,function(selected){
+					
+					if(!eidtable && !selected.editMode){
+						eidtable =  true;
+					}
+				});
+			}
+			return eidtable;
 		};
 		
 		/*

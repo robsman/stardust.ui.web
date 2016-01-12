@@ -15,25 +15,30 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.CollectionUtils;
-import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
-import org.eclipse.stardust.engine.api.query.FilterOrTerm;
-import org.eclipse.stardust.engine.api.query.Query;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.SubprocessSpawnInfo;
+import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference;
+import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.common.column.DefaultColumnModel;
 import org.eclipse.stardust.ui.web.common.column.IColumnModel;
-import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.table.DataTable;
 import org.eclipse.stardust.ui.web.common.table.DefaultRowModel;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ClientContextBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
 
 
 
@@ -206,17 +211,14 @@ public class SpawnProcessHelper
       {
          if (CollectionUtils.isNotEmpty(subprocessInstances))
          {
-
             Map<String, Object> params = CollectionUtils.newTreeMap();
-            ActivityInstanceQuery query = ActivityInstanceQuery.findAlive();
-
-            FilterOrTerm orTerm = query.getFilter().addOrTerm();
+            List<Long> pInstanceOids = new ArrayList<Long>();
             for (ProcessInstance pInstance : subprocessInstances)
             {
-               orTerm.add(ActivityInstanceQuery.PROCESS_INSTANCE_OID.isEqual(pInstance.getOID()));
+               pInstanceOids.add(pInstance.getOID());
             }
-            params.put(Query.class.getName(), query);
             params.put("name", workListTitle);
+            params.put("pInstanceOids", StringUtils.join(pInstanceOids, ','));
             long id = new Date().getTime();//to make view unique
             PortalApplication.getInstance().openViewById("worklistPanel", "id=" + id, params, null, false);
          }
@@ -238,6 +240,33 @@ public class SpawnProcessHelper
    public void setRootProcessInstance(ProcessInstance rootProcessInstance)
    {
       this.rootProcessInstance = rootProcessInstance;
+   }
+
+   public void activateSpawnedWorkItems()
+   {
+      if (CollectionUtils.isNotEmpty(subprocessInstances))
+      {
+         for (ProcessInstance pInstance : subprocessInstances)
+         {
+            ActivityInstance activityInstance = ServiceFactoryUtils.getWorkflowService()
+                  .activateNextActivityInstanceForProcessInstance(pInstance.getOID());
+
+            if (activityInstance != null)
+            {
+               ActivityEvent activityEvent = ActivityEvent.activated(activityInstance);
+               ParticipantWorklistCacheManager.getInstance().handleActivityEvent(null, activityEvent);
+               if (ProcessWorklistCacheManager.isInitialized())
+               {
+                  ProcessWorklistCacheManager.getInstance().handleActivityEvent(null, activityEvent);
+               }
+               SpecialWorklistCacheManager.getInstance().handleActivityEvent(null, activityEvent);
+               ClientContextBean.getCurrentInstance().getClientContext().sendActivityEvent(activityEvent);
+
+               ActivityInstanceUtils.openActivity(activityInstance, null);
+            }
+         }
+      }
+
    }
 
 }

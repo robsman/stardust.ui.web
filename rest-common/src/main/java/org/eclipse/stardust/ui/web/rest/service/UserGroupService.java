@@ -77,9 +77,17 @@ public class UserGroupService
       {
          userGroup.setValidFrom(new Date(userGroupDTO.validFrom));
       }
+      else
+      {
+         userGroup.setValidFrom(null);
+      }
       if (userGroupDTO.validTo != null)
       {
          userGroup.setValidTo(new Date(userGroupDTO.validTo));
+      }
+      else
+      {
+         userGroup.setValidTo(null);
       }
       return DTOBuilder.build(userGroupUtils.modifyUserGroup(userGroup), UserGroupDTO.class);
    }

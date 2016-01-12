@@ -352,7 +352,7 @@ public class DocumentSearchUtils
                   .getFormattedString(documentSearchFilter.documentName.textSearch)));
          }
       }
-      else if (null != documentSearchFilter.createDate)
+      if (null != documentSearchFilter.createDate)
       {
          Date startTime = new Date(documentSearchFilter.createDate.from);
          Date endTime = new Date(documentSearchFilter.createDate.to);
@@ -363,7 +363,7 @@ public class DocumentSearchUtils
             filter.and(DocumentQuery.DATE_CREATED.lessOrEqual(DateUtils.convertToGmt(endTime)));
 
       }
-      else if (null != documentSearchFilter.modificationDate)
+      if (null != documentSearchFilter.modificationDate)
       {
          Date startTime = new Date(documentSearchFilter.modificationDate.from);
          Date endTime = new Date(documentSearchFilter.modificationDate.to);
@@ -373,14 +373,14 @@ public class DocumentSearchUtils
          if (endTime != null)
             filter.and(DocumentQuery.DATE_LAST_MODIFIED.lessOrEqual(DateUtils.convertToGmt(endTime)));
       }
-      else if (null != documentSearchFilter.author)
+      if (null != documentSearchFilter.author)
       {
          if (StringUtils.isNotEmpty(documentSearchFilter.author.textSearch))
          {
             filter.and(DocumentQuery.OWNER.like(QueryUtils.getFormattedString(documentSearchFilter.author.textSearch)));
          }
       }
-      else if (null != documentSearchFilter.fileType)
+      if (null != documentSearchFilter.fileType)
       {
 
          if (StringUtils.isNotEmpty(documentSearchFilter.fileType.textSearch))
@@ -389,14 +389,14 @@ public class DocumentSearchUtils
                   .getFormattedString(documentSearchFilter.fileType.textSearch)));
          }
       }
-      else if (null != documentSearchFilter.documentId)
+      if (null != documentSearchFilter.documentId)
       {
          if (StringUtils.isNotEmpty(documentSearchFilter.documentId.textSearch))
          {
             filter.and(DocumentQuery.ID.like(QueryUtils.getFormattedString(documentSearchFilter.documentId.textSearch)));
          }
       }
-      else if (null != documentSearchFilter.documentType)
+      if (null != documentSearchFilter.documentType)
       {
 
          List<String> filterByValues = documentSearchFilter.documentType.like;

@@ -254,6 +254,7 @@ public class UserManagerDetailBean extends UIComponentBean
       if (activityHelper == null)
       {
          activityHelper = new ActivityTableHelper();
+         activityHelper.setShowResubmissionTime(true);
          activityHelper.setStrandedActivityView(false);
          activityHelper.setCallbackHandler(this);
          activityHelper.initActivityTable();

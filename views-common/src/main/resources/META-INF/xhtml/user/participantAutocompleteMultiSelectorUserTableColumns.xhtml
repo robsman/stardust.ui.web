@@ -23,8 +23,8 @@
 			<ice:commandLink action="#{row.removeParticipant}"
 				disabled="#{not row.removeable}">
 				<pc:automationTag value="auto-COM-PartAutoMultiSel-PartTbl-ActionsRemove" standAlone="false"/>
-				<ice:graphicImage value="/plugins/views-common/images/icons/dialog-windowbttn-close.png"
-					styleClass="#{(not row.removeable) ? 'iceCmdBtn-dis' : 'toolbar-button'}"/>
+				<ice:outputText 
+					styleClass="#{(not row.removeable) ? 'iceCmdBtn-dis' : ''} pi pi-dialog-close pi-lg"/>
 			</ice:commandLink>
 		</ice:panelGroup>
 	</ice:panelGroup>

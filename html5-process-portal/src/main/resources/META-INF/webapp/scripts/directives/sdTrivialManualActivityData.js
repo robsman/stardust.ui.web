@@ -23,7 +23,7 @@
 
       return {
          restrict : 'A',
-         templateUrl : 'plugins/html5-process-portal/scripts/directives/partials/trivialManualActivityData.html',
+         templateUrl : sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/trivialManualActivityData.html',
          controller : [ '$scope', '$parse', '$attrs', 'sdUtilService', DataController ]
       };
    }

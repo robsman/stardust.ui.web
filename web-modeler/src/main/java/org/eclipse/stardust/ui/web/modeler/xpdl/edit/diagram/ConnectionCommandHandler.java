@@ -19,39 +19,23 @@ import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractLo
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.extractString;
 import static org.eclipse.stardust.ui.web.modeler.marshaling.GsonUtils.hasNotJsonNull;
 
+import java.util.Iterator;
 import java.util.List;
 
 import javax.annotation.Resource;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.util.FeatureMap;
+
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
+import org.eclipse.stardust.model.xpdl.builder.common.AbstractElementBuilder;
 import org.eclipse.stardust.model.xpdl.builder.common.EObjectUUIDMapper;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelBuilderFacade;
 import org.eclipse.stardust.model.xpdl.builder.utils.ModelerConstants;
 import org.eclipse.stardust.model.xpdl.builder.utils.XPDLFinderUtils;
-import org.eclipse.stardust.model.xpdl.carnot.AbstractEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ActivitySymbolType;
-import org.eclipse.stardust.model.xpdl.carnot.ActivityType;
-import org.eclipse.stardust.model.xpdl.carnot.CarnotWorkflowModelFactory;
-import org.eclipse.stardust.model.xpdl.carnot.DataMappingConnectionType;
-import org.eclipse.stardust.model.xpdl.carnot.DataMappingType;
-import org.eclipse.stardust.model.xpdl.carnot.DiagramType;
-import org.eclipse.stardust.model.xpdl.carnot.DirectionType;
-import org.eclipse.stardust.model.xpdl.carnot.EndEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.EventHandlerType;
-import org.eclipse.stardust.model.xpdl.carnot.IIdentifiableElement;
-import org.eclipse.stardust.model.xpdl.carnot.INodeSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.IntermediateEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ModelType;
-import org.eclipse.stardust.model.xpdl.carnot.PoolSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.ProcessDefinitionType;
-import org.eclipse.stardust.model.xpdl.carnot.StartEventSymbol;
-import org.eclipse.stardust.model.xpdl.carnot.TransitionConnectionType;
-import org.eclipse.stardust.model.xpdl.carnot.TransitionType;
-import org.eclipse.stardust.model.xpdl.carnot.XmlTextNode;
+import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.CommandHandler;
 import org.eclipse.stardust.ui.web.modeler.edit.spi.OnCommand;
@@ -59,9 +43,11 @@ import org.eclipse.stardust.ui.web.modeler.marshaling.JsonMarshaller;
 import org.eclipse.stardust.ui.web.modeler.service.ModelService;
 import org.eclipse.stardust.ui.web.modeler.xpdl.edit.utils.CommandHandlerUtils;
 import org.eclipse.stardust.ui.web.modeler.xpdl.marshalling.EventMarshallingUtils;
+
 import org.springframework.context.ApplicationContext;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 /**
@@ -149,9 +135,12 @@ public class ConnectionCommandHandler
             }
             else if (ModelerConstants.DATA.equals(targetType))
             {
-               JsonObject controlFlowJson = request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+               /*JsonObject controlFlowJson = request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
                JsonArray dataMappingsJson = controlFlowJson.getAsJsonArray(ModelerConstants.DATAMAPPINGS_PROPERTY);
-               String direction = dataMappingsJson.get(0).getAsJsonObject().get(ModelerConstants.DIRECTION_PROPERTY).getAsString();
+               String direction = dataMappingsJson.get(0).getAsJsonObject().get(ModelerConstants.DIRECTION_PROPERTY).getAsString();*/
+
+               String direction = getDirection(request);
+
                DataMappingConnectionType dataConnectionType = getModelBuilderFacade().createDataFlowConnection(
                      processDefinition,
                      fromActivitySymbol,
@@ -247,9 +236,9 @@ public class ConnectionCommandHandler
          {
             if (ModelerConstants.ACTIVITY_KEY.equals(targetType))
             {
-               JsonObject controlFlowJson = request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
-               JsonArray dataMappingsJson = controlFlowJson.getAsJsonArray(ModelerConstants.DATAMAPPINGS_PROPERTY);
-               String direction = dataMappingsJson.get(0).getAsJsonObject().get(ModelerConstants.DIRECTION_PROPERTY).getAsString();
+
+               String direction = getDirection(request);
+
                DataMappingConnectionType dataConnectionType = getModelBuilderFacade().createDataFlowConnection(
                      processDefinition,
                      XPDLFinderUtils.findActivitySymbol(diagram, toSymbolOid),
@@ -302,6 +291,24 @@ public class ConnectionCommandHandler
       }
    }
 
+
+   private String getDirection(JsonObject request)
+   {
+      JsonObject controlFlowJson = request.getAsJsonObject(ModelerConstants.MODEL_ELEMENT_PROPERTY);
+      JsonArray dataMappingsJson = controlFlowJson.getAsJsonArray(ModelerConstants.DATAMAPPINGS_PROPERTY);
+      String direction = null;
+      if (dataMappingsJson != null)
+      {
+         direction = dataMappingsJson.get(0).getAsJsonObject()
+               .get(ModelerConstants.DIRECTION_PROPERTY).getAsString();
+      }
+      else
+      {
+         direction = controlFlowJson.get(ModelerConstants.DIRECTION_PROPERTY)
+               .getAsString();
+      }
+      return direction;
+   }
 
 
    /**
@@ -405,6 +412,38 @@ public class ConnectionCommandHandler
          }
       }
 
+   }
+
+
+   @OnCommand(commandId = "datamapping.create")
+   public void createDatamapping(ModelType model, DataMappingConnectionType dataFlowConnection,
+         JsonObject request)
+   {
+      DataMappingType dataMapping = createDataMapping(dataFlowConnection, request);
+      modelService().uuidMapper().map(dataMapping);
+   }
+
+   @OnCommand(commandId = "datamapping.delete")
+   public void deleteDatamapping(ModelType model,
+         DataMappingConnectionType dataFlowConnection, JsonObject request)
+   {
+      if (request.has(ModelerConstants.UUID_PROPERTY))
+      {
+         JsonArray uuidArray = request.get(ModelerConstants.UUID_PROPERTY)
+               .getAsJsonArray();
+         if (uuidArray != null)
+         {
+            for (Iterator<JsonElement> i = uuidArray.iterator(); i.hasNext();)
+            {
+               JsonElement element = i.next();
+               String uuid = element.getAsString();
+               DataMappingType dataMapping = (DataMappingType) modelService()
+                     .uuidMapper().getEObject(uuid);
+               ActivityType activity = ModelUtils.findContainingActivity(dataMapping);
+               activity.getDataMapping().remove(dataMapping);
+            }
+         }
+      }
    }
 
    /**
@@ -576,6 +615,92 @@ public class ConnectionCommandHandler
 
       return transition;
    }
+
+   /**
+   *
+   * @param activity
+   * @param data
+   * @param direction
+   * @param id
+   * @param name
+   * @return
+   */
+  private DataMappingType createDataMapping(DataMappingConnectionType dataFlowConnection, JsonObject dataMappingJson)
+  {
+     DataMappingType dataMapping = AbstractElementBuilder.F_CWM.createDataMappingType();
+     DataType data = dataFlowConnection.getDataSymbol().getData();
+     ActivityType activity = dataFlowConnection.getActivitySymbol().getActivity();
+
+     if (hasNotJsonNull(dataMappingJson, ModelerConstants.ID_PROPERTY))
+     {
+        dataMapping.setId(dataMappingJson.get(ModelerConstants.ID_PROPERTY)
+              .getAsString());
+     }
+     else
+     {
+           dataMapping.setId(data.getId());
+           dataMapping.setName(data.getId());
+
+     }
+
+     if (hasNotJsonNull(dataMappingJson, ModelerConstants.NAME_PROPERTY))
+     {
+        dataMapping.setName(dataMappingJson.get(ModelerConstants.NAME_PROPERTY)
+              .getAsString());
+     }
+     else
+     {
+        dataMapping.setId(data.getId());
+        dataMapping.setName(data.getId());
+     }
+
+     String direction = dataMappingJson.get(ModelerConstants.DIRECTION_PROPERTY).getAsString();
+     DirectionType directionType = direction.equals(ModelerConstants.DATAMAPPING_IN) ? DirectionType.IN_LITERAL : DirectionType.OUT_LITERAL;
+
+     dataMapping.setDirection(directionType);
+
+     if (hasNotJsonNull(dataMappingJson, ModelerConstants.ACCESS_POINT_ID_PROPERTY))
+     {
+
+        dataMapping.setApplicationAccessPoint(dataMappingJson.get(
+              ModelerConstants.ACCESS_POINT_ID_PROPERTY).getAsString());
+        {
+           dataMapping.setContext(dataMappingJson.get(
+                 ModelerConstants.ACCESS_POINT_CONTEXT_PROPERTY).getAsString());
+        }
+     }
+     if (dataMappingJson.has(ModelerConstants.ACCESS_POINT_PATH_PROPERTY))
+     {
+        if (dataMappingJson.get(ModelerConstants.ACCESS_POINT_PATH_PROPERTY)
+              .isJsonNull())
+        {
+           dataMapping.setApplicationPath(null);
+        }
+        else
+        {
+           dataMapping.setApplicationPath(dataMappingJson.get(
+                 ModelerConstants.ACCESS_POINT_PATH_PROPERTY).getAsString());
+        }
+     }
+
+     if (StringUtils.isEmpty(dataMapping.getContext()))
+     {
+        dataMapping.setContext(getModelBuilderFacade().getDefaultContext(activity,
+              directionType));
+     }
+
+     if (hasNotJsonNull(dataMappingJson, ModelerConstants.DATA_PATH_PROPERTY))
+     {
+        dataMapping.setDataPath(dataMappingJson.get(ModelerConstants.DATA_PATH_PROPERTY)
+              .getAsString());
+     }
+
+     dataMapping.setData(data);
+     activity.getDataMapping().add(dataMapping);
+     data.getDataMappings().add(dataMapping);
+
+     return dataMapping;
+  }
 
    /**
     * @param element

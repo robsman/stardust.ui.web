@@ -5,5 +5,16 @@
 
 	"scripts" : [],
 
-	"styles" : []
+	"styles" : [],
+	
+	"skip" : {
+		"libs" : [
+			"ckeditor/lang/",
+			"ckeditor/plugins/",
+			"ckeditor/skins/",
+			"ckeditor/build-config.js",
+			"ckeditor/config.js",
+			"ckeditor/styles.js"
+		]
+	}
 }

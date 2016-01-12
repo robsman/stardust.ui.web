@@ -100,6 +100,7 @@ public class ActivityViewBean extends UIViewComponentBean implements ICallbackHa
       activityHelper = new ActivityTableHelper();
       if (activityHelper != null)
       {
+         activityHelper.setShowResubmissionTime(true);
          activityHelper.initActivityTable();
          activityHelper.setCallbackHandler(this);
          activityHelper.setStrandedActivityView(false);

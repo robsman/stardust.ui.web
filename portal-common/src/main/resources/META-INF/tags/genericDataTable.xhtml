@@ -140,28 +140,27 @@
 				
 							<ice:panelGroup rendered="#{exportExcel}" >
 								<pc:automationTag value="auto-DT-ExportExcel" standAlone="false" />								
-								<ice:dataExporter
+								<ice:dataExporter styleClass="exportAsExcel"
 									for="#{id}" rendered="#{table.supportExportToExcel and !emptyData}" 
-									type="excel" style="vertical-align:top; border:none; padding-left:5px;"
-									image="/plugins/common/images/icons/document-excel-table.png"
+									type="excel" style="vertical-align:top; border:none;"
+									image="../views-common/images/icons/dummy.png"
 									label="#{common_msgPropsBean['common.genericDataTable.asExcel']}"
 									includeColumns="#{table.exportableColumns}"
 									outputTypeHandler="#{table.excelDataTableExporter}" />								
 								
 								<ice:commandLink rendered="#{!table.supportExportToExcel}" disabled="#{!table.supportExportToExcel}" >	
-									<ice:graphicImage style="vertical-align:top; border:none; padding-left:5px;"
-												value="/plugins/common/images/icons/document-excel-table.png"
-												styleClass="iceCmdBtn-dis"
+									<ice:outputText style="vertical-align:top; border:none; padding-left:5px;"
+												styleClass="iceCmdBtn-dis pi pi-export-excel pi-lg"
 												title="#{common_msgPropsBean['common.genericDataTable.asExcel']}" />
 								</ice:commandLink>
 							</ice:panelGroup>
 							
 							<ice:panelGroup rendered="#{exportCsv}" >
 								<pc:automationTag value="auto-DT-ExportCsv" standAlone="false" />
-								<ice:dataExporter
+								<ice:dataExporter styleClass="exportAsCsv"
 									for="#{id}" rendered="#{not emptyData}"
 									type="csv" style="vertical-align:top; border:none; padding-left:5px;"
-									image="/plugins/common/images/icons/document-excel-csv.png"
+									image="../views-common/images/icons/dummy.png"
 									label="#{common_msgPropsBean['common.genericDataTable.asCSV']}"
 									includeColumns="#{table.exportableColumns}"
 									outputTypeHandler="#{table.csvDataTableExporter}" />
@@ -461,42 +460,36 @@
 			            
 			            <c:if test="#{table.totalCountSuported}">
 							<f:facet name="first">
-				            	<ice:graphicImage id="#{id}firstpage"
-										url="/plugins/common/images/icons/arrow-first.gif"
-				                        style="border:none;"
+				            	<ice:outputText id="#{id}firstpage"
+				                        styleClass="pi pi-first-page pi-lg"
 				                        title="#{common_msgPropsBean['common.genericDataTable.paginator.first.title']}" />
 							</f:facet>
 				            <f:facet name="last">
-				            	<ice:graphicImage id="#{id}lastpage"
-										url="/plugins/common/images/icons/arrow-last.gif"
-										style="border:none;"
+				            	<ice:outputText id="#{id}lastpage"
+										styleClass="pi pi-last-page pi-lg"
 										title="#{common_msgPropsBean['common.genericDataTable.paginator.last.title']}" />
 							</f:facet>
 							<c:if test="#{table.paginatorFastStep > 0}">
 								<f:facet name="fastforward">
-					            	<ice:graphicImage id="#{id}fastforward"
-											url="/plugins/common/images/icons/arrow-ff.gif"
-											style="border:none;"
+					            	<ice:outputText id="#{id}fastforward"
+											styleClass="pi pi-fast-forward pi-lg"
 											title="#{common_msgPropsBean['common.genericDataTable.paginator.fastforward.title']}" />
 					               </f:facet>
 					               <f:facet name="fastrewind">
-					            	<ice:graphicImage id="#{id}fastrewind"
-											url="/plugins/common/images/icons/arrow-fr.gif"
-											style="border:none;"
+					            	<ice:outputText id="#{id}fastrewind"
+											styleClass="pi pi-fast-rewind pi-lg"
 											title="#{common_msgPropsBean['common.genericDataTable.paginator.fastrewind.title']}" />
 					               </f:facet>
 							</c:if>
 						</c:if>
 						<f:facet name="previous">
-			            	<ice:graphicImage id="#{id}previouspage"
-									url="/plugins/common/images/icons/arrow-previous.gif"
-									style="border:none;"
+			            	<ice:outputText id="#{id}previouspage"
+									styleClass="pi pi-prev-page pi-lg"
 									title="#{common_msgPropsBean['common.genericDataTable.paginator.previous.title']}" />
 						</f:facet>
 			            <f:facet name="next">
-			            	<ice:graphicImage id="#{id}nextpage"
-									url="/plugins/common/images/icons/arrow-next.gif"
-									style="border:none;"
+			            	<ice:outputText id="#{id}nextpage"
+									styleClass="pi pi-next-page pi-lg"
 									title="#{common_msgPropsBean['common.genericDataTable.paginator.next.title']}" />
 						</f:facet>
 					</ice:dataPaginator>

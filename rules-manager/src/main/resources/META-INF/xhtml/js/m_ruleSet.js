@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2015 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
 /**
  * @author Marc.Gille
  */
@@ -19,49 +29,71 @@ define([ "bpm-modeler/js/m_utils",
 		m_utils,TechnicalRule,DecisionTable,m_model,typeParser,m_ruleSetParser,m_stateFactory) {
 
 	return {
+		
 		create : function(id, name) {
 			var ruleSet = new RuleSet();
 			var state=m_stateFactory.create(false,false,false);
 			ruleSet.initialize(id, name);
 			ruleSet.state=state;
-			getRuleSets()[ruleSet.uuid] = ruleSet;
+			//We only create design time ruleSets
+			getRuleSets(false,"DESIGN")[ruleSet.uuid] = ruleSet;
 			return ruleSet;
 		},
+		
 		createFromJSON : function(data,serializer){
 			return m_ruleSetParser.fromPreDRLformat(data,serializer,new RuleSet());
 		},
-		markRuleSetForDeletion: function(uuid){
-			var rSet= getRuleSets()[uuid];
+		
+		//Mode should always be DESIGN
+		markRuleSetForDeletion: function(uuid,mode){
+			var rSet;
+			
+			mode = (mode === "DESIGN" || mode ==="PUBLISHED")?mode:"DESIGN";
+			
+			rSet= getRuleSets(false,mode)[uuid];
 			rSet.state.isDeleted=true;
 		},
+		
+		//Specific for designTime rules only! Design time rules are saved as part of the 
+		//save operation whereas runtime rules cannot be saved.
 		deleteRuleSet : function(uuid) {
-			var rSet= getRuleSets()[uuid];
+			var rSet= getRuleSets(false)[uuid];
 			rSet.state.isDeleted=true;
-			if(window.top.ruleSets.hasOwnProperty(uuid)){
-				delete window.top.ruleSets[uuid];
-				console.log("Hard deletion of ruleSet: "+ uuid);
+			if(window.top.designTimeRuleSets.hasOwnProperty(uuid)){
+				delete window.top.designTimeRuleSets[uuid];
+				console.log("Hard deletion of design time ruleSet: "+ uuid);
 			}
 		},
+		
 		getRuleSets : getRuleSets,
+		
 		emptyRuleSets : emptyRuleSets,
-		getRuleSetsCount : function() {
+		
+		getRuleSetsCount : function(mode) {
 			var count = 0;
-			for ( var i in getRuleSets()) {
+			
+			mode = (mode === "DESIGN" || mode ==="PUBLISHED")?mode:"DESIGN";
+			
+			for ( var i in getRuleSets(false,mode)) {
 				count++;
 			}
 			return count;
 		},
-		getNextRuleSetNamePostfix : function() {
+		
+		getNextRuleSetNamePostfix : function(mode) {
 			var index = 0;
 			var matchFound = true;
 			var rsName = m_i18nUtils.getProperty("rules.object.ruleset.name","Rule Set");
+			
+			mode = (mode === "DESIGN" || mode ==="PUBLISHED")?mode:"DESIGN";
+			
 			while (matchFound) {
 				index++;
 				var name = rsName + " " + index;
 				var id = name.replace(/\s/g,"");
 				matchFound = false;
-				for ( var i in getRuleSets()) {
-					var rs = getRuleSets()[i];
+				for ( var i in getRuleSets(false,mode)) {
+					var rs = getRuleSets(false,mode)[i];
 					if (rs.id == id || rs.name == name) {
 						matchFound = true;
 						break;
@@ -70,12 +102,16 @@ define([ "bpm-modeler/js/m_utils",
 			}
 			return index;
 		},
-		findRuleSetByUuid : function(uuid) {
-			return getRuleSets()[uuid];
+		
+		findRuleSetByUuid : function(uuid,mode) {
+			mode = (mode === "DESIGN" || mode ==="PUBLISHED")?mode:"DESIGN";
+			return getRuleSets(false,mode)[uuid];
 		},
-		findRuleByUuid : function(uuid) {
-			for ( var ruleSetUuid in getRuleSets()) {
-				var rule = getRuleSets()[ruleSetUuid].findRuleByUuid(uuid);
+		
+		findRuleByUuid : function(uuid,mode) {
+			mode = (mode === "DESIGN" || mode ==="PUBLISHED")?mode:"DESIGN";
+			for ( var ruleSetUuid in getRuleSets(false,mode)) {
+				var rule = getRuleSets(false,mode)[ruleSetUuid].findRuleByUuid(uuid);
 
 				if (rule) {
 					return rule;
@@ -83,6 +119,44 @@ define([ "bpm-modeler/js/m_utils",
 			}
 			return null;
 		},
+		
+		//Publish a rule set from design time
+		publishRuleSet : function(id, successCallback, errorCallback){
+			
+			var url,
+				ruleSet,
+				callbacks,
+				options,
+				data;
+
+			//Publish URL
+			url = m_urlUtils.getContextName();
+			url += "/services/rest/rules-manager/rules/";
+			url += new Date().getTime(); 
+			url += "/rule-sets/run-time";
+			
+			//Set up options object
+			options = {
+				url : url
+			};
+			
+			//Guard our callbacks
+			successCallback = successCallback || NOOPfx;
+			errorCallback = errorCallback || NOOPfx;
+			
+			//setup data object
+			data= JSON.stringify({"ruleSetId" : id});
+			
+			//Set up callback object
+			callbacks = {
+					success : successCallback,
+					error : errorCallback
+			};
+			
+			m_communicationController.postData(options,data,callbacks);
+			
+		},
+		
 		typeObject : function(json) {
 			m_utils.inheritMethods(json, new RuleSet());
 
@@ -111,29 +185,70 @@ define([ "bpm-modeler/js/m_utils",
 	};
 
 	/**
-	 * 
+	 * @param force - if true then retrieve rules from the server end-point.
+	 * @param mode - DESIGN | PUBLISHED - Defaults to DESIGN
 	 */
-	function getRuleSets(force) {
-		if (!force && window.top.ruleSets) {
-			return window.top.ruleSets;
+	function getRuleSets(force,mode) {
+		
+		//default to design if no mode specified
+		mode = (mode === "DESIGN" || mode ==="PUBLISHED")?mode:"DESIGN";
+		
+		//If force is false and designTimeRulesets are not undefined
+		if(!force &&  mode==="DESIGN" && window.top.designTimeRuleSets ){
+			return window.top.designTimeRuleSets;
 		}
-		refreshRuleSets();
-		return window.top.ruleSets;
+		
+		//If force is false and runTimeRulesets are not undefined
+		if(!force &&  mode==="PUBLISHED" && window.top.runTimeRuleSets){
+			return window.top.runTimeRuleSets;
+		}
+		
+		//If we reach here then we are going to the server for something!
+		refreshRuleSets(mode);//<-Asynch
+		
+		//now someone should have the updated data
+		if(mode==="DESIGN"){
+			return window.top.designTimeRuleSets
+		}
+		else if(mode==="PUBLISHED"){
+			return window.top.runTimeRuleSets
+		}
 	}
 
 	/**
 	 * 
 	 */
-	function emptyRuleSets() {
-		window.top.ruleSets = {};
+	function emptyRuleSets(mode) {
+		//default to design if no mode specified
+		mode = (mode === "DESIGN" || mode ==="PUBLISHED")?mode:"DESIGN";
+		
+		if(mode==="DESIGN"){
+			window.top.designTimeRuleSets = {};
+		}
+		else if(mode==="PUBLISHED"){
+			window.top.runTimeRuleSets = {};
+		}
+		
 	}
 	
+	//NOOP Guard function for success and error handlers
+	function NOOPfx(){};
+
 	/**
-	 * 
+	 * @param mode - DESIGN | PUBLISHED - determines type of rules we will receive from the server.
 	 */
-	function refreshRuleSets() {
+	function refreshRuleSets(mode) {
+		var url = m_urlUtils.getContextName(),
+			terminalPoint;
+		
+		terminalPoint = (mode==="DESIGN")? "design-time" : "run-time";
+		
+		url += "/services/rest/rules-manager/rules/";
+		url += new Date().getTime(); 
+		url += "/rule-sets/" + terminalPoint;
+		
 		m_communicationController.syncGetData({
-			url : m_urlUtils.getContextName() + "/services/rest/rules-manager/rules/" + new Date().getTime() + "/rule-sets"
+			url : url
 		}, {
 			"success" : function(json) {
 
@@ -141,20 +256,29 @@ define([ "bpm-modeler/js/m_utils",
 				var key,
 					ruleSetHashMap={},
 					tempRset,
+					i=0,
 					jsonRset,
 					defaultSerializer={method:"JSON.stringify",version:"0.0"};
-				/*TODO:remove- debugging*/
-				//window.top.ruleSets = ruleSetHashMap;
-				//return;
-				/*************************/
-				for(key in json){
-					if(json.hasOwnProperty(key)){
-						jsonRset=json[key];
-						tempRset=m_ruleSetParser.fromPreDRLformat(jsonRset,defaultSerializer,new RuleSet());
-						ruleSetHashMap[key]=tempRset;
+
+				if(mode==="DESIGN"){
+					for(key in json){
+						if(json.hasOwnProperty(key)){
+							jsonRset=json[key];
+							tempRset=m_ruleSetParser.fromPreDRLformat(jsonRset,defaultSerializer,new RuleSet());
+							ruleSetHashMap[key]=tempRset;
+						}
 					}
+					window.top.designTimeRuleSets = ruleSetHashMap;
 				}
-				window.top.ruleSets = ruleSetHashMap;
+				else if(mode==='PUBLISHED'){
+					for(i=0;i < json.length ; i++){
+						jsonRset = json[i];
+						tempRset=m_ruleSetParser.fromPreDRLformat(jsonRset,defaultSerializer,new RuleSet());
+						ruleSetHashMap[tempRset.uuid]=tempRset;
+					}
+					window.top.runTimeRuleSets = ruleSetHashMap;
+				}
+				
 				/********/
 			},
 			"error" : function() {

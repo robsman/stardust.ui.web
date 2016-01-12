@@ -1,5 +1,6 @@
 <div ng-controller="sdDataFlowPropertiesPageCtrl as ctrl">
 	<div ng-if="ctrl.initialized">
+	<div ng-show="ctrl.showMessage" sd-message></div>
 		<div>
 			<table>
 				<tr>
@@ -23,7 +24,8 @@
 									<td>
 										<table class="dataTable" style="width: 100%">
 											<tr ng-repeat="dataMapping in ctrl.unifiedDataMappings"
-												ng-click="ctrl.setSelected($index)" aid="selectDataMapping{{$index}}"
+												ng-click="ctrl.setSelected($index)"
+												aid="selectDataMapping{{$index}}"
 												ng-class="{selected: dataMapping.id == ctrl.selectedDataMapping.id}">
 												<td ng-class="ctrl.getClassFor(dataMapping)"></td>
 												<td style="min-width: 200px">{{ dataMapping.name }}</td>
@@ -40,10 +42,6 @@
 
 		<div>
 			<table>
-				<tr ng-show="ctrl.integrator">
-					<td><label>{{sdI18nModeler('modeler.element.properties.commonProperties.uuid')}}</label></td>
-					<td>{{ctrl.selectedDataMapping.uuid}}</td>
-				</tr>
 				<tr ng-show="ctrl.integrator">
 					<td><label>{{sdI18nModeler('modeler.element.properties.commonProperties.id')}}</label></td>
 					<td><div class="output" />{{ctrl.selectedDataMapping.id}}</td>
@@ -72,13 +70,23 @@
 					<td>
 						<div ng-show="ctrl.selectedDataMapping.inMappingExist">
 							<table>
+								<tr ng-show="ctrl.integrator">
+									<td>
+										<table>
+											<tr>
+												<td><label>{{sdI18nModeler('modeler.dataFlow.propertiesPanel.label.inputUuid')}}</label></td>
+												<td>{{ctrl.selectedDataMapping.inMapping.uuid}}</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
 								<tr>
 									<td><label>{{sdI18nModeler('modeler.dataFlow.propertiesPanel.label.inputDataPath')}}</label></td>
 								</tr>
 								<tr>
 									<td><textarea aid="inputDataPathInput"
 											ng-model="ctrl.selectedDataMapping.inMapping.dataPath"
-											ng-blur="ctrl.submitChanges()"
+											ng-blur="ctrl.inputDataPathChanged()"
 											ng-disabled="ctrl.dataPathDisabled" cols="40" rows="3"></textarea></td>
 								</tr>
 								<tr>
@@ -97,7 +105,7 @@
 													<td><input aid="inputAccessPointPathInput"
 														ng-model="ctrl.selectedDataMapping.inMapping.accessPointPath"
 														ng-disabled="ctrl.inputAPPathDisabled"
-														ng-blur="ctrl.submitChanges()" type="text"
+														ng-blur="ctrl.inputAccessPointPathChanged()" type="text"
 														style="width: 200px" /></td>
 												</tr>
 											</table>
@@ -112,20 +120,30 @@
 					<td>
 						<div ng-show="ctrl.selectedDataMapping.outMappingExist">
 							<table>
+								<tr ng-show="ctrl.integrator">
+									<td>
+										<table style="margin-top:10px">
+											<tr>
+												<td><label>{{sdI18nModeler('modeler.dataFlow.propertiesPanel.label.outputUuid')}}</label></td>
+												<td>{{ctrl.selectedDataMapping.outMapping.uuid}}</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
 								<tr>
 									<td colspan="2"><label>{{sdI18nModeler('modeler.dataFlow.propertiesPanel.label.outputDataPath')}}</label></td>
 								</tr>
 								<tr>
 									<td colspan="2"><textarea aid="outputDataPathInput"
 											ng-model="ctrl.selectedDataMapping.outMapping.dataPath"
-											ng-blur="ctrl.submitChanges()" cols="40" rows="3"></textarea></td>
+											ng-blur="ctrl.outputDataPathChanged()" cols="40" rows="3"></textarea></td>
 								</tr>
 								<tr>
 									<td>
 										<div ng-show="ctrl.outputAccessPointSelectInputPanel">
 											<table>
 												<tr>
-													<td><label>{{sdI18nModeler('modeler.dataFlow.propertiesPanel.label.outputAccessPoint')}}</label></td colspan="2">
+													<td><label>{{sdI18nModeler('modeler.dataFlow.propertiesPanel.label.outputAccessPoint')}}</label></td>
 													<td><select aid="outputAccessPointSelectInput"
 														ng-options="item as item.label group by item.group for item in ctrl.outputAccessPoints"
 														ng-model="ctrl.outputAccessPointVal"
@@ -135,7 +153,7 @@
 													<td><label>{{sdI18nModeler('modeler.dataFlow.propertiesPanel.label.outputAccessPointPathInput')}}</label></td>
 													<td><input aid="outputAccessPointPathInput"
 														ng-model="ctrl.selectedDataMapping.outMapping.accessPointPath"
-														ng-blur="ctrl.submitChanges()"
+														ng-blur="ctrl.outputAccessPointPathChanged()"
 														ng-disabled="ctrl.outputAPPathDisabled" type="text"
 														style="width: 200px" /></td>
 												</tr>

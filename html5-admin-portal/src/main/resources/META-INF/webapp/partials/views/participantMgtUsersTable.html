@@ -1,0 +1,119 @@
+<div ng-style="{'max-height' : ctrl.getMaxTableHeight()}" class="participant-management-wrapper">
+	<div class="view-panel-content">
+		<div>
+			<div sda-toolbar>
+				<div class="tbl-toolbar-section">
+				
+					<button
+						ng-click="bpmCommon.stopEvent($event); ctrl.openCreateCopyModifyUser('CREATE_USER');"
+						title="{{i18n('views-common-messages.common-create')}}"
+						class="button-link tbl-toolbar-item tbl-tool-link"
+						aid="ADM-PartMgmt-ToolbarCreateUser">
+						<i class="pi pi-create pi-lg" />
+					</button>
+					
+					<button
+						ng-disabled="!(ctrl.allUsersTable.getSelection().length > 0)"
+						ng-click="bpmCommon.stopEvent($event); ctrl.invalidateUsers();"
+						title="{{i18n('admin-portal-messages.views-participantMgmt-invalidateUser-title')}}"
+						class="button-link tbl-toolbar-item tbl-tool-link"
+						aid="ADM-PartMgmt-ToolbarInvalidateUser">
+						<i class="pi pi-delete pi-lg" />
+					</button>
+					
+					<button
+						ng-disabled="!(ctrl.allUsersTable.getSelection().length == 1)"
+						ng-click="bpmCommon.stopEvent($event); ctrl.openCreateCopyModifyUser('COPY_USER',ctrl.allUsersTable.getSelection()[0].oid);"
+						title="{{i18n('admin-portal-messages.common-copy')}}"
+						class="button-link tbl-toolbar-item tbl-tool-link"
+						aid="ADM-PartMgmt-ToolbarCopyUser">
+						<i class="pi pi-clone pi-lg" />
+					</button>
+					
+				</div>
+				<div class="tbl-toolbar-section">
+					<button
+						ng-click="bpmCommon.stopEvent($event); ctrl.changeHideInvalidatedUsersFlag();"
+						title="{{!ctrl.hideInvalidatedUsers ? i18n('admin-portal-messages.views-participantMgmt-filters-invalidatedUsers-hideUser') : i18n('admin-portal-messages.views-participantMgmt-filters-invalidatedUsers-showUser')}}"
+						class="button-link tbl-toolbar-item tbl-tool-link"
+						aid="ADM-PartMgmt-Filters-InvalidatedUsers-HideUser">
+						<i ng-if="!ctrl.hideInvalidatedUsers" class="pi pi-eye-close pi-lg"></i>
+                       	<i ng-if="ctrl.hideInvalidatedUsers" class="pi pi-eye-open pi-lg"></i>
+					</button>
+				</div>
+				<span sd-refresh sda-on-refresh="ctrl.refresh();" aid="PP-PartMgmt"></span>
+				<div class="float: right">
+					<table>
+						<tr>
+							<td><span class="label-item" style="font-weight:bold"
+								ng-bind="i18n('admin-portal-messages.views-common-total-label') + i18n('admin-portal-messages.common-colon')"></span></td>
+							<td><span class="overview-report-field-value"
+								ng-bind="ctrl.allCount" aid="ADM-PartMgmt-TotalUserCnt"></span></td>
+							<td><span class="label-item" style="font-weight:bold"
+								ng-bind="i18n('admin-portal-messages.views-common-valid-label') + i18n('admin-portal-messages.common-colon')"></span></td>
+							<td><span class="overview-report-field-value"
+								ng-bind="ctrl.activeCount" aid="ADM-PartMgmt-ValidUserCnt"></span></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<table sd-data-table="ctrl.allUsersTable"
+				sd-data="ctrl.getAllUsers(params)" sda-mode="remote"
+				sda-selectable="multiple" sda-page-size="{{ctrl.pageSize}}"
+				sda-preference-delegate="ctrl.preferenceDelegate(prefInfo)"
+				sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
+				sda-sort-by="{name : 'oid', dir : 'desc'}" sda-exports="true"
+				sda-exports-file-name="{{ctrl.exportFileNameForAllUsers}}">
+				<thead
+					sda-i18n-scope="admin-portal-messages.views-participantMgmt-column">
+					<tr>
+						<th sda-name="name">
+							<div sda-filter-template>
+								<div sd-name-table-filter></div>
+							</div>
+						</th>
+						<th sda-name="oid" sda-sortable="true"></th>
+						<th sda-name="account" sda-sortable="true">
+							<div sda-filter-template>
+								<div sd-text-search-table-filter></div>
+							</div>
+						</th>
+						<th sda-name="realm">
+							<div sda-filter-template>
+								<div sd-text-search-table-filter></div>
+							</div>
+						</th>
+						<th sda-name="validFrom">
+							<div sda-filter-template>
+								<div sd-date-table-filter></div>
+							</div>
+						</th>
+						<th sda-name="validTo">
+							<div sda-filter-template>
+								<div sd-date-table-filter></div>
+							</div>
+						</th>
+						<th sda-name="eMail" sda-label-key="email"></th>
+				</thead>
+				<tbody>
+					<tr>
+						<td sda-exporter="rowData.displayName"><a href="#"
+							ng-click="ctrl.openCreateCopyModifyUser('MODIFY_USER',rowData.oid);"
+							title="{{i18n('admin-portal-messages.views-userTable-columnLink-title')}}"
+							class="tbl-tool-link"
+							sd-data-drag ng-model="rowData" 
+							sda-dragstart="ctrl.userDragStart($data, $event)"
+							sda-drag-elem-fx="ctrl.getDragElement(item)"
+							aid="ADM-PartMgmt-DataTable-DisplayName">{{rowData.displayName}}</a></td>
+						<td sda-data-type="int"></td>
+						<td style="text-align: center;"></td>
+						<td style="text-align: center;" sda-exporter="rowData.realmId">{{rowData.realmId}}</td>
+						<td sda-data-type="dateTime"></td>
+						<td sda-data-type="dateTime"></td>
+						<td style="text-align: center;"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>

@@ -1,20 +1,19 @@
 <div class="deputy-management-wrapper">
-	<div class="view-panel-toolbar tbl-title"
-		style="color: #708090; font-size: 11px">{{i18n('business-control-center-messages.views-deputyTeamMemberView-myTeamMembers-title')}}</div>
+	<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-deputyTeamMemberView-myTeamMembers-title')}}</div>
 	<div sda-toolbar>
 		<div class="tbl-toolbar-section">
 			<button	ng-click="ctrl.showHideNonDeputyParticipant(!ctrl.showHideNonDepParticipant);"
 				title="{{i18n('business-control-center-messages.views-deputyTeamMemberView-myTeamMembers-toggle')}}"
-				class="button-link tbl-toolbar-item tbl-tool-link">
-				<i ng-if="ctrl.showHideNonDepParticipant" class="sc sc-fw sc-1x sc-user"></i>
-				<i ng-if="!ctrl.showHideNonDepParticipant" class="sc sc-fw sc-1x sc-user" style="opacity: 0.4;"></i>
+				class="button-link tbl-toolbar-item tbl-tool-link"
+				aid="BCC-DeputyMgmt-UserTbl-ShowHideNonDepParticipant">
+				<i ng-if="ctrl.showHideNonDepParticipant" class="pi pi-lg pi-eye-open"></i>
+				<i ng-if="!ctrl.showHideNonDepParticipant" class="pi pi-lg pi-eye-close" style="opacity: 0.5;"></i>
 			</button>
 		</div>
 	</div>
 	<table sd-data-table="ctrl.usersTable"
 		sd-data="ctrl.getUsersData()" sda-mode="local"
 		sda-ready="ctrl.showUsersTable" sda-selectable="row"
-		sda-selection="ctrl.rowSelectionForUsers"
 		sda-on-select="ctrl.onSelect(info)"
 		sda-sortable="true"
 		sda-sort-by="{name : 'userDisplayName', dir : 'desc'}"
@@ -30,7 +29,9 @@
 		</thead>
 		<tbody>
 			<tr>
-				<td><img alt="" ng-src="{{ctrl.getUserImageURL(rowData.avatarImageURI)}}" width="24px" height="24px" style="padding-right: 5px;">{{rowData.userDisplayName}}</td>
+				<td sda-data-type="string"><img alt="" ng-if="ctrl.getUserImageURL(rowData.avatarImageURI).indexOf('/') > -1" ng-src="{{ctrl.getUserImageURL(rowData.avatarImageURI)}}" width="24px" height="24px" class="spacing-right" />
+					<i class="{{ctrl.getUserImageURL(rowData.avatarImageURI)}} pi-1x" ng-if="!(ctrl.getUserImageURL(rowData.avatarImageURI).indexOf('/') > -1)"  style="margin-right: 5px;"></i>
+					{{rowData.userDisplayName}}</td>
 				<td style="text-align: center;"></td>
 			</tr>
 		</tbody>

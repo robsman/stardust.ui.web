@@ -20,6 +20,7 @@ import java.util.Map;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
 import org.eclipse.stardust.engine.api.runtime.Folder;
+import org.eclipse.stardust.engine.core.spi.dms.RepositoryConstants;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsPrivilege;
 import org.eclipse.stardust.ui.web.common.message.MessageDialog;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
@@ -37,9 +38,9 @@ import org.eclipse.stardust.ui.web.viewscommon.views.doctree.CommonFileUploadDia
 
 /**
  * Assist in uploading a Document which is to be stored in JCR repository
- * 
+ *
  * @author Yogesh.Manware
- * 
+ *
  */
 public abstract class AbstractDocumentUploadHelper implements Serializable
 {
@@ -160,7 +161,7 @@ public abstract class AbstractDocumentUploadHelper implements Serializable
     * Process Attachment folder may contain a files which are not displayed on Process
     * Instance Details screen. This is because in Document Reclassification, document is
     * logically moved between Process Attachment and Specific Document Folder.
-    * 
+    *
     * @see org.eclipse.stardust.ui.web.viewscommon.docmgmt.AbstractDocumentUploadHelper#
     * isVersionPermissible(org.eclipse.stardust.engine.api.runtime.Folder,
     * java.lang.String)
@@ -177,7 +178,7 @@ public abstract class AbstractDocumentUploadHelper implements Serializable
             {
                parentFolder = DocumentMgmtUtility.getFolder(parentFolderPath);
             }
-             
+
             allowVersion = false;
             List<Document> attachmentsList = DMSHelper.fetchProcessAttachments(attachmentUserObject
                   .getProcessInstance());
@@ -380,7 +381,7 @@ public abstract class AbstractDocumentUploadHelper implements Serializable
          if (fileWrapper.isOpenDocument())
          {
             viewParam.put("disableAutoDownload", true);
-            openDocument(updatedDocument);   
+            openDocument(updatedDocument);
          }
       }
       catch (Exception e)
@@ -410,7 +411,7 @@ public abstract class AbstractDocumentUploadHelper implements Serializable
       if (!existingDocument.getName().equals(fileName))
       {
          String parentFolderPath = org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils.substringBeforeLast(
-               existingDocument.getPath(), File.pathSeparator);
+               existingDocument.getPath(), RepositoryConstants.PATH_SEPARATOR);
          Document document = DocumentMgmtUtility.getDocument(parentFolderPath, fileName);
          if (null != document)
          {
@@ -466,7 +467,7 @@ public abstract class AbstractDocumentUploadHelper implements Serializable
    {
       this.callbackHandler = callbackHandler;
    }
-   
+
    /**
     * @param repositoryResourceUserObject
     */
@@ -474,10 +475,10 @@ public abstract class AbstractDocumentUploadHelper implements Serializable
    {
       this.repositoryResourceUserObject = repositoryResourceUserObject;
    }
-   
+
    /**
     * @author Yogesh.Manware
-    * 
+    *
     */
    public static abstract class DocumentUploadCallbackHandler
    {

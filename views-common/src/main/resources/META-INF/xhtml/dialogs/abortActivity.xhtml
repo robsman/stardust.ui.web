@@ -13,10 +13,12 @@
 					<pc:automationTag value="auto-COM-AbortDlg-Header"/>
 					<ice:outputText value="#{views_common_msgPropsBean['views.common.activity.abortActivity.label']}"
 						styleClass="headerText" />
-					<ice:commandButton
+					<ice:commandLink
 						title="#{views_common_msgPropsBean['common.close']}"
 						action="#{abortActivityBean.closePopup}" immediate="true"
-						styleClass="windowClose" />
+						styleClass="windowClose pi-cmdLnk">
+						<ice:outputText styleClass="pi pi-dialog-close pi-lg pi-outTxt" />
+					</ice:commandLink>
 				</ice:panelGroup>
 			</f:facet>
 

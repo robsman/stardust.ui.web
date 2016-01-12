@@ -23,12 +23,11 @@
 			<pc:automationTag value="auto-PP-LP-MyProcesses-MyProcTbl" standAlone="false"/>
 			<ice:panelSeries var="item" value="#{myProcessesPanel.items}">
 				<ice:panelGrid columns="3">
-					<ice:graphicImage
-						value="/plugins/views-common/images/icons/process.png" />
+					<ice:outputText stylClass="pi pi-process pi-lg" />
 					<ice:panelGroup style="display:inline;" panelTooltip="myProcTooltip">
 						<ice:outputText value="#{item.name}:" />
 					</ice:panelGroup>
-					<ice:commandLink styleClass="action-link" action="#{item.select}" 
+					<ice:commandLink styleClass="action-link" action="#{item.selectHTML5}" 
 						disabled="#{(item.totalCount eq 0) ? true : false}">
 						<ice:outputFormat style="white-space: nowrap;"
 							value="#{myProcessesPanel.messages['items']}">

@@ -165,9 +165,9 @@ public class NotesBean extends UIComponentBean implements IUserObjectBuilder<Not
       List<Note> noteList = attributes.getNotes();
       setNotes(noteList);
       if (noteList != null && noteList.size() > 0)
-         thisView.setIcon("/plugins/views-common/images/icons/mime-types/notes-filled.png");
+         thisView.setIcon("/does-not-exist/notes-filled.png");
        else
-          thisView.setIcon("/plugins/views-common/images/icons/notes-blank.png");
+          thisView.setIcon("/does-not-exist/notes-blank.png");
       
       // FOR PANAMA
       PortalApplication.getInstance().updateViewIconClass(thisView);
@@ -469,7 +469,7 @@ public class NotesBean extends UIComponentBean implements IUserObjectBuilder<Not
       else
       {
          return new NotesTableEntry(note.getText(), note.getText().substring(0,
-               Math.min(note.getText().length(), TEXT_PREVIEW_LENGTH)), "Error: no user found", note.getTimestamp(),
+               Math.min(note.getText().length(), TEXT_PREVIEW_LENGTH)), I18nUtils.getUserLabelDefault(null), note.getTimestamp(),
                notes.indexOf(note) + 1, noteInfo);
       }
    }

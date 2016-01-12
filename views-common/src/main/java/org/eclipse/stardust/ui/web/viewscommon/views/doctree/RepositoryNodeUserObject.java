@@ -135,13 +135,6 @@ public class RepositoryNodeUserObject extends RepositoryResourceUserObject
    }
 
    @Override
-   public void sendFile()
-   {
-      // TODO Auto-generated method stub
-
-   }
-
-   @Override
    public void versionHistory()
    {
       // TODO Auto-generated method stub
@@ -204,13 +197,6 @@ public class RepositoryNodeUserObject extends RepositoryResourceUserObject
 
    @Override
    public boolean isCanCreateNote()
-   {
-      // TODO Auto-generated method stub
-      return false;
-   }
-
-   @Override
-   public boolean isSendFileAllowed()
    {
       // TODO Auto-generated method stub
       return false;

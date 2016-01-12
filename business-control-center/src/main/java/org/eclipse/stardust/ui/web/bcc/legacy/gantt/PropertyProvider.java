@@ -70,7 +70,7 @@ public class PropertyProvider
 
    private transient IPreferenceEditor preferencesEditor;
 
-   private IPreferenceStore preferencesStore;
+   private transient IPreferenceStore preferencesStore;
 
    private PropertyProvider()
    {

@@ -110,15 +110,15 @@
 				</ice:commandButton>
 				
 				
-					<ice:commandButton
-						image="/plugins/views-common/images/icons/page_white_put.png"
+					<ice:commandLink
+						styleClass="pi pi-download pi-lg"
 						actionListener="#{documentSearchBean.downloadDocument}"
 						title="#{views_common_msgPropsBean['views.myDocumentsTreeView.documentTree.downloadFile']}" onclick="Event.stop(event);">
 						<pc:automationTag
 							value="auto-COM-SrchDoc-DocSrchTbl-ActionsDownload"
 							standAlone="false" />
 						<f:attribute name="row" value="#{row}" />
-					</ice:commandButton>
+					</ice:commandLink>
 
 					<ice:commandButton
 						image="/plugins/views-common/images/icons/book_open.png"

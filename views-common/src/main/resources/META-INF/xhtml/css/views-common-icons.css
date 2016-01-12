@@ -1,175 +1,329 @@
-.clipboard-task {
-	background: url("../images/icons/clipboard-task.png") no-repeat;
+/*******************************************************************************
+ * Copyright (c) 2015 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
+ 
+/* Workflow Execution Views */
+ 
+.clipboard-task:before{
+	font-family: "FontAwesome";
+	content: "\f0ea"; /* fa-clipboard */
 }
 
-.activity {
-	background: url("../images/icons/process-history/activity.png")
-		no-repeat;
+.activity:before{
+	font-family: "FontAwesome";
+	content:"\f013"; /* fa-cog */
 }
 
-.process {
-	background: url("../images/icons/process.png") no-repeat;
+.notes-filled:before{
+	font-family: "FontAwesome";
+	content:"\f086"; /* fa-comments */
 }
 
-.page_white_find {
-	background: url("../images/icons/page_white_find.png") no-repeat;
+.notes-blank:before{
+	font-family:"FontAwesome";
+	content:"\f0e6"; /* fa-comments-o */
 }
 
-.envelope {
-	background: url("../images/icons/envelope.png") no-repeat;
+.my-documents-view:before,
+.repository-view:before {
+	font-family: "FontAwesome";
+	content:"\f115"; /* fa-folder-open-o */
 }
 
-.chart-pie {
-	background: url("../images/icons/chart-pie.png") no-repeat;
+.document-search:before{
+	font-family: "FontAwesome";
+	content: "\f002"; /* fa-search */
 }
 
-.user-silhouette {
-	background: url("../images/icons/user-silhouette.png") no-repeat;
+.activity_qa_passed:before{
+	font-family: "FontAwesome";
+	content: "\f087"; /* fa-thumbs-o-up */
 }
 
-.process_manager {
-	background: url("../images/icons/process_manager.png") no-repeat;
+.activity_qa_failed:before{
+	font-family: "FontAwesome";
+	content: "\f088"; /* fa-thumbs-o-down */
 }
 
-.cog_search {
-	background: url("../images/icons/cog_search.png") no-repeat;
+.activity_qa_await:before{
+	font-family: "FontAwesome";
+	content: "\f251"; /* fa-hourglass-start */
 }
 
-.pending_activities {
-	background: url("../images/icons/pending_activities.png") no-repeat;
+/* Business Control Center Views */
+
+.chat-view:before {
+	font-family: "FontAwesome";
+	content:"\f0e5"; /* fa-comment-o */
+}
+ 
+.process_manager:before{
+	font-family:"FontAwesome";
+	content:"\f0ad"; /* fa-wrench */
 }
 
-.activity_completed {
-	background:
-		url("../images/icons/process-history/activity_completed.png")
-		no-repeat;
+.cog_search:before{
+	font-family: "FontAwesome";
+	content: "\f002"; /* fa-search */
 }
 
-.activity_postponed {
-	background: url("../images/icons/activity_postponed.png") no-repeat;
+.pending_activities:before{
+	font-family:"FontAwesome";
+	content:"\f21e"; /* fa-heartbeat */
 }
 
-.activity_stranded {
-	background: url("../images/icons/activity_stranded.png") no-repeat;
+.activity_completed:before{
+	font-family:"FontAwesome";
+	content:"\f046"; /* fa-check-square-o */
 }
 
-.group {
-	background: url("../images/icons/group.png") no-repeat;
+.activity_postponed:before{
+	font-family: "FontAwesome";
+	content:"\f017"; /* fa-clock-o */
 }
 
-.role {
-	background: url("../images/icons/role.png") no-repeat;
+.activity_stranded:before{
+	font-family: "FontAwesome";
+	content:"\f071"; /* fa-exclamation-triangle */
 }
 
-.group_key {
-	background: url("../images/icons/group_key.png") no-repeat;
+.group:before{
+	font-family:FontAwesome;
+	content:"\f0f4"; /* fa-coffee */
 }
 
-.chart-up {
-	background: url("../images/icons/chart-up.png") no-repeat;
+.role:before{
+	font-family: "FontAwesome";
+	content: "\f234"; /* fa-user-plus */
 }
 
-.chart-up-color {
-	background: url("../images/icons/chart-up-color.png") no-repeat;
+.group_key:before {
+	font-family:FontAwesome;
+	content:"\f090"; /* fa-sign-in */
 }
 
-.traffic_light {
-	background: url("../images/icons/traffic_light.png") no-repeat;
+.chart-up:before {
+	font-family:"FontAwesome";
+	content:'\f201'; /* fa-line-chart */
 }
 
-.money-coin {
-	background: url("../images/icons/money-coin.png") no-repeat;
+.chart-up-color:before {
+	font-family:"FontAwesome";
+	content:'\f1fe'; /* fa-area-chart */
 }
 
-.criticality_manager {
-	background: url("../images/icons/criticality_manager.png") no-repeat;
+.traffic_light:before {
+	font-family:"FontAwesome";
+	content:'\f024'; /* fa-flag */
 }
 
-.criticality_manager {
-	background: url("../images/icons/criticality_manager.png") no-repeat;
+.money-coin:before {
+	font-family:"FontAwesome";
+	content:'\f0d6'; /* fa-money */
 }
 
-.notes-filled {
-	background: url("../images/icons/mime-types/notes-filled.png") no-repeat;
+.criticality_manager:before{
+	font-family: "FontAwesome";
+    content:'\f024'; /* fa-flag */
 }
 
-.notes-blank {
-	background: url("../images/icons/notes-blank.png") no-repeat;
+.gantt-chart:before{
+	font-family: starclipse;
+    content:'\F049'; /* sc-task */
 }
 
-.activity_qa_passed {
-	background: url("../images/icons/activity_qa_passed.png") no-repeat;
+.process-diagram:before{
+	font-family:"FontAwesome";
+	content:'\f039'; /* fa-align-justify */
 }
 
-.activity_qa_failed {
-	background: url("../images/icons/activity_qa_failed.png") no-repeat;
+.process-view:before{
+	font-family: "FontAwesome";
+	content: "\f085"; /* fa-cogs */
 }
 
-.activity_qa_await {
-	background: url("../images/icons/activity_qa_await.png") no-repeat;
+.envelope:before {
+	font-family: "FontAwesome";
+	content: "\f0e0"; /* fa-envelope */
 }
 
-.html {
-	background: url("../images/icons/mime-types/html.png") no-repeat;
+.report-view:before {
+	font-family:"FontAwesome";
+	content:'\f200'; /* fa-pie-chart */
 }
 
-.document-image {
-	background: url("../images/icons/mime-types/document-image.png") no-repeat;
+.deputy-management:before{
+	font-family: "FontAwesome";
+	content: "\f21b"; /* fa-user-secret */
 }
 
-.images {
-	background: url("../images/icons/mime-types/images.png") no-repeat;
+/* Admininistration Perspective Views */
+ 
+ .log-entries:before {
+	font-family:"FontAwesome";
+	content:"\f090"; /* fa-sign-in */
 }
 
-.document-pdf-text {
-	background: url("../images/icons/mime-types/document-pdf-text.png") no-repeat;
+.realm-manager:before {
+	font-family:"FontAwesome";
+	content:"\f1b2"; /* fa-cube */
 }
 
-.document-word-text {
-	background: url("../images/icons/mime-types/document-word-text.png") no-repeat;
+.daemons:before {
+	font-family:"FontAwesome";
+	content:'\f0E7'; /* fa-bolt */
 }
 
-.document-film {
-	background: url("../images/icons/mime-types/document-film.png") no-repeat;
+.user-group:before {
+	font-family:"FontAwesome";
+	content:"\f0c0"; /* fa-users */
 }
 
-.document-flash-movie {
-	background: url("../images/icons/mime-types/document-flash-movie.png") no-repeat;
+.activity-overview:before {
+	font-family:"FontAwesome";
+	content:"\f013"; /* fa-cog */
 }
 
-.document-music {
-	background: url("../images/icons/mime-types/document-music.png") no-repeat;
+.process-overview:before {
+	font-family:"FontAwesome";
+	content:"\f085"; /* fa-cogs */
 }
 
-.document-zipper {
-	background: url("../images/icons/mime-types/document-zipper.png") no-repeat;
+.model-manager:before {
+	font-family: "starclipse";
+	content: '\f09E'; /* sc-spiral */
 }
 
-.document-text {
-	background: url("../images/icons/mime-types/document-text.png") no-repeat;
+.configuration-variables:before {
+	font-family:"FontAwesome";
+	content:"\f044"; /* fa-pencil-square-o */
 }
 
-.document-code {
-	background: url("../images/icons/mime-types/document-code.png") no-repeat;
+.password-security:before {
+	font-family:"FontAwesome";
+	content:"\f084"; /* fa-key */
 }
 
-.document-powerpoint {
-	background: url("../images/icons/mime-types/document-powerpoint.png") no-repeat;
+.criticality-configuration:before {
+	font-family:"FontAwesome";
+	content:"\f11d"; /* fa-flag-o */
 }
 
-.document-excel {
-	background: url("../images/icons/mime-types/document-excel.png") no-repeat;
+.qa-manager:before {
+	font-family:"FontAwesome";
+	content:"\f087"; /* fa-thumbs-o-up */
 }
 
-.tree_document {
-	background: url("../images/icons/mime-types/tree_document.gif") no-repeat;
+.preference-store:before {
+	font-family:"FontAwesome";
+	content:"\f14a"; /* fa-check-square */
 }
 
-.report {
-	background: url("../images/icons/mime-types/report.png") no-repeat;
+.participant-manager:before {
+	font-family:"FontAwesome";
+	content:"\f007"; /* fa-user */
 }
 
-.document-excel-csv {
-	background: url("../images/icons/mime-types/document-excel-csv.png") no-repeat;
+.authorization-manager-view:before {
+	font-family: "FontAwesome";
+	content:"\f09c"; /* fa-unlock */
 }
 
+/* Document Viewer Views */
+ 
+ .document-pdf-text:before{
+	font-family:"FontAwesome";
+	content:"\f1c1";
+}
+
+.document-word-text:before{
+	font-family:"FontAwesome";
+	content:"\f1c2";
+}
+
+.document-film:before {
+	font-family:"FontAwesome";
+	content:"\f1c8";
+}
+
+.document-flash-movie:before {
+	font-family:"FontAwesome";
+	content:"\f1c8";
+}
+
+.document-music:before{
+	font-family:"FontAwesome";
+	content:"\f1c7";
+}
+
+.document-zipper:before{
+	font-family:"FontAwesome";
+	content:"\f1c6";
+}
+
+.document-text:before{
+	font-family:"FontAwesome";
+	content:"\f0f6";
+}
+
+.document-code:before {
+	font-family:"FontAwesome";
+	content:"\f1c9";
+}
+
+.document-powerpoint:before{
+	font-family:"FontAwesome";
+	content:"\f1c4";
+}
+
+.document-excel:before{
+	font-family: "FontAwesome";
+	content:"\f1c3";
+}
+
+.html:before{
+	font-family:"FontAwesome";
+	content:"\f13b";
+}
+
+.document-image:before {
+	font-family:"FontAwesome";
+	content:"\f1c5"; /* fa-file-picture-o, fa-file-image-o */
+}
+
+.images:before{
+	font-family:"FontAwesome";
+	content:"\f03e";
+}
+
+.tree_document:before {
+	font-family: "FontAwesome";
+	content:"\f016";
+}
+
+.report:before{
+	font-family: "FontAwesome";
+	content:"\f0ce";
+}
+
+.document-excel-csv:before{
+	font-family: "FontAwesome";
+	content:"\f1c3";
+}
+
+.resource-manager-view:before { 
+	font-family: "FontAwesome";
+	content: '\f13c'; /* fa-css3   */
+}
+
+.correspondence-email:before { 
+	font-family:FontAwesome;
+	content:"\f003"; /*  fa-envelope-o */
+}

@@ -51,11 +51,11 @@ public class CriticalityOverviewNodeObject extends NodeUserObject
       super(treeTable, node, treeBeanPointer, componenttype);
       String tooltip = null;
       this.criticalityOverviewEntry = criticalityOverviewEntry;
-      String imagePath = "/plugins/views-common/images/icons/page_white.png";
+      String imagePath = "pi pi-lg pi-page-white";
 
       if (criticalityOverviewEntry instanceof ModelDefCriticalityMgrTableEntry)
       {
-         imagePath = "/plugins/views-common/images/icons/model.gif";
+         imagePath = "pi pi-lg pi-model";
          tooltip = ((ModelDefCriticalityMgrTableEntry) criticalityOverviewEntry).getDescription();
          
       }
@@ -64,18 +64,18 @@ public class CriticalityOverviewNodeObject extends NodeUserObject
          if (isAuxiliaryProcess())
          {
             String processType = "AuxiliaryProcess";
-            imagePath = ActivityInstanceUtils.getIconPath(processType);
+            imagePath = ActivityInstanceUtils.getFont(processType);
          }
          else
          {
-            imagePath = "/plugins/views-common/images/icons/process.png";
+            imagePath = "pi pi-lg pi-process-interface";
          }
          tooltip = ((ProcessDefCriticalityMgrTableEntry) criticalityOverviewEntry).getDescription();
       }
       else if (criticalityOverviewEntry instanceof ActivityDefCriticalityMgrTableEntry)
       {
          Activity activity = ((ActivityDefCriticalityMgrTableEntry) criticalityOverviewEntry).getActivity();
-         imagePath = ActivityInstanceUtils.getIconPath(ActivityInstanceUtils.getActivityType(activity, false));
+         imagePath = ActivityInstanceUtils.getFont(ActivityInstanceUtils.getActivityType(activity, false));
          tooltip = I18nUtils.getDescriptionAsHtml(activity, activity.getDescription());
       }
       setTooltip(tooltip);

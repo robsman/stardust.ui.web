@@ -7,7 +7,6 @@ import static org.junit.Assert.assertThat;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Iterator;
 
 import org.junit.Test;
 
@@ -42,7 +41,7 @@ public class TestMakerChecker extends RecordingTestcase
             "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
       assertThat(activity.getEventHandler(), is(not(nullValue())));
       assertThat(activity.getEventHandler().size(), is(1));
-      EventHandlerType eventHandler = assertEventHandler(activity, "_excludeUser_",
+      EventHandlerType eventHandler = GenericModelingAssertions.assertEventHandler(activity, "_excludeUser_",
             "_excludeUser_", PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION, false);
       assertThat(eventHandler.getEventAction(), is(not(nullValue())));
       assertThat(eventHandler.getEventAction().size(), is(6));
@@ -79,7 +78,7 @@ public class TestMakerChecker extends RecordingTestcase
             "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
       assertThat(activity.getEventHandler(), is(not(nullValue())));
       assertThat(activity.getEventHandler().size(), is(1));
-      EventHandlerType eventHandler = assertEventHandler(activity, "_excludeUser_",
+      EventHandlerType eventHandler = GenericModelingAssertions.assertEventHandler(activity, "_excludeUser_",
             "_excludeUser_", PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION, true);
       assertThat(eventHandler.getEventAction(), is(not(nullValue())));
       assertThat(eventHandler.getEventAction().size(), is(6));
@@ -117,7 +116,7 @@ public class TestMakerChecker extends RecordingTestcase
             "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
       assertThat(activity.getEventHandler(), is(not(nullValue())));
       assertThat(activity.getEventHandler().size(), is(1));
-      EventHandlerType eventHandler = assertEventHandler(activity, "_excludeUser_",
+      EventHandlerType eventHandler = GenericModelingAssertions.assertEventHandler(activity, "_excludeUser_",
             "_excludeUser_", PredefinedConstants.ACTIVITY_ON_ASSIGNMENT_CONDITION, true);
       assertThat(eventHandler.getEventAction(), is(not(nullValue())));
       assertThat(eventHandler.getEventAction().size(), is(2));
@@ -131,32 +130,6 @@ public class TestMakerChecker extends RecordingTestcase
    protected boolean includeConsumerModel()
    {
       return false;
-   }
-
-   public static EventHandlerType assertEventHandler(ActivityType activity, String id,
-         String name, String type, boolean logHandler)
-   {
-      assertThat(activity.getEventHandler(), is(not(nullValue())));
-      assertThat(activity.getEventHandler().size(), is(not(0)));
-      EventHandlerType foundHandler = null;
-      for (Iterator<EventHandlerType> i = activity.getEventHandler().iterator(); i
-            .hasNext();)
-      {
-         EventHandlerType eventHandler = i.next();
-         assertThat(eventHandler.getId(), is(not(nullValue())));
-         assertThat(eventHandler.getName(), is(not(nullValue())));
-         assertThat(eventHandler.getType(), is(not(nullValue())));
-         assertThat(eventHandler.getType().getId(), is(not(nullValue())));
-         if (eventHandler.getId().equals(id))
-         {
-            foundHandler = eventHandler;
-         }
-      }
-      assertThat(foundHandler, is(not(nullValue())));
-      assertThat(foundHandler.getName(), is(name));
-      assertThat(foundHandler.getType().getId(), is(type));
-      assertThat(foundHandler.isLogHandler(), is(logHandler));
-      return foundHandler;
    }
 
    public static EventActionType assertEventAction(EventHandlerType eventHandler,

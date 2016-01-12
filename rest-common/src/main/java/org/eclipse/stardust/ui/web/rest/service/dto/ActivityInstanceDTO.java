@@ -69,6 +69,8 @@ public class ActivityInstanceDTO extends AbstractDTO
    public String qualityAssuranceState;
    
    public boolean activatable;
+   
+   public boolean relocationEligible;
 
    public Map<String, DescriptorDTO> descriptorValues;
    
@@ -77,6 +79,12 @@ public class ActivityInstanceDTO extends AbstractDTO
    public String participantPerformer;
 
    public int notesCount;
+   
+   public BenchmarkDTO benchmark;
+
+   public boolean auxillary;
+   
+   public Long resubmissionTime;
 
    public void setQualityAssuranceState(QualityAssuranceState state)
    {

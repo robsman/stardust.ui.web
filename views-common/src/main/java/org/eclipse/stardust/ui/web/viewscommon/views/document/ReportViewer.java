@@ -212,7 +212,8 @@ public class ReportViewer implements IDocumentViewer, ViewEventHandler
          Object keyParamValue = (StringUtils.isNotEmpty(KEY_PARAM)) ? event.getView().getViewParams().get(KEY_PARAM) : "";
          PortalApplication.getInstance().addEventScript(
                "InfinityBpm.ProcessPortal.createOrActivateContentFrame('" + iframeId + "', '" + pagePath
-                     + event.getView().getParams() + "', {anchorId:'" + ANCHOR_ID
+                     + event.getView().getParams() + "', {html5ViewId: '" + event.getView().getHtml5FwViewId()
+                     + "', anchorId:'" + ANCHOR_ID
                      + "', anchorYAdjustment:10, zIndex:200, frmAttrs: {displayName: '" + keyParamValue + "'}});");
          fireResizeIframeEvent();
 

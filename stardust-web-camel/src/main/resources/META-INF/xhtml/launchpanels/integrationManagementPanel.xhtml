@@ -4,20 +4,18 @@
 	xmlns:ui="http://java.sun.com/jsf/facelets"
 	xmlns:c="http://java.sun.com/jstl/core"
 	xmlns:fn="http://java.sun.com/jsp/jstl/functions">
-	<ice:loadBundle basename="stardust-web-camel-perspective-messages"
+	<ice:loadBundle basename="stardust-web-camel"
 		var="msg" />
 
 	<ice:panelGroup styleClass="panelHeader">
 		<ice:commandLink action="#{launchPanelBean.toggle}">
-			<ice:panelGrid columns="2">
-				<ice:graphicImage rendered="#{!launchPanelBean.expanded}"
-					value="/plugins/common/images/panelHeader-triggerExpand.png"
-					style="border: none" />
-				<ice:graphicImage rendered="#{launchPanelBean.expanded}"
-					value="/plugins/common/images/panelHeader-triggerCollapse.png"
-					style="border: none" />
-				<ice:outputText styleClass="panelHeaderTitle"
+			<ice:panelGrid columns="2" style="width: 100%;" columnClasses="table-columnVertical table-columnVertical table-columnVertical">
+				<ice:outputText styleClass="panelHeaderTitle" 
 					value="#{msg['views.camel.openViews.label']}" />
+				<ice:outputText rendered="#{!launchPanelBean.expanded}" style="float: right;"
+					styleClass="pi pi-trigger-collapsed pi-lg pi-outTxt" />
+				<ice:outputText rendered="#{launchPanelBean.expanded}" style="float: right;"
+					styleClass="pi pi-trigger-expanded pi-lg pi-outTxt" />
 			</ice:panelGrid>
 		</ice:commandLink>
 	</ice:panelGroup>
@@ -27,7 +25,7 @@
 		<ice:commandLink action="#{ippPortalApp.openView}">
 			<f:param name="viewId" value="integrationManagementView" />
 
-			<ice:outputText value="Integration Management &amp;raquo;"
+			<ice:outputText value="#{msg['views.integrationManagementView.label']} &amp;raquo;"
 				styleClass="action-link" escape="false" />
 		</ice:commandLink>
 	</ice:panelGrid>

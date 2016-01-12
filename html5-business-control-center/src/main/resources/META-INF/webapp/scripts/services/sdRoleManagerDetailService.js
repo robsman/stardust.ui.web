@@ -40,7 +40,7 @@
 	 */
 	function RoleManagerDetailService($rootScope, $resource, sdLoggerService, $q, $http, sdDataTableHelperService,
 			sdUtilService) {
-		var REST_BASE_URL = "services/rest/portal/roleManagerDetails";
+		var REST_BASE_URL = sdUtilService.getBaseUrl() +"services/rest/portal/roleManagerDetails";
 		var trace = sdLoggerService.getLogger('bcc-ui.services.sdRoleManagerDetailService');
 
 		/**

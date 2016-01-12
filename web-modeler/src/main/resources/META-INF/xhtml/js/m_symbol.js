@@ -2180,7 +2180,9 @@ define(
 			 *
 			 */
 			function Symbol_hoverOutClosure() {
-				this.auxiliaryProperties.callbackScope.hoverOut();
+			  if (this.auxiliaryProperties) {
+			    this.auxiliaryProperties.callbackScope.hoverOut();  
+			  }
 			}
 
 			/**

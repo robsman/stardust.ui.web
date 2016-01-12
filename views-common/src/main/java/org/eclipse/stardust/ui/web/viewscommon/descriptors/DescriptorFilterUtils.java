@@ -11,14 +11,15 @@
 package org.eclipse.stardust.ui.web.viewscommon.descriptors;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
-
-import javax.faces.model.SelectItem;
+import java.util.TimeZone;
 
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.StringUtils;
@@ -46,6 +47,7 @@ import org.eclipse.stardust.engine.core.struct.IXPathMap;
 import org.eclipse.stardust.engine.core.struct.StructuredDataConstants;
 import org.eclipse.stardust.engine.core.struct.StructuredDataXPathUtils;
 import org.eclipse.stardust.engine.core.struct.TypedXPath;
+import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
 import org.eclipse.stardust.ui.web.viewscommon.common.GenericDataMapping;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.IDescriptorFilterModel;
@@ -61,6 +63,7 @@ import org.eclipse.stardust.ui.web.viewscommon.utils.XPathCacheManager;
 public class DescriptorFilterUtils
 {
    private static final Logger trace = LogManager.getLogger(DescriptorFilterUtils.class);
+   // Scan Client Date Format
 
    /**
     * @author Yogesh.Manware
@@ -984,4 +987,131 @@ public class DescriptorFilterUtils
       }
       return null;
    }
+
+   public static Object convertDataPathValue(Class dataClass, Object dataPathValue) throws Exception
+   {
+      trace.info(" ## Inside Convert DataPath Values");
+      trace.info(" ## Mapped Class for DataPath --> "+ dataClass);
+      trace.info(" ## Value for DataPath --> "+ dataPathValue);
+      Object value = null;
+      try
+      {
+         if (dataClass == Long.class || dataClass == Integer.class || dataClass == Short.class
+               || dataClass == Byte.class || dataClass == Float.class || dataClass == Double.class
+               || dataClass == BigDecimal.class)
+         {
+            value = convertToNumber(dataPathValue, dataClass);
+         }
+         else if (dataClass == Boolean.class)
+         {
+            value = Boolean.valueOf(dataPathValue.toString());
+         }
+         else if (dataClass == Date.class || dataClass == Calendar.class)
+         {
+            if (dataPathValue instanceof Date)
+            {
+               value = getDateValue((Date) dataPathValue, dataClass);
+            }
+            else if (dataPathValue instanceof String)
+            {
+               Date dateValue = DateUtils.parseDateTime(dataPathValue.toString());
+               if (null == dateValue)
+               {
+                  try
+                  {
+                     Long dateLongValue = Long.valueOf(dataPathValue.toString());
+                     dateValue = new Date(dateLongValue);
+                  }
+                  catch(NumberFormatException e)
+                  {
+                     trace.info("Date not in Long format :: ",e);
+                     dateValue = DateUtils.parseDateTime(dataPathValue.toString(), DateUtils.getDateFormat(), Locale.getDefault(),
+                           TimeZone.getDefault());
+                  }
+                  
+               }
+               value = getDateValue(dateValue, dataClass);
+            }
+            else if (dataPathValue instanceof Long)
+            {
+               Long longValue = (Long) dataPathValue;
+               Date dateValue = new Date(longValue);
+               value = getDateValue(dateValue, dataClass);
+            }
+         }
+         else if(dataClass == String.class)
+         {
+            value = dataPathValue.toString();
+         }
+         else
+         {
+            value = dataPathValue;
+         }
+      }
+      catch (Exception e)
+      {
+         throw e;
+      }
+      return value;
+   
+   }
+
+   public static Object getDateValue(Date value, Class mappedClass)
+   {
+      Object valueToSet = value;
+      if (mappedClass == Calendar.class)
+      {
+         Calendar cal = Calendar.getInstance();
+         cal.clear();
+         cal.setTime(value);
+         valueToSet = cal;
+      }
+      return valueToSet;
+   }
+
+   public static Number convertToNumber(Object value, Class type) throws Exception
+   {
+      Number localValue = null;
+      if (value != null && StringUtils.isNotEmpty(value.toString()))
+      {
+         try
+         {
+            String strVal = value.toString();
+            if (type == Long.class)
+            {
+               localValue = new Long(strVal);
+            }
+            if (type == Integer.class)
+            {
+               localValue = new Integer(strVal);
+            }
+            else if (type == Short.class)
+            {
+               localValue = new Short(strVal);
+            }
+            else if (type == Byte.class)
+            {
+               localValue = new Byte(strVal);
+            }
+            else if (type == Double.class)
+            {
+               localValue = new Double(strVal);
+            }
+            else if (type == Float.class)
+            {
+               localValue = new Float(strVal);
+            }
+            else if (type == BigDecimal.class)
+            {
+               localValue = new BigDecimal(strVal);
+            }
+         }
+         catch (Exception e)
+         {
+            throw e;
+         }
+      }
+      return localValue;
+   }
+
 }

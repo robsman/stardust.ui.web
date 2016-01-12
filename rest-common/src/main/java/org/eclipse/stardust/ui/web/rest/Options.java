@@ -17,13 +17,17 @@ import java.util.List;
  * @version $Revision: $
  */
 public class Options {
-	public int pageSize;
-	public int skip;
+	public int pageSize = Integer.MAX_VALUE;
+	public int skip = 0;
 	public String orderBy;
 	public boolean asc = true;
 	public FilterDTO filter;
 	public List<String> visibleDescriptorColumns;
 	public boolean allDescriptorsVisible;
+	public String worklistId;
+	public boolean fetchTrivialManualActivities;
+    // Extra Columns fetched conditionally
+    public List<String> extraColumns;
 
 	public Options() {
 

@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2015 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
 /**
  * Bridging for HTML5 Framework
  *
@@ -10,7 +20,7 @@ if (!window["BridgeUtils"]) {
 		var timeoutService;
 
 		var handlingTroubledConnection;
-		
+
 		var windowHandles = {};
 
 		/*
@@ -29,10 +39,10 @@ if (!window["BridgeUtils"]) {
 						console.error(str);
 					}
 				} else {
-					console.log("* " + str);
+						console.log("* " + str);
+					}
 				}
 			}
-		}
 
 		/*
 		 * 
@@ -60,6 +70,10 @@ if (!window["BridgeUtils"]) {
 				win.onscroll = function(event){
 					BridgeUtils.FrameManager.handleViewScroll(event.currentTarget);
 				};
+			} else if (win.location.href.indexOf("/plugins/common/portalSingleViewLaunchPanelsOnly.") > -1) { // Launch Panels
+				// Set Client Time Zone
+				var clientTime = new Date();
+				BridgeUtils.View.doPartialSubmit("portalLaunchPanels", "viewFormLP", "clientTimeZone", clientTime.getTimezoneOffset());
 			}
 		}
 
@@ -69,10 +83,14 @@ if (!window["BridgeUtils"]) {
 		function runInAngularContext(func) {
 			// TODO document.body?
 			var scope = angular.element(document.body).scope();
-			if (!scope.$$phase) {
-				scope.$apply(func);
+			if (scope) {
+				if (!scope.$$phase) {
+					scope.$apply(func);
+				} else {
+					func(scope);
+				}
 			} else {
-				func(scope);
+				BridgeUtils.log("scope is not available, probably angular is not yet initialized, ignoring...", "w");
 			}
 		}
 
@@ -476,7 +494,7 @@ if (!window["BridgeUtils"].View) {
 			
 			if (!initialized){
 				if (hiddenCounter == undefined) {
-					hiddenCounter = 50; // Max tries
+					hiddenCounter = 3000; // Max tries is set high deliberately to support slow environments.
 				}
 
 				if (hiddenCounter > 0) {
@@ -1572,6 +1590,7 @@ if (!window["BridgeUtils"].FrameManager) {
 								'style',
 								'display: none; z-index:100; position: relative; top: 450px; left: 100px; width: 400px; height: 300px;');
 				if (advanceArgs != undefined) {
+					contentFrame.setAttribute('html5ViewId', advanceArgs.html5ViewId);
 					contentFrame.setAttribute('noUnloadWarning',
 							advanceArgs.noUnloadWarning);
 					// Loop through custom attributes and add those as well
@@ -1639,12 +1658,13 @@ if (!window["BridgeUtils"].FrameManager) {
 			BridgeUtils.log("Trying to activate Frame = " + contentId);
 
 			if (hiddenCounter == undefined) {
-				hiddenCounter = 600; // Max tries = 60 secs
+				hiddenCounter = 1800; // Max tries = 3 minutes
 			}
 
 			doWithContentFrame( contentId, function(contentFrame) {
 				if (advanceArgs != undefined) {
 					var anchorId = advanceArgs.anchorId;
+					var html5ViewId = advanceArgs.html5ViewId;
 					var width = advanceArgs.width;
 					var height = advanceArgs.height;
 					var openOnRight = advanceArgs.openOnRight;
@@ -1772,33 +1792,56 @@ if (!window["BridgeUtils"].FrameManager) {
 						contentFrame.setAttribute('widthAdjustment', widthAdjustment);
 						contentFrame.setAttribute('heightAdjustment', heightAdjustment);
 						contentFrame.setAttribute('positionType', positionType);
-						
-						// Finally make iFrame visible
-						contentFrame.style.display = 'inline';
-	
+
 						addIframe(contentId, posX, posY);
-						
-						// This is needed because if page is scrolled at the time of iFrame activation
-						// Then it has to be readjusted for scroll position.
-						handleScroll();
-						handleViewScroll(viewFrameData.win, contentFrame);
-						BridgeUtils.log("Frame Activated = " + contentId);
+					
+						// Finally make iFrame visible
+						var showFrame = !html5ViewId || isViewActive(html5ViewId);
+
+						if (showFrame) {
+							contentFrame.style.display = 'inline';
+
+							// This is needed because if page is scrolled at the time of iFrame activation
+							// Then it has to be readjusted for scroll position.
+							handleScroll();
+							handleViewScroll(viewFrameData.win, contentFrame);
+							BridgeUtils.log("Frame Activated = " + contentId);
+						} else {
+							console.log("Skiping Activation of Frame for: " + html5ViewId);
+						}
 					}
 				}
 				
 				if (delayActivation){
-					// Anchor is still loading. Delay activation
-					BridgeUtils.log("Something is not right. Delaying frame activation = " + contentId + ", Counter: " + hiddenCounter);
-					if (hiddenCounter >= 0) {
-						window.setTimeout(function(){
-							activate(contentId, advanceArgs, --hiddenCounter);
-						}, 100);
+					if (!html5ViewId || isViewActive(html5ViewId)) {
+						// Anchor is still loading. Delay activation
+						BridgeUtils.log("Something is not right. Delaying frame activation = " + contentId + ", Counter: " + hiddenCounter);
+						if (hiddenCounter >= 0) {
+							window.setTimeout(function(){
+								activate(contentId, advanceArgs, --hiddenCounter);
+							}, 100);
+						} else {
+							BridgeUtils.log("Max tries exceeded for frame activation, for " + contentId, "e");
+							contentFrame.style.display = 'inline';
+						}
 					} else {
-						BridgeUtils.log("Max tries exceeded for frame activation, for " + contentId, "e");
-						contentFrame.style.display = 'inline';
+						console.log("Skiping Activation of Frame for: " + html5ViewId);
 					}
 				}
 			});
+		}
+
+		/*
+		 * Private
+		 */
+		function isViewActive(html5ViewId) {
+			if (html5ViewId) {
+				 var activeView = BridgeUtils.View.getActiveView();
+				 if (activeView != null && activeView.path == html5ViewId) {
+					 return true;
+				 }
+			}
+			return false;
 		}
 
 		/*
@@ -1987,7 +2030,7 @@ if (!window["BridgeUtils"].FrameManager) {
 			} else {
 				// Just in case!? Anchor is still not available. Delay activation
 				if (hiddenCounter == undefined) {
-					hiddenCounter = 10; // Max tries
+					hiddenCounter = 600; // Max tries
 				}
 
 				BridgeUtils.log("Anchor not found. Delaying frame repositioning = " + contentId + ", Counter: " + hiddenCounter);

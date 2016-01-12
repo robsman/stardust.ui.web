@@ -1,7 +1,6 @@
 <div class="sd-abort-dlg">
 	<div class="section" style="border:none;">
-		<div sd-js-error class="msgError">
-		</div>
+		<div sd-message></div>
 		<div class="abort-join-section">
 			<!-- Select From List -->	
 			<div ng-show="!joinProcessController.joinProcess.advancedSelect">
@@ -57,7 +56,7 @@
 					<table class="switch-form-info">
 						<tr>
 							<td style="padding-right: 11px;">
-								<i class="glyphicon glyphicon-info-sign"></i>
+								<i class="pi pi-information pi-lg"></i>
 							</td>
 							<td>
 								<div ng-bind-html="joinProcessController.joinProcess.dialogMsg"></div>

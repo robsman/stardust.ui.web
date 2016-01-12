@@ -13,69 +13,69 @@
  */
 
 (function() {
-    'use strict';
+	'use strict';
 
-    angular.module('admin-ui.services').provider('sdQualityAssuranceService', function() {
-	this.$get = [ '$resource', 'sgI18nService', function($resource, sgI18nService) {
-	    var service = new QualityAssuranceService($resource, sgI18nService);
-	    return service;
-	} ];
-    });
+	angular.module('admin-ui.services').provider('sdQualityAssuranceService', function() {
+		this.$get = [ '$resource', 'sgI18nService', 'sdUtilService', function($resource, sgI18nService, sdUtilService) {
+			var service = new QualityAssuranceService($resource, sgI18nService, sdUtilService);
+			return service;
+		} ];
+	});
 
-    /*
-     * 
+	/*
+	 * 
      */
-    function QualityAssuranceService($resource, sgI18nService) {
-	var REST_BASE_URL = 'services/rest/portal/qualityAssuranceManagement';
-	var self = this;
+    function QualityAssuranceService($resource, sgI18nService, sdUtilService) {
+    	var REST_BASE_URL = sdUtilService.getBaseUrl() + 'services/rest/portal/qualityAssuranceManagement';
+    	var self = this;
 
-	/**
-	 * 
-	 */
-	QualityAssuranceService.prototype.getQaActivities = function(fetchObsoleteActivities) {
-	    var restUrl = REST_BASE_URL + "/activities";
-	    restUrl = restUrl + "?showObsoleteActivities=" + fetchObsoleteActivities;
-	    return $resource(restUrl).query().$promise;
-	};
+    	/**
+    	 * 
+    	 */
+    	QualityAssuranceService.prototype.getQaActivities = function(fetchObsoleteActivities) {
+    		var restUrl = REST_BASE_URL + "/activities";
+    		restUrl = restUrl + "?showObsoleteActivities=" + fetchObsoleteActivities;
+    		return $resource(restUrl).query().$promise;
+    	};
 
-	/**
-	 * 
-	 */
-	QualityAssuranceService.prototype.getQaDepartments = function(processQId, activityQId) {
-	    var restUrl = REST_BASE_URL + "/departments";
+    	/**
+    	 * 
+    	 */
+    	QualityAssuranceService.prototype.getQaDepartments = function(processQId, activityQId) {
+    		var restUrl = REST_BASE_URL + "/departments";
 
-	    var postData = {
-		"processQualifiedId" : processQId,
-		"activityQualifiedId" : activityQId
-	    };
-	    var departments = $resource(restUrl, {}, {
-		fetch : {
-		    method : 'POST',
-		    isArray : true
-		}
-	    });
+    		var postData = {
+    				"processQualifiedId" : processQId,
+    				"activityQualifiedId" : activityQId
+    		};
+    		var departments = $resource(restUrl, {}, {
+    			fetch : {
+    				method : 'POST',
+    				isArray : true
+    			}
+    		});
 
-	    return departments.fetch({}, postData).$promise;
-	};
+    		return departments.fetch({}, postData).$promise;
+    	};
 
-	/**
-	 * 
-	 */
-	QualityAssuranceService.prototype.updateQaProbabilities = function(activities, departments) {
-	    var restUrl = REST_BASE_URL + "/updateQaProbabilities";
+    	/**
+    	 * 
+    	 */
+    	QualityAssuranceService.prototype.updateQaProbabilities = function(activities, departments) {
+    		var restUrl = REST_BASE_URL + "/updateQaProbabilities";
 
-	    var postData = {
-		"activities" : activities,
-		"departments" : departments
-	    };
-	    var departments = $resource(restUrl, {}, {
-		updatePriorities : {
-		    method : 'POST'
-		}
-	    });
+    		var postData = {
+    				"activities" : activities,
+    				"departments" : departments
+    		};
+    		var departments = $resource(restUrl, {}, {
+    			updatePriorities : {
+    				method : 'POST'
+    			}
+    		});
 
-	    return departments.updatePriorities({}, postData).$promise;
-	};
+    		return departments.updatePriorities({}, postData).$promise;
+    	};
     }
 
 })();

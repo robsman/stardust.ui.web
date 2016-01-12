@@ -94,6 +94,24 @@
 									</ice:panelGroup>
 								</ice:panelGroup>
 								
+								<ice:panelGroup rendered="#{descriptorItem.type eq 'BigDecimal'}">
+									<ice:inputText partialSubmit="true"
+										id="BigDecimal#{descriptorItem.id}"
+										value="#{descriptorItem.decimalValue}">
+										<pc:automationTag
+											value="auto-BCC-ProcSrch-Descriptors-BigDecimalVal"
+											standAlone="false" />
+										<f:converter converterId="ippDefaultBigDecimalConverter" />
+									</ice:inputText>
+									<ice:message for="BigDecimal#{descriptorItem.id}"
+										styleClass="iceMsgImage" showSummary="false"
+										showDetail="false" />
+									<ice:panelGroup styleClass="msgError">
+										<ice:message for="BigDecimal#{descriptorItem.id}"
+											styleClass="iceMsgInline" />
+									</ice:panelGroup>
+								</ice:panelGroup>
+								
 								 <ice:panelGroup
 									rendered="#{descriptorItem.type eq 'String' or descriptorItem.type eq 'Time'}">
 									<ice:inputText partialSubmit="true"

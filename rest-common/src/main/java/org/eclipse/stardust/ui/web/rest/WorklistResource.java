@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -67,14 +69,14 @@ public class WorklistResource
          @QueryParam("skip") @DefaultValue(DEFAULT_SKIP_STEP) Integer skip,
          @QueryParam("pageSize") @DefaultValue(DEFAULT_PAGE_SIZE) Integer pageSize,
          @QueryParam("orderBy") @DefaultValue(DEFAULT_ORDER_BY_FIELD) String orderBy,
-         @QueryParam("orderByDir") @DefaultValue(DEFAULT_ORDER) String orderByDir, String postData)
+         @QueryParam("orderByDir") @DefaultValue(DEFAULT_ORDER) String orderByDir, @QueryParam("userId") String userId,String postData)
    {
       try
       {
          Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
 
-         QueryResultDTO resultDTO = getWorklistService().getWorklistForParticipant(participantQId, "default", options);
+         QueryResultDTO resultDTO = getWorklistService().getWorklistForParticipant( participantQId, userId, options);
 
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }
@@ -94,6 +96,7 @@ public class WorklistResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/user/{userId}")
    public Response getWorklistForUser(@PathParam("userId") String userId,
+         @QueryParam("fetchAllStates") @DefaultValue("false") String fetchAllStates,
          @QueryParam("skip") @DefaultValue(DEFAULT_SKIP_STEP) Integer skip,
          @QueryParam("pageSize") @DefaultValue(DEFAULT_PAGE_SIZE) Integer pageSize,
          @QueryParam("orderBy") @DefaultValue(DEFAULT_ORDER_BY_FIELD) String orderBy,
@@ -103,7 +106,36 @@ public class WorklistResource
       {
          Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
-         QueryResultDTO resultDTO = getWorklistService().getWorklistForUser(userId, "default", options);
+         QueryResultDTO resultDTO = getWorklistService().getWorklistForUser(userId, options, Boolean.valueOf(fetchAllStates));
+         return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (ObjectNotFoundException onfe)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+   }
+   
+   
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("/unified/user/{userId}")
+   public Response getUnifiedWorklistForUser(@PathParam("userId") String userId,
+         @QueryParam("skip") @DefaultValue(DEFAULT_SKIP_STEP) Integer skip,
+         @QueryParam("pageSize") @DefaultValue(DEFAULT_PAGE_SIZE) Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue(DEFAULT_ORDER_BY_FIELD) String orderBy,
+         @QueryParam("orderByDir") @DefaultValue(DEFAULT_ORDER) String orderByDir, String postData)
+   {
+      try
+      {
+         Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
+         populatePostData(options, postData);
+         QueryResultDTO resultDTO = getWorklistService().getUnifiedWorklistForUser(userId, "default", options);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }
       catch (ObjectNotFoundException onfe)
@@ -175,7 +207,7 @@ public class WorklistResource
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
    @Path("/date/{dateId}")
-   public Response getItemtWorkingFromDate(@PathParam("dateId") String dateId,
+   public Response getWorklistItemsFromDate(@PathParam("dateId") String dateId,
          @QueryParam("skip") @DefaultValue(DEFAULT_SKIP_STEP) Integer skip,
          @QueryParam("pageSize") @DefaultValue(DEFAULT_PAGE_SIZE) Integer pageSize,
          @QueryParam("orderBy") @DefaultValue(DEFAULT_ORDER_BY_FIELD) String orderBy,
@@ -185,7 +217,7 @@ public class WorklistResource
       {
          Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
-         QueryResultDTO resultDTO = getWorklistService().getItemtWorkingFromDate(dateId, options);
+         QueryResultDTO resultDTO = getWorklistService().getWorklistItemsFromDate(dateId, options);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }
       catch (ObjectNotFoundException onfe)
@@ -296,6 +328,37 @@ public class WorklistResource
          Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          QueryResultDTO resultDTO = getWorklistService().getAllActivable(options);
+         return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (ObjectNotFoundException onfe)
+      {
+         return Response.status(Status.NOT_FOUND).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+   }
+   
+   
+   @POST
+   @Produces(MediaType.APPLICATION_JSON)
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Path("/processInstance")
+   public Response getWorklistForProcessInstances(@QueryParam("skip") @DefaultValue(DEFAULT_SKIP_STEP) Integer skip,
+         @QueryParam("pageSize") @DefaultValue(DEFAULT_PAGE_SIZE) Integer pageSize,
+         @QueryParam("orderBy") @DefaultValue(DEFAULT_ORDER_BY_FIELD) String orderBy,
+         @QueryParam("orderByDir") @DefaultValue(DEFAULT_ORDER) String orderByDir,
+         @QueryParam("oids") String pInstanceOids,
+         String postData)
+   {
+      try
+      {
+         List<String> pInstanceOidList = new ArrayList<String>(Arrays.asList(pInstanceOids.split(",")));
+         Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
+         populatePostData(options, postData);
+         QueryResultDTO resultDTO = getWorklistService().getWorklistForProcessInstances(options, pInstanceOidList);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
       }
       catch (ObjectNotFoundException onfe)

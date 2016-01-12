@@ -11,6 +11,7 @@
 package org.eclipse.stardust.ui.web.viewscommon.docmgmt;
 
 import org.eclipse.stardust.engine.api.runtime.Document;
+import org.eclipse.stardust.engine.api.runtime.Folder;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
 
 
@@ -47,6 +48,17 @@ public class DocumentInfo
          this.id = document.getId();
       }
       this.name = typedDocument.getName();
+   }
+
+   /**
+    * @param icon
+    * @param folder
+    */
+   public DocumentInfo(String icon, Folder folder)
+   {
+      this.documentIcon = icon;
+      this.id = folder.getPath();
+      this.name = folder.getName();
    }
 
    public String getDocumentIcon()

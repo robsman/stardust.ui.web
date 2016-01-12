@@ -1,3 +1,13 @@
+/*******************************************************************************
+ * Copyright (c) 2015 SunGard CSA LLC and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     SunGard CSA LLC - initial API and implementation and/or initial documentation
+ *******************************************************************************/
 /* ********* Info Panel Style Starts ********** */
 .sd-panel-summary-bar
 {
@@ -7,3 +17,102 @@
 	width: 800px;
 	margin-top:5px;
 }
+
+/*** Gant chart Styling *****/
+
+#gantt_chart_container {
+	overflow-x: auto;
+	min-height: 350px;
+	width :100%
+}
+
+.gantt-chart-legend-option {
+	margin-left: 25px;
+}
+
+.gantt-chart-legend-symbol {
+	margin-left: 5px;
+}
+
+.currentTimeLine {
+  position: absolute;
+  height: 100%;
+  border-left: 1px dotted #7081FF;
+  z-index: 2;
+}
+
+.majorTimeLine {
+	background-color: #7081FF;
+	text-align: center;
+	border-right: 1px solid;
+	border-bottom: 2px solid white;
+	color: white;
+	display: inline-block;
+	font-weight: bold;
+	white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;  
+    -o-text-overflow: ellipsis; 
+     z-index: 3;
+}
+
+.minorTimeLine {
+	background-color: #7081FF;
+	text-align: center;
+	color: white;
+	border-right: 1px solid;
+	display: inline-block;
+	z-index: 3;
+}
+
+.timeline {
+	display: inline-block;
+	margin-top: 5px;
+	margin-bottom: 5px;
+}
+
+.timeLineCompleted {
+	border-top-left-radius: 6px;
+	border-bottom-left-radius: 6px;
+}
+
+.timeLineInflight {
+	opacity: 0.3;
+	margin-left: -2px;
+	padding-right: 2px;
+	border-top-right-radius: 6px;
+	border-bottom-right-radius: 6px;
+}
+
+.ganttChart-currentTimeLine {
+	border-left: 1px dotted black;
+	position: absolute;
+	z-index: 200
+}
+
+.ganttChart-popup-legend-category {
+	width: 175px;
+	color: white;
+	font-weight: bold;
+	text-align: center;
+}
+
+#gantt_chart_container .tbl-hdr-col-label {
+	display: none;
+}
+
+#gantt_chart_container .tbl-hdr-col
+{
+	padding: 0px;
+	text-align: left;
+	white-space:nowrap;
+}
+
+.gantt-chart-time-frame-picker{
+	margin: 5px 5px 5px 0;
+}
+
+.gantt-chart-tool-bar {
+	margin: 0 5px 2px 5px;
+}
+

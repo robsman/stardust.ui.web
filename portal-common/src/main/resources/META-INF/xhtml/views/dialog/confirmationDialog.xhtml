@@ -22,9 +22,11 @@
 						</ice:outputText>
 						<ice:panelGroup style="text-align: right;">
 							<pc:automationTag value="auto-FW-ConfirmMsgDlg-CloseBtn" standAlone="false"/>
-							<ice:commandButton title="#{common_msgPropsBean['common.close']}"
+							<ice:commandLink title="#{common_msgPropsBean['common.close']}"
 								action="#{dialogBean.cancelAction}"
-								styleClass="windowClose" />
+								styleClass="windowClose pi-cmdLnk">
+								<ice:outputText styleClass="pi pi-dialog-close pi-lg pi-outTxt" />
+							</ice:commandLink>
 						</ice:panelGroup>
 					</ice:panelGrid>
 				</f:facet>
@@ -37,11 +39,11 @@
 						<c:if test="#{dialogBean.contentTypeAsString != 'NONE'}">
 							<f:facet name="west">
 								<ice:panelGroup>
-									<ice:graphicImage url="/plugins/common/images/icons/dialog-icon-error.jpg"
+									<ice:outputText styleClass="pi pi-dialog-error pi-2x"
 										rendered="#{dialogBean.contentTypeAsString eq 'ERROR'}" />
-									<ice:graphicImage url="/plugins/common/images/icons/dialog-icon-warning.jpg"
+									<ice:outputText styleClass="pi pi-dialog-warning pi-2x"
 										rendered="#{dialogBean.contentTypeAsString eq 'WARNING'}" />
-									<ice:graphicImage url="/plugins/common/images/icons/dialog-icon-info.jpg"
+									<ice:outputText styleClass="pi pi-dialog-info pi-2x"
 										rendered="#{dialogBean.contentTypeAsString eq 'INFO'}" />
 								</ice:panelGroup>
 							</f:facet>

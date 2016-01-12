@@ -5,7 +5,7 @@
 			<td style="width: 5px;">:</td>
 			<td> 
 				<!-- Enum -->
-				<select ng-if="mapping.isEnum"
+				<select ng-if="mapping.isEnum" aid="PP-TrivialManualActivity-SelectEnum"
 					ng-click="bpmCommon.stopEvent($event); " ng-change="dataCtrl.onChange();"
 					ng-model="dataCtrl.outData[mapping.id]"
 					ng-init="dataCtrl.outData[mapping.id] = dataCtrl.outData[mapping.id] || mapping.enumValues[0]"
@@ -13,17 +13,17 @@
 				</select> 
 				<!--Text -->
 				<input type="text" ng-click="bpmCommon.stopEvent($event); "
-					ng-change="dataCtrl.onChange();"
+					ng-change="dataCtrl.onChange();" aid="PP-TrivialManualActivity-EnterText"
 					ng-if="mapping.typeName == 'java.lang.String'"
 					ng-model="dataCtrl.outData[mapping.id]" /> 
 				<!-- Boolean -->	
-				<input type="checkbox"
+				<input type="checkbox"  aid="PP-TrivialManualActivity-SelectCheckBox"
 					ng-click="bpmCommon.stopEvent($event); "  ng-change="dataCtrl.onChange();"
 					ng-if="mapping.typeName == 'java.lang.Boolean'" ng-model-on-blur
 					ng-model="dataCtrl.outData[mapping.id]"></input>
 				<!-- Integer -->
 				<div ng-if="mapping.typeName == 'java.lang.Integer'">
-					<input name="integerField" sd-validate="integer" ng-model-on-blur
+					<input name="integerField" sd-validate="integer" ng-model-on-blur aid="PP-TrivialManualActivity-EnterInteger"
 						ng-click="bpmCommon.stopEvent($event); " ng-change="dataCtrl.onChange();"
 						type="number" ng-model="dataCtrl.outData[mapping.id]" />
 					<div
@@ -33,8 +33,8 @@
 				</div>
 				<!--Date -->
 				<div ng-if="mapping.typeName == 'java.util.Date'">
-					<input type="text" name="dateField" sd-date-picker
-						ng-click="bpmCommon.stopEvent($event); "
+					<input type="text" name="dateField" sd-date-picker 
+						ng-click="bpmCommon.stopEvent($event);" aid="PP-TrivialManualActivity-EnterDate"
 						sda-milliseconds="true" ng-change="dataCtrl.onChange();"
 						sda-change-year="true" ng-model-on-blur sda-data-type="date"
 						ng-model="dataCtrl.outData[mapping.id]"></input>
@@ -42,13 +42,13 @@
 					</div>
 				</div>
 				<!-- Money -->
-				<div  ng-if="mapping.typeName == 'org.eclipse.stardust.common.Money'">
-					<input name="moneyField"  ng-model-on-blur ng-pattern="/^[-+]?\d{0,308}(\.\d{1,309})?%?$/"
-						ng-click="bpmCommon.stopEvent($event); " ng-change="dataCtrl.onChange();"
+				<div  ng-if="mapping.typeName == 'java.lang.Double'">
+					<input name="doubleField"  ng-model-on-blur ng-pattern="/^[-+]?\d{0,308}(\.\d{1,309})?%?$/"
+						ng-click="bpmCommon.stopEvent($event);" ng-change="dataCtrl.onChange();" aid="PP-TrivialManualActivity-EnterDouble"
 					    ng-model="dataCtrl.outData[mapping.id]" />
 					<div
-						ng-show="subForm.moneyField.$error.pattern"
-						class="msg-error">{{i18n('html5-common.money-error')}} 
+						ng-show="subForm.doubleField.$error.pattern"
+						class="msg-error">{{i18n('html5-common.double-error')}} 
 					</div>
 				</div>
 				

@@ -60,6 +60,8 @@ public abstract class RepositoryResourceUserObject extends IceUserObject
    private boolean repositoryRootNode = false;
    private boolean isVersioningSupported = true;
    private boolean isWriteSupported = true;
+   private boolean clickable = false;
+   private boolean folderContentReadOnly = false;
 
    /**
     * custom constructor initialized a user object specific to node
@@ -305,13 +307,20 @@ public abstract class RepositoryResourceUserObject extends IceUserObject
 
    public void setEditable(boolean editable){
       isEditable = editable; 
-      if(isEditable){
-         
-      }
    }
    
    public void setDeletable(boolean deletable){
       isDeletable = deletable; 
+   }
+   
+   public boolean isFolderContentReadOnly()
+   {
+      return folderContentReadOnly;
+   }
+
+   public void setFolderContentReadOnly(boolean folderContentReadOnly)
+   {
+      this.folderContentReadOnly = folderContentReadOnly;
    }
    
    public boolean isMenuPopupApplicable()
@@ -383,6 +392,17 @@ public abstract class RepositoryResourceUserObject extends IceUserObject
    {
       return false;
    }
+  
+   // Folder node but click-able
+   protected void setClickable(boolean clickable)
+   {
+      this.clickable  = clickable;
+   }
+   
+   public boolean isClickable()
+   {
+      return clickable;
+   }
    
    public void detachResource()
    {
@@ -434,11 +454,6 @@ public abstract class RepositoryResourceUserObject extends IceUserObject
    public abstract void uploadFolder();
 
    /**
-    * Send File
-    */
-   public abstract void sendFile();
-
-   /**
     * Displays Version History
     */
    public abstract void versionHistory();
@@ -465,8 +480,6 @@ public abstract class RepositoryResourceUserObject extends IceUserObject
    public abstract boolean isRefreshable();
 
    public abstract boolean isCanCreateNote();
-
-   public abstract boolean isSendFileAllowed();
 
    public abstract void createNote();
 
