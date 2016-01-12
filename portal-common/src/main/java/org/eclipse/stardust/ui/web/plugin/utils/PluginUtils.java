@@ -16,13 +16,16 @@ import static org.eclipse.stardust.ui.web.plugin.support.resources.PluginResourc
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.WeakHashMap;
 
-import org.apache.commons.collections.CollectionUtils;
+import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
@@ -111,9 +114,9 @@ public class PluginUtils
     * @param skip
     * @return
     */
-   public static List<String> findWebResources(ResourcePatternResolver resolver, String pluginId, String webUriBase, String baseUri, String pattern, List<String> skip)
+   public static List<WebResource> findWebResources(ResourcePatternResolver resolver, String pluginId, String webUriBase, String baseUri, String pattern, List<String> skip)
    {
-      List<String> allResources = newArrayList();
+      List<WebResource> allResources = newArrayList();
 
       try
       {
@@ -153,7 +156,7 @@ public class PluginUtils
             if (!contains(pluginUri, skip))
             {
                String extensionWebUri = webUriPrefix + pluginUri;
-               allResources.add(extensionWebUri);
+               allResources.add(new WebResource(extensionWebUri, resource));
             }
          }
       }
@@ -310,5 +313,18 @@ public class PluginUtils
       {
          CloseableUtil.closeQuietly(inputStream);
       }
+   }
+
+   /**
+    * @param resource
+    * @param contents
+    * @return
+    * @throws IOException
+    */
+   public static void writeResource(File file, String contents) throws IOException
+   {
+      
+      FileOutputStream fos = new FileOutputStream(file);
+      fos.write(contents.getBytes());
    }
 }

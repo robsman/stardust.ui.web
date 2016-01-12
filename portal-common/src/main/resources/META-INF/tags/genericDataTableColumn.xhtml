@@ -34,12 +34,21 @@
 		</c:if>
 
 		<!-- ********** DATE COLUMN ********** -->
-		<c:if test="#{item.columnDataType eq 'DATE' || item.columnDataType eq 'DATE_WITHOUT_TIME'}">
+		<c:if test="#{item.columnDataType eq 'DATE'}">
 			<ice:outputText value="#{row[property]}" rendered="#{item.columnRenderType eq 'READ_ONLY'}">
 				<f:convertDateTime
 					pattern="#{columnPref.columnFormatter}"
 					locale="#{ippPortalApp.localeObject}"
 					timeZone="#{ippPortalApp.timeZone}" />
+			</ice:outputText>
+		</c:if>
+		
+		<c:if test="#{item.columnDataType eq 'DATE_WITHOUT_TIME'}">
+			<ice:outputText value="#{row[property]}" rendered="#{item.columnRenderType eq 'READ_ONLY'}">
+				<f:convertDateTime
+					pattern="#{columnPref.columnFormatter}"
+					locale="#{ippPortalApp.localeObject}"
+					timeZone="#{ippPortalApp.systemTimeZone}" />
 			</ice:outputText>
 		</c:if>
 

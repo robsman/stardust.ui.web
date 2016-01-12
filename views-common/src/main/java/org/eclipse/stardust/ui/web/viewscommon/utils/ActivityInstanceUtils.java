@@ -16,10 +16,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
@@ -421,18 +421,60 @@ public class ActivityInstanceUtils
          if(null != targetTimeProperty)
          {
             dateTime.setTimeInMillis(targetTimeProperty.getLongValue());
+            return dateTime.getTime();
          }
          else
          {
-            Period period = (Period) binding.getAttribute(PredefinedConstants.TIMER_PERIOD_ATT);
-            if (period != null)
+            Boolean dataAttr = (Boolean) binding.getAttribute(PredefinedConstants.TIMER_CONDITION_USE_DATA_ATT);
+            if (null != dataAttr && dataAttr.booleanValue())
             {
-               dateTime = null != ai.getStartTime() ? PortalTimestampProvider.getCalendar(ai.getStartTime()) : dateTime;
-               dateTime = period.add(dateTime);
+               String dataId = (String) binding.getAttribute(PredefinedConstants.TIMER_CONDITION_DATA_ATT);
+               String dataPathId = (String) binding.getAttribute(PredefinedConstants.TIMER_CONDITION_DATA_PATH_ATT);
+               if (null != dataId)
+               {
+                  Map<String, Serializable> data = null;
+                  // Primitive IN dataMapping, dataPath not required
+                  if (null == dataPathId)
+                  {
+                     Object value = workflowService.getInDataValue(ai.getOID(), PredefinedConstants.DEFAULT_CONTEXT,
+                           dataId);
+                     return getTimestampValue(value, ai);
+
+                  }
+                  else
+                  {
+                     // Structured IN dataMapping
+                     data = (Map<String, Serializable>) workflowService.getInDataValue(ai.getOID(),
+                           PredefinedConstants.DEFAULT_CONTEXT, dataId);
+                  }
+                  if (CollectionUtils.isNotEmpty(data))
+                  {
+                     for (Entry<String, Serializable> dataMap : data.entrySet())
+                     {
+                        String key = dataMap.getKey();
+                        if (key.equals(dataPathId))
+                        {
+                           Object value = dataMap.getValue();
+                           return getTimestampValue(value, ai);
+                        }
+                     }
+                  }
+
+               }
             }
+            else
+            {
+               Period period = (Period) binding.getAttribute(PredefinedConstants.TIMER_PERIOD_ATT);
+               if (period != null)
+               {
+                  dateTime = null != ai.getStartTime() ? PortalTimestampProvider.getCalendar(ai.getStartTime()) : dateTime;
+                  dateTime = period.add(dateTime);
+                  return dateTime.getTime();
+               }
+            }
+            
          }
          
-         return dateTime.getTime();
       }
       catch (Exception e) {
          trace.error("Resubmission Date not available for : " + ai != null ? ai.getOID() : "");
@@ -1051,5 +1093,30 @@ public class ActivityInstanceUtils
          }
       }
       return value;
+   }
+   
+   /**
+    * 
+    * @param value
+    * @param ai
+    * @return
+    */
+   private static Date getTimestampValue(Object value, ActivityInstance ai)
+   {
+      Date targetTimeStamp = null;
+      if (value instanceof Date)
+      {
+         targetTimeStamp = ((Date) value);
+      }
+      else if (value instanceof Long)
+      {
+         targetTimeStamp = new Date((Long) value);
+      }
+      else if (value instanceof Period)
+      {
+         Calendar dateTime = PortalTimestampProvider.getCalendar(ai.getStartTime());
+         targetTimeStamp = ((Period) value).add(dateTime).getTime();
+      }
+      return targetTimeStamp;
    }
 }

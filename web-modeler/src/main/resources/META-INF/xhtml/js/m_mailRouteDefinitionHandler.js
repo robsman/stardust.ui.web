@@ -434,7 +434,7 @@ define(
                
                MailRouteDefinitionHandler.prototype.includeAttachmentBean = function(attributes,accessPoints)
                {
-                  if(attributes["stardust:emailOverlay::attachmentsTemplateSource"]=="DOCUMENT_REQUEST")
+                  if(attributes["stardust:emailOverlay::attachmentsTemplateSource"]=="CORRESPONDENCE")
                      return true;
                   for (var n = 0; n < accessPoints.length; ++n)
                   {
@@ -449,6 +449,9 @@ define(
                
                MailRouteDefinitionHandler.prototype.includeProcessTemplateConfigurations = function(attributes,accessPoints) 
                {
+                  var correspondenceAp = m_routeDefinitionUtils.findAccessPoint(accessPoints, "CORRESPONDENCE");
+                  if(correspondenceAp)
+                     return true;
                   if(!attributes["stardust:emailOverlay::templateConfigurations"])
                      attributes["stardust:emailOverlay::templateConfigurations"]="[]";
                   

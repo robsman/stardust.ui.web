@@ -76,7 +76,7 @@ public class ExternalDocumentViewerBean
       {
          String contextPath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath();
          String url = contextPath + VIEWER;
-         String jsFunction = "openWindow('" + url + "');";
+         String jsFunction = "parent.DocumentUtils.openWindow('" + url + "');";
          //JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), jsFunction);
          PortalApplication.getInstance().addEventScript(jsFunction);
          setOpened(true);
@@ -92,8 +92,9 @@ public class ExternalDocumentViewerBean
     */
    public void closePopupDocument()
    {
-      PortalApplication.getInstance().addEventScript("closeWindow();");
+      PortalApplication.getInstance().addEventScript("parent.DocumentUtils.closeWindow();");
       setOpened(false);
+      getPortalUiController().broadcastNonVetoableViewEvent(view, ViewEventType.POPPED_IN);
    }
 
    /**

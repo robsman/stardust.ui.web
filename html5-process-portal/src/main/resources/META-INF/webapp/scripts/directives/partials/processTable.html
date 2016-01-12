@@ -223,9 +223,17 @@
 	</table>
 	
 	<!--Dialog for abort process  -->
-	<div sd-abort-process-dialog sda-show-dialog="processTableCtrl.showAbortProcessDialog" sda-on-abort-complete="processTableCtrl.abortCompleted()"
+	<div sd-abort-process-dialog sda-show-dialog="processTableCtrl.showAbortProcessDialog" sda-on-abort-complete="processTableCtrl.showNotificationAndRefresh(notification)"
 	     sda-processes-to-abort="processTableCtrl.processesToAbort" >
 	</div>
+	
+	<!--Dialog for abort process Notification -->	
+   <div style="float: left;" sd-dialog sda-show="processTableCtrl.showNotificationDialog"
+	    sda-title="{{i18n('views-common-messages.common-notification-title')}}" 
+	    sda-type="custom" 
+	    sda-scope="this" 
+	    sda-template="plugins/html5-process-portal/scripts/directives/partials/abortProcessNotification.html">
+   </div>
 	
 	<span sd-popover="processTableCtrl.popoverDirective" id="abortMenu">
 		<div class="popover-body">
@@ -247,8 +255,8 @@
 		<div class="popover-body" style="text-align: left; min-width: 100px;">
 			<div ng-show="processTableCtrl.processPopover.data.contentLoaded">
 				<div ng-if="processTableCtrl.processPopover.data.supportsProcessAttachments">
-					<div class="popoverHeading">
-						<b>{{i18n('processportal.toolbars-workflowActions-processDocuments-processAttachments')}}</b>
+					<div class="label-item">
+						{{i18n('processportal.toolbars-workflowActions-processDocuments-processAttachments')}}
 					</div>
 					<div ng-show="processTableCtrl.processPopover.data.processAttachments.documents.length > 0">
 						<div ng-repeat="doc in processTableCtrl.processPopover.data.processAttachments.documents">
@@ -262,8 +270,8 @@
 					</div>
 				</div>
 				<div ng-if="processTableCtrl.processPopover.data.specificDocuments.length > 0">
-					<div class="popoverHeading">
-						<b>{{i18n('processportal.toolbars-workflowActions-processDocuments-specificDocuments')}}</b>
+					<div class="label-item">
+						{{i18n('processportal.toolbars-workflowActions-processDocuments-specificDocuments')}}
 					</div>
 					<div ng-repeat="map in processTableCtrl.processPopover.data.specificDocuments">
 						<div ng-if="map.documents.length > 0">
@@ -281,7 +289,7 @@
 				<div
 					ng-if="processTableCtrl.processPopover.data.processAttachments.documents.length > 0 || processTableCtrl.processPopover.data.specificDocuments.documents.length > 0">
 					<a href="#"
-						ng-click="processTableCtrl.openAllProcessDocumentViews(processTableCtrl.processPopover.data)"><B>{{i18n('processportal.toolbars-workflowActions-processDocuments-openAllDocuments')}}</B></a>
+						ng-click="processTableCtrl.openAllProcessDocumentViews(processTableCtrl.processPopover.data)">{{i18n('processportal.toolbars-workflowActions-processDocuments-openAllDocuments')}}</a>
 				</div>
 				<div
 					ng-if="!processTableCtrl.processPopover.data.supportsProcessAttachments && processTableCtrl.processPopover.data.specificDocuments.length == 0">

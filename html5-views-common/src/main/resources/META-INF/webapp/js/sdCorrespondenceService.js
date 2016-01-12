@@ -21,6 +21,13 @@ define([],function(){
 		/**
 		 * 
 		 */
+		this.determineAddressType   = function (value , format){
+			return sdUtilService.isFaxNumber(value , format) ? "fax" : "email";
+		};
+		
+		/**
+		 * 
+		 */
 		this.getAddressBook = function (piOid){
 			var url = sdUtilService.getBaseUrl() + "services/rest/portal/process-instances/"+piOid+"/address-book";
 			return $resource(url).query().$promise;

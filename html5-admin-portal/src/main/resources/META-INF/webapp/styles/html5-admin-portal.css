@@ -1,49 +1,24 @@
-/* QA MANAGEMENT VIEW*/
-
-.qa-management-emptyCell-warning {
-	color: orange;
-	font-size: 2.27em;
-}
-
 input.search {
-	padding-left:20px;
 	background-repeat: no-repeat;
+	height:20px;
 	background-position-y: 4px;
 	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAASCAYAAABb0P4QAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADbSURBVDhP5ZI9C4MwEIb7//+BEDgICA6C4OQgBJy6dRIEB6EgCNkEJ4e3iT2oHzH9wHbpAwfyJvfkJDnhYH4kHDVKlSAigSAQoCiBKjVGXvaxFXZnxBQYkSlBICII+22K4jM63rbHSthCSdsskVX9Y6KxR5XJSSpVy6GbpbBKp6aw0BzM0ShCe1iKihMXC6EuQtMQwukzPFu3fFd4+C+/cimUNxy6WQkNnmdzL3NYPfDmLVuhZf2wZYz80qDkKX1St3CXAfVMqq4cz3hTaGEpmctxDPmB0M/fCYEbAwZYyVKYcroAAAAASUVORK5CYII=);
 }
 
+input.search:valid,
+input.search:focus{
+	background-image:none;
+}
+
+input.search:invalid{
+	box-shadow: none !important;
+	color:#000;
+}
+
+
 /* Password Management */
 .password-mgmt-text {
 	width: 35px;
-}
-
-.clearing
-{
-	clear: both;
-	height: 10px;
-}
-
-.msgFatal
-{
-	color: red;
-}
-
-.msgError
-{
-	color: red !important;
-	font-weight: normal;
-}
-
-.msgWarning
-{
-	color: orange !important;
-	font-weight: normal;
-}	
-
-.msgInfo
-{
-	color: blue !important;
-	font-weight: normal;
 }
 
 .cloneParticipantSelector .sd-participant-selector .sd-ac-container {
@@ -84,11 +59,14 @@ auth tree implementation. Therefore, we have added
 custom styles below to handle these cases.
 ---------------------------------------------------------
 */
-
+.sd-tree{
+	overflow:auto;
+}
 .sd-tree .title-section,
 .sd-tree a
 {
 	position:relative;
+	white-space:nowrap;
 }
 
 .sd-tree li.match-custom > ul > li > a.tree-node > div > div.dd-header  .js-filterable,

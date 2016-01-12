@@ -43,10 +43,10 @@
 					"pi pi-information pi-lg");	
 				} else if(msgType == 'error'){
 					angular.element('#messageIcon').parent().attr("class",
-					"pi pi-information pi-lg pi-danger");	
+					"pi pi-information pi-lg msg-error");	
 				} else {
 					angular.element('#messageIcon').parent().attr("class",
-					"pi pi-information pi-lg pi-warning");
+					"pi pi-information pi-lg msg-warn");
 				}
 				
 				angular.element('#messagePanel').attr("class",

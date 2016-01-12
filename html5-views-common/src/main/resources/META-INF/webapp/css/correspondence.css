@@ -22,7 +22,7 @@
 }
 
 .correspondence_left_section {
-	width: 100px;
+	min-width: 70px;
 	vertical-align: top;
     white-space:nowrap;
 }
@@ -70,6 +70,7 @@
 
 .correspondence_type_selector {
 	width: 100px;
+	min-height: 20px;
 }
 
 .correspondence_addressBook_conatiner {
@@ -200,8 +201,8 @@
 
 .correspondence_subject {
 	width: 806px;
-	border: solid 1px #ddd;
 	min-height: 27px;
+	padding : 5px;
 }
 
 .correspondence_dialog_error {

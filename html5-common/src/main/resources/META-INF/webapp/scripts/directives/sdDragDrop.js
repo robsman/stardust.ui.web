@@ -49,7 +49,9 @@
 	      });
 	      
 	      elem.bind("drag",function(){
-	        return false;
+	    	  if (attrs.sdDataDrag === undefined) {
+	    		  return false;
+	    	  }
 	      });
 	      
 	      elem.bind("drop",function(e){
@@ -139,7 +141,9 @@
 	        e.dataTransfer.setData(dataType,data);
 	        e.dataTransfer.dropEffect = 'move';
 	        if(e.dataTransfer.setDragImage){
-	        	e.dataTransfer.setDragImage(dragElem[0],0,0);
+	        	if(dragElem) {
+	        		e.dataTransfer.setDragImage(dragElem[0],0,0);
+	        	}
 	        }
 	        e.dataTransfer.effectAllowed="move";
 

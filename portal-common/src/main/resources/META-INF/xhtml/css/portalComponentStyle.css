@@ -90,6 +90,11 @@
 
 /*  iceCmd sort classes will be here only and removed duplicate from modern.css and nirvanaRime.css
 */
+
+.genericTableSortColHdr{
+	color: #A69A88;
+}
+
 .genericTableSortColHdr:before{
 	font-family: FontAwesome !important;
     content: "\f0dc";
@@ -97,7 +102,6 @@
 	height: 16px;
 	width: 10px;
 	padding-left: 4px;
-	color: #A69A88;
 }
 
 .genericTableHdr{
@@ -114,6 +118,10 @@
 
 /* Overrides the ICEfaces Default Styles in connection with above style */
 
+.iceCmdSrtHdr .iceCmdSrtHdrDesc ,.iceCmdSrtHdr .iceCmdSrtHdrAsc{
+	color: #A69A88;
+}
+
 .iceCmdSrtHdrAsc:before{
 	font-family: "FontAwesome";
 	content: "\f0d8"; /* fa-caret-up */
@@ -121,7 +129,6 @@
 	height: 16px;
 	width: 10px;
 	padding-left: 4px;
-	color: #A69A88;
 }
 
 .iceCmdSrtHdrDesc:before{
@@ -131,7 +138,6 @@
 	height: 16px;
 	width: 10px;
 	padding-left: 4px;
-	color: #A69A88;
 }
 
 /*

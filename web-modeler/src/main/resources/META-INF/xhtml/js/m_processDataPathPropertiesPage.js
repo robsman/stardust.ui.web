@@ -56,7 +56,7 @@ define(
           var dataPaths = this.getModelElement().dataPathes;
           for (var i = 0; i < dataPaths.length; i++) {
             if(dataPaths[i].dataPath && (dataPaths[i].dataPath.indexOf("/") > -1)){
-              dataPaths[i].dataPath = dataPaths[i].dataPath.replace("/", ".");  
+              dataPaths[i].dataPath = dataPaths[i].dataPath.replace(/\//g, ".");  
             }
           }
 
@@ -113,7 +113,7 @@ define(
         {
           for (var i = 0; i < dataPaths.length; i++) {
             if(dataPaths[i].dataPath && (dataPaths[i].dataPath.indexOf(".") > -1)){
-              dataPaths[i].dataPath = dataPaths[i].dataPath.replace(".", "/");  
+              dataPaths[i].dataPath = dataPaths[i].dataPath.replace(/\./g, "/");  
             }
           }
           this.propertiesPanel.submitChanges({"dataPathes": dataPaths});

@@ -1,7 +1,6 @@
 
 ul.sd-tree span{
   font-size:1em;
-  color:#5c6e87;
 }
 
 ul.sd-tree{
@@ -27,7 +26,6 @@ ul.sd-tree li{
 ul.sd-tree i {
   padding-right:0.5em;
   cursor: pointer;
-  color: #A69A88;
 }
 
 ul.sd-tree i.isDeferred:before{
@@ -147,11 +145,6 @@ ul.sd-tree  .is-active {
 
 ul.sd-tree a{
   text-decoration: none;
-  color:#00629A;
-}
-
-ul.sd-tree a > i{
-   color:#A69A88;
 }
 
 ul.sd-tree a i{

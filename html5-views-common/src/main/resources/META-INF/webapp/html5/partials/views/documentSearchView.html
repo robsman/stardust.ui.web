@@ -13,7 +13,7 @@
 			<form name="docSearchViewCtrl.searchCriteriaForm">
 				<table class="searchTableLayout">
 					<tr>
-						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-createDate-label')
+						<td><label class="label-item">{{i18n('views-common-messages.views-documentSearchView-createDate-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
 						<td><div sd-date-time-picker ng-model-onblur
@@ -25,7 +25,7 @@
 								{{i18n('html5-common.date-error')}}</div></td>
 					</tr>
 					<tr>
-						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-createDateTo-label')
+						<td><label class="label-item">{{i18n('views-common-messages.views-documentSearchView-createDateTo-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
 						<td><div sd-date-time-picker ng-model-onblur
@@ -44,7 +44,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-modificationDate-label')
+						<td><label class="label-item">{{i18n('views-common-messages.views-documentSearchView-modificationDate-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
 						<td><div sd-date-time-picker ng-model-onblur
@@ -56,7 +56,7 @@
 								{{i18n('html5-common.date-error')}}</div></td>
 					</tr>
 					<tr>
-						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-modificationDateTo-label')
+						<td><label class="label-item">{{i18n('views-common-messages.views-documentSearchView-modificationDateTo-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
 						<td><div sd-date-time-picker ng-model-onblur
@@ -75,7 +75,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-documentType-label')
+						<td><label class="label-item">{{i18n('views-common-messages.views-documentSearchView-documentType-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
 						<td><select multiple="multiple"
@@ -87,7 +87,7 @@
 						</select></td>
 					</tr>
 					<tr>
-						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-fileType-label')
+						<td><label class="label-item">{{i18n('views-common-messages.views-documentSearchView-fileType-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
 						<td>
@@ -99,7 +99,7 @@
 										ng-change="docSearchViewCtrl.getFileTypes()"
 										style="vertical-align: middle"
 										aid="COM-SrchDoc-FileType-ShowAll" /> <label
-										class="form-lable"
+										class="label-item"
 										style="display: inline-block; margin-bottom: 5px; padding-left: 1px; vertical-align: text-top;">{{i18n('views-common-messages.views-documentSearchView-showAll-label')}}</label>
 									</td>
 									<td><a href="#"
@@ -141,7 +141,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-containingText-label')
+						<td><label class="label-item">{{i18n('views-common-messages.views-documentSearchView-containingText-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
 						<td>
@@ -150,13 +150,13 @@
 									<td><input type="checkbox"
 										ng-model="docSearchViewCtrl.query.documentSearchCriteria.searchContent"
 										aid="COM-SrchDoc-ContTxt-SrchContent" /> <label
-										class="form-lable"
+										class="label-item"
 										style="display: inline-block; margin-bottom: 5px; padding-left: 1px; vertical-align: text-top;">{{i18n('views-common-messages.views-documentSearchView-searchContent-label')}}</label>
 									</td>
 									<td><input type="checkbox"
 										ng-model="docSearchViewCtrl.query.documentSearchCriteria.searchData"
 										aid="COM-SrchDoc-ContTxt-SrchData" /> <label
-										class="form-lable"
+										class="label-item"
 										style="display: inline-block; margin-bottom: 5px; padding-left: 1px; vertical-align: text-top;">{{i18n('views-common-messages.views-documentSearchView-searchData-label')}}</label>
 									</td>
 									<td><a href="#"
@@ -175,7 +175,7 @@
 								style="width: 260px"></textarea></td>
 					</tr>
 					<tr>
-						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-author-label')
+						<td><label class="label-item">{{i18n('views-common-messages.views-documentSearchView-author-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
 						<td><div sd-user-selector
@@ -184,7 +184,7 @@
 								sda-aid-prefix="COM-SrchDoc"></div></td>
 					</tr>
 					<tr>
-						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-documentName-label')
+						<td><label class="label-item">{{i18n('views-common-messages.views-documentSearchView-documentName-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
 						<td><input type="text"
@@ -193,7 +193,7 @@
 							aid="COM-SrchDoc-DocName" /></td>
 					</tr>
 					<tr>
-						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-documentId-label')
+						<td><label class="label-item">{{i18n('views-common-messages.views-documentSearchView-documentId-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
 						<td><input type="text" ng-model-onblur
@@ -202,7 +202,7 @@
 							aid="COM-SrchDoc-DocId" /></td>
 					</tr>
 					<tr ng-show="docSearchViewCtrl.repositories.length>1">
-						<td><label class="form-lable">{{i18n('views-common-messages.views-documentSearchView-repository-label')
+						<td><label class="label-item">{{i18n('views-common-messages.views-documentSearchView-repository-label')
 								+ i18n('views-common-messages.views-documentSearchView-colon')}}</label>
 						</td>
 						<td><select multiple="multiple"

@@ -204,9 +204,18 @@ public class DocumentViewUtil
       {
          try
          {
+            String docId = null;
+            if(StringUtils.isNotEmpty(document.getRevisionId()))
+            {
+               docId = document.getRevisionId();
+            }
+            else
+            {
+               docId = document.getId();
+            }
             // TODO review by portal team
             // documentId can contain ':' or other special characters that need to be encoded. e.g. {urn:repositoryId:<repositoryId}<id>
-            viewKey = "documentOID=" + URLEncoder.encode(document.getId(), "UTF-8");
+            viewKey = "documentOID=" + URLEncoder.encode(docId, "UTF-8");
          }
          catch (UnsupportedEncodingException e)
          {

@@ -16,5 +16,14 @@
 			"ckeditor/config.js",
 			"ckeditor/styles.js"
 		]
+	},
+
+	"concat-skip" : {
+		"libs" : [
+			"ckeditor/ckeditor.js"
+		],
+		"styles" : [
+			"3rd-party/bootstrap/3.3.2/css/bootstrap-theme.min.css"
+		]
 	}
 }

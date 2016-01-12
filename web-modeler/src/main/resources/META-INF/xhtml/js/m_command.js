@@ -300,6 +300,18 @@ define([ "bpm-modeler/js/m_utils", "bpm-modeler/js/m_constants", "bpm-modeler/js
             changes : changes
          } ]);
      },
+     createPermissionSetOwnerCommand : function(modelId, elementUUID, changes) {
+         return new ChangeDescriptor("permission.setOWNER", modelId, [ {
+            uuid : elementUUID,
+            changes : changes
+         } ]);
+     },
+     createPermissionUnsetOwnerCommand : function(modelId, elementUUID, changes) {
+         return new ChangeDescriptor("permission.unsetOWNER", modelId, [ {
+            uuid : elementUUID,
+            changes : changes
+         } ]);
+     },
      createPermissionRestoreDefaultsCommand : function(modelId, elementUUID, changes) {
          return new ChangeDescriptor("permission.restoreDefaults", modelId, [ {
             uuid : elementUUID,

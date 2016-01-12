@@ -46,8 +46,19 @@ public class ResourceInfo
       this.pluginBaseUri = pluginBaseUri;
       this.resource = resource;
       this.resourceContents = contents;
-      this.resourceBaseUri = resource.createRelative("").getURI().toString();
-      this.resourceBaseWebUri = WEB_PREFIX + pluginId + "/" + resourceBaseUri.substring(pluginBaseUri.length());
+
+      String resourceUri = resource.getURI().toString();
+      this.resourceBaseUri = resourceUri.substring(0, resourceUri.lastIndexOf("/")) + "/";
+
+      this.resourceBaseWebUri = WEB_PREFIX + pluginId + "/"; 
+      if (!this.resourceBaseUri.equals(this.pluginBaseUri.length()))
+      {
+         this.resourceBaseWebUri += this.resourceBaseUri.substring(this.pluginBaseUri.length());
+         if (!this.resourceBaseWebUri.endsWith("/")) // Safety Check
+         {
+            this.resourceBaseWebUri += "/";
+         }
+      }
    }
    
    /**

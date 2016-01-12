@@ -8,6 +8,10 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
+ #rulesOutlineToolbar{
+ 	cursor:pointer;
+ }
+ 
  .jstree a,.modelLinks a {
 	color: #00629A !important;
 	font-family: Arial, Helvetica, sans-serif;

@@ -65,7 +65,7 @@ public class PasswordUtils
 
       if (StringUtils.isEmpty(lineBreak))
       {
-         lineBreak = "     \u2022     "; 
+    	  lineBreak = " <br> "; 
          
       }
 

@@ -32,17 +32,22 @@
 							</tr>
 						</tbody>
 					</table>
-					<!-- <table>
-					<tbody>
-						<tr>
-							<td><img
-								src="plugins/bpm-modeler/images/icons/role.png" style="position: inherit;" /></td>
-								<td>
-									{{ctrl.i18n('authorization.participants.owner')}}
-								</td>
-						</tr>
-					</tbody>
-				</table> -->
+				</div>
+				<div ng-if="permission.isOwner">
+					<table>
+						<tbody>
+							<tr>
+								<td><img
+									src="plugins/bpm-modeler/images/icons/role.png" style="position: inherit;" /></td>
+									<td>
+										{{ctrl.i18n('authorization.participants.owner')}}
+									</td>
+								<td><a  ng-if="!permission.isFixedOwner" href="#"
+									ng-click="ctrl.removeOwnerFromPermission(permission.id)"><i
+										class="fa fa-minus-circle"></i></a></td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
 				<div ng-repeat="participant in permission.participants"
 					style="margin-left: 5px">

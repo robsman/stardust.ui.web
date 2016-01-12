@@ -109,10 +109,10 @@ public interface ResourcePaths
    static final String V_AUTOCOMPLETE_PRIORITY_MULTIPLE_SELECTOR = "/plugins/views-common/common/priorityAutocompleteMultiSelector.xhtml";
    static final String V_AUTOCOMPLETE_PRIORITY_SELECTOR_TABLE = "/plugins/views-common/common/priorityMultiSelectorTable.xhtml";
    
-   static final String I_USER_ONLINE = "pi pi-user-status pi-lg pi-success";
+   static final String I_USER_ONLINE = "pi pi-user-status pi-lg msg-success";
    static final String I_USER_OFFLINE = "pi pi-user-status pi-lg pi-user-status-offline";
 
-   static final String I_USER_CHAT_INITIATOR = "pi pi-user-status pi-lg pi-danger";
+   static final String I_USER_CHAT_INITIATOR = "pi pi-user-status pi-lg msg-error";
    static final String VIEW_DOCUMENT_SEARCH_COLUMN = "/plugins/views-common/views/documentsearch/documentSearchColumns.xhtml";
    static final String I_EMPTY_CORE_DOCUMENT = "pi pi-error pi-lg";
    static final String I_CORE_DOCUMENTS = "pi pi-process-attachments pi-lg";

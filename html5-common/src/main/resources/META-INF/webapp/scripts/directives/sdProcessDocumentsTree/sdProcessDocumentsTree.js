@@ -167,11 +167,9 @@
         return;
       }
       else{
-        that.folderService.getFolders(data.valueItem.path)
-        .then(function(children){
-          data.valueItem.items =  that.normalizeFolderData(children).items;
-          data.valueItem.isLoaded = true;
-        });
+    	  //TODO All Documents Required Already Fetched. Temp Fix revisit again.
+    	  data.deferred.resolve();
+          return;
       }
     }
     

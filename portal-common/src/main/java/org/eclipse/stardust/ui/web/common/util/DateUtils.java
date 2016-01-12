@@ -132,6 +132,17 @@ public class DateUtils
       }
       return simpleDateFormat.format(date);
    }
+   
+   /**
+    * 
+    * @param date
+    * @param timezone
+    * @return
+    */
+   public static String formatDate(Date date, TimeZone timezone)
+   {
+      return format(date, getDateFormat(), timezone);
+   }
 
    /**
     * @param date

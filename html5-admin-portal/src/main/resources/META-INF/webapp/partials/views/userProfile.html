@@ -9,7 +9,7 @@
 				<td></td>
 			</tr>
 			<tr>
-				<td><label class="form-lable">*{{i18n('admin-portal-messages.views-createUser-basicPanel-account-label')
+				<td><label class="label-item">*{{i18n('admin-portal-messages.views-createUser-basicPanel-account-label')
 						+ i18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><div>
 						<input type="text" name="account" ng-model="ctrl.user.account" sd-focus
@@ -23,7 +23,7 @@
 					</div></td>
 			</tr>
 			<tr>
-				<td><label class="form-lable">*{{i18n('admin-portal-messages.views-createUser-basicPanel-firstName-label')
+				<td><label class="label-item">*{{i18n('admin-portal-messages.views-createUser-basicPanel-firstName-label')
 						+ i18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><div>
 						<input type="text" name="firstName" ng-model='ctrl.user.firstName'
@@ -37,7 +37,7 @@
 					</div></td>
 			</tr>
 			<tr>
-				<td><label class="form-lable">*{{i18n('admin-portal-messages.views-createUser-basicPanel-lastName-label')
+				<td><label class="label-item">*{{i18n('admin-portal-messages.views-createUser-basicPanel-lastName-label')
 						+ i18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><div>
 						<input type="text" name="lastName" ng-model='ctrl.user.lastName'
@@ -50,7 +50,7 @@
 					</div></td>
 			</tr>
 			<tr>
-				<td><label class="form-lable">*{{i18n('admin-portal-messages.views-createUser-basicPanel-name-displayAs')
+				<td><label class="label-item">*{{i18n('admin-portal-messages.views-createUser-basicPanel-name-displayAs')
 						+ i18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><select size="1" name="selectedDisplayFormat"
 					ng-model="ctrl.user.selectedDisplayFormat"
@@ -59,7 +59,7 @@
 					aid="ADM-PartMgmt-UserPopup-SelDisplayFormat"></select></td>
 			</tr>
 			<tr>
-				<td><label class="form-lable">{{i18n('admin-portal-messages.views-createUser-basicPanel-changePwd-label')
+				<td><label class="label-item">{{i18n('admin-portal-messages.views-createUser-basicPanel-changePwd-label')
 						+ i18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><div>
 						<input ng-disabled="!ctrl.user.isPasswordEnabled || !ctrl.user.isInternalAuthentication" ng-model="ctrl.user.changePassword"
@@ -67,7 +67,7 @@
 					</div></td>
 			</tr>
 			<tr>
-				<td><label class="form-lable">*{{i18n('admin-portal-messages.views-createUser-basicPanel-pwd-label')
+				<td><label class="label-item">*{{i18n('admin-portal-messages.views-createUser-basicPanel-pwd-label')
 						+ i18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><div>
 						<input maxlength="20" name="password"
@@ -82,7 +82,7 @@
 					</div></td>
 			</tr>
 			<tr>
-				<td><label class="form-lable">*{{i18n('admin-portal-messages.views-createUser-basicPanel-cPwd-label')
+				<td><label class="label-item">*{{i18n('admin-portal-messages.views-createUser-basicPanel-cPwd-label')
 						+ i18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><div>
 						<input maxlength="20" ng-model='ctrl.user.confirmPassword'
@@ -103,12 +103,11 @@
 			</tr>
 			<tr>
 				<td></td>
-				<td class="msg-error"
-					ng-show="ctrl.userProfileForm.$error.passwordValidationMsg">
-					{{ctrl.passwordValidationMsg}}</td>
+				<td ng-show="ctrl.userProfileForm.$error.passwordValidationMsg">
+					<span class="msg-error"  ng-bind-html="ctrl.passwordValidationMsg"></span></td>
 			</tr>
 			<tr>
-				<td><label class="form-lable">{{i18n('admin-portal-messages.views-createUser-basicPanel-realm-label')
+				<td><label class="label-item">{{i18n('admin-portal-messages.views-createUser-basicPanel-realm-label')
 						+ i18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><select size="1" ng-model="ctrl.user.realmId"
 					style="width: 210px; align: center;"
@@ -117,7 +116,7 @@
 					ng-disabled="ctrl.mode == 'MODIFY_USER' && !ctrl.user.isInternalAuthentication"></select></td>
 			</tr>
 			<tr>
-				<td><label class="form-lable">{{i18n('admin-portal-messages.views-createUser-basicPanel-email-label')
+				<td><label class="label-item">{{i18n('admin-portal-messages.views-createUser-basicPanel-email-label')
 						+ i18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><input type="email" name="email" ng-model="ctrl.user.eMail"
 					aid="ADM-PartMgmt-UserPopup-Email"
@@ -130,7 +129,7 @@
 						{{i18n('views-common-messages.views-createUser-invalideEmailAddress')}}</span></td>
 			</tr>
 			<tr>
-				<td><label class="form-lable">{{i18n('admin-portal-messages.views-createUser-basicPanel-validFrom-label')
+				<td><label class="label-item">{{i18n('admin-portal-messages.views-createUser-basicPanel-validFrom-label')
 						+ i18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><div sd-date-time-picker ng-model="ctrl.user.validFrom"
 						name="validFrom" ng-model-onblur
@@ -141,7 +140,7 @@
 						{{i18n('html5-common.date-error')}}</div></td>
 			</tr>
 			<tr>
-				<td><label class="form-lable">{{i18n('admin-portal-messages.views-createUser-basicPanel-validTo-label')
+				<td><label class="label-item">{{i18n('admin-portal-messages.views-createUser-basicPanel-validTo-label')
 						+ i18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><div sd-date-time-picker ng-model="ctrl.user.validTo"
 						name="validTo" ng-model-onblur
@@ -159,7 +158,7 @@
 						{{i18n('views-common-messages.views-createUser-invalidDate')}}</div></td>
 			</tr>
 			<tr>
-				<td><label class="form-lable">{{i18n('admin-portal-messages.views-createUser-basicPanel-qaOverride-label')
+				<td><label class="label-item">{{i18n('admin-portal-messages.views-createUser-basicPanel-qaOverride-label')
 						+ i18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><div>
 						<input maxlength="3" style="width: 30px" type="text"
@@ -169,7 +168,7 @@
 					</div></td>
 			</tr>
 			<tr>
-				<td><label class="form-lable">{{i18n('admin-portal-messages.views-createUser-basicPanel-desc-label')
+				<td><label class="label-item">{{i18n('admin-portal-messages.views-createUser-basicPanel-desc-label')
 						+ i18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><textarea cols="20" rows="5"
 						ng-model='ctrl.user.description' aid="ADM-PartMgmt-UserPopup-Desc"
