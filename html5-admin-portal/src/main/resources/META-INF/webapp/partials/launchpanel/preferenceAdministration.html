@@ -1,0 +1,24 @@
+<div ng-controller="sdAdministrationPanelCtrl as ctrl">
+	<div class="panel-padding">
+		<a href="#" class="heading"
+			style="cursor: pointer; text-decoration: none;"
+			ng-click="ctrl.showPanelContent = !ctrl.showPanelContent"
+			aid="auto-ADM-preferenceAdministrationsPanel"> <span>{{i18n('admin-portal-messages.launchPanels-ippAdmPreferenceAdministrations-title')}}</span>
+			<i ng-show="ctrl.showPanelContent"
+			   class="pi pi-trigger-expanded pi-lg" style="float: right;"></i> 
+			<i ng-show="!ctrl.showPanelContent"
+			   class="pi pi-trigger-collapsed pi-lg" style="float: right;"></i>
+		</a>
+	</div>
+	<div ng-show="ctrl.showPanelContent">
+		<div style="line-height: 15px;">
+			<a href="#" ng-click="ctrl.openView('passwordMgmt');"
+				data-placement="right" aid="auto-ADM-passwordMgmt"><span>{{i18n('admin-portal-messages.views-passwordMgmt-label')}} &raquo;</span></a>
+		</div>
+		<div style="line-height: 15px;">
+			<a href="#" ng-click="ctrl.openView('prefManagerBean');"
+				data-placement="right" aid="auto-ADM-prefManager"><span>{{i18n('admin-portal-messages.views-prefManagerBean-label')}} &raquo;</span></a>
+		</div>
+	</div>
+	<div class="clearing"></div>
+</div>

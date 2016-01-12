@@ -16,24 +16,28 @@
 	'use strict';
 
 	angular.module("benchmark-app").controller('sdBenchmarkPanelCtrl',
-			[ '$q','sdLoggerService', 'sdViewUtilService', BenchmarkPanelCtrl ]);
+			[ 'sdLoggerService', 'sdViewUtilService', BenchmarkPanelCtrl ]);
 
-	var _q;
 	var trace;
 	var _sdViewUtilService;
 
 	/**
 	 * 
 	 */
-	function BenchmarkPanelCtrl($q, sdLoggerService, sdViewUtilService) {
+	function BenchmarkPanelCtrl(sdLoggerService, sdViewUtilService) {
 		trace = sdLoggerService.getLogger('benchmark-app.sdBenchmarkPanelCtrl');
-		_q = $q;
 		_sdViewUtilService = sdViewUtilService;
 		this.showPanelContent = true;
-		this.tlvViewParams = {'preferenceName':'New TLV'};
+		this.tlvViewParams = {
+			'preferenceName' : 'New TLV'
+		};
 	}
-	
-	BenchmarkPanelCtrl.prototype.openView= function(viewId,params) {		
+	/**
+	 * 
+	 * @param viewId
+	 * @param params
+	 */
+	BenchmarkPanelCtrl.prototype.openView = function(viewId, params) {
 		_sdViewUtilService.openView(viewId, null, params, false);
 	}
 })();

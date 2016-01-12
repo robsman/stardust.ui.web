@@ -15,8 +15,8 @@
 (function() {
 	'use strict';
 
-	angular.module("bcc-ui").controller('sdBCCFavoriteViewsPanelCtrl',
-			['sdLoggerService', 'sdViewUtilService', BCCFavoriteViewsPanelCtrl ]);
+	angular.module("admin-ui").controller('sdAdministrationPanelCtrl',
+			[ 'sdLoggerService', 'sdViewUtilService', AdministrationPanelCtrl ]);
 
 	var trace;
 	var _sdViewUtilService;
@@ -24,13 +24,16 @@
 	/**
 	 * 
 	 */
-	function BCCFavoriteViewsPanelCtrl(sdLoggerService, sdViewUtilService) {
-		trace = sdLoggerService.getLogger('bcc-ui.sdBCCFavoriteViewsPanelCtrl');
+	function AdministrationPanelCtrl(sdLoggerService, sdViewUtilService) {
+		trace = sdLoggerService.getLogger('admin-ui.sdAdministrationPanelCtrl');
 		_sdViewUtilService = sdViewUtilService;
 		this.showPanelContent = true;
 	}
-	
-	BCCFavoriteViewsPanelCtrl.prototype.openView= function(viewId,params) {		
-		_sdViewUtilService.openView(viewId, null, params, false);
+	/**
+	 * 
+	 * @param viewId
+	 */
+	AdministrationPanelCtrl.prototype.openView = function(viewId) {
+		_sdViewUtilService.openView(viewId, null, null, false);
 	}
 })();
