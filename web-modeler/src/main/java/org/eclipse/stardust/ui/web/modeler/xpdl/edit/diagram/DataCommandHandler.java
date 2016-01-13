@@ -84,14 +84,7 @@ public class DataCommandHandler
             }
             catch (IllegalArgumentException e)
             {
-               if (e.getMessage().equals("ModelerError.revertLastCommand.01001"))
-               {
-                  throw new ModelerException(ModelerErrorClass.DATA_ID_ALREADY_EXISTS);
-               }
-               if (e.getMessage().equals("ModelerError.revertLastCommand.01002"))
-               {
-                  throw new ModelerException(ModelerErrorClass.CIRCULAR_DEPENDENCY);
-               }              
+               throw new ModelerException(ModelerErrorClass.DATA_ID_ALREADY_EXISTS);
             }
             
             if (null == data)
