@@ -36,7 +36,6 @@
 		_sdFavoriteViewService = sdFavoriteViewService;
 		_sdFavoriteReportsService = sdFavoriteReportsService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
-		this.showPanelContent = true;
 	}
     /**
      * 

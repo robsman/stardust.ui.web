@@ -1,25 +1,13 @@
-<div ng-controller="sdBenchmarkPanelCtrl as ctrl">
-	<div class="panel-padding">
-		<a href="#" class="heading"
-			style="cursor: pointer; text-decoration: none;"
-			ng-click="ctrl.showPanelContent = !ctrl.showPanelContent"
-			aid="auto-BCC-LP-BenchmarkPnl"> <span>{{i18n('benchmark-messages.launchPanels-benchmarkLaunchPanel-label')}}</span>
-			<i ng-show="ctrl.showPanelContent"
-			   class="pi pi-trigger-expanded pi-lg" style="float: right;"></i> 
-			<i ng-show="!ctrl.showPanelContent"
-			   class="pi pi-trigger-collapsed pi-lg" style="float: right;"></i>
-		</a>
-	</div>
-	<div ng-show="ctrl.showPanelContent">
-		<div style="line-height: 15px;">
+<sd-collapsible-panel sda-aid="auto-BCC-LP-BenchmarkPnl" sda-title="{{i18n('benchmark-messages.launchPanels-benchmarkLaunchPanel-label')}}">
+        <div ng-controller="sdBenchmarkPanelCtrl as ctrl">
+        <div style="line-height: 15px;">
 			<a href="#" ng-click="ctrl.openView('benchmarkViewHtml5');"
-				data-placement="right" aid="auto-BCC-LP-BenchmarkPnl-BenchmarkMgt"><span>Benchmark Management &raquo;</span></a>
+				data-placement="right" aid="auto-BCC-LP-BenchmarkPnl-BenchmarkMgt"><span>{{i18n('benchmark-messages.views-benchmarkViewHtml5-label')}} &raquo;</span></a>
 		</div>
 		<div style="line-height: 15px;">
 			<a href="#"
 				ng-click="ctrl.openView('trafficLightViewNew',ctrl.tlvViewParams);"
-				data-placement="right" aid="auto-BCC-LP-BenchmarkPnl-Tlv"><span>Traffic Light View &raquo;</span></a>
+				data-placement="right" aid="auto-BCC-LP-BenchmarkPnl-Tlv"><span>{{i18n('business-control-center-messages.views-trafficLightView-label')}} &raquo;</span></a>
 		</div>
-	</div>
-	<div class="clearing"></div>
-</div>
+		</div>
+</sd-collapsible-panel>

@@ -1,16 +1,6 @@
-<div ng-controller="sdAdministrationPanelCtrl as ctrl">
-	<div class="panel-padding">
-		<a href="#" class="heading"
-			style="cursor: pointer; text-decoration: none;"
-			ng-click="ctrl.showPanelContent = !ctrl.showPanelContent"
-			aid="auto-ADM-userAdministrationsPanel"> <span>{{i18n('admin-portal-messages.launchPanels-ippAdmUserAdministrations-title')}}</span>
-			<i ng-show="ctrl.showPanelContent"
-			   class="pi pi-trigger-expanded pi-lg" style="float: right;"></i> 
-			<i ng-show="!ctrl.showPanelContent"
-			   class="pi pi-trigger-collapsed pi-lg" style="float: right;"></i>
-		</a>
-	</div>
-	<div ng-show="ctrl.showPanelContent">
+<sd-collapsible-panel sda-aid="auto-ADM-userAdministrationsPanel"
+	sda-title="{{i18n('admin-portal-messages.launchPanels-ippAdmUserAdministrations-title')}}">
+	<div ng-controller="sdAdministrationPanelCtrl as ctrl">
 		<div style="line-height: 15px;">
 			<a href="#" ng-click="ctrl.openView('participantMgmt');"
 				data-placement="right" aid="auto-ADM-participantMgmt"><span>{{i18n('admin-portal-messages.views-participantMgmt-label')}} &raquo;</span></a>
@@ -24,5 +14,4 @@
 				data-placement="right" aid="auto-ADM-userGroupMgmt"><span>{{i18n('admin-portal-messages.views-userGroupMgmt-label')}} &raquo;</span></a>
 		</div>
 	</div>
-	<div class="clearing"></div>
-</div>
+</sd-collapsible-panel>

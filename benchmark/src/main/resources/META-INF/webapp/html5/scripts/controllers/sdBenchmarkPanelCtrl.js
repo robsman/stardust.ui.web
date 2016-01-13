@@ -27,7 +27,6 @@
 	function BenchmarkPanelCtrl(sdLoggerService, sdViewUtilService) {
 		trace = sdLoggerService.getLogger('benchmark-app.sdBenchmarkPanelCtrl');
 		_sdViewUtilService = sdViewUtilService;
-		this.showPanelContent = true;
 		this.tlvViewParams = {
 			'preferenceName' : 'New TLV'
 		};

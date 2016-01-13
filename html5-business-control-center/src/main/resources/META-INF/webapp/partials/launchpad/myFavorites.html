@@ -1,18 +1,10 @@
-<div ng-controller="sdBCCPanelCtrl as ctrl" ng-init="ctrl.getAllFavorites()">
-	<div class="panel-padding">
-		<a href="#" class="heading"
-			style="cursor: pointer; text-decoration: none;"
-			ng-click="ctrl.showPanelContent = !ctrl.showPanelContent"
-			aid="auto-BCC-TLV-MyFavorites-ColPnl"> <span>{{i18n('business-control-center-messages.launchPanels-myFavorites-title')}}</span>
-			<i ng-show="ctrl.showPanelContent"
-			   class="pi pi-trigger-expanded pi-lg" style="float: right;"></i> 
-			<i ng-show="!ctrl.showPanelContent"
-			   class="pi pi-trigger-collapsed pi-lg" style="float: right;"></i>
-		</a>
-	</div>
-	<div ng-show="ctrl.showPanelContent">
-		<i ng-click="ctrl.refreshMyFavoritesPanel()" class="pi pi-refresh pi-lg"
-			style="float: right;" aid="auto-BCC-TLV-MyFavorites-Refresh"></i>
+<sd-collapsible-panel sda-aid="auto-BCC-TLV-MyFavorites-ColPnl"
+	sda-title="{{i18n('business-control-center-messages.launchPanels-myFavorites-title')}}">
+	<div ng-controller="sdBCCPanelCtrl as ctrl"
+		ng-init="ctrl.getAllFavorites()">
+		<i ng-click="ctrl.refreshMyFavoritesPanel()"
+			class="pi pi-refresh pi-lg" style="float: right;"
+			aid="auto-BCC-TLV-MyFavorites-Refresh"></i>
 		<div ng-if="ctrl.favorites.length == 0">
 			<span>{{i18n('views-common-messages.common-notification-message-title')}}</span>
 		</div>
@@ -20,8 +12,8 @@
 			ng-repeat="favorite in ctrl.favorites">
 			<a href="#"
 				ng-click="ctrl.openTLVView(favorite.preferenceId,favorite.preferenceName);"
-				data-placement="right" aid="auto-BCC-TLV-OpenFavoriteView"> {{favorite.preferenceName}} </a>
+				data-placement="right" aid="auto-BCC-TLV-OpenFavoriteView">
+				{{favorite.preferenceName}} </a>
 		</div>
 	</div>
-	<div class="clearing"></div>
-</div>
+</sd-collapsible-panel>

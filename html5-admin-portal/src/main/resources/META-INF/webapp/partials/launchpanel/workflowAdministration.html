@@ -1,0 +1,25 @@
+<sd-collapsible-panel sda-aid="auto-ADM-workflowAdministrationsPanel"
+	sda-title="{{i18n('admin-portal-messages.launchPanels-ippAdmWorkflowAdministrations-title')}}">
+	<div ng-controller="sdAdministrationPanelCtrl as ctrl">
+		<div style="line-height: 15px;">
+			<a href="#" ng-click="ctrl.openView('processView');"
+				data-placement="right" aid="auto-ADM-processView"><span>{{i18n('admin-portal-messages.views-processView-label')}} &raquo;</span></a>
+		</div>
+		<div style="line-height: 15px;">
+			<a href="#" ng-click="ctrl.openView('activityView');"
+				data-placement="right" aid="auto-ADM-activityView"><span>{{i18n('admin-portal-messages.views-activityView-label')}} &raquo;</span></a>
+		</div>
+		<div style="line-height: 15px;">
+			<a href="#" ng-click="ctrl.openView('criticalityConf');"
+				data-placement="right" aid="auto-ADM-criticalityConf"><span>{{i18n('admin-portal-messages.views-criticalityConf-label')}} &raquo;</span></a>
+		</div>
+		<div style="line-height: 15px;">
+			<a href="#" ng-click="ctrl.openView('modelManagementView');"
+				data-placement="right" aid="auto-ADM-LP-ModelMgmtView"><span>{{i18n('admin-portal-messages.views-modelManagementView-label')}} &raquo;</span></a>
+		</div>
+		<div style="line-height: 15px;">
+			<a href="#" ng-click="ctrl.openView('qaManagementView');"
+				data-placement="right" aid="auto-ADM-qaManagement"><span>{{i18n('admin-portal-messages.views-qaManagementView-label')}} &raquo;</span></a>
+		</div>
+	</div>
+</sd-collapsible-panel>

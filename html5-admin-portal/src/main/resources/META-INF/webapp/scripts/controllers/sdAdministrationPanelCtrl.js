@@ -27,7 +27,6 @@
 	function AdministrationPanelCtrl(sdLoggerService, sdViewUtilService) {
 		trace = sdLoggerService.getLogger('admin-ui.sdAdministrationPanelCtrl');
 		_sdViewUtilService = sdViewUtilService;
-		this.showPanelContent = true;
 	}
 	/**
 	 * 

@@ -1,0 +1,21 @@
+<sd-collapsible-panel sda-aid="auto-ADM-systemAdministrationsPanel"
+	sda-title="{{i18n('admin-portal-messages.launchPanels-ippAdmSystemAdministrations-title')}}">
+	<div ng-controller="sdAdministrationPanelCtrl as ctrl">
+		<div style="line-height: 15px;">
+			<a href="#" ng-click="ctrl.openView('overview');"
+				data-placement="right" aid="auto-ADM-overview"><span>{{i18n('admin-portal-messages.views-configurationVariablesView-label')}} &raquo;</span></a>
+		</div>
+		<div style="line-height: 15px;">
+			<a href="#" ng-click="ctrl.openView('daemons');"
+				data-placement="right" aid="auto-ADM-daemons"><span>{{i18n('admin-portal-messages.views-daemons-label')}} &raquo;</span></a>
+		</div>
+		<div style="line-height: 15px;">
+			<a href="#" ng-click="ctrl.openView('resourceMgmtTreeView');"
+				data-placement="right" aid="auto-ADM-resourceMgmt"><span>{{i18n('views-common-messages.views-resourceMgmtTreeView-label')}} &raquo;</span></a>
+		</div>
+		<div style="line-height: 15px;">
+			<a href="#" ng-click="ctrl.openView('realmMgmt');"
+				data-placement="right" aid="auto-ADM-realmMgmt"><span>{{i18n('admin-portal-messages.views-realmMgmt-label')}} &raquo;</span></a>
+		</div>
+	</div>
+</sd-collapsible-panel>

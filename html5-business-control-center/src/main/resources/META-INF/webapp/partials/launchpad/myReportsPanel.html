@@ -1,15 +1,7 @@
-<div ng-controller="sdBCCPanelCtrl as ctrl" ng-init="ctrl.getAllFavoriteReports()">
-	<div class="panel-padding">
-		<a href="#" class="heading"
-			style="cursor: pointer; text-decoration: none;"
-			ng-click="ctrl.showPanelContent = !ctrl.showPanelContent" aid="auto-BCC-LP-MyFavReportsPnl"> <span>{{i18n('business-control-center-messages.launchPanels-myReportsViewPanel-title')}}</span>
-			<i ng-show="ctrl.showPanelContent"
-			   class="pi pi-trigger-expanded pi-lg" style="float: right;"></i> 
-			<i ng-show="!ctrl.showPanelContent"
-			   class="pi pi-trigger-collapsed pi-lg" style="float: right;"></i>
-		</a>
-	</div>
-	<div ng-show="ctrl.showPanelContent">
+<sd-collapsible-panel sda-aid="auto-BCC-LP-MyFavReportsPnl"
+	sda-title="{{i18n('business-control-center-messages.launchPanels-myReportsViewPanel-title')}}">
+	<div ng-controller="sdBCCPanelCtrl as ctrl"
+		ng-init="ctrl.getAllFavoriteReports()">
 		<i ng-click="ctrl.refreshMyReportsPanel()" class="pi pi-refresh pi-lg"
 			style="float: right;" aid="auto-BCC-LP-MyFavReportsPnl-refresh"></i>
 		<div ng-if="ctrl.favoriteReports.length == 0">
@@ -17,18 +9,16 @@
 		</div>
 		<div ng-if="ctrl.favoriteReports.length > 0"
 			ng-repeat="report in ctrl.favoriteReports">
-			
-			<button	ng-click="ctrl.removeFromFavoriteReports(report.documentId);"
+	
+			<button ng-click="ctrl.removeFromFavoriteReports(report.documentId);"
 				title="{{i18n('views-common-messages.views-myReportsView-removeFromFavorite-title')}}"
 				class="button-link tbl-toolbar-item tbl-tool-link"
 				aid="auto-BCC-LP-RemFavReportView">
 				<i class=" pi pi-favorite-not pi-lg"></i>
-			</button>			
-			<a href="#"
-				ng-click="ctrl.openReportView(report.documentId);"
-				data-placement="right"
-				aid="auto-BCC-LP-OpenFavReportView"> {{report.documentName}} </a>
+			</button>
+			<a href="#" ng-click="ctrl.openReportView(report.documentId);"
+				data-placement="right" aid="auto-BCC-LP-OpenFavReportView">
+				{{report.documentName}} </a>
 		</div>
 	</div>
-	<div class="clearing"></div>
-</div>
+</sd-collapsible-panel>

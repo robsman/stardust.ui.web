@@ -1,33 +1,29 @@
-<div ng-controller="sdBCCPanelCtrl as ctrl">
-	<div class="panel-padding">
-		<a href="#" class="heading"
-			style="cursor: pointer; text-decoration: none;"
-			ng-click="ctrl.showPanelContent = !ctrl.showPanelContent"
-			aid="auto-BCC-LP-MgmtViewPnl">
-			{{i18n('business-control-center-messages.launchPanels-managementViews-title')}}
-			<i ng-show="ctrl.showPanelContent"
-			   class="pi pi-trigger-expanded pi-lg" style="float: right;"></i> 
-			<i ng-show="!ctrl.showPanelContent"
-			   class="pi pi-trigger-collapsed pi-lg" style="float: right;"></i>
-		</a>
-	</div>
-	<div ng-show="ctrl.showPanelContent">
+<sd-collapsible-panel sda-aid="auto-BCC-LP-MgmtViewPnl"
+	sda-title="{{i18n('business-control-center-messages.launchPanels-managementViews-title')}}">
+	<div ng-controller="sdBCCPanelCtrl as ctrl">
 		<div style="line-height: 15px;">
 			<a href="#" ng-click="ctrl.openView('categoryTree');"
-				data-placement="right" aid="auto-BCC-LP-AllMgmtView"><span>{{i18n('business-control-center-messages.launchPanels-managementViews-allManagement-title')}}&nbsp;&raquo;</span></a>
+				data-placement="right" aid="auto-BCC-LP-AllMgmtView">
+				<span>{{i18n('business-control-center-messages.launchPanels-managementViews-allManagement-title')}}&nbsp;&raquo;</span>
+			</a>
 		</div>
 		<div style="line-height: 15px;">
 			<a href="#" ng-click="ctrl.openAllProcessManagement();"
-				data-placement="right" aid="auto-BCC-LP-AllProcMgmtView"><span>{{i18n('business-control-center-messages.launchPanels-managementViews-allProcessManagement-label')}}&nbsp;&raquo;</span></a>
+				data-placement="right" aid="auto-BCC-LP-AllProcMgmtView">
+				<span>{{i18n('business-control-center-messages.launchPanels-managementViews-allProcessManagement-label')}}&nbsp;&raquo;</span>
+			</a>
 		</div>
 		<div style="line-height: 15px;">
 			<a href="#" ng-click="ctrl.openAllActivityManagement();"
-				data-placement="right" aid="auto-BCC-LP-AllActMgmtView"><span>{{i18n('business-control-center-messages.launchPanels-managementViews-allActivityManagement-label')}}&nbsp;&raquo;</span></a>
+				data-placement="right" aid="auto-BCC-LP-AllActMgmtView">
+				<span>{{i18n('business-control-center-messages.launchPanels-managementViews-allActivityManagement-label')}}&nbsp;&raquo;</span>
+			</a>
 		</div>
 		<div style="line-height: 15px;">
 			<a href="#" ng-click="ctrl.openAllResourceManagement();"
-				data-placement="right" aid="auto-BCC-LP-AllResMgmtView"><span>{{i18n('business-control-center-messages.launchPanels-managementViews-allResourceManagement-label')}}&nbsp;&raquo;</span></a>
+				data-placement="right" aid="auto-BCC-LP-AllResMgmtView">
+				<span>{{i18n('business-control-center-messages.launchPanels-managementViews-allResourceManagement-label')}}&nbsp;&raquo;</span>
+			</a>
 		</div>
 	</div>
-	<div class="clearing"></div>
-</div>
+</sd-collapsible-panel>
