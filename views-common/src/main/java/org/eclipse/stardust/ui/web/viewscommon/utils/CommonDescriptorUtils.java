@@ -52,7 +52,6 @@ import org.eclipse.stardust.engine.core.struct.StructuredDataXPathUtils;
 import org.eclipse.stardust.engine.core.struct.TypedXPath;
 import org.eclipse.stardust.engine.core.struct.XPathAnnotations;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
-import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
 import org.eclipse.stardust.ui.web.common.configuration.UserPreferencesHelper;
 import org.eclipse.stardust.ui.web.common.spi.preference.PreferenceScope;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
@@ -495,17 +494,7 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
       {
          if (dataPath.isDescriptor())
          {
-            if (allDescriptors.containsKey(dataPath.getId()))
-            {
-               DataPath existing = allDescriptors.get(dataPath.getId());
-               if (!existing.getData().equals(dataPath.getData()))
-               {
-                  trace.warn("* Duplicate datapath detected with id: " + dataPath.getNamespace() + "->"
-                        + dataPath.getData() + "->" + dataPath.getId() + "(" + existing.getNamespace() + "->"
-                        + existing.getData() + "->" + existing.getId() + ")");
-               }
-            }
-            else
+            if (!allDescriptors.containsKey(dataPath.getId()))
             {
                allDescriptors.put(dataPath.getId(), dataPath);
             }
