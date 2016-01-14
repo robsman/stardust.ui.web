@@ -92,23 +92,7 @@ public class ProcessActivityUtils
    private List<DataMappingWrapper> descriptorItems = new ArrayList<DataMappingWrapper>();
    private DataPath[] commonDescriptors;
 
-   public final static int ACTIVITY_INSTANCE_STATE_ALIVE = 1;
-
-   public final static int ACTIVITY_INSTANCE_STATE_COMPLETED = 2;
-
-   public final static int ACTIVITY_INSTANCE_STATE_ABORTED = 3;
-
-   public final static int ACTIVITY_INSTANCE_STATE_SUSPENDED = 4;
-
-   public final static int ACTIVITY_INSTANCE_STATE_HIBERNATED = 5;
-
-   public final static int ACTIVITY_INSTANCE_STATE_ABORTING = 6;
-
-   public final static int ACTIVITY_INSTANCE_STATE_CREATED = 7;
-
-   public final static int ACTIVITY_INSTANCE_STATE_APPLICATION = 8;
-
-   public final static int ACTIVITY_INSTANCE_STATE_INTERRUPTED = 9;
+   public final static int ACTIVITY_INSTANCE_STATE_ALIVE = 3;
 
    public final static int ACTIVITY_INSTANCE_STATE_ALL = 10;
 

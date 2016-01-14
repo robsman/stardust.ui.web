@@ -199,7 +199,7 @@
 				.then(
 						function(states) {
 							self.activitySrchState = [ {
-								value : "1",
+								value : "3",
 								label : _sdProcessSearchService
 										.getI18MessageString('business-control-center-messages.views-processSearchView-chooseProcess-options-alive-label'),
 								name : "alive",
@@ -209,7 +209,7 @@
 									.concat(states);
 
 							var default_state = [ {
-								value : "5",
+								value : "10",
 								label : _sdProcessSearchService
 										.getI18MessageString('business-control-center-messages.views-processSearchView-chooseProcess-options-all-label'),
 								name : "all",

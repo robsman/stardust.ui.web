@@ -10,8 +10,13 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service.dto;
 
+import static org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isAuxiliaryActivity;
+
+import org.eclipse.stardust.engine.api.model.Activity;
+import org.eclipse.stardust.ui.web.rest.service.dto.builder.InitializingDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
+import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 
 
 /**
@@ -20,7 +25,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
  * @version $Revision: $
  */
 @DTOClass
-public class ActivityDTO extends AbstractDTO
+public class ActivityDTO extends AbstractDTO implements InitializingDTO
 {
    @DTOAttribute("id")
    public String id;
@@ -45,5 +50,15 @@ public class ActivityDTO extends AbstractDTO
    @DTOAttribute("interactive")
    public Boolean interactive;
    
+   @DTOAttribute("runtimeElementOID")
    public Long runtimeElementOid;
+
+   @Override
+   public void afterAttributesSet(Object sourceInstance) throws Exception
+   {
+      Activity activity = (Activity)sourceInstance;
+      
+      this.auxillary = isAuxiliaryActivity(activity);
+      this.name = I18nUtils.getActivityName(activity);
+   }
 }

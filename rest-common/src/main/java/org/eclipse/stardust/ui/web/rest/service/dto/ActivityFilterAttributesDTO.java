@@ -50,39 +50,39 @@ public class ActivityFilterAttributesDTO
 
       ActivityInstanceQuery query;
 
-      if (state == ProcessActivityUtils.ACTIVITY_INSTANCE_STATE_ALIVE)
+      if (state == 3)
       {
          query = ActivityInstanceQuery.findAlive();
       }
-      else if (state == ProcessActivityUtils.ACTIVITY_INSTANCE_STATE_COMPLETED)
+      else if (state == ActivityInstanceState.Completed.getValue())
       {
          query = ActivityInstanceQuery.findInState(ActivityInstanceState.Completed);
       }
-      else if (state == ProcessActivityUtils.ACTIVITY_INSTANCE_STATE_ABORTED)
+      else if (state == ActivityInstanceState.Aborted.getValue())
       {
          query = ActivityInstanceQuery.findInState(ActivityInstanceState.Aborted);
       }
-      else if (state == ProcessActivityUtils.ACTIVITY_INSTANCE_STATE_SUSPENDED)
+      else if (state == ActivityInstanceState.Suspended.getValue())
       {
          query = ActivityInstanceQuery.findInState(ActivityInstanceState.Suspended);
       }
-      else if (state == ProcessActivityUtils.ACTIVITY_INSTANCE_STATE_HIBERNATED)
+      else if (state == ActivityInstanceState.Hibernated.getValue())
       {
          query = ActivityInstanceQuery.findInState(ActivityInstanceState.Hibernated);
       }
-      else if (state == ProcessActivityUtils.ACTIVITY_INSTANCE_STATE_ABORTING)
+      else if (state == ActivityInstanceState.Aborting.getValue())
       {
          query = ActivityInstanceQuery.findInState(ActivityInstanceState.Aborting);
       }
-      else if (state == ProcessActivityUtils.ACTIVITY_INSTANCE_STATE_CREATED)
+      else if (state == ActivityInstanceState.Created.getValue())
       {
          query = ActivityInstanceQuery.findInState(ActivityInstanceState.Created);
       }
-      else if (state == ProcessActivityUtils.ACTIVITY_INSTANCE_STATE_APPLICATION)
+      else if (state == ActivityInstanceState.Application.getValue())
       {
          query = ActivityInstanceQuery.findInState(ActivityInstanceState.Application);
       }
-      else if (state == ProcessActivityUtils.ACTIVITY_INSTANCE_STATE_INTERRUPTED)
+      else if (state == ActivityInstanceState.Interrupted.getValue())
       {
          query = ActivityInstanceQuery.findInState(ActivityInstanceState.Interrupted);
       }
