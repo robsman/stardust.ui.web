@@ -4,7 +4,7 @@
 	<div class="abort-start-section">
 		<table class="switch-form">
 			<tr>
-				<td><label class="label-form">* {{i18n('views-common-messages.views-switchProcessDialog-selectProcess')}}</label></td>
+				<td><label class="label-item">* {{i18n('views-common-messages.views-switchProcessDialog-selectProcess')}}</label></td>
 				<td>
 					<div>
 						<select ng-model="switchProcessController.switchProcess.selectedProcess" ng-options="type.name for type in switchProcessController.switchProcess.spawnableProcesses" >
@@ -13,7 +13,7 @@
 				</td>
 			</tr>
 			<tr>
-				<td><label class="label-form">{{i18n('views-common-messages.views-switchProcessDialog-linkComment')}}</label></td>
+				<td><label class="label-item">{{i18n('views-common-messages.views-switchProcessDialog-linkComment')}}</label></td>
 				<td>
 					<textarea ng-model="switchProcessController.switchProcess.linkComment"></textarea>
 				</td>

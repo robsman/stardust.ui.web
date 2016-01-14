@@ -52,6 +52,10 @@
                <include>**/*.png</include>
                <include>**/*.gif</include>
                <include>**/*.jpg</include>
+               <include>**/*.xsd</include>
+               <include>**/*.less</include>
+               <include>**/*.xpdl</include>
+               <include>**/*.zip</include>
             </includes>
          </resource>
 
@@ -71,6 +75,10 @@
                <exclude>**/*.png</exclude>
                <exclude>**/*.gif</exclude>
                <exclude>**/*.jpg</exclude>
+               <exclude>**/*.xsd</exclude>
+               <exclude>**/*.less</exclude>
+               <exclude>**/*.xpdl</exclude>
+               <exclude>**/*.zip</exclude>
             </excludes>
          </resource>
       </resources>
@@ -143,6 +151,10 @@
                      <!-- copy images without filtering -->
                      <copy todir="${build.src.portaldoc}" >
                         <fileset dir="${enduser.doc.path}/html/handbooks">
+                           <include name="**/*.xsd"/>
+                           <include name="**/*.xpdl"/>
+                           <include name="**/*.less"/>
+                           <include name="**/*.zip"/>
                            <include name="**/*.png"/>
                            <include name="**/*.gif"/>
                            <include name="**/*.jpg"/>

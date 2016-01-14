@@ -29,14 +29,14 @@
 				'<form name="filterForm">' +
 					'<table cellspacing="2" cellpadding="2" style="white-space: nowrap;">' +
 						'<tr>' +
-							'<td><label class="label-form">{{i18n(\'portal-common-messages.common-filterPopup-betweenFilter-first\')}}</label></td>' +
+							'<td><label class="label-item">{{i18n(\'portal-common-messages.common-filterPopup-betweenFilter-first\')}}</label></td>' +
 							'<td>' +
 								'<div sd-date-time-picker ng-model="filterData.from" id="from" name="from" ng-model-onblur> </div>' +
 								'<div class="msg-error" ng-show="filterForm[\'from\'].$error.validate">{{i18n(\'html5-common.date-error\')}}</div>' +
 							'</td>' +
 						'</tr>' +
 						'<tr>' +
-							'<td><label class="label-form">{{i18n(\'portal-common-messages.common-filterPopup-betweenFilter-last\')}}</label></td>' +
+							'<td><label class="label-item">{{i18n(\'portal-common-messages.common-filterPopup-betweenFilter-last\')}}</label></td>' +
 							'<td>' +
         							'<div sd-date-time-picker ng-model="filterData.to" id="to" name="to" ng-model-onblur> </div>' +
         							'<div class="msg-error" ng-show="filterForm[\'to\'].$error.validate">{{i18n(\'html5-common.date-error\')}}</div>' +

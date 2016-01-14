@@ -1,31 +1,31 @@
 <div class="confirmation-contents modal-body" style="padding-bottom: 20px">
-	<div ng-hide="abortActivityCtrl.notification.error">
+	<div ng-hide="activityTableCtrl.notification.error">
 		<div
-			ng-show="abortActivityCtrl.notification.result.success.length > 0">
+			ng-show="activityTableCtrl.notification.result.success.length > 0">
 			<div class="abort-activity-notication-message"
-				ng-bind="abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-success')"></div>
+				ng-bind="i18n('views-common-messages.views-common-activity-abortActivity-success')"></div>
 			<table class="table-bordered">
 				<tr
-					ng-repeat="activity in abortActivityCtrl.notification.result.success">
+					ng-repeat="activity in activityTableCtrl.notification.result.success">
 					<td  class="abort-activity-cell-message">{{activity.name}} (#{{activity.OID}})</td>
 					<td ng-bind="activity.message" class="abort-activity-cell-message"></td>
 				</tr>
 			</table>
 		</div>
 		<div
-			ng-show="abortActivityCtrl.notification.result.failure.length > 0">
+			ng-show="activityTableCtrl.notification.result.failure.length > 0">
 			<div class="abort-activity-notication-message"
-				ng-bind="abortActivityCtrl.i18n('views-common-messages.views-common-activity-abortActivity-failure')"></div>
+				ng-bind="i18n('views-common-messages.views-common-activity-abortActivity-failure')"></div>
 			<table class="table-bordered">
 				<tr 
-					ng-repeat="activity in abortActivityCtrl.notification.result.failure">
+					ng-repeat="activity in activityTableCtrl.notification.result.failure">
 						<td  class="abort-activity-cell-message">{{activity.name}} (#{{activity.OID}})</td>
 					<td ng-bind="activity.message" class="abort-activity-cell-message"></td>
 				</tr>
 			</table>
 		</div>
 	</div>
-	<div ng-show="abortActivityCtrl.notification.error">
+	<div ng-show="activityTableCtrl.notification.error">
 		<span>An error occurred while aborting activities</span>
 	</div>
 </div>
@@ -33,7 +33,7 @@
 	<div class="button-pane cf" >
 		<div class="button-alignment">
 			<div class="right">
-				<button class="button" ng-click="closeThisDialog()">{{abortActivityCtrl.i18n('views-common-messages.common-close')}}</button>
+				<button class="button" ng-click="closeThisDialog()">{{i18n('views-common-messages.common-close')}}</button>
 			</div>
 		</div>
 	</div>

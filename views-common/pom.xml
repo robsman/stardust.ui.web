@@ -30,6 +30,7 @@
       <maven.build.timestamp.format>yyyyMMdd-HHmm</maven.build.timestamp.format>
       <build.timestamp>${maven.build.timestamp}</build.timestamp>
       <skip.i18n-bundle-copy>false</skip.i18n-bundle-copy>
+      <skip.web.file.concatenation>false</skip.web.file.concatenation>
    </properties>
 
    <dependencies>
@@ -279,6 +280,15 @@
             <executions>
                <execution>
                   <id>replace-i18n-default-bundle</id>
+               </execution>
+            </executions>
+         </plugin>
+         <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <executions>
+               <execution>
+                  <id>concatenate-web-files</id>
                </execution>
             </executions>
          </plugin>

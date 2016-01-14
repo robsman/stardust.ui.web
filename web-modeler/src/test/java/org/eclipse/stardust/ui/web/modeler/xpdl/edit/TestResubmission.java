@@ -19,7 +19,6 @@ import org.eclipse.stardust.ui.web.modeler.utils.test.GenericModelingAssertions;
 
 public class TestResubmission extends RecordingTestcase
 {
-
    @Test
    public void testCreateResubmission() throws Throwable
    {
@@ -44,7 +43,7 @@ public class TestResubmission extends RecordingTestcase
       assertThat(eventHandler.getBindAction(), is(not(nullValue())));
       assertThat(eventHandler.getEventAction().size(), is(1));
       assertThat(eventHandler.getBindAction().size(), is(1));
-      assertThat(eventHandler.isAutoBind(), is(true));
+      assertThat(eventHandler.isAutoBind(), is(false));
       
       BindActionType bindAction = eventHandler.getBindAction().get(0);
       GenericModelingAssertions.assertAttribute(bindAction, "carnot:engine:targetState", "7");
@@ -55,7 +54,6 @@ public class TestResubmission extends RecordingTestcase
       GenericModelingAssertions.assertAttribute(eventHandler, "carnot:engine:useData", "false");
 
       GenericModelingAssertions.assertAttribute(eventHandler, "carnot:engine:period", "000000:000000:000000:000000:000000:000000");
-
    }
 
    @Test
@@ -80,7 +78,7 @@ public class TestResubmission extends RecordingTestcase
       assertThat(eventHandler.getBindAction(), is(not(nullValue())));
       assertThat(eventHandler.getEventAction().size(), is(2));
       assertThat(eventHandler.getBindAction().size(), is(1));
-      assertThat(eventHandler.isAutoBind(), is(true));
+      assertThat(eventHandler.isAutoBind(), is(false));
 
       BindActionType bindAction = eventHandler.getBindAction().get(0);
       GenericModelingAssertions.assertAttribute(bindAction, "carnot:engine:targetState", "7");
@@ -94,7 +92,6 @@ public class TestResubmission extends RecordingTestcase
       GenericModelingAssertions.assertAttribute(eventHandler, "carnot:engine:useData", "false");
 
       GenericModelingAssertions.assertAttribute(eventHandler, "carnot:engine:period", "000000:000000:000000:000000:000000:000000");
-
    }
    
    @Test
@@ -113,7 +110,6 @@ public class TestResubmission extends RecordingTestcase
       ActivityType activity = GenericModelingAssertions.assertActivity(process,
             "Activity1", "Activity 1", ActivityImplementationType.MANUAL_LITERAL);
       assertThat(activity.getEventHandler().size(), is(0));
-
    }
 
    protected boolean includeConsumerModel()
@@ -162,5 +158,4 @@ public class TestResubmission extends RecordingTestcase
                "useData=true", "defaultPerformer=false");
       }
    }
-
 }

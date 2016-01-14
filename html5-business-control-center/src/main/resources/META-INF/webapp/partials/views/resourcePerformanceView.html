@@ -66,15 +66,15 @@
 								: </b> <span
 								ng-if="rowData.statisticsByColumns[colData.title].state == 1"
 								title="{{i18n('business-control-center-messages.views-trafficLightView-critical')}}">
-								<i class="pi pi-user-status pi-1x pi-danger" ></i>
+								<i class="pi pi-user-status pi-1x msg-error" ></i>
 							</span> <span
 								ng-if="rowData.statisticsByColumns[colData.title].state == 2"
 								title="{{i18n('business-control-center-messages.views-trafficLightView-warning')}}">
-								<i class="pi pi-user-status pi-1x pi-warning" ></i>
+								<i class="pi pi-user-status pi-1x msg-warn" ></i>
 							</span> <span
 								ng-if="rowData.statisticsByColumns[colData.title].state == 3"
 								title="{{i18n('business-control-center-messages.views-trafficLightView-normal')}}">
-								<i class="pi pi-user-status pi-1x pi-success" ></i>
+								<i class="pi pi-user-status pi-1x msg-success" ></i>
 							</span>
 						</div>
 					</td>

@@ -770,7 +770,6 @@ public class ActivityTableUtils
                {
                   dto.completedBy = ActivityInstanceUtils.getPerformedByName(ai);
                   dto.participantPerformer = getParticipantPerformer(ai);
-                  dto.isCaseInstance = ai.getProcessInstance().isCaseProcessInstance();
                   dto.abortActivity = !dto.isCaseInstance && isAbortable(ai);
                   dto.delegable = isDelegable(ai);
                   dto.abortProcess = ProcessInstanceUtils.isAbortable(ai.getProcessInstance());
@@ -778,23 +777,24 @@ public class ActivityTableUtils
                else
                {
                   dto.lastPerformer = getLastPerformer(ai, UserUtils.getDefaultUserNameDisplayFormat());
-                  dto.defaultCaseActivity = ActivityInstanceUtils.isDefaultCaseActivity(ai);
                   if (!dto.defaultCaseActivity)
                   {
                      dto.abortActivity = isAbortable(ai);
                      dto.delegable = isDelegable(ai);
                   }
-                  else
-                  {
-                     dto.processInstance.processName = getCaseName(ai);
-                  }
-                  
-                  //ROOT Process 
-                  long rootProcessOID = ai.getProcessInstance().getRootProcessInstanceOID();
-                  ProcessInstance rootPI = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getProcessInstance(rootProcessOID);
-                  dto.rootProcessName = rootPI.getProcessName();
-                  
                }
+               dto.defaultCaseActivity = ActivityInstanceUtils.isDefaultCaseActivity(ai);
+               dto.isCaseInstance = ai.getProcessInstance().isCaseProcessInstance();
+               if(dto.defaultCaseActivity)
+               {
+                  dto.activity.name = getCaseName(ai);
+               }
+                  
+               //ROOT Process 
+               long rootProcessOID = ai.getProcessInstance().getRootProcessInstanceOID();
+               ProcessInstance rootPI = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getProcessInstance(rootProcessOID);
+               dto.rootProcessName = rootPI.getProcessName();
+               
                list.add(dto);
             }
          }

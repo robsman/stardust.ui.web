@@ -24,6 +24,8 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	var _parse = null;
 	var _sdViewUtilService = null;
 	var trace = null;
+	var config = null;
+	var FAX_NUMBER_FORMAT =  "";
 
 	var filesToUpload = [];
 	var VALID_TEMPLATE_FORMATS = ['text/plain' , 'text/html'];
@@ -107,16 +109,9 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 				convertToPdf : false
 		};
 		
-		var preferedCorrespondenceType = this.getDefaultCorrespondenceType();
-		
-
-		if (preferedCorrespondenceType) {
-			if (preferedCorrespondenceType == 'Print') {
-				this.selected.type = 'print'
-			} else {
-				this.selected.type = 'email';
-			}
-		}
+		this.fetchPreference();
+		this.selected.type  = this.getDefaultCorrespondenceType();
+		this.geFaxNumberFormat();
 
 		this.dialog ={
 				selectedAddresses : [],
@@ -204,16 +199,42 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	/**
 	 * 
 	 */
-	CorrespondenceCtrl.prototype.getDefaultCorrespondenceType = function (){
+	CorrespondenceCtrl.prototype.fetchPreference = function (){
 		    var moduleId = 'ipp-views-common';
 		    var preferenceId = 'preference';
 		    var scope = 'PARTITION';
-		    var config =  _sdPreferenceService.getStore(scope, moduleId, preferenceId);
+		    config =  _sdPreferenceService.getStore(scope, moduleId, preferenceId);
 		    config.fetch();
-		    var fromParent = false;
-		    var type = config.getValue('ipp-views-common.correspondencePanel.prefs.correspondence.defaultType', fromParent);
-		    return type;
-	}
+	};
+	
+	/**
+	 * 
+	 */
+	CorrespondenceCtrl.prototype.getDefaultCorrespondenceType = function (){
+		   var fromParent = false;
+		   var type = config.getValue('ipp-views-common.correspondencePanel.prefs.correspondence.defaultType', fromParent);
+		  
+		   if (type) {
+				if (type == 'Print') {
+					return 'print'
+				} else {
+					return 'email';
+				}
+			}
+		   return this.selected.type;
+	};
+	
+	/**
+	 * 
+	 */
+	CorrespondenceCtrl.prototype.geFaxNumberFormat = function (){
+		   var fromParent = false;
+		   var format = config.getValue('ipp-views-common.correspondencePanel.prefs.correspondence.numberFormat', fromParent);
+		   if(format){
+			   FAX_NUMBER_FORMAT =  new RegExp(format);
+		   }
+		   trace.log("Fax number format : ",FAX_NUMBER_FORMAT);
+	};
 	/**
 	 * 
 	 */
@@ -247,36 +268,37 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	 */
 	function preparePostData(uiData) {
 
-
 		var postData = {
-				"CORRESPONDENCE_REQUEST" : {
-					"Type" : _filter('uppercase')(uiData.type),
-					"ProcessInstanceOID" : uiData.piOid,
-					"Subject" :uiData.subject,
-					"MessageBody" : uiData.content
+				"CORRESPONDENCE" : {
+					"MessageBody" : uiData.content,
+					"MessageBodyFormat" : "HTML"
 				}
 		};
+			
 
 		if(uiData.type == 'email') {
-			var to = formatOutDataAddress(uiData.to);
+			postData.CORRESPONDENCE.Subject = uiData.subject;
+			postData.CORRESPONDENCE.Recipients = [];
+			
+			var to = formatOutDataAddress(uiData.to, "EMAIL_TO");
 			if(to && to.length > 0) {
-				postData.CORRESPONDENCE_REQUEST.To = to
+				postData.CORRESPONDENCE.Recipients = postData.CORRESPONDENCE.Recipients.concat(to);
 			}
 
-			var bcc = formatOutDataAddress(uiData.bcc);
+			var bcc = formatOutDataAddress(uiData.bcc, "EMAIL_BCC");
 			if(bcc && bcc.length > 0) {
-				postData.CORRESPONDENCE_REQUEST.BCC = bcc
+				postData.CORRESPONDENCE.Recipients = postData.CORRESPONDENCE.Recipients.concat(bcc);
 			}
 
-			var cc = formatOutDataAddress(uiData.cc);
+			var cc = formatOutDataAddress(uiData.cc, "EMAIL_CC");
 			if(cc && cc.length > 0) {
-				postData.CORRESPONDENCE_REQUEST.CC = cc
+				postData.CORRESPONDENCE.Recipients = postData.CORRESPONDENCE.Recipients.concat(cc);
 			}
 		}
 		
 		if(uiData.attachments && uiData.attachments.length > 0){
 			var formated_attachments = formatOutDataAttachments(uiData.attachments);
-			postData.CORRESPONDENCE_REQUEST.Attachments = formated_attachments
+			postData.CORRESPONDENCE.Documents = formated_attachments
 		}
 		return postData;
 	}
@@ -288,37 +310,36 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		
 		trace.log("Data from structured data",data);
 		
-		uiData.type = data.Type ? angular.lowercase(data.Type.__text) : uiData.type ;
+		uiData.type =  data.Recipients_asArray ? (data.Recipients_asArray.length > 0 ? "email" : uiData.type) : uiData.type;
+		
 		if(uiData.type == 'email'){
-			uiData.to = data.To ? formatInDataAddress(data.To_asArray) : uiData.to ;
-			uiData.bcc = data.BCC_asArray ? formatInDataAddress(data.BCC_asArray) :uiData.bcc ;
-			uiData.cc =  data.CC_asArray ?formatInDataAddress(data.CC_asArray) : uiData.cc;
-			uiData.subject = data.Subject ? data.Subject.__text :	uiData.subject ;
+			uiData = formatInDataAddress(uiData, data.Recipients_asArray)
+      uiData.subject = data.Subject ? data.Subject.__text ? data.Subject.__text : data.Subject : uiData.subject;	
 		}
 
-    uiData.content =  data.MessageBody?  data.MessageBody.__text :  uiData.content;
+   uiData.content = data.MessageBody ? data.MessageBody.__text ? data.MessageBody.__text : data.MessageBody : uiData.content;
 	
 	  //Reason for using join -
     //xml2JS.js google library is used to converts xml received from server to json in interaction.js
     //this conversion yields MessageBody.__text as an array instead of a string in case of Firefox browser.  
-    if (angular.isArray(uiData.content)) {
-      uiData.content = uiData.content.join("");
-    }
-		
-		uiData.attachments =data.Attachments_asArray ? formatInDataAttachments(data.Attachments_asArray): uiData.attachments;
-
-		if(uiData.bcc ){
-			uiData.showBcc = uiData.bcc.length > 0
-		}
-
-		if(uiData.cc ){
-			uiData.showCc =uiData.cc.length > 0
-		}
-
-   	uiData.fieldMetaData = {
-      "fields": data.FieldMetaData_asArray ? formatInDataFieldsMetaData(data.FieldMetaData_asArray) : []
-    };
-		
+	    if (angular.isArray(uiData.content)) {
+	      uiData.content = uiData.content.join("");
+	    }
+			
+			uiData.attachments = data.Documents_asArray ? formatInDataAttachments(data.Documents_asArray): uiData.attachments;
+	
+			if(uiData.bcc ){
+				uiData.showBcc = uiData.bcc.length > 0
+			}
+	
+			if(uiData.cc ){
+				uiData.showCc =uiData.cc.length > 0
+			}
+	
+	   	uiData.fieldMetaData = {
+	      "fields": data.FieldMetaData_asArray ? formatInDataFieldsMetaData(data.FieldMetaData_asArray) : []
+	    };
+			
 		trace.log("Data after conversion to ui format",uiData);
 		return uiData;
 	}
@@ -329,12 +350,17 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	function formatOutDataAttachments( attachments ){
 		var outAttachments = []; 
 		angular.forEach(attachments,function(data){
-			var templateDocumentId = data.templateDocumentId ?  data.templateDocumentId : data.documentId;
+			var templateDocumentId = data.templateDocumentId ?  data.templateDocumentId : "";
 			outAttachments.push({
-				DocumentId : data.documentId,
-				TemplateDocumentId :templateDocumentId,
+			    OutgoingDocumentID : data.documentId,
+				TemplateID :templateDocumentId,
 				Name : data.name,
-				ConvertToPdf :data.convertToPdf ? true : false 
+				ConvertToPDF :data.convertToPdf ? true : false,
+				IsAttachment : true,
+				Required :false,
+				Accepted :false,
+				RequestedDate : new Date()
+				
 			});
 		});
 		return outAttachments;
@@ -343,34 +369,42 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	/**
 	 * 
 	 */
-	function formatInDataAddress(addresses){
-		var outAddresses = []; 
+	function formatInDataAddress(uiData, addresses){
+		uiData.to = []
+		uiData.bcc = [];
+		uiData.cc = [];
 		angular.forEach(addresses,function(data){
-			if(data.Address && data.Address.length > 1) {
-				var type = "email";
-				if(data.IsFax == "true") {
-					type = "fax";
-				}
-				outAddresses.push( {
-					name : data.DataPath,
-					value : data.Address,
-					type  : type
-				});
+			
+			var add = {
+				name : data.DataPath,
+				value : data.Address,
+				type  : _sdCorrespondenceService.determineAddressType(data.Address, FAX_NUMBER_FORMAT)
 			}
+			
+			if(data.Channel == "EMAIL_TO") {
+				uiData.to.push(add);
+			}
+			else if(data.Channel == "EMAIL_CC") {
+				uiData.cc.push(add);
+			}
+			else if(data.Channel == "EMAIL_BCC") {
+				uiData.bcc.push(add);
+			}
+			
 		});
-		return outAddresses;
+		return uiData;
 	}
 
 	/**
 	 * 
 	 */
-	function formatOutDataAddress(addresses){
+	function formatOutDataAddress(addresses, channel){
 		var outAddresses = []; 
 		angular.forEach(addresses,function(data){
 			outAddresses.push( {
-				DataPath : data.name,
 				Address : data.value,
-				IsFax  : data.type != 'email'
+				DataPath : data.name,
+				Channel : channel
 			})
 		});
 
@@ -385,33 +419,16 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		angular.forEach(attachments,function(data){
 			if(data.Name && data.Name.length > 1) {
 				outAttachments.push({
-					documentId : data.DocumentId,
-					documentId :  data.DocumentId,
-					templateDocumentId : data.TemplateDocumentId,
-					name : data.Name ? data.Name : "sample",
-							convertToPdf:data.ConvertToPdf
-				})
+					documentId :  data.OutgoingDocumentID,
+					templateDocumentId : data.TemplateID,
+					name : data.Name,
+					convertToPdf:data.ConvertToPDF
+				});
 			}
 		});
 		return outAttachments;
 	}
 	
-	 /**
-   * 
-   */
-  function formatOutDataAddress(addresses){
-    var outAddresses = []; 
-    angular.forEach(addresses,function(data){
-      outAddresses.push( {
-        DataPath : data.name,
-        Address : data.value,
-        IsFax  : data.type != 'email'
-      })
-    });
-
-    return outAddresses;
-  }
-
 	/**
 	 * 
 	 */
@@ -503,9 +520,9 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 	 */
 	CorrespondenceCtrl.prototype.loadExistingState = function( uiData ){
 		trace.log("Loading existing structured data.");
-		var inData =   this.interactionProvider.fetchData( "CORRESPONDENCE_REQUEST");
-		if(inData && inData.CORRESPONDENCE_REQUEST) {
-			uiData = prepareUiData(inData.CORRESPONDENCE_REQUEST, uiData);
+		var inData =   this.interactionProvider.fetchData( "CORRESPONDENCE");
+		if(inData && inData.CORRESPONDENCE) {
+			uiData = prepareUiData(inData.CORRESPONDENCE, uiData);
 		}
 		return uiData;
 	};
@@ -678,7 +695,7 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 		var newEntry = {
 				name : val,
 				value : val,
-				type : "email"
+				type : _sdCorrespondenceService.determineAddressType(val, FAX_NUMBER_FORMAT)
 		};
 
 		return newEntry;
@@ -1090,6 +1107,5 @@ define(["html5-views-common/js/lib/base64" ],function(base64){
 			.controller("sdCorrespondenceCtrl", CorrespondenceCtrl);
 		}
 	};
-
 
 });

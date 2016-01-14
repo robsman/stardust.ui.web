@@ -28,6 +28,7 @@
 		this.constants = sdModelerConstants;
 		this.selectedAuths = [];
 		this.element;
+		this.supportsOwner;
 		this.model;
 		this.scope = $scope;
 		this.selectedPermissionsCache = [];
@@ -69,6 +70,11 @@
 		}
 		if (!this.element || this.element != elem) {
 			this.element = elem;
+			if (this.element.type === 'activity') {
+				this.supportsOwner = true;
+			} else {
+				this.supportsOwner = false;
+			}
 			this.model = this.propertiesPanel.getModel();
 			// Reset selected participants and authorizations
 			this.selectedAuths = [];
@@ -187,6 +193,35 @@
 								}));
 			}
 		});
+	};
+
+	/**
+	 * 
+	 */
+	AuthorizationPageController.prototype.addOwnerToPermissions = function() {
+		var self = this;
+		jQuery.each(this.element.permissions, function(_, permission) {
+			if (permission.selected) {
+				self.commandsController.submitCommand(self.commandHelper
+						.createPermissionSetOwnerCommand(self.model.id,
+								self.element.uuid, {
+									permissionID : permission.id
+								}));
+			}
+		});
+	};
+
+	/**
+	 * 
+	 */
+	AuthorizationPageController.prototype.removeOwnerFromPermission = function(permissionId) {
+		var self = this;
+		self.commandsController.submitCommand(self.commandHelper
+				.createPermissionUnsetOwnerCommand(self.model.id,
+						self.element.uuid, {
+							permissionID : permissionId
+						}));
+
 	};
 
 	/**

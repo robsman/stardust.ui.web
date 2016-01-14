@@ -852,11 +852,11 @@ public class ActivityTableHelper implements ICallbackHandler , IUserObjectBuilde
                         .getEndValueAsDataType();
 
                   if (startTime != null)
-                     filter.and(ActivityInstanceQuery.START_TIME.greaterOrEqual(startTime
+                     filter.and(ActivityInstanceQuery.LAST_MODIFICATION_TIME.greaterOrEqual(startTime
                            .getTime()));
 
                   if (endTime != null)
-                     filter.and(ActivityInstanceQuery.START_TIME.lessOrEqual(endTime
+                     filter.and(ActivityInstanceQuery.LAST_MODIFICATION_TIME.lessOrEqual(endTime
                            .getTime()));
                }
                else if ("Criticality".equals(dataId))

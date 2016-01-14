@@ -50,6 +50,18 @@ define(
                filterAccessPoint : function(accessPoints, accessPointId)
                {
                   return filterAccessPoint(accessPoints, accessPointId);
+               },
+               getOutAccessPoints: function(accessPoints)
+               {
+                  return filterAllAccessPointsByDirection(accessPoints, m_constants.OUT_ACCESS_POINT);
+               },
+               getInAccessPoints: function(accessPoints)
+               {
+                  return filterAllAccessPointsByDirection(accessPoints, m_constants.IN_ACCESS_POINT);
+               },
+               addAll: function(inAccessPoints, outAccessPoints)
+               {
+                  return addAll(inAccessPoints, outAccessPoints);
                }
             };
 
@@ -242,5 +254,35 @@ define(
                   }
                }
                return filteredAccessPoints;
+            }
+            
+            /**
+             * 
+             */
+            function filterAllAccessPointsByDirection(allAccessPoints, direction)
+            {
+               var accessPopints = [];
+               for (var n = 0; n < allAccessPoints.length; n++)
+               {
+                  var ap = allAccessPoints[n];
+                  if (ap.direction == direction)
+                  {
+                     accessPopints.push(ap);
+                  }
+               }
+               return accessPopints;
+            }
+            /**
+             * 
+             */
+            function addAll(inAccessPoints, outAccessPoints)
+            {
+               var accessPopints = inAccessPoints;
+               for (var n = 0; n < outAccessPoints.length; n++)
+               {
+                  var ap = outAccessPoints[n];
+                  accessPopints.push(ap);
+               }
+               return accessPopints;
             }
          });

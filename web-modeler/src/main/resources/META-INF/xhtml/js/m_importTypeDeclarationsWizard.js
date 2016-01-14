@@ -261,7 +261,7 @@ define(
                }
 
                this.tree.tableScroll({
-                  height : 170
+                  height : 150
                });
                // TODO - hack
                // The table scroll plugin sets height to auto if the

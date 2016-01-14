@@ -1,7 +1,7 @@
 /*****************************************************************************************
- * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. This program and
+ * Copyright (c) 2011 SunGard CSA LLC and others. All rights reserved. self program and
  * the accompanying materials are made available under the terms of the Eclipse Public
- * License v1.0 which accompanies this distribution, and is available at
+ * License v1.0 which accompanies self distribution, and is available at
  * http://www.eclipse.org/legal/epl-v10.html
  * 
  * Contributors: SunGard CSA LLC - initial API and implementation and/or initial
@@ -16,162 +16,165 @@
 
 	angular.module('bpm-common').directive( 'sdAbortActivityDialog', [ 'sdActivityInstanceService','sdLoggerService', 'sdUtilService', 'sdWorkflowPerspectiveConfigService', AbortActivity]);
 
+	var trace;
 	/**
 	 * 
 	 */
 	function AbortActivity(sdActivityInstanceService, sdLoggerService, sdUtilService, sdWorkflowPerspectiveConfigService){
 
-		return {
+		var directiveDefObject = {
 			restrict: 'A',
-			template: '<div  sd-dialog  '+
-							'sda-show="showDialog" '+
-							'sda-type="confirm" '+
-							'sda-title="{{abortActivityCtrl.i18n(\'views-common-messages.views-common-activity-abortActivity-label\')}}" '+
-							'sda-scope="this" '+
-							'sda-confirm-action-label="{{abortActivityCtrl.abortActivity.isPromptRequired ?  abortActivityCtrl.i18n(\'views-common-messages.common-ok\') : abortActivityCtrl.i18n(\'views-common-messages.common-yes\' )}}" ' +
-							'sda-cancel-action-label="{{abortActivityCtrl.abortActivity.isPromptRequired ?  abortActivityCtrl.i18n(\'views-common-messages.common-close\') : abortActivityCtrl.i18n(\'views-common-messages.common-no\' )}}" ' +
-							'sda-on-open="abortActivityCtrl.onConfirm(res)" '+
-							'sda-template="' +
-							 sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/abortActivityDialogBody.html"> '+
-					 '<\/div> ' +
-					 '<span style="float: left;" ' +
-					 		'sd-dialog="abortActivityCtrl.abortActivityNotification" ' +
-					 		'sda-title="{{abortActivityCtrl.i18n(\'views-common-messages.common-notification-title\')}}" '+
-					 		'sda-type="custom" ' +
-					 		'sda-scope="this" ' +
-					 		'sda-template="' +
-							 sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/abortActivityNotification.html"> ' +
-					 '</span>',
 			scope :{
 				activitiesToAbort : '=sdaActivitiesToAbort',
 				showDialog : '=sdaShowDialog',
 				abortCompleted: '&sdaOnAbortComplete'
 			},
-			controller: [ '$scope', 'sdActivityInstanceService', 'sdLoggerService','sdUtilService','sdWorkflowPerspectiveConfigService', AbortActivityController]
+			template: '<div  sd-dialog  '+
+							'sda-show="showDialog" '+
+							'sda-type="custom" '+
+							'sda-title="{{abortActivityCtrl.i18n(\'views-common-messages.views-common-activity-abortActivity-label\')}}" '+
+							'sda-scope="this" '+
+							'sda-on-open="abortActivityCtrl.onOpenDialog(res)"' +
+							'sda-template="' +
+							 sdUtilService.getBaseUrl() + 'plugins/html5-process-portal/scripts/directives/partials/abortActivityDialogBody.html"> '+
+					 '<\/div> ',
+			
+			controller: AbortActivityController
 		};
-	};
 
 	/**
 	 * 
 	 */
-
-	var trace = null;
-	var AbortActivityController = function( $scope, sdActivityInstanceService, sdLoggerService, sdUtilService, sdWorkflowPerspectiveConfigService){
+   function AbortActivityController($attrs, $scope, $element){
 
 	    var self = this;
 	    trace = sdLoggerService.getLogger('bpm-common.sdAbortActivityDialog');
-	    this.intialize( $scope, sdActivityInstanceService, sdWorkflowPerspectiveConfigService);
-
-	    /**
-	     * 
-	     */
-	    AbortActivityController.prototype.abortCompleted = function (){
-		$scope.abortCompleted();
-	    };
-	    /**
-	     * 
-	     */
-	    AbortActivityController.prototype.hideDialog = function (){
-		$scope.showDialog = false;
-	    };
-	    /**
-	     * 
-	     */
-	    AbortActivityController.prototype.openDialog = function (){
-		$scope.showDialog = true;
-	    };
-	    /**
-	     * 
-	     */
-	    AbortActivityController.prototype.getActvities = function (){
-		this.abortActivity.activities = $scope.activitiesToAbort;
-	    };
-
-	    /**
-	     * 
-	     */
-	    AbortActivityController.prototype.showNotification = function (){
-		self.abortActivityNotification.open();
-	    };
-
-	    $scope.abortActivityCtrl = this;
-	}
-
-	/**
-	 * 
-	 */
-	AbortActivityController.prototype.intialize = function ( $scope, sdActivityInstanceService, sdWorkflowPerspectiveConfigService){
-
-	    this.i18n = $scope.$parent.i18n;
-	    this.sdActivityInstanceService = sdActivityInstanceService;
-	    this.notification = {
-		    result : null,
-		    error : false
-	    };
-	    var abortScope =  sdWorkflowPerspectiveConfigService.getAbortActivityScope();
-	    var isPromptRequired = false;
-	    if(abortScope == ''){
-		isPromptRequired = true;
-		this.configuredScope = 'SubHierarchy'; 
-	    }else{
-		this.configuredScope = abortScope;
-	    } 
 	    
+	   intialize();
 	    
-	    this.abortActivity = {
-		    scope : abortScope,
-		    activities : [],
-		    isPromptRequired : isPromptRequired
-	    };
-	   
-	};
+	    /**
+		 * 
+		 */
+	   function intialize(){
+		    self.abortCompleted = $scope.abortCompleted;
+			self.onOpen = $scope.onOpen;
 
-	/**
-	 * 
-	 */
-	AbortActivityController.prototype.abortActivities = function (){
-	    this.getActvities();
-	    trace.debug("Aborting activities with following params ",this.abortActivity.scope, this.abortActivity.activities);
-	    return this.sdActivityInstanceService.abortActivities( this.abortActivity.scope, this.abortActivity.activities);
-	};
-	/**
-	 * 
-	 */
-	AbortActivityController.prototype.resetValues = function (){
-	    this.abortActivity.scope = this.configuredScope;
-	    this.notification.result = {};
-	    this.notification.error = false;
-	};
+		    self.i18n = $scope.$parent.i18n;
+		    self.notification = {
+			    result : null,
+			    error : false
+		    };
+		    var abortScope =  sdWorkflowPerspectiveConfigService.getAbortActivityScope();
+		    var isPromptRequired = false;
+		    if(abortScope == ''){
+			isPromptRequired = true;
+			self.configuredScope = 'SubHierarchy'; 
+		    }else{
+			self.configuredScope = abortScope;
+		    } 
+		    
+		    
+		    self.abortActivity = {
+			    scope : abortScope,
+			    activities : [],
+			    isPromptRequired : isPromptRequired
+		    };
+		    
+		    
+		    self.onOpenDialog = onOpenDialog;
+		    self.closeThisDialog = closeThisDialog;
+		    self.resetValues = resetValues;
+		    self.abortActivities = abortActivities;
+		    self.confirm = confirm;
+		    self.abortCompleted = abortCompleted;
+		}
+	    
+	   /**
+	    * 
+	    */
+		function onOpenDialog(result) {
+	      self.resetValues();
+		  if (angular.isDefined(self.onOpen)) {
+				self.onOpen();
+			}
+		}
 
-	/**
-	 * 
-	 */
-	AbortActivityController.prototype.onConfirm = function(res) {
-	    var self = this;
-	    var promise = res.promise;
+		/**
+		 * 
+		 */
+		function closeThisDialog(scope) {
+			scope.closeThisDialog();
+		}
 
-	    this.resetValues();
-
-	    promise.then(function(data) {
-		self.abortActivities().then(function(data) {
-		    // success
-		    self.showNotification();
-		    self.abortCompleted();
-		    self.notification.result = data;
-		    if (self.notification.result.failure.length > 0) {
-			trace.debug("Failure in aborting activities ", self.notification.result.failure);
-		    } else {
-			trace.debug("Activities aborted sucessfully.");
-		    }
-
-		}, function(data) {
-		    // Failure
+		
+		 /**
+		 * 
+		 */
+		function resetValues(){
+		    self.abortActivity.scope = self.configuredScope;
 		    self.notification.result = {};
-		    self.notification.error = true;
-		    self.showNotification();
-		    trace.error("Error in aborting activities.");
-		});
-	    })
-	};
+		    self.notification.error = false;
+		};
 
+		
+		 /**
+	     * 
+	     */
+		function abortCompleted(scope){
+			// passing the notification to the notification dialog 
+		    scope.abortCompleted({notification:self.notification});
+	    };
+		
+		/**
+		 * 
+		 */
+		function abortActivities(activitiesToAbort){
+			    self.abortActivity.activities = activitiesToAbort;
+			    trace.debug("Aborting activities with following params ",self.abortActivity.scope, self.abortActivity.activities);
+			    return sdActivityInstanceService.abortActivities( self.abortActivity.scope, self.abortActivity.activities);
+			};
+		
+		/**
+		 * 
+		 */
+		function confirm(scope) {
+			self.abortActivities(scope.activitiesToAbort).then(function(data) {
+			    self.notification.result = data;
+			    if (self.notification.result.failure.length > 0) {
+				trace.debug("Failure in aborting activities ", self.notification.result.failure);
+			    } else {
+				trace.debug("Activities aborted sucessfully.");
+			    }
+			    self.abortCompleted(scope);
+			    
+			    self.closeThisDialog(scope);
+			    
+			}, function(data) {
+			    self.notification.result = {};
+			    self.notification.error = true;
+			    self.abortCompleted(scope);
+			    self.closeThisDialog(scope);
+			    trace.error("Error in aborting activities.");
+			});
+		}
+		
+	   
+	    /**
+	     * 
+	     */
+		function hideDialog(){
+			$scope.showDialog = false;
+	    };
+	    
+	    /**
+	     * 
+	     */
+	    function openDialog(){
+	    	$scope.showDialog = true;
+	    };
+	    
+	    $scope.abortActivityCtrl = self;
+	}
+       return directiveDefObject;
+	}
 })();

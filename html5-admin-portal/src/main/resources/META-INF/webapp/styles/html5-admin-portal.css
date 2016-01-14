@@ -1,12 +1,5 @@
-/* QA MANAGEMENT VIEW*/
-
-.qa-management-emptyCell-warning {
-	color: orange;
-	font-size: 2.27em;
-}
-
 input.search {
-	padding-left:20px;
+	height:20px;
 }
 
 .search-box-icon {
@@ -15,38 +8,20 @@ input.search {
 	margin-top: 6px;
 }
 
+input.search:valid,
+input.search:focus{
+	background-image:none;
+}
+
+input.search:invalid{
+	box-shadow: none !important;
+	color:#000;
+}
+
+
 /* Password Management */
 .password-mgmt-text {
 	width: 35px;
-}
-
-.clearing
-{
-	clear: both;
-	height: 10px;
-}
-
-.msgFatal
-{
-	color: red;
-}
-
-.msgError
-{
-	color: red !important;
-	font-weight: normal;
-}
-
-.msgWarning
-{
-	color: orange !important;
-	font-weight: normal;
-}	
-
-.msgInfo
-{
-	color: blue !important;
-	font-weight: normal;
 }
 
 .cloneParticipantSelector .sd-participant-selector .sd-ac-container {
@@ -87,11 +62,14 @@ auth tree implementation. Therefore, we have added
 custom styles below to handle these cases.
 ---------------------------------------------------------
 */
-
+.sd-tree{
+	overflow:auto;
+}
 .sd-tree .title-section,
 .sd-tree a
 {
 	position:relative;
+	white-space:nowrap;
 }
 
 .sd-tree li.match-custom > ul > li > a.tree-node > div > div.dd-header  .js-filterable,

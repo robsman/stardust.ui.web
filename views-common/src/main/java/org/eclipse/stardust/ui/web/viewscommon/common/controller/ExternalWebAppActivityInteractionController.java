@@ -379,8 +379,9 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
          {
             // out data mapping was already performed
             // validate data?
-            Map<String, Serializable> data = (Map<String, Serializable>) getOutDataValues(ai);
-            RepositoryUtility.updateCorrespondenceOutFolder(data, ai);
+            Map<String, Serializable> correspondenceData = new HashMap<String, Serializable>();
+            getOutDataValues(ai, correspondenceData);
+            RepositoryUtility.updateCorrespondenceOutFolder(correspondenceData, ai);
                         
             return true;
          }
@@ -398,8 +399,22 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
          return true;
       }
    }
+   
+   /**
+    *
+    */
+   public Map< ? , ? > getOutDataValues(ActivityInstance ai)
+   {
+      return getOutDataValues(ai, null);
+   }
 
-   public Map<?, ?> getOutDataValues(ActivityInstance ai)
+   /**
+    *  Return outdata, also populated the correspondence data separately. 
+    * @param ai
+    * @param correspondenceOutData
+    * @return
+    */
+   private Map<?, ?> getOutDataValues(ActivityInstance ai, Map<String, Serializable> correspondenceOutData)
    {
       InteractionRegistry registry = (InteractionRegistry) ManagedBeanUtils.getManagedBean(InteractionRegistry.BEAN_ID);
 
@@ -416,6 +431,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
             {
                // performing client side OUT mappings
                outData = newHashMap();
+               
                @SuppressWarnings("unchecked")
                List<DataMapping> allOutDataMappings = (List<DataMapping>) interaction.getDefinition().getAllOutDataMappings();
                for (DataMapping outMapping : allOutDataMappings)
@@ -429,6 +445,14 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
                               interaction.getModel(), ai.getActivity(), outParam, outMapping);
 
                         outData.put(outMapping.getId(), (Serializable) outValue);
+ 
+                        // retain correspondence data
+                        if (correspondenceOutData != null
+                              && RepositoryUtility.CORRESPONDENCE_REQUEST.equals(outMapping.getApplicationAccessPoint()
+                                    .getId()))
+                        {
+                           correspondenceOutData.put(RepositoryUtility.CORRESPONDENCE_REQUEST, (Serializable) outValue);
+                        }
                      }
                      catch (Exception e)
                      {
@@ -452,7 +476,7 @@ public class ExternalWebAppActivityInteractionController implements IActivityInt
 
       return outData;
    }
-
+   
    @Override
    public boolean unregisterInteraction(ActivityInstance ai)
    {

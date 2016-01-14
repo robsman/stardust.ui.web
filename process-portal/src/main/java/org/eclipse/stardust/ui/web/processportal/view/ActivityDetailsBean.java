@@ -1900,7 +1900,16 @@ public class ActivityDetailsBean extends UIComponentBean
       WorkflowActivityCompletionLog completionLog = PPUtils.complete(interactionController.getContextId(ai), outData,
             CompletionOptions.ACTIVATE_NEXT, ai);
 
-      if (completionLog.isCloseViewAndProceed())
+      ContinueWithNextActivity(completionLog);
+      
+   }
+   
+   /**
+    * @param completionLog
+    */
+   public void ContinueWithNextActivity(WorkflowActivityCompletionLog completionLog)
+   {
+      if (completionLog != null && completionLog.isCloseViewAndProceed())
       {
          // There are various scenarios in which this is may have been done
          // Activity is completed, so make final attempt so that if it's there is will be unregistered! 

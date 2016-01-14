@@ -8,14 +8,6 @@
  * Contributors:
  *     SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-.form-lable {
-	color: #708090;
-	padding: 3px 5px 3px 0;
-	white-space: nowrap;
-	font-weight: normal;
-	font-size: 1em;
-}
-
 .correspondence_container {
 	width: 100%;
 	align: center;

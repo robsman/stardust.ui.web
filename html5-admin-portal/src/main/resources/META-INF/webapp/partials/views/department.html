@@ -9,21 +9,21 @@
 				<td></td>
 			</tr>
 			<tr>
-				<td><label class="form-lable">{{sdI18n('admin-portal-messages.views.participantMgmt.modifyDepartment.organization.label')
+				<td><label class="label-item">{{sdI18n('admin-portal-messages.views.participantMgmt.modifyDepartment.organization.label')
 						+ sdI18n('admin-portal-messages.common.colon')}}</label></td>
 				<td><div>
-						<span>{{ctrl.department.organization}}<span>
+						<span class="value-item">{{ctrl.department.organization}}</span>
 					</div></td>
 			</tr>
 			<tr>
-				<td><label class="form-lable">{{sdI18n('admin-portal-messages.views.participantMgmt.modifyDepartment.parentDepartment.label')
+				<td><label class="label-item">{{sdI18n('admin-portal-messages.views.participantMgmt.modifyDepartment.parentDepartment.label')
 						+ sdI18n('admin-portal-messages.common.colon')}}</label></td>
 				<td><div>
-						<span>{{ctrl.department.parentDepartmentName}}</span>
+						<span class="value-item">{{ctrl.department.parentDepartmentName}}</span>
 					</div></td>
 			</tr>
 			<tr>
-				<td><label class="form-lable">*{{sdI18n('admin-portal-messages.views.common.id.label')
+				<td><label class="label-item">*{{sdI18n('admin-portal-messages.views.common.id.label')
 						+ sdI18n('admin-portal-messages.common.colon')}}</label></td>
 				<td><div>
 						<input type="text" name="account" ng-model="ctrl.department.id"
@@ -36,7 +36,7 @@
 					</div></td>
 			</tr>
 			<tr>
-				<td><label class="form-lable">*{{sdI18n('admin-portal-messages.views.common.name.label')
+				<td><label class="label-item">*{{sdI18n('admin-portal-messages.views.common.name.label')
 						+ sdI18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><div>
 						<input type="text" name="name" ng-model='ctrl.department.name'
@@ -48,7 +48,7 @@
 					</div></td>
 			</tr>
 			<tr>
-				<td><label class="form-lable">{{sdI18n('admin-portal-messages.views-createUser-basicPanel-desc-label')
+				<td><label class="label-item">{{sdI18n('admin-portal-messages.views-createUser-basicPanel-desc-label')
 						+ sdI18n('admin-portal-messages.common-colon')}}</label></td>
 				<td><textarea cols="20" rows="5"
 						ng-model='ctrl.department.description'

@@ -300,6 +300,7 @@
 	        //======================================================================
 	        //Expand a node and that nodes parents
 	        //Param- nodeId: Id as specified through the sdTreeNode sdaNodeId attr
+	        //Will expand parent nodes as well 
 	        //======================================================================
 	        controller.api.expandNode = function(nodeId){
 	          var nodeScope= controller.childNodes[nodeId],
@@ -565,6 +566,7 @@
 	
 	        var build,
 	        	dragdropStr="",
+	        	lazyCompileString = "ng-show='isVisible'",
 	            menuStr="";
 	            
 	        if(attrs.sdaMenuItems){
@@ -589,6 +591,9 @@
 	        	dragdropStr +="DROP_EXPR_TARGET";
 	        };
 	        
+	        if(attrs.sdaLazyCompile && attrs.sdaLazyCompile.toUpperCase()==='TRUE'){
+	        	lazyCompileString = "ng-if='isVisible'";
+	        }
 	        
 	        //TODO: Factor out as many watches as you can from the template.
 	        //TODO: isLeaf needs to work.
@@ -612,7 +617,7 @@
 	          '<input ng-keypress="keyMonitor($event)" ng-blur="invokeCallback(\'node-rename-commit\',$event,this)" ',
 	          'ng-show="allowEdit" value="{{' + attrs.sdaLabel +'}}" type="text"/>',
 	          "</a><attach/></div>",
-	          "<div ng-show='isVisible'>",
+	          "<div " + lazyCompileString +  " >",
 	           elem.html(),
 	          "</div>"
 	        ];

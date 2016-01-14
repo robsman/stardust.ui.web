@@ -25,6 +25,22 @@ Supported fonts we wrap for our portal icon (pi-) classes
 }
 
 
+/*Copied from html5-common.css to be used in iframes*/
+.msg-error {
+	color: red !important;
+	padding-left: 2px;
+}
+
+.msg-success {
+	color: green !important;
+	padding-left: 2px;
+}
+
+.msg-warn {
+	color: #D7AD01 !important;
+	padding-left: 2px;
+}
+
 /*base class for all portal icons*/
 .pi{
 	display: inline-block;
@@ -172,7 +188,7 @@ portal icon badging stem, duped from starclipse
 }
 
 /*Elements (other than i) designed to incorporate pi*/
-button.pi{
+button.pi, .pi a{
 	background:transparent;
 	border:none;
 	cursor:pointer;
@@ -180,11 +196,11 @@ button.pi{
 	padding:3px;
 }
 
-button.pi:hover, button .pi:hover{
+button.pi:hover, button .pi:hover, .pi a{
 	color:#906C37;
 }
 
-button.pi[disabled='disabled']:hover, button[disabled='disabled'] .pi:hover{
+button.pi[disabled='disabled']:hover, button[disabled='disabled'] .pi:hover, .pi a{
 	color:#A69A88;
 }
 
@@ -288,27 +304,6 @@ Utility classes for portal icons
 /* Add this class where iceCmdLnk is used */
 .pi-cmdLnk:hover, span.pi:hover {
 	text-decoration: none !important;
-}
-
-
-/*
- primary meta colors (should probably be moved out of pi to a more ubiquitous selector)
------------------------------------------------------------
-*/
-.pi.pi-neutral{
-	color:#FFF;
-}
-
-.pi.pi-success:before{
-	color:green;
-}
-
-.pi.pi-warning:before{
-	color:orange;
-}
-
-.pi.pi-danger:before{
-	color:red;
 }
 
 /* Perspective Icons */
@@ -626,6 +621,7 @@ Icon implementations
 	content: "\f0c1"; /* fa-link */
 }
 
+i.pi-case:before,
 .pi-email:before,
 span.pi-case:before{
 	font-family: "FontAwesome";
@@ -1325,7 +1321,7 @@ span.pi-case:before{
 	content:'\f074'; /* fa-reverse */
 }
 
-.pi-deploy-failure:before
+.pi-deploy-failure:before,
 .pi-dialog-error:before{
 	font-family:"FontAwesome";
 	content:'\f057'; /* fa-times-circle */

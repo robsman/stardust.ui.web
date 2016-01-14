@@ -14,6 +14,11 @@
 
 (function() {
 	'use strict';
+	
+	
+	var DEFAULTS = {
+			FAX_FORMAT :  new RegExp("^\\(?([0-9]{3})\\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$")
+	}
 
 	angular.module('bpm-common.services').provider('sdUtilService', function() {
 		this.$get = [ '$rootScope', '$parse', '$q', '$http', 'sdLoggerService', function($rootScope, $parse, $q, $http, sdLoggerService) {
@@ -683,5 +688,19 @@
 			  }
 			  return value;
 			}
+	 	
+		/**
+		 *  Checks is a number is fax number
+		 */
+	 	UtilService.prototype.isFaxNumber = function (value,customFormat) {
+	 		
+	 		var fax_format = DEFAULTS.FAX_FORMAT;
+	 		
+	 		if(customFormat){
+	 			fax_format = customFormat;
+	 		}
+	 		return fax_format.test(value); 
+		}
+	 	
 	};
 })();

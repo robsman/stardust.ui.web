@@ -23,13 +23,13 @@
 		<link  rel="stylesheet"
 			href="#{facesContext.externalContext.requestContextPath}/plugins/html5-common/styles/portal-icons.css" > </link>
 		
-		<link rel="stylesheet" href="#{facesContext.externalContext.requestContextPath}/plugins/modern-skin/modern.css"></link>
-		<link rel="stylesheet" href="#{facesContext.externalContext.requestContextPath}/plugins/modern-skin/modern.font.icons.css"></link>
-	
 		<!-- stardust-ui-form-jsf.css and stardust-ui-form-jsf-override.css have been moved from activityPanel.xhtml
 			to portalHead.xhtml, as the dymanic / delayed loading sometimes caused problems in page width calculation.  -->
 		<ice:outputStyle href="/plugins/stardust-ui-form-jsf/public/css/stardust-ui-form-jsf.css" />
 		<ice:outputStyle href="/plugins/processportal/css/stardust-ui-form-jsf-override.css" />
+
+		<link rel="stylesheet" href="#{facesContext.externalContext.requestContextPath}/plugins/modern-skin/modern.css"></link>
+		<link rel="stylesheet" href="#{facesContext.externalContext.requestContextPath}/plugins/modern-skin/modern.font.icons.css"></link>
 	</c:if>
 
 	<c:if test="#{type eq 'ALL' or type eq 'ONLY_SKIN'}">

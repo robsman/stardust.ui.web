@@ -64,7 +64,7 @@
 					+ ' sda-type="alert"'
 					+ ' sda-scope="this">'
 					+ '		<span style="padding-right: 11px;">'
-					+ '			<i class="pi pi-lg pi-dialog-warning pi-danger"></i>'
+					+ '			<i class="pi pi-lg pi-dialog-warning msg-error"></i>'
 					+ '		</span>'
 					+ ' 	<span>{{createCaseController.notificationMessage.message}}</span>'
 					+ '</span>',

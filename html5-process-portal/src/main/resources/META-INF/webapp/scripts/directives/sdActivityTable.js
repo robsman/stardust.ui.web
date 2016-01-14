@@ -444,7 +444,7 @@
 	     */
 	    self.openAbortPopover = function(event, rowItem) {
 	    	var selectedItems = [];
-	    	if (angular.isDefined(rowItem)) {
+	    	if (angular.isDefined(rowItem) && rowItem !=null) {
 	    		selectedItems = [ rowItem ];
 	    	} else {
 	    		selectedItems = self.dataTable.getSelection();
@@ -659,6 +659,14 @@
 	    this.dataTable.refresh(true);
 	};
 
+	ActivityTableCompiler.prototype.showNotificationAndRefresh = function(notifications){
+		this.notification = notifications;
+		this.showNotificationDialog = true;
+		if(!sdUtilService.isEmpty(this.notification.result)){
+			this.dataTable.refresh(true);
+		}
+		
+	}
 	/*
 	 * 
 	 */
