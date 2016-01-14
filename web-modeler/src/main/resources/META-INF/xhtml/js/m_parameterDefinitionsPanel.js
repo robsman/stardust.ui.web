@@ -449,6 +449,9 @@ define(
 
 					this.initializeParameterDefinitionsTable();
 					this.selectCurrentParameterDefinition();
+					if(this.selectedRowIndex < 0) {
+						this.resetParameterDefinitionFields();
+					}
 					this.populateParameterDefinitionFields();
 				};
 				
@@ -1115,10 +1118,26 @@ define(
 
 					this.selectedRowIndex = this.parameterDefinitions.length - 1;
 					this.currentFocusInput = this.parameterDefinitionNameInput;
-
+					
 					this.submitChanges();
 				};
 				
+				/**
+				 * 
+				 */
+				ParameterDefinitionsPanel.prototype.resetParameterDefinitionFields = function() {
+					var tempParameterDefinition = {
+							name : "",
+							direction : "IN",
+							dataFullId : null,
+							dataPath : null,
+							primitiveDataType : "boolean"
+						};
+					
+					this.parameterDefinitionNameInput.val(tempParameterDefinition.name);
+					this.parameterDefinitionDirectionSelect.val(tempParameterDefinition.direction);
+					this.dataTypeSelector.setDataType(tempParameterDefinition);
+				}
 				/**
 				 * 
 				 */
