@@ -17,34 +17,29 @@
 
 	angular.module("bcc-ui").controller(
 			'sdProcessResourceMgmtCtrl',
-			['$q', '$filter', 'sdProcessResourceMgmtService', 'sdLoggerService', 'sdViewUtilService',
-					'sdCommonViewUtilService', 'sdLoggedInUserService', 'sdPreferenceService',
-					'sdDataTableHelperService', ProcessResourceMgmtCtrl]);
+			['$q','sdProcessResourceMgmtService', 'sdLoggerService', 'sdViewUtilService',
+					'sdCommonViewUtilService', 'sdLoggedInUserService', 'sdPreferenceService', ProcessResourceMgmtCtrl]);
 
 	var _q;
-	var _filter;
 	var _sdProcessResourceMgmtService;
 	var _sdViewUtilService;
 	var trace;
 	var _sdCommonViewUtilService
 	var _sdLoggedInUserService;
 	var _sdPreferenceService;
-	var _sdDataTableHelperService;
 
 	/**
 	 * 
 	 */
-	function ProcessResourceMgmtCtrl($q, $filter, sdProcessResourceMgmtService, sdLoggerService, sdViewUtilService,
-			sdCommonViewUtilService, sdLoggedInUserService, sdPreferenceService, sdDataTableHelperService) {
+	function ProcessResourceMgmtCtrl($q, sdProcessResourceMgmtService, sdLoggerService, sdViewUtilService,
+			sdCommonViewUtilService, sdLoggedInUserService, sdPreferenceService) {
 		trace = sdLoggerService.getLogger('bcc-ui.sdProcessResourceMgmtCtrl');
 		_q = $q;
-		_filter = $filter;
 		_sdProcessResourceMgmtService = sdProcessResourceMgmtService;
 		_sdViewUtilService = sdViewUtilService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
 		_sdLoggedInUserService = sdLoggedInUserService;
 		_sdPreferenceService = sdPreferenceService;
-		_sdDataTableHelperService = sdDataTableHelperService;
 
 		this.rolesTable = null;
 		this.usersTable = null;
@@ -64,8 +59,8 @@
 			_sdProcessResourceMgmtService.getProcessResourceUsers().then(function(data) {
 				self.processResourceUserList = data.processResourceUserList;
 				  if(self.rolesTable != undefined && self.usersTable != undefined){
-					  self.rolesTable.refresh();
-					  self.usersTable.refresh();
+					  self.rolesTable.refresh(true);
+					  self.usersTable.refresh(true);
 				  }else{
 					  self.showRolesTable = true;
 					  self.showUsersTable = true;

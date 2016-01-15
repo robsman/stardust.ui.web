@@ -18,7 +18,7 @@
 	angular.module("bcc-ui").controller(
 			'sdRoleManagerDetailViewCtrl',
 			['$q', '$scope', '$filter', '$element', 'sdRoleManagerDetailService', 'sdLoggerService',
-					'sdViewUtilService', 'sdLoggedInUserService', 'sdPreferenceService', 'sdDataTableHelperService',
+					'sdViewUtilService', 'sdLoggedInUserService', 'sdPreferenceService',
 					RoleManagerDetailViewCtrl]);
 	var _q;
 	var _scope;
@@ -29,13 +29,12 @@
 	var trace;
 	var _sdLoggedInUserService;
 	var _sdPreferenceService;
-	var _sdDataTableHelperService;
 
 	/*
 	 * 
 	 */
 	function RoleManagerDetailViewCtrl($q, $scope, $filter, $element, sdRoleManagerDetailService, sdLoggerService,
-			sdViewUtilService, sdLoggedInUserService, sdPreferenceService, sdDataTableHelperService) {
+			sdViewUtilService, sdLoggedInUserService, sdPreferenceService) {
 		trace = sdLoggerService.getLogger('bcc-ui.sdRoleManagerDetailViewCtrl');
 		_q = $q;
 		_scope = $scope;
@@ -45,7 +44,6 @@
 		_sdViewUtilService = sdViewUtilService;
 		_sdLoggedInUserService = sdLoggedInUserService;
 		_sdPreferenceService = sdPreferenceService;
-		_sdDataTableHelperService = sdDataTableHelperService;
 
 		this.columnSelector = _sdLoggedInUserService.getUserInfo().isAdministrator ? 'admin' : true;
 		this.exportFileNameForAssignedUsers = "AssignedUsers";
@@ -85,8 +83,8 @@
 				function(data) {
 					self.roleManagerDetails = data;
 					if(self.assignedUsersTable != undefined && self.assignableUsersTable != undefined){
-						self.assignedUsersTable.refresh();
-						self.assignableUsersTable.refresh();
+						self.assignedUsersTable.refresh(true);
+						self.assignableUsersTable.refresh(true);
 					}else{
 						self.table1 = true;
 						self.table2 = true;
