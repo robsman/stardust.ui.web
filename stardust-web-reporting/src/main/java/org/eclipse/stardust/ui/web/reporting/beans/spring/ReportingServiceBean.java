@@ -427,7 +427,7 @@ public class ReportingServiceBean
     */
    public String getLanguage(HttpServletRequest httpRequest)
    {
-      StringTokenizer tok = new StringTokenizer(httpRequest.getHeader("Accept-language"), ",");
+      StringTokenizer tok = new StringTokenizer(httpRequest.getHeader("Accept-Language"), ",");
       if (tok.hasMoreTokens())
       {
          return LanguageUtil.getLocale(tok.nextToken());
