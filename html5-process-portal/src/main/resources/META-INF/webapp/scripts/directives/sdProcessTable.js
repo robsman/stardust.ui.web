@@ -232,9 +232,9 @@
 				this.dataTable.refresh(true);
 			};
 
-		/*	*//**
+			/**
 			 * 
-			 *//*
+			 */
 			ProcessTableCompiler.prototype.showNotificationAndRefresh = function(notifications){
 				this.notification = notifications;
 				this.showNotificationDialog = true;
@@ -244,9 +244,9 @@
 				
 			}
 
-			/**
+/*			*//**
 			 * 
-			 */
+			 *//*
 			ProcessTableCompiler.prototype.preferenceDelegate = function(prefInfo) {
 				var preferenceStore = sdPreferenceService.getStore(prefInfo.scope, this.processTablePrefModule,
 						this.processTablePrefId);
