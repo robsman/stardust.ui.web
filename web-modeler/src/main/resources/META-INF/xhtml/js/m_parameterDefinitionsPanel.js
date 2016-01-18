@@ -1133,11 +1133,17 @@ define(
 							dataPath : null,
 							primitiveDataType : "boolean"
 						};
-					
-					this.parameterDefinitionNameInput.val(tempParameterDefinition.name);
-					this.parameterDefinitionDirectionSelect.val(tempParameterDefinition.direction);
-					this.dataTypeSelector.setDataType(tempParameterDefinition);
-				}
+					if(this.parameterDefinitionNameInput) {
+						this.parameterDefinitionNameInput.val(tempParameterDefinition.name);	
+					}
+					if(this.parameterDefinitionDirectionSelect) {
+						this.parameterDefinitionDirectionSelect.val(tempParameterDefinition.direction);	
+					}
+					if(this.dataTypeSelector) {
+						this.dataTypeSelector.setDataType(tempParameterDefinition);	
+					}
+				};
+				
 				/**
 				 * 
 				 */
