@@ -15,10 +15,10 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.error.PublicException;
+import org.eclipse.stardust.model.xpdl.builder.exception.ModelerException;
 import org.eclipse.stardust.model.xpdl.builder.session.EditingSession;
 import org.eclipse.stardust.model.xpdl.builder.session.Modification;
 import org.eclipse.stardust.ui.web.modeler.common.BadRequestException;
-import org.eclipse.stardust.ui.web.modeler.common.exception.ModelerException;
 import org.eclipse.stardust.ui.web.modeler.edit.ModelingSession;
 import org.eclipse.stardust.ui.web.modeler.edit.jto.ChangeDescriptionJto;
 import org.eclipse.stardust.ui.web.modeler.edit.jto.CommandJto;

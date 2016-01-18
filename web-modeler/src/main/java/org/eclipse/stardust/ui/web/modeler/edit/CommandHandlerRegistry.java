@@ -15,7 +15,7 @@ import com.google.gson.JsonObject;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.modeler.common.exception.ModelerException;
+import org.eclipse.stardust.model.xpdl.builder.exception.ModelerException;
 
 public class CommandHandlerRegistry
 {
