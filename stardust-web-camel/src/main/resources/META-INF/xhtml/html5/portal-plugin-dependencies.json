@@ -1,0 +1,9 @@
+{
+	"portal-plugins" : ["html5-views-common"],
+	
+	"libs" : [],
+
+	"scripts" : [],
+
+	"styles" : []
+}

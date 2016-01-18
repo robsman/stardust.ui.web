@@ -101,6 +101,19 @@
 			window.postMessage(JSON.stringify(message), "*");
 		};
 		
+		/**
+		 * This method will return the count of all open view.
+		 */
+		ViewUtilService.prototype.getOpenViewCount = function(){
+			return BridgeUtils.View.getOpenViewCount();
+		}
+		  
+		/**
+		 * This method will log out.
+		 */
+		ViewUtilService.prototype.logout = function(){
+			return BridgeUtils.logout(true);
+		}
 		
 		/*
 		 * 

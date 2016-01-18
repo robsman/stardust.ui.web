@@ -1,0 +1,48 @@
+<div ng-controller="sdAuditTrailCtrl as ctrl">
+	<sd-collapsible-panel sda-aid="auto-ADM-actionsPanel"
+		sda-title="{{i18n('admin-portal-messages.launchPanels-ippAdmAdministrativeActions-title')}}">
+			<div style="line-height: 15px;">
+				<a href="#" ng-click="ctrl.openRecoveryDialog();"
+					data-placement="right" aid="auto-ADM-recovery">
+					<span>{{i18n('admin-portal-messages.launchPanels-ippAdmAdministrativeActions-recovery-title')}} &raquo;</span>
+				</a>
+			</div>
+			<div style="line-height: 15px;">
+				<a href="#" ng-click="ctrl.openCleanupATDConfirm();"
+					data-placement="right" aid="auto-ADM-clAuditTrailDB">
+					<span>{{i18n('admin-portal-messages.launchPanels-ippAdmAdministrativeActions-catd-title')}} &raquo;</span>
+				</a>
+			</div>
+			<div style="line-height: 15px;">
+				<a href="#" ng-click="ctrl.openCleanupATMDConfirm();"
+					data-placement="right" aid="auto-ADM-clAuditTrailModelDB">
+					<span>{{i18n('admin-portal-messages.launchPanels-ippAdmAdministrativeActions-catmd-title')}} &raquo;</span>
+				</a>
+			</div>
+	</sd-collapsible-panel>
+
+	<div sd-dialog sda-modal="true"
+			sda-show="ctrl.showCleanupATDConfirmation"
+			sda-type="confirm"
+			sda-title="{{i18n('admin-portal-messages.launchPanels-ippAdmAdministrativeActions-catd-title')}}"
+			sda-scope="this"
+			sda-confirm-action-label="{{i18n('admin-portal-messages.common-yes')}}"	
+		    sda-cancel-action-label="{{i18n('admin-portal-messages.common-no')}}"
+			sda-template="plugins/html5-admin-portal/partials/launchpanel/cleanATDConfirmation.html"
+			sda-on-confirm="ctrl.cleanupATD(res)"
+			sda-width="450px"
+			sda-aid-prefix="ADM-DBM-CleanupATDConfirmationDlg">
+	</div>
+	<div sd-dialog sda-modal="true"
+			sda-show="ctrl.showCleanupATMDConfirmation"
+			sda-type="confirm"
+			sda-title="{{i18n('admin-portal-messages.launchPanels-ippAdmAdministrativeActions-catmd-title')}}"
+			sda-scope="this"
+			sda-confirm-action-label="{{i18n('admin-portal-messages.common-yes')}}"	
+		    sda-cancel-action-label="{{i18n('admin-portal-messages.common-no')}}"
+			sda-template="plugins/html5-admin-portal/partials/launchpanel/cleanATMDConfirmation.html"
+			sda-on-confirm="ctrl.cleanupATMD(res)"
+			sda-width="450px"
+			sda-aid-prefix="ADM-DBM-CleanupATMDConfirmationDlg">
+	</div>
+</div>

@@ -568,6 +568,23 @@ if (!window["BridgeUtils"].View) {
 			}
 			BridgeUtils.log("BridgeUtils.View Destroyed Successfully");
 		}
+		
+		
+        /*
+        *
+        */
+        function getOpenViewCount() {
+              var count = 0; 
+              BridgeUtils.runInAngularContext(function($scope) {
+                    var viewPanels = $scope.viewPanels();
+                    if (viewPanels) {
+                          count = viewPanels.length;
+                    }
+              });
+              
+              return count;
+        }
+
 
 		/*
 		 *
@@ -1017,6 +1034,7 @@ if (!window["BridgeUtils"].View) {
 		return {
 			init : init,
 			destroy : destroy,
+			getOpenViewCount : getOpenViewCount,
 			openView : openView,
 			closeView : closeView,
 			getActiveViewParams : getActiveViewParams,
