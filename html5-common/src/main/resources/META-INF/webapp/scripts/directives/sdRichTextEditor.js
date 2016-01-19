@@ -16,8 +16,11 @@
 
 /**
  * options :
- * @sdaReadOnly : true / false  Defaut : false
+ * @sdaReadOnly : true / false  Default : false
  * @sdaPosition : bottom / top  Default : bottom
+ * &sdaCustomToolbar: Could be a key to one of the "predefinedToolbars" defined in the directive
+ * 						or an array of custom tools.
+ * 						If not set, uses the default toolbar.
  */
 (function(){
 	'use strict';
@@ -26,13 +29,23 @@
 			[ 'sdLoggerService', Directive]);
 	
 	
-	function Directive (){
+	function Directive () {
+		
+		var predefinedToolbars = {
+				minimal: [
+		                  {name: 'basicstyles', items: [ 'Bold', 'Italic', 'Strike', '-', 'RemoveFormat' ]},
+		                  {name: 'styles', items: ['Styles', 'Formats']},
+		                  {name: 'paragraph', items: ['BulletedList', 'NumberedList']},
+		                  {name: 'clipboard', items: [ 'Undo', 'Redo' ]}
+		                ]
+		};
 
 	    return {
 	        require: '?ngModel',
 	        scope : {
 	        	position : '@sdaPosition',
 	        	readOnly : '@sdaReadOnly',
+	        	customToolbar: '&sdaCustomToolbar',
 	        	onBlur : '&sdaOnBlur',
 	        	onMode: '&sdaOnModeChange'
 	        },
@@ -41,7 +54,9 @@
 	            var ck = CKEDITOR.replace(elm[0]);
 	            ck.config.readOnly = $scope.readOnly || false;
 	            ck.config.toolbarLocation =$scope.position || 'bottom';
-	            
+	            if ($scope.customToolbar) {
+		            ck.config.toolbar = predefinedToolbars[$scope.customToolbar()] || $scope.customToolbar();
+	            }	            
 	            
 	            ck.on('blur', function() {
 	              $scope.$apply(function () {
