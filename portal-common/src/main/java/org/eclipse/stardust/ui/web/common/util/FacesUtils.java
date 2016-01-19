@@ -446,14 +446,6 @@ public class FacesUtils implements Constants
       return queryParameters;
    }
    
-   public static void sendRedirect(String toUrl) throws IOException
-   {
-      ExternalContext ectx = FacesContext.getCurrentInstance().getExternalContext();
-      HttpServletResponse response = (HttpServletResponse) ectx.getResponse();
-      
-      toUrl = SecurityUtils.sanitizeValue(toUrl);
-      response.sendRedirect(response.encodeRedirectURL(toUrl));
-   }
 
    /**
     * @deprecated 

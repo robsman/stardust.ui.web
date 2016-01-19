@@ -318,21 +318,6 @@ public class LoginDialogBean implements Serializable, InitializingBean
     */
    public String proceedToMainPage() throws IOException
    {
-      String returnUrl = FacesUtils.getQueryParameterValue(InfinityStartup.RETURN_URL_PARAM);
-
-      if (!StringUtils.isEmpty(returnUrl))
-      { 
-         // When returnUrl contains login.iface, clear current session and redirect to
-         // login Page
-         if (returnUrl.contains(DEFAULT_LOGIN_PAGE))
-         {
-            SessionContext.findSessionContext().logout();
-            return "ippPortalLogout";
-         }
-         FacesUtils.sendRedirect(returnUrl);
-         return null;
-      }
-
       String outcome = getNavigationOutcome();
       if (null != outcome && outcome.startsWith(Constants.LOGGED_INTO_PREFIX))
       {

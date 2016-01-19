@@ -40,8 +40,6 @@ public class InfinityStartup
    
    public final static String LOGIN_PAGE = "carnot.LOGIN_PAGE";
    
-   public final static String RETURN_URL_PARAM = "returnUrl";
-   
    private final static String TIMEOUT = "Carnot.Portal.SessionInvalidate.Timeout";
    
    private final ServletContext servletContext;
@@ -105,7 +103,6 @@ public class InfinityStartup
       StringBuffer params = new StringBuffer();
       Map<String, String[]> reqParamMap = request.getParameterMap();
       copyParam(params, reqParamMap, ExceptionFilter.ERROR_PARAM);
-      copyParam(params, reqParamMap, RETURN_URL_PARAM);
       copyParam(params, reqParamMap, "tenant");
       if(!reqParamMap.containsKey("tenant"))
       {
