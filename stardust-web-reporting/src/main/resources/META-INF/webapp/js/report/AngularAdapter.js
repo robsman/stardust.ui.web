@@ -975,46 +975,7 @@ if (!window.bpm.portal.AngularAdapter) {
 							datePickerProperties = scope.$eval(attrs.datePickerProperties); 
 						}
 						
-						var baseUrl = window.location.href.substring(0, location.href.indexOf("/plugins"));
-						var url = baseUrl
-								+ "/plugins/bpm-reporting/js/libs/jquery/plugins/jquery-ui-timepicker/jquery-ui-timepicker-addon.min.js";
-						
-						jQuery.get(url)
-					    .done(function() { 
-					    	require(
-									[url],
-									function(datetime) {
-										try {
-											element.datetimepicker({
-												inline : true,
-												timeFormat : timeFormat,
-												dateFormat : dateFormat,
-												closeText: datePickerProperties.closeText,
-												prevText: datePickerProperties.prevText,
-												nextText: datePickerProperties.nextText,
-												currentText: datePickerProperties.currentText,
-												monthNames: datePickerProperties.monthNames,
-												monthNamesShort: datePickerProperties.monthNamesShort,
-												dayNames: datePickerProperties.dayNames,
-												dayNamesShort: datePickerProperties.dayNamesShort,
-												dayNamesMin: datePickerProperties.dayNamesMin,
-												weekHeader: datePickerProperties.weekHeader,
-												firstDay: datePickerProperties.firstDay,
-												isRTL: false,
-												showMonthAfterYear: datePickerProperties.showMonthAfterYear,
-												yearSuffix: datePickerProperties.yearSuffix,
-												onSelect : function(date) {
-													scope.$apply(function () {
-													   controller.$setViewValue(date);
-													});
-												}
-											});	
-										} catch (e) {
-											// TODO: handle exception
-										}
-									}); 
-					    }).fail(function() { 
-					    	element.datepicker({
+				    	element.datepicker({
 								inline : true,
 								dateFormat : 'yy/mm/dd', // I18N
 								closeText: datePickerProperties.closeText,
@@ -1041,40 +1002,98 @@ if (!window.bpm.portal.AngularAdapter) {
 									});
 								}
 							});
-					    });
 					}
 				};
 			});
 			
-			this.angularModule.directive('sdDate', function() {
-				console.debug("sd-date parsed");
-				return {
-					restrict : "A",
-					require : "ngModel",
-					link : function(scope, element, attrs, controller) {
-						element.datepicker({
-							inline : true,
-							dateFormat : 'yy-mm-dd', // I18N
-							onSelect : function(date) {
-								scope.$apply(function () {
-								   controller.$setViewValue(date);
-                       });
+			this.angularModule.directive('sdDatePicker', function() {
+			    return {
+			        restrict: 'A',
+			        require: 'ngModel',
+			        link: function(scope, element, attrs, ngModelCtrl) {
+			        	
+						var datePickerProperties = '';
+						
+						//Things done in $observe to  observe a DOM attribute (datePickerProperties) that contains interpolation which is populated later. 
+						attrs.$observe('datePickerProperties', function(value){
+							if (value) {
+								datePickerProperties = scope.$eval(value);
+								
+								var	inline = true,
+								dateFormat = attrs.sdaDateFormat || 'yy-mm-dd', // I18N
+								closeText = datePickerProperties.closeText || 'Close',
+								prevText = datePickerProperties.prevText || 'Prev',
+								nextText = datePickerProperties.nextText || 'Next',
+								currentText = datePickerProperties.currentText || 'Today',
+								monthNames = datePickerProperties.monthNames || [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ],
+								monthNamesShort = datePickerProperties.monthNamesShort || [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ],
+								dayNames = datePickerProperties.dayNames || [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" ],
+								dayNamesShort = datePickerProperties.dayNamesShort || [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
+								dayNamesMin = datePickerProperties.dayNamesMin || [ "Su", "Mo", "Tu", "We", "Th", "Fr", "Sa" ],
+								weekHeader = datePickerProperties.weekHeader || 'Wk',
+								firstDay = datePickerProperties.firstDay || 1,
+								isRTL = false,
+								showMonthAfterYear = datePickerProperties.showMonthAfterYear || false,
+								yearSuffix = datePickerProperties.yearSuffix || '';
+							
+								milliseconds = attrs.sdaMilliseconds === 'true' ? true : false;
+
+					            ngModelCtrl.$parsers.push(function(value) {
+					               ngModelCtrl.$setValidity('validate', true);
+					            	if (value == undefined || value == null || value == '') {
+					            		return value;
+					            	}
+					            	try{
+					            	var date = jQuery.datepicker.parseDate(dateFormat, value);
+					            	}catch (e) {
+					            	   ngModelCtrl.$setValidity('validate', false);
+				                     return undefined;
+			                     }
+					            	
+			                		return milliseconds ? date.getTime():value;
+					            });
+				
+					            ngModelCtrl.$formatters.push(function(value) {
+					            	if (value == undefined || value == null || value == '') {
+					            		return value;
+					            	}
+
+					            	var date = new Date(value);
+			                		return  milliseconds ? jQuery.datepicker.formatDate(dateFormat, date) : value;
+					            });
+
+				                element.datepicker({
+				                	inline : inline,
+									dateFormat : dateFormat,
+									closeText: closeText,
+									prevText: prevText,
+									nextText: nextText,
+									currentText: currentText,
+									monthNames: monthNames,
+									monthNamesShort: monthNamesShort,
+									dayNames: dayNames,
+									dayNamesShort: dayNamesShort,
+									dayNamesMin: dayNamesMin,
+									weekHeader: weekHeader,
+									firstDay: firstDay,
+									isRTL: isRTL,
+									showMonthAfterYear: showMonthAfterYear,
+									yearSuffix: yearSuffix,				                	
+				                
+				                onSelect: function(date) {
+				                    ngModelCtrl.$setViewValue(date);
+				                    ngModelCtrl.$render();
+				                    if (angular.isFunction(ngModelCtrl.$apply)) {
+				                    	ngModelCtrl.$apply();
+				                    	}
+				                	}
+				                });
 							}
-						});
-
-						// scope.$watch(ngModel, function(val) {
-						// console.debug("val = " + val);
-						//
-						// if (val) {
-						// element.datepicker("setDate", new Date(val));
-						// } else {
-						// element.datepicker("setDate", null);
-						// }
-						// });
+			            });
 					}
-				};
+			    };
 			});
-
+			
 			// Allow for on blur semantics until Angular JS releases it (TODO this does not work)
 
 			this.angularModule.directive('ngBlur', [ '$parse',

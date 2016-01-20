@@ -1320,7 +1320,7 @@ table.formTable td {
 																<td><label>{{getI18N('reporting.definitionView.start.label')}}</label></td>
 																<td><input type="text" id="startDateId"
 																	ng-model="report.scheduling.recurrenceRange.startDate"
-																	sd-date /></td>
+																	sd-date-picker date-picker-properties="{{reportingService.datePickerProperties}}" /></td>
 															</tr>
 														</table>
 													</td>
@@ -1351,7 +1351,7 @@ table.formTable td {
 																<td colspan="2"><input type="text" id = "endDateId" 
 																	ng-model="report.scheduling.recurrenceRange.endDate"
 																	ng-disabled="report.scheduling.recurrenceRange.endMode != 'endByDate'"
-																	sd-date /></td>
+																	sd-date-picker date-picker-properties="{{reportingService.datePickerProperties}}" /></td>
 															</tr>
 														</table>
 													</td>
