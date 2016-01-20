@@ -695,12 +695,11 @@ public class ProcessInstanceService
          List<DataPath> dataPaths = processDefinition.getAllDataPaths();
          Map<String, DataPath> outDataPathMap = CollectionUtils.newHashMap();
          Map<String, Object> outDataPathValues = CollectionUtils.newHashMap();
-         trace.info("## Inside Set OUT DataPath ####");
-         trace.info(" ## Process Instance OID "+ processInstanceOid);
-         trace.info("## List of DataPath received at setDataPath method ####");
+         trace.info("Process Instance OID ::"+ processInstanceOid);
+         trace.info("List of DataPath received at setDataPath ::");
          for(Entry<String, Object> path : dataPathMap.entrySet())
          {
-            trace.info("### Data Path ID ---> "+ path.getKey() + " --> Value ---> " + path.getValue());
+            trace.info("Data Path ID ---> "+ path.getKey() + " --> Value ---> " + path.getValue());
          }
          for (DataPath dataPath : dataPaths)
          {
@@ -710,12 +709,7 @@ public class ProcessInstanceService
                
                if (dataPathMap.containsKey(dataPath.getId()) && !Direction.IN.equals(dataPath.getDirection()))
                {
-                  trace.info(" ### Matching OUT DataPath added for Update ---> " + dataPath.getId() + " --> VALUE ---> "+dataPathMap.get(dataPath.getId()) + " --> Mapped Type -->" + dataPath.getMappedType());  
                   outDataPathMap.put(dataPath.getId(), dataPath);
-               }
-               else
-               {
-                  trace.info(" @@@ Non Matching DataPath Found --->" + dataPath.getId() + " --> Direction --->"+dataPath.getDirection());
                }
             }
             else
@@ -731,7 +725,6 @@ public class ProcessInstanceService
             {
                DataPath outDataPath = outPath.getValue();
                Object value = dataPathMap.get(outPath.getKey());
-               trace.info(" ## Convert value for DataPath -->"+ outDataPath.getId());
                outDataPathValues.put(outDataPath.getId(),
                      DescriptorFilterUtils.convertDataPathValue(outDataPath.getMappedType(), value));
             }
