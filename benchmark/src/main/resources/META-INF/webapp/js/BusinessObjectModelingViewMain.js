@@ -5,7 +5,7 @@ require
 				'jquery' : [ 'benchmark/js/libs/jquery/jquery-1.11.0.min' ],
 				'jquery-ui' : [ 'benchmark/js/libs/jquery/plugins/jquery-ui-1.10.2.custom.min' ],
 				'jquery.dataTables' : [ "benchmark/js/libs/jquery/plugins/jquery.dataTables-1.9.4.min" ],
-				'angularjs' : [ 'benchmark/js/libs/angular/angular-1.2.26.min' ]
+				'angularjs' : [ '../portal-shell/js/libs/angular/1.2.11/angular.min' ]
 			},
 			shim : {
 				'jquery-ui' : [ 'jquery' ],

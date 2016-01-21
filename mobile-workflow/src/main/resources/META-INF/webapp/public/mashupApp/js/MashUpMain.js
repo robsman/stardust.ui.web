@@ -19,7 +19,7 @@ require
 				'jquery-mobile' : [ 'js/libs/jquery/plugins/jquery.mobile-1.4.0.min',
 				                    '//code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0.min'],
 				'jquery-ui'		: ['js/libs/jquery/plugins/jquery-ui-1.10.2.custom.min'],
-				'angularjs' 	: [ 'js/libs/angular/angular.1.2.11.min',
+				'angularjs' 	: [ '../portal-shell/js/libs/angular/1.2.11/angular.min',
 				            	    '//ajax.googleapis.com/ajax/libs/angularjs/1.2.11/angular.min' ],
 				 // SG
                 'json' 			: [ '../../../views-common/js/libs/json/json2',

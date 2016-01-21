@@ -48,7 +48,7 @@ if (!window.bpm.portal.reportingRequire) {
 			'json' : [ 'bpm-reporting/js/libs/json/json2',
 					'//cdnjs.cloudflare.com/ajax/libs/json2/20110223/json2' ],
 			'angularjs' : [
-					'../portal-shell/js/libs/angular/1.2.11/angular',
+					'../portal-shell/js/libs/angular/1.2.11/angular.min',
 					'//ajax.googleapis.com/ajax/libs/angularjs/1.2.11/angular.min' ],
 			'jquery.base64' : [
 					'bpm-reporting/js/libs/jquery/plugins/jquery.base64',
