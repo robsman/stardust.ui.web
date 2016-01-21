@@ -950,7 +950,7 @@ define(
 
                 // Storage properties are not applicable to parent element
                 // UI properties are allowed for parent element but not supported when this code was added.
-                if (m_structuredTypeBrowser.hasChildElements(this, true)) {
+                if (view.typeDeclaration.getType() === "importedStructuredDataType" && m_structuredTypeBrowser.hasChildElements(this, true)) {
                   if (view.propertiesTree) {
                     view.propertiesTree.clear();
                   }
