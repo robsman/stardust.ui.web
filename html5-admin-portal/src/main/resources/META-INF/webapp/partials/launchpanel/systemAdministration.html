@@ -3,7 +3,11 @@
 	<div ng-controller="sdAdministrationPanelCtrl as ctrl">
 		<div style="line-height: 15px;">
 			<a href="#" ng-click="ctrl.openView('overview');"
-				data-placement="right" aid="auto-ADM-overview"><span>{{i18n('admin-portal-messages.views-configurationVariablesView-label')}} &raquo;</span></a>
+				data-placement="right" aid="auto-ADM-overview"><span>{{i18n('admin-portal-messages.views-overview-label')}} &raquo;</span></a>
+		</div>		
+		<div style="line-height: 15px;">
+			<a href="#" ng-click="ctrl.openView('configurationVariablesView');"
+				data-placement="right" aid="auto-ADM-LP-ConfigVarView"><span>{{i18n('admin-portal-messages.views-configurationVariablesView-label')}} &raquo;</span></a>
 		</div>
 		<div style="line-height: 15px;">
 			<a href="#" ng-click="ctrl.openView('daemons');"
