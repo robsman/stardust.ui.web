@@ -111,7 +111,7 @@ public class ImageViewerMetadataRestlet
    @Path ("/language")
    public Response getLanguage()
    {
-      StringTokenizer tok = new StringTokenizer(httpRequest.getHeader("Accept-language"), ",");
+      StringTokenizer tok = new StringTokenizer(httpRequest.getHeader("Accept-Language"), ",");
       if (tok.hasMoreTokens())
       {
          return Response.ok(getMetadataService().getLocale(tok.nextToken()), MediaType.TEXT_PLAIN_TYPE).build();

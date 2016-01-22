@@ -227,7 +227,7 @@ public class DocumentRepositoryRestlet
     */
    public Locale getLocale()
    {
-      StringTokenizer tok = new StringTokenizer(httpRequest.getHeader("Accept-language"), ",");
+      StringTokenizer tok = new StringTokenizer(httpRequest.getHeader("Accept-Language"), ",");
       if (tok.hasMoreTokens())
       {
          return new Locale(tok.nextToken().substring(0, 2));

@@ -332,65 +332,75 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
                }
                else
                {
-                  // Format numeric descriptor values with thousand's seperator if supported by
-                  // underlying data
-                  if (dataPathDetails.isDescriptor())
+                  try
                   {
-                     Model refModel = model;
-                     Data data = null;
-                     if (!isEmpty(descriptorValue))
+                  // Format numeric descriptor values with thousand's seperator if
+                     // supported by
+                     // underlying data
+                     if (dataPathDetails.isDescriptor())
                      {
-                        if (null != dataDetails && StructuredDataConstants.STRUCTURED_DATA.equals(dataDetails.getTypeId()))
+                        Model refModel = model;
+                        Data data = null;
+                        if (!isEmpty(descriptorValue))
                         {
-                           Reference ref = dataDetails.getReference();
-                           if (null == ref)
+                           if (null != dataDetails
+                                 && StructuredDataConstants.STRUCTURED_DATA.equals(dataDetails.getTypeId()))
                            {
-                              data = model.getData(dataPathDetails.getData());
-                              ref = data.getReference();
-                           }
-                           if(null != ref)
-                           {
-                              if (ref.getModelOid() != model.getModelOID())
+                              Reference ref = dataDetails.getReference();
+                              if (null == ref)
                               {
-                                 refModel = ModelCache.findModelCache().getModel(ref.getModelOid());
+                                 data = model.getData(dataPathDetails.getData());
+                                 ref = data.getReference();
                               }
-                           }
-                           else
-                           {
-                              if(data.getModelOID() != model.getModelOID())
+                              if(null != ref)
                               {
-                                 refModel = ModelCache.findModelCache().getModel(data.getModelOID());
-                              }
-                           }
-                           Class dataClass = dataPathDetails.getMappedType();
-                           IXPathMap xPathMap = ClientXPathMap.getXpathMap(refModel, dataDetails);
-                           String xPath = StructuredDataXPathUtils.getXPathWithoutIndexes(dataPathDetails.getAccessPath());
-                           TypedXPath typedXPath = xPathMap.getXPath(xPath);
-                           if(null != typedXPath)
-                           {
-                              Number value = getNumericValue(dataClass, descriptorValue);
-                              if(value == null && "decimal".equals(typedXPath.getXsdTypeName()))
-                              {
-                                 value = new BigDecimal(descriptorValue.toString());
-                              }
-                              if(value !=null)
-                              {
-                                 XPathAnnotations annotation = typedXPath.getAnnotations();
-                                 if (annotation != null)
+                                 if (ref.getModelOid() != model.getModelOID())
                                  {
-                                    String descriptorLabelValue = annotation.getElementValue(
-                                          XPathAnnotations.IPP_ANNOTATIONS_NAMESPACE, new String[] {
-                                                "ui", Constants.INPUT_PREFERENCES_NUMBER_GROUP_KEY_LABEL});
-                                    if (null != descriptorLabelValue && Boolean.valueOf(descriptorLabelValue))
+                                    refModel = ModelCache.findModelCache().getModel(ref.getModelOid());
+                                 }
+                              }
+                              else
+                              {
+                                 if(data.getModelOID() != model.getModelOID())
+                                 {
+                                    refModel = ModelCache.findModelCache().getModel(data.getModelOID());
+                                 }
+                              }
+                              Class dataClass = dataPathDetails.getMappedType();
+                              IXPathMap xPathMap = ClientXPathMap.getXpathMap(refModel, dataDetails);
+                              String xPath = StructuredDataXPathUtils.getXPathWithoutIndexes(dataPathDetails
+                                    .getAccessPath());
+                              TypedXPath typedXPath = xPathMap.getXPath(xPath);
+                              if (null != typedXPath)
+                              {
+                                 Number value = getNumericValue(dataClass, descriptorValue);
+                                 if (value == null && "decimal".equals(typedXPath.getXsdTypeName()))
+                                 {
+                                    value = new BigDecimal(descriptorValue.toString());
+                                 }
+                                 if (value != null)
+                                 {
+                                    XPathAnnotations annotation = typedXPath.getAnnotations();
+                                    if (annotation != null)
                                     {
-                                       String numberValue = formatNumberInLocale(value);
-                                       descriptors.put(entry.getKey(), numberValue);
+                                       String descriptorLabelValue = annotation.getElementValue(
+                                             XPathAnnotations.IPP_ANNOTATIONS_NAMESPACE, new String[] {
+                                                   "ui", Constants.INPUT_PREFERENCES_NUMBER_GROUP_KEY_LABEL});
+                                       if (null != descriptorLabelValue && Boolean.valueOf(descriptorLabelValue))
+                                       {
+                                          String numberValue = formatNumberInLocale(value);
+                                          descriptors.put(entry.getKey(), numberValue);
+                                       }
                                     }
                                  }
                               }
                            }
                         }
                      }
+                  }
+                  catch (Exception e)
+                  {
+                     trace.error("Error occured while adding Thousands Seperator", e);
                   }
                   GenericDataMapping mapping = new GenericDataMapping(dataPathDetails);
                   DataMappingWrapper dmWrapper = new DataMappingWrapper(mapping, null, false);
@@ -484,17 +494,7 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
       {
          if (dataPath.isDescriptor())
          {
-            if (allDescriptors.containsKey(dataPath.getId()))
-            {
-               DataPath existing = allDescriptors.get(dataPath.getId());
-               if (!existing.getData().equals(dataPath.getData()))
-               {
-                  trace.warn("* Duplicate datapath detected with id: " + dataPath.getNamespace() + "->"
-                        + dataPath.getData() + "->" + dataPath.getId() + "(" + existing.getNamespace() + "->"
-                        + existing.getData() + "->" + existing.getId() + ")");
-               }
-            }
-            else
+            if (!allDescriptors.containsKey(dataPath.getId()))
             {
                allDescriptors.put(dataPath.getId(), dataPath);
             }
