@@ -13,11 +13,11 @@
 (function() {
    'use strict';
 
-   angular.module('bpm-common').directive('sdCriticalityTableFilter',[ '$parse', 'sdUtilService', CriticalityFilter ]);
+   angular.module('bpm-common').directive('sdCriticalityTableFilter',[ '$parse', 'sdUtilService','$filter', CriticalityFilter ]);
 
    /*
     */
-   function CriticalityFilter( $parse, sdUtilService) {
+   function CriticalityFilter( $parse, sdUtilService, $filter) {
       return {
          restrict : 'A',
          template : '<div class="priority-criticality-filter-container"> '+
@@ -34,7 +34,7 @@
 	                            'sda-selected-matches="criticalityCtrl.like"> ' +
                          '<\/div>' +
                    '<\/div>',
-         controller : [ '$scope','$attrs','$parse', CriticalityFilterController ],
+         controller : [ '$scope','$attrs','$parse','$filter', CriticalityFilterController ],
          
          link : function(scope, element, attr, ctrl) {
         	 /*
@@ -60,12 +60,15 @@
          }
       };
    };
+   
+   var _filter = null;
 
    /*
     * 
     */
-   var CriticalityFilterController = function($scope, $attrs, $parse) {
+   var CriticalityFilterController = function($scope, $attrs, $parse, $filter) {
 	   this.intialize($scope, $attrs, $parse);
+	   _filter = $filter
 	   $scope.criticalityCtrl = this;
    };
    
@@ -111,13 +114,10 @@
     * 
     */
    CriticalityFilterController.prototype.getCriticalities = function(value) {
-	   var results = [];
-	   this.availableCriticalities.forEach(function(v) {
-		   if (v.label.indexOf(value) > -1) {
-			   results.push(v);
-		   }
-	   });
-      this.data = results;
+	   var searchItem = {
+			   label : value
+	   };
+	   this.data = _filter('filter')(this.availableCriticalities, searchItem);
    };
 
    /**

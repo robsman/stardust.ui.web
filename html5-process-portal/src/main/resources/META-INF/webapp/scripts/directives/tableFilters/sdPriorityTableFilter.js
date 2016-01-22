@@ -14,11 +14,11 @@
 (function() {
 	'use strict';
 
-   angular.module('bpm-common').directive( 'sdPriorityTableFilter', [ 'sdPriorityService', 'sdUtilService', PriorityFilter]);
+   angular.module('bpm-common').directive( 'sdPriorityTableFilter', [ 'sdPriorityService', 'sdUtilService','$filter', PriorityFilter]);
 
 		/*
 		*/
-   function PriorityFilter( sdPriorityService, sdUtilService) {
+   function PriorityFilter( sdPriorityService, sdUtilService, $filter) {
 			return {
 				restrict : 'A',
 				template : '<div class="priority-criticality-filter-container"> '+
@@ -34,7 +34,7 @@
 									'sda-selected-matches="filterData.like">' +
 								'<\/div>' +
 							'<\/div>',
-         controller : [ '$scope', 'sdPriorityService', PriorityFilterController ],
+         controller : [ '$scope', 'sdPriorityService' ,'$filter', PriorityFilterController ],
          link : function( scope, element, attr, ctrl) {
             /*
              * 
@@ -56,13 +56,18 @@
          }
       };
    }
+   
+   
+   var _filter = null;
    /*
     * 
     */
-   var PriorityFilterController = function( $scope, sdPriorityService) {
+   var PriorityFilterController = function( $scope, sdPriorityService, $filter) {
 
       this.intialize($scope, sdPriorityService);
+      _filter = $filter;
       $scope.priorityCtrl = this;
+     
    };
 
    /**
@@ -96,18 +101,15 @@
     * 
     */
    PriorityFilterController.prototype.getPriority = function(value) {
-
-	   var results = [];
-
-	   this.priorities.forEach(function(v) {
-		   if (v.label.indexOf(value) > -1) {
-			   results.push(v);
-		   }
-	   });
-
-	   this.data = results;
+		   var searchItem = {
+			label : value
+		};
+		this.data = _filter('filter')(this.priorities, searchItem);
    };
 
+   /**
+    * 
+    */
    PriorityFilterController.prototype.getPriorityFromValues = function( availablePriorities, values) {
 	   var prioirtyObjs = [];
 
