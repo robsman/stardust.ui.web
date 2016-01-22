@@ -26,6 +26,7 @@ if (!window.bpm.portal.GenericController) {
 		this.BINDING_PREFIX = "dm";
 		this.SERVER_DATE_FORMAT = "yy-mm-dd";
 		this.SERVER_DATE_TIME_FORMAT_SEPARATOR = "T";
+		this.CLIENT_DATE_TIME_FORMAT_SEPARATOR = " ";
 
 		this.angularCompile = null;
 
@@ -224,13 +225,14 @@ if (!window.bpm.portal.GenericController) {
 		 * 
 		 */
 		GenericController.prototype.marshalDateTimesValue = function(path, binding, lastPart) {
-			if (this.isReadonly(path)) {
-				return;
-			}
 
 			if (binding) {
 				var haveTime = path.typeName == "dateTime" || path.typeName == "java.util.Date" 
 					|| path.typeName == "java.util.Calendar" || path.typeName == "time";
+				
+				if (this.isReadonly(path) && !haveTime) {
+						return;
+				}
 				
 				var value = binding[lastPart];
 				var datePart = "";
@@ -256,10 +258,20 @@ if (!window.bpm.portal.GenericController) {
 					timePart = dateTime.time;
 				}
 				
-				binding[lastPart] = datePart;
-				if (haveTime) {
-					binding[lastPart + "_timePart"] = timePart;
+				
+				if (this.isReadonly(path)) {
+					
+					//Adjusting Date time for Time Zone for Read  only value
+					if(haveTime) {
+						binding[lastPart] = datePart + this.CLIENT_DATE_TIME_FORMAT_SEPARATOR + timePart;
+					}
+				} else {
+					binding[lastPart] = datePart;
+					if (haveTime) {
+						binding[lastPart + "_timePart"] = timePart;
+					}
 				}
+				
 			}
 		};
 		
