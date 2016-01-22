@@ -58,6 +58,7 @@ import org.eclipse.stardust.engine.api.query.HistoricalStatesPolicy;
 import org.eclipse.stardust.engine.api.query.ProcessDefinitionFilter;
 import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
+import org.eclipse.stardust.engine.api.query.RootProcessInstanceFilter;
 import org.eclipse.stardust.engine.api.query.SubsetPolicy;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
@@ -354,7 +355,7 @@ public class ActivityTableUtils
          {
             for (String processQId : filterDTO.rootProcessName.processes)
             {
-               //TODO add filter
+               or.add(new RootProcessInstanceFilter(processQId, null));
             }
          }
       }
@@ -789,11 +790,7 @@ public class ActivityTableUtils
                {
                   dto.activity.name = getCaseName(ai);
                }
-                  
-               //ROOT Process 
-               long rootProcessOID = ai.getProcessInstance().getRootProcessInstanceOID();
-               ProcessInstance rootPI = org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils.getProcessInstance(rootProcessOID);
-               dto.rootProcessName = rootPI.getProcessName();
+               dto.rootProcessName = ai.getProcessInstance().getRootProcessInstanceName();;
                
                list.add(dto);
             }
