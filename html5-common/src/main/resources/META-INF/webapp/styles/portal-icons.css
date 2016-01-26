@@ -1321,6 +1321,7 @@ span.pi-case:before{
 	content:'\f074'; /* fa-reverse */
 }
 
+.pi-upload-failure:before,
 .pi-deploy-failure:before,
 .pi-dialog-error:before{
 	font-family:"FontAwesome";
@@ -1732,6 +1733,7 @@ a span.pi:hover {
 	content: '\f0B6';
 }
 
+.pi-upload-success:before,
 .pi-deploy-success:before{
 	font-family:"FontAwesome";
 	content:'\f058'; /*  fa-check-circle */
