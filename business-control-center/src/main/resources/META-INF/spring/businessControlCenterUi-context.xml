@@ -67,7 +67,13 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
             requiredView="activityCriticalityManagerView" />
   
 		<!--  VIEWS -->
-		<ippui:view name="categoryTree" include="/plugins/business-control-center/views/categoryTree.xhtml" controller="categoryTree"/>
+		<!--ippui:view name="categoryTree" include="/plugins/business-control-center/views/categoryTree.xhtml" controller="categoryTree"/-->
+	   	<ippui:view name="categoryTree" include="/plugins/html5-business-control-center/partials/views/allManagementViews.html">
+	   		<ippui:preferences>
+				<ippui:preferencePage name="icon"
+					include="/plugins/views-common/images/icons/pending_activities.png" />
+			</ippui:preferences>
+	   	</ippui:view>
 	   	
 		<ippui:view name="processOverviewView" include="/plugins/business-control-center/views/processOverviewView.xhtml" controller="businessProcessManager">
 	   		<ippui:preferences>
@@ -90,6 +96,7 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 					include="/plugins/views-common/images/icons/pending_activities.png" />
 			</ippui:preferences>
 	   	</ippui:view>
+	   	
 		<ippui:view name="completedActivities" include="/plugins/html5-business-control-center/partials/views/completedActivitiesView.html">
 	   		<ippui:preferences>
 				<ippui:preferencePage name="icon"

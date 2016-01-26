@@ -1,0 +1,33 @@
+<div sg-stretch-to-bottom class="view-panel">
+
+	<div ng-controller="sdManagementViewsCtrl as ctrl">
+      
+      <ul sd-tree="ctrl.onTreeInit(api)"
+          sda-icon-callback="ctrl.iconCallback(item)"
+          sda-event-callback = "ctrl.treeEventCallback(data,e)">
+    
+      <!--Top level Folders-->
+        <li sd-tree-node
+            sda-node-id="item.id"
+            sda-label="item.label"
+            sda-is-leaf="item.children.length==0"
+            ng-repeat="item in ctrl.views">
+          
+          <ul>
+            
+            <li sd-tree-node
+                sda-node-id="item.id"
+                sda-label="item.label"
+                sda-is-leaf="item.children.length==0"
+                ng-repeat="item in item.children">
+            </li>
+          
+          </ul>
+          
+        </li>
+        
+      </ul>
+
+    </div>
+    
+</div>
