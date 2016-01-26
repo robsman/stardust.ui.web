@@ -770,6 +770,10 @@
 	                if(e.charCode===13 && e.target.blur){
 	                	e.target.blur();
 	                }
+	                //reset on key press otherwise we can get into a state where a valid blur is ignored.
+	                else{
+	                	scope.md = false;
+	                }
 	             };
 	             
 	            //Create our own local allowEdit so we dont shadow the parents value
