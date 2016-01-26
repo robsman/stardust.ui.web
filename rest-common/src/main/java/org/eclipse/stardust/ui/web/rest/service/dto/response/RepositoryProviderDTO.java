@@ -24,7 +24,28 @@ public class RepositoryProviderDTO extends AbstractDTO
    
    @DTOAttribute("getProviderName()")
    public String name;
-
+   
+   @DTOAttribute("isWriteSupported()")
+   public boolean isWriteSupported;
+   
+   @DTOAttribute("isFullTextSearchSupported()")
+   public boolean isFullTextSearchSupported;
+   
+   @DTOAttribute("isMetaDataSearchSupported()")
+   public boolean isMetaDataSearchSupported;
+   
+   @DTOAttribute("isMetaDataWriteSupported()")
+   public boolean isMetaDataWriteSupported;
+   
+   @DTOAttribute("isTransactionSupported()")
+   public boolean isTransactionSupported;
+   
+   @DTOAttribute("isVersioningSupported()")
+   public boolean isVersioningSupported;
+   
+   @DTOAttribute("isAccessControlPolicySupported()")
+   public boolean isAccessControlPolicySupported;
+   
    public RepositoryProviderDTO()
    {}
 }

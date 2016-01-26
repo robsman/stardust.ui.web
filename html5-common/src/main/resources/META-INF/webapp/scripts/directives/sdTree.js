@@ -526,6 +526,26 @@
 	          }
 	        };//Remove Item function end
 	        
+	        //======================================================================
+	        //Set an item to intitate editing by toggling the node UI to the input
+	        //textbox and setting focus on that input field.
+	        //Param- nodeId: Id of the node we will operate on
+	        //Parma- item: item to add. Can be a single item or an array of items
+	        //======================================================================
+	        controller.api.editNode = function(nodeId){
+	          
+	        	var obj = controller.api.getItem(nodeId);
+	          
+	            $timeout(function(){
+	              var selector='[data-hashKey="' + obj.$$hashKey + '-' +  
+	                            controller.api.id +'"]';
+	              var newObj = elem[0].querySelector(selector);
+	              var objScope = angular.element(newObj).scope();
+	              objScope.invokeCallback('menu-rename',{srcElement:newObj});
+	            },0);
+                
+	        };
+	        
 	        //Build a public API to expose tree functionality to users.
 	        var publicApi = {
 	          
@@ -545,7 +565,8 @@
 	          removeChildByKey : controller.api.removeChildByKey,
 	          purgeChildNodes : controller.api.purgeChildNodes,
 	          filterTree  : controller.api.filterTree,
-	          resetFilter   : controller.api.resetFilter
+	          resetFilter   : controller.api.resetFilter,
+	          editNode    : controller.api.editNode
 	        };
 	        
 	        scope.treeInit({api:publicApi});

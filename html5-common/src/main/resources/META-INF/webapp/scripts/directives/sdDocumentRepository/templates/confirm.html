@@ -1,0 +1,18 @@
+<div class="confirmation-header section">
+  <p >
+  	<span class="header">{{title}}</span>
+  <p>
+</div>
+
+<div class="confirmation-contents section">
+	<div ng-include="userTemplate"></div>
+</div>
+
+<div class="confirmation-buttonpane">
+	<div class="button-pane cf" >
+		<div class="right">
+		  	<button class="button" ng-click="confirm()" aid="{{autoIdPrefix}}-Confirm">OK</button>
+		    <button class="button" ng-click="closeThisDialog()" aid="{{autoIdPrefix}}-CloseThisDialog">Cancel</button>
+		</div>
+  </div>
+</div>

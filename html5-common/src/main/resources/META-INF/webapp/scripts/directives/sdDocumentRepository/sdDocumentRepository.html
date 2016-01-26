@@ -1,0 +1,114 @@
+<div>
+  
+  <!--NG-Dialog Section-->
+
+  <!-- Bind Repository Confirmation Dialog -->
+  <div  sd-dialog="ctrl.bindRepoDialog" 
+        sda-title="Bind Repository" 
+        sda-type="confirm" 
+        sda-confirm-action-label="Confirm"
+        sda-cancel-action-label="Cancel"
+        sda-modal="true"
+        sda-on-open="ctrl.onBindDialogOpen(res)"
+        sda-on-confirm="ctrl.onBindDialogConfirm(res)"
+        sda-template="{{ctrl.baseTemplateUrl}}bindRepository.html"
+        sda-scope="this">
+	</div>
+	
+	<!--Repository Properties Dialog-->
+  <div  sd-dialog="ctrl.repoPropertyDialog" 
+        sda-title="{{'Repository Properties'}}" 
+        sda-type="alert" 
+        sda-confirm-action-label="Confirm"
+        sda-cancel-action-label="Cancel"
+        sda-modal="true"
+        sda-template="{{ctrl.baseTemplateUrl}}repoProperties.html"
+        sda-scope="this">
+	</div>
+	
+	<!--File Version History Dialog-->
+  <div  sd-dialog="ctrl.fileVersionHistoryDialog" 
+        sda-title="{{'File Version Histroy'}}" 
+        sda-type="alert" 
+        sda-confirm-action-label="Confirm"
+        sda-cancel-action-label="Cancel"
+        sda-modal="true"
+        sda-template="templates/fileVersionHistory.html"
+        sda-scope="this">
+	</div>
+	
+	<!--File Security Settings-->
+  <div  sd-dialog="ctrl.fileSecurityDialog" 
+        sda-title="{{'File Security'}}" 
+        sda-type="alert" 
+        sda-confirm-action-label="Confirm"
+        sda-cancel-action-label="Cancel"
+        sda-modal="true"
+        sda-template="templates/fileSecuritySettings.html"
+        sda-scope="this">
+	</div>
+	
+	<!--File Security Settings-->
+  <div  sd-dialog="ctrl.folderSecurityDialog" 
+        sda-title="{{'File Security'}}" 
+        sda-type="alert" 
+        sda-confirm-action-label="Confirm"
+        sda-cancel-action-label="Cancel"
+        sda-modal="true"
+        sda-template="templates/folderSecuritySettings.html"
+        sda-scope="this">
+	</div>
+	
+  <!--NG-Dialog Section End-->
+  
+  <!--Repo Upload Dialog Section-->
+  <div sd-repository-upload-dialog
+       sda-file-key="file1"
+       sda-parent-path="ctrl.selectedFolderPath"
+       sda-url="{{ctrl.documentRepositoryUrl}}"
+       sda-on-init="ctrl.repoDialogInit(api)">
+  </div>
+  <!--Repo Upload Dialog Section End-->
+
+  <!--Tree Section Start-->
+
+  <ul style="height:800px;" sd-tree="ctrl.onTreeInit(api)"
+      sda-recurse-factory = "ctrl.recursiveTreeNodeFactory(item)"
+      sda-menu-callback="ctrl.menuCallback(item)"
+      sda-icon-callback="ctrl.iconCallback(item)"
+      sda-event-callback = "ctrl.eventCallback(data,e)">
+    
+    <!--Single Virtual Root Repository-->
+    <li sd-tree-node
+        sda-node-id="root.id"
+        sda-menu-items="(,)"
+        sda-label="root.name"
+        sda-is-leaf="ctrl.data.length === 0"
+        ng-repeat="root in ctrl.data">
+      
+      <ul>
+        
+        <!--Bound Repository Instances-->
+        <li sd-tree-node
+            sda-menu-items="(,)"
+            sda-node-id="child.id"
+            sda-label="child.name"
+            ng-repeat="child in root.children">
+          
+          <ul>
+            
+            <!--Documents and Folders Within a Bound REPO-->
+						<li sd-tree-curse-fx></li>
+						
+		      </ul>
+		      
+        </li>
+        
+      </ul>
+      
+    </li>
+    
+  </ul>
+  <!--Tree Section End-->
+
+</div>

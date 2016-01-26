@@ -1,0 +1,80 @@
+
+<style type="text/css" media="all">
+  .repo-props input,
+  .repo-props label {
+    display:inline-block;
+  }
+  
+  
+</style>
+<div class="repo-props">
+  
+  <div>
+    <label style="min-width:120px;" for="">Repository ID</label> {{ctrl.selectedRepo.id}}
+  </div>
+  <div>
+    <label style="min-width:120px;" for="">Repository Name</label> {{ctrl.selectedRepo.name}}
+  </div>
+  <div>
+    <label style="min-width:120px;" for="">Repository Version</label> {{ctrl.selectedRepo.version}}
+  </div>
+  <div>
+    <label style="min-width:120px;" for="">Repository Type</label> {{ctrl.selectedRepo.type}}
+  </div>
+
+</div>
+
+<label>Capabilities</label>
+<hr style="margin:0;"/>
+  
+<div>
+      <div style="display:inline-table;min-width:120px;">
+        <input ng-checked="ctrl.selectedRepo.isFullTextSearchSupported" 
+             type="checkbox" 
+             disabled='disabled'/>
+        <label style="display:inline;">Full Text Search</label>
+      </div>
+
+      <div style="display:inline-table;min-width:120px;">
+        <input ng-checked="ctrl.selectedRepo.isTransactionSupported" 
+             type="checkbox" 
+             disabled='disabled'/>
+        <label style="display:inline;">Transactions</label>
+      </div>
+
+      <div style="display:inline-table;min-width:120px;">
+        <input ng-checked="ctrl.selectedRepo.isMetaDataSearchSupported" 
+             type="checkbox" 
+             disabled='disabled'/>
+        <label style="display:inline;">Meta Data Search</label>
+      </div>
+      
+      <div style="display:inline-table;min-width:120px;">
+        <input ng-checked="ctrl.selectedRepo.isMetaDataWriteSupported" 
+             type="checkbox" 
+             disabled='disabled'/>
+        <label style="display:inline;">Meta Data Storage</label>
+      </div>
+
+      <div style="display:inline-table;min-width:120px;">
+        <input ng-checked="ctrl.selectedRepo.isAccessControlPolicySupported" 
+             type="checkbox" 
+             disabled='disabled'/>
+        <label style="display:inline;">Access Control</label>
+      </div>
+      
+      <div style="display:inline-table;min-width:120px;">
+        <input ng-checked="ctrl.selectedRepo.isVersioningSupported" 
+             type="checkbox" 
+             disabled='disabled'/>
+        <label style="display:inline;">Versioning</label>
+      </div>
+
+      <div style="display:inline-table;min-width:120px;">
+        <input ng-checked="ctrl.selectedRepo.isWriteSupported" 
+             type="checkbox" 
+             disabled='disabled'/>
+        <label style="display:inline;">Writable</label>
+      </div>
+
+  </div>
