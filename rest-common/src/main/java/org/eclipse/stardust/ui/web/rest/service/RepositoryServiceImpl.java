@@ -464,6 +464,7 @@ public class RepositoryServiceImpl implements RepositoryService
          {
             throw new I18NException(MessagesViewsCommonBean.getInstance().get("views.common.invalidCharater.message"));
          }
+         document.setName(documentInfoDTO.name);
       }
 
       return DocumentDTOBuilder.build(updateDocument(document, documentInfoDTO), getDMS());
