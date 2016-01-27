@@ -872,35 +872,40 @@ public class DocumentMgmtUtility
             }
             else
             {
-                // this is a file, put it as a document
+               // this is a file, put it as a document
+               String folderPath = partitionFolderPath;
+               String documentName = relativeEntryPath;
                if (relativeEntryPath.contains("/"))
                {
-                  String folderPath = partitionFolderPath + relativeEntryPath.substring(0, relativeEntryPath.lastIndexOf('/'));
-                  String documentName = relativeEntryPath.substring(relativeEntryPath.lastIndexOf('/') + 1);
-                  Folder folder = createFolderIfNotExists(folderPath);
-                  // TODO (CRNT-10654) can not use upload servlet here if content size
-                  // exceeds threshold
-                  // (carnot.properties "Carnot.Configuration.ContentStreamingThreshold")
-                  // since the base url of the dms-content servlet is unknown
-                  byte[] documentContent = readEntryData(stream);
-                  
-                  Document document = getDocumentManagementService().getDocument(folder.getPath() + "/" + documentName);
-                  
-                  if (document == null || !merge)
-                  {
-                     // set contentType
-                     DocumentInfo docInfo = DmsUtils.createDocumentInfo(documentName);
-                     docInfo.setContentType(MimeTypesHelper.detectMimeType(documentName, null).getType());
+                  folderPath = partitionFolderPath + relativeEntryPath.substring(0, relativeEntryPath.lastIndexOf('/'));
+                  documentName = relativeEntryPath.substring(relativeEntryPath.lastIndexOf('/') + 1);
+               }
+               
+               Folder folder = createFolderIfNotExists(folderPath);
+               // TODO (CRNT-10654) can not use upload servlet here if content size
+               // exceeds threshold
+               // (carnot.properties "Carnot.Configuration.ContentStreamingThreshold")
+               // since the base url of the dms-content servlet is unknown
+               byte[] documentContent = readEntryData(stream);
 
-                     // use default encoding, should not be a problem
-                     document = getDocumentManagementService().createDocument(folder.getId(), docInfo, documentContent, null);
-                     added.add(document.getPath());
-                  }
-                  else
-                  {
-                     document = getDocumentManagementService().updateDocument(document, documentContent, "", true, "", "", false);
-                     updated.add(document.getPath());
-                  }
+               Document document = getDocumentManagementService().getDocument(folder.getPath() + "/" + documentName);
+
+               if (document == null || !merge)
+               {
+                  // set contentType
+                  DocumentInfo docInfo = DmsUtils.createDocumentInfo(documentName);
+                  docInfo.setContentType(MimeTypesHelper.detectMimeType(documentName, null).getType());
+
+                  // use default encoding, should not be a problem
+                  document = getDocumentManagementService().createDocument(folder.getId(), docInfo, documentContent,
+                        null);
+                  added.add(document.getPath());
+               }
+               else
+               {
+                  document = getDocumentManagementService().updateDocument(document, documentContent, "", true, "", "",
+                        false);
+                  updated.add(document.getPath());
                }
             }
          }
