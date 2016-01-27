@@ -1,105 +1,6 @@
 (function(){
   
-  /**This section contains bootstrap code for the plnkr,
-   * Should be removed when we go live.
-   **/
-  var children = 0;
-  
-  function generateChild(){
-    var child ={};
-    
-    var isDoc = (Math.floor(Math.random() * 2) + 1 )%2===0;
-
-    if(isDoc){
-      child = generateFolder();
-    }
-    else{
-      child = generateDocument();
-    }
-    return child;
-  }
-  
-  function generateFolder(){
-    var child ={};
-    child.id="child_" + (++children);
-    child.name = "folder_" + child.id;
-    child.nodeType="folder";
-    child.children =[];
-    
-    return child;
-  }
-  
-  function generateDocument(){
-    var child ={};
-    child.id="child_" + (++children);
-    child.name = "document" + child.id;
-    child.nodeType="document";
-    child.children =[];
-    
-    return child;
-  }
-  
-  function generateChildren(){
-    var count = (Math.floor(Math.random() * 10) + 1 );
-    var children=[];
-    
-    for(var i=0;i<count;i++){
-      children.push(generateChild());
-    }
-    return children;
-  }
-  
-  //Repository Data
-  var xxxrepos =[{
-        "name" : "Root",
-        "id" : "VirtualRoot",
-        "nodeType" : "RootRepo",
-        "children" : [{
-            "name" : "JackRabbit",
-            "type":"Content Repository API for Java(TM) Technology Specification 2.0",
-            "version" : "2.6.1",
-            "id": "R1",
-            "nodeType" : "Repo",
-            "children" : []
-          },
-          {
-            "name" : "SharePoint",
-            "type":"Microsoft SharePoint Server CMS",
-            "version":"5.3.3",
-            "id": "R2",
-            "nodeType" : "Repo",
-            "children" : []
-          },
-          {
-            "name" : "Google Docs",
-            "type":"Google Cloud Document System",
-            "version":"1.1.2",
-            "id": "R3",
-            "nodeType" : "Repo",
-            "children" : []
-          }
-        ]
-    }
-  ];
-  
-  var repoProviders = [
-    {
-      "name" : "JCR 2.6.1 Provider",
-      "jndiName" : "java:/jcr/NewJcrRepository",
-      "id" : ""
-    },
-    {
-      "name" : "Google CDS 1.1.2 Provider",
-      "jndiName" : "java:/gcds/NewGdocsRepository",
-      "id" : ""
-    },
-    {
-      "name" : "Microsoft SharePoint Provider 5.3.3",
-      "jndiName" : "microsoft:/sharepoint/NewMspRepository",
-      "id" : ""
-    }
-  ];
-  
+ 
   //Virtual root node of all instanced repositories
   var virtualRoot = {
     "name" : "Root",
@@ -118,6 +19,7 @@
 
     var absUrl;
 
+    //Put dependencies on our object which we will need later
     this.$q = $q;
     this.$timeout = $timeout;
     this.$http = $http;
@@ -264,8 +166,23 @@
   };
   
   documentRepoService.prototype.renameFolder = function(folderId,newName){
+
     var deferred = this.$q.defer();
-    deferred.resolve(newName);
+    var url= this.folderRoot + "/" + folderId;
+    var data = { "name" : newName};
+
+    this.$http({
+      "method" : "PUT",
+      "url" : url,
+      "data" : data
+    })
+    .then(function(res){
+      deferred.resolve(newName);
+    })
+    ["catch"](function(err){
+      deferred.reject(err);
+    });
+    
     return deferred.promise;
   };
   
