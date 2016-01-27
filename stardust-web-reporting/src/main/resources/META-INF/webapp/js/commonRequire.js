@@ -37,7 +37,7 @@ if (!window.bpm.portal) {
 if (!window.bpm.portal.reportingRequire) {
 	bpm.portal.reportingRequire = {
 		PATHS : {
-			'jquery' : [ 'bpm-reporting/js/libs/jquery/jquery-1.7.2',
+			'jquery' : [ '../portal-shell/js/libs/jquery/1.9.1/jquery.min',
 					'//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min' ],
 			'jquery.url' : [
 					'bpm-reporting/js/libs/jquery/plugins/jquery.url',

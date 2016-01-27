@@ -11,7 +11,7 @@
 ({
 	baseUrl : '../js/libs',
 	paths : {
-				'jquery' : 'jquery/jquery-1.7.2.min',
+				'jquery' : '../../../../../../../../portal-common/src/main/resources/portal-shell/js/libs/jquery/1.9.1/jquery.min',
 				'jquery-ui' : 'jquery/plugins/jquery-ui-1.10.2.custom.min',
 				'json' :  'json/json2',
 				'angularjs' : '../../../../../../../../portal-common/src/main/resources/portal-shell/js/libs/angular/1.2.11/angular.min',
