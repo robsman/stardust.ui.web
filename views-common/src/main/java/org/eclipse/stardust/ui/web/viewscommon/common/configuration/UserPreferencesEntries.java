@@ -71,6 +71,7 @@ public interface UserPreferencesEntries
    public static final String F_IMAGE_VIEWER_BOLD_SELECTED = "prefs.imageViewer.boldSelected";
    public static final String F_IMAGE_VIEWER_ITALIC_SELECTED = "prefs.imageViewer.italicSelected";
    public static final String F_IMAGE_VIEWER_UNDERLINE_SELECTED = "prefs.imageViewer.underlineSelected";
+   public static final String F_IMAGE_VIEWER_SELECTED_PDF_ZOOM_LEVEL = "prefs.imageViewer.selectedPDFZoomLevel";
    public static final String F_IMAGE_VIEWER_SELECTED_DISPLAY_ZOOM_LIVEL = "prefs.imageViewer.selectedDisplayZoomLevel";
    public static final String F_IMAGE_VIEWER_SELECTED_STICKY_NOTE_COLOUR = "prefs.imageViewer.selectedStickyNoteColour";
    public static final String F_IMAGE_VIEWER_SELECTED_HIGHLIGHTER_COLOUR = "prefs.imageViewer.selectedHighlighterColour";

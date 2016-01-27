@@ -51,6 +51,8 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
    
    private static final String DEFAULT_NOTE_FONT_SIZE = "24";
 
+   private List<SelectItem> pdfZoomLevelOptions;
+   
    private List<SelectItem> displayZoomLevelOptions;
 
    private List<SelectItem> noteFontSizeList;
@@ -81,6 +83,8 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
    
    private boolean underlineSelected = false;
 
+   private float selectedPDFZoomLevel;
+   
    private String selectedDisplayZoomLevel;
    
    private Map<String, String> zoomLevelMap;
@@ -127,6 +131,7 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
    public void initialize()
    {
       messageBean = MessagesViewsCommonBean.getInstance();
+      intializePDFZoomLevelOptions();
       intializeDisplayZoomLevelOptions();
       initializeHighlightColourList();
       initializeDocPriorVerionAcionList();
@@ -143,6 +148,14 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
    {
       return (ImageViewerConfigurationBean) org.eclipse.stardust.ui.web.common.util.FacesUtils
             .getBeanFromContext(BEAN_NAME);
+   }
+
+   /**
+    * @return
+    */
+   public List<SelectItem> getPdfZoomLevelOptions()
+   {
+      return pdfZoomLevelOptions;
    }
 
    /**
@@ -270,6 +283,7 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
       userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DATA_FIELD_HIGHLIGHTER_COLOUR, dataFieldHighlightColour);
 
       userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DATA_FIELD_HIGHLIGHTER_OPACITY, dataFieldHighlightOpacity);
+      userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_PDF_ZOOM_LEVEL, String.valueOf(selectedPDFZoomLevel));
       userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DISPLAY_ZOOM_LIVEL, selectedDisplayZoomLevel);
       userPrefsHelper.setString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_STAMP, ImageViewerStampsBean.getCurrent().getSelectedStampId());
       
@@ -369,6 +383,19 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
    public void toggleUnderlineSelection(ActionEvent event)
    {
       underlineSelected = !underlineSelected;
+   }
+   
+   /**
+    * @return
+    */
+   public float getSelectedPDFZoomLevel()
+   {
+      return selectedPDFZoomLevel;
+   }
+
+   public void setSelectedPDFZoomLevel(float selectedPDFZoomLevel)
+   {
+      this.selectedPDFZoomLevel = selectedPDFZoomLevel;
    }
 
    /**
@@ -595,6 +622,14 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
       }
    }
 
+   private void intializePDFZoomLevelOptions()
+   {
+      pdfZoomLevelOptions = new ArrayList<SelectItem>();
+      pdfZoomLevelOptions.add(new SelectItem(0.50f, messageBean.getString("views.imageViewerConfig.pdfDisplayOptions.minZoom")));
+      pdfZoomLevelOptions.add(new SelectItem(1.0f, messageBean.getString("views.imageViewerConfig.pdfDisplayOptions.defaultZoom")));
+      pdfZoomLevelOptions.add(new SelectItem(3.0f, messageBean.getString("views.imageViewerConfig.pdfDisplayOptions.maxZoom")));
+   }
+   
    /**
     * 
     */
@@ -701,6 +736,7 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
       highlighterColour = userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_HIGHLIGHTER_COLOUR, "#FF0000");
       dataFieldHighlightColour = userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DATA_FIELD_HIGHLIGHTER_COLOUR, "#FF0000");      
       dataFieldHighlightOpacity = userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DATA_FIELD_HIGHLIGHTER_OPACITY, "0.5");
+      selectedPDFZoomLevel = Float.valueOf(userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_PDF_ZOOM_LEVEL, "1.0f"));
       selectedDisplayZoomLevel = userPrefsHelper.getSingleString(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_SELECTED_DISPLAY_ZOOM_LIVEL, "FIT_TO_WINDOW");
       enableExtractPage = userPrefsHelper.getBoolean(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ENABLE_EXTRACT_PAGES, true);
       allowDeleteFromOriginal = userPrefsHelper.getBoolean(V_IMAGE_VIEWER_CONFIG, F_IMAGE_VIEWER_ENABLE_PAGE_DELETE, true);
