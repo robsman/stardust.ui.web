@@ -42,6 +42,7 @@ import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.security.Participant;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
@@ -113,6 +114,13 @@ public class ResourcePolicyServiceImpl implements ResourcePolicyService
       resourceId = DocumentMgmtUtility.checkAndGetCorrectResourceId(resourceId);
       
       AccessControlPolicy accessControlPolicy = getAccessControlPolicy(resourceId);
+      
+      if (accessControlPolicy == null)
+      {
+         throw new I18NException(MessagesViewsCommonBean.getInstance().getParamString(
+               "views.myDocumentsTreeView.securityDialog.resourceNotFound", resourceId));
+      }
+      
       accessControlPolicy.removeAllAccessControlEntries();
 
       // TODO: this is not good from performance perspective but kept it in order
@@ -127,6 +135,13 @@ public class ResourcePolicyServiceImpl implements ResourcePolicyService
          }
 
          DmsPrincipal dmsPrincipal = allDmsPrincipals.get(resourcePolicyDTO.participantQualifiedId);
+         
+         if (dmsPrincipal == null)
+         {
+            throw new I18NException(MessagesViewsCommonBean.getInstance().getParamString(
+                  "views.myDocumentsTreeView.securityDialog.participantNotFound",
+                  resourcePolicyDTO.participantQualifiedId));
+         }
          
          if (dmsPrincipal == null)
          {
