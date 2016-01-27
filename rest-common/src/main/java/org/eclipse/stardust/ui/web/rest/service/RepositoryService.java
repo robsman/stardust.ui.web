@@ -12,12 +12,14 @@ package org.eclipse.stardust.ui.web.rest.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentInfoDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.IResourceDataProvider;
 
 /**
  * @author Yogesh.Manware
@@ -58,26 +60,19 @@ public interface RepositoryService
    void detachProcessAttachments(List<String> documentIds, ProcessInstance processInstance)
          throws ResourceNotFoundException;
 
-   /*
-    * public DocumentDTO renameFolder(String participantQidIn);
-    *//**
-    * return parent folder
-    * 
-    * @param participantQidIn
+   /**
+    * @param resourceId
     * @return
     */
-   /*
-    * public Map<String, List<DocumentDTO>> deleteFolder(String participantQidIn);
-    * 
-    * public DocumentDTO getDocument(String documentId);
-    * 
-    * 
-    * 
-    * public DocumentDTO deleteDocument(String participantQidIn);
-    * 
-    * public DocumentDTO updateDocument(String participantQidIn);
-    * 
-    * public DocumentDTO renameDocument(String participantQidIn);
-    */
+   IResourceDataProvider exportFolder(String resourceId);
 
+   /**
+    * @param folderId
+    * @param uploadedFolder
+    * @param merge
+    * @return
+    * @throws Exception
+    */
+   Map<String, Set<String>> importFolder(String folderId, List<DocumentInfoDTO> uploadedFolder, boolean merge)
+         throws Exception;
 }

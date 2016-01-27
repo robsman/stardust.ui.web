@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.viewscommon.docmgmt;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -25,6 +26,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -115,7 +118,8 @@ public class DocumentMgmtUtility
    private static final String CONTENT_TYPE = "text/plain";
    private static final String SPECIAL_CHARACTER_SET = "[\\\\/:*?\"<>|\\[\\]]";
    private static final String VALID_FILENAME_PATTERN = "[^\\\\/:*?\"<>|\\[\\]]*";
-
+   private static final String ROOT_FOLDER_PATH = "/";
+   
    /**
     * creates blank document with default file name
     * 
@@ -809,6 +813,108 @@ public class DocumentMgmtUtility
       getDocumentManagementService().removeFolder(parentFolder.getId(), true);
    }
 
+   /**
+    * @param partitionFolderPath
+    * @param bytes
+    * @param merge
+    * @return
+    * @throws Exception
+    */
+   public static Map<String, Set<String>> importFolderFromZip(String partitionFolderPath, byte[] bytes, boolean merge)
+         throws Exception
+   {
+      // safeguard the root folder
+      if (ROOT_FOLDER_PATH.equals(partitionFolderPath))
+      {
+         throw new I18NException(MessagesViewsCommonBean.getInstance().getString(
+               "views.genericRepositoryView.replaceRootFolderWarning"));
+      }
+
+      Map<String, Set<String>> result = new HashMap<String, Set<String>>();
+      Set<String> added = new TreeSet<String>();
+      Set<String> updated = new TreeSet<String>();
+      result.put("added", added);
+      result.put("updated", updated);
+
+      // open the zip file stream
+      ZipInputStream stream = new ZipInputStream(new ByteArrayInputStream(bytes));
+      DocumentMgmtUtility.createFolderIfNotExists(partitionFolderPath);
+
+      partitionFolderPath = partitionFolderPath + "/";
+
+      try
+      {
+         // now iterate through each item in the stream. The get next
+         // entry call will return a ZipEntry for each file in the
+         // stream
+         ZipEntry entry;
+         boolean cleanedFolder = true; // clean only root folder
+         while ((entry = stream.getNextEntry()) != null)
+         {
+            // take care of Windows paths
+            String relativeEntryPath = entry.getName().replace('\\', '/');
+
+            // TODO (ab) how else we can see that this is a folder and not a file
+            // (determining this
+            // based on the size is dangerous because files also can be empty!
+            if ((relativeEntryPath.endsWith("/") || relativeEntryPath.endsWith("\\")))
+            {
+               // this is only an empty folder, create it
+               relativeEntryPath = relativeEntryPath.substring(0, relativeEntryPath.length() - 1);
+               createFolderIfNotExists(partitionFolderPath + relativeEntryPath);
+               if (!merge && cleanedFolder)
+               {
+                  cleanupFolder(getFolder(partitionFolderPath + relativeEntryPath));
+                  cleanedFolder = false;
+               }
+            }
+            else
+            {
+               // this is a file, put it as a document
+               if (relativeEntryPath.contains("/"))
+               {
+                  String folderPath = partitionFolderPath
+                        + relativeEntryPath.substring(0, relativeEntryPath.lastIndexOf('/'));
+                  String documentName = relativeEntryPath.substring(relativeEntryPath.lastIndexOf('/') + 1);
+                  Folder folder = createFolderIfNotExists(folderPath);
+                  // TODO (CRNT-10654) can not use upload servlet here if content size
+                  // exceeds threshold
+                  // (carnot.properties "Carnot.Configuration.ContentStreamingThreshold")
+                  // since the base url of the dms-content servlet is unknown
+                  byte[] documentContent = readEntryData(stream);
+
+                  Document document = getDocumentManagementService().getDocument(folder.getPath() + "/" + documentName);
+
+                  if (document == null || !merge)
+                  {
+                     // set contentType
+                     DocumentInfo docInfo = DmsUtils.createDocumentInfo(documentName);
+                     docInfo.setContentType(MimeTypesHelper.detectMimeType(documentName, null).getType());
+
+                     // use default encoding, should not be a problem
+                     document = getDocumentManagementService().createDocument(folder.getId(), docInfo, documentContent,
+                           null);
+                     added.add(document.getPath());
+                  }
+                  else
+                  {
+                     document = getDocumentManagementService().updateDocument(document, documentContent, "", true, "",
+                           "", false);
+                     updated.add(document.getPath());
+                  }
+               }
+            }
+         }
+      }
+      finally
+      {
+         // we must always close the zip file.
+         stream.close();
+      }
+
+      return result;
+   }
+   
    /**
     * Recursive function to load/create folders based on the zip file information
     * 

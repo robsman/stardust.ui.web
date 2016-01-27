@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Resource;
 
@@ -34,6 +35,8 @@ import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.DefualtResourceDataProvider;
+import org.eclipse.stardust.ui.web.viewscommon.views.document.IResourceDataProvider;
 import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
@@ -180,6 +183,33 @@ public class RepositoryServiceImpl implements RepositoryService
          documentsToBeDetached.add(DocumentMgmtUtility.getDocument(documentId));
       }
       DMSHelper.detachProcessAttachments(processInstance, documentsToBeDetached);
+   }
+   
+   
+   /**
+   *
+   */
+   public IResourceDataProvider exportFolder(String folderId)
+   {
+      folderId = DocumentMgmtUtility.checkAndGetCorrectResourceId(folderId);
+      Folder rootFolder = getDMS().getFolder(folderId);
+      return new DefualtResourceDataProvider(rootFolder.getName(), rootFolder.getId(), "", getDMS(), false);
+   };
+
+   /**
+    * @throws Exception
+    *
+    */
+   @Override
+   public Map<String, Set<String>> importFolder(String folderId, List<DocumentInfoDTO> uploadedFolder, boolean merge)
+         throws Exception
+   {
+      folderId = DocumentMgmtUtility.checkAndGetCorrectResourceId(folderId);
+      for (DocumentInfoDTO infoDTO : uploadedFolder)
+      {
+         return DocumentMgmtUtility.importFolderFromZip(folderId, infoDTO.content, merge);
+      }
+      return null;
    }
    
    /**
