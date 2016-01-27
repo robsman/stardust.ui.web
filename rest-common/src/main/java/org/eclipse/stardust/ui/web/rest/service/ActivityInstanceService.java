@@ -16,7 +16,6 @@ package org.eclipse.stardust.ui.web.rest.service;
 import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,14 +32,12 @@ import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.Folder;
-import org.eclipse.stardust.engine.api.runtime.FolderInfo;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.ScanDirection;
 import org.eclipse.stardust.engine.api.runtime.TransitionOptions;
 import org.eclipse.stardust.engine.api.runtime.TransitionReport;
 import org.eclipse.stardust.engine.api.runtime.TransitionTarget;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
-import org.eclipse.stardust.engine.extensions.dms.data.DmsFolderBean;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.Options;
 import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
@@ -71,7 +68,6 @@ import org.eclipse.stardust.ui.web.rest.service.utils.ActivityTableUtils.MODE;
 import org.eclipse.stardust.ui.web.rest.service.utils.CriticalityUtils;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 import org.springframework.stereotype.Component;
 
@@ -179,7 +175,7 @@ public class ActivityInstanceService
                         && activityInstance.getState().equals(
                               ActivityInstanceState.Suspended))
                   {
-                     serviceFactoryUtils.getWorkflowService().activate(target.getActivityInstanceOid());
+                     org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.activate(activityInstance);
                   }
                }
                TransitionReport report = serviceFactoryUtils.getWorkflowService().performAdHocTransition(target, false);
@@ -435,7 +431,8 @@ public class ActivityInstanceService
       ActivityInstance ai = null;
       try
       {
-         ai = serviceFactoryUtils.getWorkflowService().activate(activityOID);
+         ai = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.getActivityInstance(activityOID);
+         ai = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.activate(ai);
          serviceFactoryUtils.getWorkflowService().unbindActivityEventHandler(activityOID, "Resubmission");
          notification.addSuccess(new NotificationDTO(activityOID, ai.getActivity().getName(), null));
       }
