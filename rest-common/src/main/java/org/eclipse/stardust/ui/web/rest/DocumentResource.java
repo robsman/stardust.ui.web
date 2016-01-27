@@ -202,25 +202,31 @@ public class DocumentResource
    @Consumes(MediaType.MULTIPART_FORM_DATA)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/upload")
-   @RequestDescription("Multiple documents can uploaded at the same time. \r\n"
-         + "\r\n"
-         + "File and its attributes has to be supplied in sequence. \r\n"
-         + "\r\n"
-         + "Supported Attributes are \r\n"
-         + "``` javascript\r\n"
-         + "parentFolderPath //where the document will created/updated)\r\n"
-         + "description \r\n"
-         + "comments\r\n"
-         + "createVersion //'true'(default) to indicate user wants to create a version if the document already exist with the same name)\r\n"
-         + "createNewVersion //'true' (default) to indicate user wants to create new version with update, 'false' to overwrite\r\n"
-         + "\r\n" + "modelId //required when documentTypeId is also supplied\r\n"
-         + "documentTypeId //modelId must also be supplied before this attibute) \r\n" + "\r\n" + "```\r\n"
-         + "Note that all other attributes key-values would be assumed to be document *Properties*\r\n" + "\r\n"
-         + "example of how client can provide the file attributes is \r\n"
-         + "formData.append(\"file1\", files[1]);\r\n"
-         + "formData.append(\"description\", \"Description for file1\") \r\n"
-         + "formData.append(\"file2\", files[2]);\r\n"
-         + "formData.append(\"description\", \"Description for file2\") \r\n" + "")
+   @RequestDescription("Multiple documents can uploaded at the same time. \r\n" + 
+         "\r\n" + 
+         "File and its attributes has to be supplied in sequence. \r\n" + 
+         "\r\n" + 
+         "Supported Attributes are \r\n" + 
+         "``` javascript\r\n" + 
+         "parentFolderPath //where the document will created/updated)\r\n" + 
+         "description \r\n" + 
+         "comments\r\n" + 
+         "createVersion //'true'(default) to indicate user wants to create a version if the document already exist with the same name)\r\n" + 
+         "createNewVersion //'true' (default) to indicate user wants to create new version with update, 'false' to overwrite\r\n" + 
+         "\r\n" + 
+         "modelId //required when documentTypeId is also supplied\r\n" + 
+         "documentTypeId //modelId must also be supplied before this attibute) \r\n" + 
+         "\r\n" + 
+         "```\r\n" + 
+         "Note that all other attributes key-values would be assumed to be document *Properties*\r\n" + 
+         "\r\n" + 
+         "example of how client can provide the file attributes is \r\n" + 
+         "``` javascript\r\n" + 
+         "formData.append(\"file1\", files[1]);\r\n" + 
+         "formData.append(\"description\", \"Description for file1\") \r\n" + 
+         "formData.append(\"file2\", files[2]);\r\n" + 
+         "formData.append(\"description\", \"Description for file2\") \r\n" + 
+         "``` javascript")
    @ResponseDescription("Returns the result something like below\r\n" + "\r\n" + "```javascript\r\n" + "{\r\n"
          + "  \"failures\": [] //NotificationDTOs\r\n" + "  \"documents\": [] ////DocumentDTOs\r\n" + "}\r\n" + "```")
    public Response uploadDocuments(List<Attachment> attachments) throws Exception
