@@ -18,6 +18,7 @@
     this.name = "Ctrl";
     this.documentService = documentRepositoryService;
     this.sdViewUtilService = sdViewUtilService;
+    this.sdUtilService = sdUtilService;
     this.$timeout = $timeout;
     this.$filter = $filter;
     this.$scope = $scope;
@@ -208,6 +209,12 @@
       case "menu-uploadNewFileVersion":
         this.uploadNewFileVersion(data.valueItem);
         break;
+      case "menu-downloadFile" :
+        this.downloadFile(data.valueItem);
+        break;
+      case "menu-downloadFolder" :
+        this.downloadFolder(data.valueItem);
+        break;
       case "menu-uploadFile" :
         this.uploadFile(data.valueItem,data);
         break;
@@ -248,6 +255,7 @@
       menuItems.push("(createSubFolder,Create Sub Folder)");
       menuItems.push("(createFile,Create New File)");
       menuItems.push("(uploadFile,Upload File)");
+      menuItems.push("(downloadFolder,Download Folder)");
       menuItems.push("(refreshFolder,Refresh)");
       menuItems.push("(securityFolder,Security Settings)");
 
@@ -277,6 +285,14 @@
   
   docRepoController.prototype.isLeaf = function(nodeItem){
     return nodeItem.nodeType==='document';
+  };
+
+  docRepoController.prototype.downloadFolder = function(folder){
+    this.sdUtilService.downloadFolder(folder.uuid);
+  };
+
+  docRepoController.prototype.downloadFile = function(doc){
+    this.sdUtilService.downloadDocument(doc.uuid,doc.name);
   };
 
   /*Refresh a folders children by faking a treeNode event*/

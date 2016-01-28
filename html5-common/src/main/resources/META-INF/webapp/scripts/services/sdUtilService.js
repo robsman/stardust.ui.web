@@ -582,11 +582,41 @@
 		    var myNav = navigator.userAgent.toLowerCase();
 		    return (myNav.indexOf('msie') != -1) ? parseInt(myNav.split('msie')[1]) < 10 : false;
 		};
-		  
-		  
+		
+		/**
+		 * Zips and downloads a folder and all of its files and sub folders.
+		 */
+		UtilService.prototype.downloadFolder = function(folderId){
+			var REST_BASE_URL = this.getBaseUrl() + "services/rest/portal/folders";
+			window.location = this.getRootUrl() + 
+							  "/" + REST_BASE_URL + 
+							  "/export" + 
+							  "/"+ folderId;
+		};
+		
+		/**
+		 * Helper function to download a document in our document repository.
+		 * Base on the internal implementation of the sdDocumentDownload 
+		 * directive in html5-views-common. If you need a UI instance of this
+		 * method (one that gives you a download icon and confirm dialog etc)
+		 * use the directive instead.
+		 */
+		UtilService.prototype.downloadDocument = function(documentId,documentName){
+			
+		  var REST_BASE_URL = this.getBaseUrl() + "services/rest/portal/documents";
+			window.location = this.getRootUrl() + 
+							  "/" + REST_BASE_URL + 
+							  "/downloadDocument" + 
+							  "/"+ documentId + 
+							  "/" + documentName;
+		};
+	  
 	  /**
 	   *Downloads the content as a file. Tested with UTF-8 (text) content.
 	   *Still to be determined how this works with binary content (images/wav files).
+	   *Note on binary content, will not currently work and we shouldnt care.
+	   *Binary content is most likely already present in the document repository 
+	   *and thus can be downloaded using our existing framework.
 	   *Note:ref ng-grid
 	   *@param: content - data to save to file
 	   *@param: filename - name of file, if not provided with = {timestamp}.txt
