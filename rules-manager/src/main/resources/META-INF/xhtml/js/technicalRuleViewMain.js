@@ -11,7 +11,7 @@ require
 		.config({
 			baseUrl : "plugins/",
 			paths : {
-				'jquery' : [ 'bpm-modeler/js/libs/jquery/jquery-1.7.2',
+				'jquery' : [ '../portal-shell/js/libs/jquery/1.9.1/jquery.min',
 						'//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min' ],
 				'jquery-ui': [
 				        'bpm-modeler/js/libs/jquery/plugins/jquery-ui-1.10.2.min',
