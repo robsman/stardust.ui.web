@@ -240,7 +240,7 @@
 	        //======================================================================
 	        controller.api.getItem = function(nodeId){
 	          var nodeScope= controller.childNodes[nodeId];
-	          return nodeScope[nodeScope.repeater.lhs];
+	          return nodeScope.nodeItem;
 	        };
 	        
 	        //======================================================================

@@ -97,7 +97,7 @@
     
     var classes=["fa"];
 
-    if(data.nodeType=="folder"){
+    if(data.nodeType=="folder" || data.nodeType == "repoFolderRoot"){
       classes.push("pi-folder");
     }
     else if(data.nodeType=="document"){
@@ -118,17 +118,35 @@
     switch(data.treeEvent){
       case "node-expand":
         if(! data.valueItem.isInitialized && 
-        (data.valueItem.nodeType ==='folder' || data.valueItem.nodeType ==='Repo')){
+        (data.valueItem.nodeType ==='folder' || data.valueItem.nodeType ==='repoFolderRoot')){
+
           var resourceId;
-          //Todo: need valid repository jcruuid
-          resourceId = (data.valueItem.nodeType ==='Repo')?"":data.valueItem.id;
+          resourceId = (data.valueItem.nodeType ==='repoFolderRoot')?data.valueItem.path : data.valueItem.id;
+
           this.documentService.getChildren(resourceId)
           .then(function(root){
-            children = that.treeifyChildren(root);
+            var children = that.treeifyChildren(root);
             data.valueItem.children = children;
             data.valueItem.isInitialized=true;
             data.deferred.resolve();
           });
+
+        }
+        else if(! data.valueItem.isInitialized && data.valueItem.nodeType ==='Repo'){
+
+          this.documentService.getRepositoryRootFolder(data.valueItem.id)
+          .then(function(root){
+            var rootFolder = root.data;
+            rootFolder.nodeType="folder";
+            rootFolder.id = rootFolder.uuid;
+            rootFolder.name = "Root";
+            rootFolder.isInitialized = true;
+            rootFolder.children = that.treeifyChildren(rootFolder);
+            data.valueItem.isInitialized=true;
+            data.valueItem.children=[rootFolder];
+            data.deferred.resolve();
+          });
+
         }
         else{
           data.deferred.resolve();
@@ -221,7 +239,7 @@
       }
 
       menuItems.push("(repoProperties,Properties)");
-
+       menuItems.push("(unbindRepo,Unbind Repository)");
     }
     else if(menuData.item.nodeType=="folder"){
 
@@ -234,7 +252,16 @@
       menuItems.push("(securityFolder,Security Settings)");
 
     }
-     else if(menuData.item.nodeType=="document"){
+    else if(menuData.item.nodeType==="repoFolderRoot"){
+
+      menuItems.push("(createSubFolder,Create Sub Folder)");
+      menuItems.push("(createFile,Create New File)");
+      menuItems.push("(uploadFile,Upload File)");
+      menuItems.push("(refreshFolder,Refresh)");
+      menuItems.push("(securityFolder,Security Settings)");
+
+    }
+    else if(menuData.item.nodeType=="document"){
 
       menuItems.push("(rename,Rename)");
       menuItems.push("(delete,Delete)");
@@ -249,10 +276,25 @@
   };
   
   docRepoController.prototype.isLeaf = function(nodeItem){
-    return (nodeItem.isInitialized===true && nodeItem.children.length===0) || 
-            nodeItem.nodeType==='document';
+    return nodeItem.nodeType==='document';
   };
-  
+
+  /*Refresh a folders children by faking a treeNode event*/
+  docRepoController.prototype.refreshFolder = function(treeNode){
+    var that = this;
+    var data;
+    var deferred = this.$q.defer();
+    treeNode.isInitialized = false;
+
+    data = {
+      "treeEvent" : "node-expand",
+      "valueItem" : treeNode,
+      "deferred" : deferred
+    };
+
+    this.eventCallback(data,{});
+  };
+
   docRepoController.prototype.recursiveTreeNodeFactory = function(nodeScope){
 	  var template;
 
@@ -272,19 +314,29 @@
   
   docRepoController.prototype.openFolderSecuritySettingsDialog = function(folderItem){
 
-    this.activeFolder = folderItem;
+    var that = this;
 
-    this.folderSecurityDialog.open()
-    .then(function(files){});
+    this.documentService.getFolderPolicy(folderItem.id)
+    .then(function(res){
+      that.activeFolder= folderItem;
+      that.activeFolder.policy = res.data;
+      return that.folderSecurityDialog.open();
+    });
+
 
   };
   
   docRepoController.prototype.openFileSecuritySettingsDialog = function(documentItem){
-    this.activeDocument = documentItem;
-    this.fileSecurityDialog.open()
-    .then(function(data){
-    })
-    ["catch"](function(err){});
+
+    var that = this;
+
+    this.documentService.getDocumentPolicy(documentItem.id)
+    .then(function(res){
+      that.activeDocument = documentItem;
+      that.activeDocument.policy = res.data;
+      return that.fileSecurityDialog.open();
+    });
+
   };
   
   docRepoController.prototype.uploadFile = function(targetFolder){
@@ -344,29 +396,21 @@
     alert("TODO: UNFV utilize file upload directive if possible.");
   };
   
-  docRepoController.prototype.refreshFolder = function(folderItem){
-    var that = this;
-    var isExpanded = this.treeApi.childNodes[folderItem.id].isVisible;
-    this.documentService.getFolder(folderItem.id)
-    .then(function(refreshedFolder){
-      refreshedFolder = folderItem;//TODO remove in production
-      var parentItem = that.treeApi.getParentItem(folderItem.id);
-      var index = parentItem.children.indexOf(folderItem);
-      parentItem.children.splice(index,1);
-      refreshedFolder.isInitialized = true;
-      parentItem.children.push(refreshedFolder);
-    });
-  };
-  
   docRepoController.prototype.refreshDocument = function(documentNode){
     var that = this;
     this.documentService.getDocument(documentNode.id)
     .then(function(refreshedDoc){
-      refreshedDoc = documentNode;//TODO remove in production
+
       var parentItem = that.treeApi.getParentItem(documentNode.id);
       var index = parentItem.children.indexOf(documentNode);
+
       parentItem.children.splice(index,1);
+
+      refreshedDoc.nodeType = "document";
+      refreshedDoc.id = refreshedDoc.uuid;
+
       parentItem.children.push(refreshedDoc);
+
     });
   }
   
@@ -385,10 +429,12 @@
     var name = "New Folder"
     var dateTime = new Date();
     var name = this.$filter('date')(new Date(), 'yyyy-MM-dd HH-mm-ss');
+    var parentFolderId;
 
     name = "New Folder, " + name;
+    parentFolderId = (parentFolderNode.nodeType=="folder")?parentFolderNode.id:parentFolderNode.path;
 
-    this.documentService.createFolder(parentFolderNode.id,name)
+    this.documentService.createFolder(parentFolderId,name)
     .then(function(newFolder){
       newFolder.id=newFolder.uuid;
       newFolder.nodeType = "folder";
@@ -487,21 +533,26 @@
   
    docRepoController.prototype.onBindDialogConfirm = function(res){
     var that = this;
-    alert("Todo: Finish Back End Work..." );
-    return;
-    res.promise.then(function(){
-      that.documentService.bindRepository(that.boundDialogRepoProvider)
+    var jndiName = that.boundDialogRepoProvider.jndiName;
+    var id = that.boundDialogRepoProvider.beanId;
+    var providerId = that.boundDialogRepoProvider.id;
+    
+    if(res===true){
+      that.documentService.bindRepository(providerId,id,jndiName)
       .then(function(boundRepo){
         //TODO:refresh tree as we need the uuid etc.
         that.data[0].children.push(boundRepo);//this wont work...
+      })
+      ["catch"](function(err){
+        alert("TODO: Error handling!" );
       });
-    });
+    };
     
   };
 
   docRepoController.prototype.onBindDialogOpen = function(res){
     var that = this;
-        
+    return;    
     res.promise.then(function(){
       that.documentService.bindRepository(that.boundDialogRepoProvider)
       .then(function(boundRepo){

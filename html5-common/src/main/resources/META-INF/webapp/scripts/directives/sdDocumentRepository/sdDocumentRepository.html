@@ -1,7 +1,7 @@
 <div>
   
   <!--NG-Dialog Section-->
-
+asdsasad
   <!-- Bind Repository Confirmation Dialog -->
   <div  sd-dialog="ctrl.bindRepoDialog" 
         sda-title="Bind Repository" 
@@ -33,7 +33,7 @@
         sda-confirm-action-label="Confirm"
         sda-cancel-action-label="Cancel"
         sda-modal="true"
-        sda-template="templates/fileVersionHistory.html"
+        sda-template="{{ctrl.baseTemplateUrl}}fileVersionHistory.html"
         sda-scope="this">
 	</div>
 	
@@ -44,7 +44,7 @@
         sda-confirm-action-label="Confirm"
         sda-cancel-action-label="Cancel"
         sda-modal="true"
-        sda-template="templates/fileSecuritySettings.html"
+        sda-template="{{ctrl.baseTemplateUrl}}fileSecuritySettings.html"
         sda-scope="this">
 	</div>
 	
@@ -55,7 +55,7 @@
         sda-confirm-action-label="Confirm"
         sda-cancel-action-label="Cancel"
         sda-modal="true"
-        sda-template="templates/folderSecuritySettings.html"
+        sda-template="{{ctrl.baseTemplateUrl}}folderSecuritySettings.html"
         sda-scope="this">
 	</div>
 	
@@ -92,7 +92,7 @@
         <li sd-tree-node
             sda-menu-items="(,)"
             sda-node-id="child.id"
-            sda-label="child.name"
+            sda-label="child.id"
             ng-repeat="child in root.children">
           
           <ul>

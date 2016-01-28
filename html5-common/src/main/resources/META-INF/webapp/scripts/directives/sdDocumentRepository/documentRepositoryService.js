@@ -3,7 +3,7 @@
  
   //Virtual root node of all instanced repositories
   var virtualRoot = {
-    "name" : "Root",
+    "name" : "Available Repositories",
     "id" : "VirtualRoot",
     "type" : "VirtualRoot",
     "version" : "0.0.0",
@@ -11,6 +11,17 @@
     "nodeType" : "RootRepo",
     "children" : []
   };
+
+  //Artificially constructed Root Nodes for a single Repository.
+  var repoRoot = {
+    "name" : "",
+    "id" : "",
+    "uuid" : "",
+    "path" : "",
+    "nodeType" : "repoFolderRoot",
+    "children" : []
+  }
+
   /**Bootstrap Section Ends**/
   
   documentRepoService.$inject = ["$q","$timeout","$location","$http", "sdUtilService"];
@@ -37,12 +48,59 @@
     this.rootUrl = this.absUrl + "/services/rest/portal/repository";
 
   }
-  
+
+  documentRepoService.prototype.getRepositoryRootFolder = function(repositoryId){
+
+    var deferred = this.$q.defer();
+    var repoUrlId = "{urn:repositoryId:" + repositoryId + "}";
+
+    this.$http({
+      "method" : "GET",
+      "url" : this.folderRoot + "/" + repoUrlId + "//",
+    })
+    .then(function(res){
+      deferred.resolve(res);
+    });
+
+    return deferred.promise;
+
+  };
+
+  documentRepoService.prototype.getDocumentPolicy = function(documentId){
+
+    var deferred = this.$q.defer();
+
+    this.$http({
+      "method" : "GET",
+      "url" : this.documentRoot + "/policy/" + documentId
+    })
+    .then(function(res){
+      deferred.resolve(res);
+    });
+
+    return deferred.promise;
+  };
+
+  documentRepoService.prototype.getFolderPolicy = function(folderId){
+
+    var deferred = this.$q.defer();
+
+    this.$http({
+      "method" : "GET",
+      "url" : this.folderRoot + "/policy/" + folderId
+    })
+    .then(function(res){
+      deferred.resolve(res);
+    });
+
+    return deferred.promise;
+  };
+
   documentRepoService.prototype.getVirtualRoot = function(){
     var deferred = this.$q.defer();
     deferred.resolve(angular.extend({},virtualRoot));
     return deferred.promise;
-  }
+  };
 
   documentRepoService.prototype.setFileSecurity = function(fileId,settings){
     var deferred = this.$q.defer();
@@ -113,8 +171,21 @@
   };
   
   documentRepoService.prototype.getDocument = function(documentId){
+
     var deferred = this.$q.defer();
-    deferred.resolve({});
+    var url= this.documentRoot + "/" + documentId;
+    
+    this.$http({
+      "method" : "GET",
+      "url" : url
+    })
+    .then(function(res){
+      deferred.resolve(res.data);
+    })
+    ["catch"](function(err){
+      deferred.reject(err);
+    });
+    
     return deferred.promise;
   };
   
@@ -293,15 +364,22 @@
 
   };
   
-  documentRepoService.prototype.bindRepository = function(repo){
+  documentRepoService.prototype.bindRepository = function(providerId, id, jndiName){
 
     var deferred = this.$q.defer();
     var url= this.rootUrl + "/bind";
+    var data
+
+    data={
+      "providerId" : providerId,
+      "id" : id,
+      "jndiName" : jndiName
+    };
 
     this.$http({
       "method" : "PUT",
       "url" : url,
-      "data" : repo
+      "data" : data
     })
     .then(function(res){
       deferred.resolve(res.data);
