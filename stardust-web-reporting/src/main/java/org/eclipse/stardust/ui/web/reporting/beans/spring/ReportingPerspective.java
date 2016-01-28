@@ -82,7 +82,6 @@ public class ReportingPerspective extends AbstractLaunchPanel implements Perspec
    private static void deActivateIframe()
    {
       String deActivateIframeJS = "InfinityBpm.ProcessPortal.deactivateContentFrame('reportingOutlineFrame');";
-      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), deActivateIframeJS);
       PortalApplicationEventScript.getInstance().addEventScript(deActivateIframeJS);
    }
 
@@ -104,7 +103,6 @@ public class ReportingPerspective extends AbstractLaunchPanel implements Perspec
 
       // Activate iframe
 
-      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(), activateIframeJS);
       PortalApplicationEventScript.getInstance().addEventScript(activateIframeJS);
 
       // Resize iframe

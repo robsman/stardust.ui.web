@@ -81,8 +81,6 @@ public class RulesManagerLaunchPanel extends AbstractLaunchPanel
    private static void deActivateIframe()
    {
       String deActivateIframeJS = "InfinityBpm.ProcessPortal.deactivateContentFrame('ruleSetOutlineFrame');";
-      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-            deActivateIframeJS);
       PortalApplicationEventScript.getInstance().addEventScript(deActivateIframeJS);
    }
 
@@ -94,8 +92,6 @@ public class RulesManagerLaunchPanel extends AbstractLaunchPanel
        String outlinePath = FacesContext.getCurrentInstance().getExternalContext().getRequestContextPath() 
        		+ "/plugins/rules-manager/launchpad/outline.html";
       String deActivateIframeJS = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('ruleSetOutlineFrame', '" + outlinePath + "', {anchorId:'portalLaunchPanels:rulesOutlineAnchor', autoResize: true, zIndex:800, noUnloadWarning: 'true', frmAttrs: {repotitionOnScroll: false}});";
-      JavascriptContext.addJavascriptCall(FacesContext.getCurrentInstance(),
-            deActivateIframeJS);
       PortalApplicationEventScript.getInstance().addEventScript(deActivateIframeJS);
    }
 
