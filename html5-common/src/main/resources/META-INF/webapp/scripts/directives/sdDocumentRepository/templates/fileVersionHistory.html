@@ -1,1 +1,38 @@
-TODO Version History
+
+<table sd-data-table="ctrl.fvhTableApi"
+	   sda-mode="local"
+	   sda-selectable="row"
+	   sda-sortable="single"
+	   sda-sor-by ="{revisionName : 'revisionName', dir : 'desc'}"
+	   sda-page-size = "5"
+	   sda-on-select="ctrl.benchmarkSelected(d)"
+	   sd-data ="ctrl.currentFileVersionHistory">
+	   <thead>
+		   	<tr>
+		   		<th sda-name="revisionName" sda-label="Version No"></th>
+		   		<th sda-name="name" sda-label="Document Name"></th>
+		   		<th sda-name="owner" sda-label="Author"></th>
+		   		<th sda-name="dateLastModified" sda-label="Modified Date"></th>
+		   	</tr>
+	   </thead>
+	   <tbody>
+	   		<tr>
+	   			<td sda-field="revisionName">
+	   				<a sd-open-document-link
+	   				   sda-name="rowData.revisionName"
+	   				   sda-document-id="rowData.revisionId"
+	   				   sda-mime-type="rowData.contentType"
+	   				   href="#">
+	   				</a>
+	   			</td>
+	   			<td sda-field="name"></td>
+	   			<td sda-field="owner"></td>
+	   			<td sda-field="dateLastModified"
+	   				sda-data-type="DateTime">
+	   				<span>
+	   				{{rowData.dateLastModified | date:'short'}}
+	   				</span>
+	   			</td>
+	   		</tr>
+	   </tbody>
+</table>

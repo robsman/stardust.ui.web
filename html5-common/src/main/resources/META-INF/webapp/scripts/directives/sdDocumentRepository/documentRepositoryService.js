@@ -60,6 +60,9 @@
     })
     .then(function(res){
       deferred.resolve(res);
+    })
+    ["catch"](function(err){
+      deferred.reject(err);
     });
 
     return deferred.promise;
@@ -76,9 +79,13 @@
     })
     .then(function(res){
       deferred.resolve(res);
+    })
+    ["catch"](function(err){
+      deferred.reject(err);
     });
 
     return deferred.promise;
+
   };
 
   documentRepoService.prototype.getFolderPolicy = function(folderId){
@@ -91,6 +98,9 @@
     })
     .then(function(res){
       deferred.resolve(res);
+    })
+    ["catch"](function(err){
+      deferred.reject(err);
     });
 
     return deferred.promise;
@@ -114,10 +124,22 @@
     return deferred.promise;
   };
   
-  documentRepoService.prototype.getFileVersionHistory = function(fileId){
+  documentRepoService.prototype.getFileVersionHistory = function(documentId){
     var deferred = this.$q.defer();
-    deferred.resolve({"data" : []});
+
+    this.$http({
+      "method" : "GET",
+      "url" : this.documentRoot + "/history/" + documentId
+    })
+    .then(function(res){
+      deferred.resolve(res);
+    })
+    ["catch"](function(err){
+      deferred.reject(err);
+    });
+
     return deferred.promise;
+
   };
   
   documentRepoService.prototype.getFolder = function(folderId){
@@ -338,6 +360,9 @@
       var vr = angular.extend({}, virtualRoot)
       vr.children=(res.data);
       deferred.resolve([vr]);
+    })
+    ["catch"](function(err){
+      deferred.reject(err);
     });
 
     return deferred.promise;
