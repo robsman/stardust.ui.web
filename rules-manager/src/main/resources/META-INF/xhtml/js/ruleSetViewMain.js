@@ -47,8 +47,8 @@ require
 						'bpm-modeler/js/libs/jquery/plugins/jquery.jstree',
 						'https://jstree.googlecode.com/svn-history/r191/trunk/jquery.jstree' ],
 				'jquery.simplemodal' : [
-						'bpm-modeler/js/libs/jquery/plugins/jquery.simplemodal.1.4.1.min',
-						'//simplemodal.googlecode.com/files/jquery.simplemodal.1.4.1.min' ],
+						'bpm-modeler/js/libs/jquery/plugins/jquery.simplemodal.1.4.5.min',
+						'//simplemodal.googlecode.com/files/jquery.simplemodal.1.4.4.min' ],
 				'jquery.tablescroll' : [
 						'bpm-modeler/js/libs/jquery/plugins/jquery.tablescroll',
 						'https://raw.github.com/farinspace/jquery.tableScroll/master/jquery.tablescroll' ],

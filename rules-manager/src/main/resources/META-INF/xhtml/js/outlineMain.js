@@ -40,8 +40,8 @@ require
 						'rules-manager/js/libs/jquery/plugins/jquery.jstree',
 						'https://jstree.googlecode.com/svn-history/r191/trunk/jquery.jstree' ],
 				'jquery.simplemodal' : [
-						'bpm-modeler/js/libs/jquery/plugins/jquery.simplemodal.1.4.1.min',
-						'//simplemodal.googlecode.com/files/jquery.simplemodal.1.4.1.min' ],
+						'bpm-modeler/js/libs/jquery/plugins/jquery.simplemodal.1.4.5.min',
+						'//simplemodal.googlecode.com/files/jquery.simplemodal.1.4.4.min' ],
 				'jquery.url' : [
 						'bpm-modeler/js/libs/jquery/plugins/jquery.url',
 						'https://raw.github.com/allmarkedup/jQuery-URL-Parser/472315f02afbfd7193184300cc381163e19b4a16/jquery.url' ],
