@@ -11,6 +11,8 @@
 package org.eclipse.stardust.ui.web.rest.service.utils;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.stardust.common.StringUtils;
@@ -21,6 +23,7 @@ import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.rest.service.dto.NoteDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.viewscommon.common.NoteTip;
 import org.eclipse.stardust.ui.web.viewscommon.common.event.IppEventController;
 import org.eclipse.stardust.ui.web.viewscommon.common.event.NoteEvent;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
@@ -67,6 +70,14 @@ public class NotesUtils
          noteDTO.noteNumber = noteList.indexOf(note) + 1;
          noteDTOList.add(noteDTO);
       }
+      
+      Collections.sort(noteDTOList, new Comparator<NoteDTO>()
+            {
+               public int compare(NoteDTO arg0, NoteDTO arg1)
+               {
+                  return new Long(arg1.created).compareTo(new Long(arg0.created));
+               }
+            });
 
       QueryResultDTO queryResultDTO = new QueryResultDTO();
       queryResultDTO.list = noteDTOList;

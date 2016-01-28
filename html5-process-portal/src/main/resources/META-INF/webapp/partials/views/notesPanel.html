@@ -15,10 +15,10 @@
 	<table sd-data-table="ctrl.notesTable"
 		sd-data="ctrl.getNotesData(params)" sda-mode="local"
 		sda-ready="ctrl.showNotesTable" sda-selectable="row"
-		sda-initial-selection="[{noteNumber: ctrl.notes.totalCount}]"
+		sda-initial-selection="[ctrl.initialSelection]"
 		sda-on-select="ctrl.onSelect(info)"
 		sda-column-selector="{{ctrl.columnSelector}}" sda-sortable="true"
-		sda-sort-by="{name : 'teamMember', dir : 'desc'}" sda-exports="false"
+		sda-sort-by="{name : 'created', dir : 'desc'}" sda-exports="false"
 		sda-preference-module="ipp-workflow-perspective" sda-preference-id="preference"
 		sda-preference-name="ipp-workflow-perspective.processportalNotesTable.selectedColumns">
 		<thead sda-i18n-scope="processportal.views-notesPanel-column">

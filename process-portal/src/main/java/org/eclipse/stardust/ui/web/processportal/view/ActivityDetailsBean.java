@@ -1149,8 +1149,13 @@ public class ActivityDetailsBean extends UIComponentBean
       Map<String, Object> params = CollectionUtils.newTreeMap();
       Date noteTimestamp = (Date) event.getComponent().getAttributes().get("noteTimestamp");
       Integer noteIndex = (Integer) event.getComponent().getAttributes().get("noteIndex");
-      params.put("noteTimestamp", noteTimestamp);
-      params.put("noteIndex", noteIndex);
+      Boolean createNote = Boolean.valueOf((String)event.getComponent().getAttributes().get("createNote"));
+      if(createNote){
+         params.put("createNote", createNote);
+      }else if(noteIndex != null && noteTimestamp != null){
+         params.put("noteTimestamp", noteTimestamp.getTime());
+         params.put("noteIndex", noteIndex + 1);
+      }      
       openNotesView(params);
       closeNotesIframePopupSelf();
    }

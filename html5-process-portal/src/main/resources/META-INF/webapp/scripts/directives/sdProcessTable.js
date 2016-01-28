@@ -475,7 +475,7 @@
 			 *
 			 */
 			ProcessTableCompiler.prototype.openNotes = function(rowItem) {
-				sdCommonViewUtilService.openNotesView(rowItem.oid, true);
+				sdCommonViewUtilService.openNotesViewHTML5(rowItem.oid, rowItem.processName, true);
 			};
 
 			/*

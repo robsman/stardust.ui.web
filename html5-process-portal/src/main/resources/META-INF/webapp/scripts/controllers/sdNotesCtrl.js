@@ -75,6 +75,15 @@
 		var self = this;
 		_sdNotesService.getNotes(self.viewParams.oid).then(function(data) {
 			self.notes = data;
+			if(self.viewParams.createNote === true && data.totalCount == 0){
+				self.addNote();
+				delete self.viewParams.createNote;
+			}else if(self.viewParams.noteTimestamp != undefined){
+				self.initialSelection = {'created' : self.viewParams.noteTimestamp};
+				delete self.viewParams.noteTimestamp;
+			}else{
+				self.initialSelection = {'noteNumber' : data.totalCount };
+			}
 			self.showNotesTable = true;
 		}, function(error) {
 			trace.log(error);
@@ -88,18 +97,6 @@
 	 */
 	NotesCtrl.prototype.getNotesData = function(options) {
 		var self = this;
-		var list = [];
-		angular.forEach(self.notes.list, function(note) {
-			list.push(note);
-		});
-
-		list.sort(function(a, b) {
-			return parseInt(a.noteNumber) - parseInt(b.noteNumber);
-		});
-
-		list.reverse();
-
-		self.notes.list = list;
 		return self.notes;
 	};
 
@@ -117,8 +114,11 @@
 	 * @param info
 	 */
 	NotesCtrl.prototype.onSelect = function(info) {
-		var self = this;
-		if (info.action == "select") {
+		var self = this;		
+		if(self.viewParams.createNote === true){
+			self.addNote();
+			delete self.viewParams.createNote;
+		}else if (info.action == "select") {
 			self.note = info.current.note;
 			self.isAddMode = false;
 		} else {
@@ -152,9 +152,9 @@
 					self.notesTable.refresh();
 					setTimeout(function() {
 						self.notesTable.setSelection({
-							noteNumber : data.totalCount
+							'noteNumber' : data.totalCount
 						});
-					}, 0);
+					}, 100);
 				}, function(error) {
 					trace.log(error);
 				});
@@ -171,7 +171,7 @@
 		var self = this;
 		if (self.notes.totalCount > 0) {
 			self.notesTable.setSelection({
-				noteNumber : self.notes.totalCount
+				'noteNumber' : self.notes.totalCount
 			});
 		} else {
 			self.isAddMode = false;

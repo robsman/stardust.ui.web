@@ -279,17 +279,25 @@ public class View extends AbstractUiElement implements TabScopeManager
     * @param viewParams2
     * @return
     */
-   private String contertToJsonString(Map<String, Object> viewParams2)
+   private String convertToJsonString(Map<String, Object> viewParams2)
    {
       String ret = "";
 
       if (viewParams2 != null)
       {
-        for (Entry<String, Object> element : viewParams2.entrySet())
+         for (Entry<String, Object> element : viewParams2.entrySet())
          {
             if (element.getValue() instanceof String)
             {
                ret += element.getKey() + ": '" + element.getValue() + "', ";
+            }
+            else if (element.getValue() instanceof Number)
+            {
+               ret += element.getKey() + ":" + element.getValue() + ",";
+            }
+            else if (element.getValue() instanceof Boolean)
+            {
+               ret += element.getKey() + ":" + element.getValue() + ",";
             }
          }
       }
@@ -643,7 +651,7 @@ public class View extends AbstractUiElement implements TabScopeManager
 
    public String getParamsAsJson()
    {
-      return contertToJsonString(viewParams);
+      return convertToJsonString(viewParams);
    }
 
    public View getOpenerView()
