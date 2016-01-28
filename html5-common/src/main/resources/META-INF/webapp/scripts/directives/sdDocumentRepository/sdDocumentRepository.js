@@ -6,10 +6,10 @@
   /*Controller section*/
   
   docRepoController.$inject = ["documentRepositoryService", "$timeout", "sdUtilService", 
-                               "$scope", "$filter", "sdViewUtilService", "$q"];
+                               "$scope", "$filter", "sdViewUtilService", "$q","sdMimeTypeService"];
   
   //constructor
-  function docRepoController(documentRepositoryService, $timeout, sdUtilService, $scope, $filter, sdViewUtilService, $q){
+  function docRepoController(documentRepositoryService, $timeout, sdUtilService, $scope, $filter, sdViewUtilService, $q,sdMimeTypeService){
 
     var that = this;
     var virtualRoot;
@@ -23,6 +23,7 @@
     this.$filter = $filter;
     this.$scope = $scope;
     this.$q = $q;
+    this.sdMimeTypeService = sdMimeTypeService;
     this.selectedRepo = {};
     this.repositoryProviders =[]; 
     this.documentRepositoryUrl = documentRepositoryService.documentRoot + "/upload";
@@ -71,27 +72,10 @@
   
   docRepoController.prototype.getDocumentClass = function(doc){
 
-    var docClass = "pi-invert",
-        docType = doc.contentType,
-        docName = doc.name;
+    var docType = doc.contentType;
 
-    if(docType==="application/pdf"){
-      docClass = "pi-pdf";
-    }
-    else if(docType.indexOf("image")===0){
-      docClass = "pi-image"
-    }
-    else if((/.*\.(json|xml)$/i).test(docName)){
-      docClass = "pi-xml-json";
-    }
-    else if((/.*\.(txt)$/i).test(docName)){
-      docClass = "pi-text";
-    }
-    else if((/.*\.(css)$/i).test(docName)){
-      docClass = "pi-css";
-    }
-
-    return docClass;
+    return this.sdMimeTypeService.getIcon(docType);  
+   
   };
 
   docRepoController.prototype.iconCallback = function(data,e){
