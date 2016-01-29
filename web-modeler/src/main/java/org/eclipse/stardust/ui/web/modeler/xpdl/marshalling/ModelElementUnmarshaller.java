@@ -1315,7 +1315,19 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
          {
             dataPathType.setDirection(DirectionType.OUT_LITERAL);
          }
-
+         
+         //Descriptor related 
+         
+         if (hasNotJsonNull(dataPathJson, "type"))
+         {
+            AttributeUtil.setAttribute(dataPathType, "type", dataPathJson.get("type").getAsString());            
+         }
+         
+         if (hasNotJsonNull(dataPathJson, "text"))
+         {
+            AttributeUtil.setAttribute(dataPathType, "text", dataPathJson.get("text").getAsString());            
+         }
+         
          newDataPaths.add(dataPathType);
       }
       processDefinition.getDataPath().clear();

@@ -322,6 +322,26 @@ public class ModelElementMarshaller implements ModelMarshaller
                dataPath.isDescriptor());
          dataPathJson.addProperty(ModelerConstants.KEY_DESCRIPTOR_PROPERTY,
                dataPath.isKey());
+         
+         if (dataPath.isDescriptor())
+         {
+            AttributeType typeAttribute = AttributeUtil.getAttribute(dataPath, "type");
+            if (typeAttribute != null)
+            {
+               String value = typeAttribute.getValue();
+               dataPathJson.addProperty("type", value);
+               if (value.equals("Link"))
+               {
+                  AttributeType linkTextAttribute = AttributeUtil.getAttribute(dataPath,
+                        "text");
+                  if (linkTextAttribute != null)
+                  {
+                     dataPathJson.addProperty("text", linkTextAttribute.getValue());
+                  }
+               }
+            }
+         }
+         
       }
 
       JsonObject activitiesJson = new JsonObject();
