@@ -471,6 +471,30 @@ public class DocumentMgmtUtility
    }
 
    /**
+    * @param parentFolder
+    * @param folderName
+    * @return
+    */
+   public static Folder getFolder(Folder parentFolder, String folderName)
+   {
+      if (null != parentFolder)
+      {
+         folderName = stripOffSpecialCharacters(folderName);
+         Folder finalFolder = getDocumentManagementService().getFolder(parentFolder.getId());
+         List<Folder> folders = finalFolder.getFolders();
+
+         for (Folder folder : folders)
+         {
+            if (folder.getName().equalsIgnoreCase(folderName))
+            {
+               return folder;
+            }
+         }
+      }
+      return null;
+   }
+   
+   /**
     * Returns the folder if exist otherwise create new folder
     * 
     * @param folderPath
