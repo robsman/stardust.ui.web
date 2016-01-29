@@ -207,28 +207,29 @@ public class DocumentMgmtUtility
          DocumentAnnotations annotation, Map<String, Object> metaDataProperties)
    {
       Document doc = null;
-      if (null != byteContents)
+      if (null == byteContents)
       {
-         DocumentInfo docInfo = DmsUtils.createDocumentInfo(fileName);
-         docInfo.setOwner(getUser().getAccount());
-         docInfo.setContentType(contentType);
-         docInfo.setDocumentAnnotations(annotation);
-         docInfo.setDocumentType(documentType);
-         docInfo.setDescription(description);
-         Map properties = docInfo.getProperties();
-         if (null == properties)
-         {
-            properties = new HashMap();
-         }
-         
-         if (CollectionUtils.isNotEmpty(metaDataProperties))
-         {
-            properties.putAll(metaDataProperties);
-         }
-         
-         doc = getDocumentManagementService().createDocument(targetId, docInfo, byteContents, null);
-         doc = getDocumentManagementService().versionDocument(doc.getId(), comments, null);
+         byteContents = new String("").getBytes();
       }
+      DocumentInfo docInfo = DmsUtils.createDocumentInfo(fileName);
+      docInfo.setOwner(getUser().getAccount());
+      docInfo.setContentType(contentType);
+      docInfo.setDocumentAnnotations(annotation);
+      docInfo.setDocumentType(documentType);
+      docInfo.setDescription(description);
+      Map properties = docInfo.getProperties();
+      if (null == properties)
+      {
+         properties = new HashMap();
+      }
+
+      if (CollectionUtils.isNotEmpty(metaDataProperties))
+      {
+         properties.putAll(metaDataProperties);
+      }
+
+      doc = getDocumentManagementService().createDocument(targetId, docInfo, byteContents, null);
+      doc = getDocumentManagementService().versionDocument(doc.getId(), comments, null);
       return doc;
    }
 
@@ -312,6 +313,7 @@ public class DocumentMgmtUtility
     * @param parentFolder path
     * @param name
     * @return
+    * @deprecated 
     */
    public static Document getDocument(String path, String name)
    {
@@ -331,6 +333,31 @@ public class DocumentMgmtUtility
       }
       return null;
    }
+   
+   /**
+    * @param parentFolder
+    * @param name
+    * @return
+    */
+   public static Document getDocument(Folder parentFolder, String name)
+   {
+      if (null != parentFolder)
+      {
+         name = stripOffSpecialCharacters(name);
+         Folder folder = getDocumentManagementService().getFolder(parentFolder.getId());
+         List<Document> documents = folder.getDocuments();
+         for (Document document : documents)
+         {
+            if (document.getName().equalsIgnoreCase(name))
+            {
+               return document;
+            }
+         }
+      }
+      return null;
+   }
+    
+   
 
    /**
     * returns true if the folder/file(having name as input parameter 'name') already exist
@@ -561,7 +588,15 @@ public class DocumentMgmtUtility
             {
                folderInfo.setName(childName);
             }
-            return getDocumentManagementService().createFolder(parentFolder.getId(), folderInfo);
+
+            Folder childFolder = getFolder(parentFolder, childName);
+            
+            if (childFolder == null)
+            {
+               childFolder = getDocumentManagementService().createFolder(parentFolder.getId(), folderInfo);
+            }
+
+            return childFolder;
          }
       }
       else
@@ -569,6 +604,56 @@ public class DocumentMgmtUtility
          return folder;
       }
    }
+
+   /**
+    * DMS service is oblivious to multiple repository syntax, so this method
+    * folderPath can be something like  {urn:repositoryId:Repo3}//Y/Artifacts
+    *
+    * @param folderPath
+    * @return
+    */
+   public static Folder getFolderIfExist(String folderPath)
+   {
+      Folder folder = getDocumentManagementService().getFolder(folderPath, Folder.LOD_NO_MEMBERS);
+
+      if (null == folder)
+      {
+         // folder does not exist yet, create it
+         String parentPath = folderPath.substring(0, folderPath.lastIndexOf('/'));
+         String childName = folderPath.substring(folderPath.lastIndexOf('/') + 1);
+         Folder parentFolder = getFolderIfExist(parentPath);
+         return getFolder(parentFolder, childName);
+      }
+      else
+      {
+         return folder;
+      }
+   }
+
+   /**
+    * @param parentFolder
+    * @param folderName
+    * @return
+    */
+   public static Folder getFolder(Folder parentFolder, String folderName)
+   {
+      if (null != parentFolder)
+      {
+         folderName = stripOffSpecialCharacters(folderName);
+         Folder finalFolder = getDocumentManagementService().getFolder(parentFolder.getId());
+         List<Folder> folders = finalFolder.getFolders();
+
+         for (Folder folder : folders)
+         {
+            if (folder.getName().equalsIgnoreCase(folderName))
+            {
+               return folder;
+            }
+         }
+      }
+      return null;
+   }
+   
    
    /**
     * returns documents attached to provided process instance
@@ -1548,7 +1633,7 @@ public class DocumentMgmtUtility
     * @return
     */
    public static String checkAndGetCorrectResourceId(String id){
-      if (!id.startsWith("{") && !id.startsWith("/"))
+      if (StringUtils.isNotEmpty(id) && !id.startsWith("{") && !id.startsWith("/"))
       {
          id = "/" + id;
       }

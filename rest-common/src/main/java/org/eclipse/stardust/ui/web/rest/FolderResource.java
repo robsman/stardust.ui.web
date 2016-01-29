@@ -149,7 +149,7 @@ public class FolderResource
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{folderId: .*}")
-   @RequestDescription("Either url should contain complete path or message body must contain *parentFolderId* and *folderName* to be created")
+   @RequestDescription("Either url should contain complete path or message body must contain *parentFolderPath* and *name* to be created")
    @ResponseDescription("On success, sents back FolderDTO in response")
    public Response createFolder(@PathParam("folderId") String folderId, String postedData)
          throws DocumentManagementServiceException, UnsupportedEncodingException

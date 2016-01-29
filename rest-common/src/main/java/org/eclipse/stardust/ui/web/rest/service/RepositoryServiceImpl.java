@@ -24,6 +24,7 @@ import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.Base64;
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
 import org.eclipse.stardust.engine.api.runtime.Folder;
@@ -88,6 +89,9 @@ public class RepositoryServiceImpl implements RepositoryService
          folderId = folderId.substring(0, folderId.length() - 1);
       }
 
+      // remove unwanted slashes 
+      folderId = folderId.replaceAll("//", "/");
+      
       // fetching of children information may be time consuming, may need to be
       // parameterized later
       Folder folder = getDMS().getFolder(folderId, levelOfDetail);
@@ -122,19 +126,29 @@ public class RepositoryServiceImpl implements RepositoryService
    public FolderDTO createFolder(String folderId, Map<String, Object> folderDataMap)
    {
       Folder folder = null;
+      String parentFolderPath = null;
+      
+      if (folderDataMap != null && folderDataMap.get("parentFolderPath") != null)
+      {
+         parentFolderPath = (String) folderDataMap.get("parentFolderPath");
+      }
 
-      if (!StringUtils.isEmpty(folderId))
+      if (!StringUtils.isEmpty(parentFolderPath))
+      {
+         folder = DocumentMgmtUtility.createFolderIfNotExists(parentFolderPath);
+         String folderName = (String) folderDataMap.get("name");
+         folder = getDMS().createFolder(folder.getId(), DmsUtils.createFolderInfo(folderName));
+      }
+      else if (StringUtils.isNotEmpty(folderId))
       {
          folderId = DocumentMgmtUtility.checkAndGetCorrectResourceId(folderId);
          folder = DocumentMgmtUtility.createFolderIfNotExists(folderId);
       }
       else
       {
-         String parentFolderPath = (String) folderDataMap.get("parentFolderId");
-         folder = DocumentMgmtUtility.createFolderIfNotExists(parentFolderPath);
-         String folderName = (String) folderDataMap.get("folderName");
-         folder = DocumentMgmtUtility.createFolderIfNotExists(folder.getPath() + "/" + folderName);
+         throw new I18NException(restCommonClientMessages.getParamString("folder.notFound", folderId));
       }
+      
       return FolderDTOBuilder.build(folder);
    }
 
@@ -145,20 +159,8 @@ public class RepositoryServiceImpl implements RepositoryService
    public void updateFolder(String folderId, Map<String, Object> documentDataMap)
    {
       folderId = DocumentMgmtUtility.checkAndGetCorrectResourceId(folderId);
-
-      Folder folder = getDMS().getFolder(folderId);
-
+      Folder folder = DocumentMgmtUtility.getFolderIfExist(folderId);
       String newName = String.valueOf(documentDataMap.get("name"));
-
-      String parentPath = org.eclipse.stardust.ui.web.viewscommon.utils.StringUtils.substringBeforeLast(
-            folder.getPath(), "/");
-
-      if (DocumentMgmtUtility.isFolderPresent(parentPath, newName))
-      {
-         throw new I18NException(MessagesViewsCommonBean.getInstance().get(
-               "views.genericRepositoryView.folderAlreadyPresent"));
-      }
-
       folder.setName(newName);
       getDMS().updateFolder(folder);
    }
@@ -346,9 +348,7 @@ public class RepositoryServiceImpl implements RepositoryService
             documentInfoDTO.dataPathId = CommonProperties.PROCESS_ATTACHMENTS;
          }
          
-         
-
-         Document document = DocumentMgmtUtility.getDocument(parentFolder.getPath(), documentInfoDTO.name);
+         Document document = DocumentMgmtUtility.getDocument(parentFolder, documentInfoDTO.name);
 
          if (!documentInfoDTO.createVersion && document != null)
          {

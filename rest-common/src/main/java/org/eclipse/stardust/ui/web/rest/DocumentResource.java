@@ -227,7 +227,7 @@ public class DocumentResource
          "formData.append(\"file2\", files[2]);\r\n" + 
          "formData.append(\"description\", \"Description for file2\") \r\n" + 
          "``` javascript")
-   @ResponseDescription("Returns the result something like below\r\n" + "\r\n" + "```javascript\r\n" + "{\r\n"
+   @ResponseDescription("Returns the result something like below\r\n" + "\r\n" + "```\r\n" + "{\r\n"
          + "  \"failures\": [] //NotificationDTOs\r\n" + "  \"documents\": [] ////DocumentDTOs\r\n" + "}\r\n" + "```")
    public Response uploadDocuments(List<Attachment> attachments) throws Exception
    {
