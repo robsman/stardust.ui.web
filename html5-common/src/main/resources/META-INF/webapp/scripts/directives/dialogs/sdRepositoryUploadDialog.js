@@ -195,6 +195,10 @@
 		});
 	};
 
+	fileRepoUploadController.prototype.uploadNewVersion = function(dataPathId,content){
+		//stubbed
+	}
+
 	//handles file upload, as suspected
 	fileRepoUploadController.prototype.__uploadFile = function(file,nonFileData,fileKey,deferred){
 		
@@ -265,9 +269,23 @@
 			that = this;
 
 		linkfx = function(scope, element, attrs){
+
 			scope.$watch('parentPath', function(newValue, oldValue, scope) {
 				scope.repoUploadCtrl.parentPath = newValue;
 			});
+
+			scope.$watch('targetDocument', function(newValue, oldValue, scope) {
+				scope.repoUploadCtrl.targetDocument = newValue;
+
+				if(scope.repoUploadCtrl.targetDocument){
+					scope.repoUploadCtrl.mode="CREATE";
+				}
+				else{
+					scope.repoUploadCtrl.mode="UPDATE";
+				}
+
+			});
+
 		};
 		
 		return {
@@ -277,6 +295,7 @@
 			"scope": {
 				"subTitle" : "@sdaSubTitle",
 				"initCallback" : "&sdaOnInit",
+				"targetDocument" : "=sdaTargetDocument",
 				"fileKey" : "@sdaFileKey",
 				"parentPath" : "=sdaParentPath",
 				"url" : "@sdaUrl"

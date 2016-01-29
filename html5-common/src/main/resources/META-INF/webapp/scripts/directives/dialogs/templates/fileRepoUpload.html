@@ -8,8 +8,8 @@ Name:{{repoUploadCtrl.name}}
 </div>
 
 <script type="text/ng-template" id="tmplRepoUploadDialog">
-
 	<div style="margin:1em;">
+	{{repoUploadCtrl.mode}}
 		<div style="display:inline-flex;width:60px">
 			<div ng-show="repoUploadCtrl.state ==='initial' || repoUploadCtrl.state ==='fileSelected'">
 		        <label style="display:inline-block;" for="{{repoUploadCtrl.id}}">
@@ -19,7 +19,7 @@ Name:{{repoUploadCtrl.name}}
 					<input id="{{repoUploadCtrl.id}}" 
 		                   style="display:none;"
 		                   onchange="angular.element(this).scope().fileNameChanged(this)" 
-		                   multiple
+		                   ng-attr-multiple="{{repoUploadCtrl.mode === 'CREATE'}}"
 		                   type="file"/>
 		        </label>
 			</div>

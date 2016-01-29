@@ -27,6 +27,7 @@
     this.selectedRepo = {};
     this.repositoryProviders =[]; 
     this.documentRepositoryUrl = documentRepositoryService.documentRoot + "/upload";
+
     //Async retrieve repo providers.
     this.getRepositoryProviders()
     .then(function(providers){
