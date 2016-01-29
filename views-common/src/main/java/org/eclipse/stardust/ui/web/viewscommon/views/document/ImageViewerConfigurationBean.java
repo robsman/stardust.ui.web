@@ -625,9 +625,12 @@ public class ImageViewerConfigurationBean implements PortalConfigurationListener
    private void intializePDFZoomLevelOptions()
    {
       pdfZoomLevelOptions = new ArrayList<SelectItem>();
-      pdfZoomLevelOptions.add(new SelectItem(0.50f, messageBean.getString("views.imageViewerConfig.pdfDisplayOptions.minZoom")));
-      pdfZoomLevelOptions.add(new SelectItem(1.0f, messageBean.getString("views.imageViewerConfig.pdfDisplayOptions.defaultZoom")));
-      pdfZoomLevelOptions.add(new SelectItem(3.0f, messageBean.getString("views.imageViewerConfig.pdfDisplayOptions.maxZoom")));
+      pdfZoomLevelOptions.add(new SelectItem(0.50f, messageBean.getString("views.imageViewerConfig.pdfDisplayOptions.zoom50")));
+      pdfZoomLevelOptions.add(new SelectItem(1.0f, messageBean.getString("views.imageViewerConfig.pdfDisplayOptions.zoom100")));
+      pdfZoomLevelOptions.add(new SelectItem(1.5f, messageBean.getString("views.imageViewerConfig.pdfDisplayOptions.zoom150")));
+      pdfZoomLevelOptions.add(new SelectItem(2.0f, messageBean.getString("views.imageViewerConfig.pdfDisplayOptions.zoom200")));
+      pdfZoomLevelOptions.add(new SelectItem(2.5f, messageBean.getString("views.imageViewerConfig.pdfDisplayOptions.zoom250")));
+      pdfZoomLevelOptions.add(new SelectItem(3.0f, messageBean.getString("views.imageViewerConfig.pdfDisplayOptions.zoom300")));
    }
    
    /**
