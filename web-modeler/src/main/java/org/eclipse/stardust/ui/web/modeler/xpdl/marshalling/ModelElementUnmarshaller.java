@@ -821,6 +821,15 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
                : DirectionType.OUT_LITERAL;
          dataMapping.setDirection(directionType);
       }
+      
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.DATA_MAPPING_MANDATORY))
+      {
+         AttributeUtil.setBooleanAttribute(dataMapping, ModelerConstants.DATA_MAPPING_MANDATORY, dataMappingJson.get(ModelerConstants.DATA_MAPPING_MANDATORY).getAsBoolean());
+      }
+      else
+      {
+         AttributeUtil.setAttribute(dataMapping, ModelerConstants.DATA_MAPPING_MANDATORY, null);
+      }            
    }
 
    /**
@@ -1016,7 +1025,16 @@ public class ModelElementUnmarshaller implements ModelUnmarshaller
       dataMapping.setData(data);
       activity.getDataMapping().add(dataMapping);
       data.getDataMappings().add(dataMapping);
-
+      
+      if (hasNotJsonNull(dataMappingJson, ModelerConstants.DATA_MAPPING_MANDATORY))
+      {
+         AttributeUtil.setBooleanAttribute(dataMapping, ModelerConstants.DATA_MAPPING_MANDATORY, dataMappingJson.get(ModelerConstants.DATA_MAPPING_MANDATORY).getAsBoolean());
+      }
+      else
+      {
+         AttributeUtil.setAttribute(dataMapping, ModelerConstants.DATA_MAPPING_MANDATORY, null);
+      }      
+      
       return dataMapping;
    }
 

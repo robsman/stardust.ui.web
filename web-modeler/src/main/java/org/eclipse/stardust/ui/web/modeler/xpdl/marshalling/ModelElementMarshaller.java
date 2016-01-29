@@ -3514,9 +3514,14 @@ public class ModelElementMarshaller implements ModelMarshaller
       dataMappingJson.addProperty(ModelerConstants.DIRECTION_PROPERTY, dataMapping.getDirection().getLiteral());
       dataMappingJson.addProperty(ModelerConstants.DATA_PATH_PROPERTY,
             dataMapping.getDataPath());
+            
+      if(AttributeUtil.getAttribute(dataMapping, ModelerConstants.DATA_MAPPING_MANDATORY) != null)
+      {
+         dataMappingJson.addProperty(ModelerConstants.DATA_MAPPING_MANDATORY, AttributeUtil.getBooleanValue(dataMapping, ModelerConstants.DATA_MAPPING_MANDATORY));         
+      }
+      
       return dataMappingJson;
    }
-
 
    /**
     * Returns Models infromation only and skips info about its elements
