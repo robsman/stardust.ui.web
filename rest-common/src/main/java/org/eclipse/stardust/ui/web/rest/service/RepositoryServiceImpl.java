@@ -49,6 +49,7 @@ import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.DefualtResourceDataProvider;
@@ -287,11 +288,12 @@ public class RepositoryServiceImpl implements RepositoryService
    }
 
    /**
+    * @throws ResourceNotFoundException 
     *
     */
    @Override
    public Map<String, Object> createDocument(DocumentContentRequestDTO documentInfoDTO,
-         ProcessInstance processInstance, boolean processAttachments)
+         ProcessInstance processInstance, boolean processAttachments) throws ResourceNotFoundException
    {
       List<DocumentContentRequestDTO> documentInfoDTOs = new ArrayList<DocumentContentRequestDTO>();
       documentInfoDTOs.add(documentInfoDTO);
@@ -299,11 +301,12 @@ public class RepositoryServiceImpl implements RepositoryService
    }
 
    /**
+    * @throws ResourceNotFoundException 
     *
     */
    @Override
    public Map<String, Object> createDocuments(List<DocumentContentRequestDTO> documentInfoDTOs,
-         ProcessInstance processInstance, boolean processAttachments)
+         ProcessInstance processInstance, boolean processAttachments) throws ResourceNotFoundException
    {
       Map<String, Object> result = new HashMap<String, Object>();
       List<NotificationDTO> failures = new ArrayList<NotificationDTO>();
@@ -348,7 +351,17 @@ public class RepositoryServiceImpl implements RepositoryService
             documentInfoDTO.dataPathId = CommonProperties.PROCESS_ATTACHMENTS;
          }
          
-         Document document = DocumentMgmtUtility.getDocument(parentFolder, documentInfoDTO.name);
+         Document document = null;
+         
+         // deliberate version upgrade
+         if (documentInfoDTO.uploadVersion)
+         {
+            document = DocumentMgmtUtility.getDocument(documentInfoDTO.uuid);
+         }
+         else
+         {
+            document = DocumentMgmtUtility.getDocument(parentFolder, documentInfoDTO.name);
+         }
 
          if (!documentInfoDTO.createVersion && document != null)
          {

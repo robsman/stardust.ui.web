@@ -28,6 +28,10 @@ public class DocumentContentRequestDTO extends DocumentDTO
    public String content;
    public String contentBase64; // kept as alternate to send data
    
+   public boolean uploadVersion = false; // to indicate that user intends to create a new
+                                        // version of existing document with new uploaded
+                                        // contents
+
    public boolean createVersion = true; // to indicate user wants to create a version if
                                         // the document already exist with the same name
                                         // and when he/she actually intends to create a

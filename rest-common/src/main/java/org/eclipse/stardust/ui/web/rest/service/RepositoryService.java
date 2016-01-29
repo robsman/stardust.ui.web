@@ -21,6 +21,7 @@ import org.eclipse.stardust.ui.web.rest.service.dto.request.DocumentContentReque
 import org.eclipse.stardust.ui.web.rest.service.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.RepositoryInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.RepositoryProviderDTO;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IResourceDataProvider;
 
 /**
@@ -121,9 +122,10 @@ public interface RepositoryService
     * @param documentInfoDTO
     * @param processInstance
     * @return
+    * @throws ResourceNotFoundException 
     */
    Map<String, Object> createDocuments(List<DocumentContentRequestDTO> documentInfoDTO,
-         ProcessInstance processInstance, boolean processAttachments);
+         ProcessInstance processInstance, boolean processAttachments) throws ResourceNotFoundException;
 
    /**
     * internally calls createDocuments
@@ -132,9 +134,10 @@ public interface RepositoryService
     * @param processInstance
     * @param processAttachments
     * @return
+    * @throws ResourceNotFoundException 
     */
    Map<String, Object> createDocument(DocumentContentRequestDTO documentInfoDTO, ProcessInstance processInstance,
-         boolean processAttachments);
+         boolean processAttachments) throws ResourceNotFoundException;
 
    /**
     * @param documentIds
