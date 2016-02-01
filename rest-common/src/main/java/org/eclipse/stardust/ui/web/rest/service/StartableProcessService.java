@@ -29,18 +29,22 @@ import org.eclipse.stardust.engine.api.runtime.Department;
 import org.eclipse.stardust.engine.api.runtime.Grant;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.User;
-import org.eclipse.stardust.ui.web.processportal.common.PPUtils;
-import org.eclipse.stardust.ui.web.processportal.launchpad.WorklistsBean;
+import org.eclipse.stardust.engine.api.runtime.WorkflowService;
+import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.StartableProcessDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.request.DepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ClientContextBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessDefinitionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessInstanceUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
+import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.JsonObject;
@@ -54,6 +58,7 @@ public class StartableProcessService
 
    /**
     * This method will return the list of all startable processes.
+    * 
     * @return
     */
    public List<StartableProcessDTO> getStartableProcess()
@@ -164,19 +169,22 @@ public class StartableProcessService
       ActivityInstance nextActivityInstance = null;
       JsonObject result = new JsonObject();
       ProcessDefinition processDefinition = ProcessDefinitionUtils.getProcessDefinition(processId);
-      ProcessInstance processInstance = PPUtils.startProcess(processDefinition, true);
+      ProcessInstance processInstance = startProcess(processDefinition, true);
 
       if (!(ProcessInstanceUtils.isTransientProcess(processInstance) || ProcessInstanceUtils
             .isCompletedProcess(processInstance)))
       {
-         nextActivityInstance = PPUtils.activateNextActivityInstance(processInstance);
+         nextActivityInstance = activateNextActivityInstance(processInstance);
 
          if (nextActivityInstance != null)
          {
-            if (WorklistsBean.getInstance().isAssemblyLineActivity(nextActivityInstance.getActivity()))
-            {
-               result.addProperty("assemblyLineActivity", true);
-            }
+            /*
+             * if
+             * (WorklistsBean.getInstance().isAssemblyLineActivity(nextActivityInstance.
+             * getActivity())) {
+             */
+            result.addProperty("assemblyLineActivity", true);
+            /* } */
             result.addProperty("activityInstanceOid", nextActivityInstance.getOID());
          }
       }
@@ -186,6 +194,44 @@ public class StartableProcessService
 
       }
       return result;
+   }
+
+   /**
+    * @param pi
+    * @return
+    */
+   public ActivityInstance activateNextActivityInstance(ProcessInstance pi)
+   {
+      ActivityInstance rtAi = serviceFactoryUtils.getWorkflowService().activateNextActivityInstanceForProcessInstance(
+            pi.getOID());
+      if (rtAi != null)
+      {
+         sendActivityEvent(null, ActivityEvent.activated(rtAi));
+
+         return rtAi;
+      }
+      return null;
+   }
+
+   /**
+    * @param oldAi
+    * @param activityEvent
+    */
+   public static void sendActivityEvent(ActivityInstance oldAi, ActivityEvent activityEvent)
+   {
+      ParticipantWorklistCacheManager.getInstance().handleActivityEvent(oldAi, activityEvent);
+      if (ProcessWorklistCacheManager.isInitialized())
+      {
+         ProcessWorklistCacheManager.getInstance().handleActivityEvent(oldAi, activityEvent);
+      }
+      SpecialWorklistCacheManager.getInstance().handleActivityEvent(oldAi, activityEvent);
+      ClientContextBean.getCurrentInstance().getClientContext().sendActivityEvent(activityEvent);
+   }
+
+   public ProcessInstance startProcess(ProcessDefinition processDefinition, boolean synchronous)
+   {
+      WorkflowService wfs = serviceFactoryUtils.getWorkflowService();
+      return wfs.startProcess(processDefinition.getQualifiedId(), null, synchronous);
    }
 
    /**
@@ -407,8 +453,19 @@ public class StartableProcessService
          }
       }
 
-      return PPUtils.activateNextActivityInstance(PPUtils.startProcess(processDefinition, processDataMap, true));
+      return activateNextActivityInstance(startProcess(processDefinition, processDataMap, true));
 
+   }
+
+   /**
+    * @param processDefinition
+    * @param synchronous
+    * @return
+    */
+   public ProcessInstance startProcess(ProcessDefinition processDefinition, Map<String, ? > data, boolean synchronous)
+   {
+      WorkflowService wfs = serviceFactoryUtils.getWorkflowService();
+      return wfs.startProcess(processDefinition.getQualifiedId(), data, synchronous);
    }
 
    /**
