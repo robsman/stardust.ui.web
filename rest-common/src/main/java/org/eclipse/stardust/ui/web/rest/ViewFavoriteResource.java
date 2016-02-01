@@ -75,6 +75,24 @@ public class ViewFavoriteResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
+   @ResponseDescription("#### Sample Response:\r\n" +
+         "[{\r\n" + 
+         "   \"scope\": \"USER\",\r\n" + 
+         "   \"moduleId\": \"FAVORITE\",\r\n" + 
+         "   \"preferenceId\": \"trafficLightViewNew\",\r\n" + 
+         "   \"preferenceName\": \"TLV3\",\r\n" + 
+         "   \"preferenceValue\": \"{\\\"selectedProcesses\\\":[{\\\"id\\\":\\\"{AuthorizationWorkflowModel}PROCESSDefinitionScopedOrg_NationAndScopedMember\\\",\\\"name\\\":\\\"Process Definition Scoped Org Nation & Scoped Member Are Authorized\\\"}],\\\"selectedBenchmarks\\\":[2],\\\"selectedDrillDown\\\":\\\"PROCESS_WORKITEM\\\",\\\"selectedDateType\\\":\\\"BUSINESS_DATE\\\",\\\"dayOffset\\\":-10}\",\r\n" + 
+         "   \"isPasswordType\": false,\r\n" + 
+         "   \"partitionId\": \"default\"\r\n" + 
+         "}, {\r\n" + 
+         "   \"scope\": \"USER\",\r\n" + 
+         "   \"moduleId\": \"FAVORITE\",\r\n" + 
+         "   \"preferenceId\": \"trafficLightViewNew\",\r\n" + 
+         "   \"preferenceName\": \"TLV2\",\r\n" + 
+         "   \"preferenceValue\": \"{\\\"selectedProcesses\\\":[{\\\"id\\\":\\\"{CustomerManagement}CustomerOnboarding\\\",\\\"name\\\":\\\"Customer Onboarding\\\"}],\\\"selectedBenchmarks\\\":[2],\\\"selectedDrillDown\\\":\\\"PROCESS_WORKITEM\\\",\\\"selectedDateType\\\":\\\"BUSINESS_DATE\\\",\\\"dayOffset\\\":-7}\",\r\n" + 
+         "   \"isPasswordType\": false,\r\n" + 
+         "   \"partitionId\": \"default\"\r\n" + 
+         "}]")
    public Response getAllFavorite()
    {
       try

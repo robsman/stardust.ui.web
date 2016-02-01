@@ -1,0 +1,19 @@
+<div>
+<span class="label-item" ng-bind="i18n('processportal.launchPanels-processes-selectDepartment-label')"></span>
+<ul sd-tree sda-event-callback="ctrl.eventCallback(data,e)">
+  <li sd-tree-node
+      sda-label="item.name"
+      sda-node-id="item.uuid"
+      sda-is-leaf="item.hasChildren===false"
+      ng-repeat="item in ctrl.participantNodes">
+    <ul>
+      <li sd-tree-node
+          ng-repeat = "item in item.children"
+          sda-label="item.name"
+          sda-is-leaf="item.hasChildren===false"
+          sda-node-id="item.uuid">
+      </li>
+    </ul>
+  </li>
+</ul>
+</div>

@@ -15,6 +15,8 @@ import java.util.List;
 
 import javax.faces.context.FacesContext;
 
+import org.eclipse.stardust.ui.web.common.util.FacesUtils;
+
 /**
  * @author Shrikant.Gangal
  *
@@ -36,9 +38,7 @@ public class CriticalityConfigurationHelper
     */
    public static CriticalityConfigurationHelper getInstance()
    {
-      return (CriticalityConfigurationHelper) FacesContext.getCurrentInstance().getApplication()
-            .getVariableResolver().resolveVariable(FacesContext.getCurrentInstance(),
-                  BEAN_NAME);
+      return (CriticalityConfigurationHelper) FacesUtils.getBeanFromContext(BEAN_NAME);
    }
    
    public List<CriticalityCategory> getCriticalityConfiguration()

@@ -24,6 +24,7 @@ import javax.ws.rs.core.Response;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
+import org.eclipse.stardust.ui.web.rest.misc.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.service.FavoriteReportsService;
 import org.eclipse.stardust.ui.web.rest.service.dto.FavoriteReportDTO;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
@@ -44,6 +45,11 @@ public class FavoriteReportsResource
 
    @GET
    @Produces(MediaType.APPLICATION_JSON)
+   @ResponseDescription("#### Sample Response:\r\n" + 
+         "[{\r\n" + 
+         "   \"documentId\": \"{urn:repositoryId:System}{jcrUuid}12179aae-6212-4a63-a7f9-669fce20bcb1\",\r\n" + 
+         "   \"documentName\": \"Report Definition 1\"\r\n" + 
+         "}]")
    public Response getFavoriteReports()
    {
       try

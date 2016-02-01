@@ -1,0 +1,28 @@
+<div ng-controller="sdStartableProcessPanelCtrl as ctrl">
+	<sd-collapsible-panel sda-aid="auto-PP-LP-StartableProc-ColPnl"
+		sda-title="{{i18n('processportal.launchPanels-processes-title')}}">
+			<i ng-click="ctrl.refreshMyStartableProcessPanel()"
+				class="pi pi-refresh pi-lg" style="float: right;"
+			aid="auto-PP-LP-StartableProc-Refresh"></i>
+			<div ng-if="ctrl.favorites.length == 0">
+				<span>{{i18n('views-common-messages.common-notification-message-title')}}</span>
+			</div>
+			<div ng-if="ctrl.startableProcesses.length > 0"
+				ng-repeat="startableProcess in ctrl.startableProcesses">
+				<a href="#" ng-click="ctrl.startProcess(startableProcess)"
+					data-placement="right" aid="auto-PP-LP-StartableProc-start">
+					{{startableProcess.name}} </a>
+			</div>
+	</sd-collapsible-panel>
+    <div sd-dialog="ctrl.departmentDialog" sda-modal="true"
+		sda-show="ctrl.showDeptDialog"
+		sda-type="alert"
+		sda-title="{{i18n('processportal.launchPanels-processes-department-title')}}"
+		sda-cancel-action-label="{{i18n('html5-common.common-close')}}"
+		sda-scope="this"
+		sda-template="plugins/html5-process-portal/partials/launchpanels/departmentDialog.html"
+		sda-width="450px"
+		sda-aid-prefix="auto-PP-LP-StartableProc-departmentDialog">
+	</div>
+</div>
+

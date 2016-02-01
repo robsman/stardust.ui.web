@@ -1,0 +1,44 @@
+<sd-collapsible-panel sda-aid="auto-WF-overViewPanel"
+	sda-title="{{i18n('processportal.launchPanels-workflowOverview-title')}}">
+	<div ng-controller="sdWorkflowOverviewPanelCtrl as ctrl">
+	    <a href="#" ng-click="ctrl.refreshOverviewPanel()" style="float: right;" aid="auto-PP-LP-Overview-Refresh">
+	      <i class="pi pi-refresh pi-lg"></i>
+	    </a>
+	    <span style="color: #708090;" ng-bind="i18n('processportal.launchPanels-workflowOverview-directWorkItems')"></span>
+		<div style="line-height: 15px; margin-left: 10px;">
+			<a href="#" ng-click="ctrl.openDirectUserWorkActionHTML5();"
+				data-placement="right" aid="auto-PP-LP-Overview-DirectWorkItems">
+				<span ng-bind="sdI18n('processportal.launchPanels.workflowOverview.directWorkItemsLink','',[ctrl.workflowOverviewCounts.directUserWorkCount])"></span>
+			</a>
+		</div>
+		<div style="line-height: 15px; margin-left: 10px;">
+			<a href="#" ng-click="ctrl.openAllAssignedActivitiesActionHTML5();"
+				data-placement="right" aid="auto-PP-LP-Overview-selectAllAssignedActivitiesAction">
+				<span ng-bind="sdI18n('processportal.launchPanels.workflowOverview.allWorkItemsLink','',[ctrl.workflowOverviewCounts.assignedActivitiesCount])"></span>
+			</a>
+		</div>
+		<div style="line-height: 15px; margin-left: 10px;">
+			<a href="#" ng-click="ctrl.openCriticalActivitiesActionHTML5();"
+				data-placement="right" aid="auto-PP-LP-Overview-selectCriticalActivitiesAction">
+				<span ng-bind="sdI18n('processportal.launchPanels.workflowOverview.criticalWorkItemsLink','',[ctrl.workflowOverviewCounts.criticalActivitiesCount])"></span>
+			</a>
+		</div>
+		<div class="clearing"></div>
+		<div style="line-height: 15px;">
+		   <span style="color: #708090;" ng-bind="i18n('processportal.launchPanels-workflowOverview-pastProcessInstances')"></span>
+		   <select size="1" style="padding: 0;width: 100px;"
+					ng-model="ctrl.dateId"
+					ng-change="ctrl.dateIdChange()"
+					aid="auto-PP-LP-Overview-LastNSelect">
+					<option value="-"></option>
+					<option value="today">{{i18n('processportal.launchPanels-workflowOverview-pastProcessInstances-today')}}</option>
+					<option value="thisWeek">{{i18n('processportal.launchPanels-workflowOverview-pastProcessInstances-thisWeek')}}</option>
+					<option value="thisMonth">{{i18n('processportal.launchPanels-workflowOverview-pastProcessInstances-thisMonth')}}</option>
+					<option value="thisQuarter">{{i18n('processportal.launchPanels-workflowOverview-pastProcessInstances-thisQuarter')}}</option>
+					<option value="lastSixMonths">{{i18n('processportal.launchPanels-workflowOverview-pastProcessInstances-lastSixMonths')}}</option>
+					<option value="lastYear">{{i18n('processportal.launchPanels-workflowOverview-pastProcessInstances-lastYear')}}</option>
+					<option value="all">{{i18n('processportal.launchPanels-workflowOverview-pastProcessInstances-all')}}</option>
+			</select>
+		</div>
+	</div>
+</sd-collapsible-panel>

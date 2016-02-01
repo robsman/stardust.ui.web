@@ -58,6 +58,8 @@
          <bean class="org.eclipse.stardust.ui.web.rest.RepositoryResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.FavoriteReportsResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.AuditTrailResource" />
+         <bean class="org.eclipse.stardust.ui.web.rest.WorkflowOverviewResource" />
+         <bean class="org.eclipse.stardust.ui.web.rest.StartableProcessResource" />
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>
             <bean class="org.eclipse.stardust.ui.web.rest.exception.PortalRestExceptionMapper"/>
