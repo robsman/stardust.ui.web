@@ -297,8 +297,8 @@ public class DocumentResource
          properties = (HashMap<String, Object>) data.get("properties");
       }
       
-      DocumentContentRequestDTO documentInfoDTO = DTOBuilder.buildFromJSON2(postedData,
-            DocumentContentRequestDTO.class, null);
+      DocumentContentRequestDTO documentInfoDTO = DTOBuilder.buildFromJSON(postedData, DocumentContentRequestDTO.class,
+            null);
 
       documentInfoDTO.properties = properties; 
       
@@ -331,8 +331,8 @@ public class DocumentResource
          properties = (HashMap<String, Object>) data.get("properties");
       }
 
-      DocumentContentRequestDTO documentInfoDTO = DTOBuilder.buildFromJSON2(postedData,
-            DocumentContentRequestDTO.class, null);
+      DocumentContentRequestDTO documentInfoDTO = DTOBuilder.buildFromJSON(postedData, DocumentContentRequestDTO.class,
+            null);
       documentInfoDTO.properties = properties;
       DocumentDTO documentDTO = repositoryService.updateDocument(documentId, documentInfoDTO, false);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
@@ -414,8 +414,8 @@ public class DocumentResource
    public Response revertToPreviousVersion(@PathParam("documentId") String documentId, String postedData)
   throws Exception
    {
-      DocumentContentRequestDTO documentInfoDTO = DTOBuilder
-            .buildFromJSON2(postedData, DocumentContentRequestDTO.class, null);
+      DocumentContentRequestDTO documentInfoDTO = DTOBuilder.buildFromJSON(postedData, DocumentContentRequestDTO.class,
+            null);
       DocumentDTO documentDTO = repositoryService.revertDocument(documentId, documentInfoDTO);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
    }

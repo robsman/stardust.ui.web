@@ -18,14 +18,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
+import java.util.Map.Entry;
 
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
-import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOAttribute;
 import org.eclipse.stardust.ui.web.rest.service.dto.common.DTOClass;
 import org.springframework.util.StringUtils;
@@ -180,42 +179,6 @@ public class DTOBuilder
 
    
    /**
-    *  accounts class hierarchy of DTO class 
-    * @param json
-    * @param toClass
-    * @param customTokens
-    * @return
-    * @throws Exception
-    */
-   public static <DTO, T> DTO buildFromJSON2(String postedData, Class<DTO> toClass, Map<String, Type> customTokens)
-         throws Exception
-   {
-      JsonMarshaller jsonIo = new JsonMarshaller();
-      JsonObject json = jsonIo.readJsonObject(postedData);
-      
-      DTO toInstance = null;
-      toInstance = toClass.newInstance();
-
-      Class< ? > iteratorClass1 = toClass;
-
-      Stack<Object> classStack = new Stack<Object>();
-      while (iteratorClass1 != AbstractDTO.class)
-      {
-         classStack.push(iteratorClass1);
-         iteratorClass1 = iteratorClass1.getSuperclass();
-      }
-      
-      for (Object iteratorClass2 : classStack)
-      {
-         @SuppressWarnings("unchecked")
-         Class<DTO> iteratorClass = (Class<DTO>) iteratorClass2;
-         mapFields(json, iteratorClass, toInstance, customTokens);
-      }
-
-      return toInstance;
-   }
-   
-   /**
     * Builds a DTO from a JSON
     * 
     * @param json
@@ -243,65 +206,62 @@ public class DTOBuilder
    public static <DTO, T> void mapFields(JsonObject json, Class<DTO> toClass, DTO toInstance,
          Map<String, Type> customTokens) throws Exception
    {
-      for (Field field : toClass.getDeclaredFields())
+      for (Entry<String, JsonElement> entry : json.entrySet())
       {
-         if (json.get(field.getName()) != null && !json.get(field.getName()).isJsonNull())
+         Field field = toClass.getField(entry.getKey());
+         if (field != null)
          {
-            if (String.class.equals(field.getType()))
+            if (json.get(field.getName()) != null && !json.get(field.getName()).isJsonNull())
             {
-               setFieldValue(toInstance, field, json.get(field.getName()).getAsString());
-            }
-            else if (int.class.equals(field.getType())
-                  || Integer.class.equals(field.getType()))
-            {
-               setFieldValue(toInstance, field, getValue(json.get(field.getName()), Integer.class));
-            }
-            else if (Long.class.equals(field.getType())
-                  || long.class.equals(field.getType()))
-            {
-               setFieldValue(toInstance, field, getValue(json.get(field.getName()), Long.class));
-            }
-            else if (Float.class.equals(field.getType()))
-            {
-               setFieldValue(toInstance, field, getValue(json.get(field.getName()), Float.class));
-            }
-            else if (Boolean.class.equals(field.getType())
-                  || boolean.class.equals(field.getType()))
-            {
-               setFieldValue(toInstance, field, getValue(json.get(field.getName()), Boolean.class));
-            }
-            else if (Date.class.equals(field.getType()))
-            {
-               if (json.get(field.getName()).getAsString().isEmpty())
+               if (String.class.equals(field.getType()))
                {
-                  setFieldValue(toInstance, field, null);
+                  setFieldValue(toInstance, field, json.get(field.getName()).getAsString());
+               }
+               else if (int.class.equals(field.getType()) || Integer.class.equals(field.getType()))
+               {
+                  setFieldValue(toInstance, field, getValue(json.get(field.getName()), Integer.class));
+               }
+               else if (Long.class.equals(field.getType()) || long.class.equals(field.getType()))
+               {
+                  setFieldValue(toInstance, field, getValue(json.get(field.getName()), Long.class));
+               }
+               else if (Float.class.equals(field.getType()))
+               {
+                  setFieldValue(toInstance, field, getValue(json.get(field.getName()), Float.class));
+               }
+               else if (Boolean.class.equals(field.getType()) || boolean.class.equals(field.getType()))
+               {
+                  setFieldValue(toInstance, field, getValue(json.get(field.getName()), Boolean.class));
+               }
+               else if (Date.class.equals(field.getType()))
+               {
+                  if (json.get(field.getName()).getAsString().isEmpty())
+                  {
+                     setFieldValue(toInstance, field, null);
+                  }
+                  else
+                  {
+                     setFieldValue(toInstance, field, new Date(json.get(field.getName()).getAsLong()));
+                  }
+               }
+               else if (List.class.equals(field.getType()))
+               {
+                  Type listType = new TypeToken<List<String>>()
+                  {
+                  }.getType();
+                  if (customTokens != null && customTokens.containsKey(field.getName()))
+                  {
+                     listType = customTokens.get(field.getName());
+                  }
+                  setFieldValue(toInstance, field,
+                        GsonUtils.extractList(json.get(field.getName()).getAsJsonArray(), listType));
                }
                else
                {
-                  setFieldValue(toInstance, field, new Date(json.get(field.getName())
-                        .getAsLong()));
+                  Class< ? > fieldClass = field.getType();
+                  setFieldValue(toInstance, field,
+                        buildFromJSON(json.get(field.getName()).toString(), fieldClass, customTokens));
                }
-            }
-            else if (List.class.equals(field.getType()))
-            {
-               Type listType = new TypeToken<List<String>>()
-               {
-               }.getType();
-               if (customTokens != null && customTokens.containsKey(field.getName()))
-               {
-                  listType = customTokens.get(field.getName());
-               }
-               setFieldValue(toInstance, field, GsonUtils.extractList(
-                     json.get(field.getName()).getAsJsonArray(), listType));
-            }
-            else
-            {
-               Class< ? > fieldClass = field.getType();
-               setFieldValue(
-                     toInstance,
-                     field,
-                     buildFromJSON(json.get(field.getName()).toString(), fieldClass,
-                           customTokens));
             }
          }
       }
