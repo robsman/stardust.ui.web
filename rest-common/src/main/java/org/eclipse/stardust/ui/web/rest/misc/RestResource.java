@@ -57,7 +57,7 @@ import org.springframework.util.SystemPropertyUtils;
 @Path("/portal-rest")
 public class RestResource
 {
-   private static final String REST_COMMON_PACKAGE = "org.eclipse.stardust.ui.web.rest";
+   private static final String REST_COMMON_PACKAGE = "org.eclipse.stardust.ui.web.rest.resource";
 
    @Context
    private HttpServletRequest httpRequest;
