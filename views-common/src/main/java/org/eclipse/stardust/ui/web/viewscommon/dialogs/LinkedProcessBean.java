@@ -35,6 +35,8 @@ public class LinkedProcessBean
    private String joinProcessName;
    private ProcessInstance relatedLinkedProcess;
    private String relatedProcessName;
+   private ProcessInstance insertedLinkedProcess;
+   private String insertedProcessName;
 
    /**
     * @return
@@ -104,6 +106,26 @@ public class LinkedProcessBean
    public void setRelatedProcessName(String relatedProcessName)
    {
       this.relatedProcessName = relatedProcessName;
+   }
+   
+   public ProcessInstance getInsertedLinkedProcess()
+   {
+      return insertedLinkedProcess;
+   }
+
+   public void setInsertedLinkedProcess(ProcessInstance insertedLinkedProcess)
+   {
+      this.insertedLinkedProcess = insertedLinkedProcess;
+   }
+
+   public String getInsertedProcessName()
+   {
+      return insertedProcessName;
+   }
+
+   public void setInsertedProcessName(String insertedProcessName)
+   {
+      this.insertedProcessName = insertedProcessName;
    }
 
    /**

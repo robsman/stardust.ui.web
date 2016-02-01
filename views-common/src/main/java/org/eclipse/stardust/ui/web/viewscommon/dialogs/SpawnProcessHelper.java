@@ -19,6 +19,8 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
+import org.eclipse.stardust.engine.api.runtime.SpawnOptions;
+import org.eclipse.stardust.engine.api.runtime.SpawnOptions.SpawnMode;
 import org.eclipse.stardust.engine.api.runtime.SubprocessSpawnInfo;
 import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
@@ -72,8 +74,8 @@ public class SpawnProcessHelper
    public ProcessInstance spawnPeerProcessInstances(long rootProcessInstanceOid,
          List<SubprocessSpawnInfo> subprocessSpawnInfo)
    {
-      ProcessInstance pi = ServiceFactoryUtils.getWorkflowService().spawnPeerProcessInstance(rootProcessInstanceOid,
-            subprocessSpawnInfo.get(0).getProcessId(), true, null, false, null);
+      SpawnOptions options = new SpawnOptions(null, SpawnMode.HALT, null, null);
+      ProcessInstance pi = ServiceFactoryUtils.getWorkflowService().spawnPeerProcessInstance(rootProcessInstanceOid, subprocessSpawnInfo.get(0).getProcessId(), options);
       if(CollectionUtils.isEmpty(subprocessInstances))
       {
          subprocessInstances = CollectionUtils.newArrayList();

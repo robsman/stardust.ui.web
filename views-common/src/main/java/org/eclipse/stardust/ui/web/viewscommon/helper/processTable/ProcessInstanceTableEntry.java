@@ -449,7 +449,8 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
       String SPAWN_TO = MessagesViewsCommonBean.getInstance().getString("view.linkedProcess.label.spawn_to");
       String SPAWN_FROM = MessagesViewsCommonBean.getInstance().getString("view.linkedProcess.label.spawn_from");
       String RELATED = MessagesViewsCommonBean.getInstance().getString("view.linkedProcess.label.related");
-
+      String INSERTED = MessagesViewsCommonBean.getInstance().getString("view.linkedProcess.label.inserted");
+      String INSERTED_INTO = MessagesViewsCommonBean.getInstance().getString("view.linkedProcess.label.insertedInto");
       long sourceLinkOID = link.getSourceOID();
       long targetLinkOID = link.getTargetOID();
       // If processOID of current process is Sources for LinkedProcess,
@@ -468,6 +469,10 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
          {
             linkType = RELATED;
          }
+         else if (PredefinedProcessInstanceLinkTypes.INSERT.getId().equals(link.getLinkType().getId())) 
+         {
+            linkType = INSERTED_INTO;
+         }
          else
             // If the link type is Join , set the To Process Link Type
             linkType = PredefinedProcessInstanceLinkTypes.JOIN.getId().equals(link.getLinkType().getId()) ? JOIN_FROM : SWITCH_FROM;
@@ -485,6 +490,10 @@ public class ProcessInstanceTableEntry extends DefaultRowModel
          else if (PredefinedProcessInstanceLinkTypes.RELATED.getId().equals(link.getLinkType().getId()))
          {
             linkType = RELATED;
+         }
+         else if (PredefinedProcessInstanceLinkTypes.INSERT.getId().equals(link.getLinkType().getId())) 
+         {
+            linkType = INSERTED;
          }
          else
             linkType = PredefinedProcessInstanceLinkTypes.JOIN.getId().equals(link.getLinkType().getId()) ? JOIN_TO : SWITCH_TO;

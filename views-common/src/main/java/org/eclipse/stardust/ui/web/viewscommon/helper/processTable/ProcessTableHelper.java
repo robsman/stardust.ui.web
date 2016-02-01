@@ -163,7 +163,11 @@ public class ProcessTableHelper implements IUserObjectBuilder<ProcessInstanceTab
       allStatusList.add(new SelectItem(Integer.toString(ProcessInstanceState.COMPLETED), propsBean
             .getString("views.processTable.statusFilter.completed")));
       allStatusList.add(new SelectItem(Integer.toString(ProcessInstanceState.ABORTING), propsBean
-            .getString("views.processTable.statusFilter.aborting")));     
+            .getString("views.processTable.statusFilter.aborting")));   
+      allStatusList.add(new SelectItem(Integer.toString(ProcessInstanceState.HALTING), propsBean
+            .getString("views.processTable.statusFilter.halting")));
+      allStatusList.add(new SelectItem(Integer.toString(ProcessInstanceState.HALTED), propsBean
+            .getString("views.processTable.statusFilter.halted")));
       
       canCreateCase = AuthorizationUtils.canCreateCase();
       

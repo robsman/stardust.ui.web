@@ -972,6 +972,10 @@ public class ActivityInstanceUtils
 
       allStatusList.add(new SelectItem(Integer.toString(ActivityInstanceState.SUSPENDED), propsBean
             .getString("views.activityTable.statusFilter.suspended")));
+      allStatusList.add(new SelectItem(Integer.toString(ActivityInstanceState.HALTING), propsBean
+            .getString("views.activityTable.statusFilter.halting")));
+      allStatusList.add(new SelectItem(Integer.toString(ActivityInstanceState.HALTED), propsBean
+            .getString("views.activityTable.statusFilter.halted")));
       return allStatusList;
    }
    
