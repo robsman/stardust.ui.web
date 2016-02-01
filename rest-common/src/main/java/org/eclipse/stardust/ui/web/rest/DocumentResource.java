@@ -36,6 +36,7 @@ import javax.ws.rs.core.StreamingOutput;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.rest.exception.PortalErrorClass;
 import org.eclipse.stardust.ui.web.rest.exception.PortalRestException;
@@ -211,12 +212,11 @@ public class DocumentResource
          + "parentFolderPath //where the document will created/updated)\r\n"
          + "description \r\n"
          + "comments\r\n"
-         + "uploadVersion  //indicates that user intends to create a new version of existing document with new uploaded contents for provided uuid\r\n"
          + "createVersion //'true'(default) to indicate user wants to create a version if the document already exist with the same name)\r\n"
          + "createNewVersion //'true' (default) to indicate user wants to create new version with update, 'false' to overwrite\r\n"
          + "\r\n" + "modelId //required when documentTypeId is also supplied\r\n"
          + "documentTypeId //modelId must also be supplied before this attibute) \r\n" + "\r\n" + "```\r\n"
-         + "Note that all other attributes key-values would be assumed to be document *Properties*\r\n" + "\r\n"
+         + "Properties //document properties map" + "\r\n"
          + "example of how client can provide the file attributes is \r\n" + "``` javascript\r\n"
          + "formData.append(\"file1\", files[1]);\r\n"
          + "formData.append(\"description\", \"Description for file1\") \r\n"
@@ -230,6 +230,38 @@ public class DocumentResource
       List<DocumentContentRequestDTO> uploadedDocuments = FileUploadUtils.parseAttachments(attachments);
       Map<String, Object> result = repositoryService.createDocuments(uploadedDocuments, null, false);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(result)).build();
+   }
+   
+   /**
+    * @author Yogesh.Manware
+    * @param attachments
+    * @return
+    * @throws Exception
+    */
+   @PUT
+   @Consumes(MediaType.MULTIPART_FORM_DATA)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/upload/{documentId: .*}")
+   @RequestDescription("Supported Attributes are \r\n"
+         + "``` javascript\r\n"
+         + "description \r\n"
+         + "comments\r\n"
+         + "createNewVersion //'true' (default) to indicate user wants to create new version with update, 'false' to overwrite\r\n"
+         + "\r\n" + "modelId //required when documentTypeId is also supplied\r\n"
+         + "documentTypeId //modelId must also be supplied before this attibute) \r\n" + "\r\n" + "```\r\n"
+         + "Properties //document properties map" + "\r\n" + "```")
+   @ResponseDescription("Returns the result something like below\r\n" + "\r\n" + "```\r\n" + "{\r\n"
+         + "  \"failures\": [] //NotificationDTOs\r\n" + "  \"documents\": [] ////DocumentDTOs\r\n" + "}\r\n" + "```")
+   public Response uploadVersion(@PathParam("documentId") String documentId, List<Attachment> attachments)
+         throws Exception
+   {
+      // parse attachments
+      List<DocumentContentRequestDTO> uploadedDocuments = FileUploadUtils.parseAttachments(attachments);
+      if (!CollectionUtils.isEmpty(uploadedDocuments))
+      {
+         repositoryService.updateDocument(documentId, uploadedDocuments.get(0), true);
+      }
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(restCommonClientMessages.get("success.message"))).build();
    }
    
    /**
@@ -302,7 +334,7 @@ public class DocumentResource
       DocumentContentRequestDTO documentInfoDTO = DTOBuilder.buildFromJSON2(postedData,
             DocumentContentRequestDTO.class, null);
       documentInfoDTO.properties = properties;
-      DocumentDTO documentDTO = repositoryService.updateDocument(documentId, documentInfoDTO);
+      DocumentDTO documentDTO = repositoryService.updateDocument(documentId, documentInfoDTO, false);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
    }
    

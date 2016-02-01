@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *	Yogesh.Manware (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *  Yogesh.Manware (SunGard CSA LLC) - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
 
@@ -122,10 +122,9 @@ public interface RepositoryService
     * @param documentInfoDTO
     * @param processInstance
     * @return
-    * @throws ResourceNotFoundException 
     */
    Map<String, Object> createDocuments(List<DocumentContentRequestDTO> documentInfoDTO,
-         ProcessInstance processInstance, boolean processAttachments) throws ResourceNotFoundException;
+         ProcessInstance processInstance, boolean processAttachments);
 
    /**
     * internally calls createDocuments
@@ -134,10 +133,9 @@ public interface RepositoryService
     * @param processInstance
     * @param processAttachments
     * @return
-    * @throws ResourceNotFoundException 
     */
    Map<String, Object> createDocument(DocumentContentRequestDTO documentInfoDTO, ProcessInstance processInstance,
-         boolean processAttachments) throws ResourceNotFoundException;
+         boolean processAttachments);
 
    /**
     * @param documentIds
@@ -155,9 +153,10 @@ public interface RepositoryService
    /**
     * @param documentId
     * @param documentInfoDTO
+    * @param versionUpload
+    * @return
     */
-   DocumentDTO updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO);
-
+   DocumentDTO updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO, boolean versionUpload);
 
    // *******************************
    // Repository level operations
@@ -187,4 +186,5 @@ public interface RepositoryService
     * @param repositoryId
     */
    void unbindRepository(String repositoryId);
+
 }

@@ -83,10 +83,6 @@ public class FileUploadUtils
             {
                documentInfoDTO.parentFolderPath = inputStream.toString();
             }
-            else if (CommonProperties.UPLOAD_VERSION.equals(dataHandler.getName()))
-            {
-               documentInfoDTO.uploadVersion = Boolean.valueOf(inputStream.toString());
-            }
             else if (CommonProperties.CREATE_VERSION.equals(dataHandler.getName()))
             {
                documentInfoDTO.createVersion = Boolean.valueOf(inputStream.toString());

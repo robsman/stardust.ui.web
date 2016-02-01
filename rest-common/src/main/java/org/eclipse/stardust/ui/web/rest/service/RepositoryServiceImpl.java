@@ -6,7 +6,7 @@
  * http://www.eclipse.org/legal/epl-v10.html
  *
  * Contributors:
- *	Yogesh.Manware (SunGard CSA LLC) - initial API and implementation and/or initial documentation
+ *  Yogesh.Manware (SunGard CSA LLC) - initial API and implementation and/or initial documentation
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.service;
 
@@ -288,12 +288,11 @@ public class RepositoryServiceImpl implements RepositoryService
    }
 
    /**
-    * @throws ResourceNotFoundException 
     *
     */
    @Override
    public Map<String, Object> createDocument(DocumentContentRequestDTO documentInfoDTO,
-         ProcessInstance processInstance, boolean processAttachments) throws ResourceNotFoundException
+         ProcessInstance processInstance, boolean processAttachments)
    {
       List<DocumentContentRequestDTO> documentInfoDTOs = new ArrayList<DocumentContentRequestDTO>();
       documentInfoDTOs.add(documentInfoDTO);
@@ -301,12 +300,11 @@ public class RepositoryServiceImpl implements RepositoryService
    }
 
    /**
-    * @throws ResourceNotFoundException 
     *
     */
    @Override
    public Map<String, Object> createDocuments(List<DocumentContentRequestDTO> documentInfoDTOs,
-         ProcessInstance processInstance, boolean processAttachments) throws ResourceNotFoundException
+         ProcessInstance processInstance, boolean processAttachments)
    {
       Map<String, Object> result = new HashMap<String, Object>();
       List<NotificationDTO> failures = new ArrayList<NotificationDTO>();
@@ -351,17 +349,7 @@ public class RepositoryServiceImpl implements RepositoryService
             documentInfoDTO.dataPathId = CommonProperties.PROCESS_ATTACHMENTS;
          }
          
-         Document document = null;
-         
-         // deliberate version upgrade
-         if (documentInfoDTO.uploadVersion)
-         {
-            document = DocumentMgmtUtility.getDocument(documentInfoDTO.uuid);
-         }
-         else
-         {
-            document = DocumentMgmtUtility.getDocument(parentFolder, documentInfoDTO.name);
-         }
+         Document document = DocumentMgmtUtility.getDocument(parentFolder, documentInfoDTO.name);
 
          if (!documentInfoDTO.createVersion && document != null)
          {
@@ -459,7 +447,7 @@ public class RepositoryServiceImpl implements RepositoryService
     *
     */
    @Override
-   public DocumentDTO updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO)
+   public DocumentDTO updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO, boolean versionUpload)
    {
       documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
       Document document = getDMS().getDocument(documentId);
@@ -471,7 +459,7 @@ public class RepositoryServiceImpl implements RepositoryService
       }
 
       // check if name is changed
-      if ((documentInfoDTO.name != null) && !document.getName().equals(documentInfoDTO.name))
+      if (!versionUpload && (documentInfoDTO.name != null) && !document.getName().equals(documentInfoDTO.name))
       {
          if (!DocumentMgmtUtility.validateFileName(documentInfoDTO.name))
          {
