@@ -759,3 +759,7 @@ table.dataTable .group {
 	color: red;
 	padding-left: 2px;
 }
+
+.noUnderline {
+	text-decoration: none;
+}
