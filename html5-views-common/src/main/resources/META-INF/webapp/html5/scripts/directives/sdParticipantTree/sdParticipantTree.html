@@ -1,0 +1,31 @@
+boo!
+
+
+<div class="permission-tree">
+	<ul sd-tree="partTreeCtrl.onTreeInit(api)"
+		sda-menu-callback="partTreeCtrl.menuCallback(item)"
+		sda-icon-callback="partTreeCtrl.iconCallback(item)"
+		sda-recurse-factory = "partTreeCtrl.recursiveTreeNodeFactory(item)"
+		sda-event-callback="partTreeCtrl.eventCallback(data,e)">
+		<li sd-tree-node 
+			sda-node-id="item.uuid" 
+			sda-label="item.name"
+			sda-menu-items="(,)" 
+			sda-is-leaf="item.children.length == 0"
+			ng-repeat="item in partTreeCtrl.participants">
+			<ul>
+				<li sd-tree-node 
+				    ng-repeat="item in item.children"
+					sda-menu-items="(,)"
+					sda-node-id="item.uuid" 
+					sda-lazy-compile="true"
+					sda-is-leaf="!item.children || item.children.length == 0"
+					sda-label="item.name" >
+					<ul>
+						<li sd-tree-curse-fx></li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+	</ul>
+</div>
