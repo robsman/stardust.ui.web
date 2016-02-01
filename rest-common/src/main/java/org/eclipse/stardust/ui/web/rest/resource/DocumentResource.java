@@ -241,26 +241,25 @@ public class DocumentResource
    @Consumes(MediaType.MULTIPART_FORM_DATA)
    @Produces(MediaType.APPLICATION_JSON)
    @Path("/upload/{documentId: .*}")
-   @RequestDescription("Supported Attributes are \r\n"
-         + "``` javascript\r\n"
-         + "description \r\n"
-         + "comments\r\n"
-         + "createNewVersion //'true' (default) to indicate user wants to create new version with update, 'false' to overwrite\r\n"
-         + "\r\n" + "modelId //required when documentTypeId is also supplied\r\n"
-         + "documentTypeId //modelId must also be supplied before this attibute) \r\n" + "\r\n" + "```\r\n"
-         + "Properties //document properties map" + "\r\n" + "```")
-   @ResponseDescription("Returns the result something like below\r\n" + "\r\n" + "```\r\n" + "{\r\n"
-         + "  \"failures\": [] //NotificationDTOs\r\n" + "  \"documents\": [] ////DocumentDTOs\r\n" + "}\r\n" + "```")
+   @RequestDescription("Supported Attributes are \r\n" + 
+         "``` javascript\r\n" + 
+         "description \r\n" + 
+         "comments\r\n" + 
+         "createNewVersion //'true' (default) to indicate user wants to create new version with update, 'false' to overwrite\r\n" + 
+         "\r\n" + 
+         "modelId //required when documentTypeId is also supplied\r\n" + 
+         "documentTypeId //modelId must also be supplied before this attibute) \r\n" + 
+         "\r\n" + 
+         "Properties //document properties map\r\n" + 
+         "```")
+   @ResponseDescription("If the document is updated successfully, it returns updated document DTO")
    public Response uploadVersion(@PathParam("documentId") String documentId, List<Attachment> attachments)
          throws Exception
    {
       // parse attachments
       List<DocumentContentRequestDTO> uploadedDocuments = FileUploadUtils.parseAttachments(attachments);
-      if (!CollectionUtils.isEmpty(uploadedDocuments))
-      {
-         repositoryService.updateDocument(documentId, uploadedDocuments.get(0), true);
-      }
-      return Response.ok(GsonUtils.toJsonHTMLSafeString(restCommonClientMessages.get("success.message"))).build();
+      DocumentDTO documentDTO = repositoryService.updateDocument(documentId, uploadedDocuments.get(0), true);
+      return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
    }
    
    /**
@@ -318,7 +317,7 @@ public class DocumentResource
    @Produces(MediaType.APPLICATION_JSON)
    @Path("{documentId: .*}")
    @RequestDescription("Request must contain DocumentContentRequestDTO like json and few attributes from DocumentDTO")
-   @ResponseDescription("if the document is updated successfully, it returns *Operation completed successfully*.")
+   @ResponseDescription("If the document is updated successfully, it returns updated document")
    public Response updateDocument(@PathParam("documentId") String documentId, String postedData)
          throws Exception
    {
