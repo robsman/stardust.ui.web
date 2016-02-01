@@ -347,6 +347,10 @@
 
     treeFolder = that.treeApi.childNodes[targetFolder.id];
 
+    //reset state as this should be null unless we are uploading a new
+    //version of an existing document.
+    this.documentVersionTarget=null;
+
     //property tied to the upload dialog directive must be updated
     this.selectedFolderPath = targetFolder.path;
 
@@ -395,7 +399,32 @@
   };
 
   docRepoController.prototype.uploadNewFileVersion = function(file){
-    alert("TODO: UNFV utilize file upload directive if possible.");
+    
+    
+    var that = this;
+    var treeFolder;
+
+    //property tied to the upload dialog directive must be updated
+    this.selectedFolderPath = file.path;
+
+    //supplying an ID here (which is tied the dialog via an attribute binding)
+    //will singal the dialog that this is a new file version upload rather than
+    //a new file upload.
+    this.documentVersionTarget = file.uuid;
+
+    //now open dialog and wait for succesful files to be resolved.
+    that.uploadDialogAPI.open()
+    .then(function(files){
+      
+        //Todo remove old file version and add new file version
+    })
+    ["catch"](function(err){
+      //Todo: handle error
+    })
+    ["finally"](function(){
+      that.documentVersionTarget=null;
+    });
+
   };
   
   docRepoController.prototype.refreshDocument = function(documentNode){

@@ -55,6 +55,11 @@
 				that.state = "fileSelected";
 				that.files = elem.files;
 
+				//In update mode we only allow one curated file
+				if(that.$scope.repoUploadCtrl.mode==="UPDATE"){
+					while(that.curatedFiles.pop());
+				};
+
 				for (var i = 0;i<that.files.length;i++) {
 					file=that.files[i];
 					that.totalSize += file.size;
@@ -175,12 +180,16 @@
 
 			data.forEach(function(result){
 
-				if(result.failures.length>0){
-					failed = true;
+				//New version uploads dont return a full result object
+				if(result.failures && result.documents){
+					if(result.failures.length>0){
+						failed = true;
+					}
+					else{
+						that.responseFiles.push(result.documents[0]);
+					}
 				}
-				else{
-					that.responseFiles.push(result.documents[0]);
-				}
+				
 			});
 
 			that.state = (failed)? "error" : "success";
@@ -229,7 +238,7 @@
 
 			//integer division -> any 2XX status = success
 			if((status/100 | 0)===2){ 
-				if(result.failures.length > 0){
+				if(result.failures && result.failures.length > 0){
 					that.$timeout(function(res){file.fileState = FileState.ERROR;},0);
 					deferred.resolve(result);
 				}
@@ -250,7 +259,15 @@
 			that.$timeout(function(){file.fileState = FileState.ERROR;},0);
 			deferred.reject(file);
 		}, false);
-        xhr.open("POST", that.$scope.url, true);
+
+		//Upload new file(s)
+		if(that.$scope.repoUploadCtrl.mode==="CREATE"){
+        	xhr.open("POST", that.$scope.url, true);
+    	}
+    	//upload a new version of an existing file.
+    	else{
+    		xhr.open("PUT", that.$scope.url + "/" + that.$scope.repoUploadCtrl.targetDocument, true);
+    	}
 		xhr.send(fd);
 
 	};
@@ -278,10 +295,10 @@
 				scope.repoUploadCtrl.targetDocument = newValue;
 
 				if(scope.repoUploadCtrl.targetDocument){
-					scope.repoUploadCtrl.mode="CREATE";
+					scope.repoUploadCtrl.mode="UPDATE";
 				}
 				else{
-					scope.repoUploadCtrl.mode="UPDATE";
+					scope.repoUploadCtrl.mode="CREATE";
 				}
 
 			});
