@@ -201,6 +201,9 @@
       case "menu-downloadFolder" :
         this.downloadFolder(data.valueItem);
         break;
+      case "menu-uploadZipFile":
+        this.uploadAndExplode(data.valueItem);
+        break;
       case "menu-uploadFile" :
         this.uploadFile(data.valueItem,data);
         break;
@@ -241,7 +244,8 @@
       menuItems.push("(createSubFolder,Create Sub Folder)");
       menuItems.push("(createFile,Create New File)");
       menuItems.push("(uploadFile,Upload File)");
-      menuItems.push("(downloadFolder,Download Folder)");
+      menuItems.push("(uploadZipFile, Upload Zip)");
+      menuItems.push("(downloadFolder,Send to ZIP)");
       menuItems.push("(refreshFolder,Refresh)");
       menuItems.push("(securityFolder,Security Settings)");
 
@@ -271,6 +275,40 @@
   
   docRepoController.prototype.isLeaf = function(nodeItem){
     return nodeItem.nodeType==='document';
+  };
+
+  docRepoController.prototype.uploadAndExplode = function(folder){
+    
+    var that = this;
+    var treeFolder;
+
+    //property tied to the upload dialog directive must be updated
+    this.selectedFolderPath = folder.path;
+
+    //supplying an ID here (which is tied the dialog via an attribute binding)
+    //will singal the dialog that this is a new file version upload rather than
+    //a new file upload. (Unless explode and upload is true in which case the new
+    //file version operation is ignored)
+    this.documentVersionTarget = folder.uuid;
+
+    //Supplying true here signals the docRepo dialog that we are actually uploading
+    //a compressed zip which will then be exploded into its internal file/folder structure
+    //within the document repository
+    this.explodeUpload = true;
+
+    //now open dialog and wait for folder to explode.
+    that.uploadDialogAPI.open()
+    .then(function(files){
+       //Todo: some form of refresh.
+    })
+    ["catch"](function(err){
+      //Todo: handle error
+    })
+    ["finally"](function(){
+      that.documentVersionTarget=null;
+      that.explodeUpload = false;
+    });
+
   };
 
   docRepoController.prototype.downloadFolder = function(folder){
@@ -399,7 +437,6 @@
   };
 
   docRepoController.prototype.uploadNewFileVersion = function(file){
-    
     
     var that = this;
     var treeFolder;

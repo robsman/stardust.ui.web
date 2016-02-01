@@ -35,6 +35,7 @@
 		this.totalUploadedSize = 0;
 		this.removedFiles = [];
 		this.curatedFiles = [];
+		this.sdUtilService = sdUtilService;
 		this.parentPath="/";
 		this.$scope = $scope;
 		this.$timeout = $timeout;
@@ -44,6 +45,8 @@
 		this.fileDefer = {};
 		this.id = "sdFileUploadDialog_" + $scope.$id;
 		this.trace = sdLoggerService.getLogger('bpm-common.directives.sdFileUploadController');
+
+		this.title = "Upload New File";//default
 
 		//Function has to be on scope so we can call it
 		//from non angular environment as ng-change does not
@@ -189,7 +192,6 @@
 						that.responseFiles.push(result.documents[0]);
 					}
 				}
-				
 			});
 
 			that.state = (failed)? "error" : "success";
@@ -234,7 +236,8 @@
 			//We will let our main ALL handler determine state for the upload.
 			var src = (e.srcElement || e.target),
 			    status = src.status,
-			    result = JSON.parse(src.response || src.responseText);
+			    result = JSON.parse(src.response || src.responseText),
+			    expUrl;
 
 			//integer division -> any 2XX status = success
 			if((status/100 | 0)===2){ 
@@ -265,9 +268,16 @@
         	xhr.open("POST", that.$scope.url, true);
     	}
     	//upload a new version of an existing file.
-    	else{
+    	else if(that.$scope.repoUploadCtrl.mode==="UPDATE"){
     		xhr.open("PUT", that.$scope.url + "/" + that.$scope.repoUploadCtrl.targetDocument, true);
     	}
+    	else if(that.$scope.repoUploadCtrl.mode==="EXPLODE"){
+    		var expUrl = that.sdUtilService.getRootUrl() + "/services/rest/portal/folders/import/";
+    			expUrl += that.$scope.repoUploadCtrl.targetDocument;
+    			debugger;
+    		xhr.open("POST", expUrl + "/" + that.$scope.repoUploadCtrl.targetDocument, true);
+    	}
+
 		xhr.send(fd);
 
 	};
@@ -291,14 +301,46 @@
 				scope.repoUploadCtrl.parentPath = newValue;
 			});
 
+			//Watch doExplode and examine in combination with targetDocument
+			//to determine if we are in explode of update mode.
+			scope.$watch('doExplode',function(newValue, oldValue, scope){
+				scope.repoUploadCtrl.doExplode=newValue;
+
+				if(scope.repoUploadCtrl.targetDocument){
+					
+					if(scope.repoUploadCtrl.doExplode===true){
+						scope.repoUploadCtrl.mode = "EXPLODE";
+						scope.repoUploadCtrl.title = "Upload Zip File"
+					}
+					else{
+						scope.repoUploadCtrl.mode="UPDATE";
+						scope.repoUploadCtrl.title = "Upload New File Version";
+					}
+				}
+				
+
+			});
+
+			//Watch taget document in combination with doExplode to determine
+			//what mode our dialog is in.
 			scope.$watch('targetDocument', function(newValue, oldValue, scope) {
 				scope.repoUploadCtrl.targetDocument = newValue;
 
 				if(scope.repoUploadCtrl.targetDocument){
-					scope.repoUploadCtrl.mode="UPDATE";
+					
+					if(scope.repoUploadCtrl.doExplode===true){
+						scope.repoUploadCtrl.mode = "EXPLODE";
+						scope.repoUploadCtrl.title = "Upload Zip File"
+					}
+					else{
+						scope.repoUploadCtrl.mode="UPDATE";
+						scope.repoUploadCtrl.title = "Upload New File Version";
+					}
+
 				}
 				else{
 					scope.repoUploadCtrl.mode="CREATE";
+					scope.repoUploadCtrl.title = "Upload New File"
 				}
 
 			});
@@ -313,6 +355,7 @@
 				"subTitle" : "@sdaSubTitle",
 				"initCallback" : "&sdaOnInit",
 				"targetDocument" : "=sdaTargetDocument",
+				"doExplode" : "=sdaExplodeMode",
 				"fileKey" : "@sdaFileKey",
 				"parentPath" : "=sdaParentPath",
 				"url" : "@sdaUrl"

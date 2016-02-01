@@ -1,6 +1,6 @@
 Name:{{repoUploadCtrl.name}}
 <div sd-dialog="repoUploadCtrl.uploadDialog"
-	 sda-title="REPO FILE UPLOAD"
+	 sda-title="{{repoUploadCtrl.title}}"
 	 sda-cancel-action-label="OK"
      sda-type="custom"
      sda-template="tmplRepoUploadDialog"
@@ -16,7 +16,7 @@ Name:{{repoUploadCtrl.name}}
 		        <label style="display:inline-block;" for="{{repoUploadCtrl.id}}">
 					<i sd-data-drop sda-drop="repoUploadCtrl.onFileDrop($data,$event)" class="glyphicon sc-3x glyphicon-folder-open"></i>
 		
-					<!--Using two input fields as some browsers do not like the multiple attribute evaluating to false etc...-->
+					
 					<input ng-if="repoUploadCtrl.mode === 'CREATE'" 
 						   id ="{{repoUploadCtrl.id}}" 
 		                   style="display:none;"
@@ -29,6 +29,14 @@ Name:{{repoUploadCtrl.name}}
 		                   style="display:none;"
 		                   onchange="angular.element(this).scope().fileNameChanged(this)" 
 		                   type="file"/>
+
+		            <input ng-if="repoUploadCtrl.mode === 'EXPLODE'" 
+						   id ="{{repoUploadCtrl.id}}" 
+		                   style="display:none;"
+		                   accept="application/zip"
+		                   onchange="angular.element(this).scope().fileNameChanged(this)" 
+		                   type="file"/>
+
 		        </label>
 			</div>
 
@@ -53,7 +61,17 @@ Name:{{repoUploadCtrl.name}}
 		    </div>
 	    </div>
 
-	    <span ng-show="repoUploadCtrl.state==='initial'" style="margin-left:1em;">Select files to upload.</span>
+	    <span ng-show="repoUploadCtrl.state==='initial' && repoUploadCtrl.mode==='CREATE'" 
+	    	  style="margin-left:1em;">Select files to upload.
+	   	</span>
+
+	   	<span ng-show="repoUploadCtrl.state==='initial' && repoUploadCtrl.mode==='UPDATE'" 
+	    	  style="margin-left:1em;">Select New Version of Current File.
+	   	</span>
+
+	   	<span ng-show="repoUploadCtrl.state==='initial' && repoUploadCtrl.mode==='EXPLODE'" 
+	    	  style="margin-left:1em;">Select Zip Archive to Upload.
+	   	</span>
 
 	    <div ng-show="repoUploadCtrl.state !=='initial'" 
 	         style="width:500px;max-height:200px;display:inline-flex;position:relative;vertical-align:top;">
