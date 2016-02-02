@@ -34,12 +34,12 @@ import org.apache.cxf.jaxrs.ext.multipart.MultipartBody;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
-import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
-import org.eclipse.stardust.ui.web.rest.service.BenchmarkDefinitionService;
-import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkCategoryDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkDefinitionDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
+import org.eclipse.stardust.ui.web.rest.component.service.BenchmarkDefinitionService;
+import org.eclipse.stardust.ui.web.rest.dto.AbstractDTO;
+import org.eclipse.stardust.ui.web.rest.dto.BenchmarkCategoryDTO;
+import org.eclipse.stardust.ui.web.rest.dto.BenchmarkDefinitionDTO;
+import org.eclipse.stardust.ui.web.rest.dto.JsonDTO;
+import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.springframework.beans.factory.annotation.Autowired;
 

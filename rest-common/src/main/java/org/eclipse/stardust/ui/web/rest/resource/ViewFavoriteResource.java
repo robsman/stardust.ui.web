@@ -25,12 +25,12 @@ import javax.ws.rs.core.Response;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
-import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
-import org.eclipse.stardust.ui.web.rest.misc.RequestDescription;
-import org.eclipse.stardust.ui.web.rest.misc.ResponseDescription;
-import org.eclipse.stardust.ui.web.rest.service.ViewFavoriteService;
-import org.eclipse.stardust.ui.web.rest.service.dto.PreferenceDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.SaveFavoriteStatusDTO;
+import org.eclipse.stardust.ui.web.rest.component.service.ViewFavoriteService;
+import org.eclipse.stardust.ui.web.rest.documentation.RequestDescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
+import org.eclipse.stardust.ui.web.rest.dto.PreferenceDTO;
+import org.eclipse.stardust.ui.web.rest.dto.SaveFavoriteStatusDTO;
+import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;

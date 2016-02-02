@@ -19,10 +19,10 @@ import javax.ws.rs.core.Response;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
-import org.eclipse.stardust.ui.web.rest.service.PasswordManagementService;
-import org.eclipse.stardust.ui.web.rest.service.dto.PasswordRulesDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.component.service.PasswordManagementService;
+import org.eclipse.stardust.ui.web.rest.dto.PasswordRulesDTO;
+import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.JsonObject;

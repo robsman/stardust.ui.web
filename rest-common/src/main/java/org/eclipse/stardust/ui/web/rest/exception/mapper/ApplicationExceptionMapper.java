@@ -23,8 +23,8 @@ import org.eclipse.stardust.common.error.ApplicationException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
-import org.eclipse.stardust.ui.web.rest.exception.ExceptionHelper;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.ErrorMessageDTO;
+import org.eclipse.stardust.ui.web.rest.component.exception.ExceptionHelper;
+import org.eclipse.stardust.ui.web.rest.dto.response.ErrorMessageDTO;
 
 /**
  * @author Yogesh.Manware

@@ -28,9 +28,9 @@ import javax.ws.rs.core.Response;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
-import org.eclipse.stardust.ui.web.rest.service.DeputyManagementService;
-import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.component.service.DeputyManagementService;
+import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;

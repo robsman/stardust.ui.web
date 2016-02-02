@@ -635,6 +635,10 @@ public class SecurityDialog extends PopupUIComponentBean
          {
             participants.put(principal.getName(), qualifiedModelParticipantInfo);
          }
+         else
+         {
+            System.out.println("#### This key already exist...." + principal.getName());
+         }
       }
       return participants;
    }

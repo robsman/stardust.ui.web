@@ -25,12 +25,12 @@ import javax.ws.rs.core.Response;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
-import org.eclipse.stardust.ui.web.rest.service.ProcessDefinitionService;
-import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.DescriptorColumnDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.DocumentDataDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
+import org.eclipse.stardust.ui.web.rest.component.service.ProcessDefinitionService;
+import org.eclipse.stardust.ui.web.rest.dto.AbstractDTO;
+import org.eclipse.stardust.ui.web.rest.dto.DescriptorColumnDTO;
+import org.eclipse.stardust.ui.web.rest.dto.DocumentDataDTO;
+import org.eclipse.stardust.ui.web.rest.dto.ProcessDefinitionDTO;
+import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.JsonObject;

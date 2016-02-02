@@ -20,8 +20,8 @@ import javax.ws.rs.core.Response;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.rest.service.DocumentTypeService;
-import org.eclipse.stardust.ui.web.rest.service.dto.DocumentTypeDTO;
+import org.eclipse.stardust.ui.web.rest.component.service.DocumentTypeService;
+import org.eclipse.stardust.ui.web.rest.dto.DocumentTypeDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;

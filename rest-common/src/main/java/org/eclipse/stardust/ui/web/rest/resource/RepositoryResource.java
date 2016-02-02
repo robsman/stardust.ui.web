@@ -23,13 +23,13 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
-import org.eclipse.stardust.ui.web.rest.exception.RestCommonClientMessages;
-import org.eclipse.stardust.ui.web.rest.misc.RequestDescription;
-import org.eclipse.stardust.ui.web.rest.misc.ResponseDescription;
-import org.eclipse.stardust.ui.web.rest.service.RepositoryService;
-import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.RepositoryInstanceDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.RepositoryProviderDTO;
+import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
+import org.eclipse.stardust.ui.web.rest.component.service.RepositoryService;
+import org.eclipse.stardust.ui.web.rest.documentation.RequestDescription;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
+import org.eclipse.stardust.ui.web.rest.dto.JsonDTO;
+import org.eclipse.stardust.ui.web.rest.dto.response.RepositoryInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.dto.response.RepositoryProviderDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

@@ -13,6 +13,7 @@
 
 	<jaxrs:server id="rest-common" address="/portal">
 		<jaxrs:serviceBeans>
+		 <bean class="org.eclipse.stardust.ui.web.rest.documentation.RestResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.resource.ActivityInstanceResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.resource.DocumentResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.resource.DocumentTypeResource" />
@@ -51,7 +52,6 @@
          <bean class="org.eclipse.stardust.ui.web.rest.resource.FolderResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.resource.TrafficLightViewResource" /> 
          <bean class="org.eclipse.stardust.ui.web.rest.resource.SchemaDefinitionResource" />        
-         <bean class="org.eclipse.stardust.ui.web.rest.misc.RestResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.resource.SessionResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.resource.ViewFavoriteResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.resource.PerspectiveResource" />

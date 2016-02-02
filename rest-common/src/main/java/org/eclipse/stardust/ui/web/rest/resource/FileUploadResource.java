@@ -19,8 +19,8 @@ import javax.ws.rs.core.Response;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.eclipse.stardust.ui.web.html5.rest.RestControllerUtils;
-import org.eclipse.stardust.ui.web.rest.service.dto.FileInfoDTO;
-import org.eclipse.stardust.ui.web.rest.service.utils.FileUploadUtils;
+import org.eclipse.stardust.ui.web.rest.dto.FileInfoDTO;
+import org.eclipse.stardust.ui.web.rest.util.FileUploadUtils;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.FileStorage;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MIMEType;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MimeTypesHelper;

@@ -26,7 +26,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.stardust.common.StringUtils;
-import org.eclipse.stardust.ui.web.rest.common.LanguageUtil;
+import org.eclipse.stardust.ui.web.rest.util.LanguageUtil;
 
 /**
  * @author Anoop.Nair

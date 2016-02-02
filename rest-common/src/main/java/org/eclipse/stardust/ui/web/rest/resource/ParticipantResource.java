@@ -33,13 +33,13 @@ import javax.ws.rs.core.Response;
 
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
-import org.eclipse.stardust.ui.web.rest.service.ParticipantSearchComponent;
-import org.eclipse.stardust.ui.web.rest.service.ParticipantService;
-import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
-import org.eclipse.stardust.ui.web.rest.service.dto.request.DepartmentDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.ParticipantDTO;
+import org.eclipse.stardust.ui.web.rest.component.service.ParticipantSearchComponent;
+import org.eclipse.stardust.ui.web.rest.component.service.ParticipantService;
+import org.eclipse.stardust.ui.web.rest.dto.AbstractDTO;
+import org.eclipse.stardust.ui.web.rest.dto.JsonDTO;
+import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.dto.request.DepartmentDTO;
+import org.eclipse.stardust.ui.web.rest.dto.response.ParticipantDTO;
 
 /**
  * @author Yogesh.Manware

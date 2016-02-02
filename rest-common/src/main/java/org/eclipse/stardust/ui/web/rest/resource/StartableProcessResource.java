@@ -23,9 +23,9 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
-import org.eclipse.stardust.ui.web.rest.service.StartableProcessService;
-import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.StartableProcessDTO;
+import org.eclipse.stardust.ui.web.rest.component.service.StartableProcessService;
+import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.dto.StartableProcessDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.JsonObject;

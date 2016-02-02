@@ -23,8 +23,8 @@ import javax.ws.rs.core.Response.Status;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.rest.service.LocalizationService;
-import org.eclipse.stardust.ui.web.rest.service.dto.LocalizationInfoDTO;
+import org.eclipse.stardust.ui.web.rest.component.service.LocalizationService;
+import org.eclipse.stardust.ui.web.rest.dto.LocalizationInfoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Path("/localization")

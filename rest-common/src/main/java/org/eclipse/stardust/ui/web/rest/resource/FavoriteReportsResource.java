@@ -24,9 +24,9 @@ import javax.ws.rs.core.Response;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
-import org.eclipse.stardust.ui.web.rest.misc.ResponseDescription;
-import org.eclipse.stardust.ui.web.rest.service.FavoriteReportsService;
-import org.eclipse.stardust.ui.web.rest.service.dto.FavoriteReportDTO;
+import org.eclipse.stardust.ui.web.rest.component.service.FavoriteReportsService;
+import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
+import org.eclipse.stardust.ui.web.rest.dto.FavoriteReportDTO;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.RepositoryUtility;
 
 /**

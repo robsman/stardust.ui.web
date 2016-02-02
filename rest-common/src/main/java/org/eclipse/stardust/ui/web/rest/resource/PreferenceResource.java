@@ -38,12 +38,12 @@ import org.eclipse.stardust.engine.api.runtime.AdministrationService;
 import org.eclipse.stardust.engine.core.preferences.PreferenceScope;
 import org.eclipse.stardust.engine.core.preferences.Preferences;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
-import org.eclipse.stardust.ui.web.rest.service.AuthorizationManagerService;
-import org.eclipse.stardust.ui.web.rest.service.PreferenceService;
-import org.eclipse.stardust.ui.web.rest.service.dto.JsonDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.PreferenceDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.response.PermissionDTO;
-import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.rest.component.service.AuthorizationManagerService;
+import org.eclipse.stardust.ui.web.rest.component.service.PreferenceService;
+import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.rest.dto.JsonDTO;
+import org.eclipse.stardust.ui.web.rest.dto.PreferenceDTO;
+import org.eclipse.stardust.ui.web.rest.dto.response.PermissionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.Gson;

@@ -21,8 +21,8 @@ import javax.ws.rs.core.Response;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.rest.service.ProcessResourceMgmtService;
-import org.eclipse.stardust.ui.web.rest.service.dto.ProcessResourceMgmtDTO;
+import org.eclipse.stardust.ui.web.rest.component.service.ProcessResourceMgmtService;
+import org.eclipse.stardust.ui.web.rest.dto.ProcessResourceMgmtDTO;
 
 @Path("/processResourceManagement")
 public class ProcessResourceMgmtResource

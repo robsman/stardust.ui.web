@@ -156,13 +156,14 @@ public class JsfBackingBeanUtils
          // TODO completion methods with parameters allowed?
 
          Object returnValue = null;
-         try
+/*         try
          {
+*/          
             Class beanType = targetObject.getClass();
             Method completionMethod = Reflect.decodeMethod(beanType, methodName);
             
             returnValue = completionMethod.invoke(targetObject, (Object[]) null);
-         }
+/*         }
          catch (Throwable e)
          {
             if (e.getCause() instanceof ValidatorException)
@@ -173,7 +174,7 @@ public class JsfBackingBeanUtils
             throw new PortalException(
                   ProcessPortalErrorClass.FAILED_INVOKING_COMPLETION_METHOD, e);
          }
-
+*/
          if (trace.isDebugEnabled())
          {
             trace.debug("Performing Backing Bean Out Data Mappings with old approach.");
@@ -262,6 +263,7 @@ public class JsfBackingBeanUtils
       }
       catch (Exception e)
       {
+         e.printStackTrace();
          PortalException pe = e instanceof PortalException ?
                (PortalException)e : new PortalException(
                      ProcessPortalErrorClass.FAILED_INVOKING_COMPLETION_METHOD, e);

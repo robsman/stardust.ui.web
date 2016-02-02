@@ -18,7 +18,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.eclipse.stardust.ui.web.rest.service.AuditTrailService;
+import org.eclipse.stardust.ui.web.rest.component.service.AuditTrailService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.JsonObject;

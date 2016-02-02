@@ -24,10 +24,10 @@ import javax.ws.rs.core.Response;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.runtime.Daemon;
-import org.eclipse.stardust.ui.web.rest.service.dto.DaemonDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.QueryResultDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
-import org.eclipse.stardust.ui.web.rest.service.utils.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.rest.dto.DaemonDTO;
+import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
 
 /**
  * @author Subodh.Godbole

@@ -27,11 +27,11 @@ import javax.ws.rs.core.Response;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
-import org.eclipse.stardust.ui.web.rest.service.QualityAssuranceManagementService;
-import org.eclipse.stardust.ui.web.rest.service.dto.QualityAssuranceActivityDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.QualityAssuranceDepartmentDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.builder.DTOBuilder;
-import org.eclipse.stardust.ui.web.rest.service.dto.request.QualityAssuranceRequestDTO;
+import org.eclipse.stardust.ui.web.rest.component.service.QualityAssuranceManagementService;
+import org.eclipse.stardust.ui.web.rest.dto.QualityAssuranceActivityDTO;
+import org.eclipse.stardust.ui.web.rest.dto.QualityAssuranceDepartmentDTO;
+import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.dto.request.QualityAssuranceRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.gson.JsonObject;

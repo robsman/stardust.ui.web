@@ -20,9 +20,9 @@ import javax.ws.rs.core.Response;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.rest.service.ArtifactTypeService;
-import org.eclipse.stardust.ui.web.rest.service.dto.AbstractDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.ArtifactTypeDTO;
+import org.eclipse.stardust.ui.web.rest.component.service.ArtifactTypeService;
+import org.eclipse.stardust.ui.web.rest.dto.AbstractDTO;
+import org.eclipse.stardust.ui.web.rest.dto.ArtifactTypeDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

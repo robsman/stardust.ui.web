@@ -7,8 +7,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
-import org.eclipse.stardust.ui.web.rest.service.WorkflowOverviewService;
-import org.eclipse.stardust.ui.web.rest.service.dto.WorkflowOverviewCountsDTO;
+import org.eclipse.stardust.ui.web.rest.component.service.WorkflowOverviewService;
+import org.eclipse.stardust.ui.web.rest.dto.WorkflowOverviewCountsDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Path("/workflow-overview")

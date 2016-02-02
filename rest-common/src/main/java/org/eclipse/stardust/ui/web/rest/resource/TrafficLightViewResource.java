@@ -31,12 +31,12 @@ import javax.ws.rs.core.Response;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.rest.JsonMarshaller;
-import org.eclipse.stardust.ui.web.rest.service.TrafficLightViewService;
-import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkCategoryDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkProcessActivitiesTLVStatisticsResultDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.BenchmarkTLVStatisticsByBOResultDTO;
-import org.eclipse.stardust.ui.web.rest.service.dto.ProcessDefinitionDTO;
+import org.eclipse.stardust.ui.web.rest.component.service.TrafficLightViewService;
+import org.eclipse.stardust.ui.web.rest.dto.BenchmarkCategoryDTO;
+import org.eclipse.stardust.ui.web.rest.dto.BenchmarkProcessActivitiesTLVStatisticsResultDTO;
+import org.eclipse.stardust.ui.web.rest.dto.BenchmarkTLVStatisticsByBOResultDTO;
+import org.eclipse.stardust.ui.web.rest.dto.ProcessDefinitionDTO;
+import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;

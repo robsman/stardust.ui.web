@@ -9,6 +9,6 @@
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
 		http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/portal/common/uiDefinition.xsd">
 
-	<context:component-scan base-package="org.eclipse.stardust.ui.web.rest" />
+	<context:component-scan base-package="org.eclipse.stardust.ui.web.rest.component" />
 
 </beans>

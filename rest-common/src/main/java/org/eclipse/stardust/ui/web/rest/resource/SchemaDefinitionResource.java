@@ -18,7 +18,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.eclipse.stardust.common.Base64;
-import org.eclipse.stardust.ui.web.rest.service.SchemaDefinitionService;
+import org.eclipse.stardust.ui.web.rest.component.service.SchemaDefinitionService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @Path("/schema-definition")
