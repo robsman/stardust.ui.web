@@ -66,4 +66,12 @@ public class ProcessSearchCriteriaDTO extends AbstractDTO
    public String activitySrchPerformer;
    
    public JsonObject descriptors;
+   
+   public boolean showAuxiliaryProcess;    
+   
+   public boolean showInteractiveActivities;
+   
+   public boolean showNonInteractiveActivities;
+   
+   public boolean showAuxiliaryActivities;
 }
