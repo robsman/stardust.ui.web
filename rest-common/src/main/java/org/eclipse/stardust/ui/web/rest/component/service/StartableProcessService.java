@@ -16,6 +16,7 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.common.CompareHelper;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.PublicException;
+import org.eclipse.stardust.engine.api.model.Activity;
 import org.eclipse.stardust.engine.api.model.Data;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.ModelParticipant;
@@ -34,8 +35,8 @@ import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.rest.dto.ProcessDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.dto.StartableProcessDTO;
-import org.eclipse.stardust.ui.web.rest.dto.request.DepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.ParticipantDTO;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ClientContextBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ModelCache;
@@ -75,7 +76,6 @@ public class StartableProcessService
          Map<ModelParticipant, Set<Department>> mapData = new HashMap<ModelParticipant, Set<Department>>();
          ModelCache modelCache = ModelCache.findModelCache();
          Model currentModel = modelCache.getModel(processDefinition.getModelOID());
-         Set<DepartmentDTO> deptList = new HashSet<DepartmentDTO>();
          for (Trigger triggerDetails : triggers)
          {
             if (PredefinedConstants.MANUAL_TRIGGER.equals(triggerDetails.getType()))
@@ -111,12 +111,6 @@ public class StartableProcessService
                                  if (!grant.getDepartment().getName().equals(Department.DEFAULT.getName()))
                                  {
                                     mapData.get(modelparticipant1).add(grant.getDepartment());
-
-                                    DepartmentDTO department = new DepartmentDTO();
-                                    department.id = grant.getDepartment().getId();
-                                    department.name = grant.getDepartment().getName();
-                                    department.description = grant.getDepartment().getDescription();
-                                    deptList.add(department);
                                  }
                               }
                            }
@@ -139,7 +133,6 @@ public class StartableProcessService
          startableProcessDTO.name = I18nUtils.getProcessName(processDefinition);
          startableProcessDTO.processDefinition = processDefinitionDTO;
          startableProcessDTO.participantNodes = participantNodes;
-         startableProcessDTO.deptList = deptList;
          items.add(startableProcessDTO);
       }
 
@@ -178,13 +171,10 @@ public class StartableProcessService
 
          if (nextActivityInstance != null)
          {
-            /*
-             * if
-             * (WorklistsBean.getInstance().isAssemblyLineActivity(nextActivityInstance.
-             * getActivity())) {
-             */
-            result.addProperty("assemblyLineActivity", true);
-            /* } */
+            if (isAssemblyLineActivity(nextActivityInstance.getActivity()))
+            {
+               result.addProperty("assemblyLineActivity", true);
+            }
             result.addProperty("activityInstanceOid", nextActivityInstance.getOID());
          }
       }
@@ -194,6 +184,32 @@ public class StartableProcessService
 
       }
       return result;
+   }
+
+   /**
+    * 
+    * @param activity
+    * @return
+    */
+   public boolean isAssemblyLineActivity(Activity activity)
+   {
+      if (null != activity)
+      {
+         return getAssemblyLineParticipants().contains(activity.getDefaultPerformer().getId());
+      }
+
+      return false;
+   }
+
+   /**
+    * 
+    * @return
+    */
+   private Set<String> getAssemblyLineParticipants()
+   {
+      Set<String> assemblyLineParticipants = ParticipantUtils.categorizeParticipants(
+            SessionContext.findSessionContext().getUser()).getAssemblyLineParticipants();
+      return assemblyLineParticipants;
    }
 
    /**
@@ -244,9 +260,10 @@ public class StartableProcessService
    private List<ParticipantDTO> buildDepartmentTree(Map<ModelParticipant, Set<Department>> mapData,
          ProcessDefinition processDefinition)
    {
-      Set<Department> deptList = new HashSet<Department>();
+      List<ParticipantDTO> participantNodes = new ArrayList<ParticipantDTO>();
       for (ModelParticipant modelParticipant : mapData.keySet())
       {
+         ParticipantDTO participantNode = createNode(I18nUtils.getParticipantName(modelParticipant));
          if (mapData.get(modelParticipant) != null)
          {
 
@@ -254,36 +271,13 @@ public class StartableProcessService
             {
                if (d != null)
                {
-                  deptList.add(d);
+                  createChildNode(participantNode, d.getName(), d, processDefinition);
                }
             }
          }
+
+         participantNodes.add(participantNode);
       }
-
-      List<ParticipantDTO> participantNodes = new ArrayList<ParticipantDTO>();
-
-      boolean allowTree = deptList != null && !deptList.isEmpty() && deptList.size() > 1 ? true : false;
-      if (allowTree)
-      {
-         for (ModelParticipant modelParticipant : mapData.keySet())
-         {
-            ParticipantDTO participantNode = createNode(I18nUtils.getParticipantName(modelParticipant));
-            if (mapData.get(modelParticipant) != null)
-            {
-
-               for (Department d : mapData.get(modelParticipant))
-               {
-                  if (d != null)
-                  {
-                     createChildNode(participantNode, d.getName(), d, processDefinition);
-                  }
-               }
-            }
-
-            participantNodes.add(participantNode);
-         }
-      }
-
       return participantNodes;
    }
 

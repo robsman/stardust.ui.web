@@ -17,8 +17,7 @@
 	angular.module("workflow-ui").controller(
 			'sdStartableProcessPanelCtrl',
 			[ '$scope', 'sdStartableProcessService', 'sdLoggerService', 'sdViewUtilService', 'sdUtilService',
-					 'sdI18nService', 'sdDialogService', 'sdCommonViewUtilService',
-					StartableProcessPanelCtrl ]);
+					 'sdI18nService', 'sdDialogService', 'sdCommonViewUtilService', StartableProcessPanelCtrl ]);
 	var _scope;
 	var _sdStartableProcessService;
 	var _sdViewUtilService;
@@ -66,9 +65,9 @@
 		self.processId = startableProcess.processDefinition.id;
 		self.processName = startableProcess.name;
          
-		if (_sdUtilService.isEmpty(startableProcess.participantNodes)
-				&& !_sdUtilService.isEmpty(startableProcess.deptList) && startableProcess.deptList.length === 1) {
-			//if participant Nodes are empty but department list is not not empty
+		if (startableProcess.participantNodes.length === 1 && startableProcess.participantNodes[0].children.length === 1) {
+			//if there is only one participant node and one child.
+			self.startProcessOnSelectDepartment(startableProcess.participantNodes[0].children[0].OID);
 
 		} else if (!_sdUtilService.isEmpty(startableProcess.participantNodes)) {
 			// if process is having scoped participant
@@ -106,7 +105,6 @@
 		var self = this;
 		_sdStartableProcessService.startProcessOnSelectDepartment(departmentOid, self.processId).then(
 				function(data) {
-					self.departmentDialog.close();
 					trace.log("Result from startProcessOnSelectDepartment:-" + data);
 					if (data.processStarted) {
 						_sdDialogService.info(_scope, _sdI18nService.translate(
@@ -136,6 +134,7 @@
 			data.valueItem.isLoaded = true;
 			data.deferred.resolve();
 		} else if (data.treeEvent === "node-click" && data.valueItem.children == undefined) {
+            self.departmentDialog.close();
 			self.startProcessOnSelectDepartment(data.valueItem.OID);
 		}
 	};
