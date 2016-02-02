@@ -14,6 +14,7 @@ import static java.util.Arrays.asList;
 import static org.eclipse.stardust.ui.web.common.util.CollectionUtils.newArrayList;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -78,10 +79,13 @@ public class LoginFilter implements Filter
          + "/public/*";
    
    private static final String PRINCIPAL_LOGIN_INIT_PAGE = "/plugins/common/initializeSession.iface";
+
+   private final static String SKIP_URIS = "skipURIs";
    
    private String loginPage;
    private String logoutPage;
    private String mainPage;
+   private List<String > skipUris;
    
    private List<String> principalUserRoles;
    
@@ -225,6 +229,25 @@ public class LoginFilter implements Filter
          chain.doFilter(request, response);
          return;
       }
+
+      
+      if (null != skipUris && !skipUris.isEmpty())
+      {
+         for (String skipUri : skipUris)
+         {
+            if (requestUri.startsWith(contextPath + skipUri))
+            {
+               if (trace.isDebugEnabled())
+               {
+                  trace.debug("Bypassing login check for predefined URI: " + requestUri);
+               }
+
+               chain.doFilter(request, response);
+               return;
+            }
+         }
+      }
+      
       FacesContext facesContext = FacesUtils.getFacesContext(servletContext, request, response);
      
       SessionContext sessionContext = SessionContext.findSessionContext(facesContext);
@@ -454,6 +477,17 @@ public class LoginFilter implements Filter
       if (publicAnyPluginUris.isEmpty() && publicUris.isEmpty())
       {
          trace.info("Publicly accessible URIs are disabled.");
+      }
+
+      skipUris = new ArrayList<String>();
+      String skip = filterCfg.getInitParameter(SKIP_URIS);
+      if (!StringUtils.isEmpty(skip))
+      {
+         String[] skipParts = skip.split(",");
+         for (String part : skipParts)
+         {
+            skipUris.add(part.trim());
+         }
       }
    }
 

@@ -103,6 +103,10 @@
 	<filter>
 		<filter-name>IppPortalLoginFilter</filter-name>
 		<filter-class>org.eclipse.stardust.ui.web.viewscommon.login.filter.LoginFilter</filter-class>
+	  	<init-param>
+	  		<param-name>skipURIs</param-name>
+	  		<param-value>/xmlhttp,/plugins/processportal/integration/iframe/iframe-panel-server-support.js,/plugins/common/js/facesSupport.js,/plugins/views-common/scripts/loginUtil.js</param-value>
+	  	</init-param>
 	</filter>
 	<filter>
 		<filter-name>portalPluginContentFilter</filter-name>
@@ -126,6 +130,14 @@
 	<filter-mapping>
 		<filter-name>IppPortalLoginFilter</filter-name>
 		<url-pattern>*.xhtml</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>IppPortalLoginFilter</filter-name>
+		<url-pattern>*.js</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>IppPortalLoginFilter</filter-name>
+		<url-pattern>*.html</url-pattern>
 	</filter-mapping>
 	<filter>
 	    <filter-name>touchSessionFilter</filter-name>
