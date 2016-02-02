@@ -111,33 +111,42 @@ Name:{{repoUploadCtrl.name}}
 		<div ng-show="repoUploadCtrl.curatedFiles.length > 0">
 			<hr style="margin:5px;">
 			
-			<div style="width:45%;display:inline-table;">
-				<label>
-					<i ng-click="descrCollapse = !descrCollapse" 
-					   ng-class="{'pi-trigger-expanded' :  descrCollapse, 'pi-trigger-collapsed' : !descrCollapse}"	
-				       class="pi">
-		           	</i> 
-		      		Description
+			<div ng-show="repoUploadCtrl.mode === 'EXPLODE'">
+				<input ng-model="repoUploadCtrl.overwriteFiles" type="checkbox"/>
+				<label style="display:inline-flex;vertical-align:sub;margin-left:1em;">
+					Overwrite Existing Folder
 				</label>
-				<textarea ng-model="repoUploadCtrl.selectedFile.description" style="width:90%;" ng-show="descrCollapse"></textarea>
-			</div>
-			
-			<div style="width:45%;display:inline-table;">
-				<label>
-					<i ng-click="versCollapse = !versCollapse" 
-					   ng-class="{'pi-trigger-expanded' :  versCollapse, 'pi-trigger-collapsed' : !versCollapse}"	
-				       class="pi">
-		           	</i> 
-					Version Comments
-				</label>
-				<textarea ng-model="repoUploadCtrl.selectedFile.versionComments" 
-				          style="width:90%;" 
-				          ng-show="versCollapse">
-				</textarea>
 			</div>
 
-		    <div>
-		    	<input type="checkbox"/><label style="display:inline-flex;vertical-align:sub;margin-left:1em;">Open Documents</label>
+			<div ng-show="repoUploadCtrl.mode !== 'EXPLODE'">
+				<div style="width:45%;display:inline-table;">
+					<label>
+						<i ng-click="descrCollapse = !descrCollapse" 
+						   ng-class="{'pi-trigger-expanded' :  descrCollapse, 'pi-trigger-collapsed' : !descrCollapse}"	
+					       class="pi">
+			           	</i> 
+			      		Description
+					</label>
+					<textarea ng-model="repoUploadCtrl.selectedFile.description" style="width:90%;" ng-show="descrCollapse"></textarea>
+				</div>
+				
+				<div style="width:45%;display:inline-table;">
+					<label>
+						<i ng-click="versCollapse = !versCollapse" 
+						   ng-class="{'pi-trigger-expanded' :  versCollapse, 'pi-trigger-collapsed' : !versCollapse}"	
+					       class="pi">
+			           	</i> 
+						Version Comments
+					</label>
+					<textarea ng-model="repoUploadCtrl.selectedFile.versionComments" 
+					          style="width:90%;" 
+					          ng-show="versCollapse">
+					</textarea>
+				</div>
+
+			    <div>
+			    	<input type="checkbox"/><label style="display:inline-flex;vertical-align:sub;margin-left:1em;">Open Documents</label>
+			    </div>
 		    </div>
     	</div>
 

@@ -272,10 +272,14 @@
     		xhr.open("PUT", that.$scope.url + "/" + that.$scope.repoUploadCtrl.targetDocument, true);
     	}
     	else if(that.$scope.repoUploadCtrl.mode==="EXPLODE"){
-    		var expUrl = that.sdUtilService.getRootUrl() + "/services/rest/portal/folders/import/";
-    			expUrl += that.$scope.repoUploadCtrl.targetDocument;
-    			debugger;
-    		xhr.open("POST", expUrl + "/" + that.$scope.repoUploadCtrl.targetDocument, true);
+    		
+    		var expUrl = that.sdUtilService.getRootUrl() + 
+    					 "/services/rest/portal/folders/import/" +
+    					 that.$scope.repoUploadCtrl.targetDocument;
+    		
+    		var verb = (that.$scope.repoUploadCtrl.overwriteFiles===true)?"POST":"PUT";
+
+    		xhr.open(verb, expUrl, true);
     	}
 
 		xhr.send(fd);
