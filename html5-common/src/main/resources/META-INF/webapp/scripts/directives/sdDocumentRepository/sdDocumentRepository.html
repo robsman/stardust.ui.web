@@ -72,6 +72,21 @@
   </div>
   <!--Repo Upload Dialog Section End-->
 
+  <!--Search Section Start-->
+  <div  sd-auto-complete
+        sda-item-pre-class="ctrl.searchItemIcon(item,index)"
+        sda-tag-pre-class="ctrl.searchItemIcon(item,index)"
+        sda-allow-multiple="false"
+        sda-matches="ctrl.searchMatches" 
+        sda-match-str="ctrl.matchVal" 
+        sda-change="ctrl.getMatches(ctrl.matchVal)" 
+        sda-text-property="name" 
+        sda-container-class="sd-ac-container" 
+        sda-item-hot-class="sd-ac-item-isActive" 
+        sda-selected-matches="ctrl.selectedMatches">
+  </div>
+  <!--Search Section End-->
+
   <!--Tree Section Start-->
 
   <ul style="height:800px;" sd-tree="ctrl.onTreeInit(api)"

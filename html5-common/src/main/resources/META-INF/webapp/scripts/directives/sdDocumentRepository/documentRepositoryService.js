@@ -49,6 +49,33 @@
 
   }
 
+  documentRepoService.prototype.searchRepository = function(searchVal){
+
+     var deferred = this.$q.defer();
+     var results;
+
+     results =[
+      {"name" : "documentA" , "type" : "document"},
+      {"name" : "documentABC" , "type" : "document"},
+      {"name" : "documentABCD" , "type" : "document"},
+      {"name" : "documentABCDE" , "type" : "document"},
+      {"name" : "documentABCDEF" , "type" : "document"},
+      {"name" : "folderA" , "type" : "folder"},
+      {"name" : "folderABC" , "type" : "folder"},
+      {"name" : "folderABCD" , "type" : "folder"},
+      {"name" : "folderABCDE" , "type" : "folder"},
+      {"name" : "folderABCDEF" , "type" : "folder"}
+     ];
+
+     var results = results.filter(function(v){
+        return v.name.indexOf(searchVal) > -1;
+     });
+
+     deferred.resolve(results);
+
+     return deferred.promise;
+  };
+
   documentRepoService.prototype.getRepositoryRootFolder = function(repositoryId){
 
     var deferred = this.$q.defer();
@@ -151,13 +178,12 @@
   documentRepoService.prototype.createFolder = function(parentFolderId,name){
 
     var deferred = this.$q.defer();
-    var url= this.folderRoot;
+    var url= this.folderRoot + "/" + parentFolderId;
 
     this.$http({
       "method" : "POST",
       "url" : url,
       "data" : {
-        "parentFolderId" : parentFolderId,
         "folderName" : name
       }
     })

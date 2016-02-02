@@ -24,9 +24,18 @@
     this.$scope = $scope;
     this.$q = $q;
     this.sdMimeTypeService = sdMimeTypeService;
+
     this.selectedRepo = {};
     this.repositoryProviders =[]; 
+    this.selectedMatches = [];
     this.documentRepositoryUrl = documentRepositoryService.documentRoot + "/upload";
+
+    //set up a watch on our selected matches from our autocomplete directive
+    $scope.$watchCollection('ctrl.selectedMatches', function(newValue, oldValue) {
+      if(newValue.length > 0){
+        that.expandNodePath(newValue[0]);
+      };
+    });
 
     //Async retrieve repo providers.
     this.getRepositoryProviders()
@@ -36,6 +45,18 @@
 
   }
   
+  docRepoController.prototype.expandNodePath = function(path){
+
+    /*TODO: Implementation...
+    leverage the eventCallback method to dupe tree node-expand 
+    events for our path. We will pass a deferred with the object
+    and once that deferred is resolve we will process the next
+    node in the path until we reach the last folder to expand.
+    This approach is used for a single folder in our refreshFolder
+    method.
+    */
+
+  };
 
   docRepoController.prototype.repoDialogInit = function(api){
     this.uploadDialogAPI = api;
@@ -299,7 +320,7 @@
     //now open dialog and wait for folder to explode.
     that.uploadDialogAPI.open()
     .then(function(files){
-       //Todo: some form of refresh.
+      that.refreshFolder(folder);
     })
     ["catch"](function(err){
       //Todo: handle error
@@ -630,6 +651,27 @@
     
   };
   
+  docRepoController.prototype.getMatches = function(matchVal){
+    var that = this;
+    debugger;
+    this.documentService.searchRepository(matchVal)
+    .then(function(res){
+      that.searchMatches = res;
+    });
+
+  };
+
+  docRepoController.prototype.searchItemIcon = function(item,index){
+
+    if(item.type==="folder"){
+      return "pi pi-fw pi-lg pi-folder"
+    }
+    else{
+      return this.sdMimeTypeService.getIcon("todo/docType");  
+    }
+
+  };
+
   /*Controller Section Ends*/
   
   
