@@ -40,8 +40,9 @@
                   });
                }
                else {
-                  if ((scope.filterData.processes) < 1)
-                     return false;
+                  if ((scope.filterData.processes) < 1) {
+                	  return false; 
+                  }       
 
                   angular.forEach(scope.filterData.processes, function(value) {
                      displayText.push(ctrl.idToName[value]);
@@ -129,13 +130,15 @@
       this.loadValues = function() {
          angular.forEach(self.allAccessibleProcesses, function(data) {
 
-            var found = $filter('filter')(self.processes, {
-               name : data.name
+            var duplicate =  $filter('filter')(self.processes, {
+               id : data.id
             }, true);
-            if (found.length < 1) {
-               data['order'] = 1;
-               self.processes.push(data)
+          
+            if (duplicate.length < 1) {
+            	data['order'] = 1;
+            	self.processes.push(data)
             }
+          
 
          });
 
@@ -218,6 +221,7 @@
             self.idToName[activity.qualifiedId] = activity.name;
          });
       });
+      
    };
 
    /*
@@ -244,11 +248,18 @@
 
 		   if (!angular.isUndefined(process.activities)) {
 			   angular.forEach(process.activities, function(activity) {
-				   var found = $filter('filter')(self.activities,{ name : activity.name}, true);
-				   if (found.length < 1) {
-					   activity['order'] = 1;
-					   self.activities.push(activity)
-				   }
+				   
+				  angular.forEach(process.activities, function(activity) {
+					   var duplicate =  $filter('filter')(self.activities, {
+						   id : activity.id
+					   }, true);
+
+					   if (duplicate.length < 1) {
+						   activity['order'] = 1;
+						   self.activities.push(activity)
+					   }
+				   });
+				   
 			   });
 		   }
 	   });
