@@ -64,21 +64,22 @@
 		var self = this;
 		self.processId = startableProcess.processDefinition.id;
 		self.processName = startableProcess.name;
-         
-		if (startableProcess.participantNodes.length === 1 && startableProcess.participantNodes[0].children.length === 1) {
-			//if there is only one participant node and one child.
-			self.startProcessOnSelectDepartment(startableProcess.participantNodes[0].children[0].OID);
 
-		} else if (!_sdUtilService.isEmpty(startableProcess.participantNodes)) {
-			// if process is having scoped participant
-			self.participantNodes = startableProcess.participantNodes;
-			self.showDeptDialog = true;
-		} else if (_sdUtilService.isEmpty(startableProcess.participantNodes)) {
-			//if process is not having any scoped participant and departments
-			_sdStartableProcessService.startProcess(self.processId).then(function(data) {
-						
-				trace.log("Result from startProcess:-" + data);
-						
+		if (!_sdUtilService.isEmpty(startableProcess.participantNodes)) {
+			if (startableProcess.participantNodes.length === 1
+					&& (!_sdUtilService.isEmpty(startableProcess.participantNodes[0].children) && startableProcess.participantNodes[0].children.length === 1)) {
+				self.startProcessOnSelectDepartment(startableProcess.participantNodes[0].children[0].OID);
+			} else {
+				self.participantNodes = startableProcess.participantNodes;
+				self.showDeptDialog = true;
+			}
+		} else {
+			// if process is not having any scoped participant and departments
+			_sdStartableProcessService.startProcess(self.processId).then(
+					function(data) {
+
+						trace.log("Result from startProcess:-" + data);
+
 						if (data.processStarted) {
 							_sdDialogService.info(_scope, _sdI18nService.translate(
 									'processportal.common-processStarted-message', {}, [ self.processName ]), {});
@@ -90,7 +91,8 @@
 							if (data.assemblyLineActivity) {
 								params.assemblyLineActivity = true;
 							}
-							_sdViewUtilService.openView("activityPanel", "oid=" + data.activityInstanceOid, params, false);
+							_sdViewUtilService.openView("activityPanel", "oid=" + data.activityInstanceOid, params,
+									false);
 						}
 					}, function(error) {
 						trace.error(error);
@@ -98,9 +100,9 @@
 		}
 	};
     /**
-     * 
-     * @param departmentOid
-     */
+	 * 
+	 * @param departmentOid
+	 */
 	StartableProcessPanelCtrl.prototype.startProcessOnSelectDepartment = function(departmentOid) {
 		var self = this;
 		_sdStartableProcessService.startProcessOnSelectDepartment(departmentOid, self.processId).then(
