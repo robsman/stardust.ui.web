@@ -49,7 +49,6 @@ import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.DMSHelper;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.DefualtResourceDataProvider;
@@ -447,7 +446,7 @@ public class RepositoryServiceImpl implements RepositoryService
     *
     */
    @Override
-   public DocumentDTO updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO, boolean versionUpload)
+   public DocumentDTO updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO)
    {
       documentId = DocumentMgmtUtility.checkAndGetCorrectResourceId(documentId);
       Document document = getDMS().getDocument(documentId);
@@ -459,7 +458,7 @@ public class RepositoryServiceImpl implements RepositoryService
       }
 
       // check if name is changed
-      if (!versionUpload && (documentInfoDTO.name != null) && !document.getName().equals(documentInfoDTO.name))
+      if ((documentInfoDTO.name != null) && !document.getName().equals(documentInfoDTO.name))
       {
          if (!DocumentMgmtUtility.validateFileName(documentInfoDTO.name))
          {

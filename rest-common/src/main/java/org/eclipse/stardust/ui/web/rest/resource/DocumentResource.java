@@ -258,7 +258,7 @@ public class DocumentResource
    {
       // parse attachments
       List<DocumentContentRequestDTO> uploadedDocuments = FileUploadUtils.parseAttachments(attachments);
-      DocumentDTO documentDTO = repositoryService.updateDocument(documentId, uploadedDocuments.get(0), true);
+      DocumentDTO documentDTO = repositoryService.updateDocument(documentId, uploadedDocuments.get(0));
       return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
    }
    
@@ -323,7 +323,7 @@ public class DocumentResource
    {
       //custom token approach does not work here!
       Map<String, Object> data = JsonDTO.getAsMap(postedData);
-      HashMap<String, Object> properties = null; 
+      HashMap<String, Object> properties = null;
       if (data.get("properties") != null)
       {
          properties = (HashMap<String, Object>) data.get("properties");
@@ -332,7 +332,7 @@ public class DocumentResource
       DocumentContentRequestDTO documentInfoDTO = DTOBuilder.buildFromJSON(postedData, DocumentContentRequestDTO.class,
             null);
       documentInfoDTO.properties = properties;
-      DocumentDTO documentDTO = repositoryService.updateDocument(documentId, documentInfoDTO, false);
+      DocumentDTO documentDTO = repositoryService.updateDocument(documentId, documentInfoDTO);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(documentDTO)).build();
    }
    

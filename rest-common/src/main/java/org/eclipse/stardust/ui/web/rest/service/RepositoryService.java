@@ -153,10 +153,9 @@ public interface RepositoryService
    /**
     * @param documentId
     * @param documentInfoDTO
-    * @param versionUpload
     * @return
     */
-   DocumentDTO updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO, boolean versionUpload);
+   DocumentDTO updateDocument(String documentId, DocumentContentRequestDTO documentInfoDTO);
 
    // *******************************
    // Repository level operations
