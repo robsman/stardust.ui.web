@@ -101,7 +101,7 @@ public class HTML5FrameworkServices
    }
 
    @GET
-   @Produces(MediaType.APPLICATION_JSON)
+   @Produces("application/javascript")
    @Path("config")
    public Response config(@HeaderParam("Accept-Language") String locale, @Context UriInfo uriInfo)
    {
@@ -135,7 +135,7 @@ public class HTML5FrameworkServices
       {
          contents = StringUtils.replace(contents, "COMMON_MENU", "");
       }
-      return Response.ok(contents, MediaType.APPLICATION_JSON_TYPE).build();
+      return Response.ok(contents, MediaType.valueOf("application/javascript")).build();
    }
 
    @GET

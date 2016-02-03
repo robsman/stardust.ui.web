@@ -14,7 +14,7 @@
 
 'use strict';
 
-var bpmUiAMod = angular.module('bpm-ui', ['bpm-ui.services', 'shell', 'bpm-ui.init']);
+var bpmUiAMod = angular.module('bpm-ui', ['bpm-ui.services', 'shell', 'sg.widgets', 'sg.megamenu', 'bpm-ui.init']);
 var bpmUiServicesAMod = angular.module('bpm-ui.services', []);
 bpmUiAMod.config([
 		'$routeProvider', '$controllerProvider', '$compileProvider', '$filterProvider', '$provide',

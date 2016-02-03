@@ -6800,31 +6800,7 @@ input.secondary{
 .genericTableToolbarSection{
 	/*background: linear-gradient(to right, #ffffff 0%,#d4d2ee 100%);*/
 }
-/**************************SG OVERRIDES*************************************/
-/***************************************************************************/
 
-/*override flyout panel vertical tab*/
-.sg-sidebar-toggle{
-	background-color:#A69A88;
-}
-
-.sg-sidebar-content-well-container{
-	border:none;
-	box-shadow: 3px 0px 5px #ddd;
-}
-
-
-
-/*over-ride padding and margins for our portal panel container*/
-.sg-sidebar-content-well{
-	padding-left:0px !important;
-	margin-top:0px !important;
-	margin-bottom:0px !important;
-}
-/*over-ride the 4px border on our portal panel container*/
-.sg-sidebar-content-well-outer{
-	border:none;
-}
 
 /*body of our portal panel within the panels iframe -- need somethign on the body element we can target*/
 body[id='document:body'] {
@@ -6834,50 +6810,10 @@ body[id='document:body'] {
 	/* background: #DDDDDD; */
 }
 
-.sg-top-bar > div.navbar-inner > div.container-fluid,
-.sg-tabs-bar,
-.sg-top-bar .nav,
-.navbar-inner,
-.sg-controls > ul
-{
-	background: #28303b !important;
-}
-
-li.sg-tab{
-	background:#778899 !important;
-}
-li.sg-tab:hover{
-	background:#8899AA !important;
-	background-image:none !important;
-}
-/*Text in our Nav bar*/
-.navbar .nav>li>a,
-.navbar .noLinkSpan
-{
-	color:#dedede;
-}
-
-.navbar .nav>li>a:hover span,
-.navbar .nav>li>a:hover i,
-.navbar .noLinkSpan:hover span
-{
-	color:#fff !important;
-}
-
-
 /*Bell icon in SG main nav bar*/
 i.viewIconBase.bell:before{
     font-family:FontAwesome;
 	content:"\f0f3"; /* fa-bell */
-}
-.sg-tabs-bar{
-	background:#5f5c53 url('./images/sungard.png')!important;
-	background-repeat:repeat-x !important;
-}
-
-.sg-sidebar-title{
-	background: #A69A88;
-	color: #FFF;
 }
 
 /********************************************************************/
@@ -9798,8 +9734,8 @@ img[src *='world_go.png'].nodeMenuIcon {
 }
 
 .perspective-active-font, .perspective-inactive-font {
-	padding-top: 3px;
-	padding-bottom: 8px;
+	padding-top: 5px;
+	padding-bottom: 4px;
 }
 
 .perspective-icon {

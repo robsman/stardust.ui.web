@@ -1,4 +1,4 @@
-{
+angular.module('bpm-ui').constant('sgConfig', {
 	"windowTitle": "PORTAL_TITLE",
 	"appId": "ipp",
 	"appTitle": "PORTAL_TITLE",
@@ -12,12 +12,19 @@
 	    "width": "350"
 	},
 	"menuApi":{
-      "searchEnabled": false
+      "searchEnabled": false,
+      "loadingIndicator": false,
+      "showEmptyMenu" : true
     },
    "widgets": {
 		"sgTabsClosingMenu": {
       	"enabled": true
       }
+   },
+   "shell": {
+   		"sgShell": {
+            "isResponsive": "never"
+        }
    },
    "supportedLanguages": [],
 	"endpoints": {
@@ -25,4 +32,4 @@
 		"i18n": "/CONTEXT_ROOT/services/rest/common/html5/api/messages",
 		"theme": "/CONTEXT_ROOT/services/rest/common/html5/api/themes"
 	}COMMON_MENU
-}
+});

@@ -17,7 +17,7 @@
 	position: fixed;
 	left: 0;
 	top: 0;
-	height: 91px;
+	height: 100px;
 }
 
 .gray-out-footer {
@@ -26,11 +26,11 @@
 	background-color: black;
 	opacity: 0.5;
 	opacity: 0.3 \0/; /* For IE9 and IE8 */
-	z-index: 1000;
+	z-index: 1100;
 	position: fixed;
 	left: 0;
 	bottom: 0;
-	height: 56px;
+	height: 60px;
 }
 
 .gray-out-sidebar {
@@ -42,7 +42,7 @@
 	z-index: 1000;
 	position: fixed;
 	left: 0;
-	top: 90px;
+	top: 99px;
 }
 
 .gray-out-sidebar-view {

@@ -9,11 +9,13 @@
  *     SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
 /*override exception handler*/
-angular.module('bpm-common.services')
+angular.module('bpm-common.services');
+
+/* Temporarily commenting out the override it's not compatible with Angular upgrade
 .factory('$exceptionHandler', function ($injector) {
     return function errorCatcherHandler(exception, cause) {
     	
-      /*Late resolution to avoid circular dependency*/
+      // Late resolution to avoid circular dependency
       var eventBus = $injector.get('eventBus');
       rootScope = $injector.get('$rootScope');
       eventBus.emitMsg("js.error",exception.message,{emitXApp:true});
@@ -21,3 +23,4 @@ angular.module('bpm-common.services')
       
     };
 });
+*/

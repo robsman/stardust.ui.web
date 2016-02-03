@@ -130,7 +130,7 @@
 		/*
 		 * Defined here as access required to scope
 		 */
-		if (angular.isDefined(ctrl)) {
+		if (angular.isDefined(ctrl) && ctrl != null) {
 			trace.debug("sdData is defined.Activity table will use provided custom source for data.");
 			this.sdDataCtrl = ctrl;
 		}

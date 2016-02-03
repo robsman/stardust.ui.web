@@ -326,6 +326,8 @@ if (!window["BridgeUtils"]) {
 		            		}
 		            	}
 
+		            	height = height - 10;
+
 		            	elem.style.height = height + "px";
 		            }
 	            } else {
@@ -1146,7 +1148,7 @@ if (!window["BridgeUtils"].Dialog) {
 					iframeForSidebar.style.top = headerHeight + "px";
 				}
 				iframeForSidebar.style.width = (sidebarDetails.width) + "px";
-				iframeForSidebar.style.height = (sidebarDetails.height) + "px";
+				iframeForSidebar.style.height = (sidebarDetails.height - 17) + "px";
 				iframeForSidebar.style.visibility = "visible";
 				
 				// Activate the View, if fromView is not visible
