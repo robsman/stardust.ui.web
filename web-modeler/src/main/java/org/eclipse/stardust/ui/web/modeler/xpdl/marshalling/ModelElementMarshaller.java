@@ -2340,8 +2340,12 @@ public class ModelElementMarshaller implements ModelMarshaller
                         ModelType refModel = getModelBuilderFacade()
                               .getModelManagementStrategy().getModels()
                               .get(data.getExternalReference().getLocation());
-                        eObject = refModel.getTypeDeclarations().getTypeDeclaration(
-                              data.getExternalReference().getXref());
+                        if (refModel != null)
+                        {
+                           eObject = refModel.getTypeDeclarations().getTypeDeclaration(
+                                 data.getExternalReference().getXref());
+
+                        }
                      }
 
                      ModelType containingModel = ModelUtils.findContainingModel(eObject);
