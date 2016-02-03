@@ -127,7 +127,7 @@ public class RepositoryServiceImpl implements RepositoryService
    {
       Folder folder = null;
       String parentFolderPath = null;
-      
+
       if (folderDataMap != null && folderDataMap.get("parentFolderPath") != null)
       {
          parentFolderPath = (String) folderDataMap.get("parentFolderPath");
@@ -143,12 +143,17 @@ public class RepositoryServiceImpl implements RepositoryService
       {
          folderId = DocumentMgmtUtility.checkAndGetCorrectResourceId(folderId);
          folder = DocumentMgmtUtility.createFolderIfNotExists(folderId);
+         if (folderDataMap.get("name") != null)
+         {
+            String folderName = (String) folderDataMap.get("name");
+            folder = getDMS().createFolder(folder.getId(), DmsUtils.createFolderInfo(folderName));
+         }
       }
       else
       {
          throw new I18NException(restCommonClientMessages.getParamString("folder.notFound", folderId));
       }
-      
+
       return FolderDTOBuilder.build(folder);
    }
 
