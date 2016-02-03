@@ -209,7 +209,7 @@
 									.concat(states);
 
 							var default_state = [ {
-								value : "10",
+								value : "11",
 								label : _sdProcessSearchService
 										.getI18MessageString('business-control-center-messages.views-processSearchView-chooseProcess-options-all-label'),
 								name : "all",

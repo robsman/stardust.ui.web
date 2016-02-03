@@ -86,12 +86,21 @@ public class ActivityFilterAttributesDTO
       {
          query = ActivityInstanceQuery.findInState(ActivityInstanceState.Interrupted);
       }
+      else if (state == ActivityInstanceState.Halting.getValue())
+      {
+         query = ActivityInstanceQuery.findInState(ActivityInstanceState.Halting);
+      }
+      else if (state == ActivityInstanceState.Halted.getValue())
+      {
+         query = ActivityInstanceQuery.findInState(ActivityInstanceState.Halted);
+      }
       else
       {
          query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
                ActivityInstanceState.Interrupted, ActivityInstanceState.Aborting, ActivityInstanceState.Suspended,
                ActivityInstanceState.Completed, ActivityInstanceState.Created, ActivityInstanceState.Hibernated,
-               ActivityInstanceState.Aborted, ActivityInstanceState.Application});
+               ActivityInstanceState.Aborted, ActivityInstanceState.Application, ActivityInstanceState.Halting,
+               ActivityInstanceState.Halted});
       }
       FilterAndTerm filter = query.getFilter().addAndTerm();
 

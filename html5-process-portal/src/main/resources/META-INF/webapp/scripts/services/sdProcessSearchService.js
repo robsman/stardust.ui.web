@@ -121,6 +121,12 @@
 				{
 					"value" : "5",
 					"label" : sgI18nService
+							.translate('business-control-center-messages.views-processSearchView-chooseProcess-options-halted-label'),
+					"name" : "Halted"
+				},
+				{
+					"value" : "6",
+					"label" : sgI18nService
 							.translate('business-control-center-messages.views-processSearchView-chooseProcess-options-all-label'),
 					"name" : "All"
 				} ];

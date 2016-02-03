@@ -18,6 +18,7 @@ import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
+import org.eclipse.stardust.engine.api.runtime.DataCopyOptions;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.SpawnOptions;
 import org.eclipse.stardust.engine.api.runtime.SpawnOptions.SpawnMode;
@@ -74,8 +75,10 @@ public class SpawnProcessHelper
    public ProcessInstance spawnPeerProcessInstances(long rootProcessInstanceOid,
          List<SubprocessSpawnInfo> subprocessSpawnInfo)
    {
-      SpawnOptions options = new SpawnOptions(null, SpawnMode.HALT, null, null);
-      ProcessInstance pi = ServiceFactoryUtils.getWorkflowService().spawnPeerProcessInstance(rootProcessInstanceOid, subprocessSpawnInfo.get(0).getProcessId(), options);
+      DataCopyOptions dataCopyOptions = new DataCopyOptions(subprocessSpawnInfo.get(0).isCopyData(), null, null, true);
+      SpawnOptions options = new SpawnOptions(null, SpawnMode.HALT, null, dataCopyOptions);
+      ProcessInstance pi = ServiceFactoryUtils.getWorkflowService().spawnPeerProcessInstance(rootProcessInstanceOid,
+            subprocessSpawnInfo.get(0).getProcessId(), options);
       if(CollectionUtils.isEmpty(subprocessInstances))
       {
          subprocessInstances = CollectionUtils.newArrayList();

@@ -83,8 +83,10 @@ public class ProcessActivityUtils
    public final static int PROCESS_INSTANCE_STATE_ABORTED = 3;
 
    public final static int PROCESS_INSTANCE_STATE_INTERRUPTED = 4;
+   
+   public final static int PROCESS_INSTANCE_STATE_HALTED = 5;
 
-   public final static int PROCESS_INSTANCE_STATE_ALL = 5;
+   public final static int PROCESS_INSTANCE_STATE_ALL = 6;
 
    public static final int ALL_PRIORITIES = -9999;
 
@@ -378,11 +380,16 @@ public class ProcessActivityUtils
       {
          query = ProcessInstanceQuery.findInState(ProcessInstanceState.Interrupted);
       }
+      else if (filterAttributesDTO.getState() == PROCESS_INSTANCE_STATE_HALTED)
+      {
+         query = ProcessInstanceQuery.findInState(ProcessInstanceState.Halted);
+      }
       else
       {
          query = ProcessInstanceQuery.findInState(new ProcessInstanceState[] {
                ProcessInstanceState.Active, ProcessInstanceState.Completed, ProcessInstanceState.Interrupted,
-               ProcessInstanceState.Aborted, ProcessInstanceState.Aborting});
+               ProcessInstanceState.Aborted, ProcessInstanceState.Aborting, ProcessInstanceState.Halting,
+               ProcessInstanceState.Halted});
       }
       FilterAndTerm filter = query.getFilter().addAndTerm();
 
@@ -611,6 +618,9 @@ public class ProcessActivityUtils
          break;
       case PROCESS_INSTANCE_STATE_INTERRUPTED:
          query = ActivityInstanceQuery.findInState(ActivityInstanceState.Interrupted);
+         break;
+      case PROCESS_INSTANCE_STATE_HALTED:
+         query = ActivityInstanceQuery.findInState(ActivityInstanceState.Halted);
          break;
       default:
          query = ActivityInstanceQuery.findAll();

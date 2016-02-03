@@ -73,6 +73,16 @@
 		             				value : 5,
 		             				label : sgI18nService
 		             						.translate('views-common-messages.views-activityTable-statusFilter-suspended')
+		             			},
+		             			{
+		             				value : 9,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-activityTable-statusFilter-halting')
+		             			},
+		             			{
+		             				value : 10,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-activityTable-statusFilter-halted')
 		             			}
 		             	];
 		}
