@@ -354,6 +354,7 @@
     };
 
     this.eventCallback(data,{});
+    return deferred.promise;
   };
 
   docRepoController.prototype.recursiveTreeNodeFactory = function(nodeScope){
@@ -519,20 +520,23 @@
     var dateTime = new Date();
     var name = this.$filter('date')(new Date(), 'yyyy-MM-dd HH-mm-ss');
     var parentFolderId;
-
+    var newFolderId;
+    
     name = "New Folder, " + name;
     parentFolderId = (parentFolderNode.nodeType=="folder")?parentFolderNode.id:parentFolderNode.path;
 
     this.documentService.createFolder(parentFolderId,name)
     .then(function(newFolder){
-      newFolder.id=newFolder.uuid;
-      newFolder.nodeType = "folder";
-      parentFolderNode.children.push(newFolder);
-      that.$timeout(function(){
+        newFolderId = newFolder.uuid;
+        return that.refreshFolder(parentFolderNode);
+    })
+    .then(function(){
         that.treeApi.expandNode(parentFolderNode.id);
-        that.treeApi.editNode(newFolder.id);
-      },0);
+        that.$timeout(function(){
+          that.treeApi.editNode(newFolderId);
+        },0);
     });
+
   };
   
   docRepoController.prototype.createDocument = function(parentFolderNode){
@@ -549,9 +553,12 @@
       newDocument.id = newDocument.uuid;
 
       parentFolderNode.children.push(newDocument);
+      that.treeApi.expandNode(parentFolderNode.id);
 
+      //allow for angular to complete the digest which will consume our
+      //new child node and instance it into our tree. Otherwise the api
+      //function will be looking for a node which doesnt yet exist.
       that.$timeout(function(){
-        that.treeApi.expandNode(parentFolderNode.id);
         that.treeApi.editNode(newDocument.id);
       },0);
 

@@ -184,7 +184,7 @@
       "method" : "POST",
       "url" : url,
       "data" : {
-        "folderName" : name
+        "name" : name
       }
     })
     .then(function(res){
