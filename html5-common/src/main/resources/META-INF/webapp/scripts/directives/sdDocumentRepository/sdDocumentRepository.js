@@ -6,10 +6,10 @@
   /*Controller section*/
   
   docRepoController.$inject = ["documentRepositoryService", "$timeout", "sdUtilService", 
-                               "$scope", "$filter", "sdViewUtilService", "$q","sdMimeTypeService"];
-  
-  //constructor
-  function docRepoController(documentRepositoryService, $timeout, sdUtilService, $scope, $filter, sdViewUtilService, $q,sdMimeTypeService){
+                               "$scope", "$filter", "sdViewUtilService", "$q",
+                               "sdMimeTypeService", "sdI18nService"];
+
+  function docRepoController(documentRepositoryService, $timeout, sdUtilService, $scope, $filter, sdViewUtilService, $q, sdMimeTypeService, sdI18nService){
 
     var that = this;
     var virtualRoot;
@@ -24,6 +24,9 @@
     this.$scope = $scope;
     this.$q = $q;
     this.sdMimeTypeService = sdMimeTypeService;
+    this.i18n = sdI18nService.getInstance('views-common-messages');
+
+    this.textMap = this.getTextMap(this.i18n);
 
     this.selectedRepo = {};
     this.repositoryProviders =[]; 
@@ -58,9 +61,43 @@
 
   };
 
+  docRepoController.prototype.getTextMap = function(i18n){
+
+    textMap = {};
+    textMap.rename = i18n.translate("views.genericRepositoryView.treeMenuItem.rename");
+    textMap.delete = i18n.translate("views.genericRepositoryView.treeMenuItem.delete");
+    textMap.createSubFolder = i18n.translate("views.genericRepositoryView.treeMenuItem.createSubFolder");
+    textMap.createNewDoc = i18n.translate("views.genericRepositoryView.treeMenuItem.createNewDoc");
+    textMap.uploadFile = i18n.translate("views.genericRepositoryView.treeMenuItem.uploadFile");
+    textMap.sendToZip = i18n.translate("views.genericRepositoryView.treeMenuItem.sendToZip");
+    textMap.uploadZip = i18n.translate("views.genericRepositoryView.treeMenuItem.uploadZip");
+    textMap.refresh = i18n.translate("views.genericRepositoryView.treeMenuItem.refresh");
+    textMap.security = i18n.translate("views.genericRepositoryView.treeMenuItem.security");
+    textMap.versionHistory = i18n.translate("views.genericRepositoryView.treeMenuItem.versionHistory");
+    textMap.download = i18n.translate("views.genericRepositoryView.treeMenuItem.download");
+    textMap.newVersion = i18n.translate("views.genericRepositoryView.treeMenuItem.newVersion");
+    textMap.refresh = i18n.translate("views.genericRepositoryView.treeMenuItem.refresh");
+    textMap.unbindRepo = i18n.translate("views.genericRepositoryView.treeMenuItem.repo.unbindRepo");
+    textMap.bindRepo = i18n.translate("views.genericRepositoryView.treeMenuItem.repo.bindRepo");
+    textMap.properties = i18n.translate("views.genericRepositoryView.treeMenuItem.repo.properties");
+    textMap.makeDefault = i18n.translate("views.genericRepositoryView.treeMenuItem.repo.makeDefault");
+    textMap.default = i18n.translate("views.genericRepositoryView.treeMenuItem.repo.default");
+    textMap.repoRoot = i18n.translate("views.genericRepositoryView.treeMenuItem.repo.root");
+
+    debugger;
+    return textMap;
+  };
+
+  /**
+   * Callback associated with our sdTree directive which will
+   * recieve the trees API upon tree initialization.
+   * @param  {api: Tree Api from sdTree directive}
+   * @return {void}
+   */
   docRepoController.prototype.repoDialogInit = function(api){
     this.uploadDialogAPI = api;
   };
+
 
   docRepoController.prototype.getRepositoryProviders = function(){
     return this.documentService.getRepositoryProviders();
@@ -243,52 +280,54 @@
   };
   
   docRepoController.prototype.menuCallback = function(menuData){
+
     var menuItems=[];
+
     if(menuData.item.nodeType=="RootRepo"){
-      menuItems.push("(bind,Bind Repository)");
+      menuItems.push("(bind,"+ this.textMap.bindRepo +")");
     }
     else if(menuData.item.nodeType=="Repo"){
 
       //TODO:double check this logic
       if(menuData.item.isDefault===false){
-        menuItems.push("(setDefault,Make Defualt)");
-        menuItems.push("(unbindRepo,Unbind Repository)");
+        menuItems.push("(setDefault," + this.textMap.makeDefault + ")");
+        menuItems.push("(unbindRepo," + this.textMap.unbindRepo + ")");
       }
 
-      menuItems.push("(repoProperties,Properties)");
-       menuItems.push("(unbindRepo,Unbind Repository)");
+      menuItems.push("(repoProperties, " + this.textMap.properties + ")");
+       menuItems.push("(unbindRepo, " + this.textMap.unbindRepo + ")");
     }
     else if(menuData.item.nodeType=="folder"){
 
-      menuItems.push("(rename,Rename)");
-      menuItems.push("(delete,Delete)");
-      menuItems.push("(createSubFolder,Create Sub Folder)");
-      menuItems.push("(createFile,Create New File)");
-      menuItems.push("(uploadFile,Upload File)");
-      menuItems.push("(uploadZipFile, Upload Zip)");
-      menuItems.push("(downloadFolder,Send to ZIP)");
-      menuItems.push("(refreshFolder,Refresh)");
-      menuItems.push("(securityFolder,Security Settings)");
+      menuItems.push("(rename," + this.textMap.rename + ")");
+      menuItems.push("(delete," + this.textMap.delete + ")");
+      menuItems.push("(createSubFolder," + this.textMap.createSubFolder + ")");
+      menuItems.push("(createFile," + this.textMap.createNewDoc + ")");
+      menuItems.push("(uploadFile," + this.textMap.uploadFile + ")");
+      menuItems.push("(uploadZipFile," + this.textMap.uploadZip + ")");
+      menuItems.push("(downloadFolder," + this.textMap.sendToZip + ")");
+      menuItems.push("(refreshFolder," + this.textMap.refresh + ")");
+      menuItems.push("(securityFolder," + this.textMap.security  + ")");
 
     }
     else if(menuData.item.nodeType==="repoFolderRoot"){
 
-      menuItems.push("(createSubFolder,Create Sub Folder)");
-      menuItems.push("(createFile,Create New File)");
-      menuItems.push("(uploadFile,Upload File)");
-      menuItems.push("(refreshFolder,Refresh)");
-      menuItems.push("(securityFolder,Security Settings)");
+      menuItems.push("(createSubFolder," + this.textMap.createSubFolder + ")");
+      menuItems.push("(createFile," + this.textMap.createNewDoc + ")");
+      menuItems.push("(uploadFile," + this.textMap.uploadFile + ")");
+      menuItems.push("(refreshFolder," + this.textMap.refresh + ")");
+      menuItems.push("(securityFolder," + this.textMap.security  + ")");
 
     }
     else if(menuData.item.nodeType=="document"){
 
-      menuItems.push("(rename,Rename)");
-      menuItems.push("(delete,Delete)");
-      menuItems.push("(versionFileHistory,Version History)");
-      menuItems.push("(downloadFile,Download)");
-      menuItems.push("(uploadNewFileVersion,Upload New Version)");
-      menuItems.push("(refreshFile,Refresh)");
-      menuItems.push("(securityFile,Security Settings)");
+      menuItems.push("(rename," + this.textMap.rename + ")");
+      menuItems.push("(delete," + this.textMap.delete + ")");
+      menuItems.push("(versionFileHistory," + this.textMap.versionHistory  + ")");
+      menuItems.push("(downloadFile," + this.textMap.download + ")");
+      menuItems.push("(uploadNewFileVersion," + this.textMap.newVersion + ")");
+      menuItems.push("(refreshFile," + this.textMap.refresh + ")");
+      menuItems.push("(securityFile," + this.textMap.security + ")");
 
     }
     menuData.deferred.resolve(menuItems.toString());
