@@ -14,11 +14,15 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
@@ -206,9 +210,19 @@ public class DTOBuilder
    public static <DTO, T> void mapFields(JsonObject json, Class<DTO> toClass, DTO toInstance,
          Map<String, Type> customTokens) throws Exception
    {
+      // get all fields from class
+      Field[] fields = toClass.getFields();
+      Map<String, Field> allFields = new HashMap<String, Field>();
+      for (Field field : fields)
+      {
+         allFields.put(field.getName(), field);
+      }
+      
+      //iterate over all json fields and map
       for (Entry<String, JsonElement> entry : json.entrySet())
       {
-         Field field = toClass.getField(entry.getKey());
+         Field field = allFields.get(entry.getKey());
+         
          if (field != null)
          {
             if (json.get(field.getName()) != null && !json.get(field.getName()).isJsonNull())
