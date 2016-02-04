@@ -142,9 +142,9 @@ span.heading{
 }
 
 .popup-dlg-hdr-txt {
-	color: #A69A88;
+	font-weight: normal;
+    color: #009775 ;
 	font-size: 1.36em;
-	font-weight: bold;
 	text-transform: uppercase;
 }
 
@@ -257,10 +257,11 @@ span.heading{
 
 /*Base for all button type elements*/
 .button {
+	border : 1px outset;
 	border-radius: 3px;
-	background: #24415E !important;
-	color: white !important;
-	border-color: #21659d;
+	border-color: #CCCCCC  !important;
+    background: #007d8a !important;
+    color: #fff !important;
 }
 
 .button[disabled='disabled'] {
@@ -279,7 +280,7 @@ span.heading{
 .header {
 	font-size: 1.36em;
 	font-weight: 400 !important;
-	color: #A69A88 !important;
+	color: #009775;
 	padding: 0px;
 	line-height: 20px;
 	text-align: left;
@@ -408,7 +409,6 @@ to {
 }
 
 .sd-dialog .modal-dialog .modal-content .modal-header {
-	height: 1px;
 	padding: 15px;
 }
 

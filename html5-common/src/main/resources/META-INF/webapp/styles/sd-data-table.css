@@ -10,6 +10,8 @@
  *******************************************************************************/
  .tbl {
    width: 100%;
+   color: #464646;
+}
    color: #708090;
 }
 
@@ -27,29 +29,29 @@
 	text-align: left;
 }
 
+.tbl-hdr-col, .tbl-hdr-col.sorting, .tbl-hdr-col.sorting_desc, .tbl-hdr-col.sorting_asc {
+	background: #e5e5e5 !important;
+}
+
 .tbl-hdr-col {
     text-align: center;
     vertical-align: bottom;
 	padding: 2px 15px 2px 10px;
 	border: none;
 	border-bottom: solid 1px #708090;
-	background: #FFFFFF;
 	font-weight: normal;
 }
 
 .tbl-hdr-col.sorting {
 	cursor: pointer;
-	background: none;
 }
 
 .tbl-hdr-col.sorting_asc {
 	cursor: pointer;
-	background: none;
 }
 
 .tbl-hdr-col.sorting_desc {
 	cursor: pointer;
-	background: none;
 }
 
 .tbl-hdr-col-label {
@@ -77,7 +79,7 @@
 }
 
 .tbl-col-flt-title {
-	color: gray;
+ 	color: #333333;
 	font-weight: normal;
 }
 
@@ -109,27 +111,29 @@
 }
 
 .tbl-row.odd {
-   background: #FFFFFF;
+   background: #ffffff;
 }
 
 .tbl-row.even {
-   background: #F4F4F4;
+    background: #f5f5f5;
 }
 
 .tbl-row.odd:hover {
-   background: #FFFFE0;
+   background: #ffffe0
 }
 
 .tbl-row.even:hover {
-   background: #FFFFE0;
+  background: #ffffe0;
 }
 
 .tbl-row-selected {
-   background: #EEE2CF !important;
+	background: #e4f7fd !important;
+	color: #464646;
 }
 
 .tbl-row a {
-   color: #2B2865;
+    font-weight: normal;
+  color: #2a5db0;
 }
 
 .tbl-row a:hover {

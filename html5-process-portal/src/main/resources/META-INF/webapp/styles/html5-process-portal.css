@@ -173,8 +173,8 @@ padding : 5px;;
 	background-color: #FFEDF0;
 }
 
-.activity-table-priority-combo{
-	width :80px;
+.activity-table-priority-combo {
+	min-width: 80px;
 }
 
 .change-highlight{
