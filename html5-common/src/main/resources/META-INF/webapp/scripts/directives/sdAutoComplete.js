@@ -100,7 +100,7 @@ angular.module('bpm-common.directives')
       }
       else{
         tmrPromise=$timeout(function(){
-          $scope.changeHandler(v);
+          $scope.changeHandler({value:v});
         },$scope.keyDelay*1,true);
       }
     }
