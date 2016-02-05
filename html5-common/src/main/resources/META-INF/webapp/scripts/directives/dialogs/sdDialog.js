@@ -290,16 +290,26 @@
 				}
 		        
 				unregisterHandler = $scope.$watch($scope.getContentHeight, function(height) {
-		        	if (height === 0) {
-		        		return;
-		        	}
-		        	// Now determine and set correct position for the dialog.
-		        	var w = jQuery(window);
-		        	dialogContent.css({
-					    'position':'absolute',
-					    'top':Math.abs(((w.height() - dialogContent.outerHeight()) / 2) + w.scrollTop()),
-					    'left':Math.abs(((w.width() - dialogContent.outerWidth()) / 2) + w.scrollLeft())
-					 });
+					
+					var TIMER_INTERVAL = 50; //play with this to get a balance of performance/responsiveness
+					var timer;
+					$scope.$watch(function() { timer = timer || $timeout(
+					    function() {
+					       timer = null;
+					       if (height === 0) {
+				        		return;
+				        	}
+				        	// Now determine and set correct position for the dialog.
+				        	var w = jQuery(window);
+				        	dialogContent.css({
+							    'position':'absolute',
+							    'top':Math.abs(((w.height() - dialogContent.outerHeight()) / 2) + w.scrollTop()),
+							    'left':Math.abs(((w.width() - dialogContent.outerWidth()) / 2) + w.scrollLeft())
+							 });
+					    },
+					    TIMER_INTERVAL,
+					    false
+					)});
 		        });
 			}
 
