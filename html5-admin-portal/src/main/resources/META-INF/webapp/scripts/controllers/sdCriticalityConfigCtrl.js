@@ -344,9 +344,14 @@
 			var self = this;
 			var eidtable = false;
 			
+			
+			if(null == self.dataTable  ||  !angular.isDefined (self.dataTable)) {
+				return eidtable;
+			}
+			
 			if(self.dataTable.getSelection() < 1) {
 				eidtable =  false;
-			}else{
+			} else {
 				angular.forEach(self.dataTable.getSelection() ,function(selected){
 					
 					if(!eidtable && !selected.editMode){
@@ -354,6 +359,7 @@
 					}
 				});
 			}
+			
 			return eidtable;
 		};
 		
