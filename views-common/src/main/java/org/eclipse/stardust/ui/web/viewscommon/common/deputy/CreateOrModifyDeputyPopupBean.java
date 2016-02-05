@@ -431,7 +431,7 @@ public class CreateOrModifyDeputyPopupBean extends PopupUIComponentBean
             selData.add(new UserWrapper(user, UserAutocompleteMultiSelector.getUserLabel(user, searchValue), true));
 
             Users users = ServiceFactoryUtils.getQueryService().getAllUsers(userQuery);
-            return UserAutocompleteMultiSelector.buildSearchResult(users, selData, searchValue);
+            return UserAutocompleteMultiSelector.buildSearchResult(users, selData, searchValue, false);
          }
       }
 

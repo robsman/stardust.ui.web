@@ -75,6 +75,7 @@ public class ChatRoom implements Serializable
       super();
       this.id = id;
       autoCompleteSelector = new UserAutocompleteMultiSelector(false, false);
+      autoCompleteSelector.setRetrieveLoginStatistics(true);
       autoCompleteSelector.setAutocompleteMultiSelectorListener(new AutocompleteUserSelectorListener());
       this.owner = owner;
       UserWrapper userWrapper = new UserWrapper(owner, owner, true);

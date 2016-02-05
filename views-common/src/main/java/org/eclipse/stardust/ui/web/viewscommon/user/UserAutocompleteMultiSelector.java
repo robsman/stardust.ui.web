@@ -62,6 +62,7 @@ public class UserAutocompleteMultiSelector extends AutocompleteMultiSelector<Use
    
    protected boolean showOnlineIndicator;
    protected boolean showProfileImage;
+   protected boolean retrieveLoginStatistics = false;
 
    /**
     * @param maxRows
@@ -324,13 +325,18 @@ public class UserAutocompleteMultiSelector extends AutocompleteMultiSelector<Use
     * @param searchValue
     * @return
     */
-   public static List<SelectItem> buildSearchResult(List<User> users, List<UserWrapper> selectedData, String searchValue)
+   public static List<SelectItem> buildSearchResult(List<User> users, List<UserWrapper> selectedData,
+         String searchValue, boolean retrieveLoginStatistics)
    {
       List<SelectItem> userItems = new ArrayList<SelectItem>(users.size());
 
       if(CollectionUtils.isNotEmpty(users))
       {
-         UserLoginStatistics userLoginStatistics = UserUtils.getUserLoginStatistics(users);
+         UserLoginStatistics userLoginStatistics = null;
+         if (retrieveLoginStatistics)
+         {
+            userLoginStatistics = UserUtils.getUserLoginStatistics(users);
+         }
          
          UserWrapper userWrapper;
          if (null == selectedData)
@@ -340,7 +346,12 @@ public class UserAutocompleteMultiSelector extends AutocompleteMultiSelector<Use
 
          for (User user : users)
          {
-            LoginStatistics loginStatistics = userLoginStatistics.getLoginStatistics(user.getOID());
+            LoginStatistics loginStatistics = null;
+            if (userLoginStatistics != null)
+            {
+               loginStatistics = userLoginStatistics.getLoginStatistics(user.getOID());
+            }
+
             userWrapper = new UserWrapper(user, SessionContext.findSessionContext().getUser(), getUserLabel(user,
                   searchValue), loginStatistics != null ? loginStatistics.currentlyLoggedIn : false);
             if (!selectedData.contains(userWrapper))
@@ -386,7 +397,7 @@ public class UserAutocompleteMultiSelector extends AutocompleteMultiSelector<Use
       {
          List<User> users = UserUtils.searchUsers(searchValue + "%", onlyActiveUsers, maxMatches);
          return buildSearchResult(users, !isSingleSelect() ? getSelectedValues() : new ArrayList<UserWrapper>(),
-               searchValue);
+               searchValue, retrieveLoginStatistics);
       }
    }
    
@@ -408,5 +419,13 @@ public class UserAutocompleteMultiSelector extends AutocompleteMultiSelector<Use
             autoComplete.setValue(null);
          }
       }
+   }
+
+   /**
+    * @param retrieveLoginStatistics
+    */
+   public void setRetrieveLoginStatistics(boolean retrieveLoginStatistics)
+   {
+      this.retrieveLoginStatistics = retrieveLoginStatistics;
    }
 }
