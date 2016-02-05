@@ -30,9 +30,19 @@ public class ClosePanelScenario extends StringKey
    public static final ClosePanelScenario QA_FAIL = new ClosePanelScenario("qaFail");
 
    public static final ClosePanelScenario SUSPEND = new ClosePanelScenario("suspend");
+   
+   public static final ClosePanelScenario SUSPEND_TO_USER_WORKLIST = new ClosePanelScenario("suspendToUserWorklist");
+   
+   public static final ClosePanelScenario SUSPEND_TO_DEFAULT_PERFORMER = new ClosePanelScenario("suspendToDefaultPerformer");
 
    public static final ClosePanelScenario SUSPEND_AND_SAVE = new ClosePanelScenario(
          "suspendAndSave");
+   
+   public static final ClosePanelScenario SUSPEND_AND_SAVE_TO_USER_WORKLIST = new ClosePanelScenario(
+		  "suspendAndSaveToUserWorklist");
+   
+   public static final ClosePanelScenario SUSPEND_AND_SAVE_TO_DEFAULT_PERFORMER = new ClosePanelScenario(
+		  "suspendAndSaveToDefaultPerformer");
 
    public static final ClosePanelScenario ABORT = new ClosePanelScenario("abort");
 

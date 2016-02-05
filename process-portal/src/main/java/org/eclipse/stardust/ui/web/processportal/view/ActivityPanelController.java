@@ -208,9 +208,27 @@ public class ActivityPanelController extends UIComponentBean
             {
                activityDetailsBean.suspendAndSaveCurrentActivity();
             }
+            else if (ClosePanelScenario.SUSPEND_AND_SAVE_TO_USER_WORKLIST == scenario)
+            {
+			   activityDetailsBean.suspendAndSaveCurrentActivity(true, true, false,
+					ClosePanelScenario.SUSPEND_AND_SAVE_TO_USER_WORKLIST);
+            }
+            else if (ClosePanelScenario.SUSPEND_AND_SAVE_TO_DEFAULT_PERFORMER == scenario)
+            {
+               activityDetailsBean.suspendAndSaveCurrentActivity(false, true, false,
+            		ClosePanelScenario.SUSPEND_AND_SAVE_TO_DEFAULT_PERFORMER);
+            }
             else if (ClosePanelScenario.SUSPEND == scenario)
             {
                activityDetailsBean.suspendCurrentActivity();
+            }
+            else if (ClosePanelScenario.SUSPEND_TO_USER_WORKLIST == scenario)
+            {
+               activityDetailsBean.suspendCurrentActivity(true, true, false);
+            }
+            else if (ClosePanelScenario.SUSPEND_TO_DEFAULT_PERFORMER == scenario)
+            {
+               activityDetailsBean.suspendCurrentActivity(false, true, false);
             }
             else if (ClosePanelScenario.ABORT == scenario)
             {

@@ -1461,8 +1461,28 @@ public class ActivityDetailsBean extends UIComponentBean
       }
    }
 
+   /**
+    * 
+    * @param keepOwnership
+    * @param closeView
+    * @param suspendToParticipant
+    */
    public void suspendAndSaveCurrentActivity(final boolean keepOwnership, final boolean closeView,
          final boolean suspendToParticipant)
+   {
+	   suspendAndSaveCurrentActivity(keepOwnership, closeView, suspendToParticipant, ClosePanelScenario.SUSPEND_AND_SAVE);
+   }
+   
+
+   /**
+    * 
+    * @param keepOwnership
+    * @param closeView
+    * @param suspendToParticipant
+    * @param closePanelScenario
+    */
+   public void suspendAndSaveCurrentActivity(final boolean keepOwnership, final boolean closeView,
+         final boolean suspendToParticipant, final ClosePanelScenario closePanelScenario)
    {
       if (null != activityInstance)
       {
@@ -1472,7 +1492,7 @@ public class ActivityDetailsBean extends UIComponentBean
                .getActivity());
          if (null != interactionController)
          {
-            if (interactionController.closePanel(ai, ClosePanelScenario.SUSPEND_AND_SAVE, null))
+            if (interactionController.closePanel(ai, closePanelScenario, null))
             {
                // close synchronously
                retrieveOutDataMapping(interactionController, true, new ParametricCallbackHandler()
