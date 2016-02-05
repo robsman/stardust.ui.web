@@ -279,7 +279,7 @@ if (!window["BridgeUtils"]) {
 		function handleResize(shellSizes) {
 			// To avoid flickering effect, hide scroll first
 			var elem = document.getElementById("portalLaunchPanels");
-			if (elem) {
+			if (elem && elem.contentWindow.document.body) {
 				elem.contentWindow.document.body.style.overflowY = 'hidden';
 			}
 			 
