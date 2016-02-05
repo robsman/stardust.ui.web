@@ -194,6 +194,21 @@
             </ExtendedAttribute>
          </ExtendedAttributes>
       </DataField>
+      <DataField Id="PrimitiveData_1" Name="Primitive Data 1" IsArray="FALSE">
+         <DataType>
+            <BasicType Type="STRING"/>
+         </DataType>
+         <ExtendedAttributes>
+            <ExtendedAttribute Name="CarnotExt">
+               <carnot:DataField Oid="60" Type="primitive">
+                  <carnot:Attributes>
+                     <carnot:Attribute Name="carnot:engine:visibility" Value="Public"/>
+                     <carnot:Attribute Name="carnot:engine:type" Value="String" Type="org.eclipse.stardust.engine.core.pojo.data.Type"/>
+                  </carnot:Attributes>
+               </carnot:DataField>
+            </ExtendedAttribute>
+         </ExtendedAttributes>
+      </DataField>
    </DataFields>
    <WorkflowProcesses>
       <WorkflowProcess Id="ProcessDefinition_1" Name="Process Definition 1" AccessLevel="PUBLIC">
@@ -215,7 +230,12 @@
                      <carnot:Activity Oid="54" Implementation="Manual" IsAbortableByPerformer="false" IsHibernatedOnCreation="false">
                         <carnot:EventHandlers/>
                         <carnot:QualityCodes/>
-                        <carnot:DataFlows/>
+                        <carnot:DataFlows>
+                           <carnot:DataFlow Oid="62" Id="PrimitiveData_1" Name="PrimitiveData_1" Direction="IN" Context="default">
+                              <carnot:DataRef Id="PrimitiveData_1"/>
+                              <carnot:AccessPointRef/>
+                           </carnot:DataFlow>
+                        </carnot:DataFlows>
                         <carnot:Attributes>
                            <carnot:Attribute Name="carnot:pwh:includeTime" Value="true" Type="boolean"/>
                            <carnot:Attribute Name="carnot:engine:relocate:source" Value="false" Type="boolean"/>
@@ -248,11 +268,7 @@
                         </carnot:Attributes>
                      </carnot:Trigger>
                   </carnot:Triggers>
-                  <carnot:DataPaths>
-                     <carnot:DataPath Oid="59" Id="DataPath_1" Name="Data Path 1" Direction="IN" IsDescriptor="false">
-                        <carnot:DataRef Id="CURRENT_DATE" Expression=""/>
-                     </carnot:DataPath>
-                  </carnot:DataPaths>
+                  <carnot:DataPaths/>
                   <carnot:EventHandlers/>
                   <carnot:Attributes>
                      <carnot:Attribute Name="authorization:processDefinition.abortProcessInstances[0]" Value="Administrator"/>
@@ -274,9 +290,11 @@
                               <carnot:Symbols>
                                  <carnot:Symbol Kind="ACTIVITY" Oid="55" X="445" Y="225" Width="180" Height="50" ModelElement="ManualActivity_1"/>
                                  <carnot:Symbol Kind="STARTEVENT" Oid="57" X="255" Y="225" Width="110" Height="50" ModelElement="ManualTrigger_1"/>
+                                 <carnot:Symbol Kind="DATA" Oid="61" X="155" Y="90" Width="100" Height="70" ModelElement="PrimitiveData_1"/>
                               </carnot:Symbols>
                               <carnot:Connections>
                                  <carnot:Connection Kind="TRANSITION" Oid="58" SourceSymbol="57" TargetSymbol="55" SourceAnchor="center" TargetAnchor="center"/>
+                                 <carnot:Connection Kind="DATA_FLOW" Oid="63" SourceSymbol="61" TargetSymbol="55"/>
                               </carnot:Connections>
                            </carnot:Symbol>
                         </carnot:Symbols>
