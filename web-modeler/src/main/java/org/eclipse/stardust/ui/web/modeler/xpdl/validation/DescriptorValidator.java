@@ -43,6 +43,17 @@ public class DescriptorValidator implements IModelElementValidator
             refMap.put(dataPathType.getId(), reference);
             resolveReferences(reference, issues);
          }
+      } else 
+      {
+         String value = dataPathType.getDataPath();
+         if ((value != null) && this.hasVariable(value))
+         {
+            issues.add(Issue.error(dataPathType,
+                  MessageFormat.format(
+                        "Data Path ''{0}'' is not a Composite / Link descriptor, therefore variables are not allowed.",                           
+                        new Object[] {dataPathType.getId()}),
+                  ValidationService.PKG_CWM.getProcessDefinitionType_DataPath()));
+         }
       }
       return (Issue[]) issues.toArray(Issue.ISSUE_ARRAY);
    }
@@ -51,7 +62,7 @@ public class DescriptorValidator implements IModelElementValidator
    { 
       DataPathType dataPathType = reference.getDataPath();
       String value = VariableContextHelper.getInstance().getContext(dataPathType).replaceAllVariablesByDefaultValue(dataPathType.getDataPath());
-      if (!this.hasVariabled(value))
+      if (!this.hasVariable(value))
       {
          return;
       }
@@ -152,10 +163,22 @@ public class DescriptorValidator implements IModelElementValidator
       return null;
    }
       
-   private boolean hasVariabled(String value)
+   private boolean hasVariable(String value)
    {
+      if (value == null)
+      {
+         return false;
+      }
       Matcher matcher = pattern.matcher(value);
-      return matcher.find();
+      while (matcher.find())
+      {
+         if ((matcher.start() == 0) || ((matcher.start() > 0)
+               && (value.charAt(matcher.start() - 1) != '\\')))
+         {
+            return true;
+         }
+      }
+      return false;
    }
    
    public class DataPathReference
