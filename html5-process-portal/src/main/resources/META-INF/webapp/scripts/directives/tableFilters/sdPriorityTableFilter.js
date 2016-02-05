@@ -22,7 +22,7 @@
 			return {
 				restrict : 'A',
 				template : '<div class="priority-criticality-filter-container"> '+
-								'<label ng-bind="criticalityCtrl.i18n(\'views-common-messages.views-activityTable-priorityFilter-autoComplete-title\')"><\/label> '+
+								'<label ng-bind="priorityCtrl.i18n(\'views-common-messages.views-activityTable-priorityFilter-autoComplete-title\')"><\/label> '+
 								'<div sd-auto-complete '+
 									'sda-item-pre-class="priorityCtrl.tagPreMapper(item,index)"'+
 									'sda-tag-pre-class="priorityCtrl.tagPreMapper(item,index)" '+
