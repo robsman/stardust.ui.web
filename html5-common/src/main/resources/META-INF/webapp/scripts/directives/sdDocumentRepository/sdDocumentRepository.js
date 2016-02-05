@@ -84,7 +84,6 @@
     textMap.default = i18n.translate("views.genericRepositoryView.treeMenuItem.repo.default");
     textMap.repoRoot = i18n.translate("views.genericRepositoryView.treeMenuItem.repo.root");
 
-    debugger;
     return textMap;
   };
 
@@ -699,7 +698,6 @@
   
   docRepoController.prototype.getMatches = function(matchVal){
     var that = this;
-    debugger;
     this.documentService.searchRepository(matchVal)
     .then(function(res){
       that.searchMatches = res;
