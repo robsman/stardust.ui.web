@@ -47,7 +47,7 @@ public class DefaultDataPathValueFilter implements IDataPathValueFilter
 
       dataPathValueDTO.dataPath = DTOBuilder.build(dataPath, DataPathDTO.class);
       dataPathValueDTO.dataPath.name = I18nUtils.getDataPathName(dataPath);
-      dataPathValueDTO.dataPath.dataType = null != dataDetails.getTypeId() ? dataDetails.getTypeId() : "";
+      dataPathValueDTO.dataPath.dataType = (null!= dataDetails && null != dataDetails.getTypeId()) ? dataDetails.getTypeId() : "";
 
       if ((dataValue != null) && (dataValue instanceof Map))
       {

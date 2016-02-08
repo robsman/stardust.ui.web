@@ -71,6 +71,8 @@ public class DescriptorColumnUtils
 
    private static final String DESC_TRUE = "true";
    private static final String DESC_FALSE = "false";
+   private static final String DESC_COMPOSITE = "Composite";
+   private static final String DESC_LINK = "Link";
    /**
     * @return
     */
@@ -481,5 +483,22 @@ public class DescriptorColumnUtils
       }
       
       return null;
+   }
+   
+   public static boolean isCompositeOrLinkDescriptor(DataPath path)
+   {
+      if(path.isDescriptor())
+      {
+         Object type = path.getAttribute("type");
+         if(null != type)
+         {
+            String value = type.toString();
+            if(DESC_COMPOSITE.equals(value) || DESC_LINK.equals(value))
+            {
+               return true;
+            }
+         }
+      }
+      return false;
    }
 }

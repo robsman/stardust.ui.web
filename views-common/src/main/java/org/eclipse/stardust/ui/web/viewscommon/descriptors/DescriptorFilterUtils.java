@@ -980,7 +980,7 @@ public class DescriptorFilterUtils
     */
    public static Data getData(DataPath dataPath)
    {
-      if (null != dataPath)
+      if (null != dataPath && !DescriptorColumnUtils.isCompositeOrLinkDescriptor(dataPath))
       {
          Model model = org.eclipse.stardust.ui.web.viewscommon.utils.ModelUtils.getModel(dataPath.getModelOID());
          return model.getData(dataPath.getData());

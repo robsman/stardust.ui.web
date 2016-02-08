@@ -85,6 +85,7 @@ import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
 import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.viewscommon.common.converter.PriorityConverter;
 import org.eclipse.stardust.ui.web.viewscommon.common.exceptions.I18NException;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorColumnUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
@@ -265,7 +266,7 @@ public class ProcessInstanceService
             dataDetails = (DataDetails) model.getData(dataPath.getData());
 
             if (Direction.OUT.equals(dataPath.getDirection()) || Direction.IN_OUT.equals(dataPath.getDirection())
-                  || DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId()))
+                  || (!DescriptorColumnUtils.isCompositeOrLinkDescriptor(dataPath) && DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId())))
             {
                outDataMappingExist = true;
                break;
@@ -279,8 +280,10 @@ public class ProcessInstanceService
          }
 
          // determine DocumentType
-         DocumentType documentType = org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils
-               .getDocumentTypeFromData(model, dataDetails);
+         DocumentType documentType = null != dataDetails
+               ? org.eclipse.stardust.engine.core.runtime.beans.DocumentTypeUtils.getDocumentTypeFromData(model,
+                     dataDetails)
+               : null;
 
          for (DocumentContentRequestDTO documentInfoDTO : uploadedDocuments)
          {

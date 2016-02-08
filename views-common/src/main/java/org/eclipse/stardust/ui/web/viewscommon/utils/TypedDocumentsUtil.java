@@ -49,6 +49,7 @@ import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.event.DocumentEvent;
 import org.eclipse.stardust.ui.web.viewscommon.common.event.IppEventController;
 import org.eclipse.stardust.ui.web.viewscommon.core.CommonProperties;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorColumnUtils;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.views.doctree.TypedDocument;
 
@@ -91,7 +92,7 @@ public class TypedDocumentsUtil
       {
          DataPath dataPath = (DataPath) objectDataPath;
          DataDetails dataDetails = (DataDetails) model.getData(dataPath.getData());
-         if (DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId()))
+         if (!DescriptorColumnUtils.isCompositeOrLinkDescriptor(dataPath) && DmsConstants.DATA_TYPE_DMS_DOCUMENT.equals(dataDetails.getTypeId()))
          {
             dataDetailsQId = dataDetails.getQualifiedId();
             Direction direction = dataPath.getDirection();

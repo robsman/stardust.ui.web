@@ -66,6 +66,7 @@ import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferen
 import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 import org.eclipse.stardust.ui.web.viewscommon.core.ResourcePaths;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DataMappingWrapper;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorColumnUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils.DataPathMetadata;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentInfo;
@@ -465,7 +466,7 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
             if (allDescriptors.containsKey(dataPath.getId()))
             {
                DataPath existing = allDescriptors.get(dataPath.getId());
-               if (!existing.getData().equals(dataPath.getData()))
+               if (!DescriptorColumnUtils.isCompositeOrLinkDescriptor(existing) && !existing.getData().equals(dataPath.getData()))
                {
                   trace.warn("* Duplicate datapath detected with id: " + dataPath.getNamespace() + "->"
                         + dataPath.getData() + "->" + dataPath.getId() + "(" + existing.getNamespace() + "->"
@@ -637,14 +638,17 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
       Model model = ModelCache.findModelCache().getModel(dataPath.getModelOID());
       if (model != null)
       {
-         Data data = model.getData(dataPath.getData());
-         if (data instanceof DataDetails)
+         if(!DescriptorColumnUtils.isCompositeOrLinkDescriptor(dataPath))
          {
-            DataDetails dataDetails = (DataDetails) data;
-            String typeId = dataDetails.getTypeId();
-            if (StructuredDataConstants.STRUCTURED_DATA.equals(typeId))
+            Data data = model.getData(dataPath.getData());
+            if (data instanceof DataDetails)
             {
-               return true;
+               DataDetails dataDetails = (DataDetails) data;
+               String typeId = dataDetails.getTypeId();
+               if (StructuredDataConstants.STRUCTURED_DATA.equals(typeId))
+               {
+                  return true;
+               }
             }
          }
       }
@@ -663,11 +667,14 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
          Model model = ModelCache.findModelCache().getModel(dataPath.getModelOID());
          if (model != null)
          {
-            Data data = model.getData(dataPath.getData());
-            Object carnotType = data.getAttribute("carnot:engine:type");
-            if(carnotType != null && carnotType.equals(ProcessPortalConstants.ENUM_TYPE))
+            if(!DescriptorColumnUtils.isCompositeOrLinkDescriptor(dataPath))
             {
-                  return true;                  
+               Data data = model.getData(dataPath.getData());
+               Object carnotType = data.getAttribute("carnot:engine:type");
+               if(carnotType != null && carnotType.equals(ProcessPortalConstants.ENUM_TYPE))
+               {
+                     return true;                  
+               }
             }
          }
       }

@@ -127,7 +127,7 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
 
    public String determineType()
    {
-      String dataTypeId = getDataDetails().getTypeId();
+      String dataTypeId = getDataDetails()!=null ? getDataDetails().getTypeId() : "";
       String type = null;
       Class dataClass = dataMapping != null ? dataMapping.getMappedType() : null;
       if(dataClass == Boolean.class)
@@ -186,7 +186,7 @@ public class DataMappingWrapper implements IGenericInputField, Serializable
       }
       else if (dataClass == String.class || dataClass == Character.class)
       {
-         if (dataTypeId.equals("struct") && CommonDescriptorUtils.isEnumerationType(dataMapping))
+         if ("struct".equals(dataTypeId) && CommonDescriptorUtils.isEnumerationType(dataMapping))
          {
             Model model = ModelCache.findModelCache().getModel(dataMapping.getModelOID());
             populateEnumValues(model, dataMapping);
