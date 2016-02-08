@@ -123,6 +123,19 @@ define(
 	                              m_i18nUtils.getProperty("modeler.element.properties.commonProperties.direction"));
 					
 					m_utils.jQuerySelect(this.options.scope
+		                     + "label[for='parameterDefinitionTypeSelect']").text(
+		                              m_i18nUtils.getProperty("modeler.element.properties.commonProperties.type"));
+					m_utils.jQuerySelect(this.options.scope
+		                     + "label[for='parameterDefinitionTypeSelect']").text(
+		                              m_i18nUtils.getProperty("modeler.element.properties.commonProperties.type"));
+					m_utils.jQuerySelect(this.options.scope
+		                     + "label[for='parameterDefinitionValueInput']").text(
+		                              m_i18nUtils.getProperty("modeler.processDefinition.propertyPages.dataPath.type.value"));
+					m_utils.jQuerySelect(this.options.scope
+		                     + "label[for='parameterDefinitionLinkTextInput']").text(
+		                              m_i18nUtils.getProperty("modeler.processDefinition.propertyPages.dataPath.type.linkText"));
+					
+					m_utils.jQuerySelect(this.options.scope
                         + "label[for='dataTypeSelect']").text(
                                  m_i18nUtils.getProperty("modeler.element.properties.commonProperties.dataType"));
 					
@@ -154,6 +167,19 @@ define(
 					direction = m_i18nUtils.getProperty("modeler.element.properties.commonProperties.out");
 					this.parameterDefinitionDirectionSelect.append("<option value=\"OUT\">" + direction + "</option>");
 					
+					this.parameterDefinitionTypeSelect = m_utils.jQuerySelect(this.options.scope
+							+ " #parameterDefinitionTypeSelect");
+					var dataPathType = m_i18nUtils.getProperty("modeler.processDefinition.propertyPages.dataPath.type.standard");
+					this.parameterDefinitionTypeSelect.append("<option value=\"\">" + dataPathType + "</option>");
+					dataPathType = m_i18nUtils.getProperty("modeler.processDefinition.propertyPages.dataPath.type.composite");
+					this.parameterDefinitionTypeSelect.append("<option value=\"Composite\">" + dataPathType + "</option>");
+					dataPathType = m_i18nUtils.getProperty("modeler.processDefinition.propertyPages.dataPath.type.link");
+					this.parameterDefinitionTypeSelect.append("<option value=\"Link\">" + dataPathType + "</option>");
+					
+					this.parameterDefinitionValueInput = m_utils.jQuerySelect(this.options.scope
+							+ " #parameterDefinitionValueInput");
+					this.parameterDefinitionLinkTextInput = m_utils.jQuerySelect(this.options.scope
+							+ " #parameterDefinitionLinkTextInput");
 					
 					this.addParameterDefinitionButton = m_utils.jQuerySelect(this.options.scope
 							+ " #addParameterDefinitionButton");
@@ -317,7 +343,12 @@ define(
 											// Reset descriptor and key-descriptor on direction change
 											event.data.panel.currentParameterDefinition.descriptor = false;
 											event.data.panel.currentParameterDefinition.keyDescriptor = false;
-
+											if(event.data.panel.currentParameterDefinition.type) {
+												event.data.panel.currentParameterDefinition.type = null;
+												event.data.panel.currentParameterDefinition.dataPath = null;
+												event.data.panel.currentParameterDefinition.text = null;
+											}
+											
 											// Switch back to standard focus
 											// handling
 
@@ -326,7 +357,7 @@ define(
 											event.data.panel.submitChanges();
 										}
 									});
-
+					
 					if (this.options.supportsDescriptors) {
 						this.descriptorInput
 								.change(
@@ -338,6 +369,11 @@ define(
 													.prop("checked");
 											// Reset key-descriptor input on descriptor change.
 											event.data.panel.currentParameterDefinition.keyDescriptor = false;
+											if(event.data.panel.currentParameterDefinition.type) {
+												event.data.panel.currentParameterDefinition.type = null;
+												event.data.panel.currentParameterDefinition.dataPath = null;
+												event.data.panel.currentParameterDefinition.text = null;
+											}
 
 											if (event.data.panel.descriptorInput
 													.prop("checked")) {
@@ -345,7 +381,7 @@ define(
 											} else {
 												// Switch back to standard focus
 												// handling
-
+												
 												event.data.panel.currentFocusInput = null;
 											}
 
@@ -367,6 +403,56 @@ define(
 
 											event.data.panel.submitChanges();
 										});
+						
+						this.parameterDefinitionTypeSelect
+						.change(
+								{
+									panel : this
+								},
+								function(event) {
+									if (event.data.panel.currentParameterDefinition != null) {
+										
+										if(event.data.panel.parameterDefinitionTypeSelect.val() != '') {
+											event.data.panel.currentParameterDefinition.type = event.data.panel.parameterDefinitionTypeSelect
+															.val();
+										} else {
+											event.data.panel.currentParameterDefinition.type = null;
+										}
+										event.data.panel.currentParameterDefinition.dataPath = null;
+										event.data.panel.currentParameterDefinition.text = null;
+										event.data.panel.submitChanges();
+									}
+								});
+						
+						this.parameterDefinitionValueInput
+						.change(
+								{
+									panel : this
+								},
+								function(event) {
+									if (event.data.panel.currentParameterDefinition != null) {
+										if (jQuery.trim(event.data.panel.parameterDefinitionValueInput.val()) == "") {
+											return;
+										}
+											event.data.panel.currentParameterDefinition.dataPath = event.data.panel.parameterDefinitionValueInput.val();
+											event.data.panel.submitChanges();
+									}
+								});
+						
+						this.parameterDefinitionLinkTextInput
+						.change(
+								{
+									panel : this
+								},
+								function(event) {
+									if (event.data.panel.currentParameterDefinition != null) {
+										if (jQuery.trim(event.data.panel.parameterDefinitionLinkTextInput.val()) == "") {
+											return;
+										}
+											event.data.panel.currentParameterDefinition.text = event.data.panel.parameterDefinitionLinkTextInput.val();
+											event.data.panel.submitChanges();
+									}
+								});
 					}
 
 					if (this.options.supportsDataMappings) {
@@ -843,6 +929,59 @@ define(
 					}
 				};
 
+				ParameterDefinitionsPanel.prototype.hideDescriptorTypeFields = function() {
+					m_utils.jQuerySelect(this.options.scope
+							+ " #parameterDefinitionLinkTextInput").hide();
+					m_utils.jQuerySelect(this.options.scope
+							+ " label[for='parameterDefinitionLinkTextInput']").hide();
+					m_utils.jQuerySelect(this.options.scope
+							+ " #parameterDefinitionValueInput").hide();
+					m_utils.jQuerySelect(this.options.scope
+							+ " label[for='parameterDefinitionValueInput']").hide();
+					// Show Data fields
+					m_utils.jQuerySelect(this.options.scope
+							+ " #parameterDefinitionDataSelect").show();
+					m_utils.jQuerySelect(this.options.scope
+							+ " label[for='parameterDefinitionDataSelect']").show();
+					m_utils.jQuerySelect(this.options.scope
+							+ " #parameterDefinitionPathInput").show();
+					m_utils.jQuerySelect(this.options.scope
+							+ " label[for='parameterDefinitionPathInput']").show();
+				}
+				
+				ParameterDefinitionsPanel.prototype.showDescriptorTypeFields = function() {
+					// Show 'composite' and 'Link' type fields
+					m_utils.jQuerySelect(this.options.scope
+							+ " #parameterDefinitionValueInput").show();
+					m_utils.jQuerySelect(this.options.scope
+							+ " label[for='parameterDefinitionValueInput']").show();
+					// Set the Value field using dataPath
+					this.parameterDefinitionValueInput.val(this.currentParameterDefinition.dataPath);
+					if(this.currentParameterDefinition.type == m_constants.TYPE_LINK) {
+						m_utils.jQuerySelect(this.options.scope
+								+ " #parameterDefinitionLinkTextInput").show();
+						m_utils.jQuerySelect(this.options.scope
+								+ " label[for='parameterDefinitionLinkTextInput']").show();
+						this.parameterDefinitionLinkTextInput.val(this.currentParameterDefinition.text);
+					} else {
+						m_utils.jQuerySelect(this.options.scope
+								+ " #parameterDefinitionLinkTextInput").hide();
+						m_utils.jQuerySelect(this.options.scope
+								+ " label[for='parameterDefinitionLinkTextInput']").hide();
+					}
+					// Hide Data and DataPath selection
+					m_utils.jQuerySelect(this.options.scope
+							+ " #parameterDefinitionDataSelect").hide();
+					m_utils.jQuerySelect(this.options.scope
+							+ " label[for='parameterDefinitionDataSelect']").hide();
+					m_utils.jQuerySelect(this.options.scope
+							+ " #parameterDefinitionPathInput").hide();
+					m_utils.jQuerySelect(this.options.scope
+							+ " label[for='parameterDefinitionPathInput']").hide();
+					//disable key descriptors
+					this.keyDescriptorInput.attr("disabled",true);
+					this.keyDescriptorInput.prop("checked",false);
+				}
 				/**
 				 *
 				 */
@@ -852,6 +991,7 @@ define(
 						if(this.currentParameterDefinition){
 							this.parameterDefinitionNameInput.val(this.currentParameterDefinition.name);
 							this.parameterDefinitionDirectionSelect.val(this.currentParameterDefinition.direction);
+							this.parameterDefinitionTypeSelect.val(this.currentParameterDefinition.type);
 							this.dataTypeSelector.setDataType(this.currentParameterDefinition);
 						}
 						this.parameterDefinitionNameInput.attr("disabled", true);
@@ -889,6 +1029,8 @@ define(
 								.val(this.currentParameterDefinition.name);
 						this.parameterDefinitionDirectionSelect
 								.val(this.currentParameterDefinition.direction);
+						this.parameterDefinitionTypeSelect
+								.val(this.currentParameterDefinition.type);
 
 						if (this.options.supportsDataTypeSelection) {
 							if (this.options.readOnlyParameterList) {
@@ -896,7 +1038,7 @@ define(
 							} else {
 								this.dataTypeSelector.enable();
 							}
-
+							
 							this.dataTypeSelector.setDataType(this.currentParameterDefinition);
 						}
 
@@ -914,15 +1056,31 @@ define(
 
 								if (this.currentParameterDefinition.descriptor) {
 									this.keyDescriptorInput.prop("checked",this.currentParameterDefinition.keyDescriptor);
+									this.parameterDefinitionTypeSelect.removeAttr("disabled",false);
+									this.parameterDefinitionTypeSelect.val(this.currentParameterDefinition.type);
+									if (this.currentParameterDefinition
+											&& this.currentParameterDefinition.type) {
+										this.showDescriptorTypeFields();
+									} else {
+										this.hideDescriptorTypeFields();
+										//enable key descriptors
+										this.keyDescriptorInput.attr("disabled",false);
+									}
 								} else {
 									this.keyDescriptorInput.attr("disabled",true);
 									this.keyDescriptorInput.prop("checked",false);
+									this.parameterDefinitionTypeSelect.attr("disabled",true);
+									this.parameterDefinitionTypeSelect.val("");
+									this.hideDescriptorTypeFields();
 								}
 							} else {
 								this.descriptorInput.attr("disabled", true);
 								this.keyDescriptorInput.attr("disabled", true);
+								this.parameterDefinitionTypeSelect.attr("disabled",true);
+								this.parameterDefinitionTypeSelect.val("");
 								this.descriptorInput.prop("checked", false);
 								this.keyDescriptorInput.prop("checked", false);
+								this.hideDescriptorTypeFields();
 							}
 						}
 
@@ -1005,6 +1163,7 @@ define(
 			        	  if(!this.isPredefinedAccessPoint(this.currentParameterDefinition))
 			        		  this.parameterDefinitionDirectionSelect.removeAttr("disabled");
 			          }
+			          
 				};
 
 				ParameterDefinitionsPanel.prototype.isPredefinedAccessPoint = function(currentParameterDefinition) {

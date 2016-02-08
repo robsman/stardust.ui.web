@@ -408,7 +408,10 @@ define(function() {
 
 		// Web-service
 		DYNAMICALLY_BOUND_SERVICE : "Dynamically bound Service",
-
+		
+		// DataPaths
+		TYPE_LINK : "Link",
+		
 		//General
 		NEW_LINE : 	"\n",
 		EXTERNAL_REFERENCE_PROPERTY : "externalReference",
