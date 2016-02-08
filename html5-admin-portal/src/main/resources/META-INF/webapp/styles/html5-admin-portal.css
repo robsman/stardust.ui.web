@@ -18,6 +18,16 @@ input.search:invalid{
 	color:#000;
 }
 
+/*** Criticality Config **/
+.criticality-config-input {
+    width: 60px;
+}
+
+.criticality-config-table td {
+    text-align: center;
+}
+
+
 
 /* Password Management */
 .password-mgmt-text {
@@ -35,10 +45,10 @@ input.search:invalid{
 
 .permission-tree .sd-tree .expand-section {
 	float: left;
-}  
+}
 
 .permission-tree ul {
-	margin: 0 0 0 0;	
+	margin: 0 0 0 0;
 }
 
 .overview-report-field-value{
@@ -57,7 +67,7 @@ Custom match rules for the Authorization Management Tree:
 Auth tree is a hand-stitched implementation of a tree rather
 than an instance of the sdTree directive. It's DOM structure
 deviates from that of sdTree causing several of the styles we
-would like to inherit from sdTree to no longer work with the 
+would like to inherit from sdTree to no longer work with the
 auth tree implementation. Therefore, we have added
 custom styles below to handle these cases.
 ---------------------------------------------------------

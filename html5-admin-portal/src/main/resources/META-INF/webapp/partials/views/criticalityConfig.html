@@ -1,6 +1,6 @@
 <div class="view-panel" ng-controller="sdCriticalityConfigCtrl as ctrl"
 	sg-stretch-to-bottom>
-	
+
 	<div>
 		<div class="heading" ng-bind="i18n('admin-portal-messages.views-criticalityConf-criticality-categories-title')"></div>
 		<div class="clearing"></div>
@@ -8,36 +8,36 @@
 		<div sda-toolbar>
 			<div class="tbl-toolbar-section">
 				<!-- Import -->
-				<button ng-click="ctrl.showImportDialog()" title="{{i18n('admin-portal-messages.views-criticalityConf-criticality-categories-toolbar-import')}}" 
-						class="button-link tbl-toolbar-item tbl-tool-link" 
+				<button ng-click="ctrl.showImportDialog()" title="{{i18n('admin-portal-messages.views-criticalityConf-criticality-categories-toolbar-import')}}"
+						class="button-link tbl-toolbar-item tbl-tool-link"
 						aid="ADM-CriticalityConfig-CategoriesTableToolbar-Import">
 				   <i class="pi pi-import pi-lg" ></i>
 				</button>
 				<!-- Export -->
-				<button ng-click="ctrl.exportCriticalities()" title="{{i18n('admin-portal-messages.views-criticalityConf-criticality-categories-toolbar-export')}}" 
-						class="button-link tbl-toolbar-item tbl-tool-link" 
+				<button ng-click="ctrl.exportCriticalities()" title="{{i18n('admin-portal-messages.views-criticalityConf-criticality-categories-toolbar-export')}}"
+						class="button-link tbl-toolbar-item tbl-tool-link"
 						aid="ADM-CriticalityConfig-CategoriesTableToolbar-Export">
 				   <i class="pi pi-export pi-lg" ></i>
 				</button>
 			</div>
 			<div class="tbl-toolbar-section">
 				<!-- Add -->
-				<button ng-click="ctrl.addRow()" title="{{i18n('admin-portal-messages.views-criticalityConf-criticality-categories-toolbar-add')}}" 
-						class="button-link tbl-toolbar-item tbl-tool-link" 
+				<button ng-click="ctrl.addRow()" title="{{i18n('admin-portal-messages.views-criticalityConf-criticality-categories-toolbar-add')}}"
+						class="button-link tbl-toolbar-item tbl-tool-link"
 						aid="ADM-CriticalityConfig-CategoriesTableToolbar-Add">
 				   <i class="pi pi-create pi-lg" ></i>
 				</button>
 				<!-- Remove -->
-				<button ng-disabled="ctrl.dataTable.getSelection() < 1" ng-click="ctrl.removeRows()" 
-					title="{{i18n('admin-portal-messages.views-criticalityConf-criticality-categories-toolbar-delete')}}" 
-					class="button-link tbl-toolbar-item tbl-tool-link" 
+				<button ng-disabled="ctrl.dataTable.getSelection() < 1" ng-click="ctrl.removeRows()"
+					title="{{i18n('admin-portal-messages.views-criticalityConf-criticality-categories-toolbar-delete')}}"
+					class="button-link tbl-toolbar-item tbl-tool-link"
 					aid="ADM-CriticalityConfig-CategoriesTableToolbar-Delete">
 				   <i class="pi pi-delete pi-lg" ></i>
 				</button>
 				<!-- Edit -->
-				<button ng-disabled="!ctrl.isEditable()" ng-click="ctrl.editRows()" 
-					title="{{i18n('admin-portal-messages.views-criticalityConf-criticality-categories-toolbar-edit')}}" 
-					class="button-link tbl-toolbar-item tbl-tool-link" 
+				<button ng-disabled="!ctrl.isEditable()" ng-click="ctrl.editRows()"
+					title="{{i18n('admin-portal-messages.views-criticalityConf-criticality-categories-toolbar-edit')}}"
+					class="button-link tbl-toolbar-item tbl-tool-link"
 					aid="ADM-CriticalityConfig-CategoriesTableToolbar-Edit">
 				   <i class="pi pi-edit pi-lg"></i>
 				</button>
@@ -45,7 +45,7 @@
 		</div>
 		<!-- Data table -->
 		<table sd-data-table="ctrl.dataTable" sd-data="ctrl.criticalityConfig.criticalities"
-			sda-mode="local" sda-selectable="multiple" sda-no-pagination="true"
+			sda-mode="local" sda-selectable="multiple" sda-no-pagination="true" class="criticality-config-table"
 			sda-sortable="false" sda-exports="false">
 			<thead sda-i18n-scope="admin-portal-messages.views-criticalityConf-criticality-categories">
 				<!-- <tr> TODO uncomment when header grouping is supported by "sd-datatable"
@@ -58,7 +58,7 @@
 					<th sda-name="rangeFrom"></th>
 					<th sda-name="rangeTo"></th>
 				</tr> -->
-				
+
 				<tr>
 					<th sda-name="rangeFrom"></th>
 					<th sda-name="rangeTo"></th>
@@ -69,52 +69,52 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td sda-data-type="int" style="text-align: center;">
-						<input ng-if="ctrl.rowEditable(rowData)" type="number" ng-model="rowData.rangeFrom" 
-						       style="width: 60px; padding-right: 0;" ng-click="bpmCommon.stopEvent($event);"
+					<td sda-data-type="int" >
+						<input ng-if="ctrl.rowEditable(rowData)" type="number" ng-model="rowData.rangeFrom"
+						       class="criticality-config-input" ng-click="bpmCommon.stopEvent($event);"
 						       aid="ADM-CriticalityConfig-Categories-Table-EditRangeFrom"/>
 						<span ng-if="!ctrl.rowEditable(rowData)" ng-bind="rowData.rangeFrom"></span>
 					</td>
-					<td sda-data-type="int" style="text-align: center;">
-						<input ng-if="ctrl.rowEditable(rowData)" type="number" ng-model="rowData.rangeTo" 
-						style="width: 60px; padding-right: 0;" ng-click="bpmCommon.stopEvent($event);"
+					<td sda-data-type="int">
+						<input ng-if="ctrl.rowEditable(rowData)" type="number" ng-model="rowData.rangeTo"
+                   class="criticality-config-input" ng-click="bpmCommon.stopEvent($event);"
 						aid="ADM-CriticalityConfig-Categories-Table-EditRangeTo"/>
 						<span ng-if="!ctrl.rowEditable(rowData)" ng-bind="rowData.rangeTo"></span>
 					</td>
 					<td>
-						<input ng-if="ctrl.rowEditable(rowData)" type="text" ng-model="rowData.label" 
-						       style="width: 60px; padding-right: 0;" ng-click="bpmCommon.stopEvent($event);"
+						<input ng-if="ctrl.rowEditable(rowData)" type="text" ng-model="rowData.label"
+						      class="criticality-config-input" ng-click="bpmCommon.stopEvent($event);"
 						       aid="ADM-CriticalityConfig-Categories-Table-Editlabel"/>
 						<span ng-if="!ctrl.rowEditable(rowData)" ng-bind="rowData.label"></span>
 					</td>
-					<td style="text-align: center;">
-						<span sd-criticality-icon-selector ng-model="rowData.color" sda-edit-mode="ctrl.rowEditable(rowData)" 
+					<td>
+						<span sd-criticality-icon-selector ng-model="rowData.color" sda-edit-mode="ctrl.rowEditable(rowData)"
 						      ng-click="bpmCommon.stopEvent($event);" aid="ADM-CriticalityConfig-Categories-Table-EditColor"></span>
 					</td>
-					<td style="text-align: center;">
-						<span sd-criticality-icon-count-selector ng-model="rowData.count" sda-icon="rowData.color" 
+					<td>
+						<span sd-criticality-icon-count-selector ng-model="rowData.count" sda-icon="rowData.color"
 						      sda-edit-mode="ctrl.rowEditable(rowData)" ng-click="bpmCommon.stopEvent($event);"
 						      aid="ADM-CriticalityConfig-Categories-Table-EditCount"></span>
 					</td>
-					
+
 				</tr>
 			</tbody>
 		</table>
 	</div>
-	
+
 	<div class="clearing"></div>
 	<div class="msg-error">
 		<p ng-bind-html="ctrl.getValidationMsg()"></p>
 	</div>
 	<div class="clearing"></div>
-	
+
 	<div>
 		<div class="heading" ng-bind="i18n('admin-portal-messages.views-criticalityConf-recalculationEvents-label')"></div>
 		<!-- Recalculation Events -->
 		<div>
 			<div class="clearing"></div>
 			<div ng-bind="i18n('admin-portal-messages.views-criticalityConf-recalculationEvents-titleMessage')"></div>
-			
+
 			<div class="clearing"></div>
 			<div>
 				<input type="checkbox" ng-model="ctrl.criticalityConfig.activityCreation" aid="ADM-CriticalityConfig-ReCalc-ActivityCreation"/>
@@ -147,20 +147,20 @@
 		</div>
 		<div class="clearing"></div>
 	</div>
-	
+
 	<!-- Save Button -->
-	<button ng-bind="i18n('admin-portal-messages.views-criticalityConf-save-label')" 
-			ng-click="ctrl.save();" 
-			aid="ADM-PwdMgmt-SaveBtn" 
+	<button ng-bind="i18n('admin-portal-messages.views-criticalityConf-save-label')"
+			ng-click="ctrl.save();"
+			aid="ADM-PwdMgmt-SaveBtn"
 			class="button">Save</button>
-	
+
 	<div sd-dialog sda-show="ctrl.showImportDlg" sda-type="alert" sda-cancel-action-label="{{i18n('views-common-messages.common-ok')}}"
 		sda-on-close="ctrl.importCriticalities()" sda-title="{{i18n('admin-portal-messages.views-criticalityConf-importDialog-title')}}"
 		sda-height="140px" sda-show-close="false"
 		sda-aid-prefix="ADM-CriticalityConfig-ImportDlg">
 		<div><span ng-bind="i18n('admin-portal-messages.views-criticalityConf-importDialog-info')"></span></div>
 		<div>
-			<i  class="pi msg-error pi-dialog-warning pi-lg"></i> 
+			<i  class="pi msg-error pi-dialog-warning pi-lg"></i>
 			<span ng-bind="i18n('admin-portal-messages.views-criticalityConf-importDialog-warning')"></span>
 		</div>
 		<br />
