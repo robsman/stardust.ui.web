@@ -66,7 +66,7 @@
 
 			-->			<ippui:view name="genericRepositoryView"
 				include="/plugins/views-common/views/doctree/genericRepositoryView.xhtml"
-				controller="genericRepositoryTreeViewBean">				<ippui:preferences>					<ippui:preferencePage name="icon" include="/does-not-exist/repository-view.png" />				</ippui:preferences>			</ippui:view>
+				controller="genericRepositoryTreeViewBean">				<ippui:preferences>					<ippui:preferencePage name="icon" include="/does-not-exist/repository-view.png" />				</ippui:preferences>			</ippui:view>			<ippui:view name="genericRepositoryViewHtml5"				include="/plugins/html5-views-common/html5/partials/views/genericRepositoryView.html">				<ippui:preferences>					<ippui:preferencePage name="icon" include="/does-not-exist/repository-view.png" />				</ippui:preferences>			</ippui:view>
 
 			<ippui:view name="myDocumentsTreeView"
 				include="/plugins/views-common/views/mydoctree/myDocumentsTreeView.xhtml"
