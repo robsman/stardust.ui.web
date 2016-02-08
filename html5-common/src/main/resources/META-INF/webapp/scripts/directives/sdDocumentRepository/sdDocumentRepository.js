@@ -31,6 +31,7 @@
     this.selectedRepo = {};
     this.repositoryProviders =[]; 
     this.selectedMatches = [];
+    this.data=[];
     this.documentRepositoryUrl = documentRepositoryService.documentRoot + "/upload";
 
     //set up a watch on our selected matches from our autocomplete directive
@@ -722,17 +723,49 @@
   /*Linking Function*/
   function lnk($scope,$elem,$attrs){
     var ctrl = $scope.ctrl;
-    $attrs.$observe("sdaRootPath",function(v1){
-      //TODO:update tree nodes
+    var paths =[];
 
-      ctrl.documentService.getRepositories(v1)
-      .then(function(data){
-        data[0].children.forEach(function(elem){
-          elem.nodeType = "Repo";
-          elem.children=[];
+    $attrs.$observe("sdaRootPath",function(v1){
+      //If user has not assigned a value or simply given us a "/" then load all repositories
+      if(!v1 || v1 == "/"){
+        ctrl.documentService.getRepositories(v1)
+        .then(function(data){
+          data[0].children.forEach(function(elem){
+            elem.nodeType = "Repo";
+            elem.children=[];
+          });
+          ctrl.data = data;
         });
-        ctrl.data = data;
-      });
+      }
+      //user has given us a folder path as our root and we are loading an actual root folder and its children.
+      else{
+
+        paths = v1.split(",");
+
+        paths.forEach(function(path){
+
+          ctrl.documentService.getChildren(path)
+          .then(function(data){
+
+            var children  = ctrl.treeifyChildren(data);
+            var parent = {
+              "uuid" : data.uuid,
+              "name" : data.name, 
+              "path" : data.path, 
+              "hasChildren" : true,
+              "nodeType" : "folder",
+              "id" : data.uuid
+            }
+
+            parent.children = children;
+            ctrl.data.push(parent);
+          });//then end
+
+        });//foreach end
+
+      }//else end
+
+
     });
     
   }
