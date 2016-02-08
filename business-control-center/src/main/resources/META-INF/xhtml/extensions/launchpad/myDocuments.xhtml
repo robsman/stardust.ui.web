@@ -19,9 +19,9 @@
 
 	<ice:panelGrid columns="1" rendered="#{myDocumentsPanelBean.expanded}">
 		<ice:commandLink action="#{ippPortalApp.openView}"
-			rendered="#{pc:isViewAvailable(ippPortalApp, 'myDocumentsTreeView')}">
+			rendered="#{pc:isViewAvailable(ippPortalApp, 'myDocumentsTreeViewHtml5')}">
 			<pc:automationTag value="auto-BCC-LP-MyDocView" standAlone="false"/>
-			<f:param name="viewId" value="myDocumentsTreeView" />
+			<f:param name="viewId" value="myDocumentsTreeViewHtml5" />
 			<ice:outputText
 				value="#{myDocumentsPanelBean.messages['myDocuments']} &amp;raquo;"
 				styleClass="action-link" escape="false" />

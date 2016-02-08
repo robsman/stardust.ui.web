@@ -66,12 +66,12 @@
 
 			-->			<ippui:view name="genericRepositoryView"
 				include="/plugins/views-common/views/doctree/genericRepositoryView.xhtml"
-				controller="genericRepositoryTreeViewBean">				<ippui:preferences>					<ippui:preferencePage name="icon" include="/does-not-exist/repository-view.png" />				</ippui:preferences>			</ippui:view>			<ippui:view name="genericRepositoryViewHtml5"				include="/plugins/html5-views-common/html5/partials/views/genericRepositoryView.html">				<ippui:preferences>					<ippui:preferencePage name="icon" include="/does-not-exist/repository-view.png" />				</ippui:preferences>			</ippui:view>
+				controller="genericRepositoryTreeViewBean">				<ippui:preferences>					<ippui:preferencePage name="icon" include="/does-not-exist/repository-view.png" />				</ippui:preferences>			</ippui:view>						<ippui:view name="genericRepositoryViewHtml5"				include="/plugins/html5-views-common/html5/partials/views/genericRepositoryView.html">				<ippui:preferences>					<ippui:preferencePage name="icon" include="/does-not-exist/repository-view.png" />				</ippui:preferences>			</ippui:view>
 
 			<ippui:view name="myDocumentsTreeView"
 				include="/plugins/views-common/views/mydoctree/myDocumentsTreeView.xhtml"
 				controller="myDocumentsTreeViewBean">				<ippui:preferences>					<ippui:preferencePage name="icon" include="/does-not-exist/my-documents-view.png" />				</ippui:preferences>			</ippui:view>
-
+						<ippui:view name="myDocumentsTreeViewHtml5"				include="/plugins/html5-views-common/html5/partials/views/myDocumentsTreeView.html">				<ippui:preferences>					<ippui:preferencePage name="icon" include="/does-not-exist/my-documents-view.png" />				</ippui:preferences>			</ippui:view>			
 			<ippui:view name="documentView"
 				include="/plugins/views-common/views/document/documentView.xhtml"
 				controller="documentHandlerBean">				<ippui:preferences>					<ippui:preferencePage name="configuration"						include="/plugins/views-common/views/document/imageViewerConfiguration.xhtml" />				</ippui:preferences>
@@ -82,7 +82,7 @@
 			<ippui:view name="resourceMgmtTreeView"
 				include="/plugins/views-common/views/resourcemgmttree/resourceMgmtTreeView.xhtml"
 				controller="resourceMgmtTreeViewBean">				<ippui:preferences>					<ippui:preferencePage name="icon" include="/does-not-exist/resource-manager-view.png" />				</ippui:preferences>			</ippui:view>
-
+						<ippui:view name="resourceMgmtTreeViewHtml5"				include="/plugins/html5-views-common/html5/partials/views/resourceMgmtTreeView.html">				<ippui:preferences>					<ippui:preferencePage name="icon" include="/does-not-exist/repository-view.png" />				</ippui:preferences>			</ippui:view>			
 			<ippui:view name="documentSearchView"
 				include="/plugins/html5-views-common/html5/partials/views/documentSearchView.html">
 				<ippui:preferences>
