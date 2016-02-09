@@ -637,6 +637,7 @@ define(
                   var attributes = this.getApplication().attributes;
                   attributes["stardust:application::decorator::modelId"] = this.modelId;
                   attributes["stardust:application::decorator::elementId"] = this.eltId;
+                  attributes["carnot:engine:camel::processContextHeaders"] = true;
                   attributes["stardust:application::decorator::elementType"] = this
                            .getElementType(this.eltId);
                };
