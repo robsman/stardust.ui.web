@@ -26,42 +26,54 @@ import org.eclipse.stardust.modeling.validation.*;
 public class DescriptorValidator implements IModelElementValidator
 {
    private Pattern pattern = Pattern.compile("(\\%\\{[^{}]+\\})"); //$NON-NLS-1$
+
    private Map<String, DataPathReference> refMap = null;
-   
+
+   private ProcessDefinitionType process = null;
+
+   private DataPathType validatedDataPathType = null;
+
    public Issue[] validate(IModelElement element) throws ValidationException
    {
       List<Issue> issues = new ArrayList<Issue>();
-      DataPathType dataPathType = (DataPathType) element;
+      validatedDataPathType = (DataPathType) element;
+      process = (ProcessDefinitionType) element.eContainer();
 
-      if (dataPathType.isDescriptor())
+      if (process == null)
       {
-         AttributeType attribute = AttributeUtil.getAttribute(dataPathType, "type");
+         return (Issue[]) issues.toArray(Issue.ISSUE_ARRAY);
+      }
+
+      if (validatedDataPathType.isDescriptor())
+      {
+         AttributeType attribute = AttributeUtil.getAttribute(validatedDataPathType,
+               "type");
          if (attribute != null)
          {
-            refMap = new HashMap<String, DataPathReference>(); 
-            DataPathReference reference = new DataPathReference(dataPathType, new ArrayList<DataPathReference>());
-            refMap.put(dataPathType.getId(), reference);
+            refMap = new HashMap<String, DataPathReference>();
+            DataPathReference reference = new DataPathReference(validatedDataPathType,
+                  new ArrayList<DataPathReference>());
+            refMap.put(validatedDataPathType.getId(), reference);
             resolveReferences(reference, issues);
          }
-      } else 
-      {
-         String value = dataPathType.getDataPath();
-         if ((value != null) && this.hasVariable(value))
+         attribute = AttributeUtil.getAttribute(validatedDataPathType, "text");
+         if (attribute != null)
          {
-            issues.add(Issue.error(dataPathType,
-                  MessageFormat.format(
-                        "Data Path ''{0}'' is not a Composite / Link descriptor, therefore variables are not allowed.",                           
-                        new Object[] {dataPathType.getId()}),
-                  ValidationService.PKG_CWM.getProcessDefinitionType_DataPath()));
+            String text = attribute.getAttributeValue();
+            refMap = new HashMap<String, DataPathReference>();
+            DataPathReference reference = new DataPathReference(validatedDataPathType,
+                  text, new ArrayList<DataPathReference>());
+            resolveReferences(reference, issues);
          }
       }
       return (Issue[]) issues.toArray(Issue.ISSUE_ARRAY);
    }
-   
+
    private void resolveReferences(DataPathReference reference, List<Issue> issues)
-   { 
+   {
       DataPathType dataPathType = reference.getDataPath();
-      String value = VariableContextHelper.getInstance().getContext(dataPathType).replaceAllVariablesByDefaultValue(dataPathType.getDataPath());
+      String value = VariableContextHelper.getInstance().getContext(dataPathType)
+            .replaceAllVariablesByDefaultValue(reference.getValue());
       if (!this.hasVariable(value))
       {
          return;
@@ -70,61 +82,60 @@ public class DescriptorValidator implements IModelElementValidator
       Matcher matcher = pattern.matcher(value);
       while (matcher.find())
       {
-         if ((matcher.start() == 0) || ((matcher.start() > 0)
-               && (value.charAt(matcher.start() - 1) != '\\')))
+         if ((matcher.start() == 0)
+               || ((matcher.start() > 0) && (value.charAt(matcher.start() - 1) != '\\')))
          {
             String ref = value.substring(matcher.start(), matcher.end());
             ref = ref.trim();
             id = ref;
             id = id.replace("%{", "");
             id = id.replace("}", "");
-            ProcessDefinitionType process = (ProcessDefinitionType) dataPathType.eContainer();
-            DataPathType refDataPathType = findDataPath(process, id); 
-            
-            
+            DataPathType refDataPathType = findDataPath(process, id);
+
             if (refDataPathType == null)
             {
-               issues.add(Issue.error(dataPathType,
+               issues.add(Issue.error(validatedDataPathType,
                      MessageFormat.format(
-                           Validation_Messages.ERR_REFERENCED_DESCRIPTOR_DOES_NOT_EXIST,                           
-                           new Object[] {dataPathType.getId(), ref}),
+                           Validation_Messages.ERR_REFERENCED_DESCRIPTOR_DOES_NOT_EXIST,
+                           new Object[] {validatedDataPathType.getId(), ref}),
                      ValidationService.PKG_CWM.getProcessDefinitionType_DataPath()));
                return;
             }
             String refAccessPath = refDataPathType.getDataPath();
-            
+
             if (refAccessPath == null)
             {
-               issues.add(Issue.warning(dataPathType,
+               issues.add(Issue.warning(validatedDataPathType,
                      MessageFormat.format(
-                           Validation_Messages.WR_REFERENCED_DESCRIPTOR_NO_DATAPATH,                           
+                           Validation_Messages.WR_REFERENCED_DESCRIPTOR_NO_DATAPATH,
                            new Object[] {ref}),
                      ValidationService.PKG_CWM.getProcessDefinitionType_DataPath()));
             }
-                                                     
-            DataPathReference refDataPathTypeReference = refMap.get(refDataPathType.getId());
+
+            DataPathReference refDataPathTypeReference = refMap
+                  .get(refDataPathType.getId());
             if (refDataPathTypeReference == null)
             {
                refDataPathTypeReference = new DataPathReference(refDataPathType,
                      new ArrayList<DataPathReference>());
                reference.getReferences().add(refDataPathTypeReference);
                refMap.put(refDataPathType.getId(), refDataPathTypeReference);
-            }     
-            if (this.hasCircularDependency(dataPathType.getId(), refDataPathTypeReference)) 
+            }
+            if (hasCircularDependency(dataPathType.getId(), refDataPathTypeReference))
             {
-               issues.add(Issue.error(dataPathType,
+               issues.add(Issue.error(validatedDataPathType,
                      MessageFormat.format(
-                           Validation_Messages.ERR_REFERENCED_DATAPTH_IS_A_CIRCULAR_DEPENDENCY,                           
-                           new Object[] {dataPathType.getId()}),
+                           Validation_Messages.ERR_REFERENCED_DATAPTH_IS_A_CIRCULAR_DEPENDENCY,
+                           new Object[] {validatedDataPathType.getId()}),
                      ValidationService.PKG_CWM.getProcessDefinitionType_DataPath()));
                return;
             }
-            resolveReferences(refDataPathTypeReference, issues);            
+            resolveReferences(refDataPathTypeReference, issues);
          }
       }
       return;
    }
-   
+
    private boolean hasCircularDependency(String referencingDataPathID,
          DataPathReference referencedDataPath)
    {
@@ -140,8 +151,10 @@ public class DescriptorValidator implements IModelElementValidator
          if (hasCircularDependency(referencedDataPath.getDataPath().getId(), reference))
          {
             return true;
-         } else {
-            if (this.hasCircularDependency(referencingDataPathID, reference)) 
+         }
+         else
+         {
+            if (hasCircularDependency(referencingDataPathID, reference))
             {
                return true;
             }
@@ -149,7 +162,7 @@ public class DescriptorValidator implements IModelElementValidator
       }
       return false;
    }
-      
+
    private DataPathType findDataPath(ProcessDefinitionType process, String ref)
    {
       for (Iterator<DataPathType> i = process.getDataPath().iterator(); i.hasNext();)
@@ -162,7 +175,7 @@ public class DescriptorValidator implements IModelElementValidator
       }
       return null;
    }
-      
+
    private boolean hasVariable(String value)
    {
       if (value == null)
@@ -172,41 +185,53 @@ public class DescriptorValidator implements IModelElementValidator
       Matcher matcher = pattern.matcher(value);
       while (matcher.find())
       {
-         if ((matcher.start() == 0) || ((matcher.start() > 0)
-               && (value.charAt(matcher.start() - 1) != '\\')))
+         if ((matcher.start() == 0)
+               || ((matcher.start() > 0) && (value.charAt(matcher.start() - 1) != '\\')))
          {
             return true;
          }
       }
       return false;
    }
-   
+
    public class DataPathReference
    {
-      private DataPathType dataPath;
+      private DataPathType dataPath = null;
+
+      private String value;
+
       private List<DataPathReference> references = new ArrayList<DataPathReference>();
-      
+
       public DataPathType getDataPath()
       {
          return dataPath;
       }
-      public void setDataPath(DataPathType dataPath)
+
+      public String getValue()
       {
-         this.dataPath = dataPath;
+         return value;
       }
+
       public List<DataPathReference> getReferences()
       {
          return references;
       }
-      public void setReferences(List<DataPathReference> references)
-      {
-         this.references = references;
-      }
+
       public DataPathReference(DataPathType dataPath, List<DataPathReference> references)
       {
          super();
          this.dataPath = dataPath;
          this.references = references;
+         this.value = dataPath.getDataPath();
+      }
+
+      public DataPathReference(DataPathType dataPath, String value,
+            List<DataPathReference> references)
+      {
+         super();
+         this.value = value;
+         this.references = references;
+         this.dataPath = dataPath;
       }
 
    }
