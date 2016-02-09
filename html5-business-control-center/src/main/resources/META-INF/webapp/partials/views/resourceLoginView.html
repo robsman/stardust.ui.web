@@ -10,10 +10,9 @@
 	<div class="view-panel-content">
 		<div class="view-panel-toolbar heading">{{i18n('business-control-center-messages.views-resourceLoginView-title')}}</div>
 
-		<table sd-data-table="ctrl.dataTable"
+		<table sd-data-table="ctrl.dataTable" sda-mode="local" 
 			sd-data="ctrl.getResourceLoginTimeInfo(params)"
-			sda-sortable="true" sda-sort-by="{name : 'name', dir : 'desc'}"
-			sda-mode="local" sda-sortable="false"
+			sda-sortable="true" sda-sort-by="{name : 'name', dir : 'asc'}"			
 			sda-exports="true" sda-exports-file-name="{{ctrl.exportFileName}}">
 			<thead
 				sda-i18n-scope="business-control-center-messages.views-common-column">
@@ -27,7 +26,7 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td sda-exporter="rowData.name"><a href="#"
+					<td sda-exporter="rowData.name" sda-data-type="string"><a href="#"
 					ng-click="bpmCommon.stopEvent($event); ctrl.openUserManagerView(rowData.userOid,rowData.userId);"
 					title="{{i18n('business-control-center-messages.views-userManagerDetailView-title')}}"
 					class="tbl-tool-link" aid="BCC-ResLogin-TotLogInTimeTbl-TeamMember">{{rowData.name}}</a></td>
