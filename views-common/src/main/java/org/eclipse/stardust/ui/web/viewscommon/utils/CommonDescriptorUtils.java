@@ -570,7 +570,7 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
          for (Iterator descrItr = process.getAllDataPaths().iterator(); descrItr.hasNext();)
          {
             DataPath path = (DataPath) descrItr.next();
-            if (Direction.IN.equals(path.getDirection()) && path.isDescriptor()
+            if (Direction.IN.equals(path.getDirection()) && path.isDescriptor() && !DescriptorColumnUtils.isCompositeOrLinkDescriptor(path)
                   && ((onlyFilterable && DescriptorFilterUtils.isDataFilterable(path)) || !onlyFilterable))
             {
                if (firstProcess)
