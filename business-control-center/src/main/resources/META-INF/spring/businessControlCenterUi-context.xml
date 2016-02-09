@@ -67,7 +67,6 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
             requiredView="activityCriticalityManagerView" />
   
 		<!--  VIEWS -->
-		<!--ippui:view name="categoryTree" include="/plugins/business-control-center/views/categoryTree.xhtml" controller="categoryTree"/-->
 	   	<ippui:view name="categoryTree" include="/plugins/html5-business-control-center/partials/views/allManagementViews.html">
 	   		<ippui:preferences>
 				<ippui:preferencePage name="icon"
