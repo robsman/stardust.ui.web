@@ -330,6 +330,11 @@
       menuItems.push("(securityFile," + this.textMap.security + ")");
 
     }
+
+    if(this.$scope.useMenuHook===true){
+      menuItems = this.$scope.menuHook({"menuItems" : menuItems,"treeNode" : menuData.item});
+    }
+
     menuData.deferred.resolve(menuItems.toString());
   };
   
@@ -725,6 +730,10 @@
     var ctrl = $scope.ctrl;
     var paths =[];
 
+    //If user has supplied the directive with a menuHook that indicate that on our
+    //scope as we only wish to invoke if we have a function that will return something.
+    $scope.useMenuHook = ($attrs.sdaMenuHook)?true:false;
+
     $attrs.$observe("sdaRootPath",function(v1){
       //If user has not assigned a value or simply given us a "/" then load all repositories
       if(!v1 || v1 == "/"){
@@ -778,6 +787,9 @@
       var templateUrl = sdUtilService.getBaseUrl() + 'plugins/html5-common/scripts/directives/sdDocumentRepository/sdDocumentRepository.html';
 
       return {
+        "scope" : {
+          "menuHook" : "&sdaMenuHook"
+        },
         "controller" : docRepoController,
         "controllerAs" : 'ctrl',
         "templateUrl" : templateUrl,

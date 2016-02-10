@@ -2,6 +2,7 @@
      sg-stretch-to-bottom class="view-panel">
 	
 	<div sd-document-repository 
+		 sda-menu-hook="sdMyDocumentsTreeViewCtrl.menuHook(menuItems,treeNode)"
 	     sda-root-path="{{sdMyDocumentsTreeViewCtrl.path}}">
 	</div>
 
