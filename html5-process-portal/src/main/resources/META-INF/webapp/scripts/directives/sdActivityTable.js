@@ -26,7 +26,7 @@
 		    ActivityTableDirective ]);
 
     /*
-     * 
+     *
      */
     function ActivityTableDirective($parse, $q, sdUtilService, sdViewUtilService, sdLoggerService, sdPreferenceService,
 	    sdWorklistService, sdActivityInstanceService, sdProcessInstanceService, sdProcessDefinitionService, sdCriticalityService,
@@ -80,7 +80,7 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	function processRawMarkup(elem, attr) {
 		// Process Trivial Data Column
@@ -117,7 +117,7 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	function ActivityTableCompiler(scope, element, attr, ctrl) {
 		try {
@@ -147,8 +147,57 @@
 		sdUtilService.addFunctionProxies(scope.activityTableCtrl);
 	};
 
+	/**
+	*
+	*/
+	ActivityTableCompiler.prototype.isToolBarVisible = function( name ) {
+		if(this.toolBarConfig === false) {
+			return false;
+		}
+		if(!name) {
+			return true;
+		}
+
+		return this.isMenuItemVisibile(name);
+	}
+
+	/**
+	*
+	*/
+	ActivityTableCompiler.prototype.isMenuItemVisibile = function( menuItem ) {
+		if(menuItem === "refresh") {
+			return  this.isWorklistMode() && checkCofig(this.toolBarConfig,"refresh");
+		} else if(menuItem === "abort") {
+			return checkCofig(this.toolBarConfig,"abort");
+		} else if (menuItem === "complete") {
+			return  this.isWorklistMode() && checkCofig(this.toolBarConfig,"complete");
+		} else if (menuItem === "delegate") {
+			return checkCofig(this.toolBarConfig,"delegate");
+		} else if (menuItem === "saveFilters") {
+			return checkCofig(this.toolBarConfig,"saveFilters");
+		} else if (menuItem === "export") {
+			return checkCofig(this.toolBarConfig, menuItem);
+		} else if (menuItem === "columnSelector") {
+			return checkCofig(this.toolBarConfig, menuItem);
+		}
+		
+		return true;
+	};
+
+
+function checkCofig(toolBarConfig, menuItem) {
+
+	if(!toolBarConfig || toolBarConfig == null) {
+		return true;
+	} else if(!angular.isUndefined(toolBarConfig[menuItem])) {
+		return toolBarConfig[menuItem];
+	}
+
+	return true;
+}
+
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.initialize = function(attr, scope, $filter) {
 		var scopeToUse = scope.$parent;
@@ -172,7 +221,6 @@
 		this.availablePriorities = [];
 		this.preferenceModule = "";
 		this.preferenceId = "";
-		this.columnSelector = sdLoggedInUserService.getUserInfo().isAdministrator ?  'admin' : true;
 
 		// Process Query
 		if (!attr.sdaQuery && !attr.sdData) {
@@ -205,7 +253,11 @@
 		}
 
 		this.customizeWithAttributeValues(attr, scope, scopeToUse);
-		
+
+		if(this.isToolBarVisible("columnSelector")) {
+			this.columnSelector = sdLoggedInUserService.getUserInfo().isAdministrator ?  'admin' : true;
+		}
+
 		if(attr.sdaExtraColumns) {
 			this.extraColumns = JSON.parse(attr.sdaExtraColumns);
 		}
@@ -217,7 +269,7 @@
 				this.extraColumns.push("resubmissionTime");
 			}
 		}
-		
+
 		if (attr.sdaPageSize) {
 			this.sdaPageSize = attr.sdaPageSize;
 		}
@@ -250,7 +302,7 @@
 		this.documentPopoverHandle = null;
 	    // Process TableHandle and then set data table instance
 	    this.tableHandleExpr = 'activityTableCtrl.dataTable';
-	 
+
 	    var unregister = scope.$watch(this.tableHandleExpr, function(newVal, oldVal) {
 	    	if (newVal != undefined && newVal != null && newVal != oldVal) {
 	    		if (attr.sdActivityTable) {
@@ -279,11 +331,11 @@
 
 	    //Additional logging added below to debug CRNT-38715 in production env.
 	    /**
-	     * 
+	     *
 	     */
 	    this.preferenceDelegate = function(prefInfo) {
 	    	trace.log('Fetching column preference for scope :',prefInfo.scope ,",preferenceId :",self.preferenceId,", preferenceName:",self.preferenceName);
-	      	
+
 	    	var preferenceStore = sdPreferenceService.getStore(prefInfo.scope, self.preferenceModule,
 	    			self.preferenceId);
 	    	preferenceStore.super_getValue = preferenceStore.getValue;
@@ -298,11 +350,11 @@
 	    	// Override
 	    	preferenceStore.marshalName = function(scope, name) {
 	    		trace.debug("marshalName - scope:",scope,", name :", name);
-	    		
+
 	    		if(name) {
 	    			return name;
 	    		}
-	    		
+
 	    		var name = self.preferenceName;
 	    		if (scope == 'PARTITION') {
 	    			if (self.isWorklistMode() && this.parentStore && !this.parentStore[name]) {
@@ -318,7 +370,7 @@
 	    };
 
 	    /**
-	     * 
+	     *
 	     */
 	    ActivityTableCompiler.prototype.getColumnNamesByMode = function getColumnNamesByMode(value) {
 
@@ -346,7 +398,7 @@
 	    };
 
 	    /**
-	     * 
+	     *
 	     */
 	    ActivityTableCompiler.prototype.isColumnVisible = function(columnName) {
 	    	var found = $filter('filter')(self.visibleColumns, columnName);
@@ -357,7 +409,7 @@
 	    };
 
 	    /**
-	     * 
+	     *
 	     */
 	    ActivityTableCompiler.prototype.changeFormStatus = function(rowId) {
 	    	var self = this;
@@ -388,14 +440,14 @@
 
 
 	    /**
-	     * 
+	     *
 	     */
 	    this.showResubmissionConfirmation = function(rowItem) {
 	    	var self = this;
 	    	trace.log('Worklist Item submitted for resubmission :',rowItem.activityOID);
-	    	
+
 	    	var title = sgI18nService.translate('views-common-messages.common-confirm', 'Confirm');
-	    	
+
 	    	var options = {
 		    			title : title,
 						dialogActionType : 'YES_NO'
@@ -409,7 +461,7 @@
 	    };
 
 	    /**
-	     * 
+	     *
 	     * @param rowItem
 	     */
 	    this.activateAndOpenView = function( rowItem ) {
@@ -417,7 +469,7 @@
 			function(result) {
 			    if (result.failure.length > 0) {
 				trace.error("Error in activating worklist item : ",rowItem.activityOID,".Error : ",  result.failure[0].message);
-				var options = { 
+				var options = {
 						title : sgI18nService.translate('views-common-messages.common-error', 'Error')
 						};
 				var message = result.failure[0].message;
@@ -432,15 +484,15 @@
 	    this.fetchDescriptorCols(attr);
 	    this.fetchAvailableStates();
 	    this.fetchAvailablePriorities();
-	    
-	    //Refreshing when Item is activated //remove on completion of server push 
+
+	    //Refreshing when Item is activated //remove on completion of server push
 	    this.registerRefreshHandler = $parse(attr.sdaRegisterRefreshRequired);
 	    ActivityTableCompiler.prototype.registerRefreshRequired = function(){
 	    	 this.registerRefreshHandler(scopeToUse);
 	    }
 
 	    /*
-	     * 
+	     *
 	     */
 	    self.openAbortPopover = function(event, rowItem) {
 	    	var selectedItems = [];
@@ -459,7 +511,7 @@
 	    };
 
 	    /*
-	     * 
+	     *
 	     */
 	    self.joinCompleted = function(result) {
 	    	self.refresh();
@@ -471,14 +523,14 @@
 	    };
 
 	    /*
-	     * 
+	     *
 	     */
 	    self.openJoinDialog = function() {
 	    	self.showJoinProcessDialog = true;
 	    };
 
 	    /*
-	     * 
+	     *
 	     */
 	    self.switchCompleted = function(result) {
 	    	self.refresh();
@@ -486,36 +538,36 @@
 	    		var name  =  sgI18nService.translate('views-common-messages.views-switchProcessDialog-worklist-title');
 	    		var params = {
 	    				pInstanceOids :  result.join(','),
-	    				name : name   
-	    		}  
+	    				name : name
+	    		}
 	    		sdViewUtilService.openView('worklistPanel', 'id='+new Date().getTime(), params, true);
 	    	}
 	    };
 
 	    /*
-	     * 
+	     *
 	     */
 	    self.openSwitchDialog = function() {
 	    	self.showSwitchProcessDialog = true;
 	    };
 
 	    /**
-	     * 
+	     *
 	     * @param rowItems
 	     */
 	    self.openDefaultDelegationDialog = function(rowItems) {
 	    	var self = this;
-	    	
+
 	    	var options = {
     			title : gI18nService.translate('views-common-messages.common-confirm', 'Confirm'),
 				dialogActionType : 'YES_NO'
 			};
-		
+
 	    	var defer = sdDialogService.confirm
 						(scope, sgI18nService.translate(
-				    			'views-common-messages.views-strandedActivities-confirmDefaultDelegate'), 
+				    			'views-common-messages.views-strandedActivities-confirmDefaultDelegate'),
 						options);
-	    	
+
 	    	defer.then(function() {
 	    		self.performDefaultDelegate(scope, sdActivityInstanceService, sdDialogService, sgI18nService,
 						rowItems);
@@ -524,7 +576,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.initializeWorklistMode = function(attr, scope) {
 		this.priorityEditable = false;
@@ -536,9 +588,9 @@
 				dir : 'desc'
 		};
 	};
-	
+
 	/**
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.reactivateItem = function(rowItem, scope, methodScope) {
 	    var interpolate = $filter('interpolate');
@@ -546,7 +598,7 @@
 		    function(result) {
 			if (result.failure.length > 0) {
 			    trace.error("Error in reactivating worklist item : ",rowItem.activityOID,".Error : ", result.failure[0].message);
-			    var options = { 
+			    var options = {
 			    		title : sgI18nService.translate('views-common-messages.common-error', 'Error')
 			    		};
 			    var message = interpolate(sgI18nService.translate(
@@ -559,9 +611,9 @@
 			}
 		    });
 	};
-	
+
 	/**
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.initializeActivityInstanceMode = function(attr, scope) {
 		this.priorityEditable = true;
@@ -595,7 +647,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.customizeWithAttributeValues = function(attr, scope, scopeToUse) {
 		// Process Title
@@ -620,9 +672,9 @@
 				this.preferenceName = sdLoggedInUserService.getUserInfo().id;
 				this.preferenceId = 'worklist-participant-columns';
 			}
-			if(this.query.name) {
-				this.exportFileName = this.exportFileName + " (" + this.query.name +")";
-			}
+		if(this.query.name) {
+			this.exportFileName = this.exportFileName + " (" + this.query.name +")";
+		}
 		}
 
 		if (attr.sdaPreferenceModule) {
@@ -634,6 +686,7 @@
 		}
 
 		if (attr.sdaPreferenceName) {
+
 			this.preferenceName = attr.sdaPreferenceName;
 		}
 
@@ -650,10 +703,16 @@
 			var visibleColumnGetter = $parse(attr.sdaVisibleColumns);
 			this.visibleColumns = visibleColumnGetter(scopeToUse);
 		}
+
+		this.toolBarConfig = {};
+		if (attr.sdaToolbar) {
+			var toolBarConfigGetter =  $parse(attr.sdaToolbar);
+			this.toolBarConfig = toolBarConfigGetter(scopeToUse);
+		}
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.refresh = function() {
 	    this.dataTable.refresh(true);
@@ -665,17 +724,17 @@
 		if(!sdUtilService.isEmpty(this.notification.result)){
 			this.dataTable.refresh(true);
 		}
-		
+
 	}
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.cleanLocals = function() {
 	    this.dirtyDataForms = [];
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.fetchPage = function(options) {
 		var self = this;
@@ -685,15 +744,15 @@
 		var query = angular.extend({}, this.query);
 		options.descriptorColumns = self.descriptorCols;
 		query.options = options;
-		
+
 		var showResubmitLink = false;
 		if(query.id == 'allResubmissionInstances'){
 			showResubmitLink  = true;
 		}
 		options.extraColumns = self.extraColumns;
-			
+
 		if (angular.isDefined(this.sdDataCtrl)) { //If sdData is provided
-			
+
 			var dataResult = self.sdDataCtrl.retrieveData(query);
 			dataResult.then(function(data) {
 				self.activities.list = data.list;
@@ -739,7 +798,7 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.fetchDescriptorCols = function(attr) {
 		var self = this;
@@ -768,7 +827,7 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.fetchAllProcesses = function() {
 		var self = this;
@@ -787,7 +846,7 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.fetchAllAvailableCriticalities = function() {
 		var self = this;
@@ -806,7 +865,7 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.fetchAvailableStates = function() {
 		var self = this;
@@ -816,7 +875,7 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.fetchAvailablePriorities = function() {
 		var self = this;
@@ -826,10 +885,10 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.activateItem = function(rowItem) {
-		
+
 		if(rowItem.showResubmitLink){
 			trace.debug("Openinig resubmission confirmation for ",rowItem.activityOID);
 			this.showResubmissionConfirmation(rowItem);
@@ -839,17 +898,17 @@
 		}
 		this.registerRefreshRequired();
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.openNotes = function(rowItem) {
 	   //sdCommonViewUtilService.openNotesView(rowItem.processInstance.oid, true);
 	   sdCommonViewUtilService.openNotesViewHTML5(rowItem.processInstance.oid, rowItem.processInstance.processName, true); // do not remove this line
 	};
-	
+
 	/**
-	 * 
+	 *
 	 * @param rowItem
 	 */
 	ActivityTableCompiler.prototype.openRelocationDialog = function(rowItem) {
@@ -870,11 +929,11 @@
 				rowItem.showNoRelocationTargetsDialog = true;
 			}
 		});
-		
+
 	};
-	
+
 	/**
-	 * 
+	 *
 	 * @param rowItem
 	 */
 	ActivityTableCompiler.prototype.relocateActivity = function(rowItem) {
@@ -883,7 +942,7 @@
 			self.refresh();
 		}, function(errorMessage) {
 			trace.error("Error in relocating worklist item : " , rowItem.activityOID , ".Error : " , errorMessage);
-			var options = { 
+			var options = {
 					title : sgI18nService.translate('views-common-messages.common-error', 'Error')
 					};
 			var message = errorMessage ? sgI18nService.translate(errorMessage) : sgI18nService.translate('processportal.toolbars-workflowActions-relocation-dialog-notAuthorized');
@@ -891,9 +950,9 @@
 		});
 		rowItem.showRelocationDialog = false;
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.openProcessDocumentsPopover = function(rowItem, $event) {
 	  var self = this;
@@ -928,23 +987,23 @@
 	    self.documentPopoverHandle.show($event, 151);
 	  });
 	}
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.openDocumentsView = function(docId) {
 	   sdCommonViewUtilService.openDocumentView(docId);
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.openCorrespondenceView = function(folder) {
     sdCommonViewUtilService.openCorrespondenceView(folder);
   };
-	
+
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.openAllProcessDocumentViews = function(rowItem) {
 		var self = this;
@@ -968,7 +1027,7 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.openProcessDetails = function(rowItem) {
 	    if (this.isWorklistMode()) {
@@ -982,7 +1041,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.containsAllTrivialManualActivities = function() {
 		var self = this;
@@ -1010,7 +1069,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.isSelectionHomogenous = function(selectedRows) {
 		var firstItem = selectedRows[0];
@@ -1032,7 +1091,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.isSelectionDirty = function(activities) {
 		var self = this;
@@ -1052,7 +1111,7 @@
 	}
 
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.completeAll = function(res) {
 		var self = this;
@@ -1162,7 +1221,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 * @param rowItem
 	 */
 	ActivityTableCompiler.prototype.openCompleteDialog = function(rowItem) {
@@ -1207,7 +1266,7 @@
 					.copy(firstItem.dataMappings);
 					self.completeDialog.outData = angular
 					.copy(firstItem.inOutData);
-					
+
 					self.completeDialog.description = firstItem.activity.description;
 
 					self.completeAllDialog.confirmLabel = sgI18nService.translate(
@@ -1224,7 +1283,7 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.openDelegateDialog = function(rowItem) {
 		this.showDelegateDialog = true;
@@ -1240,7 +1299,7 @@
 
 
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.openAbortDialog = function(value) {
 		var self = this;
@@ -1263,7 +1322,7 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.getDescriptorExportText = function(descriptors) {
 		var descriptorsToExport = [];
@@ -1276,7 +1335,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.getDescriptorValueForExport = function(descriptorData) {
 		var exportValue;
@@ -1297,7 +1356,7 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.storePriorities = function(data) {
 		var self = this;
@@ -1311,7 +1370,7 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.isPriorityChanged = function() {
 		for (name in this.changedPriorities) {
@@ -1321,7 +1380,7 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.isPriorityChangedForRow = function(id) {
 		for (name in this.changedPriorities) {
@@ -1333,7 +1392,7 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.registerNewPriority = function(activityOID, value) {
 		var self = this;
@@ -1346,7 +1405,7 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.savePriorityChanges = function() {
 		var self = this;
@@ -1380,14 +1439,14 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.isWorklistMode = function() {
 	    return this.mode === DEFAULT_VALUES.WORKLIST.NAME;
 	};
-	
+
 	/**
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.showResubmissionTime = function() {
 	    if(this.extraColumns && $.inArray('resubmissionTime', this.extraColumns) > -1) {
@@ -1397,14 +1456,14 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.isActivityTableMode = function() {
 	    return this.mode === DEFAULT_VALUES.ACITIVITY_INSTANCE_VIEW.NAME;
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.showError = function(e) {
 		trace.error('Error on activity table:', e);
@@ -1421,7 +1480,7 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	ActivityTableCompiler.prototype.performDefaultDelegate = function(scope, sdActivityInstanceService,
 			sdDialogService, sgI18nService, rowItems) {
@@ -1435,7 +1494,7 @@
 		});
 
 		if (containsCaseInstance) {
-			var options = { 
+			var options = {
 					title : sgI18nService.translate('views-common-messages.common-error', 'Error')
 					};
 			var message = sgI18nService.translate(
@@ -1454,7 +1513,7 @@
 		});
 		sdActivityInstanceService.performDefaultDelegate(data).then(function(result) {
 			if (result.failure.length > 0) {
-				var options = { 
+				var options = {
 						title : sgI18nService.translate('views-common-messages.common-error', 'Error')
 						};
 				sdDialogService.error(scope, result.failure[0].message, options)
@@ -1469,7 +1528,7 @@
     }
 
     /**
-     * 
+     *
      */
     function replaceColumnNames(originalColumns, columnNameMap) {
     	var newColumns = [];

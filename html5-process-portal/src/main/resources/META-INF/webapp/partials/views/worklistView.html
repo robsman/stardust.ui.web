@@ -1,11 +1,12 @@
 <div class="view-panel" ng-controller="sdWorklistViewCtrl as worklistViewCtrl" sg-stretch-to-bottom>
   <div class="ng-hide" ng-show="true">
-	<!-- View Toolbar -->
-	<div sd-include="'plugins/html5-process-portal/partials/views/worklistViewToolbar.html'"></div>
-	
-	<!-- View Content -->
-	<div class="view-panel-content">
-		<div sd-activity-table="worklistViewCtrl.dataTable" sda-query="panel.params.custom" sda-register-refresh-required="worklistViewCtrl.registerRefreshRequired()"/>
-	</div>
- </div>
+  <!-- View Toolbar -->
+    <div sd-include="'plugins/html5-process-portal/partials/views/worklistViewToolbar.html'"></div>
+    <!-- View Content -->
+      <div class="view-panel-content">
+        <div sd-activity-table="worklistViewCtrl.dataTable" sda-query="panel.params.custom"
+         sda-register-refresh-required="worklistViewCtrl.registerRefreshRequired()"/>
+        </div>
+      </div>
+  </div>
 </div>

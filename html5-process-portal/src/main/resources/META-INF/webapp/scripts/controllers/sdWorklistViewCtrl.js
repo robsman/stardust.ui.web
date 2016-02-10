@@ -15,29 +15,35 @@
 (function() {
 	'use strict';
 
-	angular.module('workflow-ui').controller('sdWorklistViewCtrl', 
-			['$scope', 'sdUtilService', 'sdViewUtilService', '$interval', 'sdWorklistViewConfigService', WorklistViewCtrl]);
+	angular.module('workflow-ui').controller('sdWorklistViewCtrl',
+			['$scope', '$parse', 'sdUtilService', 'sdViewUtilService', '$interval',
+			'sdWorklistViewConfigService', 'sdLoggerService', WorklistViewCtrl]);
 
 	var  _$interval = null ;
 	var _sdWorklistViewConfigService = null;
-	
+	var _parse = null;
+	var trace = null;
 	/*
-	 * 
+	 *
 	 */
-	function WorklistViewCtrl($scope, sdUtilService, sdViewUtilService, $interval, sdWorklistViewConfigService) {
+	function WorklistViewCtrl($scope, $parse, sdUtilService,
+											sdViewUtilService, $interval, sdWorklistViewConfigService,
+											sdLoggerService) {
 		// Register for View Events
 		sdViewUtilService.registerForViewEvents($scope, this.handleViewEvents, this);
 
 		// Preserve to use later in life-cycle
 		_$interval = $interval;
 		_sdWorklistViewConfigService = sdWorklistViewConfigService;
+		_parse = $parse;
+		trace  = sdLoggerService.getLogger('workflow-ui.sdWorklistViewCtrl')
 
 		this.initialize();
-		
+
 		this.registerForAutoRefresh();
-		
+
 		this.refreshRequired = false;
-		
+
 		/*
 		 * This needs to be defined here as it requires access to $scope
 		 */
@@ -45,16 +51,16 @@
 			sdUtilService.safeApply($scope);
 		};
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	WorklistViewCtrl.prototype.registerRefreshRequired = function() {
 		this.refreshRequired = true;
 	};
-	
+
 	/*
-	 * 
+	 *
 	 */
 	WorklistViewCtrl.prototype.registerForAutoRefresh = function() {
 	    var self = this;
@@ -70,7 +76,7 @@
 
 
 	/*
-	 * 
+	 *
 	 */
 	WorklistViewCtrl.prototype.handleViewEvents = function(event) {
 		if (event.type == "ACTIVATED") {
@@ -87,14 +93,39 @@
 	};
 
 	/*
-	 * 
+	 *
 	 */
 	WorklistViewCtrl.prototype.initialize = function() {
 		this.dataTable = null; // This will be set to underline data table instance automatically
 	};
 
 	/*
-	 * 
+	 *
+	 */
+	WorklistViewCtrl.prototype.generateQuery = function($scope) {
+
+		var queryGetter = _parse("panel.params.custom");
+		var params = queryGetter($scope);
+
+		var query = {};
+
+		if(params.participantQId) {
+			query.participantQId = params.participantQId;
+		} else if (params.processQId) {
+				query.processQId = params.processQId;
+		} else if(params.type) {
+				query.type = params.type;
+
+				if(params.userId) {
+						query.userId =	params.userId
+					}
+		}
+
+		return query;
+	};
+
+	/*
+	 *
 	 */
 	WorklistViewCtrl.prototype.refresh = function() {
 		this.dataTable.refresh(true);
