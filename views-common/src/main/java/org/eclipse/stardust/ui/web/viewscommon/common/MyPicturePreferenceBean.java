@@ -25,7 +25,6 @@ import org.eclipse.stardust.ui.web.viewscommon.common.configuration.UserPreferen
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 
-
 import com.icesoft.faces.component.inputfile.FileInfo;
 import com.icesoft.faces.component.inputfile.InputFile;
 
@@ -39,8 +38,6 @@ public class MyPicturePreferenceBean
    private final Logger logger = LogManager.getLogger(MyPicturePreferenceBean.class);
    private String savedHTTPImageURL = MyPicturePreferenceUtils.DEFAULT_HTTP_IMAGE_URL;
    private String currentHTTPImageURL = MyPicturePreferenceUtils.DEFAULT_HTTP_IMAGE_URL;
-   private String savedMonsterImageURL;
-   private String currentMonsterImageURL;
    private String savedPicturePreference;
    private String currentPicturePreference;
    private byte[] savedImage;
@@ -67,7 +64,6 @@ public class MyPicturePreferenceBean
       validationMsg = null;
       currentPicturePreference = savedPicturePreference;
       currentHTTPImageURL = savedHTTPImageURL;
-      currentMonsterImageURL = savedMonsterImageURL;
       currentImage = savedImage;
    }
 
@@ -119,27 +115,17 @@ public class MyPicturePreferenceBean
          MyPicturePreferenceUtils.saveImage(user, currentImage);
          savedImage = currentImage;
          savedHTTPImageURL = currentHTTPImageURL = MyPicturePreferenceUtils.DEFAULT_HTTP_IMAGE_URL;
-         savedMonsterImageURL = currentMonsterImageURL = null;
       }
       else if (MyPicturePreferenceUtils.F_MY_PICTURE_TYPE_HTTP_URL.equals(currentPicturePreference))
       {
          MyPicturePreferenceUtils.savePreference(UserPreferencesEntries.F_MY_PICTURE_HTTP_URL, currentHTTPImageURL);
          savedHTTPImageURL = currentHTTPImageURL;
-         savedMonsterImageURL = currentMonsterImageURL = null;
          savedImage = currentImage = null;
 
-      }
-      else if (MyPicturePreferenceUtils.F_MY_PICTURE_TYPE_MONSTER_ID.equals(currentPicturePreference))
-      {
-         MyPicturePreferenceUtils.savePreference(UserPreferencesEntries.F_MY_PICTURE_HTTP_URL, currentMonsterImageURL);
-         savedMonsterImageURL = currentMonsterImageURL;
-         savedHTTPImageURL = currentHTTPImageURL = MyPicturePreferenceUtils.DEFAULT_HTTP_IMAGE_URL;
-         savedImage = currentImage = null;
       }
       else
       {
          savedHTTPImageURL = currentHTTPImageURL = MyPicturePreferenceUtils.DEFAULT_HTTP_IMAGE_URL;
-         savedMonsterImageURL = currentMonsterImageURL = null;
          savedImage = currentImage = null;
       }
    }   
@@ -166,21 +152,12 @@ public class MyPicturePreferenceBean
    }
 
    /**
-    * Listens for selection change of radio buttons. In case of a change to 'Monster Id',
-    * sets the current image to the derived monster id URL.
     * 
     * @param actionEvent
     */
    public void selectionChangeListener(ValueChangeEvent actionEvent)
    {
       validationMsg = null;
-      if (MyPicturePreferenceUtils.F_MY_PICTURE_TYPE_MONSTER_ID.equals(actionEvent.getNewValue()))
-      {
-         if (currentMonsterImageURL == null)
-         {
-            currentMonsterImageURL = MyPicturePreferenceUtils.getMonsterIdURL(user);
-         }
-      }
    }
 
    /**
@@ -207,16 +184,6 @@ public class MyPicturePreferenceBean
    public boolean isNoPictureSelected()
    {
       return (currentPicturePreference == null || MyPicturePreferenceUtils.F_MY_PICTURE_TYPE_NO_PICTURE
-            .equals(currentPicturePreference));
-   }
-
-   /**
-    * @return
-    */
-   public boolean isMonsterIdSelected()
-   {
-
-      return (currentPicturePreference != null && MyPicturePreferenceUtils.F_MY_PICTURE_TYPE_MONSTER_ID
             .equals(currentPicturePreference));
    }
 
@@ -287,23 +254,7 @@ public class MyPicturePreferenceBean
    public String getValidationMsg() {
       return validationMsg;
    }
-   
-   /**
-    * @return
-    */
-   public String getCurrentMonsterImageURL()
-   {
-      return currentMonsterImageURL;
-   }
 
-   /**
-    * @param currentMonsterImageURL
-    */
-   public void setCurrentMonsterImageURL(String currentMonsterImageURL)
-   {
-      this.currentMonsterImageURL = currentMonsterImageURL;
-   }
-   
    /**
     * Initializes the 'My picture' tab view. Sets retrieves the picture preference, URL
     * and Image from JCR and sets the current values.
@@ -315,11 +266,6 @@ public class MyPicturePreferenceBean
       if (MyPicturePreferenceUtils.F_MY_PICTURE_TYPE_HTTP_URL.equals(currentPicturePreference))
       {
          currentHTTPImageURL = savedHTTPImageURL = MyPicturePreferenceUtils.getHTTPImageURL(savedPicturePreference);
-      }
-      else if (MyPicturePreferenceUtils.F_MY_PICTURE_TYPE_MONSTER_ID.equals(currentPicturePreference))
-      {
-         currentMonsterImageURL = savedMonsterImageURL = MyPicturePreferenceUtils
-               .getHTTPImageURL(savedPicturePreference);
       }
       else if (MyPicturePreferenceUtils.F_MY_PICTURE_TYPE_MY_COMPUTER.equals(currentPicturePreference))
       {
@@ -368,10 +314,8 @@ public class MyPicturePreferenceBean
       {
          MyPicturePreferenceUtils.deleteUsersProfileImage(user);
       }
-      else if ((MyPicturePreferenceUtils.F_MY_PICTURE_TYPE_HTTP_URL.equals(oldPreference) || MyPicturePreferenceUtils.F_MY_PICTURE_TYPE_MONSTER_ID
-            .equals(oldPreference))
-            && !(MyPicturePreferenceUtils.F_MY_PICTURE_TYPE_HTTP_URL.equals(currentPicturePreference) || MyPicturePreferenceUtils.F_MY_PICTURE_TYPE_MONSTER_ID
-                  .equals(currentPicturePreference)))
+      else if ((MyPicturePreferenceUtils.F_MY_PICTURE_TYPE_HTTP_URL.equals(oldPreference))
+            && !(MyPicturePreferenceUtils.F_MY_PICTURE_TYPE_HTTP_URL.equals(currentPicturePreference)))
       {
          MyPicturePreferenceUtils.resetPreference(UserPreferencesEntries.F_MY_PICTURE_HTTP_URL);
       }

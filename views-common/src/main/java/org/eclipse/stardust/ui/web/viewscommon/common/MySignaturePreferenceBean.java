@@ -135,8 +135,6 @@ public class MySignaturePreferenceBean
    }
 
    /**
-    * Listens for selection change of radio buttons. In case of a change to 'Monster Id',
-    * sets the current image to the derived monster id URL.
     * 
     * @param actionEvent
     */
