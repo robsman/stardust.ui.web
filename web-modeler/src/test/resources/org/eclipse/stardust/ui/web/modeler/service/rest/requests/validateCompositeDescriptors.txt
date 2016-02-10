@@ -1,0 +1,13 @@
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"26","changes":{"dataPathes":[{"id":"New_1","name":"New 1","direction":"IN","descriptor":false,"keyDescriptor":false}]}}]}
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"26","changes":{"dataPathes":[{"id":"DataPath_1","name":"DataPath_ 1","direction":"IN","descriptor":true,"keyDescriptor":false}]}}]}
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"26","changes":{"dataPathes":[{"id":"DataPath_1","name":"DataPath_ 1","direction":"IN","descriptor":true,"keyDescriptor":false,"type":"Link"}]}}]}
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"26","changes":{"dataPathes":[{"id":"DataPath_1","name":"DataPath_ 1","direction":"IN","descriptor":true,"keyDescriptor":false,"type":"Link","text":"This is a link."}]}}]}
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"26","changes":{"dataPathes":[{"id":"DataPath_1","name":"DataPath_ 1","direction":"IN","descriptor":true,"keyDescriptor":false,"type":"Link","text":"This is a link.","dataPath":"http://www.link.com"}]}}]}
+
+{"commandId":"modelElement.update","modelId":"ProviderModel","account":"motu","changeDescriptions":[{"oid":"26","changes":{"dataPathes":[{"id":"DataPath_1","name":"DataPath_ 1","direction":"IN","descriptor":true,"keyDescriptor":false,"type":"Link","text":"This is a link.","dataPath":"http://www.link.com"},{"id":"FirstOne","name":"First One","direction":"IN","descriptor":true,"keyDescriptor":false,"type":"Composite","dataPath":"%{SecondOne} %{ThirdOne}"},{"id":"SecondOne","name":"Second One","direction":"IN","descriptor":true,"keyDescriptor":false,"type":"Composite","dataPath":"%{ForthOne}"},{"id":"ThirdOne","name":"Third One","direction":"IN","descriptor":true,"keyDescriptor":false,"type":"Composite","dataPath":"\\%{Hello} Blah %{Hello}"},{"id":"ForthOne","name":"Forth One","direction":"IN","descriptor":true,"keyDescriptor":false,"type":"Composite","dataPath":"%{SecondOne}"}]}}]}
+
+
+
+
+
+

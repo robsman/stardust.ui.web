@@ -15,15 +15,8 @@ import org.eclipse.stardust.model.xpdl.carnot.*;
 import org.eclipse.stardust.model.xpdl.carnot.extensions.FormalParameterMappingsType;
 import org.eclipse.stardust.model.xpdl.carnot.util.AttributeUtil;
 import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
-import org.eclipse.stardust.model.xpdl.xpdl2.BasicTypeType;
+import org.eclipse.stardust.model.xpdl.xpdl2.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
-import org.eclipse.stardust.model.xpdl.xpdl2.DeclaredTypeType;
-import org.eclipse.stardust.model.xpdl.xpdl2.ExtendedAttributeType;
-import org.eclipse.stardust.model.xpdl.xpdl2.FormalParameterType;
-import org.eclipse.stardust.model.xpdl.xpdl2.FormalParametersType;
-import org.eclipse.stardust.model.xpdl.xpdl2.ModeType;
-import org.eclipse.stardust.model.xpdl.xpdl2.TypeDeclarationType;
-import org.eclipse.stardust.model.xpdl.xpdl2.TypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
 
 public class GenericModelingAssertions
@@ -425,6 +418,42 @@ public class GenericModelingAssertions
       assertThat(foundHandler.getType().getId(), is(type));
       assertThat(foundHandler.isLogHandler(), is(logHandler));
       return foundHandler;
+   }
+   
+   public static DataPathType assertDataPath(ProcessDefinitionType process, String dataPathID, String dataPathName, DataType dataType, boolean isDescriptor, boolean isKey, DirectionType direction, String expression) 
+   {      
+      DataPathType foundDataPath = null;
+      for (Iterator<DataPathType> i = process.getDataPath().iterator(); i.hasNext(); i
+            .hasNext())
+      {
+         DataPathType dataPath = i.next();
+         if (dataPath.getId().equals(dataPathID))
+         {
+            assertThat(dataPath.getDirection(), is(direction));
+            assertThat(dataPath.getName(), is(dataPathName));
+            assertThat(dataPath.isDescriptor(), is(isDescriptor));
+            assertThat(dataPath.isKey(), is(isKey));
+            if (dataType == null)
+            {
+               assertThat(dataPath.getData(), is(nullValue()));
+            }
+            else
+            {
+               assertThat(dataPath.getData(), is(dataType));
+            }
+            if (expression == null)
+            {
+               assertThat(dataPath.getDataPath(), is(nullValue()));
+            }
+            else
+            {
+               assertThat(dataPath.getDataPath(), is(expression));
+            }
+            foundDataPath = dataPath;
+         }
+      }
+      assertThat(foundDataPath, is(not(nullValue())));
+      return foundDataPath;
    }
 
    public static void assertReferencedRole(ModelType consumerModel, ModelType providerModel, String roleID, String roleName)
