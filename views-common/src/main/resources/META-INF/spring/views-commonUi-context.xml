@@ -111,8 +111,7 @@
 			</ippui:view>
 			
 			<ippui:view name="myReportsView"
-			include="/plugins/views-common/views/report/myReportsView.xhtml"
-			controller="myReportsViewBean" >			<ippui:preferences>				<ippui:preferencePage name="icon"					include="/does-not-exist/report-view.png" />			</ippui:preferences>			</ippui:view>
+						include="/plugins/html5-views-common/html5/partials/views/myReportsView.html">				<ippui:preferences>					<ippui:preferencePage name="icon"						include="/does-not-exist/report-view.png" />				</ippui:preferences>			</ippui:view>
 				
 			<ippui:view name="deputyManagementView"			include="/plugins/views-common/deputy/deputyManagementView.xhtml"			controller="deputyManagementBean">	   		<ippui:preferences>				<ippui:preferencePage name="configuration"					include="/plugins/views-common/deputy/deputyManagementView.xhtml" />				<ippui:preferencePage name="icon"					include="/does-not-exist/deputy-management.png" />			</ippui:preferences>		</ippui:view>
 		<ippui:view name="correspondencePanel"			include="/plugins/html5-views-common/html5/partials/views/correspondenceView.html">			<ippui:preferences>				<ippui:preferencePage name="icon"					include="/does-not-exist/correspondence-email.png" />				<ippui:preferencePage name="configuration"					include="/plugins/views-common/user/correspondencePanel.xhtml" />			</ippui:preferences>		</ippui:view>					

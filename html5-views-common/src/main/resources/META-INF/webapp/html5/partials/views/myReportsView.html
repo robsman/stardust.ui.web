@@ -1,0 +1,52 @@
+
+<div ng-controller="sdMyReportsViewCtrl as sdMyReportsViewCtrl" 
+     sg-stretch-to-bottom
+     class="view-panel">
+
+	
+	<ul class="sd-tree sdMyReportsViewCtrl">
+	
+		<li>
+			<div class="title-section">
+				<div class="expand-section">
+					<i ng-click="expandR1=!expandR1" 
+					   ng-class="{'pi-arrow-r' : !expandR1, 'pi-arrow-d' : expandR1}"
+					   class="pi">
+					</i>
+					<a href class="tree-node">
+						<i class="js-icon pi pi-folder"></i>
+						<span>Reports</span>
+					</a>
+					<ul ng-show="expandR1">
+						<li>
+							<div class="title-section">
+								<div class="expand-section">
+									<i ng-click="expandR2=!expandR2" 
+									   ng-class="{'pi-arrow-r' : !expandR2, 'pi-arrow-d' : expandR2}"
+									   class="pi">
+									</i>
+									<a href class="tree-node">
+										<i class="js-icon pi pi-folder"></i>
+										<span>Report Definitions</span>
+									</a>
+									<ul ng-show="expandR2">
+										<li>
+											<div sd-document-repository 
+												 style="position:relative;top:-4px;left:-8px;"
+												 sda-menu-hook="sdMyReportsViewCtrl.menuHook(menuItems,treeNode)"
+											     sda-root-path="{{sdMyReportsViewCtrl.paths}}">
+											</div>
+										</li>
+									</ul>
+								</div>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</li>
+		
+	
+	
+	</ul>
+</div>

@@ -25,7 +25,7 @@
     this.$q = $q;
     this.sdMimeTypeService = sdMimeTypeService;
     this.i18n = sdI18nService.getInstance('views-common-messages');
-
+    this.showSearchFilter = $scope.showSearchFilter;
     this.textMap = this.getTextMap(this.i18n);
 
     this.selectedRepo = {};
@@ -788,7 +788,8 @@
 
       return {
         "scope" : {
-          "menuHook" : "&sdaMenuHook"
+          "menuHook" : "&sdaMenuHook",
+          "showSearchFilter" : "=sdaSearchable"
         },
         "controller" : docRepoController,
         "controllerAs" : 'ctrl',
