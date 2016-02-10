@@ -1302,7 +1302,7 @@
 		 * 
 		 */
 		function getSavedTableState () {
-			if(tableStateValue === false) {
+			if(tableStateValue === false && enableStateSave) {
 				tableStateValue = undefined;
 				var pScope = 'USER' ;	
 				var preferenceDelegate = getPreferenceDelegate(pScope);				
