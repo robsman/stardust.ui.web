@@ -27,4 +27,5 @@ public interface UserPreferencesEntries
    public static final String F_PAGINATOR_PAGE_SIZE = "prefs.pageSize";
    public static final String F_PAGINATOR_MAX_PAGES = "prefs.paginatorMaxPages";
    public static final String F_PAGINATOR_FAST_STEP = "prefs.paginatorFastStep";
+   public static final String F_ENABLE_USER_AVATARS = "prefs.enableUserAvatars";
 }

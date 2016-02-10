@@ -71,6 +71,8 @@ public class PortalConfigurationPanel extends UIComponentBean
    private List<SelectItem> availablePerspectives;
    private String selectedPerspective;
 
+   private boolean enableUserAvatars = false;
+   
    /**
     * 
     */
@@ -117,6 +119,9 @@ public class PortalConfigurationPanel extends UIComponentBean
       // PERSPECTIVES
       selectedPerspective = userPrefsHelper.getSingleString(V_PORTAL_CONFIG, F_DEFAULT_PERSPECTIVE);
 
+      // User Avatars
+      enableUserAvatars = userPrefsHelper.getBoolean(V_PORTAL_CONFIG, F_ENABLE_USER_AVATARS, false);
+      
       PortalApplication portalApp = PortalApplication.getInstance();
       boolean perspectiveAvailable = false;
       IPerspectiveDefinition xmlConfigDefaultPerspetive = null;
@@ -184,6 +189,7 @@ public class PortalConfigurationPanel extends UIComponentBean
       userPrefsHelper.setString(V_PORTAL_CONFIG, F_PAGINATOR_PAGE_SIZE, String.valueOf(pageSize));
       userPrefsHelper.setString(V_PORTAL_CONFIG, F_PAGINATOR_MAX_PAGES, String.valueOf(paginatorMaxPages));
       userPrefsHelper.setString(V_PORTAL_CONFIG, F_PAGINATOR_FAST_STEP, String.valueOf(paginatorFastStep));
+      userPrefsHelper.setString(V_PORTAL_CONFIG, F_ENABLE_USER_AVATARS, String.valueOf(enableUserAvatars));
       
       PortalApplication.getInstance().refreshSkin();
       
@@ -393,7 +399,14 @@ public class PortalConfigurationPanel extends UIComponentBean
    {
       return portalConfirmationDialog;
    }
-   
-   
 
+   public boolean isEnableUserAvatars()
+   {
+      return enableUserAvatars;
+   }
+
+   public void setEnableUserAvatars(boolean enableUserAvatars)
+   {
+      this.enableUserAvatars = enableUserAvatars;
+   }
 }

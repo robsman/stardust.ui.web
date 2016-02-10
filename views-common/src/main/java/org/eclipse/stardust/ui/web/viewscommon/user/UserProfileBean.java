@@ -63,6 +63,7 @@ import org.eclipse.stardust.ui.web.viewscommon.login.util.PasswordUtils;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ExceptionHandler;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
+import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 
@@ -113,7 +114,8 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
    private int focusIndex = 0;
    private String emailValidationMsg;
    private ConfirmationDialog userProfileConfirmationDlg;
-
+   private boolean userAvatarEnabled = false;
+   
    /**
     * 
     */
@@ -376,7 +378,11 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
          
          if (isModifyProfileConfiguration())
          {
-            myPicturePreference = new MyPicturePreferenceBean(user);
+            userAvatarEnabled = MyPicturePreferenceUtils.isUserAvatarEnabled();
+            if (userAvatarEnabled)
+            {
+               myPicturePreference = new MyPicturePreferenceBean(user);
+            }
             mySignaturePreference = new MySignaturePreferenceBean(user);
          }
       }
@@ -962,6 +968,11 @@ public class UserProfileBean extends PopupUIComponentBean implements Confirmatio
    public MySignaturePreferenceBean getMySignaturePreference()
    {
       return mySignaturePreference;
+   }
+   
+   public boolean isUserAvatarEnabled()
+   {
+      return userAvatarEnabled;
    }
    
 }

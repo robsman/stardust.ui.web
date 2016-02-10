@@ -63,6 +63,11 @@ public class MyPicturePreferenceUtils
     */
    public static String getLoggedInUsersImagePreference()
    {
+      if (!isUserAvatarEnabled())
+      {
+         return F_MY_PICTURE_TYPE_NO_PICTURE;
+      }
+
       UserPreferencesHelper userPrefsHelper = UserPreferencesHelper.getInstance(UserPreferencesEntries.M_VIEWS_COMMON,
             PreferenceScope.USER);
       String picturePreference = userPrefsHelper.getSingleString(UserPreferencesEntries.V_MY_PICTURE,
@@ -85,6 +90,11 @@ public class MyPicturePreferenceUtils
     */
    public static String getLoggedInUsersImageURI()
    {
+      if (!isUserAvatarEnabled())
+      {
+         return DEFAULT_USER_IMAGE;
+      }
+
       String imageURI = DEFAULT_USER_IMAGE;
       SessionContext context = SessionContext.findSessionContext();
       User user = (context != null) ? context.getUser() : null;
@@ -128,6 +138,11 @@ public class MyPicturePreferenceUtils
     */
    public static String getUsersImageURI(final User user)
    {
+      if (!isUserAvatarEnabled())
+      {
+         return DEFAULT_USER_IMAGE;
+      }
+      
       String imageURI = DEFAULT_USER_IMAGE;
 
       if (user != null)
@@ -339,6 +354,20 @@ public class MyPicturePreferenceUtils
       return true;
    }
 
+   /**
+    * @return
+    */
+   public static boolean isUserAvatarEnabled()
+   {
+      UserPreferencesHelper userPrefsHelper = UserPreferencesHelper
+            .getInstance(org.eclipse.stardust.ui.web.common.configuration.UserPreferencesEntries.M_PORTAL,
+                  PreferenceScope.PARTITION);
+      boolean enableUserAvatars = userPrefsHelper.getBoolean(
+            org.eclipse.stardust.ui.web.common.configuration.UserPreferencesEntries.V_PORTAL_CONFIG,
+            org.eclipse.stardust.ui.web.common.configuration.UserPreferencesEntries.F_ENABLE_USER_AVATARS, false);
+      return enableUserAvatars;
+   }
+   
    /**
     * @return an implementation of DocumentManagementService
     */
