@@ -33,6 +33,7 @@ import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.ui.event.ActivityEvent;
 import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.rest.component.util.WorklistUtils;
 import org.eclipse.stardust.ui.web.rest.dto.ProcessDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.dto.StartableProcessDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.ParticipantDTO;
@@ -56,6 +57,9 @@ public class StartableProcessService
 
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
+   
+   @Resource
+   private WorklistUtils worklistUtils;
 
    /**
     * This method will return the list of all startable processes.
@@ -195,21 +199,10 @@ public class StartableProcessService
    {
       if (null != activity)
       {
-         return getAssemblyLineParticipants().contains(activity.getDefaultPerformer().getId());
+         return worklistUtils.getAssemblyLineParticipants().contains(activity.getDefaultPerformer().getId());
       }
 
       return false;
-   }
-
-   /**
-    * 
-    * @return
-    */
-   private Set<String> getAssemblyLineParticipants()
-   {
-      Set<String> assemblyLineParticipants = ParticipantUtils.categorizeParticipants(
-            SessionContext.findSessionContext().getUser()).getAssemblyLineParticipants();
-      return assemblyLineParticipants;
    }
 
    /**

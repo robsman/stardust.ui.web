@@ -1,0 +1,30 @@
+<sd-collapsible-panel sda-aid="auto-PP-LP-MyAssign-ColPnl"
+	sda-title="{{i18n('processportal.launchPanels-worklists-title')}}">
+<div ng-controller="sdWorkflowWorklistPanelCtrl as ctrl">
+	<a href="#"
+		ng-click="ctrl.refreshMyAssignmentPanel(ctrl.showEmptyWorklists)"
+		style="float: right;" aid="auto-PP-LP-MyAssign-ColPnl-Refresh"> <i
+		class="pi pi-refresh pi-lg"></i>
+	</a>
+	<div>
+		<input type="checkbox" ng-model="ctrl.showEmptyWorklists"
+			ng-change="ctrl.getUserAssignments(ctrl.showEmptyWorklists)"
+			class="sel-chkbox"
+			aid="auto-PP-LP-MyAssign-ShowHideChkbox" /> 
+		<label class="label-item">{{i18n('processportal.launchPanels-worklists-showEmptyWorklist')}}</label>
+	</div>
+	<div>
+		<ul sd-tree sda-event-callback="ctrl.eventCallback(data,e)" sda-icon-callback="ctrl.iconCallback(item)">
+			<li sd-tree-node sda-label="ctrl.getLabel(item.name, item.activityCount)" sda-node-id="item.uuid"
+				sda-is-leaf="!item.children || item.children.length == 0"
+				ng-repeat="item in ctrl.workflowMyAssignments">
+				<ul>
+					<li sd-tree-node ng-repeat="item in item.children"
+						sda-label="ctrl.getLabel(item.name, item.activityCount)" sda-is-leaf="!item.children || item.children.length == 0"
+						sda-node-id="item.uuid"></li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+</div>
+</sd-collapsible-panel>

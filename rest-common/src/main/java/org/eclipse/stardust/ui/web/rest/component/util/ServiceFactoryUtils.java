@@ -18,6 +18,8 @@ import org.springframework.stereotype.Component;
 import org.eclipse.stardust.engine.api.dto.QualityAssuranceAdminServiceFacade;
 import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.AbstractProcessExecutionPortal;
+import org.eclipse.stardust.ui.web.viewscommon.common.constant.ProcessPortalConstants;
 
 /**
  * @author Anoop.Nair
@@ -84,6 +86,21 @@ public class ServiceFactoryUtils
    {
       ServiceFactory serviceFactory = getServiceFactory();
       return (serviceFactory != null) ? serviceFactory.getUserService() : null;
+   }
+   
+   
+   /**
+    * @return
+    */
+   public static AbstractProcessExecutionPortal getProcessExecutionPortal()
+   {
+      SessionContext session = SessionContext.findSessionContext();
+      if (null != session)
+      {
+         return (AbstractProcessExecutionPortal)session.lookup(ProcessPortalConstants.WORKFLOW_FACADE);
+      }
+      
+      return null;
    }
 
    /**

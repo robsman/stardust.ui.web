@@ -17,7 +17,7 @@
 	angular.module("workflow-ui").controller(
 			'sdStartableProcessPanelCtrl',
 			[ '$scope', 'sdStartableProcessService', 'sdLoggerService', 'sdViewUtilService', 'sdUtilService',
-					 'sdI18nService', 'sdDialogService', 'sdCommonViewUtilService', StartableProcessPanelCtrl ]);
+					'sdI18nService', 'sdDialogService', 'sdCommonViewUtilService', StartableProcessPanelCtrl ]);
 	var _scope;
 	var _sdStartableProcessService;
 	var _sdViewUtilService;
@@ -26,7 +26,7 @@
 	var _sdI18nService;
 	var _sdDialogService;
 	var _sdCommonViewUtilService;
-	
+
 	/**
 	 * 
 	 */
@@ -99,7 +99,7 @@
 					});
 		}
 	};
-    /**
+	/**
 	 * 
 	 * @param departmentOid
 	 */
@@ -124,11 +124,11 @@
 	StartableProcessPanelCtrl.prototype.refreshMyStartableProcessPanel = function() {
 		this.getStartableProcesses();
 	};
-    /**
-     * 
-     * @param data
-     * @param e
-     */
+	/**
+	 * 
+	 * @param data
+	 * @param e
+	 */
 	StartableProcessPanelCtrl.prototype.eventCallback = function(data, e) {
 		var self = this;
 		if (data.treeEvent === "node-expand") {
@@ -136,8 +136,10 @@
 			data.valueItem.isLoaded = true;
 			data.deferred.resolve();
 		} else if (data.treeEvent === "node-click" && data.valueItem.children == undefined) {
-            self.departmentDialog.close();
+			self.departmentDialog.close();
 			self.startProcessOnSelectDepartment(data.valueItem.OID);
+		} else if (data.treeEvent === "node-collapse") {
+			data.deferred.resolve();
 		}
 	};
 })();

@@ -115,7 +115,7 @@
 	WorkflowOverviewPanelCtrl.prototype.refreshOverviewPanel = function(){
 		this.getOverviewCounts();
 	};
-
+	
 })();
 
 	

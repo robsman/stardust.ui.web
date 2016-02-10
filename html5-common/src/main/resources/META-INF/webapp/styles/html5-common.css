@@ -543,3 +543,9 @@ button.close {
 	vertical-align: text-top; 
 	color: #708090;"
 }
+
+.sel-chkbox{
+   margin: 0 5px 2px 2px !important;
+   padding: 2px !important;
+   vertical-align: middle;
+}

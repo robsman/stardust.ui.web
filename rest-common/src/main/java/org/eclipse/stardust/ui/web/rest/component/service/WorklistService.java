@@ -16,6 +16,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.ui.web.rest.common.Options;
@@ -23,8 +24,12 @@ import org.eclipse.stardust.ui.web.rest.component.util.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.WorklistUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils.MODE;
+import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.TrivialManualActivityDTO;
+import org.eclipse.stardust.ui.web.rest.dto.response.ParticipantDTO;
+import org.eclipse.stardust.ui.web.rest.dto.response.WorklistParticipantDTO;
+import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.springframework.stereotype.Component;
 
 /**
@@ -206,6 +211,21 @@ public class WorklistService
          resultDTO = ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);
       }
       return resultDTO;
+   }
+   
+   public QueryResultDTO getWorklistAssignemnt(Boolean showEmptyWorklist) throws PortalException
+   {
+      List<WorklistParticipantDTO> listOfAssignments = worklistUtils.getWorklistAssignemnt(showEmptyWorklist);
+      QueryResultDTO result = new QueryResultDTO();
+      result.list = listOfAssignments;
+      result.totalCount = listOfAssignments.size();
+      return result;
+   }
+   
+   public ActivityInstanceDTO getNextAssemblyLineActivity() throws PortalException
+   {
+      return worklistUtils.getNextAssemblyLineActivity();
+      
    }
 
 }

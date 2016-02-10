@@ -39,8 +39,11 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 				
 <!-- 		<ippui:launchPanel name="processes"
 			include="/plugins/processportal/launchpad/processes.xhtml" /> -->
+<!-- 		<ippui:launchPanel name="worklists"
+			include="/plugins/processportal/launchpad/worklists.xhtml" /> -->
+			
 		<ippui:launchPanel name="worklists"
-			include="/plugins/processportal/launchpad/worklists.xhtml" />
+			include="/plugins/html5-process-portal/partials/launchpanels/worklists.html" />
 
 		<ippui:launchPanel name="myProcesses"
 			include="/plugins/processportal/launchpad/myProcesses.xhtml" />

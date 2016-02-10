@@ -10,16 +10,22 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.component.util;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.common.config.Parameters;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
+import org.eclipse.stardust.common.error.PublicException;
+import org.eclipse.stardust.engine.api.model.OrganizationInfo;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
 import org.eclipse.stardust.engine.api.query.ActivityFilter;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
@@ -35,20 +41,38 @@ import org.eclipse.stardust.engine.api.query.ProcessDefinitionFilter;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.Worklist;
 import org.eclipse.stardust.engine.api.query.WorklistQuery;
+import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserInfo;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
+import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
 import org.eclipse.stardust.ui.web.rest.common.Options;
+import org.eclipse.stardust.ui.web.rest.common.Resources;
+import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.component.service.UserService;
+import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserDTO;
+import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.dto.response.WorklistParticipantDTO;
+import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
+import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
+import org.eclipse.stardust.ui.web.viewscommon.common.ParticipantLabel;
+import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityConfigurationUtil;
+import org.eclipse.stardust.ui.web.viewscommon.common.provider.DefaultAssemblyLineActivityProvider;
+import org.eclipse.stardust.ui.web.viewscommon.common.provider.IAssemblyLineActivityProvider;
+import org.eclipse.stardust.ui.web.viewscommon.common.spi.SpiConstants;
+import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ProcessWorklistCacheManager;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ResubmissionUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ResubmissionUtils.ModelResubmissionActivity;
 import org.eclipse.stardust.ui.web.viewscommon.utils.SpecialWorklistCacheManager;
+import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.stereotype.Component;
 
 /**
@@ -68,15 +92,21 @@ public class WorklistUtils
    @Resource
    private UserService userService;
 
+   @Resource
+   private RestCommonClientMessages restCommonClientMessages;
+
+   public static Logger trace = LogManager.getLogger(WorklistUtils.class);
+
    /**
     * @param participantQId
     * @return
     */
    public QueryResult< ? > getWorklistForParticipant(String participantQId, String userId, Options options)
    {
-      //If the userId is not passed consider the user to be the logged in user.
-      //User id is required to differentiate between the particpants when the deputy logs in 
-      
+      // If the userId is not passed consider the user to be the logged in user.
+      // User id is required to differentiate between the particpants when the deputy logs
+      // in
+
       if (StringUtils.isEmpty(userId))
       {
          userId = userService.getLoggedInUser().id;
@@ -177,10 +207,10 @@ public class WorklistUtils
                or.add(PerformingParticipantFilter.forParticipant(participantInfo));
             }
          }
-         
+
          query.setPolicy(ExcludeUserPolicy.EXCLUDE_USER);
          query.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
-         
+
          ActivityTableUtils.addCriterias(query, options);
 
          ActivityInstances activityInstances = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
@@ -206,10 +236,10 @@ public class WorklistUtils
 
       FilterOrTerm or = criticalActivitiesQuery.getFilter().addOrTerm();
       or.add(PerformingParticipantFilter.ANY_FOR_USER).add(PerformingUserFilter.CURRENT_USER);
-     
+
       criticalActivitiesQuery.setPolicy(ExcludeUserPolicy.EXCLUDE_USER);
       criticalActivitiesQuery.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
-      
+
       List<CriticalityCategory> criticalityConfigs = CriticalityUtils.getCriticalityConfiguration();
       CriticalityCategory highCriticality = CriticalityUtils.getCriticalityCategory(
             CriticalityConfigurationUtil.PORTAL_CRITICALITY_MAX, criticalityConfigs);
@@ -270,7 +300,7 @@ public class WorklistUtils
       FilterTerm where = query.getFilter().addAndTerm();
       where.add(ActivityInstanceQuery.LAST_MODIFICATION_TIME.greaterOrEqual(fromDate.getTime()));
       where.addOrTerm().add(PerformingUserFilter.CURRENT_USER).add(PerformedByUserFilter.CURRENT_USER);
-      
+
       ActivityTableUtils.addCriterias(query, options);
 
       return serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
@@ -313,7 +343,8 @@ public class WorklistUtils
    {
 
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(ActivityInstanceState.Hibernated);
-   // new PerformingUserFilter(0) : For activities created in non-interactive context (such as activity threads started by daemons)
+      // new PerformingUserFilter(0) : For activities created in non-interactive context
+      // (such as activity threads started by daemons)
       query.getFilter().addOrTerm().or(PerformingUserFilter.CURRENT_USER).or(new PerformingUserFilter(0));
       List<ModelResubmissionActivity> resubmissionActivities = CollectionUtils.newList();
       ResubmissionUtils.fillListWithResubmissionActivities(resubmissionActivities);
@@ -356,10 +387,10 @@ public class WorklistUtils
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
             ActivityInstanceState.Application, ActivityInstanceState.Suspended});
       query.getFilter().add(PerformingUserFilter.CURRENT_USER);
-      
+
       query.setPolicy(ExcludeUserPolicy.EXCLUDE_USER);
       query.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
-   
+
       ActivityTableUtils.addCriterias(query, options);
 
       QueryResult< ? > result = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
@@ -387,10 +418,10 @@ public class WorklistUtils
 
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
             ActivityInstanceState.Hibernated, ActivityInstanceState.Application, ActivityInstanceState.Suspended});
-      
+
       query.setPolicy(ExcludeUserPolicy.EXCLUDE_USER);
       query.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
-      
+
       ActivityTableUtils.addCriterias(query, options);
 
       QueryResult< ? > result = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
@@ -412,15 +443,15 @@ public class WorklistUtils
    {
       ActivityInstanceQuery query = ActivityInstanceQuery.findAlive();
       FilterOrTerm orTerm = query.getFilter().addOrTerm();
-      
+
       query.setPolicy(ExcludeUserPolicy.EXCLUDE_USER);
       query.setPolicy(EvaluateByWorkitemsPolicy.WORKITEMS);
-      
+
       ActivityTableUtils.addCriterias(query, options);
-      
+
       for (String oid : pInstanceOids)
       {
-       orTerm.add(ActivityInstanceQuery.PROCESS_INSTANCE_OID.isEqual(Long.valueOf(oid)));
+         orTerm.add(ActivityInstanceQuery.PROCESS_INSTANCE_OID.isEqual(Long.valueOf(oid)));
       }
 
       QueryResult< ? > result = serviceFactoryUtils.getQueryService().getAllActivityInstances(query);
@@ -479,48 +510,349 @@ public class WorklistUtils
 
       switch (ParticipantUtils.getParticipantType(participantInfo))
       {
-      case ORGANIZATION:
-      case ROLE:
-      case SCOPED_ORGANIZATION:
-      case SCOPED_ROLE:
-      case USERGROUP:
-         Iterator<Worklist> worklistIter1 = worklist.getSubWorklists();
-         Worklist subWorklist;
-         while (worklistIter1.hasNext())
-         {
-            subWorklist = worklistIter1.next();
-            if (ParticipantUtils.areEqual(participantInfo, subWorklist.getOwner()))
+         case ORGANIZATION:
+         case ROLE:
+         case SCOPED_ORGANIZATION:
+         case SCOPED_ROLE:
+         case USERGROUP:
+            Iterator<Worklist> worklistIter1 = worklist.getSubWorklists();
+            Worklist subWorklist;
+            while (worklistIter1.hasNext())
             {
-               extractedWorklist = subWorklist;
-               break;
-            }
-         }
-         break;
-
-      case USER:
-         if (ParticipantUtils.areEqual(participantInfo, worklist.getOwner()))
-         {
-            extractedWorklist = worklist;
-            break;
-         }
-         else
-         {
-            // User-Worklist(Deputy Of) is contained in Sub-worklist of
-            // User worklist(Deputy)
-            Iterator<Worklist> subWorklistIter = worklist.getSubWorklists();
-            Worklist subWorklist1;
-            while (subWorklistIter.hasNext())
-            {
-               subWorklist1 = subWorklistIter.next();
-               if (ParticipantUtils.areEqual(participantInfo, subWorklist1.getOwner()))
+               subWorklist = worklistIter1.next();
+               if (ParticipantUtils.areEqual(participantInfo, subWorklist.getOwner()))
                {
-                  extractedWorklist = subWorklist1;
+                  extractedWorklist = subWorklist;
                   break;
                }
             }
-         }
+            break;
+
+         case USER:
+            if (ParticipantUtils.areEqual(participantInfo, worklist.getOwner()))
+            {
+               extractedWorklist = worklist;
+               break;
+            }
+            else
+            {
+               // User-Worklist(Deputy Of) is contained in Sub-worklist of
+               // User worklist(Deputy)
+               Iterator<Worklist> subWorklistIter = worklist.getSubWorklists();
+               Worklist subWorklist1;
+               while (subWorklistIter.hasNext())
+               {
+                  subWorklist1 = subWorklistIter.next();
+                  if (ParticipantUtils.areEqual(participantInfo, subWorklist1.getOwner()))
+                  {
+                     extractedWorklist = subWorklist1;
+                     break;
+                  }
+               }
+            }
       }
       return extractedWorklist;
    }
 
+   public List<WorklistParticipantDTO> getWorklistAssignemnt(Boolean showEmptyWorklist) throws PortalException
+   {
+
+      /*
+       * clear(); if (reload) { ParticipantWorklistCacheManager.getInstance().reset(); }
+       */
+      Map<String, Set<ParticipantInfo>> participantMap = ParticipantWorklistCacheManager.getInstance()
+            .getWorklistParticipants();
+      List<WorklistParticipantDTO> rootUserObjectList = new ArrayList<WorklistParticipantDTO>();
+      for (Entry<String, Set<ParticipantInfo>> entry : participantMap.entrySet())
+      {
+         WorklistParticipantDTO tempRootNode = null;
+         WorklistParticipantDTO assemblyLineNode = null;
+         Set<ParticipantInfo> participants = entry.getValue();
+         if (null == assemblyLineNode)
+         {
+            assemblyLineNode = initAssemblyLineChild();
+         }
+         for (ParticipantInfo participantInfo : participants)
+         {
+            boolean assemblyNodeCreated = false;
+            if (participantInfo.getQualifiedId().equals(entry.getKey()) && (participantInfo instanceof UserInfo))
+            {
+               tempRootNode = addParentNode(participantInfo, showEmptyWorklist);
+            }
+
+            if (isAssemblyLineMode() && getAssemblyLineParticipants().contains(participantInfo.getId()))
+            {
+               if (!assemblyNodeCreated)
+               {
+                  assemblyLineNode = addAssemblyLineChild(showEmptyWorklist, tempRootNode, assemblyLineNode);
+               }
+               assemblyNodeCreated = true;
+               continue;
+            }
+            WorklistParticipantDTO childNode = addChild(participantInfo, true, tempRootNode, showEmptyWorklist);
+            if (null == childNode)
+            {
+               continue;
+            }
+            if (entry.getKey().equals(participantInfo.getQualifiedId()) && (participantInfo instanceof UserInfo))
+            {
+               childNode.name = restCommonClientMessages.getString("launchPanels.worklists.personalWorklist");
+            }
+
+         }
+
+         if (tempRootNode != null)
+         {
+            tempRootNode.activityCount = getTotalActivityCountForParentNode(tempRootNode);
+            rootUserObjectList.add(tempRootNode);
+         }
+      }
+      return rootUserObjectList;
+   }
+
+   private long getTotalActivityCountForParentNode(WorklistParticipantDTO tempRootNode)
+   {
+      List<WorklistParticipantDTO> childObjects = tempRootNode.children;
+      long count = 0;
+      for (WorklistParticipantDTO childObject : childObjects)
+      {
+         count = count + childObject.activityCount;
+      }
+      return count;
+   }
+
+   private WorklistParticipantDTO addChild(ParticipantInfo participantInfo, boolean isLeaf,
+         WorklistParticipantDTO tempRootNode, boolean showEmptyWorklist)
+
+   {
+      String userParticipantId = tempRootNode.userId;
+
+      if (showEmptyWorklist
+            || (ParticipantWorklistCacheManager.getInstance().getWorklistCount(participantInfo, userParticipantId) > 0 || !isLeaf))
+      {
+         String labelName = null;
+         ParticipantLabel label = ModelHelper.getParticipantLabel(participantInfo);
+         String viewKey = ParticipantUtils.getWorklistViewKey(participantInfo);
+         WorklistParticipantDTO child = new WorklistParticipantDTO();
+
+         if (userParticipantId.equals(participantInfo.getQualifiedId()))
+         {
+
+            String personalLabel = restCommonClientMessages
+                  .getParamString("views.worklistPanel.label.personalWorklist");
+            child.userId = userParticipantId;
+            labelName = personalLabel + " - " + label.getLabel();
+
+         }
+         else
+         {
+            if (participantInfo instanceof OrganizationInfo
+                  && null != ((OrganizationInfo) participantInfo).getDepartment())
+            {
+               OrganizationInfo organization = (OrganizationInfo) participantInfo;
+               child.participantQId = participantInfo.getQualifiedId() + organization.getDepartment().getId();
+            }
+            else
+            {
+               child.participantQId = participantInfo.getQualifiedId();
+            }
+            child.userId = userParticipantId;
+            labelName = label.getLabel();
+         }
+
+         child.name = label.getWrappedLabel() + ": ";
+         child.tooltip = label.getLabel();
+         child.icon = getParticipantIcon(participantInfo);
+         child.id = participantInfo.getQualifiedId();
+         child.activityCount = getActivityCount(participantInfo, userParticipantId);
+         child.labelName = labelName;
+         child.viewKey = viewKey;
+         tempRootNode.children.add(child);
+         return child;
+      }
+      return null;
+   }
+
+   /**
+    * 
+    * @param showEmptyWorklist
+    * @param tempRootNode
+    * @param assemblyLineNode
+    * @return
+    */
+   private WorklistParticipantDTO addAssemblyLineChild(Boolean showEmptyWorklist, WorklistParticipantDTO tempRootNode,
+         WorklistParticipantDTO assemblyLineNode)
+   {
+
+      if (showEmptyWorklist || assemblyLineNode.activityCount > 0)
+      {
+         tempRootNode.children.add(assemblyLineNode);
+      }
+
+      return assemblyLineNode;
+   }
+
+   private WorklistParticipantDTO addParentNode(ParticipantInfo participantInfo, boolean showEmptyWorklist)
+   {
+      String userParticipantId = participantInfo.getQualifiedId();
+      WorklistParticipantDTO parent = null;
+      parent = new WorklistParticipantDTO();
+      ParticipantLabel label = ModelHelper.getParticipantLabel(participantInfo);
+      parent.name = label.getWrappedLabel() + ": ";
+      parent.tooltip = label.getLabel();
+      parent.icon = getParticipantIcon(participantInfo);
+      parent.id = userParticipantId;
+      parent.children = new ArrayList<WorklistParticipantDTO>();
+
+      String viewKey = ParticipantUtils.getWorklistViewKey(participantInfo);
+      viewKey = viewKey + participantInfo.getQualifiedId();
+      parent.viewKey = viewKey;
+      parent.userId = userParticipantId;
+
+      String unifiedLabel = restCommonClientMessages.getParamString("views.worklistPanel.label.unifiedWorklist");
+      String labelName = unifiedLabel + " - " + label.getLabel();
+      parent.labelName = labelName;
+      return parent;
+   }
+
+   /**
+    * @param participantInfo
+    * @return
+    */
+   public static String getParticipantIcon(ParticipantInfo participantInfo)
+   {
+      String iconPath = "";
+
+      switch (ParticipantUtils.getParticipantType(participantInfo))
+      {
+         case ORGANIZATION:
+            iconPath = Resources.Icons.getOrganization();
+            break;
+
+         case ROLE:
+            iconPath = Resources.Icons.getRole();
+            break;
+
+         case SCOPED_ORGANIZATION:
+            iconPath = Resources.Icons.getScopedOrganization();
+            break;
+
+         case SCOPED_ROLE:
+            iconPath = Resources.Icons.getScopedRole();
+            break;
+
+         case USER:
+            if (participantInfo.getQualifiedId().equals(SessionContext.findSessionContext().getUser().getQualifiedId()))
+            {
+               iconPath = MyPicturePreferenceUtils.getLoggedInUsersImageURI();
+            }
+            else
+            {
+               UserInfo userInfo = (UserInfo) participantInfo;
+               User user = UserUtils.getUser(userInfo.getId());
+               iconPath = MyPicturePreferenceUtils.getUsersImageURI(user);
+            }
+
+            break;
+
+         case USERGROUP:
+            iconPath = Resources.Icons.getUserGroup();
+            break;
+      }
+
+      return iconPath;
+   }
+
+   public Long getActivityCount(ParticipantInfo participantInfo, String userParticipantId)
+   {
+      Long totalCount = ParticipantWorklistCacheManager.getInstance().getWorklistCount(participantInfo,
+            userParticipantId);
+      Long totalCountThreshold = ParticipantWorklistCacheManager.getInstance().getWorklistCountThreshold(
+            participantInfo, userParticipantId);
+      if (totalCount < Long.MAX_VALUE)
+         return totalCount;
+      else
+         return totalCountThreshold;
+   }
+
+   private WorklistParticipantDTO initAssemblyLineChild() throws PortalException
+   {
+      WorklistParticipantDTO assemblyLineParticipant = new WorklistParticipantDTO();
+      assemblyLineParticipant.name = restCommonClientMessages.getString("launchPanels.worklists.assemblyLine.title");
+      assemblyLineParticipant.activityCount = calculateActivityCount();
+      assemblyLineParticipant.icon = "pi pi-assembly-line pi-lg";
+      assemblyLineParticipant.isAssemblyLineParticipant = true;
+      return assemblyLineParticipant;
+   }
+
+   public long calculateActivityCount() throws PortalException
+   {
+      long activityCount = 0;
+
+      if (isAssemblyLineMode() && null != getAssemblyLineActivityProvider())
+      {
+         activityCount = getAssemblyLineActivityProvider().getAssemblyLineActivityCount(
+               ServiceFactoryUtils.getProcessExecutionPortal(), getAssemblyLineParticipants());
+      }
+      return activityCount;
+
+   }
+
+   public Boolean isAssemblyLineMode()
+   {
+      return CollectionUtils.isNotEmpty(getAssemblyLineParticipants()) ? true : false;
+
+   }
+
+   /**
+    * 
+    * @return
+    */
+   public Set<String> getAssemblyLineParticipants()
+   {
+      Set<String> assemblyLineParticipants = ParticipantUtils.categorizeParticipants(
+            SessionContext.findSessionContext().getUser()).getAssemblyLineParticipants();
+      return assemblyLineParticipants;
+   }
+
+   private IAssemblyLineActivityProvider getAssemblyLineActivityProvider()
+   {
+      IAssemblyLineActivityProvider assemblyLineActivityProvider = null;
+
+      String assemblyLineProvider = (String) Parameters.instance().get(SpiConstants.ASSEMBLY_LINE_ACTIVITY_PROVIDER);
+      if (StringUtils.isNotEmpty(assemblyLineProvider))
+      {
+         Object instance = ReflectionUtils.createInstance(assemblyLineProvider);
+         if (instance instanceof IAssemblyLineActivityProvider)
+         {
+            assemblyLineActivityProvider = ((IAssemblyLineActivityProvider) instance);
+         }
+         else
+         {
+            throw new PublicException(
+                  "Assembly Line Provider is not an instance of org.eclipse.stardust.ui.web.processportal.spi.IAssemblyLineActivityProvider");
+         }
+      }
+      else
+      {
+         assemblyLineActivityProvider = new DefaultAssemblyLineActivityProvider();
+         trace.info("Using DefaultAssemblyLineActivityProvider...");
+      }
+      return assemblyLineActivityProvider;
+   }
+
+   public ActivityInstanceDTO getNextAssemblyLineActivity() throws PortalException
+   {
+      if (null != getAssemblyLineActivityProvider())
+      {
+         ActivityInstance ai = getAssemblyLineActivityProvider().getNextAssemblyLineActivity(
+               serviceFactoryUtils.getProcessExecutionPortal(), getAssemblyLineParticipants());
+         ActivityInstanceDTO dto = DTOBuilder.build(ai, ActivityInstanceDTO.class);
+         dto.activatable = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils.isActivatable(ai);
+         dto.defaultCaseActivity = org.eclipse.stardust.ui.web.viewscommon.utils.ActivityInstanceUtils
+               .isDefaultCaseActivity(ai);
+         return dto;
+      }
+      return null;
+   }
 }

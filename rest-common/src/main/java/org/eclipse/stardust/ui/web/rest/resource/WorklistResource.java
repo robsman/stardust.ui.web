@@ -16,6 +16,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -32,8 +33,10 @@ import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.component.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.component.service.WorklistService;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils;
+import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -369,6 +372,26 @@ public class WorklistResource
          trace.error("", e);
          return Response.status(Status.INTERNAL_SERVER_ERROR).build();
       }
+   }
+   
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/{showEmptyWorklist}")
+   public Response getWorklistAssignemnt(@PathParam("showEmptyWorklist") boolean showEmptyWorklist) throws PortalException
+   {
+   QueryResultDTO result = worklistService.getWorklistAssignemnt(showEmptyWorklist);
+   return Response.ok(result.toJson(), MediaType.APPLICATION_JSON).build();
+   }
+   
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/nextAssemblyLineActivity")
+   public Response getNextAssemblyLineActivity() throws PortalException
+   {
+     ActivityInstanceDTO result = worklistService.getNextAssemblyLineActivity();
+      
+      return Response.ok(result.toJson(), MediaType.APPLICATION_JSON).build();
+      
    }
 
    /**
