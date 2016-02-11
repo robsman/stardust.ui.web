@@ -501,4 +501,21 @@ public class DescriptorColumnUtils
       }
       return false;
    }
+   
+   public static boolean isLinkDescriptor(DataPath path)
+   {
+      if(path.isDescriptor())
+      {
+         Object type = path.getAttribute("type");
+         if(null != type)
+         {
+            String value = type.toString();
+            if(DESC_LINK.equals(value))
+            {
+               return true;
+            }
+         }
+      }
+      return false;
+   }
 }

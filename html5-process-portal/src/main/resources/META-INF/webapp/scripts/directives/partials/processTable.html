@@ -156,7 +156,8 @@
 					<table>
 						<tr ng-repeat="desc in rowData.descriptorValues">
 							<td ng-if ="!desc.isDocument" style="white-space: nowrap;">{{desc.key}}:</td>
-							<td ng-if ="!desc.isDocument" style="white-space: normal;">{{desc.value}}</td>
+							<td ng-if ="!desc.isDocument && !desc.isLink" style="white-space: normal;">{{desc.value}}</td>
+							<td ng-if ="desc.isLink" style="white-space: normal;"><a href="{{desc.value}}" target="_blank">{{desc.linkText}}</a></td>
 						</tr>
 					</table>
 					<div sd-editor-template></div>

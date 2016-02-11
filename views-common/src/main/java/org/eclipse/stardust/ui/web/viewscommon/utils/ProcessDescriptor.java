@@ -19,12 +19,23 @@ public class ProcessDescriptor extends DefaultRowModel
    String id; 
    String key;
    String value = null;
+   boolean isLink = false;
+   String linkText = null;
 
    public ProcessDescriptor(String id, String key, String value)
    {
       this.id = id;
       this.key = key;
       this.value = value;
+   }
+   
+   public ProcessDescriptor(String id, String key, String value, boolean isLink, String linkText)
+   {
+      this.id = id;
+      this.key = key;
+      this.value = value;
+      this.isLink = isLink;
+      this.linkText = linkText;
    }
 
    public String getId()
@@ -41,4 +52,15 @@ public class ProcessDescriptor extends DefaultRowModel
    {
       return value;
    }
+
+   public boolean isLink()
+   {
+      return isLink;
+   }
+
+   public String getLinkText()
+   {
+      return linkText;
+   }
+
 }

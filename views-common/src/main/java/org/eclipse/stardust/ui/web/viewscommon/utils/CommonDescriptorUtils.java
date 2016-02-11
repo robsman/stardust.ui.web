@@ -405,10 +405,26 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
                   }
                   GenericDataMapping mapping = new GenericDataMapping(dataPathDetails);
                   DataMappingWrapper dmWrapper = new DataMappingWrapper(mapping, null, false);
-
-                  processDescriptor = new ProcessDescriptor(entry.getKey(), I18nUtils.getDataPathName(entry.getValue()),
-                        formatDescriptorValue(descriptors.get(entry.getKey()), dmWrapper.getType()));
-                  processDescriptors.add(processDescriptor);
+                  if(DescriptorColumnUtils.isLinkDescriptor(dataPathDetails))
+                  {
+                     Object text =   dataPathDetails.getAttribute("text");
+                     if(null != text && StringUtils.isNotEmpty(text.toString()))
+                     {
+                        processDescriptor = new ProcessDescriptor(entry.getKey(), I18nUtils.getDataPathName(entry.getValue()),
+                              formatDescriptorValue(descriptors.get(entry.getKey()), dmWrapper.getType()), true, text.toString());   
+                     }
+                     else
+                     {
+                        processDescriptor = new ProcessDescriptor(entry.getKey(), I18nUtils.getDataPathName(entry.getValue()),
+                              formatDescriptorValue(descriptors.get(entry.getKey()), dmWrapper.getType()));
+                     }
+                  }
+                  else
+                  {
+                     processDescriptor = new ProcessDescriptor(entry.getKey(), I18nUtils.getDataPathName(entry.getValue()),
+                           formatDescriptorValue(descriptors.get(entry.getKey()), dmWrapper.getType()));
+                  }
+                  processDescriptors.add(processDescriptor);  
                }
             }
          }

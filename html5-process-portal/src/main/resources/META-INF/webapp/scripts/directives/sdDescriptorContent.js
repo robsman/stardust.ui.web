@@ -31,8 +31,11 @@
 							'{{descriptorCtrl.descriptorValue.value | number}}<\/div>'+
 						'<div ng-if="descriptorCtrl.dataType == \'DATE\' "> ' +
 						'{{descriptorCtrl.descriptorValue.value | sdDateFilter}}<\/div>'+
-						'<div ng-if="descriptorCtrl.dataType == \'STRING\' || descriptorCtrl.dataType == \'BOOLEAN\' ">'+
+						'<div ng-if="(descriptorCtrl.dataType == \'STRING\' && !descriptorCtrl.descriptorValue.isLink) || descriptorCtrl.dataType == \'BOOLEAN\' ">'+
 							'{{descriptorCtrl.descriptorValue.value}}'+
+						'<\/div>'+
+						'<div ng-if="(descriptorCtrl.dataType == \'STRING\' && descriptorCtrl.descriptorValue.isLink)">'+
+							'<a href="{{descriptorCtrl.descriptorValue.value}}" title="{{descriptorCtrl.descriptorValue.value}}" target="_blank">{{descriptorCtrl.descriptorValue.linkText}}</a>'+
 						'<\/div>'+
 						'<div style="text-align:left;" ng-if="(descriptorCtrl.dataType == \'DOCUMENT\') || (descriptorCtrl.dataType == \'LIST\' && descriptorCtrl.descriptorValue.isDocument ) ">'+
 								'<div ng-repeat="document in  descriptorCtrl.descriptorValue.documents">'+

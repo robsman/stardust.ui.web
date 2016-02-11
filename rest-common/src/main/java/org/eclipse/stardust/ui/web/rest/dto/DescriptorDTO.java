@@ -22,7 +22,11 @@ public class DescriptorDTO extends AbstractDTO{
 	public String value;
 
 	public boolean isDocument;
-
+	
+	public boolean isLink;
+	
+	public String linkText;
+	
 	public List<DocumentDTO> documents;
 
 	public DescriptorDTO(String key, String value, boolean isDocument,
@@ -33,6 +37,18 @@ public class DescriptorDTO extends AbstractDTO{
 		this.isDocument = isDocument;
 		this.documents = documents;
 	}
+	
+	public DescriptorDTO(String key, String value, boolean isDocument,
+          List<DocumentDTO> documents, boolean isLink, String linkText) 
+	{
+      super();
+      this.key = key;
+      this.value = value;
+      this.isDocument = isDocument;
+      this.documents = documents;
+      this.isLink = isLink;
+      this.linkText = linkText;
+  }
 
 
 }

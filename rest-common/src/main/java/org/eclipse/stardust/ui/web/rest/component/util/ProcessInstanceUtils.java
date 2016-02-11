@@ -1959,9 +1959,8 @@ public class ProcessInstanceUtils
          }
          else
          {
-
             ProcessDescriptor desc = (ProcessDescriptor) descriptor;
-            DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey(), desc.getValue(), false, null);
+            DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey(), desc.getValue(), false, null, desc.isLink(), desc.getLinkText());
             descriptors.put(desc.getId(), descriptorDto);
          }
       }
