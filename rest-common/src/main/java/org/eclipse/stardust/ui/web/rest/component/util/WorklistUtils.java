@@ -27,6 +27,7 @@ import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.engine.api.model.OrganizationInfo;
 import org.eclipse.stardust.engine.api.model.ParticipantInfo;
+import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.query.ActivityFilter;
 import org.eclipse.stardust.engine.api.query.ActivityInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ActivityInstances;
@@ -53,6 +54,7 @@ import org.eclipse.stardust.ui.web.rest.common.Resources;
 import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.component.service.UserService;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.dto.MyProcessDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.dto.response.WorklistParticipantDTO;
@@ -65,6 +67,8 @@ import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCon
 import org.eclipse.stardust.ui.web.viewscommon.common.provider.DefaultAssemblyLineActivityProvider;
 import org.eclipse.stardust.ui.web.viewscommon.common.provider.IAssemblyLineActivityProvider;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.SpiConstants;
+import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
+import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantWorklistCacheManager;
@@ -854,5 +858,37 @@ public class WorklistUtils
          return dto;
       }
       return null;
+   }
+   
+   /**
+    * 
+    * @return
+    */
+   public List<MyProcessDTO> getUserProcesses(){
+      List<MyProcessDTO> items = CollectionUtils.newArrayList();
+      Set<ProcessDefinition> processDefs = ProcessWorklistCacheManager.getInstance().getProcesses();
+      for (ProcessDefinition processDefinition : processDefs)
+      {   MyProcessDTO myProcessDTO = new MyProcessDTO();
+          myProcessDTO.id = processDefinition.getQualifiedId();
+          myProcessDTO.name = I18nUtils.getProcessName(processDefinition);
+          myProcessDTO.totalCount = getTotalCount(processDefinition);
+         items.add(myProcessDTO);         
+      }
+      return items;
+   }
+   /**
+    * 
+    * @param processDefinition
+    * @return
+    */
+   private String getTotalCount(ProcessDefinition processDefinition)
+   {
+      Long totalCount = ProcessWorklistCacheManager.getInstance().getWorklistCount(processDefinition);
+      Long totalCountThreshold = ProcessWorklistCacheManager.getInstance().getWorklistCountThreshold(processDefinition);
+      if (totalCount < Long.MAX_VALUE)
+         return totalCount.toString();
+      else
+         return restCommonClientMessages.getParamString("common.notification.worklistCountThreshold",
+               totalCountThreshold.toString());
    }
 }

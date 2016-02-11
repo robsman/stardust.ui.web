@@ -549,3 +549,8 @@ button.close {
    padding: 2px !important;
    vertical-align: middle;
 }
+
+.disabled {
+	opacity: 0.5;
+	cursor: default;
+}

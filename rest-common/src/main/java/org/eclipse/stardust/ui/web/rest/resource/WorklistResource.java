@@ -35,6 +35,7 @@ import org.eclipse.stardust.ui.web.rest.component.service.WorklistService;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DescriptorColumnDTO;
+import org.eclipse.stardust.ui.web.rest.dto.MyProcessDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -390,6 +391,18 @@ public class WorklistResource
    {
      ActivityInstanceDTO result = worklistService.getNextAssemblyLineActivity();
       
+      return Response.ok(result.toJson(), MediaType.APPLICATION_JSON).build();
+      
+   }
+   
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/userProcesses")
+   public Response getUserProcesses() throws PortalException
+   {
+      List<MyProcessDTO> myProcesses = worklistService.getUserProcesses();
+      QueryResultDTO result = new QueryResultDTO();
+      result.list = myProcesses;
       return Response.ok(result.toJson(), MediaType.APPLICATION_JSON).build();
       
    }

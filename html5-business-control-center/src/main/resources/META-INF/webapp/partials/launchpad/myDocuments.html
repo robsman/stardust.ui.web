@@ -1,0 +1,17 @@
+<sd-collapsible-panel sda-aid="auto-BCC-LP-DocPnl"
+	sda-title="{{i18n('processportal.launchPanels-myDocuments-title')}}">
+	<div ng-controller="sdBCCPanelCtrl as ctrl">
+		<div style="line-height: 15px;">
+			<a href="#" ng-click="ctrl.openView('myDocumentsTreeView');"
+				data-placement="right" aid="auto-BCC-LP-MyDocView">
+				<span>{{i18n('processportal.launchPanels-myDocuments-myDocuments')}}&nbsp;&raquo;</span>
+			</a>
+		</div>
+		<div style="line-height: 15px;">
+			<a href="#" ng-click="ctrl.openView('documentSearchView');"
+				data-placement="right" aid="auto-BCC-LP-SrchDocView">
+				<span>{{i18n('processportal.launchPanels-myDocuments-searchDocuments')}}&nbsp;&raquo;</span>
+			</a>
+		</div>
+	</div>
+</sd-collapsible-panel>

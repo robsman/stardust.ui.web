@@ -25,6 +25,7 @@ import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.WorklistUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils.MODE;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.dto.MyProcessDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.ParticipantDTO;
@@ -226,6 +227,11 @@ public class WorklistService
    {
       return worklistUtils.getNextAssemblyLineActivity();
       
+   }
+   
+   public List<MyProcessDTO> getUserProcesses()
+   {
+      return worklistUtils.getUserProcesses();
    }
 
 }

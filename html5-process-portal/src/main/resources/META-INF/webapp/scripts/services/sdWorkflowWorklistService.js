@@ -53,6 +53,16 @@
 			
 			return $resource(restUrl).get(urlTemplateParams).$promise;
 		};
+		
+		WorkflowWorklistService.prototype.getUserProcesses = function(){
+			// Prepare URL
+			var restUrl = REST_BASE_URL + "/userProcesses";
+
+			var urlTemplateParams = {};
+			
+			return $resource(restUrl).get(urlTemplateParams).$promise;
+		};
+
 
 	}
 	;
