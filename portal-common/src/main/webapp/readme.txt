@@ -4,6 +4,8 @@ and needs to be kept updated/synchronised _manually_!
 See CRNT-23890 for more information.
 
 Also, web.xml changes needs to be added manually to (if available/applicable) -
+- org.eclipse.stardust.ide.wst.facet.portal.InstallDelegate
+- org.eclipse.stardust.ide.wst.facet.portal.UninstallDelegate
 - "components\configure-configs\ipp-portal\properties.xml"
 - "components\configure-configs\stardust-portal\properties.xml"
 
