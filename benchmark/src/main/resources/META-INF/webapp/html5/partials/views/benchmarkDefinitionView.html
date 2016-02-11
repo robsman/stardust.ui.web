@@ -260,7 +260,7 @@
 	</div>
 	
 	<!--Bottom Container - Tabs - > Model Tree and Categories  -->
-	<div style="width:100%;position:relative;margin-top:1em;">
+	<div style="width:100%;position:relative;margin-top:1em;overflow:auto;">
 		
 	    <!-- Tabs -->
 	    <div class="tab-container">
@@ -292,48 +292,55 @@
 	    		</a>
 	    	</div>
 	    	
-		    <!-- Model Tree Container -->
-			<div ng-show="ctrl.selectedBenchmark" 
-			     style="width:225px;display:inline-table;">
-				
-				<!-- sdTree Implementation of Model Tree -->
-			    <ul sd-tree="ctrl.onTreeInit(api)"
-			       	sda-event-callback="ctrl.treeCallback(data,e)"
-			       	sda-icon-callback="ctrl.iconCallback(item)"
-			       	sda-menu-callback="ctrl.menuCallback(item)">
-			      <li sd-tree-node 
-			          sda-is-leaf = "model.processDefinitions.length == 0"
-			          sda-label="model.name" 
-			          sda-node-id="model.nodeId" 
-			          ng-repeat="model in ctrl.models">
-			        <ul>
-			          <li sd-tree-node
-			          	  ng-show="ctrl.showAllTreeNodes===true || process.auxillary===false"
-			              sda-is-leaf="process.activities.length==0"
-			              sda-label="process.name"
-			              sda-node-id="process.nodeId"
-			              ng-repeat="process in model.processDefinitions">
-			            <ul>
-			              <li sd-tree-node
-			                  ng-show="ctrl.showAllTreeNodes === true || (activity.interactive === true && activity.auxillary === false)"
-			                  sda-is-leaf="true"
-			                  sda-draggable="true"
-			                  sda-label="activity.name"
-			                  sda-node-id="activity.nodeId"
-			                  ng-repeat="activity in process.activities">
-			              </li><!-- activity structure ends -->
-			            </ul>
-			          </li><!-- process structure ends -->
-			        </ul>
-			      </li><!-- model structure ends -->
-			    </ul>
+	    	<!-- Container for treeView and Benchmark table -->
+	    	<div style="position:relative;">
+			    <!-- Model Tree Container -->
+				<div ng-show="ctrl.selectedBenchmark" 
+				     style="width:225px;xdisplay:inline-flex;xdisplay:-ms-flexbox;a;overflow:auto;">
+					
+					<!-- sdTree Implementation of Model Tree -->
+				    <ul sd-tree="ctrl.onTreeInit(api)"
+				       	sda-event-callback="ctrl.treeCallback(data,e)"
+				       	sda-icon-callback="ctrl.iconCallback(item)"
+				       	sda-menu-callback="ctrl.menuCallback(item)">
+				      <li sd-tree-node 
+				          sda-is-leaf = "model.processDefinitions.length == 0"
+				          sda-label="model.name" 
+				          sda-node-id="model.nodeId" 
+				          ng-repeat="model in ctrl.models">
+				        <ul>
+				          <li sd-tree-node
+				          	  ng-show="ctrl.showAllTreeNodes===true || process.auxillary===false"
+				              sda-is-leaf="process.activities.length==0"
+				              sda-label="process.name"
+				              sda-node-id="process.nodeId"
+				              ng-repeat="process in model.processDefinitions">
+				            <ul>
+				              <li sd-tree-node
+				                  ng-show="ctrl.showAllTreeNodes === true || (activity.interactive === true && activity.auxillary === false)"
+				                  sda-is-leaf="true"
+				                  sda-draggable="true"
+				                  sda-label="activity.name"
+				                  sda-node-id="activity.nodeId"
+				                  ng-repeat="activity in process.activities">
+				              </li><!-- activity structure ends -->
+				            </ul>
+				          </li><!-- process structure ends -->
+				        </ul>
+				      </li><!-- model structure ends -->
+				    </ul>
+				    
+			    </div>
 			    
-		    </div>
-		    
-		    <div class="container" ng-show="!ctrl.selectedBenchmark"  style="width:calc(100% - 230px);display:inline-table;"> No Benchmark Selected</div>
-		    
-		    <!-- Categories Table-->
-		    <div ng-show="ctrl.selectedBenchmark" style="width:calc(100% - 230px);display:inline-table;">
+			    <div class="container" 
+			         ng-show="!ctrl.selectedBenchmark"  
+			         style="width:calc(100% - 230px);display:inline-table;"> 
+			         No Benchmark Selected
+			    </div>
+			    
+			    <!-- Categories Table-->
+			    <div ng-show="ctrl.selectedBenchmark" 
+			         style="width:calc(100% - 230px);position:absolute;left:230px;top:0;">
 		    
 		    	<table class="tbl ng-scope dataTable" id="benchmarkTable" style="width:100%;">
 		    	
@@ -519,6 +526,7 @@
 	    		</tbody>
 	    	</table>
     	</div>
+			</div>
 	</div>
 	
 	<!-- General Elements of the Benchmark -->
