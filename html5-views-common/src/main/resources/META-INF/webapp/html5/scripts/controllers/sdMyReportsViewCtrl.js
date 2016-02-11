@@ -10,7 +10,7 @@
 		this.paths= null;
 		this.path = sdReportsService.getReportPaths()
 		.then(function(paths){
-			that.paths = paths.join(",");
+			that.paths = paths;
 		});
 	}
 

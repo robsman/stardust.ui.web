@@ -734,7 +734,10 @@
     //scope as we only wish to invoke if we have a function that will return something.
     $scope.useMenuHook = ($attrs.sdaMenuHook)?true:false;
 
-    $attrs.$observe("sdaRootPath",function(v1){
+    $scope.$watch("rootPath",function(v1){
+
+      var key;
+
       //If user has not assigned a value or simply given us a "/" then load all repositories
       if(!v1 || v1 == "/"){
         ctrl.documentService.getRepositories(v1)
@@ -747,9 +750,11 @@
         });
       }
       //user has given us a folder path as our root and we are loading an actual root folder and its children.
-      else{
+      else if(angular.isString(v1) || angular.isArray(v1)){
 
-        paths = v1.split(",");
+        if(angular.isString(v1)){
+          paths = v1.split(",");
+        }
 
         paths.forEach(function(path){
 
@@ -768,11 +773,37 @@
 
             parent.children = children;
             ctrl.data.push(parent);
+
           });//then end
 
         });//foreach end
 
-      }//else end
+      }
+      //We have a hash map whose key will be the path and value will be the name for the node.
+      else if(angular.isObject(v1)){
+        for(key in v1){
+
+          (function(path){
+            ctrl.documentService.getChildren(key)
+            .then(function(data){
+
+              var children = ctrl.treeifyChildren(data);
+              var parent = {
+                "uuid" : data.uuid,
+                "name" : v1[path], 
+                "path" : data.path, 
+                "hasChildren" : true,
+                "nodeType" : "folder",
+                "id" : data.uuid
+              }
+
+              parent.children = children;
+              ctrl.data.push(parent);
+
+            });
+          })(key);
+        }
+      }
 
 
     });
@@ -788,6 +819,7 @@
 
       return {
         "scope" : {
+          "rootPath" : "=sdaRootPath",
           "menuHook" : "&sdaMenuHook",
           "showSearchFilter" : "=sdaSearchable"
         },

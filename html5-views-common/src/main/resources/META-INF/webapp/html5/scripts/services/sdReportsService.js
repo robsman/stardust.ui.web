@@ -15,11 +15,16 @@
 			paths =[];
 		
 		//this will always exist as such...
-		paths.push("reports/designs");
+		//paths.push("reports/designs");
 		
 		//TODO: "realms/carnot/users/motu/documents/" derive from current user data
-		paths.push("realms/carnot/users/motu/documents/reports/designs");
+		//paths.push("realms/carnot/users/motu/documents/reports/designs");
 		
+		paths={
+			"reports/designs" : "Private Report Definitions",
+			"realms/carnot/users/motu/documents/reports/designs" : "Public Report Definitions"
+		}
+
 		//TODO: Need list if fully qualified participant IDs
 		//For each fully qualified participant create a path as such...
 		//.../reports/{fullyQualifeidParticipantId}/designs
