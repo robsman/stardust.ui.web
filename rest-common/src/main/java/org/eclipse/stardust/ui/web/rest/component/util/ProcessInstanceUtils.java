@@ -64,26 +64,26 @@ import org.eclipse.stardust.engine.api.runtime.WorkflowService;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.dto.AbortNotificationDTO;
 import org.eclipse.stardust.ui.web.rest.dto.BenchmarkDTO;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DescriptorDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentDTO;
+import org.eclipse.stardust.ui.web.rest.dto.FilterDTO.BooleanDTO;
+import org.eclipse.stardust.ui.web.rest.dto.FilterDTO.RangeDTO;
+import org.eclipse.stardust.ui.web.rest.dto.FilterDTO.TextSearchDTO;
 import org.eclipse.stardust.ui.web.rest.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.NotificationMap;
+import org.eclipse.stardust.ui.web.rest.dto.NotificationMap.NotificationDTO;
 import org.eclipse.stardust.ui.web.rest.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.dto.PriorityDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ProcessTableFilterDTO;
+import org.eclipse.stardust.ui.web.rest.dto.ProcessTableFilterDTO.DescriptorFilterDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.RelatedProcessesDTO;
 import org.eclipse.stardust.ui.web.rest.dto.StatusDTO;
-import org.eclipse.stardust.ui.web.rest.dto.FilterDTO.BooleanDTO;
-import org.eclipse.stardust.ui.web.rest.dto.FilterDTO.RangeDTO;
-import org.eclipse.stardust.ui.web.rest.dto.FilterDTO.TextSearchDTO;
-import org.eclipse.stardust.ui.web.rest.dto.NotificationMap.NotificationDTO;
-import org.eclipse.stardust.ui.web.rest.dto.ProcessTableFilterDTO.DescriptorFilterDTO;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.rest.util.DescriptorUtils;
@@ -1392,7 +1392,7 @@ public class ProcessInstanceUtils
     * @param options
     * @return
     */
-   public ProcessInstances getProcessInstances(ProcessInstanceQuery query, Options options)
+   public ProcessInstances getProcessInstances(ProcessInstanceQuery query, DataTableOptionsDTO options)
    {
       if (query == null)
       {
@@ -1448,9 +1448,9 @@ public class ProcessInstanceUtils
     * @param query
     *           Query
     * @param options
-    *           Options
+    *           DataTableOptionsDTO
     */
-   private void addFilterCriteria(Query query, Options options)
+   private void addFilterCriteria(Query query, DataTableOptionsDTO options)
    {
 
       if (options.filter == null)
@@ -1581,7 +1581,7 @@ public class ProcessInstanceUtils
     * @param query
     */
 
-   private void addDescriptorPolicy(Options options, Query query)
+   private void addDescriptorPolicy(DataTableOptionsDTO options, Query query)
    {
 
       if (options.allDescriptorsVisible)
@@ -1673,7 +1673,7 @@ public class ProcessInstanceUtils
     * @param query
     * @param options
     */
-   private void addSortCriteria(Query query, Options options)
+   private void addSortCriteria(Query query, DataTableOptionsDTO options)
    {
       if (trace.isDebugEnabled())
       {
@@ -1740,7 +1740,7 @@ public class ProcessInstanceUtils
       {
          if (trace.isDebugEnabled())
          {
-            trace.debug("ProcessInstanceUtils.addSortCriteria(Query, Options): Sorting not implemented for "
+            trace.debug("ProcessInstanceUtils.addSortCriteria(Query, DataTableOptionsDTO): Sorting not implemented for "
                   + options.asc);
          }
       }
@@ -1974,7 +1974,7 @@ public class ProcessInstanceUtils
     * @param postData
     * @return
     */
-   public static Options populatePostData(Options options, String postData,
+   public static DataTableOptionsDTO populatePostData(DataTableOptionsDTO options, String postData,
          List<DescriptorColumnDTO> availableDescriptors)
    {
 

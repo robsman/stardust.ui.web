@@ -43,10 +43,10 @@ import org.eclipse.stardust.engine.api.runtime.IllegalOperationException;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstanceState;
 import org.eclipse.stardust.ui.web.bcc.ProcessSearchProvider;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.common.ProcessSearchParameterConstants;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityFilterAttributesDTO;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.dto.FilterAttributesDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ProcessDefinitionDTO;
@@ -108,7 +108,7 @@ public class ProcessActivityUtils
     * @param commonDescriptors
     * @return
     */
-   public QueryResult<ProcessInstance> performProcessSearch(Options options,
+   public QueryResult<ProcessInstance> performProcessSearch(DataTableOptionsDTO options,
          String postData, ProcessSearchCriteriaDTO processSearchAttributes, List<DescriptorColumnDTO> availableDescriptors)
    {
 
@@ -187,7 +187,7 @@ public class ProcessActivityUtils
     * @param availableDescriptors
     * @return
     */
-   public QueryResult<ActivityInstance> performActivitySearch(Options options,
+   public QueryResult<ActivityInstance> performActivitySearch(DataTableOptionsDTO options,
          String postData, ProcessSearchCriteriaDTO processSearchAttributes, List<DescriptorColumnDTO> availableDescriptors)
    {
       // TODO Validation for Activity Search
@@ -287,7 +287,7 @@ public class ProcessActivityUtils
     * @param query
     * @return QueryResult
     */
-   private QueryResult<ProcessInstance> getAllProcessInstances(Options options, ProcessInstanceQuery query)
+   private QueryResult<ProcessInstance> getAllProcessInstances(DataTableOptionsDTO options, ProcessInstanceQuery query)
    {
 
       QueryResult< ? extends ProcessInstance> queryResult = processInstanceUtilsREST
@@ -300,7 +300,7 @@ public class ProcessActivityUtils
     * @param query
     * @return
     */
-   private QueryResult<ActivityInstance> allActivityInstances(Options options, ActivityInstanceQuery query)
+   private QueryResult<ActivityInstance> allActivityInstances(DataTableOptionsDTO options, ActivityInstanceQuery query)
    {
       QueryResult<ActivityInstance> result = null;
       ActivityTableUtils.addDescriptorPolicy(options, query);

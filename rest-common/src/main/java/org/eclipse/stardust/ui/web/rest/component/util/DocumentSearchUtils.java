@@ -31,6 +31,7 @@ import org.eclipse.stardust.engine.api.query.DocumentQuery;
 import org.eclipse.stardust.engine.api.query.FilterAndTerm;
 import org.eclipse.stardust.engine.api.query.FilterCriterion;
 import org.eclipse.stardust.engine.api.query.FilterOrTerm;
+import org.eclipse.stardust.engine.api.query.FilterableAttribute;
 import org.eclipse.stardust.engine.api.query.ProcessInstanceQuery;
 import org.eclipse.stardust.engine.api.query.ProcessInstances;
 import org.eclipse.stardust.engine.api.query.Query;
@@ -47,7 +48,7 @@ import org.eclipse.stardust.engine.core.thirdparty.encoding.Text;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.app.View;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
-import org.eclipse.stardust.ui.web.rest.common.Options;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentSearchCriteriaDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentSearchFilterAttributesDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentSearchFilterDTO;
@@ -57,6 +58,7 @@ import org.eclipse.stardust.ui.web.rest.dto.InfoDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.SelectItemDTO;
 import org.eclipse.stardust.ui.web.rest.dto.InfoDTO.MessageType;
+import org.eclipse.stardust.ui.web.rest.dto.request.RepositorySearchRequestDTO;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
@@ -213,8 +215,9 @@ public class DocumentSearchUtils
     * @param options
     * @param documentSearchAttributes
     * @return
+    * @deprecated
     */
-   public QueryResult<Document> performSearch(Options options, DocumentSearchCriteriaDTO documentSearchAttributes)
+   public QueryResult<Document> performSearch(DataTableOptionsDTO options, DocumentSearchCriteriaDTO documentSearchAttributes)
    {
       DocumentQuery query = new DocumentQuery();
 
@@ -331,7 +334,132 @@ public class DocumentSearchUtils
 
       return docs;
    }
+   
+   /**
+    * @author Yogesh.Manware
+    * @param options
+    * @param documentSearchRequest
+    * @return
+    */
+   public QueryResult<Document> documentSearch(RepositorySearchRequestDTO documentSearchRequest)
+   {
+      DataTableOptionsDTO options = documentSearchRequest.dataTableOptions;
 
+      DocumentQuery query = new DocumentQuery();
+
+      SubsetPolicy subsetPolicy = new SubsetPolicy(options.pageSize, options.skip, true);
+      query.setPolicy(subsetPolicy);
+
+      addSortCriteria(query, options);
+
+      if (options.filter != null)
+      {
+         applyFiltering(query, options.filter);
+      }
+
+      FilterAndTerm filter = query.where(DocumentQuery.NAME.like(QueryUtils
+            .getFormattedString(documentSearchRequest.name)));
+
+      setDateFilter(documentSearchRequest.dateCreatedFrom, documentSearchRequest.dateCreateTo,
+            DocumentQuery.DATE_CREATED, filter);
+
+      setDateFilter(documentSearchRequest.dateLastModifiedFrom, documentSearchRequest.dateLastModifiedTo,
+            DocumentQuery.DATE_LAST_MODIFIED, filter);
+
+      if (StringUtils.isNotEmpty(documentSearchRequest.owner))
+      {
+         filter.and(DocumentQuery.OWNER.like(QueryUtils.getFormattedString(documentSearchRequest.owner)));
+      }
+
+      // Document types
+      List<String> documentTypeIds = documentSearchRequest.documentTypeIdIn;
+      if (documentTypeIds.size() > 0 && !checkIfAllOptionSelect(documentTypeIds))
+      {
+         FilterOrTerm filterOrTerm = filter.addOrTerm();
+         for (String documentTypeId : documentTypeIds)
+         {
+            filterOrTerm.add(DocumentQuery.DOCUMENT_TYPE_ID.isEqual(documentTypeId));
+         }
+      }
+
+      // Repository types
+      List<String> selectedRepo = documentSearchRequest.repositoryIn;
+      if (selectedRepo.size() > 0 && !checkIfAllOptionSelect(selectedRepo))
+      {
+         query.setPolicy(RepositoryPolicy.includeRepositories(CollectionUtils.newArrayList(selectedRepo)));
+      }
+      else
+      {
+         query.setPolicy(RepositoryPolicy.includeAllRepositories());
+      }
+
+      // File Type
+      if (StringUtils.isNotEmpty(documentSearchRequest.contentTypeLike))
+      {
+         filter.and(DocumentQuery.CONTENT_TYPE.like(QueryUtils
+               .getFormattedString(documentSearchRequest.contentTypeLike)));
+      }
+      else
+      {
+         List<String> mimeTypes = documentSearchRequest.contentTypeIn;
+         if (mimeTypes.size() > 0 && !checkIfAllOptionSelect(mimeTypes))
+         {
+            FilterOrTerm filterOrTerm = filter.addOrTerm();
+            for (String mimeType : mimeTypes)
+            {
+               filterOrTerm.add(DocumentQuery.CONTENT_TYPE.isEqual(mimeType));
+            }
+         }
+      }
+
+      if (StringUtils.isNotEmpty(documentSearchRequest.id))
+      {
+         filter.and(DocumentQuery.ID.like(QueryUtils.getFormattedString(documentSearchRequest.id)));
+      }
+
+      FilterCriterion contentFilter = null, dataFilter = null;
+      if (StringUtils.isNotEmpty(documentSearchRequest.contentLike))
+      {
+         contentFilter = DocumentQuery.CONTENT.like(QueryUtils.getFormattedString(Text
+               .escapeIllegalJcrChars(documentSearchRequest.contentLike)));
+         FilterOrTerm filterOrTerm = filter.addOrTerm();
+         filterOrTerm.add(contentFilter);
+      }
+      if (StringUtils.isNotEmpty(documentSearchRequest.metaDataLike))
+      {
+         dataFilter = DocumentQuery.META_DATA.any().like(
+               QueryUtils.getFormattedString(Text.escapeIllegalJcrChars(documentSearchRequest.metaDataLike)));
+         FilterOrTerm filterOrTerm = filter.addOrTerm();
+         filterOrTerm.add(dataFilter);
+      }
+
+      DocumentManagementService documentManagementService = ServiceFactoryUtils.getDocumentManagementService();
+      return documentManagementService.findDocuments(query);
+   }
+
+   /**
+    * @author Yogesh.Manware
+    * @param dateFrom
+    * @param dateTo
+    * @param dateAttributeName
+    * @param filter
+    */
+   private void setDateFilter(Date dateFrom, Date dateTo, FilterableAttribute dateAttributeName, FilterAndTerm filter)
+   {
+      if (null != dateFrom && null != dateTo)
+      {
+         filter.and(dateAttributeName.between(DateUtils.convertToGmt(dateFrom), DateUtils.convertToGmt(dateTo)));
+      }
+      else if (null != dateFrom)
+      {
+         filter.and(dateAttributeName.greaterOrEqual(DateUtils.convertToGmt(dateFrom)));
+      }
+      else if (null != dateTo)
+      {
+         filter.and(dateAttributeName.lessOrEqual(DateUtils.convertToGmt(dateTo)));
+      }
+   }
+   
    /**
     * 
     * @param query
@@ -448,7 +576,7 @@ public class DocumentSearchUtils
     * @param query
     * @param options
     */
-   private void addSortCriteria(Query query, Options options)
+   private void addSortCriteria(Query query, DataTableOptionsDTO options)
    {
       if (COL_DOCUMENT_NAME.equals(options.orderBy))
       {

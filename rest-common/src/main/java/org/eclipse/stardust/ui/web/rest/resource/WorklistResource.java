@@ -29,11 +29,11 @@ import javax.ws.rs.core.Response.Status;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.component.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.component.service.WorklistService;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.dto.MyProcessDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
@@ -76,7 +76,7 @@ public class WorklistResource
    {
       try
       {
-         Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
 
          QueryResultDTO resultDTO = getWorklistService().getWorklistForParticipant( participantQId, userId, options);
@@ -107,7 +107,7 @@ public class WorklistResource
    {
       try
       {
-         Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          QueryResultDTO resultDTO = getWorklistService().getWorklistForUser(userId, options, Boolean.valueOf(fetchAllStates));
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
@@ -136,7 +136,7 @@ public class WorklistResource
    {
       try
       {
-         Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          QueryResultDTO resultDTO = getWorklistService().getUnifiedWorklistForUser(userId, "default", options);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
@@ -163,7 +163,7 @@ public class WorklistResource
    {
       try
       {
-         Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          QueryResultDTO resultDTO = getWorklistService().getWorklistForHighCriticality(options);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
@@ -190,7 +190,7 @@ public class WorklistResource
    {
       try
       {
-         Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          QueryResultDTO resultDTO = getWorklistService().getAllAssignedWorkItems(options);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
@@ -218,7 +218,7 @@ public class WorklistResource
    {
       try
       {
-         Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          QueryResultDTO resultDTO = getWorklistService().getWorklistItemsFromDate(dateId, options);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
@@ -246,7 +246,7 @@ public class WorklistResource
    {
       try
       {
-         Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          QueryResultDTO resultDTO = getWorklistService().getWorklistByProcess(processQId, options);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
@@ -274,7 +274,7 @@ public class WorklistResource
    {
       try
       {
-         Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          QueryResultDTO resultDTO = getWorklistService().getWorklistForResubmissionActivities(options);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
@@ -301,7 +301,7 @@ public class WorklistResource
    {
       try
       {
-         Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          QueryResultDTO resultDTO = getWorklistService().getWorklistForLoggedInUser(options);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
@@ -328,7 +328,7 @@ public class WorklistResource
    {
       try
       {
-         Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          QueryResultDTO resultDTO = getWorklistService().getAllActivable(options);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
@@ -359,7 +359,7 @@ public class WorklistResource
       try
       {
          List<String> pInstanceOidList = new ArrayList<String>(Arrays.asList(pInstanceOids.split(",")));
-         Options options = new Options(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, DEFAULT_ORDER.equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          QueryResultDTO resultDTO = getWorklistService().getWorklistForProcessInstances(options, pInstanceOidList);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
@@ -412,7 +412,7 @@ public class WorklistResource
     * @param options
     * @param postData
     */
-   private void populatePostData(Options options, String postData)
+   private void populatePostData(DataTableOptionsDTO options, String postData)
    {
       List<DescriptorColumnDTO> availableDescriptors = processDefService.getDescriptorColumns(true);
       ActivityTableUtils.populatePostData(options, postData, availableDescriptors);

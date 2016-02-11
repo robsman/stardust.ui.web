@@ -72,11 +72,11 @@ import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.DateUtils;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ColumnDTO;
 import org.eclipse.stardust.ui.web.rest.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.dto.NotificationMap.NotificationDTO;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.OpenActivitiesDynamicUserObjectDTO;
 import org.eclipse.stardust.ui.web.rest.dto.PathDTO;
 import org.eclipse.stardust.ui.web.rest.dto.PendingActivitiesStatisticsDTO;
@@ -154,7 +154,7 @@ public class ActivityInstanceUtils
     * @param userId
     * @return
     */
-   public QueryResult< ? > getActivityInstances(Options options, ActivityInstanceQuery query)
+   public QueryResult< ? > getActivityInstances(DataTableOptionsDTO options, ActivityInstanceQuery query)
    {
       return getActivitiesByOids(options, null, query);
    }
@@ -163,7 +163,7 @@ public class ActivityInstanceUtils
     * @param userId
     * @return
     */
-   public QueryResult< ? > getActivitiesByOids(Options options, List<Long> oids, ActivityInstanceQuery query)
+   public QueryResult< ? > getActivitiesByOids(DataTableOptionsDTO options, List<Long> oids, ActivityInstanceQuery query)
    {
       if(query == null){
          query = ActivityInstanceQuery.findAll();

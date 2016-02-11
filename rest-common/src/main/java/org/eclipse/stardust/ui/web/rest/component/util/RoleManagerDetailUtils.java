@@ -24,7 +24,7 @@ import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
 import org.eclipse.stardust.ui.web.bcc.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.bcc.jsf.RoleItem;
 import org.eclipse.stardust.ui.web.bcc.jsf.UserItem;
-import org.eclipse.stardust.ui.web.rest.common.Options;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.RoleManagerDetailUserDTO;
 import org.eclipse.stardust.ui.web.rest.dto.RoleManagerDetailsDTO;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
@@ -321,7 +321,7 @@ public class RoleManagerDetailUtils
     * @param options
     * @return
     */
-   public QueryResult<ActivityInstance> getAllActivitiesForRole(String roleId, String departmentOid, Options options)
+   public QueryResult<ActivityInstance> getAllActivitiesForRole(String roleId, String departmentOid, DataTableOptionsDTO options)
    {
       Query query = createQuery(roleId, departmentOid, options);
       QueryResult<ActivityInstance> result = performSearch(query);
@@ -335,7 +335,7 @@ public class RoleManagerDetailUtils
     * @param options
     * @return
     */
-   private Query createQuery(String roleId, String departmentOid, Options options)
+   private Query createQuery(String roleId, String departmentOid, DataTableOptionsDTO options)
    {
       WorkflowFacade facade = WorkflowFacade.getWorkflowFacade();
       QualifiedModelParticipantInfo modelParticipantInfo = getModelParticipantInfo(roleId, departmentOid, facade);

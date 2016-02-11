@@ -65,9 +65,9 @@ import org.eclipse.stardust.engine.core.preferences.Preferences;
 import org.eclipse.stardust.engine.core.runtime.beans.removethis.SecurityProperties;
 import org.eclipse.stardust.ui.web.common.util.PortalTimestampProvider;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.component.exception.ExceptionHelper;
 import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.InvalidateUserStatusDTO;
 import org.eclipse.stardust.ui.web.rest.dto.NotificationMap;
 import org.eclipse.stardust.ui.web.rest.dto.NotificationMessageDTO;
@@ -140,7 +140,7 @@ public class ParticipantManagementUtils
    @Resource
    private ExceptionHelper exceptionHelper;
 
-   public QueryResultDTO getAllUsers(Boolean hideInvalidatedUsers, Options options)
+   public QueryResultDTO getAllUsers(Boolean hideInvalidatedUsers, DataTableOptionsDTO options)
    {
       UserQuery query = (UserQuery) createQuery(hideInvalidatedUsers);
 
@@ -242,7 +242,7 @@ public class ParticipantManagementUtils
     * @param query
     * @param options
     */
-   public void applyFiltering(Query query, Options options)
+   public void applyFiltering(Query query, DataTableOptionsDTO options)
    {
       FilterAndTerm filter = query.getFilter().addAndTerm();
 
@@ -353,7 +353,7 @@ public class ParticipantManagementUtils
     * @param query
     * @param options
     */
-   public void applySorting(Query query, Options options)
+   public void applySorting(Query query, DataTableOptionsDTO options)
    {
       if ("oid".equals(options.orderBy))
       {

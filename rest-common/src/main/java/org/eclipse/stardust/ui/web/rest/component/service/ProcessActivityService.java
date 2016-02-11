@@ -17,10 +17,10 @@ import javax.annotation.Resource;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ProcessActivityUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils.MODE;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ProcessSearchCriteriaDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
@@ -51,7 +51,7 @@ public class ProcessActivityService
     * @param processSearchAttributes
     * @return
     */
-   public QueryResultDTO performSearch(Options options, String postData,
+   public QueryResultDTO performSearch(DataTableOptionsDTO options, String postData,
          ProcessSearchCriteriaDTO processSearchAttributes, List<DescriptorColumnDTO> availableDescriptors)
    {
       if (processSearchAttributes.filterObject == 0)

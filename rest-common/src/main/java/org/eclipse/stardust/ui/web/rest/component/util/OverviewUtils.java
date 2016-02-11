@@ -24,7 +24,7 @@ import org.eclipse.stardust.engine.api.query.Query;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.query.SubsetPolicy;
 import org.eclipse.stardust.engine.api.runtime.LogEntry;
-import org.eclipse.stardust.ui.web.rest.common.Options;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.LogEntryDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.springframework.stereotype.Component;
@@ -35,7 +35,7 @@ public class OverviewUtils
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
 
-   public QueryResultDTO getAllLogEntries(Options options)
+   public QueryResultDTO getAllLogEntries(DataTableOptionsDTO options)
    {
       List<LogEntryDTO> logEntries = new ArrayList<LogEntryDTO>();
 
@@ -62,7 +62,7 @@ public class OverviewUtils
       return queryResultDTO;
    }
 
-   public void applySorting(Query query, Options options)
+   public void applySorting(Query query, DataTableOptionsDTO options)
    {
       if ("timeStamp".equals(options.orderBy))
       {

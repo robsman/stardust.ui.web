@@ -8,7 +8,7 @@ import org.eclipse.stardust.engine.api.query.SubsetPolicy;
 import org.eclipse.stardust.engine.api.query.UserGroupQuery;
 import org.eclipse.stardust.engine.api.query.UserGroups;
 import org.eclipse.stardust.engine.api.runtime.UserGroup;
-import org.eclipse.stardust.ui.web.rest.common.Options;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.springframework.stereotype.Component;
 
 /**
@@ -32,7 +32,7 @@ public class UserGroupUtils
     * @param options
     * @return
     */
-   public UserGroups getAllUserGroups(Options options)
+   public UserGroups getAllUserGroups(DataTableOptionsDTO options)
    {
       UserGroupQuery userGroupQuery = UserGroupQuery.findAll();
 
@@ -103,7 +103,7 @@ public class UserGroupUtils
     * @param userGroupQuery
     * @param options
     */
-   private void addSortCriteria(UserGroupQuery userGroupQuery, Options options)
+   private void addSortCriteria(UserGroupQuery userGroupQuery, DataTableOptionsDTO options)
    {
       if (COL_USERGROUP_NAME.equals(options.orderBy))
       {

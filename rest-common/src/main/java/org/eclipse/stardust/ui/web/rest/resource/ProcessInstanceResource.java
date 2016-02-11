@@ -43,13 +43,13 @@ import org.eclipse.stardust.engine.api.query.ProcessStateFilter;
 import org.eclipse.stardust.engine.core.query.statistics.api.BenchmarkProcessStatisticsQuery;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsConstants;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.component.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.component.service.ProcessInstanceService;
 import org.eclipse.stardust.ui.web.rest.component.util.ProcessInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.TrafficLightViewUtils;
 import org.eclipse.stardust.ui.web.rest.dto.AbstractDTO;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.JsonDTO;
@@ -294,7 +294,7 @@ public class ProcessInstanceResource
    {
       try
       {
-         Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
 
          return Response.ok(GsonUtils.toJsonHTMLSafeString(processInstanceService.getProcessInstances(null, options)),
@@ -319,7 +319,7 @@ public class ProcessInstanceResource
    {
       try
       {
-         Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
 
          JsonMarshaller jsonIo = new JsonMarshaller();
@@ -634,7 +634,7 @@ public class ProcessInstanceResource
     * @param postData
     * @return
     */
-   public Options populatePostData(Options options, String postData)
+   public DataTableOptionsDTO populatePostData(DataTableOptionsDTO options, String postData)
    {
       List<DescriptorColumnDTO> availableDescriptors = processDefService.getDescriptorColumns(true);
       return ProcessInstanceUtils.populatePostData(options, postData, availableDescriptors);

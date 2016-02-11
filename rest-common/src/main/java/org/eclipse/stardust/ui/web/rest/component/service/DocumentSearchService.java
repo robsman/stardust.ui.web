@@ -24,8 +24,8 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.Document;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.component.util.DocumentSearchUtils;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentSearchCriteriaDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentSearchResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentVersionDTO;
@@ -56,7 +56,7 @@ public class DocumentSearchService
       return documentSearchUtils.getFilterAttributes();
    }
 
-   public QueryResultDTO performSearch(Options options, DocumentSearchCriteriaDTO documentSearchAttributes)
+   public QueryResultDTO performSearch(DataTableOptionsDTO options, DocumentSearchCriteriaDTO documentSearchAttributes)
    {
       QueryResult<Document> docs = documentSearchUtils.performSearch(options, documentSearchAttributes);
       return buildDocumentSearchResult(docs);

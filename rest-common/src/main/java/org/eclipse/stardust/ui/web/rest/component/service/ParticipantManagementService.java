@@ -17,8 +17,8 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.component.util.ParticipantManagementUtils;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.InvalidateUserStatusDTO;
 import org.eclipse.stardust.ui.web.rest.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
@@ -36,7 +36,7 @@ public class ParticipantManagementService
     * 
     * @return
     */
-   public QueryResultDTO getAllUsers(Boolean hideInvalidatedUsers, Options options)
+   public QueryResultDTO getAllUsers(Boolean hideInvalidatedUsers, DataTableOptionsDTO options)
    {
       return participantManagementUtils.getAllUsers(hideInvalidatedUsers, options);
    }

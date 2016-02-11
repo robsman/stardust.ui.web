@@ -29,11 +29,11 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.common.ProcessSearchParameterConstants;
 import org.eclipse.stardust.ui.web.rest.component.service.ProcessActivityService;
 import org.eclipse.stardust.ui.web.rest.component.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityDTO;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ProcessDefinitionDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ProcessSearchCriteriaDTO;
@@ -88,7 +88,7 @@ public class ProcessActivityResource
          e.printStackTrace();
       }
 
-      Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
+      DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
 
       List<DescriptorColumnDTO> availableDescriptors = processDefinitionService.getDescriptorColumns(true);
 

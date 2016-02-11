@@ -52,7 +52,6 @@ import org.eclipse.stardust.engine.api.query.FilterOrTerm;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.core.query.statistics.api.BenchmarkActivityStatisticsQuery;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.component.service.ActivityInstanceService;
 import org.eclipse.stardust.ui.web.rest.component.service.DelegationComponent;
 import org.eclipse.stardust.ui.web.rest.component.service.ParticipantSearchComponent;
@@ -65,6 +64,7 @@ import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceOutDataDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ColumnDTO;
 import org.eclipse.stardust.ui.web.rest.dto.CompletedActivitiesStatisticsDTO;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.dto.InstanceCountsDTO;
@@ -598,7 +598,7 @@ public class ActivityInstanceResource
    {
       try
       {
-         Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          QueryResultDTO resultDTO = getActivityInstanceService().getAllInstances(options, null);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
@@ -625,7 +625,7 @@ public class ActivityInstanceResource
    {
       try
       {
-         Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
 
          JsonMarshaller jsonIo = new JsonMarshaller();
@@ -934,7 +934,7 @@ public class ActivityInstanceResource
          {
             aInstanceOids.add(Long.valueOf(oid));
          }
-         Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          QueryResultDTO resultDTO = getActivityInstanceService().getInstancesByOids(options, aInstanceOids, null);
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();
@@ -1000,7 +1000,7 @@ public class ActivityInstanceResource
     * @param options
     * @param postData
     */
-   private void populatePostData(Options options, String postData)
+   private void populatePostData(DataTableOptionsDTO options, String postData)
    {
       List<DescriptorColumnDTO> availableDescriptors = processDefService.getDescriptorColumns(true);
       ActivityTableUtils.populatePostData(options, postData, availableDescriptors);

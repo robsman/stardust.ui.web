@@ -35,7 +35,7 @@ import org.eclipse.stardust.ui.web.bcc.WorkflowFacade;
 import org.eclipse.stardust.ui.web.bcc.common.configuration.UserPreferencesEntries;
 import org.eclipse.stardust.ui.web.bcc.jsf.RoleItem;
 import org.eclipse.stardust.ui.web.bcc.jsf.UserItem;
-import org.eclipse.stardust.ui.web.rest.common.Options;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserManagerDetailRoleDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserManagerDetailsDTO;
 import org.eclipse.stardust.ui.web.viewscommon.utils.AuthorizationUtils;
@@ -297,7 +297,7 @@ public class UserManagerDetailUtils
     * @return
     */
 
-   public QueryResult<ActivityInstance> getAllActivitiesForUser(String userOid, Options options)
+   public QueryResult<ActivityInstance> getAllActivitiesForUser(String userOid, DataTableOptionsDTO options)
    {
       Query query = createQuery(userOid, options);
       QueryResult<ActivityInstance> result = performSearch(query);
@@ -311,7 +311,7 @@ public class UserManagerDetailUtils
     * @return
     */
 
-   private Query createQuery(String userOid, Options options)
+   private Query createQuery(String userOid, DataTableOptionsDTO options)
    {
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
             ActivityInstanceState.Application, ActivityInstanceState.Created, ActivityInstanceState.Hibernated,

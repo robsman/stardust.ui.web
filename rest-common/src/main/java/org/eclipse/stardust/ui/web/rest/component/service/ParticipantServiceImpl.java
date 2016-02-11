@@ -47,11 +47,11 @@ import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.engine.api.runtime.UserGroup;
 import org.eclipse.stardust.engine.api.runtime.UserService;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.component.util.ParticipantManagementUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.UserGroupUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ParticipantManagementUtils.ParticipantType;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ModelDTO;
 import org.eclipse.stardust.ui.web.rest.dto.request.DepartmentDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.ParticipantDTO;
@@ -141,7 +141,7 @@ public class ParticipantServiceImpl implements ParticipantService
     */
    private ParticipantDTO getUserGroupDTOs()
    {
-      UserGroups userGroups = userGroupUtils.getAllUserGroups(new Options());
+      UserGroups userGroups = userGroupUtils.getAllUserGroups(new DataTableOptionsDTO());
       ParticipantDTO userGroupDTOs = new ParticipantDTO();
       userGroupDTOs.id = "_internal_user_groups_";
       userGroupDTOs.name = MessagesViewsCommonBean.getInstance().get("views.participantTree.userGroup.label");

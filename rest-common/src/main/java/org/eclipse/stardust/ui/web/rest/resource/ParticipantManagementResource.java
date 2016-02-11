@@ -34,8 +34,8 @@ import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.component.service.ParticipantManagementService;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.InvalidateUserStatusDTO;
 import org.eclipse.stardust.ui.web.rest.dto.NotificationMessageDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
@@ -78,7 +78,7 @@ public class ParticipantManagementResource
    {
       try
       {
-         Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
          populateFilters(options, postData);
 
          JsonMarshaller jsonIo = new JsonMarshaller();
@@ -251,7 +251,7 @@ public class ParticipantManagementResource
     * @param postData
     * @return
     */
-   private Options populateFilters(Options options, String postData)
+   private DataTableOptionsDTO populateFilters(DataTableOptionsDTO options, String postData)
    {
       JsonMarshaller jsonIo = new JsonMarshaller();
       JsonObject postJSON = jsonIo.readJsonObject(postData);

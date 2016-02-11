@@ -34,9 +34,9 @@ import javax.ws.rs.core.Response.Status;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.component.service.DocumentSearchService;
 import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentSearchCriteriaDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentSearchFilterDTO;
 import org.eclipse.stardust.ui.web.rest.dto.InfoDTO;
@@ -104,7 +104,7 @@ public class DocumentSearchResource
 
       try
       {
-         Options options = new Options(pageSize, skip, orderBy, "desc".equalsIgnoreCase(orderByDir));
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, "desc".equalsIgnoreCase(orderByDir));
          populateFilters(options, postData);
 
          DocumentSearchCriteriaDTO documentSearchAttributes = getDocumentSearchCriteria(postData);
@@ -254,7 +254,7 @@ public class DocumentSearchResource
     * @param postData
     * @return
     */
-   private Options populateFilters(Options options, String postData)
+   private DataTableOptionsDTO populateFilters(DataTableOptionsDTO options, String postData)
    {
       JsonMarshaller jsonIo = new JsonMarshaller();
       JsonObject postJSON = jsonIo.readJsonObject(postData);

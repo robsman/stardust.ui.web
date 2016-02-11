@@ -16,19 +16,17 @@ import java.util.Map;
 import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.CollectionUtils;
-import org.eclipse.stardust.common.error.PublicException;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils;
-import org.eclipse.stardust.ui.web.rest.component.util.WorklistUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils.MODE;
+import org.eclipse.stardust.ui.web.rest.component.util.WorklistUtils;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.MyProcessDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.TrivialManualActivityDTO;
-import org.eclipse.stardust.ui.web.rest.dto.response.ParticipantDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.WorklistParticipantDTO;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
 import org.springframework.stereotype.Component;
@@ -51,7 +49,7 @@ public class WorklistService
     * @param string
     * @return
     */
-   public QueryResultDTO getWorklistForParticipant(String participantQId, String userId, Options options)
+   public QueryResultDTO getWorklistForParticipant(String participantQId, String userId, DataTableOptionsDTO options)
    {
       QueryResult< ? > queryResult = worklistUtils.getWorklistForParticipant(participantQId, userId, options);
       return getTableResult(queryResult, options.fetchTrivialManualActivities);
@@ -61,7 +59,7 @@ public class WorklistService
     * @param userId
     * @return
     */
-   public QueryResultDTO getWorklistForUser(String userId, Options options, boolean fetchAllStates)
+   public QueryResultDTO getWorklistForUser(String userId, DataTableOptionsDTO options, boolean fetchAllStates)
    {
       QueryResult< ? > queryResult = worklistUtils.getWorklistForUser(userId, options, fetchAllStates);
       return getTableResult(queryResult, options.fetchTrivialManualActivities);
@@ -71,7 +69,7 @@ public class WorklistService
     * @param userId
     * @return
     */
-   public QueryResultDTO getUnifiedWorklistForUser(String userId, String context, Options options)
+   public QueryResultDTO getUnifiedWorklistForUser(String userId, String context, DataTableOptionsDTO options)
    {
       QueryResult< ? > queryResult = worklistUtils.getUnifiedWorklistForUser(userId, options);
       return getTableResult(queryResult, options.fetchTrivialManualActivities);
@@ -84,7 +82,7 @@ public class WorklistService
     * @param options
     * @return
     */
-   public QueryResultDTO getWorklistForHighCriticality(Options options)
+   public QueryResultDTO getWorklistForHighCriticality(DataTableOptionsDTO options)
    {
       QueryResult< ? > queryResult = worklistUtils.getWorklistForHighCriticality(options);
       return getTableResult(queryResult, options.fetchTrivialManualActivities);
@@ -96,7 +94,7 @@ public class WorklistService
     * @param options
     * @return
     */
-   public QueryResultDTO getAllAssignedWorkItems(Options options)
+   public QueryResultDTO getAllAssignedWorkItems(DataTableOptionsDTO options)
    {
       QueryResult< ? > queryResult = worklistUtils.getAllAssignedWorkItems(options);
       return getTableResult(queryResult, options.fetchTrivialManualActivities);
@@ -108,7 +106,7 @@ public class WorklistService
     * @param options
     * @return
     */
-   public QueryResultDTO getWorklistItemsFromDate(String dateId, Options options)
+   public QueryResultDTO getWorklistItemsFromDate(String dateId, DataTableOptionsDTO options)
    {
       QueryResult< ? > queryResult = worklistUtils.getWorklistItemsFromDate(dateId, options);
       return getTableResult(queryResult, options.fetchTrivialManualActivities);
@@ -120,7 +118,7 @@ public class WorklistService
     * @param options
     * @return
     */
-   public QueryResultDTO getWorklistByProcess(String processQId, Options options)
+   public QueryResultDTO getWorklistByProcess(String processQId, DataTableOptionsDTO options)
    {
       QueryResult< ? > queryResult = worklistUtils.getWorklistByProcess(processQId, options);
       return getTableResult(queryResult, options.fetchTrivialManualActivities);
@@ -131,7 +129,7 @@ public class WorklistService
     * @param options
     * @return
     */
-   public QueryResultDTO getWorklistForResubmissionActivities(Options options)
+   public QueryResultDTO getWorklistForResubmissionActivities(DataTableOptionsDTO options)
    {
       QueryResult< ? > queryResult = worklistUtils.getWorklistForResubmissionActivities(options);
       QueryResultDTO resultDTO = null;
@@ -167,7 +165,7 @@ public class WorklistService
     * @param options
     * @return
     */
-   public QueryResultDTO getWorklistForLoggedInUser(Options options)
+   public QueryResultDTO getWorklistForLoggedInUser(DataTableOptionsDTO options)
    {
       QueryResult< ? > queryResult = worklistUtils.getWorklistForLoggedInUser(options);
       return getTableResult(queryResult, options.fetchTrivialManualActivities);
@@ -178,7 +176,7 @@ public class WorklistService
     * @param options
     * @return
     */
-   public QueryResultDTO getAllActivable(Options options)
+   public QueryResultDTO getAllActivable(DataTableOptionsDTO options)
    {
       QueryResult< ? > queryResult = worklistUtils.getAllActivable(options);
       return getTableResult(queryResult, options.fetchTrivialManualActivities);
@@ -189,7 +187,7 @@ public class WorklistService
     * @param options
     * @return
     */
-   public QueryResultDTO getWorklistForProcessInstances(Options options, List<String> pInstanceOids)
+   public QueryResultDTO getWorklistForProcessInstances(DataTableOptionsDTO options, List<String> pInstanceOids)
    {
       QueryResult< ? > queryResult = worklistUtils.getWorklistForProcessInstances(options, pInstanceOids);
       return ActivityTableUtils.buildTableResult(queryResult, MODE.WORKLIST);

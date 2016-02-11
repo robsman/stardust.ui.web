@@ -19,8 +19,8 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.query.UserGroups;
 import org.eclipse.stardust.engine.api.runtime.UserGroup;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.component.util.UserGroupUtils;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserGroupDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserGroupQueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
@@ -43,7 +43,7 @@ public class UserGroupService
     * @param options
     * @return
     */
-   public UserGroupQueryResultDTO getAllUserGroups(Options options)
+   public UserGroupQueryResultDTO getAllUserGroups(DataTableOptionsDTO options)
    {
       UserGroups userGroups = userGroupUtils.getAllUserGroups(options);
       List<UserGroupDTO> allUserGroupsDTO = DTOBuilder.buildList(userGroups, UserGroupDTO.class);

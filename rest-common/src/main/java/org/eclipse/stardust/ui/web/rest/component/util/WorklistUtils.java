@@ -49,11 +49,11 @@ import org.eclipse.stardust.engine.api.runtime.UserInfo;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.ReflectionUtils;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.common.Resources;
 import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.component.service.UserService;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.MyProcessDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserDTO;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
@@ -67,7 +67,6 @@ import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCon
 import org.eclipse.stardust.ui.web.viewscommon.common.provider.DefaultAssemblyLineActivityProvider;
 import org.eclipse.stardust.ui.web.viewscommon.common.provider.IAssemblyLineActivityProvider;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.SpiConstants;
-import org.eclipse.stardust.ui.web.viewscommon.messages.MessagesViewsCommonBean;
 import org.eclipse.stardust.ui.web.viewscommon.utils.I18nUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ParticipantUtils;
@@ -105,7 +104,7 @@ public class WorklistUtils
     * @param participantQId
     * @return
     */
-   public QueryResult< ? > getWorklistForParticipant(String participantQId, String userId, Options options)
+   public QueryResult< ? > getWorklistForParticipant(String participantQId, String userId, DataTableOptionsDTO options)
    {
       // If the userId is not passed consider the user to be the logged in user.
       // User id is required to differentiate between the particpants when the deputy logs
@@ -137,7 +136,7 @@ public class WorklistUtils
     * @param userId
     * @return
     */
-   public QueryResult< ? > getWorklistForUser(String userId, Options options, boolean fetchAllStates)
+   public QueryResult< ? > getWorklistForUser(String userId, DataTableOptionsDTO options, boolean fetchAllStates)
    {
       User user = serviceFactoryUtils.getUserService().getUser(userId);
 
@@ -191,7 +190,7 @@ public class WorklistUtils
     * @param userId
     * @return
     */
-   public QueryResult< ? > getUnifiedWorklistForUser(String userId, Options options)
+   public QueryResult< ? > getUnifiedWorklistForUser(String userId, DataTableOptionsDTO options)
    {
       User user = serviceFactoryUtils.getUserService().getUser(userId);
 
@@ -233,7 +232,7 @@ public class WorklistUtils
     * @param options
     * @return
     */
-   public QueryResult< ? > getWorklistForHighCriticality(Options options)
+   public QueryResult< ? > getWorklistForHighCriticality(DataTableOptionsDTO options)
    {
       ActivityInstanceQuery criticalActivitiesQuery = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
             ActivityInstanceState.Application, ActivityInstanceState.Suspended});
@@ -269,7 +268,7 @@ public class WorklistUtils
     * @param options
     * @return
     */
-   public QueryResult< ? > getAllAssignedWorkItems(Options options)
+   public QueryResult< ? > getAllAssignedWorkItems(DataTableOptionsDTO options)
    {
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
             ActivityInstanceState.Application, ActivityInstanceState.Suspended});
@@ -295,7 +294,7 @@ public class WorklistUtils
     * @param options
     * @return
     */
-   public QueryResult< ? > getWorklistItemsFromDate(String dateId, Options options)
+   public QueryResult< ? > getWorklistItemsFromDate(String dateId, DataTableOptionsDTO options)
    {
       Date fromDate = ActivityTableUtils.determineDate(dateId);
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
@@ -316,7 +315,7 @@ public class WorklistUtils
     * @param options
     * @return
     */
-   public QueryResult< ? > getWorklistByProcess(String processQId, Options options)
+   public QueryResult< ? > getWorklistByProcess(String processQId, DataTableOptionsDTO options)
    {
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
             ActivityInstanceState.Application, ActivityInstanceState.Suspended});
@@ -343,7 +342,7 @@ public class WorklistUtils
     * @param options
     * @return
     */
-   public QueryResult< ? > getWorklistForResubmissionActivities(Options options)
+   public QueryResult< ? > getWorklistForResubmissionActivities(DataTableOptionsDTO options)
    {
 
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(ActivityInstanceState.Hibernated);
@@ -385,7 +384,7 @@ public class WorklistUtils
     * @param options
     * @return
     */
-   public QueryResult< ? > getWorklistForLoggedInUser(Options options)
+   public QueryResult< ? > getWorklistForLoggedInUser(DataTableOptionsDTO options)
    {
 
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
@@ -417,7 +416,7 @@ public class WorklistUtils
     * @param options
     * @return
     */
-   public QueryResult< ? > getAllActivable(Options options)
+   public QueryResult< ? > getAllActivable(DataTableOptionsDTO options)
    {
 
       ActivityInstanceQuery query = ActivityInstanceQuery.findInState(new ActivityInstanceState[] {
@@ -443,7 +442,7 @@ public class WorklistUtils
     * @param options
     * @return
     */
-   public QueryResult< ? > getWorklistForProcessInstances(Options options, List<String> pInstanceOids)
+   public QueryResult< ? > getWorklistForProcessInstances(DataTableOptionsDTO options, List<String> pInstanceOids)
    {
       ActivityInstanceQuery query = ActivityInstanceQuery.findAlive();
       FilterOrTerm orTerm = query.getFilter().addOrTerm();

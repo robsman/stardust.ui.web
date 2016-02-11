@@ -18,7 +18,7 @@ import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.model.DataPath;
 import org.eclipse.stardust.engine.api.query.DescriptorPolicy;
 import org.eclipse.stardust.engine.api.query.Query;
-import org.eclipse.stardust.ui.web.rest.common.Options;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 
 /**
  * 
@@ -66,7 +66,7 @@ public class DescriptorUtils
    /**
     * @param query
     */
-   public static void applyDescriptorPolicy(Query query, Options options)
+   public static void applyDescriptorPolicy(Query query, DataTableOptionsDTO options)
    {
       if (options.allDescriptorsVisible)
       {

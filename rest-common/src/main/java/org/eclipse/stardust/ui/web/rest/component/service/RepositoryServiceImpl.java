@@ -24,6 +24,7 @@ import javax.annotation.Resource;
 
 import org.eclipse.stardust.common.Base64;
 import org.eclipse.stardust.common.CollectionUtils;
+import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.DmsUtils;
 import org.eclipse.stardust.engine.api.runtime.Document;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
@@ -35,13 +36,16 @@ import org.eclipse.stardust.engine.core.spi.dms.IRepositoryInstanceInfo;
 import org.eclipse.stardust.engine.core.spi.dms.IRepositoryProviderInfo;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
 import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
+import org.eclipse.stardust.ui.web.rest.component.util.DocumentSearchUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ServiceFactoryUtils;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.dto.NotificationMap.NotificationDTO;
+import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DocumentDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.dto.builder.FolderDTOBuilder;
 import org.eclipse.stardust.ui.web.rest.dto.request.DocumentContentRequestDTO;
+import org.eclipse.stardust.ui.web.rest.dto.request.RepositorySearchRequestDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.RepositoryInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.RepositoryProviderDTO;
@@ -74,6 +78,9 @@ public class RepositoryServiceImpl implements RepositoryService
 
    @Resource
    private RestCommonClientMessages restCommonClientMessages;
+   
+   @Resource
+   private DocumentSearchUtils documentSearchUtils;
 
    // *******************************
    // Folder specific
@@ -527,6 +534,29 @@ public class RepositoryServiceImpl implements RepositoryService
       return document;
    }
 
+   /**
+    * @param searchRequestDTO
+    * @return
+    */
+   public QueryResultDTO SearchDocuments(RepositorySearchRequestDTO searchRequestDTO)
+   {
+      QueryResult<Document> docs = documentSearchUtils.documentSearch(searchRequestDTO);
+      return buildDocumentSearchResult(docs);
+   }
+
+   /**
+    * @param docs
+    * @return
+    */
+   private QueryResultDTO buildDocumentSearchResult(QueryResult<Document> docs)
+   {
+      QueryResultDTO resultDTO = new QueryResultDTO();
+      resultDTO.list = DocumentDTOBuilder.build(docs, getDMS());
+      resultDTO.totalCount = docs.getTotalCount();
+      return resultDTO;
+   }
+   
+   
    // *******************************
    // Repository level operations
    // *******************************
@@ -648,6 +678,15 @@ public class RepositoryServiceImpl implements RepositoryService
    {
       validateRepositoryId(repositoryId);
       DocumentMgmtUtility.getDocumentManagementService().unbindRepository(repositoryId);
+   }
+   
+   /**
+    * @param repositorySearchRequestDTO
+    */
+   @Override
+   public QueryResultDTO searchResources(RepositorySearchRequestDTO repositorySearchRequestDTO)
+   {
+      return SearchDocuments(repositorySearchRequestDTO);
    }
 
    // *******************************

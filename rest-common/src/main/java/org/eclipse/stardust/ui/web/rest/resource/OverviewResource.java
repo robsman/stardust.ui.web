@@ -25,8 +25,8 @@ import javax.ws.rs.core.Response.Status;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.component.service.OverviewService;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 
 /**
@@ -54,7 +54,7 @@ public class OverviewResource
    {
       try
       {
-         Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
          QueryResultDTO resultDTO = overviewService.getAllLogEntries(options);
 
          return Response.ok(resultDTO.toJson(), MediaType.APPLICATION_JSON).build();

@@ -15,6 +15,7 @@ import java.util.Map;
 import javax.annotation.Resource;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -28,6 +29,9 @@ import org.eclipse.stardust.ui.web.rest.component.service.RepositoryService;
 import org.eclipse.stardust.ui.web.rest.documentation.RequestDescription;
 import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
 import org.eclipse.stardust.ui.web.rest.dto.JsonDTO;
+import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
+import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
+import org.eclipse.stardust.ui.web.rest.dto.request.RepositorySearchRequestDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.RepositoryInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.RepositoryProviderDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,5 +132,18 @@ public class RepositoryResource
    {
       repositoryService.unbindRepository(repositoryId);
       return Response.ok(GsonUtils.toJsonHTMLSafeString(restCommonClientMessages.get("success.message"))).build();
+   }
+   
+   @POST
+   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/search")
+   public Response searchResources(String postData) throws Exception
+   {
+      // default orderBy is resource name
+      RepositorySearchRequestDTO repositorySearchRequestDTO = DTOBuilder.buildFromJSON(postData,
+            RepositorySearchRequestDTO.class, null);
+      QueryResultDTO dto = repositoryService.searchResources(repositorySearchRequestDTO);
+      return Response.ok(dto.toJson(), MediaType.APPLICATION_JSON).build();
    }
 }

@@ -17,11 +17,12 @@ import java.util.Set;
 import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
 import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentDTO;
+import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.request.DocumentContentRequestDTO;
+import org.eclipse.stardust.ui.web.rest.dto.request.RepositorySearchRequestDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.FolderDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.RepositoryInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.RepositoryProviderDTO;
-import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
 import org.eclipse.stardust.ui.web.viewscommon.views.document.IResourceDataProvider;
 
 /**
@@ -185,5 +186,11 @@ public interface RepositoryService
     * @param repositoryId
     */
    void unbindRepository(String repositoryId);
+   
+   /**
+    * @param repositorySearchRequestDTO
+    * @return
+    */
+   QueryResultDTO searchResources(RepositorySearchRequestDTO repositorySearchRequestDTO);
 
 }

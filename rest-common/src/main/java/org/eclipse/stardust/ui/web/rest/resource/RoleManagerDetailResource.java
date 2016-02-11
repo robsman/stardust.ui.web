@@ -33,10 +33,10 @@ import javax.ws.rs.core.Response.Status;
 import org.eclipse.stardust.common.error.ObjectNotFoundException;
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.component.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.component.service.RoleManagerDetailService;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.RoleManagerDetailsDTO;
@@ -162,7 +162,7 @@ public class RoleManagerDetailResource
    {
       try
       {
-         Options options = new Options(pageSize, skip, orderBy,
+         DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy,
                "asc".equalsIgnoreCase(orderByDir));
          populatePostData(options, postData);
          
@@ -192,7 +192,7 @@ public class RoleManagerDetailResource
     * @param options
     * @param postData
     */
-   private void populatePostData(Options options, String postData)
+   private void populatePostData(DataTableOptionsDTO options, String postData)
    {
       List<DescriptorColumnDTO> availableDescriptors = processDefService.getDescriptorColumns(true);
       ActivityTableUtils.populatePostData(options, postData, availableDescriptors);

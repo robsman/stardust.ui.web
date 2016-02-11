@@ -42,7 +42,6 @@ import org.eclipse.stardust.engine.api.runtime.TransitionTarget;
 import org.eclipse.stardust.engine.core.runtime.beans.AbortScope;
 import org.eclipse.stardust.engine.extensions.dms.data.DmsFolderBean;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityStatisticsUtils;
@@ -56,6 +55,7 @@ import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceOutDataDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ColumnDTO;
 import org.eclipse.stardust.ui.web.rest.dto.CompletedActivitiesStatisticsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.CriticalityDTO;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.dto.InstanceCountsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.NotificationMap;
@@ -396,7 +396,7 @@ public class ActivityInstanceService
     * @param userId
     * @return
     */
-   public QueryResultDTO getAllInstances(Options options, ActivityInstanceQuery query)
+   public QueryResultDTO getAllInstances(DataTableOptionsDTO options, ActivityInstanceQuery query)
    {
       QueryResult< ? > queryResult = activityInstanceUtils.getActivityInstances(options, query);
       if(CollectionUtils.isNotEmpty(options.extraColumns))
@@ -412,7 +412,7 @@ public class ActivityInstanceService
    /**
     * @return
     */
-   public QueryResultDTO getInstancesByOids( Options options, List<Long> oids, ActivityInstanceQuery query)
+   public QueryResultDTO getInstancesByOids( DataTableOptionsDTO options, List<Long> oids, ActivityInstanceQuery query)
    {
       QueryResult< ? > queryResult = activityInstanceUtils.getActivitiesByOids(options, oids, query);
       if(CollectionUtils.isNotEmpty(options.extraColumns))

@@ -52,7 +52,6 @@ import org.eclipse.stardust.engine.ws.WsApiStartProcessUtils;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessages;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityInstanceUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ProcessDefinitionUtils;
@@ -60,6 +59,7 @@ import org.eclipse.stardust.ui.web.rest.dto.AbstractDTO;
 import org.eclipse.stardust.ui.web.rest.dto.AttachToCaseDTO;
 import org.eclipse.stardust.ui.web.rest.dto.ColumnDTO;
 import org.eclipse.stardust.ui.web.rest.dto.CreateCaseDTO;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentDataDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentTypeDTO;
@@ -482,7 +482,7 @@ public class ProcessInstanceService
       return GsonUtils.toJsonHTMLSafeString(notificationMap);
    }
 
-   public QueryResultDTO getProcessInstances(ProcessInstanceQuery query, Options options)
+   public QueryResultDTO getProcessInstances(ProcessInstanceQuery query, DataTableOptionsDTO options)
    {
       QueryResult< ? extends ProcessInstance> queryResult = processInstanceUtilsREST
             .getProcessInstances(query, options);

@@ -25,14 +25,14 @@ import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.QueryService;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.common.util.PortalTimestampProvider;
-import org.eclipse.stardust.ui.web.rest.common.Options;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.viewscommon.utils.ServiceFactoryUtils;
 import org.springframework.stereotype.Component;
 
 @Component
 public class StrandedActivitiesUtils
 {
-   public QueryResult<ActivityInstance> getStrandedActivities(Options options)
+   public QueryResult<ActivityInstance> getStrandedActivities(DataTableOptionsDTO options)
    {
       QueryService queryService = ServiceFactoryUtils.getQueryService();
       Query query = createQuery(queryService, options);
@@ -40,7 +40,7 @@ public class StrandedActivitiesUtils
       return result;
    }
 
-   private Query createQuery(QueryService queryService, Options options)
+   private Query createQuery(QueryService queryService, DataTableOptionsDTO options)
    {
       ActivityInstanceQuery aiQuery = ActivityInstanceQuery.findAll();
 

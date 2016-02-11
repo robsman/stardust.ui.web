@@ -8,17 +8,15 @@
  * Contributors:
  *    SunGard CSA LLC - initial API and implementation and/or initial documentation
  *******************************************************************************/
-package org.eclipse.stardust.ui.web.rest.common;
+package org.eclipse.stardust.ui.web.rest.dto;
 
 import java.util.List;
-
-import org.eclipse.stardust.ui.web.rest.dto.FilterDTO;
 
 /**
  * @author Subodh.Godbole
  * @version $Revision: $
  */
-public class Options {
+public class DataTableOptionsDTO extends AbstractDTO {
 	public int pageSize = Integer.MAX_VALUE;
 	public int skip = 0;
 	public String orderBy;
@@ -31,7 +29,7 @@ public class Options {
     // Extra Columns fetched conditionally
     public List<String> extraColumns;
 
-	public Options() {
+	public DataTableOptionsDTO() {
 
 	}
 
@@ -39,7 +37,7 @@ public class Options {
 	 * @param pageSize
 	 * @param skip
 	 */
-	public Options(int pageSize, int skip, String orderBy, boolean asc) {
+	public DataTableOptionsDTO(int pageSize, int skip, String orderBy, boolean asc) {
 		super();
 		this.pageSize = pageSize;
 		this.skip = skip;

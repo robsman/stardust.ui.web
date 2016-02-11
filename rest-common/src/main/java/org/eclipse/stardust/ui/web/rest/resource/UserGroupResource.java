@@ -25,8 +25,8 @@ import javax.ws.rs.core.Response;
 
 import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.component.service.UserGroupService;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserGroupDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserGroupQueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
@@ -57,7 +57,7 @@ public class UserGroupResource
          @QueryParam("orderBy") @DefaultValue("oid") String orderBy,
          @QueryParam("orderByDir") @DefaultValue("asc") String orderByDir)
    {
-      Options options = new Options(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
+      DataTableOptionsDTO options = new DataTableOptionsDTO(pageSize, skip, orderBy, "asc".equalsIgnoreCase(orderByDir));
       UserGroupQueryResultDTO allUserGroupsDTO = getUserGroupService().getAllUserGroups(options);
       return Response.ok(allUserGroupsDTO.toJson(), MediaType.APPLICATION_JSON).build();
    }

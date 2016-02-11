@@ -64,28 +64,27 @@ import org.eclipse.stardust.engine.api.query.WorklistQuery;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.DepartmentInfo;
-import org.eclipse.stardust.engine.api.runtime.ProcessInstance;
 import org.eclipse.stardust.engine.api.runtime.QualityAssuranceUtils.QualityAssuranceState;
 import org.eclipse.stardust.engine.api.runtime.User;
 import org.eclipse.stardust.ui.web.common.app.PortalApplication;
 import org.eclipse.stardust.ui.web.common.column.ColumnPreference.ColumnDataType;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.component.service.ParticipantSearchComponent;
 import org.eclipse.stardust.ui.web.rest.dto.ActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.BenchmarkDTO;
 import org.eclipse.stardust.ui.web.rest.dto.CriticalityDTO;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DescriptorColumnDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DescriptorDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentDTO;
+import org.eclipse.stardust.ui.web.rest.dto.FilterDTO.BooleanDTO;
+import org.eclipse.stardust.ui.web.rest.dto.FilterDTO.RangeDTO;
+import org.eclipse.stardust.ui.web.rest.dto.FilterDTO.TextSearchDTO;
 import org.eclipse.stardust.ui.web.rest.dto.PriorityDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.StatusDTO;
 import org.eclipse.stardust.ui.web.rest.dto.TrivialActivityInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.TrivialManualActivityDTO;
 import org.eclipse.stardust.ui.web.rest.dto.WorklistFilterDTO;
-import org.eclipse.stardust.ui.web.rest.dto.FilterDTO.BooleanDTO;
-import org.eclipse.stardust.ui.web.rest.dto.FilterDTO.RangeDTO;
-import org.eclipse.stardust.ui.web.rest.dto.FilterDTO.TextSearchDTO;
 import org.eclipse.stardust.ui.web.rest.dto.WorklistFilterDTO.DescriptorFilterDTO;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.rest.dto.response.ParticipantDTO;
@@ -172,7 +171,7 @@ public class ActivityTableUtils
     * @param options
     *           Options
     */
-   public static void addFilterCriteria(Query query, Options options)
+   public static void addFilterCriteria(Query query, DataTableOptionsDTO options)
    {
 
       WorklistFilterDTO filterDTO = (WorklistFilterDTO) options.filter;
@@ -403,7 +402,7 @@ public class ActivityTableUtils
     * @param options
     * @param query
     */
-   public static void addDescriptorPolicy(Options options, Query query)
+   public static void addDescriptorPolicy(DataTableOptionsDTO options, Query query)
    {
       if(options.allDescriptorsVisible){
          query.setPolicy(DescriptorPolicy.WITH_DESCRIPTORS);
@@ -481,7 +480,7 @@ public class ActivityTableUtils
     * @param query
     * @param options
     */
-   public static void addSortCriteria(Query query, Options options)
+   public static void addSortCriteria(Query query, DataTableOptionsDTO options)
    {
       boolean worklistQuery = query instanceof WorklistQuery;
 
@@ -583,7 +582,7 @@ public class ActivityTableUtils
     * @param postData
     * @return
     */
-   public static Options populatePostData(Options options, String postData,
+   public static DataTableOptionsDTO populatePostData(DataTableOptionsDTO options, String postData,
          List<DescriptorColumnDTO> availableDescriptorColumns)
    {
       JsonMarshaller jsonIo = new JsonMarshaller();
@@ -880,7 +879,7 @@ public class ActivityTableUtils
     * @param query
     * @param options
     */
-   public static void addCriterias(Query query,Options options){
+   public static void addCriterias(Query query,DataTableOptionsDTO options){
       addDescriptorPolicy(options, query);
       addSortCriteria(query, options);
       addFilterCriteria(query, options);

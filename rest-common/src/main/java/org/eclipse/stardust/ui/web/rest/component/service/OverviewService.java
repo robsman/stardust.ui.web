@@ -15,8 +15,8 @@ package org.eclipse.stardust.ui.web.rest.component.service;
 
 import javax.annotation.Resource;
 
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.component.util.OverviewUtils;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +26,7 @@ public class OverviewService
    @Resource
    private OverviewUtils overviewUtils;
 
-   public QueryResultDTO getAllLogEntries(Options options)
+   public QueryResultDTO getAllLogEntries(DataTableOptionsDTO options)
    {
       return overviewUtils.getAllLogEntries(options);
    }

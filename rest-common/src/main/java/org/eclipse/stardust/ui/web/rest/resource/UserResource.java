@@ -215,6 +215,28 @@ public class UserResource
       }
 
    }
+   
+   /**
+    * This method returns runtime permissions for logged in user.
+    * 
+    * @return
+    */
+   @GET
+   @Path("/whoAmI/participant-grants")
+   public Response getGrantsForLoggedInUser()
+   {
+      try
+      {
+         UserPermissionsDTO permissionsDTO = userService.getPermissionsForLoggedInUser();
+         return Response.ok(permissionsDTO.toJson(), MediaType.APPLICATION_JSON).build();
+      }
+      catch (Exception e)
+      {
+         trace.error("", e);
+         return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+      }
+
+   }
 
    /**
     * This method returns the logged In user

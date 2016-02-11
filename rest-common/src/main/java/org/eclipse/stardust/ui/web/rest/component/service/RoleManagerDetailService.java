@@ -21,10 +21,10 @@ import javax.annotation.Resource;
 import org.eclipse.stardust.common.CollectionUtils;
 import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
-import org.eclipse.stardust.ui.web.rest.common.Options;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.RoleManagerDetailUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils.MODE;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.RoleManagerDetailsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.UserAuthorizationStatusDTO;
@@ -84,7 +84,7 @@ public class RoleManagerDetailService
     * @return
     */
    public QueryResultDTO getAllActivitiesForRole(String roleId,
-         String departmentOid, Options options){
+         String departmentOid, DataTableOptionsDTO options){
       QueryResult<ActivityInstance> queryResult = roleManagerDetailUtils.getAllActivitiesForRole(roleId, departmentOid, options);
       if(CollectionUtils.isNotEmpty(options.extraColumns))
       {
