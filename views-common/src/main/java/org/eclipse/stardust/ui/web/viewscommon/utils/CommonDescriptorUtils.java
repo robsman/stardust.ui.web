@@ -411,7 +411,7 @@ public static List<ProcessDescriptor> createProcessDescriptors(Map<String, Objec
                      if(null != text && StringUtils.isNotEmpty(text.toString()))
                      {
                         processDescriptor = new ProcessDescriptor(entry.getKey(), I18nUtils.getDataPathName(entry.getValue()),
-                              formatDescriptorValue(descriptors.get(entry.getKey()), dmWrapper.getType()), true, text.toString());   
+                              formatDescriptorValue(descriptors.get(entry.getKey()), dmWrapper.getType()), true);   
                      }
                      else
                      {

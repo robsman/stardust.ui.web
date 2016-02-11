@@ -94,6 +94,7 @@ import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.Constants;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
 import org.eclipse.stardust.ui.web.viewscommon.common.criticality.CriticalityCategory;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorColumnUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.GenericDescriptorFilterModel;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.NumberRange;
@@ -1030,7 +1031,19 @@ public class ActivityTableUtils
                descriptors.put(desc.getId(), descriptorDto);
             }else{
                ProcessDescriptor desc = (ProcessDescriptor) descriptor;
-               DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey() , desc.getValue(), false, null, desc.isLink(), desc.getLinkText());
+               DescriptorDTO descriptorDto = null;
+               if(desc.isLink())
+               {
+                  // Fetch the dataPath from Process Instance to read instance 'Link Text' attribute value
+                  List<DataPath> dataPaths = processInstanceDetails.getDescriptorDefinitions();
+                  String linkText = DescriptorColumnUtils.getLinkDescriptorText(desc.getId(), dataPaths);
+                  descriptorDto = new DescriptorDTO(desc.getKey() , desc.getValue(), false, null, desc.isLink(), linkText);
+               }
+               else
+               {
+                  descriptorDto = new DescriptorDTO(desc.getKey() , desc.getValue(), false, null);
+               }
+               
                descriptors.put(desc.getId(), descriptorDto);
             }
          }

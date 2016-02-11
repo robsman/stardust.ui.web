@@ -518,4 +518,16 @@ public class DescriptorColumnUtils
       }
       return false;
    }
+   
+   public static String getLinkDescriptorText(String descId, List<DataPath> dataPaths)
+   {
+      for(DataPath path : dataPaths)
+      {
+         if(path.getId().equals(descId))
+         {
+            return (String) path.getAttribute("text");
+         }
+      }
+      return null;
+   }
 }

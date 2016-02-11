@@ -92,6 +92,7 @@ import org.eclipse.stardust.ui.web.rest.util.RelatedProcessSearchUtils;
 import org.eclipse.stardust.ui.web.viewscommon.common.DateRange;
 import org.eclipse.stardust.ui.web.viewscommon.common.ModelHelper;
 import org.eclipse.stardust.ui.web.viewscommon.common.PortalException;
+import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorColumnUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.DescriptorFilterUtils;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.GenericDescriptorFilterModel;
 import org.eclipse.stardust.ui.web.viewscommon.descriptors.NumberRange;
@@ -1894,7 +1895,7 @@ public class ProcessInstanceUtils
 
          if (!processDescriptorsList.isEmpty())
          {
-            return getProcessDescriptors(processDescriptorsList);
+            return getProcessDescriptors(processDescriptorsList, processInstance);
          }
       }
 
@@ -1934,7 +1935,7 @@ public class ProcessInstanceUtils
    /**
     * 
     */
-   private Map<String, DescriptorDTO> getProcessDescriptors(List<ProcessDescriptor> processDescriptorsList)
+   private Map<String, DescriptorDTO> getProcessDescriptors(List<ProcessDescriptor> processDescriptorsList, ProcessInstance processInstance)
    {
       Map<String, DescriptorDTO> descriptors = new LinkedHashMap<String, DescriptorDTO>();
       for (Object descriptor : processDescriptorsList)
@@ -1960,7 +1961,16 @@ public class ProcessInstanceUtils
          else
          {
             ProcessDescriptor desc = (ProcessDescriptor) descriptor;
-            DescriptorDTO descriptorDto = new DescriptorDTO(desc.getKey(), desc.getValue(), false, null, desc.isLink(), desc.getLinkText());
+            DescriptorDTO descriptorDto = null;
+            if(desc.isLink())
+            {
+               String linkText = DescriptorColumnUtils.getLinkDescriptorText(desc.getId(), processInstance.getDescriptorDefinitions());
+               descriptorDto = new DescriptorDTO(desc.getKey() , desc.getValue(), false, null, desc.isLink(), linkText);
+            }
+            else
+            {
+               descriptorDto = new DescriptorDTO(desc.getKey() , desc.getValue(), false, null);
+            }
             descriptors.put(desc.getId(), descriptorDto);
          }
       }
