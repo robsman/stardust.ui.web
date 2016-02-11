@@ -51,16 +51,10 @@ import org.eclipse.stardust.engine.api.model.Participant;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
 import org.eclipse.stardust.engine.api.model.QualifiedModelParticipantInfo;
 import org.eclipse.stardust.engine.api.query.UnsupportedFilterException;
-import org.eclipse.stardust.engine.api.runtime.DeployedModel;
-import org.eclipse.stardust.engine.api.runtime.DmsUtils;
-import org.eclipse.stardust.engine.api.runtime.Document;
-import org.eclipse.stardust.engine.api.runtime.DocumentInfo;
-import org.eclipse.stardust.engine.api.runtime.DocumentManagementService;
-import org.eclipse.stardust.engine.api.runtime.DocumentManagementServiceException;
-import org.eclipse.stardust.engine.api.runtime.Folder;
-import org.eclipse.stardust.engine.api.runtime.ServiceFactory;
-import org.eclipse.stardust.engine.api.runtime.UserService;
+import org.eclipse.stardust.engine.api.runtime.*;
 import org.eclipse.stardust.engine.core.runtime.beans.AdministrationServiceImpl;
+import org.eclipse.stardust.engine.core.runtime.beans.BpmRuntimeEnvironment;
+import org.eclipse.stardust.engine.core.runtime.beans.interceptors.PropertyLayerProviderInterceptor;
 import org.eclipse.stardust.engine.core.runtime.scheduling.SchedulingFactory;
 import org.eclipse.stardust.engine.core.runtime.scheduling.SchedulingRecurrence;
 import org.eclipse.stardust.reporting.rt.ReportParameter;
@@ -216,8 +210,11 @@ public class ReportingServiceBean
     * @return
     */
    public JsonObject getModelData(Locale locale)
-   {
-      return ReportUtilities.getModelData(locale);
+   {      
+      QueryService qs = getServiceFactory().getService(QueryService.class);
+      AdministrationService as = getServiceFactory().getService(AdministrationService.class);
+            
+      return ReportUtilities.getModelData(locale, qs, as);
    }
 
    /**
