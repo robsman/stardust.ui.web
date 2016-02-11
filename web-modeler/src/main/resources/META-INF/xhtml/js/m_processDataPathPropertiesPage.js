@@ -55,11 +55,10 @@ define(
           
           var dataPaths = this.getModelElement().dataPathes;
           for (var i = 0; i < dataPaths.length; i++) {
-        	// Skip replacing '/' for Link type DataPath  
-            if(dataPaths[i].dataPath && (!dataPaths[i].type || dataPaths[i].type != m_constants.TYPE_LINK) && (dataPaths[i].dataPath.indexOf("/") > -1)) {
-              dataPaths[i].dataPath = dataPaths[i].dataPath.replace(/\//g, ".");  
+              if(dataPaths[i].dataPath && (dataPaths[i].dataPath.indexOf("/") > -1)){
+                dataPaths[i].dataPath = dataPaths[i].dataPath.replace(/\//g, ".");  
+              }
             }
-          }
 
           this.parameterDefinitionsPanel.setParameterDefinitions(dataPaths);
         };
