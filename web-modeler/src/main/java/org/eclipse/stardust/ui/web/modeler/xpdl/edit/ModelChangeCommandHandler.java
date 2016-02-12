@@ -125,8 +125,9 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
       model.getRole().add(admin);
       mapper.map(admin);
 
-      if (request.has("createBusinessDate")) {
-         DataType businessDate = facade.createPrimitiveData(model, "BusinessDate", "Business Date",
+      if (request.has("createBusinessDate"))
+      {
+         facade.createPrimitiveData(model, "BusinessDate", "Business Date",
                ModelerConstants.DATE_PRIMITIVE_DATA_TYPE);
       }
 
@@ -191,6 +192,12 @@ public class ModelChangeCommandHandler implements ModelCommandsHandler
          }
          catch (Exception e)
          {
+            //This happens if a inconsistent / broken model is deleted
+            JsonObject removeInfo = new JsonObject();            
+            removeInfo.addProperty(ModelerConstants.TYPE_PROPERTY, "model");
+            removeInfo.addProperty(ModelerConstants.ID_PROPERTY, model.getId());                            
+            removeInfo.addProperty(ModelerConstants.UUID_PROPERTY, modelService.uuidMapper().getUUID(model));
+            changes.removed.add(removeInfo);
          }
          modelMgtStrategy.deleteModel(model);
       }
