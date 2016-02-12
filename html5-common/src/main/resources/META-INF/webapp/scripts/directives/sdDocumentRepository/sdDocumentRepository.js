@@ -739,7 +739,7 @@
       var key;
 
       //If user has not assigned a value or simply given us a "/" then load all repositories
-      if(!v1 || v1 == "/"){
+      if(v1 == "/"){
         ctrl.documentService.getRepositories(v1)
         .then(function(data){
           data[0].children.forEach(function(elem){
