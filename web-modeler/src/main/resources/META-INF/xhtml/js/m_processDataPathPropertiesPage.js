@@ -116,7 +116,9 @@ define(
         {
           for (var i = 0; i < dataPaths.length; i++) {
             if(dataPaths[i].dataPath && (dataPaths[i].dataPath.indexOf(".") > -1)){
-              dataPaths[i].dataPath = dataPaths[i].dataPath.replace(/\./g, "/");  
+            	if(!dataPaths[i].type || dataPaths[i].type != m_constants.TYPE_LINK) {
+            		dataPaths[i].dataPath = dataPaths[i].dataPath.replace(/\./g, "/");	
+            	}
             }
           }
           this.propertiesPanel.submitChanges({"dataPathes": dataPaths});
