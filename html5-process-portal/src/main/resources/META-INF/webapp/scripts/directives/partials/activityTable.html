@@ -3,7 +3,7 @@
 	<div class="worklist-title tbl-title" ng-bind="activityTableCtrl.title"></div>
 	<div sda-toolbar>
 		<div class="tbl-toolbar-section" ng-if="activityTableCtrl.isToolBarVisible()">
-			<button ng-if="activityTableCtrl.isToolBarVisible('complete')" sda-column="TRIVIAL_DATA"  aid="PP-ActivityTable-	CompleteAll" ng-disabled="!activityTableCtrl.containsAllTrivialManualActivities()"  ng-click="activityTableCtrl.$openCompleteDialog()"
+			<button ng-if="activityTableCtrl.isToolBarVisible('complete')" sda-column-type="TRIVIAL_DATA"  aid="PP-ActivityTable-	CompleteAll" ng-disabled="!activityTableCtrl.containsAllTrivialManualActivities()"  ng-click="activityTableCtrl.$openCompleteDialog()"
 					title="{{i18n('processportal.views-worklistPanel-tooltip-completeAll')}}" class="button-link tbl-toolbar-item tbl-tool-link">
 			 		  <i class="pi pi-quick-complete pi-lg"></i>
 			</button>
@@ -122,7 +122,7 @@
 					sda-visible="{{activityTableCtrl.isColumnVisible('participantPerformer')}}" sda-label="{{i18n('views-common-messages.views-activityTable-activityTable-column-participantPerformer')}}">
 				</th>
 
-				<th sda-column="DESCRIPTOR_COLUMNS" ng-repeat="descCol in activityTableCtrl.descriptorCols" sda-visible="{{activityTableCtrl.isColumnVisible('descriptorCols')}}"
+				<th sda-column-type="DESCRIPTOR_COLUMNS" ng-repeat="descCol in activityTableCtrl.descriptorCols" sda-visible="{{activityTableCtrl.isColumnVisible('descriptorCols')}}"
 					sda-name="{{descCol.id}}" sda-label="{{descCol.title}}" sda-sortable="{{descCol.sortable}}" sda-filterable="{{descCol.filterable}}">
 					<div sda-filter-template ng-if="descCol.filterable">
 						<div ng-if="colData.dataType =='NUMBER'"><div sd-number-table-filter></div></div>
@@ -139,7 +139,7 @@
 					</div>
 				</th>
 
-				<th sda-name="data" sda-column="TRIVIAL_DATA" sda-sortable="false" sda-exportable="false" sda-filterable="false" sda-visible="{{activityTableCtrl.isColumnVisible('data')}}">
+				<th sda-name="data" sda-column-type="TRIVIAL_DATA" sda-sortable="false" sda-exportable="false" sda-filterable="false" sda-visible="{{activityTableCtrl.isColumnVisible('data')}}">
 				</th>
 
 				<th sda-name="actions" sda-fixed="true" sda-exportable="false" sda-filterable="false">
@@ -247,7 +247,7 @@
 				<td ng-if ="activityTableCtrl.isActivityTableMode();"  sda-field="participantPerformer">
 				</td>
 
-				<td sda-column="DESCRIPTOR_COLUMNS" ng-repeat="descCol in activityTableCtrl.descriptorCols" sda-data-type="{{descCol.dataType}}"
+				<td sda-column-type="DESCRIPTOR_COLUMNS" ng-repeat="descCol in activityTableCtrl.descriptorCols" sda-data-type="{{descCol.dataType}}"
 					sda-exporter="activityTableCtrl.getDescriptorValueForExport( rowData.descriptorValues[colData.field])">
 					<div sd-descriptor-content sda-value="rowData.descriptorValues[colData.field]" sda-data-type ="colData.dataType"> </div>
 				</td>
@@ -255,7 +255,7 @@
 				<td sda-field="rootProcessName" ng-if ="activityTableCtrl.isWorklistMode();">
 				</td>
 
-				<td sda-column="TRIVIAL_DATA">
+				<td sda-column-type="TRIVIAL_DATA">
 					<div ng-if="rowData.dataMappings">
 						<div sd-trivial-manual-activity-data sda-data-mappings="rowData.dataMappings"
 							sda-out-data="rowData.inOutData" sda-on-change=activityTableCtrl.changeFormStatus(rowData.activityOID)>
@@ -279,7 +279,7 @@
 							class="button-link tbl-toolbar-item tbl-tool-link">
 							<i class="pi pi-user pi-lg"></i>
 						</button>
-						<button sda-column="TRIVIAL_DATA" ng-if="activityTableCtrl.isWorklistMode();"  aid="PP-ActivityTable-CompleteAction"
+						<button sda-column-type="TRIVIAL_DATA" ng-if="activityTableCtrl.isWorklistMode();"  aid="PP-ActivityTable-CompleteAction"
 							ng-disabled="(rowData.dataMappings == undefined) || !rowData.activatable"
 							ng-click="bpmCommon.stopEvent($event); activityTableCtrl.$openCompleteDialog(rowData);"
 							title="{{i18n('processportal.toolbars-workflowActions-tooltip-complete')}}" class="button-link tbl-tool-link">

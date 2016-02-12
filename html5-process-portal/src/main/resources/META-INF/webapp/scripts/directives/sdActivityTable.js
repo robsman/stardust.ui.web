@@ -83,6 +83,11 @@
 	 *
 	 */
 	function processRawMarkup(elem, attr) {
+		//Processing markup
+
+		//Process Table - Reting only required columns
+		processTableColumns(elem, attr);
+
 		// Process Trivial Data Column
 		var showTrivialDataColumn = DEFAULT_VALUES.WORKLIST.SHOW_TRIVIAL_DATA_COLUMNS;
 
@@ -95,11 +100,11 @@
 		}
 		// If not required remove the column
 		if (!showTrivialDataColumn) {
-			var cols = elem.find('[sda-column="TRIVIAL_DATA"]');
+			var cols = elem.find('[sda-column-type="TRIVIAL_DATA"]');
 			cols.remove();
 			// Toolbar
 			var toolbar = elem.prev();
-			var items = toolbar.find('[sda-column="TRIVIAL_DATA"]');
+			var items = toolbar.find('[sda-column-type="TRIVIAL_DATA"]');
 			items.remove();
 		}
 
@@ -111,10 +116,38 @@
 		// If not required remove the column
 		if (!showDescriptorCoulmns) {
 			trace.debug("Removing descriptor columns.");
-			var cols = elem.find('[sda-column="DESCRIPTOR_COLUMNS"]');
+			var cols = elem.find('[sda-column-type="DESCRIPTOR_COLUMNS"]');
 			cols.remove();
 		}
 	};
+
+	/**
+	*
+	*/
+	function processTableColumns(elem, attr){
+		var requiredColumns;
+
+		if (attr.sdaColumns) {
+			requiredColumns = JSON.parse(attr.sdaColumns);
+		}
+
+		if(requiredColumns) {
+			var headColumns = elem.find('table[sd-data-table] > thead > tr > th');
+			var bodyColumns = elem.find('table[sd-data-table] > tbody > tr > td');
+
+			for(var col = 0 ; col < headColumns.length ; col++ ) {
+				var columnElement = angular.element(headColumns[col]);
+
+				if(requiredColumns.indexOf(columnElement.attr('sda-name')) === -1) {
+					var bodyElement = angular.element(bodyColumns[col]);
+					columnElement.remove();
+					bodyElement.remove();
+				}
+
+			}
+		}
+	}
+
 
 	/*
 	 *
@@ -180,7 +213,7 @@
 		} else if (menuItem === "columnSelector") {
 			return checkCofig(this.toolBarConfig, menuItem);
 		}
-		
+
 		return true;
 	};
 
@@ -342,11 +375,23 @@ function checkCofig(toolBarConfig, menuItem) {
 	    	// Override
 	    	preferenceStore.getValue = function(name, fromParent) {
 	    		var value = this.super_getValue(name, fromParent);
-	    		trace.debug("Before migrating column names ",value);
+
+	    		if(name && name.indexOf(".columnFilterAndSortOrder") > -1){
+	    			return value;
+	    		}
 	    		value = self.getColumnNamesByMode(value);
-	    		trace.debug("After migrating column names",value);
+
+	    		if( value === undefined && self.visibleColumns){
+	    			var valueJSON = {
+	    				selectedColumns : self.visibleColumns,
+	    				lock : false
+	    			}
+	    			value = JSON.stringify(valueJSON);
+	    		}
+
 	    		return value;
 	    	};
+
 	    	// Override
 	    	preferenceStore.marshalName = function(scope, name) {
 	    		trace.debug("marshalName - scope:",scope,", name :", name);
@@ -363,7 +408,6 @@ function checkCofig(toolBarConfig, menuItem) {
 	    				name = 'Default';
 	    			}
 	    		}
-	    	  	trace.log('Preference Name to be used for prference :',name);
 	    		return name;
 	    	}
 	    	return preferenceStore;
@@ -643,7 +687,6 @@ function checkCofig(toolBarConfig, menuItem) {
 		if (attr.sdaDefaultDelegateEnabled) {
 			this.defaultDelegateEnabled = attr.sdaDefaultDelegateEnabled === 'true' ? true : false;
 		}
-
 	};
 
 	/**
@@ -686,7 +729,6 @@ function checkCofig(toolBarConfig, menuItem) {
 		}
 
 		if (attr.sdaPreferenceName) {
-
 			this.preferenceName = attr.sdaPreferenceName;
 		}
 
@@ -700,8 +742,18 @@ function checkCofig(toolBarConfig, menuItem) {
 		}
 
 		if (attr.sdaVisibleColumns) {
-			var visibleColumnGetter = $parse(attr.sdaVisibleColumns);
-			this.visibleColumns = visibleColumnGetter(scopeToUse);
+			this.visibleColumns  = JSON.parse(attr.sdaVisibleColumns);
+		} else if(!attr.sdaVisibleColumns  && attr.sdaColumns) {
+			this.visibleColumns  = JSON.parse(attr.sdaColumns);
+		}
+		//Check to see if required column and visible columns have valid values
+		if(attr.sdaVisibleColumns && attr.sdaColumns) {
+			var requiredColumns = JSON.parse(attr.sdaColumns);
+			angular.forEach(this.visibleColumns, function(visibleColumn) {
+					if(requiredColumns.indexOf(visibleColumn) == -1) {
+						throw 'sdaVisibleColumns cant contain columns not present in sdaColumns';
+					}
+			});
 		}
 
 		this.toolBarConfig = {};
@@ -718,14 +770,13 @@ function checkCofig(toolBarConfig, menuItem) {
 	    this.dataTable.refresh(true);
 	};
 
-	ActivityTableCompiler.prototype.showNotificationAndRefresh = function(notifications){
+	ActivityTableCompiler.prototype.showNotificationAndRefresh = function(notifications) {
 		this.notification = notifications;
 		this.showNotificationDialog = true;
 		if(!sdUtilService.isEmpty(this.notification.result)){
 			this.dataTable.refresh(true);
 		}
-
-	}
+	};
 	/*
 	 *
 	 */
