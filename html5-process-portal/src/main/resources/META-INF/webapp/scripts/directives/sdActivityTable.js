@@ -125,16 +125,17 @@
 	*
 	*/
 	function processTableColumns(elem, attr){
-		var requiredColumns;
-
-		if (attr.sdaColumns) {
-			requiredColumns = JSON.parse(attr.sdaColumns);
+		if (!attr.sdaColumns) {
+			return;
 		}
 
-		if(requiredColumns) {
+		var requiredColumns = JSON.parse(attr.sdaColumns);
+		var currentOrder = [];
+
 			var headColumns = elem.find('table[sd-data-table] > thead > tr > th');
 			var bodyColumns = elem.find('table[sd-data-table] > tbody > tr > td');
 
+			//Retaining required columns
 			for(var col = 0 ; col < headColumns.length ; col++ ) {
 				var columnElement = angular.element(headColumns[col]);
 
@@ -142,10 +143,25 @@
 					var bodyElement = angular.element(bodyColumns[col]);
 					columnElement.remove();
 					bodyElement.remove();
+				}else {
+					currentOrder.push(columnElement.attr('sda-name'));
 				}
-
 			}
-		}
+
+			//Reordering columnns
+			for(var colIndex = requiredColumns.length -1; colIndex >=  0; colIndex-- ) {
+					var presentIndex = currentOrder.indexOf(requiredColumns[colIndex]);
+
+					var fromHeadPos = elem.find('table thead tr th:eq('+presentIndex+')');
+					var toHeadPos = elem.find('table thead tr th:eq('+colIndex+')');
+					elem.find("table[sd-data-table] thead tr th")
+									.detach(fromHeadPos).insertAfter(toHeadPos);
+
+					var fromBodyPos = elem.find('table tbody tr td:eq('+presentIndex+')');
+					var toBodyPos = elem.find('table tbody tr td:eq('+colIndex+')');
+					elem.find("table[sd-data-table] tbody tr td")
+							.detach(fromBodyPos).insertAfter(toBodyPos);
+			}
 	}
 
 
@@ -380,15 +396,6 @@ function checkCofig(toolBarConfig, menuItem) {
 	    			return value;
 	    		}
 	    		value = self.getColumnNamesByMode(value);
-
-	    		if( value === undefined && self.visibleColumns){
-	    			var valueJSON = {
-	    				selectedColumns : self.visibleColumns,
-	    				lock : false
-	    			}
-	    			value = JSON.stringify(valueJSON);
-	    		}
-
 	    		return value;
 	    	};
 
