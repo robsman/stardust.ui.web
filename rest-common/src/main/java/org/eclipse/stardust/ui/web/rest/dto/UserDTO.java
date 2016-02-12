@@ -81,5 +81,7 @@ public class UserDTO extends AbstractDTO
    public List<SelectItemDTO> allRealms;
 
    public String selectedDisplayFormat;
+   
+   public String myDocumentsFolderPath;
 
 }

@@ -31,6 +31,7 @@ import org.eclipse.stardust.ui.web.rest.dto.UserPermissionsDTO;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
 import org.eclipse.stardust.ui.web.viewscommon.beans.SessionContext;
 import org.eclipse.stardust.ui.web.viewscommon.common.spi.user.impl.IppUser;
+import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.utils.MyPicturePreferenceUtils;
 import org.eclipse.stardust.ui.web.viewscommon.utils.UserUtils;
 import org.springframework.stereotype.Component;
@@ -61,6 +62,8 @@ public class UserService
       User loggedInUser = SessionContext.findSessionContext().getUser();
       UserDTO userDTO = DTOBuilder.build(loggedInUser, UserDTO.class);
       userDTO.displayName = UserUtils.getUserDisplayLabel(loggedInUser);
+      userDTO.myDocumentsFolderPath = DocumentMgmtUtility.getMyDocumentsPath();
+      
       return userDTO;
    }
 
