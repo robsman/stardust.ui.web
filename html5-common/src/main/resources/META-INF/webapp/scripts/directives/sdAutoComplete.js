@@ -121,7 +121,7 @@ angular.module('bpm-common.directives')
           $scope.dataList=[];
           $scope.ui.selectedIndex=0;
         });
-      },$scope.closeDelay,true);
+      },500); //need a delay here or we can lose click events on our dropdown
       
     };
               
@@ -144,7 +144,7 @@ angular.module('bpm-common.directives')
               
     $scope.pushData=function(item){
         var idx=-1;
-        
+
         if($scope.allowMultiple===false){
           $scope.dataSelected=[];
         }
@@ -163,8 +163,9 @@ angular.module('bpm-common.directives')
         if($scope.clearOnSelect===true){
         	$scope.matchStr ="";
         }
-        
+
         $scope.dataSelected.push(item);
+
         if (angular.isDefined($attrs.sdaOnSelectionChange)) {
           $scope.onSelectionChange({selectedData: $scope.dataSelected});
         }
