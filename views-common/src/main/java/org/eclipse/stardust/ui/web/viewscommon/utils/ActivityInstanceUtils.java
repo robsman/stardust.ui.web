@@ -756,6 +756,22 @@ public class ActivityInstanceUtils
    }
 
    /**
+    * Utility method called from Icefaces activate() and REST endpoints to activate
+    * activity
+    * 
+    * @param ai
+    * @return
+    * @throws Exception
+    */
+   public static ActivityInstance activateActivity(ActivityInstance ai)
+   {
+      ActivityInstance activatedAi = null;
+      activatedAi = ServiceFactoryUtils.getWorkflowService().activate(ai.getOID());
+      sendActivityEvent(ai, ActivityEvent.activated(activatedAi));
+      return activatedAi;
+   }
+   
+   /**
     * @param ai
     */
    public static ActivityInstance activate(ActivityInstance ai)
@@ -763,9 +779,7 @@ public class ActivityInstanceUtils
       ActivityInstance activatedAi = null;
       try
       {
-         activatedAi = ServiceFactoryUtils.getWorkflowService().activate(ai.getOID());
-
-         sendActivityEvent(ai, ActivityEvent.activated(activatedAi));
+         activatedAi = activateActivity(ai);
       }
       catch (ConcurrencyException ce)
       {
