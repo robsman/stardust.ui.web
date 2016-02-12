@@ -29,7 +29,7 @@ public class RepositorySearchRequestDTO extends AbstractDTO
    public String id;
    public String name;
 
-   public DataTableOptionsDTO dataTableOptions;
+   public DataTableOptionsDTO documentDataTableOption;
 
    public String searchType = Search_Type.Both.name();
 

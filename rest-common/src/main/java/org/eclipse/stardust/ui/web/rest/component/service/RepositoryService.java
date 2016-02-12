@@ -30,6 +30,10 @@ import org.eclipse.stardust.ui.web.viewscommon.views.document.IResourceDataProvi
  * @version $Revision: $
  * 
  */
+/**
+ * @author Yogesh.Manware
+ * @version $Revision: $
+ */
 public interface RepositoryService
 {
    // *******************************
@@ -187,10 +191,11 @@ public interface RepositoryService
     */
    void unbindRepository(String repositoryId);
    
+   
    /**
     * @param repositorySearchRequestDTO
     * @return
     */
-   QueryResultDTO searchResources(RepositorySearchRequestDTO repositorySearchRequestDTO);
+   Map<String, QueryResultDTO> searchResources(RepositorySearchRequestDTO repositorySearchRequestDTO);
 
 }

@@ -72,6 +72,8 @@ public class RepositoryServiceImpl implements RepositoryService
 {
    private static final String PROVIDER_ID = "providerId";
    private static final String REPOSITORY_ID = "id";
+   private static String DOCUMENTS = "documents";
+   private static String FOLDERS = "folders";
    
    @Resource
    private ServiceFactoryUtils serviceFactoryUtils;
@@ -79,9 +81,6 @@ public class RepositoryServiceImpl implements RepositoryService
    @Resource
    private RestCommonClientMessages restCommonClientMessages;
    
-   @Resource
-   private DocumentSearchUtils documentSearchUtils;
-
    // *******************************
    // Folder specific
    // *******************************
@@ -540,7 +539,7 @@ public class RepositoryServiceImpl implements RepositoryService
     */
    public QueryResultDTO SearchDocuments(RepositorySearchRequestDTO searchRequestDTO)
    {
-      QueryResult<Document> docs = documentSearchUtils.documentSearch(searchRequestDTO);
+      QueryResult<Document> docs = DocumentSearchUtils.search(searchRequestDTO, getDMS());
       return buildDocumentSearchResult(docs);
    }
 
@@ -679,14 +678,19 @@ public class RepositoryServiceImpl implements RepositoryService
       validateRepositoryId(repositoryId);
       DocumentMgmtUtility.getDocumentManagementService().unbindRepository(repositoryId);
    }
-   
+
    /**
+    * search both documents and folders based on input parameters
+    * 
     * @param repositorySearchRequestDTO
     */
    @Override
-   public QueryResultDTO searchResources(RepositorySearchRequestDTO repositorySearchRequestDTO)
+   public Map<String, QueryResultDTO> searchResources(RepositorySearchRequestDTO repositorySearchRequestDTO)
    {
-      return SearchDocuments(repositorySearchRequestDTO);
+      Map<String, QueryResultDTO> result = new HashMap<String, QueryResultDTO>();
+      result.put(DOCUMENTS, SearchDocuments(repositorySearchRequestDTO));
+      result.put(FOLDERS, new QueryResultDTO());
+      return result;
    }
 
    // *******************************

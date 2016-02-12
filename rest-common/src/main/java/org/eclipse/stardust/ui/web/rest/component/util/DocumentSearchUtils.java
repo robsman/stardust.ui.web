@@ -55,9 +55,9 @@ import org.eclipse.stardust.ui.web.rest.dto.DocumentSearchFilterDTO;
 import org.eclipse.stardust.ui.web.rest.dto.DocumentVersionDTO;
 import org.eclipse.stardust.ui.web.rest.dto.FilterDTO;
 import org.eclipse.stardust.ui.web.rest.dto.InfoDTO;
+import org.eclipse.stardust.ui.web.rest.dto.InfoDTO.MessageType;
 import org.eclipse.stardust.ui.web.rest.dto.ProcessInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.SelectItemDTO;
-import org.eclipse.stardust.ui.web.rest.dto.InfoDTO.MessageType;
 import org.eclipse.stardust.ui.web.rest.dto.request.RepositorySearchRequestDTO;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.DocumentMgmtUtility;
 import org.eclipse.stardust.ui.web.viewscommon.docmgmt.ResourceNotFoundException;
@@ -78,6 +78,7 @@ import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
 
+// TODO: This class can be made completely static after removed the deprecated method
 @Component
 public class DocumentSearchUtils
 {
@@ -341,9 +342,20 @@ public class DocumentSearchUtils
     * @param documentSearchRequest
     * @return
     */
-   public QueryResult<Document> documentSearch(RepositorySearchRequestDTO documentSearchRequest)
+   public static QueryResult<Document> search(RepositorySearchRequestDTO documentSearchRequest,
+         DocumentManagementService documentManagementService)
    {
-      DataTableOptionsDTO options = documentSearchRequest.dataTableOptions;
+      DataTableOptionsDTO options = documentSearchRequest.documentDataTableOption;
+      if (options == null)
+      {
+         options = documentSearchRequest.documentDataTableOption = new DataTableOptionsDTO();
+      }
+      
+      // without orderby, totalCount ends up being null
+      if (options.orderBy == null)
+      {
+         options.orderBy = "documentName";
+      }
 
       DocumentQuery query = new DocumentQuery();
 
@@ -351,11 +363,6 @@ public class DocumentSearchUtils
       query.setPolicy(subsetPolicy);
 
       addSortCriteria(query, options);
-
-      if (options.filter != null)
-      {
-         applyFiltering(query, options.filter);
-      }
 
       FilterAndTerm filter = query.where(DocumentQuery.NAME.like(QueryUtils
             .getFormattedString(documentSearchRequest.name)));
@@ -373,7 +380,7 @@ public class DocumentSearchUtils
 
       // Document types
       List<String> documentTypeIds = documentSearchRequest.documentTypeIdIn;
-      if (documentTypeIds.size() > 0 && !checkIfAllOptionSelect(documentTypeIds))
+      if (documentTypeIds != null && documentTypeIds.size() > 0 && !checkIfAllOptionSelect(documentTypeIds))
       {
          FilterOrTerm filterOrTerm = filter.addOrTerm();
          for (String documentTypeId : documentTypeIds)
@@ -384,7 +391,7 @@ public class DocumentSearchUtils
 
       // Repository types
       List<String> selectedRepo = documentSearchRequest.repositoryIn;
-      if (selectedRepo.size() > 0 && !checkIfAllOptionSelect(selectedRepo))
+      if (selectedRepo != null && selectedRepo.size() > 0 && !checkIfAllOptionSelect(selectedRepo))
       {
          query.setPolicy(RepositoryPolicy.includeRepositories(CollectionUtils.newArrayList(selectedRepo)));
       }
@@ -402,7 +409,7 @@ public class DocumentSearchUtils
       else
       {
          List<String> mimeTypes = documentSearchRequest.contentTypeIn;
-         if (mimeTypes.size() > 0 && !checkIfAllOptionSelect(mimeTypes))
+         if (mimeTypes != null && mimeTypes.size() > 0 && !checkIfAllOptionSelect(mimeTypes))
          {
             FilterOrTerm filterOrTerm = filter.addOrTerm();
             for (String mimeType : mimeTypes)
@@ -433,7 +440,12 @@ public class DocumentSearchUtils
          filterOrTerm.add(dataFilter);
       }
 
-      DocumentManagementService documentManagementService = ServiceFactoryUtils.getDocumentManagementService();
+      //override filters with table level filters
+      if (options.filter != null)
+      {
+         applyFiltering(query, options.filter);
+      }
+
       return documentManagementService.findDocuments(query);
    }
 
@@ -444,7 +456,7 @@ public class DocumentSearchUtils
     * @param dateAttributeName
     * @param filter
     */
-   private void setDateFilter(Date dateFrom, Date dateTo, FilterableAttribute dateAttributeName, FilterAndTerm filter)
+   private static void setDateFilter(Date dateFrom, Date dateTo, FilterableAttribute dateAttributeName, FilterAndTerm filter)
    {
       if (null != dateFrom && null != dateTo)
       {
@@ -465,7 +477,7 @@ public class DocumentSearchUtils
     * @param query
     * @param filters
     */
-   private void applyFiltering(Query query, FilterDTO filters)
+   private static void applyFiltering(Query query, FilterDTO filters)
    {
       DocumentSearchFilterDTO documentSearchFilter = (DocumentSearchFilterDTO) filters;
 
@@ -484,22 +496,13 @@ public class DocumentSearchUtils
       {
          Date startTime = new Date(documentSearchFilter.createDate.from);
          Date endTime = new Date(documentSearchFilter.createDate.to);
-         if (startTime != null)
-            filter.and(DocumentQuery.DATE_CREATED.greaterOrEqual(DateUtils.convertToGmt(startTime)));
-
-         if (endTime != null)
-            filter.and(DocumentQuery.DATE_CREATED.lessOrEqual(DateUtils.convertToGmt(endTime)));
-
+         setDateFilter(startTime, endTime, DocumentQuery.DATE_CREATED, filter);
       }
       if (null != documentSearchFilter.modificationDate)
       {
          Date startTime = new Date(documentSearchFilter.modificationDate.from);
          Date endTime = new Date(documentSearchFilter.modificationDate.to);
-         if (startTime != null)
-            filter.and(DocumentQuery.DATE_LAST_MODIFIED.greaterOrEqual(DateUtils.convertToGmt(startTime)));
-
-         if (endTime != null)
-            filter.and(DocumentQuery.DATE_LAST_MODIFIED.lessOrEqual(DateUtils.convertToGmt(endTime)));
+         setDateFilter(startTime, endTime, DocumentQuery.DATE_LAST_MODIFIED, filter);
       }
       if (null != documentSearchFilter.author)
       {
@@ -576,7 +579,7 @@ public class DocumentSearchUtils
     * @param query
     * @param options
     */
-   private void addSortCriteria(Query query, DataTableOptionsDTO options)
+   private static void addSortCriteria(Query query, DataTableOptionsDTO options)
    {
       if (COL_DOCUMENT_NAME.equals(options.orderBy))
       {
@@ -651,7 +654,7 @@ public class DocumentSearchUtils
     * @param selectedValues
     * @return
     */
-   private boolean checkIfAllOptionSelect(List<String> selectedValues)
+   private static boolean checkIfAllOptionSelect(List<String> selectedValues)
    {
       for (String value : selectedValues)
       {

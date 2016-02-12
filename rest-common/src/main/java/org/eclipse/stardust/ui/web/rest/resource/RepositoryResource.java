@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.rest.resource;
 
+import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -28,6 +30,7 @@ import org.eclipse.stardust.ui.web.rest.component.message.RestCommonClientMessag
 import org.eclipse.stardust.ui.web.rest.component.service.RepositoryService;
 import org.eclipse.stardust.ui.web.rest.documentation.RequestDescription;
 import org.eclipse.stardust.ui.web.rest.documentation.ResponseDescription;
+import org.eclipse.stardust.ui.web.rest.dto.DocumentSearchFilterDTO;
 import org.eclipse.stardust.ui.web.rest.dto.JsonDTO;
 import org.eclipse.stardust.ui.web.rest.dto.QueryResultDTO;
 import org.eclipse.stardust.ui.web.rest.dto.builder.DTOBuilder;
@@ -35,6 +38,8 @@ import org.eclipse.stardust.ui.web.rest.dto.request.RepositorySearchRequestDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.RepositoryInstanceDTO;
 import org.eclipse.stardust.ui.web.rest.dto.response.RepositoryProviderDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.gson.reflect.TypeToken;
 
 /**
  * @author Yogesh.Manware
@@ -137,13 +142,20 @@ public class RepositoryResource
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
+   @RequestDescription("Search criteria can be provided as per RepositorySearchRequestDTO")
+   @ResponseDescription("The response would be map of *documents* and *folders* with values in the form of *QueryResultDTO*")
    @Path("/search")
    public Response searchResources(String postData) throws Exception
    {
       // default orderBy is resource name
+      Map<String, Type> customTokens = new HashMap<String, Type>();
+      customTokens.put("filter", new TypeToken<DocumentSearchFilterDTO>()
+      {
+      }.getType());
+
       RepositorySearchRequestDTO repositorySearchRequestDTO = DTOBuilder.buildFromJSON(postData,
-            RepositorySearchRequestDTO.class, null);
-      QueryResultDTO dto = repositoryService.searchResources(repositorySearchRequestDTO);
-      return Response.ok(dto.toJson(), MediaType.APPLICATION_JSON).build();
+            RepositorySearchRequestDTO.class, customTokens);
+      Map<String, QueryResultDTO> result = repositoryService.searchResources(repositorySearchRequestDTO);
+      return Response.ok((GsonUtils.toJsonHTMLSafeString(result)), MediaType.APPLICATION_JSON).build();
    }
 }

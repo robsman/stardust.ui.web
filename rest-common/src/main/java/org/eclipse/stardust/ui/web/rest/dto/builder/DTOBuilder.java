@@ -14,15 +14,12 @@ import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
@@ -273,8 +270,21 @@ public class DTOBuilder
                else
                {
                   Class< ? > fieldClass = field.getType();
-                  setFieldValue(toInstance, field,
-                        buildFromJSON(json.get(field.getName()).toString(), fieldClass, customTokens));
+                  if (json.get(field.getName()).isJsonPrimitive())
+                  {
+                     setFieldValue(toInstance, field, json.get(field.getName()).toString());
+                  }
+                  else
+                  {
+                     //Following code is added to hanlde the case when composite object is interface
+                     //e.g. DataTableOptionsDTO.filter
+                     if (customTokens != null && customTokens.containsKey(field.getName()))
+                     {
+                        fieldClass = (Class< ? >) customTokens.get(field.getName());
+                     }
+                     setFieldValue(toInstance, field,
+                           buildFromJSON(json.get(field.getName()).toString(), fieldClass, customTokens));
+                  }
                }
             }
          }
