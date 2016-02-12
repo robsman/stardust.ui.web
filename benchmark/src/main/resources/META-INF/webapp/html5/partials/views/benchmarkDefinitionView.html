@@ -340,23 +340,22 @@
 			    
 			    <!-- Categories Table-->
 			    <div ng-show="ctrl.selectedBenchmark" 
-			         style="width:calc(100% - 230px);position:absolute;left:230px;top:0;">
+			         style="width:calc(100% - 230px);position:absolute;left:230px;top:0;overflow-x: auto;min-height: 200px;">
 		    
-		    	<table class="tbl ng-scope dataTable" id="benchmarkTable" style="width:100%;">
+		    	<table class="tbl ng-scope dataTable" id="benchmarkTable">
 		    	
-			    	<colgroup>
-				       <col span="1" style="width: 10%;">
-				       <col span="1" style="width: 20%;">
-				    </colgroup>
-				    
+
 		    		<thead>
-		    			<th class="tbl-hdr-col">
+		    			<th style="min-width:100px;" 
+		    			    class="tbl-hdr-col">
 		    				<span class="tbl-hdr-col-label">{{ctrl.textMap.element}}</span>
 		    			</th>
-		    			<th class="tbl-hdr-col">
+		    			<th style="min-width:140px;"" class="tbl-hdr-col">
 		    				<span class="tbl-hdr-col-label">{{ctrl.textMap.options}}</span>
 		    			</th>
-		    			<th class="tbl-hdr-col" ng-repeat="category in ctrl.selectedBenchmark.categories | orderBy:'index'">
+		    			<th style="min-width:200px;" 
+		    			    class="tbl-hdr-col" 
+		    			    ng-repeat="category in ctrl.selectedBenchmark.categories | orderBy:'index'">
 		    			
 		    				<div ng-if="ctrl.benchmarkFilter==='Design'"
 		    				     sd-drop-down-menu 
@@ -379,7 +378,9 @@
 		    			</th>
 		    		</thead>
 		    		<tbody>
-		    			<tr ng-class-even="even" class="tbl-row" ng-repeat="data in ctrl.benchmarkDataRows">
+		    			<tr ng-class-even="even" 
+		    			    class="tbl-row" 
+		    			    ng-repeat="data in ctrl.benchmarkDataRows">
 		    				
 		    				<td style="vertical-align:top;">
 			    				<span  title="{{data.breadCrumbs.join('&#x2F;')}}">
@@ -389,23 +390,27 @@
 		    				
 		    				<td style="vertical-align:top;">
 		    					<form>
-			    					<label>
-			    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
-			    						       ng-model="data.elementRef.enableBenchmark" 
-			    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
-			    						       type="checkbox"/>
-			    						       {{ctrl.textMap.enableBenchmark}}
-			    					</label>
-			    					
-			    					<label>
-			    						{{ctrl.textMap.expectedDuration}}
-			    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
-			    						       ng-model="data.elementRef.expectedDuration"
-			    						       style="width:30px;"
-			    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
-			    						       type="text"/>
-			    						       {{ctrl.textMap.hour}}
-			    					</label>
+		    						<div>
+				    					<label>
+				    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+				    						       ng-model="data.elementRef.enableBenchmark" 
+				    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
+				    						       style="top:6px;position:relative;"
+				    						       type="checkbox"/>
+				    						       {{ctrl.textMap.enableBenchmark}}
+				    					</label>
+			    					</div>
+			    					<div>
+				    					<label>
+				    						{{ctrl.textMap.expectedDuration}}
+				    						<input ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)" 
+				    						       ng-model="data.elementRef.expectedDuration"
+				    						       style="width:30px;"
+				    						       ng-disabled="ctrl.benchmarkFilter==='Published'"
+				    						       type="text"/>
+				    						       {{ctrl.textMap.hour}}
+				    					</label>
+			    					</div>
 		    					</form>
 
 		    				</td>
@@ -473,35 +478,39 @@
 			  							</i>
 				
 			    					</div>
-				    					
-				    				<label style="display:inline-table;">
-				    					<input ng-model="catInst.details.condition.offset.useBusinessDays" 
-				    					       ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
-				    					       ng-disabled="ctrl.benchmarkFilter==='Published'"
-						    				   ng-value="true" 
-						    				   name="{{data.nodePath}}{{$index}}ubd"
-						    				   type="radio"/>
-						    				   {{ctrl.textMap.businessDays}}
-				    				</label>
-					    				
-				    				<label style="display:inline-table;">
-				    					<input ng-model ="catInst.details.condition.offset.useBusinessDays" 
-				    					       ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
-				    					       ng-disabled="ctrl.benchmarkFilter==='Published'"
-				    					       name="{{data.nodePath}}{{$index}}ubd" 
-				    					       ng-value="false" 
-				    					       type="radio"/>
-				    					       {{ctrl.textMap.calendarDays}}
-				    				</label>
-					    				
-			    					<label>
-			    						<input ng-model="catInst.details.condition.offset.applyOffset" 
-			    							   ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
-			    							   ng-disabled="ctrl.benchmarkFilter==='Published'"
-			    						       type="checkbox"/>
-		    								   {{ctrl.textMap.applyOffset}}
-			    					</label>
-				    					
+				    				<div>	
+					    				<label style="display:inline-table;">
+					    					<input ng-model="catInst.details.condition.offset.useBusinessDays" 
+					    					       ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+					    					       ng-disabled="ctrl.benchmarkFilter==='Published'"
+							    				   ng-value="true" 
+												   style="position:relative;top:6px;"
+							    				   name="{{data.nodePath}}{{$index}}ubd"
+							    				   type="radio"/>
+							    				   {{ctrl.textMap.businessDays}}
+					    				</label>
+						    				
+					    				<label style="display:inline-table;">
+					    					<input ng-model ="catInst.details.condition.offset.useBusinessDays" 
+					    					       ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+					    					       ng-disabled="ctrl.benchmarkFilter==='Published'"
+					    					       name="{{data.nodePath}}{{$index}}ubd" 
+					    					       ng-value="false" 
+					    					       style="position:relative;top:6px;"
+					    					       type="radio"/>
+					    					       {{ctrl.textMap.calendarDays}}
+					    				</label>
+					    			</div>	
+					    			<div>
+				    					<label>
+				    						<input ng-model="catInst.details.condition.offset.applyOffset" 
+				    							   ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
+				    							   ng-disabled="ctrl.benchmarkFilter==='Published'"
+				    							   style="position:relative;top:6px;"
+				    						       type="checkbox"/>
+			    								   {{ctrl.textMap.applyOffset}}
+				    					</label>
+				    				</div>	
 			    					<div ng-show="catInst.details.condition.offset.applyOffset===true">
 			    					
 				    					<input  ng-model="catInst.details.condition.offset.amount"
