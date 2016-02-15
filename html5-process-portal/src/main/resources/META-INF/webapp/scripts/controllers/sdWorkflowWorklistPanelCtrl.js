@@ -29,7 +29,7 @@
 	var _sdCommonViewUtilService;
 	var _scope;
 	/**
-	 * 
+	 *
 	 */
 	function WorkflowWorklistPanelCtrl(sdWorkflowWorklistService, sdLoggerService, sdViewUtilService,
 			sdLoggedInUserService, sdI18nService, sdActivityInstanceService, sdDialogService, sdCommonViewUtilService, $scope) {
@@ -51,7 +51,7 @@
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	WorkflowWorklistPanelCtrl.prototype.getUserAssignments = function(showEmptyWorklist) {
 		var self = this;
@@ -63,7 +63,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	WorkflowWorklistPanelCtrl.prototype.refreshMyAssignmentPanel = function(showEmptyWorklist) {
 		this.getUserAssignments(showEmptyWorklist);
@@ -90,11 +90,15 @@
 				"participantQId" : data.valueItem.participantQId,
 				"name" : data.valueItem.labelName
 			};
+
+			if(!data.valueItem.participantQId) {
+				params['type'] = "personal";
+			}
 			_sdViewUtilService.openView("worklistPanel", "id=" + data.valueItem.viewKey, params);
 
 		} else if (data.treeEvent === "node-click" && data.valueItem.children != undefined) {
 			var params = {
-				"url" : "services/rest/portal/worklist/unified/",
+				"type" : "unified",
 				"userId" : data.valueItem.userId,
 				"id" : data.valueItem.id,
 				"name" : data.valueItem.labelName
@@ -106,7 +110,7 @@
 	};
 
 	/**
-	 * 
+	 *
 	 * @param name
 	 * @param activityCount
 	 * @returns
@@ -115,7 +119,7 @@
 		return name + _sdI18nService.translate("processportal.launchPanels.worklists.items", "", [ activityCount ]);
 	};
     /**
-     * 
+     *
      * @param ai
      */
 	WorkflowWorklistPanelCtrl.prototype.openActivity = function(ai) {
@@ -147,9 +151,9 @@
 					});
 		}
 	};
-	
+
 	/**
-	 * 
+	 *
 	 * @param item
 	 * @returns
 	 */

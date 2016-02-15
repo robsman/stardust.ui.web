@@ -278,7 +278,7 @@ function checkCofig(toolBarConfig, menuItem) {
 
 		if (!attr.sdData) {
 			var queryGetter = $parse(attr.sdaQuery);
-			var query = queryGetter(scopeToUse);
+			var query = queryGetter(scope);
 			if (query == undefined) {
 				throw 'Query evaluated to "nothing" for activity table.';
 			}
@@ -589,7 +589,8 @@ function checkCofig(toolBarConfig, menuItem) {
 	    		var name  =  sgI18nService.translate('views-common-messages.views-switchProcessDialog-worklist-title');
 	    		var params = {
 	    				pInstanceOids :  result.join(','),
-	    				name : name
+	    				name : name,
+	    				type : "processInstances"
 	    		}
 	    		sdViewUtilService.openView('worklistPanel', 'id='+new Date().getTime(), params, true);
 	    	}
@@ -709,22 +710,30 @@ function checkCofig(toolBarConfig, menuItem) {
 		this.title = titleGetter(scopeToUse);
 
 		if (this.query) {
-			if (this.query.processQId) {
+				this.preferenceId = 'worklist-participant-columns';
+
+			if (this.query.type) {
+				if (this.query.type == "personal" || this.query.type == "allStates") {
+						this.preferenceName = this.query.userId ?
+								 this.query.userId :
+								sdLoggedInUserService.getUserInfo().id;
+				} else {
+					this.preferenceName = this.query.type;
+				}
+			} else if (this.query.processQId) {
 				this.preferenceName = this.query.processQId;
 				this.preferenceId = 'worklist-process-columns';
 			} else if (this.query.participantQId) {
 				this.preferenceName = "{ipp-participant}" + this.query.participantQId;
-				this.preferenceId = 'worklist-participant-columns';
-			} else if (this.query.userId) {
-				this.preferenceName = this.query.userId;
-				this.preferenceId = 'worklist-participant-columns';
 			} else {
-				this.preferenceName = sdLoggedInUserService.getUserInfo().id;
-				this.preferenceId = 'worklist-participant-columns';
+				this.preferenceName = this.query.userId ?
+								      this.query.userId :
+								      sdLoggedInUserService.getUserInfo().id;
 			}
-		if(this.query.name) {
-			this.exportFileName = this.exportFileName + " (" + this.query.name +")";
-		}
+
+			if(this.query.name) {
+				this.exportFileName = this.exportFileName + " (" + this.query.name +")";
+			}
 		}
 
 		if (attr.sdaPreferenceModule) {
@@ -804,7 +813,7 @@ function checkCofig(toolBarConfig, menuItem) {
 		query.options = options;
 
 		var showResubmitLink = false;
-		if(query.id == 'allResubmissionInstances'){
+		if(query.id == 'allResubmissionInstances' || query.type == 'resubmission'){
 			showResubmitLink  = true;
 		}
 		options.extraColumns = self.extraColumns;

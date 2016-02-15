@@ -361,7 +361,7 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
          String id = ID_ALL_ACTIVITY_INSTANCES;
          params.put("id", id);
          params.put("name", name);
-         params.put("url", "services/rest/portal/worklist/allActivable");
+         params.put("type", "allActivable");
          PPUtils.openWorklistViewHTML5("id=" + id, params);
          PPUtils.selectWorklist(null);
          if (lastSearchItems.containsKey(id))
@@ -381,7 +381,7 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
          String id = ProcessPortalConstants.ID_ALL_RESUBMISSION_ACTIVITY_INSTANCES;
          params.put("id", id);
          params.put("name", name);
-         params.put("url", "services/rest/portal/worklist/resubmissionActivities");
+         params.put("type", "resubmission");
          PPUtils.openWorklistViewHTML5("id=" + id, params);
          PPUtils.selectWorklist(null);
          // add to SearchResult Map
@@ -406,7 +406,7 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
          params.put("id", id);
          params.put("name", name);
          params.put("userId", user.getId());
-         params.put("queryParams", "fetchAllStates=true");
+         params.put("type", "allStates");
          PPUtils.openWorklistViewHTML5("id=" + id, params);
          PPUtils.selectWorklist(null);
          if (lastSearchItems.containsKey(id))

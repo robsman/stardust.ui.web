@@ -29,7 +29,7 @@
 	var _sdCommonViewUtilService;
 	var _scope;
 	/**
-	 * 
+	 *
 	 */
 	function WorkflowMyProcessPanelCtrl(sdWorkflowWorklistService, sdLoggerService, sdViewUtilService,
 			sdLoggedInUserService, sdI18nService, sdActivityInstanceService, sdDialogService, sdCommonViewUtilService, $scope) {
@@ -50,7 +50,7 @@
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	WorkflowMyProcessPanelCtrl.prototype.getUserProcesses = function() {
 		var self = this;
@@ -62,16 +62,17 @@
 	};
 
 	/**
-	 * 
+	 *
 	 */
 	WorkflowMyProcessPanelCtrl.prototype.refreshMyProcessesPanel = function() {
 		this.getUserProcesses();
 	};
-	
+
 	WorkflowMyProcessPanelCtrl.prototype.openWorklistView = function(process){
-		  var params = {"id": process.id,
-				        "name" : process.name,
-				        "processQId" : process.id
+		  var params = {
+					  	"id": process.id,
+						"name" : process.name,
+						 "processQId" : process.id
 				       };
 		_sdViewUtilService.openView("worklistPanel","id=" +process.id, params);
 	};

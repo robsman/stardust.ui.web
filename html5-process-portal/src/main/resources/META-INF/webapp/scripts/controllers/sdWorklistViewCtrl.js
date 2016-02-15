@@ -29,10 +29,8 @@
 	function WorklistViewCtrl($scope, $parse, sdUtilService,
 											sdViewUtilService, $interval, sdWorklistViewConfigService,
 											sdLoggerService) {
-		// Register for View Events
 		sdViewUtilService.registerForViewEvents($scope, this.handleViewEvents, this);
 
-		// Preserve to use later in life-cycle
 		_$interval = $interval;
 		_sdWorklistViewConfigService = sdWorklistViewConfigService;
 		_parse = $parse;
@@ -43,6 +41,8 @@
 		this.registerForAutoRefresh();
 
 		this.refreshRequired = false;
+
+		this.query = this.generateQuery($scope);
 
 		/*
 		 * This needs to be defined here as it requires access to $scope
@@ -106,21 +106,20 @@
 
 		var queryGetter = _parse("panel.params.custom");
 		var params = queryGetter($scope);
-
+		
 		var query = {};
 
 		if(params.participantQId) {
-			query.participantQId = params.participantQId;
+				query.participantQId = params.participantQId;
 		} else if (params.processQId) {
 				query.processQId = params.processQId;
 		} else if(params.type) {
 				query.type = params.type;
-
-				if(params.userId) {
-						query.userId =	params.userId
-					}
+				query.userId =	params.userId ? params.userId : undefined;
+				query.from =	params.from ? params.from : undefined;
 		}
 
+		query.id = params.id;
 		return query;
 	};
 

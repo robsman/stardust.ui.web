@@ -24,7 +24,7 @@
 	var _sdLoggedInUserService;
 	var _sdI18nService;
 	/**
-	 * 
+	 *
 	 */
 	function WorkflowOverviewPanelCtrl(sdWorkflowOverviewService, sdLoggerService, sdViewUtilService, sdLoggedInUserService, sdI18nService) {
 		trace = sdLoggerService.getLogger('workflow-ui.sdWorkflowOverviewPanelCtrl');
@@ -34,13 +34,13 @@
 		_sdI18nService = sdI18nService;
 
 		this.userInfo = _sdLoggedInUserService.getUserInfo();
-		
+
 		this.getOverviewCounts();
-	
+
 	}
-	
+
 	/**
-	 * 
+	 *
 	 */
 	WorkflowOverviewPanelCtrl.prototype.getOverviewCounts = function(){
 		var self = this;
@@ -50,72 +50,73 @@
 			trace.error(error);
 		});
 	};
-	
+
 	/**
-	 * 
+	 *
 	 */
 	WorkflowOverviewPanelCtrl.prototype.openDirectUserWorkActionHTML5 = function(){
 		 var self = this;
 
-	      var params = {"id" : self.userInfo.id,
-	    		        "url" : "services/rest/portal/worklist/personalItems",
-	    		        "name": self.userInfo.displayName
-	    		       };
-	      _sdViewUtilService.openView("worklistPanel","id=" + self.userInfo.id, params);
-		
+      var params = {"id" : self.userInfo.id,
+		    		"type" : "personal",
+		    		"name": self.userInfo.displayName
+		    	   };
+      _sdViewUtilService.openView("worklistPanel","id=" + self.userInfo.id, params);
 	};
+
 	/**
-	 * 
+	 *
 	 */
 	WorkflowOverviewPanelCtrl.prototype.openAllAssignedActivitiesActionHTML5 = function(){
 		 var self = this;
 
-	      var params = {"id" : "allActivities",
-	    		        "url" : "services/rest/portal/worklist/allAssigned",
-	    		        "name": self.userInfo.displayName
-	    		       };
-	      _sdViewUtilService.openView("worklistPanel","id=allActivities", params);
-		
+      var params = {"id" : "allActivities",
+    		        "type" : "allAssigned",
+    		        "name": self.userInfo.displayName
+		    	   };
+      _sdViewUtilService.openView("worklistPanel","id=allActivities", params);
+
 	};
-	
+
 	/**
-	 * 
+	 *
 	 */
 	WorkflowOverviewPanelCtrl.prototype.openCriticalActivitiesActionHTML5 = function(){
 		 var self = this;
 
-	      var params = {"id" : "criticalActivities",
-	    		        "criticality" : "high",
-	    		        "name": self.userInfo.displayName
-	    		       };
-	      _sdViewUtilService.openView("worklistPanel","id=criticalActivities", params);
-		
+      var params = {"id" : "criticalActivities",
+		            "type" : "highCriticality",
+		    		"name": self.userInfo.displayName
+		    		};
+      _sdViewUtilService.openView("worklistPanel","id=criticalActivities", params);
+
 	};
-	
+
 	/**
-	 * 
+	 *
 	 */
 	WorkflowOverviewPanelCtrl.prototype.dateIdChange = function(){
 		var self = this;
-		
+
 	    if("-" === self.dateId){
 	         return;
 	      }
 	      var name = _sdI18nService.translate('processportal.launchPanels-workflowOverview-pastProcessInstances.' + self.dateId);
 	      var params = { "id" : "lastNWorkedOn",
 	    		         "name" : name,
-	    		         "fromDate" : self.dateId
-	    		       }
+	    		         "from" : self.dateId,
+	    		         "type" : "myWorkSince"
+			    	 };
 	      _sdViewUtilService.openView("worklistPanel","id=" + "lastNWorkedOn" + "&dateID=" + self.dateId, params);
 	};
-	
+
 	/**
-	 * 
+	 *
 	 */
 	WorkflowOverviewPanelCtrl.prototype.refreshOverviewPanel = function(){
 		this.getOverviewCounts();
 	};
-	
+
 })();
 
-	
+

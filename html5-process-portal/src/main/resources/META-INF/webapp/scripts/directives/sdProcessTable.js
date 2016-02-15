@@ -604,7 +604,8 @@
 					var viewKey = new Date().getTime();
 					var params = {
 							name : sgI18nService.translate('views-common-messages.views-switchProcessDialog-worklist-title', 'Abort and Join Process'),
-							pInstanceOids : result.join(",")
+							pInstanceOids : result.join(","),
+							type : "processInstances"
 					};
 					sdViewUtilService.openView('worklistPanel', 'id='+viewKey, params, true);
 				}
