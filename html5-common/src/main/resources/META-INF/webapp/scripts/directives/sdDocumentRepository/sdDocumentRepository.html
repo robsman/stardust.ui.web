@@ -79,13 +79,12 @@
   <!--Repo Upload Dialog Section End-->
 
   <!--Search Section Start-->
-  <div>
+  <div ng-if = "ctrl.showSearchFilter">
     <div style="display:inline-block;min-width:100px;">
       <span>{{ctrl.textMap.quickSearch}}</span>
     </div>
     <div style="display:inline-block;width:calc(100% - 110px);">
       <div  sd-auto-complete
-            ng-if = "ctrl.showSearchFilter"
             sda-item-pre-class="ctrl.searchItemIcon(item,index)"
             sda-tag-pre-class="ctrl.searchItemIcon(item,index)"
             sda-allow-multiple="false"

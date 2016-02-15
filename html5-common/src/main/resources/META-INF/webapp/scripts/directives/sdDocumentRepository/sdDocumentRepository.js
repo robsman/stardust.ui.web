@@ -109,16 +109,25 @@
           else if(treeNode.nodeItem.nodeType==="folder"){
             that.treeApi.expandNode(treeNode.nodeItem.id);
             that.$timeout(function(){
+
               var nextPath = childPaths.splice(0,1)[0];
               nextPath = treeNode.nodeItem.path + nextPath;
 
               var nextChild = treeNode.nodeItem.children.filter(function(child){
                 var testPath = child.path;
-                testPath += (child.nodeType==='folder')?"/":"";
+                testPath += (child.nodeType==='folder' && childPaths.length > 0)?"/":"";
                 return nextPath.indexOf(testPath ) == 0;
               })[0];
 
-              fx(nextChild.id,childPaths);//set up recursion
+              if(nextChild){
+                fx(nextChild.id,childPaths);//set up recursion
+              }
+              else{
+                //there is an assumption here that this block should
+                //only be reached if our match is a folder.
+                that.matches.push(treeNode.nodeItem);
+              }
+
             },0);
           }
           //Else we have a document
@@ -131,6 +140,7 @@
 
     };
 
+    //boot up recursive calls
     fx(res.repositoryId,pathAccum);
 
     return;
@@ -783,7 +793,7 @@
   
   docRepoController.prototype.getMatches = function(matchVal){
     var that = this;
-    if(matchVal.length > 4){
+    if(matchVal.length > 2){
       this.documentService.searchRepository(matchVal)
       .then(function(res){
 

@@ -69,6 +69,11 @@
         "data" : data
       })
       .then(function(res){
+        //documents have a repositoryId property but folders do not.
+        //We will add the proper repoID to each folder at this point.
+        res.data.folders.list.forEach(function(folder){
+            folder.repositoryId =  folder.uuid.split("}{")[0].split(":")[2];
+        });
         deferred.resolve(res.data);
       })
       ["catch"](function(err){
