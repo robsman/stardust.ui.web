@@ -27,7 +27,7 @@ public class RepositorySearchRequestDTO extends AbstractDTO
    }
 
    public String id;
-   public String name;
+   public String name = "";
 
    public DataTableOptionsDTO documentDataTableOption;
 
