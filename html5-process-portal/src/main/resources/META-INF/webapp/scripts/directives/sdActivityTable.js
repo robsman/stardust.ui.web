@@ -22,7 +22,7 @@
 	    [ '$parse', '$q', 'sdUtilService', 'sdViewUtilService', 'sdLoggerService', 'sdPreferenceService',
 		    'sdWorklistService', 'sdActivityInstanceService', 'sdProcessInstanceService', 'sdProcessDefinitionService',
 		    'sdCriticalityService', 'sdStatusService', 'sdPriorityService', '$filter', 'sgI18nService',
-		    '$timeout', 'sdLoggedInUserService', 'sdDialogService', 'sdCommonViewUtilService',
+		    '$timeout', 'sdLoggedInUserService', 'sdDialogService', 'sdCommonViewUtilService','sdWorklistConstants',
 		    ActivityTableDirective ]);
 
     /*
@@ -31,7 +31,7 @@
     function ActivityTableDirective($parse, $q, sdUtilService, sdViewUtilService, sdLoggerService, sdPreferenceService,
 	    sdWorklistService, sdActivityInstanceService, sdProcessInstanceService, sdProcessDefinitionService, sdCriticalityService,
 	    sdStatusService, sdPriorityService, $filter, sgI18nService, $timeout, sdLoggedInUserService,
-	    sdDialogService, sdCommonViewUtilService) {
+	    sdDialogService, sdCommonViewUtilService, sdWorklistConstants) {
 
 	var trace = sdLoggerService.getLogger('bpm-common.sdActivityTable');
 
@@ -709,14 +709,13 @@ function checkCofig(toolBarConfig, menuItem) {
 		var titleGetter = $parse(titleExpr);
 		this.title = titleGetter(scopeToUse);
 
+		this.preferenceId = 'worklist-participant-columns';
+
 		if (this.query) {
-				this.preferenceId = 'worklist-participant-columns';
 
 			if (this.query.type) {
-				if (this.query.type == "personal" || this.query.type == "allStates") {
-						this.preferenceName = this.query.userId ?
-								 this.query.userId :
-								sdLoggedInUserService.getUserInfo().id;
+				if (this.query.type == "all") {
+						this.preferenceName = this.query.userId;
 				} else {
 					this.preferenceName = this.query.type;
 				}
@@ -725,15 +724,19 @@ function checkCofig(toolBarConfig, menuItem) {
 				this.preferenceId = 'worklist-process-columns';
 			} else if (this.query.participantQId) {
 				this.preferenceName = "{ipp-participant}" + this.query.participantQId;
-			} else {
-				this.preferenceName = this.query.userId ?
-								      this.query.userId :
-								      sdLoggedInUserService.getUserInfo().id;
+			}
+
+			if(!this.preferenceName) {
+				this.preferenceName = this.query.userId;
 			}
 
 			if(this.query.name) {
 				this.exportFileName = this.exportFileName + " (" + this.query.name +")";
 			}
+		}
+
+		if(!this.preferenceName) {
+				this.preferenceName = sdLoggedInUserService.getUserInfo().id;
 		}
 
 		if (attr.sdaPreferenceModule) {

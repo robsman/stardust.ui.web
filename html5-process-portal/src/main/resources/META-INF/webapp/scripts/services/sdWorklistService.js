@@ -15,16 +15,29 @@
 (function() {
    'use strict';
 
+   angular.module('workflow-ui.services').constant('sdWorklistConstants', {
+    Types: {
+        HIGH_CRITICALITY : 'highCriticality',
+        TOTAL : 'total',
+        PERSONAL : 'personal',
+        UNIFIED : 'unified',
+        WORK_SINCE : 'myWorkSince',
+        RESUBMISSION : 'resubmission',
+        ALIVE : 'alive',
+        ALL : 'all'
+    }});
+
    angular.module('workflow-ui.services').provider('sdWorklistService', function() {
-      this.$get = [ '$rootScope', '$resource','sdDataTableHelperService', 'sdUtilService', function($rootScope, $resource, sdDataTableHelperService, sdUtilService) {
-         var service = new WorklistService($rootScope, $resource, sdDataTableHelperService, sdUtilService);
+      this.$get = [ '$rootScope', '$resource','sdDataTableHelperService', 'sdUtilService','sdWorklistConstants',
+       function($rootScope, $resource, sdDataTableHelperService, sdUtilService, sdWorklistConstants) {
+         var service = new WorklistService($rootScope, $resource, sdDataTableHelperService, sdUtilService, sdWorklistConstants);
          return service;
       } ];
    });
    /*
     *
     */
-   function WorklistService($rootScope, $resource, sdDataTableHelperService, sdUtilService) {
+   function WorklistService($rootScope, $resource, sdDataTableHelperService, sdUtilService, sdWorklistConstants) {
 	   var REST_BASE_URL = "services/rest/portal/worklist/";
 
 	   /*
@@ -44,39 +57,34 @@
 
 	   	if (query.type) {
 
-				if(query.type === "highCriticality") {
+				if(query.type === sdWorklistConstants.Types["HIGH_CRITICALITY"]) {
 					 restUrl = restUrl  + ":type/:id";
 			   	 urlTemplateParams.type = "criticality";
 			  	 urlTemplateParams.id = "high";
 
-				} else if(query.type === "allAssigned") {
+				} else if(query.type === sdWorklistConstants.Types["TOTAL"]) {
 						restUrl = restUrl + "allAssigned";
 
-				}  else if(query.type === "personal") {
+				}  else if(query.type === sdWorklistConstants.Types["PERSONAL"]) {
 						restUrl = restUrl + "personalItems";
 
-				} else if(query.type === "unified") {
+				} else if(query.type === sdWorklistConstants.Types["UNIFIED"]) {
 						restUrl = restUrl + "unified/:type/:id";
 						urlTemplateParams.type = "user";
 			  	  urlTemplateParams.id = query.userId;
 
-				} else if(query.type === "myWorkSince") {
+				} else if(query.type === sdWorklistConstants.Types["WORK_SINCE"]) {
 					 restUrl = restUrl  + ":type/:id";
 			 	   urlTemplateParams.type = "date";
 			  	 urlTemplateParams.id = query.from;
 
-				} else if(query.type === "resubmission") {
+				} else if(query.type ===  sdWorklistConstants.Types["RESUBMISSION"]) {
 					 restUrl = restUrl  + "resubmissionActivities";
 
-				} else if(query.type === "allActivable") {
-					 restUrl = restUrl  + "allActivable";
+				} else if(query.type ===  sdWorklistConstants.Types["ALIVE"]) {
+					 restUrl = restUrl  + "alive";
 
-				} else if(query.type === "processInstances"){
-					 restUrl = restUrl  + ":type";
-		  		 urlTemplateParams.type = "processInstance";
-		  		 var params = "oids="+query.pInstanceOids;
-		   		 restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, params);
-				} else if (query.type === "allStates") {
+				}  else if (query.type === sdWorklistConstants.Types["ALL"]) {
 						restUrl = restUrl + ":type/:id";
 						urlTemplateParams.type = "user";
 			  	  urlTemplateParams.id = query.userId;
@@ -93,12 +101,18 @@
 			   urlTemplateParams.type = "process";
 			   urlTemplateParams.id = query.processQId;
 
-			} else if(query.userId){
+			} else if(query.pInstanceOids ){
+				restUrl = restUrl  + ":type";
+		  		 urlTemplateParams.type = "processInstance";
+		  		 var params = "oids="+query.pInstanceOids;
+		   		 restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, params);
+
+			}
+
+			else if(query.userId){
 					restUrl = restUrl + ":type/:id";
 					urlTemplateParams.type = "user";
 		  	  urlTemplateParams.id = query.userId;
-		  	  var params = "fetchAllStates="+true;
-	   		  restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, params);
 
 			} else {
 				if(!query.url){

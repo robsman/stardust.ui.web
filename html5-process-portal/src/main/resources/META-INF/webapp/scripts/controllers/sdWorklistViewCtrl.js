@@ -106,17 +106,19 @@
 
 		var queryGetter = _parse("panel.params.custom");
 		var params = queryGetter($scope);
-		
+
 		var query = {};
 
 		if(params.participantQId) {
 				query.participantQId = params.participantQId;
 		} else if (params.processQId) {
 				query.processQId = params.processQId;
+		} else if (params.pInstanceOids) {
+				query.pInstanceOids = params.pInstanceOids;
 		} else if(params.type) {
 				query.type = params.type;
-				query.userId =	params.userId ? params.userId : undefined;
-				query.from =	params.from ? params.from : undefined;
+				query.userId =	params.userId;
+				query.from =	params.from;
 		}
 
 		query.id = params.id;

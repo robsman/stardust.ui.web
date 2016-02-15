@@ -17,22 +17,23 @@
 	angular.module("workflow-ui").controller(
 			'sdWorkflowOverviewPanelCtrl',
 			['sdWorkflowOverviewService', 'sdLoggerService', 'sdViewUtilService',
-					'sdLoggedInUserService', 'sdI18nService', WorkflowOverviewPanelCtrl ]);
+					'sdLoggedInUserService', 'sdI18nService','sdWorklistConstants', WorkflowOverviewPanelCtrl ]);
 	var _sdWorkflowOverviewService;
 	var _sdViewUtilService;
 	var trace;
 	var _sdLoggedInUserService;
 	var _sdI18nService;
+	var _sdWorklistConstants;
 	/**
 	 *
 	 */
-	function WorkflowOverviewPanelCtrl(sdWorkflowOverviewService, sdLoggerService, sdViewUtilService, sdLoggedInUserService, sdI18nService) {
+	function WorkflowOverviewPanelCtrl(sdWorkflowOverviewService, sdLoggerService, sdViewUtilService, sdLoggedInUserService, sdI18nService, sdWorklistConstants) {
 		trace = sdLoggerService.getLogger('workflow-ui.sdWorkflowOverviewPanelCtrl');
 		_sdWorkflowOverviewService = sdWorkflowOverviewService;
 		_sdViewUtilService = sdViewUtilService;
 		_sdLoggedInUserService = sdLoggedInUserService;
 		_sdI18nService = sdI18nService;
-
+		_sdWorklistConstants = sdWorklistConstants;
 		this.userInfo = _sdLoggedInUserService.getUserInfo();
 
 		this.getOverviewCounts();
@@ -58,7 +59,7 @@
 		 var self = this;
 
       var params = {"id" : self.userInfo.id,
-		    		"type" : "personal",
+		    		"type" : _sdWorklistConstants.Types["PERSONAL"],
 		    		"name": self.userInfo.displayName
 		    	   };
       _sdViewUtilService.openView("worklistPanel","id=" + self.userInfo.id, params);
@@ -71,7 +72,7 @@
 		 var self = this;
 
       var params = {"id" : "allActivities",
-    		        "type" : "allAssigned",
+    		        "type" : _sdWorklistConstants.Types["TOTAL"],
     		        "name": self.userInfo.displayName
 		    	   };
       _sdViewUtilService.openView("worklistPanel","id=allActivities", params);
@@ -85,7 +86,7 @@
 		 var self = this;
 
       var params = {"id" : "criticalActivities",
-		            "type" : "highCriticality",
+		            "type" : _sdWorklistConstants.Types["HIGH_CRITICALITY"],
 		    		"name": self.userInfo.displayName
 		    		};
       _sdViewUtilService.openView("worklistPanel","id=criticalActivities", params);
@@ -105,7 +106,7 @@
 	      var params = { "id" : "lastNWorkedOn",
 	    		         "name" : name,
 	    		         "from" : self.dateId,
-	    		         "type" : "myWorkSince"
+	    		         "type" : _sdWorklistConstants.Types["WORK_SINCE"],
 			    	 };
 	      _sdViewUtilService.openView("worklistPanel","id=" + "lastNWorkedOn" + "&dateID=" + self.dateId, params);
 	};

@@ -320,7 +320,7 @@ public class WorklistResource
    @POST
    @Produces(MediaType.APPLICATION_JSON)
    @Consumes(MediaType.APPLICATION_JSON)
-   @Path("/allActivable")
+   @Path("/alive")
    public Response getAllActivable(@QueryParam("skip") @DefaultValue(DEFAULT_SKIP_STEP) Integer skip,
          @QueryParam("pageSize") @DefaultValue(DEFAULT_PAGE_SIZE) Integer pageSize,
          @QueryParam("orderBy") @DefaultValue(DEFAULT_ORDER_BY_FIELD) String orderBy,

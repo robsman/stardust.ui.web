@@ -361,7 +361,7 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
          String id = ID_ALL_ACTIVITY_INSTANCES;
          params.put("id", id);
          params.put("name", name);
-         params.put("type", "allActivable");
+         params.put("type", "alive");
          PPUtils.openWorklistViewHTML5("id=" + id, params);
          PPUtils.selectWorklist(null);
          if (lastSearchItems.containsKey(id))
@@ -406,7 +406,7 @@ public class ActivitySearchPanelBean extends AbstractLaunchPanel
          params.put("id", id);
          params.put("name", name);
          params.put("userId", user.getId());
-         params.put("type", "allStates");
+         params.put("type", "all");
          PPUtils.openWorklistViewHTML5("id=" + id, params);
          PPUtils.selectWorklist(null);
          if (lastSearchItems.containsKey(id))
