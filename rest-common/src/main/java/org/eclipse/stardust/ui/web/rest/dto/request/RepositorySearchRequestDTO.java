@@ -22,7 +22,7 @@ import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
  */
 public class RepositorySearchRequestDTO extends AbstractDTO
 {
-   enum Search_Type {
+   public enum Search_Type {
       Both, Document, Folder
    }
 

@@ -201,7 +201,37 @@ public class RepositoryServiceImpl implements RepositoryService
       }
       return null;
    }
+   
+   /**
+    * @param searchRequestDTO
+    * @return
+    */
+   public QueryResultDTO SearchFolder(RepositorySearchRequestDTO searchRequestDTO)
+   {
+      String xPathQuery = "//*[jcr:like(fn:lower-case(@vfs:metaData/vfs:name), '%"
+            + searchRequestDTO.name.toLowerCase() + "%')]";
 
+      List<Folder> folders = DocumentMgmtUtility.getDocumentManagementService().findFolders(xPathQuery,
+            Folder.LOD_NO_MEMBERS);
+
+      return buildFolderSearchResult(folders);
+   }
+
+   /**
+    * @param folders
+    * @return
+    */
+   private QueryResultDTO buildFolderSearchResult(List<Folder> folders)
+   {
+      QueryResultDTO resultDTO = new QueryResultDTO();
+      if (folders != null)
+      {
+         resultDTO.list = FolderDTOBuilder.build(folders);
+         resultDTO.totalCount = folders.size();
+      }
+      return resultDTO;
+   }
+   
    // *******************************
    // Document specific
    // *******************************
@@ -688,8 +718,25 @@ public class RepositoryServiceImpl implements RepositoryService
    public Map<String, QueryResultDTO> searchResources(RepositorySearchRequestDTO repositorySearchRequestDTO)
    {
       Map<String, QueryResultDTO> result = new HashMap<String, QueryResultDTO>();
-      result.put(DOCUMENTS, SearchDocuments(repositorySearchRequestDTO));
-      result.put(FOLDERS, new QueryResultDTO());
+
+      repositorySearchRequestDTO.searchType = repositorySearchRequestDTO.searchType.toLowerCase();
+
+      if (RepositorySearchRequestDTO.Search_Type.Both.name().toLowerCase()
+            .equals(repositorySearchRequestDTO.searchType))
+      {
+         result.put(DOCUMENTS, SearchDocuments(repositorySearchRequestDTO));
+         result.put(FOLDERS, SearchFolder(repositorySearchRequestDTO));
+      }
+      else if (RepositorySearchRequestDTO.Search_Type.Document.name().toLowerCase()
+            .equals(repositorySearchRequestDTO.searchType))
+      {
+         result.put(DOCUMENTS, SearchDocuments(repositorySearchRequestDTO));
+      }
+      else if (RepositorySearchRequestDTO.Search_Type.Folder.name().toLowerCase()
+            .equals(repositorySearchRequestDTO.searchType))
+      {
+         result.put(FOLDERS, SearchFolder(repositorySearchRequestDTO));
+      }
       return result;
    }
 

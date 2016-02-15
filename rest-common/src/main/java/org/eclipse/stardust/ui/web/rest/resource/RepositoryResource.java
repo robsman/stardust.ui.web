@@ -142,7 +142,24 @@ public class RepositoryResource
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
    @Produces(MediaType.APPLICATION_JSON)
-   @RequestDescription("Search criteria can be provided as per RepositorySearchRequestDTO")
+   @RequestDescription("Search criteria can be provided as per RepositorySearchRequestDTO\r\n" + 
+         "\r\n" + 
+         "*Sample*\r\n" + 
+         "\r\n" + 
+         "```javascript\r\n" + 
+         "{\r\n" + 
+         "  name: \"Repo\",\r\n" + 
+         "  searchType:\"Document\",\r\n" + 
+         "  contentTypeIn:['text/plain'],\r\n" + 
+         "  documentDataTableOption: {\r\n" + 
+         "    filter: {\r\n" + 
+         "      documentName: {\r\n" + 
+         "        textSearch:\"REPO\"\r\n" + 
+         "      }\r\n" + 
+         "    }\r\n" + 
+         "  }\r\n" + 
+         "}\r\n" + 
+         "```")
    @ResponseDescription("The response would be map of *documents* and *folders* with values in the form of *QueryResultDTO*")
    @Path("/search")
    public Response searchResources(String postData) throws Exception
