@@ -1,4 +1,10 @@
-<div>
+<style type="text/css">
+  .sd-document-repository .sd-ac-container{
+    width:calc(100% - 120px) !important;
+  }
+</style>
+
+<div class="sd-document-repository">
 
   <!--NG-Dialog Section-->
 
@@ -73,18 +79,26 @@
   <!--Repo Upload Dialog Section End-->
 
   <!--Search Section Start-->
-  <div  sd-auto-complete
-        ng-if = "ctrl.showSearchFilter"
-        sda-item-pre-class="ctrl.searchItemIcon(item,index)"
-        sda-tag-pre-class="ctrl.searchItemIcon(item,index)"
-        sda-allow-multiple="false"
-        sda-matches="ctrl.searchMatches" 
-        sda-match-str="ctrl.matchVal" 
-        sda-change="ctrl.getMatches(ctrl.matchVal)" 
-        sda-text-property="name" 
-        sda-container-class="sd-ac-container" 
-        sda-item-hot-class="sd-ac-item-isActive" 
-        sda-selected-matches="ctrl.selectedMatches">
+  <div>
+    <div style="display:inline-block;min-width:100px;">
+      <span>{{ctrl.textMap.quickSearch}}</span>
+    </div>
+    <div style="display:inline-block;width:calc(100% - 110px);">
+      <div  sd-auto-complete
+            ng-if = "ctrl.showSearchFilter"
+            sda-item-pre-class="ctrl.searchItemIcon(item,index)"
+            sda-tag-pre-class="ctrl.searchItemIcon(item,index)"
+            sda-allow-multiple="false"
+            sda-key-delay="500"
+            sda-matches="ctrl.searchMatches" 
+            sda-match-str="ctrl.matchVal" 
+            sda-change="ctrl.getMatches(ctrl.matchVal)" 
+            sda-text-property="path" 
+            sda-container-class="sd-ac-container" 
+            sda-item-hot-class="sd-ac-item-isActive" 
+            sda-selected-matches="ctrl.selectedMatches">
+      </div>
+    </div>
   </div>
   <!--Search Section End-->
 

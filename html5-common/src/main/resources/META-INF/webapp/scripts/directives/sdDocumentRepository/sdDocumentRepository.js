@@ -30,12 +30,14 @@
 
     this.selectedRepo = {};
     this.repositoryProviders =[]; 
-    this.selectedMatches = [];
+    this.selectedMatches = []; //matched from our sdAutocomplete directive
+    this.matches = []; //Tree node matches corresponding to our selectedMatches
     this.data=[];
     this.documentRepositoryUrl = documentRepositoryService.documentRoot + "/upload";
 
     //set up a watch on our selected matches from our autocomplete directive
     $scope.$watchCollection('ctrl.selectedMatches', function(newValue, oldValue) {
+      that.matches=[];
       if(newValue.length > 0){
         that.expandNodePath(newValue[0]);
       };
@@ -49,17 +51,89 @@
 
   }
   
-  docRepoController.prototype.expandNodePath = function(path){
+  //Currently this will only work for the full full doc repo view (sdaRootPath="/").
+  //It will nto work for any other path.
+  docRepoController.prototype.expandNodePath = function(res){
 
-    /*TODO: Implementation...
-    leverage the eventCallback method to dupe tree node-expand 
-    events for our path. We will pass a deferred with the object
-    and once that deferred is resolve we will process the next
-    node in the path until we reach the last folder to expand.
-    This approach is used for a single folder in our refreshFolder
-    method.
-    */
+    var expPaths = [],
+        pathSegments = [],
+        i = 0,
+        that = this,
+        repoUrn,
+        pathAccum = [];
 
+    pathSegments = res.path.split("/").filter(function(v){return !!v});
+    for(; i < pathSegments.length  ; i++){
+      pathAccum.push("/" + pathSegments.slice(i).join("/"));
+    }
+
+    //1:Expand virtual Root, we know it already has children
+    this.treeApi.expandNode("VirtualRoot");
+
+    var fx = function(nodeId,childPaths){
+
+      var treeNode = that.treeApi.childNodes[nodeId];
+
+      that.refreshFolder(treeNode.nodeItem)
+      .then(function(res){
+
+          that.treeApi.expandNode(treeNode.nodeItem.id);
+
+          //This block handles our Repository Structure
+          if(treeNode.nodeItem.nodeType==="Repo"){
+
+            var nextPath = childPaths.splice(0,1)[0];
+
+            that.$timeout(function(){
+              var virtualRoot = treeNode.nodeItem.children[0];
+              var nextChild;
+
+              //This is a virtualized root folder and already has children initialized
+              that.treeApi.expandNode(virtualRoot.id);
+
+              nextChild = virtualRoot.children.filter(function(child){
+                var testPath = child.path;
+                testPath += (child.nodeType==='folder')?"/":"";
+                return nextPath.indexOf(testPath) == 0;
+              })[0];
+              
+              if(nextChild && (nextChild.nodeType==="folder" || nextChild.nodeType==="document")){
+                that.$timeout(function(){
+                  fx(nextChild.id,childPaths);//recursive call
+                },300);
+              }
+
+            },0);
+          }
+          //Else we have a pure folder structure
+          else if(treeNode.nodeItem.nodeType==="folder"){
+            that.treeApi.expandNode(treeNode.nodeItem.id);
+            that.$timeout(function(){
+              var nextPath = childPaths.splice(0,1)[0];
+              nextPath = treeNode.nodeItem.path + nextPath;
+
+              var nextChild = treeNode.nodeItem.children.filter(function(child){
+                var testPath = child.path;
+                testPath += (child.nodeType==='folder')?"/":"";
+                return nextPath.indexOf(testPath ) == 0;
+              })[0];
+
+              fx(nextChild.id,childPaths);//set up recursion
+            },0);
+          }
+          //Else we have a document
+          else if(treeNode.nodeItem.nodeType==='document'){
+            //Add to our matched collection
+            that.matches.push(treeNode.nodeItem);
+          };
+
+      });
+
+    };
+
+    fx(res.repositoryId,pathAccum);
+
+    return;
   };
 
   docRepoController.prototype.getTextMap = function(i18n){
@@ -84,6 +158,7 @@
     textMap.makeDefault = i18n.translate("views.genericRepositoryView.treeMenuItem.repo.makeDefault");
     textMap.default = i18n.translate("views.genericRepositoryView.treeMenuItem.repo.default");
     textMap.repoRoot = i18n.translate("views.genericRepositoryView.treeMenuItem.repo.root");
+    textMap.quickSearch = i18n.translate("views.genericRepositoryView.quickSearch");
 
     return textMap;
   };
@@ -141,6 +216,10 @@
   docRepoController.prototype.iconCallback = function(data,e){
     
     var classes=["fa"];
+
+    if(this.matches.indexOf(data) > -1){
+      classes.push("match");
+    }
 
     if(data.nodeType=="folder" || data.nodeType == "repoFolderRoot"){
       classes.push("pi-folder");
@@ -704,10 +783,48 @@
   
   docRepoController.prototype.getMatches = function(matchVal){
     var that = this;
-    this.documentService.searchRepository(matchVal)
-    .then(function(res){
-      that.searchMatches = res;
-    });
+    if(matchVal.length > 4){
+      this.documentService.searchRepository(matchVal)
+      .then(function(res){
+
+        var docs = [],
+            folders = [];
+
+        if(res.documents.list){
+
+          docs = res.documents.list.map(function(doc){
+            return {
+              "uuid" : doc.uuid,
+              "name" : doc.name,
+              "repositoryId" : doc.repositoryId,
+              "path" : doc.path,
+              "type" : "document",
+              "contentType" : doc.contentType
+            }
+          });
+
+        };
+
+        if(res.folders.list){
+
+          folders = res.folders.list.map(function(doc){
+            return {
+              "uuid" : doc.uuid,
+              "name" : doc.name,
+              "repositoryId" : doc.repositoryId,
+              "path" : doc.path,
+              "type" : "folder",
+              "contentType" : ""
+            }
+          });
+
+        };
+
+        that.searchMatches = docs.concat(folders);
+
+      });
+
+    }
 
   };
 

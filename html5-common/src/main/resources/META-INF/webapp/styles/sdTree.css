@@ -168,6 +168,7 @@ ul.sd-tree a.tree-node:hover span{
   text-decoration:underline;
 }
 
+.sd-tree i.match + span,
 .sd-tree .match > div > a > span{
 	background: #f4f4f4;
 	border-radius: 2px;

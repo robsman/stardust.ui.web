@@ -51,29 +51,35 @@
 
   documentRepoService.prototype.searchRepository = function(searchVal){
 
-     var deferred = this.$q.defer();
-     var results;
+    var deferred = this.$q.defer(),
+        results,
+        data;
 
-     results =[
-      {"name" : "documentA" , "type" : "document"},
-      {"name" : "documentABC" , "type" : "document"},
-      {"name" : "documentABCD" , "type" : "document"},
-      {"name" : "documentABCDE" , "type" : "document"},
-      {"name" : "documentABCDEF" , "type" : "document"},
-      {"name" : "folderA" , "type" : "folder"},
-      {"name" : "folderABC" , "type" : "folder"},
-      {"name" : "folderABCD" , "type" : "folder"},
-      {"name" : "folderABCDE" , "type" : "folder"},
-      {"name" : "folderABCDEF" , "type" : "folder"}
-     ];
+    url = this.rootUrl + "/search";
 
-     var results = results.filter(function(v){
-        return v.name.indexOf(searchVal) > -1;
-     });
+    data = {
+      "name" : searchVal,
+      "searchType" : "BOTH"
+    };
 
-     deferred.resolve(results);
+    if(searchVal){
+      this.$http({
+        "method" : "POST",
+        "url" : url,
+        "data" : data
+      })
+      .then(function(res){
+        deferred.resolve(res.data);
+      })
+      ["catch"](function(err){
+        deferred.reject(err);
+      });
+    }
+    else{
+      deferred.reject("Empty Search Value");
+    }
 
-     return deferred.promise;
+    return deferred.promise;
   };
 
   documentRepoService.prototype.getRepositoryRootFolder = function(repositoryId){

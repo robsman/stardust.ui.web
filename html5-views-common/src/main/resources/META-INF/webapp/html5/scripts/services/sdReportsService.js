@@ -20,13 +20,18 @@
 		
 
 
-		//TODO: Need list if fully qualified participant IDs
+		//TODO: Need list of fully qualified participant IDs
 		//For each fully qualified participant create a path as such...
 		//.../reports/{fullyQualifeidParticipantId}/designs
+		//Add them all in a bot hasynch requests in a $q.all method
+		//and then resovle paths
+		
+		//1: Add the fixed path we do know
 		paths={
 			"reports/designs" : "Private Report Definitions",
 		}
 
+		//2: Add the computed path for the users documents
 		this.getCurrentUser()
 		.then(function(user){
 

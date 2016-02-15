@@ -8,6 +8,7 @@
 	function sdMyReportsViewCtrl(sdReportsService){
 		var that = this;
 		this.paths= null;
+		
 		this.path = sdReportsService.getReportPaths()
 		.then(function(paths){
 			that.paths = paths;
