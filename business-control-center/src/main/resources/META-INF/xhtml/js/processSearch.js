@@ -12,7 +12,7 @@
  * 
  */
 function openArchiveSearch(url, criteria) {
-	var message = '{"type": "OpenView", "data": {"viewId": "processSearchView", "params": ' + criteria + '}}';
+	var message = '{"type": "OpenView", "data": {"viewId": "processSearchViewIF", "params": ' + criteria + '}}';
 
 	// url will always end with "/"
 	url += "main.html?uicommand=" + message;

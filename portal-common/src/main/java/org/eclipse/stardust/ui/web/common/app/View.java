@@ -21,13 +21,18 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.eclipse.stardust.ui.web.common.ViewDefinition;
+import org.eclipse.stardust.ui.web.common.log.LogManager;
+import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.message.UiElementMessage;
 import org.eclipse.stardust.ui.web.common.spring.scope.TabScopeManager;
 import org.eclipse.stardust.ui.web.common.uielement.AbstractUiElement;
 import org.eclipse.stardust.ui.web.common.util.AbstractMessageBean;
 import org.eclipse.stardust.ui.web.common.util.CollectionUtils;
+import org.eclipse.stardust.ui.web.common.util.GsonUtils;
 import org.eclipse.stardust.ui.web.common.util.MessagePropertiesBean;
 import org.eclipse.stardust.ui.web.common.util.StringUtils;
+
+import com.google.gson.Gson;
 
 
 /**
@@ -75,6 +80,8 @@ public class View extends AbstractUiElement implements TabScopeManager
    private String identityUrl;
    
    private FrameworkViewInfo frameworkViewInfo = null;
+   
+   private static final Logger trace = LogManager.getLogger(PortalUiController.class);
 
    /**
     * @param definition
@@ -285,27 +292,41 @@ public class View extends AbstractUiElement implements TabScopeManager
 
       if (viewParams2 != null)
       {
-         for (Entry<String, Object> element : viewParams2.entrySet())
+         try
          {
-            if (element.getValue() instanceof String)
+            Gson gson = new Gson();
+            return gson.toJson(viewParams2);
+         }
+         catch (Exception e)
+         {
+            if (trace.isDebugEnabled())
             {
-               ret += element.getKey() + ": '" + element.getValue() + "', ";
+               trace.debug(("Exception occured while converting all view Params to String so doing it on discrete data types"));
             }
-            else if (element.getValue() instanceof Number)
+            
+            for (Entry<String, Object> element : viewParams2.entrySet())
             {
-               ret += element.getKey() + ":" + element.getValue() + ",";
-            }
-            else if (element.getValue() instanceof Boolean)
-            {
-               ret += element.getKey() + ":" + element.getValue() + ",";
+               if (element.getValue() instanceof String)
+               {
+                  ret += element.getKey() + ": '" + element.getValue() + "', ";
+               }
+               else if (element.getValue() instanceof Number)
+               {
+                  ret += element.getKey() + ":" + element.getValue() + ",";
+               }
+               else if (element.getValue() instanceof Boolean)
+               {
+                  ret += element.getKey() + ":" + element.getValue() + ",";
+               }
             }
          }
+        
       }
 
       if (ret.length() == 0)
-         ret = "";
+         ret = "{}";
       else
-         ret = ret.substring(0, ret.length() - 2);
+         ret = "{" + ret.substring(0, ret.length() - 2) + "}";
       return ret;
    }
 

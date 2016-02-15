@@ -1161,7 +1161,7 @@ public class PortalApplication
       FrameworkViewInfo frameworkViewInfo = view.getHtml5FwViewInfo();
       
       String script = "parent.BridgeUtils.View.openView('" + frameworkViewInfo.getHtml5FwViewId() + "', '" + frameworkViewInfo.getViewId()
-            + "', {type: '_TYPE_', id: '_ID_', label: '_LABEL_', icon: '_ICON_', url: '_URL_', custom: {_CUSTOM_}});";
+            + "', {type: '_TYPE_', id: '_ID_', label: '_LABEL_', icon: '_ICON_', url: '_URL_', custom: _CUSTOM_});";
       script = StringUtils.replace(script, "_TYPE_", frameworkViewInfo.getTypeId());
       script = StringUtils.replace(script, "_ID_", frameworkViewInfo.getId());
       script = StringUtils.replace(script, "_LABEL_", view.getFullLabel());

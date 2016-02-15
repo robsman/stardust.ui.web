@@ -144,6 +144,69 @@
 							.translate('portal-common-messages.common-false'),
 					"name" : "false"
 				} ];
+		
+		this.activityStates = [
+		             			{
+		             				value : 6,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-activityTable-statusFilter-aborted'),
+		             				name : "Aborted"
+		             			},
+		             			{
+		             				value : 8,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-activityTable-statusFilter-aborting'),
+		             				name : "Aborting"
+		             			},
+		             			{
+		             				value : 1,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-activityTable-statusFilter-application'),
+		             				name : "Application"
+		             			},
+		             			{
+		             				value : 2,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-activityTable-statusFilter-completed'),
+		             				name : "Completed"
+		             			},
+		             			{
+		             				value : 0,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-activityTable-statusFilter-created'),
+		             				name : "Created"
+		             			},
+		             			{
+		             				value : 7,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-activityTable-statusFilter-hibernated'),
+		             				name : "Hibernated"
+		             			},
+		             			{
+		             				value : 4,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-activityTable-statusFilter-interrupted'),
+		             				name : "Interrupted"
+		             			},
+		             			{
+		             				value : 5,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-activityTable-statusFilter-suspended'),
+		             				name : "Suspended"
+		             			},
+		             			{
+		             				value : 9,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-activityTable-statusFilter-halting'),
+		             				name : "Halting"
+		             			},
+		             			{
+		             				value : 10,
+		             				label : sgI18nService
+		             						.translate('views-common-messages.views-activityTable-statusFilter-halted'),
+		             				name : "Halted"
+		             			}
+		             	];
 
 		var REST_BASE_URL = sdUtilService.getBaseUrl() + "services/rest/portal/processActivity";
 
@@ -274,8 +337,18 @@
 		 * 
 		 */
 		ProcessSearchService.prototype.getAllActivityStates = function() {
-			return sdStatusService.getAllActivityStates();
-		}
+			var deferred = $q.defer();
+			deferred.resolve(this.activityStates);
+			return deferred.promise;
+		};
+		
+		/*
+		 * 
+		 */
+		ProcessSearchService.prototype.getArchiveAuditTrailURL = function() {
+			var restUrl = REST_BASE_URL + '/archiveAuditTrailURL';
+			return $resource(restUrl).get().$promise;
+		};
 
 	}
 	;

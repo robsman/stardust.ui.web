@@ -422,6 +422,10 @@
 										value="{{i18n('business-control-center-messages.views-processSearchView-button-searchProcess')}}"
 										ng-click="procSearchViewCtrl.search()"
 										aid="BCC-ProcSrch-Search"></td>
+									<td ng-show="procSearchViewCtrl.archiveAuditTrailURL != ''"><input class="button" type="submit"
+										value="{{i18n('business-control-center-messages.views-processSearchView-button-searchArchiveProcess')}}"
+										ng-click="procSearchViewCtrl.performArchiveSearch()"
+										aid="BCC-ProcSrch-ArchiveSearch"></td>
 									<td><input type="submit"
 										ng-click="procSearchViewCtrl.reset()" value="{{i18n('business-control-center-messages.common-button-reset')}}"
 										aid="BCC-ProcSrch-Reset"></td>

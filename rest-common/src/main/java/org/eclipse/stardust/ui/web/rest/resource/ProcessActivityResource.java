@@ -16,6 +16,7 @@ import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -29,6 +30,7 @@ import org.eclipse.stardust.common.log.LogManager;
 import org.eclipse.stardust.common.log.Logger;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
 import org.eclipse.stardust.engine.api.model.ProcessDefinition;
+import org.eclipse.stardust.ui.web.bcc.views.ProcessSearchConfigurationBean;
 import org.eclipse.stardust.ui.web.rest.common.ProcessSearchParameterConstants;
 import org.eclipse.stardust.ui.web.rest.component.service.ProcessActivityService;
 import org.eclipse.stardust.ui.web.rest.component.service.ProcessDefinitionService;
@@ -96,6 +98,17 @@ public class ProcessActivityResource
             processSearchCriteria, availableDescriptors);
 
       return Response.ok(queryResultDTO.toJson(), MediaType.APPLICATION_JSON).build();
+   }
+   
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   @Path("/archiveAuditTrailURL")
+   public Response getArchiveAuditTrailURL()
+   {
+      String archiveAuditTrailURL = ProcessSearchConfigurationBean.getArchiveAuditTrailURL();
+
+      return Response.ok("{\"archiveAuditTrailURL\": \"" + archiveAuditTrailURL + "\"}", MediaType.APPLICATION_JSON)
+            .build();
    }
 
    /**
