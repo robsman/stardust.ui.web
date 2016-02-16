@@ -10,11 +10,15 @@
  *******************************************************************************/
 package org.eclipse.stardust.ui.web.modeler.xpdl.validation;
 
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.stardust.common.StringUtils;
+import org.eclipse.stardust.engine.core.model.utils.ModelUtils;
+import org.eclipse.stardust.engine.core.runtime.utils.XmlUtils;
 import org.eclipse.stardust.model.xpdl.carnot.AttributeType;
 import org.eclipse.stardust.model.xpdl.carnot.DataPathType;
 import org.eclipse.stardust.model.xpdl.carnot.IModelElement;
@@ -46,6 +50,7 @@ public class DescriptorValidator implements IModelElementValidator
 
       if (validatedDataPathType.isDescriptor())
       {
+         String resolvedValue = null;
          AttributeType attribute = AttributeUtil.getAttribute(validatedDataPathType,
                "type");
          if (attribute != null)
@@ -54,7 +59,14 @@ public class DescriptorValidator implements IModelElementValidator
             DataPathReference reference = new DataPathReference(validatedDataPathType,
                   new ArrayList<DataPathReference>());
             refMap.put(validatedDataPathType.getId(), reference);
-            resolveReferences(reference, issues);
+            resolvedValue = resolveReferences(reference, issues);
+            if (attribute.getValue() != null && attribute.getValue().equals("Link"))
+            {
+               if (!hasVariable(resolvedValue))
+               {
+                  checkLinkUrl(issues, resolvedValue);
+               }
+            }
          }
          attribute = AttributeUtil.getAttribute(validatedDataPathType, "text");
          if (attribute != null)
@@ -63,20 +75,22 @@ public class DescriptorValidator implements IModelElementValidator
             refMap = new HashMap<String, DataPathReference>();
             DataPathReference reference = new DataPathReference(validatedDataPathType,
                   text, new ArrayList<DataPathReference>());
-            resolveReferences(reference, issues);
+            resolvedValue = resolveReferences(reference, issues);
          }
+         attribute = AttributeUtil.getAttribute(validatedDataPathType, "text");
       }
       return (Issue[]) issues.toArray(Issue.ISSUE_ARRAY);
    }
 
-   private void resolveReferences(DataPathReference reference, List<Issue> issues)
+   private String resolveReferences(DataPathReference reference, List<Issue> issues)
    {
       DataPathType dataPathType = reference.getDataPath();
       String value = VariableContextHelper.getInstance().getContext(dataPathType)
             .replaceAllVariablesByDefaultValue(reference.getValue());
+      String result = value;
       if (!this.hasVariable(value))
       {
-         return;
+         return value;
       }
       String id = null;
       Matcher matcher = pattern.matcher(value);
@@ -99,7 +113,8 @@ public class DescriptorValidator implements IModelElementValidator
                            Validation_Messages.ERR_REFERENCED_DESCRIPTOR_DOES_NOT_EXIST,
                            new Object[] {validatedDataPathType.getId(), ref}),
                      ValidationService.PKG_CWM.getProcessDefinitionType_DataPath()));
-               return;
+               result = ModelUtils.replaceDescriptorVariable("%{" + id + "}", result, "");
+               return result;
             }
             String refAccessPath = refDataPathType.getDataPath();
 
@@ -110,6 +125,8 @@ public class DescriptorValidator implements IModelElementValidator
                            Validation_Messages.WR_REFERENCED_DESCRIPTOR_NO_DATAPATH,
                            new Object[] {ref}),
                      ValidationService.PKG_CWM.getProcessDefinitionType_DataPath()));
+               result = ModelUtils.replaceDescriptorVariable("%{" + id + "}", result, "");
+               return result;
             }
 
             DataPathReference refDataPathTypeReference = refMap
@@ -128,12 +145,14 @@ public class DescriptorValidator implements IModelElementValidator
                            Validation_Messages.ERR_REFERENCED_DATAPTH_IS_A_CIRCULAR_DEPENDENCY,
                            new Object[] {validatedDataPathType.getId()}),
                      ValidationService.PKG_CWM.getProcessDefinitionType_DataPath()));
-               return;
+               result = ModelUtils.replaceDescriptorVariable("%{" + id + "}", result, "");
+               return result;
             }
-            resolveReferences(refDataPathTypeReference, issues);
+            result = ModelUtils.replaceDescriptorVariable("%{" + id + "}", result,
+                  resolveReferences(refDataPathTypeReference, issues));
          }
       }
-      return;
+      return result;
    }
 
    private boolean hasCircularDependency(String referencingDataPathID,
@@ -234,6 +253,25 @@ public class DescriptorValidator implements IModelElementValidator
          this.dataPath = dataPath;
       }
 
+   }
+
+   private void checkLinkUrl(List<Issue> issues, String uri)
+   {
+      if (!StringUtils.isEmpty(uri))
+      {
+         try
+         {
+            new URL(XmlUtils.resolveResourceUri(uri));
+         }
+         catch (Exception ex)
+         {
+            issues.add(Issue.error(validatedDataPathType,
+                  MessageFormat.format(
+                        "Link descriptor ''{0}'' contains invalid URL: ''{1}''",
+                        new Object[] {validatedDataPathType.getId(), uri}),
+                  ValidationService.PKG_CWM.getProcessDefinitionType_DataPath()));
+         }
+      }
    }
 
 }
