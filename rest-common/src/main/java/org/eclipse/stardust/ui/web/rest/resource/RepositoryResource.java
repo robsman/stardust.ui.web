@@ -159,7 +159,9 @@ public class RepositoryResource
          "    }\r\n" + 
          "  }\r\n" + 
          "}\r\n" + 
-         "```")
+         "```\r\n" + 
+         "\r\n" + 
+         "**Note**: Folder search can be done only based on *name* and it does not support any other option including multiple repository.")
    @ResponseDescription("The response would be map of *documents* and *folders* with values in the form of *QueryResultDTO*")
    @Path("/search")
    public Response searchResources(String postData) throws Exception
