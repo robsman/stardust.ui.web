@@ -65,7 +65,7 @@
 			    "OID" : "ActivityOID",
 			    "Started" : "StartTime",
 			    "ProcessDefinition" : "ProcessName"
-			}
+				}
 	    },
 	    ACITIVITY_INSTANCE_VIEW : {
 			NAME : 'activityTable',
@@ -75,7 +75,7 @@
 			COLUMN_NAME_MAP : {
 			    "EndTime" : "LastModified",
 			    "ProcessId" : "ProcessName"
-			}
+				}
 	    }
 	};
 
@@ -714,11 +714,7 @@ function checkCofig(toolBarConfig, menuItem) {
 		if (this.query) {
 
 			if (this.query.type) {
-				if (this.query.type == "all") {
-						this.preferenceName = this.query.userId;
-				} else {
 					this.preferenceName = this.query.type;
-				}
 			} else if (this.query.processQId) {
 				this.preferenceName = this.query.processQId;
 				this.preferenceId = 'worklist-process-columns';

@@ -24,7 +24,7 @@
         WORK_SINCE : 'myWorkSince',
         RESUBMISSION : 'resubmission',
         ALIVE : 'alive',
-        ALL : 'all'
+        USER : 'user'
     }});
 
    angular.module('workflow-ui.services').provider('sdWorklistService', function() {
@@ -57,39 +57,39 @@
 
 	   	if (query.type) {
 
-				if(query.type === sdWorklistConstants.Types["HIGH_CRITICALITY"]) {
+				if(query.type === sdWorklistConstants.Types.HIGH_CRITICALITY) {
 					 restUrl = restUrl  + ":type/:id";
 			   	 urlTemplateParams.type = "criticality";
 			  	 urlTemplateParams.id = "high";
 
-				} else if(query.type === sdWorklistConstants.Types["TOTAL"]) {
+				} else if(query.type === sdWorklistConstants.Types.TOTAL) {
 						restUrl = restUrl + "allAssigned";
 
-				}  else if(query.type === sdWorklistConstants.Types["PERSONAL"]) {
+				}  else if(query.type === sdWorklistConstants.Types.PERSONAL) {
 						restUrl = restUrl + "personalItems";
 
-				} else if(query.type === sdWorklistConstants.Types["UNIFIED"]) {
+				} else if(query.type === sdWorklistConstants.Types.UNIFIED) {
 						restUrl = restUrl + "unified/:type/:id";
 						urlTemplateParams.type = "user";
 			  	  urlTemplateParams.id = query.userId;
 
-				} else if(query.type === sdWorklistConstants.Types["WORK_SINCE"]) {
+				} else if(query.type === sdWorklistConstants.Types.WORK_SINCE) {
 					 restUrl = restUrl  + ":type/:id";
 			 	   urlTemplateParams.type = "date";
 			  	 urlTemplateParams.id = query.from;
 
-				} else if(query.type ===  sdWorklistConstants.Types["RESUBMISSION"]) {
+				} else if(query.type ===  sdWorklistConstants.Types.RESUBMISSION) {
 					 restUrl = restUrl  + "resubmissionActivities";
 
-				} else if(query.type ===  sdWorklistConstants.Types["ALIVE"]) {
+				} else if(query.type ===  sdWorklistConstants.Types.ALIVE) {
 					 restUrl = restUrl  + "alive";
 
-				}  else if (query.type === sdWorklistConstants.Types["ALL"]) {
+				} else if (query.type === sdWorklistConstants.Types.USER) {
 						restUrl = restUrl + ":type/:id";
 						urlTemplateParams.type = "user";
 			  	  urlTemplateParams.id = query.userId;
-			  	  var params = "fetchAllStates="+true;
-		   		  restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, params);
+			  	  var fetchParams = "fetchAllStates="+true;
+		   		  restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, fetchParams);
 				}
 			} else if (query.participantQId) {
 				 restUrl = restUrl  + ":type/:id";
@@ -104,8 +104,8 @@
 			} else if(query.pInstanceOids ){
 				restUrl = restUrl  + ":type";
 		  		 urlTemplateParams.type = "processInstance";
-		  		 var params = "oids="+query.pInstanceOids;
-		   		 restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, params);
+		  		 var oidParam = "oids="+query.pInstanceOids;
+		   		 restUrl = sdDataTableHelperService.appendQueryParamsToURL(restUrl, oidParam);
 
 			}
 
@@ -139,7 +139,7 @@
 		   }
 
 		   var postData = sdDataTableHelperService.convertToPostParams(query.options);
-		   postData['worklistId'] = query.id;
+		   postData.worklistId = query.id;
 
 		   var worklist = $resource(restUrl, {
 			   type : '@type',

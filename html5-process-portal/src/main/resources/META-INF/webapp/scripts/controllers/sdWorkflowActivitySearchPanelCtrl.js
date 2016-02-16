@@ -105,14 +105,13 @@
 			var id = "userWorklistSearch" + userOID;
 			self.worklistMap[id] = data.totalCount;
 			var worklistForUserParams = {
-					"queryParams": "fetchAllStates=true",
-					"type" : _sdWorklistConstants.Types.ALL
+					"type" : _sdWorklistConstants.Types.USER
 			};
 			
 			worklistForUserParams.id = id;			
 			worklistForUserParams.name = name;
 			worklistForUserParams.userId = userId;
-            //checking in map if search for perticular item is already created or not
+            //checking in map if search for perticular item is already createdsd or not
 			if(self.worklistMapOfParams[id] == undefined){
 				worklistForUserParams.index = self.index;
 				self.worklistMapOfParams[id] = worklistForUserParams;
