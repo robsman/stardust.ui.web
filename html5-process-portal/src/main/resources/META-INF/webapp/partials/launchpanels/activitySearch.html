@@ -1,0 +1,73 @@
+<div ng-controller="sdWorkflowActivitySearchPanelCtrl as ctrl">
+	<sd-collapsible-panel sda-aid="auto-PP-LP-ActSrchPnl"
+		sda-title="{{i18n('processportal.launchPanels-activitySearch-title')}}">
+	<div>
+		<span
+			ng-bind="i18n('processportal.launchPanels-activitySearch-description')"></span>
+		<div style="line-height: 15px;">
+			<a href="#" ng-click="ctrl.getAllResubmissionActivityInstances();"
+				data-placement="right" aid="auto-PP-LP-ActReSubmission"> <span>{{i18n('processportal.launchPanels-activitySearch-resubmission')}}</span>
+			</a>
+		</div>
+		<div style="line-height: 15px;">
+			<a href="#" ng-click="ctrl.getAllActivityInstances();"
+				data-placement="right" aid="auto-PP-LP-AllAvailActivity"> <span>{{i18n('processportal.launchPanels-activitySearch-allActivities')}}</span>
+			</a>
+		</div>
+		<div style="line-height: 15px;">
+			<a href="#" ng-click="ctrl.showUserWorkList = !ctrl.showUserWorkList"
+				data-placement="right" aid="auto-PP-LP-UserWorklist"> <span>{{i18n('processportal.launchPanels-activitySearch-userWorklist')}}</span>
+			</a>
+		</div>
+		<div ng-show="ctrl.showUserWorkList" style="margin-top: 5px;">
+			<div class="table-border">
+				<table>
+					<tr>
+						<td><label class="label-item" style="margin-left:5px">{{i18n('processportal.launchPanels-activitySearch-firstName')}}:</label></td>
+						<td><label class="label-item" style="margin-left:10px">{{i18n('processportal.launchPanels-activitySearch-lastName')}}:</label></td>
+					</tr>
+					<tr>
+						<td><input ng-model="ctrl.firstName" style="margin-left:5px" aid="auto-PP-LP-UserWorklist-FName"></td>
+						<td><input ng-model="ctrl.lastName" style="margin-left:10px" aid="auto-PP-LP-UserWorklist-LName"></td>
+					</tr>
+					<tr>
+						<td><div style="margin-top:5px"></div></td>
+						<td><div style="margin-top:5px; margin-left:10px; display: flex;">
+						       <div><a href="#" ng-click="ctrl.getUsersByCriteria()" aid="auto-PP-LP-UserWorklist-SrchBtn"> 
+						           <i class="pi pi-search"></i><span>{{i18n('processportal.launchPanels-activitySearch-search')}}</span>
+						           </a>
+						       </div>
+						       <div style="margin-left:10px;"><a href="#" ng-click="ctrl.clearUsers()" aid="auto-PP-LP-UserWorklist-ClearBtn"> 
+						           <i class="pi pi-close pi-lg"></i><span>{{i18n('processportal.launchPanels-activitySearch-clear')}}</span>
+						           </a>
+						       </div>
+						    </div>
+					    </td>
+					</tr>
+					</tbody>
+				</table>
+				<div class="user-list-decorator">
+					<div ng-repeat="user in ctrl.users">
+						<span>{{i18n('processportal.launchPanels-activitySearch-user')}}:</span>
+						<a href="#" ng-click="ctrl.getWorklistForUser(user.oid, user.id, user.displayName)"
+						   aid="auto-PP-LP-UserWorklist-UserLink">{{user.displayName}}</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div style="line-height: 15px;" ng-if="ctrl.worklistMapNotEmpty()">
+			<span>{{i18n('processportal.launchPanels-activitySearch-recentSearchResults')}}</span>
+			<a href="#" ng-click="ctrl.clearSearch();" data-placement="right"
+				aid="auto-PP-LP-ClearLink"> <span>({{i18n('processportal.launchPanels-activitySearch-clear')}})</span>
+			</a>
+		</div>
+
+		<div ng-repeat="data in ctrl.worklistMapOfParams | sdMapOrderBy:'index':'desc'">
+			<span class="label-item">{{data.name}}:</span> 
+			<a href="#" ng-click="ctrl.openWorklistView(data.id, data);" data-placement="right"> 
+			   <span ng-bind="sdI18n('processportal.launchPanels-worklists-items','',[ctrl.worklistMap[data.id]])"></span>
+			</a>
+		</div>
+	</div>
+	</sd-collapsible-panel>
+</div>

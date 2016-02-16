@@ -554,3 +554,17 @@ button.close {
 	opacity: 0.5;
 	cursor: default;
 }
+
+.user-list-decorator{
+	margin-left: 5px; 
+	margin-top: 5px; 
+	overflow: auto; 
+	height: 100px;
+}
+
+.table-border{
+   margin-left: 10px;
+   border-left: 1px solid #DDD;
+   border-top: 1px solid #DDD;
+}
+

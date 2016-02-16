@@ -57,8 +57,11 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		<ippui:launchPanel name="myDocuments"
 			include="/plugins/html5-business-control-center/partials/launchpad/myDocuments.html"  />
 			
+<!-- 		<ippui:launchPanel name="activitySearch"
+			include="/plugins/processportal/launchpad/activitySearch.xhtml" /> -->
+			
 		<ippui:launchPanel name="activitySearch"
-			include="/plugins/processportal/launchpad/activitySearch.xhtml" />
+			include="/plugins/html5-process-portal/partials/launchpanels/activitySearch.html" />
 
 		<ippui:toolbarSection name="workflowActions"
 			include="/plugins/processportal/toolbar/workflowActions.xhtml"

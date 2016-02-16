@@ -60,6 +60,8 @@
          <bean class="org.eclipse.stardust.ui.web.rest.resource.AuditTrailResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.resource.WorkflowOverviewResource" />
          <bean class="org.eclipse.stardust.ui.web.rest.resource.StartableProcessResource" />
+          <bean class="org.eclipse.stardust.ui.web.rest.resource.ActivitySearchResource" />
+         
 		</jaxrs:serviceBeans>
 		<jaxrs:providers>
             <bean class="org.eclipse.stardust.ui.web.rest.exception.mapper.PortalRestExceptionMapper"/>
