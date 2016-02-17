@@ -18,7 +18,7 @@
 			'sdWorkflowWorklistPanelCtrl',
 			[ 'sdWorkflowWorklistService', 'sdLoggerService', 'sdViewUtilService',
 					'sdI18nService', 'sdActivityInstanceService', 'sdDialogService', 'sdCommonViewUtilService',
-					'$scope', 'sgPubSubService', WorkflowWorklistPanelCtrl ]);
+					'$scope', 'sgPubSubService', 'sdSidebarService', WorkflowWorklistPanelCtrl ]);
 	var _sdWorkflowWorklistService;
 	var _sdViewUtilService;
 	var trace;
@@ -31,7 +31,7 @@
 	 *
 	 */
 	function WorkflowWorklistPanelCtrl(sdWorkflowWorklistService, sdLoggerService, sdViewUtilService, 
-			sdI18nService, sdActivityInstanceService, sdDialogService, sdCommonViewUtilService, $scope, sgPubSubService) {
+			sdI18nService, sdActivityInstanceService, sdDialogService, sdCommonViewUtilService, $scope, sgPubSubService, sdSidebarService) {
 		trace = sdLoggerService.getLogger('workflow-ui.sdWorkflowWorklistPanelCtrl');
 		_sdWorkflowWorklistService = sdWorkflowWorklistService;
 		_sdViewUtilService = sdViewUtilService;
@@ -45,8 +45,21 @@
 		
 		this.collapsePanelHandle = null;
 		var self = this;
+		
+		sgPubSubService.subscribe("sdActivePerspectiveChange", function(){
+			var activePerspective = sdSidebarService.getActivePerspectiveName();
+			if(self.collapsePanelHandle.expanded() && activePerspective === "WorkflowExecution"){
+				if(self.syncPanel == true){
+					self.syncPanel = false;
+					self.refreshMyAssignmentPanel(self.showEmptyWorklists);
+				}
+				
+			}
+		});
+		
 		sgPubSubService.subscribe('sdRefreshLaunchPanel', function(){
-			if(self.collapsePanelHandle.expanded()){
+			var activePerspective = sdSidebarService.getActivePerspectiveName();
+			if(self.collapsePanelHandle.expanded() && activePerspective === "WorkflowExecution"){
 				self.refreshMyAssignmentPanel(self.showEmptyWorklists);
 			}else{
 				self.syncPanel = true;

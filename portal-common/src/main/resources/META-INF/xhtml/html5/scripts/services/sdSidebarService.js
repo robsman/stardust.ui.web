@@ -18,15 +18,60 @@ angular.module('bpm-ui.services').provider('sdSidebarService', function () {
 	var self = this;
 	var REST_BASE_URL = 'services/rest/portal/';
 
-	self.$get = ['sdUtilService', function (sdUtilService) {
+	self.$get = ['$q', 'sdUtilService', 'sdViewUtilService', function ($q, sdUtilService, sdViewUtilService) {
 
 		var service = {};
+
+		var perspectives;
+		var activePerspective;
+
+		/*
+		 * 
+		 */
+		service.initialize = function() {
+			var deferred = $q.defer();
+
+			sdUtilService.ajax(REST_BASE_URL, '', 'perspectives').then(function(result) {
+				perspectives = result;
+				angular.forEach(result, function(perspective) {
+					if (perspective.active) {
+						activePerspective = perspective;
+					}										
+				});
+				deferred.resolve();
+				
+			});			
+			return deferred.promise;
+		}
 
 		/*
 		 * 
 		 */
 		service.getPerspectives = function() {
-			return sdUtilService.ajax(REST_BASE_URL, '', 'perspectives');
+			return perspectives;
+		}
+
+		/*
+		 * 
+		 */
+		service.activatePerspective = function(perspective) {
+			sdViewUtilService.changePerspective(perspective.name);
+			activePerspective = perspective;
+			return activePerspective;
+		}
+
+		/*
+		 * 
+		 */
+		service.getActivePerspectiveName = function() {
+			return activePerspective.name;
+		}
+		
+		/*
+		 * 
+		 */
+		service.getActivePerspective = function() {
+			return activePerspective;
 		}
 
 		return service;

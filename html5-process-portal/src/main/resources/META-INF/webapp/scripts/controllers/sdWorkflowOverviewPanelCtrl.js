@@ -17,7 +17,7 @@
 	angular.module("workflow-ui").controller(
 			'sdWorkflowOverviewPanelCtrl',
 			['$scope','sdWorkflowOverviewService', 'sdLoggerService', 'sdViewUtilService',
-					'sdLoggedInUserService', 'sdI18nService','sdWorklistConstants', 'sgPubSubService', WorkflowOverviewPanelCtrl ]);
+					'sdLoggedInUserService', 'sdI18nService','sdWorklistConstants', 'sgPubSubService','sdSidebarService', WorkflowOverviewPanelCtrl ]);
 	var _sdWorkflowOverviewService;
 	var _sdViewUtilService;
 	var trace;
@@ -27,7 +27,7 @@
 	 *
 	 */
 	function WorkflowOverviewPanelCtrl($scope, sdWorkflowOverviewService, sdLoggerService, sdViewUtilService, 
-			 sdLoggedInUserService, sdI18nService, sdWorklistConstants, sgPubSubService) {
+			 sdLoggedInUserService, sdI18nService, sdWorklistConstants, sgPubSubService, sdSidebarService) {
 		trace = sdLoggerService.getLogger('workflow-ui.sdWorkflowOverviewPanelCtrl');
 		_sdWorkflowOverviewService = sdWorkflowOverviewService;
 		_sdViewUtilService = sdViewUtilService;
@@ -36,8 +36,21 @@
 		this.userInfo = sdLoggedInUserService.getUserInfo();
 		this.collapsePanelHandle = null;
 		var self = this;
+		
+		sgPubSubService.subscribe("sdActivePerspectiveChange", function(){
+			var activePerspective = sdSidebarService.getActivePerspectiveName();
+			if(self.collapsePanelHandle.expanded() && activePerspective === "WorkflowExecution"){
+				if(self.syncPanel == true){
+					self.syncPanel = false;
+					self.getOverviewCounts();
+				}
+				
+			}
+		});
+		
 		sgPubSubService.subscribe('sdRefreshLaunchPanel', function(){
-			if(self.collapsePanelHandle.expanded()){
+			var activePerspective = sdSidebarService.getActivePerspectiveName();
+			if(self.collapsePanelHandle.expanded() && activePerspective === "WorkflowExecution"){
 				self.getOverviewCounts();
 			}else{
 				self.syncPanel = true;

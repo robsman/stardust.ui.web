@@ -16,7 +16,7 @@
 
 	angular.module("workflow-ui").controller(
 			'sdWorkflowMyProcessPanelCtrl',
-			[ 'sdWorkflowWorklistService', 'sdLoggerService', 'sdViewUtilService', '$scope', 'sgPubSubService', WorkflowMyProcessPanelCtrl ]);
+			[ 'sdWorkflowWorklistService', 'sdLoggerService', 'sdViewUtilService', '$scope', 'sgPubSubService', 'sdSidebarService', WorkflowMyProcessPanelCtrl ]);
 	var _sdWorkflowWorklistService;
 	var _sdViewUtilService;
 	var trace;
@@ -25,7 +25,7 @@
 	 *
 	 */
 	function WorkflowMyProcessPanelCtrl(sdWorkflowWorklistService, sdLoggerService, sdViewUtilService,
-			$scope, sgPubSubService) {
+			$scope, sgPubSubService, sdSidebarService) {
 		trace = sdLoggerService.getLogger('workflow-ui.sdWorkflowMyProcessPanelCtrl');
 		_sdWorkflowWorklistService = sdWorkflowWorklistService;
 		_sdViewUtilService = sdViewUtilService;
@@ -33,8 +33,21 @@
 		
 		this.collapsePanelHandle = null;
 		var self = this;
-		sgPubSubService.subscribe('sdRefreshLaunchPanel', function(){			
-			if(self.collapsePanelHandle.expanded()){
+		
+		sgPubSubService.subscribe("sdActivePerspectiveChange", function(){
+			var activePerspective = sdSidebarService.getActivePerspectiveName();
+			if(self.collapsePanelHandle.expanded() && activePerspective === "WorkflowExecution"){
+				if(self.syncPanel == true){
+					self.syncPanel = false;
+					self.refreshMyProcessesPanel();
+				}
+				
+			}
+		});
+		
+		sgPubSubService.subscribe('sdRefreshLaunchPanel', function(){
+			var activePerspective = sdSidebarService.getActivePerspectiveName();
+			if(self.collapsePanelHandle.expanded() && activePerspective === "WorkflowExecution"){
 				self.refreshMyProcessesPanel();
 			}else{
 				self.syncPanel = true;
