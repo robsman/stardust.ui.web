@@ -15,6 +15,7 @@ span.dirty:before{
 	border-bottom:solid 1px silver;
 	position:relative;
 	height:30px;
+	box-sizing: content-box;
 }
 
 .tab {
@@ -41,9 +42,10 @@ span.dirty:before{
 .tab-arrow {
 	position: absolute;
 	left: calc(50% - 5px);
-	bottom:-10px;
+	x.bottom:-10px;
 	background: #fff;
 	border: 1px solid transparent;
+	top:20px;
 }
 
 .tab-arrow:after, .tab-arrow:before {
