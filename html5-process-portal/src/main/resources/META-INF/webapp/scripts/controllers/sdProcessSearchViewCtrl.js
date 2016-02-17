@@ -386,21 +386,8 @@
 		
 		this.descritorCols = [];
 		if (this.query.processSearchCriteria.filterObject == 1) {
-			this.procSrchActivities = [];
-			for (var i = 0; i < this.procSrchProcessSelected.length; i++) {
-				if (this.procSrchProcessSelected[i].value
-						&& this.procSrchProcessSelected[i].value == "All") {
-					var allActivites = addAllActivites(this.procSrchProcess);
-					this.procSrchActivities = this.procSrchActivities
-							.concat(allActivites);
-
-					break;
-				} else {
-					this.procSrchActivities = this.procSrchActivities
-							.concat(this.procSrchProcessSelected[i].activities);
-				}
-			}
-
+			this.procSrchActivities = this.calculateSelectedProcessActivities();
+			
 			this.applyActivityFilters();
 
 			this.procSrchActivities.splice(0, 0, this.defaultActivity);
@@ -551,11 +538,23 @@
 			if (self.procSrchAuxProcess.length == 0) {
 				this.getAllUniqueProcesses(false).then(function(processes) {
 					self.procSrchProcess = processes;
+					self.initializeCriteria();
+					return;
 				});
 			} else {
 				self.procSrchProcess = self.procSrchAuxProcess;
+				self.initializeCriteria();
+				return;
 			}
 		}
+		this.initializeCriteria();
+	}
+	
+	
+	/*
+	 * 
+	 */
+	ProcessSearchViewCtrl.prototype.initializeCriteria = function() {
 		this.procSrchProcessSelected = [ this.procSrchProcess[0] ];
 		this.descritorCols = [];
 		this.filterProcessDefinitionList();
@@ -570,8 +569,7 @@
 		} else {
 			this.query.processSearchCriteria.showInteractiveActivities = true;
 		}
-		this.filterProcessDefinitionList();
-		this.processChange();
+		this.postToggleActivities();
 	}
 
 	/*
@@ -583,8 +581,7 @@
 		} else {
 			this.query.processSearchCriteria.showNonInteractiveActivities = true;
 		}
-		this.filterProcessDefinitionList();
-		this.processChange();
+		this.postToggleActivities();
 	}
 
 	/*
@@ -596,8 +593,7 @@
 		} else {
 			this.query.processSearchCriteria.showAuxiliaryActivities = true;
 		}
-		this.filterProcessDefinitionList();
-		this.processChange();
+		this.postToggleActivities();
 	}
 
 	/*
@@ -733,10 +729,6 @@
 	};
 	
 	function openArchiveSearch(url, criteria) {
-		//var message = '{"type": "OpenView", "data": {"viewId": "processSearchView", "params": ' + criteria + '}}';
-		
-		//var message = '[{"type":"CleanAllViews","data":{}}, {"type": "OpenView", "data": {"viewId": "processSearchView", "params": ' + JSON.stringify(criteria) + '}}]';
-
 		var message = '{"type": "OpenView", "data": {"viewId": "processSearchView", "params": ' + JSON.stringify(criteria) + '}}';
 
 		// url will always end with "/"
@@ -1107,12 +1099,12 @@
 	           
 	      this.query.processSearchCriteria.processSrchPrioritySelected = findIdByValue(this.priorities, params[this.PRIORITY]);
 	      
-	      if ('' != params[this.OID]) {
+	      if (params[this.OID]) {
 	    	  this.query.processSearchCriteria.activitySrchActivityOID = params[this.OID];
 	      }
 	      
 	      //TODO
-	      if ('' != params[this.PERFORMER]) {
+	      if (params[this.PERFORMER]) {
 //	    	  this.query.processSearchCriteria.activitySrchPerformer = params[this.PERFORMER];
 			  this.activitySrchPerformer = [{ "id" : params[this.PERFORMER] }];
 	      }
@@ -1131,12 +1123,13 @@
 	    	  //For Descriptors
 		      self.prePopulateDescriptors(params[self.DESCRIPTORS]);
 		      
-		      self.prePopulateSelectedActivities(params[self.ACTIVITIES]);
 		      
-		      //Set Activity State and Criticality after processChange as it resets it.
-		      self.query.processSearchCriteria.activitySrchStateSelected = findIdByValue(self.activitySrchState, params[self.STATE]);
-	    	  self.query.processSearchCriteria.activitySrchCriticalitySelected = params[self.CRITICALITY];
-		      deferred.resolve();
+		      self.prePopulateSelectedActivities(params[self.ACTIVITIES]).then(function(){
+			      //Set Activity State and Criticality after processChange as it resets it.
+			      self.query.processSearchCriteria.activitySrchStateSelected = findIdByValue(self.activitySrchState, params[self.STATE]);
+		    	  self.query.processSearchCriteria.activitySrchCriticalitySelected = params[self.CRITICALITY];
+		    	  deferred.resolve();
+		      });
 	      });
 	      return deferred.promise;
 	};
@@ -1173,20 +1166,27 @@
 	 * 
 	 */
 	ProcessSearchViewCtrl.prototype.prePopulateSelectedActivities = function(selectedActivities) {
+		var deferred = _q.defer();
+		
 		this.activitySrchSelected = [];
 		var tempSelectedActivities = [];
 		for (var index = 0; index < selectedActivities.length; index++) {
 			if (selectedActivities[index] == this.defaultActivity.value) {
-				tempSelectedActivities = this.defaultActivity;
+				tempSelectedActivities = [this.defaultActivity];
 				break;
 			}
 			var selActivity = selectedActivities[index];
 			var selActivityQID = unmarshalActivityID(selActivity);
 			tempSelectedActivities.push(this.activitiesQIDMap[selActivityQID]);
 		}
-		this.processChange();
-		//processChange() would reset the selectedActivities to ALL
-		this.activitySrchSelected = tempSelectedActivities;
+		var self = this;
+		this.processChange().then(function() {
+			//processChange() would reset the selectedActivities to ALL
+			self.activitySrchSelected = tempSelectedActivities;
+			deferred.resolve();
+		});
+		
+		return deferred.promise;
 	};
 	
 	/*
@@ -1256,6 +1256,38 @@
 		dateObj["mins"] = dateStr.substr(datePartSeperator + 4, 3);
 		dateObj["meridian"] = dateStr.substr(datePartSeperator + 7, 3);
 		return getDate(dateObj, false);
+	};
+	
+	/*
+	 * 
+	 */
+	ProcessSearchViewCtrl.prototype.calculateSelectedProcessActivities = function() {
+		this.procSrchActivities = [];
+		for (var i = 0; i < this.procSrchProcessSelected.length; i++) {
+			if (this.procSrchProcessSelected[i].value
+					&& this.procSrchProcessSelected[i].value == "All") {
+				var allActivites = addAllActivites(this.procSrchProcess);
+				this.procSrchActivities = this.procSrchActivities
+						.concat(allActivites);
+
+				break;
+			} else {
+				this.procSrchActivities = this.procSrchActivities
+						.concat(this.procSrchProcessSelected[i].activities);
+			}
+		}
+		return this.procSrchActivities;
+	};
+	
+	/*
+	 * 
+	 */
+	ProcessSearchViewCtrl.prototype.postToggleActivities = function() {
+		this.filterProcessDefinitionList();
+		this.calculateSelectedProcessActivities();
+		this.applyActivityFilters();
+		this.procSrchActivities.splice(0, 0, this.defaultActivity);
+		this.activitySrchSelected = [ this.procSrchActivities[0] ];
 	};
 	
 	/*
