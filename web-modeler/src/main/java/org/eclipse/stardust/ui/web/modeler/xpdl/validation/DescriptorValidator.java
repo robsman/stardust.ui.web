@@ -265,9 +265,9 @@ public class DescriptorValidator implements IModelElementValidator
          }
          catch (Exception ex)
          {
-            issues.add(Issue.error(validatedDataPathType,
+            issues.add(Issue.error(validatedDataPathType,                  
                   MessageFormat.format(
-                        "Link descriptor ''{0}'' contains invalid URL: ''{1}''",
+                        Validation_Messages.WR_LINK_DESCRIPTOR_CONTAINS_INVALID_URL,
                         new Object[] {validatedDataPathType.getId(), uri}),
                   ValidationService.PKG_CWM.getProcessDefinitionType_DataPath()));
          }
