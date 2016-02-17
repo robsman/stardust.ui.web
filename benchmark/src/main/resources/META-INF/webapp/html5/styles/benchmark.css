@@ -42,7 +42,6 @@ span.dirty:before{
 .tab-arrow {
 	position: absolute;
 	left: calc(50% - 5px);
-	x.bottom:-10px;
 	background: #fff;
 	border: 1px solid transparent;
 	top:20px;
