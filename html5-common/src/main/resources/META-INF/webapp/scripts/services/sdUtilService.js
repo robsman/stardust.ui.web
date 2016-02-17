@@ -21,8 +21,8 @@
 	}
 
 	angular.module('bpm-common.services').provider('sdUtilService', function() {
-		this.$get = [ '$rootScope', '$parse', '$q', '$http', 'sdLoggerService', function($rootScope, $parse, $q, $http, sdLoggerService) {
-			var service = new UtilService($rootScope, $parse, $q, $http, sdLoggerService);
+		this.$get = [ '$rootScope', '$parse', '$q', '$http', 'sdEnvConfigService', 'sdLoggerService', function($rootScope, $parse, $q, $http, sdEnvConfigService, sdLoggerService) {
+			var service = new UtilService($rootScope, $parse, $q, $http, sdEnvConfigService, sdLoggerService);
 			return service;
 		} ];
 	});
@@ -30,7 +30,7 @@
 	/*
 	 * 
 	 */
-	function UtilService($rootScope, $parse, $q, $http, sdLoggerService) {
+	function UtilService($rootScope, $parse, $q, $http, sdEnvConfigService, sdLoggerService) {
 		
 		var trace = sdLoggerService.getLogger('bpm-common.services.sdUtilService');
 		
@@ -386,6 +386,10 @@
 		 * 
 		 */
 		UtilService.prototype.getBaseUrl = function() {
+			if (sdEnvConfigService.getBaseUrl()) {
+				return sdEnvConfigService.getBaseUrl();
+			}
+			
 			// When loaded from framework i.e index.html, location.href points
 			// to contextRoot
 			var baseURL = '';
