@@ -28,40 +28,34 @@ http://infinity.com/bpm/portal/common/uiDefinition http://infinity.com/bpm/porta
 		<!-- <ippui:menuSection name="workflowExecutionMenuItem"
 			include="/plugins/processportal/menu/workflowExecution.xhtml" /> -->
 
-<!-- 		<ippui:launchPanel name="workflowOverview"
-			include="/plugins/processportal/launchpad/overview.xhtml" /> -->
-			
 		<ippui:launchPanel name="workflowOverview"
-			include="/plugins/html5-process-portal/partials/launchpanels/workflowOverview.html" />	
-			
+			include="/plugins/html5-process-portal/partials/launchpanels/workflowOverview.html" />				
 		<ippui:launchPanel name="processes"
-			include="/plugins/html5-process-portal/partials/launchpanels/processes.html" />
-				
-<!-- 		<ippui:launchPanel name="processes"
-			include="/plugins/processportal/launchpad/processes.xhtml" /> -->
-<!-- 		<ippui:launchPanel name="worklists"
-			include="/plugins/processportal/launchpad/worklists.xhtml" /> -->
-			
+			include="/plugins/html5-process-portal/partials/launchpanels/processes.html" />			
 		<ippui:launchPanel name="worklists"
 			include="/plugins/html5-process-portal/partials/launchpanels/worklists.html" />
-
-<!-- 		<ippui:launchPanel name="myProcesses"
-			include="/plugins/processportal/launchpad/myProcesses.xhtml" /> -->
-			
 		<ippui:launchPanel name="myProcesses"
 			include="/plugins/html5-process-portal/partials/launchpanels/myProcesses.html" />
-
-		<!-- For time being refer from BCC Plugin -->
-<!-- 		<ippui:launchPanel name="myDocuments"
-			include="/plugins/business-control-center/extensions/launchpad/myDocuments.xhtml"  /> -->
 		<ippui:launchPanel name="myDocuments"
 			include="/plugins/html5-business-control-center/partials/launchpad/myDocuments.html"  />
+		<ippui:launchPanel name="activitySearch"
+			include="/plugins/html5-process-portal/partials/launchpanels/activitySearch.html" />		
+
+<!-- 		<ippui:launchPanel name="workflowOverview"
+			include="/plugins/processportal/launchpad/overview.xhtml" />				
+		<ippui:launchPanel name="processes"
+			include="/plugins/processportal/launchpad/processes.xhtml" />
+		<ippui:launchPanel name="worklists"
+			include="/plugins/processportal/launchpad/worklists.xhtml" />
+		<ippui:launchPanel name="myProcesses"
+			include="/plugins/processportal/launchpad/myProcesses.xhtml" />
 			
-<!-- 		<ippui:launchPanel name="activitySearch"
-			include="/plugins/processportal/launchpad/activitySearch.xhtml" /> -->
+		For time being refer from BCC Plugin
+		<ippui:launchPanel name="myDocuments"
+			include="/plugins/business-control-center/extensions/launchpad/myDocuments.xhtml"  />
 			
 		<ippui:launchPanel name="activitySearch"
-			include="/plugins/html5-process-portal/partials/launchpanels/activitySearch.html" />
+			include="/plugins/processportal/launchpad/activitySearch.xhtml" />		 -->	
 
 		<ippui:toolbarSection name="workflowActions"
 			include="/plugins/processportal/toolbar/workflowActions.xhtml"

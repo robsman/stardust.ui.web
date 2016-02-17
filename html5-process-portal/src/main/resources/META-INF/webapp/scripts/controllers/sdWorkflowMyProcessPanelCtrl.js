@@ -16,34 +16,30 @@
 
 	angular.module("workflow-ui").controller(
 			'sdWorkflowMyProcessPanelCtrl',
-			[ 'sdWorkflowWorklistService', 'sdLoggerService', 'sdViewUtilService', 'sdLoggedInUserService',
-					'sdI18nService', 'sdActivityInstanceService', 'sdDialogService', 'sdCommonViewUtilService',
-					'$scope', WorkflowMyProcessPanelCtrl ]);
+			[ 'sdWorkflowWorklistService', 'sdLoggerService', 'sdViewUtilService', '$scope', 'sgPubSubService', WorkflowMyProcessPanelCtrl ]);
 	var _sdWorkflowWorklistService;
 	var _sdViewUtilService;
 	var trace;
-	var _sdLoggedInUserService;
-	var _sdActivityInstanceService;
-	var _sdI18nService;
-	var _sdDialogService;
-	var _sdCommonViewUtilService;
 	var _scope;
 	/**
 	 *
 	 */
 	function WorkflowMyProcessPanelCtrl(sdWorkflowWorklistService, sdLoggerService, sdViewUtilService,
-			sdLoggedInUserService, sdI18nService, sdActivityInstanceService, sdDialogService, sdCommonViewUtilService, $scope) {
+			$scope, sgPubSubService) {
 		trace = sdLoggerService.getLogger('workflow-ui.sdWorkflowMyProcessPanelCtrl');
 		_sdWorkflowWorklistService = sdWorkflowWorklistService;
 		_sdViewUtilService = sdViewUtilService;
-		_sdLoggedInUserService = sdLoggedInUserService;
-		_sdI18nService = sdI18nService;
-		_sdActivityInstanceService = sdActivityInstanceService;
-		_sdDialogService = sdDialogService;
-		_sdCommonViewUtilService = sdCommonViewUtilService;
 		_scope = $scope;
-
-		this.userInfo = _sdLoggedInUserService.getUserInfo();
+		
+		this.collapsePanelHandle = null;
+		var self = this;
+		sgPubSubService.subscribe('sdRefreshLaunchPanel', function(){			
+			if(self.collapsePanelHandle.expanded()){
+				self.refreshMyProcessesPanel();
+			}else{
+				self.syncPanel = true;
+			}			
+		});
 
 		this.getUserProcesses();
 
@@ -67,6 +63,17 @@
 	WorkflowMyProcessPanelCtrl.prototype.refreshMyProcessesPanel = function() {
 		this.getUserProcesses();
 	};
+	/**
+	 * 
+	 */
+	WorkflowMyProcessPanelCtrl.prototype.refreshPanelToSync = function() {
+		var self = this;
+		if(self.syncPanel){
+			self.syncPanel = false;
+			self.getUserProcesses();
+		}		
+	};
+	
 
 	WorkflowMyProcessPanelCtrl.prototype.openWorklistView = function(process){
 		  var params = {

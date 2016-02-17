@@ -1,5 +1,5 @@
 <div ng-controller="sdWorkflowMyProcessPanelCtrl as ctrl">
-	<sd-collapsible-panel sda-aid="auto-PP-LP-MyProcesses-ColPnl"
+	<div sd-collapsible-panel="ctrl.collapsePanelHandle"  sda-expanded="false" sda-on-expand-collapse="ctrl.refreshPanelToSync()" sda-aid="auto-PP-LP-MyProcesses-ColPnl"
 		sda-title="{{i18n('processportal.launchPanels-myProcesses-title')}}">
 	<a href="#" ng-click="ctrl.refreshMyProcessesPanel()"
 		style="float: right;" aid="auto-PP-LP-MyProcesses-ColPnl-Refresh"> <i
@@ -20,5 +20,5 @@
 		 <span ng-if="process.totalCount == 0" ng-bind="sdI18n('processportal.launchPanels-myProcesses-items','',[process.totalCount])" class="disabled"></span>
 	</div>
 	</div>
-	</sd-collapsible-panel>
+	</div>
 </div>

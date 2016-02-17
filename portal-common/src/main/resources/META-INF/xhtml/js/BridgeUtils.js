@@ -501,6 +501,7 @@ if (!window["BridgeUtils"].View) {
 
 		var viewsToClose = [];
 		var viewsToCloseHandler = null;
+		var _sgPubSubService;
 
 		/*
 		 *
@@ -536,7 +537,9 @@ if (!window["BridgeUtils"].View) {
 					BridgeUtils.log("Subscribing to Sidebar Events");
 					unsubscribers.push(sgPubSubService.subscribe('sgSidebarVisibilityChanged', sidebarVisibilityChanged));
 					unsubscribers.push(sgPubSubService.subscribe('sgSidebarPinStateChanged', sidebarPinStateChanged));
-		
+		            // Added global variable of pubsub in order to publish the event.
+					_sgPubSubService = sgPubSubService;
+					
 					BridgeUtils.log("BridgeUtils.View Initialized Successfully");
 				}
 			} catch(e) {
@@ -878,6 +881,9 @@ if (!window["BridgeUtils"].View) {
 		 *
 		 */
 		function syncLaunchPanels(value) {
+			//This event get publish to synch HTML5 launch panels
+			_sgPubSubService.publish("sdRefreshLaunchPanel");
+			
 			// TODO: Check if sidebar is visible
 			BridgeUtils.log("Trying to sync launch panels.");
 			if (value == undefined) {

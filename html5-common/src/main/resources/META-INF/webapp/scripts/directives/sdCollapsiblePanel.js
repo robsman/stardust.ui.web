@@ -14,11 +14,13 @@
 (function() {
 	'use strict';
 
-	angular.module('bpm-common.directives').directive('sdCollapsiblePanel', [CollapsiblePanel ]);
+	angular.module('bpm-common.directives').directive('sdCollapsiblePanel', ['$parse','sdLoggerService', CollapsiblePanelDirective]);
 	/*
 	 * 
 	 */
-	function CollapsiblePanel() {
+	var trace;
+	
+	function CollapsiblePanelDirective($parse, sdLoggerService) {
 
 		return {
 			restrict : 'EA',
@@ -28,7 +30,7 @@
 				title : '@sdaTitle',
 				bExpanded : '@sdaExpanded',
 				bDisabled : '@sdaDisabled', //this will be used to disabled the panel
-				onExpandCollapse : '&sdaOnExpandCollapse'
+				onExpandCollapse : '&sdaOnExpandCollapse' // this will be used to perform operation on expand.
 			},
 			transclude : true,
 			replace : true,
@@ -36,7 +38,7 @@
 			             "<div class='panel-padding'>" +
 			                "<div ng-show='!disabled'>" +
 						        "<a href='#' class='heading' style='cursor: pointer; text-decoration: none;'" +
-						            "ng-click='expanded = !expanded' aid='{{aid}}'>" +
+						            "ng-click='onExpand()' aid='{{aid}}'>" +
 						           "<span>{{title}}</span>" +
 		                           "<i ng-show='expanded' class='pi pi-trigger-expanded pi-lg' style='float: right;'></i>" +
 						           "<i ng-show='!expanded' class='pi pi-trigger-collapsed pi-lg' style='float: right;'></i>" +
@@ -52,18 +54,31 @@
 					     "</div>" + 
 					     "<div class='clearing'></div>" + 
 					   "</div>",
-			link : function(scope, element, attrs, ctrl) {
-
+		     compile: function(elem, attr, transclude) {
+							return {
+								post : function(scope, element, attr, ctrl) {
+									var collapsiblePanelCompiler = new CollapsiblePanelCompiler(
+											$parse, sdLoggerService, scope, element, attr, ctrl);
+								}
+							};
+			}	
+		};
+	}
+	
+	function CollapsiblePanelCompiler($parse, sdLoggerService, scope, element, attr, ctrl) {
+		   var elemScope = scope.$parent;
+		   trace = sdLoggerService.getLogger('bpm-common.directives.sdCollapsiblePanel');
+		
 				if(scope.bExpanded == undefined){
 			    	scope.expanded = true;
                 }else{
-                	scope.expanded = scope.bExpanded;
+                	scope.expanded =  scope.bExpanded === "true";
                 }
 			    
 				if(scope.bDisabled == undefined){
 				    scope.disabled = false;
 				}else{
-					scope.disabled = scope.bDisabled;
+					scope.disabled = scope.bDisabled === "true";
 				}
 				
 				if (!angular.isDefined(scope.i18n)) {
@@ -74,8 +89,44 @@
 				if (scope.template != undefined) {
 					scope.showUserTemplate = true;
 				}
+				
+				exposeAPIs();
+				
+				/*
+				 * This method is for exposing API to external controller.
+				 */
+				function exposeAPIs() {
+					if (attr.sdCollapsiblePanel != undefined && attr.sdCollapsiblePanel != '') {
+						var collapsiblePanelAssignable = $parse(attr.sdCollapsiblePanel).assign;
+						if (collapsiblePanelAssignable) {
+							trace.info('Exposing API for: ' + attr.sdCollapsiblePanel + ', on scope Id: ' + elemScope.$id + ', Scope:', elemScope);
+							collapsiblePanelAssignable(elemScope, new CollapsiblePanel());
+						} else {
+							trace.error('Could not expose API for: ' + attr.sdCollapsiblePanel + ', expression is not an assignable.');
+						}
+					}
+				}
+				
+				scope.onExpand = function (){
+					scope.expanded = !scope.expanded;
+					if(scope.onExpandCollapse != undefined && scope.expanded){
+						//calling function from controller using this directive.
+						scope.onExpandCollapse();
+					}
+				}
+				/**
+				 * 
+				 */
+				function CollapsiblePanel(){
+					this.expanded = function() {
+						return scope.expanded;
+					};
 
-			}
-		};
-	}
+					this.setExpanded = function() {
+						return scope.expanded = !scope.expanded;
+					};
+
+				}
+			};
+
 })();

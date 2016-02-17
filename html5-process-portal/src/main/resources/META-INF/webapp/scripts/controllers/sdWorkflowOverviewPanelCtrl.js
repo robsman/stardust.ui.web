@@ -16,26 +16,34 @@
 
 	angular.module("workflow-ui").controller(
 			'sdWorkflowOverviewPanelCtrl',
-			['sdWorkflowOverviewService', 'sdLoggerService', 'sdViewUtilService',
-					'sdLoggedInUserService', 'sdI18nService','sdWorklistConstants', WorkflowOverviewPanelCtrl ]);
+			['$scope','sdWorkflowOverviewService', 'sdLoggerService', 'sdViewUtilService',
+					'sdLoggedInUserService', 'sdI18nService','sdWorklistConstants', 'sgPubSubService', WorkflowOverviewPanelCtrl ]);
 	var _sdWorkflowOverviewService;
 	var _sdViewUtilService;
 	var trace;
-	var _sdLoggedInUserService;
 	var _sdI18nService;
 	var _sdWorklistConstants;
 	/**
 	 *
 	 */
-	function WorkflowOverviewPanelCtrl(sdWorkflowOverviewService, sdLoggerService, sdViewUtilService, sdLoggedInUserService, sdI18nService, sdWorklistConstants) {
+	function WorkflowOverviewPanelCtrl($scope, sdWorkflowOverviewService, sdLoggerService, sdViewUtilService, 
+			 sdLoggedInUserService, sdI18nService, sdWorklistConstants, sgPubSubService) {
 		trace = sdLoggerService.getLogger('workflow-ui.sdWorkflowOverviewPanelCtrl');
 		_sdWorkflowOverviewService = sdWorkflowOverviewService;
 		_sdViewUtilService = sdViewUtilService;
-		_sdLoggedInUserService = sdLoggedInUserService;
 		_sdI18nService = sdI18nService;
 		_sdWorklistConstants = sdWorklistConstants;
-		this.userInfo = _sdLoggedInUserService.getUserInfo();
-
+		this.userInfo = sdLoggedInUserService.getUserInfo();
+		this.collapsePanelHandle = null;
+		var self = this;
+		sgPubSubService.subscribe('sdRefreshLaunchPanel', function(){
+			if(self.collapsePanelHandle.expanded()){
+				self.getOverviewCounts();
+			}else{
+				self.syncPanel = true;
+			}				
+		});
+		
 		this.getOverviewCounts();
 
 	}
@@ -116,6 +124,17 @@
 	 */
 	WorkflowOverviewPanelCtrl.prototype.refreshOverviewPanel = function(){
 		this.getOverviewCounts();
+	};
+	
+	/**
+	 * 
+	 */
+	WorkflowOverviewPanelCtrl.prototype.refreshPanelToSync = function() {
+		var self = this;
+		if(self.syncPanel){
+			self.syncPanel = false;
+			self.getOverviewCounts();
+		}		
 	};
 
 })();

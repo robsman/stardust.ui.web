@@ -16,13 +16,12 @@
 
 	angular.module("workflow-ui").controller(
 			'sdWorkflowWorklistPanelCtrl',
-			[ 'sdWorkflowWorklistService', 'sdLoggerService', 'sdViewUtilService', 'sdLoggedInUserService',
+			[ 'sdWorkflowWorklistService', 'sdLoggerService', 'sdViewUtilService',
 					'sdI18nService', 'sdActivityInstanceService', 'sdDialogService', 'sdCommonViewUtilService',
-					'$scope', WorkflowWorklistPanelCtrl ]);
+					'$scope', 'sgPubSubService', WorkflowWorklistPanelCtrl ]);
 	var _sdWorkflowWorklistService;
 	var _sdViewUtilService;
 	var trace;
-	var _sdLoggedInUserService;
 	var _sdActivityInstanceService;
 	var _sdI18nService;
 	var _sdDialogService;
@@ -31,20 +30,28 @@
 	/**
 	 *
 	 */
-	function WorkflowWorklistPanelCtrl(sdWorkflowWorklistService, sdLoggerService, sdViewUtilService,
-			sdLoggedInUserService, sdI18nService, sdActivityInstanceService, sdDialogService, sdCommonViewUtilService, $scope) {
+	function WorkflowWorklistPanelCtrl(sdWorkflowWorklistService, sdLoggerService, sdViewUtilService, 
+			sdI18nService, sdActivityInstanceService, sdDialogService, sdCommonViewUtilService, $scope, sgPubSubService) {
 		trace = sdLoggerService.getLogger('workflow-ui.sdWorkflowWorklistPanelCtrl');
 		_sdWorkflowWorklistService = sdWorkflowWorklistService;
 		_sdViewUtilService = sdViewUtilService;
-		_sdLoggedInUserService = sdLoggedInUserService;
 		_sdI18nService = sdI18nService;
 		_sdActivityInstanceService = sdActivityInstanceService;
 		_sdDialogService = sdDialogService;
 		_sdCommonViewUtilService = sdCommonViewUtilService;
 		_scope = $scope;
-
-		this.userInfo = _sdLoggedInUserService.getUserInfo();
+		
 		this.showEmptyWorklists = false;
+		
+		this.collapsePanelHandle = null;
+		var self = this;
+		sgPubSubService.subscribe('sdRefreshLaunchPanel', function(){
+			if(self.collapsePanelHandle.expanded()){
+				self.refreshMyAssignmentPanel(self.showEmptyWorklists);
+			}else{
+				self.syncPanel = true;
+			}				
+		});
 
 		this.getUserAssignments(this.showEmptyWorklists);
 
@@ -68,6 +75,18 @@
 	WorkflowWorklistPanelCtrl.prototype.refreshMyAssignmentPanel = function(showEmptyWorklist) {
 		this.getUserAssignments(showEmptyWorklist);
 	};
+	
+	/**
+	 * 
+	 */
+	WorkflowWorklistPanelCtrl.prototype.refreshPanelToSync = function() {
+		var self = this;
+		if(self.syncPanel){
+			self.syncPanel = false;
+			self.getUserAssignments(self.showEmptyWorklists);
+		}		
+	};
+
 
 	WorkflowWorklistPanelCtrl.prototype.eventCallback = function(data, e) {
 		var self = this;
