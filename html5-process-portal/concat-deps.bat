@@ -7,5 +7,3 @@ move /y META-INF\webapp\portal-plugin-dependencies-org.json META-INF\webapp\port
 
 cd ../../../
 java -classpath c:/deps/*;../portal-common/target/classes;./src/main/resources org.eclipse.stardust.ui.web.html5.utils.ConcatDependencies src/main/resources
-
-set /p pathName=Press Enter To Stop...
