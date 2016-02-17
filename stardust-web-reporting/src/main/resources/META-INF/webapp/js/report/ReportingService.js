@@ -531,6 +531,11 @@ define(
 							id : "Completed",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.completed"),
 							order : 4
+						},
+						halted : {
+							id : "Halted",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.processState.halted"),
+							order : 6
 						}
 					},
 					activityStates : {
@@ -561,6 +566,14 @@ define(
 						interrupted : {
 							id : "Interrupted",
 							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.interrupted")
+						},
+						halting : {
+							id : "Halting",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.halting")
+						},
+						halted : {
+							id : "Halted",
+							name : this.getI18N("reporting.definitionView.additionalFiltering.activityState.halted")
 						}						
 					},
 					priorityLevel : {
