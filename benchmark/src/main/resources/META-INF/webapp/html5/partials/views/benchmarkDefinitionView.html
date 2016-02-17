@@ -350,7 +350,7 @@
 		    			    class="tbl-hdr-col">
 		    				<span class="tbl-hdr-col-label">{{ctrl.textMap.element}}</span>
 		    			</th>
-		    			<th style="min-width:140px;"" class="tbl-hdr-col">
+		    			<th style="min-width:140px;" class="tbl-hdr-col">
 		    				<span class="tbl-hdr-col-label">{{ctrl.textMap.options}}</span>
 		    			</th>
 		    			<th style="min-width:200px;" 
@@ -416,7 +416,7 @@
 		    				</td>
 		    				
 		    				<td ng-repeat="catInst in data.categoryConditions | orderBy:'categoryRef.index'">
-	
+									
 		    					<div ng-show="data.elementRef.enableBenchmark">
 		    						<select ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
 		    								ie-select-fix
@@ -485,7 +485,7 @@
 					    					       ng-disabled="ctrl.benchmarkFilter==='Published'"
 							    				   ng-value="true" 
 												   style="position:relative;top:6px;"
-							    				   name="{{data.nodePath}}{{$index}}ubd"
+							    				   ng-attr-name="{{data.nodePath}}{{$index}}ubd"
 							    				   type="radio"/>
 							    				   {{ctrl.textMap.businessDays}}
 					    				</label>
@@ -494,7 +494,7 @@
 					    					<input ng-model ="catInst.details.condition.offset.useBusinessDays" 
 					    					       ng-change="ctrl.markBenchmarkDirty(ctrl.selectedBenchmark)"
 					    					       ng-disabled="ctrl.benchmarkFilter==='Published'"
-					    					       name="{{data.nodePath}}{{$index}}ubd" 
+					    					       ng-attr-name="{{data.nodePath}}{{$index}}ubd" 
 					    					       ng-value="false" 
 					    					       style="position:relative;top:6px;"
 					    					       type="radio"/>
