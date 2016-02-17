@@ -9701,6 +9701,10 @@ img[src *='world_go.png'].nodeMenuIcon {
 }
 
 /*************** Sidebar - Start ***************/ 
+.sg-sidebar-content{
+	top:29px !important;
+}
+
 .perspective-sidebar-contents {
 	width: 100%;
 	height: 100%;
@@ -9710,18 +9714,35 @@ img[src *='world_go.png'].nodeMenuIcon {
 	height: 28px;
 	border-bottom: 1px solid #DDDDDD;
 	border-top: 1px solid #958977;
+	position:fixed;
+	background:#fff;
+	z-index:1;
+	left:0;
+	top:54px;
+	width:350px;
 }
+
+@media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+/* IE10+ CSS styles go here */
+	.perspective-series-wrapper {
+		top:149px;
+	}
+}
+
 
 .perspective-series {
 	height: 20px;
 }
 
 .perspective-launch-panels {
-	margin-top: 5px;
+	position:relative;
+	top:0;
 }
 
 .perspective-launch-panels-html5 {
 	padding: 0 13px; /* This is required to match padding of ICEfaces Launch Panels, class: content */
+	position:relative;
+	top:0;
 }
 
 .perspective-active-font, .perspective-active-img {
