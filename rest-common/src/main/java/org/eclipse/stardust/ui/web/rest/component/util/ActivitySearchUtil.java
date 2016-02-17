@@ -122,7 +122,9 @@ public class ActivitySearchUtil
       UserDetailsPolicy userPolicy = new UserDetailsPolicy(UserDetailsLevel.Core);
       userPolicy.setPreferenceModules(prefModules);
       query.setPolicy(userPolicy);
-
+      //limiting the user search to 20
+      query.setPolicy(new SubsetPolicy(20, false));
+      
       FilterAndTerm and = query.getFilter().addAndTerm();
       if (!isEmpty(firstName))
       {
