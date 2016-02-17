@@ -149,7 +149,8 @@
 	 */
 	benchmarkBuilderService.prototype.cleanAndClone = function(benchmark){
 		var clone = {};
-		
+		var that = this;
+
 		clone = angular.copy(benchmark);
 		
 		delete clone.isDirty;
@@ -169,6 +170,10 @@
 					delete catCond.details.condition.lhs.groupName;
 					delete catCond.details.condition.rhs.name;
 					delete catCond.details.condition.rhs.groupName;
+
+					//convert date to benchmark time format "hh:mm"
+					catCond.details.condition.offset.time = that.convertDateToBenchmarkTime(catCond.details.condition.offset.time );
+
 				});
 				
 				procDef.activities.forEach(function(activity){
@@ -176,6 +181,9 @@
 					activity.categoryConditions.forEach(function(catCond,catIndex,catCondArray){
 						delete catCond.$$hashKey;
 						delete catCond.categoryRef;
+
+						//convert date to benchmark time format "hh:mm"
+						catCond.details.condition.offset.time = that.convertDateToBenchmarkTime(catCond.details.condition.offset.time );
 					});
 				});
 				
@@ -183,6 +191,18 @@
 		})//models loop ends
 		
 		return clone;
+	};
+
+
+	benchmarkBuilderService.prototype.convertDateToBenchmarkTime = function(v){
+		if(!angular.isDate(v)){return "00:00";}
+
+		var hours = v.getHours();
+		var minutes = v.getMinutes();
+
+		hours = (hours < 10)? "0" + hours : "" + hours;
+		minutes = (minutes < 10)? "0" + minutes : "" + minutes;
+		return hours + ":" + minutes;
 	};
 	
 	/**
