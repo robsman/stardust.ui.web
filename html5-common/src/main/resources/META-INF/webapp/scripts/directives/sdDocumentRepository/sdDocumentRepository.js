@@ -794,7 +794,7 @@
   docRepoController.prototype.getMatches = function(matchVal){
     var that = this;
     if(matchVal.length > 2){
-      this.documentService.searchRepository(matchVal)
+      this.documentService.searchRepository(matchVal,that.repositories)
       .then(function(res){
 
         var docs = [],
@@ -861,6 +861,8 @@
     //scope as we only wish to invoke if we have a function that will return something.
     $scope.useMenuHook = ($attrs.sdaMenuHook)?true:false;
 
+    ctrl.repositories = [];
+
     $scope.$watch("rootPath",function(v1){
 
       var key;
@@ -872,6 +874,7 @@
           data[0].children.forEach(function(elem){
             elem.nodeType = "Repo";
             elem.children=[];
+            ctrl.repositories.push(elem.id);
           });
           ctrl.data = data;
         });

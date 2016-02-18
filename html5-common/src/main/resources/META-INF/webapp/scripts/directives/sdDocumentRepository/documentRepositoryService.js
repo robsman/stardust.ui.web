@@ -49,7 +49,7 @@
 
   }
 
-  documentRepoService.prototype.searchRepository = function(searchVal){
+  documentRepoService.prototype.searchRepository = function(searchVal,repos){
 
     var deferred = this.$q.defer(),
         results,
@@ -59,8 +59,13 @@
 
     data = {
       "name" : searchVal,
-      "searchType" : "BOTH"
+      "searchType" : "BOTH",
+      "documentDataTableOption" : {pageSize:10}
     };
+
+    if(angular.isArray( repos) && repos.length > 0){
+        data.repositoryIn = repos;
+    }
 
     if(searchVal){
       this.$http({
