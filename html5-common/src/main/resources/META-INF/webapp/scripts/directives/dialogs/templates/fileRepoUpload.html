@@ -82,7 +82,7 @@
 						ng-click="repoUploadCtrl.selectedFile = file"
 					    ng-class="{'even' : $even,'odd':$odd,'tbl-row-selected':repoUploadCtrl.selectedFile === file}" 
 						ng-repeat="file in repoUploadCtrl.curatedFiles | orderBy : '-name'">
-						<td style="width:50%;">
+						<td style="width:90%;">
 							<button ng-show="file.fileState==1" 
 							        ng-click="file.send=!file.send" 
 							        ng-class="{'pi-add' : file.send, 'pi-delete' : !file.send}" 	
@@ -95,12 +95,6 @@
 							{{ (file.percentUploaded * 100) | number:0}}
 							</span>
 							{{file.name}} 
-						</td>
-						<td style="width:40%">
-							<select ng-model="file.documentType" 
-									style="min-width:100px;width:auto;"
-									ng-options="type as type for type in ['Insurance Claim','Accident Form']">
-							</select>
 						</td>
 						<td ng-if="(file.size/1024) < 1024" style="width:10%">{{(file.size/1024)| number:1}} kb</td>
 						<td ng-if="(file.size/1024) >= 1024" style="width:10%">{{(file.size/1048576)| number:1}} mb</td>
@@ -119,6 +113,13 @@
 			</div>
 
 			<div ng-show="repoUploadCtrl.mode !== 'EXPLODE'">
+				<div ng-show="repoUploadCtrl.documentTypes.length > 0">
+				<label>Document Type </label>
+					<select ng-model="repoUploadCtrl.documentTypeId" 
+							style="min-width:100px;width:auto;"
+							ng-options="type.documentTypeId as type.name for type in repoUploadCtrl.documentTypes">
+					</select>
+				</div>
 				<div style="width:45%;display:inline-table;">
 					<label>
 						<i ng-click="descrCollapse = !descrCollapse" 
@@ -127,7 +128,7 @@
 			           	</i> 
 			      		Description
 					</label>
-					<textarea ng-model="repoUploadCtrl.selectedFile.description" style="width:90%;" ng-show="descrCollapse"></textarea>
+					<textarea ng-model="repoUploadCtrl.description" style="width:90%;" ng-show="descrCollapse"></textarea>
 				</div>
 				
 				<div style="width:45%;display:inline-table;">
@@ -138,7 +139,7 @@
 			           	</i> 
 						Version Comments
 					</label>
-					<textarea ng-model="repoUploadCtrl.selectedFile.versionComments" 
+					<textarea ng-model="repoUploadCtrl.comments" 
 					          style="width:90%;" 
 					          ng-show="versCollapse">
 					</textarea>

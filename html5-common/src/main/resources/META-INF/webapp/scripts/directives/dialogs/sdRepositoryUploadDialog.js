@@ -67,9 +67,10 @@
 					file=that.files[i];
 					that.totalSize += file.size;
 					that.curatedFiles.push({
-						"versionComments" : "",
+						"comments" : "",
 						"description" : "",
-						"documentType" : {},
+						"modelId" : "",
+						"documentTypeId" : "",
 						"fileState" : FileState.BASE,
 						"send" : true,
 						"name" : file.name,
@@ -130,6 +131,9 @@
 		this.state = "initial";
 		this.nonFileData = {};
 		this.fileDefer = {};
+		this.comments = "";
+		this.documentTypeId = "";
+		this.description = "";
 	};
 	
 	/**
@@ -148,6 +152,7 @@
 		var fileKey = this.$scope.fileKey,
 			that = this,
 			promises=[],
+			modelId,
 			invocations=[];
 			
 
@@ -159,11 +164,36 @@
 			deferred = that.$q.defer();
 			filePromise = deferred.promise;
 			nonFileData = angular.extend({}, file);
+
 			nonFileData.parentFolderPath = that.parentPath;
+
+			//add data from our UI, these are global for all files
+			if(that.documentTypeId){
+				nonFileData.modelId = ""; //TODO:????
+				nonFileData.documentTypeId = that.documentTypeId;
+			}
+
+			if(that.description){
+				nonFileData.description = that.description;
+			}
+
+			if(that.comments){
+				nonFileData.comments = that.comments;
+			}
 
 			promises.push(filePromise);
 
+			//clean up our nonFileData to remove props inherited from the file object
+			//which we dont need. These are just extra form data vars we will send,
+			//the file obj will keep all the local important data itself.
 			delete nonFileData.blob;
+			delete nonFileData.fileState;
+			delete nonFileData.send;
+			delete nonFileData.name;
+			delete nonFileData.type;
+			delete nonFileData.size;
+			delete nonFileData.percentUploaded;
+
 			invocations.push([file,nonFileData,fileKey,deferred]);
 
 			filePromise.then(function(file){
@@ -305,6 +335,10 @@
 				scope.repoUploadCtrl.parentPath = newValue;
 			});
 
+			scope.$watchCollection('documentTypes', function(newValue, oldValue, scope) {
+				scope.repoUploadCtrl.documentTypes = newValue;
+			});
+
 			//Watch doExplode and examine in combination with targetDocument
 			//to determine if we are in explode of update mode.
 			scope.$watch('doExplode',function(newValue, oldValue, scope){
@@ -362,6 +396,7 @@
 				"doExplode" : "=sdaExplodeMode",
 				"fileKey" : "@sdaFileKey",
 				"parentPath" : "=sdaParentPath",
+				"documentTypes" : "=sdaDocumentTypes",
 				"url" : "@sdaUrl"
 			},
 			"transclude" : true,
