@@ -34,7 +34,7 @@
 		_$interval = $interval;
 		_sdWorklistViewConfigService = sdWorklistViewConfigService;
 		_parse = $parse;
-		trace  = sdLoggerService.getLogger('workflow-ui.sdWorklistViewCtrl')
+		trace  = sdLoggerService.getLogger('workflow-ui.sdWorklistViewCtrl');
 
 		this.initialize();
 

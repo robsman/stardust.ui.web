@@ -121,47 +121,56 @@
 		}
 	};
 
+
 	/**
 	*
 	*/
-	function processTableColumns(elem, attr){
+	function processTableColumns(elem, attr) {
 		if (!attr.sdaColumns) {
 			return;
 		}
-
-		var requiredColumns = JSON.parse(attr.sdaColumns);
+		var requiredColumns = $parse(attr.sdaColumns)();
 		var currentOrder = [];
 
-			var headColumns = elem.find('table[sd-data-table] > thead > tr > th');
-			var bodyColumns = elem.find('table[sd-data-table] > tbody > tr > td');
+		var headColumns = elem.find('table[sd-data-table] > thead > tr > th');
+		var bodyColumns = elem.find('table[sd-data-table] > tbody > tr > td');
 
-			//Retaining required columns
-			for(var col = 0 ; col < headColumns.length ; col++ ) {
-				var columnElement = angular.element(headColumns[col]);
+		// Retaining required columns
+		for(var col = 0 ; col < headColumns.length ; col++ ) {
+			var columnElement = angular.element(headColumns[col]);
 
-				if(requiredColumns.indexOf(columnElement.attr('sda-name')) === -1) {
-					var bodyElement = angular.element(bodyColumns[col]);
-					columnElement.remove();
-					bodyElement.remove();
-				}else {
-					currentOrder.push(columnElement.attr('sda-name'));
-				}
+			if(requiredColumns.indexOf(columnElement.attr('sda-name')) === -1) {
+				var bodyElement = angular.element(bodyColumns[col]);
+				columnElement.remove();
+				bodyElement.remove();
+			}else {
+				currentOrder.push(columnElement.attr('sda-name'));
 			}
+		}
 
-			//Reordering columnns
-			for(var colIndex = requiredColumns.length -1; colIndex >=  0; colIndex-- ) {
-					var presentIndex = currentOrder.indexOf(requiredColumns[colIndex]);
+		// Reordering columnns
+		var table =  elem.find('table[sd-data-table]');
+		for(var colIndex = requiredColumns.length -1; colIndex >=  0; colIndex-- ) {
+			var presentIndex = currentOrder.indexOf(requiredColumns[colIndex]);
 
-					var fromHeadPos = elem.find('table thead tr th:eq('+presentIndex+')');
-					var toHeadPos = elem.find('table thead tr th:eq('+colIndex+')');
-					elem.find("table[sd-data-table] thead tr th")
-									.detach(fromHeadPos).insertAfter(toHeadPos);
-
-					var fromBodyPos = elem.find('table tbody tr td:eq('+presentIndex+')');
-					var toBodyPos = elem.find('table tbody tr td:eq('+colIndex+')');
-					elem.find("table[sd-data-table] tbody tr td")
-							.detach(fromBodyPos).insertAfter(toBodyPos);
+			if(colIndex === presentIndex) {
+				continue;
 			}
+			if(colIndex != presentIndex) {
+				moveColumn(table, presentIndex, colIndex);
+
+			}
+		}
+	}
+
+
+	function moveColumn (table, from, to) {
+		var rows = jQuery('tr', table);
+		var cols;
+		rows.each(function() {
+			cols = jQuery(this).children('th, td');
+			cols.eq(from).detach().insertBefore(cols.eq(to));
+		});
 	}
 
 
@@ -757,13 +766,13 @@ function checkCofig(toolBarConfig, menuItem) {
 		}
 
 		if (attr.sdaVisibleColumns) {
-			this.visibleColumns  = JSON.parse(attr.sdaVisibleColumns);
+			this.visibleColumns  = $parse(attr.sdaVisibleColumns)();
 		} else if(!attr.sdaVisibleColumns  && attr.sdaColumns) {
-			this.visibleColumns  = JSON.parse(attr.sdaColumns);
+			this.visibleColumns  =$parse(attr.sdaColumns)();
 		}
 		//Check to see if required column and visible columns have valid values
 		if(attr.sdaVisibleColumns && attr.sdaColumns) {
-			var requiredColumns = JSON.parse(attr.sdaColumns);
+			var requiredColumns = JSON.parse(attr.sdaColumns.replace(/'/g, '"'));
 			angular.forEach(this.visibleColumns, function(visibleColumn) {
 					if(requiredColumns.indexOf(visibleColumn) == -1) {
 						throw 'sdaVisibleColumns cant contain columns not present in sdaColumns';
