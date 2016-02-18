@@ -214,19 +214,30 @@ public class RepositoryServiceImpl implements RepositoryService
       List<Folder> folders = DocumentMgmtUtility.getDocumentManagementService().findFolders(xPathQuery,
             Folder.LOD_NO_MEMBERS);
 
-      return buildFolderSearchResult(folders);
+      return buildFolderSearchResult(folders, searchRequestDTO);
    }
 
    /**
     * @param folders
+    * @param searchRequestDTO 
     * @return
     */
-   private QueryResultDTO buildFolderSearchResult(List<Folder> folders)
+   private QueryResultDTO buildFolderSearchResult(List<Folder> folders, RepositorySearchRequestDTO searchRequestDTO)
    {
       QueryResultDTO resultDTO = new QueryResultDTO();
+
       if (folders != null)
       {
-         resultDTO.list = FolderDTOBuilder.build(folders);
+         if (searchRequestDTO.documentDataTableOption != null)
+         {
+            resultDTO.list = FolderDTOBuilder.build(folders.subList(0,
+                  searchRequestDTO.documentDataTableOption.pageSize));
+         }
+         else
+         {
+            resultDTO.list = FolderDTOBuilder.build(folders);
+         }
+
          resultDTO.totalCount = folders.size();
       }
       return resultDTO;
