@@ -1,3 +1,5 @@
+echo off
+
 cd src/main/resources
 
 del /s benchmark-resources.js

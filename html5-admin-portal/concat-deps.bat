@@ -1,3 +1,5 @@
+echo off
+
 cd src/main/resources
 
 del /s html5-admin-portal-resources.js
