@@ -169,6 +169,8 @@
     textMap.default = i18n.translate("views.genericRepositoryView.treeMenuItem.repo.default");
     textMap.repoRoot = i18n.translate("views.genericRepositoryView.treeMenuItem.repo.root");
     textMap.quickSearch = i18n.translate("views.genericRepositoryView.quickSearch");
+    textMap.newFile= i18n.translate("views.genericRepositoryView.newFile.name");
+    textMap.newFolder= i18n.translate("views.genericRepositoryView.newFolder.name");
 
     return textMap;
   };
@@ -537,6 +539,7 @@
   docRepoController.prototype.uploadFile = function(targetFolder){
     var that = this;
     var treeFolder;
+    var repoId;
 
     treeFolder = that.treeApi.childNodes[targetFolder.id];
 
@@ -545,7 +548,8 @@
     this.documentVersionTarget=null;
 
     //property tied to the upload dialog directive must be updated
-    this.selectedFolderPath = targetFolder.path;
+    repoId = targetFolder.uuid.split("}{")[0] + "}";
+    this.selectedFolderPath = repoId + "/" + targetFolder.path;
 
     //If this folder hasnt been expanded/loaded then we will need to do that
     //so that when the upload dialog returns the folder will have its proper contents.
@@ -655,7 +659,7 @@
     var parentFolderId;
     var newFolderId;
     
-    name = "New Folder, " + name;
+    name = this.textMap.newFolder + " " + name;
     parentFolderId = (parentFolderNode.nodeType=="folder")?parentFolderNode.id:parentFolderNode.path;
 
     this.documentService.createFolder(parentFolderId,name)
@@ -676,10 +680,14 @@
 
     var that = this;
     var name = this.$filter('date')(new Date(), 'yyyy-MM-dd HH-mm-ss');
+    var parentPath;
+    var repoId;
 
-    name = "New Document, " + name;
+    repoId= parentFolderNode.uuid.split("}{")[0] + "}";
+    parentPath = repoId + "/" + parentFolderNode.path;
+    name = this.textMap.newFile + " " + name;
 
-    this.documentService.createDocument(parentFolderNode.path,name)
+    this.documentService.createDocument(parentPath/*parentFolderNode.path*/,name)
     .then(function(newDocument){
 
       newDocument.nodeType = "document";
