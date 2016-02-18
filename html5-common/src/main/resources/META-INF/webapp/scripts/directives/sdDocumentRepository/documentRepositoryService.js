@@ -45,6 +45,7 @@
     this.absUrl = sdUtilService.getRootUrl();
     this.folderRoot = this.absUrl + "/services/rest/portal/folders";
     this.documentRoot = this.absUrl + "/services/rest/portal/documents";
+    this.documentTypesRoot = this.absUrl + "/services/rest/portal/document-types";
     this.rootUrl = this.absUrl + "/services/rest/portal/repository";
 
   }
@@ -234,6 +235,25 @@
 
   };
   
+  documentRepoService.prototype.getDocumentTypes = function(){
+
+    var deferred = this.$q.defer();
+    var url= this.documentTypesRoot
+    
+    this.$http({
+      "method" : "GET",
+      "url" : url
+    })
+    .then(function(res){
+      deferred.resolve(res.data);
+    })
+    ["catch"](function(err){
+      deferred.reject(err);
+    });
+    
+    return deferred.promise;
+  };
+
   documentRepoService.prototype.getDocument = function(documentId){
 
     var deferred = this.$q.defer();

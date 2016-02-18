@@ -34,6 +34,7 @@
     this.matches = []; //Tree node matches corresponding to our selectedMatches
     this.data=[];
     this.documentRepositoryUrl = documentRepositoryService.documentRoot + "/upload";
+    this.documentTypes = [];
 
     //set up a watch on our selected matches from our autocomplete directive
     $scope.$watchCollection('ctrl.selectedMatches', function(newValue, oldValue) {
@@ -41,6 +42,18 @@
       if(newValue.length > 0){
         that.expandNodePath(newValue[0]);
       };
+    });
+
+
+    //Async retrieve document types
+    this.documentService.getDocumentTypes()
+    .then(function(docTypes){
+      docTypes.forEach(function(v){
+        that.documentTypes.push(v);
+      });
+    })
+    ["catch"](function(err){
+      //TODO:err handling
     });
 
     //Async retrieve repo providers.
@@ -730,6 +743,8 @@
     var that = this;
     this.documentService.renameFolder(folderId,newName)
     .then(function(name){
+      var newPath =  nodeItem.path.replace(nodeItem.path.match("[^/]+$")[0],name);
+      nodeItem.path = newPath;
       nodeItem.name = name;
     });
   };
