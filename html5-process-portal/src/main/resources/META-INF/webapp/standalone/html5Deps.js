@@ -52,6 +52,7 @@ var html5Deps = function() {
 				'sdLoggerService' : [ 'html5-common/scripts/services/sdLoggerService' ],
 				'sdData' : [ 'html5-common/scripts/directives/sdData' ],
 				'sdDataTable' : [ 'html5-common/scripts/directives/sdDataTable' ],
+				'sdEnvConfigService' : [ 'html5-common/scripts/services/sdEnvConfigService' ],
 				'sdUtilService' : [ 'html5-common/scripts/services/sdUtilService' ],
 				'sdViewUtilService' : [ 'html5-common/scripts/services/sdViewUtilService' ],
 				'sdPreferenceService' : [ 'html5-common/scripts/services/sdPreferenceService' ],
@@ -82,6 +83,7 @@ var html5Deps = function() {
 				'sdLoggerService' : [ 'html5CommonMain' ],
 				'sdData' : [ 'html5CommonMain' ],
 				'sdDataTable' : [ 'html5CommonMain', 'sdLoggerService', 'sdDialogService' ,'sdPopover'],
+				'sdEnvConfigService' : [ 'html5CommonMain' ],
 				'sdUtilService' : [ 'html5CommonMain' ],
 				'sdViewUtilService' : [ 'html5CommonMain' ],
 				'sdPreferenceService' : [ 'html5CommonMain','angularResource'],
@@ -99,7 +101,7 @@ var html5Deps = function() {
 			},
 			deps : [ "jquery.dataTables", "angularjs", "angularResource","bootstrap","ckeditor","portalApplication",
 					"html5CommonMain", "sdEventBusService", "httpInterceptorProvider",
-					"sdLoggerService", "sdData", "sdDataTable",
+					"sdLoggerService", "sdData", "sdDataTable", "sdEnvConfigService",
 					'sdUtilService', 'sdViewUtilService', 'sdPreferenceService', 'sdDialog', 'sdDialogService', 'sdPortalConfigurationService' , 'sdPopover', 
 					'sdAutoComplete','sdRichTextEditor','sdTree','sdFolderTree','sdProcessDocumentTree']
 
