@@ -230,8 +230,11 @@ public class RepositoryServiceImpl implements RepositoryService
       {
          if (searchRequestDTO.documentDataTableOption != null)
          {
-            resultDTO.list = FolderDTOBuilder.build(folders.subList(0,
-                  searchRequestDTO.documentDataTableOption.pageSize));
+        	int pageSize = searchRequestDTO.documentDataTableOption.pageSize;
+        	if(folders.size() < pageSize){
+        		pageSize = folders.size();
+        	}
+            resultDTO.list = FolderDTOBuilder.build(folders.subList(0,pageSize));
          }
          else
          {
