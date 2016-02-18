@@ -9,8 +9,21 @@ reference for all our icons.
 Supported fonts we wrap for our portal icon (pi-) classes
 -------------------------------------------------------------
 */
+@font-face{
+	font-family: starclipse;
+	src: url(./starclipse/fonts/starclipse.woff?x=1)  format('woff');
+}
 
-/* @font-face includes will be automatically done */
+@font-face{
+	font-family: 'Glyphicons Halflings';
+	src: url(./3rd-party/glyphicons/3.3.2/fonts/glyphicons-halflings-regular.woff)  format('woff');
+}
+
+@font-face{
+	font-family: FontAwesome;
+	src: url(./3rd-party/font-awesome/4.4.0/fonts/fontawesome-webfont.woff)  format('woff');
+}
+
 
 /*Copied from html5-common.css to be used in iframes*/
 .msg-error {
