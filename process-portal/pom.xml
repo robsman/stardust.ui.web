@@ -69,6 +69,12 @@
          <scope>compile</scope>
       </dependency>
       <dependency>
+         <groupId>org.eclipse.stardust.ui.web</groupId>
+         <artifactId>stardust-portal-rest-common</artifactId>
+         <version>${project.version}</version>
+         <scope>compile</scope>
+      </dependency>
+      <dependency>
          <groupId>org.eclipse.stardust.ui.common</groupId>
          <artifactId>stardust-common-introspection</artifactId>
          <version>${project.version}</version>
