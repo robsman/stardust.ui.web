@@ -535,7 +535,7 @@ function checkCofig(toolBarConfig, menuItem) {
 				var message = result.failure[0].message;
 				sdDialogService.error(scope, message, options)
 			    } else {
-				sdCommonViewUtilService.openActivityView(rowItem.activityOID);
+			    	sdCommonViewUtilService.openActivityView(rowItem.activityOID, null, self.cachedQuery);
 				self.refresh();
 			    }
 			});
@@ -816,19 +816,19 @@ function checkCofig(toolBarConfig, menuItem) {
 		var deferred = $q.defer();
 		self.cleanLocals();
 
-		var query = angular.extend({}, this.query);
+		self.cachedQuery = angular.extend({}, this.query);
 		options.descriptorColumns = self.descriptorCols;
-		query.options = options;
+		self.cachedQuery.options = options;
 
 		var showResubmitLink = false;
-		if(query.id == 'allResubmissionInstances' || query.type == 'resubmission'){
+		if(self.cachedQuery.id == 'allResubmissionInstances' || self.cachedQuery.type == 'resubmission'){
 			showResubmitLink  = true;
 		}
 		options.extraColumns = self.extraColumns;
 
 		if (angular.isDefined(this.sdDataCtrl)) { //If sdData is provided
 
-			var dataResult = self.sdDataCtrl.retrieveData(query);
+			var dataResult = self.sdDataCtrl.retrieveData(self.cachedQuery);
 			dataResult.then(function(data) {
 				self.activities.list = data.list;
 				self.activities.totalCount = data.totalCount;
@@ -846,7 +846,7 @@ function checkCofig(toolBarConfig, menuItem) {
 				throw 'sdData is not defined for sdActivityTable';
 			}
 
-			sdWorklistService.getWorklist(query).then(function(data) {
+			sdWorklistService.getWorklist(self.cachedQuery).then(function(data) {
 
 				angular.forEach(data.list,function(item){
 					item.showResubmitLink = showResubmitLink;

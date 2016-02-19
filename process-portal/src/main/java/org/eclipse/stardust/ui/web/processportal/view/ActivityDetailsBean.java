@@ -39,6 +39,7 @@ import org.eclipse.stardust.engine.api.model.ContextData;
 import org.eclipse.stardust.engine.api.model.DataMapping;
 import org.eclipse.stardust.engine.api.model.Model;
 import org.eclipse.stardust.engine.api.model.PredefinedConstants;
+import org.eclipse.stardust.engine.api.query.QueryResult;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstance;
 import org.eclipse.stardust.engine.api.runtime.ActivityInstanceState;
 import org.eclipse.stardust.engine.api.runtime.Document;
@@ -91,6 +92,11 @@ import org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityForm;
 import org.eclipse.stardust.ui.web.processportal.view.manual.ModelUtils;
 import org.eclipse.stardust.ui.web.processportal.views.qualityassurance.QualityAssuranceActivityBean;
 import org.eclipse.stardust.ui.web.processportal.views.qualityassurance.QualityAssuranceActivityBean.QAAction;
+import org.eclipse.stardust.ui.web.rest.component.service.ProcessDefinitionService;
+import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils;
+import org.eclipse.stardust.ui.web.rest.component.util.WorklistUtils;
+import org.eclipse.stardust.ui.web.rest.dto.DataTableOptionsDTO;
+import org.eclipse.stardust.ui.web.rest.util.JsonMarshaller;
 import org.eclipse.stardust.ui.web.viewscommon.common.ClosePanelScenario;
 import org.eclipse.stardust.ui.web.viewscommon.common.NoteTip;
 import org.eclipse.stardust.ui.web.viewscommon.common.activity.QualityAssuranceCodesBean;
@@ -136,6 +142,8 @@ import org.eclipse.stardust.ui.web.viewscommon.views.document.IDocumentContentIn
 import org.eclipse.stardust.ui.web.viewscommon.views.document.JCRDocument;
 import org.springframework.beans.factory.DisposableBean;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.icesoft.faces.context.effects.JavascriptContext;
 
 /**
@@ -1882,6 +1890,16 @@ public class ActivityDetailsBean extends UIComponentBean
 
    public void completeCurrentActivity()
    {
+      completeCurrentActivity(false);
+   }
+
+   public void completeCurrentActivity(final boolean activateNextInWorklist)
+   {
+      completeCurrentActivity(activateNextInWorklist, ClosePanelScenario.COMPLETE);
+   }
+   
+   public void completeCurrentActivity(final boolean activateNextInWorklist, ClosePanelScenario closePanelScenario)
+   {
       if (activityInstance != null)
       {
          ActivityInstance ai = activityInstance;
@@ -1890,7 +1908,7 @@ public class ActivityDetailsBean extends UIComponentBean
                .getActivity());
          if (null != interactionController)
          {
-            if (interactionController.closePanel(ai, ClosePanelScenario.COMPLETE, null))
+            if (interactionController.closePanel(ai, closePanelScenario, null))
             {
                // close synchronously
                retrieveOutDataMapping(interactionController, false, new ParametricCallbackHandler()
@@ -1900,7 +1918,7 @@ public class ActivityDetailsBean extends UIComponentBean
                   {
                      if (EventType.APPLY == eventType)
                      {
-                        completeCurrentActivityContinue((Map)getParameters());
+                        completeCurrentActivityContinue((Map)getParameters(), activateNextInWorklist);
                      }
                   }
                });
@@ -1913,11 +1931,11 @@ public class ActivityDetailsBean extends UIComponentBean
          }
       }
    }
-   
+
    /**
     * @param outData
     */
-   private void completeCurrentActivityContinue(Map<String, Serializable> outData)
+   private void completeCurrentActivityContinue(Map<String, Serializable> outData, boolean activateNextInWorklist)
    {
       ActivityInstance ai = activityInstance;
       IActivityInteractionController interactionController = getInteractionController(ai.getActivity());
@@ -1925,10 +1943,67 @@ public class ActivityDetailsBean extends UIComponentBean
       WorkflowActivityCompletionLog completionLog = PPUtils.complete(interactionController.getContextId(ai), outData,
             CompletionOptions.ACTIVATE_NEXT, ai);
 
-      ContinueWithNextActivity(completionLog);
       
+      String queryString = (String) getThisView().getViewParams().get("query");
+      if (null != queryString && activateNextInWorklist)
+      {
+         continueWithNextActivityInWorklist(completionLog, queryString);
+      }
+      else
+      {
+         ContinueWithNextActivity(completionLog);
+      }
    }
-   
+
+   /**
+    * @param completionLog
+    * @param rawQueryString
+    */
+   public void continueWithNextActivityInWorklist(
+         WorkflowActivityCompletionLog completionLog, String rawQueryString)
+   {
+      // TODO - check if the character replacement has a better alternative
+      String queryString = StringUtils.replace(rawQueryString, "$#$", "\"");
+      queryString = StringUtils.replace(queryString, "$@$", "'");
+      JsonObject query = new JsonMarshaller().readJsonObject(queryString);
+      PortalApplication.getInstance().closeView(thisView, true);
+      JsonArray order = query.get("options")
+            .getAsJsonObject()
+            .get("order")
+            .getAsJsonArray();
+      DataTableOptionsDTO options = new DataTableOptionsDTO(1, 0,
+            order.get(0).getAsJsonObject().get("field").getAsString(),
+            (order.get(0).getAsJsonObject().get("dir").getAsString()).equals("asc"));
+      if (query.get("options").getAsJsonObject().has("filters"))
+      {
+         String filter = query.get("options")
+               .getAsJsonObject()
+               .get("filters")
+               .getAsJsonObject()
+               .toString();
+         options.filter = ActivityTableUtils.getFilters(filter,
+               ((ProcessDefinitionService) FacesUtils
+                     .getBeanFromContext("processDefinitionService"))
+                           .getDescriptorColumns(true));
+      }
+
+      QueryResult<? > result = null;
+      result = ((WorklistUtils) FacesUtils.getBeanFromContext("worklistUtils"))
+            .getUnifiedWorklistForUser(
+                  ServiceFactoryUtils.getSessionContext().getUser().getId(), options);
+      if (result.size() > 0)
+      {
+         Map<String, Object> params = getPinViewStatusParam();
+         params.put("query", rawQueryString);
+         ActivityInstanceUtils.openActivity((ActivityInstance) result.get(0), params);
+      }
+      else
+      {
+         PortalApplication.getInstance()
+               .addEventScript("parent.BridgeUtils.View.syncActiveView();");
+      }
+   }
+
    /**
     * @param completionLog
     */

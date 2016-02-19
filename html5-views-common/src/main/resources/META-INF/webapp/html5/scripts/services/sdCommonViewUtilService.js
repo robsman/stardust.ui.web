@@ -109,13 +109,18 @@
 				"processName" : processName
 			}, nested);
 		};
+
 		/**
 		 * 
 		 */
-		CommonViewUtilService.prototype.openActivityView = function(activityOID, nested) {
-			sdViewUtilService.openView("activityPanel", "oid=" + activityOID, {
-				"oid" : "" + activityOID
-			}, nested);
+		CommonViewUtilService.prototype.openActivityView = function(activityOID, nested, query) {
+			var params = {"oid" : "" + activityOID};
+			if (query) {
+				// TODO - check if the character replacement has a better alternative
+				params.query = JSON.stringify(query).replace(/\"/g, '$#$');
+				params.query = params.query.replace(/'/g, '$@$');
+			}
+			sdViewUtilService.openView("activityPanel", "oid=" + activityOID, params, nested);
 		};
 		
 		/**

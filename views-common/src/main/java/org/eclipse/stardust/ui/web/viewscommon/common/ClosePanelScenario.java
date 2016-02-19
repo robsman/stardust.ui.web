@@ -24,6 +24,8 @@ public class ClosePanelScenario extends StringKey
    public static final ClosePanelScenario UNKNOWN = new ClosePanelScenario("unknown");
 
    public static final ClosePanelScenario COMPLETE = new ClosePanelScenario("complete");
+   
+   public static final ClosePanelScenario COMPLETE_AND_NEXT_IN_WORKLIST = new ClosePanelScenario("completeAndNextInWorklist");
 
    public static final ClosePanelScenario QA_PASS = new ClosePanelScenario("qaPass");
    

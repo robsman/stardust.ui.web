@@ -577,7 +577,8 @@ Icon implementations
 	content: "\f0c7"; /* fa-floppy-o */
 }
 
-.pi-exit-edit-mode:before{
+.pi-exit-edit-mode:before,
+.pi-default-action:before{
 	font-family: 'FontAwesome';
 	content: "\f00c"; /* fa-check */
 }

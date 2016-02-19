@@ -485,7 +485,8 @@ public class ActivityTableUtils
    {
       boolean worklistQuery = query instanceof WorklistQuery;
 
-      if (options.visibleDescriptorColumns.contains(options.orderBy))
+      if (options.visibleDescriptorColumns != null
+            && options.visibleDescriptorColumns.contains(options.orderBy))
       {
          Map<String, DataPath> allDescriptors = ProcessDefinitionUtils.getAllDescriptors(false);
          String descriptorName = options.orderBy;

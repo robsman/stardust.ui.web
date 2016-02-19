@@ -196,6 +196,10 @@ public class ActivityPanelController extends UIComponentBean
             {
                activityDetailsBean.completeCurrentActivity();
             }
+            else if (ClosePanelScenario.COMPLETE_AND_NEXT_IN_WORKLIST == scenario)
+            {
+               activityDetailsBean.completeCurrentActivity(true, ClosePanelScenario.COMPLETE_AND_NEXT_IN_WORKLIST);
+            }
             else if (ClosePanelScenario.QA_PASS == scenario)
             {
                activityDetailsBean.continueQualityAssurancePass();
