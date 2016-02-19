@@ -60,6 +60,9 @@
     this.getRepositoryProviders()
     .then(function(providers){
       that.repositoryProviders = providers;
+      if(providers.length > 0){
+        that.boundDialogRepoProvider = providers[0];
+      }
     });
 
   }
@@ -184,7 +187,13 @@
     textMap.quickSearch = i18n.translate("views.genericRepositoryView.quickSearch");
     textMap.newFile= i18n.translate("views.genericRepositoryView.newFile.name");
     textMap.newFolder= i18n.translate("views.genericRepositoryView.newFolder.name");
-
+    textMap.bindErrorRepoId = i18n.translate("views.bindRepositoryDialog.repoId.empty");
+    textMap.bindErrorProviderId = i18n.translate("views.bindRepositoryDialog.providerId.invalid");
+    textMap.bindErrorJndiName = i18n.translate("views.bindRepositoryDialog.jndiName.empty");
+    textMap.bindErrorCreate = i18n.translate("views.bindRepositoryDialog.createException");
+    textMap.close =  i18n.translate("common.close");
+    textMap.confirm =  i18n.translate("common.confirm");
+    textMap.error =  i18n.translate("common.error");
     return textMap;
   };
 
@@ -790,14 +799,28 @@
     var providerId = that.boundDialogRepoProvider.id;
     
     if(res===true){
-      that.documentService.bindRepository(providerId,id,jndiName)
-      .then(function(boundRepo){
-        //TODO:refresh tree as we need the uuid etc.
-        that.data[0].children.push(boundRepo);//this wont work...
-      })
-      ["catch"](function(err){
-        alert("TODO: Error handling!" );
-      });
+
+      if(jndiName && id && providerId){
+
+        that.documentService.bindRepository(providerId,id,jndiName)
+        .then(function(boundRepo){
+          //TODO:refresh tree as we need the uuid etc.
+          that.data[0].children.push(boundRepo);//this wont work...
+        })
+        ["catch"](function(err){
+          that.errorMessage=that.textMap.bindErrorCreate;
+          that.errorDialog.open();
+        });
+
+      }
+      else{
+        this.errorMessage = "";
+        if(!jndiName){this.errorMessage = this.textMap.bindErrorJndiName;}
+        else if(!providerId){this.errorMessage = this.textMap.bindErrorProviderId;}
+        else if(!id){this.errorMessage = this.textMap.bindErrorRepoId;}
+        this.errorDialog.open();
+      }
+
     };
     
   };

@@ -12,8 +12,8 @@
   <div  sd-dialog="ctrl.bindRepoDialog" 
         sda-title="Bind Repository" 
         sda-type="confirm" 
-        sda-confirm-action-label="Confirm"
-        sda-cancel-action-label="Cancel"
+        sda-confirm-action-label="{{ctrl.textMap.confirm}}"
+        sda-cancel-action-label="{{ctrl.textMap.close}}"
         sda-modal="true"
         sda-on-open="ctrl.onBindDialogOpen(res)"
         sda-on-confirm="ctrl.onBindDialogConfirm(res)"
@@ -25,8 +25,8 @@
   <div  sd-dialog="ctrl.repoPropertyDialog" 
         sda-title="{{'Repository Properties'}}" 
         sda-type="alert" 
-        sda-confirm-action-label="Confirm"
-        sda-cancel-action-label="Cancel"
+        sda-confirm-action-label="{{ctrl.textMap.confirm}}"
+        sda-cancel-action-label="{{ctrl.textMap.close}}"
         sda-modal="true"
         sda-template="{{ctrl.baseTemplateUrl}}repoProperties.html"
         sda-scope="this">
@@ -36,8 +36,8 @@
   <div  sd-dialog="ctrl.fileVersionHistoryDialog" 
         sda-title="{{'File Version History'}}" 
         sda-type="alert" 
-        sda-confirm-action-label="Confirm"
-        sda-cancel-action-label="Cancel"
+        sda-confirm-action-label="{{ctrl.textMap.confirm}}"
+        sda-cancel-action-label="{{ctrl.textMap.close}}"
         sda-modal="true"
         sda-template="{{ctrl.baseTemplateUrl}}fileVersionHistory.html"
         sda-scope="this">
@@ -47,8 +47,8 @@
   <div  sd-dialog="ctrl.fileSecurityDialog" 
         sda-title="{{'File Security'}}" 
         sda-type="alert" 
-        sda-confirm-action-label="Confirm"
-        sda-cancel-action-label="Cancel"
+        sda-confirm-action-label="{{ctrl.textMap.confirm}}"
+        sda-cancel-action-label="{{ctrl.textMap.close}}"
         sda-modal="true"
         sda-template="{{ctrl.baseTemplateUrl}}fileSecuritySettings.html"
         sda-scope="this">
@@ -58,12 +58,22 @@
   <div  sd-dialog="ctrl.folderSecurityDialog" 
         sda-title="{{'File Security'}}" 
         sda-type="alert" 
-        sda-confirm-action-label="Confirm"
-        sda-cancel-action-label="Cancel"
+        sda-confirm-action-label="{{ctrl.textMap.confirm}}"
+        sda-cancel-action-label="{{ctrl.textMap.close}}"
         sda-modal="true"
         sda-template="{{ctrl.baseTemplateUrl}}folderSecuritySettings.html"
         sda-scope="this">
 	</div>
+
+  <!--General Error Dialog-->
+  <div  sd-dialog="ctrl.errorDialog" 
+        sda-title="{{ctrl.textMap.error}}" 
+        sda-type="alert" 
+        sda-modal="true"
+        sda-cancel-action-label="{{ctrl.textMap.close}}"
+        sda-template="{{ctrl.baseTemplateUrl}}error.html"
+        sda-scope="this">
+  </div>
 	
   <!--NG-Dialog Section End-->
 
