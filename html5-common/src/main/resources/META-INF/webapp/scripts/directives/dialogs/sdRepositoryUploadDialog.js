@@ -23,7 +23,7 @@
 	/**
 	 * Controller function for our directive
 	 */
-	function fileRepoUploadController($scope,sdUtilService,$q,$timeout,sdLoggerService){
+	function fileRepoUploadController($scope,sdUtilService,$q,$timeout,sdLoggerService,sdViewUtilService){
 
 		var that = this;
 		this.FileState = FileState;
@@ -36,6 +36,7 @@
 		this.removedFiles = [];
 		this.curatedFiles = [];
 		this.sdUtilService = sdUtilService;
+		this.sdViewUtilService = sdViewUtilService;
 		this.parentPath="/";
 		this.$scope = $scope;
 		this.$timeout = $timeout;
@@ -44,6 +45,7 @@
 		this.nonFileData = {};//data to send with the file upload, key->values
 		this.fileDefer = {};
 		this.id = "sdFileUploadDialog_" + $scope.$id;
+		this.openOnComplete = false;
 		this.trace = sdLoggerService.getLogger('bpm-common.directives.sdFileUploadController');
 
 		this.title = "Upload New File";//default
@@ -102,6 +104,15 @@
 		},0);
 	}
 	
+	fileRepoUploadController.prototype.openDocumentView = function(docId){
+
+	    var params = {"documentId" : docId};
+	    var viewKey = 'documentOID=' + encodeURIComponent(docId);
+
+	    viewKey = window.btoa(viewKey);
+	    this.sdViewUtilService.openView("documentView",viewKey,params,false);
+  	};
+
 	//handle file drops and shunt them through the same folder
 	fileRepoUploadController.prototype.onFileDrop = function(data,e){
 		console.log(data);
@@ -140,9 +151,15 @@
 	 * Closes a dialog and resolves promise;
 	 */
 	fileRepoUploadController.prototype.closeDialog = function(){
+		var that = this;
 		this.uploadDialog.close();
 		if(this.fileDefer && this.fileDefer.resolve){
 			this.fileDefer.resolve(this.responseFiles);
+			if(this.openOnComplete===true){
+				this.responseFiles.forEach(function(rFile){
+					that.openDocumentView(rFile.uuid);
+				});
+			};
 		}
 		this.resetState();
 	};
@@ -319,7 +336,7 @@
 
 	};
 	
-	fileRepoUploadController.$inject = ["$scope","sdUtilService","$q","$timeout","sdLoggerService"];
+	fileRepoUploadController.$inject = ["$scope","sdUtilService","$q","$timeout","sdLoggerService","sdViewUtilService"];
 	
 	//angular.module("bpm-common.directives").controller("sdFileUploadController",fileUploadController);
 	
