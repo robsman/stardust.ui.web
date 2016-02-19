@@ -42,4 +42,5 @@ public class CommonProperties
    public static final String CREATE_VERSION = "createVersion";
    public static final String CREATE_NEW_REVISION = "createNewRevision";
    public static final String PROPERTIES = "properties";
+   public static final String SCHEMA_LOCATION = "schemaLocation";
 }

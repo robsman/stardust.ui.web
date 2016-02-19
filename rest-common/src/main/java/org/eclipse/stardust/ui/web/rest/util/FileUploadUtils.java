@@ -25,6 +25,7 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.eclipse.stardust.common.StringUtils;
 import org.eclipse.stardust.engine.api.model.Model;
+import org.eclipse.stardust.engine.extensions.dms.data.DocumentType;
 import org.eclipse.stardust.ui.web.common.log.LogManager;
 import org.eclipse.stardust.ui.web.common.log.Logger;
 import org.eclipse.stardust.ui.web.common.util.GsonUtils;
@@ -51,6 +52,8 @@ public class FileUploadUtils
       List<DocumentContentRequestDTO> documents = new ArrayList<DocumentContentRequestDTO>();
       DocumentContentRequestDTO documentInfoDTO = null;
       String modelId = null;
+      String schemaLocation = null;
+      
       for (Attachment attachment : attachments)
       {
          DataHandler dataHandler = attachment.getDataHandler();
@@ -102,6 +105,15 @@ public class FileUploadUtils
                         .getDocumentType(inputStream.toString(), model);
                   modelId = null;
                }
+               else if(StringUtils.isNotEmpty(schemaLocation)){
+            	   String documentTypeId = inputStream.toString();
+            	   DocumentType documentType = new DocumentType(documentTypeId, schemaLocation);
+            	   documentInfoDTO.documentType = documentType;
+               }
+            }
+            else if (CommonProperties.SCHEMA_LOCATION.equals(dataHandler.getName()))
+            {
+               schemaLocation = inputStream.toString();
             }
             else if (CommonProperties.MODEL_ID.equals(dataHandler.getName()))
             {

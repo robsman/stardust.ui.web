@@ -115,9 +115,9 @@
 			<div ng-show="repoUploadCtrl.mode !== 'EXPLODE'">
 				<div ng-show="repoUploadCtrl.documentTypes.length > 0">
 				<label>Document Type </label>
-					<select ng-model="repoUploadCtrl.documentTypeId" 
+					<select ng-model="repoUploadCtrl.documentType" 
 							style="min-width:100px;width:auto;"
-							ng-options="type.documentTypeId as type.name for type in repoUploadCtrl.documentTypes">
+							ng-options="type as type.name for type in repoUploadCtrl.documentTypes">
 					</select>
 				</div>
 				<div style="width:45%;display:inline-table;">

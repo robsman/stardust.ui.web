@@ -69,7 +69,7 @@
 					that.curatedFiles.push({
 						"comments" : "",
 						"description" : "",
-						"modelId" : "",
+						"schemaLocation" : "",
 						"documentTypeId" : "",
 						"fileState" : FileState.BASE,
 						"send" : true,
@@ -132,7 +132,7 @@
 		this.nonFileData = {};
 		this.fileDefer = {};
 		this.comments = "";
-		this.documentTypeId = "";
+		this.documentType = null;
 		this.description = "";
 	};
 	
@@ -157,6 +157,7 @@
 			
 
 		this.curatedFiles.forEach(function(file){
+
 			var filePromise,
 				deferred,
 				nonFileData;
@@ -165,12 +166,24 @@
 			filePromise = deferred.promise;
 			nonFileData = angular.extend({}, file);
 
+			//clean up our nonFileData to remove props inherited from the file object
+			//which we don't need. These are just extra form data vars we will send,
+			//the file obj will keep all the local important data itself.
+			delete nonFileData.blob;
+			delete nonFileData.fileState;
+			delete nonFileData.send;
+			delete nonFileData.name;
+			delete nonFileData.type;
+			delete nonFileData.size;
+			delete nonFileData.percentUploaded;
+
+			//add parent path from our inherited scoped context
 			nonFileData.parentFolderPath = that.parentPath;
 
-			//add data from our UI, these are global for all files
-			if(that.documentTypeId){
-				nonFileData.modelId = ""; //TODO:????
-				nonFileData.documentTypeId = that.documentTypeId;
+			//add data from our dialog UI, these are global for all files
+			if(that.documentType){
+				nonFileData.schemaLocation = that.documentType.schemaLocation;
+				nonFileData.documentTypeId = that.documentType.documentTypeId;
 			}
 
 			if(that.description){
@@ -183,16 +196,6 @@
 
 			promises.push(filePromise);
 
-			//clean up our nonFileData to remove props inherited from the file object
-			//which we dont need. These are just extra form data vars we will send,
-			//the file obj will keep all the local important data itself.
-			delete nonFileData.blob;
-			delete nonFileData.fileState;
-			delete nonFileData.send;
-			delete nonFileData.name;
-			delete nonFileData.type;
-			delete nonFileData.size;
-			delete nonFileData.percentUploaded;
 
 			invocations.push([file,nonFileData,fileKey,deferred]);
 
