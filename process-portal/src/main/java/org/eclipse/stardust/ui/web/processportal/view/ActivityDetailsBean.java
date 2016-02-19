@@ -92,6 +92,7 @@ import org.eclipse.stardust.ui.web.processportal.view.manual.ManualActivityForm;
 import org.eclipse.stardust.ui.web.processportal.view.manual.ModelUtils;
 import org.eclipse.stardust.ui.web.processportal.views.qualityassurance.QualityAssuranceActivityBean;
 import org.eclipse.stardust.ui.web.processportal.views.qualityassurance.QualityAssuranceActivityBean.QAAction;
+import org.eclipse.stardust.ui.web.rest.common.WorklistTypes;
 import org.eclipse.stardust.ui.web.rest.component.service.ProcessDefinitionService;
 import org.eclipse.stardust.ui.web.rest.component.util.ActivityTableUtils;
 import org.eclipse.stardust.ui.web.rest.component.util.WorklistUtils;
@@ -1965,6 +1966,7 @@ public class ActivityDetailsBean extends UIComponentBean
       // TODO - check if the character replacement has a better alternative
       String queryString = StringUtils.replace(rawQueryString, "$#$", "\"");
       queryString = StringUtils.replace(queryString, "$@$", "'");
+
       JsonObject query = new JsonMarshaller().readJsonObject(queryString);
       PortalApplication.getInstance().closeView(thisView, true);
       JsonArray order = query.get("options")
@@ -1987,11 +1989,9 @@ public class ActivityDetailsBean extends UIComponentBean
                            .getDescriptorColumns(true));
       }
 
-      QueryResult<? > result = null;
-      result = ((WorklistUtils) FacesUtils.getBeanFromContext("worklistUtils"))
-            .getUnifiedWorklistForUser(
-                  ServiceFactoryUtils.getSessionContext().getUser().getId(), options);
-      if (result.size() > 0)
+      QueryResult<? > result = getNextActivityFromWorklist(query, options);
+
+      if (null != result && result.size() > 0)
       {
          Map<String, Object> params = getPinViewStatusParam();
          params.put("query", rawQueryString);
@@ -2002,6 +2002,64 @@ public class ActivityDetailsBean extends UIComponentBean
          PortalApplication.getInstance()
                .addEventScript("parent.BridgeUtils.View.syncActiveView();");
       }
+   }
+   
+   /**
+    * @param query
+    * @param options
+    * @return
+    */
+   public QueryResult<? > getNextActivityFromWorklist(JsonObject query,
+         DataTableOptionsDTO options)
+   {
+      QueryResult<? > result = null;
+
+      if (query.has("type"))
+      {
+         String type = query.get("type").getAsString();
+         if (WorklistTypes.UNIFIED.equals(type))
+         {
+            result = ((WorklistUtils) FacesUtils.getBeanFromContext("worklistUtils"))
+                  .getUnifiedWorklistForUser(
+                        ServiceFactoryUtils.getSessionContext().getUser().getId(),
+                        options);
+         }
+         else if (WorklistTypes.PERSONAL.equals(type))
+         {
+            result = ((WorklistUtils) FacesUtils.getBeanFromContext("worklistUtils"))
+                  .getWorklistForUser(
+                        ServiceFactoryUtils.getSessionContext().getUser().getId(),
+                        options, true);
+         }
+         else if (WorklistTypes.TOTAL.equals(type))
+         {
+            result = ((WorklistUtils) FacesUtils.getBeanFromContext("worklistUtils"))
+                  .getUnifiedWorklistForUser(
+                        ServiceFactoryUtils.getSessionContext().getUser().getId(),
+                        options);
+         }
+         else if (WorklistTypes.HIGH_CRITICALITY.equals(type))
+         {
+            result = ((WorklistUtils) FacesUtils.getBeanFromContext("worklistUtils"))
+                  .getWorklistForHighCriticality(options);
+         }
+      }
+
+      if (null == result && query.has("participantQId"))
+      {
+         String participantQId = query.get("participantQId").getAsString();
+         result = ((WorklistUtils) FacesUtils.getBeanFromContext("worklistUtils"))
+               .getWorklistForParticipant(participantQId,
+                     ServiceFactoryUtils.getSessionContext().getUser().getId(), options);
+      }
+      if (null == result && query.has("processQId"))
+      {
+         String processQId = query.get("processQId").getAsString();
+         result = ((WorklistUtils) FacesUtils.getBeanFromContext("worklistUtils"))
+               .getWorklistByProcess(processQId, options);
+      }
+
+      return result;
    }
 
    /**
