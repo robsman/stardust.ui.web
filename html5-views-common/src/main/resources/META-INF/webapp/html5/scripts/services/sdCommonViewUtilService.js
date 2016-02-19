@@ -115,7 +115,8 @@
 		 */
 		CommonViewUtilService.prototype.openActivityView = function(activityOID, nested, query) {
 			var params = {"oid" : "" + activityOID};
-			if (query) {
+			// Add query param only of being activated from a worklist
+			if (query && (query.type || query.participantQId || query.processQId)) {
 				// TODO - check if the character replacement has a better alternative
 				params.query = JSON.stringify(query).replace(/\"/g, '$#$');
 				params.query = params.query.replace(/'/g, '$@$');

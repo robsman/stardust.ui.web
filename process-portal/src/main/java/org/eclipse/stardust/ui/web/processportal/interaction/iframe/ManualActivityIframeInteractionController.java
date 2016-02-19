@@ -311,6 +311,9 @@ public class ManualActivityIframeInteractionController implements IActivityInter
       case TO_BE_ACTIVATED:
          String uri = providePanelUri(activityInstance);
          
+         if (null != event.getView().getParamValue("query")) {
+            uri += "&activatedFromWorklist=true";
+         }
          eventScript = "InfinityBpm.ProcessPortal.createOrActivateContentFrame('"
                + getContentFrameId(activityInstance) + "', '" + uri + "', {html5ViewId: '" + event.getView().getHtml5FwViewId() + "'});";
          break;
