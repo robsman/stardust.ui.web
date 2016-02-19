@@ -113,11 +113,16 @@ ul.sd-tree .menu ul{
   padding:0;
 }
 
-ul.sd-tree .menu li:not(:first-child):not(:last-child) {
+ul.sd-tree .menu li{
   list-style-type: none;
-  border-bottom:solid 1px #ddd !important;
+  border-bottom:solid 1px #ddd;
   margin:0;
   padding:1px;
+}
+
+ul.sd-tree .menu li:only-child,
+ul.sd-tree .menu li:last-child{
+  border-bottom:none;
 }
 
 /*case where menu elements have no text*/
