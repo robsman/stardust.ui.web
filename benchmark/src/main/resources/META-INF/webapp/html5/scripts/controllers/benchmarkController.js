@@ -1240,7 +1240,7 @@
 		
 		//TODO-ZZM: need appropriate icons
 		if(d.nodeType === "model"){
-			iconCss = "sc sc-spiral";
+			iconCss = "pi pi-model";
 			if(!this.benchmarkValidationService.isModelValid(nodeItem.model)){
 				iconCss += " invalid";
 			}
@@ -1251,7 +1251,7 @@
 			}
 		}
 		else if(d.nodeType === "process"){
-			iconCss = "sc sc-cogs";
+			iconCss = "pi pi-process";
 			if(!this.benchmarkValidationService.isProcessDefinitionValid(nodeItem.model,nodeItem.process)){
 				iconCss += " invalid";
 			}
@@ -1259,7 +1259,7 @@
 			isSelected = this.isNodeOnDataRows(d);
 		}
 		else{
-			iconCss = "sc sc-cog";
+			iconCss = "pi pi-activity";
 			if(!this.benchmarkValidationService.isActivityValid(nodeItem.model,nodeItem.process,nodeItem.activity)){
 				iconCss += " invalid";
 			}
