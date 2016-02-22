@@ -125,7 +125,7 @@ public class BenchmarkDefinitionResource
    public Response deletePublishedBenchmarkDefinition(@PathParam("runtimeOid") long runtimeOid)
    {
          benchmarkDefinitionService.deletePublishedBenchmarkDefinition(runtimeOid);
-         return Response.ok("Run-time Benchmark " + runtimeOid + " deleted.", MediaType.APPLICATION_JSON).build();
+         return Response.ok("Run-time Benchmark " + runtimeOid + " deleted.", MediaType.TEXT_PLAIN).build();
    }
    
    @POST
@@ -206,7 +206,7 @@ public class BenchmarkDefinitionResource
    public Response deleteBenchmarkDefinition(@PathParam("id") String benchmarkId)
    {
          benchmarkDefinitionService.deleteBenchmarkDefinition(benchmarkId);
-         return Response.ok("Benchmark " + benchmarkId + " deleted.", MediaType.APPLICATION_JSON).build();
+         return Response.ok("Benchmark " + benchmarkId + " deleted.", MediaType.TEXT_PLAIN).build();
 
    }
    
