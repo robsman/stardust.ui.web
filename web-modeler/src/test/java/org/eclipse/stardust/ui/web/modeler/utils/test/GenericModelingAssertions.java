@@ -4,8 +4,15 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 import java.lang.reflect.Proxy;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.xsd.XSDAnnotation;
+import org.eclipse.xsd.XSDComplexTypeDefinition;
+import org.eclipse.xsd.XSDElementDeclaration;
+import org.w3c.dom.Node;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -18,6 +25,7 @@ import org.eclipse.stardust.model.xpdl.carnot.util.ModelUtils;
 import org.eclipse.stardust.model.xpdl.xpdl2.*;
 import org.eclipse.stardust.model.xpdl.xpdl2.DataTypeType;
 import org.eclipse.stardust.model.xpdl.xpdl2.util.ExtendedAttributeUtil;
+import org.eclipse.stardust.model.xpdl.xpdl2.util.TypeDeclarationUtils;
 
 public class GenericModelingAssertions
 {
@@ -255,6 +263,26 @@ public class GenericModelingAssertions
       assertThat(dataTypeType.getCarnotType(), is(carnotTypeID));
       return dataTypeType;
    }
+   
+   public static void assertAnnotationForTypeDeclaration(TypeDeclarationType declaration,
+         String elementName, String annotationName, String value)
+   {
+      XSDElementDeclaration element = getElementDeclaration(declaration, elementName);
+      XSDAnnotation annotation = element.getAnnotation();
+      Node uiNode = annotation.getElement().getFirstChild().getFirstChild();
+      Node storageNode = uiNode.getNextSibling();
+      List<Node> uiNodes = getUIAnnotations(uiNode);
+      List<Node> storageNodes = getUIAnnotations(storageNode);
+      List<Node> allAnnotationNodes = new ArrayList<Node>();
+      allAnnotationNodes.addAll(uiNodes);
+      allAnnotationNodes.addAll(storageNodes);
+      uiNodes.addAll(storageNodes);
+      Node valueNode = findValueNodeByLocalName(allAnnotationNodes, annotationName);
+      assertThat(valueNode, is(not(nullValue())));
+      assertThat(valueNode.getNodeValue(), is(not(nullValue())));
+      assertThat(valueNode.getNodeValue(), is(value));
+   }
+   
 
    public static ProcessDefinitionType assertProcessInterface(ModelType model, String interfaceID, String interfaceName,
          int paramCount)
@@ -523,6 +551,53 @@ public class GenericModelingAssertions
          JsonObject json = jsonArray.get(i).getAsJsonObject();
          assertJsonHasKeyValue(json, keyValues[i]);
       }
+   }
+   
+   private static Node findValueNodeByLocalName(List<Node> nodes, String annotationName)
+   {
+      for (Iterator<Node> i = nodes.iterator(); i.hasNext();)
+      {
+         Node node = i.next();
+         String localName = node.getLocalName();
+         if (localName.equals(annotationName))
+         {
+            return node.getFirstChild();
+         }
+         ;
+      }
+      return null;
+   }
+
+   private static List<Node> getUIAnnotations(Node uiNode)
+   {
+      List<Node> nodeList = new ArrayList<Node>();
+      Node firstChild = uiNode.getFirstChild();
+      nodeList.add(firstChild);
+      while (firstChild.getNextSibling() != null)
+      {
+         nodeList.add(firstChild.getNextSibling());
+         firstChild = firstChild.getNextSibling();
+      }
+      return nodeList;
+   }
+
+   private static XSDElementDeclaration getElementDeclaration(
+         TypeDeclarationType declaration, String name)
+   {
+      XSDComplexTypeDefinition def = TypeDeclarationUtils.getComplexType(declaration);
+      for (Iterator<EObject> i = def.eAllContents(); i.hasNext();)
+      {
+         EObject object = i.next();
+         if (object instanceof XSDElementDeclaration)
+         {
+            XSDElementDeclaration elementDeclaration = (XSDElementDeclaration) object;
+            if (elementDeclaration.getName().equals(name))
+            {
+               return elementDeclaration;
+            }
+         }
+      }
+      return null;
    }
 
 
