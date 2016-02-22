@@ -13,7 +13,8 @@
 			<pc:automationTag value="auto-COM-DocView-ToolbarShowPrevVersion"
 				standAlone="false" />
 			<ice:outputText
-				styleClass="#{documentHandlerBean.showPrev ? '' : '-dis'} pi pi-version pi-lg">
+				styleClass="#{documentHandlerBean.showPrev ? '' : '-dis'} pi pi-version pi-lg"
+				title="#{documentHandlerBean.messages['versionToolBar.showPreviousVersion']}">
 				<ice:outputText styleClass="pi pi-badge-icon pi-badge-icon-arrow-l pi-top pi-left" title="#{documentHandlerBean.messages['versionToolBar.showPreviousVersion']}" />
 			</ice:outputText>
 		</ice:commandLink>
